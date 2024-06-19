@@ -16,6 +16,7 @@ import {
 } from '../TeamProvider'
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../TeamSelect/TeamSelect'
 
+import { User } from 'next-firebase-auth'
 import { TeamOnboarding } from '.'
 
 jest.mock('next/router', () => ({
@@ -33,15 +34,6 @@ jest.mock('apps/journeys-admin/src/libs/useCurrentUserLazyQuery', () => ({
       email: 'siyangguccigang@example.com'
     }
   })
-}))
-
-jest.mock('next-firebase-auth', () => ({
-  __esModule: true,
-  useUser: jest.fn(() => ({
-    id: 'userId',
-    name: 'userName',
-    displayName: 'User Name'
-  }))
 }))
 
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
@@ -141,6 +133,22 @@ describe('TeamOnboarding', () => {
   })
 
   it('creates new team and sets it as active', async () => {
+    const user: User = {
+      id: null,
+      email: null,
+      emailVerified: false,
+      phoneNumber: null,
+      displayName: 'User Name',
+      photoURL: null,
+      claims: {},
+      tenantId: null,
+      getIdToken: async (forceRefresh?: boolean) => null,
+      clientInitialized: false,
+      firebaseUser: null,
+      signOut: async () => {},
+      serialize: (a?: { includeToken?: boolean }) => JSON.stringify({})
+    }
+
     const cache = new InMemoryCache()
     cache.restore({
       ROOT_QUERY: {
@@ -180,7 +188,7 @@ describe('TeamOnboarding', () => {
       >
         <SnackbarProvider>
           <TeamProvider>
-            <TeamOnboarding />
+            <TeamOnboarding user={user} />
             <TestComponent />
           </TeamProvider>
         </SnackbarProvider>
