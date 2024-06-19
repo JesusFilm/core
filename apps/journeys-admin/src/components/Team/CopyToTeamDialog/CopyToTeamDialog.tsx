@@ -7,11 +7,10 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { InferType, object, string } from 'yup'
 
+import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { useUpdateLastActiveTeamIdMutation } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
 import { Dialog } from '@core/shared/ui/Dialog'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
-
-import { useTeam } from '../TeamProvider'
 
 interface CopyToTeamDialogProps {
   title: string

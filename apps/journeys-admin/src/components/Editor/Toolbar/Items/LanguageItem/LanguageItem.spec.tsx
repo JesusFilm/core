@@ -4,8 +4,8 @@ import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { TeamProvider } from '@core/journeys/ui/TeamProvider'
 
-import { TeamProvider } from '../../../../Team/TeamProvider'
 import { defaultJourney } from '../../../data'
 
 import { LanguageItem } from './LanguageItem'

@@ -1,16 +1,16 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 
+import {
+  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
+  TeamProvider
+} from '@core/journeys/ui/TeamProvider'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { UserTeamRole } from '../../../../__generated__/globalTypes'
 import { ApolloLoadingProvider } from '../../../../test/ApolloLoadingProvider'
 import { GET_CURRENT_USER } from '../../../libs/useCurrentUserLazyQuery'
 import { GET_USER_TEAMS_AND_INVITES } from '../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
-import {
-  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
-  TeamProvider
-} from '../TeamProvider'
 
 import { TeamManageDialog } from './TeamManageDialog'
 
