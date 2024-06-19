@@ -122,8 +122,6 @@ export function Header({
   const trigger = useScrollTrigger()
   const [drawerOpen, setDrawerOpen] = useState(false)
 
-  const lightTheme = themeMode === ThemeMode.light
-
   return (
     <>
       {hideSpacer !== true && <Box data-testid="HeaderSpacer" height={128} />}
@@ -143,7 +141,7 @@ export function Header({
               background: 'transparent',
               boxShadow: 'none'
             }}
-            showDivider={lightTheme}
+            showDivider={themeMode === ThemeMode.light}
             onMenuClick={() => setDrawerOpen(true)}
           />
         </Fade>
