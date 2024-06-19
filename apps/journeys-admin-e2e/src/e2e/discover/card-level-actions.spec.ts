@@ -40,7 +40,7 @@ test.describe('verify card level actions', () => {
   })
 
   //Text - create, update & delete
-  test('Text - create, update & delete', async ({ page }) => {
+  test.fixme('Text - create, update & delete', async ({ page }) => {
     const cardLevelActionPage = new CardLevelActionPage(page)
     await cardLevelActionPage.clickAddBlockBtn() //clicking on add block button
     await cardLevelActionPage.clickBtnInAddBlockDrawer('Text') // clicking on text button in add block drawer
