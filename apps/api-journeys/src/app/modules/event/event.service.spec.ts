@@ -63,8 +63,7 @@ describe('EventService', () => {
     emailQueue = {
       add: jest.fn(),
       getJob: jest.fn(),
-      remove: jest.fn(),
-      updateJobProgress: jest.fn()
+      remove: jest.fn()
     }
 
     const module: TestingModule = await Test.createTestingModule({
@@ -182,36 +181,36 @@ describe('EventService', () => {
 
   describe('resetEventsEmailDelay', () => {
     it('should reset events email delay', async () => {
-      emailQueue.getJob.mockResolvedValueOnce({})
+      const changeDelay = jest.fn()
+      emailQueue.getJob.mockResolvedValueOnce({
+        changeDelay
+      })
       const journeyId = 'journey-id'
       const visitorId = 'visitor-id'
       await service.resetEventsEmailDelay(journeyId, visitorId)
-      expect(emailQueue.updateJobProgress).toHaveBeenCalledWith(
-        'visitor-event-journey-id-visitor-id',
-        { delay: 120000 }
-      )
+      await expect(changeDelay).toHaveBeenCalledWith(120000)
     })
 
     it('should adjust email delay based on custom input', async () => {
-      emailQueue.getJob.mockResolvedValueOnce({})
+      const changeDelay = jest.fn()
+      emailQueue.getJob.mockResolvedValueOnce({
+        changeDelay
+      })
       const journeyId = 'journey-id'
       const visitorId = 'visitor-id'
-      await service.resetEventsEmailDelay(journeyId, visitorId, 300000)
-      expect(emailQueue.updateJobProgress).toHaveBeenCalledWith(
-        'visitor-event-journey-id-visitor-id',
-        { delay: 300000 }
-      )
+      await service.resetEventsEmailDelay(journeyId, visitorId, 180)
+      await expect(changeDelay).toHaveBeenCalledWith(180000)
     })
 
     it('should use default delay if custom input is invalid', async () => {
-      emailQueue.getJob.mockResolvedValueOnce({})
+      const changeDelay = jest.fn()
+      emailQueue.getJob.mockResolvedValueOnce({
+        changeDelay
+      })
       const journeyId = 'journey-id'
       const visitorId = 'visitor-id'
       await service.resetEventsEmailDelay(journeyId, visitorId, -1)
-      expect(emailQueue.updateJobProgress).toHaveBeenCalledWith(
-        'visitor-event-journey-id-visitor-id',
-        { delay: 120000 }
-      )
+      await expect(changeDelay).toHaveBeenCalledWith(120000)
     })
   })
 })

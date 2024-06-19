@@ -123,11 +123,10 @@ export class EventService {
     const visitorEmailJob = await this.emailQueue.getJob(jobId)
 
     if (visitorEmailJob != null) {
-      const defaultDelay = 2 * 60 * 1000
-      const delayTimer = Math.max(delay ?? 0, defaultDelay)
-      await this.emailQueue.updateJobProgress(jobId, {
-        delay: delayTimer
-      })
+      const baseDelay = 2 * 60 * 1000
+      const delayInMilliseconds = (delay ?? 0) * 1000
+      const delayTimer = Math.max(delayInMilliseconds, baseDelay)
+      await visitorEmailJob.changeDelay(delayTimer)
     }
   }
 }
