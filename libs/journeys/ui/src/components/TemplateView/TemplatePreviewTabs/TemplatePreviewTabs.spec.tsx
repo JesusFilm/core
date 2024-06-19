@@ -9,7 +9,6 @@ import { TemplatePreviewTabs } from './TemplatePreviewTabs'
 import { journeyVideoBlocks } from './data'
 import '../../../../test/i18n'
 
-
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
