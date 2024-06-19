@@ -41,8 +41,6 @@ describe('Header', () => {
     ).not.toBeInTheDocument()
   })
 
-  // should hide spacer
-
   it('should hide spacer', () => {
     render(<Header hideAbsoluteAppBar hideSpacer />)
     expect(screen.queryByTestId('HeaderSpacer')).not.toBeInTheDocument()
