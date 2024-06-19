@@ -773,7 +773,7 @@ export const blocksWithStepBlockPosition: StepBlockWithPosition[] = blocks
     return {
       __typename: 'StepBlock',
       id: block.id,
-      x: Number.parseInt(`${index * 3}00`),
+      x: parseInt(`${index * 3}00`),
       y: 1
     }
   })
