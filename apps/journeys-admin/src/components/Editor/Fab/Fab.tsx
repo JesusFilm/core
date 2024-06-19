@@ -1,11 +1,10 @@
 import MuiFab, { FabProps as MuiFabProps } from '@mui/material/Fab'
+import Zoom from '@mui/material/Zoom'
 import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import Zoom from '@mui/material/Zoom'
 import { useTranslation } from 'next-i18next'
 import { MouseEvent, ReactElement, ReactNode } from 'react'
 
-import { TreeBlock } from '@core/journeys/ui/block'
 import {
   ActiveCanvasDetailsDrawer,
   ActiveContent,
@@ -13,6 +12,7 @@ import {
   ActiveSlide,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
+import { TreeBlock } from '@core/journeys/ui/block'
 import CheckContainedIcon from '@core/shared/ui/icons/CheckContained'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'

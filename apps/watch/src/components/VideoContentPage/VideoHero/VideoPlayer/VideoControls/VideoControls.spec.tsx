@@ -122,7 +122,6 @@ describe('VideoControls', () => {
   })
 
   it('fullscreens the video player on fullscreen icon click when mobile', () => {
-    // eslint-disable-next-line @typescript-eslint/no-extra-semi
     ;(global.navigator.userAgent as unknown as string) = 'iPhone'
     const fullscreenStub = jest
       .spyOn(player, 'requestFullscreen')
@@ -141,7 +140,6 @@ describe('VideoControls', () => {
   })
 
   it('fullscreens the video player on fullscreen icon click when desktop', async () => {
-    // eslint-disable-next-line @typescript-eslint/no-extra-semi
     ;(global.navigator.userAgent as unknown as string) = 'Mac'
     const { getByTestId } = render(
       <MockedProvider>

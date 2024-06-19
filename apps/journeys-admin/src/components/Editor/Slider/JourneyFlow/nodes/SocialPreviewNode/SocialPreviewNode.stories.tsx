@@ -12,14 +12,14 @@ import {
   GetJourney_journey as Journey
 } from '../../../../../../../__generated__/GetJourney'
 import {
+  StepAndCardBlockCreate,
+  StepAndCardBlockCreateVariables
+} from '../../../../../../../__generated__/StepAndCardBlockCreate'
+import {
   JourneyStatus,
   ThemeMode,
   ThemeName
 } from '../../../../../../../__generated__/globalTypes'
-import {
-  StepAndCardBlockCreate,
-  StepAndCardBlockCreateVariables
-} from '../../../../../../../__generated__/StepAndCardBlockCreate'
 import { simpleComponentConfig } from '../../../../../../libs/storybook'
 import { STEP_AND_CARD_BLOCK_CREATE } from '../../../../../../libs/useStepAndCardBlockCreateMutation/useStepAndCardBlockCreateMutation'
 

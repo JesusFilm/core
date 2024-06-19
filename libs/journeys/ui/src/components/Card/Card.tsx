@@ -6,22 +6,21 @@ import { MouseEvent, ReactElement, useEffect, useMemo } from 'react'
 import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
+import { useJourney } from '../../libs/JourneyProvider'
 import { TreeBlock, useBlocks } from '../../libs/block'
 import { blurImage } from '../../libs/blurImage'
 import { getStepHeading } from '../../libs/getStepHeading'
-import { useJourney } from '../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../libs/rtl'
-// eslint-disable-next-line import/no-cycle
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { ImageFields } from '../Image/__generated__/ImageFields'
 import { StepFields } from '../Step/__generated__/StepFields'
 import { VideoFields } from '../Video/__generated__/VideoFields'
 
+import { ContainedCover } from './ContainedCover'
+import { ExpandedCover } from './ExpandedCover'
 import { CardFields } from './__generated__/CardFields'
 import { StepNextEventCreate } from './__generated__/StepNextEventCreate'
 import { StepPreviousEventCreate } from './__generated__/StepPreviousEventCreate'
-import { ContainedCover } from './ContainedCover'
-import { ExpandedCover } from './ExpandedCover'
 
 export const STEP_NEXT_EVENT_CREATE = gql`
   mutation StepNextEventCreate($input: StepNextEventCreateInput!) {
