@@ -126,7 +126,7 @@ export function Header({
     <>
       {hideSpacer !== true && <Box data-testid="HeaderSpacer" height={128} />}
       <ThemeProvider themeName={ThemeName.website} themeMode={themeMode} nested>
-        <Fade
+        {/* <Fade
           appear={false}
           in={hideAbsoluteAppBar !== true}
           style={{
@@ -135,18 +135,21 @@ export function Header({
           }}
           timeout={{ exit: 2225 }}
           data-testid="Header"
-        >
-          <LocalAppBar
-            sx={{
-              background: 'transparent',
-              boxShadow: 'none'
-            }}
-            showDivider={themeMode === ThemeMode.light}
-            onMenuClick={() => setDrawerOpen(true)}
-          />
-        </Fade>
+        > */}
+        <LocalAppBar
+          sx={{
+            background: 'transparent',
+            boxShadow: 'none',
+            backdropFilter: 'blur(10px)'
+          }}
+          data-testid="Header"
+          position="fixed"
+          showDivider={themeMode === ThemeMode.light}
+          onMenuClick={() => setDrawerOpen(true)}
+        />
+        {/* </Fade> */}
       </ThemeProvider>
-      <ThemeProvider themeName={ThemeName.website} themeMode={themeMode} nested>
+      {/* <ThemeProvider themeName={ThemeName.website} themeMode={themeMode} nested>
         <Slide in={trigger}>
           <LocalAppBar
             sx={{
@@ -156,7 +159,7 @@ export function Header({
             onMenuClick={() => setDrawerOpen(true)}
           />
         </Slide>
-      </ThemeProvider>
+      </ThemeProvider> */}
       <ThemeProvider
         themeName={ThemeName.website}
         themeMode={ThemeMode.light}
