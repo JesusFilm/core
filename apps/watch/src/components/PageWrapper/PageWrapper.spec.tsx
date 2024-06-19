@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box'
-import { render } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 
 import { PageWrapper } from '.'
 
@@ -32,5 +32,10 @@ describe('PageWrapper', () => {
       </PageWrapper>
     )
     expect(getByTestId('content')).toBeInTheDocument()
+  })
+
+  it('should not render header spacer', () => {
+    render(<PageWrapper hideHeaderSpacer />)
+    expect(screen.queryByTestId('HeaderSpacer')).not.toBeInTheDocument()
   })
 })
