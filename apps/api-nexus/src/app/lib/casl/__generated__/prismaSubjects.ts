@@ -9,8 +9,6 @@ import {
   Resource, 
   ResourceChannel, 
   ResourceLocalization, 
-  ResourceLocalizationSource, 
-  ResourceSource, 
   UserRole
 } from '.prisma/api-nexus-client'
 
@@ -21,7 +19,5 @@ export type PrismaSubjects = Subjects<{
   Resource: Resource, 
   ResourceChannel: ResourceChannel, 
   ResourceLocalization: ResourceLocalization, 
-  ResourceLocalizationSource: ResourceLocalizationSource, 
-  ResourceSource: ResourceSource, 
   UserRole: UserRole
 }>

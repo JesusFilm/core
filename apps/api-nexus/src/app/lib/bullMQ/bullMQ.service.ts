@@ -108,7 +108,6 @@ export class BullMQService {
         const resource = await this.prismaService.resource.findUnique({
           where: { id: task.resourceId ?? '' },
           include: {
-            resourceSource: true,
             resourceLocalizations: true
           }
         })
@@ -123,12 +122,11 @@ export class BullMQService {
           accessToken,
           resource: {
             id: resource.id,
-            driveId: resource.resourceSource?.videoGoogleDriveId ?? '',
+            driveId: resource?.videoGoogleDriveId ?? '',
             title: resource.resourceLocalizations[0]?.title ?? '',
             description: resource.resourceLocalizations[0]?.description ?? '',
-            thumbnailDriveId:
-              resource.resourceSource?.thumbnailGoogleDriveId ?? '',
-            thumbnailMimeType: resource.resourceSource?.thumbnailMimeType ?? '',
+            thumbnailDriveId: resource?.thumbnailGoogleDriveId ?? '',
+            thumbnailMimeType: resource?.thumbnailMimeType ?? '',
             privacyStatus: resource.privacy ?? PrivacyStatus.private
           },
           channel: {
@@ -199,10 +197,7 @@ export class BullMQService {
     const resources = await this.prismaService.resource.findMany({
       where: { id: { in: resourceIds } },
       include: {
-        resourceLocalizations: {
-          include: { resourceLocalizationSource: true }
-        },
-        resourceSource: true
+        resourceLocalizations: true
       }
     })
     // Create Batch Tasks
@@ -246,9 +241,8 @@ export class BullMQService {
           category: item.category ?? '',
           privacyStatus: item.privacy,
           isMadeForKids: item.isMadeForKids,
-          thumbnailDriveId:
-            item.resourceSource?.thumbnailGoogleDriveId ?? undefined,
-          thumbnailMimeType: item.resourceSource?.thumbnailMimeType ?? undefined
+          thumbnailDriveId: item?.thumbnailGoogleDriveId ?? undefined,
+          thumbnailMimeType: item?.thumbnailMimeType ?? undefined
         },
         localizations: item.resourceLocalizations.map((loc) => {
           return {
@@ -257,8 +251,7 @@ export class BullMQService {
             title: loc.title ?? '',
             description: loc.description ?? '',
             resourceId: loc.resourceId ?? '',
-            captionDriveId:
-              loc.resourceLocalizationSource?.captionGoogleDriveId ?? ''
+            captionDriveId: loc?.captionGoogleDriveId ?? ''
           }
         })
       }

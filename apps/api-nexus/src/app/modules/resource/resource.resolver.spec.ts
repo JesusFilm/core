@@ -44,7 +44,11 @@ describe('ResourceResolver', () => {
     playlistId: null,
     mediaComponentId: null,
     notifySubscribers: false,
-    publishedAt: null
+    publishedAt: null,
+    videoGoogleDriveId: null,
+    videoMimeType: null,
+    thumbnailGoogleDriveId: null,
+    thumbnailMimeType: null
   }
   const resourceWithNexusUserNexus = {
     ...resource

@@ -38,36 +38,27 @@ enum ResourceStatus {
 }
 
 model Resource {
-    id                    String                 @id @default(uuid())
-    name                  String
-    category              String?
-    language              String?
-    customThumbnail       String?
-    playlistId            String?
-    isMadeForKids         Boolean                @default(false)
-    mediaComponentId      String?
-    notifySubscribers     Boolean                @default(false)
-    status                ResourceStatus         @default(created)
-    privacy               PrivacyStatus          @default(private)
-    resourceLocalizations ResourceLocalization[]
-    resourceChannels      ResourceChannel[]
-    resourceSource        ResourceSource?
-    createdAt             DateTime               @default(now())
-    updatedAt             DateTime?              @updatedAt
-    publishedAt           DateTime?
-    deletedAt             DateTime?
-}
-
-model ResourceSource {
-    id                     String   @id @default(uuid())
-    resourceId             String   @unique
+    id                     String                 @id @default(uuid())
+    name                   String
+    category               String?
+    language               String?
+    customThumbnail        String?
+    playlistId             String?
+    isMadeForKids          Boolean                @default(false)
+    mediaComponentId       String?
+    notifySubscribers      Boolean                @default(false)
     videoGoogleDriveId     String?
-    videoCloudFlareId      String?
     videoMimeType          String?
     thumbnailGoogleDriveId String?
-    thumbnailCloudFlareId  String?
     thumbnailMimeType      String?
-    resource               Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+    status                 ResourceStatus         @default(created)
+    privacy                PrivacyStatus          @default(private)
+    resourceLocalizations  ResourceLocalization[]
+    resourceChannels       ResourceChannel[]
+    createdAt              DateTime               @default(now())
+    updatedAt              DateTime?              @updatedAt
+    publishedAt            DateTime?
+    deletedAt              DateTime?
 }
 
 model ResourceChannel {
@@ -80,29 +71,20 @@ model ResourceChannel {
 }
 
 model ResourceLocalization {
-    id                         String                      @id @default(uuid())
-    resourceId                 String
-    title                      String?
-    description                String?
-    keywords                   String?
-    captionFile                String?
-    audioTrackFile             String?
-    language                   String
-    videoId                    String?
-    resource                   Resource                    @relation(fields: [resourceId], references: [id], onDelete: Cascade)
-    resourceLocalizationSource ResourceLocalizationSource?
-}
-
-model ResourceLocalizationSource {
-    id                      String               @id @default(uuid())
-    reourceLocalizationId   String               @unique
+    id                      String   @id @default(uuid())
+    resourceId              String
+    title                   String?
+    description             String?
+    keywords                String?
+    captionFile             String?
+    audioTrackFile          String?
+    language                String
+    videoId                 String?
     captionGoogleDriveId    String?
-    captionCloudFlareId     String?
     captionMimeType         String?
     audioTrackGoogleDriveId String?
-    audioTrackCloudFlareId  String?
-    audioMimeType           String?
-    resourceLocalization    ResourceLocalization @relation(fields: [reourceLocalizationId], references: [id], onDelete: Cascade)
+    audioTrackMimeType      String?
+    resource                Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
 }
 
 enum BatchStatus {

@@ -48,15 +48,8 @@ export class BatchService {
                     row.notifySubscribers.toLocaleLowerCase()
                   )
                 : undefined,
-            resourceSource: {
-              update: {
-                where: { resourceId: row.resourceData?.id },
-                data: {
-                  thumbnailGoogleDriveId: row.customThumbnailDriveFile?.id,
-                  thumbnailMimeType: row.customThumbnailDriveFile?.mimeType
-                }
-              }
-            }
+            thumbnailGoogleDriveId: row.customThumbnailDriveFile?.id,
+            thumbnailMimeType: row.customThumbnailDriveFile?.mimeType
           }
         })
       }
@@ -72,16 +65,12 @@ export class BatchService {
             captionFile: row.captionFile ?? '',
             audioTrackFile: row.audioTrackFile ?? '',
             videoId: row.videoId ?? '',
-            resourceLocalizationSource: {
-              create: {
-                captionMimeType: row.captionDriveFile?.mimeType ?? '',
-                captionGoogleDriveId: row.captionDriveFile?.id ?? '',
-                audioTrackGoogleDriveId: row.audioTrackDriveFile?.id ?? '',
-                audioMimeType: row.audioTrackDriveFile?.mimeType ?? ''
-              }
-            }
+            captionGoogleDriveId: row.captionDriveFile?.id ?? '',
+            captionMimeType: row.captionDriveFile?.mimeType ?? '',
+            audioTrackGoogleDriveId: row.audioTrackDriveFile?.id ?? '',
+            audioTrackMimeType: row.audioTrackDriveFile?.mimeType ?? ''
           },
-          include: { resource: true, resourceLocalizationSource: true }
+          include: { resource: true }
         })
       } else {
         await this.prismaService.resourceLocalization.update({
@@ -94,27 +83,12 @@ export class BatchService {
             audioTrackFile: row.audioTrackFile,
             language: row.language ?? 'en',
             videoId: row.videoId,
-            resourceLocalizationSource: {
-              upsert: {
-                where: {
-                  reourceLocalizationId: resource?.resourceLocalizations[0].id
-                },
-                create: {
-                  audioMimeType: row.audioTrackDriveFile?.mimeType,
-                  audioTrackGoogleDriveId: row.audioTrackDriveFile?.id,
-                  captionMimeType: row.captionDriveFile?.mimeType,
-                  captionGoogleDriveId: row.captionDriveFile?.id
-                },
-                update: {
-                  audioMimeType: row.audioTrackDriveFile?.mimeType,
-                  audioTrackGoogleDriveId: row.audioTrackDriveFile?.id,
-                  captionMimeType: row.captionDriveFile?.mimeType,
-                  captionGoogleDriveId: row.captionDriveFile?.id
-                }
-              }
-            }
+            captionGoogleDriveId: row.captionDriveFile?.id,
+            captionMimeType: row.captionDriveFile?.mimeType,
+            audioTrackGoogleDriveId: row.audioTrackDriveFile?.id,
+            audioTrackMimeType: row.audioTrackDriveFile?.mimeType
           },
-          include: { resource: true, resourceLocalizationSource: true }
+          include: { resource: true }
         })
       }
       if (resource != null) {

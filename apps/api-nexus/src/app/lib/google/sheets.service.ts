@@ -264,22 +264,14 @@ export class GoogleSheetsService {
               language: row.textLanguage ?? 'en',
               audioTrackFile: row.audioTrackFile ?? '',
               captionFile: row.captionFile ?? '',
-              resourceLocalizationSource: {
-                create: {
-                  captionGoogleDriveId: row.captionDriveFile?.id ?? '',
-                  audioTrackGoogleDriveId: row.audioTrackDriveFile?.id
-                }
-              }
+              captionGoogleDriveId: row.captionDriveFile?.id ?? '',
+              audioTrackGoogleDriveId: row.audioTrackDriveFile?.id ?? ''
             }
           },
-          resourceSource: {
-            create: {
-              videoMimeType: row.videoDriveFile?.mimeType ?? '',
-              videoGoogleDriveId: row.videoDriveFile?.id ?? '',
-              thumbnailGoogleDriveId: row.customThumbnailDriveFile?.id ?? '',
-              thumbnailMimeType: row.customThumbnailDriveFile?.mimeType ?? ''
-            }
-          }
+          videoMimeType: row.videoDriveFile?.mimeType ?? '',
+          videoGoogleDriveId: row.videoDriveFile?.id ?? '',
+          thumbnailGoogleDriveId: row.customThumbnailDriveFile?.id ?? '',
+          thumbnailMimeType: row.customThumbnailDriveFile?.mimeType ?? ''
         }
       })
       if (row.channelData !== undefined && resource !== null) {
