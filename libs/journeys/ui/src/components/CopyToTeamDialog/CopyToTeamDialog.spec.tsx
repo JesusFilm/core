@@ -2,14 +2,14 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor, within } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { JourneyProvider } from '../../libs/JourneyProvider'
+import { GetJourney_journey as Journey } from '../../libs/useJourneyQuery/__generated__/GetJourney'
+import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../../libs/useUpdateLastActiveTeamIdMutation'
+import { UpdateLastActiveTeamId } from '../../libs/useUpdateLastActiveTeamIdMutation/__generated__/UpdateLastActiveTeamId'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
-} from '@core/journeys/ui/TeamProvider'
-import { GetJourney_journey as Journey } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
-import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
-import { UpdateLastActiveTeamId } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation/__generated__/UpdateLastActiveTeamId'
+} from '../TeamProvider'
 
 import { CopyToTeamDialog } from './CopyToTeamDialog'
 
