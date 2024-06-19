@@ -15,11 +15,11 @@ import {
   useState
 } from 'react'
 
-import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
-import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
+import { LanguageOption } from '@core/shared/ui/MultipleLanguageAutocomplete'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
-import { GetLanguages_languages } from '../../../../__generated__/GetLanguages'
+import { setBeaconPageViewed } from '../../../libs/setBeaconPageViewed'
+import { useLanguagesQuery } from '../../../libs/useLanguagesQuery'
 
 import { LanguagesFilterPopper } from './LanguagesFilterPopper/LanguagesFilterPopper'
 import { convertLanguagesToOptions } from './convertLanguagesToOptions'
@@ -159,7 +159,7 @@ export function HeaderAndLanguageFilter({
 }: LanguageFilterProps): ReactElement {
   const router = useRouter()
   const [open, setOpen] = useState(false)
-  const { t } = useTranslation('apps-journeys-admin')
+  const { t } = useTranslation('libs-journeys-ui')
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
 
   useEffect(() => {
@@ -214,7 +214,7 @@ export function HeaderAndLanguageFilter({
   }
   const localButtonProps: LocalButtonProps = {
     loading,
-    onClick: (e) => {
+    onClick: () => {
       const param = 'template-language'
       void router.push({ query: { ...router.query, param } }, undefined, {
         shallow: true
@@ -226,7 +226,7 @@ export function HeaderAndLanguageFilter({
     }
   }
 
-  function handleSubmit(values: { languages: GetLanguages_languages[] }): void {
+  function handleSubmit(values: { languages: LanguageOption[] }): void {
     const ids = values.languages.map((language) => language.id)
     onChange(ids)
   }

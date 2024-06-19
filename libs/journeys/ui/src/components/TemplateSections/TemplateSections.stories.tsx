@@ -3,19 +3,19 @@ import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
-import { GET_JOURNEYS } from '@core/journeys/ui/useJourneysQuery'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
-import {
-  GetJourneys,
-  GetJourneys_journeys as Journey,
-  GetJourneys_journeys_tags as Tag
-} from '../../../__generated__/GetJourneys'
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
+import { GET_JOURNEYS } from '../../libs/useJourneysQuery'
+import {
+  GetJourneys,
+  GetJourneys_journeys as Journey,
+  GetJourneys_journeys_tags as Tag
+} from '../../libs/useJourneysQuery/__generated__/GetJourneys'
 
 import { TemplateSections } from '.'
 

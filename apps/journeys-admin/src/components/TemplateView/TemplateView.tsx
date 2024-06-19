@@ -11,12 +11,12 @@ import { SwiperOptions } from 'swiper/types'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { StrategySection } from '@core/journeys/ui/StrategySection'
+import { TemplateGalleryCarousel } from '@core/journeys/ui/TemplateGallery/TemplateGalleryCarousel'
+import { TemplateGalleryCard } from '@core/journeys/ui/TemplateGalleryCard'
 import { useJourneysQuery } from '@core/journeys/ui/useJourneysQuery'
 import { useUserRoleQuery } from '@core/journeys/ui/useUserRoleQuery'
 
 import { Role } from '../../../__generated__/globalTypes'
-import { TemplateGalleryCarousel } from '../TemplateGallery/TemplateGalleryCarousel'
-import { TemplateGalleryCard } from '../TemplateGalleryCard'
 
 import { TemplateFooter } from './TemplateFooter'
 import { TemplatePreviewTabs } from './TemplatePreviewTabs'

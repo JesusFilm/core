@@ -11,9 +11,8 @@ import Image from 'next/image'
 import NextLink from 'next/link'
 import { ReactElement } from 'react'
 
-import { abbreviateLanguageName } from '@core/journeys/ui/abbreviateLanguageName'
-
-import { GetJourneys_journeys as Journey } from '../../../__generated__/GetJourneys'
+import { abbreviateLanguageName } from '../../libs/abbreviateLanguageName'
+import { GetJourneys_journeys as Journey } from '../../libs/useJourneysQuery/__generated__/GetJourneys'
 
 interface HoverLayerProps {
   className?: string
@@ -60,7 +59,7 @@ export function TemplateGalleryCard({
   )
 
   const theme = useTheme()
-  const { t } = useTranslation('apps-journeys-admin')
+  const { t } = useTranslation('libs-journeys-ui')
   const date =
     journey != null
       ? intlFormat(parseISO(String(journey.createdAt)), {

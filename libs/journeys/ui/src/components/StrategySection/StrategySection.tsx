@@ -18,7 +18,7 @@ export function StrategySection({
   variant,
   isError = false
 }: StrategySectionProps): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
+  const { t } = useTranslation('libs-journeys-ui')
 
   const [embedURL, setEmbedURL] = useState<string | undefined>(undefined)
 

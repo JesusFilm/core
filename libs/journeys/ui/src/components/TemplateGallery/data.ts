@@ -1,23 +1,22 @@
 import { MockedResponse } from '@apollo/client/testing'
 
-import { GET_JOURNEYS } from '@core/journeys/ui/useJourneysQuery'
-import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
-import { GET_TAGS } from '@core/journeys/ui/useTagsQuery'
-
-import {
-  GetJourneys,
-  GetJourneysVariables,
-  GetJourneys_journeys as Journey,
-  GetJourneys_journeys_tags as Tag
-} from '../../../__generated__/GetJourneys'
-import { GetLanguages } from '../../../__generated__/GetLanguages'
-import { GetTags } from '../../../__generated__/GetTags'
 import {
   JourneyStatus,
   Service,
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
+import { GET_JOURNEYS } from '../../libs/useJourneysQuery'
+import {
+  GetJourneys,
+  GetJourneysVariables,
+  GetJourneys_journeys as Journey,
+  GetJourneys_journeys_tags as Tag
+} from '../../libs/useJourneysQuery/__generated__/GetJourneys'
+import { GET_LANGUAGES } from '../../libs/useLanguagesQuery'
+import { GetLanguages } from '../../libs/useLanguagesQuery/__generated__/GetLanguages'
+import { GET_TAGS } from '../../libs/useTagsQuery'
+import { GetTags } from '../../libs/useTagsQuery/__generated__/GetTags'
 
 const defaultTemplate: Journey = {
   __typename: 'Journey',

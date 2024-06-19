@@ -14,7 +14,7 @@ import { TagCarousels } from './TagCarousels'
 import { TagsFilter } from './TagsFilter'
 
 export function TemplateGallery(): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
+  const { t } = useTranslation('libs-journeys-ui')
   const router = useRouter()
   const [selectedLanguageIds, setSelectedLanguageIds] = useState<string[]>(
     router.query.languageIds != null

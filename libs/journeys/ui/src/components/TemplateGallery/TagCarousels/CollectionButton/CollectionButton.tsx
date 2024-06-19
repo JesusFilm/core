@@ -7,7 +7,7 @@ import { styled, useTheme } from '@mui/material/styles'
 import NextImage, { StaticImageData } from 'next/image'
 import { ReactElement } from 'react'
 
-import { GetTags_tags as Tag } from '../../../../../__generated__/GetTags'
+import { GetTags_tags as Tag } from '../../../../libs/useTagsQuery/__generated__/GetTags'
 
 import jesusFilmImage from './assets/jesusFilm.jpg'
 import nuaImage from './assets/nua.jpg'

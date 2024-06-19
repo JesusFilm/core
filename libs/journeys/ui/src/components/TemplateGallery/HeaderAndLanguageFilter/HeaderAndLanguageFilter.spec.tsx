@@ -5,6 +5,7 @@ import { NextRouter, useRouter } from 'next/router'
 import { getLanguagesMock } from '../data'
 
 import { HeaderAndLanguageFilter } from '.'
+import '../../../../test/i18n'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,

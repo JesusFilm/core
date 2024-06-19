@@ -7,14 +7,18 @@ import Popper from '@mui/material/Popper'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { styled, useTheme } from '@mui/material/styles'
-import { FieldArray, Form, Formik, FormikValues } from 'formik'
+import { FieldArray, Form, Formik } from 'formik'
 import { Dispatch, ReactElement, SetStateAction } from 'react'
 
 import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
 
+interface LanguageOptions {
+  languages: LanguageOption[]
+}
+
 interface LanguagesFilterPopperProps {
   initialValues: LanguageOption[]
-  onSubmit: (values: FormikValues) => void
+  onSubmit: (values: LanguageOptions) => void
   setOpen: Dispatch<SetStateAction<boolean>>
   open: boolean
   anchorEl: HTMLElement | null
@@ -44,7 +48,7 @@ export function LanguagesFilterPopper({
       initialValues={{
         languages: initialValues
       }}
-      onSubmit={(values) => onSubmit(values)}
+      onSubmit={(values: LanguageOptions) => onSubmit(values)}
       enableReinitialize
     >
       {({ values, handleSubmit }) => (
