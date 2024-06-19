@@ -37,7 +37,6 @@ export function useUpdateEdge(): (
     if (journey == null || target == null) return
     let selectedStep: TreeBlock<StepBlock> | undefined
     const edgeSource = convertToEdgeSource(rawEdgeSource)
-
     if (
       rawEdgeSource.oldEdge != null &&
       rawEdgeSource.oldEdge.target === target &&
