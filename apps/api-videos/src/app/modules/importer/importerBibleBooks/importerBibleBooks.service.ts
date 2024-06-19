@@ -6,7 +6,7 @@ import { ImporterService } from '../importer.service'
 const bibleBookSchema = z.object({
   id: z.number().transform(String),
   osisId: z.string(),
-  alternateName: z.string().optional(),
+  alternateName: z.string().nullable(),
   paratextAbbreviation: z.string(),
   isNewTestament: z.number().transform(Boolean),
   order: z.number()

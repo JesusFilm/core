@@ -60,7 +60,7 @@ export class BigQueryConsumer extends WorkerHost {
       //   this.importerVideoVariantsService,
       // 'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariantDownload_arclight_data':
       //   this.importerVideoVariantsDownloadService,
-      'jfp-data-warehouse.jfp_mmdb_prod.new_core_bibleBooks_arclight_data':
+      'jfp-data-warehouse.jfp_mmdb_prod.core_bibleBooks_arclight_data':
         this.importerBibleBooksService
       // 'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariantSubtitles_arclight_data':
       //   this.importerVideoVariantsSubtitleService
