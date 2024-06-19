@@ -26,6 +26,5 @@ input GrowthSpaceIntegrationUpdateInput {
 extend type Mutation {
     growthSpacesIntegrationCreate(teamId: ID!, input: GrowthSpaceIntegrationCreateInput!): GrowthSpaceIntegration!
     growthSpacesIntegrationUpdate(teamId: ID!, input: GrowthSpaceIntegrationUpdateInput!): GrowthSpaceIntegration!
-
 }
 

@@ -7,6 +7,7 @@ type TextResponseBlock implements Block {
   hint: String
   minRows: Int
   type: TextResponseType
+  routeId: String
 }
 
 enum TextResponseType {
