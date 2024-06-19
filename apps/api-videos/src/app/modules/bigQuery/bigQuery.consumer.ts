@@ -6,15 +6,16 @@ import { PrismaService } from '../../lib/prisma.service'
 import { ImporterService } from '../importer/importer.service'
 import { ImporterVideoDescriptionService } from '../importer/importerVideoDescriptions/importerVideoDescriptions.service'
 import { ImporterVideoImageAltService } from '../importer/importerVideoImageAlt/importerVideoImageAlt.service'
-import { ImporterVideosService } from '../importer/importerVideos/importerVideos.service'
-import { ImporterVideosChildrenService } from '../importer/importerVideosChildren/importerVideosChildren.service'
 import { ImporterVideoSnippetsService } from '../importer/importerVideoSnippets/importerVideoSnippets.service'
 import { ImporterVideoStudyQuestionsService } from '../importer/importerVideoStudyQuestions/importerVideoStudyQuestions.service'
 import { ImporterVideoTitleService } from '../importer/importerVideoTitles/importerVideoTitle.service'
 import { ImporterVideoVariantDownloadsService } from '../importer/importerVideoVariantDownloads/importerVideoVariantDownloads.service'
-import { ImporterVideoVariantsService } from '../importer/importerVideoVariants/importerVideoVariants.service'
 import { ImporterVideoVariantSubtitlesService } from '../importer/importerVideoVariantSubtitle/importerVideovariantSubtitle.service'
+import { ImporterVideoVariantsService } from '../importer/importerVideoVariants/importerVideoVariants.service'
+import { ImporterVideosService } from '../importer/importerVideos/importerVideos.service'
+import { ImporterVideosChildrenService } from '../importer/importerVideosChildren/importerVideosChildren.service'
 
+import { importerBibleBooksService } from '../importer/importerBibleBooks/importerBibleBooks.service'
 import { BigQueryService } from './bigQuery.service'
 
 interface BigQueryRowError {
@@ -38,26 +39,29 @@ export class BigQueryConsumer extends WorkerHost {
     private readonly importerVideoImageAltService: ImporterVideoImageAltService,
     private readonly importerVideoVariantsDownloadService: ImporterVideoVariantDownloadsService,
     private readonly importerVideoVariantsSubtitleService: ImporterVideoVariantSubtitlesService,
-    private readonly importerVideosChildrenService: ImporterVideosChildrenService
+    private readonly importerVideosChildrenService: ImporterVideosChildrenService,
+    private readonly importerBibleBooksService: importerBibleBooksService
   ) {
     super()
     this.tables = {
-      'jfp-data-warehouse.jfp_mmdb_prod.core_video_arclight_data':
-        this.importerVideosService,
-      'jfp-data-warehouse.jfp_mmdb_prod.core_videoTitle_arclight_data':
-        this.importerVideoTitleService,
-      'jfp-data-warehouse.jfp_mmdb_prod.core_videoDescription_arclight_data':
-        this.importerVideoDescriptionService,
-      'jfp-data-warehouse.jfp_mmdb_prod.core_videoStudyQuestions_arclight_data':
-        this.importerVideoStudyQuestionsService,
-      'jfp-data-warehouse.jfp_mmdb_prod.core_videoSnippet_arclight_data':
-        this.importerVideoSnippetsService,
-      'jfp-data-warehouse.jfp_mmdb_prod.core_videoImageAlt_arclight_data':
-        this.importerVideoImageAltService,
-      'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariant_arclight_data':
-        this.importerVideoVariantsService,
-      'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariantDownload_arclight_data':
-        this.importerVideoVariantsDownloadService
+      // 'jfp-data-warehouse.jfp_mmdb_prod.core_video_arclight_data':
+      //   this.importerVideosService,
+      // 'jfp-data-warehouse.jfp_mmdb_prod.core_videoTitle_arclight_data':
+      //   this.importerVideoTitleService,
+      // 'jfp-data-warehouse.jfp_mmdb_prod.core_videoDescription_arclight_data':
+      //   this.importerVideoDescriptionService,
+      // 'jfp-data-warehouse.jfp_mmdb_prod.core_videoStudyQuestions_arclight_data':
+      //   this.importerVideoStudyQuestionsService,
+      // 'jfp-data-warehouse.jfp_mmdb_prod.core_videoSnippet_arclight_data':
+      //   this.importerVideoSnippetsService,
+      // 'jfp-data-warehouse.jfp_mmdb_prod.core_videoImageAlt_arclight_data':
+      //   this.importerVideoImageAltService,
+      // 'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariant_arclight_data':
+      //   this.importerVideoVariantsService,
+      // 'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariantDownload_arclight_data':
+      //   this.importerVideoVariantsDownloadService,
+      'jfp-data-warehouse.jfp_mmdb_prod.new_core_bibleBooks_arclight_data':
+        this.importerBibleBooksService
       // 'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariantSubtitles_arclight_data':
       //   this.importerVideoVariantsSubtitleService
     }
