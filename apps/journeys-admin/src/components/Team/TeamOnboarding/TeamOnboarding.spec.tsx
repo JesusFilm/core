@@ -35,6 +35,15 @@ jest.mock('apps/journeys-admin/src/libs/useCurrentUserLazyQuery', () => ({
   })
 }))
 
+jest.mock('next-firebase-auth', () => ({
+  __esModule: true,
+  useUser: jest.fn(() => ({
+    id: 'userId',
+    name: 'userName',
+    displayName: 'User Name'
+  }))
+}))
+
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('TeamOnboarding', () => {
@@ -122,7 +131,7 @@ describe('TeamOnboarding', () => {
   let push: jest.Mock
 
   beforeEach(() => {
-    jest.resetAllMocks()
+    jest.clearAllMocks()
     push = jest.fn()
 
     mockUseRouter.mockReturnValue({
@@ -177,6 +186,8 @@ describe('TeamOnboarding', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
+    expect(getAllByRole('textbox')[0]).toHaveValue('User Name & Team')
+    expect(getAllByRole('textbox')[1]).toHaveValue('U Team')
     fireEvent.change(getAllByRole('textbox')[0], {
       target: { value: 'Team Title' }
     })

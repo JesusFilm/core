@@ -1,5 +1,6 @@
 import { ApolloError, useMutation } from '@apollo/client'
 import { Formik, FormikConfig, FormikHelpers } from 'formik'
+import { useUser } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
@@ -18,12 +19,15 @@ interface TeamCreateFormProps {
     data?: TeamCreate | null
   ) => void
   children?: FormikConfig<TeamCreateInput>['children']
+  onboarding?: boolean
 }
 
 export function TeamCreateForm({
   onSubmit,
-  children
+  children,
+  onboarding = false
 }: TeamCreateFormProps): ReactElement {
+  const user = useUser()
   const { t } = useTranslation('apps-journeys-admin')
   const teamCreateSchema: ObjectSchema<TeamCreateInput> = object({
     title: string()
@@ -88,7 +92,18 @@ export function TeamCreateForm({
       }
     }
   }
-  const initialValues: TeamCreateInput = { title: '' }
+
+  const initialValues: TeamCreateInput =
+    onboarding && user.displayName?.length !== 0
+      ? {
+          title: t('{{ displayName }} & Team', {
+            displayName: user.displayName
+          }),
+          publicTitle: t('{{ displayName }} Team', {
+            displayName: user.displayName?.charAt(0)
+          })
+        }
+      : { title: '' }
 
   return (
     <Formik

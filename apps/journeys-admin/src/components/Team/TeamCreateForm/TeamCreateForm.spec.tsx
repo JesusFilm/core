@@ -19,6 +19,11 @@ import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../TeamSelect/TeamSelect'
 
 import { TeamCreateForm } from '.'
 
+jest.mock('next-firebase-auth', () => ({
+  __esModule: true,
+  useUser: jest.fn(() => ({ id: 'userId', name: 'userName' }))
+}))
+
 describe('TeamCreateForm', () => {
   const teamCreateMock: MockedResponse<TeamCreate> = {
     request: {

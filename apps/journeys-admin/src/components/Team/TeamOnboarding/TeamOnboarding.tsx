@@ -57,7 +57,10 @@ export function TeamOnboarding(): ReactElement {
   }
 
   return (
-    <TeamCreateForm onSubmit={async (_, __, data) => await handleSubmit(data)}>
+    <TeamCreateForm
+      onSubmit={async (_, __, data) => await handleSubmit(data)}
+      onboarding
+    >
       {({
         values,
         errors,

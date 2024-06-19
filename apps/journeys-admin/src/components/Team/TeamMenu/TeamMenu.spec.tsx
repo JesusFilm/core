@@ -22,6 +22,11 @@ jest.mock('next/router', () => ({
   useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
 }))
 
+jest.mock('next-firebase-auth', () => ({
+  __esModule: true,
+  useUser: jest.fn(() => ({ id: 'userId', name: 'userName' }))
+}))
+
 const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('TeamMenu', () => {
