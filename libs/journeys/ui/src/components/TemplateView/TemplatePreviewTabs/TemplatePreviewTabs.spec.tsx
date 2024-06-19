@@ -5,8 +5,10 @@ import { JourneyProvider } from '../../../libs/JourneyProvider'
 import { JourneyFields } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
 import { publishedJourney } from '../data'
 
-import { journeyVideoBlocks } from './data'
 import { TemplatePreviewTabs } from './TemplatePreviewTabs'
+import { journeyVideoBlocks } from './data'
+import '../../../../test/i18n'
+
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,

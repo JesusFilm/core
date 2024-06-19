@@ -3,8 +3,8 @@ import { render } from '@testing-library/react'
 
 import { JourneyProvider } from '../../../libs/JourneyProvider'
 
-import { journey } from './data'
 import { TemplateFooter } from './TemplateFooter'
+import { journey } from './data'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,

@@ -6,7 +6,6 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { publishedJourney } from '@core/journeys/ui/TemplateView/data'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
-
 import { EmbedJourneyDialog } from './EmbedJourneyDialog'
 
 const EmbedJourneyDialogStory: Meta<typeof EmbedJourneyDialog> = {

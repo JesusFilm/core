@@ -8,7 +8,6 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { journey } from '@core/journeys/ui/TemplateView/TemplateFooter/data'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
-
 import { GoalDetails } from '.'
 
 const GoalDetailsStory: Meta<typeof GoalDetails> = {

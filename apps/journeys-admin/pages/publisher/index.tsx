@@ -1,4 +1,3 @@
-import { useRouter } from 'next/router'
 import {
   AuthAction,
   useUser,
@@ -7,6 +6,7 @@ import {
 } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
+import { useRouter } from 'next/router'
 import { ReactElement, useEffect } from 'react'
 
 import { useUserRoleQuery } from '@core/journeys/ui/useUserRoleQuery'

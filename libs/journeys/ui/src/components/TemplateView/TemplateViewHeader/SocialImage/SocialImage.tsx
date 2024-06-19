@@ -2,10 +2,9 @@ import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import { ReactElement } from 'react'
 
-import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { NextImage } from '@core/shared/ui/NextImage'
-
-import { useJourney } from '../../../../libs/JourneyProvider'
+import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
 
 interface SocialImageProps {
   hasCreatorDescription?: boolean

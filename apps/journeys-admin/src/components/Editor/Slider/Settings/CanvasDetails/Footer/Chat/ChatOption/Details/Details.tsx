@@ -19,8 +19,8 @@ import TiktokIcon from '@core/shared/ui/icons/Tiktok'
 import ViberIcon from '@core/shared/ui/icons/Viber'
 import VkIcon from '@core/shared/ui/icons/Vk'
 
-import { MessagePlatform } from '../../../../../../../../../../__generated__/globalTypes'
 import { JourneyChatButtonUpdate } from '../../../../../../../../../../__generated__/JourneyChatButtonUpdate'
+import { MessagePlatform } from '../../../../../../../../../../__generated__/globalTypes'
 import { TextFieldForm } from '../../../../../../../../TextFieldForm'
 
 export const JOURNEY_CHAT_BUTTON_UPDATE = gql`

@@ -7,7 +7,6 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
-
 import { JOURNEY_SLUG_UPDATE, SlugDialog } from './SlugDialog'
 
 const SlugDialogStory: Meta<typeof SlugDialog> = {

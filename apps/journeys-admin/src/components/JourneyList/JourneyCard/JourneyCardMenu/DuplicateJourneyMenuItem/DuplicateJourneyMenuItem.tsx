@@ -1,10 +1,11 @@
 import { FetchResult } from '@apollo/client'
 import CircularProgress from '@mui/material/CircularProgress'
-import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
+import { useRouter } from 'next/router'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
+import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import CopyLeftIcon from '@core/shared/ui/icons/CopyLeft'
@@ -12,7 +13,6 @@ import CopyLeftIcon from '@core/shared/ui/icons/CopyLeft'
 import { JourneyDuplicate } from '../../../../../../__generated__/JourneyDuplicate'
 import { MenuItem } from '../../../../MenuItem'
 import { CopyToTeamDialog } from '../../../../Team/CopyToTeamDialog'
-import { useTeam } from '../../../../Team/TeamProvider'
 
 interface DuplicateJourneyMenuItemProps {
   id?: string

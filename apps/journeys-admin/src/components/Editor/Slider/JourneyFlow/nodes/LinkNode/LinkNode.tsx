@@ -1,6 +1,6 @@
 import Stack from '@mui/material/Stack'
-import { alpha } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import { alpha } from '@mui/material/styles'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { NodeProps } from 'reactflow'
@@ -21,8 +21,7 @@ export function LinkNode({ id }: NodeProps): ReactElement {
   const strippedNodeId = id.replace('LinkNode-', '')
 
   const matchedActionBlock = steps
-    ?.map((step) => filterActionBlocks(step))
-    .flat()
+    ?.flatMap((step) => filterActionBlocks(step))
     .find(({ id }) => id === strippedNodeId)
 
   function getActionDetail(matchedActionBlock): string {

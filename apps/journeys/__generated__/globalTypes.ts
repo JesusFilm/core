@@ -200,6 +200,11 @@ export interface ChatOpenEventCreateInput {
   value?: MessagePlatform | null;
 }
 
+export interface JourneyProfileUpdateInput {
+  lastActiveTeamId?: string | null;
+  journeyFlowBackButtonClicked?: boolean | null;
+}
+
 export interface JourneyViewEventCreateInput {
   id?: string | null;
   journeyId: string;

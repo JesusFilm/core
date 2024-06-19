@@ -8,7 +8,6 @@ import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
-
 import { JOURNEY_LANGUAGE_UPDATE } from './LanguageDialog'
 
 import { LanguageDialog } from '.'
@@ -136,6 +135,7 @@ const Template: StoryObj<typeof LanguageDialog> = {
 }
 
 export const Default = { ...Template }
+
 export const Error = {
   ...Template,
   play: async () => {

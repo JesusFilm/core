@@ -1,4 +1,3 @@
-import { useMutation } from '@apollo/client'
 import FormControl from '@mui/material/FormControl'
 import MenuItem from '@mui/material/MenuItem'
 import TextField from '@mui/material/TextField'
@@ -8,12 +7,10 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { InferType, object, string } from 'yup'
 
+import { useTeam } from '@core/journeys/ui/TeamProvider'
+import { useUpdateLastActiveTeamIdMutation } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
 import { Dialog } from '@core/shared/ui/Dialog'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
-
-import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActiveTeamId'
-import { useTeam } from '../TeamProvider'
-import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../TeamSelect/TeamSelect'
 
 interface CopyToTeamDialogProps {
   title: string
@@ -34,6 +31,7 @@ export function CopyToTeamDialog({
 }: CopyToTeamDialogProps): ReactElement {
   const { query, setActiveTeam } = useTeam()
   const teams = query?.data?.teams ?? []
+
   const { t } = useTranslation('apps-journeys-admin')
   function handleClose(): void {
     onClose()
@@ -43,9 +41,7 @@ export function CopyToTeamDialog({
     teamSelect: string().required(t('Please select a valid team'))
   })
 
-  const [updateLastActiveTeamId] = useMutation<UpdateLastActiveTeamId>(
-    UPDATE_LAST_ACTIVE_TEAM_ID
-  )
+  const updateLastActiveTeamId = useUpdateLastActiveTeamIdMutation()
 
   async function handleSubmit(
     values: InferType<typeof copyToSchema>,

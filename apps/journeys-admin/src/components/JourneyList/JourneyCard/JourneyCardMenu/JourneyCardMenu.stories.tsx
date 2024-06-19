@@ -3,10 +3,10 @@ import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent, waitFor } from '@storybook/testing-library'
 import { SnackbarProvider } from 'notistack'
 
+import { TeamProvider } from '@core/journeys/ui/TeamProvider'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
-import { TeamProvider } from '../../../Team/TeamProvider'
 import { ThemeProvider } from '../../../ThemeProvider'
 
 import { JourneyCardMenu } from './JourneyCardMenu'

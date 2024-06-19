@@ -5,7 +5,8 @@ import { NextRouter, useRouter } from 'next/router'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
-} from '../../../../../../../apps/journeys-admin/src/components/Team/TeamProvider' // TODO(jk)
+} from '@core/journeys/ui/TeamProvider'
+
 import {
   JourneyStatus,
   ThemeMode,

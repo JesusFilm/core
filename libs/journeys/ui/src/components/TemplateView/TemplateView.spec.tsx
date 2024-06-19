@@ -11,9 +11,9 @@ import { GET_JOURNEYS } from '../../libs/useJourneysQuery'
 import { GET_TAGS } from '../../libs/useTagsQuery'
 import { GetTags } from '../../libs/useTagsQuery/__generated__/GetTags'
 
-import { defaultJourney } from './data'
 import { parentTags, tags } from './TemplateTags/data'
 import { TemplateView } from './TemplateView'
+import { defaultJourney } from './data'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,

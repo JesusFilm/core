@@ -7,7 +7,6 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
-
 import { DescriptionDialog, JOURNEY_DESC_UPDATE } from './DescriptionDialog'
 
 const DescriptionDialogStory: Meta<typeof DescriptionDialog> = {

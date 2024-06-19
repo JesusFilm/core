@@ -7,7 +7,6 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
-
 import { JOURNEY_TITLE_UPDATE, TitleDialog } from './TitleDialog'
 
 const TitleDialogStory: Meta<typeof TitleDialog> = {

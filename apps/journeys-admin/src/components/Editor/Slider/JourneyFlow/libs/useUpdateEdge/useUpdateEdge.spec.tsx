@@ -2,10 +2,10 @@ import { MockedProvider } from '@apollo/client/testing'
 import { renderHook } from '@testing-library/react'
 import { act } from 'react-dom/test-utils'
 
-import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
+import { TreeBlock } from '@core/journeys/ui/block'
 
 import {
   BlockFields_ButtonBlock as ButtonBlock,

@@ -6,7 +6,6 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 
-
 import { JOURNEY_LANGUAGE_UPDATE } from './LanguageDialog'
 
 import { LanguageDialog } from '.'

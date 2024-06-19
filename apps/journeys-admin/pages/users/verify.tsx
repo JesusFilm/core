@@ -9,7 +9,6 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Form, Formik, FormikValues } from 'formik'
 import { GraphQLError } from 'graphql'
-import { useRouter } from 'next/router'
 import {
   AuthAction,
   useUser,
@@ -17,15 +16,17 @@ import {
   withUserTokenSSR
 } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
+import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
 import { number, object } from 'yup'
+
+import { useTeam } from '@core/journeys/ui/TeamProvider'
 
 import { CreateVerificationRequest } from '../../__generated__/CreateVerificationRequest'
 import { GetMe } from '../../__generated__/GetMe'
 import { CREATE_VERIFICATION_REQUEST } from '../../src/components/EmailVerification/EmailVerification'
 import { OnboardingPageWrapper } from '../../src/components/OnboardingPageWrapper'
 import { GET_ME } from '../../src/components/PageWrapper/NavigationDrawer/UserNavigation'
-import { useTeam } from '../../src/components/Team/TeamProvider'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { useHandleNewAccountRedirect } from '../../src/libs/useRedirectNewAccount'
 

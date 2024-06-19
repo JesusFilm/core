@@ -1,11 +1,12 @@
 import { useQuery } from '@apollo/client'
 import { GetStaticProps } from 'next'
-import { useRouter } from 'next/router'
 import { useUser, withUser } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
+import { useRouter } from 'next/router'
 import { ReactElement, useEffect } from 'react'
 
+import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { TemplateGallery } from '@core/journeys/ui/TemplateGallery'
 import { GET_JOURNEYS } from '@core/journeys/ui/useJourneysQuery'
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
@@ -23,7 +24,6 @@ import { GetMe } from '../../__generated__/GetMe'
 import { GetTags } from '../../__generated__/GetTags'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { GET_ME } from '../../src/components/PageWrapper/NavigationDrawer/UserNavigation'
-import { useTeam } from '../../src/components/Team/TeamProvider'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 
 function TemplateIndexPage(): ReactElement {
