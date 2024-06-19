@@ -11,6 +11,8 @@ import {
 } from 'react'
 import Div100vh from 'react-div-100vh'
 
+import { ThemeMode } from '@core/shared/ui/themes'
+
 import { Header } from '../../Header'
 
 import { VideoHeroOverlay } from './VideoHeroOverlay'
@@ -57,7 +59,11 @@ export function VideoHero({ onPlay, hasPlayed }: VideoHeroProps): ReactElement {
 
   return (
     <>
-      <Header hideAbsoluteAppBar={!controlsVisible} />
+      <Header
+        hideAbsoluteAppBar={!controlsVisible}
+        hideSpacer
+        themeMode={ThemeMode.dark}
+      />
       <Div100vh
         css={{
           marginBottom: isFullscreen ? 0 : -VIDEO_HERO_BOTTOM_SPACING,

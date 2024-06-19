@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { getVideoChildrenMock } from '../../libs/useVideoChildren/getVideoChildrenMock'
@@ -76,5 +76,18 @@ describe('VideoContainerPage', () => {
         getByRole('heading', { name: 'Reflections of Hope' })
       ).toBeInTheDocument()
     )
+  })
+
+  it('should not render header spacer', () => {
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <VideoProvider value={{ content: videos[0] }}>
+            <VideoContainerPage />
+          </VideoProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    expect(screen.queryByTestId('HeaderSpacer')).not.toBeInTheDocument()
   })
 })

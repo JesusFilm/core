@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { renderHook } from '@testing-library/react'
-import { act } from 'react-dom/test-utils'
+import { renderHook, waitFor } from '@testing-library/react'
+import { act } from 'react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -148,5 +148,65 @@ describe('useUpdateEdge', () => {
     )
 
     expect(blockActionResult).toHaveBeenCalled()
+  })
+
+  it('should update edge for source node change', async () => {
+    navigateToBlockActionUpdateMock.request.variables = {
+      id: 'block1.id',
+      journeyId: 'journeyId',
+      input: { blockId: 'step2.id' }
+    }
+
+    stepBlockNextBlockUpdateMock.request.variables = {
+      id: 'step1.id',
+      journeyId: 'journeyId',
+      input: { nextBlockId: null }
+    }
+
+    const blockActionResult = jest
+      .fn()
+      .mockReturnValue(navigateToBlockActionUpdateMock.result)
+
+    const stepBlockResult = jest
+      .fn()
+      .mockReturnValue(stepBlockNextBlockUpdateMock.result)
+
+    const { result } = renderHook(() => useUpdateEdge(), {
+      wrapper: ({ children }) => (
+        <MockedProvider
+          mocks={[
+            { ...navigateToBlockActionUpdateMock, result: blockActionResult },
+            {
+              ...stepBlockNextBlockUpdateMock,
+              result: stepBlockResult
+            }
+          ]}
+        >
+          <JourneyProvider
+            value={{ journey: { id: 'journeyId' } as unknown as Journey }}
+          >
+            <EditorProvider initialState={{ steps: [step1] }}>
+              {children}
+            </EditorProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      )
+    })
+
+    await act(
+      async () =>
+        await result.current({
+          source: 'step1.id',
+          sourceHandle: 'block1.id',
+          target: 'step2.id',
+          oldEdge: {
+            id: 'oldEdge.id',
+            source: 'step1.id',
+            sourceHandle: null,
+            target: 'step2.id'
+          }
+        })
+    )
+    await waitFor(() => expect(stepBlockResult).toHaveBeenCalled())
   })
 })

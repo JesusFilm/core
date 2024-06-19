@@ -3,22 +3,22 @@ import { Meta, StoryObj } from '@storybook/react'
 import { watchConfig } from '../../libs/storybook'
 import { videos } from '../Videos/__generated__/testData'
 
-import { HomePage } from '.'
+import { WatchHomePage } from '.'
 
-const HomePageStory: Meta<typeof HomePage> = {
+const WatchHomePageStory: Meta<typeof WatchHomePage> = {
   ...watchConfig,
-  component: HomePage,
-  title: 'Watch/HomePage',
+  component: WatchHomePage,
+  title: 'Watch/WatchHomePage',
   parameters: {
     ...watchConfig.parameters,
     layout: 'fullscreen'
   }
 }
 
-const Template: StoryObj<typeof HomePage> = {
-  render: ({ ...args }) => <HomePage {...args} />
+const Template: StoryObj<typeof WatchHomePage> = {
+  render: ({ ...args }) => <WatchHomePage {...args} />
 }
 
 export const Default = { ...Template, args: { videos } }
 
-export default HomePageStory
+export default WatchHomePageStory

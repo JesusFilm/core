@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 
 import { videos } from '../Videos/__generated__/testData'
@@ -232,6 +232,15 @@ describe('VideosPage', () => {
       expect(getByRole('heading', { name: 'The Savior' })).toBeInTheDocument()
       expect(getByRole('button', { name: 'No More Videos' })).toBeDisabled()
     })
+  })
+
+  it('should not render header spacer', () => {
+    render(
+      <MockedProvider>
+        <VideosPage videos={videos} />
+      </MockedProvider>
+    )
+    expect(screen.queryByTestId('HeaderSpacer')).not.toBeInTheDocument()
   })
 
   // TODO: add test for load more button

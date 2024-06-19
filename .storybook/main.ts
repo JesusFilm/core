@@ -49,7 +49,8 @@ const config: StorybookConfig = {
     '@storybook/addon-essentials',
     '@storybook/addon-interactions',
     '@storybook/addon-a11y',
-    'storybook-addon-apollo-client'
+    'storybook-addon-apollo-client',
+    '@storybook/addon-actions'
   ],
   webpackFinal: async (config) => {
     const tsPaths = new TsconfigPathsPlugin({
