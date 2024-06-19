@@ -6,6 +6,7 @@ import { useRouter } from 'next/router'
 import { ReactElement, useEffect } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { GET_JOURNEY, useJourneyQuery } from '@core/journeys/ui/useJourneyQuery'
 import { GET_JOURNEYS } from '@core/journeys/ui/useJourneysQuery'
 import { GET_TAGS } from '@core/journeys/ui/useTagsQuery'
@@ -17,7 +18,6 @@ import {
 } from '../../__generated__/GetJourneys'
 import { GetTags } from '../../__generated__/GetTags'
 import { PageWrapper } from '../../src/components/PageWrapper'
-import { useTeam } from '../../src/components/Team/TeamProvider'
 import { TemplateView } from '../../src/components/TemplateView'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 

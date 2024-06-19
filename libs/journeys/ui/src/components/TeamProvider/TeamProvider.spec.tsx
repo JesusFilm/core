@@ -3,12 +3,11 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { ReactElement } from 'react'
 import TagManager from 'react-gtm-module'
 
+import { GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS } from './TeamProvider'
 import {
   GetLastActiveTeamIdAndTeams,
   GetLastActiveTeamIdAndTeams_teams as Team
-} from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
-
-import { GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS } from './TeamProvider'
+} from './__generated__/GetLastActiveTeamIdAndTeams'
 
 import { TeamProvider, useTeam } from '.'
 

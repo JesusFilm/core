@@ -8,6 +8,7 @@ import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
 
+import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import GlobeIcon from '@core/shared/ui/icons/Globe'
@@ -17,7 +18,6 @@ import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
 import { MenuItem } from '../../MenuItem'
 import { TeamAvatars } from '../TeamAvatars'
-import { useTeam } from '../TeamProvider'
 
 const DynamicTeamCreateDialog = dynamic(
   async () =>

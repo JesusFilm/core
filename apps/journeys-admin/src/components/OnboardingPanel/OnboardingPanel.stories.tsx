@@ -1,11 +1,11 @@
 import { Meta, StoryObj } from '@storybook/react'
 import { ReactElement } from 'react'
 
+import { TeamProvider } from '@core/journeys/ui/TeamProvider'
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { PageProvider } from '../../libs/PageWrapperProvider'
 import { SidePanel } from '../PageWrapper/SidePanel'
-import { TeamProvider } from '../Team/TeamProvider'
 
 import { getOnboardingJourneysMock, getTeamsMock } from './data'
 
