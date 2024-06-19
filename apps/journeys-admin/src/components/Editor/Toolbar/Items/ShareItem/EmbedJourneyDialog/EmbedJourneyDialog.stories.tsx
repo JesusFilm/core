@@ -3,9 +3,8 @@ import { Meta, StoryObj } from '@storybook/react'
 import { ReactElement, useState } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { publishedJourney } from '@core/journeys/ui/TemplateView/data'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
-
-import { publishedJourney } from '../../../../data'
 
 import { EmbedJourneyDialog } from './EmbedJourneyDialog'
 

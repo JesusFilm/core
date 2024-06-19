@@ -25,6 +25,10 @@ interface LanguagesFilterPopperProps {
   sortedLanguages: LanguageOption[]
 }
 
+interface LanguageOptions {
+  languages: LanguageOption[]
+}
+
 const StyledPopperOption = styled(ButtonBase)(() => ({
   backgroundColor: 'transparent',
   display: 'flex',

@@ -21,8 +21,7 @@ export function LinkNode({ id }: NodeProps): ReactElement {
   const strippedNodeId = id.replace('LinkNode-', '')
 
   const matchedActionBlock = steps
-    ?.map((step) => filterActionBlocks(step))
-    .flat()
+    ?.flatMap((step) => filterActionBlocks(step))
     .find(({ id }) => id === strippedNodeId)
 
   function getActionDetail(matchedActionBlock): string {
