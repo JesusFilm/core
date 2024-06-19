@@ -71,7 +71,6 @@ export function ChatButtons(): ReactElement {
       void chatButtonEventCreate({
         variables: {
           input: {
-            id: chatButton?.id,
             blockId: activeBlock?.id,
             stepId: activeBlock?.id,
             value: chatButton?.platform
