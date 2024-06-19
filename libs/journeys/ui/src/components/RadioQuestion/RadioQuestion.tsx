@@ -1,29 +1,29 @@
-import { gql, useMutation } from '@apollo/client'
-import Box, { BoxProps } from '@mui/material/Box'
-import ButtonGroup from '@mui/material/ButtonGroup'
-import { styled } from '@mui/material/styles'
-import { useTranslation } from 'next-i18next'
-import { usePlausible } from 'next-plausible'
-import { ReactElement, useEffect, useState } from 'react'
-import TagManager from 'react-gtm-module'
-import { v4 as uuidv4 } from 'uuid'
+import { gql, useMutation } from "@apollo/client";
+import Box, { BoxProps } from "@mui/material/Box";
+import ButtonGroup from "@mui/material/ButtonGroup";
+import { styled } from "@mui/material/styles";
+import { useTranslation } from "next-i18next";
+import { usePlausible } from "next-plausible";
+import { ReactElement, useEffect, useState } from "react";
+import TagManager from "react-gtm-module";
+import { v4 as uuidv4 } from "uuid";
 
-import { RadioQuestionSubmissionEventCreateInput } from '../../../__generated__/globalTypes'
-import type { TreeBlock } from '../../libs/block'
-import { isActiveBlockOrDescendant, useBlocks } from '../../libs/block'
-import { getStepHeading } from '../../libs/getStepHeading'
-import { useJourney } from '../../libs/JourneyProvider'
-import { JourneyPlausibleEvents, keyify } from '../../libs/plausibleHelpers'
+import { RadioQuestionSubmissionEventCreateInput } from "../../../__generated__/globalTypes";
+import type { TreeBlock } from "../../libs/block";
+import { isActiveBlockOrDescendant, useBlocks } from "../../libs/block";
+import { getStepHeading } from "../../libs/getStepHeading";
+import { useJourney } from "../../libs/JourneyProvider";
+import { JourneyPlausibleEvents, keyify } from "../../libs/plausibleHelpers";
 // eslint-disable-next-line import/no-cycle
-import { BlockRenderer, WrappersProps } from '../BlockRenderer'
-import { RadioOption } from '../RadioOption'
-import { RadioOptionFields } from '../RadioOption/__generated__/RadioOptionFields'
+import { BlockRenderer, WrappersProps } from "../BlockRenderer";
+import { RadioOption } from "../RadioOption";
+import { RadioOptionFields } from "../RadioOption/__generated__/RadioOptionFields";
 
-import { RadioQuestionFields } from './__generated__/RadioQuestionFields'
+import { RadioQuestionFields } from "./__generated__/RadioQuestionFields";
 import {
   RadioQuestionSubmissionEventCreate,
-  RadioQuestionSubmissionEventCreateVariables
-} from './__generated__/RadioQuestionSubmissionEventCreate'
+  RadioQuestionSubmissionEventCreateVariables,
+} from "./__generated__/RadioQuestionSubmissionEventCreate";
 
 export const RADIO_QUESTION_SUBMISSION_EVENT_CREATE = gql`
   mutation RadioQuestionSubmissionEventCreate(
@@ -33,100 +33,100 @@ export const RADIO_QUESTION_SUBMISSION_EVENT_CREATE = gql`
       id
     }
   }
-`
+`;
 
 interface RadioQuestionProps extends TreeBlock<RadioQuestionFields> {
-  uuid?: () => string
-  wrappers?: WrappersProps
-  addOption?: ReactElement
+  uuid?: () => string;
+  wrappers?: WrappersProps;
+  addOption?: ReactElement;
 }
 
 const StyledRadioQuestion = styled(Box)<BoxProps>(({ theme }) => ({
-  marginBottom: theme.spacing(4)
-}))
+  marginBottom: theme.spacing(4),
+}));
 
 export function RadioQuestion({
   id: blockId,
   children,
   uuid = uuidv4,
   wrappers,
-  addOption
+  addOption,
 }: RadioQuestionProps): ReactElement {
   const [radioQuestionSubmissionEventCreate] = useMutation<
     RadioQuestionSubmissionEventCreate,
     RadioQuestionSubmissionEventCreateVariables
-  >(RADIO_QUESTION_SUBMISSION_EVENT_CREATE)
-  const plausible = usePlausible<JourneyPlausibleEvents>()
-  const { variant, journey } = useJourney()
-  const [selectedId, setSelectedId] = useState<string | null>(null)
-  const { blockHistory, treeBlocks } = useBlocks()
-  const { t } = useTranslation('libs-journeys-ui')
-  const activeBlock = blockHistory[blockHistory.length - 1]
+  >(RADIO_QUESTION_SUBMISSION_EVENT_CREATE);
+  const plausible = usePlausible<JourneyPlausibleEvents>();
+  const { variant, journey } = useJourney();
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const { blockHistory, treeBlocks } = useBlocks();
+  const { t } = useTranslation("libs-journeys-ui");
+  const activeBlock = blockHistory[blockHistory.length - 1];
 
   useEffect(() => {
     // test via e2e: radio selection is cleared when going back to card that is no longer rendered
-    if (!isActiveBlockOrDescendant(blockId)) setSelectedId(null)
-  }, [blockId, blockHistory])
+    if (!isActiveBlockOrDescendant(blockId)) setSelectedId(null);
+  }, [blockId, blockHistory]);
 
   const heading =
     activeBlock != null
       ? getStepHeading(activeBlock.id, activeBlock.children, treeBlocks, t)
-      : 'None'
+      : "None";
 
   const handleClick = (
     radioOptionBlockId: string,
     radioOptionLabel: string
   ): void => {
-    if (variant === 'default' || variant === 'embed') {
-      const id = uuid()
+    if (variant === "default" || variant === "embed") {
+      const id = uuid();
       const input: RadioQuestionSubmissionEventCreateInput = {
         id,
         blockId,
         radioOptionBlockId,
         stepId: activeBlock?.id,
         label: heading,
-        value: radioOptionLabel
-      }
+        value: radioOptionLabel,
+      };
       void radioQuestionSubmissionEventCreate({
         variables: {
-          input
-        }
-      })
+          input,
+        },
+      });
       const radioOptionBlock = children.find(
         (child) =>
           child.id === radioOptionBlockId &&
-          child.__typename === 'RadioOptionBlock'
-      ) as TreeBlock<RadioOptionFields> | undefined
+          child.__typename === "RadioOptionBlock"
+      ) as TreeBlock<RadioOptionFields> | undefined;
       if (journey != null && radioOptionBlock != null) {
-        plausible('radioQuestionSubmit', {
+        plausible("radioQuestionSubmit", {
           props: {
             ...input,
             key: keyify({
-              stepId: input.stepId ?? '',
-              event: 'radioQuestionSubmit',
+              stepId: input.stepId ?? "",
+              event: "radioQuestionSubmit",
               blockId: radioOptionBlock.id,
-              target: radioOptionBlock.action
-            })
-          }
-        })
+              target: radioOptionBlock.action,
+            }),
+          },
+        });
       }
       TagManager.dataLayer({
         dataLayer: {
-          event: 'radio_question_submission',
+          event: "radio_question_submission",
           eventId: id,
           blockId,
           radioOptionSelectedId: radioOptionBlockId,
           radioOptionSelectedLabel: radioOptionLabel,
-          stepName: heading
-        }
-      })
+          stepName: heading,
+        },
+      });
     }
-    setSelectedId(radioOptionBlockId)
-  }
+    setSelectedId(radioOptionBlockId);
+  };
 
   const options = children?.map(
     (option) =>
-      option.__typename === 'RadioOptionBlock' &&
+      option.__typename === "RadioOptionBlock" &&
       (wrappers != null ? (
         <BlockRenderer block={option} wrappers={wrappers} key={option.id} />
       ) : (
@@ -138,7 +138,7 @@ export function RadioQuestion({
           onClick={handleClick}
         />
       ))
-  )
+  );
 
   return (
     <StyledRadioQuestion data-testid={`JourneysRadioQuestion-${blockId}`}>
@@ -147,5 +147,5 @@ export function RadioQuestion({
         {addOption}
       </ButtonGroup>
     </StyledRadioQuestion>
-  )
+  );
 }

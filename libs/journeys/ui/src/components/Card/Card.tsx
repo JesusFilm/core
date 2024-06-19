@@ -1,40 +1,41 @@
-import { gql, useMutation } from '@apollo/client'
-import Paper from '@mui/material/Paper'
-import { useTheme } from '@mui/material/styles'
-import { useTranslation } from 'next-i18next'
-import { usePlausible } from 'next-plausible'
-import { MouseEvent, ReactElement, useEffect, useMemo } from 'react'
-import TagManager from 'react-gtm-module'
-import { v4 as uuidv4 } from 'uuid'
+import { gql, useMutation } from "@apollo/client";
+import Paper from "@mui/material/Paper";
+import { useTheme } from "@mui/material/styles";
+import { useTranslation } from "next-i18next";
+import { usePlausible } from "next-plausible";
+import { MouseEvent, ReactElement, useEffect, useMemo } from "react";
+import TagManager from "react-gtm-module";
+import { v4 as uuidv4 } from "uuid";
 
 import {
   StepNextEventCreateInput,
-  StepPreviousEventCreateInput
-} from '../../../__generated__/globalTypes'
-import { TreeBlock, useBlocks } from '../../libs/block'
-import { blurImage } from '../../libs/blurImage'
-import { getStepHeading } from '../../libs/getStepHeading'
-import { useJourney } from '../../libs/JourneyProvider'
-import { JourneyPlausibleEvents } from '../../libs/plausibleHelpers'
-import { keyify } from '../../libs/plausibleHelpers/plausibleHelpers'
-import { getJourneyRTL } from '../../libs/rtl'
-// eslint-disable-next-line import/no-cycle
-import { BlockRenderer, WrappersProps } from '../BlockRenderer'
-import { ImageFields } from '../Image/__generated__/ImageFields'
-import { StepFields } from '../Step/__generated__/StepFields'
-import { VideoFields } from '../Video/__generated__/VideoFields'
+  StepPreviousEventCreateInput,
+} from "../../../__generated__/globalTypes";
+import { TreeBlock, useBlocks } from "../../libs/block";
+import { blurImage } from "../../libs/blurImage";
+import { getStepHeading } from "../../libs/getStepHeading";
+import { useJourney } from "../../libs/JourneyProvider";
+import { JourneyPlausibleEvents } from "../../libs/plausibleHelpers";
+import { keyify } from "../../libs/plausibleHelpers/plausibleHelpers";
+import { getJourneyRTL } from "../../libs/rtl";
+import { BlockRenderer, WrappersProps } from "../BlockRenderer";
+import { ImageFields } from "../Image/__generated__/ImageFields";
+import { StepFields } from "../Step/__generated__/StepFields";
+import { VideoFields } from "../Video/__generated__/VideoFields";
 
-import { CardFields } from './__generated__/CardFields'
+import { ContainedCover } from "./ContainedCover";
+import { ExpandedCover } from "./ExpandedCover";
+import { CardFields } from "./__generated__/CardFields";
 import {
   StepNextEventCreate,
-  StepNextEventCreateVariables
-} from './__generated__/StepNextEventCreate'
+  StepNextEventCreateVariables,
+} from "./__generated__/StepNextEventCreate";
 import {
   StepPreviousEventCreate,
-  StepPreviousEventCreateVariables
-} from './__generated__/StepPreviousEventCreate'
-import { ContainedCover } from './ContainedCover'
-import { ExpandedCover } from './ExpandedCover'
+  StepPreviousEventCreateVariables,
+} from "./__generated__/StepPreviousEventCreate";
+import { ContainedCover } from "./ContainedCover";
+import { ExpandedCover } from "./ExpandedCover";
 
 export const STEP_NEXT_EVENT_CREATE = gql`
   mutation StepNextEventCreate($input: StepNextEventCreateInput!) {
@@ -42,7 +43,7 @@ export const STEP_NEXT_EVENT_CREATE = gql`
       id
     }
   }
-`
+`;
 
 export const STEP_PREVIOUS_EVENT_CREATE = gql`
   mutation StepPreviousEventCreate($input: StepPreviousEventCreateInput!) {
@@ -50,10 +51,10 @@ export const STEP_PREVIOUS_EVENT_CREATE = gql`
       id
     }
   }
-`
+`;
 
 interface CardProps extends TreeBlock<CardFields> {
-  wrappers?: WrappersProps
+  wrappers?: WrappersProps;
 }
 
 export function Card({
@@ -62,56 +63,56 @@ export function Card({
   backgroundColor,
   coverBlockId,
   fullscreen,
-  wrappers
+  wrappers,
 }: CardProps): ReactElement {
   const [stepNextEventCreate] = useMutation<
     StepNextEventCreate,
     StepNextEventCreateVariables
-  >(STEP_NEXT_EVENT_CREATE)
+  >(STEP_NEXT_EVENT_CREATE);
   const [stepPreviousEventCreate] = useMutation<
     StepPreviousEventCreate,
     StepPreviousEventCreateVariables
-  >(STEP_PREVIOUS_EVENT_CREATE)
+  >(STEP_PREVIOUS_EVENT_CREATE);
 
-  const { t } = useTranslation('journeys-ui')
-  const plausible = usePlausible<JourneyPlausibleEvents>()
-  const theme = useTheme()
+  const { t } = useTranslation("journeys-ui");
+  const plausible = usePlausible<JourneyPlausibleEvents>();
+  const theme = useTheme();
   const {
     nextActiveBlock,
     previousActiveBlock,
     blockHistory,
     treeBlocks,
-    getNextBlock
-  } = useBlocks()
-  const { journey, variant } = useJourney()
-  const { rtl } = getJourneyRTL(journey)
+    getNextBlock,
+  } = useBlocks();
+  const { journey, variant } = useJourney();
+  const { rtl } = getJourneyRTL(journey);
   const activeBlock = blockHistory[
     blockHistory.length - 1
-  ] as TreeBlock<StepFields>
+  ] as TreeBlock<StepFields>;
 
   const cardColor =
     backgroundColor != null
       ? backgroundColor
       : // Card theme is determined in Conductor
-        theme.palette.background.paper
+        theme.palette.background.paper;
 
   useEffect(() => {
     document
       .querySelector('meta[name="theme-color"]')
-      ?.setAttribute('content', cardColor)
-  }, [cardColor])
+      ?.setAttribute("content", cardColor);
+  }, [cardColor]);
 
   const coverBlock = children.find(
     (block) =>
       block.id === coverBlockId &&
-      (block.__typename === 'ImageBlock' || block.__typename === 'VideoBlock')
-  ) as TreeBlock<ImageFields | VideoFields> | undefined
+      (block.__typename === "ImageBlock" || block.__typename === "VideoBlock")
+  ) as TreeBlock<ImageFields | VideoFields> | undefined;
 
   const videoBlock =
-    coverBlock?.__typename === 'VideoBlock' ? coverBlock : undefined
+    coverBlock?.__typename === "VideoBlock" ? coverBlock : undefined;
 
   const imageBlock =
-    coverBlock?.__typename === 'ImageBlock' ? coverBlock : undefined
+    coverBlock?.__typename === "ImageBlock" ? coverBlock : undefined;
 
   const blurUrl = useMemo(
     () =>
@@ -119,18 +120,18 @@ export function Card({
         ? blurImage(imageBlock.blurhash, cardColor)
         : undefined,
     [imageBlock, cardColor]
-  )
+  );
 
   const renderedChildren = children
     .filter(({ id }) => id !== coverBlockId)
     .map((block) => (
       <BlockRenderer block={block} wrappers={wrappers} key={block.id} />
-    ))
+    ));
 
   const hasFullscreenVideo =
     children.find(
-      (child) => child.__typename === 'VideoBlock' && child.id !== coverBlockId
-    ) != null
+      (child) => child.__typename === "VideoBlock" && child.id !== coverBlockId
+    ) != null;
 
   // should always be called with nextActiveBlock()
   // should match with other handleNextNavigationEventCreate functions
@@ -139,55 +140,55 @@ export function Card({
   // journeys/src/components/Conductor/NavigationButton/NavigationButton.tsx
   // journeys/src/components/Conductor/SwipeNavigation/SwipeNavigation.tsx
   function handleNextNavigationEventCreate(): void {
-    const id = uuidv4()
+    const id = uuidv4();
     const stepName = getStepHeading(
       activeBlock.id,
       activeBlock.children,
       treeBlocks,
       t
-    )
-    const targetBlock = getNextBlock({ id: undefined, activeBlock })
-    if (targetBlock == null) return
+    );
+    const targetBlock = getNextBlock({ id: undefined, activeBlock });
+    if (targetBlock == null) return;
     const targetStepName = getStepHeading(
       targetBlock.id,
       targetBlock.children,
       treeBlocks,
       t
-    )
+    );
     const input: StepNextEventCreateInput = {
       id,
       blockId: activeBlock.id,
       label: stepName,
       value: targetStepName,
-      nextStepId: targetBlock.id
-    }
+      nextStepId: targetBlock.id,
+    };
     void stepNextEventCreate({
       variables: {
-        input
-      }
-    })
+        input,
+      },
+    });
     if (journey != null)
-      plausible('navigateNextStep', {
+      plausible("navigateNextStep", {
         props: {
           ...input,
           key: keyify({
             stepId: input.blockId,
-            event: 'navigateNextStep',
+            event: "navigateNextStep",
             blockId: input.blockId,
-            target: input.nextStepId
-          })
-        }
-      })
+            target: input.nextStepId,
+          }),
+        },
+      });
     TagManager.dataLayer({
       dataLayer: {
-        event: 'step_next',
+        event: "step_next",
         eventId: id,
         blockId: activeBlock.id,
         stepName,
         targetStepId: targetBlock.id,
-        targetStepName
-      }
-    })
+        targetStepName,
+      },
+    });
   }
   // should always be called with previousActiveBlock()
   // should match with other handlePreviousNavigationEventCreate functions
@@ -196,103 +197,103 @@ export function Card({
   // journeys/src/components/Conductor/NavigationButton/NavigationButton.tsx
   // journeys/src/components/Conductor/SwipeNavigation/SwipeNavigation.tsx
   function handlePreviousNavigationEventCreate(): void {
-    const id = uuidv4()
+    const id = uuidv4();
     const stepName = getStepHeading(
       activeBlock.id,
       activeBlock.children,
       treeBlocks,
       t
-    )
+    );
     const targetBlock = blockHistory[
       blockHistory.length - 2
-    ] as TreeBlock<StepFields>
-    if (targetBlock == null) return
+    ] as TreeBlock<StepFields>;
+    if (targetBlock == null) return;
     const targetStepName = getStepHeading(
       targetBlock.id,
       targetBlock.children,
       treeBlocks,
       t
-    )
+    );
     const input: StepPreviousEventCreateInput = {
       id,
       blockId: activeBlock.id,
       label: stepName,
       value: targetStepName,
-      previousStepId: targetBlock.id
-    }
+      previousStepId: targetBlock.id,
+    };
     void stepPreviousEventCreate({
       variables: {
-        input
-      }
-    })
+        input,
+      },
+    });
     if (journey != null)
-      plausible('navigatePreviousStep', {
+      plausible("navigatePreviousStep", {
         props: {
           ...input,
           key: keyify({
             stepId: input.blockId,
-            event: 'navigatePreviousStep',
+            event: "navigatePreviousStep",
             blockId: input.blockId,
-            target: input.previousStepId
-          })
-        }
-      })
+            target: input.previousStepId,
+          }),
+        },
+      });
     TagManager.dataLayer({
       dataLayer: {
-        event: 'step_prev',
+        event: "step_prev",
         eventId: id,
         blockId: activeBlock.id,
         stepName,
         targetStepId: targetBlock.id,
-        targetStepName
-      }
-    })
+        targetStepName,
+      },
+    });
   }
   const handleNavigation = (e: MouseEvent): void => {
-    if (variant === 'admin') return
-    const screenWidth = window.innerWidth
+    if (variant === "admin") return;
+    const screenWidth = window.innerWidth;
     if (rtl) {
-      const divide = screenWidth * 0.66
+      const divide = screenWidth * 0.66;
       if (e.clientX <= divide) {
         if (!activeBlock?.locked && activeBlock?.nextBlockId != null) {
-          handleNextNavigationEventCreate()
-          nextActiveBlock()
+          handleNextNavigationEventCreate();
+          nextActiveBlock();
         }
       } else {
         if (blockHistory.length > 1) {
-          handlePreviousNavigationEventCreate()
-          previousActiveBlock()
+          handlePreviousNavigationEventCreate();
+          previousActiveBlock();
         }
       }
     } else {
-      const divide = screenWidth * 0.33
+      const divide = screenWidth * 0.33;
       if (e.clientX >= divide) {
         if (!activeBlock?.locked && activeBlock?.nextBlockId != null) {
-          handleNextNavigationEventCreate()
-          nextActiveBlock()
+          handleNextNavigationEventCreate();
+          nextActiveBlock();
         }
       } else {
         if (blockHistory.length > 1) {
-          handlePreviousNavigationEventCreate()
-          previousActiveBlock()
+          handlePreviousNavigationEventCreate();
+          previousActiveBlock();
         }
       }
     }
-  }
+  };
 
   return (
     <Paper
       data-testid={`JourneysCard-${id}`}
       sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'flex-end',
-        borderRadius: { xs: 'inherit', lg: 3 },
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "flex-end",
+        borderRadius: { xs: "inherit", lg: 3 },
         backgroundColor,
-        width: '100%',
-        height: '100%',
-        overflow: 'hidden',
-        transform: 'translateZ(0)' // safari glitch with border radius
+        width: "100%",
+        height: "100%",
+        overflow: "hidden",
+        transform: "translateZ(0)", // safari glitch with border radius
       }}
       elevation={3}
       onClick={handleNavigation}
@@ -318,5 +319,5 @@ export function Card({
         </ExpandedCover>
       )}
     </Paper>
-  )
+  );
 }

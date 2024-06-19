@@ -1,91 +1,80 @@
-import Box from '@mui/material/Box'
-import { alpha } from '@mui/material/styles'
-import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import { alpha } from "@mui/material/styles";
+import { useTranslation } from "next-i18next";
+import { ReactElement } from "react";
 
-import { TreeBlock } from '@core/journeys/ui/block'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { TreeBlock } from "@core/journeys/ui/block";
+import { useEditor } from "@core/journeys/ui/EditorProvider";
 
-import { BlockFields as Block } from '../../../../../../../../__generated__/BlockFields'
-import { useUpdateEdge } from '../../../libs/useUpdateEdge'
-import { BaseNode } from '../../BaseNode'
-import { ACTION_BUTTON_HEIGHT } from '../libs/sizes'
+import { BlockFields as Block } from "../../../../../../../../__generated__/BlockFields";
+import { useUpdateEdge } from "../../../libs/useUpdateEdge";
+import { BaseNode } from "../../BaseNode";
+import { ACTION_BUTTON_HEIGHT } from "../libs/sizes";
 
 interface BlockUIProperties {
-  title: string
-  isSourceConnected: boolean
-  typename?: string
+  title: string;
+  isSourceConnected: boolean;
+  typename?: string;
 }
 
 interface ActionButtonProps {
-  block: TreeBlock<Block>
-  selected?: boolean
+  block: TreeBlock<Block>;
+  selected?: boolean;
 }
 
 export function ActionButton({
   block,
-  selected = false
+  selected = false,
 }: ActionButtonProps): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
+  const { t } = useTranslation("apps-journeys-admin");
   const {
-    state: { showJourneyFlowAnalytics }
-  } = useEditor()
-  const updateEdge = useUpdateEdge()
+    state: { showJourneyFlowAnalytics },
+  } = useEditor();
+  const updateEdge = useUpdateEdge();
 
   function getTitle(block, defaultTitle): string {
-    if (block.label != null && block.label !== '') return block.label
-    if (block.__typename === 'VideoBlock')
-      return block.video?.title?.[0]?.value ?? block.title ?? t('Video')
-    return defaultTitle
+    if (block.label != null && block.label !== "") return block.label;
+    if (block.__typename === "VideoBlock")
+      return block.video?.title?.[0]?.value ?? block.title ?? t("Video");
+    return defaultTitle;
   }
 
   function extractTitleAndConnection(block, defaultTitle): BlockUIProperties {
     const isSourceConnected =
-      block.action?.__typename === 'NavigateToBlockAction' &&
-      block.action?.blockId != null
-    const title = getTitle(block, defaultTitle)
-    const typename = block.__typename
+      block.action?.__typename === "NavigateToBlockAction" &&
+      block.action?.blockId != null;
+    const title = getTitle(block, defaultTitle);
+    const typename = block.__typename;
 
-    return { title, isSourceConnected, typename }
+    return { title, isSourceConnected, typename };
   }
 
   function getTitleAndConnection(): BlockUIProperties {
     switch (block.__typename) {
-      case 'ButtonBlock':
-        return extractTitleAndConnection(block, t('Button'))
-      case 'FormBlock':
-        return extractTitleAndConnection(block, t('Form'))
-      case 'RadioOptionBlock':
-        return extractTitleAndConnection(block, t('Option'))
-      case 'SignUpBlock':
-        return extractTitleAndConnection(block, t('Subscribe'))
-      case 'TextResponseBlock':
-        return extractTitleAndConnection(block, t('Feedback'))
-      case 'VideoBlock':
-        return extractTitleAndConnection(block, t('Video'))
-      case 'StepBlock':
-        return extractTitleAndConnection(block, t('Default Next Step →'))
+      case "ButtonBlock":
+        return extractTitleAndConnection(block, t("Button"));
+      case "FormBlock":
+        return extractTitleAndConnection(block, t("Form"));
+      case "RadioOptionBlock":
+        return extractTitleAndConnection(block, t("Option"));
+      case "SignUpBlock":
+        return extractTitleAndConnection(block, t("Subscribe"));
+      case "VideoBlock":
+        return extractTitleAndConnection(block, t("Video"));
+      case "StepBlock":
+        return extractTitleAndConnection(block, t("Default Next Step →"));
       default:
-        return { title: '', isSourceConnected: false }
+        return { title: "", isSourceConnected: false };
     }
   }
 
-  const { title, isSourceConnected, typename } = getTitleAndConnection()
-
-  let sourceHandle
-  if (typename === 'TextResponseBlock') {
-    sourceHandle = 'hide'
-  } else if (showJourneyFlowAnalytics) {
-    sourceHandle = 'disabled'
-  } else {
-    sourceHandle = 'show'
-  }
+  const { title, isSourceConnected } = getTitleAndConnection();
 
   return (
     <BaseNode
       id={block.id}
-      sourceHandle={sourceHandle}
+      sourceHandle={showJourneyFlowAnalytics ? "disabled" : "show"}
       onSourceConnect={updateEdge}
       selected={selected}
       isSourceConnected={isSourceConnected}
@@ -95,21 +84,21 @@ export function ActionButton({
         sx={{
           px: 3,
           opacity: selected ? 1 : 0.7,
-          transition: (theme) => theme.transitions.create('opacity'),
+          transition: (theme) => theme.transitions.create("opacity"),
           margin: 0,
           borderTop: (theme) =>
             `1px solid ${alpha(theme.palette.secondary.dark, 0.1)}`,
           height: ACTION_BUTTON_HEIGHT,
-          width: '100%'
+          width: "100%",
         }}
       >
         <Typography
           align="left"
           noWrap
           sx={{
-            fontWeight: 'bold',
+            fontWeight: "bold",
             fontSize: 10,
-            lineHeight: `${ACTION_BUTTON_HEIGHT - 1}px`
+            lineHeight: `${ACTION_BUTTON_HEIGHT - 1}px`,
           }}
           variant="body2"
         >
@@ -117,5 +106,5 @@ export function ActionButton({
         </Typography>
       </Box>
     </BaseNode>
-  )
+  );
 }

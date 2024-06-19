@@ -11,10 +11,10 @@ import {
   ActiveSlide,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
-import { getStepTheme } from '@core/journeys/ui/getStepTheme'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { StepFooter } from '@core/journeys/ui/StepFooter'
+import { getStepTheme } from '@core/journeys/ui/getStepTheme'
+import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeName } from '@core/shared/ui/themes'
 
@@ -26,6 +26,7 @@ import { CardWrapper } from './CardWrapper'
 import { FormWrapper } from './FormWrapper'
 import { InlineEditWrapper } from './InlineEditWrapper'
 import { SelectableWrapper } from './SelectableWrapper'
+import { VideoWrapper } from './VideoWrapper'
 import {
   CARD_HEIGHT,
   CARD_WIDTH,
@@ -33,7 +34,6 @@ import {
   calculateScaledHeight,
   calculateScaledMargin
 } from './utils/calculateDimensions'
-import { VideoWrapper } from './VideoWrapper'
 
 export function Canvas(): ReactElement {
   const frameRef = useRef<HTMLIFrameElement>(null)

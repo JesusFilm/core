@@ -2,10 +2,10 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor, within } from '@testing-library/react'
 import TagManager from 'react-gtm-module'
 
+import { JourneyProvider } from '../../libs/JourneyProvider'
 import type { TreeBlock } from '../../libs/block'
 import { blockHistoryVar, treeBlocksVar } from '../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
-import { JourneyProvider } from '../../libs/JourneyProvider'
 
 import { RadioQuestionFields } from './__generated__/RadioQuestionFields'
 

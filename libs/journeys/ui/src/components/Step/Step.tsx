@@ -1,25 +1,25 @@
-import { gql, useMutation } from '@apollo/client'
-import { useTranslation } from 'next-i18next'
-import { usePlausible } from 'next-plausible'
-import { NextSeo } from 'next-seo'
-import { ReactElement, useEffect } from 'react'
-import TagManager from 'react-gtm-module'
-import { v4 as uuidv4 } from 'uuid'
+import { gql, useMutation } from "@apollo/client";
+import { useTranslation } from "next-i18next";
+import { usePlausible } from "next-plausible";
+import { NextSeo } from "next-seo";
+import { ReactElement, useEffect } from "react";
+import TagManager from "react-gtm-module";
+import { v4 as uuidv4 } from "uuid";
 
-import { StepViewEventCreateInput } from '../../../__generated__/globalTypes'
-import type { TreeBlock } from '../../libs/block'
-import { isActiveBlockOrDescendant, useBlocks } from '../../libs/block'
-import { getStepHeading } from '../../libs/getStepHeading'
-import { useJourney } from '../../libs/JourneyProvider/JourneyProvider'
-import { JourneyPlausibleEvents, keyify } from '../../libs/plausibleHelpers'
+import { StepViewEventCreateInput } from "../../../__generated__/globalTypes";
+import type { TreeBlock } from "../../libs/block";
+import { isActiveBlockOrDescendant, useBlocks } from "../../libs/block";
+import { getStepHeading } from "../../libs/getStepHeading";
+import { useJourney } from "../../libs/JourneyProvider/JourneyProvider";
+import { JourneyPlausibleEvents, keyify } from "../../libs/plausibleHelpers";
 // eslint-disable-next-line import/no-cycle
-import { BlockRenderer, WrappersProps } from '../BlockRenderer'
+import { BlockRenderer, WrappersProps } from "../BlockRenderer";
 
-import { StepFields } from './__generated__/StepFields'
+import { StepFields } from "./__generated__/StepFields";
 import {
   StepViewEventCreate,
-  StepViewEventCreateVariables
-} from './__generated__/StepViewEventCreate'
+  StepViewEventCreateVariables,
+} from "./__generated__/StepViewEventCreate";
 
 export const STEP_VIEW_EVENT_CREATE = gql`
   mutation StepViewEventCreate($input: StepViewEventCreateInput!) {
@@ -27,65 +27,65 @@ export const STEP_VIEW_EVENT_CREATE = gql`
       id
     }
   }
-`
+`;
 
 interface StepProps extends TreeBlock<StepFields> {
-  wrappers?: WrappersProps
+  wrappers?: WrappersProps;
 }
 
 export function Step({
   id: blockId,
   children,
-  wrappers
+  wrappers,
 }: StepProps): ReactElement {
   const [stepViewEventCreate] = useMutation<
     StepViewEventCreate,
     StepViewEventCreateVariables
-  >(STEP_VIEW_EVENT_CREATE)
-  const plausible = usePlausible<JourneyPlausibleEvents>()
-  const { variant, journey } = useJourney()
-  const { treeBlocks } = useBlocks()
-  const { t } = useTranslation('libs-journeys-ui')
+  >(STEP_VIEW_EVENT_CREATE);
+  const plausible = usePlausible<JourneyPlausibleEvents>();
+  const { variant, journey } = useJourney();
+  const { treeBlocks } = useBlocks();
+  const { t } = useTranslation("libs-journeys-ui");
 
   const activeJourneyStep =
-    (variant === 'default' || variant === 'embed') &&
-    isActiveBlockOrDescendant(blockId)
+    (variant === "default" || variant === "embed") &&
+    isActiveBlockOrDescendant(blockId);
 
-  const heading = getStepHeading(blockId, children, treeBlocks, t)
+  const heading = getStepHeading(blockId, children, treeBlocks, t);
 
   useEffect(() => {
     if (activeJourneyStep && wrappers === undefined) {
-      const id = uuidv4()
+      const id = uuidv4();
       const input: StepViewEventCreateInput = {
         id,
         blockId,
-        value: heading
-      }
+        value: heading,
+      };
       void stepViewEventCreate({
         variables: {
-          input
-        }
-      })
+          input,
+        },
+      });
       if (journey != null)
-        plausible('pageview', {
+        plausible("pageview", {
           u: `${journey.id}/${blockId}`,
           props: {
             ...input,
             key: keyify({
               stepId: input.blockId,
-              event: 'pageview',
-              blockId: input.blockId
-            })
-          }
-        })
+              event: "pageview",
+              blockId: input.blockId,
+            }),
+          },
+        });
       TagManager.dataLayer({
         dataLayer: {
-          event: 'step_view',
+          event: "step_view",
           eventId: id,
           blockId,
-          stepName: heading
-        }
-      })
+          stepName: heading,
+        },
+      });
     }
   }, [
     blockId,
@@ -95,20 +95,20 @@ export function Step({
     activeJourneyStep,
     wrappers,
     journey,
-    plausible
-  ])
+    plausible,
+  ]);
 
   return (
     <>
       {activeJourneyStep &&
         (treeBlocks[0]?.id !== blockId ? (
-          <NextSeo title={`${heading} (${journey?.title ?? ''})`} />
+          <NextSeo title={`${heading} (${journey?.title ?? ""})`} />
         ) : (
-          <NextSeo title={`${journey?.title ?? ''} (${heading})`} />
+          <NextSeo title={`${journey?.title ?? ""} (${heading})`} />
         ))}
       {children.map((block) => (
         <BlockRenderer block={block} wrappers={wrappers} key={block.id} />
       ))}
     </>
-  )
+  );
 }

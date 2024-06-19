@@ -1,10 +1,10 @@
 import Stack from '@mui/material/Stack'
-import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next'
+import dynamic from 'next/dynamic'
 import { ReactElement, useState } from 'react'
 
-import { TreeBlock } from '@core/journeys/ui/block/TreeBlock'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
+import { TreeBlock } from '@core/journeys/ui/block/TreeBlock'
 
 import { BlockFields as StepBlock } from '../../../../../../../__generated__/BlockFields'
 import { Drawer } from '../../Drawer'
@@ -153,7 +153,7 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
       component = <SignUp {...selectedBlock} />
       break
     case 'TextResponseBlock':
-      title = t('Feedback Properties')
+      title = t('Text Input Properties')
       component = <TextResponse {...selectedBlock} />
       break
     default:
