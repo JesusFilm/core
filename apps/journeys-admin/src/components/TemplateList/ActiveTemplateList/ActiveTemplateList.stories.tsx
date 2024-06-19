@@ -17,7 +17,7 @@ import {
 
 import { ActiveTemplateList } from '.'
 
-import '@core/journeys/ui/test/i18n'
+import '../../../../test/i18n'
 
 const ActiveTemplateListStory: Meta<typeof ActiveTemplateList> = {
   component: ActiveTemplateList,
