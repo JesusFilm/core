@@ -141,7 +141,7 @@ export function Header({
               background: 'transparent',
               boxShadow: 'none'
             }}
-            showDivider
+            showDivider={themeMode === ThemeMode.light}
             onMenuClick={() => setDrawerOpen(true)}
           />
         </Fade>
