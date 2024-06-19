@@ -10,6 +10,8 @@ import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
 import { ReactElement, useEffect } from 'react'
 
+import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
+
 import {
   GetAdminJourneys,
   GetAdminJourneysVariables
@@ -25,7 +27,6 @@ import { PageWrapper } from '../src/components/PageWrapper'
 import { TeamMenu } from '../src/components/Team/TeamMenu'
 import { useTeam } from '../src/components/Team/TeamProvider'
 import { TeamSelect } from '../src/components/Team/TeamSelect'
-import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../src/components/Team/TeamSelect/TeamSelect'
 import { initAndAuthApp } from '../src/libs/initAndAuthApp'
 import { GET_ADMIN_JOURNEYS } from '../src/libs/useAdminJourneysQuery/useAdminJourneysQuery'
 

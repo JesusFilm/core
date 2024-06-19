@@ -7,6 +7,8 @@ import { Form } from 'formik'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
 
+import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
+
 import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { TeamCreate } from '../../../../__generated__/TeamCreate'
 import { TEAM_CREATE } from '../../../libs/useTeamCreateMutation/useTeamCreateMutation'
@@ -15,7 +17,6 @@ import {
   TeamProvider,
   useTeam
 } from '../TeamProvider'
-import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../TeamSelect/TeamSelect'
 
 import { TeamCreateForm } from '.'
 

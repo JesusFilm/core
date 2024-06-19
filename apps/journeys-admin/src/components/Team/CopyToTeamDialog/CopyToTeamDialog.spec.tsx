@@ -3,14 +3,14 @@ import { fireEvent, render, waitFor, within } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { GetJourney_journey as Journey } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
+import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
+import { UpdateLastActiveTeamId } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation/__generated__/UpdateLastActiveTeamId'
 
-import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
-import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActiveTeamId'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
 } from '../TeamProvider'
-import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../TeamSelect/TeamSelect'
 
 import { CopyToTeamDialog } from './CopyToTeamDialog'
 
