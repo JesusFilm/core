@@ -4,6 +4,8 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import omit from 'lodash/omit'
 import { v4 as uuidv4 } from 'uuid'
 
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+import { getPowerBiEmbed } from '@core/nest/powerBi/getPowerBiEmbed'
 import {
   Action,
   Block,
@@ -20,8 +22,6 @@ import {
   UserJourneyRole,
   UserTeamRole
 } from '.prisma/api-journeys-client'
-import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
-import { getPowerBiEmbed } from '@core/nest/powerBi/getPowerBiEmbed'
 
 import {
   IdType,

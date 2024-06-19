@@ -38,14 +38,29 @@
       }
     },
     "lint": {
-      "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx @biomejs/biome check --diagnostic-level=warn",
+        "cwd": "apps/api-analytics"
+      }
     },
     "test": {
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/apps/api-analytics"],
       "options": {
         "jestConfig": "apps/api-analytics/jest.config.ts"
+      }
+    },
+    "codegen": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "graphql-codegen --config apps/api-analytics/codegen.ts"
+      }
+    },
+    "generate-graphql": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apps/api-analytics/src/schema/index.ts"
       }
     },
     "subgraph-check": {

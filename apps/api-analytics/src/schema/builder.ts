@@ -5,7 +5,7 @@ import ErrorsPlugin from '@pothos/plugin-errors'
 import FederationPlugin from '@pothos/plugin-federation'
 import pluginName from '@pothos/plugin-prisma'
 
-import { users as User } from '.prisma/api-analytics-client'
+import { Prisma, users as User } from '.prisma/api-analytics-client'
 
 import type PrismaTypes from '../__generated__/pothos-types'
 import { prisma } from '../lib/prisma'
@@ -38,6 +38,7 @@ export const builder = new SchemaBuilder<{
   ],
   prisma: {
     client: prisma,
+    dmmf: Prisma.dmmf,
     onUnusedQuery: process.env.NODE_ENV === 'production' ? null : 'warn'
   }
 })
