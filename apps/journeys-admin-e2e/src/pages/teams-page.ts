@@ -174,7 +174,7 @@ export class TeamsPage {
 
   async verifyMemberAddedInMemberList() {
     await expect(
-      this.page.locator('li[data-testid*="UserTeamInviteListItem"] p', {
+      this.page.locator('div[data-testid*="UserTeamInviteListItem"] p', {
         hasText: this.memberEmail
       })
     ).toBeVisible()

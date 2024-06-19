@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import Divider from '@mui/material/Divider'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemAvatar from '@mui/material/ListItemAvatar'
@@ -48,7 +49,6 @@ export function UserList({
     <>
       {loading === true ? (
         <Box data-testid="JourneysAdminUserList">
-          <Typography variant="subtitle1">{title}</Typography>
           <List>
             {[0, 1, 2].map((i) => (
               <ListItem key={i} sx={{ px: 0 }}>
@@ -71,33 +71,39 @@ export function UserList({
         </Box>
       ) : (
         <>
-          {users.length > 0 && (
-            <Box>
-              <Typography variant="subtitle1">{title}</Typography>
+          {(users.length > 0 || invites.length > 0) && (
+            <>
+              <Divider sx={{ pb: 4 }}>
+                <Typography
+                  variant="subtitle3"
+                  color="secondary.light"
+                  sx={{ opacity: 0.8 }}
+                >
+                  {title}
+                </Typography>
+              </Divider>
 
-              <List sx={{ py: 0 }}>
-                {sortedUsers.map((user) => (
-                  <UserListItem
-                    journeyId={journeyId}
-                    key={user.id}
-                    listItem={user}
-                    currentUser={currentUser}
-                  />
-                ))}
-                {invites.map(
-                  (invite) =>
-                    invite.removedAt == null &&
-                    invite.acceptedAt == null && (
-                      <UserListItem
-                        journeyId={journeyId}
-                        key={invite.id}
-                        listItem={invite}
-                        currentUser={currentUser}
-                      />
-                    )
-                )}
-              </List>
-            </Box>
+              {sortedUsers.map((user) => (
+                <UserListItem
+                  journeyId={journeyId}
+                  key={user.id}
+                  listItem={user}
+                  currentUser={currentUser}
+                />
+              ))}
+              {invites.map(
+                (invite) =>
+                  invite.removedAt == null &&
+                  invite.acceptedAt == null && (
+                    <UserListItem
+                      journeyId={journeyId}
+                      key={invite.id}
+                      listItem={invite}
+                      currentUser={currentUser}
+                    />
+                  )
+              )}
+            </>
           )}
         </>
       )}

@@ -30,9 +30,9 @@ export function AccessItem({
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
-  const [accessDialogOpen, setAccessDialogOpen] = useState<
-    boolean | undefined
-  >()
+  const [accessDialogOpen, setAccessDialogOpen] = useState<boolean | undefined>(
+    router?.query?.manageAccess === 'true' ? true : undefined
+  )
 
   function setRoute(param: string): void {
     void router.push({ query: { ...router.query, param } }, undefined, {

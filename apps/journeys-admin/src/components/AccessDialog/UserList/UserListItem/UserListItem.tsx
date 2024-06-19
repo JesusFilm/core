@@ -1,11 +1,10 @@
 import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
-import ListItem from '@mui/material/ListItem'
-import ListItemAvatar from '@mui/material/ListItemAvatar'
-import ListItemText from '@mui/material/ListItemText'
+import Grid from '@mui/material/Grid'
 import Menu from '@mui/material/Menu'
 import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import compact from 'lodash/compact'
 import { useTranslation } from 'next-i18next'
 import { MouseEvent, ReactElement, useEffect, useMemo, useState } from 'react'
@@ -15,6 +14,7 @@ import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import { GetJourneyWithPermissions_journey_userJourneys as UserJourney } from '../../../../../__generated__/GetJourneyWithPermissions'
 import { GetUserInvites_userInvites as UserInvite } from '../../../../../__generated__/GetUserInvites'
 import { UserJourneyRole } from '../../../../../__generated__/globalTypes'
+import { NotificationSwitch } from '../../NotificationSwitch'
 
 import { ApproveUser } from './ApproveUser'
 import { PromoteUser } from './PromoteUser'
@@ -29,6 +29,7 @@ interface UserItem {
   imageUrl?: string
   removedAt?: string
   acceptedAt?: string
+  userId?: string
 }
 
 interface UserListItemProps {
@@ -45,7 +46,7 @@ export function UserListItem({
   const { t } = useTranslation('apps-journeys-admin')
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = Boolean(anchorEl)
-  const { id, role, displayName, email, imageUrl, journeyId } =
+  const { id, role, displayName, email, imageUrl, journeyId, userId } =
     useMemo((): UserItem => {
       if (listItem.__typename === 'UserInvite') {
         return {
@@ -60,6 +61,7 @@ export function UserListItem({
           listItem.user?.firstName,
           listItem.user?.lastName
         ]).join(' '),
+        userId: listItem.user?.id,
         email: listItem.user?.email ?? '',
         imageUrl: listItem.user?.imageUrl ?? ''
       }
@@ -105,14 +107,48 @@ export function UserListItem({
 
   return (
     <>
-      <ListItem
-        sx={{
-          px: 0,
-          '& > .MuiListItemSecondaryAction-root': {
-            right: 0
-          }
-        }}
-        secondaryAction={
+      <Grid
+        container
+        spacing={1}
+        alignItems="center"
+        data-testId="UserListItem"
+      >
+        <Grid xs={2} sm={1}>
+          <Avatar src={imageUrl ?? undefined} alt={displayName ?? email}>
+            {displayName != null
+              ? displayName.charAt(0)?.toUpperCase()
+              : email.charAt(0).toUpperCase()}
+          </Avatar>
+        </Grid>
+        <Grid xs={5} sm={7}>
+          <Stack sx={{ ml: 2 }}>
+            <Typography variant="subtitle2" sx={{ width: '100%', flexGrow: 1 }}>
+              {displayName}
+            </Typography>
+            <Typography
+              variant="body1"
+              sx={{
+                width: { xs: '90%', sm: '90%' },
+                whiteSpace: 'nowrap',
+                overflow: 'clip',
+                textOverflow: 'ellipsis'
+              }}
+            >
+              {email}
+            </Typography>
+          </Stack>
+        </Grid>
+        <Grid xs={2} sm={2}>
+          {listItem.__typename !== 'UserInvite' && (
+            <NotificationSwitch
+              name={listItem?.user?.firstName}
+              journeyId={journeyIdFromParent}
+              checked={listItem?.journeyNotification?.visitorInteractionEmail}
+              disabled={userId !== currentUser?.user?.id}
+            />
+          )}
+        </Grid>
+        <Grid xs={3} sm={2}>
           <Button
             aria-controls={open ? 'basic-menu' : undefined}
             aria-haspopup="true"
@@ -127,19 +163,8 @@ export function UserListItem({
           >
             {isInvite ? t('Pending') : menuLabel}
           </Button>
-        }
-        data-testid="UserListItem"
-      >
-        <ListItemAvatar>
-          <Avatar src={imageUrl ?? undefined} alt={displayName ?? email}>
-            {displayName != null
-              ? displayName.charAt(0)?.toUpperCase()
-              : email.charAt(0).toUpperCase()}
-          </Avatar>
-        </ListItemAvatar>
-
-        <ListItemText primary={displayName} secondary={email} />
-      </ListItem>
+        </Grid>
+      </Grid>
 
       <Menu
         anchorEl={anchorEl}
