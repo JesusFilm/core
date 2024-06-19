@@ -26,17 +26,17 @@ import { init, t } from 'i18next'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/BlockFields'
+import { IconBlockNameUpdate } from '../../../../../../../../../__generated__/IconBlockNameUpdate'
+import { IconFields } from '../../../../../../../../../__generated__/IconFields'
 import {
   IconColor,
   IconName
 } from '../../../../../../../../../__generated__/globalTypes'
-import { IconBlockNameUpdate } from '../../../../../../../../../__generated__/IconBlockNameUpdate'
-import { IconFields } from '../../../../../../../../../__generated__/IconFields'
 
 import { Color } from './Color'
 

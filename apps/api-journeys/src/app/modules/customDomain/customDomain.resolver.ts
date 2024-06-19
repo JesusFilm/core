@@ -11,6 +11,7 @@ import {
 import { GraphQLError } from 'graphql'
 import omit from 'lodash/omit'
 
+import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 import {
   CustomDomain,
   Journey,
@@ -18,7 +19,6 @@ import {
   Prisma,
   Team
 } from '.prisma/api-journeys-client'
-import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 
 import {
   CustomDomainCheck,

@@ -89,8 +89,8 @@ export class CardLevelActionPage {
     ).toBeVisible()
   }
   async clickOnCreatedOrRenamedTextInJourneyCard(createdOrRenamed: string) {
-    let text =
-      createdOrRenamed == 'created' ? this.journeyName : this.renameJourmeyName
+    const text =
+      createdOrRenamed === 'created' ? this.journeyName : this.renameJourmeyName
     await this.page
       .frameLocator(this.journeyCardFrame)
       .locator(
@@ -270,8 +270,8 @@ export class CardLevelActionPage {
     ).toBeHidden({ timeout: 60000 })
   }
   async verifyUploadVideoInJourney(uplodedType: string) {
-    let videoName =
-      uplodedType == 'created'
+    const videoName =
+      uplodedType === 'created'
         ? testData.cardLevelAction.uploadVideoName
         : this.seletedVideo
     await expect(
