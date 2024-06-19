@@ -93,16 +93,17 @@ export function TeamCreateForm({
     }
   }
 
-  const initialValues: TeamCreateInput = onboarding
-    ? {
-        title: t('{{ displayName }} & Team', {
-          displayName: user.displayName
-        }),
-        publicTitle: t('{{ displayName }} Team', {
-          displayName: user.displayName?.charAt(0)
-        })
-      }
-    : { title: '' }
+  const initialValues: TeamCreateInput =
+    onboarding && user.displayName?.length !== 0
+      ? {
+          title: t('{{ displayName }} & Team', {
+            displayName: user.displayName
+          }),
+          publicTitle: t('{{ displayName }} Team', {
+            displayName: user.displayName?.charAt(0)
+          })
+        }
+      : { title: '' }
 
   return (
     <Formik
