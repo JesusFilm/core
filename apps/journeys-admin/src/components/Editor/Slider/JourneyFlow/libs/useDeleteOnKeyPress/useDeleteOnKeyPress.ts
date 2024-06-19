@@ -39,6 +39,7 @@ export function useDeleteOnKeyPress(): {
 
   const deleteEvent = useKeyPress(['Delete', 'Backspace'])
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(
     function handleDeleteEvent() {
       if (
@@ -58,7 +59,6 @@ export function useDeleteOnKeyPress(): {
         setSelected(undefined)
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [deleteEvent]
   )
 

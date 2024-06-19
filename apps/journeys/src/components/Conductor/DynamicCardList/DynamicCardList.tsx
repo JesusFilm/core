@@ -3,8 +3,8 @@ import Fade from '@mui/material/Fade'
 import { SxProps } from '@mui/material/styles'
 import { ReactElement, useEffect } from 'react'
 
-import { TreeBlock, useBlocks } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
+import { TreeBlock, useBlocks } from '@core/journeys/ui/block'
 
 import { StepFields } from '../../../../__generated__/StepFields'
 
