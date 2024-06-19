@@ -104,11 +104,6 @@ const createJourneyButton = (
 )
 
 describe('CreateJourneyButton', () => {
-  const originalWindow = window
-  afterAll(() => {
-    window = originalWindow
-  })
-
   it('should open team dialog if url query set to createNew', async () => {
     mockUseRouter.mockReturnValue({
       query: { createNew: 'true' }
