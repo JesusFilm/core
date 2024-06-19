@@ -1,4 +1,10 @@
 {
+  "Please select a valid team": "Please select a valid team",
+  "Cancel": "Cancel",
+  "Add": "Add",
+  "Copy": "Copy",
+  "Journey will be copied to selected team.": "Journey will be copied to selected team.",
+  "Select Team": "Select Team",
   "Form": "Form",
   "Name must be 2 characters or more": "Name must be 2 characters or more",
   "Name must be 50 characters or less": "Name must be 50 characters or less",
@@ -23,7 +29,6 @@
   "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_one": "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>",
   "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_other": "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>",
   "Available Languages": "Available Languages",
-  "Cancel": "Cancel",
   "Topics, holidays, felt needs, collections": "Topics, holidays, felt needs, collections",
   "Audience": "Audience",
   "Genre": "Genre",
