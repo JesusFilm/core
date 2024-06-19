@@ -28,7 +28,7 @@ export function CreateJourneyButton({
   openTeamDialog,
   setOpenTeamDialog
 }: CreateJourneyButtonProps): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
+  const { t } = useTranslation('libs-journeys-ui')
 
   const router = useRouter()
   const { journey } = useJourney()

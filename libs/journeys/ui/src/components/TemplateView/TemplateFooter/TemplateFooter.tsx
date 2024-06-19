@@ -16,7 +16,7 @@ export function TemplateFooter({
   openTeamDialog,
   setOpenTeamDialog
 }: TemplateFooterProps): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
+  const { t } = useTranslation('libs-journeys-ui')
 
   return (
     <Stack

@@ -30,7 +30,7 @@ interface TemplateViewProps {
 export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
   const { journey } = useJourney()
   const { breakpoints } = useTheme()
-  const { t } = useTranslation('apps-journeys-admin')
+  const { t } = useTranslation('libs-journeys-ui')
   const [openTeamDialog, setOpenTeamDialog] = useState(false)
 
   const tagIds = journey?.tags.map((tag) => tag.id)

@@ -11,7 +11,7 @@ export function PreviewTemplateButton({
   slug,
   isPublisher
 }: PreviewTemplateButtonProps): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
+  const { t } = useTranslation('libs-journeys-ui')
 
   const link =
     isPublisher === true

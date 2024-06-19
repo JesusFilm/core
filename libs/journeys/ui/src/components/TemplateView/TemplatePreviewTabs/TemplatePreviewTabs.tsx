@@ -39,7 +39,7 @@ export function TemplatePreviewTabs({
   setOpenTeamDialog
 }: TemplatePreviewTabsProps): ReactElement {
   const [tabValue, setTabValue] = useState(0)
-  const { t } = useTranslation('apps-journeys-admin')
+  const { t } = useTranslation('libs-journeys-ui')
 
   const { journey } = useJourney()
 

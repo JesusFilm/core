@@ -32,7 +32,7 @@ export function CopyToTeamDialog({
   const { query, setActiveTeam } = useTeam()
   const teams = query?.data?.teams ?? []
 
-  const { t } = useTranslation('apps-journeys-admin')
+  const { t } = useTranslation('libs-journeys-ui')
   function handleClose(): void {
     onClose()
   }

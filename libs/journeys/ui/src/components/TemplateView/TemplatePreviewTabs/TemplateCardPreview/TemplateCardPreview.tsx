@@ -118,7 +118,7 @@ export function TemplateCardPreview({
   setOpenTeamDialog
 }: TemplateCardPreviewProps): ReactElement {
   const { breakpoints } = useTheme()
-  const { t } = useTranslation('apps-journeys-admin')
+  const { t } = useTranslation('libs-journeys-ui')
   const swiperBreakpoints: SwiperOptions['breakpoints'] = {
     [breakpoints.values.xs]: {
       spaceBetween: 12

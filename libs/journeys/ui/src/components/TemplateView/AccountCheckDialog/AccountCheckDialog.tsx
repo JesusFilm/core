@@ -19,7 +19,7 @@ export function AccountCheckDialog({
   onClose,
   handleSignIn
 }: AccountCheckDialogProps): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
+  const { t } = useTranslation('libs-journeys-ui')
   return (
     <Dialog
       open={open}
