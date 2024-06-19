@@ -132,7 +132,8 @@ describe('ChatOpenEventResolver', () => {
           default:
             return newResponse
         }
-      })
+      }),
+      sendEventsEmail: jest.fn()
     })
   }
 
