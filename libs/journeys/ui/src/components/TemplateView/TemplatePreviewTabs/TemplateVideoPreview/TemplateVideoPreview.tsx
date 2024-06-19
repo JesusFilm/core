@@ -11,18 +11,13 @@ import { SwiperOptions } from 'swiper/types'
 import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
 import { TreeBlock } from '../../../../libs/block'
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../libs/useJourneyQuery/__generated__/GetJourney'
+import { TemplateVideoPlayerProps } from './TemplateVideoPlayer/TemplateVideoPlayer'
 
 interface TemplateVideoPreviewProps {
   videoBlocks: Array<TreeBlock<VideoBlock>>
 }
 
-const DynamicTemplateVideoPlayer = dynamic<{
-  id?: string | null
-  source?: VideoBlockSource
-  poster?: string
-  startAt?: number
-  endAt?: number
-}>(
+const DynamicTemplateVideoPlayer = dynamic<TemplateVideoPlayerProps>(
   async () =>
     await import(
       /* webpackChunkName: "TemplateVideoPlayer" */ './TemplateVideoPlayer'

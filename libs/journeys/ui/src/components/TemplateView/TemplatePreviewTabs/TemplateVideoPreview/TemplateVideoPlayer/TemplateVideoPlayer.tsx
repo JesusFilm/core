@@ -5,8 +5,8 @@ import Player from 'video.js/dist/types/player'
 
 import { VideoBlockSource } from '../../../../../../__generated__/globalTypes'
 
-interface TemplateVideoPreviewItemProps {
-  id: string
+export interface TemplateVideoPlayerProps {
+  id?: string | null
   source?: VideoBlockSource
   poster?: string
   startAt: number
@@ -19,7 +19,7 @@ export function TemplateVideoPlayer({
   poster,
   startAt = 0,
   endAt
-}: TemplateVideoPreviewItemProps): ReactElement {
+}: TemplateVideoPlayerProps): ReactElement {
   const videoRef = useRef<HTMLVideoElement>(null)
   const [player, setPlayer] = useState<Player>()
 

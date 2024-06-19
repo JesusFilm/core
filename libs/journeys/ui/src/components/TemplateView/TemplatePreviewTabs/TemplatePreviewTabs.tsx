@@ -8,6 +8,7 @@ import {
   Dispatch,
   ReactElement,
   SetStateAction,
+  SyntheticEvent,
   useMemo,
   useState
 } from 'react'
@@ -64,7 +65,7 @@ export function TemplatePreviewTabs({
     return videoBlocks?.filter(({ id }) => !cardBlockCoverIds?.includes(id))
   }, [journey?.blocks])
 
-  const handleTabChange = (_event, newValue: number): void => {
+  const handleTabChange = (_event: SyntheticEvent<Element, Event>, newValue: number): void => {
     setTabValue(newValue)
   }
 

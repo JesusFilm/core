@@ -76,7 +76,7 @@ export function CreateJourneyButton({
     }
   }
 
-  const handleSignIn = (login): void => {
+  const handleSignIn = (login: boolean): void => {
     const url = window.location.origin + router.asPath
     void router.push(
       {
