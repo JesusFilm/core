@@ -14,7 +14,7 @@ import {
 } from './data'
 
 import { TemplateList } from '.'
-import '@core/journeys/ui/test/i18n'
+import '../../../test/i18n'
 
 const TemplateListStory: Meta<typeof TemplateList> = {
   ...journeysAdminConfig,

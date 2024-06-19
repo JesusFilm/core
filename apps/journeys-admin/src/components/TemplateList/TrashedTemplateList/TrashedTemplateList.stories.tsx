@@ -18,7 +18,7 @@ import {
 
 import { TrashedTemplateList } from '.'
 
-import '@core/journeys/ui/test/i18n'
+import '../../../../test/i18n'
 
 const TrashedTemplateListStory: Meta<typeof TrashedTemplateList> = {
   component: TrashedTemplateList,
