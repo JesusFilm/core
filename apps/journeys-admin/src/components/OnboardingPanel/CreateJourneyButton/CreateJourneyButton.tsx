@@ -1,5 +1,5 @@
-import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
+import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 
 import FilePlus1Icon from '@core/shared/ui/icons/FilePlus1'

@@ -2,12 +2,12 @@ import { gql, useMutation } from '@apollo/client'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import type { TreeBlock } from '@core/journeys/ui/block'
 
-import { IconColor } from '../../../../../../../../../../__generated__/globalTypes'
 import { IconBlockColorUpdate } from '../../../../../../../../../../__generated__/IconBlockColorUpdate'
 import { IconFields } from '../../../../../../../../../../__generated__/IconFields'
+import { IconColor } from '../../../../../../../../../../__generated__/globalTypes'
 import { ColorDisplayIcon } from '../../ColorDisplayIcon'
 import { ToggleButtonGroup } from '../../ToggleButtonGroup'
 

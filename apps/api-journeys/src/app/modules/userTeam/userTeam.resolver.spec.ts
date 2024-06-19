@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 
-import { UserTeam, UserTeamRole } from '.prisma/api-journeys-client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+import { UserTeam, UserTeamRole } from '.prisma/api-journeys-client'
 
 import { UserTeamRole as GraphQlUserTeamRole } from '../../__generated__/graphql'
 import { AppCaslFactory } from '../../lib/casl/caslFactory'
@@ -305,6 +305,50 @@ describe('UserTeamResolver', () => {
       ).resolves.toEqual({
         __typename: 'User',
         id: 'userId'
+      })
+    })
+  })
+
+  describe('journeyNotification', () => {
+    it('returns associated journeyNotification', async () => {
+      const userTeam = {
+        id: 'userTeamId',
+        journeyNotifications: [
+          {
+            id: 'journeyNotification',
+            userId: 'userId',
+            journeyId: 'journeyId',
+            userTeamId: null,
+            userJourneyId: 'userJourneyId',
+            visitorInteractionEmail: false
+          }
+        ]
+      }
+
+      const journeyNotifications = jest
+        .fn()
+        .mockResolvedValue(userTeam.journeyNotifications)
+
+      prismaService.userTeam.findUnique = jest
+        .fn()
+        .mockReturnValue({ ...userTeam, journeyNotifications })
+      await expect(
+        userTeamResolver.journeyNotifications(
+          userTeam as unknown as UserTeam,
+          'journeyId'
+        )
+      ).resolves.toEqual({
+        id: 'journeyNotification',
+        journeyId: 'journeyId',
+        userId: 'userId',
+        userJourneyId: 'userJourneyId',
+        userTeamId: null,
+        visitorInteractionEmail: false
+      })
+      expect(journeyNotifications).toHaveBeenCalledWith({
+        where: {
+          journeyId: 'journeyId'
+        }
       })
     })
   })
