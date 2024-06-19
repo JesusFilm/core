@@ -8,7 +8,7 @@ import { descriptiveTemplate } from '../data'
 
 import { TemplateListItem } from '.'
 
-import '@core/journeys/ui/test/i18n'
+import '../../../../test/i18n'
 
 const TemplateListItemStory: Meta<typeof TemplateListItem> = {
   ...journeysAdminConfig,
