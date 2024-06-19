@@ -315,10 +315,10 @@ export function VideoControls({
     delay = 250
   ): MouseEventHandler {
     let timeoutID: NodeJS.Timeout | undefined
-    return (event) => {
+    return function (event) {
       event.stopPropagation()
       if (timeoutID == null) {
-        timeoutID = setTimeout(() => {
+        timeoutID = setTimeout(function () {
           onClick(event)
           timeoutID = undefined
         }, delay)
