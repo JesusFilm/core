@@ -35,3 +35,5 @@ npm i
 curl -sSL https://router.apollo.dev/download/nix/v1.43.1 | sh
 mv router apps/api-gateway/
 
+# update plausible db
+psql -U postgres -h db -d plausible_db < .devcontainer/plausible.sql

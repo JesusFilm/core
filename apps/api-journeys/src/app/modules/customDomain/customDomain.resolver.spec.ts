@@ -423,7 +423,8 @@ describe('CustomDomainResolver', () => {
         title: 'title',
         publicTitle: 'publicTitle',
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
+        plausibleToken: null
       }
       prismaService.team.findUnique.mockResolvedValue(team)
       expect(await resolver.team(customDomain)).toEqual(team)
