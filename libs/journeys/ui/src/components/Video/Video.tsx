@@ -1,46 +1,46 @@
-import VideocamRounded from "@mui/icons-material/VideocamRounded";
-import Box from "@mui/material/Box";
-import Paper from "@mui/material/Paper";
-import { ThemeProvider, styled, useTheme } from "@mui/material/styles";
+import VideocamRounded from '@mui/icons-material/VideocamRounded'
+import Box from '@mui/material/Box'
+import Paper from '@mui/material/Paper'
+import { ThemeProvider, styled, useTheme } from '@mui/material/styles'
 import {
   CSSProperties,
   ReactElement,
   useEffect,
   useMemo,
   useRef,
-  useState,
-} from "react";
-import { use100vh } from "react-div-100vh";
-import Player from "video.js/dist/types/player";
+  useState
+} from 'react'
+import { use100vh } from 'react-div-100vh'
+import Player from 'video.js/dist/types/player'
 
-import { NextImage } from "@core/shared/ui/NextImage";
+import { NextImage } from '@core/shared/ui/NextImage'
 
 import {
   VideoBlockObjectFit,
-  VideoBlockSource,
-} from "../../../__generated__/globalTypes";
-import { useEditor } from "../../libs/EditorProvider";
+  VideoBlockSource
+} from '../../../__generated__/globalTypes'
+import { useEditor } from '../../libs/EditorProvider'
 import {
   TreeBlock,
   isActiveBlockOrDescendant,
-  useBlocks,
-} from "../../libs/block";
-import { blurImage } from "../../libs/blurImage";
-import { ImageFields } from "../Image/__generated__/ImageFields";
-import { VideoEvents } from "../VideoEvents";
-import { VideoTrigger } from "../VideoTrigger";
-import { VideoTriggerFields } from "../VideoTrigger/__generated__/VideoTriggerFields";
+  useBlocks
+} from '../../libs/block'
+import { blurImage } from '../../libs/blurImage'
+import { ImageFields } from '../Image/__generated__/ImageFields'
+import { VideoEvents } from '../VideoEvents'
+import { VideoTrigger } from '../VideoTrigger'
+import { VideoTriggerFields } from '../VideoTrigger/__generated__/VideoTriggerFields'
 
-import { InitAndPlay } from "./InitAndPlay";
-import { VideoControls } from "./VideoControls";
-import { VideoFields } from "./__generated__/VideoFields";
-import "videojs-youtube";
-import "video.js/dist/video-js.css";
+import { InitAndPlay } from './InitAndPlay'
+import { VideoControls } from './VideoControls'
+import { VideoFields } from './__generated__/VideoFields'
+import 'videojs-youtube'
+import 'video.js/dist/video-js.css'
 
-const VIDEO_BACKGROUND_COLOR = "#000";
-const VIDEO_FOREGROUND_COLOR = "#FFF";
+const VIDEO_BACKGROUND_COLOR = '#000'
+const VIDEO_FOREGROUND_COLOR = '#FFF'
 
-const StyledVideo = styled("video")(() => ({}));
+const StyledVideo = styled('video')(() => ({}))
 
 const StyledVideoGradient = styled(Box)`
   width: 100%;
@@ -55,7 +55,7 @@ const StyledVideoGradient = styled(Box)`
     #00000080 15%,
     #00000000 95%
   );
-`;
+`
 
 export function Video({
   id: blockId,
@@ -71,99 +71,98 @@ export function Video({
   posterBlockId,
   children,
   action,
-  objectFit,
+  objectFit
 }: TreeBlock<VideoFields>): ReactElement {
-  const { blockHistory } = useBlocks();
-  const [loading, setLoading] = useState(true);
-  const [showPoster, setShowPoster] = useState(true);
-  const theme = useTheme();
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [player, setPlayer] = useState<Player>();
-  const hundredVh = use100vh();
-  const [activeStep, setActiveStep] = useState(false);
+  const { blockHistory } = useBlocks()
+  const [loading, setLoading] = useState(true)
+  const [showPoster, setShowPoster] = useState(true)
+  const theme = useTheme()
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const [player, setPlayer] = useState<Player>()
+  const hundredVh = use100vh()
+  const [activeStep, setActiveStep] = useState(false)
   useEffect(() => {
-    setActiveStep(isActiveBlockOrDescendant(blockId));
-  }, [blockId, blockHistory]);
+    setActiveStep(isActiveBlockOrDescendant(blockId))
+  }, [blockId, blockHistory])
 
   const {
-    state: { selectedBlock },
-  } = useEditor();
+    state: { selectedBlock }
+  } = useEditor()
 
-  const eventVideoTitle = video?.title[0].value ?? title;
-  const eventVideoId = video?.id ?? videoId;
+  const eventVideoTitle = video?.title[0].value ?? title
+  const eventVideoId = video?.id ?? videoId
 
   // Setup poster image
   const posterBlock = children.find(
-    (block) => block.id === posterBlockId && block.__typename === "ImageBlock"
-  ) as TreeBlock<ImageFields> | undefined;
+    (block) => block.id === posterBlockId && block.__typename === 'ImageBlock'
+  ) as TreeBlock<ImageFields> | undefined
 
-  const videoImage =
-    source === VideoBlockSource.internal ? video?.image : image;
+  const videoImage = source === VideoBlockSource.internal ? video?.image : image
 
   const blurBackground = useMemo(() => {
     return posterBlock != null
       ? blurImage(posterBlock.blurhash, theme.palette.background.paper)
-      : undefined;
-  }, [posterBlock, theme]);
+      : undefined
+  }, [posterBlock, theme])
 
   const triggerTimes = useMemo(() => {
     return children
-      .filter((block) => block.__typename === "VideoTriggerBlock")
-      .map((block) => (block as VideoTriggerFields).triggerStart);
-  }, [children]);
+      .filter((block) => block.__typename === 'VideoTriggerBlock')
+      .map((block) => (block as VideoTriggerFields).triggerStart)
+  }, [children])
 
   const [videoEndTime, setVideoEndTime] = useState(
     Math.min(...triggerTimes, endAt ?? 10000)
-  );
+  )
 
   // Set video layout
-  let videoFit: CSSProperties["objectFit"];
+  let videoFit: CSSProperties['objectFit']
   if (source === VideoBlockSource.youTube) {
-    videoFit = "contain";
+    videoFit = 'contain'
   } else {
     switch (objectFit) {
       case VideoBlockObjectFit.fill:
-        videoFit = "cover";
-        break;
+        videoFit = 'cover'
+        break
       case VideoBlockObjectFit.fit:
-        videoFit = "contain";
-        break;
+        videoFit = 'contain'
+        break
       case VideoBlockObjectFit.zoomed:
-        videoFit = "contain";
-        break;
+        videoFit = 'contain'
+        break
       default:
-        videoFit = "cover";
-        break;
+        videoFit = 'cover'
+        break
     }
   }
 
   const isFillAndNotYoutube = (): boolean =>
-    videoFit === "cover" && source !== VideoBlockSource.youTube;
+    videoFit === 'cover' && source !== VideoBlockSource.youTube
 
   return (
     <Box
       data-testid={`JourneysVideo-${blockId}`}
       sx={{
-        display: "flex",
-        width: "100%",
-        height: "100%",
-        minHeight: "inherit",
+        display: 'flex',
+        width: '100%',
+        height: '100%',
+        minHeight: 'inherit',
         backgroundColor: VIDEO_BACKGROUND_COLOR,
-        overflow: "hidden",
-        my: "0px !important",
-        mx: isFillAndNotYoutube() ? "inherit" : "0px !important",
-        position: "absolute",
+        overflow: 'hidden',
+        my: '0px !important',
+        mx: isFillAndNotYoutube() ? 'inherit' : '0px !important',
+        position: 'absolute',
         top: 0,
         right: 0,
-        "> .MuiIconButton-root": {
+        '> .MuiIconButton-root': {
           color: VIDEO_FOREGROUND_COLOR,
-          position: "absolute",
+          position: 'absolute',
           bottom: 12,
           zIndex: 1,
-          "&:hover": {
-            color: VIDEO_FOREGROUND_COLOR,
-          },
-        },
+          '&:hover': {
+            color: VIDEO_FOREGROUND_COLOR
+          }
+        }
       }}
     >
       <InitAndPlay
@@ -206,14 +205,14 @@ export function Video({
           <StyledVideoGradient />
           <Box
             height={{
-              xs: isFillAndNotYoutube() ? hundredVh : "100%",
-              sm: "100%",
+              xs: isFillAndNotYoutube() ? hundredVh : '100%',
+              sm: '100%'
             }}
             width="100%"
             minHeight="-webkit-fill-available"
             overflow="hidden"
             marginX={0}
-            position={isFillAndNotYoutube() ? "absolute" : "inherit"}
+            position={isFillAndNotYoutube() ? 'absolute' : 'inherit'}
             data-testid="video-container"
           >
             <StyledVideo
@@ -222,30 +221,30 @@ export function Video({
               playsInline
               preload="auto"
               sx={{
-                "&.video-js.vjs-youtube.vjs-fill": {
-                  transform: "scale(1.01)",
+                '&.video-js.vjs-youtube.vjs-fill': {
+                  transform: 'scale(1.01)'
                 },
-                "> .vjs-tech": {
+                '> .vjs-tech': {
                   objectFit: videoFit,
                   transform:
                     objectFit === VideoBlockObjectFit.zoomed
-                      ? "scale(1.33)"
-                      : undefined,
+                      ? 'scale(1.33)'
+                      : undefined
                 },
-                "> .vjs-poster": {
+                '> .vjs-poster': {
                   backgroundColor: VIDEO_BACKGROUND_COLOR,
-                  backgroundSize: "cover",
-                  transform: "scale(1.1)",
-                },
+                  backgroundSize: 'cover',
+                  transform: 'scale(1.1)'
+                }
               }}
             >
               {source === VideoBlockSource.cloudflare && videoId != null && (
                 <source
                   src={`https://customer-${
                     process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ??
-                    ""
+                    ''
                   }.cloudflarestream.com/${
-                    videoId ?? ""
+                    videoId ?? ''
                   }/manifest/video.m3u8?clientBandwidthHint=10`}
                   type="application/x-mpegURL"
                 />
@@ -268,7 +267,7 @@ export function Video({
             </StyledVideo>
           </Box>
           {player != null && (
-            <ThemeProvider theme={{ ...theme, direction: "ltr" }}>
+            <ThemeProvider theme={{ ...theme, direction: 'ltr' }}>
               <VideoControls
                 player={player}
                 startAt={startAt ?? 0}
@@ -296,16 +295,16 @@ export function Video({
         <>
           <Paper
             sx={{
-              backgroundColor: "transparent",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              width: "100%",
+              backgroundColor: 'transparent',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '100%',
               fontSize: 100,
               zIndex: 1,
               outline:
-                selectedBlock?.id === blockId ? "2px solid #C52D3A" : "none",
-              outlineOffset: "-3px",
+                selectedBlock?.id === blockId ? '2px solid #C52D3A' : 'none',
+              outlineOffset: '-3px'
             }}
             elevation={0}
             variant="outlined"
@@ -314,7 +313,7 @@ export function Video({
               fontSize="inherit"
               sx={{
                 color: VIDEO_FOREGROUND_COLOR,
-                filter: `drop-shadow(-1px 0px 5px ${VIDEO_BACKGROUND_COLOR})`,
+                filter: `drop-shadow(-1px 0px 5px ${VIDEO_BACKGROUND_COLOR})`
               }}
             />
           </Paper>
@@ -331,8 +330,8 @@ export function Video({
           style={{
             transform:
               objectFit === VideoBlockObjectFit.zoomed
-                ? "scale(1.33)"
-                : undefined,
+                ? 'scale(1.33)'
+                : undefined
           }}
         />
       )}
@@ -341,12 +340,12 @@ export function Video({
         <NextImage
           src={posterBlock.src}
           alt={posterBlock.alt}
-          placeholder={blurBackground != null ? "blur" : "empty"}
+          placeholder={blurBackground != null ? 'blur' : 'empty'}
           blurDataURL={blurBackground}
           layout="fill"
           objectFit="cover"
         />
       )}
     </Box>
-  );
+  )
 }

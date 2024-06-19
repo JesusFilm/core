@@ -1,34 +1,34 @@
-import { ApolloError, gql, useMutation } from "@apollo/client";
-import LoadingButton from "@mui/lab/LoadingButton";
-import Box from "@mui/material/Box";
-import { SxProps } from "@mui/system/styleFunctionSx";
-import { Form, Formik } from "formik";
-import { useTranslation } from "next-i18next";
-import { usePlausible } from "next-plausible";
-import { useRouter } from "next/router";
-import { useSnackbar } from "notistack";
-import { ReactElement } from "react";
-import TagManager from "react-gtm-module";
-import { v4 as uuidv4 } from "uuid";
-import { object, string } from "yup";
+import { ApolloError, gql, useMutation } from '@apollo/client'
+import LoadingButton from '@mui/lab/LoadingButton'
+import Box from '@mui/material/Box'
+import { SxProps } from '@mui/system/styleFunctionSx'
+import { Form, Formik } from 'formik'
+import { useTranslation } from 'next-i18next'
+import { usePlausible } from 'next-plausible'
+import { useRouter } from 'next/router'
+import { useSnackbar } from 'notistack'
+import { ReactElement } from 'react'
+import TagManager from 'react-gtm-module'
+import { v4 as uuidv4 } from 'uuid'
+import { object, string } from 'yup'
 
-import { SignUpSubmissionEventCreateInput } from "../../../__generated__/globalTypes";
-import { useEditor } from "../../libs/EditorProvider";
-import { useJourney } from "../../libs/JourneyProvider";
-import { handleAction } from "../../libs/action";
-import { useBlocks } from "../../libs/block";
-import type { TreeBlock } from "../../libs/block";
-import { getStepHeading } from "../../libs/getStepHeading";
-import { JourneyPlausibleEvents, keyify } from "../../libs/plausibleHelpers";
-import { Icon } from "../Icon";
-import { IconFields } from "../Icon/__generated__/IconFields";
-import { TextField } from "../TextField";
+import { SignUpSubmissionEventCreateInput } from '../../../__generated__/globalTypes'
+import { useEditor } from '../../libs/EditorProvider'
+import { useJourney } from '../../libs/JourneyProvider'
+import { handleAction } from '../../libs/action'
+import { useBlocks } from '../../libs/block'
+import type { TreeBlock } from '../../libs/block'
+import { getStepHeading } from '../../libs/getStepHeading'
+import { JourneyPlausibleEvents, keyify } from '../../libs/plausibleHelpers'
+import { Icon } from '../Icon'
+import { IconFields } from '../Icon/__generated__/IconFields'
+import { TextField } from '../TextField'
 
-import { SignUpFields } from "./__generated__/SignUpFields";
+import { SignUpFields } from './__generated__/SignUpFields'
 import {
   SignUpSubmissionEventCreate,
-  SignUpSubmissionEventCreateVariables,
-} from "./__generated__/SignUpSubmissionEventCreate";
+  SignUpSubmissionEventCreateVariables
+} from './__generated__/SignUpSubmissionEventCreate'
 
 export const SIGN_UP_SUBMISSION_EVENT_CREATE = gql`
   mutation SignUpSubmissionEventCreate(
@@ -38,16 +38,16 @@ export const SIGN_UP_SUBMISSION_EVENT_CREATE = gql`
       id
     }
   }
-`;
+`
 interface SignUpProps extends TreeBlock<SignUpFields> {
-  uuid?: () => string;
-  editableSubmitLabel?: ReactElement;
-  sx?: SxProps;
+  uuid?: () => string
+  editableSubmitLabel?: ReactElement
+  sx?: SxProps
 }
 
 interface SignUpFormValues {
-  name: string;
-  email: string;
+  name: string
+  email: string
 }
 
 export const SignUp = ({
@@ -62,91 +62,91 @@ export const SignUp = ({
   sx,
   ...props
 }: SignUpProps): ReactElement => {
-  const { t } = useTranslation("libs-journeys-ui");
+  const { t } = useTranslation('libs-journeys-ui')
 
   const submitIcon = children.find((block) => block.id === submitIconId) as
     | TreeBlock<IconFields>
-    | undefined;
+    | undefined
 
-  const plausible = usePlausible<JourneyPlausibleEvents>();
-  const { variant, journey } = useJourney();
-  const { enqueueSnackbar } = useSnackbar();
-  const { blockHistory, treeBlocks } = useBlocks();
-  const activeBlock = blockHistory[blockHistory.length - 1];
+  const plausible = usePlausible<JourneyPlausibleEvents>()
+  const { variant, journey } = useJourney()
+  const { enqueueSnackbar } = useSnackbar()
+  const { blockHistory, treeBlocks } = useBlocks()
+  const activeBlock = blockHistory[blockHistory.length - 1]
 
   const heading =
     activeBlock != null
       ? getStepHeading(activeBlock.id, activeBlock.children, treeBlocks, t)
-      : "None";
+      : 'None'
 
-  const router = useRouter();
+  const router = useRouter()
   const [signUpSubmissionEventCreate, { loading }] = useMutation<
     SignUpSubmissionEventCreate,
     SignUpSubmissionEventCreateVariables
-  >(SIGN_UP_SUBMISSION_EVENT_CREATE);
+  >(SIGN_UP_SUBMISSION_EVENT_CREATE)
 
-  const initialValues: SignUpFormValues = { name: "", email: "" };
+  const initialValues: SignUpFormValues = { name: '', email: '' }
   const signUpSchema = object().shape({
     name: string()
-      .min(2, t("Name must be 2 characters or more"))
-      .max(50, t("Name must be 50 characters or less"))
-      .required(t("Required")),
+      .min(2, t('Name must be 2 characters or more'))
+      .max(50, t('Name must be 50 characters or less'))
+      .required(t('Required')),
     email: string()
-      .email(t("Please enter a valid email address"))
-      .required(t("Required")),
-  });
+      .email(t('Please enter a valid email address'))
+      .required(t('Required'))
+  })
 
   const onSubmitHandler = async (values: SignUpFormValues): Promise<void> => {
-    if (variant === "default" || variant === "embed") {
-      const id = uuid();
+    if (variant === 'default' || variant === 'embed') {
+      const id = uuid()
       const input: SignUpSubmissionEventCreateInput = {
         id,
         blockId,
         stepId: activeBlock?.id,
         name: values.name,
-        email: values.email,
-      };
+        email: values.email
+      }
       try {
         await signUpSubmissionEventCreate({
           variables: {
-            input,
-          },
-        });
+            input
+          }
+        })
         if (journey != null) {
-          plausible("signupSubmit", {
+          plausible('signupSubmit', {
             props: {
               ...input,
               key: keyify({
-                stepId: input.stepId ?? "",
-                event: "signupSubmit",
+                stepId: input.stepId ?? '',
+                event: 'signupSubmit',
                 blockId: input.blockId,
-                target: action,
-              }),
-            },
-          });
+                target: action
+              })
+            }
+          })
         }
         TagManager.dataLayer({
           dataLayer: {
-            event: "sign_up_submission",
+            event: 'sign_up_submission',
             eventId: id,
             blockId,
-            stepName: heading,
-          },
-        });
+            stepName: heading
+          }
+        })
       } catch (e) {
         if (e instanceof ApolloError) {
           enqueueSnackbar(e.message, {
-            variant: "error",
-            preventDuplicate: true,
-          });
+            variant: 'error',
+            preventDuplicate: true
+          })
         }
       }
     }
-  };
+  }
 
   const {
-    state: { selectedBlock },
-  } = useEditor();
+    state: { selectedBlock }
+  } = useEditor()
 
   return (
     <Box sx={{ mb: 4 }} data-testid="JourneysSignUp">
@@ -158,8 +158,8 @@ export const SignUp = ({
         onSubmit={(values) => {
           if (selectedBlock === undefined) {
             void onSubmitHandler(values).then(() => {
-              handleAction(router, action);
-            });
+              handleAction(router, action)
+            })
           }
         }}
       >
@@ -167,15 +167,15 @@ export const SignUp = ({
           <Form
             data-testid={`signUp-${blockId}`}
             style={{
-              display: "flex",
-              flexDirection: "column",
+              display: 'flex',
+              flexDirection: 'column'
             }}
           >
             <TextField
               data-testid="name"
               id="name"
               name="name"
-              label={t("Name")}
+              label={t('Name')}
               value={values.name}
               onClick={(e) => e.stopPropagation()}
               onChange={handleChange}
@@ -183,8 +183,8 @@ export const SignUp = ({
               InputProps={{
                 readOnly: selectedBlock !== undefined,
                 sx: {
-                  pointerEvents: selectedBlock !== undefined ? "none" : "auto",
-                },
+                  pointerEvents: selectedBlock !== undefined ? 'none' : 'auto'
+                }
               }}
             />
             <TextField
@@ -193,13 +193,13 @@ export const SignUp = ({
               onBlur={handleBlur}
               id="email"
               name="email"
-              label={t("Email")}
+              label={t('Email')}
               onClick={(e) => e.stopPropagation()}
               InputProps={{
                 readOnly: selectedBlock !== undefined,
                 sx: {
-                  pointerEvents: selectedBlock !== undefined ? "none" : "auto",
-                },
+                  pointerEvents: selectedBlock !== undefined ? 'none' : 'auto'
+                }
               }}
             />
             <LoadingButton
@@ -213,14 +213,14 @@ export const SignUp = ({
               onClick={(e) => e.stopPropagation()}
               sx={{
                 ...sx,
-                mb: 0,
+                mb: 0
               }}
             >
-              <span>{editableSubmitLabel ?? submitLabel ?? t("Submit")}</span>
+              <span>{editableSubmitLabel ?? submitLabel ?? t('Submit')}</span>
             </LoadingButton>
           </Form>
         )}
       </Formik>
     </Box>
-  );
-};
+  )
+}

@@ -1,41 +1,41 @@
-import { gql, useMutation } from "@apollo/client";
-import Box from "@mui/material/Box";
-import MuiButton from "@mui/material/Button";
-import { useTranslation } from "next-i18next";
-import { usePlausible } from "next-plausible";
-import { useRouter } from "next/router";
-import { MouseEvent, ReactElement, useMemo } from "react";
-import TagManager from "react-gtm-module";
-import { v4 as uuidv4 } from "uuid";
+import { gql, useMutation } from '@apollo/client'
+import Box from '@mui/material/Box'
+import MuiButton from '@mui/material/Button'
+import { useTranslation } from 'next-i18next'
+import { usePlausible } from 'next-plausible'
+import { useRouter } from 'next/router'
+import { MouseEvent, ReactElement, useMemo } from 'react'
+import TagManager from 'react-gtm-module'
+import { v4 as uuidv4 } from 'uuid'
 
 import {
   ButtonAction,
   ButtonClickEventCreateInput,
   ButtonVariant,
-  ChatOpenEventCreateInput,
-} from "../../../__generated__/globalTypes";
-import { handleAction } from "../../libs/action";
-import type { TreeBlock } from "../../libs/block";
-import { useBlocks } from "../../libs/block";
-import { getStepHeading } from "../../libs/getStepHeading";
-import { useJourney } from "../../libs/JourneyProvider";
-import { JourneyPlausibleEvents } from "../../libs/plausibleHelpers";
-import { keyify } from "../../libs/plausibleHelpers/plausibleHelpers";
-import { Icon } from "../Icon";
-import { IconFields } from "../Icon/__generated__/IconFields";
+  ChatOpenEventCreateInput
+} from '../../../__generated__/globalTypes'
+import { useJourney } from '../../libs/JourneyProvider'
+import { handleAction } from '../../libs/action'
+import type { TreeBlock } from '../../libs/block'
+import { useBlocks } from '../../libs/block'
+import { getStepHeading } from '../../libs/getStepHeading'
+import { JourneyPlausibleEvents } from '../../libs/plausibleHelpers'
+import { keyify } from '../../libs/plausibleHelpers/plausibleHelpers'
+import { Icon } from '../Icon'
+import { IconFields } from '../Icon/__generated__/IconFields'
 
 import {
   ButtonClickEventCreate,
-  ButtonClickEventCreateVariables,
-} from "./__generated__/ButtonClickEventCreate";
-import { ButtonFields } from "./__generated__/ButtonFields";
+  ButtonClickEventCreateVariables
+} from './__generated__/ButtonClickEventCreate'
+import { ButtonFields } from './__generated__/ButtonFields'
 import {
   ChatOpenEventCreate,
-  ChatOpenEventCreateVariables,
-} from "./__generated__/ChatOpenEventCreate";
-import { findMessagePlatform } from "./utils/findMessagePlatform";
-import { getActionLabel } from "./utils/getActionLabel";
-import { getLinkActionGoal } from "./utils/getLinkActionGoal";
+  ChatOpenEventCreateVariables
+} from './__generated__/ChatOpenEventCreate'
+import { findMessagePlatform } from './utils/findMessagePlatform'
+import { getActionLabel } from './utils/getActionLabel'
+import { getLinkActionGoal } from './utils/getLinkActionGoal'
 
 export const BUTTON_CLICK_EVENT_CREATE = gql`
   mutation ButtonClickEventCreate($input: ButtonClickEventCreateInput!) {
@@ -43,7 +43,7 @@ export const BUTTON_CLICK_EVENT_CREATE = gql`
       id
     }
   }
-`;
+`
 
 export const CHAT_OPEN_EVENT_CREATE = gql`
   mutation ChatOpenEventCreate($input: ChatOpenEventCreateInput!) {
@@ -51,10 +51,10 @@ export const CHAT_OPEN_EVENT_CREATE = gql`
       id
     }
   }
-`;
+`
 
 export interface ButtonProps extends TreeBlock<ButtonFields> {
-  editableLabel?: ReactElement;
+  editableLabel?: ReactElement
 }
 
 export function Button({
@@ -67,45 +67,45 @@ export function Button({
   endIconId,
   action,
   children,
-  editableLabel,
+  editableLabel
 }: ButtonProps): ReactElement {
   const [buttonClickEventCreate] = useMutation<
     ButtonClickEventCreate,
     ButtonClickEventCreateVariables
-  >(BUTTON_CLICK_EVENT_CREATE);
+  >(BUTTON_CLICK_EVENT_CREATE)
   const [chatOpenEventCreate] = useMutation<
     ChatOpenEventCreate,
     ChatOpenEventCreateVariables
-  >(CHAT_OPEN_EVENT_CREATE);
+  >(CHAT_OPEN_EVENT_CREATE)
 
-  const plausible = usePlausible<JourneyPlausibleEvents>();
-  const { variant, journey } = useJourney();
-  const { treeBlocks, blockHistory } = useBlocks();
-  const { t } = useTranslation("libs-journeys-ui");
-  const activeBlock = blockHistory[blockHistory.length - 1];
+  const plausible = usePlausible<JourneyPlausibleEvents>()
+  const { variant, journey } = useJourney()
+  const { treeBlocks, blockHistory } = useBlocks()
+  const { t } = useTranslation('libs-journeys-ui')
+  const activeBlock = blockHistory[blockHistory.length - 1]
 
   const heading =
     activeBlock != null
       ? getStepHeading(activeBlock.id, activeBlock.children, treeBlocks, t)
-      : "None";
+      : 'None'
 
   const startIcon = children.find((block) => block.id === startIconId) as
     | TreeBlock<IconFields>
-    | undefined;
+    | undefined
 
   const endIcon = children.find((block) => block.id === endIconId) as
     | TreeBlock<IconFields>
-    | undefined;
+    | undefined
 
-  const messagePlatform = useMemo(() => findMessagePlatform(action), [action]);
+  const messagePlatform = useMemo(() => findMessagePlatform(action), [action])
   const actionValue = useMemo(
     () => getActionLabel(action, treeBlocks, t),
     [action, treeBlocks, t]
-  );
+  )
 
   function createClickEvent(): void {
-    if (variant === "default" || variant === "embed") {
-      const id = uuidv4();
+    if (variant === 'default' || variant === 'embed') {
+      const id = uuidv4()
       const input: ButtonClickEventCreateInput = {
         id,
         blockId,
@@ -113,57 +113,57 @@ export function Button({
         label: heading,
         value: label,
         action: action?.__typename as ButtonAction | undefined,
-        actionValue,
-      };
+        actionValue
+      }
       void buttonClickEventCreate({
         variables: {
-          input,
-        },
-      });
+          input
+        }
+      })
       if (journey != null) {
-        plausible("buttonClick", {
+        plausible('buttonClick', {
           props: {
             ...input,
             key: keyify({
-              stepId: input.stepId ?? "",
-              event: "buttonClick",
+              stepId: input.stepId ?? '',
+              event: 'buttonClick',
               blockId: input.blockId,
-              target: action,
-            }),
-          },
-        });
+              target: action
+            })
+          }
+        })
       }
-      addEventToDataLayer(id);
+      addEventToDataLayer(id)
     }
   }
 
   function createChatEvent(): void {
-    if (variant === "default" || variant === "embed") {
-      const id = uuidv4();
+    if (variant === 'default' || variant === 'embed') {
+      const id = uuidv4()
       const input: ChatOpenEventCreateInput = {
         id,
         blockId,
         stepId: activeBlock?.id,
-        value: messagePlatform,
-      };
+        value: messagePlatform
+      }
       void chatOpenEventCreate({
         variables: {
-          input,
-        },
-      });
+          input
+        }
+      })
       if (journey != null)
-        plausible("chatButtonClick", {
+        plausible('chatButtonClick', {
           props: {
             ...input,
             key: keyify({
-              stepId: input.stepId ?? "",
-              event: "chatButtonClick",
+              stepId: input.stepId ?? '',
+              event: 'chatButtonClick',
               blockId: input.blockId,
-              target: action,
-            }),
-          },
-        });
-      addEventToDataLayer(id);
+              target: action
+            })
+          }
+        })
+      addEventToDataLayer(id)
     }
   }
 
@@ -171,40 +171,40 @@ export function Button({
     const eventProperties = {
       eventId: id,
       blockId,
-      stepName: heading,
-    };
+      stepName: heading
+    }
 
-    if (action?.__typename === "LinkAction") {
+    if (action?.__typename === 'LinkAction') {
       TagManager.dataLayer({
         dataLayer: {
           ...eventProperties,
-          event: "outbound_action_click",
+          event: 'outbound_action_click',
           buttonLabel: label,
           outboundActionType: getLinkActionGoal(action.url),
-          outboundActionValue: action.url,
-        },
-      });
+          outboundActionValue: action.url
+        }
+      })
     } else {
       TagManager.dataLayer({
         dataLayer: {
           ...eventProperties,
-          event: "button_click",
-        },
-      });
+          event: 'button_click'
+        }
+      })
     }
   }
 
-  const router = useRouter();
+  const router = useRouter()
   const handleClick = async (e: MouseEvent): Promise<void> => {
-    e.stopPropagation();
+    e.stopPropagation()
     if (messagePlatform == null) {
-      void createClickEvent();
+      void createClickEvent()
     } else {
-      void createChatEvent();
+      void createChatEvent()
     }
 
-    handleAction(router, action);
-  };
+    handleAction(router, action)
+  }
 
   return (
     // Margin added via Box so it's ignored by admin selection border outline
@@ -212,13 +212,13 @@ export function Button({
       sx={{
         mb: 4,
         mt:
-          size === "large"
+          size === 'large'
             ? 6
-            : size === "medium"
-            ? 5
-            : size === "small"
-            ? 4
-            : 5,
+            : size === 'medium'
+              ? 5
+              : size === 'small'
+                ? 4
+                : 5
       }}
       data-testid={`JourneysButton-${blockId}`}
     >
@@ -233,12 +233,12 @@ export function Button({
         sx={
           editableLabel != null
             ? {
-                "&:hover": {
+                '&:hover': {
                   backgroundColor:
                     buttonVariant === ButtonVariant.text
-                      ? "transparent"
-                      : `${buttonColor ?? "primary"}.main`,
-                },
+                      ? 'transparent'
+                      : `${buttonColor ?? 'primary'}.main`
+                }
               }
             : undefined
         }
@@ -246,5 +246,5 @@ export function Button({
         {editableLabel ?? label}
       </MuiButton>
     </Box>
-  );
+  )
 }

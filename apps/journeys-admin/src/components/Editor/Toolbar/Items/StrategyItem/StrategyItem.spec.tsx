@@ -1,38 +1,38 @@
-import { MockedProvider } from "@apollo/client/testing";
-import { fireEvent, render, screen } from "@testing-library/react";
-import { SnackbarProvider } from "notistack";
+import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, screen } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
 
 import {
   ActiveContent,
   ActiveFab,
-  EditorState,
-} from "@core/journeys/ui/EditorProvider";
+  EditorState
+} from '@core/journeys/ui/EditorProvider'
 import {
   ActiveCanvasDetailsDrawer,
   ActiveSlide,
-  EditorProvider,
-} from "@core/journeys/ui/EditorProvider/EditorProvider";
-import { JourneyProvider } from "@core/journeys/ui/JourneyProvider";
+  EditorProvider
+} from '@core/journeys/ui/EditorProvider/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { JourneyFields } from "../../../../../../__generated__/JourneyFields";
-import { TestEditorState } from "../../../../../libs/TestEditorState";
+import { JourneyFields } from '../../../../../../__generated__/JourneyFields'
+import { TestEditorState } from '../../../../../libs/TestEditorState'
 
-import { StrategyItem } from ".";
+import { StrategyItem } from '.'
 
-describe("StrategyItem", () => {
-  it("should navigate to goals and close menu on click", async () => {
+describe('StrategyItem', () => {
+  it('should navigate to goals and close menu on click', async () => {
     const state: EditorState = {
       activeFab: ActiveFab.Add,
       activeSlide: ActiveSlide.JourneyFlow,
       activeContent: ActiveContent.Canvas,
-      activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
-    };
+      activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
+    }
     const mockJourney: JourneyFields = {
-      id: "journeyId",
-      title: "Some Title",
-      slug: "journeySlug",
-    } as unknown as JourneyFields;
-    const mockCloseMenu = jest.fn();
+      id: 'journeyId',
+      title: 'Some Title',
+      slug: 'journeySlug'
+    } as unknown as JourneyFields
+    const mockCloseMenu = jest.fn()
 
     render(
       <MockedProvider>
@@ -45,15 +45,15 @@ describe("StrategyItem", () => {
           </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
-    );
+    )
 
-    expect(screen.getByText("activeContent: canvas")).toBeInTheDocument();
-    expect(screen.getByText("activeSlide: 0")).toBeInTheDocument();
+    expect(screen.getByText('activeContent: canvas')).toBeInTheDocument()
+    expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
 
-    fireEvent.click(screen.getByRole("button"));
+    fireEvent.click(screen.getByRole('button'))
 
-    expect(screen.getByText("activeContent: goals")).toBeInTheDocument();
-    expect(screen.getByText("activeSlide: 1")).toBeInTheDocument();
-    expect(mockCloseMenu).toHaveBeenCalled();
-  });
-});
+    expect(screen.getByText('activeContent: goals')).toBeInTheDocument()
+    expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
+    expect(mockCloseMenu).toHaveBeenCalled()
+  })
+})

@@ -1,36 +1,36 @@
-import fscreen from "fscreen";
-import { useRouter } from "next/router";
-import { usePlausible } from "next-plausible";
-import { ReactElement, useEffect, useState } from "react";
-import Player from "video.js/dist/types/player";
+import fscreen from 'fscreen'
+import { usePlausible } from 'next-plausible'
+import { useRouter } from 'next/router'
+import { ReactElement, useEffect, useState } from 'react'
+import Player from 'video.js/dist/types/player'
 
-import { isIPhone } from "@core/shared/ui/deviceUtils";
+import { isIPhone } from '@core/shared/ui/deviceUtils'
 
-import { handleAction } from "../../libs/action";
-import type { TreeBlock } from "../../libs/block";
-import { useJourney } from "../../libs/JourneyProvider";
-import { JourneyPlausibleEvents, keyify } from "../../libs/plausibleHelpers";
+import { useJourney } from '../../libs/JourneyProvider'
+import { handleAction } from '../../libs/action'
+import type { TreeBlock } from '../../libs/block'
+import { JourneyPlausibleEvents, keyify } from '../../libs/plausibleHelpers'
 
-import { VideoTriggerFields } from "./__generated__/VideoTriggerFields";
+import { VideoTriggerFields } from './__generated__/VideoTriggerFields'
 
 type VideoTriggerProps = (
   | TreeBlock<VideoTriggerFields>
-  | Pick<TreeBlock<VideoTriggerFields>, "triggerAction" | "triggerStart">
+  | Pick<TreeBlock<VideoTriggerFields>, 'triggerAction' | 'triggerStart'>
 ) & {
-  blockId: string;
-  player?: Player;
-};
+  blockId: string
+  player?: Player
+}
 
 export function VideoTrigger({
   blockId,
   player,
   triggerAction,
-  triggerStart,
+  triggerStart
 }: VideoTriggerProps): ReactElement {
-  const router = useRouter();
-  const { variant } = useJourney();
-  const [triggered, setTriggered] = useState(false);
-  const plausible = usePlausible<JourneyPlausibleEvents>();
+  const router = useRouter()
+  const { variant } = useJourney()
+  const [triggered, setTriggered] = useState(false)
+  const plausible = usePlausible<JourneyPlausibleEvents>()
 
   useEffect(() => {
     if (player != null && !triggered) {
@@ -39,63 +39,63 @@ export function VideoTrigger({
           (player.currentTime() ?? 0) >= triggerStart - 0.25 &&
           !(player.scrubbing() ?? false)
         ) {
-          setTriggered(true);
-          player.pause();
+          setTriggered(true)
+          player.pause()
 
-          if (variant === "embed" && !isIPhone()) {
-            handleAction(router, triggerAction);
-            const input = { blockId };
-            plausible("videoTrigger", {
+          if (variant === 'embed' && !isIPhone()) {
+            handleAction(router, triggerAction)
+            const input = { blockId }
+            plausible('videoTrigger', {
               props: {
                 ...input,
                 key: keyify({
                   stepId: input.blockId,
-                  event: "videoTrigger",
+                  event: 'videoTrigger',
                   blockId: input.blockId,
-                  target: triggerAction,
-                }),
-              },
-            });
-            return;
+                  target: triggerAction
+                })
+              }
+            })
+            return
           }
           if (player.isFullscreen() ?? false) {
             void player.exitFullscreen().then(() => {
-              handleAction(router, triggerAction);
-              const input = { blockId };
-              plausible("videoTrigger", {
+              handleAction(router, triggerAction)
+              const input = { blockId }
+              plausible('videoTrigger', {
                 props: {
                   ...input,
                   key: keyify({
                     stepId: input.blockId,
-                    event: "videoTrigger",
+                    event: 'videoTrigger',
                     blockId: input.blockId,
-                    target: triggerAction,
-                  }),
-                },
-              });
-            });
+                    target: triggerAction
+                  })
+                }
+              })
+            })
           } else {
             if (fscreen.fullscreenElement != null) {
-              void fscreen.exitFullscreen();
+              void fscreen.exitFullscreen()
             }
-            handleAction(router, triggerAction);
-            const input = { blockId };
-            plausible("videoTrigger", {
+            handleAction(router, triggerAction)
+            const input = { blockId }
+            plausible('videoTrigger', {
               props: {
                 ...input,
                 key: keyify({
                   stepId: input.blockId,
-                  event: "videoTrigger",
+                  event: 'videoTrigger',
                   blockId: input.blockId,
-                  target: triggerAction,
-                }),
-              },
-            });
+                  target: triggerAction
+                })
+              }
+            })
           }
         }
-      };
-      player.on("timeupdate", handleTimeUpdate);
-      return () => player.off("timeupdate", handleTimeUpdate);
+      }
+      player.on('timeupdate', handleTimeUpdate)
+      return () => player.off('timeupdate', handleTimeUpdate)
     }
   }, [
     player,
@@ -105,8 +105,8 @@ export function VideoTrigger({
     triggered,
     variant,
     blockId,
-    plausible,
-  ]);
+    plausible
+  ])
 
-  return <></>;
+  return <></>
 }

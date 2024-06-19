@@ -1,71 +1,71 @@
-import { useMutation } from "@apollo/client";
-import Box from "@mui/material/Box";
-import { useTranslation } from "next-i18next";
-import { usePlausible } from "next-plausible";
-import { ReactElement, ReactNode, useCallback } from "react";
-import TagManager from "react-gtm-module";
-import { SwipeEventData, useSwipeable } from "react-swipeable";
-import { v4 as uuidv4 } from "uuid";
+import { useMutation } from '@apollo/client'
+import Box from '@mui/material/Box'
+import { useTranslation } from 'next-i18next'
+import { usePlausible } from 'next-plausible'
+import { ReactElement, ReactNode, useCallback } from 'react'
+import TagManager from 'react-gtm-module'
+import { SwipeEventData, useSwipeable } from 'react-swipeable'
+import { v4 as uuidv4 } from 'uuid'
 
 import {
   STEP_NEXT_EVENT_CREATE,
-  STEP_PREVIOUS_EVENT_CREATE,
-} from "@core/journeys/ui/Card/Card";
-import { useJourney } from "@core/journeys/ui/JourneyProvider";
+  STEP_PREVIOUS_EVENT_CREATE
+} from '@core/journeys/ui/Card/Card'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { TreeBlock, useBlocks } from '@core/journeys/ui/block'
+import { getStepHeading } from '@core/journeys/ui/getStepHeading'
 import {
   JourneyPlausibleEvents,
-  keyify,
-} from "@core/journeys/ui/plausibleHelpers";
-import { TreeBlock, useBlocks } from "@core/journeys/ui/block";
-import { getStepHeading } from "@core/journeys/ui/getStepHeading";
+  keyify
+} from '@core/journeys/ui/plausibleHelpers'
 
-import {
-  StepNextEventCreateInput,
-  StepPreviousEventCreateInput,
-} from "../../../../__generated__/globalTypes";
-import { StepFields } from "../../../../__generated__/StepFields";
+import { StepFields } from '../../../../__generated__/StepFields'
 import {
   StepNextEventCreate,
-  StepNextEventCreateVariables,
-} from "../../../../__generated__/StepNextEventCreate";
+  StepNextEventCreateVariables
+} from '../../../../__generated__/StepNextEventCreate'
 import {
   StepPreviousEventCreate,
-  StepPreviousEventCreateVariables,
-} from "../../../../__generated__/StepPreviousEventCreate";
+  StepPreviousEventCreateVariables
+} from '../../../../__generated__/StepPreviousEventCreate'
+import {
+  StepNextEventCreateInput,
+  StepPreviousEventCreateInput
+} from '../../../../__generated__/globalTypes'
 
 interface SwipeNavigationProps {
-  activeBlock: TreeBlock<StepFields>;
-  rtl: boolean;
-  children: ReactNode;
+  activeBlock: TreeBlock<StepFields>
+  rtl: boolean
+  children: ReactNode
 }
 
 export function SwipeNavigation({
   activeBlock,
   rtl,
-  children,
+  children
 }: SwipeNavigationProps): ReactElement {
   const [stepNextEventCreate] = useMutation<
     StepNextEventCreate,
     StepNextEventCreateVariables
-  >(STEP_NEXT_EVENT_CREATE);
+  >(STEP_NEXT_EVENT_CREATE)
   const [stepPreviousEventCreate] = useMutation<
     StepPreviousEventCreate,
     StepPreviousEventCreateVariables
-  >(STEP_PREVIOUS_EVENT_CREATE);
-  const plausible = usePlausible<JourneyPlausibleEvents>();
-  const { variant, journey } = useJourney();
+  >(STEP_PREVIOUS_EVENT_CREATE)
+  const plausible = usePlausible<JourneyPlausibleEvents>()
+  const { variant, journey } = useJourney()
   const {
     getNextBlock,
     treeBlocks,
     blockHistory,
     nextActiveBlock,
-    previousActiveBlock,
-  } = useBlocks();
-  const { t } = useTranslation("apps-journeys");
+    previousActiveBlock
+  } = useBlocks()
+  const { t } = useTranslation('apps-journeys')
 
   const handleNavigation = useCallback(
-    (direction: "next" | "previous"): void => {
-      if (variant === "admin") return;
+    (direction: 'next' | 'previous'): void => {
+      if (variant === 'admin') return
 
       // should always be called with nextActiveBlock()
       // should match with other handleNextNavigationEventCreate functions
@@ -74,60 +74,60 @@ export function SwipeNavigation({
       // journeys/src/components/Conductor/NavigationButton/NavigationButton.tsx
       // journeys/src/components/Conductor/SwipeNavigation/SwipeNavigation.tsx
       function handleNextNavigationEventCreate(): void {
-        const id = uuidv4();
+        const id = uuidv4()
         const stepName = getStepHeading(
           activeBlock.id,
           activeBlock.children,
           treeBlocks,
           t
-        );
-        const targetBlock = getNextBlock({ id: undefined, activeBlock });
+        )
+        const targetBlock = getNextBlock({ id: undefined, activeBlock })
 
-        if (targetBlock == null) return;
+        if (targetBlock == null) return
 
         const targetStepName = getStepHeading(
           targetBlock.id,
           targetBlock.children,
           treeBlocks,
           t
-        );
+        )
 
         const input: StepNextEventCreateInput = {
           id,
           blockId: activeBlock.id,
           label: stepName,
           value: targetStepName,
-          nextStepId: targetBlock.id,
-        };
+          nextStepId: targetBlock.id
+        }
         void stepNextEventCreate({
           variables: {
-            input,
-          },
-        });
+            input
+          }
+        })
 
         if (journey != null)
-          plausible("navigateNextStep", {
+          plausible('navigateNextStep', {
             props: {
               ...input,
               key: keyify({
                 stepId: input.blockId,
-                event: "navigateNextStep",
+                event: 'navigateNextStep',
                 blockId: input.blockId,
-                target: input.nextStepId,
-              }),
-            },
-          });
+                target: input.nextStepId
+              })
+            }
+          })
 
         TagManager.dataLayer({
           dataLayer: {
-            event: "step_next",
+            event: 'step_next',
             eventId: id,
             blockId: activeBlock.id,
             stepName,
             targetStepId: targetBlock.id,
-            targetStepName,
-          },
-        });
+            targetStepName
+          }
+        })
       }
       // should always be called with previousActiveBlock()
       // should match with other handlePreviousNavigationEventCreate functions
@@ -136,69 +136,69 @@ export function SwipeNavigation({
       // journeys/src/components/Conductor/NavigationButton/NavigationButton.tsx
       // journeys/src/components/Conductor/SwipeNavigation/SwipeNavigation.tsx
       function handlePreviousNavigationEventCreate(): void {
-        const id = uuidv4();
+        const id = uuidv4()
         const stepName = getStepHeading(
           activeBlock.id,
           activeBlock.children,
           treeBlocks,
           t
-        );
+        )
         const targetBlock = blockHistory[
           blockHistory.length - 2
-        ] as TreeBlock<StepFields>;
-        if (targetBlock == null) return;
+        ] as TreeBlock<StepFields>
+        if (targetBlock == null) return
         const targetStepName = getStepHeading(
           targetBlock.id,
           targetBlock.children,
           treeBlocks,
           t
-        );
+        )
         const input: StepPreviousEventCreateInput = {
           id,
           blockId: activeBlock.id,
           label: stepName,
           value: targetStepName,
-          previousStepId: targetBlock?.id,
-        };
+          previousStepId: targetBlock?.id
+        }
         void stepPreviousEventCreate({
           variables: {
-            input,
-          },
-        });
+            input
+          }
+        })
         if (journey != null)
-          plausible("navigatePreviousStep", {
+          plausible('navigatePreviousStep', {
             props: {
               ...input,
               key: keyify({
                 stepId: input.blockId,
-                event: "navigatePreviousStep",
+                event: 'navigatePreviousStep',
                 blockId: input.blockId,
-                target: input.previousStepId,
-              }),
-            },
-          });
+                target: input.previousStepId
+              })
+            }
+          })
         TagManager.dataLayer({
           dataLayer: {
-            event: "step_prev",
+            event: 'step_prev',
             eventId: id,
             blockId: activeBlock.id,
             stepName,
             targetStepId: targetBlock?.id,
-            targetStepName,
-          },
-        });
+            targetStepName
+          }
+        })
       }
 
       if (
-        direction === "next" &&
+        direction === 'next' &&
         activeBlock?.nextBlockId != null &&
         !activeBlock.locked
       ) {
-        handleNextNavigationEventCreate();
-        nextActiveBlock();
-      } else if (direction === "previous" && blockHistory.length > 1) {
-        handlePreviousNavigationEventCreate();
-        previousActiveBlock();
+        handleNextNavigationEventCreate()
+        nextActiveBlock()
+      } else if (direction === 'previous' && blockHistory.length > 1) {
+        handlePreviousNavigationEventCreate()
+        previousActiveBlock()
       }
     },
     [
@@ -213,52 +213,52 @@ export function SwipeNavigation({
       t,
       getNextBlock,
       plausible,
-      journey,
+      journey
     ]
-  );
+  )
 
   function isSliderElement(eventData: SwipeEventData): boolean {
-    const element = eventData.event.target as HTMLElement;
+    const element = eventData.event.target as HTMLElement
 
-    if (element.classList.contains("MuiSlider-root")) return true;
-    if (element.classList.contains("MuiSlider-rail")) return true;
-    if (element.classList.contains("MuiSlider-track")) return true;
-    if (element.classList.contains("MuiSlider-thumb")) return true;
+    if (element.classList.contains('MuiSlider-root')) return true
+    if (element.classList.contains('MuiSlider-rail')) return true
+    if (element.classList.contains('MuiSlider-track')) return true
+    if (element.classList.contains('MuiSlider-thumb')) return true
 
-    return false;
+    return false
   }
 
   const swipeHandlers = useSwipeable({
     onSwipedLeft: (eventData) => {
-      if (isSliderElement(eventData)) return;
+      if (isSliderElement(eventData)) return
       if (rtl) {
-        handleNavigation("previous");
+        handleNavigation('previous')
       } else {
-        handleNavigation("next");
+        handleNavigation('next')
       }
     },
     onSwipedRight: (eventData) => {
-      if (isSliderElement(eventData)) return;
+      if (isSliderElement(eventData)) return
       if (rtl) {
-        handleNavigation("next");
+        handleNavigation('next')
       } else {
-        handleNavigation("previous");
+        handleNavigation('previous')
       }
     },
-    preventScrollOnSwipe: true,
-  });
+    preventScrollOnSwipe: true
+  })
 
   return (
     <Box
       sx={{
-        height: "inherit",
-        maxHeight: "inherit",
-        overflow: "hidden",
-        position: "relative",
+        height: 'inherit',
+        maxHeight: 'inherit',
+        overflow: 'hidden',
+        position: 'relative'
       }}
       {...swipeHandlers}
     >
       {children}
     </Box>
-  );
+  )
 }

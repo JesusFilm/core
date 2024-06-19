@@ -1,37 +1,37 @@
-import { gql, useMutation } from "@apollo/client";
-import IconButton from "@mui/material/IconButton";
-import Stack from "@mui/material/Stack";
-import { useTheme } from "@mui/material/styles";
-import { usePlausible } from "next-plausible";
-import { ReactElement } from "react";
+import { gql, useMutation } from '@apollo/client'
+import IconButton from '@mui/material/IconButton'
+import Stack from '@mui/material/Stack'
+import { useTheme } from '@mui/material/styles'
+import { usePlausible } from 'next-plausible'
+import { ReactElement } from 'react'
 
-import Facebook from "@core/shared/ui/icons/Facebook";
-import Instagram from "@core/shared/ui/icons/Instagram";
-import Line from "@core/shared/ui/icons/Line";
-import MessageTyping from "@core/shared/ui/icons/MessageTyping";
-import Plus2 from "@core/shared/ui/icons/Plus2";
-import Skype from "@core/shared/ui/icons/Skype";
-import Snapchat from "@core/shared/ui/icons/Snapchat";
-import Telegram from "@core/shared/ui/icons/Telegram";
-import Tiktok from "@core/shared/ui/icons/Tiktok";
-import Viber from "@core/shared/ui/icons/Viber";
-import Vk from "@core/shared/ui/icons/Vk";
-import WhatsApp from "@core/shared/ui/icons/WhatsApp";
+import Facebook from '@core/shared/ui/icons/Facebook'
+import Instagram from '@core/shared/ui/icons/Instagram'
+import Line from '@core/shared/ui/icons/Line'
+import MessageTyping from '@core/shared/ui/icons/MessageTyping'
+import Plus2 from '@core/shared/ui/icons/Plus2'
+import Skype from '@core/shared/ui/icons/Skype'
+import Snapchat from '@core/shared/ui/icons/Snapchat'
+import Telegram from '@core/shared/ui/icons/Telegram'
+import Tiktok from '@core/shared/ui/icons/Tiktok'
+import Viber from '@core/shared/ui/icons/Viber'
+import Vk from '@core/shared/ui/icons/Vk'
+import WhatsApp from '@core/shared/ui/icons/WhatsApp'
 
 import {
   ChatOpenEventCreateInput,
-  MessagePlatform,
-} from "../../../../__generated__/globalTypes";
-import { useBlocks } from "../../../libs/block";
-import { useJourney } from "../../../libs/JourneyProvider";
-import { JourneyFields_chatButtons as ChatButton } from "../../../libs/JourneyProvider/__generated__/JourneyFields";
-import { JourneyPlausibleEvents, keyify } from "../../../libs/plausibleHelpers";
-import { getJourneyRTL } from "../../../libs/rtl";
+  MessagePlatform
+} from '../../../../__generated__/globalTypes'
+import { useJourney } from '../../../libs/JourneyProvider'
+import { JourneyFields_chatButtons as ChatButton } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
+import { useBlocks } from '../../../libs/block'
+import { JourneyPlausibleEvents, keyify } from '../../../libs/plausibleHelpers'
+import { getJourneyRTL } from '../../../libs/rtl'
 
 import {
   ChatButtonEventCreate,
-  ChatButtonEventCreateVariables,
-} from "./__generated__/ChatButtonEventCreate";
+  ChatButtonEventCreateVariables
+} from './__generated__/ChatButtonEventCreate'
 
 export const CHAT_BUTTON_EVENT_CREATE = gql`
   mutation ChatButtonEventCreate($input: ChatOpenEventCreateInput!) {
@@ -39,69 +39,69 @@ export const CHAT_BUTTON_EVENT_CREATE = gql`
       id
     }
   }
-`;
+`
 
 interface ChatIconProps {
-  platform: MessagePlatform;
-  index: number;
+  platform: MessagePlatform
+  index: number
 }
 
 export function ChatButtons(): ReactElement {
-  const plausible = usePlausible<JourneyPlausibleEvents>();
-  const { variant, journey } = useJourney();
-  const { blockHistory } = useBlocks();
-  const activeBlock = blockHistory[blockHistory.length - 1];
-  const theme = useTheme();
-  const { rtl } = getJourneyRTL(journey);
-  const chatButtons = journey?.chatButtons;
+  const plausible = usePlausible<JourneyPlausibleEvents>()
+  const { variant, journey } = useJourney()
+  const { blockHistory } = useBlocks()
+  const activeBlock = blockHistory[blockHistory.length - 1]
+  const theme = useTheme()
+  const { rtl } = getJourneyRTL(journey)
+  const chatButtons = journey?.chatButtons
 
   const [chatButtonEventCreate] = useMutation<
     ChatButtonEventCreate,
     ChatButtonEventCreateVariables
-  >(CHAT_BUTTON_EVENT_CREATE);
+  >(CHAT_BUTTON_EVENT_CREATE)
 
   const getColor = (
     primary: boolean,
-    type: "main" | "background" = "main"
+    type: 'main' | 'background' = 'main'
   ): string | undefined => {
-    if (type === "background") {
-      return primary ? theme.palette.grey[100] : "#dedfe026";
+    if (type === 'background') {
+      return primary ? theme.palette.grey[100] : '#dedfe026'
     }
-    if (type === "main") {
-      return primary ? theme.palette.grey[900] : theme.palette.grey[100];
+    if (type === 'main') {
+      return primary ? theme.palette.grey[900] : theme.palette.grey[100]
     }
-  };
+  }
 
   const handleClick = (chatButton: ChatButton): void => {
     if (
-      (variant === "default" || variant === "embed") &&
+      (variant === 'default' || variant === 'embed') &&
       chatButton.link != null
     ) {
-      window.open(chatButton.link, "_blank");
+      window.open(chatButton.link, '_blank')
       const input: ChatOpenEventCreateInput = {
         id: chatButton?.id,
         blockId: activeBlock?.id,
         stepId: activeBlock?.id,
-        value: chatButton?.platform,
-      };
+        value: chatButton?.platform
+      }
       void chatButtonEventCreate({
         variables: {
-          input,
-        },
-      });
+          input
+        }
+      })
       if (journey != null)
-        plausible("footerChatButtonClick", {
+        plausible('footerChatButtonClick', {
           props: {
             ...input,
             key: keyify({
-              stepId: input.stepId ?? "",
-              event: "footerChatButtonClick",
-              blockId: input.blockId,
-            }),
-          },
-        });
+              stepId: input.stepId ?? '',
+              event: 'footerChatButtonClick',
+              blockId: input.blockId
+            })
+          }
+        })
     }
-  };
+  }
 
   const ChatIcon = ({ platform, index }: ChatIconProps): ReactElement => {
     const platformComponents = {
@@ -115,17 +115,17 @@ export function ChatButtons(): ReactElement {
       skype: Skype,
       line: Line,
       tikTok: Tiktok,
-      custom: MessageTyping,
-    };
+      custom: MessageTyping
+    }
 
-    const IconComponent = platformComponents[platform];
-    return <IconComponent sx={{ color: getColor(index === 0, "main") }} />;
-  };
+    const IconComponent = platformComponents[platform]
+    return <IconComponent sx={{ color: getColor(index === 0, 'main') }} />
+  }
 
   return (
     <Stack
       data-testid="StepFooterChatButtons"
-      direction={rtl ? "row" : "row-reverse"}
+      direction={rtl ? 'row' : 'row-reverse'}
       gap={2}
     >
       {chatButtons?.map((chatButton, index) => (
@@ -135,10 +135,10 @@ export function ChatButtons(): ReactElement {
           sx={{
             height: 44,
             width: 44,
-            backgroundColor: getColor(index === 0, "background"),
-            "&:hover": {
-              backgroundColor: getColor(index === 0, "background"),
-            },
+            backgroundColor: getColor(index === 0, 'background'),
+            '&:hover': {
+              backgroundColor: getColor(index === 0, 'background')
+            }
           }}
         >
           <ChatIcon
@@ -147,22 +147,22 @@ export function ChatButtons(): ReactElement {
           />
         </IconButton>
       ))}
-      {variant === "admin" && chatButtons?.length === 0 && (
+      {variant === 'admin' && chatButtons?.length === 0 && (
         <IconButton
           key="default"
           disabled
           sx={{
             height: 44,
             width: 44,
-            outline: "none",
-            border: "3px dashed ",
+            outline: 'none',
+            border: '3px dashed ',
             opacity: 0.5,
-            borderColor: (theme) => theme.palette.grey[700],
+            borderColor: (theme) => theme.palette.grey[700]
           }}
         >
           <Plus2 sx={{ color: (theme) => theme.palette.grey[700] }} />
         </IconButton>
       )}
     </Stack>
-  );
+  )
 }

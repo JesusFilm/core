@@ -1,32 +1,32 @@
-import Stack from "@mui/material/Stack";
-import { alpha } from "@mui/material/styles";
-import { ReactElement } from "react";
-import { NodeProps } from "reactflow";
+import Stack from '@mui/material/Stack'
+import { alpha } from '@mui/material/styles'
+import { ReactElement } from 'react'
+import { NodeProps } from 'reactflow'
 
-import { ActiveContent, useEditor } from "@core/journeys/ui/EditorProvider";
-import { filterActionBlocks } from "@core/journeys/ui/filterActionBlocks";
+import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
+import { filterActionBlocks } from '@core/journeys/ui/filterActionBlocks'
 
-import { BaseNode } from "../BaseNode";
+import { BaseNode } from '../BaseNode'
 
-import { ActionButton } from "./ActionButton";
-import { StepBlockNodeCard } from "./StepBlockNodeCard";
-import { StepBlockNodeMenu } from "./StepBlockNodeMenu";
-import { STEP_NODE_WIDTH } from "./libs/sizes";
+import { ActionButton } from './ActionButton'
+import { StepBlockNodeCard } from './StepBlockNodeCard'
+import { StepBlockNodeMenu } from './StepBlockNodeMenu'
+import { STEP_NODE_WIDTH } from './libs/sizes'
 
 export function StepBlockNode({
   id,
   xPos,
   yPos,
-  dragging,
+  dragging
 }: NodeProps): ReactElement {
   const {
-    state: { steps, selectedStep, activeContent },
-  } = useEditor();
-  const step = steps?.find((step) => step.id === id);
-  const actionBlocks = filterActionBlocks(step);
+    state: { steps, selectedStep, activeContent }
+  } = useEditor()
+  const step = steps?.find((step) => step.id === id)
+  const actionBlocks = filterActionBlocks(step)
 
   const isSelected =
-    activeContent === ActiveContent.Canvas && selectedStep?.id === step?.id;
+    activeContent === ActiveContent.Canvas && selectedStep?.id === step?.id
 
   return step != null ? (
     <>
@@ -50,7 +50,7 @@ export function StepBlockNode({
             `2px solid ${alpha(theme.palette.secondary.dark, 0.1)}`,
           borderRadius: 3,
           maxWidth: STEP_NODE_WIDTH,
-          transition: (theme) => theme.transitions.create("background"),
+          transition: (theme) => theme.transitions.create('background')
         }}
       >
         <BaseNode
@@ -76,5 +76,5 @@ export function StepBlockNode({
     </>
   ) : (
     <></>
-  );
+  )
 }
