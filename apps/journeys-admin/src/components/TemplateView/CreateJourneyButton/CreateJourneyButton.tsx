@@ -20,7 +20,7 @@ const DynamicCopyToTeamDialog = dynamic(
   async () =>
     await import(
       /* webpackChunkName: "CopyToTeamDialog" */
-      '../../Team/CopyToTeamDialog'
+      '@core/journeys/ui/CopyToTeamDialog'
     ).then((mod) => mod.CopyToTeamDialog)
 )
 
