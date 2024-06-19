@@ -37,7 +37,6 @@ export function StepBlockNode({
         xPos={xPos}
         yPos={yPos}
       />
-
       <Stack
         data-testid={`StepBlockNode-${step.id}`}
         direction="column"
