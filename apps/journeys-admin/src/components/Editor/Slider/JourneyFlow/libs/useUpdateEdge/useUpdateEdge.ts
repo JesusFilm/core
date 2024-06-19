@@ -1,8 +1,8 @@
 import { Edge } from 'reactflow'
 
-import { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { TreeBlock } from '@core/journeys/ui/block'
 import { searchBlocks } from '@core/journeys/ui/searchBlocks'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'

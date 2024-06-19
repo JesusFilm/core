@@ -6,8 +6,8 @@ import Stack from '@mui/material/Stack'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { TreeBlock } from '@core/journeys/ui/block'
 import Grid1Icon from '@core/shared/ui/icons/Grid1'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 
