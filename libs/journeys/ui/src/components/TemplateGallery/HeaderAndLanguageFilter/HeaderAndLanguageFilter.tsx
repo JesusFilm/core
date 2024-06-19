@@ -15,8 +15,8 @@ import {
   useState
 } from 'react'
 
-import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import { LanguageOption } from '@core/shared/ui/MultipleLanguageAutocomplete'
+import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 import { setBeaconPageViewed } from '../../../libs/setBeaconPageViewed'
 import { useLanguagesQuery } from '../../../libs/useLanguagesQuery'
