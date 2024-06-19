@@ -52,6 +52,7 @@ model Video {
   children          Video[]              @relation("ParentChild")
   parent            Video[]              @relation("ParentChild")
   variants          VideoVariant[]
+  bibleCitation     BibleCitation[]
 
   @@index(label)
   @@index(childIds)
@@ -198,4 +199,48 @@ model VideoStudyQuestion {
 model ImportTimes {
   modelName  String   @id
   lastImport DateTime
+}
+
+enum BibleCitationType {
+  keyword
+  citation
+}
+
+model BibleCitation {
+  id                 String            @id @default(uuid())
+  type               BibleCitationType
+  bibleBookId        String
+  chapStart          Int
+  chapEnd            Int?
+  verseStart         Int
+  verseEnd           Int?
+  verseGroupParentId Int
+  videoId            String
+  video              Video             @relation(fields: [videoId], references: [id])
+  bibleBook          BibleBook         @relation(fields: [bibleBookId], references: [id])
+}
+
+model BibleBook {
+  id                   String          @id @default(uuid())
+  osisId               String
+  name                 BibleBookName[]
+  alternateNames       String
+  paratextAbbreviation String
+  isNewTestament       Boolean
+  orderNumber          Int
+  bibleCitation        BibleCitation[]
+}
+
+model BibleBookName {
+  id          String    @id @default(uuid())
+  value       String
+  languageId  String
+  primary     Boolean
+  bibleBookId String
+  bibleBook   BibleBook @relation(fields: [bibleBookId], references: [id])
+
+  @@unique([bibleBookId, languageId])
+  @@index(value(type: Hash))
+  @@index(primary(type: Hash))
+  @@index(languageId(type: Hash))
 }

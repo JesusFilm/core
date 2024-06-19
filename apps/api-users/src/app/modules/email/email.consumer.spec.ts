@@ -1,5 +1,5 @@
-import { Test, TestingModule } from '@nestjs/testing'
 import { MailerService } from '@nestjs-modules/mailer'
+import { Test, TestingModule } from '@nestjs/testing'
 import { Job } from 'bullmq'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
