@@ -5,7 +5,6 @@ import { useTranslation } from "next-i18next";
 import { ReactElement } from "react";
 
 import { TreeBlock } from "@core/journeys/ui/block";
-import { useEditor } from "@core/journeys/ui/EditorProvider";
 
 import { BlockFields as Block } from "../../../../../../../../__generated__/BlockFields";
 import { useUpdateEdge } from "../../../libs/useUpdateEdge";
@@ -28,9 +27,6 @@ export function ActionButton({
   selected = false,
 }: ActionButtonProps): ReactElement {
   const { t } = useTranslation("apps-journeys-admin");
-  const {
-    state: { showJourneyFlowAnalytics },
-  } = useEditor();
   const updateEdge = useUpdateEdge();
 
   function getTitle(block, defaultTitle): string {
@@ -74,7 +70,7 @@ export function ActionButton({
   return (
     <BaseNode
       id={block.id}
-      sourceHandle={showJourneyFlowAnalytics ? "disabled" : "show"}
+      sourceHandle="show"
       onSourceConnect={updateEdge}
       selected={selected}
       isSourceConnected={isSourceConnected}

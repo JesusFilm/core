@@ -34,8 +34,6 @@ import {
   StepPreviousEventCreate,
   StepPreviousEventCreateVariables,
 } from "./__generated__/StepPreviousEventCreate";
-import { ContainedCover } from "./ContainedCover";
-import { ExpandedCover } from "./ExpandedCover";
 
 export const STEP_NEXT_EVENT_CREATE = gql`
   mutation StepNextEventCreate($input: StepNextEventCreateInput!) {

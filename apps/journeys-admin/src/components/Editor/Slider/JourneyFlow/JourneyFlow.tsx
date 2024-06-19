@@ -39,7 +39,6 @@ import {
 } from "../../../../../__generated__/GetStepBlocksWithPosition";
 import { useStepBlockPositionUpdateMutation } from "../../../../libs/useStepBlockPositionUpdateMutation";
 
-import { AnalyticsOverlaySwitch } from "./AnalyticsOverlaySwitch";
 import { NewStepButton } from "./NewStepButton";
 import { CustomEdge } from "./edges/CustomEdge";
 import { StartEdge } from "./edges/StartEdge";
@@ -77,7 +76,7 @@ export function JourneyFlow(): ReactElement {
   const { journey } = useJourney();
   const theme = useTheme();
   const {
-    state: { steps, activeSlide, showJourneyFlowAnalytics },
+    state: { steps, activeSlide },
   } = useEditor();
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance | null>(null);
@@ -301,12 +300,10 @@ export function JourneyFlow(): ReactElement {
         onConnectEnd={onConnectEnd}
         onConnectStart={onConnectStart}
         onNodeDragStop={onNodeDragStop}
-        onEdgeUpdate={showJourneyFlowAnalytics ? undefined : onEdgeUpdate}
+        onEdgeUpdate={onEdgeUpdate}
         onEdgeUpdateStart={onEdgeUpdateStart}
         onEdgeUpdateEnd={onEdgeUpdateEnd}
-        onSelectionChange={
-          showJourneyFlowAnalytics ? undefined : onSelectionChange
-        }
+        onSelectionChange={onSelectionChange}
         fitView
         fitViewOptions={{ nodes: [nodes[0]], minZoom: 1, maxZoom: 0.7 }}
         nodeTypes={nodeTypes}
@@ -324,9 +321,6 @@ export function JourneyFlow(): ReactElement {
           <>
             <Panel position="top-right">
               <NewStepButton />
-            </Panel>
-            <Panel position="top-left">
-              <AnalyticsOverlaySwitch />
             </Panel>
             <Controls showInteractive={false}>
               <ControlButton onClick={blockPositionsUpdate}>

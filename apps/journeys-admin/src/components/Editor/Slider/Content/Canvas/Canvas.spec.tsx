@@ -1,7 +1,7 @@
-import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { SnackbarProvider } from 'notistack'
+import { MockedProvider } from "@apollo/client/testing";
+import { fireEvent, render, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { SnackbarProvider } from "notistack";
 
 import {
   ActiveCanvasDetailsDrawer,
@@ -9,56 +9,56 @@ import {
   ActiveFab,
   ActiveSlide,
   EditorProvider,
-  EditorState
-} from '@core/journeys/ui/EditorProvider'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
+  EditorState,
+} from "@core/journeys/ui/EditorProvider";
+import { JourneyProvider } from "@core/journeys/ui/JourneyProvider";
+import type { TreeBlock } from "@core/journeys/ui/block";
 
-import { BlockFields_StepBlock as StepBlock } from '../../../../../../__generated__/BlockFields'
-import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
+import { BlockFields_StepBlock as StepBlock } from "../../../../../../__generated__/BlockFields";
+import { GetJourney_journey as Journey } from "../../../../../../__generated__/GetJourney";
 import {
   ThemeMode,
   ThemeName,
   TypographyAlign,
   TypographyColor,
-  TypographyVariant
-} from '../../../../../../__generated__/globalTypes'
-import { TestEditorState } from '../../../../../libs/TestEditorState'
-import { ThemeProvider } from '../../../../ThemeProvider'
+  TypographyVariant,
+} from "../../../../../../__generated__/globalTypes";
+import { TestEditorState } from "../../../../../libs/TestEditorState";
+import { ThemeProvider } from "../../../../ThemeProvider";
 
-import { Canvas } from '.'
+import { Canvas } from ".";
 
-describe('Canvas', () => {
+describe("Canvas", () => {
   const step0: TreeBlock<StepBlock> = {
-    id: 'step0.id',
-    __typename: 'StepBlock',
+    id: "step0.id",
+    __typename: "StepBlock",
     parentBlockId: null,
     parentOrder: 0,
     locked: false,
     nextBlockId: null,
     children: [
       {
-        __typename: 'TypographyBlock',
-        id: 'heading3',
-        parentBlockId: 'question',
+        __typename: "TypographyBlock",
+        id: "heading3",
+        parentBlockId: "question",
         parentOrder: 0,
-        content: 'Hello World!',
+        content: "Hello World!",
         variant: TypographyVariant.h3,
         color: TypographyColor.primary,
         align: TypographyAlign.left,
-        children: []
-      }
-    ]
-  }
+        children: [],
+      },
+    ],
+  };
   const step1: TreeBlock<StepBlock> = {
-    id: 'step1.id',
-    __typename: 'StepBlock',
+    id: "step1.id",
+    __typename: "StepBlock",
     parentBlockId: null,
     parentOrder: 1,
     locked: false,
     nextBlockId: null,
-    children: []
-  }
+    children: [],
+  };
   const initialState: EditorState = {
     steps: [step0, step1],
     selectedStep: step0,
@@ -67,10 +67,9 @@ describe('Canvas', () => {
     activeSlide: ActiveSlide.JourneyFlow,
     activeContent: ActiveContent.Canvas,
     activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
-    showJourneyFlowAnalytics: false
-  }
+  };
 
-  it('should show border around selected step', () => {
+  it("should show border around selected step", () => {
     const { getByTestId } = render(
       <MockedProvider>
         <SnackbarProvider>
@@ -78,17 +77,17 @@ describe('Canvas', () => {
             <JourneyProvider
               value={{
                 journey: {
-                  id: 'journeyId',
+                  id: "journeyId",
                   themeMode: ThemeMode.dark,
                   themeName: ThemeName.base,
                   language: {
-                    __typename: 'Language',
-                    id: '529',
-                    bcp47: 'en',
-                    iso3: 'eng'
-                  }
+                    __typename: "Language",
+                    id: "529",
+                    bcp47: "en",
+                    iso3: "eng",
+                  },
                 } as unknown as Journey,
-                variant: 'admin'
+                variant: "admin",
               }}
             >
               <EditorProvider initialState={initialState}>
@@ -98,14 +97,14 @@ describe('Canvas', () => {
           </ThemeProvider>
         </SnackbarProvider>
       </MockedProvider>
-    )
+    );
 
-    expect(getByTestId('CanvasContainer')).toHaveStyle({
-      border: '2px solid #C52D3A'
-    })
-  })
+    expect(getByTestId("CanvasContainer")).toHaveStyle({
+      border: "2px solid #C52D3A",
+    });
+  });
 
-  it('should select step on click', () => {
+  it("should select step on click", () => {
     const { getByTestId, getByText } = render(
       <MockedProvider>
         <SnackbarProvider>
@@ -113,17 +112,17 @@ describe('Canvas', () => {
             <JourneyProvider
               value={{
                 journey: {
-                  id: 'journeyId',
+                  id: "journeyId",
                   themeMode: ThemeMode.dark,
                   themeName: ThemeName.base,
                   language: {
-                    __typename: 'Language',
-                    id: '529',
-                    bcp47: 'en',
-                    iso3: 'eng'
-                  }
+                    __typename: "Language",
+                    id: "529",
+                    bcp47: "en",
+                    iso3: "eng",
+                  },
                 } as unknown as Journey,
-                variant: 'admin'
+                variant: "admin",
               }}
             >
               <EditorProvider initialState={initialState}>
@@ -134,16 +133,16 @@ describe('Canvas', () => {
           </ThemeProvider>
         </SnackbarProvider>
       </MockedProvider>
-    )
-    fireEvent.click(getByTestId('CanvasContainer'))
-    expect(getByText('selectedBlock: step0.id')).toBeInTheDocument()
-    expect(getByText(`activeFab: Add`)).toBeInTheDocument()
+    );
+    fireEvent.click(getByTestId("CanvasContainer"));
+    expect(getByText("selectedBlock: step0.id")).toBeInTheDocument();
+    expect(getByText(`activeFab: Add`)).toBeInTheDocument();
     expect(
-      getByText('selectedAttributeId: step0.id-next-block')
-    ).toBeInTheDocument()
-  })
+      getByText("selectedAttributeId: step0.id-next-block")
+    ).toBeInTheDocument();
+  });
 
-  it('should not select step if mouse down target element is not the card', async () => {
+  it("should not select step if mouse down target element is not the card", async () => {
     const { queryByText, baseElement } = render(
       <MockedProvider>
         <SnackbarProvider>
@@ -151,17 +150,17 @@ describe('Canvas', () => {
             <JourneyProvider
               value={{
                 journey: {
-                  id: 'journeyId',
+                  id: "journeyId",
                   themeMode: ThemeMode.dark,
                   themeName: ThemeName.base,
                   language: {
-                    __typename: 'Language',
-                    id: '529',
-                    bcp47: 'en',
-                    iso3: 'eng'
-                  }
+                    __typename: "Language",
+                    id: "529",
+                    bcp47: "en",
+                    iso3: "eng",
+                  },
                 } as unknown as Journey,
-                variant: 'admin'
+                variant: "admin",
               }}
             >
               <EditorProvider initialState={initialState}>
@@ -172,45 +171,45 @@ describe('Canvas', () => {
           </ThemeProvider>
         </SnackbarProvider>
       </MockedProvider>
-    )
+    );
 
-    const iframe = baseElement.getElementsByTagName('iframe')[0]
-    let typogBlock
+    const iframe = baseElement.getElementsByTagName("iframe")[0];
+    let typogBlock;
     await waitFor(() => {
-      typogBlock = iframe.contentDocument?.body.getElementsByTagName('h3')[0]
-    })
+      typogBlock = iframe.contentDocument?.body.getElementsByTagName("h3")[0];
+    });
     await userEvent.pointer([
       // mouse down the screen at typography block
-      { keys: '[MouseLeft>]', target: typogBlock },
+      { keys: "[MouseLeft>]", target: typogBlock },
       // move the pointer onto the card component
-      { pointerName: 'mouse', target: iframe },
+      { pointerName: "mouse", target: iframe },
       // release the pointer at card component
-      { keys: '[/MouseLeft]' }
-    ])
+      { keys: "[/MouseLeft]" },
+    ]);
     expect(
-      queryByText('selectedAttributeId: step0.id-next-block')
-    ).not.toBeInTheDocument()
-  })
+      queryByText("selectedAttributeId: step0.id-next-block")
+    ).not.toBeInTheDocument();
+  });
 
   // TODO: Add to E2E tests when complete. Can't test in unit test as iframe doesn't render
-  it.skip('should selected footer on click', () => {
+  it.skip("should selected footer on click", () => {
     const { getByTestId, getByText } = render(
       <MockedProvider>
         <ThemeProvider>
           <JourneyProvider
             value={{
               journey: {
-                id: 'journeyId',
+                id: "journeyId",
                 themeMode: ThemeMode.dark,
                 themeName: ThemeName.base,
                 language: {
-                  __typename: 'Language',
-                  id: '529',
-                  bcp47: 'en',
-                  iso3: 'eng'
-                }
+                  __typename: "Language",
+                  id: "529",
+                  bcp47: "en",
+                  iso3: "eng",
+                },
               } as unknown as Journey,
-              variant: 'admin'
+              variant: "admin",
             }}
           >
             <EditorProvider initialState={initialState}>
@@ -220,24 +219,24 @@ describe('Canvas', () => {
           </JourneyProvider>
         </ThemeProvider>
       </MockedProvider>
-    )
-    expect(getByTestId('stepFooter')).toHaveStyle({
-      outline: 'none'
-    })
-    fireEvent.click(getByTestId('stepFooter'))
-    expect(getByText('selectedBlock: step0.id')).toBeInTheDocument()
-    expect(getByText('activeFab: Add')).toBeInTheDocument()
-    expect(getByText('selectedAttributeId: hosted-by')).toBeInTheDocument()
+    );
+    expect(getByTestId("stepFooter")).toHaveStyle({
+      outline: "none",
+    });
+    fireEvent.click(getByTestId("stepFooter"));
+    expect(getByText("selectedBlock: step0.id")).toBeInTheDocument();
+    expect(getByText("activeFab: Add")).toBeInTheDocument();
+    expect(getByText("selectedAttributeId: hosted-by")).toBeInTheDocument();
     expect(
       getByText(
         `activeCanvasDetailsDrawerAction: ${ActiveCanvasDetailsDrawer.Footer}`
       )
-    ).toBeInTheDocument()
-    expect(getByTestId('stepFooter')).toHaveStyle({
-      outline: '2px solid #C52D3A'
-    })
-    expect(getByTestId('step-step0.id')).toHaveStyle({
-      outline: '0px solid'
-    })
-  })
-})
+    ).toBeInTheDocument();
+    expect(getByTestId("stepFooter")).toHaveStyle({
+      outline: "2px solid #C52D3A",
+    });
+    expect(getByTestId("step-step0.id")).toHaveStyle({
+      outline: "0px solid",
+    });
+  });
+});

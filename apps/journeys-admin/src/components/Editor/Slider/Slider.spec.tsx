@@ -1,7 +1,7 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import useMediaQuery from '@mui/material/useMediaQuery'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { SnackbarProvider } from 'notistack'
+import { MockedProvider, MockedResponse } from "@apollo/client/testing";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { SnackbarProvider } from "notistack";
 
 import {
   ActiveCanvasDetailsDrawer,
@@ -9,51 +9,51 @@ import {
   ActiveFab,
   ActiveSlide,
   EditorProvider,
-  EditorState
-} from '@core/journeys/ui/EditorProvider'
-import { TreeBlock } from '@core/journeys/ui/block'
+  EditorState,
+} from "@core/journeys/ui/EditorProvider";
+import { TreeBlock } from "@core/journeys/ui/block";
 
-import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourney'
+import { GetJourney_journey_blocks_StepBlock as StepBlock } from "../../../../__generated__/GetJourney";
 import {
   UpdateJourneyFlowBackButtonClicked,
-  UpdateJourneyFlowBackButtonClickedVariables
-} from '../../../../__generated__/UpdateJourneyFlowBackButtonClicked'
-import { getJourneyFlowBackButtonClicked } from '../../../../__generated__/getJourneyFlowBackButtonClicked'
-import { ThemeMode, ThemeName } from '../../../../__generated__/globalTypes'
-import { mockReactFlow } from '../../../../test/mockReactFlow'
-import { TestEditorState } from '../../../libs/TestEditorState'
+  UpdateJourneyFlowBackButtonClickedVariables,
+} from "../../../../__generated__/UpdateJourneyFlowBackButtonClicked";
+import { getJourneyFlowBackButtonClicked } from "../../../../__generated__/getJourneyFlowBackButtonClicked";
+import { ThemeMode, ThemeName } from "../../../../__generated__/globalTypes";
+import { mockReactFlow } from "../../../../test/mockReactFlow";
+import { TestEditorState } from "../../../libs/TestEditorState";
 
 import {
   GET_JOURNEY_FLOW_BACK_BUTTON_CLICKED,
-  UPDATE_JOURNEY_FLOW_BACK_BUTTON_CLICKED
-} from './Slider'
+  UPDATE_JOURNEY_FLOW_BACK_BUTTON_CLICKED,
+} from "./Slider";
 
-import { Slider } from '.'
+import { Slider } from ".";
 
-jest.mock('@mui/material/useMediaQuery', () => ({
+jest.mock("@mui/material/useMediaQuery", () => ({
   __esModule: true,
-  default: jest.fn(() => false)
-}))
+  default: jest.fn(() => false),
+}));
 
 const mockUseMediaQuery = useMediaQuery as jest.MockedFunction<
   typeof useMediaQuery
->
+>;
 
-describe('Slider', () => {
-  let state: EditorState
+describe("Slider", () => {
+  let state: EditorState;
   const selectedStep = {
-    __typename: 'StepBlock',
-    id: 'step1.id',
+    __typename: "StepBlock",
+    id: "step1.id",
     children: [
       {
-        __typename: 'CardBlock',
-        id: 'card1.id',
+        __typename: "CardBlock",
+        id: "card1.id",
         themeName: ThemeName.base,
         themeMode: ThemeMode.light,
-        children: []
-      }
-    ]
-  } as unknown as TreeBlock<StepBlock>
+        children: [],
+      },
+    ],
+  } as unknown as TreeBlock<StepBlock>;
 
   beforeEach(() => {
     state = {
@@ -62,32 +62,31 @@ describe('Slider', () => {
       activeContent: ActiveContent.Canvas,
       activeFab: ActiveFab.Add,
       activeSlide: ActiveSlide.JourneyFlow,
-      showJourneyFlowAnalytics: false
-    }
-    mockUseMediaQuery.mockImplementation(() => true)
-    mockReactFlow()
-  })
+    };
+    mockUseMediaQuery.mockImplementation(() => true);
+    mockReactFlow();
+  });
 
   afterEach(() => {
-    jest.clearAllMocks()
-  })
+    jest.clearAllMocks();
+  });
 
-  it('renders slides', () => {
+  it("renders slides", () => {
     render(
       <MockedProvider>
         <EditorProvider initialState={state}>
           <Slider />
         </EditorProvider>
       </MockedProvider>
-    )
+    );
 
-    expect(screen.getByTestId('Slider')).toBeInTheDocument()
-    expect(screen.getByTestId('JourneyFlow')).toBeInTheDocument()
-    expect(screen.getByTestId('Content')).toBeInTheDocument()
-    expect(screen.getByTestId('SettingsDrawer')).toBeInTheDocument()
-  })
+    expect(screen.getByTestId("Slider")).toBeInTheDocument();
+    expect(screen.getByTestId("JourneyFlow")).toBeInTheDocument();
+    expect(screen.getByTestId("Content")).toBeInTheDocument();
+    expect(screen.getByTestId("SettingsDrawer")).toBeInTheDocument();
+  });
 
-  it('dispatches SetActiveSlideAction on activeIndexChange', () => {
+  it("dispatches SetActiveSlideAction on activeIndexChange", () => {
     render(
       <MockedProvider>
         <SnackbarProvider>
@@ -97,18 +96,18 @@ describe('Slider', () => {
           </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
-    )
+    );
 
-    expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
-    fireEvent.click(screen.getByTestId('EditorCanvas'))
-    expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
-  })
+    expect(screen.getByText("activeSlide: 0")).toBeInTheDocument();
+    fireEvent.click(screen.getByTestId("EditorCanvas"));
+    expect(screen.getByText("activeSlide: 1")).toBeInTheDocument();
+  });
 
-  it('handles prev on back click', async () => {
+  it("handles prev on back click", async () => {
     const contentState = {
       ...state,
-      activeSlide: ActiveSlide.Content
-    }
+      activeSlide: ActiveSlide.Content,
+    };
 
     render(
       <MockedProvider>
@@ -117,43 +116,19 @@ describe('Slider', () => {
           <Slider />
         </EditorProvider>
       </MockedProvider>
-    )
+    );
 
-    expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
-    fireEvent.click(screen.getByTestId('ChevronLeftIcon'))
-    expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
-  })
+    expect(screen.getByText("activeSlide: 1")).toBeInTheDocument();
+    fireEvent.click(screen.getByTestId("ChevronLeftIcon"));
+    expect(screen.getByText("activeSlide: 0")).toBeInTheDocument();
+  });
 
-  it('handles prev on back click when goals with selected step', async () => {
-    const contentState = {
-      ...state,
-      activeContent: ActiveContent.Goals,
-      activeSlide: ActiveSlide.Content
-    }
-
-    render(
-      <MockedProvider>
-        <EditorProvider initialState={contentState}>
-          <TestEditorState />
-          <Slider />
-        </EditorProvider>
-      </MockedProvider>
-    )
-
-    expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
-    expect(screen.getByText('activeContent: goals')).toBeInTheDocument()
-    fireEvent.click(screen.getByTestId('ChevronLeftIcon'))
-    expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
-    expect(screen.getByText('activeContent: canvas')).toBeInTheDocument()
-  })
-
-  it('handles prev on back click when goals without selected step', async () => {
+  it("handles prev on back click when goals with selected step", async () => {
     const contentState = {
       ...state,
       activeContent: ActiveContent.Goals,
       activeSlide: ActiveSlide.Content,
-      steps: undefined
-    }
+    };
 
     render(
       <MockedProvider>
@@ -162,37 +137,61 @@ describe('Slider', () => {
           <Slider />
         </EditorProvider>
       </MockedProvider>
-    )
+    );
 
-    expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
-    expect(screen.getByText('activeContent: goals')).toBeInTheDocument()
-    fireEvent.click(screen.getByTestId('ChevronLeftIcon'))
-    expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
-    expect(screen.getByText('activeContent: social')).toBeInTheDocument()
-  })
+    expect(screen.getByText("activeSlide: 1")).toBeInTheDocument();
+    expect(screen.getByText("activeContent: goals")).toBeInTheDocument();
+    fireEvent.click(screen.getByTestId("ChevronLeftIcon"));
+    expect(screen.getByText("activeSlide: 0")).toBeInTheDocument();
+    expect(screen.getByText("activeContent: canvas")).toBeInTheDocument();
+  });
 
-  it('should update journey flow back button clicked', async () => {
+  it("handles prev on back click when goals without selected step", async () => {
     const contentState = {
       ...state,
       activeContent: ActiveContent.Goals,
-      activeSlide: ActiveSlide.Content
-    }
+      activeSlide: ActiveSlide.Content,
+      steps: undefined,
+    };
+
+    render(
+      <MockedProvider>
+        <EditorProvider initialState={contentState}>
+          <TestEditorState />
+          <Slider />
+        </EditorProvider>
+      </MockedProvider>
+    );
+
+    expect(screen.getByText("activeSlide: 1")).toBeInTheDocument();
+    expect(screen.getByText("activeContent: goals")).toBeInTheDocument();
+    fireEvent.click(screen.getByTestId("ChevronLeftIcon"));
+    expect(screen.getByText("activeSlide: 0")).toBeInTheDocument();
+    expect(screen.getByText("activeContent: social")).toBeInTheDocument();
+  });
+
+  it("should update journey flow back button clicked", async () => {
+    const contentState = {
+      ...state,
+      activeContent: ActiveContent.Goals,
+      activeSlide: ActiveSlide.Content,
+    };
 
     const mockGetJourneyFlowBackButtonClicked: MockedResponse<getJourneyFlowBackButtonClicked> =
       {
         request: {
-          query: GET_JOURNEY_FLOW_BACK_BUTTON_CLICKED
+          query: GET_JOURNEY_FLOW_BACK_BUTTON_CLICKED,
         },
         result: jest.fn(() => ({
           data: {
             getJourneyProfile: {
-              __typename: 'JourneyProfile',
-              id: 'userProfile.id',
-              journeyFlowBackButtonClicked: null
-            }
-          }
-        }))
-      }
+              __typename: "JourneyProfile",
+              id: "userProfile.id",
+              journeyFlowBackButtonClicked: null,
+            },
+          },
+        })),
+      };
 
     const mockUpdateJourneyFlowBackButtonClicked: MockedResponse<
       UpdateJourneyFlowBackButtonClicked,
@@ -202,26 +201,26 @@ describe('Slider', () => {
         query: UPDATE_JOURNEY_FLOW_BACK_BUTTON_CLICKED,
         variables: {
           input: {
-            journeyFlowBackButtonClicked: true
-          }
-        }
+            journeyFlowBackButtonClicked: true,
+          },
+        },
       },
       result: jest.fn(() => ({
         data: {
           journeyProfileUpdate: {
-            __typename: 'JourneyProfile',
-            id: 'userProfile.id',
-            journeyFlowBackButtonClicked: true
-          }
-        }
-      }))
-    }
+            __typename: "JourneyProfile",
+            id: "userProfile.id",
+            journeyFlowBackButtonClicked: true,
+          },
+        },
+      })),
+    };
 
     render(
       <MockedProvider
         mocks={[
           mockGetJourneyFlowBackButtonClicked,
-          mockUpdateJourneyFlowBackButtonClicked
+          mockUpdateJourneyFlowBackButtonClicked,
         ]}
       >
         <SnackbarProvider>
@@ -230,40 +229,40 @@ describe('Slider', () => {
           </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
-    )
+    );
 
     await waitFor(() =>
       expect(mockGetJourneyFlowBackButtonClicked.result).toHaveBeenCalled()
-    )
-    expect(screen.getByText('back to map')).toBeVisible()
-    fireEvent.click(screen.getByTestId('ChevronLeftIcon'))
+    );
+    expect(screen.getByText("back to map")).toBeVisible();
+    fireEvent.click(screen.getByTestId("ChevronLeftIcon"));
     await waitFor(() =>
       expect(mockUpdateJourneyFlowBackButtonClicked.result).toHaveBeenCalled()
-    )
-  })
+    );
+  });
 
-  it('should hide back button text', async () => {
+  it("should hide back button text", async () => {
     const contentState = {
       ...state,
       activeContent: ActiveContent.Goals,
-      activeSlide: ActiveSlide.Content
-    }
+      activeSlide: ActiveSlide.Content,
+    };
 
     const mockGetJourneyFlowBackButtonClicked: MockedResponse<getJourneyFlowBackButtonClicked> =
       {
         request: {
-          query: GET_JOURNEY_FLOW_BACK_BUTTON_CLICKED
+          query: GET_JOURNEY_FLOW_BACK_BUTTON_CLICKED,
         },
         result: jest.fn(() => ({
           data: {
             getJourneyProfile: {
-              __typename: 'JourneyProfile',
-              id: 'userProfile.id',
-              journeyFlowBackButtonClicked: true
-            }
-          }
-        }))
-      }
+              __typename: "JourneyProfile",
+              id: "userProfile.id",
+              journeyFlowBackButtonClicked: true,
+            },
+          },
+        })),
+      };
 
     render(
       <MockedProvider mocks={[mockGetJourneyFlowBackButtonClicked]}>
@@ -271,11 +270,11 @@ describe('Slider', () => {
           <Slider />
         </EditorProvider>
       </MockedProvider>
-    )
+    );
 
     await waitFor(() =>
       expect(mockGetJourneyFlowBackButtonClicked.result).toHaveBeenCalled()
-    )
-    expect(screen.getByText('back to map')).not.toBeVisible()
-  })
-})
+    );
+    expect(screen.getByText("back to map")).not.toBeVisible();
+  });
+});
