@@ -1,83 +1,45 @@
-import { ApolloClient, MutationResult, gql } from '@apollo/client'
 import { BullModule, getQueueToken } from '@nestjs/bullmq'
 import { Test, TestingModule } from '@nestjs/testing'
-import axios, { AxiosInstance } from 'axios'
-
-import {
-  Journey,
-  JourneyStatus,
-  ThemeMode,
-  ThemeName
-} from '.prisma/api-journeys-client'
+import { setupServer } from 'msw/node'
 
 import { PrismaService } from '../../lib/prisma.service'
 
-import { PlausibleService, SITE_CREATE } from './plausible.service'
-
-jest.mock('@apollo/client')
-// jest.mock('axios')
-// jest.mock('axios', () => ({
-//   __esModule: true,
-//   ...jest.requireActual('axios'),
-//   create: jest.fn(),
-//   get: jest.fn()
-// }))
-
-// const mockedAxios = axios as jest.Mocked<typeof axios>
-// const mockedAxiosCreate = axios.create as jest.MockedFunction<
-//   typeof axios.create
-// >
-// const mockedAxiosGet = axios.get as jest.MockedFunction<typeof axios.get>
-
-const team = {
-  __typename: 'Team',
-  id: 'team.id',
-  publicTitle: 'title',
-  createAt: '2021-02-18T00:00:00Z',
-  updateAt: '2021-02-18T00:00:00Z',
-  userTeams: [],
-  customDomains: [],
-  plausibleToken: 'token'
-}
-
-const journey: Journey = {
-  id: 'journeyId',
-  slug: 'journey-slug',
-  title: 'published',
-  status: JourneyStatus.published,
-  languageId: '529',
-  themeMode: ThemeMode.light,
-  themeName: ThemeName.base,
-  description: null,
-  creatorDescription: null,
-  creatorImageBlockId: null,
-  primaryImageBlockId: null,
-  teamId: 'teamId',
-  publishedAt: new Date('2021-11-19T12:34:56.647Z'),
-  createdAt: new Date('2021-11-19T12:34:56.647Z'),
-  updatedAt: new Date('2021-11-19T12:34:56.647Z'),
-  archivedAt: null,
-  trashedAt: null,
-  featuredAt: null,
-  deletedAt: null,
-  seoTitle: null,
-  seoDescription: null,
-  template: false,
-  hostId: null,
-  strategySlug: null,
-  plausibleToken: null
-}
+import { PlausibleService } from './plausible.service'
+import {
+  MOCK_GATEWAY_URL,
+  MOCK_PLAUSIBLE_URL,
+  handlers,
+  journey,
+  realTimeVisitorsJourneyResponse,
+  realTimeVisitorsTeamResponse,
+  siteCreateResponse,
+  statsAggregateJourneyResponse,
+  statsAggregateTeamResponse,
+  statsBreakdownJourneyResponse,
+  statsBreakdownTeamResponse,
+  statsTimeSeriesTeamResponse,
+  statsTimeseriesJourneyResponse,
+  team
+} from './plausibleData'
 
 describe('PlausibleService', () => {
   let service: PlausibleService,
     prismaService: PrismaService,
     plausibleQueue: { add: jest.Mock }
 
+  const OLD_ENV = process.env
+
+  const server = setupServer(...handlers)
+
+  beforeAll(() => {
+    server.listen()
+  })
+
   beforeEach(async () => {
+    process.env = { ...OLD_ENV }
     plausibleQueue = {
       add: jest.fn()
     }
-
     const module: TestingModule = await Test.createTestingModule({
       imports: [BullModule.registerQueue({ name: 'api-journeys-plausible' })],
       providers: [
@@ -102,10 +64,18 @@ describe('PlausibleService', () => {
       .compile()
     service = module.get<PlausibleService>(PlausibleService)
     prismaService = module.get<PrismaService>(PrismaService)
+
+    await service.onModuleInit()
   })
 
   afterEach(() => {
+    process.env = OLD_ENV
     jest.clearAllMocks()
+    server.resetHandlers()
+  })
+
+  afterAll(() => {
+    server.close()
   })
 
   describe('createSites', () => {
@@ -184,96 +154,115 @@ describe('PlausibleService', () => {
   })
 
   describe('createSite', () => {
-    it('should create a site', async () => {
-      jest.spyOn(ApolloClient.prototype, 'mutate').mockImplementationOnce(
-        async () =>
-          await Promise.resolve({
-            data: {
-              siteCreate: {
-                id: 'siteId',
-                slug: 'site-slug'
-              }
-            }
-          } as unknown as MutationResult<unknown>)
-      )
+    process.env.GATEWAY_URL = MOCK_GATEWAY_URL
 
-      const response = await service.createSite('site-name')
-      expect(jest.spyOn(ApolloClient.prototype, 'mutate')).toHaveBeenCalledWith(
-        {
-          mutation: SITE_CREATE,
-          variables: {
-            input: {
-              domain: 'site-name',
-              goals: [
-                'footerThumbsUpButtonClick',
-                'footerThumbsDownButtonClick',
-                'shareButtonClick',
-                'pageview',
-                'navigatePreviousStep',
-                'navigateNextStep',
-                'buttonClick',
-                'chatButtonClick',
-                'footerChatButtonClick',
-                'radioQuestionSubmit',
-                'signUpSubmit',
-                'textResponseSubmit',
-                'videoPlay',
-                'videoPause',
-                'videoExpand',
-                'videoCollapse',
-                'videoStart',
-                'videoProgress25',
-                'videoProgress50',
-                'videoProgress75',
-                'videoComplete',
-                'videoTrigger'
-              ]
-            }
-          }
-        }
+    it('should create a site', async () => {
+      expect(await service.createSite('site-name')).toEqual(
+        siteCreateResponse.data.siteCreate
       )
-      expect(response).toEqual({
-        id: 'siteId',
-        slug: 'site-slug'
-      })
     })
   })
 
   describe('getStatsRealtimeVisitors', () => {
+    process.env.PLAUSIBLE_URL = MOCK_PLAUSIBLE_URL
+
     it('should return real time visitors for journey', async () => {
-      const response = 10
-      const mockPlausibleClient = {
-        get: jest.fn()
-      } as unknown as AxiosInstance
+      expect(
+        await service.getStatsRealtimeVisitors(journey.id, 'journey')
+      ).toBe(realTimeVisitorsJourneyResponse)
+    })
 
-      // axios.get = jest.fn().mockResolvedValue({ data: response })
-      // const axiosClient = axios.create()
-      // axiosClient.get = jest.fn().mockResolvedValue({ data: response })
-      // axios.create = jest.fn().mockResolvedValue({
-      //   get: jest.fn().mockResolvedValue(mockPlausibleClient)
-      // })
-      // mockedAxios.create.mockReturnValue(mockPlausibleClient)
-      // mockedAxios.get.mockResolvedValue({ data: response })
-      // mockedAxiosCreate.mockResolvedValue(mockPlausibleClient)
-      // mockedAxiosGet.mockResolvedValue({ data: response })
-      // mockedAxios.create.mockImplementation(() => mockPlausibleClient)
-      // mockedAxios.get.mockResolvedValue({ data: response })
-
-      // mockedAxios.create.mockImplementation(
-      //   async () => await Promise.resolve(mockPlausibleClient)
-      // )
-
-      const actual = await service.getStatsRealtimeVisitors(
-        journey.id,
-        'journey'
+    it('should return real time visitors for team', async () => {
+      expect(await service.getStatsRealtimeVisitors(team.id, 'team')).toBe(
+        realTimeVisitorsTeamResponse
       )
-      expect(actual).toEqual(response)
     })
   })
 
-  describe('getStatsAggregate', () => {})
+  describe('getStatsAggregate', () => {
+    process.env.PLAUSIBLE_URL = MOCK_PLAUSIBLE_URL
 
-  describe('getStatsBreakdown', () => {})
+    it('should return aggregate stats for journey', async () => {
+      expect(
+        await service.getStatsAggregate(journey.id, 'journey', {
+          metrics: 'metrics'
+        })
+      ).toEqual(statsAggregateJourneyResponse.results)
+    })
 
-  describe('getStatsTimeseries', () => {})
+    it('should return aggregate stats for team', async () => {
+      expect(
+        await service.getStatsAggregate(team.id, 'team', {
+          metrics: 'metrics'
+        })
+      ).toEqual(statsAggregateTeamResponse.results)
+    })
+
+    it('should throw error', async () => {
+      await expect(
+        service.getStatsAggregate('invalid-id', 'journey', {
+          metrics: 'metrics'
+        })
+      ).rejects.toThrow('Request failed with status code 404')
+    })
+  })
+
+  describe('getStatsBreakdown', () => {
+    process.env.PLAUSIBLE_URL = MOCK_PLAUSIBLE_URL
+
+    it('should return breakdown stats for journey', async () => {
+      expect(
+        await service.getStatsBreakdown(journey.id, 'journey', {
+          property: 'property',
+          metrics: 'metrics'
+        })
+      ).toEqual(statsBreakdownJourneyResponse.results)
+    })
+
+    it('should return breakdown stats for team', async () => {
+      expect(
+        await service.getStatsBreakdown(team.id, 'team', {
+          property: 'property',
+          metrics: 'metrics'
+        })
+      ).toEqual(statsBreakdownTeamResponse.results)
+    })
+
+    it('should throw error', async () => {
+      await expect(
+        service.getStatsBreakdown('invalid-id', 'journey', {
+          property: 'property',
+          metrics: 'metrics'
+        })
+      ).rejects.toThrow('Request failed with status code 404')
+    })
+  })
+
+  describe('getStatsTimeseries', () => {
+    process.env.PLAUSIBLE_URL = MOCK_PLAUSIBLE_URL
+
+    it('should return timeseries stats for journey', async () => {
+      expect(
+        await service.getStatsTimeseries(journey.id, 'journey', {
+          metrics: 'metrics'
+        })
+      ).toEqual(statsTimeseriesJourneyResponse.results)
+    })
+
+    it('should return timeseries stats for team', async () => {
+      expect(
+        await service.getStatsTimeseries(team.id, 'team', {
+          metrics: 'metrics'
+        })
+      ).toEqual(statsTimeSeriesTeamResponse.results)
+    })
+
+    it('should throw error', async () => {
+      await expect(
+        service.getStatsTimeseries('invalid-id', 'journey', {
+          metrics: 'metrics'
+        })
+      ).rejects.toThrow('Request failed with status code 404')
+    })
+  })
 })

@@ -29,7 +29,7 @@ import { PrismaService } from '../../lib/prisma.service'
 
 import { PlausibleJob } from './plausible.consumer'
 
-export const SITE_CREATE = gql(`
+const SITE_CREATE = gql(`
   mutation SiteCreate($input: SiteCreateInput!) {
     siteCreate(input: $input) {
       ... on Error {
@@ -61,6 +61,31 @@ export const SITE_CREATE = gql(`
     }
   }
 `)
+
+export const goals: Array<keyof JourneyPlausibleEvents> = [
+  'footerThumbsUpButtonClick',
+  'footerThumbsDownButtonClick',
+  'shareButtonClick',
+  'pageview',
+  'navigatePreviousStep',
+  'navigateNextStep',
+  'buttonClick',
+  'chatButtonClick',
+  'footerChatButtonClick',
+  'radioQuestionSubmit',
+  'signUpSubmit',
+  'textResponseSubmit',
+  'videoPlay',
+  'videoPause',
+  'videoExpand',
+  'videoCollapse',
+  'videoStart',
+  'videoProgress25',
+  'videoProgress50',
+  'videoProgress75',
+  'videoComplete',
+  'videoTrigger'
+]
 
 interface PlausibleAPIStatsBreakdownResponse extends PlausibleAPIStatsResponse {
   [key: string]: unknown
@@ -95,26 +120,11 @@ interface PlausibleAPIStatsAggregateResponse {
   time_on_page?: { value: number; change?: number }
 }
 
-const client = new ApolloClient<NormalizedCacheObject>({
-  link: new HttpLink({
-    uri: process.env.GATEWAY_URL,
-    fetch,
-    headers: {
-      Authorization: `Bearer ${process.env.PLAUSIBLE_API_KEY}`
-    }
-  }),
-  cache: new InMemoryCache()
-})
-
-const plausibleClient: AxiosInstance = axios.create({
-  baseURL: process.env.PLAUSIBLE_URL,
-  headers: {
-    Authorization: `Bearer ${process.env.PLAUSIBLE_API_KEY}`
-  }
-})
-
 @Injectable()
 export class PlausibleService implements OnModuleInit {
+  client: ApolloClient<NormalizedCacheObject>
+  plausibleClient: AxiosInstance
+
   constructor(
     @InjectQueue('api-journeys-plausible')
     private readonly plausibleQueue: Queue<PlausibleJob>,
@@ -122,6 +132,23 @@ export class PlausibleService implements OnModuleInit {
   ) {}
 
   async onModuleInit(): Promise<void> {
+    this.client = new ApolloClient<NormalizedCacheObject>({
+      link: new HttpLink({
+        uri: process.env.GATEWAY_URL,
+        fetch,
+        headers: {
+          Authorization: `Bearer ${process.env.PLAUSIBLE_API_KEY}`
+        }
+      }),
+      cache: new InMemoryCache()
+    })
+
+    this.plausibleClient = axios.create({
+      baseURL: process.env.PLAUSIBLE_URL,
+      headers: {
+        Authorization: `Bearer ${process.env.PLAUSIBLE_API_KEY}`
+      }
+    })
     await this.plausibleQueue.add('plausibleCreateSites', {
       __typename: 'plausibleCreateSites'
     })
@@ -185,32 +212,7 @@ export class PlausibleService implements OnModuleInit {
   async createSite(
     domain: string
   ): Promise<MutationSiteCreateResult | undefined> {
-    const goals: Array<keyof JourneyPlausibleEvents> = [
-      'footerThumbsUpButtonClick',
-      'footerThumbsDownButtonClick',
-      'shareButtonClick',
-      'pageview',
-      'navigatePreviousStep',
-      'navigateNextStep',
-      'buttonClick',
-      'chatButtonClick',
-      'footerChatButtonClick',
-      'radioQuestionSubmit',
-      'signUpSubmit',
-      'textResponseSubmit',
-      'videoPlay',
-      'videoPause',
-      'videoExpand',
-      'videoCollapse',
-      'videoStart',
-      'videoProgress25',
-      'videoProgress50',
-      'videoProgress75',
-      'videoComplete',
-      'videoTrigger'
-    ]
-
-    const { data } = await client.mutate({
+    const { data } = await this.client.mutate({
       mutation: SITE_CREATE,
       variables: {
         input: {
@@ -229,20 +231,14 @@ export class PlausibleService implements OnModuleInit {
     const domain =
       type === 'journey' ? this.journeySiteId(id) : this.teamSiteId(id)
 
-    console.log('CLIENT: ', plausibleClient)
-    let response
-    try {
-      response = await plausibleClient.get<number>(
-        `/api/v1/stats/realtime/visitors`,
-        {
-          params: {
-            site_id: domain
-          }
+    const response = await this.plausibleClient.get<number>(
+      `/api/v1/stats/realtime/visitors`,
+      {
+        params: {
+          site_id: domain
         }
-      )
-    } catch (e) {
-      console.log(e.message)
-    }
+      }
+    )
 
     return response.data
   }
@@ -257,7 +253,7 @@ export class PlausibleService implements OnModuleInit {
     const domain =
       type === 'journey' ? this.journeySiteId(id) : this.teamSiteId(id)
     try {
-      const response = await plausibleClient.get<{
+      const response = await this.plausibleClient.get<{
         results: PlausibleAPIStatsAggregateResponse
       }>(`/api/v1/stats/aggregate`, {
         params: {
@@ -294,7 +290,7 @@ export class PlausibleService implements OnModuleInit {
     const domain =
       type === 'journey' ? this.journeySiteId(id) : this.teamSiteId(id)
     try {
-      const response = await plausibleClient.get<{
+      const response = await this.plausibleClient.get<{
         results: PlausibleAPIStatsBreakdownResponse[]
       }>(`/api/v1/stats/breakdown`, {
         params: {
@@ -337,7 +333,7 @@ export class PlausibleService implements OnModuleInit {
     const domain =
       type === 'journey' ? this.journeySiteId(id) : this.teamSiteId(id)
     try {
-      const response = await plausibleClient.get<{
+      const response = await this.plausibleClient.get<{
         results: PlausibleAPIStatsTimeseriesResponse[]
       }>(`/api/v1/stats/timeseries`, {
         params: {
