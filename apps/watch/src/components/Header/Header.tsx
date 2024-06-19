@@ -17,6 +17,7 @@ import { MouseEventHandler, ReactElement, forwardRef, useState } from 'react'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
+import { light } from '@mui/material/styles/createPalette'
 import { HeaderMenuPanel } from './HeaderMenuPanel'
 import { HeaderTabButtons } from './HeaderTabButtons'
 import minimalLogo from './assets/minimal-logo.png'
@@ -122,6 +123,8 @@ export function Header({
   const trigger = useScrollTrigger()
   const [drawerOpen, setDrawerOpen] = useState(false)
 
+  const lightTheme = themeMode === ThemeMode.light
+
   return (
     <>
       {hideSpacer !== true && <Box data-testid="HeaderSpacer" height={128} />}
@@ -141,7 +144,7 @@ export function Header({
               background: 'transparent',
               boxShadow: 'none'
             }}
-            showDivider
+            showDivider={lightTheme}
             onMenuClick={() => setDrawerOpen(true)}
           />
         </Fade>
