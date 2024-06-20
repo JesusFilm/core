@@ -270,7 +270,6 @@ export class CrowdinService {
     languageId: string,
     value: string
   ): Promise<void> {
-    console.log(bibleBookId, languageId, value)
     await this.prisma.bibleBookName.upsert({
       where: {
         bibleBookId_languageId: {
