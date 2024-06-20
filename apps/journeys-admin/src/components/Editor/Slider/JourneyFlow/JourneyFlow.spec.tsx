@@ -5,6 +5,13 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { ActiveSlide, EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  blocks,
+  blocksWithStepBlockPosition,
+  defaultJourney,
+  edges,
+  nodes
+} from '@core/journeys/ui/TemplateView/data'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { transformer } from '@core/journeys/ui/transformer'
 
@@ -15,13 +22,6 @@ import {
 import { StepFields as StepBlock } from '../../../../../__generated__/StepFields'
 import { mockReactFlow } from '../../../../../test/mockReactFlow'
 import { useStepBlockPositionUpdateMutation } from '../../../../libs/useStepBlockPositionUpdateMutation'
-import {
-  blocks,
-  blocksWithStepBlockPosition,
-  defaultJourney,
-  edges,
-  nodes
-} from '../../data'
 
 import { GET_STEP_BLOCKS_WITH_POSITION } from './JourneyFlow'
 import { transformSteps } from './libs/transformSteps'
