@@ -86,7 +86,11 @@ export function ChatButtons(): ReactElement {
       }
       void chatButtonEventCreate({
         variables: {
-          input
+          input: {
+            blockId: activeBlock?.id,
+            stepId: activeBlock?.id,
+            value: chatButton?.platform
+          }
         }
       })
       if (journey != null)

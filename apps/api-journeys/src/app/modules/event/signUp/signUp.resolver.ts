@@ -75,6 +75,8 @@ export class SignUpSubmissionEventResolver {
       )
     }
 
+    await this.eventService.sendEventsEmail(journeyId, visitor.id)
+
     const [signUpSubmissionEvent] = await Promise.all(promises)
     return signUpSubmissionEvent as SignUpSubmissionEvent
   }

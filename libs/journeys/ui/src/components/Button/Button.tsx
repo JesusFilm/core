@@ -1,9 +1,9 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import MuiButton from '@mui/material/Button'
-import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { usePlausible } from 'next-plausible'
+import { useRouter } from 'next/router'
 import { MouseEvent, ReactElement, useMemo } from 'react'
 import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
@@ -215,10 +215,10 @@ export function Button({
           size === 'large'
             ? 6
             : size === 'medium'
-            ? 5
-            : size === 'small'
-            ? 4
-            : 5
+              ? 5
+              : size === 'small'
+                ? 4
+                : 5
       }}
       data-testid={`JourneysButton-${blockId}`}
     >

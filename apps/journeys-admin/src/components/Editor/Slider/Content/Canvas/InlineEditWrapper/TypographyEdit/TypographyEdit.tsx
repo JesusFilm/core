@@ -2,9 +2,9 @@ import { gql, useMutation } from '@apollo/client'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Typography } from '@core/journeys/ui/Typography'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { hasTouchScreen } from '@core/shared/ui/deviceUtils'
 
 import { TypographyBlockUpdateContent } from '../../../../../../../../__generated__/TypographyBlockUpdateContent'

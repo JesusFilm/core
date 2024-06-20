@@ -6,6 +6,7 @@ import Player from 'video.js/dist/types/player'
 
 import { isIPhone } from '@core/shared/ui/deviceUtils'
 
+import { useJourney } from '../../libs/JourneyProvider'
 import { handleAction } from '../../libs/action'
 import type { TreeBlock } from '../../libs/block'
 import { useJourney } from '../../libs/JourneyProvider'

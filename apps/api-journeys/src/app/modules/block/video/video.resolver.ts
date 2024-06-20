@@ -6,8 +6,8 @@ import omit from 'lodash/omit'
 import fetch from 'node-fetch'
 import { object, string } from 'yup'
 
-import { Block, VideoBlockSource } from '.prisma/api-journeys-client'
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
+import { Block, VideoBlockSource } from '.prisma/api-journeys-client'
 
 import {
   VideoBlock,
@@ -83,7 +83,9 @@ function parseISO8601Duration(duration: string): number {
   }
   const [years, weeks, days, hours, minutes, seconds] = match
     .slice(1)
-    .map((period) => (period != null ? parseInt(period.replace(/\D/, '')) : 0))
+    .map((period) =>
+      period != null ? Number.parseInt(period.replace(/\D/, '')) : 0
+    )
   return (
     (((years * 365 + weeks * 7 + days) * 24 + hours) * 60 + minutes) * 60 +
     seconds

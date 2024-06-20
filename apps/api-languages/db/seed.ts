@@ -6,12 +6,12 @@ import omit from 'lodash/omit'
 import fetch from 'node-fetch'
 import slugify from 'slugify'
 
+import { Translation } from '@core/nest/common/TranslationModule'
 import {
   LanguageName,
   Prisma,
   PrismaClient
 } from '.prisma/api-languages-client'
-import { Translation } from '@core/nest/common/TranslationModule'
 
 const prismaService = new PrismaClient()
 

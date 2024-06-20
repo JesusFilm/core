@@ -18,12 +18,13 @@ import { useJourney } from '../../libs/JourneyProvider'
 import { JourneyPlausibleEvents } from '../../libs/plausibleHelpers'
 import { keyify } from '../../libs/plausibleHelpers/plausibleHelpers'
 import { getJourneyRTL } from '../../libs/rtl'
-// eslint-disable-next-line import/no-cycle
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { ImageFields } from '../Image/__generated__/ImageFields'
 import { StepFields } from '../Step/__generated__/StepFields'
 import { VideoFields } from '../Video/__generated__/VideoFields'
 
+import { ContainedCover } from './ContainedCover'
+import { ExpandedCover } from './ExpandedCover'
 import { CardFields } from './__generated__/CardFields'
 import {
   StepNextEventCreate,
