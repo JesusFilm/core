@@ -174,6 +174,11 @@ export function Card({
             event: 'navigateNextStep',
             blockId: input.blockId,
             target: input.nextStepId
+          }),
+          simpleKey: keyify({
+            stepId: input.blockId,
+            event: 'navigateNextStep',
+            blockId: input.blockId
           })
         }
       })
@@ -233,6 +238,11 @@ export function Card({
             event: 'navigatePreviousStep',
             blockId: input.blockId,
             target: input.previousStepId
+          }),
+          simpleKey: keyify({
+            stepId: input.blockId,
+            event: 'navigatePreviousStep',
+            blockId: input.blockId
           })
         }
       })

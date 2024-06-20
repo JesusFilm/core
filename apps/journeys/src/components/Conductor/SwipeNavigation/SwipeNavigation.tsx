@@ -114,6 +114,11 @@ export function SwipeNavigation({
                 event: 'navigateNextStep',
                 blockId: input.blockId,
                 target: input.nextStepId
+              }),
+              simpleKey: keyify({
+                stepId: input.blockId,
+                event: 'navigateNextStep',
+                blockId: input.blockId
               })
             }
           })
@@ -174,6 +179,11 @@ export function SwipeNavigation({
                 event: 'navigatePreviousStep',
                 blockId: input.blockId,
                 target: input.previousStepId
+              }),
+              simpleKey: keyify({
+                stepId: input.blockId,
+                event: 'navigatePreviousStep',
+                blockId: input.blockId
               })
             }
           })

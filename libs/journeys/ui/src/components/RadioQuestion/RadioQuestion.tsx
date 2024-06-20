@@ -106,6 +106,11 @@ export function RadioQuestion({
               event: 'radioQuestionSubmit',
               blockId: radioOptionBlock.id,
               target: radioOptionBlock.action
+            }),
+            simpleKey: keyify({
+              stepId: input.stepId ?? '',
+              event: 'radioQuestionSubmit',
+              blockId: radioOptionBlock.id
             })
           }
         })

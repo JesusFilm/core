@@ -100,6 +100,12 @@ export function ChatButtons(): ReactElement {
             key: keyify({
               stepId: input.stepId ?? '',
               event: 'footerChatButtonClick',
+              blockId: input.blockId,
+              target: `link:${chatButton.link}:${chatButton.platform}`
+            }),
+            simpleKey: keyify({
+              stepId: input.stepId ?? '',
+              event: 'footerChatButtonClick',
               blockId: input.blockId
             })
           }

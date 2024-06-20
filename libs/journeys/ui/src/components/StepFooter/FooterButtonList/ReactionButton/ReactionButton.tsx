@@ -37,14 +37,16 @@ export function ReactionButton({ variant }: ReactionButtonProps): ReactElement {
         const event = `footer${
           variant === 'thumbsup' ? 'ThumbsUp' : 'ThumbsDown'
         }ButtonClick` as const
+        const key = keyify({
+          stepId: input.blockId,
+          event,
+          blockId: input.blockId
+        })
         plausible(event, {
           props: {
             ...input,
-            key: keyify({
-              stepId: input.blockId,
-              event,
-              blockId: input.blockId
-            })
+            key,
+            simpleKey: key
           }
         })
       }

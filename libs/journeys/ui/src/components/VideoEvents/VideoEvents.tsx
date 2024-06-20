@@ -186,17 +186,20 @@ export function VideoEvents({
             input
           }
         })
-        if (journey != null)
+        if (journey != null) {
+          const key = keyify({
+            stepId: input.stepId ?? '',
+            event: 'videoPlay',
+            blockId: input.blockId
+          })
           plausible('videoPlay', {
             props: {
               ...input,
-              key: keyify({
-                stepId: input.stepId ?? '',
-                event: 'videoPlay',
-                blockId: input.blockId
-              })
+              key,
+              simpleKey: key
             }
           })
+        }
         TagManager.dataLayer({
           dataLayer: {
             event: 'video_play',
@@ -242,17 +245,20 @@ export function VideoEvents({
           input
         }
       })
-      if (journey != null)
+      if (journey != null) {
+        const key = keyify({
+          stepId: input.stepId ?? '',
+          event: 'videoPause',
+          blockId: input.blockId
+        })
         plausible('videoPause', {
           props: {
             ...input,
-            key: keyify({
-              stepId: input.stepId ?? '',
-              event: 'videoPause',
-              blockId: input.blockId
-            })
+            key,
+            simpleKey: key
           }
         })
+      }
       TagManager.dataLayer({
         dataLayer: {
           event: 'video_pause',
@@ -298,17 +304,20 @@ export function VideoEvents({
             input
           }
         })
-        if (journey != null)
+        if (journey != null) {
+          const key = keyify({
+            stepId: input.stepId ?? '',
+            event: 'videoExpand',
+            blockId: input.blockId
+          })
           plausible('videoExpand', {
             props: {
               ...input,
-              key: keyify({
-                stepId: input.stepId ?? '',
-                event: 'videoExpand',
-                blockId: input.blockId
-              })
+              key,
+              simpleKey: key
             }
           })
+        }
         TagManager.dataLayer({
           dataLayer: {
             event: 'video_expand',
@@ -354,17 +363,20 @@ export function VideoEvents({
             input
           }
         })
-        if (journey != null)
+        if (journey != null) {
+          const key = keyify({
+            stepId: input.stepId ?? '',
+            event: 'videoCollapse',
+            blockId: input.blockId
+          })
           plausible('videoCollapse', {
             props: {
               ...input,
-              key: keyify({
-                stepId: input.stepId ?? '',
-                event: 'videoCollapse',
-                blockId: input.blockId
-              })
+              key,
+              simpleKey: key
             }
           })
+        }
         TagManager.dataLayer({
           dataLayer: {
             event: 'video_collapse',
@@ -410,17 +422,20 @@ export function VideoEvents({
             input
           }
         })
-        if (journey != null)
+        if (journey != null) {
+          const key = keyify({
+            stepId: input.stepId ?? '',
+            event: 'videoStart',
+            blockId: input.blockId
+          })
           plausible('videoStart', {
             props: {
               ...input,
-              key: keyify({
-                stepId: input.stepId ?? '',
-                event: 'videoStart',
-                blockId: input.blockId
-              })
+              key,
+              simpleKey: key
             }
           })
+        }
         TagManager.dataLayer({
           dataLayer: {
             event: 'video_start',
@@ -469,17 +484,20 @@ export function VideoEvents({
             input
           }
         })
-        if (journey != null)
+        if (journey != null) {
+          const key = keyify({
+            stepId: input.stepId ?? '',
+            event: 'videoProgress25',
+            blockId: input.blockId
+          })
           plausible('videoProgress25', {
             props: {
               ...input,
-              key: keyify({
-                stepId: input.stepId ?? '',
-                event: 'videoProgress25',
-                blockId: input.blockId
-              })
+              key,
+              simpleKey: key
             }
           })
+        }
         TagManager.dataLayer({
           dataLayer: {
             event: 'video_progress',
@@ -529,17 +547,20 @@ export function VideoEvents({
             input
           }
         })
-        if (journey != null)
+        if (journey != null) {
+          const key = keyify({
+            stepId: input.stepId ?? '',
+            event: 'videoProgress50',
+            blockId: input.blockId
+          })
           plausible('videoProgress50', {
             props: {
               ...input,
-              key: keyify({
-                stepId: input.stepId ?? '',
-                event: 'videoProgress50',
-                blockId: input.blockId
-              })
+              key,
+              simpleKey: key
             }
           })
+        }
         TagManager.dataLayer({
           dataLayer: {
             event: 'video_progress',
@@ -589,17 +610,20 @@ export function VideoEvents({
             input
           }
         })
-        if (journey != null)
+        if (journey != null) {
+          const key = keyify({
+            stepId: input.stepId ?? '',
+            event: 'videoProgress75',
+            blockId: input.blockId
+          })
           plausible('videoProgress75', {
             props: {
               ...input,
-              key: keyify({
-                stepId: input.stepId ?? '',
-                event: 'videoProgress75',
-                blockId: input.blockId
-              })
+              key,
+              simpleKey: key
             }
           })
+        }
         TagManager.dataLayer({
           dataLayer: {
             event: 'video_progress',
@@ -659,6 +683,11 @@ export function VideoEvents({
                 event: 'videoComplete',
                 blockId: input.blockId,
                 target: action
+              }),
+              simpleKey: keyify({
+                stepId: input.stepId ?? '',
+                event: 'videoComplete',
+                blockId: input.blockId
               })
             }
           })

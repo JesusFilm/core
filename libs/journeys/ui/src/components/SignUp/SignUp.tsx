@@ -121,6 +121,11 @@ export const SignUp = ({
                 event: 'signupSubmit',
                 blockId: input.blockId,
                 target: action
+              }),
+              simpleKey: keyify({
+                stepId: input.stepId ?? '',
+                event: 'signupSubmit',
+                blockId: input.blockId
               })
             }
           })

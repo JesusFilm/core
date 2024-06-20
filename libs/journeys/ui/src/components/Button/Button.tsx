@@ -129,6 +129,11 @@ export function Button({
               event: 'buttonClick',
               blockId: input.blockId,
               target: action
+            }),
+            simpleKey: keyify({
+              stepId: input.stepId ?? '',
+              event: 'buttonClick',
+              blockId: input.blockId
             })
           }
         })
@@ -160,6 +165,11 @@ export function Button({
               event: 'chatButtonClick',
               blockId: input.blockId,
               target: action
+            }),
+            simpleKey: keyify({
+              stepId: input.stepId ?? '',
+              event: 'chatButtonClick',
+              blockId: input.blockId
             })
           }
         })
