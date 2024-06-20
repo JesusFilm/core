@@ -31,13 +31,17 @@ const Template: StoryObj<typeof IntegrationsList> = {
 }
 
 export const Default = {
-  ...Template
+  ...Template,
+  args: {
+    teamId: 'teamId'
+  }
 }
 
 export const Complete = {
   ...Template,
   args: {
-    showAddButton: true
+    showAddButton: true,
+    teamId: 'teamId'
   }
 }
 
