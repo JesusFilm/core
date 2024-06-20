@@ -12,7 +12,7 @@ interface TemplateEditButtonProps {
 export function TemplateEditButton({
   journeyId
 }: TemplateEditButtonProps): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
+  const { t } = useTranslation('libs-journeys-ui')
 
   return (
     <NextLink

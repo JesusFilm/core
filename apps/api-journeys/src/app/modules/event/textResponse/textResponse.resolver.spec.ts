@@ -23,7 +23,8 @@ describe('TextResponseEventResolver', () => {
     provide: EventService,
     useFactory: () => ({
       save: jest.fn((input) => input),
-      validateBlockEvent: jest.fn(() => response)
+      validateBlockEvent: jest.fn(() => response),
+      sendEventsEmail: jest.fn()
     })
   }
 

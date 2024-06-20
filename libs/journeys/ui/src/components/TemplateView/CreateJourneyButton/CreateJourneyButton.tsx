@@ -19,7 +19,7 @@ const DynamicCopyToTeamDialog = dynamic(
   async () =>
     await import(
       /* webpackChunkName: "CopyToTeamDialog" */
-      '../../../../../../../apps/journeys-admin/src/components/Team/CopyToTeamDialog'
+      '../../CopyToTeamDialog'
     ).then((mod) => mod.CopyToTeamDialog)
 )
 
@@ -28,7 +28,7 @@ export function CreateJourneyButton({
   openTeamDialog,
   setOpenTeamDialog
 }: CreateJourneyButtonProps): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
+  const { t } = useTranslation('libs-journeys-ui')
 
   const router = useRouter()
   const { journey } = useJourney()

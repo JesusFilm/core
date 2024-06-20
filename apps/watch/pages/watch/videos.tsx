@@ -12,6 +12,7 @@ import {
 import i18nConfig from '../../next-i18next.config'
 import { Videos } from '../../src/components/VideosPage'
 import { createApolloClient } from '../../src/libs/apolloClient'
+import { getFlags } from '../../src/libs/getFlags'
 import { VIDEO_CHILD_FIELDS } from '../../src/libs/videoChildFields'
 
 import { GET_HOME_VIDEOS } from './index'
@@ -100,6 +101,7 @@ export const getStaticProps: GetStaticProps<VideosPageProps> = async ({
   return {
     revalidate: 3600,
     props: {
+      flags: await getFlags(),
       initialApolloState: apolloClient.cache.extract(),
       videos,
       ...(await serverSideTranslations(
