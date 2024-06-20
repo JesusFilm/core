@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy } from 'jest-mock-extended'
 
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 import {
   Journey,
   JourneyStatus,
@@ -8,7 +9,6 @@ import {
   ThemeName,
   UserTeamRole
 } from '.prisma/api-journeys-client'
-import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 
 import {
   IdType,
