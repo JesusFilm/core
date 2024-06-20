@@ -2148,13 +2148,23 @@ describe('JourneyResolver', () => {
   })
 
   describe('plausibleToken', () => {
-    it('returns plausibleToken for federation', async () => {
+    it('returns plausibleToken', async () => {
       const journeyWithToken = {
         ...journeyWithUserTeam,
         plausibleToken: 'plausibleToken'
       }
       expect(await resolver.plausibleToken(ability, journeyWithToken)).toBe(
         'plausibleToken'
+      )
+    })
+
+    it('returns null', async () => {
+      const journeyWithToken = {
+        ...journey,
+        plausibleToken: 'plausibleToken'
+      }
+      expect(await resolver.plausibleToken(ability, journeyWithToken)).toBe(
+        null
       )
     })
   })
