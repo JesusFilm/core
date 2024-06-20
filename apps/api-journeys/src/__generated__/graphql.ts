@@ -16,6 +16,7 @@ export type Scalars = {
   Float: { input: number; output: number; }
   DateTime: { input: any; output: any; }
   Json: { input: any; output: any; }
+  join__DirectiveArguments: { input: any; output: any; }
   join__FieldSet: { input: any; output: any; }
   link__Import: { input: any; output: any; }
 };
@@ -257,6 +258,31 @@ export type CloudflareVideo = {
   userId: Scalars['ID']['output'];
 };
 
+export type Country = {
+  __typename?: 'Country';
+  continent: Array<Translation>;
+  flagPngSrc?: Maybe<Scalars['String']['output']>;
+  flagWebpSrc?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  languages: Array<Language>;
+  latitude?: Maybe<Scalars['Float']['output']>;
+  longitude?: Maybe<Scalars['Float']['output']>;
+  name: Array<Translation>;
+  population?: Maybe<Scalars['Int']['output']>;
+};
+
+
+export type CountryContinentArgs = {
+  languageId?: InputMaybe<Scalars['ID']['input']>;
+  primary?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+export type CountryNameArgs = {
+  languageId?: InputMaybe<Scalars['ID']['input']>;
+  primary?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
 export type CreateVerificationRequestInput = {
   redirect?: InputMaybe<Scalars['String']['input']>;
 };
@@ -355,24 +381,6 @@ export type Event = {
   journeyId: Scalars['ID']['output'];
   label?: Maybe<Scalars['String']['output']>;
   value?: Maybe<Scalars['String']['output']>;
-};
-
-export type EventEmailNotifications = {
-  __typename?: 'EventEmailNotifications';
-  id: Scalars['ID']['output'];
-  journeyId: Scalars['ID']['output'];
-  userId: Scalars['ID']['output'];
-  userJourneyId?: Maybe<Scalars['ID']['output']>;
-  userTeamId?: Maybe<Scalars['ID']['output']>;
-  value: Scalars['Boolean']['output'];
-};
-
-export type EventEmailNotificationsUpdateInput = {
-  journeyId: Scalars['ID']['input'];
-  userId: Scalars['ID']['input'];
-  userJourneyId?: InputMaybe<Scalars['ID']['input']>;
-  userTeamId?: InputMaybe<Scalars['ID']['input']>;
-  value: Scalars['Boolean']['input'];
 };
 
 export type FormBlock = Block & {
@@ -670,6 +678,21 @@ export type JourneyCreateInput = {
   themeMode?: InputMaybe<ThemeMode>;
   themeName?: InputMaybe<ThemeName>;
   title: Scalars['String']['input'];
+};
+
+export type JourneyNotification = {
+  __typename?: 'JourneyNotification';
+  id: Scalars['ID']['output'];
+  journeyId: Scalars['ID']['output'];
+  userId: Scalars['ID']['output'];
+  userJourneyId?: Maybe<Scalars['ID']['output']>;
+  userTeamId?: Maybe<Scalars['ID']['output']>;
+  visitorInteractionEmail: Scalars['Boolean']['output'];
+};
+
+export type JourneyNotificationUpdateInput = {
+  journeyId: Scalars['ID']['input'];
+  visitorInteractionEmail: Scalars['Boolean']['input'];
 };
 
 export type JourneyProfile = {
@@ -978,7 +1001,6 @@ export type Mutation = {
   customDomainUpdate: CustomDomain;
   deleteCloudflareImage?: Maybe<Scalars['Boolean']['output']>;
   deleteCloudflareVideo?: Maybe<Scalars['Boolean']['output']>;
-  eventEmailNotificationsUpdate: EventEmailNotifications;
   formBlockCreate: FormBlock;
   formBlockUpdate?: Maybe<FormBlock>;
   hostCreate: Host;
@@ -995,6 +1017,7 @@ export type Mutation = {
   journeyDuplicate: Journey;
   /** Sets journey status to featured */
   journeyFeature?: Maybe<Journey>;
+  journeyNotificationUpdate: JourneyNotification;
   journeyProfileCreate: JourneyProfile;
   journeyProfileOnboardingFormComplete: JourneyProfile;
   journeyProfileUpdate: JourneyProfile;
@@ -1233,11 +1256,6 @@ export type MutationDeleteCloudflareVideoArgs = {
 };
 
 
-export type MutationEventEmailNotificationsUpdateArgs = {
-  input: EventEmailNotificationsUpdateInput;
-};
-
-
 export type MutationFormBlockCreateArgs = {
   input: FormBlockCreateInput;
 };
@@ -1323,6 +1341,11 @@ export type MutationJourneyDuplicateArgs = {
 export type MutationJourneyFeatureArgs = {
   feature: Scalars['Boolean']['input'];
   id: Scalars['ID']['input'];
+};
+
+
+export type MutationJourneyNotificationUpdateArgs = {
+  input: JourneyNotificationUpdateInput;
 };
 
 
@@ -1697,9 +1720,10 @@ export type Query = {
   adminJourneysReport?: Maybe<PowerBiEmbed>;
   block: Block;
   blocks: Array<Block>;
+  countries: Array<Country>;
+  country: Country;
   customDomain: CustomDomain;
   customDomains: Array<CustomDomain>;
-  eventEmailNotificationsByJourney: Array<EventEmailNotifications>;
   getJourneyProfile?: Maybe<JourneyProfile>;
   getMyCloudflareImages?: Maybe<Array<Maybe<CloudflareImage>>>;
   getMyCloudflareVideo?: Maybe<CloudflareVideo>;
@@ -1767,6 +1791,11 @@ export type QueryBlocksArgs = {
 };
 
 
+export type QueryCountryArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type QueryCustomDomainArgs = {
   id: Scalars['ID']['input'];
 };
@@ -1774,11 +1803,6 @@ export type QueryCustomDomainArgs = {
 
 export type QueryCustomDomainsArgs = {
   teamId: Scalars['ID']['input'];
-};
-
-
-export type QueryEventEmailNotificationsByJourneyArgs = {
-  journeyId: Scalars['ID']['input'];
 };
 
 
@@ -2265,8 +2289,6 @@ export type TeamUpdateInput = {
 
 export type TextResponseBlock = Block & {
   __typename?: 'TextResponseBlock';
-  /** @deprecated This block no longer support actions */
-  action?: Maybe<Action>;
   hint?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
@@ -2274,10 +2296,6 @@ export type TextResponseBlock = Block & {
   minRows?: Maybe<Scalars['Int']['output']>;
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
-  /** @deprecated Submit icon relates to action, this block no longer support actions */
-  submitIconId?: Maybe<Scalars['ID']['output']>;
-  /** @deprecated Submit label relates to action, this block no longer support actions */
-  submitLabel?: Maybe<Scalars['String']['output']>;
 };
 
 export type TextResponseBlockCreateInput = {
@@ -2285,7 +2303,6 @@ export type TextResponseBlockCreateInput = {
   journeyId: Scalars['ID']['input'];
   label: Scalars['String']['input'];
   parentBlockId: Scalars['ID']['input'];
-  submitLabel: Scalars['String']['input'];
 };
 
 export type TextResponseBlockUpdateInput = {
@@ -2293,8 +2310,6 @@ export type TextResponseBlockUpdateInput = {
   label?: InputMaybe<Scalars['String']['input']>;
   minRows?: InputMaybe<Scalars['Int']['input']>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
-  submitIconId?: InputMaybe<Scalars['ID']['input']>;
-  submitLabel?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type TextResponseSubmissionEvent = Event & {
@@ -2548,6 +2563,7 @@ export type UserJourney = {
   id: Scalars['ID']['output'];
   journey?: Maybe<Journey>;
   journeyId: Scalars['ID']['output'];
+  journeyNotification?: Maybe<JourneyNotification>;
   /** Date time of when the journey was first opened */
   openedAt?: Maybe<Scalars['DateTime']['output']>;
   role: UserJourneyRole;
@@ -2572,9 +2588,15 @@ export type UserTeam = {
   __typename?: 'UserTeam';
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
+  journeyNotification?: Maybe<JourneyNotification>;
   role: UserTeamRole;
   updatedAt: Scalars['DateTime']['output'];
   user: User;
+};
+
+
+export type UserTeamJourneyNotificationArgs = {
+  journeyId: Scalars['ID']['input'];
 };
 
 export type UserTeamFilterInput = {
@@ -3323,6 +3345,13 @@ export type GetUserByEmailQueryVariables = Exact<{
 
 export type GetUserByEmailQuery = { __typename?: 'Query', userByEmail?: { __typename?: 'User', id: string, email: string, firstName: string, imageUrl?: string | null } | null };
 
+export type UserQueryVariables = Exact<{
+  userId: Scalars['ID']['input'];
+}>;
+
+
+export type UserQuery = { __typename?: 'Query', user?: { __typename?: 'User', id: string, firstName: string, email: string, imageUrl?: string | null } | null };
+
 export type SiteCreateMutationVariables = Exact<{
   input: SiteCreateInput;
 }>;
@@ -3333,4 +3362,5 @@ export type SiteCreateMutation = { __typename?: 'Mutation', siteCreate: { __type
 
 export const GetUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUser"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"user"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}}]}}]}}]} as unknown as DocumentNode<GetUserQuery, GetUserQueryVariables>;
 export const GetUserByEmailDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUserByEmail"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"email"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userByEmail"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"email"},"value":{"kind":"Variable","name":{"kind":"Name","value":"email"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}}]}}]}}]} as unknown as DocumentNode<GetUserByEmailQuery, GetUserByEmailQueryVariables>;
+export const UserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"User"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"user"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}}]}}]}}]} as unknown as DocumentNode<UserQuery, UserQueryVariables>;
 export const SiteCreateDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SiteCreate"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteCreateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"siteCreate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Error"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}},{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MutationSiteCreateSuccess"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"domain"}},{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"Field","name":{"kind":"Name","value":"memberships"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}},{"kind":"Field","name":{"kind":"Name","value":"goals"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"eventName"}},{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}},{"kind":"Field","name":{"kind":"Name","value":"sharedLinks"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<SiteCreateMutation, SiteCreateMutationVariables>;
