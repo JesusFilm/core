@@ -60,7 +60,6 @@ export function transformPlausibleBreakdown({
     journeyActionsSums
   } = data
 
-  console.log(journeyActionsSums)
   const journeyEvents = getJourneyEvents(journeyStepsActions)
   const journeyEventsSums = getJourneyEvents(journeyActionsSums)
   const stepExits = getStepExits(journeyVisitorsPageExits, journeyId)
@@ -96,12 +95,11 @@ function getJourneyEvents(
 ): PlausibleEvent[] {
   const journeyEvents: PlausibleEvent[] = []
   journeyStepsActions.forEach((action) => {
-    if (action.property !== '(none') {
-      journeyEvents.push({
-        ...reverseKeyify(action.property),
-        events: action.events ?? 0
-      })
-    }
+    if (action.property === '(none)') return
+    journeyEvents.push({
+      ...reverseKeyify(action.property),
+      events: action.events ?? 0
+    })
   })
 
   return journeyEvents
