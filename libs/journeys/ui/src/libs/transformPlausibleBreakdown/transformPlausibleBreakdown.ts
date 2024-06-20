@@ -31,7 +31,6 @@ interface StepStat {
   visitors: number
   timeOnPage: number
   visitorsExitAtStep: number
-  stepEvents: PlausibleEvent[]
 }
 
 interface PlausibleEvent {
@@ -57,10 +56,13 @@ export function transformPlausibleBreakdown({
     journeyStepsActions,
     journeyVisitorsPageExits,
     journeyReferrer,
-    journeyAggregateVisitors
+    journeyAggregateVisitors,
+    journeyActionsSums
   } = data
 
+  console.log(journeyActionsSums)
   const journeyEvents = getJourneyEvents(journeyStepsActions)
+  const journeyEventsSums = getJourneyEvents(journeyActionsSums)
   const stepExits = getStepExits(journeyVisitorsPageExits, journeyId)
   const { chatsStarted, linksVisited } = getLinkClicks(journeyEvents)
 
@@ -90,12 +92,15 @@ function getStepId(property: string, journeyId: string): string {
 }
 
 function getJourneyEvents(
-  journeyStepsActions: JourneyStepsAction[]
+  journeyStepsActions: JourneyStepsAction[] | JourneyActionsSums[]
 ): PlausibleEvent[] {
-  const journeyEvents = journeyStepsActions.map((action) => {
-    return {
-      ...reverseKeyify(action.property),
-      events: action.events ?? 0
+  const journeyEvents: PlausibleEvent[] = []
+  journeyStepsActions.forEach((action) => {
+    if (action.property !== '(none') {
+      journeyEvents.push({
+        ...reverseKeyify(action.property),
+        events: action.events ?? 0
+      })
     }
   })
 

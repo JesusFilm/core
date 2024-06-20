@@ -108,8 +108,7 @@ export class PlausibleResolver {
       ) as string[],
       'property',
       'typename',
-      'plausible_journey_referrer_fields',
-      'plausible_journey_steps_actions_fields'
+      'plausible_journey_referrer_fields'
     ).join(',')
     return metrics === '' ? 'visitors' : metrics
   }
