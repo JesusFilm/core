@@ -132,7 +132,7 @@ export class PlausibleService implements OnModuleInit {
   ) {}
 
   async onModuleInit(): Promise<void> {
-    this.client = new ApolloClient<NormalizedCacheObject>({
+    this.client = new ApolloClient({
       link: new HttpLink({
         uri: process.env.GATEWAY_URL,
         fetch,
