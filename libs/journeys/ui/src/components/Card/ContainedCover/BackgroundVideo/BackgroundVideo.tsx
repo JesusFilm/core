@@ -122,7 +122,6 @@ export function BackgroundVideo({
       width="100%"
       minHeight="-webkit-fill-available"
       overflow="hidden"
-      marginX={0}
       position="absolute"
       data-testid="CardContainedBackgroundVideo"
     >
