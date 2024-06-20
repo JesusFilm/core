@@ -1,11 +1,11 @@
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Stack from '@mui/material/Stack'
 import Switch from '@mui/material/Switch'
+import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { Typography } from '@mui/material'
 
 export function AnalyticsOverlaySwitch(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
