@@ -32,7 +32,7 @@ export function AIPrompt({
   const initialValues: AIPromptInput = {
     prompt:
       selectedBlock?.alt != null &&
-      selectedBlock.alt.split(' ')[0] === 'PROMPT:'
+      selectedBlock.alt.split(' ')[0] === 'Prompt:'
         ? selectedBlock?.alt.substring(8)
         : ''
   }

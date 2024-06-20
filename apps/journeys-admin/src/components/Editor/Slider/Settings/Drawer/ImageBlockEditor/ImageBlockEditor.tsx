@@ -110,7 +110,7 @@ export function ImageBlockEditor({
           : selectedBlock?.blurhash,
       alt:
         prompt != null
-          ? `PROMPT: ${prompt}`
+          ? `Prompt: ${prompt}`
           : src.replace(/(.*\/)*/, '').replace(/\?.*/, '') // per Vlad 26/1/22, we are hardcoding the image alt for now
     }
     if ((blurhash?.length ?? 0) > 0) {
