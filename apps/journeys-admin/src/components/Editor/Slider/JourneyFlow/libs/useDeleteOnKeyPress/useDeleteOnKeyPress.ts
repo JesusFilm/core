@@ -40,28 +40,25 @@ export function useDeleteOnKeyPress(): {
   const deleteEvent = useKeyPress(['Delete', 'Backspace'])
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-  useEffect(
-    () => {
-      if (
-        deleteEvent &&
-        selected != null &&
-        activeSlide === ActiveSlide.JourneyFlow &&
-        !showJourneyFlowAnalytics
-      ) {
-        if (isEdge(selected)) {
-          void deleteEdge({
-            source: selected.source,
-            sourceHandle: selected.sourceHandle
-          })
-        } else {
-          void blockDelete(selected)
-        }
-
-        setSelected(undefined)
+  useEffect(() => {
+    if (
+      deleteEvent &&
+      selected != null &&
+      activeSlide === ActiveSlide.JourneyFlow &&
+      !showJourneyFlowAnalytics
+    ) {
+      if (isEdge(selected)) {
+        void deleteEdge({
+          source: selected.source,
+          sourceHandle: selected.sourceHandle
+        })
+      } else {
+        void blockDelete(selected)
       }
-    },
-    [deleteEvent]
-  )
+
+      setSelected(undefined)
+    }
+  }, [deleteEvent])
 
   return { onSelectionChange }
 }

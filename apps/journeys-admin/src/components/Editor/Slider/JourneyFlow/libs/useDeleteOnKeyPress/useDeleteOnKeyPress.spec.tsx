@@ -2,12 +2,12 @@ import { MutationResult } from '@apollo/client'
 import { act, renderHook, waitFor } from '@testing-library/react'
 import { Edge, OnSelectionChangeParams, useKeyPress } from 'reactflow'
 
-import { TreeBlock } from '@core/journeys/ui/block'
 import {
   ActiveSlide,
   EditorProvider,
   EditorState
 } from '@core/journeys/ui/EditorProvider'
+import { TreeBlock } from '@core/journeys/ui/block'
 
 import { BlockDelete } from '../../../../../../../__generated__/BlockDelete'
 import { StepFields as StepBlock } from '../../../../../../../__generated__/StepFields'
