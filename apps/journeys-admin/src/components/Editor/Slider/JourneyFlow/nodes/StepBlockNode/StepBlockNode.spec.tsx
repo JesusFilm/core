@@ -2,8 +2,8 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render, screen } from '@testing-library/react'
 import { NodeProps, ReactFlowProvider } from 'reactflow'
 
-import { TreeBlock } from '@core/journeys/ui/block'
 import { ActiveContent, EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { TreeBlock } from '@core/journeys/ui/block'
 
 import {
   BlockFields_ButtonBlock as ButtonBlock,

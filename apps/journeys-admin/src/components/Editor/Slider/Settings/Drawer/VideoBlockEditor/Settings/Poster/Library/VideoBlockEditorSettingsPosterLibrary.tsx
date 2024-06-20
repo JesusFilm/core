@@ -102,13 +102,13 @@ export function VideoBlockEditorSettingsPosterLibrary({
     { error: imageBlockUpdateError, loading: updateLoading, error: updateError }
   ] = useMutation<PosterImageBlockUpdate>(POSTER_IMAGE_BLOCK_UPDATE)
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (createLoading || updateLoading) {
       onLoading?.()
     } else {
       onLoad?.()
     }
-    // eslint-disable-next-line
   }, [createLoading, updateLoading])
 
   const deleteCoverBlock = async (): Promise<void> => {

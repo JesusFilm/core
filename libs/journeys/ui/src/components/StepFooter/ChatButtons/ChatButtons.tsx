@@ -22,9 +22,9 @@ import {
   ChatOpenEventCreateInput,
   MessagePlatform
 } from '../../../../__generated__/globalTypes'
-import { useBlocks } from '../../../libs/block'
 import { useJourney } from '../../../libs/JourneyProvider'
 import { JourneyFields_chatButtons as ChatButton } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
+import { useBlocks } from '../../../libs/block'
 import { JourneyPlausibleEvents, keyify } from '../../../libs/plausibleHelpers'
 import { getJourneyRTL } from '../../../libs/rtl'
 
@@ -86,7 +86,11 @@ export function ChatButtons(): ReactElement {
       }
       void chatButtonEventCreate({
         variables: {
-          input
+          input: {
+            blockId: activeBlock?.id,
+            stepId: activeBlock?.id,
+            value: chatButton?.platform
+          }
         }
       })
       if (journey != null)
@@ -94,6 +98,12 @@ export function ChatButtons(): ReactElement {
           props: {
             ...input,
             key: keyify({
+              stepId: input.stepId ?? '',
+              event: 'footerChatButtonClick',
+              blockId: input.blockId,
+              target: `link:${chatButton.link}:${chatButton.platform}`
+            }),
+            simpleKey: keyify({
               stepId: input.stepId ?? '',
               event: 'footerChatButtonClick',
               blockId: input.blockId

@@ -7,8 +7,8 @@ import {
   Resolver
 } from '@nestjs/graphql'
 
-import { Language, Prisma } from '.prisma/api-languages-client'
 import { Translation } from '@core/nest/common/TranslationModule'
+import { Language, Prisma } from '.prisma/api-languages-client'
 
 import { LanguageIdType, LanguagesFilter } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'

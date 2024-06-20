@@ -1,9 +1,9 @@
 import { GetStaticPaths, GetStaticProps } from 'next'
-import Head from 'next/head'
-import { useRouter } from 'next/router'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import PlausibleProvider from 'next-plausible'
 import { NextSeo } from 'next-seo'
+import Head from 'next/head'
+import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'

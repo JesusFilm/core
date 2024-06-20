@@ -1,14 +1,14 @@
 import fscreen from 'fscreen'
-import { useRouter } from 'next/router'
 import { usePlausible } from 'next-plausible'
+import { useRouter } from 'next/router'
 import { ReactElement, useEffect, useState } from 'react'
 import Player from 'video.js/dist/types/player'
 
 import { isIPhone } from '@core/shared/ui/deviceUtils'
 
+import { useJourney } from '../../libs/JourneyProvider'
 import { handleAction } from '../../libs/action'
 import type { TreeBlock } from '../../libs/block'
-import { useJourney } from '../../libs/JourneyProvider'
 import { JourneyPlausibleEvents, keyify } from '../../libs/plausibleHelpers'
 
 import { VideoTriggerFields } from './__generated__/VideoTriggerFields'
@@ -42,55 +42,37 @@ export function VideoTrigger({
           setTriggered(true)
           player.pause()
 
+          const input = {
+            blockId,
+            key: keyify({
+              stepId: blockId,
+              event: 'videoTrigger',
+              blockId: blockId,
+              target: triggerAction
+            }),
+            simpleKey: keyify({
+              stepId: blockId,
+              event: 'videoTrigger',
+              blockId: blockId
+            })
+          }
+
           if (variant === 'embed' && !isIPhone()) {
             handleAction(router, triggerAction)
-            const input = { blockId }
-            plausible('videoTrigger', {
-              props: {
-                ...input,
-                key: keyify({
-                  stepId: input.blockId,
-                  event: 'videoTrigger',
-                  blockId: input.blockId,
-                  target: triggerAction
-                })
-              }
-            })
+            plausible('videoTrigger', { props: input })
             return
           }
           if (player.isFullscreen() ?? false) {
             void player.exitFullscreen().then(() => {
               handleAction(router, triggerAction)
-              const input = { blockId }
-              plausible('videoTrigger', {
-                props: {
-                  ...input,
-                  key: keyify({
-                    stepId: input.blockId,
-                    event: 'videoTrigger',
-                    blockId: input.blockId,
-                    target: triggerAction
-                  })
-                }
-              })
+              plausible('videoTrigger', { props: input })
             })
           } else {
             if (fscreen.fullscreenElement != null) {
               void fscreen.exitFullscreen()
             }
             handleAction(router, triggerAction)
-            const input = { blockId }
-            plausible('videoTrigger', {
-              props: {
-                ...input,
-                key: keyify({
-                  stepId: input.blockId,
-                  event: 'videoTrigger',
-                  blockId: input.blockId,
-                  target: triggerAction
-                })
-              }
-            })
+            plausible('videoTrigger', { props: input })
           }
         }
       }
