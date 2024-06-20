@@ -6,10 +6,8 @@ import Divider from '@mui/material/Divider'
 import Fade from '@mui/material/Fade'
 import Grid from '@mui/material/Grid'
 import IconButton from '@mui/material/IconButton'
-import Slide from '@mui/material/Slide'
 import SwipeableDrawer from '@mui/material/SwipeableDrawer'
 import Toolbar from '@mui/material/Toolbar'
-import useScrollTrigger from '@mui/material/useScrollTrigger'
 import Image from 'next/image'
 import NextLink from 'next/link'
 import { MouseEventHandler, ReactElement, forwardRef, useState } from 'react'
@@ -138,7 +136,6 @@ export function Header({
   hideSpacer,
   themeMode = ThemeMode.light
 }: HeaderProps): ReactElement {
-  const trigger = useScrollTrigger()
   const [drawerOpen, setDrawerOpen] = useState(false)
 
   const lightTheme = themeMode === ThemeMode.light
@@ -148,14 +145,12 @@ export function Header({
       'linear-gradient(rgb(255 255 255 / 60%), rgb(255 255 255 / 26%))',
     backdropFilter: 'blur(20px) brightness(1.1)',
     '-webkit-backdrop-filter': 'blur(20px) brightness(1.1)'
-    // transition: 'background-image 1s, backdrop-filter 1s'
   }
 
   const darkStyles = {
     backgroundImage: 'linear-gradient(rgb(0 0 0 / 60%), rgb(0 0 0 / 26%))',
     backdropFilter: 'blur(20px) brightness(0.9)',
     '-webkit-backdrop-filter': 'blur(20px) brightness(0.9)'
-    // transition: 'background-image 1s, backdrop-filter 1s'
   }
 
   const appBarStyles = lightTheme ? lightStyles : darkStyles
@@ -184,7 +179,6 @@ export function Header({
               background: 'transparent',
               boxShadow: 'none',
               ...appBarStyles
-              // ...(trigger ? appBarStyles : {})
             }}
             data-testid="Header"
             position="fixed"
@@ -193,17 +187,6 @@ export function Header({
           />
         </Fade>
       </ThemeProvider>
-      {/* <ThemeProvider themeName={ThemeName.website} themeMode={themeMode} nested>
-        <Slide in={trigger}>
-          <LocalAppBar
-            sx={{
-              backgroundColor: 'background.default'
-            }}
-            position="fixed"
-            onMenuClick={() => setDrawerOpen(true)}
-          />
-        </Slide>
-      </ThemeProvider> */}
       <ThemeProvider
         themeName={ThemeName.website}
         themeMode={ThemeMode.light}
