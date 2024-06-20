@@ -16,7 +16,7 @@ const nextConfig = {
       // arclight image provider - cloudfront
       { protocol: 'https', hostname: 'd1wl257kev7hsz.cloudfront.net' },
       // cloudflare
-      { protocol: 'https', hostname: 'imagedelivery.net' },
+      { protocol: 'https', hostname: 'imagedelivery.net' }
     ],
     minimumCacheTTL: 31536000
   },
