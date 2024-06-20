@@ -8,7 +8,6 @@ import { DateTimeScalar } from '../../lib/dateTime/dateTime.provider'
 import { PrismaService } from '../../lib/prisma.service'
 import { BlockService } from '../block/block.service'
 import { ChatButtonResolver } from '../chatButton/chatButton.resolver'
-import { PlausibleService } from '../plausible/plausible.service'
 
 import { JourneyResolver } from './journey.resolver'
 
@@ -22,8 +21,7 @@ import { JourneyResolver } from './journey.resolver'
     BlockService,
     DateTimeScalar,
     ChatButtonResolver,
-    PrismaService,
-    PlausibleService
+    PrismaService
   ]
 })
 export class JourneyModule {}

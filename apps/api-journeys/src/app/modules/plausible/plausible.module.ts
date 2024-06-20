@@ -18,8 +18,8 @@ import { PlausibleService } from './plausible.service'
   providers: [
     PlausibleResolver,
     PlausibleService,
-    PrismaService,
-    PlausibleConsumer
+    PrismaService
+    // PlausibleConsumer
   ]
 })
 export class PlausibleModule {}
