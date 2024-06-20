@@ -31,6 +31,7 @@ import { IdType } from '../../__generated__/globalTypes'
 import i18nConfig from '../../next-i18next.config'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { createApolloClient } from '../../src/libs/apolloClient'
+import { getFlags } from '../../src/libs/getFlags'
 import { LanguageProvider } from '../../src/libs/languageContext/LanguageContext'
 
 export default function JourneyDetailsPage(): ReactElement {
@@ -117,6 +118,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
     return {
       props: {
         content: data,
+        flags: await getFlags(),
         ...(await serverSideTranslations(
           context.locale ?? 'en',
           ['apps-watch'],
