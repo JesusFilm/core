@@ -1,10 +1,6 @@
 import { http, delay } from 'msw'
 
-import {
-  YoutubePlaylist,
-  YoutubeVideo,
-  YoutubeVideosData
-} from './VideoFromYouTube'
+import { YoutubePlaylist, YoutubeVideo } from './VideoFromYouTube'
 
 const playlistItem1: YoutubePlaylist = {
   kind: 'youtube#playlistItem',
@@ -108,6 +104,7 @@ export const getPlaylistItemsEmpty = http.get(
 export const getPlaylistItemsWithOffsetAndUrl = http.get(
   'https://www.googleapis.com/youtube/v3/playlistItems',
   ({ request }) => {
+    console.log(request.url)
     const url = new URL(request.url)
     const id = url.searchParams.get('id')
     const pageToken = url.searchParams.get('pageToken')
@@ -126,7 +123,8 @@ export const getPlaylistItemsWithOffsetAndUrl = http.get(
     if (pageToken !== 'nextPageToken') {
       return new Response(
         JSON.stringify({
-          items: [playlistItem1, playlistItem2]
+          items: [playlistItem1, playlistItem2],
+          nextPageToken: 'nextPageToken'
         }),
         {
           headers: {
