@@ -18,9 +18,9 @@ import TranslateRounded from '@mui/icons-material/TranslateRounded'
 import { ReactElement, createElement } from 'react'
 
 import { IconName } from '../../../__generated__/globalTypes'
+import { useJourney } from '../../libs/JourneyProvider'
 import type { TreeBlock } from '../../libs/block'
 import { BlockFields_IconBlock as IconBlock } from '../../libs/block/__generated__/BlockFields'
-import { useJourney } from '../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../libs/rtl'
 
 export function Icon({
@@ -35,12 +35,12 @@ export function Icon({
     iconSize === 'sm'
       ? '16px'
       : iconSize === 'md'
-      ? '20px'
-      : iconSize === 'lg'
-      ? '28px'
-      : iconSize === 'xl'
-      ? '48px'
-      : 'inherit'
+        ? '20px'
+        : iconSize === 'lg'
+          ? '28px'
+          : iconSize === 'xl'
+            ? '48px'
+            : 'inherit'
 
   const icons = {
     CheckCircleRounded,
