@@ -30,6 +30,10 @@ type Journey @key(fields: "id") {
   strategySlug: String
   tags: [Tag!]!
   journeyCollections: [JourneyCollection!]!
+  """
+  used in a plausible share link to embed report
+  """
+  plausibleToken: String
 }
 
 enum IdType {

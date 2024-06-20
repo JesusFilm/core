@@ -67,7 +67,8 @@ describe('VideoEvents', () => {
       endAt: 100,
       videoTitle: 'video.title',
       source: VideoBlockSource.internal,
-      videoId: 'video.id'
+      videoId: 'video.id',
+      action: null
     }
   })
 

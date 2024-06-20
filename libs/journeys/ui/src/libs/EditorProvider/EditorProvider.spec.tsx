@@ -470,7 +470,8 @@ describe('EditorContext', () => {
       const initialState = {
         steps: [block],
         selectedBlock: block,
-        selectedStep: block
+        selectedStep: block,
+        showJourneyFlowAnalytics: false
       }
 
       const wrapper = ({ children }: { children: ReactNode }): ReactNode => (
@@ -487,7 +488,8 @@ describe('EditorContext', () => {
         activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
         activeFab: ActiveFab.Add,
         activeSlide: ActiveSlide.Content,
-        activeContent: ActiveContent.Canvas
+        activeContent: ActiveContent.Canvas,
+        showJourneyFlowAnalytics: false
       })
     })
   })

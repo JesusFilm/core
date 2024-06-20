@@ -196,6 +196,7 @@ export function Video({
             videoId={eventVideoId}
             startAt={startAt}
             endAt={videoEndTime}
+            action={action}
           />
         )}
 
@@ -283,6 +284,7 @@ export function Video({
           {/* Default navigate to next card on video end */}
           {action != null && (
             <VideoTrigger
+              blockId={blockId}
               player={player}
               triggerStart={videoEndTime}
               triggerAction={action}
