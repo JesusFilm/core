@@ -18,14 +18,19 @@ import {
 import { ActionFields as Action } from '../action/__generated__/ActionFields'
 
 interface Props {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // biome-ignore lint/suspicious/noExplicitAny: any is needed for plausible events
   [K: string]: any
   blockId: string
   /**
-   * compound of event name, blockId, targetBlockId.
-   * Required to run plausible /api/v1/stats/breakdown api call with
+   * compound of stepId, event name, blockId, targetBlockId.
+   * Needed to run plausible /api/v1/stats/breakdown api call with
    * property=event:props:key param */
   key: string
+  /**
+   * compound of stepId, event name, blockId.
+   * Needed to run plausible /api/v1/stats/breakdown api call with
+   * property=event:props:simpleKey param */
+  simpleKey: string
 }
 
 interface Events {
