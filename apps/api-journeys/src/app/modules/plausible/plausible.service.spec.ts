@@ -3,40 +3,42 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { setupServer } from 'msw/node'
 
 import { PrismaService } from '../../lib/prisma.service'
+import { Journey, Team } from '.prisma/api-journeys-client'
 
-import { PlausibleService } from './plausible.service'
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import {
-  MOCK_GATEWAY_URL,
-  MOCK_PLAUSIBLE_URL,
-  handlers,
-  journey,
-  realTimeVisitorsJourneyResponse,
-  realTimeVisitorsTeamResponse,
-  siteCreateResponse,
-  statsAggregateJourneyResponse,
-  statsAggregateTeamResponse,
-  statsBreakdownJourneyResponse,
-  statsBreakdownTeamResponse,
-  statsTimeSeriesTeamResponse,
-  statsTimeseriesJourneyResponse,
-  team
-} from './plausibleData'
+  getRealTimeVisitors,
+  getRealTimeVisitorsResponse,
+  getStatsAggregate,
+  getStatsAggregateResponse,
+  getStatsBreakdown,
+  getStatsBreakdownResponse,
+  getStatsTimeseries,
+  getStatsTimeseriesResponse,
+  siteCreate,
+  siteCreateResponse
+} from './plausible.handlers'
+import { PlausibleService } from './plausible.service'
 
 describe('PlausibleService', () => {
   let service: PlausibleService,
-    prismaService: PrismaService,
+    prismaService: DeepMockProxy<PrismaService>,
     plausibleQueue: { add: jest.Mock }
 
   const OLD_ENV = process.env
 
-  const server = setupServer(...handlers)
+  const server = setupServer()
 
   beforeAll(() => {
     server.listen()
   })
 
   beforeEach(async () => {
-    process.env = { ...OLD_ENV }
+    process.env = {
+      ...OLD_ENV,
+      GATEWAY_URL: 'http://gateway.local',
+      PLAUSIBLE_URL: 'http://plausible.local'
+    }
     plausibleQueue = {
       add: jest.fn()
     }
@@ -46,16 +48,7 @@ describe('PlausibleService', () => {
         PlausibleService,
         {
           provide: PrismaService,
-          useValue: {
-            journey: {
-              findMany: jest.fn(),
-              update: jest.fn()
-            },
-            team: {
-              findMany: jest.fn(),
-              update: jest.fn()
-            }
-          }
+          useValue: mockDeep<PrismaService>()
         }
       ]
     })
@@ -63,7 +56,9 @@ describe('PlausibleService', () => {
       .useValue(plausibleQueue)
       .compile()
     service = module.get<PlausibleService>(PlausibleService)
-    prismaService = module.get<PrismaService>(PrismaService)
+    prismaService = module.get<PrismaService>(
+      PrismaService
+    ) as DeepMockProxy<PrismaService>
 
     await service.onModuleInit()
   })
@@ -83,18 +78,20 @@ describe('PlausibleService', () => {
       service.createTeamSite = jest.fn()
       service.createJourneySite = jest.fn()
 
-      prismaService.team.findMany = jest.fn().mockResolvedValueOnce([team])
-      prismaService.journey.findMany = jest
-        .fn()
-        .mockResolvedValueOnce([journey])
+      prismaService.team.findMany.mockResolvedValueOnce([
+        { id: 'teamId' } as unknown as Team
+      ])
+      prismaService.journey.findMany.mockResolvedValueOnce([
+        { id: 'journeyId' } as unknown as Journey
+      ])
 
       await service.createSites()
 
       expect(service.createTeamSite).toHaveBeenCalledTimes(1)
-      expect(service.createTeamSite).toHaveBeenCalledWith({ teamId: team.id })
+      expect(service.createTeamSite).toHaveBeenCalledWith({ teamId: 'teamId' })
       expect(service.createJourneySite).toHaveBeenCalledTimes(1)
       expect(service.createJourneySite).toHaveBeenCalledWith({
-        journeyId: journey.id
+        journeyId: 'journeyId'
       })
     })
   })
@@ -112,13 +109,13 @@ describe('PlausibleService', () => {
         }
       })
 
-      await service.createJourneySite({ journeyId: journey.id })
+      await service.createJourneySite({ journeyId: 'journeyId' })
 
       expect(service.createSite).toHaveBeenCalledWith(
-        `api-journeys-journey-${journey.id}`
+        'api-journeys-journey-journeyId'
       )
       expect(prismaService.journey.update).toHaveBeenCalledWith({
-        where: { id: journey.id },
+        where: { id: 'journeyId' },
         data: {
           plausibleToken: 'slug'
         }
@@ -139,13 +136,13 @@ describe('PlausibleService', () => {
         }
       })
 
-      await service.createTeamSite({ teamId: team.id })
+      await service.createTeamSite({ teamId: 'teamId' })
 
       expect(service.createSite).toHaveBeenCalledWith(
-        `api-journeys-team-${team.id}`
+        'api-journeys-team-teamId'
       )
       expect(prismaService.team.update).toHaveBeenCalledWith({
-        where: { id: team.id },
+        where: { id: 'teamId' },
         data: {
           plausibleToken: 'slug'
         }
@@ -154,8 +151,9 @@ describe('PlausibleService', () => {
   })
 
   describe('createSite', () => {
-    process.env.GATEWAY_URL = MOCK_GATEWAY_URL
-
+    beforeEach(() => {
+      server.use(siteCreate)
+    })
     it('should create a site', async () => {
       expect(await service.createSite('site-name')).toEqual(
         siteCreateResponse.data.siteCreate
@@ -164,38 +162,42 @@ describe('PlausibleService', () => {
   })
 
   describe('getStatsRealtimeVisitors', () => {
-    process.env.PLAUSIBLE_URL = MOCK_PLAUSIBLE_URL
+    beforeEach(() => {
+      server.use(getRealTimeVisitors())
+    })
 
     it('should return real time visitors for journey', async () => {
       expect(
-        await service.getStatsRealtimeVisitors(journey.id, 'journey')
-      ).toBe(realTimeVisitorsJourneyResponse)
+        await service.getStatsRealtimeVisitors('journeyId', 'journey')
+      ).toBe(getRealTimeVisitorsResponse)
     })
 
     it('should return real time visitors for team', async () => {
-      expect(await service.getStatsRealtimeVisitors(team.id, 'team')).toBe(
-        realTimeVisitorsTeamResponse
+      expect(await service.getStatsRealtimeVisitors('teamId', 'team')).toBe(
+        getRealTimeVisitorsResponse
       )
     })
   })
 
   describe('getStatsAggregate', () => {
-    process.env.PLAUSIBLE_URL = MOCK_PLAUSIBLE_URL
+    beforeEach(() => {
+      server.use(getStatsAggregate())
+    })
 
     it('should return aggregate stats for journey', async () => {
       expect(
-        await service.getStatsAggregate(journey.id, 'journey', {
+        await service.getStatsAggregate('journeyId', 'journey', {
           metrics: 'metrics'
         })
-      ).toEqual(statsAggregateJourneyResponse.results)
+      ).toEqual(getStatsAggregateResponse.results)
     })
 
     it('should return aggregate stats for team', async () => {
       expect(
-        await service.getStatsAggregate(team.id, 'team', {
+        await service.getStatsAggregate('teamId', 'team', {
           metrics: 'metrics'
         })
-      ).toEqual(statsAggregateTeamResponse.results)
+      ).toEqual(getStatsAggregateResponse.results)
     })
 
     it('should throw error', async () => {
@@ -208,24 +210,26 @@ describe('PlausibleService', () => {
   })
 
   describe('getStatsBreakdown', () => {
-    process.env.PLAUSIBLE_URL = MOCK_PLAUSIBLE_URL
+    beforeEach(() => {
+      server.use(getStatsBreakdown())
+    })
 
     it('should return breakdown stats for journey', async () => {
       expect(
-        await service.getStatsBreakdown(journey.id, 'journey', {
+        await service.getStatsBreakdown('journeyId', 'journey', {
           property: 'property',
           metrics: 'metrics'
         })
-      ).toEqual(statsBreakdownJourneyResponse.results)
+      ).toEqual(getStatsBreakdownResponse.results)
     })
 
     it('should return breakdown stats for team', async () => {
       expect(
-        await service.getStatsBreakdown(team.id, 'team', {
+        await service.getStatsBreakdown('teamId', 'team', {
           property: 'property',
           metrics: 'metrics'
         })
-      ).toEqual(statsBreakdownTeamResponse.results)
+      ).toEqual(getStatsBreakdownResponse.results)
     })
 
     it('should throw error', async () => {
@@ -239,22 +243,24 @@ describe('PlausibleService', () => {
   })
 
   describe('getStatsTimeseries', () => {
-    process.env.PLAUSIBLE_URL = MOCK_PLAUSIBLE_URL
+    beforeEach(() => {
+      server.use(getStatsTimeseries())
+    })
 
     it('should return timeseries stats for journey', async () => {
       expect(
-        await service.getStatsTimeseries(journey.id, 'journey', {
+        await service.getStatsTimeseries('journeyId', 'journey', {
           metrics: 'metrics'
         })
-      ).toEqual(statsTimeseriesJourneyResponse.results)
+      ).toEqual(getStatsTimeseriesResponse.results)
     })
 
     it('should return timeseries stats for team', async () => {
       expect(
-        await service.getStatsTimeseries(team.id, 'team', {
+        await service.getStatsTimeseries('teamId', 'team', {
           metrics: 'metrics'
         })
-      ).toEqual(statsTimeSeriesTeamResponse.results)
+      ).toEqual(getStatsTimeseriesResponse.results)
     })
 
     it('should throw error', async () => {
