@@ -27,6 +27,7 @@ import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 import { Stack } from '@mui/system'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'react-i18next'
+import { IdType } from '../../__generated__/globalTypes'
 import i18nConfig from '../../next-i18next.config'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { createApolloClient } from '../../src/libs/apolloClient'
@@ -36,7 +37,8 @@ export default function JourneyDetailsPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const { data } = useJourneyQuery({
-    id: router.query.journeyId as string
+    id: router.query.journeyId as string,
+    idType: IdType.databaseId
   })
 
   return (
@@ -88,7 +90,8 @@ export const getStaticProps: GetStaticProps = async (context) => {
     const { data } = await apolloClient.query<GetJourney, GetJourneyVariables>({
       query: GET_JOURNEY,
       variables: {
-        id: journeyId
+        id: journeyId,
+        idType: IdType.databaseId
       }
     })
 
@@ -125,7 +128,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
     if (error.message === 'journey not found') {
       return {
         redirect: {
-          destination: '/templates',
+          destination: '/journeys',
           permanent: false
         }
       }

@@ -11,6 +11,7 @@ import Image from 'next/image'
 import NextLink from 'next/link'
 import { ReactElement } from 'react'
 
+import { useRouter } from 'next/router'
 import { abbreviateLanguageName } from '../../libs/abbreviateLanguageName'
 import { GetJourneys_journeys as Journey } from '../../libs/useJourneysQuery/__generated__/GetJourneys'
 
@@ -48,6 +49,9 @@ export function TemplateGalleryCard({
   item: journey,
   priority
 }: TemplateGalleryCardProps): ReactElement {
+  const router = useRouter()
+  const journeyIdPath = `${router.pathname}/${journey?.id ?? ''}`
+
   const localLanguage = journey?.language?.name.find(
     ({ primary }) => !primary
   )?.value
@@ -101,11 +105,7 @@ export function TemplateGalleryCard({
         }
       }}
     >
-      <NextLink
-        href={`/templates/${journey?.id ?? ''}`}
-        passHref
-        legacyBehavior
-      >
+      <NextLink href={journeyIdPath} passHref legacyBehavior>
         <Box
           component="a"
           tabIndex={-1}
