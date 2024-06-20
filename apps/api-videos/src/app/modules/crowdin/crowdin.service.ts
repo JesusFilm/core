@@ -45,7 +45,7 @@ class MatchError extends Error {
 
 @Injectable()
 export class CrowdinService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async pullTranslations(): Promise<void> {
     if (process.env.CROWDIN_DISTRIBUTION_HASH == null)
@@ -164,7 +164,10 @@ export class CrowdinService {
       case '/Arclight/Bible_books.csv':
         {
           const bibleBookId = resName
-          await this.addBibleBookName(bibleBookId, languageId, value)
+          const bibleBooks = await this.getBibleBooks(bibleBookId)
+          if (bibleBooks.length === 0)
+            throw new MatchError(`no matching bibleBookId found for ${bibleBookId}`)
+          await this.updateBibleBookName(bibleBookId, languageId, value)
         }
         break
     }
@@ -249,6 +252,17 @@ export class CrowdinService {
     })
   }
 
+  private async getBibleBooks(bibleBookId: string): Promise<
+    Array<{
+      id: string
+    }>
+  > {
+    return await this.prisma.bibleBook.findMany({
+      select: { id: true },
+      where: { id: bibleBookId }
+    })
+  }
+
   private async updateBibleBookName(
     bibleBookId: string,
     languageId: string,
@@ -266,22 +280,6 @@ export class CrowdinService {
         value
       },
       create: {
-        value,
-        bibleBookId,
-        languageId,
-        primary: false
-      }
-    })
-  }
-
-  private async addBibleBookName(
-    bibleBookId: string,
-    languageId: string,
-    value: string
-  ): Promise<void> {
-    console.log(bibleBookId, languageId, value)
-    await this.prisma.bibleBookName.create({
-      data: {
         value,
         bibleBookId,
         languageId,

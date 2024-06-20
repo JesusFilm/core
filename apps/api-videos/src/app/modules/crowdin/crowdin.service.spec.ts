@@ -288,6 +288,63 @@ describe('CrowdinService', () => {
       expect(prismaService.videoStudyQuestion.upsert).toHaveBeenCalledTimes(2)
     })
 
+    it('should get crowdin translations for bible book names and push to api-videos', async () => {
+      process.env.CROWDIN_DISTRIBUTION_HASH = 'hash'
+
+      prismaService.bibleBook.findMany.mockResolvedValue([
+        {
+          id: '1',
+          osisId: 'Gen',
+          alternateName: null,
+          paratextAbbreviation: 'GEN',
+          isNewTestament: false,
+          order: 1
+        }
+      ])
+
+      mockGetTranslations.mockResolvedValue({
+        ko: [
+          {
+            content: `<?xml version="1.0" encoding="UTF-8"?>
+            <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+            <file id="35" original="/Arclight/Bible_books.csv" source-language="en" target-language="ko">
+              <body>
+              <trans-unit id="1" resname="1">
+                <source>Genesis</source>
+                <target>창세기</target>
+              </trans-unit>
+              </body>
+            </file>
+            </xliff>`,
+            file: '/content/3804.xliff'
+          }
+        ]
+      })
+
+      await service.pullTranslations()
+      expect(mockOtaClient).toHaveBeenCalledWith('hash', {
+        disableManifestCache: true,
+        disableStringsCache: true
+      })
+
+      expect(prismaService.bibleBook.findMany).toHaveBeenCalledWith({
+        select: { id: true },
+        where: {
+          id: '1'
+        }
+      })
+      expect(prismaService.bibleBookName.upsert).toHaveBeenCalledWith({
+        create: {
+          languageId: '3804',
+          primary: false,
+          value: '창세기',
+          bibleBookId: '1'
+        },
+        update: { value: '창세기' },
+        where: { bibleBookId_languageId: { languageId: '3804', bibleBookId: '1' } }
+      })
+    })
+
     it('should throw if exported filename is wrong format', async () => {
       process.env.CROWDIN_DISTRIBUTION_HASH = 'hash'
       prismaService.video.findMany.mockResolvedValue([])
@@ -428,7 +485,7 @@ describe('CrowdinService', () => {
       )
     })
 
-    it('should throw if no matching crowdInId', async () => {
+    it('should throw if no matching crowdInId for study question upsert', async () => {
       process.env.CROWDIN_DISTRIBUTION_HASH = 'hash'
       prismaService.videoStudyQuestion.findMany.mockResolvedValue([])
 
@@ -453,6 +510,34 @@ describe('CrowdinService', () => {
 
       await expect(service.pullTranslations()).rejects.toThrow(
         'no matching crowdInId found for 1'
+      )
+    })
+
+    it('should throw if no matching bibleBookId for bible book name upsert', async () => {
+      process.env.CROWDIN_DISTRIBUTION_HASH = 'hash'
+      prismaService.bibleBook.findMany.mockResolvedValue([])
+
+      mockGetTranslations.mockResolvedValue({
+        ko: [
+          {
+            content: `<?xml version="1.0" encoding="UTF-8"?>
+            <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+            <file id="35" original="/Arclight/Bible_books.csv" source-language="en" target-language="ko">
+              <body>
+              <trans-unit id="1" resname="1">
+                <source>Genesis</source>
+                <target>창세기</target>
+              </trans-unit>
+              </body>
+            </file>
+            </xliff>`,
+            file: '/content/3804.xliff'
+          }
+        ]
+      })
+
+      await expect(service.pullTranslations()).rejects.toThrow(
+        'no matching bibleBookId found for 1'
       )
     })
   })
