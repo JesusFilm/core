@@ -80,6 +80,7 @@ describe('fetchEmailDetails', () => {
     publicTitle: null,
     createdAt: new Date('2024-05-14T22:08:12.000Z'),
     updatedAt: new Date('2024-05-14T22:08:12.000Z'),
+    plausibleToken: null,
     userTeams: [
       {
         id: 'userTeamId',
@@ -115,6 +116,7 @@ describe('fetchEmailDetails', () => {
     creatorImageBlockId: null,
     primaryImageBlockId: null,
     teamId: 'teamId',
+    plausibleToken: null,
     publishedAt: new Date('2021-11-19T12:34:56.647Z'),
     createdAt: new Date('2021-11-19T12:34:56.647Z'),
     updatedAt: new Date('2021-11-19T12:34:56.647Z'),
