@@ -7,6 +7,8 @@ import { watchConfig } from '../../libs/storybook'
 import { ThemeMode } from '@core/shared/ui/themes'
 import { Header } from './Header'
 
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+
 const HeaderStory: Meta<typeof Header> = {
   ...watchConfig,
   component: Header,
@@ -16,15 +18,24 @@ const HeaderStory: Meta<typeof Header> = {
   }
 }
 
+const trueHeaderItemsFlags = {
+  strategies: true,
+  journeys: true,
+  calendar: true,
+  products: true
+}
+
 const Template: StoryObj<typeof Header> = {
   render: () => (
-    <Box
-    // sx={{
-    //   backgroundColor: '#26262E'
-    // }}
-    >
-      <Header themeMode={ThemeMode.light} />
-    </Box>
+    <FlagsProvider flags={{ ...trueHeaderItemsFlags }}>
+      <Box
+      // sx={{
+      //   backgroundColor: '#26262E'
+      // }}
+      >
+        <Header themeMode={ThemeMode.light} />
+      </Box>
+    </FlagsProvider>
   )
 }
 
