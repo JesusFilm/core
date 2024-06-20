@@ -15,6 +15,7 @@ import { MouseEventHandler, ReactElement, forwardRef, useState } from 'react'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
+import useScrollTrigger from '@mui/material/useScrollTrigger'
 import { HeaderMenuPanel } from './HeaderMenuPanel'
 import { HeaderTabButtons } from './HeaderTabButtons'
 import minimalLogo from './assets/minimal-logo.png'
@@ -155,6 +156,7 @@ export function Header({
 
   const appBarStyles = lightTheme ? lightStyles : darkStyles
 
+  const trigger = useScrollTrigger({ disableHysteresis: true })
   return (
     <>
       {hideSpacer !== true && (
@@ -166,9 +168,10 @@ export function Header({
       <ThemeProvider themeName={ThemeName.website} themeMode={themeMode} nested>
         <Fade
           appear={false}
-          in={hideAbsoluteAppBar !== true}
+          in={hideAbsoluteAppBar !== true || trigger}
           style={{
-            transitionDelay: hideAbsoluteAppBar !== true ? undefined : '2s',
+            transitionDelay:
+              hideAbsoluteAppBar !== true || trigger ? undefined : '2s',
             transitionDuration: '225ms'
           }}
           timeout={{ exit: 2225 }}
