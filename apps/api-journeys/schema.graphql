@@ -230,7 +230,7 @@ type Mutation {
   hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host!
   hostDelete(id: ID!, teamId: ID!): Host!
   growthSpacesIntegrationCreate(teamId: ID!, input: GrowthSpaceIntegrationCreateInput!): GrowthSpaceIntegration!
-  growthSpacesIntegrationUpdate(teamId: ID!, input: GrowthSpaceIntegrationUpdateInput!): GrowthSpaceIntegration!
+  growthSpacesIntegrationUpdate(id: ID!, input: GrowthSpaceIntegrationUpdateInput!): GrowthSpaceIntegration!
   integrationDelete(input: IntegrationInput!): Integration!
   journeyCreate(input: JourneyCreateInput!, teamId: ID!): Journey!
   journeyDuplicate(id: ID!, teamId: ID!): Journey!
@@ -860,6 +860,7 @@ type TextResponseBlock implements Block {
   hint: String
   minRows: Int
   type: TextResponseType
+  routeId: String
 }
 
 enum TextResponseType {
@@ -880,6 +881,8 @@ input TextResponseBlockUpdateInput {
   label: String
   hint: String
   minRows: Int
+  routeId: String
+  type: TextResponseType
 }
 
 enum TypographyVariant {
@@ -1936,28 +1939,28 @@ input HostCreateInput {
   src2: String
 }
 
-type GrowthSpaceRoutes {
-  id: String!
-  name: String!
-}
-
 type GrowthSpaceIntegration implements Integration {
   id: ID!
   teamId: String!
   type: IntegrationType!
   accessId: String!
   accessSecretPart: String!
-  routes: [GrowthSpaceRoutes!]!
+  routes: [GrowthSpacesRoute!]!
 }
 
 input GrowthSpaceIntegrationCreateInput {
   accessId: String!
-  accessSecretPart: String!
+  accessSecret: String!
 }
 
 input GrowthSpaceIntegrationUpdateInput {
-  accessId: String
-  accessSecretPart: String
+  accessId: String!
+  accessSecret: String!
+}
+
+type GrowthSpacesRoute {
+  id: String!
+  name: String!
 }
 
 enum IntegrationType {
@@ -2304,7 +2307,7 @@ type Team
   updatedAt: DateTime!
   userTeams: [UserTeam!]!
   customDomains: [CustomDomain!]!
-  integration: Integration
+  integrations: [Integration!]!
 }
 
 input TeamCreateInput {

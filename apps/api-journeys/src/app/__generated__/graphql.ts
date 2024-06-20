@@ -390,6 +390,8 @@ export class TextResponseBlockUpdateInput {
     label?: Nullable<string>;
     hint?: Nullable<string>;
     minRows?: Nullable<number>;
+    routeId?: Nullable<string>;
+    type?: Nullable<TextResponseType>;
 }
 
 export class TypographyBlockCreateInput {
@@ -617,12 +619,12 @@ export class HostCreateInput {
 
 export class GrowthSpaceIntegrationCreateInput {
     accessId: string;
-    accessSecretPart: string;
+    accessSecret: string;
 }
 
 export class GrowthSpaceIntegrationUpdateInput {
-    accessId?: Nullable<string>;
-    accessSecretPart?: Nullable<string>;
+    accessId: string;
+    accessSecret: string;
 }
 
 export class IntegrationInput {
@@ -1046,7 +1048,7 @@ export abstract class IQuery {
 
     abstract hosts(teamId: string): Host[] | Promise<Host[]>;
 
-    abstract integrations(input?: Nullable<IntegrationsFilter>): Integration[] | Promise<Integration[]>;
+    abstract integrationsForTeam(input?: Nullable<IntegrationsFilter>): Integration[] | Promise<Integration[]>;
 
     abstract adminJourneys(status?: Nullable<JourneyStatus[]>, template?: Nullable<boolean>, teamId?: Nullable<string>, useLastActiveTeamId?: Nullable<boolean>): Journey[] | Promise<Journey[]>;
 
@@ -1242,6 +1244,7 @@ export class TextResponseBlock implements Block {
     hint?: Nullable<string>;
     minRows?: Nullable<number>;
     type?: Nullable<TextResponseType>;
+    routeId?: Nullable<string>;
 }
 
 export class TypographyBlock implements Block {
@@ -1504,12 +1507,6 @@ export class Host {
     src2?: Nullable<string>;
 }
 
-export class GrowthSpaceRoutes {
-    __typename?: 'GrowthSpaceRoutes';
-    id: string;
-    name: string;
-}
-
 export class GrowthSpaceIntegration implements Integration {
     __typename?: 'GrowthSpaceIntegration';
     id: string;
@@ -1517,7 +1514,13 @@ export class GrowthSpaceIntegration implements Integration {
     type: IntegrationType;
     accessId: string;
     accessSecretPart: string;
-    routes: GrowthSpaceRoutes[];
+    routes: GrowthSpacesRoute[];
+}
+
+export class GrowthSpacesRoute {
+    __typename?: 'GrowthSpacesRoute';
+    id: string;
+    name: string;
 }
 
 export class PowerBiEmbed {
@@ -1628,7 +1631,7 @@ export class Team {
     updatedAt: DateTime;
     userTeams: UserTeam[];
     customDomains: CustomDomain[];
-    integration?: Nullable<Integration>;
+    integrations: Integration[];
 }
 
 export class UserInvite {

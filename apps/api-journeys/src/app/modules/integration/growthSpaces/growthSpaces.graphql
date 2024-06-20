@@ -3,18 +3,19 @@ type GrowthSpaceIntegration implements Integration {
     teamId: String!
     type: IntegrationType!
     accessId: String!
-    accessSecretPart: String!
+    accessSecretPart: String!,
+    routes: [GrowthSpacesRoute!]!
 }
 
 
 input GrowthSpaceIntegrationCreateInput {
     accessId: String!
-    accessSecretPart: String!
+    accessSecret: String!
 }
 
 input GrowthSpaceIntegrationUpdateInput {
-    accessId: String
-    accessSecretPart: String
+    accessId: String!
+    accessSecret: String!
 }
 
 type GrowthSpacesRoute {
@@ -22,12 +23,8 @@ type GrowthSpacesRoute {
     name: String!
 }
 
-extend type Query {
-    getGrowthSpacesRoutes(growthSpaceId: ID): [GrowthSpacesRoute!]!
-}
-
 extend type Mutation {
     growthSpacesIntegrationCreate(teamId: ID!, input: GrowthSpaceIntegrationCreateInput!): GrowthSpaceIntegration!
-    growthSpacesIntegrationUpdate(teamId: ID!, input: GrowthSpaceIntegrationUpdateInput!): GrowthSpaceIntegration!
+    growthSpacesIntegrationUpdate(id: ID!, input: GrowthSpaceIntegrationUpdateInput!): GrowthSpaceIntegration!
 }
 

@@ -580,24 +580,24 @@ type GrowthSpaceIntegration implements Integration
   type: IntegrationType!
   accessId: String!
   accessSecretPart: String!
-  routes: [GrowthSpaceRoutes!]!
+  routes: [GrowthSpacesRoute!]!
 }
 
 input GrowthSpaceIntegrationCreateInput
   @join__type(graph: JOURNEYS)
 {
   accessId: String!
-  accessSecretPart: String!
+  accessSecret: String!
 }
 
 input GrowthSpaceIntegrationUpdateInput
   @join__type(graph: JOURNEYS)
 {
-  accessId: String
-  accessSecretPart: String
+  accessId: String!
+  accessSecret: String!
 }
 
-type GrowthSpaceRoutes
+type GrowthSpacesRoute
   @join__type(graph: JOURNEYS)
 {
   id: String!
@@ -1455,7 +1455,7 @@ type Mutation
   hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host! @join__field(graph: JOURNEYS)
   hostDelete(id: ID!, teamId: ID!): Host! @join__field(graph: JOURNEYS)
   growthSpacesIntegrationCreate(teamId: ID!, input: GrowthSpaceIntegrationCreateInput!): GrowthSpaceIntegration! @join__field(graph: JOURNEYS)
-  growthSpacesIntegrationUpdate(teamId: ID!, input: GrowthSpaceIntegrationUpdateInput!): GrowthSpaceIntegration! @join__field(graph: JOURNEYS)
+  growthSpacesIntegrationUpdate(id: ID!, input: GrowthSpaceIntegrationUpdateInput!): GrowthSpaceIntegration! @join__field(graph: JOURNEYS)
   integrationDelete(input: IntegrationInput!): Integration! @join__field(graph: JOURNEYS)
   journeyCreate(input: JourneyCreateInput!, teamId: ID!): Journey! @join__field(graph: JOURNEYS)
   journeyDuplicate(id: ID!, teamId: ID!): Journey! @join__field(graph: JOURNEYS)
@@ -2078,7 +2078,7 @@ type Team
   updatedAt: DateTime!
   userTeams: [UserTeam!]!
   customDomains: [CustomDomain!]!
-  integration: Integration
+  integrations: [Integration!]!
 }
 
 input TeamCreateInput
@@ -2107,6 +2107,7 @@ type TextResponseBlock implements Block
   hint: String
   minRows: Int
   type: TextResponseType
+  routeId: String
 }
 
 input TextResponseBlockCreateInput
@@ -2125,6 +2126,8 @@ input TextResponseBlockUpdateInput
   label: String
   hint: String
   minRows: Int
+  routeId: String
+  type: TextResponseType
 }
 
 type TextResponseSubmissionEvent implements Event

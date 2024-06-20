@@ -219,12 +219,14 @@ model Team {
 }
 
 model Integration {
-  id               String          @id @default(uuid())
-  teamId           String
-  type             IntegrationType
-  accessId         String?
-  accessSecretPart String?
-  team             Team            @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  id           String          @id @default(uuid())
+  teamId       String
+  type         IntegrationType
+  accessId     String?
+  accessSecret String?
+  team         Team            @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@index([teamId])
 }
 
 model UserTeam {
