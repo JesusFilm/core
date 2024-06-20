@@ -1,6 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import { usePlausible } from 'next-plausible'
 
+import { keyify } from '@core/journeys/ui/plausibleHelpers'
 import {
   JourneyStatus,
   MessagePlatform,
@@ -16,6 +18,15 @@ import { TreeBlock, blockHistoryVar } from '../../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../../libs/block/__generated__/BlockFields'
 
 import { CHAT_BUTTON_EVENT_CREATE, ChatButtons } from './ChatButtons'
+
+jest.mock('next-plausible', () => ({
+  __esModule: true,
+  usePlausible: jest.fn()
+}))
+
+const mockUsePlausible = usePlausible as jest.MockedFunction<
+  typeof usePlausible
+>
 
 describe('ChatButtons', () => {
   const chatButtons: ChatButton[] = [
@@ -98,7 +109,6 @@ describe('ChatButtons', () => {
         query: CHAT_BUTTON_EVENT_CREATE,
         variables: {
           input: {
-            id: chatButtons[0]?.id,
             blockId: stepBlock?.id,
             stepId: stepBlock?.id,
             value: chatButtons[0].platform
@@ -131,6 +141,8 @@ describe('ChatButtons', () => {
   it('handles button click and sends a mutation', async () => {
     window.open = jest.fn()
     blockHistoryVar([stepBlock])
+    const mockPlausible = jest.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
 
     const { getAllByRole } = render(
       <MockedProvider mocks={mocks}>
@@ -144,6 +156,25 @@ describe('ChatButtons', () => {
     fireEvent.click(buttons[0])
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(window.open).toHaveBeenCalledWith(chatButtons[0].link, '_blank')
+    expect(mockPlausible).toHaveBeenCalledWith('footerChatButtonClick', {
+      props: {
+        id: '1',
+        blockId: 'step',
+        stepId: 'step',
+        value: 'facebook',
+        key: keyify({
+          stepId: 'step',
+          event: 'footerChatButtonClick',
+          blockId: 'step',
+          target: 'link:https://m.me/:facebook'
+        }),
+        simpleKey: keyify({
+          stepId: 'step',
+          event: 'footerChatButtonClick',
+          blockId: 'step'
+        })
+      }
+    })
   })
 
   it('does not open a new window or send a mutation for admin user', async () => {

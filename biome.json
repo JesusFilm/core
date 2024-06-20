@@ -33,7 +33,7 @@
         "useMediaCaption": "info"
       },
       "complexity": {
-        "noForEach": "warn",
+        "noForEach": "off",
         "noUselessFragments": "info",
         "noUselessSwitchCase": "info",
         "useArrowFunction": "info",
