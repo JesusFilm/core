@@ -1,15 +1,17 @@
 import { Injectable } from '@nestjs/common'
-import { z } from 'zod'
+import { string, z } from 'zod'
 import { PrismaService } from '../../../lib/prisma.service'
 import { ImporterService } from '../importer.service'
 
 const bibleBookSchema = z.object({
   id: z.number().transform(String),
+  name: string(),
   osisId: z.string(),
   alternateName: z.string().nullable(),
   paratextAbbreviation: z.string(),
   isNewTestament: z.number().transform(Boolean),
-  order: z.number()
+  order: z.number(),
+  languageId: z.number().transform(String)
 })
 
 type BibleBook = z.infer<typeof bibleBookSchema>
@@ -22,17 +24,69 @@ export class ImporterBibleBooksService extends ImporterService<BibleBook> {
     super()
   }
 
+  trimBibleBook(bibleBook: BibleBook) {
+    const { name, languageId, ...trimmedBibleBook } = bibleBook
+    return trimmedBibleBook
+  }
+
   protected async save(bibleBook: BibleBook): Promise<void> {
+    const trimmedBibleBook = this.trimBibleBook(bibleBook)
     await this.prismaService.bibleBook.upsert({
       where: { id: bibleBook.id },
-      update: bibleBook,
-      create: bibleBook
+      update: {
+        ...trimmedBibleBook,
+        name: {
+          upsert: {
+            where: {
+              bibleBookId_languageId: {
+                bibleBookId: bibleBook.id,
+                languageId: bibleBook.languageId
+              }
+            },
+            update: {
+              value: bibleBook.name,
+              primary: true
+            },
+            create: {
+              value: bibleBook.name,
+              languageId: bibleBook.languageId,
+              primary: true
+            }
+          }
+        }
+      },
+      create: {
+        ...trimmedBibleBook,
+        name: {
+          create: {
+            value: bibleBook.name,
+            languageId: bibleBook.languageId,
+            primary: true
+          }
+        }
+      }
     })
   }
 
   protected async saveMany(bibleBooks: BibleBook[]): Promise<void> {
+    const trimmedBibleBooks = bibleBooks.map((bibleBook) =>
+      this.trimBibleBook(bibleBook)
+    )
+
+    const bibleBookNames = bibleBooks.map((bibleBook) => ({
+      value: bibleBook.name,
+      languageId: bibleBook.languageId,
+      primary: true,
+      bibleBookId: bibleBook.id
+    }))
+
     await this.prismaService.bibleBook.createMany({
-      data: bibleBooks,
+      data: trimmedBibleBooks,
+      skipDuplicates: true
+    })
+
+    await this.prismaService.bibleBookName.createMany({
+      data: bibleBookNames,
       skipDuplicates: true
     })
   }

@@ -28,11 +28,13 @@ describe('ImporterBibleBooksService', () => {
     it('should upsert bible book', async () => {
       await service.import({
         id: 1,
+        name: 'Genesis',
         osisId: 'Gen',
         alternateName: null,
         paratextAbbreviation: 'GEN',
         isNewTestament: 0,
         order: 1,
+        languageId: 529,
         extraStuff: 'randomData'
       })
       expect(prismaService.bibleBook.upsert).toHaveBeenCalledWith({
@@ -43,7 +45,26 @@ describe('ImporterBibleBooksService', () => {
           alternateName: null,
           paratextAbbreviation: 'GEN',
           isNewTestament: false,
-          order: 1
+          order: 1,
+          name: {
+            upsert: {
+              where: {
+                bibleBookId_languageId: {
+                  bibleBookId: '1',
+                  languageId: '529'
+                }
+              },
+              update: {
+                value: 'Genesis',
+                primary: true
+              },
+              create: {
+                value: 'Genesis',
+                languageId: '529',
+                primary: true
+              }
+            }
+          }
         },
         create: {
           id: '1',
@@ -51,7 +72,14 @@ describe('ImporterBibleBooksService', () => {
           alternateName: null,
           paratextAbbreviation: 'GEN',
           isNewTestament: false,
-          order: 1
+          order: 1,
+          name: {
+            create: {
+              value: 'Genesis',
+              languageId: '529',
+              primary: true
+            }
+          }
         }
       })
     })
@@ -60,20 +88,24 @@ describe('ImporterBibleBooksService', () => {
       await service.importMany([
         {
           id: 1,
+          name: 'Genesis',
           osisId: 'Gen',
           alternateName: null,
           paratextAbbreviation: 'GEN',
           isNewTestament: 0,
           order: 1,
+          languageId: 529,
           extraStuff: 'randomData'
         },
         {
           id: 21,
+          name: 'Ecclesiastes',
           osisId: 'Eccl',
           alternateName: 'Qohelet',
           paratextAbbreviation: 'ECC',
           isNewTestament: 0,
           order: 21,
+          languageId: 529,
           extraStuff: 'randomData'
         }
       ])
@@ -98,6 +130,23 @@ describe('ImporterBibleBooksService', () => {
         ],
         skipDuplicates: true
       })
+      expect(prismaService.bibleBookName.createMany).toBeCalledWith({
+        data: [
+          {
+            value: 'Genesis',
+            languageId: '529',
+            primary: true,
+            bibleBookId: '1'
+          },
+          {
+            value: 'Ecclesiastes',
+            languageId: '529',
+            primary: true,
+            bibleBookId: '21'
+          }
+        ],
+        skipDuplicates: true
+      })
     })
 
     it('should throw error when row is invalid', async () => {
@@ -114,11 +163,13 @@ describe('ImporterBibleBooksService', () => {
         service.importMany([
           {
             id: 1,
+            name: 'Genesis',
             osisId: 'Gen',
             alternateName: null,
             paratextAbbreviation: 'GEN',
             isNewTestament: 0,
             order: 1,
+            languageId: 529,
             extraStuff: 'randomData'
           },
           {
