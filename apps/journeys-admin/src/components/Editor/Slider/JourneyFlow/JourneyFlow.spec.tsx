@@ -99,7 +99,7 @@ describe('JourneyFlow', () => {
     expect(screen.getByRole('button', { name: 'Add Step' })).toBeInTheDocument()
     expect(screen.getAllByTestId('StepBlockNodeCard')).toHaveLength(7)
     expect(
-      screen.getByRole('checkbox', { name: 'Analytics' })
+      screen.getByRole('checkbox', { name: 'Analytics Overlay' })
     ).toBeInTheDocument()
   })
 
