@@ -46,7 +46,7 @@ export default function JourneyDetailsPage(): ReactElement {
     <PageWrapper>
       <Box
         sx={{ backgroundColor: 'background.default' }}
-        data-testid="HomePage"
+        data-testid="JourneyDetailsPage"
       >
         <Container maxWidth="xxl" sx={{ paddingY: '4rem' }}>
           <Stack gap={10}>
