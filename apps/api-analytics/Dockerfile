@@ -1,11 +1,11 @@
-FROM node:20-bookworm-slim
+FROM node:20-alpine
 
 EXPOSE 4008
 
 ENV PRISMA_LOCATION_ANALYTICS=/app/node_modules/.prisma/api-analytics-client
 
-RUN apt update
-RUN apt install -y git
+RUN apk upgrade --update-cache --available && \
+    rm -rf /var/cache/apk/*
 
 WORKDIR /app
 COPY ./dist/apps/api-analytics .
