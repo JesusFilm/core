@@ -50,7 +50,10 @@ export function TemplateGalleryCard({
   priority
 }: TemplateGalleryCardProps): ReactElement {
   const router = useRouter()
-  const journeyIdPath = `${router.pathname}/${journey?.id ?? ''}`
+  const journeyBasePath = router.pathname.startsWith('/journeys')
+    ? '/journeys'
+    : '/templates'
+  const journeyIdPath = `${journeyBasePath}/${journey?.id ?? ''}`
 
   const localLanguage = journey?.language?.name.find(
     ({ primary }) => !primary
