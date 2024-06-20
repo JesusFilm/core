@@ -108,12 +108,14 @@ describe('CrowdinService', () => {
         disableManifestCache: true,
         disableStringsCache: true
       })
+
       expect(prismaService.video.findMany).toHaveBeenCalledWith({
         select: { id: true },
         where: {
           id: { endsWith: 'cl13-0-0' }
         }
       })
+
       expect(prismaService.videoTitle.upsert).toHaveBeenCalledWith({
         create: {
           languageId: '3804',
@@ -124,6 +126,7 @@ describe('CrowdinService', () => {
         update: { value: '스토리 클럽' },
         where: { videoId_languageId: { languageId: '3804', videoId: 'id' } }
       })
+
       expect(prismaService.videoTitle.upsert).toHaveBeenCalledTimes(2)
     })
 
@@ -145,6 +148,7 @@ describe('CrowdinService', () => {
           childIds: []
         } as unknown as Video
       ])
+
       mockGetTranslations.mockResolvedValue({
         ko: [
           {
@@ -177,12 +181,14 @@ describe('CrowdinService', () => {
         disableManifestCache: true,
         disableStringsCache: true
       })
+
       expect(prismaService.video.findMany).toHaveBeenCalledWith({
         select: { id: true },
         where: {
           id: { endsWith: 'cl13-0-0' }
         }
       })
+
       expect(prismaService.videoDescription.upsert).toHaveBeenCalledWith({
         create: {
           languageId: '3804',
@@ -193,12 +199,12 @@ describe('CrowdinService', () => {
         update: { value: '스토리 클럽' },
         where: { videoId_languageId: { languageId: '3804', videoId: 'id' } }
       })
+
       expect(prismaService.videoDescription.upsert).toHaveBeenCalledTimes(2)
     })
 
     it('should get crowdin translations for study questions and push to api-videos', async () => {
       process.env.CROWDIN_DISTRIBUTION_HASH = 'hash'
-
       prismaService.videoStudyQuestion.findMany.mockResolvedValue([
         {
           id: '1',
@@ -219,6 +225,7 @@ describe('CrowdinService', () => {
           videoId: 'video2'
         }
       ])
+
       mockGetTranslations.mockResolvedValue({
         ko: [
           {
@@ -243,6 +250,7 @@ describe('CrowdinService', () => {
         disableManifestCache: true,
         disableStringsCache: true
       })
+
       expect(prismaService.videoStudyQuestion.upsert).toHaveBeenNthCalledWith(
         1,
         {
@@ -264,6 +272,7 @@ describe('CrowdinService', () => {
           }
         }
       )
+
       expect(prismaService.videoStudyQuestion.upsert).toHaveBeenNthCalledWith(
         2,
         {
@@ -285,12 +294,12 @@ describe('CrowdinService', () => {
           }
         }
       )
+
       expect(prismaService.videoStudyQuestion.upsert).toHaveBeenCalledTimes(2)
     })
 
     it('should get crowdin translations for bible book names and push to api-videos', async () => {
       process.env.CROWDIN_DISTRIBUTION_HASH = 'hash'
-
       prismaService.bibleBook.findMany.mockResolvedValue([
         {
           id: '1',
@@ -333,6 +342,7 @@ describe('CrowdinService', () => {
           id: '1'
         }
       })
+
       expect(prismaService.bibleBookName.upsert).toHaveBeenCalledWith({
         create: {
           languageId: '3804',
@@ -341,7 +351,9 @@ describe('CrowdinService', () => {
           bibleBookId: '1'
         },
         update: { value: '창세기' },
-        where: { bibleBookId_languageId: { languageId: '3804', bibleBookId: '1' } }
+        where: {
+          bibleBookId_languageId: { languageId: '3804', bibleBookId: '1' }
+        }
       })
     })
 

@@ -45,7 +45,7 @@ class MatchError extends Error {
 
 @Injectable()
 export class CrowdinService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async pullTranslations(): Promise<void> {
     if (process.env.CROWDIN_DISTRIBUTION_HASH == null)
@@ -166,7 +166,9 @@ export class CrowdinService {
           const bibleBookId = resName
           const bibleBooks = await this.getBibleBooks(bibleBookId)
           if (bibleBooks.length === 0)
-            throw new MatchError(`no matching bibleBookId found for ${bibleBookId}`)
+            throw new MatchError(
+              `no matching bibleBookId found for ${bibleBookId}`
+            )
           await this.updateBibleBookName(bibleBookId, languageId, value)
         }
         break
