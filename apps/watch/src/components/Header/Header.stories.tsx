@@ -4,6 +4,7 @@ import { screen, userEvent } from '@storybook/testing-library'
 
 import { watchConfig } from '../../libs/storybook'
 
+import { ThemeMode } from '@core/shared/ui/themes'
 import { Header } from './Header'
 
 const HeaderStory: Meta<typeof Header> = {
@@ -18,11 +19,11 @@ const HeaderStory: Meta<typeof Header> = {
 const Template: StoryObj<typeof Header> = {
   render: () => (
     <Box
-      sx={{
-        backgroundColor: '#26262E'
-      }}
+    // sx={{
+    //   backgroundColor: '#26262E'
+    // }}
     >
-      <Header />
+      <Header themeMode={ThemeMode.light} />
     </Box>
   )
 }
