@@ -51,13 +51,18 @@ const LocalAppBar = forwardRef<HTMLDivElement, LocalAppBarProps>(
               }}
             >
               <Grid item sx={{ gridRow: 1 }}>
-                <NextLink href="/watch">
-                  <Box
-                    sx={{
-                      width: { xs: '64px', md: '76px', xl: '88px' },
-                      marginLeft: { xs: '-8px', md: '-12px', xl: '0px' }
-                    }}
-                  >
+                <Box
+                  sx={{
+                    width: { xs: '64px', md: '76px', xl: '88px' },
+                    marginLeft: {
+                      xs: '-8px',
+                      md: '-14px',
+                      xl: '-16px',
+                      xxl: '0px'
+                    }
+                  }}
+                >
+                  <NextLink href="/watch">
                     <Image
                       src={minimalLogo}
                       alt="Watch Logo"
@@ -67,8 +72,8 @@ const LocalAppBar = forwardRef<HTMLDivElement, LocalAppBarProps>(
                         height: 'auto'
                       }}
                     />
-                  </Box>
-                </NextLink>
+                  </NextLink>
+                </Box>
               </Grid>
               <Grid
                 item
@@ -81,14 +86,27 @@ const LocalAppBar = forwardRef<HTMLDivElement, LocalAppBarProps>(
                 <HeaderTabButtons />
               </Grid>
               <Grid item sx={{ gridRow: 1 }}>
-                <IconButton
-                  color="inherit"
-                  aria-label="open header menu"
-                  edge="start"
-                  onClick={onMenuClick}
+                <Box
+                  data-testid="MenuBox"
+                  sx={{
+                    marginRight: {
+                      xs: '-18px',
+                      md: '-14px',
+                      lg: '-22px',
+                      xl: '-14px',
+                      xxl: '2px'
+                    }
+                  }}
                 >
-                  <MenuIcon />
-                </IconButton>
+                  <IconButton
+                    color="inherit"
+                    aria-label="open header menu"
+                    edge="start"
+                    onClick={onMenuClick}
+                  >
+                    <MenuIcon />
+                  </IconButton>
+                </Box>
               </Grid>
             </Grid>
           </Toolbar>
