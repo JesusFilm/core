@@ -1,5 +1,6 @@
 import { GetStaticPaths, GetStaticProps } from 'next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import PlausibleProvider from 'next-plausible'
 import { NextSeo } from 'next-seo'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
@@ -34,7 +35,17 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
     void router.push('/embed/[journeySlug]', `/embed/${journey.slug}`)
   }
   return (
-    <>
+    <PlausibleProvider
+      enabled
+      trackLocalhost
+      trackFileDownloads
+      trackOutboundLinks
+      manualPageviews
+      customDomain="/plausible"
+      domain={`api-journeys-journey-${journey.id}${
+        journey.team?.id != null ? `,api-journeys-team-${journey.team.id}` : ''
+      }`}
+    >
       <Head>
         <link
           rel="alternate"
@@ -96,7 +107,7 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
           )}
         </ThemeProvider>
       </JourneyProvider>
-    </>
+    </PlausibleProvider>
   )
 }
 
