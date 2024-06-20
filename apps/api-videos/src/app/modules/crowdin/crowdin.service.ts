@@ -6,8 +6,6 @@ import z from 'zod'
 
 import { PrismaService } from '../../lib/prisma.service'
 
-// TODO: uncomment bible books when there is support for bible citations
-
 type CrowdinFileName =
   | '/Arclight/collection_title.csv'
   | '/Arclight/collection_long_description.csv'
