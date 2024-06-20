@@ -26,12 +26,14 @@ export class TextResponseSubmissionEventResolver {
     @CurrentUserId() userId: string,
     @Args('input') input: TextResponseSubmissionEventCreateInput
   ): Promise<TextResponseSubmissionEvent> {
-    const { visitor, journeyVisitor, journeyId } =
+    const { visitor, journeyVisitor, journeyId, block } =
       await this.eventService.validateBlockEvent(
         userId,
         input.blockId,
         input.stepId
       )
+
+    // if block is of type email and has a route id - run a function that adds them to subscriber list in growth spaces
 
     const [textResponseSubmissionEvent] = await Promise.all([
       this.eventService.save({
