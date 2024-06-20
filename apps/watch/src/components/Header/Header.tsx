@@ -123,6 +123,25 @@ export function Header({
   const trigger = useScrollTrigger()
   const [drawerOpen, setDrawerOpen] = useState(false)
 
+  const lightTheme = themeMode === ThemeMode.light
+
+  const lightStyles = {
+    backgroundImage:
+      'linear-gradient(rgb(255 255 255 / 60%), rgb(255 255 255 / 26%))',
+    backdropFilter: 'blur(20px) brightness(1.1)',
+    '-webkit-backdrop-filter': 'blur(20px) brightness(1.1)'
+    // transition: 'background-image 1s, backdrop-filter 1s'
+  }
+
+  const darkStyles = {
+    backgroundImage: 'linear-gradient(rgb(0 0 0 / 60%), rgb(0 0 0 / 26%))',
+    backdropFilter: 'blur(20px) brightness(0.9)',
+    '-webkit-backdrop-filter': 'blur(20px) brightness(0.9)'
+    // transition: 'background-image 1s, backdrop-filter 1s'
+  }
+
+  const appBarStyles = lightTheme ? lightStyles : darkStyles
+
   return (
     <>
       {hideSpacer !== true && (
@@ -146,12 +165,12 @@ export function Header({
             sx={{
               background: 'transparent',
               boxShadow: 'none',
-              backdropFilter: 'blur(10px)',
-              '-webkit-backdrop-filter': 'blur(10px)'
+              ...appBarStyles
+              // ...(trigger ? appBarStyles : {})
             }}
             data-testid="Header"
             position="fixed"
-            showDivider={themeMode === ThemeMode.light}
+            showDivider={lightTheme}
             onMenuClick={() => setDrawerOpen(true)}
           />
         </Fade>
