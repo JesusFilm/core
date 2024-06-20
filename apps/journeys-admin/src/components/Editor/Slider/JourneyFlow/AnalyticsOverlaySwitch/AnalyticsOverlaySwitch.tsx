@@ -5,6 +5,7 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { Typography } from '@mui/material'
 
 export function AnalyticsOverlaySwitch(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -29,7 +30,9 @@ export function AnalyticsOverlaySwitch(): ReactElement {
             onChange={handleSwitchAnalytics}
           />
         }
-        label={t('Analytics')}
+        label={
+          <Typography variant="subtitle2">{t('Analytics Overlay')}</Typography>
+        }
         labelPlacement="start"
       />
     </Stack>
