@@ -13,10 +13,20 @@ const nextConfig = {
   images: {
     remotePatterns: [
       { protocol: 'http', hostname: 'localhost' },
+      { protocol: 'https', hostname: 'unsplash.com' },
+      { protocol: 'https', hostname: 'images.unsplash.com' },
+      { protocol: 'https', hostname: 'imagizer.imageshack.com' },
+      { protocol: 'https', hostname: 'i.ytimg.com' },
       // arclight image provider - cloudfront
       { protocol: 'https', hostname: 'd1wl257kev7hsz.cloudfront.net' },
       // cloudflare
-      { protocol: 'https', hostname: 'imagedelivery.net' }
+      { protocol: 'https', hostname: 'imagedelivery.net' },
+      {
+        protocol: 'https',
+        hostname: `customer-${
+          process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ?? ''
+        }.cloudflarestream.com`
+      }
     ],
     minimumCacheTTL: 31536000
   },
