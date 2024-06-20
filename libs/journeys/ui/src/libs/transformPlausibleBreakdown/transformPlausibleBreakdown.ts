@@ -2,6 +2,7 @@ import replace from 'lodash/replace'
 
 import { JourneyPlausibleEvents, reverseKeyify } from '../plausibleHelpers'
 
+import { PlausibleJourneyActionsSumsFields as JourneyActionsSums } from './plausibleFields/__generated__/PlausibleJourneyActionsSumsFields'
 import { PlausibleJourneyAggregateVisitorsFields as JourneyAggregateVisitors } from './plausibleFields/__generated__/PlausibleJourneyAggregateVisitorsFields'
 import { PlausibleJourneyReferrerFields as JourneyReferrer } from './plausibleFields/__generated__/PlausibleJourneyReferrerFields'
 import { PlausibleJourneyStepsActionsFields as JourneyStepsAction } from './plausibleFields/__generated__/PlausibleJourneyStepsActionsFields'
@@ -14,6 +15,7 @@ export interface StatsBreakdown {
   journeyReferrer: JourneyReferrer[]
   journeyAggregateVisitors: JourneyAggregateVisitors
   journeyVisitorsPageExits: JourneyVisitorsPageExit[]
+  journeyActionsSums: JourneyActionsSums[]
 }
 
 export interface JourneyStatsBreakdown {

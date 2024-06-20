@@ -3,8 +3,8 @@ import { ReactElement } from 'react'
 import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { transformer } from '@core/journeys/ui/transformer'
 import { transformPlausibleBreakdown } from '@core/journeys/ui/transformPlausibleBreakdown'
+import { transformer } from '@core/journeys/ui/transformer'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
@@ -35,6 +35,8 @@ export function Editor({
     id: journey?.id ?? '',
     idType: IdType.databaseId
   })
+
+  console.log(data)
 
   const journeyStatsBreakdown = transformPlausibleBreakdown({
     journeyId: journey?.id,

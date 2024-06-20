@@ -1,6 +1,7 @@
 import { QueryResult, gql, useQuery } from '@apollo/client'
 
 import {
+  PLAUSIBLE_JOURNEY_ACTIONS_SUMS_FIELDS,
   PLAUSIBLE_JOURNEY_AGGREGATE_VISITORS_FIELDS,
   PLAUSIBLE_JOURNEY_REFERRER_FIELDS,
   PLAUSIBLE_JOURNEY_STEPS_ACTIONS_FIELDS,
@@ -14,11 +15,12 @@ import {
 } from '../../../__generated__/GetJourneyPlausibleStatsBreakdown'
 
 export const GET_JOURNEY_PLAUSIBLE_STATS_BREAKDOWN = gql`
-  ${PLAUSIBLE_JOURNEY_AGGREGATE_VISITORS_FIELDS}
-  ${PLAUSIBLE_JOURNEY_REFERRER_FIELDS}
-  ${PLAUSIBLE_JOURNEY_STEPS_ACTIONS_FIELDS}
   ${PLAUSIBLE_JOURNEY_STEPS_FIELDS}
+  ${PLAUSIBLE_JOURNEY_STEPS_ACTIONS_FIELDS}
+  ${PLAUSIBLE_JOURNEY_REFERRER_FIELDS}
   ${PLAUSIBLE_JOURNEY_VISITORS_PAGE_EXITS_FIELDS}
+  ${PLAUSIBLE_JOURNEY_AGGREGATE_VISITORS_FIELDS}
+  ${PLAUSIBLE_JOURNEY_ACTIONS_SUMS_FIELDS}
   query GetJourneyPlausibleStatsBreakdown(
     $id: ID!
     $idType: IdType
@@ -33,7 +35,6 @@ export const GET_JOURNEY_PLAUSIBLE_STATS_BREAKDOWN = gql`
       idType: $idType
       where: {
         property: "event:page"
-        filters: "visitors"
         period: $period
         date: $date
         limit: $limit
@@ -80,6 +81,19 @@ export const GET_JOURNEY_PLAUSIBLE_STATS_BREAKDOWN = gql`
       }
     ) {
       ...PlausibleJourneyVisitorsPageExitsFields
+    }
+    journeyActionsSums: journeysPlausibleStatsBreakdown(
+      id: $id
+      idType: $idType
+      where: {
+        property: "event:props:simpleKey"
+        period: $period
+        date: $date
+        limit: $limit
+        page: $page
+      }
+    ) {
+      ...PlausibleJourneyActionsSumsFields
     }
     journeyAggregateVisitors: journeysPlausibleStatsAggregate(
       id: $id
