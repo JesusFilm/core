@@ -11,7 +11,13 @@ const { i18n } = require('./next-i18next.config')
 const nextConfig = {
   swcMinify: true,
   images: {
-    domains: ['localhost', 'd1wl257kev7hsz.cloudfront.net'],
+    remotePatterns: [
+      { protocol: 'http', hostname: 'localhost' },
+      // arclight image provider - cloudfront
+      { protocol: 'https', hostname: 'd1wl257kev7hsz.cloudfront.net' },
+      // cloudflare
+      { protocol: 'https', hostname: 'imagedelivery.net' },
+    ],
     minimumCacheTTL: 31536000
   },
   i18n,
