@@ -34,6 +34,7 @@ const LocalAppBar = forwardRef<HTMLDivElement, LocalAppBarProps>(
         {...props}
         sx={{
           p: 4,
+          pb: showDivider ? 0 : 4,
           color: 'text.primary',
           ...props.sx
         }}
@@ -124,7 +125,12 @@ export function Header({
 
   return (
     <>
-      {hideSpacer !== true && <Box data-testid="HeaderSpacer" height={128} />}
+      {hideSpacer !== true && (
+        <Box
+          data-testid="HeaderSpacer"
+          sx={{ height: { xs: 108, md: 120, lg: 168, xl: 132 } }}
+        />
+      )}
       <ThemeProvider themeName={ThemeName.website} themeMode={themeMode} nested>
         <Fade
           appear={false}
