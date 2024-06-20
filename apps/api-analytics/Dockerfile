@@ -19,5 +19,4 @@ RUN npx prisma@^5.2.0 generate --generator client
 
 WORKDIR /app
 
-RUN npm install uNetworking/uWebSockets.js#v20.44.0
 CMD node ./main.js
