@@ -2,20 +2,20 @@ import {
   ApolloClient,
   HttpLink,
   InMemoryCache,
-  type NormalizedCacheObject,
+  NormalizedCacheObject,
   gql
 } from '@apollo/client'
 import { InjectQueue } from '@nestjs/bullmq'
-import { Injectable, type OnModuleInit } from '@nestjs/common'
-import axios, { type AxiosInstance } from 'axios'
-import type { Queue } from 'bullmq'
+import { Injectable, OnModuleInit } from '@nestjs/common'
+import axios, { AxiosInstance } from 'axios'
+import { Queue } from 'bullmq'
 import { GraphQLError } from 'graphql'
 import camelCase from 'lodash/camelCase'
 import get from 'lodash/get'
 import last from 'lodash/last'
 import reduce from 'lodash/reduce'
 
-import type { JourneyPlausibleEvents } from '@core/journeys/ui/plausibleHelpers'
+import { JourneyPlausibleEvents } from '@core/journeys/ui/plausibleHelpers'
 
 import { MutationSiteCreateResult } from '../../../__generated__/graphql'
 import {
@@ -25,9 +25,9 @@ import {
   PlausibleStatsResponse,
   PlausibleStatsTimeseriesFilter
 } from '../../__generated__/graphql'
-import type { PrismaService } from '../../lib/prisma.service'
+import { PrismaService } from '../../lib/prisma.service'
 
-import type { PlausibleJob } from './plausible.consumer'
+import { PlausibleJob } from './plausible.consumer'
 
 const SITE_CREATE = gql(`
   mutation SiteCreate($input: SiteCreateInput!) {
@@ -239,6 +239,7 @@ export class PlausibleService implements OnModuleInit {
         }
       }
     )
+
     return response.data
   }
 
