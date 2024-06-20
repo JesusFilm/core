@@ -196,6 +196,7 @@ export function Video({
             videoId={eventVideoId}
             startAt={startAt}
             endAt={videoEndTime}
+            action={action}
           />
         )}
 

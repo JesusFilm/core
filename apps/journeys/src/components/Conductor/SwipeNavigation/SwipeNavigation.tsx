@@ -2,7 +2,7 @@ import { useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import { useTranslation } from 'next-i18next'
 import { usePlausible } from 'next-plausible'
-import { type ReactElement, type ReactNode, useCallback } from 'react'
+import { ReactElement, ReactNode, useCallback } from 'react'
 import TagManager from 'react-gtm-module'
 import { type SwipeEventData, useSwipeable } from 'react-swipeable'
 import { v4 as uuidv4 } from 'uuid'
@@ -12,26 +12,30 @@ import {
   STEP_PREVIOUS_EVENT_CREATE
 } from '@core/journeys/ui/Card/Card'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { type TreeBlock, useBlocks } from '@core/journeys/ui/block'
+import { getStepHeading } from '@core/journeys/ui/getStepHeading'
 import {
   type JourneyPlausibleEvents,
   keyify
 } from '@core/journeys/ui/plausibleHelpers'
-import { type TreeBlock, useBlocks } from '@core/journeys/ui/block'
-import { getStepHeading } from '@core/journeys/ui/getStepHeading'
+import {
+  JourneyPlausibleEvents,
+  keyify
+} from '@core/journeys/ui/plausibleHelpers'
 
-import type {
-  StepNextEventCreateInput,
-  StepPreviousEventCreateInput
-} from '../../../../__generated__/globalTypes'
-import type { StepFields } from '../../../../__generated__/StepFields'
-import type {
+import { StepFields } from '../../../../__generated__/StepFields'
+import {
   StepNextEventCreate,
   StepNextEventCreateVariables
 } from '../../../../__generated__/StepNextEventCreate'
-import type {
+import {
   StepPreviousEventCreate,
   StepPreviousEventCreateVariables
 } from '../../../../__generated__/StepPreviousEventCreate'
+import {
+  StepNextEventCreateInput,
+  StepPreviousEventCreateInput
+} from '../../../../__generated__/globalTypes'
 
 interface SwipeNavigationProps {
   activeBlock: TreeBlock<StepFields>
@@ -114,6 +118,11 @@ export function SwipeNavigation({
                 event: 'navigateNextStep',
                 blockId: input.blockId,
                 target: input.nextStepId
+              }),
+              simpleKey: keyify({
+                stepId: input.blockId,
+                event: 'navigateNextStep',
+                blockId: input.blockId
               })
             }
           })
@@ -174,6 +183,11 @@ export function SwipeNavigation({
                 event: 'navigatePreviousStep',
                 blockId: input.blockId,
                 target: input.previousStepId
+              }),
+              simpleKey: keyify({
+                stepId: input.blockId,
+                event: 'navigatePreviousStep',
+                blockId: input.blockId
               })
             }
           })

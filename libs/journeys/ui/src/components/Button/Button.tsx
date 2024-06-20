@@ -14,11 +14,11 @@ import {
   ButtonVariant,
   ChatOpenEventCreateInput
 } from '../../../__generated__/globalTypes'
+import { useJourney } from '../../libs/JourneyProvider'
 import { handleAction } from '../../libs/action'
 import type { TreeBlock } from '../../libs/block'
 import { useBlocks } from '../../libs/block'
 import { getStepHeading } from '../../libs/getStepHeading'
-import { useJourney } from '../../libs/JourneyProvider'
 import { JourneyPlausibleEvents } from '../../libs/plausibleHelpers'
 import { keyify } from '../../libs/plausibleHelpers/plausibleHelpers'
 import { Icon } from '../Icon'
@@ -129,6 +129,11 @@ export function Button({
               event: 'buttonClick',
               blockId: input.blockId,
               target: action
+            }),
+            simpleKey: keyify({
+              stepId: input.stepId ?? '',
+              event: 'buttonClick',
+              blockId: input.blockId
             })
           }
         })
@@ -160,6 +165,11 @@ export function Button({
               event: 'chatButtonClick',
               blockId: input.blockId,
               target: action
+            }),
+            simpleKey: keyify({
+              stepId: input.stepId ?? '',
+              event: 'chatButtonClick',
+              blockId: input.blockId
             })
           }
         })

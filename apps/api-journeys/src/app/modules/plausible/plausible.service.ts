@@ -17,8 +17,8 @@ import reduce from 'lodash/reduce'
 
 import type { JourneyPlausibleEvents } from '@core/journeys/ui/plausibleHelpers'
 
-import type { MutationSiteCreateResult } from '../../../__generated__/graphql'
-import type {
+import { MutationSiteCreateResult } from '../../../__generated__/graphql'
+import {
   PlausibleStatsAggregateFilter,
   PlausibleStatsAggregateResponse,
   PlausibleStatsBreakdownFilter,

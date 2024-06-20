@@ -7,11 +7,12 @@ import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
 import { StepViewEventCreateInput } from '../../../__generated__/globalTypes'
+import { useJourney } from '../../libs/JourneyProvider/JourneyProvider'
 import type { TreeBlock } from '../../libs/block'
 import { isActiveBlockOrDescendant, useBlocks } from '../../libs/block'
 import { getStepHeading } from '../../libs/getStepHeading'
-import { useJourney } from '../../libs/JourneyProvider/JourneyProvider'
 import { JourneyPlausibleEvents, keyify } from '../../libs/plausibleHelpers'
+// eslint-disable-next-line import/no-cycle
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 
 import { StepFields } from './__generated__/StepFields'
@@ -65,18 +66,21 @@ export function Step({
           input
         }
       })
-      if (journey != null)
+      if (journey != null) {
+        const key = keyify({
+          stepId: input.blockId,
+          event: 'pageview',
+          blockId: input.blockId
+        })
         plausible('pageview', {
           u: `${journey.id}/${blockId}`,
           props: {
             ...input,
-            key: keyify({
-              stepId: input.blockId,
-              event: 'pageview',
-              blockId: input.blockId
-            })
+            key,
+            simpleKey: key
           }
         })
+      }
       TagManager.dataLayer({
         dataLayer: {
           event: 'step_view',

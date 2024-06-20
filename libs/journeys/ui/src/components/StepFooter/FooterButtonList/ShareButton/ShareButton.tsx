@@ -4,8 +4,9 @@ import { ReactElement, useState } from 'react'
 
 import ShareIcon from '@core/shared/ui/icons/Share'
 
-import { useBlocks } from '../../../../libs/block'
 import { useJourney } from '../../../../libs/JourneyProvider'
+import { useBlocks } from '../../../../libs/block'
+import { useBlocks } from '../../../../libs/block'
 import {
   JourneyPlausibleEvents,
   keyify
@@ -28,20 +29,23 @@ export function ShareButton(): ReactElement {
       : undefined
 
   async function handleShare(): Promise<void> {
+    console.log('here', variant, url)
     if (variant === 'admin' || url == null) return
 
     if (journey != null) {
       const input = {
         blockId: activeBlock?.id
       }
+      const key = keyify({
+        stepId: input.blockId ?? '',
+        event: 'shareButtonClick',
+        blockId: input.blockId
+      })
       plausible('shareButtonClick', {
         props: {
           ...input,
-          key: keyify({
-            stepId: input.blockId ?? '',
-            event: 'shareButtonClick',
-            blockId: input.blockId
-          })
+          key,
+          simpleKey: key
         }
       })
     }

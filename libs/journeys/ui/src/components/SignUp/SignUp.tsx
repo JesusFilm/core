@@ -19,7 +19,6 @@ import { handleAction } from '../../libs/action'
 import { useBlocks } from '../../libs/block'
 import type { TreeBlock } from '../../libs/block'
 import { getStepHeading } from '../../libs/getStepHeading'
-import { useJourney } from '../../libs/JourneyProvider'
 import { JourneyPlausibleEvents, keyify } from '../../libs/plausibleHelpers'
 import { Icon } from '../Icon'
 import { IconFields } from '../Icon/__generated__/IconFields'
@@ -122,6 +121,11 @@ export const SignUp = ({
                 event: 'signupSubmit',
                 blockId: input.blockId,
                 target: action
+              }),
+              simpleKey: keyify({
+                stepId: input.stepId ?? '',
+                event: 'signupSubmit',
+                blockId: input.blockId
               })
             }
           })

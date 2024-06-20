@@ -9,11 +9,12 @@ import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
 import { RadioQuestionSubmissionEventCreateInput } from '../../../__generated__/globalTypes'
+import { useJourney } from '../../libs/JourneyProvider'
 import type { TreeBlock } from '../../libs/block'
 import { isActiveBlockOrDescendant, useBlocks } from '../../libs/block'
 import { getStepHeading } from '../../libs/getStepHeading'
-import { useJourney } from '../../libs/JourneyProvider'
 import { JourneyPlausibleEvents, keyify } from '../../libs/plausibleHelpers'
+// eslint-disable-next-line import/no-cycle
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { RadioOption } from '../RadioOption'
 import { RadioOptionFields } from '../RadioOption/__generated__/RadioOptionFields'
@@ -105,6 +106,11 @@ export function RadioQuestion({
               event: 'radioQuestionSubmit',
               blockId: radioOptionBlock.id,
               target: radioOptionBlock.action
+            }),
+            simpleKey: keyify({
+              stepId: input.stepId ?? '',
+              event: 'radioQuestionSubmit',
+              blockId: radioOptionBlock.id
             })
           }
         })
