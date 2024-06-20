@@ -28,6 +28,7 @@ export function ShareButton(): ReactElement {
       : undefined
 
   async function handleShare(): Promise<void> {
+    console.log('here', variant, url)
     if (variant === 'admin' || url == null) return
 
     if (journey != null) {

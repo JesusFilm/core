@@ -1,8 +1,10 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { render, waitFor } from '@testing-library/react'
+import { usePlausible } from 'next-plausible'
 import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
+import { keyify } from '@core/journeys/ui/plausibleHelpers'
 import {
   JourneyStatus,
   ThemeMode,
@@ -45,6 +47,15 @@ jest.mock('next/head', () => {
     }
   }
 })
+
+jest.mock('next-plausible', () => ({
+  __esModule: true,
+  usePlausible: jest.fn()
+}))
+
+const mockUsePlausible = usePlausible as jest.mockedFunction<
+  typeof usePlausible
+>
 
 const journey: Journey = {
   __typename: 'Journey',
@@ -159,6 +170,8 @@ describe('Step', () => {
     mockUuidv4.mockReturnValueOnce('uuid')
     treeBlocksVar([block])
     blockHistoryVar([block])
+    const mockPlausible = jest.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
 
     render(
       <MockedProvider mocks={[mockStepViewEventCreate]}>
@@ -170,9 +183,28 @@ describe('Step', () => {
     await waitFor(() =>
       expect(mockStepViewEventCreate.result).toHaveBeenCalled()
     )
+    expect(mockPlausible).toHaveBeenCalledWith('pageview', {
+      u: 'journeyId/Step1',
+      props: {
+        id: 'uuid',
+        blockId: 'Step1',
+        value: 'Step {{number}}',
+        key: keyify({
+          stepId: 'Step1',
+          event: 'pageview',
+          blockId: 'Step1'
+        }),
+        simpleKey: keyify({
+          stepId: 'Step1',
+          event: 'pageview',
+          blockId: 'Step1'
+        })
+      }
+    })
   })
 
   it('should stepViewEvent to dataLayer', async () => {
+    mockUsePlausible.mockReturnValue(jest.fn())
     mockUuidv4.mockReturnValueOnce('uuid')
     blockHistoryVar([block])
     treeBlocksVar([block])
@@ -278,6 +310,7 @@ describe('Step', () => {
 
   it('should set seoTitle to [journey name (step name)] if activeStep and on first card', () => {
     mockUuidv4.mockReturnValueOnce('uuid')
+    mockUsePlausible.mockReturnValue(jest.fn())
     treeBlocksVar([block])
     blockHistoryVar([block])
 
@@ -295,6 +328,7 @@ describe('Step', () => {
 
   it('should set seoTitle to [step name (journey name)] if activeStep and not on first card', () => {
     mockUuidv4.mockReturnValueOnce('uuid')
+    mockUsePlausible.mockReturnValue(jest.fn())
     treeBlocksVar([{ ...block, id: 'Step0' }, block])
     blockHistoryVar([block])
 
