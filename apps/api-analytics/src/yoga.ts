@@ -21,7 +21,6 @@ export const yoga = createYoga({
       apiKey
     } as Context
   },
-  logging: 'error',
   plugins: [
     authZEnvelopPlugin({ rules }),
     useReadinessCheck({
