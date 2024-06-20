@@ -4,7 +4,7 @@ import { useTranslation } from 'next-i18next'
 import { usePlausible } from 'next-plausible'
 import { ReactElement, ReactNode, useCallback } from 'react'
 import TagManager from 'react-gtm-module'
-import { type SwipeEventData, useSwipeable } from 'react-swipeable'
+import { SwipeEventData, useSwipeable } from 'react-swipeable'
 import { v4 as uuidv4 } from 'uuid'
 
 import {
@@ -12,12 +12,8 @@ import {
   STEP_PREVIOUS_EVENT_CREATE
 } from '@core/journeys/ui/Card/Card'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { type TreeBlock, useBlocks } from '@core/journeys/ui/block'
+import { TreeBlock, useBlocks } from '@core/journeys/ui/block'
 import { getStepHeading } from '@core/journeys/ui/getStepHeading'
-import {
-  type JourneyPlausibleEvents,
-  keyify
-} from '@core/journeys/ui/plausibleHelpers'
 import {
   JourneyPlausibleEvents,
   keyify
