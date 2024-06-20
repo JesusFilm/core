@@ -15,10 +15,10 @@ import {
   MessagePlatform
 } from '../../../__generated__/globalTypes'
 import { JourneyProvider } from '../../libs/JourneyProvider'
+import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
 import { handleAction } from '../../libs/action'
 import { TreeBlock, blockHistoryVar, treeBlocksVar } from '../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
-import { JourneyFields as Journey } from '../../libs/journey/__generated__/JourneyFields'
 
 import { BUTTON_CLICK_EVENT_CREATE, CHAT_OPEN_EVENT_CREATE } from './Button'
 import {
@@ -70,7 +70,7 @@ jest.mock('next-plausible', () => ({
   usePlausible: jest.fn()
 }))
 
-const mockUsePlausible = usePlausible as jest.mockedFunction<
+const mockUsePlausible = usePlausible as jest.MockedFunction<
   typeof usePlausible
 >
 

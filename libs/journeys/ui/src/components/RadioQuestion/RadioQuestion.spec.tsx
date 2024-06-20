@@ -5,11 +5,11 @@ import TagManager from 'react-gtm-module'
 
 import { keyify } from '@core/journeys/ui/plausibleHelpers'
 import { JourneyProvider } from '../../libs/JourneyProvider'
+import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
 import type { TreeBlock } from '../../libs/block'
 import { blockHistoryVar, treeBlocksVar } from '../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
 
-import { JourneyFields as Journey } from '../../libs/journey/__generated__/JourneyFields'
 import { RadioQuestionFields } from './__generated__/RadioQuestionFields'
 
 import { RADIO_QUESTION_SUBMISSION_EVENT_CREATE, RadioQuestion } from '.'
@@ -39,7 +39,7 @@ jest.mock('next-plausible', () => ({
   usePlausible: jest.fn()
 }))
 
-const mockUsePlausible = usePlausible as jest.mockedFunction<
+const mockUsePlausible = usePlausible as jest.MockedFunction<
   typeof usePlausible
 >
 
@@ -317,7 +317,7 @@ describe('RadioQuestion', () => {
             stepId: 'step.id',
             event: 'radioQuestionSubmit',
             blockId: 'RadioOption1',
-            target: block.action
+            target: null
           }),
           simpleKey: keyify({
             stepId: 'step.id',

@@ -1,4 +1,5 @@
 import { generateActionTargetKey, keyify, reverseKeyify } from '.'
+import { ActionFields as Action } from '../action/__generated__/ActionFields'
 
 describe('PlausibleHelpers', () => {
   describe('generateActionTargetKey', () => {
@@ -6,7 +7,7 @@ describe('PlausibleHelpers', () => {
       const action = {
         __typename: 'NavigateToBlockAction',
         blockId: 'blockId'
-      }
+      } as unknown as Action
       expect(generateActionTargetKey(action)).toBe('blockId')
     })
 
@@ -14,7 +15,7 @@ describe('PlausibleHelpers', () => {
       const action = {
         __typename: 'LinkAction',
         url: 'url'
-      }
+      } as unknown as Action
       expect(generateActionTargetKey(action)).toBe('link:url')
     })
 
@@ -22,7 +23,7 @@ describe('PlausibleHelpers', () => {
       const action = {
         __typename: 'EmailAction',
         email: 'email'
-      }
+      } as unknown as Action
       expect(generateActionTargetKey(action)).toBe('email:email')
     })
   })
@@ -53,7 +54,7 @@ describe('PlausibleHelpers', () => {
         target: {
           __typename: 'NavigateToBlockAction',
           blockId: 'blockId'
-        }
+        } as unknown as Action
       }
       expect(keyify(props)).toBe(
         JSON.stringify({

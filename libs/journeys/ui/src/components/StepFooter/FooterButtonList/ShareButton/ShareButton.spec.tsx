@@ -11,8 +11,8 @@ import {
   treeBlocksVar
 } from '../../../../libs/block'
 
+import { StepFields } from '../../../Step/__generated__/StepFields'
 import { ShareButton } from './ShareButton'
-import { StepFields } from './__generated__/StepFields'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -24,7 +24,7 @@ jest.mock('next-plausible', () => ({
   usePlausible: jest.fn()
 }))
 
-const mockUsePlausible = usePlausible as jest.mockedFunction<
+const mockUsePlausible = usePlausible as jest.MockedFunction<
   typeof usePlausible
 >
 

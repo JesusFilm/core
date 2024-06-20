@@ -4,12 +4,13 @@ import { usePlausible } from 'next-plausible'
 import { keyify } from '@core/journeys/ui/plausibleHelpers'
 import { ReactionButton } from '.'
 import { JourneyProvider } from '../../../../libs/JourneyProvider'
+import { JourneyFields as Journey } from '../../../../libs/JourneyProvider/__generated__/JourneyFields'
 import {
   TreeBlock,
   blockHistoryVar,
   treeBlocksVar
 } from '../../../../libs/block'
-import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
+import { StepFields } from '../../../Step/__generated__/StepFields'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -21,7 +22,7 @@ jest.mock('next-plausible', () => ({
   usePlausible: jest.fn()
 }))
 
-const mockUsePlausible = usePlausible as jest.mockedFunction<
+const mockUsePlausible = usePlausible as jest.MockedFunction<
   typeof usePlausible
 >
 

@@ -8,11 +8,11 @@ import TagManager from 'react-gtm-module'
 import { keyify } from '@core/journeys/ui/plausibleHelpers'
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 import { JourneyProvider } from '../../libs/JourneyProvider'
+import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
 import { handleAction } from '../../libs/action'
 import type { TreeBlock } from '../../libs/block'
 import { blockHistoryVar, treeBlocksVar } from '../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
-import { JourneyFields as Journey } from '../../libs/journey/__generated__/JourneyFields'
 
 import { SIGN_UP_SUBMISSION_EVENT_CREATE, SignUp } from './SignUp'
 import { SignUpFields } from './__generated__/SignUpFields'
@@ -50,7 +50,7 @@ jest.mock('next-plausible', () => ({
   usePlausible: jest.fn()
 }))
 
-const mockUsePlausible = usePlausible as jest.mockedFunction<
+const mockUsePlausible = usePlausible as jest.MockedFunction<
   typeof usePlausible
 >
 
