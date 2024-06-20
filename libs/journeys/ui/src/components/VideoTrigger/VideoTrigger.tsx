@@ -1,6 +1,5 @@
 import fscreen from 'fscreen'
 import { usePlausible } from 'next-plausible'
-import { usePlausible } from 'next-plausible'
 import { useRouter } from 'next/router'
 import { ReactElement, useEffect, useState } from 'react'
 import Player from 'video.js/dist/types/player'

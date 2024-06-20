@@ -6,7 +6,6 @@ import ShareIcon from '@core/shared/ui/icons/Share'
 
 import { useJourney } from '../../../../libs/JourneyProvider'
 import { useBlocks } from '../../../../libs/block'
-import { useBlocks } from '../../../../libs/block'
 import {
   JourneyPlausibleEvents,
   keyify
