@@ -27,6 +27,8 @@ input TextResponseBlockUpdateInput {
   label: String
   hint: String
   minRows: Int
+  routeId: String
+  type: TextResponseType
 }
 extend type Mutation {
   textResponseBlockCreate(

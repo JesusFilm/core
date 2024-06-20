@@ -1,15 +1,9 @@
-type GrowthSpaceRoutes {
-    id: String!
-    name: String!
-}
-
 type GrowthSpaceIntegration implements Integration {
     id: ID!       
     teamId: String!
     type: IntegrationType!
     accessId: String!
     accessSecretPart: String!
-    routes: [GrowthSpaceRoutes!]!
 }
 
 
@@ -21,6 +15,15 @@ input GrowthSpaceIntegrationCreateInput {
 input GrowthSpaceIntegrationUpdateInput {
     accessId: String
     accessSecretPart: String
+}
+
+type GrowthSpacesRoute {
+    id: String!
+    name: String!
+}
+
+extend type Query {
+    getGrowthSpacesRoutes(growthSpaceId: ID): [GrowthSpacesRoute!]!
 }
 
 extend type Mutation {
