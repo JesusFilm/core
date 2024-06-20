@@ -1,11 +1,11 @@
 import difference from 'lodash/difference'
 import {
+  http,
   GraphQLQuery,
   GraphQLVariables,
   HttpResponse,
   RequestHandler,
-  graphql,
-  http
+  graphql
 } from 'msw'
 
 import {
