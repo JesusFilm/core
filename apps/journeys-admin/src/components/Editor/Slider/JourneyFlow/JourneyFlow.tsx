@@ -321,7 +321,7 @@ export function JourneyFlow(): ReactElement {
         {activeSlide === ActiveSlide.JourneyFlow && (
           <>
             <Panel position="top-right">
-              <NewStepButton />
+              {!showJourneyFlowAnalytics && <NewStepButton />}
             </Panel>
             <Panel position="top-left">
               <AnalyticsOverlaySwitch />
