@@ -1,37 +1,79 @@
-import Card from '@mui/material/Card'
-import CardContent from '@mui/material/CardContent'
-import CardMedia from '@mui/material/CardMedia'
+import Plus1Icon from '@core/shared/ui/icons/Plus1'
+import InsertPhotoRoundedIcon from '@mui/icons-material/InsertPhotoRounded'
+import Box from '@mui/material/Box'
+import Skeleton from '@mui/material/Skeleton'
+import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import NextLink from 'next/link'
+import Image from 'next/image'
 
+import NextLink from 'next/link'
 import { ReactElement } from 'react'
 
 interface IntegrationItemProps {
-  imageSrc?: string
-  title?: string
   url: string
+  src?: string
+  title?: string
+  showAddButton?: boolean
 }
 
 export function IntegrationsListItem({
-  imageSrc,
+  url,
+  src,
   title,
-  url
+  showAddButton = false
 }: IntegrationItemProps): ReactElement {
   return (
-    <Card
-      style={{
+    <Stack
+      justifyContent="center"
+      alignItems="center"
+      sx={{
+        p: 4,
         width: 150,
         height: 180,
-        margin: 'auto',
-        border: 'none',
         borderRadius: 2,
-        boxShadow: 'none'
+        '&:hover': {
+          backgroundColor: (theme) => theme.palette.grey[200]
+        }
       }}
     >
-      {/* <NextLink href={url} passHref legacyBehavior> */}
-      <CardMedia style={{ height: 200 }} image={imageSrc} title={title} />
-      <Typography variant="h6">{title}</Typography>
-      {/* </NextLink> */}
-    </Card>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: 110,
+          width: 110,
+          border: (theme) => `1px solid ${theme.palette.grey[300]}`,
+          borderRadius: 2,
+          position: 'relative',
+          overflow: 'hidden',
+          mb: 3
+        }}
+      >
+        {showAddButton ? (
+          <Plus1Icon />
+        ) : src != null ? (
+          <Image src={src} alt={title ?? ''} layout="fill" objectFit="cover" />
+        ) : (
+          <InsertPhotoRoundedIcon />
+        )}
+      </Box>
+      {title != null || showAddButton ? (
+        <Typography
+          variant="body1"
+          sx={{
+            width: '100%',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textAlign: 'center'
+          }}
+        >
+          {showAddButton ? 'Add Integration' : title}
+        </Typography>
+      ) : (
+        <Skeleton variant="text" width="80%" />
+      )}
+    </Stack>
   )
 }

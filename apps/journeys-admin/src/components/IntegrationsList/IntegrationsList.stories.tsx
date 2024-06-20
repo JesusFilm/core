@@ -21,7 +21,7 @@ const Template: StoryObj<typeof IntegrationsList> = {
     <Box
       sx={{
         backgroundColor: 'background.paper',
-        height: '100%',
+        height: '100vh',
         p: 5
       }}
     >
@@ -32,6 +32,13 @@ const Template: StoryObj<typeof IntegrationsList> = {
 
 export const Default = {
   ...Template
+}
+
+export const Complete = {
+  ...Template,
+  args: {
+    showAddButton: true
+  }
 }
 
 export default IntegrationsListStory
