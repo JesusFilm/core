@@ -15,7 +15,7 @@ const bibleBookSchema = z.object({
 type BibleBook = z.infer<typeof bibleBookSchema>
 
 @Injectable()
-export class importerBibleBooksService extends ImporterService<BibleBook> {
+export class ImporterBibleBooksService extends ImporterService<BibleBook> {
   schema = bibleBookSchema
 
   constructor(private readonly prismaService: PrismaService) {

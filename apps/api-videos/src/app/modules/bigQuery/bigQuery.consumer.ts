@@ -15,7 +15,7 @@ import { ImporterVideoVariantsService } from '../importer/importerVideoVariants/
 import { ImporterVideosService } from '../importer/importerVideos/importerVideos.service'
 import { ImporterVideosChildrenService } from '../importer/importerVideosChildren/importerVideosChildren.service'
 
-import { importerBibleBooksService } from '../importer/importerBibleBooks/importerBibleBooks.service'
+import { ImporterBibleBooksService } from '../importer/importerBibleBooks/importerBibleBooks.service'
 import { BigQueryService } from './bigQuery.service'
 
 interface BigQueryRowError {
@@ -40,7 +40,7 @@ export class BigQueryConsumer extends WorkerHost {
     private readonly importerVideoVariantsDownloadService: ImporterVideoVariantDownloadsService,
     private readonly importerVideoVariantsSubtitleService: ImporterVideoVariantSubtitlesService,
     private readonly importerVideosChildrenService: ImporterVideosChildrenService,
-    private readonly importerBibleBooksService: importerBibleBooksService
+    private readonly importerBibleBooksService: ImporterBibleBooksService
   ) {
     super()
     this.tables = {

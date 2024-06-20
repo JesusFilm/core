@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common'
 
 import { PrismaService } from '../../lib/prisma.service'
 
-import { importerBibleBooksService } from './importerBibleBooks/importerBibleBooks.service'
+import { ImporterBibleBooksService } from './importerBibleBooks/importerBibleBooks.service'
 import { ImporterVideoDescriptionService } from './importerVideoDescriptions/importerVideoDescriptions.service'
 import { ImporterVideoImageAltService } from './importerVideoImageAlt/importerVideoImageAlt.service'
 import { ImporterVideoSnippetsService } from './importerVideoSnippets/importerVideoSnippets.service'
@@ -27,7 +27,7 @@ import { ImporterVideosChildrenService } from './importerVideosChildren/importer
     ImporterVideoVariantsService,
     ImporterVideoVariantDownloadsService,
     ImporterVideoVariantSubtitlesService,
-    importerBibleBooksService
+    ImporterBibleBooksService
   ],
   exports: [
     ImporterVideosService,
@@ -40,7 +40,7 @@ import { ImporterVideosChildrenService } from './importerVideosChildren/importer
     ImporterVideoVariantsService,
     ImporterVideoVariantDownloadsService,
     ImporterVideoVariantSubtitlesService,
-    importerBibleBooksService
+    ImporterBibleBooksService
   ]
 })
 export class ImporterModule {}
