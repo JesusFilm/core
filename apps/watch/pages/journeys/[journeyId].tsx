@@ -116,6 +116,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
     })
 
     return {
+      revalidate: 60,
       props: {
         content: data,
         flags: await getFlags(),
@@ -129,6 +130,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
   } catch (error) {
     if (error.message === 'journey not found') {
       return {
+        revalidate: 1,
         redirect: {
           destination: '/journeys',
           permanent: false

@@ -21,7 +21,7 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
     }
 
   return {
-    revalidate: 3600,
+    revalidate: 60,
     props: {
       flags,
       ...(await serverSideTranslations(
