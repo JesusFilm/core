@@ -1,11 +1,10 @@
 import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
-import ListItem from '@mui/material/ListItem'
-import ListItemAvatar from '@mui/material/ListItemAvatar'
-import ListItemText from '@mui/material/ListItemText'
+import Grid from '@mui/material/Grid'
 import Menu from '@mui/material/Menu'
 import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { MouseEvent, ReactElement, useState } from 'react'
 
@@ -38,14 +37,33 @@ export function UserTeamInviteListItem({
   const { t } = useTranslation('apps-journeys-admin')
   return (
     <>
-      <ListItem
-        sx={{
-          px: 0,
-          '& > .MuiListItemSecondaryAction-root': {
-            right: 0
-          }
-        }}
-        secondaryAction={
+      <Grid
+        container
+        spacing={1}
+        alignItems="center"
+        data-testId="UserTeamInviteListItem"
+      >
+        <Grid xs={2} sm={1}>
+          <Avatar src={undefined} alt={email}>
+            {email.charAt(0).toUpperCase()}
+          </Avatar>
+        </Grid>
+        <Grid xs={7} sm={9}>
+          <Stack sx={{ ml: 2 }}>
+            <Typography
+              variant="body1"
+              sx={{
+                width: { xs: '90%', sm: '90%' },
+                whiteSpace: 'nowrap',
+                overflow: 'clip',
+                textOverflow: 'ellipsis'
+              }}
+            >
+              {email}
+            </Typography>
+          </Stack>
+        </Grid>
+        <Grid xs={3} sm={2} justifyContent="flex-end" sx={{ display: 'flex' }}>
           <Button
             aria-controls={open ? 'basic-menu' : undefined}
             aria-haspopup="true"
@@ -60,28 +78,8 @@ export function UserTeamInviteListItem({
           >
             {t('Invited')}
           </Button>
-        }
-        data-testid={`UserTeamInviteListItem-${user.id}`}
-      >
-        <ListItemAvatar>
-          <Avatar src={undefined} alt={email}>
-            {email.charAt(0).toUpperCase()}
-          </Avatar>
-        </ListItemAvatar>
-
-        <ListItemText
-          secondary={email}
-          sx={{
-            '& > .MuiListItemText-secondary': {
-              width: { xs: '110px', sm: '90%' },
-              whiteSpace: 'nowrap',
-              overflow: 'clip',
-              textOverflow: 'ellipsis'
-            }
-          }}
-        />
-      </ListItem>
-
+        </Grid>
+      </Grid>
       <Menu
         anchorEl={anchorEl}
         open={open}

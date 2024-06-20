@@ -380,6 +380,11 @@ export interface JourneyCollectionUpdateInput {
   journeyIds?: string[] | null;
 }
 
+export interface JourneyNotificationUpdateInput {
+  journeyId: string;
+  visitorInteractionEmail: boolean;
+}
+
 export interface JourneyProfileUpdateInput {
   lastActiveTeamId?: string | null;
   journeyFlowBackButtonClicked?: boolean | null;
