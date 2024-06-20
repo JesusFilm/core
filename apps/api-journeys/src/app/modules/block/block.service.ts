@@ -145,13 +145,16 @@ export class BlockService {
           newBlock.nextBlockId != null ||
           newBlock.action != null
         ) {
+          const isActionEmpty = Object.keys(newBlock.action ?? {}).length === 0
           const updateBlockData = {
             parentBlockId: newBlock.parentBlockId ?? undefined,
             posterBlockId: newBlock.posterBlockId ?? undefined,
             coverBlockId: newBlock.coverBlockId ?? undefined,
             nextBlockId: newBlock.nextBlockId ?? undefined,
             action:
-              newBlock.action != null ? { create: newBlock.action } : undefined
+              !isActionEmpty && newBlock.action
+                ? { create: newBlock.action }
+                : undefined
           }
           if (newBlock.typename === 'StepBlock') {
             return await this.prismaService.block.update({
