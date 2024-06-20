@@ -18,6 +18,7 @@ import {
   GetJourneysVariables
 } from '../../__generated__/GetJourneys'
 import { GetTags } from '../../__generated__/GetTags'
+import { IdType } from '../../__generated__/globalTypes'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 
@@ -26,7 +27,8 @@ function TemplateDetailsPage(): ReactElement {
   const router = useRouter()
   const user = useUser()
   const { data } = useJourneyQuery({
-    id: router.query.journeyId as string
+    id: router.query.journeyId as string,
+    idType: IdType.databaseId
   })
   const { query } = useTeam()
 
@@ -90,7 +92,8 @@ export const getServerSideProps: GetStaticProps = withUserTokenSSR()(
       >({
         query: GET_JOURNEY,
         variables: {
-          id: params.journeyId.toString()
+          id: params.journeyId.toString(),
+          idType: IdType.databaseId
         }
       })
       const tagIds = data.journey.tags.map((tag) => tag.id)
