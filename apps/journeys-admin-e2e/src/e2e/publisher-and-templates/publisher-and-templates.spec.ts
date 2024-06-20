@@ -1,10 +1,10 @@
 import { expect, test } from '@playwright/test'
+import { CardLevelActionPage } from '../../pages/card-level-actions'
+import { JourneyLevelActions } from '../../pages/journey-level-actions-page'
+import { JourneyPage } from '../../pages/journey-page'
 import { LandingPage } from '../../pages/landing-page'
 import { LoginPage } from '../../pages/login-page'
-import { JourneyPage } from '../../pages/journey-page'
 import { Publisher } from '../../pages/publisher-and-templates-page'
-import { JourneyLevelActions } from '../../pages/journey-level-actions-page'
-import { CardLevelActionPage } from '../../pages/card-level-actions'
 import { TemplatePage } from '../../pages/template-page'
 
 test.describe('Publisher page functionality', () => {
@@ -254,7 +254,7 @@ test.describe('Verify template page functionality', () => {
     const templatesPage = new TemplatePage(page)
     const cardLevelActionPage = new CardLevelActionPage(page)
     const journeyPage = new JourneyPage(page)
-    let journeyName = await cardLevelActionPage.getJourneyName() // getting journey name
+    const journeyName = await cardLevelActionPage.getJourneyName() // getting journey name
     await templatesPage.setBrowserContext(context) // setting browser context
     await templatesPage.navigateToTempalatePage() // navigating to templates page
     await templatesPage.selectExistingTemplate() // clicking on existing template in template page

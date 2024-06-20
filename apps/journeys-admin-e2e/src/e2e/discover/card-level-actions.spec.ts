@@ -1,8 +1,8 @@
 import { expect, test } from '@playwright/test'
+import { CardLevelActionPage } from '../../pages/card-level-actions'
+import { JourneyPage } from '../../pages/journey-page'
 import { LandingPage } from '../../pages/landing-page'
 import { LoginPage } from '../../pages/login-page'
-import { JourneyPage } from '../../pages/journey-page'
-import { CardLevelActionPage } from '../../pages/card-level-actions'
 
 import { Register } from '../../pages/register-Page'
 

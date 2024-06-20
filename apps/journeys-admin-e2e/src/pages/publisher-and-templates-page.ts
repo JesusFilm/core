@@ -1,6 +1,6 @@
 import { expect } from '@playwright/test'
-import { Page } from 'playwright-core'
 import dayjs from 'dayjs'
+import { Page } from 'playwright-core'
 import testData from '../utils/testData.json'
 export class Publisher {
   readonly page: Page
@@ -107,11 +107,11 @@ export class Publisher {
     await expect(
       this.page.locator('div[aria-label="template-card"]').first()
     ).toBeVisible()
-    let templateCount = await this.page
+    const templateCount = await this.page
       .locator('div[aria-label="template-card"]')
       .count()
     for (let template = 0; template < templateCount; template++) {
-      let templateName = await this.page
+      const templateName = await this.page
         .locator(
           'div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
         )
@@ -307,7 +307,7 @@ export class Publisher {
         )
         .first()
     ).toBeVisible({ timeout: 30000 })
-    let archiveTabTemplateList = await this.page
+    const archiveTabTemplateList = await this.page
       .locator(
         'div[id*="archived-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
       )
@@ -349,7 +349,7 @@ export class Publisher {
         )
         .first()
     ).toBeVisible({ timeout: 30000 })
-    let activeTabTemplateList = await this.page
+    const activeTabTemplateList = await this.page
       .locator(
         'div[id*="active-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
       )
@@ -370,7 +370,7 @@ export class Publisher {
         )
         .first()
     ).toBeVisible({ timeout: 30000 })
-    let trashTabTemplateList = await this.page
+    const trashTabTemplateList = await this.page
       .locator(
         'div[id*="trashed-status-panel-tabpanel"] div[aria-label="template-card"] div[class*="MuiCardContent"] h6'
       )
@@ -463,7 +463,7 @@ export class Publisher {
     ).toHaveCount(0, { timeout: 30000 })
   }
   async setFilterBelowCategoryTab(filter: string) {
-    let selectedFilter = await this.page
+    const selectedFilter = await this.page
       .locator('div[role="presentation"] ul[role="listbox"] li')
       .first()
       .innerText()

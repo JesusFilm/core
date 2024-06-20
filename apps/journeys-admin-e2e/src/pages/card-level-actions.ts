@@ -1,6 +1,6 @@
 import { expect } from '@playwright/test'
-import { Page } from 'playwright-core'
 import dayjs from 'dayjs'
+import { Page } from 'playwright-core'
 import testData from '../utils/testData.json'
 
 export class CardLevelActionPage {
@@ -361,7 +361,7 @@ export class CardLevelActionPage {
       .click()
   }
   async deleteAllAddedCardProperties() {
-    let properties = await this.page
+    const properties = await this.page
       .frameLocator(this.journeyCardFrame)
       .locator(
         'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"]'
@@ -938,7 +938,7 @@ export class CardLevelActionPage {
     } catch (err) {}
   }
   async deleteAllThePollOptions() {
-    let pollOptionCount = await this.page
+    const pollOptionCount = await this.page
       .frameLocator(this.journeyCardFrame)
       .locator(
         'div[data-testid*="JourneysRadioQuestion"] div[role="group"] [data-testid*="SelectableWrapper"]'
