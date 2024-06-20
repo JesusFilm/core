@@ -5,8 +5,8 @@ import { GraphQLError } from 'graphql'
 import pull from 'lodash/pull'
 import snakeCase from 'lodash/snakeCase'
 
-import { Journey, Prisma } from '.prisma/api-journeys-client'
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
+import { Journey, Prisma } from '.prisma/api-journeys-client'
 
 import {
   IdType,
