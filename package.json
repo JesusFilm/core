@@ -165,7 +165,6 @@
     "tus-js-client": "^3.1.1",
     "ua-parser-js": "^1.0.33",
     "util": "^0.12.4",
-    "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.44.0",
     "vercel": "^32.1.0",
     "video.js": "^8.6.1",
     "videojs-youtube": "^3.0.1",
