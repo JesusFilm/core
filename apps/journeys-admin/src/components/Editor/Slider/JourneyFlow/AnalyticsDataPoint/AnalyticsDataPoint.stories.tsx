@@ -3,7 +3,7 @@ import { ComponentPropsWithoutRef } from 'react'
 
 import { simpleComponentConfig } from '../../../../../libs/storybook'
 
-import Cursor4 from '@core/shared/ui/icons/Cursor4'
+import TrendDown1 from '@core/shared/ui/icons/TrendDown1'
 import { AnalyticsDataPoint } from './AnalyticsDataPoint'
 
 const AnalyticsDataPointDemo = {
@@ -20,8 +20,8 @@ const Template: StoryObj<ComponentPropsWithoutRef<typeof AnalyticsDataPoint>> =
 export const Default = {
   ...Template,
   args: {
-    children: 10,
-    Icon: Cursor4,
+    value: 10,
+    Icon: TrendDown1,
     tooltipLabel: 'Clicks'
   }
 }
@@ -29,7 +29,7 @@ export const Default = {
 export const WithoutIcon = {
   ...Template,
   args: {
-    children: '10',
+    value: '10',
     tooltipLabel: 'Clicks'
   }
 }
