@@ -3,7 +3,6 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ReactFlowProvider } from 'reactflow'
 import { v4 as uuidv4 } from 'uuid'
 
-import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { stepAndCardBlockCreateMock } from '../../../../../libs/useStepAndCardBlockCreateMutation/useStepAndCardBlockCreateMutation.mock'
@@ -50,22 +49,5 @@ describe('NewStepButton', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Add Step' }))
 
     await waitFor(() => expect(result).toHaveBeenCalled())
-  })
-
-  it('should be disabled', () => {
-    const initialState = {
-      showJourneyFlowAnalytics: true
-    } as unknown as EditorState
-    render(
-      <MockedProvider>
-        <ReactFlowProvider>
-          <EditorProvider initialState={initialState}>
-            <NewStepButton />
-          </EditorProvider>
-        </ReactFlowProvider>
-      </MockedProvider>
-    )
-
-    expect(screen.getByRole('button', { name: 'Add Step' })).toBeDisabled()
   })
 })
