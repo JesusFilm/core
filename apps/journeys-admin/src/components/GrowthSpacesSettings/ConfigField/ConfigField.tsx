@@ -44,9 +44,9 @@ export function ConfigField({
         gap: 4
       }}
     >
-      <Box sx={{ flex: 0.2 }}>
-        <Typography variant="body1">{label}</Typography>
-      </Box>
+      <Typography variant="body1" sx={{ flex: 0.2 }}>
+        {label}
+      </Typography>
       <Box sx={{ flex: 0.8, position: 'relative', width: '100%' }}>
         <TextField
           type={visible ? 'text' : 'password'}
