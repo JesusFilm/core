@@ -4,17 +4,17 @@ import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
-interface StatsOverlayDataPointProps {
-  children: string | number
+interface AnalyticsDataPointProps {
+  value: number | string
   Icon?: typeof SvgIcon
   tooltipLabel: string
 }
 
 export function AnalyticsDataPoint({
-  children,
+  value,
   Icon,
   tooltipLabel = ''
-}: StatsOverlayDataPointProps): ReactElement {
+}: AnalyticsDataPointProps): ReactElement {
   return (
     <Tooltip
       title={tooltipLabel}
@@ -47,7 +47,7 @@ export function AnalyticsDataPoint({
       >
         {Icon != null && <Icon sx={{ fontSize: '16px' }} />}
         <Typography variant="caption" sx={{ fontWeight: 800 }}>
-          {children}
+          {value}
         </Typography>
       </Stack>
     </Tooltip>

@@ -21,7 +21,7 @@ const Template: StoryObj<ComponentPropsWithoutRef<typeof LinkNodeAnalytics>> = {
         width: '1px'
       }}
     >
-      <LinkNodeAnalytics>{args.children}</LinkNodeAnalytics>
+      <LinkNodeAnalytics {...args} />
     </div>
   )
 }
@@ -29,14 +29,14 @@ const Template: StoryObj<ComponentPropsWithoutRef<typeof LinkNodeAnalytics>> = {
 export const Default = {
   ...Template,
   args: {
-    children: 10
+    clicksCount: 10
   }
 }
 
 export const Fallback = {
   ...Template,
   args: {
-    children: undefined
+    clicksCount: undefined
   }
 }
 

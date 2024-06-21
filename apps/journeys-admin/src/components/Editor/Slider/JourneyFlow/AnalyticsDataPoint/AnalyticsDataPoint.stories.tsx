@@ -21,7 +21,7 @@ const Template: StoryObj<ComponentPropsWithoutRef<typeof AnalyticsDataPoint>> =
 export const Default = {
   ...Template,
   args: {
-    children: 10,
+    value: 10,
     Icon: Cursor4Icon,
     tooltipLabel: 'Clicks'
   }
@@ -30,7 +30,7 @@ export const Default = {
 export const WithoutIcon = {
   ...Template,
   args: {
-    children: '10',
+    value: '10',
     tooltipLabel: 'Clicks'
   }
 }

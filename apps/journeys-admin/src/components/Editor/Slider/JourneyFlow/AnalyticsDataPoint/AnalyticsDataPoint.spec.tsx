@@ -1,20 +1,18 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-import PointerClick from '@core/shared/ui/icons/PointerClick'
+import Cursor4Icon from '@core/shared/ui/icons/Cursor4'
 
 import { AnalyticsDataPoint } from '.'
 
 describe('AnalyticsDataPoint', () => {
   it('should render', async () => {
     render(
-      <AnalyticsDataPoint Icon={PointerClick} tooltipLabel="Clicks">
-        {10}
-      </AnalyticsDataPoint>
+      <AnalyticsDataPoint Icon={Cursor4Icon} tooltipLabel="Clicks" value={10} />
     )
 
     expect(screen.getByText('10')).toBeInTheDocument()
-    expect(screen.getByTestId('PointerClickIcon')).toBeInTheDocument()
+    expect(screen.getByTestId('Cursor4Icon')).toBeInTheDocument()
 
     const element = screen.getByTestId('AnalyticsDataPoint')
     await userEvent.hover(element)
@@ -24,9 +22,9 @@ describe('AnalyticsDataPoint', () => {
   })
 
   it('should render without icon', () => {
-    render(<AnalyticsDataPoint tooltipLabel="Clicks">{10}</AnalyticsDataPoint>)
+    render(<AnalyticsDataPoint tooltipLabel="Clicks" value={10} />)
 
     expect(screen.getByText('10')).toBeInTheDocument()
-    expect(screen.queryByTestId('PointerClickIcon')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('Cursor4Icon')).not.toBeInTheDocument()
   })
 })

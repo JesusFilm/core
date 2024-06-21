@@ -4,7 +4,7 @@ import { LinkNodeAnalytics } from '.'
 
 describe('LinkNodeAnalytics', () => {
   it('should render with count', () => {
-    render(<LinkNodeAnalytics>{10}</LinkNodeAnalytics>)
+    render(<LinkNodeAnalytics clicksCount={10} />)
 
     const icon = screen.getByTestId('Cursor4Icon')
     const clickCount = screen.getByText('10')

@@ -7,10 +7,12 @@ import Cursor4Icon from '@core/shared/ui/icons/Cursor4'
 import { AnalyticsDataPoint } from '../../../AnalyticsDataPoint'
 
 interface LinkNodeAnalyticsProps {
-  children?: number
+  clicksCount?: number
 }
 
-export function LinkNodeAnalytics(props: LinkNodeAnalyticsProps): ReactElement {
+export function LinkNodeAnalytics({
+  clicksCount
+}: LinkNodeAnalyticsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
   return (
@@ -26,9 +28,11 @@ export function LinkNodeAnalytics(props: LinkNodeAnalyticsProps): ReactElement {
         filter: 'drop-shadow(4px 4px 10px rgba(0,0,0,0.25))'
       }}
     >
-      <AnalyticsDataPoint Icon={Cursor4Icon} tooltipLabel={t('Clicks')}>
-        {props.children ?? '~'}
-      </AnalyticsDataPoint>
+      <AnalyticsDataPoint
+        value={clicksCount ?? '~'}
+        Icon={Cursor4Icon}
+        tooltipLabel={t('Clicks')}
+      />
     </Box>
   )
 }
