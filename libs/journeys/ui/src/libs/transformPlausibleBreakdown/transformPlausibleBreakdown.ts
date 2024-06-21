@@ -9,6 +9,16 @@ import { PlausibleJourneyStepsActionsFields as JourneyStepsAction } from './plau
 import { PlausibleJourneyStepsFields as JourneyStep } from './plausibleFields/__generated__/PlausibleJourneyStepsFields'
 import { PlausibleJourneyVisitorsPageExitsFields as JourneyVisitorsPageExit } from './plausibleFields/__generated__/PlausibleJourneyVisitorsPageExitsFields'
 
+const ACTION_EVENTS: Array<keyof JourneyPlausibleEvents> = [
+  'navigateNextStep',
+  'buttonClick',
+  'textResponseSubmit',
+  'signUpSubmit',
+  'radioQuestionSubmit',
+  'videoComplete',
+  'chatButtonClick'
+]
+
 export interface StatsBreakdown {
   journeySteps: JourneyStep[]
   journeyStepsActions: JourneyStepsAction[]
@@ -18,12 +28,17 @@ export interface StatsBreakdown {
   journeyActionsSums: JourneyActionsSums[]
 }
 
+type SumEventMap = Map<string, number>
+
 export interface JourneyStatsBreakdown {
   totalVisitors: number
   chatsStarted: number
   linksVisited: number
   referrers: JourneyReferrer[]
   stepsStats: StepStat[]
+  stepMap: Map<string, { eventMap: SumEventMap; total: number }>
+  blockMap: SumEventMap
+  targetMap: SumEventMap
 }
 
 interface StepStat {
@@ -65,6 +80,45 @@ export function transformPlausibleBreakdown({
   const stepExits = getStepExits(journeyVisitorsPageExits, journeyId)
   const { chatsStarted, linksVisited } = getLinkClicks(journeyEvents)
 
+  const stepMap = new Map()
+  const blockMap = new Map()
+  const targetMap = new Map()
+
+  journeyEventsSums.forEach((event) => {
+    const step = stepMap.get(event.stepId) ?? {
+      eventMap: new Map(),
+      total: 0
+    }
+
+    // Set event map for step by event type
+    let stepEvent = step.eventMap.get(event.event) ?? 0
+
+    stepEvent += event.events
+
+    step.eventMap.set(event.event, stepEvent)
+
+    if (ACTION_EVENTS.includes(event.event)) {
+      step.total += event.events
+
+      let block = blockMap.get(event.blockId) ?? 0
+
+      block += event.events
+
+      blockMap.set(event.blockId, block)
+    }
+
+    stepMap.set(event.stepId, step)
+  })
+
+  journeyEvents.forEach((event) => {
+    if (event.target == null || !ACTION_EVENTS.includes(event.event)) return
+    const key = `${event.blockId}->${event.target}`
+
+    let target = targetMap.get(key) ?? 0
+    target += event.events
+    targetMap.set(key, target)
+  })
+
   const stepsStats: StepStat[] = journeySteps.map((step) => {
     const stepId = getStepId(step.property, journeyId)
     return {
@@ -72,8 +126,7 @@ export function transformPlausibleBreakdown({
       visitors: step.visitors ?? 0,
       timeOnPage: step.timeOnPage ?? 0,
       visitorsExitAtStep:
-        stepExits.find((step) => step.id === stepId)?.visitors ?? 0,
-      stepEvents: journeyEvents.filter((event) => event.stepId === stepId) ?? []
+        stepExits.find((step) => step.id === stepId)?.visitors ?? 0
     }
   })
 
@@ -82,7 +135,10 @@ export function transformPlausibleBreakdown({
     chatsStarted,
     linksVisited,
     referrers: journeyReferrer,
-    stepsStats
+    stepsStats,
+    stepMap,
+    blockMap,
+    targetMap
   }
 }
 

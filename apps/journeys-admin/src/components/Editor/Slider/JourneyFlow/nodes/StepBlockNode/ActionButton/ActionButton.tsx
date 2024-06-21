@@ -4,8 +4,8 @@ import { alpha } from '@mui/material/styles'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { TreeBlock } from '@core/journeys/ui/block'
 
 import { BlockFields as Block } from '../../../../../../../../__generated__/BlockFields'
 import { useUpdateEdge } from '../../../libs/useUpdateEdge'
@@ -102,7 +102,7 @@ export function ActionButton({
           }}
           variant="body2"
         >
-          {title}
+          {block.id}
         </Typography>
       </Box>
     </BaseNode>
