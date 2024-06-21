@@ -509,7 +509,10 @@ describe('EditorContext', () => {
           chatsStarted: 0,
           linksVisited: 0,
           referrers: [],
-          stepsStats: []
+          stepsStats: [],
+          stepMap: new Map(),
+          blockMap: new Map(),
+          targetMap: new Map()
         }
 
         expect(
