@@ -11,6 +11,7 @@ exec(
     const services = stdout
       .split('\n')
       .filter((value) => value != null && value !== '')
+     .map((value) => value.replace('-e2e', ''))
       .join('","')
     if (services === '') {
       console.log('[]')
