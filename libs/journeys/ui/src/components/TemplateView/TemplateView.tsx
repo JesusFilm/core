@@ -25,9 +25,13 @@ import { TemplateCreatorDetails } from './TemplateViewHeader/TemplateCreatorDeta
 
 interface TemplateViewProps {
   authUser?: User
+  hideOverflow?: boolean
 }
 
-export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
+export function TemplateView({
+  authUser,
+  hideOverflow
+}: TemplateViewProps): ReactElement {
   const { journey } = useJourney()
   const { breakpoints } = useTheme()
   const { t } = useTranslation('libs-journeys-ui')
@@ -91,7 +95,9 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
     >
       <Container
         sx={{
-          px: { xs: 6, sm: 8 },
+          overflow: hideOverflow ? 'hidden' : 'none',
+          maxWidth: { md: '90vw' },
+          px: { xs: 6, sm: 8, md: 0 },
           py: { xs: 6, sm: 9 }
         }}
       >

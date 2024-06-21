@@ -63,7 +63,7 @@ export default function JourneyDetailsPage(): ReactElement {
                     themeMode={ThemeMode.light}
                     nested
                   >
-                    <TemplateView />
+                    <TemplateView hideOverflow />
                   </ThemeProvider>
                 </JourneyProvider>
               </LanguageProvider>
