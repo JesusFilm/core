@@ -190,9 +190,9 @@ export class TemplatePage {
       await this.clickPreviewBtnInJourneyTemplatePage()
     ])
     await newPage.waitForLoadState()
-    let tabName: string = await newPage.title()
+    const tabName: string = await newPage.title()
     await expect(tabName.includes(this.selecetdTemplated)).toBeTruthy()
-    let slidesCount = await newPage
+    const slidesCount = await newPage
       .locator(
         'div[data-testid="pagination-bullets"] svg[data-testid*="bullet"]'
       )
@@ -218,7 +218,6 @@ export class TemplatePage {
           )
           .nth(slide)
       ).toHaveAttribute('data-testid', 'bullet-active')
-      break
     }
 
     await newPage.close()
@@ -240,12 +239,12 @@ export class TemplatePage {
       await this.clickPreviewBtnInJourneyTemplatePage()
     ])
     await newPage.waitForLoadState()
-    let tabName: string = await newPage.title()
+    const tabName: string = await newPage.title()
     await newPage.reload({ waitUntil: 'load' })
     expect(tabName.includes(this.selecetdTemplated)).toBeTruthy()
     await newPage.reload({ waitUntil: 'load' })
-    let currentTime = new Date()
-    let addedSevenMinsTime = new Date(new Date().getTime() + 7 * 60000)
+    const currentTime = new Date()
+    const addedSevenMinsTime = new Date(new Date().getTime() + 7 * 60000)
     console.log('Current time is ' + currentTime.toString())
     console.log('Added wait time is ' + addedSevenMinsTime.toString())
     while (new Date() < addedSevenMinsTime) {

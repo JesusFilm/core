@@ -120,7 +120,7 @@ export class Publisher {
       if (
         (await this.page
           .locator('div[aria-label="template-card"]', { hasText: templateName })
-          .count()) == 1
+          .count()) === 1
       ) {
         this.templateName = templateName
         break
@@ -317,7 +317,7 @@ export class Publisher {
         matchCount = matchCount + 1
       }
     }
-    expect(matchCount == this.templateList.length).toBeTruthy()
+    expect(matchCount === this.templateList.length).toBeTruthy()
   }
   async getTemplateListOfArchivedTab() {
     await expect(
@@ -359,7 +359,7 @@ export class Publisher {
         matchCount = matchCount + 1
       }
     }
-    expect(matchCount == this.templateList.length).toBeTruthy()
+    expect(matchCount === this.templateList.length).toBeTruthy()
   }
   async verifyAllTemplateMovedToTrashTab() {
     let matchCount = 0
@@ -380,7 +380,7 @@ export class Publisher {
         matchCount = matchCount + 1
       }
     }
-    expect(matchCount == this.templateList.length).toBeTruthy()
+    expect(matchCount === this.templateList.length).toBeTruthy()
   }
   async getTemplateListOfTrashTab() {
     await expect(
@@ -499,7 +499,7 @@ export class Publisher {
     }
   }
   async addFilterBelowCategoryTab(filter: string) {
-    if (filter == 'Felt Needs' || filter == 'Collections') {
+    if (filter === 'Felt Needs' || filter === 'Collections') {
       let selectedFilter = ' '
       switch (filter) {
         case 'Felt Needs': {

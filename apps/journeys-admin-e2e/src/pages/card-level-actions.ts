@@ -886,7 +886,7 @@ export class CardLevelActionPage {
         .locator(typographyPath)
         .first()
         .click({ timeout: 15000, delay: 1000 })
-      for (var clickRetry = 0; clickRetry < 5; clickRetry++) {
+      for (let clickRetry = 0; clickRetry < 5; clickRetry++) {
         if (
           await this.page
             .frameLocator(this.journeyCardFrame)
