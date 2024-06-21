@@ -69,9 +69,15 @@ export function Comparison(): ReactElement {
       <Button
         onClick={handleClick}
         variant="outlined"
+        color="secondary"
         endIcon={<ChevronDownIcon />}
         ref={ref}
-        sx={{ minWidth: 180, justifyContent: 'space-between' }}
+        sx={{ minWidth: 180, justifyContent: 'space-between',
+        backgroundColor: 'background.paper',
+        ':hover': {
+        backgroundColor: 'background.paper',
+        }
+       }}
       >
         {handleRenderValue()}
       </Button>

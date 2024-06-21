@@ -1,3 +1,4 @@
+import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
@@ -15,7 +16,13 @@ export function PlausibleFilter(): ReactElement {
   } = usePlausibleLocal()
 
   return (
-    <>
+    <Stack
+      spacing={2}
+      direction="row"
+      sx={{
+        alignItems: 'center'
+      }}
+    >
       {['day', 'month', 'year'].includes(period) && <Arrows />}
       <Period />
       {comparison != null && (
@@ -24,6 +31,6 @@ export function PlausibleFilter(): ReactElement {
           <Comparison />
         </>
       )}
-    </>
+    </Stack>
   )
 }

@@ -39,6 +39,18 @@ export function RangePicker({
         vertical: 'top',
         horizontal: 'right'
       }}
+      sx={{
+        color: 'pink',
+        '.rdp': {
+          '--rdp-background-color': (theme) => theme.palette.primary.main,
+          '--rdp-accent-color': (theme) => theme.palette.primary.main,
+          '.rdp-button': {
+            ':hover': {
+              color: (theme) => theme.palette.primary.contrastText
+            }
+          }
+        }
+      }}
     >
       <DayPicker
         mode="range"

@@ -64,12 +64,31 @@ export function Arrows(): ReactElement {
     }
   }
 
+  const buttonStyles = {
+    px: 0,
+    backgroundColor: 'background.paper',
+    ':hover': {
+      backgroundColor: 'background.paper'
+    }
+  }
+
   return (
     <ButtonGroup variant="outlined">
-      <Button sx={{ px: 0 }} onClick={subClick}>
+      <Button
+        onClick={subClick}
+        variant="outlined"
+        color="secondary"
+        sx={buttonStyles}
+      >
         <ChevronLeftIcon />
       </Button>
-      <Button sx={{ px: 0 }} onClick={addClick} disabled={disabled}>
+      <Button
+        onClick={addClick}
+        disabled={disabled}
+        variant="outlined"
+        color="secondary"
+        sx={buttonStyles}
+      >
         <ChevronRightIcon />
       </Button>
     </ButtonGroup>
