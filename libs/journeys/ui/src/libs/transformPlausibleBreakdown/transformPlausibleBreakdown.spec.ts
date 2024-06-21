@@ -105,6 +105,50 @@ describe('transformPlausibleBreakdown', () => {
           visitors: 2
         }
       ],
+      journeyActionsSums: [
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"pageview","blockId":"step1.id","target":""}',
+          events: 5
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"navigateNextStep","blockId":"step1.id","target":""}',
+          events: 5
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step2.id","event":"navigatePreviousStep","blockId":"step2.id","target":""}',
+          events: 5
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"buttonClick","blockId":"button1.id","target":"s"}',
+          events: 5
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"radioQuestionSubmit","blockId":"radioOption1.id","target":""}',
+          events: 5
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"signUpSubmit","blockId":"signUp1.id","target":""}',
+          events: 5
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"chatButtonClick","blockId":"step1.id","target":""}',
+          events: 5
+        }
+      ],
       journeyAggregateVisitors: {
         __typename: 'PlausibleStatsAggregateResponse',
         visitors: {
@@ -140,75 +184,57 @@ describe('transformPlausibleBreakdown', () => {
           stepId: 'step1.id',
           visitors: 10,
           timeOnPage: 10,
-          visitorsExitAtStep: 5,
-          stepEvents: [
-            {
-              stepId: 'step1.id',
-              event: 'pageview',
-              blockId: 'step1.id',
-              target: '',
-              events: 5
-            },
-            {
-              stepId: 'step1.id',
-              event: 'navigateNextStep',
-              blockId: 'step1.id',
-              target: 'step2,id',
-              events: 5
-            },
-            {
-              stepId: 'step1.id',
-              event: 'buttonClick',
-              blockId: 'button1.id',
-              target: 'step2.id',
-              events: 5
-            },
-            {
-              stepId: 'step1.id',
-              event: 'radioQuestionSubmit',
-              blockId: 'radioOption1.id',
-              target: 'link:https://google.com',
-              events: 5
-            },
-            {
-              stepId: 'step1.id',
-              event: 'signUpSubmit',
-              blockId: 'signUp1.id',
-              target: 'link:https://bible.com',
-              events: 5
-            },
-            {
-              stepId: 'step1.id',
-              event: 'chatButtonClick',
-              blockId: 'step1.id',
-              target: 'link:https://m.me/test',
-              events: 5
-            }
-          ]
+          visitorsExitAtStep: 5
         },
         {
           stepId: 'step2.id',
           visitors: 5,
           timeOnPage: 3,
-          visitorsExitAtStep: 3,
-          stepEvents: [
-            {
-              stepId: 'step2.id',
-              event: 'navigatePreviousStep',
-              blockId: 'step2.id',
-              target: 'step1.id',
-              events: 5
-            }
-          ]
+          visitorsExitAtStep: 3
         },
         {
           stepId: 'step3.id',
           visitors: 2,
           timeOnPage: 1,
-          visitorsExitAtStep: 2,
-          stepEvents: []
+          visitorsExitAtStep: 2
         }
-      ]
+      ],
+      stepMap: new Map([
+        [
+          'step1.id',
+          {
+            eventMap: new Map([
+              ['pageview', 5],
+              ['navigateNextStep', 5],
+              ['buttonClick', 5],
+              ['radioQuestionSubmit', 5],
+              ['signUpSubmit', 5],
+              ['chatButtonClick', 5]
+            ]),
+            total: 25
+          }
+        ],
+        [
+          'step2.id',
+          {
+            eventMap: new Map([['navigatePreviousStep', 5]]),
+            total: 0
+          }
+        ]
+      ]),
+      blockMap: new Map([
+        ['step1.id', 10],
+        ['button1.id', 5],
+        ['radioOption1.id', 5],
+        ['signUp1.id', 5]
+      ]),
+      targetMap: new Map([
+        ['step1.id->step2,id', 5],
+        ['button1.id->step2.id', 5],
+        ['radioOption1.id->link:https://google.com', 5],
+        ['signUp1.id->link:https://bible.com', 5],
+        ['step1.id->link:https://m.me/test', 5]
+      ])
     }
 
     expect(

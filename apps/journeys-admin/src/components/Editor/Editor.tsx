@@ -41,8 +41,6 @@ export function Editor({
     data
   })
 
-  console.log({ data, journeyStatsBreakdown })
-
   const steps =
     journey != null
       ? (transformer(journey.blocks ?? []) as Array<TreeBlock<StepBlock>>)

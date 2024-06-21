@@ -100,7 +100,7 @@ export function ActionButton({
           }}
           variant="body2"
         >
-          {block.id}
+          {title}
         </Typography>
       </Box>
     </BaseNode>
