@@ -176,7 +176,6 @@ export const reducer = (
         activeFab: action.activeFab
       }
     case 'SetActiveSlideAction':
-      if (state.showJourneyFlowAnalytics) return state
       return {
         ...state,
         activeContent: state.activeContent,
@@ -185,7 +184,6 @@ export const reducer = (
     case 'SetSelectedAttributeIdAction':
       return { ...state, selectedAttributeId: action.selectedAttributeId }
     case 'SetSelectedBlockAction':
-      if (state.showJourneyFlowAnalytics) return state
       return {
         ...state,
         selectedBlock: action.selectedBlock,

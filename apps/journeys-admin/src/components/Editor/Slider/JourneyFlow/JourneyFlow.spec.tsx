@@ -167,4 +167,34 @@ describe('JourneyFlow', () => {
     fireEvent.click(screen.getByTestId('ArrowRefresh6Icon'))
     expect(mockUpdate).toHaveBeenCalled()
   })
+
+  it('should hide new step button if in analytics mode', async () => {
+    const result = jest
+      .fn()
+      .mockReturnValue(mockGetStepBlocksWithPosition.result)
+
+    render(
+      <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
+        <JourneyProvider value={{ journey: defaultJourney }}>
+          <EditorProvider
+            initialState={{
+              steps,
+              activeSlide: ActiveSlide.JourneyFlow,
+              showJourneyFlowAnalytics: true
+            }}
+          >
+            <Box sx={{ width: '100vw', height: '100vh' }}>
+              <JourneyFlow />
+            </Box>
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => expect(result).toHaveBeenCalled())
+
+    expect(
+      screen.queryByRole('button', { name: 'Add Step' })
+    ).not.toBeInTheDocument()
+  })
 })
