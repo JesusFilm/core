@@ -66,6 +66,7 @@ export function Canvas(): ReactElement {
   }, [])
 
   function handleFooterClick(): void {
+    if (showJourneyFlowAnalytics) return
     dispatch({
       type: 'SetActiveCanvasDetailsDrawerAction',
       activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer
@@ -92,6 +93,7 @@ export function Canvas(): ReactElement {
   }
 
   function handleSelectCard(): void {
+    if (showJourneyFlowAnalytics) return
     const iframeDocument =
       frameRef.current?.contentDocument ??
       frameRef.current?.contentWindow?.document
