@@ -6,35 +6,47 @@ import { ReactElement, useState } from 'react'
 import { ConfigField } from './ConfigField'
 
 export function GrowthSpacesSettings(): ReactElement {
-  // get the key values from the backend
-  const [accessKey, setAccessKey] = useState('accessKey')
-  const [apiKey, setApiKey] = useState('apiKey')
+  // get initial values from backend
+  const [accessId, setAccessId] = useState<string | undefined>()
+  const [accessSecret, setAccessSecret] = useState<string | undefined>()
 
   function handleSave(): void {
-    console.log('accessKey', accessKey)
-    console.log('apiKey', apiKey)
+    console.log('accessId', accessId)
+    console.log('accessSecret', accessSecret)
   }
 
   return (
     <Box
       sx={{
+        p: 6,
+        gap: 4,
+        m: 'auto',
+        width: '60%',
         display: 'flex',
         flexDirection: 'column',
-        gap: 4
+        border: '1px solid',
+        borderRadius: 4,
+        borderColor: 'divider',
+        backgroundColor: 'background.paper'
       }}
     >
       <Typography variant="h5">App Settings</Typography>
       <ConfigField
-        label="Access Key"
-        initialValue={accessKey}
-        onChange={(value) => setAccessKey(value)}
+        label="Access ID"
+        initialValue={accessId}
+        onChange={(value) => setAccessId(value)}
       />
       <ConfigField
-        label="Api Key"
-        initialValue={apiKey}
-        onChange={(value) => setApiKey(value)}
+        label="Access Secret"
+        initialValue={accessSecret}
+        onChange={(value) => setAccessSecret(value)}
       />
-      <Button variant="contained" color="primary" onClick={handleSave}>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleSave}
+        sx={{ width: '20%', alignSelf: 'flex-end' }}
+      >
         Save
       </Button>
     </Box>
