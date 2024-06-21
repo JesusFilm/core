@@ -1,0 +1,1 @@
+export { fetchEmailDetails } from './fetchEmailDetails'

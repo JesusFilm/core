@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { VideoProvider } from '../../../libs/videoContext'
@@ -21,5 +21,19 @@ describe('VideoHero', () => {
     expect(getByText('JESUS')).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Play Video' }))
     expect(queryByText('JESUS')).not.toBeInTheDocument()
+  })
+
+  it('should not have header spacer', () => {
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <VideoProvider value={{ content: videos[0] }}>
+            <VideoHero />
+          </VideoProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    expect(screen.getByTestId('Header')).toBeInTheDocument()
+    expect(screen.queryByTestId('HeaderSpacer')).not.toBeInTheDocument()
   })
 })
