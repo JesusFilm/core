@@ -6,8 +6,6 @@ import { ReactElement } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
-import { BlockAnalytics } from '@core/journeys/ui/plausibleHelpers/plausibleHelpers'
-
 import { BlockFields as Block } from '../../../../../../../../__generated__/BlockFields'
 import { useUpdateEdge } from '../../../libs/useUpdateEdge'
 import { BaseNode } from '../../BaseNode'
@@ -21,7 +19,10 @@ interface BlockUIProperties {
 interface ActionButtonProps {
   block: TreeBlock<Block>
   selected?: boolean
-  analytics?: BlockAnalytics
+  analytics?: {
+    percentage: number
+    total: number
+  }
 }
 
 export function ActionButton({
@@ -90,9 +91,7 @@ export function ActionButton({
           borderTop: (theme) =>
             `1px solid ${alpha(theme.palette.secondary.dark, 0.1)}`,
           height: ACTION_BUTTON_HEIGHT,
-          width: '100%',
-          position: 'relative',
-          boxSizing: 'border-box'
+          position: 'relative'
         }}
       >
         <Box
@@ -108,6 +107,7 @@ export function ActionButton({
         >
           <Box
             className="stats-overlay__bar"
+            data-testid="AnalyticsOverlayBar"
             sx={{
               backgroundColor: 'info.main',
               position: 'relative',
@@ -115,7 +115,7 @@ export function ActionButton({
               flexShrink: '1px',
               transition: 'all 300ms ease',
               flexGrow: showJourneyFlowAnalytics
-                ? `${analytics?.percentOfStepEvents ?? 0}`
+                ? `${analytics?.percentage ?? 0}`
                 : 0,
               borderRadius: '0 4px 4px 0'
             }}
@@ -127,12 +127,8 @@ export function ActionButton({
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            '.event-count': {
-              opacity: 0,
-              transition: 'opacity 200ms ease-in-out'
-            },
             '&:hover': {
-              '& .event-count': {
+              '& .stats-overlay__event-count': {
                 opacity: showJourneyFlowAnalytics ? 1 : 0
               }
             }
@@ -151,8 +147,10 @@ export function ActionButton({
             {title}
           </Typography>
           <Box
-            className="event-count"
+            className="stats-overlay__event-count"
+            data-testid="AnalyticsEventCount"
             sx={{
+              transition: 'opacity 200ms ease-in-out',
               borderRadius: 50,
               backgroundColor: 'background.paper',
               px: 1,
@@ -161,7 +159,7 @@ export function ActionButton({
             }}
           >
             <Typography variant="body1" sx={{ fontSize: 12, lineHeight: 1 }}>
-              {analytics?.event.events}
+              {analytics?.total}
             </Typography>
           </Box>
         </Box>
