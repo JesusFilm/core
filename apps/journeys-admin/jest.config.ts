@@ -1,5 +1,5 @@
 import type { Config } from 'jest'
-// Add a comment just so admin app can be deployed to test e2e's
+
 const config: Config = {
   displayName: 'journeys-admin',
   moduleNameMapper: {
@@ -14,7 +14,6 @@ const config: Config = {
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   coverageDirectory: '../../coverage/apps/journeys-admin',
-  setupFiles: ['./jest.polyfills.js'],
   setupFilesAfterEnv: ['<rootDir>setupTests.tsx'],
   collectCoverage: true,
   coverageReporters: ['cobertura'],

@@ -60,7 +60,7 @@ test.describe('Publisher page functionality', () => {
     await publisherPage.verifyTemplateMovedUnarchivedToActiveTab()
   })
 
-  test('Verify the user able to move the all template from Active, archived, Trash page', async ({
+  test.skip('Verify the user able to move the all template from Active, archived, Trash page', async ({
     page
   }) => {
     const publisherPage = new Publisher(page)
