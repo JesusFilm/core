@@ -20,6 +20,7 @@ import {
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import {
   CustomDomain,
+  Integration,
   Prisma,
   Team,
   UserTeam
@@ -126,23 +127,24 @@ export class TeamResolver {
     })
   }
 
-  // UNCOMMENT once prisma commands have run
-  // @ResolveField()
-  // async integrations(
-  //   @Parent() parent: Team,
-  //   @CaslAbility({ optional: true }) ability?: AppAbility
-  // ): Promise<Integration[]> {
-  //   if (ability == null) return []
+  @ResolveField()
+  async integrations(
+    @Parent() parent: Team,
+    @CaslAbility({ optional: true }) ability?: AppAbility
+  ): Promise<Integration[]> {
+    if (ability == null) return []
 
-  //   const integrations = await this.prismaService.team.findUnique({
-  //     where: { id: parent.id },
-  //   }).integrations({ include: { team: { include: { userTeams: true }}}})
+    const integrations = await this.prismaService.team
+      .findUnique({
+        where: { id: parent.id }
+      })
+      .integrations({
+        where: { teamId: parent.id },
+        include: { team: { include: { userTeams: true } } }
+      })
 
-  //   ability.can(Action.Read, subject('Integration', integrations))
-  //   return filter(integrations, (integration) =>
-  //   ability.can(Action.Read, subject('UserTeam', integration))
-  // )
-  // }
+    return integrations != null ? integrations : []
+  }
 
   @ResolveReference()
   async resolveReference(reference: {

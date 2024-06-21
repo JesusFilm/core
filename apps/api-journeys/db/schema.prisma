@@ -213,7 +213,7 @@ model Team {
   UserTeamInvites    UserTeamInvite[]
   journeyCollections JourneyCollection[]
   customDomains      CustomDomain[]
-  Integration        Integration[]
+  integrations       Integration[]
 
   @@index(title)
 }
