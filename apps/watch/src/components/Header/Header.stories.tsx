@@ -8,6 +8,7 @@ import { ThemeMode } from '@core/shared/ui/themes'
 import { Header } from './Header'
 
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+import { parameters } from '.storybook/preview'
 
 const HeaderStory: Meta<typeof Header> = {
   ...watchConfig,
@@ -26,20 +27,31 @@ const trueHeaderItemsFlags = {
 }
 
 const Template: StoryObj<typeof Header> = {
+  render: () => <Header themeMode={ThemeMode.light} />
+}
+
+const WithFlagsTemplate: StoryObj<typeof Header> = {
   render: () => (
     <FlagsProvider flags={{ ...trueHeaderItemsFlags }}>
-      <Box
-      // sx={{
-      //   backgroundColor: '#26262E'
-      // }}
-      >
-        <Header themeMode={ThemeMode.light} />
-      </Box>
+      <Header themeMode={ThemeMode.light} />
     </FlagsProvider>
   )
 }
 
-export const Default = { ...Template }
+export const Default = {
+  ...Template
+}
+
+export const WithAllButtons = {
+  ...WithFlagsTemplate,
+  parameters: {
+    nextjs: {
+      router: {
+        pathname: '/watch'
+      }
+    }
+  }
+}
 
 export const OpenPanel = {
   ...Template,
