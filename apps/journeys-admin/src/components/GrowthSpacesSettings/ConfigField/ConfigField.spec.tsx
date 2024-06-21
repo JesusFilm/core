@@ -2,7 +2,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ConfigField } from './ConfigField'
 
 describe('ConfigField', () => {
-  it('should call the onChange callback when the value is changed', () => {
+  it('should call onChange callback when the value is changed', async () => {
     const handleChange = jest.fn()
     render(
       <ConfigField
@@ -13,7 +13,20 @@ describe('ConfigField', () => {
     )
     const input = screen.getByDisplayValue('accessKey')
     fireEvent.change(input, { target: { value: 'newAccessKey' } })
-    expect(handleChange).toHaveBeenCalledWith('newAccessKey')
+    fireEvent.submit(input)
+    await waitFor(() =>
+      expect(handleChange).toHaveBeenCalledWith('newAccessKey')
+    )
+  })
+
+  it('should show error message when value is empty', async () => {
+    const onSubmit = jest.fn()
+    render(<ConfigField label={'Access Key'} value={''} onChange={onSubmit} />)
+    const input = screen.getByDisplayValue('')
+    fireEvent.submit(input)
+    await waitFor(() =>
+      expect(screen.getByText('This field is required')).toBeInTheDocument()
+    )
   })
 
   it('should show the value on text field click', async () => {
