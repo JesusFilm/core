@@ -11,13 +11,15 @@ import {
 import { PrismaService } from '../../../lib/prisma.service'
 
 import { IntegrationService } from '../integration.service'
+import { GrowthSpacesIntegrationService } from './growthSpaces.service'
 import { Integration } from '.prisma/api-journeys-client'
 
 @Resolver('GrowthSpacesIntegration')
 export class GrowthSpacesIntegrationResolver {
   constructor(
     private readonly prismaService: PrismaService,
-    private readonly integrationService: IntegrationService
+    private readonly integrationService: IntegrationService,
+    private readonly growthSpacesIntegrationService: GrowthSpacesIntegrationService
   ) {}
 
   @Mutation()
@@ -25,45 +27,25 @@ export class GrowthSpacesIntegrationResolver {
     @Args('teamId') teamId: string,
     @Args('input') input: IntegrationGrowthSpaceCreateInput
   ): Promise<Integration> {
-    try {
-      const res = await fetch(
-        'https://api.growthspaces.org/api/v1/authentication',
-        {
-          headers: {
-            'Access-Id': input.accessId,
-            'Access-Secret': input.accessSecret
-          }
-        }
+    await this.growthSpacesIntegrationService.authenticate(
+      input.accessId,
+      input.accessSecret
+    )
+    const { ciphertext, iv, tag } =
+      await this.integrationService.encryptSymmetric(
+        'some-key',
+        input.accessSecret
       )
-      const data = await res.json()
-      if (data === 'ok') {
-        const { ciphertext, iv, tag } =
-          await this.integrationService.encryptSymmetric(
-            'some-key',
-            input.accessSecret
-          )
-        return await this.prismaService.integration.create({
-          data: {
-            type: IntegrationType.growthSpaces,
-            teamId: teamId,
-            accessId: input.accessId,
-            accessSecretCipherText: ciphertext,
-            accessSecretIv: iv,
-            accessSecretTag: tag
-          }
-        })
+    return await this.prismaService.integration.create({
+      data: {
+        type: IntegrationType.growthSpaces,
+        teamId: teamId,
+        accessId: input.accessId,
+        accessSecretCipherText: ciphertext,
+        accessSecretIv: iv,
+        accessSecretTag: tag
       }
-      throw new GraphQLError(
-        'incorrect access Id and access secret for Growth Space integration',
-        {
-          extensions: { code: 'UNAUTHORIZED' }
-        }
-      )
-    } catch (e) {
-      throw new GraphQLError(e.message, {
-        extensions: { code: 'INTERNAL_SERVER_ERROR' }
-      })
-    }
+    })
   }
 
   @Mutation()
@@ -71,6 +53,10 @@ export class GrowthSpacesIntegrationResolver {
     @Args('teamId') id: string,
     @Args('input') input: IntegrationGrowthSpaceUpdateInput
   ): Promise<Integration> {
+    await this.growthSpacesIntegrationService.authenticate(
+      input.accessId,
+      input.accessSecret
+    )
     const { ciphertext, iv, tag } =
       await this.integrationService.encryptSymmetric(
         'some-key',
