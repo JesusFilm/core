@@ -3,14 +3,16 @@ import { ReactElement } from 'react'
 import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { transformer } from '@core/journeys/ui/transformer'
 import { transformPlausibleBreakdown } from '@core/journeys/ui/transformPlausibleBreakdown'
+import { transformer } from '@core/journeys/ui/transformer'
+import formatISO from 'date-fns/formatISO'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import { IdType } from '../../../__generated__/globalTypes'
 import { useJourneyPlausibleStatsBreakdownQuery } from '../../libs/useJourneyPlausibleStatsBreakdownQuery'
 
+import { usePlausibleLocal } from '../PlausibleLocalProvider'
 import { Fab } from './Fab'
 import { Slider } from './Slider'
 import { Toolbar } from './Toolbar'
@@ -31,9 +33,14 @@ export function Editor({
   selectedStepId,
   initialState
 }: EditorProps): ReactElement {
+  const {
+    state: { period, date }
+  } = usePlausibleLocal()
   const { data } = useJourneyPlausibleStatsBreakdownQuery({
     id: journey?.id ?? '',
-    idType: IdType.databaseId
+    idType: IdType.databaseId,
+    period,
+    date: formatISO(date, { representation: 'date' })
   })
 
   const journeyStatsBreakdown = transformPlausibleBreakdown({
