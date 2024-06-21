@@ -1,5 +1,6 @@
 import { gql, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
+import Fade from '@mui/material/Fade'
 import { useTheme } from '@mui/material/styles'
 import {
   MouseEvent,
@@ -40,6 +41,7 @@ import {
 import { useStepBlockPositionUpdateMutation } from '../../../../libs/useStepBlockPositionUpdateMutation'
 
 import { AnalyticsOverlaySwitch } from './AnalyticsOverlaySwitch'
+import { JourneyAnalyticsCard } from './JourneyAnalyticsCard'
 import { NewStepButton } from './NewStepButton'
 import { CustomEdge } from './edges/CustomEdge'
 import { StartEdge } from './edges/StartEdge'
@@ -326,7 +328,14 @@ export function JourneyFlow(): ReactElement {
               <NewStepButton />
             </Panel>
             <Panel position="top-left">
+              <div>
               <AnalyticsOverlaySwitch />
+                <Fade in={showJourneyFlowAnalytics}>
+                  <div>
+                    <JourneyAnalyticsCard {...journeyStatsBreakdown} />
+                  </div>
+                </Fade>
+              </div>
             </Panel>
             <Controls showInteractive={false}>
               <ControlButton onClick={blockPositionsUpdate}>
