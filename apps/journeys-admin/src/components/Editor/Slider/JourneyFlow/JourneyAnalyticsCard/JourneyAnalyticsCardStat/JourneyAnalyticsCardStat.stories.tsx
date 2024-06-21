@@ -8,7 +8,8 @@ import { JourneyAnalyticsCardStat } from '.'
 const JourneyAnalyticsCardStatDemo = {
   ...simpleComponentConfig,
   component: JourneyAnalyticsCardStat,
-  title: 'Journeys-Admin/Editor/Slider/JourneyFlow/JourneyAnalytics/NumberStat'
+  title:
+    'Journeys-Admin/Editor/Slider/JourneyFlow/JourneyAnalyticsCard/NumberStat'
 }
 
 const Template: StoryObj<
