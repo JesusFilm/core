@@ -334,14 +334,14 @@ export function JourneyFlow(): ReactElement {
             </Panel>
             {journeyFlowAnalytics && (
               <Panel position="top-left">
-                <div>
+                <>
                   <AnalyticsOverlaySwitch />
                   <Fade in={showJourneyFlowAnalytics}>
-                    <div>
+                    <Box>
                       <JourneyAnalyticsCard {...journeyStatsBreakdown} />
-                    </div>
+                    </Box>
                   </Fade>
-                </div>
+                </>
               </Panel>
             )}
             <Controls showInteractive={false}>

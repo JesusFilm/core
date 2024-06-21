@@ -1,5 +1,4 @@
 import FormControlLabel from '@mui/material/FormControlLabel'
-import Stack from '@mui/material/Stack'
 import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
@@ -22,19 +21,17 @@ export function AnalyticsOverlaySwitch(): ReactElement {
   }
 
   return (
-    <Stack>
-      <FormControlLabel
-        control={
-          <Switch
-            checked={showJourneyFlowAnalytics}
-            onChange={handleSwitchAnalytics}
-          />
-        }
-        label={
-          <Typography variant="subtitle2">{t('Analytics Overlay')}</Typography>
-        }
-        labelPlacement="start"
-      />
-    </Stack>
+    <FormControlLabel
+      control={
+        <Switch
+          checked={showJourneyFlowAnalytics}
+          onChange={handleSwitchAnalytics}
+        />
+      }
+      label={
+        <Typography variant="subtitle2">{t('Analytics Overlay')}</Typography>
+      }
+      labelPlacement="start"
+    />
   )
 }
