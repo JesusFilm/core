@@ -27,7 +27,7 @@ export function StepBlockNodeCard({
   selected
 }: StepBlockNodeCardProps): ReactElement {
   const {
-    state: { selectedStep },
+    state: { selectedStep, showJourneyFlowAnalytics },
     dispatch
   } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
@@ -65,6 +65,11 @@ export function StepBlockNodeCard({
       title={t('Click to edit or drag')}
       onClick={handleClick}
       sx={{
+        opacity: showJourneyFlowAnalytics ? 0.8 : 1,
+        boxShadow: showJourneyFlowAnalytics ? 'none' : 3,
+        backgroundColor: showJourneyFlowAnalytics
+          ? 'transparent'
+          : 'background.paper',
         width: STEP_NODE_CARD_WIDTH,
         m: 1.5,
         '&:hover': {
