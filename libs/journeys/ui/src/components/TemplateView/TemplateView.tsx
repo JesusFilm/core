@@ -101,7 +101,7 @@ export function TemplateView({
           py: { xs: 6, sm: 9 }
         }}
       >
-        <Stack sx={{ gap: { xs: 3, sm: 7 } }}>
+        <Stack sx={{ gap: { xs: 3, sm: 7, md: 0 } }}>
           <TemplateViewHeader
             isPublisher={isPublisher}
             authUser={authUser}
