@@ -2,8 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
 import { PrismaService } from '../../../lib/prisma.service'
-import { ImporterVideosService } from '../importerVideos/importerVideos.service'
 import { ImporterVideoVariantsService } from '../importerVideoVariants/importerVideoVariants.service'
+import { ImporterVideosService } from '../importerVideos/importerVideos.service'
 
 import { ImporterVideoVariantSubtitlesService } from './importerVideovariantSubtitle.service'
 
