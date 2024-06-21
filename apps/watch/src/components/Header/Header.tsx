@@ -181,7 +181,8 @@ export function Header({
             sx={{
               background: 'transparent',
               boxShadow: 'none',
-              ...appBarStyles
+              // ...appBarStyles
+              ...(trigger ? appBarStyles : {})
             }}
             data-testid="Header"
             position="fixed"
