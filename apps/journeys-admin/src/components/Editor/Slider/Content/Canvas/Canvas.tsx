@@ -45,7 +45,8 @@ export function Canvas(): ReactElement {
       selectedStep,
       selectedBlock,
       activeSlide,
-      activeCanvasDetailsDrawer
+      activeCanvasDetailsDrawer,
+      showJourneyFlowAnalytics
     },
     dispatch
   } = useEditor()
@@ -65,6 +66,7 @@ export function Canvas(): ReactElement {
   }, [])
 
   function handleFooterClick(): void {
+    if (showJourneyFlowAnalytics) return
     dispatch({
       type: 'SetActiveCanvasDetailsDrawerAction',
       activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer
@@ -91,6 +93,7 @@ export function Canvas(): ReactElement {
   }
 
   function handleSelectCard(): void {
+    if (showJourneyFlowAnalytics) return
     const iframeDocument =
       frameRef.current?.contentDocument ??
       frameRef.current?.contentWindow?.document
@@ -292,15 +295,17 @@ export function Canvas(): ReactElement {
                 </ThemeProvider>
               </FramePortal>
             </Box>
-            <Box
-              sx={{
-                mt: 4,
-                alignSelf: 'end',
-                transform: `scale(${scale})`
-              }}
-            >
-              <Fab variant="canvas" />
-            </Box>
+            {!showJourneyFlowAnalytics && (
+              <Box
+                sx={{
+                  mt: 4,
+                  alignSelf: 'end',
+                  transform: `scale(${scale})`
+                }}
+              >
+                <Fab variant="canvas" />
+              </Box>
+            )}
           </Box>
         </Stack>
       )}

@@ -31,6 +31,7 @@ import {
 
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import ArrowRefresh6Icon from '@core/shared/ui/icons/ArrowRefresh6'
 
 import {
@@ -75,6 +76,7 @@ export const GET_STEP_BLOCKS_WITH_POSITION = gql`
 
 export function JourneyFlow(): ReactElement {
   const { journey } = useJourney()
+  const { journeyFlowAnalytics } = useFlags()
   const theme = useTheme()
   const {
     state: { steps, activeSlide, showJourneyFlowAnalytics }
@@ -304,9 +306,7 @@ export function JourneyFlow(): ReactElement {
         onEdgeUpdate={showJourneyFlowAnalytics ? undefined : onEdgeUpdate}
         onEdgeUpdateStart={onEdgeUpdateStart}
         onEdgeUpdateEnd={onEdgeUpdateEnd}
-        onSelectionChange={
-          showJourneyFlowAnalytics ? undefined : onSelectionChange
-        }
+        onSelectionChange={onSelectionChange}
         fitView
         fitViewOptions={{ nodes: [nodes[0]], minZoom: 1, maxZoom: 0.7 }}
         nodeTypes={nodeTypes}
@@ -323,11 +323,13 @@ export function JourneyFlow(): ReactElement {
         {activeSlide === ActiveSlide.JourneyFlow && (
           <>
             <Panel position="top-right">
-              <NewStepButton />
+              {!showJourneyFlowAnalytics && <NewStepButton />}
             </Panel>
-            <Panel position="top-left">
-              <AnalyticsOverlaySwitch />
-            </Panel>
+            {journeyFlowAnalytics && (
+              <Panel position="top-left">
+                <AnalyticsOverlaySwitch />
+              </Panel>
+            )}
             <Controls showInteractive={false}>
               <ControlButton onClick={blockPositionsUpdate}>
                 <ArrowRefresh6Icon />
