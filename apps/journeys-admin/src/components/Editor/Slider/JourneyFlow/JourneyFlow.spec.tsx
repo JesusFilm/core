@@ -7,6 +7,7 @@ import { ActiveSlide, EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { transformer } from '@core/journeys/ui/transformer'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import {
   GetStepBlocksWithPosition,
@@ -81,15 +82,17 @@ describe('JourneyFlow', () => {
 
     render(
       <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
-        <JourneyProvider value={{ journey: defaultJourney }}>
-          <EditorProvider
-            initialState={{ steps, activeSlide: ActiveSlide.JourneyFlow }}
-          >
-            <Box sx={{ width: '100vw', height: '100vh' }}>
-              <JourneyFlow />
-            </Box>
-          </EditorProvider>
-        </JourneyProvider>
+        <FlagsProvider flags={{ journeyFlowAnalytics: true }}>
+          <JourneyProvider value={{ journey: defaultJourney }}>
+            <EditorProvider
+              initialState={{ steps, activeSlide: ActiveSlide.JourneyFlow }}
+            >
+              <Box sx={{ width: '100vw', height: '100vh' }}>
+                <JourneyFlow />
+              </Box>
+            </EditorProvider>
+          </JourneyProvider>
+        </FlagsProvider>
       </MockedProvider>
     )
 

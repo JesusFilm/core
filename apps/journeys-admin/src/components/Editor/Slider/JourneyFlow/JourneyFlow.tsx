@@ -31,6 +31,7 @@ import {
 
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import ArrowRefresh6Icon from '@core/shared/ui/icons/ArrowRefresh6'
 
 import {
@@ -75,6 +76,7 @@ export const GET_STEP_BLOCKS_WITH_POSITION = gql`
 
 export function JourneyFlow(): ReactElement {
   const { journey } = useJourney()
+  const { journeyFlowAnalytics } = useFlags()
   const theme = useTheme()
   const {
     state: { steps, activeSlide, showJourneyFlowAnalytics }
@@ -323,9 +325,11 @@ export function JourneyFlow(): ReactElement {
             <Panel position="top-right">
               {!showJourneyFlowAnalytics && <NewStepButton />}
             </Panel>
-            <Panel position="top-left">
-              <AnalyticsOverlaySwitch />
-            </Panel>
+            {journeyFlowAnalytics && (
+              <Panel position="top-left">
+                <AnalyticsOverlaySwitch />
+              </Panel>
+            )}
             <Controls showInteractive={false}>
               <ControlButton onClick={blockPositionsUpdate}>
                 <ArrowRefresh6Icon />
