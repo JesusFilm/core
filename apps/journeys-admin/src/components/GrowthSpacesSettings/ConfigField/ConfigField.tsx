@@ -11,26 +11,20 @@ import { useTranslation } from 'react-i18next'
 
 interface ConfigFieldProps {
   label: string
-  initialValue?: string
+  value?: string
   onChange: (value?: string) => void
 }
 
 export function ConfigField({
   label,
-  initialValue,
-  onChange
+  value,
+  onChange: handleChange
 }: ConfigFieldProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [value, setValue] = useState(initialValue)
   const [visible, setVisible] = useState(false)
   const [hover, setHover] = useState(false)
 
-  function handleBlur(): void {
-    setVisible(false)
-    onChange(value)
-  }
-
-  function handleClick(e: MouseEvent): void {
+  function handleIconClick(e: MouseEvent): void {
     e.stopPropagation()
     setVisible(!visible)
   }
@@ -51,15 +45,15 @@ export function ConfigField({
         <TextField
           type={visible ? 'text' : 'password'}
           value={hover && !visible ? '' : value}
-          onBlur={handleBlur}
-          onChange={(e) => setValue(e.target.value)}
+          onBlur={(e) => handleChange(e.target.value)}
+          onChange={(e) => handleChange(e.target.value)}
           onClick={() => setVisible(true)}
           onMouseEnter={() => setHover(true)}
           onMouseLeave={() => setHover(false)}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
-                <IconButton onClick={handleClick}>
+                <IconButton onClick={handleIconClick}>
                   {visible ? <EyeOpenIcon /> : <EyeClosedIcon />}
                 </IconButton>
               </InputAdornment>

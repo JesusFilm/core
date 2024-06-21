@@ -33,12 +33,12 @@ export function GrowthSpacesSettings(): ReactElement {
       <Typography variant="h5">App Settings</Typography>
       <ConfigField
         label="Access ID"
-        initialValue={accessId}
+        value={accessId}
         onChange={(value) => setAccessId(value)}
       />
       <ConfigField
         label="Access Secret"
-        initialValue={accessSecret}
+        value={accessSecret}
         onChange={(value) => setAccessSecret(value)}
       />
       <Button
