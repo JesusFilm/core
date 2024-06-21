@@ -6,6 +6,7 @@ import { ReactElement } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
+import { BlockAnalytics } from '@core/journeys/ui/plausibleHelpers/plausibleHelpers'
 
 import { BlockFields as Block } from '../../../../../../../../__generated__/BlockFields'
 import { useUpdateEdge } from '../../../libs/useUpdateEdge'
@@ -20,11 +21,13 @@ interface BlockUIProperties {
 interface ActionButtonProps {
   block: TreeBlock<Block>
   selected?: boolean
+  analytics?: BlockAnalytics
 }
 
 export function ActionButton({
   block,
-  selected = false
+  selected = false,
+  analytics
 }: ActionButtonProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const {
@@ -87,21 +90,81 @@ export function ActionButton({
           borderTop: (theme) =>
             `1px solid ${alpha(theme.palette.secondary.dark, 0.1)}`,
           height: ACTION_BUTTON_HEIGHT,
-          width: '100%'
+          width: '100%',
+          position: 'relative',
+          boxSizing: 'border-box'
         }}
       >
-        <Typography
-          align="left"
-          noWrap
+        <Box
           sx={{
-            fontWeight: 'bold',
-            fontSize: 10,
-            lineHeight: `${ACTION_BUTTON_HEIGHT - 1}px`
+            opacity: 0.2,
+            width: '100%',
+            height: 'calc(100% - 2px)',
+            position: 'absolute',
+            left: 0,
+            top: 1,
+            display: 'flex'
           }}
-          variant="body2"
         >
-          {title}
-        </Typography>
+          <Box
+            className="stats-overlay__bar"
+            sx={{
+              backgroundColor: 'info.main',
+              position: 'relative',
+              flexBasis: 0,
+              flexShrink: '1px',
+              transition: 'all 300ms ease',
+              flexGrow: showJourneyFlowAnalytics
+                ? `${analytics?.percentOfStepEvents ?? 0}`
+                : 0,
+              borderRadius: '0 4px 4px 0'
+            }}
+          />
+        </Box>
+        <Box
+          sx={{
+            position: 'relative',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            '.event-count': {
+              opacity: 0,
+              transition: 'opacity 200ms ease-in-out'
+            },
+            '&:hover': {
+              '& .event-count': {
+                opacity: showJourneyFlowAnalytics ? 1 : 0
+              }
+            }
+          }}
+        >
+          <Typography
+            align="left"
+            noWrap
+            sx={{
+              fontWeight: 'bold',
+              fontSize: 10,
+              lineHeight: `${ACTION_BUTTON_HEIGHT - 1}px`
+            }}
+            variant="body2"
+          >
+            {title}
+          </Typography>
+          <Box
+            className="event-count"
+            sx={{
+              borderRadius: 50,
+              backgroundColor: 'background.paper',
+              px: 1,
+              py: 1,
+              opacity: 0
+            }}
+          >
+            <Typography variant="body1" sx={{ fontSize: 12, lineHeight: 1 }}>
+              {analytics?.event.events}
+            </Typography>
+          </Box>
+        </Box>
       </Box>
     </BaseNode>
   )

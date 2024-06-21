@@ -1,6 +1,7 @@
+import Fade from '@mui/material/Fade'
 import Stack from '@mui/material/Stack'
 import { alpha } from '@mui/material/styles'
-import { ReactElement } from 'react'
+import { ReactElement, useMemo } from 'react'
 import { NodeProps } from 'reactflow'
 
 import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
@@ -9,6 +10,7 @@ import { filterActionBlocks } from '@core/journeys/ui/filterActionBlocks'
 import { BaseNode } from '../BaseNode'
 
 import { ActionButton } from './ActionButton'
+import { StepBlockNodeAnalytics } from './StepBlockNodeAnalytics'
 import { StepBlockNodeCard } from './StepBlockNodeCard'
 import { StepBlockNodeMenu } from './StepBlockNodeMenu'
 import { STEP_NODE_WIDTH } from './libs/sizes'
@@ -20,16 +22,40 @@ export function StepBlockNode({
   dragging
 }: NodeProps): ReactElement {
   const {
-    state: { steps, selectedStep, activeContent, showJourneyFlowAnalytics }
+    state: {
+      steps,
+      selectedStep,
+      activeContent,
+      showJourneyFlowAnalytics,
+      journeyStatsBreakdown
+    }
   } = useEditor()
   const step = steps?.find((step) => step.id === id)
-  const actionBlocks = filterActionBlocks(step)
+
+  const stats = journeyStatsBreakdown?.stepsStats.find(
+    (step) => step.stepId === id
+  )
+  const actionBlocks = useMemo(
+    () => (step != null ? [step, ...filterActionBlocks(step)] : []),
+    [step]
+  )
+
+  const blockAnalyticsMap = {}
+
+  // const { blockAnalyticsMap } = useMemo(() => {
+  //   return getStepAnalytics(actionBlocks, journeyStatsBreakdown?.actionEventMap)
+  // }, [actionBlocks, journeyStatsBreakdown?.actionEventMap])
 
   const isSelected =
     activeContent === ActiveContent.Canvas && selectedStep?.id === step?.id
 
   return step != null ? (
-    <>
+    <Stack sx={{ position: 'relative' }}>
+      <Fade in={showJourneyFlowAnalytics}>
+        <div>
+          <StepBlockNodeAnalytics {...stats} />
+        </div>
+      </Fade>
       {!showJourneyFlowAnalytics && (
         <StepBlockNodeMenu
           in={isSelected}
@@ -39,6 +65,7 @@ export function StepBlockNode({
           yPos={yPos}
         />
       )}
+      {/* <div style={{ position: 'relative' }}> */}
       <Stack
         data-testid={`StepBlockNode-${step.id}`}
         direction="column"
@@ -52,6 +79,8 @@ export function StepBlockNode({
           borderRadius: 3,
           maxWidth: STEP_NODE_WIDTH,
           transition: (theme) => theme.transitions.create('background')
+          // overflow: 'hidden'
+          // boxSizing: 'border-box'
         }}
       >
         <BaseNode
@@ -61,20 +90,21 @@ export function StepBlockNode({
           isSourceConnected={step.nextBlockId != null}
           dragging={dragging}
         >
-          {() => (
-            <>
-              <StepBlockNodeCard step={step} selected={isSelected} />
-              <ActionButton block={step} selected={isSelected} />
-            </>
-          )}
+          {() => <StepBlockNodeCard step={step} selected={isSelected} />}
         </BaseNode>
-        <Stack direction="column">
+        <Stack direction="column" sx={{}}>
           {actionBlocks.map((block) => (
-            <ActionButton key={block.id} block={block} selected={isSelected} />
+            <ActionButton
+              key={block.id}
+              block={block}
+              selected={isSelected}
+              analytics={blockAnalyticsMap[block.id]}
+            />
           ))}
         </Stack>
       </Stack>
-    </>
+      {/* </div> */}
+    </Stack>
   ) : (
     <></>
   )
