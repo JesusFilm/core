@@ -10,7 +10,7 @@ export function GrowthSpacesSettings(): ReactElement {
   const [accessId, setAccessId] = useState<string | undefined>()
   const [accessSecret, setAccessSecret] = useState<string | undefined>()
 
-  function handleSave(): void {
+  function handleClick(): void {
     console.log('accessId', accessId)
     console.log('accessSecret', accessSecret)
   }
@@ -44,7 +44,7 @@ export function GrowthSpacesSettings(): ReactElement {
       <Button
         variant="contained"
         color="primary"
-        onClick={handleSave}
+        onClick={handleClick}
         sx={{ width: '20%', alignSelf: 'flex-end' }}
       >
         Save
