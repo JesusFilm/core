@@ -40,6 +40,19 @@ function formatTime(totalSeconds: number): string {
   return minutes > 0 ? `${minutes}m${seconds}s` : `${seconds}s`
 }
 
+function getPercentage(dividend, divisor): string {
+  let quotient = dividend / divisor
+
+  if (Number.isNaN(quotient) || !Number.isFinite(quotient)) {
+    quotient = 0
+  }
+
+  return quotient.toLocaleString(undefined, {
+    style: 'percent',
+    minimumFractionDigits: 0
+  })
+}
+
 interface StepBlockNodeAnalyticsProps {
   timeOnPage?: number
   visitors?: number
@@ -52,22 +65,28 @@ export function StepBlockNodeAnalytics({
   visitorsExitAtStep = 0
 }: StepBlockNodeAnalyticsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+
   return (
-    <StatsOverlay direction="row" data-testid="StepBlockNodeAnalytics">
+    <StatsOverlay
+      direction="row"
+      divider={<Divider orientation="vertical" flexItem />}
+      data-testid="StepBlockNodeAnalytics"
+    >
       <AnalyticsDataPoint
         Icon={UserProfile3}
         tooltipLabel={t('Unique visitors')}
-      >
-        {visitors}
-      </AnalyticsDataPoint>
-      <Divider orientation="vertical" flexItem />
-      <AnalyticsDataPoint Icon={TrendDown1} tooltipLabel={t('Bounce rate')}>
-        {`${visitorsExitAtStep}%`}
-      </AnalyticsDataPoint>
-      <Divider orientation="vertical" flexItem />
-      <AnalyticsDataPoint Icon={Clock1} tooltipLabel={t('Visit duration')}>
-        {formatTime(timeOnPage)}
-      </AnalyticsDataPoint>
+        value={visitors}
+      />
+      <AnalyticsDataPoint
+        Icon={TrendDown1}
+        tooltipLabel={t('Bounce rate')}
+        value={getPercentage(visitorsExitAtStep, visitors)}
+      />
+      <AnalyticsDataPoint
+        Icon={Clock1}
+        tooltipLabel={t('Visit duration')}
+        value={formatTime(timeOnPage)}
+      />
     </StatsOverlay>
   )
 }
