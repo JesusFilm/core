@@ -6,10 +6,8 @@ import Divider from '@mui/material/Divider'
 import Fade from '@mui/material/Fade'
 import Grid from '@mui/material/Grid'
 import IconButton from '@mui/material/IconButton'
-import Slide from '@mui/material/Slide'
 import SwipeableDrawer from '@mui/material/SwipeableDrawer'
 import Toolbar from '@mui/material/Toolbar'
-import useScrollTrigger from '@mui/material/useScrollTrigger'
 import Image from 'next/image'
 import NextLink from 'next/link'
 import { MouseEventHandler, ReactElement, forwardRef, useState } from 'react'
@@ -17,6 +15,7 @@ import { MouseEventHandler, ReactElement, forwardRef, useState } from 'react'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
+import useScrollTrigger from '@mui/material/useScrollTrigger'
 import { HeaderMenuPanel } from './HeaderMenuPanel'
 import { HeaderTabButtons } from './HeaderTabButtons'
 import minimalLogo from './assets/minimal-logo.png'
@@ -34,6 +33,7 @@ const LocalAppBar = forwardRef<HTMLDivElement, LocalAppBarProps>(
         {...props}
         sx={{
           p: 4,
+          pb: showDivider ? 0 : 4,
           color: 'text.primary',
           ...props.sx
         }}
@@ -51,13 +51,18 @@ const LocalAppBar = forwardRef<HTMLDivElement, LocalAppBarProps>(
               }}
             >
               <Grid item sx={{ gridRow: 1 }}>
-                <NextLink href="/watch">
-                  <Box
-                    sx={{
-                      width: { xs: '64px', md: '76px', xl: '88px' },
-                      marginLeft: { xs: '-8px', md: '-12px', xl: '0px' }
-                    }}
-                  >
+                <Box
+                  sx={{
+                    width: { xs: '64px', md: '76px', xl: '88px' },
+                    marginLeft: {
+                      xs: '-8px',
+                      md: '-14px',
+                      xl: '-16px',
+                      xxl: '0px'
+                    }
+                  }}
+                >
+                  <NextLink href="/watch">
                     <Image
                       src={minimalLogo}
                       alt="Watch Logo"
@@ -67,8 +72,8 @@ const LocalAppBar = forwardRef<HTMLDivElement, LocalAppBarProps>(
                         height: 'auto'
                       }}
                     />
-                  </Box>
-                </NextLink>
+                  </NextLink>
+                </Box>
               </Grid>
               <Grid
                 item
@@ -81,14 +86,27 @@ const LocalAppBar = forwardRef<HTMLDivElement, LocalAppBarProps>(
                 <HeaderTabButtons />
               </Grid>
               <Grid item sx={{ gridRow: 1 }}>
-                <IconButton
-                  color="inherit"
-                  aria-label="open header menu"
-                  edge="start"
-                  onClick={onMenuClick}
+                <Box
+                  data-testid="MenuBox"
+                  sx={{
+                    marginRight: {
+                      xs: '-18px',
+                      md: '-14px',
+                      lg: '-22px',
+                      xl: '-14px',
+                      xxl: '2px'
+                    }
+                  }}
                 >
-                  <MenuIcon />
-                </IconButton>
+                  <IconButton
+                    color="inherit"
+                    aria-label="open header menu"
+                    edge="start"
+                    onClick={onMenuClick}
+                  >
+                    <MenuIcon />
+                  </IconButton>
+                </Box>
               </Grid>
             </Grid>
           </Toolbar>
@@ -119,18 +137,41 @@ export function Header({
   hideSpacer,
   themeMode = ThemeMode.light
 }: HeaderProps): ReactElement {
-  const trigger = useScrollTrigger()
   const [drawerOpen, setDrawerOpen] = useState(false)
 
+  const lightTheme = themeMode === ThemeMode.light
+
+  const lightStyles = {
+    backgroundImage:
+      'linear-gradient(rgb(255 255 255 / 60%), rgb(255 255 255 / 26%))',
+    backdropFilter: 'blur(20px) brightness(1.1)',
+    '-webkit-backdrop-filter': 'blur(20px) brightness(1.1)'
+  }
+
+  const darkStyles = {
+    backgroundImage: 'linear-gradient(rgb(0 0 0 / 60%), rgb(0 0 0 / 26%))',
+    backdropFilter: 'blur(20px) brightness(0.9)',
+    '-webkit-backdrop-filter': 'blur(20px) brightness(0.9)'
+  }
+
+  const appBarStyles = lightTheme ? lightStyles : darkStyles
+
+  const trigger = useScrollTrigger({ disableHysteresis: true })
   return (
     <>
-      {hideSpacer !== true && <Box data-testid="HeaderSpacer" height={128} />}
+      {hideSpacer !== true && (
+        <Box
+          data-testid="HeaderSpacer"
+          sx={{ height: { xs: 108, md: 120, lg: 168, xl: 132 } }}
+        />
+      )}
       <ThemeProvider themeName={ThemeName.website} themeMode={themeMode} nested>
         <Fade
           appear={false}
-          in={hideAbsoluteAppBar !== true}
+          in={hideAbsoluteAppBar !== true || trigger}
           style={{
-            transitionDelay: hideAbsoluteAppBar !== true ? undefined : '2s',
+            transitionDelay:
+              hideAbsoluteAppBar !== true || trigger ? undefined : '2s',
             transitionDuration: '225ms'
           }}
           timeout={{ exit: 2225 }}
@@ -139,23 +180,15 @@ export function Header({
           <LocalAppBar
             sx={{
               background: 'transparent',
-              boxShadow: 'none'
+              boxShadow: 'none',
+              ...appBarStyles
             }}
-            showDivider={themeMode === ThemeMode.light}
+            data-testid="Header"
+            position="fixed"
+            showDivider={lightTheme}
             onMenuClick={() => setDrawerOpen(true)}
           />
         </Fade>
-      </ThemeProvider>
-      <ThemeProvider themeName={ThemeName.website} themeMode={themeMode} nested>
-        <Slide in={trigger}>
-          <LocalAppBar
-            sx={{
-              backgroundColor: 'background.default'
-            }}
-            position="fixed"
-            onMenuClick={() => setDrawerOpen(true)}
-          />
-        </Slide>
       </ThemeProvider>
       <ThemeProvider
         themeName={ThemeName.website}

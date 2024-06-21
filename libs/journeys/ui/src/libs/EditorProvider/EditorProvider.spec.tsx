@@ -469,35 +469,58 @@ describe('EditorContext', () => {
         })
       })
     })
-  })
 
-  describe('SetJourneyStatsBreakdownAction', () => {
-    it('should set journey stats breakdown', () => {
-      const state: EditorState = {
-        steps: [],
-        activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
-        activeFab: ActiveFab.Add,
-        activeSlide: ActiveSlide.JourneyFlow,
-        activeContent: ActiveContent.Canvas,
-        showJourneyFlowAnalytics: false
-      }
+    describe('SetShowJourneyFlowAnalyticsAction', () => {
+      it('should set showJourneyFlowAnalytics', () => {
+        const state: EditorState = {
+          steps: [],
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+          activeFab: ActiveFab.Add,
+          activeSlide: ActiveSlide.Content,
+          activeContent: ActiveContent.Social,
+          showJourneyFlowAnalytics: false
+        }
 
-      const journeyStatsBreakdown: JourneyStatsBreakdown = {
-        totalVisitors: 0,
-        chatsStarted: 0,
-        linksVisited: 0,
-        referrers: [],
-        stepsStats: []
-      }
+        expect(
+          reducer(state, {
+            type: 'SetShowJourneyFlowAnalyticsAction',
+            showJourneyFlowAnalytics: true
+          })
+        ).toEqual({
+          ...state,
+          showJourneyFlowAnalytics: true
+        })
+      })
+    })
 
-      expect(
-        reducer(state, {
-          type: 'SetJourneyStatsBreakdownAction',
+    describe('SetJourneyStatsBreakdownAction', () => {
+      it('should set journey stats breakdown', () => {
+        const state: EditorState = {
+          steps: [],
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+          activeFab: ActiveFab.Add,
+          activeSlide: ActiveSlide.JourneyFlow,
+          activeContent: ActiveContent.Canvas,
+          showJourneyFlowAnalytics: false
+        }
+
+        const journeyStatsBreakdown: JourneyStatsBreakdown = {
+          totalVisitors: 0,
+          chatsStarted: 0,
+          linksVisited: 0,
+          referrers: [],
+          stepsStats: []
+        }
+
+        expect(
+          reducer(state, {
+            type: 'SetJourneyStatsBreakdownAction',
+            journeyStatsBreakdown
+          })
+        ).toEqual({
+          ...state,
           journeyStatsBreakdown
         })
-      ).toEqual({
-        ...state,
-        journeyStatsBreakdown
       })
     })
   })
