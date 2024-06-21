@@ -4,8 +4,8 @@ import { ReactElement, useState } from 'react'
 import ThumbsDown from '@core/shared/ui/icons/ThumbsDown'
 import ThumbsUp from '@core/shared/ui/icons/ThumbsUp'
 
-import { useBlocks } from '../../../../libs/block'
 import { useJourney } from '../../../../libs/JourneyProvider'
+import { useBlocks } from '../../../../libs/block'
 import {
   JourneyPlausibleEvents,
   keyify
@@ -37,14 +37,16 @@ export function ReactionButton({ variant }: ReactionButtonProps): ReactElement {
         const event = `footer${
           variant === 'thumbsup' ? 'ThumbsUp' : 'ThumbsDown'
         }ButtonClick` as const
+        const key = keyify({
+          stepId: input.blockId,
+          event,
+          blockId: input.blockId
+        })
         plausible(event, {
           props: {
             ...input,
-            key: keyify({
-              stepId: input.blockId,
-              event,
-              blockId: input.blockId
-            })
+            key,
+            simpleKey: key
           }
         })
       }

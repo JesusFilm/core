@@ -11,16 +11,17 @@ import {
 import { GraphQLError } from 'graphql'
 import omit from 'lodash/omit'
 
-import {
-  Journey,
-  Prisma,
-  UserJourney,
-  UserJourneyRole
-} from '.prisma/api-journeys-client'
 import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 import { User } from '@core/nest/common/firebaseClient'
 import { CurrentUser } from '@core/nest/decorators/CurrentUser'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
+import {
+  Journey,
+  JourneyNotification,
+  Prisma,
+  UserJourney,
+  UserJourneyRole
+} from '.prisma/api-journeys-client'
 
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
@@ -256,5 +257,18 @@ export class UserJourneyResolver {
     @Parent() userJourney: UserJourney
   ): Promise<{ __typename: string; id: string }> {
     return { __typename: 'User', id: userJourney.userId }
+  }
+
+  @ResolveField('journeyNotification')
+  async journeyNotification(
+    @Parent() userJourney: UserJourney
+  ): Promise<JourneyNotification | null | undefined> {
+    const res = await this.prismaService.userJourney
+      .findUnique({
+        where: { id: userJourney.id }
+      })
+      .journeyNotification()
+
+    return res
   }
 }

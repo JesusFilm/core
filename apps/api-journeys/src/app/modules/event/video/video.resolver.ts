@@ -21,12 +21,16 @@ import {
   VideoStartEvent,
   VideoStartEventCreateInput
 } from '../../../__generated__/graphql'
+import { PrismaService } from '../../../lib/prisma.service'
 import { EventService } from '../event.service'
 
 @Resolver('VideoStartEvent')
 @UseGuards(GqlAuthGuard)
 export class VideoStartEventResolver {
-  constructor(private readonly eventService: EventService) {}
+  constructor(
+    private readonly eventService: EventService,
+    private readonly prismaService: PrismaService
+  ) {}
 
   @Mutation()
   async videoStartEventCreate(
@@ -38,6 +42,22 @@ export class VideoStartEventResolver {
       input.blockId,
       input.stepId
     )
+
+    const video = await this.prismaService.block.findUnique({
+      where: { id: input.blockId },
+      select: {
+        duration: true,
+        startAt: true,
+        endAt: true
+      }
+    })
+
+    const delay =
+      video?.endAt != null && video?.startAt != null
+        ? video.endAt - video.startAt
+        : video?.duration ?? 0
+
+    await this.eventService.resetEventsEmailDelay(journeyId, visitor.id, delay)
 
     return await this.eventService.save({
       ...input,
@@ -57,7 +77,10 @@ export class VideoStartEventResolver {
 @Resolver('VideoPlayEvent')
 @UseGuards(GqlAuthGuard)
 export class VideoPlayEventResolver {
-  constructor(private readonly eventService: EventService) {}
+  constructor(
+    private readonly eventService: EventService,
+    private readonly prismaService: PrismaService
+  ) {}
 
   @Mutation()
   async videoPlayEventCreate(
@@ -69,6 +92,22 @@ export class VideoPlayEventResolver {
       input.blockId,
       input.stepId
     )
+
+    const video = await this.prismaService.block.findUnique({
+      where: { id: input.blockId },
+      select: {
+        duration: true,
+        startAt: true,
+        endAt: true
+      }
+    })
+
+    const delay =
+      video?.endAt != null && video?.startAt != null
+        ? video.endAt - video.startAt
+        : video?.duration ?? 0
+
+    await this.eventService.resetEventsEmailDelay(journeyId, visitor.id, delay)
 
     return await this.eventService.save({
       ...input,
@@ -133,6 +172,8 @@ export class VideoCompleteEventResolver {
       input.blockId,
       input.stepId
     )
+
+    await this.eventService.resetEventsEmailDelay(journeyId, visitor.id)
 
     return await this.eventService.save({
       ...input,
