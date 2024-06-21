@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import omit from 'lodash/omit'
 
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 import {
   CustomDomain,
   Journey,
@@ -10,7 +11,6 @@ import {
   Team,
   UserTeamRole
 } from '.prisma/api-journeys-client'
-import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 
 import {
   CustomDomainCreateInput,
@@ -423,7 +423,8 @@ describe('CustomDomainResolver', () => {
         title: 'title',
         publicTitle: 'publicTitle',
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
+        plausibleToken: null
       }
       prismaService.team.findUnique.mockResolvedValue(team)
       expect(await resolver.team(customDomain)).toEqual(team)

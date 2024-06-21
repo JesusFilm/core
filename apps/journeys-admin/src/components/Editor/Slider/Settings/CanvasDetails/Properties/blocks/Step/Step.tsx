@@ -1,10 +1,10 @@
 import Box from '@mui/material/Box'
-import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next'
+import dynamic from 'next/dynamic'
 import { ReactElement } from 'react'
 
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { getStepHeading } from '@core/journeys/ui/getStepHeading'
 import Lock1Icon from '@core/shared/ui/icons/Lock1'
 import LockOpen1Icon from '@core/shared/ui/icons/LockOpen1'

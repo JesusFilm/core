@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common'
 import omit from 'lodash/omit'
 import { v4 as uuidv4 } from 'uuid'
 
-import { Action, Block, Prisma } from '.prisma/api-journeys-client'
 import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
 import { ToPostgresql } from '@core/nest/decorators/ToPostgresql'
+import { Action, Block, Prisma } from '.prisma/api-journeys-client'
 
 import { PrismaService } from '../../lib/prisma.service'
 
@@ -145,13 +145,16 @@ export class BlockService {
           newBlock.nextBlockId != null ||
           newBlock.action != null
         ) {
+          const isActionEmpty = Object.keys(newBlock.action ?? {}).length === 0
           const updateBlockData = {
             parentBlockId: newBlock.parentBlockId ?? undefined,
             posterBlockId: newBlock.posterBlockId ?? undefined,
             coverBlockId: newBlock.coverBlockId ?? undefined,
             nextBlockId: newBlock.nextBlockId ?? undefined,
             action:
-              newBlock.action != null ? { create: newBlock.action } : undefined
+              !isActionEmpty && newBlock.action
+                ? { create: newBlock.action }
+                : undefined
           }
           if (newBlock.typename === 'StepBlock') {
             return await this.prismaService.block.update({

@@ -79,6 +79,15 @@ module "api-gateway-stage" {
   alb_listener_arn = module.stage.public_alb.alb_listener.arn
 }
 
+module "api-analytics" {
+  source                = "../../../apps/api-analytics/infrastructure"
+  ecs_config            = local.internal_ecs_config
+  env                   = "stage"
+  doppler_token         = data.aws_ssm_parameter.doppler_api_analytics_stage_token.value
+  subnet_group_name     = module.stage.vpc.db_subnet_group_name
+  vpc_security_group_id = module.stage.private_rds_security_group_id
+}
+
 module "api-journeys" {
   source                = "../../../apps/api-journeys/infrastructure"
   ecs_config            = local.internal_ecs_config
@@ -229,4 +238,24 @@ module "journeys-admin" {
   env              = "stage"
   doppler_token    = data.aws_ssm_parameter.doppler_journeys_admin_stage_token.value
   alb_listener_arn = module.stage.public_alb.alb_listener.arn
+}
+
+module "postgresql" {
+  source                  = "../../modules/aws/aurora"
+  name                    = "jfp-core"
+  env                     = "stage"
+  doppler_token           = data.aws_ssm_parameter.doppler_core_stage_token.value
+  doppler_project         = "core"
+  subnet_group_name       = module.stage.vpc.db_subnet_group_name
+  vpc_security_group_id   = module.stage.private_rds_security_group_id
+  PG_DATABASE_URL_ENV_VAR = "PRIVATE_DATABASE_URL"
+}
+
+module "eks" {
+  source             = "../../modules/aws/eks"
+  env                = "stage"
+  name               = "jfp-eks"
+  subnet_ids         = concat(module.stage.vpc.internal_subnets, module.stage.vpc.public_subnets)
+  security_group_ids = [module.stage.ecs.internal_ecs_security_group_id, module.stage.ecs.public_ecs_security_group_id]
+  vpc_id             = module.stage.vpc.id
 }

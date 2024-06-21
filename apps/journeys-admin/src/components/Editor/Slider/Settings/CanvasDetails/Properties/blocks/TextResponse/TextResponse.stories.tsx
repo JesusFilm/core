@@ -2,15 +2,10 @@ import { jest } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
-import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { TreeBlock } from '@core/journeys/ui/block'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../__generated__/BlockFields'
-import {
-  IconColor,
-  IconName,
-  IconSize
-} from '../../../../../../../../../__generated__/globalTypes'
 import { journeysAdminConfig } from '../../../../../../../../libs/storybook'
 import { Drawer } from '../../../../Drawer'
 
@@ -39,9 +34,6 @@ const block: TreeBlock<TextResponseBlock> = {
   label: '',
   hint: null,
   minRows: null,
-  submitLabel: null,
-  submitIconId: null,
-  action: null,
   children: []
 }
 
@@ -75,25 +67,7 @@ export const Complete = {
     label: 'complete label',
     hint: 'hint text',
     minRows: 2,
-    submitIconId: 'icon.id',
-    action: {
-      __typename: 'LinkAction',
-      parentBlockId: 'responseAction.id',
-      gtmEventName: 'responseAction',
-      url: 'https://www.google.com'
-    },
-    children: [
-      {
-        id: 'icon.id',
-        __typename: 'IconBlock',
-        parentBlockId: 'button',
-        parentOrder: 0,
-        iconName: IconName.ArrowForwardRounded,
-        iconColor: IconColor.action,
-        iconSize: IconSize.lg,
-        children: []
-      }
-    ]
+    children: []
   }
 }
 

@@ -62,7 +62,7 @@ describe('AudioLanguageDialog', () => {
     )
     fireEvent.click(queryAllByRole('option')[1])
     await waitFor(() => expect(push).toHaveBeenCalled())
-    expect(push).toHaveBeenCalledWith('/jesus/a-hmao')
+    expect(push).toHaveBeenCalledWith('/watch/jesus/a-hmao')
   })
 
   it('should redirect to the selected language with container', async () => {
@@ -87,6 +87,6 @@ describe('AudioLanguageDialog', () => {
     )
     fireEvent.click(queryAllByRole('option')[1])
     await waitFor(() => expect(push).toHaveBeenCalled())
-    expect(push).toHaveBeenCalledWith('/lumo/jesus/a-hmao')
+    expect(push).toHaveBeenCalledWith('/watch/lumo/jesus/a-hmao')
   })
 })

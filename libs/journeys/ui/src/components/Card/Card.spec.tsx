@@ -1,5 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import { usePlausible } from 'next-plausible'
 import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -8,6 +9,8 @@ import {
   ThemeName,
   VideoBlockSource
 } from '../../../__generated__/globalTypes'
+import { JourneyProvider } from '../../libs/JourneyProvider'
+import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
 import {
   type TreeBlock,
   blockHistoryVar,
@@ -18,16 +21,15 @@ import {
   BlockFields_StepBlock as StepBlock
 } from '../../libs/block/__generated__/BlockFields'
 import { blurImage } from '../../libs/blurImage'
-import { JourneyProvider } from '../../libs/JourneyProvider'
-import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
 import { ImageFields } from '../Image/__generated__/ImageFields'
-import { StepViewEventCreate } from '../Step/__generated__/StepViewEventCreate'
 import { STEP_VIEW_EVENT_CREATE } from '../Step/Step'
+import { StepViewEventCreate } from '../Step/__generated__/StepViewEventCreate'
 import { VideoFields } from '../Video/__generated__/VideoFields'
 
+import { keyify } from '../../libs/plausibleHelpers/plausibleHelpers'
+import { STEP_NEXT_EVENT_CREATE, STEP_PREVIOUS_EVENT_CREATE } from './Card'
 import { StepNextEventCreate } from './__generated__/StepNextEventCreate'
 import { StepPreviousEventCreate } from './__generated__/StepPreviousEventCreate'
-import { STEP_NEXT_EVENT_CREATE, STEP_PREVIOUS_EVENT_CREATE } from './Card'
 
 import { Card } from '.'
 
@@ -52,6 +54,15 @@ jest.mock('react-gtm-module', () => ({
 
 const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
   typeof TagManager.dataLayer
+>
+
+jest.mock('next-plausible', () => ({
+  __esModule: true,
+  usePlausible: jest.fn()
+}))
+
+const mockUsePlausible = usePlausible as jest.MockedFunction<
+  typeof usePlausible
 >
 
 describe('CardBlock', () => {
@@ -216,6 +227,13 @@ describe('CardBlock', () => {
       }
     ]
   }
+
+  const journey = {
+    id: 'journey.id',
+    language: {
+      bcp: 'en'
+    }
+  } as unknown as Journey
 
   const mockStepPreviousEventCreate: MockedResponse<StepPreviousEventCreate> = {
     request: {
@@ -407,10 +425,14 @@ describe('CardBlock', () => {
     mockUuidv4.mockReturnValue('uuid')
     treeBlocksVar([step1, step2, step3])
     blockHistoryVar([step1])
+    const mockPlausible = jest.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
 
     const { getByTestId } = render(
       <MockedProvider mocks={[mockStepNextEventCreate]}>
-        <Card {...card1} />
+        <JourneyProvider value={{ journey }}>
+          <Card {...card1} />
+        </JourneyProvider>
       </MockedProvider>
     )
 
@@ -422,7 +444,26 @@ describe('CardBlock', () => {
     await waitFor(() =>
       expect(mockStepNextEventCreate.result).toHaveBeenCalled()
     )
-
+    expect(mockPlausible).toHaveBeenCalledWith('navigateNextStep', {
+      props: {
+        id: 'uuid',
+        blockId: 'step1.id',
+        label: 'Step {{number}}',
+        value: 'Step {{number}}',
+        nextStepId: 'step2.id',
+        key: keyify({
+          stepId: 'step1.id',
+          event: 'navigateNextStep',
+          blockId: 'step1.id',
+          target: 'step2.id'
+        }),
+        simpleKey: keyify({
+          stepId: 'step1.id',
+          event: 'navigateNextStep',
+          blockId: 'step1.id'
+        })
+      }
+    })
     expect(mockedDataLayer).toHaveBeenCalledWith({
       dataLayer: {
         event: 'step_next',
@@ -439,12 +480,16 @@ describe('CardBlock', () => {
     mockUuidv4.mockReturnValue('uuid')
     treeBlocksVar([step1, step2, step3])
     blockHistoryVar([step1, step2])
+    const mockPlausible = jest.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
 
     const { getByTestId } = render(
       <MockedProvider
         mocks={[getStepViewEventMock(step2.id), mockStepPreviousEventCreate]}
       >
-        <Card {...card2} />
+        <JourneyProvider value={{ journey }}>
+          <Card {...card2} />
+        </JourneyProvider>
       </MockedProvider>
     )
 
@@ -456,7 +501,26 @@ describe('CardBlock', () => {
     await waitFor(() =>
       expect(mockStepPreviousEventCreate.result).toHaveBeenCalled()
     )
-
+    expect(mockPlausible).toHaveBeenCalledWith('navigatePreviousStep', {
+      props: {
+        id: 'uuid',
+        blockId: 'step2.id',
+        label: 'Step {{number}}',
+        value: 'Step {{number}}',
+        previousStepId: 'step1.id',
+        key: keyify({
+          stepId: 'step2.id',
+          event: 'navigatePreviousStep',
+          blockId: 'step2.id',
+          target: 'step1.id'
+        }),
+        simpleKey: keyify({
+          stepId: 'step2.id',
+          event: 'navigatePreviousStep',
+          blockId: 'step2.id'
+        })
+      }
+    })
     expect(mockedDataLayer).toHaveBeenCalledWith({
       dataLayer: {
         event: 'step_prev',
@@ -523,6 +587,7 @@ describe('CardBlock', () => {
   })
 
   it('should navigate next on rtl', () => {
+    mockUsePlausible.mockReturnValue(jest.fn())
     const journey = {
       language: {
         bcp47: 'ar'
@@ -549,6 +614,7 @@ describe('CardBlock', () => {
   })
 
   it('should navigate previous on rtl', () => {
+    mockUsePlausible.mockReturnValue(jest.fn())
     const journey = {
       language: {
         bcp47: 'ar'

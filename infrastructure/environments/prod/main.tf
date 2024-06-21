@@ -58,6 +58,14 @@ module "api-gateway" {
   alb_listener_arn = module.prod.public_alb.alb_listener.arn
 }
 
+module "api-analytics" {
+  source                = "../../../apps/api-analytics/infrastructure"
+  ecs_config            = local.internal_ecs_config
+  doppler_token         = data.aws_ssm_parameter.doppler_api_analytics_prod_token.value
+  subnet_group_name     = module.prod.vpc.db_subnet_group_name
+  vpc_security_group_id = module.prod.private_rds_security_group_id
+}
+
 module "api-journeys" {
   source                = "../../../apps/api-journeys/infrastructure"
   ecs_config            = local.internal_ecs_config

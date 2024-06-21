@@ -1,11 +1,14 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor, within } from '@testing-library/react'
+import { usePlausible } from 'next-plausible'
 import TagManager from 'react-gtm-module'
 
+import { keyify } from '@core/journeys/ui/plausibleHelpers'
+import { JourneyProvider } from '../../libs/JourneyProvider'
+import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
 import type { TreeBlock } from '../../libs/block'
 import { blockHistoryVar, treeBlocksVar } from '../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
-import { JourneyProvider } from '../../libs/JourneyProvider'
 
 import { RadioQuestionFields } from './__generated__/RadioQuestionFields'
 
@@ -29,6 +32,15 @@ jest.mock('react-gtm-module', () => ({
 
 const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
   typeof TagManager.dataLayer
+>
+
+jest.mock('next-plausible', () => ({
+  __esModule: true,
+  usePlausible: jest.fn()
+}))
+
+const mockUsePlausible = usePlausible as jest.MockedFunction<
+  typeof usePlausible
 >
 
 const block: TreeBlock<RadioQuestionFields> = {
@@ -67,6 +79,10 @@ const activeBlock: TreeBlock<StepBlock> = {
   nextBlockId: null,
   children: []
 }
+
+const journey = {
+  id: 'journey.id'
+} as unknown as Journey
 
 describe('RadioQuestion', () => {
   it('should display the correct options', () => {
@@ -244,6 +260,70 @@ describe('RadioQuestion', () => {
           radioOptionSelectedId: 'RadioOption1',
           radioOptionSelectedLabel: 'Option 1',
           stepName: 'Step {{number}}'
+        }
+      })
+    )
+  })
+  it('should add radio submission to plausible', async () => {
+    blockHistoryVar([activeBlock])
+    treeBlocksVar([activeBlock])
+    const mockPlausible = jest.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
+
+    const { getAllByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: RADIO_QUESTION_SUBMISSION_EVENT_CREATE,
+              variables: {
+                input: {
+                  id: 'uuid',
+                  blockId: 'RadioQuestion1',
+                  radioOptionBlockId: 'RadioOption1',
+                  stepId: 'step.id',
+                  label: 'Step {{number}}',
+                  value: 'Option 1'
+                }
+              }
+            },
+            result: {
+              data: {
+                radioQuestionSubmissionEventCreate: {
+                  id: 'uuid'
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <JourneyProvider value={{ journey }}>
+          <RadioQuestion {...block} uuid={() => 'uuid'} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    const buttons = getAllByRole('button')
+    fireEvent.click(buttons[0])
+    await waitFor(() =>
+      expect(mockPlausible).toHaveBeenCalledWith('radioQuestionSubmit', {
+        props: {
+          id: 'uuid',
+          blockId: 'RadioQuestion1',
+          label: 'Step {{number}}',
+          radioOptionBlockId: 'RadioOption1',
+          stepId: 'step.id',
+          value: 'Option 1',
+          key: keyify({
+            stepId: 'step.id',
+            event: 'radioQuestionSubmit',
+            blockId: 'RadioOption1',
+            target: null
+          }),
+          simpleKey: keyify({
+            stepId: 'step.id',
+            event: 'radioQuestionSubmit',
+            blockId: 'RadioOption1'
+          })
         }
       })
     )

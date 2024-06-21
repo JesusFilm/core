@@ -1,10 +1,10 @@
 import Stack from '@mui/material/Stack'
-import { SxProps } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import { SxProps } from '@mui/material/styles'
 import Box from '@mui/system/Box'
 import isEmpty from 'lodash/isEmpty'
-import Image from 'next/image'
 import { useTranslation } from 'next-i18next'
+import Image from 'next/image'
 import { ReactElement, ReactNode, useEffect, useRef, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -166,7 +166,6 @@ export function Message(): ReactElement {
                     lineHeight="16px"
                     mt={2}
                     color="#C52D3A"
-                    // eslint-disable-next-line i18next/no-literal-string
                   >
                     https://your.nextstep.is/{journey.slug}
                   </Typography>

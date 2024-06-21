@@ -4,8 +4,8 @@ import noop from 'lodash/noop'
 
 import { simpleComponentConfig } from '../../../../../../../libs/storybook'
 
-import { listUnsplashCollectionMock } from './data'
 import { UnsplashGallery } from './UnsplashGallery'
+import { listUnsplashCollectionMock } from './data'
 
 const UnsplashGalleryStory: Meta<typeof UnsplashGallery> = {
   ...simpleComponentConfig,
