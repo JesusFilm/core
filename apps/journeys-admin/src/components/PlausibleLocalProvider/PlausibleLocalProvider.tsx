@@ -34,6 +34,7 @@ export interface PlausibleLocalState {
   comparison: PlausibleComparison
   comparisonRange?: DateRange
   matchDayOfWeek: boolean
+  showComparison: boolean
 }
 
 interface SetPeriodAction {
@@ -111,7 +112,8 @@ export const PlausibleLocalContext = createContext<{
     date: new Date(),
     period: '7d',
     comparison: undefined,
-    matchDayOfWeek: true
+    matchDayOfWeek: true,
+    showComparison: false
   },
   dispatch: () => null
 })
@@ -130,6 +132,7 @@ export function PlausibleLocalProvider({
     period: '7d',
     comparison: undefined,
     matchDayOfWeek: true,
+    showComparison: false,
     ...initialState
   })
 

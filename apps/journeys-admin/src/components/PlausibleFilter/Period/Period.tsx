@@ -29,7 +29,7 @@ export function Period(): ReactElement {
   const [rangePickerOpen, setRangePickerOpen] = useState(false)
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
   const {
-    state: { period, comparison, periodRange, date },
+    state: { period, comparison, periodRange, date, showComparison },
     dispatch
   } = usePlausibleLocal()
 
@@ -101,9 +101,17 @@ export function Period(): ReactElement {
       <Button
         onClick={handleClick}
         variant="outlined"
+        color="secondary"
         endIcon={<ChevronDownIcon />}
         ref={ref}
-        sx={{ minWidth: 180, justifyContent: 'space-between' }}
+        sx={{
+          minWidth: 180,
+          justifyContent: 'space-between',
+          backgroundColor: 'background.paper',
+          ':hover': {
+            backgroundColor: 'background.paper'
+          }
+        }}
       >
         {handleRenderValue()}
       </Button>
@@ -182,21 +190,23 @@ export function Period(): ReactElement {
         >
           {t('Custom range')}
         </MuiMenuItem>
-        {period !== 'all' && <Divider />}
-        {period !== 'all' && (
-          <MuiMenuItem
-            value="compare"
-            dense
-            onClick={() => {
-              dispatch({
-                type: 'SetComparisonAction',
-                comparison: comparison != null ? undefined : 'previous_period'
-              })
-              setAnchorEl(null)
-            }}
-          >
-            {comparison != null ? t('Disable comparison') : t('Compare')}
-          </MuiMenuItem>
+        {showComparison && period !== 'all' && (
+          <>
+            <Divider />
+            <MuiMenuItem
+              value="compare"
+              dense
+              onClick={() => {
+                dispatch({
+                  type: 'SetComparisonAction',
+                  comparison: comparison != null ? undefined : 'previous_period'
+                })
+                setAnchorEl(null)
+              }}
+            >
+              {comparison != null ? t('Disable comparison') : t('Compare')}
+            </MuiMenuItem>
+          </>
         )}
       </Menu>
     </>
