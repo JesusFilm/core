@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
 
@@ -62,7 +62,6 @@ describe('Canvas', () => {
   const initialState: EditorState = {
     steps: [step0, step1],
     selectedStep: step0,
-    selectedBlock: step0,
     activeFab: ActiveFab.Add,
     activeSlide: ActiveSlide.JourneyFlow,
     activeContent: ActiveContent.Canvas,
@@ -192,6 +191,47 @@ describe('Canvas', () => {
     ).not.toBeInTheDocument()
   })
 
+  it('should not select step in analytics mode', () => {
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <ThemeProvider>
+            <JourneyProvider
+              value={{
+                journey: {
+                  id: 'journeyId',
+                  themeMode: ThemeMode.dark,
+                  themeName: ThemeName.base,
+                  language: {
+                    __typename: 'Language',
+                    id: '529',
+                    bcp47: 'en',
+                    iso3: 'eng'
+                  }
+                } as unknown as Journey,
+                variant: 'admin'
+              }}
+            >
+              <EditorProvider
+                initialState={{
+                  ...initialState,
+                  showJourneyFlowAnalytics: true
+                }}
+              >
+                <TestEditorState />
+                <Canvas />
+              </EditorProvider>
+            </JourneyProvider>
+          </ThemeProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('CanvasContainer'))
+    expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
+  })
+
   // TODO: Add to E2E tests when complete. Can't test in unit test as iframe doesn't render
   it.skip('should selected footer on click', () => {
     const { getByTestId, getByText } = render(
@@ -239,5 +279,76 @@ describe('Canvas', () => {
     expect(getByTestId('step-step0.id')).toHaveStyle({
       outline: '0px solid'
     })
+  })
+
+  it('should show fab', () => {
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <ThemeProvider>
+            <JourneyProvider
+              value={{
+                journey: {
+                  id: 'journeyId',
+                  themeMode: ThemeMode.dark,
+                  themeName: ThemeName.base,
+                  language: {
+                    __typename: 'Language',
+                    id: '529',
+                    bcp47: 'en',
+                    iso3: 'eng'
+                  }
+                } as unknown as Journey,
+                variant: 'admin'
+              }}
+            >
+              <EditorProvider initialState={initialState}>
+                <Canvas />
+              </EditorProvider>
+            </JourneyProvider>
+          </ThemeProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByTestId('Fab')).toBeInTheDocument()
+  })
+
+  it('should hide fab in analytics mode', () => {
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <ThemeProvider>
+            <JourneyProvider
+              value={{
+                journey: {
+                  id: 'journeyId',
+                  themeMode: ThemeMode.dark,
+                  themeName: ThemeName.base,
+                  language: {
+                    __typename: 'Language',
+                    id: '529',
+                    bcp47: 'en',
+                    iso3: 'eng'
+                  }
+                } as unknown as Journey,
+                variant: 'admin'
+              }}
+            >
+              <EditorProvider
+                initialState={{
+                  ...initialState,
+                  showJourneyFlowAnalytics: true
+                }}
+              >
+                <Canvas />
+              </EditorProvider>
+            </JourneyProvider>
+          </ThemeProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.queryByTestId('Fab')).not.toBeInTheDocument()
   })
 })
