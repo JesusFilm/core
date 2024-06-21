@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true'
 })
@@ -47,6 +46,11 @@ const nextConfig = {
   },
   async redirects() {
     return [
+      {
+        source: '/',
+        destination: '/watch',
+        permanent: false
+      },
       {
         source: '/bin/jf/watch.html/:videoId/:languageId',
         destination: '/api/jf/watch.html/:videoId/:languageId',

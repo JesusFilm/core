@@ -16,11 +16,11 @@ import {
 } from '../../../../../__generated__/GetAdminJourneys'
 import { GetCustomDomains_customDomains as CustomDomain } from '../../../../../__generated__/GetCustomDomains'
 import { GetLastActiveTeamIdAndTeams } from '../../../../../__generated__/GetLastActiveTeamIdAndTeams'
-import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 import {
   UpdateJourneyCollection,
   UpdateJourneyCollectionVariables
 } from '../../../../../__generated__/UpdateJourneyCollection'
+import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 import { GET_ADMIN_JOURNEYS } from '../../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import {
   defaultJourney,

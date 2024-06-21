@@ -41,6 +41,7 @@ import { useStepBlockPositionUpdateMutation } from '../../../../libs/useStepBloc
 import { PlausibleFilter } from '../../../PlausibleFilter'
 
 import { AnalyticsOverlaySwitch } from './AnalyticsOverlaySwitch'
+import { NewStepButton } from './NewStepButton'
 import { CustomEdge } from './edges/CustomEdge'
 import { StartEdge } from './edges/StartEdge'
 import { PositionMap, arrangeSteps } from './libs/arrangeSteps'
@@ -49,7 +50,6 @@ import { useCreateStep } from './libs/useCreateStep'
 import { useDeleteEdge } from './libs/useDeleteEdge'
 import { useDeleteOnKeyPress } from './libs/useDeleteOnKeyPress'
 import { useUpdateEdge } from './libs/useUpdateEdge'
-import { NewStepButton } from './NewStepButton'
 import { LinkNode } from './nodes/LinkNode'
 import { SocialPreviewNode } from './nodes/SocialPreviewNode'
 import { StepBlockNode } from './nodes/StepBlockNode'
@@ -248,9 +248,9 @@ export function JourneyFlow(): ReactElement {
       const { source, sourceHandle, target } = newConnection
       setEdges((prev) => reactFlowUpdateEdge(oldEdge, newConnection, prev))
       edgeUpdateSuccessful.current = true
-      void updateEdge({ source, sourceHandle, target })
+      void updateEdge({ source, sourceHandle, target, oldEdge })
     },
-    [updateEdge, setEdges]
+    [setEdges, updateEdge]
   )
 
   const onEdgeUpdateEnd = useCallback<

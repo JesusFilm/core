@@ -2,8 +2,8 @@ import { gql, useMutation } from '@apollo/client'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import type { TreeBlock } from '@core/journeys/ui/block'
 
 import {
   BlockDeleteForBackgroundImage,
