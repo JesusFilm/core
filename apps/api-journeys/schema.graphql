@@ -229,8 +229,8 @@ type Mutation {
   hostCreate(teamId: ID!, input: HostCreateInput!): Host!
   hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host!
   hostDelete(id: ID!, teamId: ID!): Host!
-  growthSpacesIntegrationCreate(teamId: ID!, input: GrowthSpaceIntegrationCreateInput!): GrowthSpaceIntegration!
-  growthSpacesIntegrationUpdate(id: ID!, input: GrowthSpaceIntegrationUpdateInput!): GrowthSpaceIntegration!
+  integrationGrowthSpacesCreate(teamId: ID!, input: IntegrationGrowthSpaceCreateInput!): IntegrationGrowthSpace!
+  integrationGrowthSpacesUpdate(id: ID!, input: IntegrationGrowthSpaceUpdateInput!): IntegrationGrowthSpace!
   integrationDelete(input: IntegrationInput!): Integration!
   journeyCreate(input: JourneyCreateInput!, teamId: ID!): Journey!
   journeyDuplicate(id: ID!, teamId: ID!): Journey!
@@ -1939,7 +1939,7 @@ input HostCreateInput {
   src2: String
 }
 
-type GrowthSpaceIntegration implements Integration {
+type IntegrationGrowthSpace implements Integration {
   id: ID!
   teamId: String!
   type: IntegrationType!
@@ -1948,12 +1948,12 @@ type GrowthSpaceIntegration implements Integration {
   routes: [GrowthSpacesRoute!]!
 }
 
-input GrowthSpaceIntegrationCreateInput {
+input IntegrationGrowthSpaceCreateInput {
   accessId: String!
   accessSecret: String!
 }
 
-input GrowthSpaceIntegrationUpdateInput {
+input IntegrationGrowthSpaceUpdateInput {
   accessId: String!
   accessSecret: String!
 }
@@ -1964,7 +1964,7 @@ type GrowthSpacesRoute {
 }
 
 enum IntegrationType {
-  growthSpace
+  growthSpaces
 }
 
 interface Integration {

@@ -158,7 +158,7 @@ export enum MessagePlatform {
 }
 
 export enum IntegrationType {
-    growthSpace = "growthSpace"
+    growthSpaces = "growthSpaces"
 }
 
 export enum IdType {
@@ -617,12 +617,12 @@ export class HostCreateInput {
     src2?: Nullable<string>;
 }
 
-export class GrowthSpaceIntegrationCreateInput {
+export class IntegrationGrowthSpaceCreateInput {
     accessId: string;
     accessSecret: string;
 }
 
-export class GrowthSpaceIntegrationUpdateInput {
+export class IntegrationGrowthSpaceUpdateInput {
     accessId: string;
     accessSecret: string;
 }
@@ -924,9 +924,9 @@ export abstract class IMutation {
 
     abstract hostDelete(id: string, teamId: string): Host | Promise<Host>;
 
-    abstract growthSpacesIntegrationCreate(teamId: string, input: GrowthSpaceIntegrationCreateInput): GrowthSpaceIntegration | Promise<GrowthSpaceIntegration>;
+    abstract integrationGrowthSpacesCreate(teamId: string, input: IntegrationGrowthSpaceCreateInput): IntegrationGrowthSpace | Promise<IntegrationGrowthSpace>;
 
-    abstract growthSpacesIntegrationUpdate(teamId: string, input: GrowthSpaceIntegrationUpdateInput): GrowthSpaceIntegration | Promise<GrowthSpaceIntegration>;
+    abstract integrationGrowthSpacesUpdate(id: string, input: IntegrationGrowthSpaceUpdateInput): IntegrationGrowthSpace | Promise<IntegrationGrowthSpace>;
 
     abstract integrationDelete(input: IntegrationInput): Integration | Promise<Integration>;
 
@@ -1048,7 +1048,7 @@ export abstract class IQuery {
 
     abstract hosts(teamId: string): Host[] | Promise<Host[]>;
 
-    abstract integrationsForTeam(input?: Nullable<IntegrationsFilter>): Integration[] | Promise<Integration[]>;
+    abstract integrations(input?: Nullable<IntegrationsFilter>): Integration[] | Promise<Integration[]>;
 
     abstract adminJourneys(status?: Nullable<JourneyStatus[]>, template?: Nullable<boolean>, teamId?: Nullable<string>, useLastActiveTeamId?: Nullable<boolean>): Journey[] | Promise<Journey[]>;
 
@@ -1507,8 +1507,8 @@ export class Host {
     src2?: Nullable<string>;
 }
 
-export class GrowthSpaceIntegration implements Integration {
-    __typename?: 'GrowthSpaceIntegration';
+export class IntegrationGrowthSpace implements Integration {
+    __typename?: 'IntegrationGrowthSpace';
     id: string;
     teamId: string;
     type: IntegrationType;

@@ -2,25 +2,29 @@ import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 import fetch from 'node-fetch'
 import {
-  GrowthSpaceIntegration,
-  GrowthSpaceIntegrationCreateInput,
-  GrowthSpaceIntegrationUpdateInput,
   GrowthSpacesRoute,
+  IntegrationGrowthSpaceCreateInput,
+  IntegrationGrowthSpaceUpdateInput,
   IntegrationType
 } from '../../../__generated__/graphql'
 
-import crypto from 'crypto-js'
 import { PrismaService } from '../../../lib/prisma.service'
 
+import { IntegrationService } from '../integration.service'
+import { Integration } from '.prisma/api-journeys-client'
+
 @Resolver('GrowthSpacesIntegration')
-export class GrowthSpacesIntegration {
-  constructor(private readonly prismaService: PrismaService) {}
+export class GrowthSpacesIntegrationResolver {
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly integrationService: IntegrationService
+  ) {}
 
   @Mutation()
-  async growthSpacesIntegrationCreate(
+  async integrationGrowthSpacesCreate(
     @Args('teamId') teamId: string,
-    @Args('input') input: GrowthSpaceIntegrationCreateInput
-  ): Promise<GrowthSpaceIntegration> {
+    @Args('input') input: IntegrationGrowthSpaceCreateInput
+  ): Promise<Integration> {
     try {
       const res = await fetch(
         'https://api.growthspaces.org/api/v1/authentication',
@@ -33,38 +37,26 @@ export class GrowthSpacesIntegration {
       )
       const data = await res.json()
       if (data === 'ok') {
-        const cipherText = crypto.AES.encrypt(
-          input.accessSecret,
-          'secret key 123' // todo env var some key,
-        ).toString()
-        const growthSpaceIntegration =
-          await this.prismaService.integration.create({
-            data: {
-              type: IntegrationType.growthSpace,
-              teamId: teamId,
-              accessId: input.accessId,
-              accessSecret: cipherText
-            }
-          })
-        if (
-          growthSpaceIntegration.accessId != null &&
-          growthSpaceIntegration.accessSecret != null
-        ) {
-          return {
-            ...growthSpaceIntegration,
-            type: IntegrationType.growthSpace,
-            accessId: growthSpaceIntegration.accessId,
-            accessSecretPart: `${input.accessSecret.slice(0, 6)}**********`,
-            routes: await this.routes(
-              growthSpaceIntegration as unknown as GrowthSpaceIntegration
-            )
+        const { ciphertext, iv, tag } =
+          await this.integrationService.encryptSymmetric(
+            'some-key',
+            input.accessSecret
+          )
+        return await this.prismaService.integration.create({
+          data: {
+            type: IntegrationType.growthSpaces,
+            teamId: teamId,
+            accessId: input.accessId,
+            accessSecretCipherText: ciphertext,
+            accessSecretIv: iv,
+            accessSecretTag: tag
           }
-        }
+        })
       }
       throw new GraphQLError(
         'incorrect access Id and access secret for Growth Space integration',
         {
-          extensions: { code: 'BAD_USER_INPUT' }
+          extensions: { code: 'UNAUTHORIZED' }
         }
       )
     } catch (e) {
@@ -75,49 +67,65 @@ export class GrowthSpacesIntegration {
   }
 
   @Mutation()
-  async growthSpacesIntegrationUpdate(
+  async integrationGrowthSpacesUpdate(
     @Args('teamId') id: string,
-    @Args('input') input: GrowthSpaceIntegrationUpdateInput
-  ) {
+    @Args('input') input: IntegrationGrowthSpaceUpdateInput
+  ): Promise<Integration> {
+    const { ciphertext, iv, tag } =
+      await this.integrationService.encryptSymmetric(
+        'some-key',
+        input.accessSecret
+      )
     return await this.prismaService.integration.update({
       where: { id },
-      data: { ...input }
+      data: {
+        accessSecretCipherText: ciphertext,
+        accessSecretIv: iv,
+        accessSecretTag: tag,
+        ...input
+      }
     })
   }
 
   @ResolveField()
   async routes(
-    @Parent() growthSpacesIntegration: GrowthSpaceIntegration
+    @Parent() integration: Integration
   ): Promise<GrowthSpacesRoute[]> {
-    const primsaGSIntegration = await this.prismaService.integration.findUnique(
-      {
-        where: { id: growthSpacesIntegration.id }
-      }
+    const {
+      accessId,
+      accessSecretCipherText,
+      accessSecretIv,
+      accessSecretTag
+    } = integration
+
+    if (
+      accessId == null ||
+      accessSecretCipherText == null ||
+      accessSecretIv == null ||
+      accessSecretTag == null
     )
-    if (primsaGSIntegration == null) {
       throw new GraphQLError(
-        'could not find Groth Spaces Integration to fetch routes',
+        'incorrect access Id and access secret for Growth Space integration',
         {
-          extensions: { code: 'INTERNAL_SERVER_ERROR' }
+          extensions: { code: 'UNAUTHORIZED' }
         }
       )
-    }
-    const bytes = CryptoJS.AES.decrypt(
-      primsaGSIntegration?.accessSecret as string,
-      'secret key 123' // todo: process env some key
-    )
-    const decryptedAccessSecret = JSON.parse(bytes.toString(CryptoJS.enc.Utf8))
+
+    const decryptedAccessSecret =
+      await this.integrationService.decryptSymmetric(
+        'some-key',
+        accessSecretCipherText,
+        accessSecretIv,
+        accessSecretTag
+      )
 
     try {
-      const res = await fetch(
-        'https://api.growthspaces.org/api/v1/authentication',
-        {
-          headers: {
-            'Access-Id': primsaGSIntegration.accessId as string,
-            'Access-Secret': decryptedAccessSecret
-          }
+      const res = await fetch('https://api.growthspaces.org/api/v1/routes', {
+        headers: {
+          'Access-Id': integration.accessId as string,
+          'Access-Secret': decryptedAccessSecret
         }
-      )
+      })
       const data: GrowthSpacesRoute[] = await res.json()
       return data
     } catch (e) {

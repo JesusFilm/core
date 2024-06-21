@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "IntegrationType" AS ENUM ('growthSpace');
+CREATE TYPE "IntegrationType" AS ENUM ('growthSpaces');
 
 -- CreateEnum
 CREATE TYPE "TextResponseType" AS ENUM ('freeForm', 'name', 'email');
@@ -14,7 +14,9 @@ CREATE TABLE "Integration" (
     "teamId" TEXT NOT NULL,
     "type" "IntegrationType" NOT NULL,
     "accessId" TEXT,
-    "accessSecret" TEXT,
+    "accessSecretCipherText" TEXT,
+    "accessSecretIv" TEXT,
+    "accessSecretTag" TEXT,
 
     CONSTRAINT "Integration_pkey" PRIMARY KEY ("id")
 );

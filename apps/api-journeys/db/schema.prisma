@@ -67,7 +67,7 @@ enum VideoBlockSource {
 }
 
 enum IntegrationType {
-  growthSpace
+  growthSpaces
 }
 
 enum TextResponseType {
@@ -219,12 +219,14 @@ model Team {
 }
 
 model Integration {
-  id           String          @id @default(uuid())
-  teamId       String
-  type         IntegrationType
-  accessId     String?
-  accessSecret String?
-  team         Team            @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  id                     String          @id @default(uuid())
+  teamId                 String
+  type                   IntegrationType
+  accessId               String?
+  accessSecretCipherText String?
+  accessSecretIv         String?
+  accessSecretTag        String?
+  team                   Team            @relation(fields: [teamId], references: [id], onDelete: Cascade)
 
   @@index([teamId])
 }

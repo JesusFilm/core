@@ -571,32 +571,6 @@ enum GridJustifyContent
   center @join__enumValue(graph: JOURNEYS)
 }
 
-type GrowthSpaceIntegration implements Integration
-  @join__implements(graph: JOURNEYS, interface: "Integration")
-  @join__type(graph: JOURNEYS)
-{
-  id: ID!
-  teamId: String!
-  type: IntegrationType!
-  accessId: String!
-  accessSecretPart: String!
-  routes: [GrowthSpacesRoute!]!
-}
-
-input GrowthSpaceIntegrationCreateInput
-  @join__type(graph: JOURNEYS)
-{
-  accessId: String!
-  accessSecret: String!
-}
-
-input GrowthSpaceIntegrationUpdateInput
-  @join__type(graph: JOURNEYS)
-{
-  accessId: String!
-  accessSecret: String!
-}
-
 type GrowthSpacesRoute
   @join__type(graph: JOURNEYS)
 {
@@ -791,6 +765,32 @@ interface Integration
   type: IntegrationType!
 }
 
+type IntegrationGrowthSpace implements Integration
+  @join__implements(graph: JOURNEYS, interface: "Integration")
+  @join__type(graph: JOURNEYS)
+{
+  id: ID!
+  teamId: String!
+  type: IntegrationType!
+  accessId: String!
+  accessSecretPart: String!
+  routes: [GrowthSpacesRoute!]!
+}
+
+input IntegrationGrowthSpaceCreateInput
+  @join__type(graph: JOURNEYS)
+{
+  accessId: String!
+  accessSecret: String!
+}
+
+input IntegrationGrowthSpaceUpdateInput
+  @join__type(graph: JOURNEYS)
+{
+  accessId: String!
+  accessSecret: String!
+}
+
 input IntegrationInput
   @join__type(graph: JOURNEYS)
 {
@@ -808,7 +808,7 @@ input IntegrationsFilter
 enum IntegrationType
   @join__type(graph: JOURNEYS)
 {
-  growthSpace @join__enumValue(graph: JOURNEYS)
+  growthSpaces @join__enumValue(graph: JOURNEYS)
 }
 
 scalar join__FieldSet
@@ -1454,8 +1454,8 @@ type Mutation
   hostCreate(teamId: ID!, input: HostCreateInput!): Host! @join__field(graph: JOURNEYS)
   hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host! @join__field(graph: JOURNEYS)
   hostDelete(id: ID!, teamId: ID!): Host! @join__field(graph: JOURNEYS)
-  growthSpacesIntegrationCreate(teamId: ID!, input: GrowthSpaceIntegrationCreateInput!): GrowthSpaceIntegration! @join__field(graph: JOURNEYS)
-  growthSpacesIntegrationUpdate(id: ID!, input: GrowthSpaceIntegrationUpdateInput!): GrowthSpaceIntegration! @join__field(graph: JOURNEYS)
+  integrationGrowthSpacesCreate(teamId: ID!, input: IntegrationGrowthSpaceCreateInput!): IntegrationGrowthSpace! @join__field(graph: JOURNEYS)
+  integrationGrowthSpacesUpdate(id: ID!, input: IntegrationGrowthSpaceUpdateInput!): IntegrationGrowthSpace! @join__field(graph: JOURNEYS)
   integrationDelete(input: IntegrationInput!): Integration! @join__field(graph: JOURNEYS)
   journeyCreate(input: JourneyCreateInput!, teamId: ID!): Journey! @join__field(graph: JOURNEYS)
   journeyDuplicate(id: ID!, teamId: ID!): Journey! @join__field(graph: JOURNEYS)
