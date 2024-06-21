@@ -48,7 +48,7 @@ export default function JourneyDetailsPage(): ReactElement {
         sx={{ backgroundColor: 'background.default' }}
         data-testid="JourneyDetailsPage"
       >
-        <Container maxWidth="xxl" sx={{ paddingY: '4rem' }}>
+        <Container maxWidth="xxl">
           <Stack gap={10}>
             <SnackbarProvider>
               <LanguageProvider>

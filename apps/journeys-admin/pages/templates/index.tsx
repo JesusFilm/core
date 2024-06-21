@@ -12,6 +12,7 @@ import { GET_JOURNEYS } from '@core/journeys/ui/useJourneysQuery'
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 import { GET_TAGS } from '@core/journeys/ui/useTagsQuery'
 
+import { Box } from '@mui/material'
 import {
   GetJourneys,
   GetJourneysVariables
@@ -51,7 +52,14 @@ function TemplateIndexPage(): ReactElement {
         showAppHeader={user?.id != null}
         showNavBar={user?.id != null}
       >
-        <TemplateGallery />
+        <Box
+          sx={{
+            px: { md: 10 },
+            bgcolor: (theme) => theme.palette.background.paper
+          }}
+        >
+          <TemplateGallery />
+        </Box>
       </PageWrapper>
     </>
   )
