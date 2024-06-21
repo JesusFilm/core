@@ -31,10 +31,11 @@ export class GrowthSpacesIntegrationResolver {
       input.accessId,
       input.accessSecret
     )
+
     const { ciphertext, iv, tag } =
       await this.integrationService.encryptSymmetric(
-        'some-key',
-        input.accessSecret
+        input.accessSecret,
+        process.env.INTEGRATION_CRYPTO_KEY
       )
     return await this.prismaService.integration.create({
       data: {
@@ -50,7 +51,7 @@ export class GrowthSpacesIntegrationResolver {
 
   @Mutation()
   async integrationGrowthSpacesUpdate(
-    @Args('teamId') id: string,
+    @Args('id') id: string,
     @Args('input') input: IntegrationGrowthSpaceUpdateInput
   ): Promise<Integration> {
     await this.growthSpacesIntegrationService.authenticate(
@@ -59,16 +60,16 @@ export class GrowthSpacesIntegrationResolver {
     )
     const { ciphertext, iv, tag } =
       await this.integrationService.encryptSymmetric(
-        'some-key',
-        input.accessSecret
+        input.accessSecret,
+        process.env.INTEGRATION_CRYPTO_KEY
       )
     return await this.prismaService.integration.update({
       where: { id },
       data: {
+        accessId: input.accessId,
         accessSecretCipherText: ciphertext,
         accessSecretIv: iv,
-        accessSecretTag: tag,
-        ...input
+        accessSecretTag: tag
       }
     })
   }
@@ -99,10 +100,10 @@ export class GrowthSpacesIntegrationResolver {
 
     const decryptedAccessSecret =
       await this.integrationService.decryptSymmetric(
-        'some-key',
         accessSecretCipherText,
         accessSecretIv,
-        accessSecretTag
+        accessSecretTag,
+        process.env.INTEGRATION_CRYPTO_KEY
       )
 
     try {
@@ -119,5 +120,36 @@ export class GrowthSpacesIntegrationResolver {
         extensions: { code: 'INTERNAL_SERVER_ERROR' }
       })
     }
+  }
+
+  @ResolveField()
+  async accessSecretPart(@Parent() integration: Integration): Promise<string> {
+    const {
+      accessId,
+      accessSecretCipherText,
+      accessSecretIv,
+      accessSecretTag
+    } = integration
+    if (
+      accessId == null ||
+      accessSecretCipherText == null ||
+      accessSecretIv == null ||
+      accessSecretTag == null
+    ) {
+      throw new GraphQLError(
+        'incorrect access Id and access secret for Growth Space integration',
+        {
+          extensions: { code: 'UNAUTHORIZED' }
+        }
+      )
+    }
+    const decryptedAccessSecret =
+      await this.integrationService.decryptSymmetric(
+        accessSecretCipherText,
+        accessSecretIv,
+        accessSecretTag,
+        process.env.INTEGRATION_CRYPTO_KEY
+      )
+    return decryptedAccessSecret.slice(0, 6)
   }
 }

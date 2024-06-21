@@ -632,11 +632,6 @@ export class IntegrationInput {
     teamId: string;
 }
 
-export class IntegrationsFilter {
-    teamId: string;
-    type: IntegrationType;
-}
-
 export class JourneysFilter {
     featured?: Nullable<boolean>;
     template?: Nullable<boolean>;
@@ -1048,7 +1043,7 @@ export abstract class IQuery {
 
     abstract hosts(teamId: string): Host[] | Promise<Host[]>;
 
-    abstract integrations(input?: Nullable<IntegrationsFilter>): Integration[] | Promise<Integration[]>;
+    abstract integrations(teamId: string): Integration[] | Promise<Integration[]>;
 
     abstract adminJourneys(status?: Nullable<JourneyStatus[]>, template?: Nullable<boolean>, teamId?: Nullable<string>, useLastActiveTeamId?: Nullable<boolean>): Journey[] | Promise<Journey[]>;
 

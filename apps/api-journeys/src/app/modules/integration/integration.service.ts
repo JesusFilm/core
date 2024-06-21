@@ -1,9 +1,23 @@
 import crypto from 'node:crypto'
 import { Injectable } from '@nestjs/common'
+import { GraphQLError } from 'graphql/error'
+
+export interface EncryptResponse {
+  ciphertext: string
+  iv: string
+  tag: string
+}
 
 @Injectable()
 export class IntegrationService {
-  async encryptSymmetric(key: string, plaintext: string) {
+  async encryptSymmetric(
+    plaintext: string,
+    key: string | undefined
+  ): Promise<EncryptResponse> {
+    if (key == null)
+      throw new GraphQLError('no crypto key', {
+        extensions: { code: 'INTERNAL_SERVER_ERROR' }
+      })
     const iv = crypto.randomBytes(12).toString('base64')
     const cipher = crypto.createCipheriv('aes-256-gcm', key, iv)
     let ciphertext = cipher.update(plaintext, 'utf8', 'base64')
@@ -13,14 +27,18 @@ export class IntegrationService {
   }
 
   async decryptSymmetric(
-    key: string,
     ciphertext: string,
     iv: string,
-    tag: string
-  ) {
+    tag: string,
+    key?: string | undefined
+  ): Promise<string> {
+    if (key == null)
+      throw new GraphQLError('no crypto key', {
+        extensions: { code: 'INTERNAL_SERVER_ERROR' }
+      })
     const decipher = crypto.createDecipheriv(
       'aes-256-gcm',
-      Buffer.from(key, 'base64'),
+      key,
       Buffer.from(iv, 'base64')
     )
 

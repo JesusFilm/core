@@ -13,13 +13,9 @@ input IntegrationInput {
   teamId: String!
 }
 
-input IntegrationsFilter {
-  teamId: ID!
-  type: IntegrationType!
-}
 
 extend type Query {
-  integrations(input: IntegrationsFilter): [Integration!]!
+  integrations(teamId: ID!): [Integration!]!
 }
 
 extend type Mutation {

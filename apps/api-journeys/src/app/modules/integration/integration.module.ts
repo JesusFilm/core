@@ -5,6 +5,7 @@ import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 import { AppCaslFactory } from '../../lib/casl/caslFactory'
 import { PrismaService } from '../../lib/prisma.service'
 import { GrowthSpacesIntegrationResolver } from './growthSpaces/growthSpaces.resolver'
+import { GrowthSpacesIntegrationService } from './growthSpaces/growthSpaces.service'
 import { IntegrationService } from './integration.service'
 
 @Global()
@@ -13,8 +14,9 @@ import { IntegrationService } from './integration.service'
   providers: [
     PrismaService,
     IntegrationService,
+    GrowthSpacesIntegrationService,
     GrowthSpacesIntegrationResolver
   ],
-  exports: [IntegrationService]
+  exports: [IntegrationService, GrowthSpacesIntegrationService]
 })
 export class IntegrationModule {}
