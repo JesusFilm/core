@@ -6,7 +6,7 @@ describe('LinkNodeAnalytics', () => {
   it('should render with count', () => {
     render(<LinkNodeAnalytics>{10}</LinkNodeAnalytics>)
 
-    const icon = screen.getByTestId('PointerClickIcon')
+    const icon = screen.getByTestId('Cursor4Icon')
     const clickCount = screen.getByText('10')
 
     expect(icon).toBeInTheDocument()

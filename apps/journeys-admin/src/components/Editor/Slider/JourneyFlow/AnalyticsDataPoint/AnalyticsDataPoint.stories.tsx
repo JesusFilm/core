@@ -1,7 +1,7 @@
 import { StoryObj } from '@storybook/react'
 import { ComponentPropsWithoutRef } from 'react'
 
-import PointerClick from '@core/shared/ui/icons/PointerClick'
+import Cursor4Icon from '@core/shared/ui/icons/Cursor4'
 
 import { simpleComponentConfig } from '../../../../../libs/storybook'
 
@@ -22,7 +22,7 @@ export const Default = {
   ...Template,
   args: {
     children: 10,
-    Icon: PointerClick,
+    Icon: Cursor4Icon,
     tooltipLabel: 'Clicks'
   }
 }

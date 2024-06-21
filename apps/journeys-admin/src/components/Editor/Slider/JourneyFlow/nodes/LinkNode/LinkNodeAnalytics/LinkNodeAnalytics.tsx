@@ -2,7 +2,7 @@ import Box from '@mui/material/Box'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import PointerClick from '@core/shared/ui/icons/PointerClick'
+import Cursor4Icon from '@core/shared/ui/icons/Cursor4'
 
 import { AnalyticsDataPoint } from '../../../AnalyticsDataPoint'
 
@@ -26,7 +26,7 @@ export function LinkNodeAnalytics(props: LinkNodeAnalyticsProps): ReactElement {
         filter: 'drop-shadow(4px 4px 10px rgba(0,0,0,0.25))'
       }}
     >
-      <AnalyticsDataPoint Icon={PointerClick} tooltipLabel={t('Clicks')}>
+      <AnalyticsDataPoint Icon={Cursor4Icon} tooltipLabel={t('Clicks')}>
         {props.children ?? '~'}
       </AnalyticsDataPoint>
     </Box>
