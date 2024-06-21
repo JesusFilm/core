@@ -6,7 +6,10 @@ sudo chgrp node -R /workspaces
 
 cd /workspaces/core
 
+# install bun CLI tool
 curl -fsSL https://bun.sh/install | bash -s "bun-v1.1.13"
+git config diff.lockb.textconv bun
+git config diff.lockb.binary true
 
 # add default user to postgres
 psql -c "CREATE USER \"test-user\" WITH PASSWORD 'test-password' CREATEDB;"
@@ -27,6 +30,7 @@ bun install -g foreman
 bun install -g apollo graphql
 
 # install all dependencies
+rm -rf /workspaces/core/node_modules
 bun i
 
 # install router to api gateways
@@ -39,3 +43,6 @@ mv router apps/api-gateway/
 
 # update plausible db
 psql -U postgres -h db -d plausible_db < .devcontainer/plausible.sql
+
+# generate prisma clients
+bunx nx run-many --all --target=prisma-generate --parallel=1

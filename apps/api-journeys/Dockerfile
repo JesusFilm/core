@@ -3,12 +3,12 @@ FROM node:20-alpine
 EXPOSE 4001
 
 ENV PRISMA_LOCATION_JOURNEYS=/app/node_modules/.prisma/api-journeys-client
+ENV BUN_INSTALL=/bun
+ENV PATH=${BUN_INSTALL}/bin:${PATH}
 
 RUN apk upgrade --update-cache --available && \
+    apk add --no-cache bash curl gcompat && \
     rm -rf /var/cache/apk/*
-
-ENV BUN_INSTALL="/bun"
-ENV PATH=$BUN_INSTALL/bin:$PATH
 
 RUN curl -fsSL https://bun.sh/install | bash -s "bun-v1.1.13"
 
@@ -16,7 +16,7 @@ WORKDIR /app
 COPY ./dist/apps/api-journeys .
 
 # dependencies that nestjs needs
-RUN bun install --production --silent
+RUN bun install --production --silent --frozen-lockfile
 
 WORKDIR /prisma
 COPY ./apps/api-journeys/db .

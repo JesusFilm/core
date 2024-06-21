@@ -33,6 +33,7 @@
           "optimization": true,
           "extractLicenses": true,
           "inspect": false,
+          "generatePackageJson": true,
           "fileReplacements": [
             {
               "replace": "apps/api-journeys/src/environments/environment.ts",
