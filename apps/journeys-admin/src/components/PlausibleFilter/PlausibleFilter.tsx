@@ -1,0 +1,36 @@
+import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next'
+import { ReactElement } from 'react'
+
+import { usePlausibleLocal } from '../PlausibleLocalProvider'
+
+import { Arrows } from './Arrows'
+import { Comparison } from './Comparison'
+import { Period } from './Period'
+import Box from '@mui/material/Box'
+
+export function PlausibleFilter(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+  const {
+    state: { period, comparison }
+  } = usePlausibleLocal()
+
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        gap: 2,
+        alignItems: 'center'
+      }}
+    >
+      {['day', 'month', 'year'].includes(period) && <Arrows />}
+      <Period />
+      {comparison != null && (
+        <>
+          <Typography>{t('vs.')}</Typography>
+          <Comparison />
+        </>
+      )}
+    </Box>
+  )
+}

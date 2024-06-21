@@ -14,7 +14,7 @@ export function useDeleteOnKeyPress(): {
   onSelectionChange: OnSelectionChangeFunc
 } {
   const {
-    state: { selectedBlock, activeSlide }
+    state: { selectedBlock, activeSlide, showJourneyFlowAnalytics }
   } = useEditor()
   const deleteEdge = useDeleteEdge()
   const [blockDelete] = useBlockDeleteMutation()
@@ -41,11 +41,12 @@ export function useDeleteOnKeyPress(): {
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(
-    function handleDeleteEvent() {
+    () => {
       if (
         deleteEvent &&
         selected != null &&
-        activeSlide === ActiveSlide.JourneyFlow
+        activeSlide === ActiveSlide.JourneyFlow &&
+        !showJourneyFlowAnalytics
       ) {
         if (isEdge(selected)) {
           void deleteEdge({

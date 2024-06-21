@@ -1,5 +1,5 @@
+import Box from '@mui/material/Box'
 import FormControlLabel from '@mui/material/FormControlLabel'
-import Stack from '@mui/material/Stack'
 import Switch from '@mui/material/Switch'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
@@ -21,7 +21,7 @@ export function AnalyticsOverlaySwitch(): ReactElement {
   }
 
   return (
-    <Stack>
+    <Box>
       <FormControlLabel
         control={
           <Switch
@@ -32,6 +32,6 @@ export function AnalyticsOverlaySwitch(): ReactElement {
         label={t('Analytics')}
         labelPlacement="start"
       />
-    </Stack>
+    </Box>
   )
 }

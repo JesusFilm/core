@@ -2,7 +2,13 @@ import Box from '@mui/material/Box'
 import { styled } from '@mui/material/styles'
 import isFunction from 'lodash/isFunction'
 import { useTranslation } from 'next-i18next'
-import { ComponentProps, ReactElement, ReactNode, useState } from 'react'
+import {
+  ComponentProps,
+  ReactElement,
+  ReactNode,
+  useEffect,
+  useState
+} from 'react'
 import {
   Handle,
   OnConnect,
@@ -11,6 +17,7 @@ import {
   useStore
 } from 'reactflow'
 
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
 
 import {
@@ -20,6 +27,7 @@ import {
   HANDLE_WITH_BORDER_DIAMETER,
   NODE_EXTRA_DETECTION_WIDTH,
   STEP_NODE_CARD_HEIGHT,
+  STEP_NODE_CARD_MARGIN,
   STEP_NODE_CARD_WIDTH,
   STEP_NODE_WIDTH
 } from '../StepBlockNode/libs/sizes'
@@ -46,6 +54,7 @@ interface BaseNodeProps {
   children?:
     | ((context: { selected: 'descendant' | boolean }) => ReactNode)
     | ReactNode
+  positionTargetHandle?: boolean
 }
 
 export function BaseNode({
@@ -57,8 +66,12 @@ export function BaseNode({
   isSourceConnected = false,
   sourceHandleProps,
   dragging,
-  children
+  children,
+  positionTargetHandle = false
 }: BaseNodeProps): ReactElement {
+  const {
+    state: { showJourneyFlowAnalytics }
+  } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
   const connectionHandleId = useStore(connectionHandleIdSelector)
   const connectionNodeId = useStore(connectionNodeIdSelector)
@@ -68,9 +81,17 @@ export function BaseNode({
   const [targetSelected, setTargetSelected] = useState(false)
   const [sourceSelected, setSourceSelected] = useState(false)
 
+  useEffect(() => {
+    if (showJourneyFlowAnalytics) {
+      setTargetSelected(false)
+      setSourceSelected(false)
+    }
+  }, [showJourneyFlowAnalytics])
+
   useOnSelectionChange({
     onChange: (selected) => {
       const selectedEdge = selected.edges[0]
+      if (showJourneyFlowAnalytics) return
       setTargetSelected(selectedEdge?.target === id)
       setSourceSelected(
         selectedEdge?.sourceHandle != null
@@ -101,11 +122,7 @@ export function BaseNode({
         <PulseWrapper show={isConnecting && targetHandle !== 'disabled'}>
           <StyledHandle
             type="target"
-            data-testid={
-              targetHandle === 'disabled'
-                ? 'BaseNodeLeftHandle-disabled'
-                : 'BaseNodeLeftHandle'
-            }
+            data-testid={`BaseNodeLeftHandle-${targetHandle}`}
             position={Position.Left}
             isConnectableStart={isConnecting && targetHandle !== 'disabled'}
             isConnectable={
@@ -115,7 +132,7 @@ export function BaseNode({
               width: HANDLE_DIAMETER + HANDLE_BORDER_WIDTH,
               height: HANDLE_DIAMETER + HANDLE_BORDER_WIDTH,
               left: -HANDLE_WITH_BORDER_DIAMETER / 2,
-              top: isFunction(children)
+              top: positionTargetHandle
                 ? (STEP_NODE_CARD_HEIGHT + HANDLE_WITH_BORDER_DIAMETER) / 2
                 : null,
               background: (theme) => theme.palette.background.default,
@@ -123,6 +140,7 @@ export function BaseNode({
                 (isConnecting && targetHandle !== 'disabled') || targetSelected
                   ? `${HANDLE_BORDER_WIDTH}px solid ${theme.palette.primary.main}`
                   : `${HANDLE_BORDER_WIDTH}px solid ${theme.palette.secondary.light}80`,
+              // position: 'absolute',
 
               '&:after': {
                 display: isConnecting ? 'block' : 'none',
@@ -143,7 +161,7 @@ export function BaseNode({
           id={id}
           type="source"
           title={t('Drag to connect')}
-          data-testid="BaseNodeRightHandle"
+          data-testid={`BaseNodeRightHandle-${sourceHandle}`}
           position={Position.Right}
           onConnect={onSourceConnect}
           isConnectable={sourceHandle !== 'disabled'}
@@ -157,6 +175,15 @@ export function BaseNode({
                 ? theme.palette.primary.main
                 : `${theme.palette.secondary.light}A0`,
             ...sourceHandleProps?.sx,
+            // position: 'absolute',
+            // right: -2,
+            // top:
+            //   STEP_NODE_CARD_HEIGHT +
+            //   STEP_NODE_CARD_MARGIN +
+            //   HANDLE_DIAMETER +
+            //   ACTION_BUTTON_HEIGHT * (index + 1) -
+            //   ACTION_BUTTON_HEIGHT / 2 -
+            //   HANDLE_DIAMETER / 2,
 
             '&:after': {
               content: '""',

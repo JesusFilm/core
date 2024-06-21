@@ -98,6 +98,9 @@ describe('JourneyFlow', () => {
     expect(screen.getByTestId('JourneyFlow')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Add Step' })).toBeInTheDocument()
     expect(screen.getAllByTestId('StepBlockNodeCard')).toHaveLength(7)
+    expect(
+      screen.getByRole('checkbox', { name: 'Analytics' })
+    ).toBeInTheDocument()
   })
 
   it('should update step positions if any step does not have a position', async () => {

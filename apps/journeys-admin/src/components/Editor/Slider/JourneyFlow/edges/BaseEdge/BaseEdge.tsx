@@ -2,6 +2,7 @@ import { alpha, useTheme } from '@mui/material/styles'
 import { CSSProperties, ReactElement, ReactNode, useState } from 'react'
 import { BaseEdge as DefaultBaseEdge, useOnSelectionChange } from 'reactflow'
 
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { hasTouchScreen } from '@core/shared/ui/deviceUtils'
 
 import {
@@ -24,6 +25,9 @@ export function BaseEdge({
   children,
   isSelected = false
 }: BaseEdgeProps): ReactElement {
+  const {
+    state: { showJourneyFlowAnalytics }
+  } = useEditor()
   const [edgeSelected, setEdgeSelected] = useState(isSelected)
   const [isHovering, setIsHovering] = useState(false)
   const theme = useTheme()
@@ -31,7 +35,7 @@ export function BaseEdge({
   useOnSelectionChange({
     onChange: (selected) => {
       const selectedEdge = selected.edges.find((edge) => edge.id === id)
-      if (selectedEdge != null) {
+      if (selectedEdge != null && !showJourneyFlowAnalytics) {
         setEdgeSelected(true)
       } else {
         setEdgeSelected(false)
@@ -39,10 +43,11 @@ export function BaseEdge({
     }
   })
 
-  const props = !hasTouchScreen() && {
-    onMouseOver: () => setIsHovering(true),
-    onMouseLeave: () => setIsHovering(false)
-  }
+  const props = !hasTouchScreen() &&
+    !showJourneyFlowAnalytics && {
+      onMouseOver: () => setIsHovering(true),
+      onMouseLeave: () => setIsHovering(false)
+    }
 
   let stroke: CSSProperties['stroke']
 

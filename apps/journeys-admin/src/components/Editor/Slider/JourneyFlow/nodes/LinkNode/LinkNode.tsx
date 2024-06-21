@@ -1,3 +1,4 @@
+import Fade from '@mui/material/Fade'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { alpha } from '@mui/material/styles'
@@ -9,20 +10,22 @@ import { getLinkActionGoal } from '@core/journeys/ui/Button/utils/getLinkActionG
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { filterActionBlocks } from '@core/journeys/ui/filterActionBlocks'
 import { getGoalDetails } from '@core/journeys/ui/getGoalDetails'
+// import { getBlockEventKey } from '@core/journeys/ui/plausibleHelpers/plausibleHelpers'
 
 import { BaseNode } from '../BaseNode'
 import { LINK_NODE_HEIGHT, LINK_NODE_WIDTH } from '../StepBlockNode/libs/sizes'
 
+import { LinkNodeAnalytics } from './LinkNodeAnalytics'
+
 export function LinkNode({ id }: NodeProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const {
-    state: { steps }
+    state: { steps, showJourneyFlowAnalytics, journeyStatsBreakdown }
   } = useEditor()
   const strippedNodeId = id.replace('LinkNode-', '')
 
   const matchedActionBlock = steps
-    ?.map((step) => filterActionBlocks(step))
-    .flat()
+    ?.flatMap((step) => filterActionBlocks(step))
     .find(({ id }) => id === strippedNodeId)
 
   function getActionDetail(matchedActionBlock): string {
@@ -53,9 +56,15 @@ export function LinkNode({ id }: NodeProps): ReactElement {
           borderRadius: 2,
           border: (theme) =>
             `2px solid ${alpha(theme.palette.secondary.dark, 0.1)}`,
-          transition: (theme) => theme.transitions.create('opacity')
+          transition: (theme) => theme.transitions.create('opacity'),
+          position: 'relative'
         }}
       >
+        <Fade in={showJourneyFlowAnalytics}>
+          <div>
+            <LinkNodeAnalytics>{event?.events ?? 0}</LinkNodeAnalytics>
+          </div>
+        </Fade>
         {icon}
         <Stack
           sx={{ width: '85%' }}

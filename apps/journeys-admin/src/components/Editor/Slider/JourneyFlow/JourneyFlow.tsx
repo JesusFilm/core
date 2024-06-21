@@ -15,6 +15,7 @@ import {
   Background,
   ControlButton,
   Controls,
+  MarkerType,
   NodeDragHandler,
   OnConnect,
   OnConnectEnd,
@@ -39,6 +40,7 @@ import {
   GetStepBlocksWithPositionVariables
 } from '../../../../../__generated__/GetStepBlocksWithPosition'
 import { useStepBlockPositionUpdateMutation } from '../../../../libs/useStepBlockPositionUpdateMutation'
+import { PlausibleFilter } from '../../../PlausibleFilter'
 
 import { AnalyticsOverlaySwitch } from './AnalyticsOverlaySwitch'
 import { JourneyAnalyticsCard } from './JourneyAnalyticsCard'
@@ -46,7 +48,7 @@ import { NewStepButton } from './NewStepButton'
 import { CustomEdge } from './edges/CustomEdge'
 import { StartEdge } from './edges/StartEdge'
 import { PositionMap, arrangeSteps } from './libs/arrangeSteps'
-import { transformSteps } from './libs/transformSteps'
+import { MARKER_END_DEFAULT_COLOR, transformSteps } from './libs/transformSteps'
 import { useCreateStep } from './libs/useCreateStep'
 import { useDeleteEdge } from './libs/useDeleteEdge'
 import { useDeleteOnKeyPress } from './libs/useDeleteOnKeyPress'
@@ -57,6 +59,42 @@ import { StepBlockNode } from './nodes/StepBlockNode'
 import { STEP_NODE_CARD_HEIGHT } from './nodes/StepBlockNode/libs/sizes'
 
 import 'reactflow/dist/style.css'
+import { ReferrerNode } from './nodes/ReferrerNode'
+
+// function getReferrerNodes(referrers: []) {
+//   if (referrers == null) return { nodes: [], edges: [] }
+
+//   const { nodes, edges } = referrers.reduce(
+//     (acc, referrer) => {
+//       acc.nodes.push({
+//         id: `referrer->SocialPreview`,
+//         type: 'Referrer',
+//         data: referrer,
+//         position: { x: -600, y: -46 + 131 / 2 + 4 },
+//         draggable: false
+//       })
+
+//       acc.edges.push({
+//         id: `referrer->SocialPreview`,
+//         source: 'referrer',
+//         target: 'SocialPreview',
+//         type: 'Custom',
+//         markerEnd: {
+//           type: MarkerType.ArrowClosed,
+//           height: 10,
+//           width: 10,
+//           color: MARKER_END_DEFAULT_COLOR
+//         }
+//       })
+
+//       return acc
+//     },
+//     { nodes: [], edges: [] }
+//   )
+
+//   console.log({ nodes, edges })
+//   return { nodes, edges }
+// }
 
 // some styles can only be updated through css after render
 const additionalEdgeStyles = {
@@ -79,7 +117,12 @@ export function JourneyFlow(): ReactElement {
   const { journey } = useJourney()
   const theme = useTheme()
   const {
-    state: { steps, activeSlide, showJourneyFlowAnalytics }
+    state: {
+      steps,
+      activeSlide,
+      showJourneyFlowAnalytics,
+      journeyStatsBreakdown
+    }
   } = useEditor()
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance | null>(null)
@@ -147,9 +190,12 @@ export function JourneyFlow(): ReactElement {
           }
         })
       }
-      const { nodes, edges } = transformSteps(steps ?? [], positions)
-      setEdges(edges)
-      setNodes(nodes)
+      const { nodes: stepNodes, edges: stepEdges } = transformSteps(
+        steps ?? [],
+        positions
+      )
+      setEdges([...stepEdges])
+      setNodes([...stepNodes])
     }
   })
 
@@ -179,8 +225,12 @@ export function JourneyFlow(): ReactElement {
     if (!validSteps) return
 
     const { nodes, edges } = transformSteps(steps ?? [], positions)
-    setEdges(edges)
-    setNodes(nodes)
+    // const { nodes: aNodes, edges: aEdges } = getReferrerNodes(
+    //   journeyStatsBreakdown?.referrers
+    // )
+
+    // setEdges([...aEdges, ...edges])
+    // setNodes([...aNodes, ...nodes])
   }, [steps, data, theme, setEdges, setNodes, refetch])
 
   const onConnect = useCallback<OnConnect>(() => {
@@ -272,7 +322,8 @@ export function JourneyFlow(): ReactElement {
     () => ({
       StepBlock: StepBlockNode,
       SocialPreview: SocialPreviewNode,
-      Link: LinkNode
+      Link: LinkNode,
+      Referrer: ReferrerNode
     }),
     []
   )
@@ -306,9 +357,7 @@ export function JourneyFlow(): ReactElement {
         onEdgeUpdate={showJourneyFlowAnalytics ? undefined : onEdgeUpdate}
         onEdgeUpdateStart={onEdgeUpdateStart}
         onEdgeUpdateEnd={onEdgeUpdateEnd}
-        onSelectionChange={
-          showJourneyFlowAnalytics ? undefined : onSelectionChange
-        }
+        onSelectionChange={onSelectionChange}
         fitView
         fitViewOptions={{ nodes: [nodes[0]], minZoom: 1, maxZoom: 0.7 }}
         nodeTypes={nodeTypes}
@@ -325,11 +374,15 @@ export function JourneyFlow(): ReactElement {
         {activeSlide === ActiveSlide.JourneyFlow && (
           <>
             <Panel position="top-right">
-              <NewStepButton />
+              {showJourneyFlowAnalytics ? (
+                <PlausibleFilter />
+              ) : (
+                <NewStepButton />
+              )}
             </Panel>
             <Panel position="top-left">
               <div>
-              <AnalyticsOverlaySwitch />
+                <AnalyticsOverlaySwitch />
                 <Fade in={showJourneyFlowAnalytics}>
                   <div>
                     <JourneyAnalyticsCard {...journeyStatsBreakdown} />
@@ -344,7 +397,13 @@ export function JourneyFlow(): ReactElement {
             </Controls>
           </>
         )}
-        <Background color="#aaa" gap={16} />
+        <Background
+          color="#aaa"
+          gap={16}
+          style={{
+            backgroundColor: showJourneyFlowAnalytics ? '#DEE8EF' : ''
+          }}
+        />
       </ReactFlow>
     </Box>
   )

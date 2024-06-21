@@ -22,9 +22,10 @@ export interface JourneyStatsBreakdown {
   linksVisited: number
   referrers: JourneyReferrer[]
   stepsStats: StepStat[]
+  actionEventMap: Record<string, PlausibleEvent>
 }
 
-interface StepStat {
+export interface StepStat {
   stepId: string
   visitors: number
   timeOnPage: number
@@ -32,11 +33,12 @@ interface StepStat {
   stepEvents: PlausibleEvent[]
 }
 
-interface PlausibleEvent {
+export interface PlausibleEvent {
   stepId: string
   event: keyof JourneyPlausibleEvents
   blockId: string
   target?: string // target step id or link
+  actionKey?: string
   events: number
 }
 
@@ -74,12 +76,19 @@ export function transformPlausibleBreakdown({
     }
   })
 
+  const actionEventMap = Object.fromEntries(
+    journeyEvents
+      .filter((e) => e.target != null)
+      .map((event) => [`${event.blockId}->${event.target}`, event])
+  )
+
   return {
     totalVisitors: journeyAggregateVisitors.visitors?.value ?? 0,
     chatsStarted,
     linksVisited,
     referrers: journeyReferrer,
-    stepsStats
+    stepsStats,
+    actionEventMap
   }
 }
 

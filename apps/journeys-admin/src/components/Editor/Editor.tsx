@@ -14,6 +14,7 @@ import { useJourneyPlausibleStatsBreakdownQuery } from '../../libs/useJourneyPla
 import { Fab } from './Fab'
 import { Slider } from './Slider'
 import { Toolbar } from './Toolbar'
+import { PlausibleLocalProvider } from '../PlausibleLocalProvider'
 
 interface EditorProps {
   journey?: Journey
@@ -50,6 +51,7 @@ export function Editor({
       ? steps.find(({ id }) => id === selectedStepId)
       : undefined
 
+  console.log(data, journeyStatsBreakdown)
   return (
     <JourneyProvider value={{ journey, variant: 'admin' }}>
       <EditorProvider
@@ -60,9 +62,11 @@ export function Editor({
           ...initialState
         }}
       >
-        <Toolbar />
-        <Slider />
-        <Fab variant="mobile" />
+        <PlausibleLocalProvider>
+          <Toolbar />
+          <Slider />
+          <Fab variant="mobile" />
+        </PlausibleLocalProvider>
       </EditorProvider>
     </JourneyProvider>
   )

@@ -16,6 +16,7 @@ import {
   VideoStartEventCreateInput
 } from '../../../__generated__/globalTypes'
 import { ActionFields as Action } from '../action/__generated__/ActionFields'
+import { PlausibleEvent } from '../transformPlausibleBreakdown/transformPlausibleBreakdown'
 
 interface Props {
   // biome-ignore lint/suspicious/noExplicitAny: any is needed for plausible events
@@ -69,15 +70,9 @@ interface KeyifyProps {
   target?: string | Action | null
 }
 
-export function generateActionTargetKey(action: Action): string {
-  switch (action.__typename) {
-    case 'NavigateToBlockAction':
-      return action.blockId
-    case 'LinkAction':
-      return `link:${action.url}`
-    case 'EmailAction':
-      return `email:${action.email}`
-  }
+export interface BlockAnalytics {
+  percentOfStepEvents: number
+  event: PlausibleEvent
 }
 
 export function keyify({
@@ -109,4 +104,15 @@ export function reverseKeyify(key: string): {
   target?: string
 } {
   return JSON.parse(key)
+}
+
+function generateActionTargetKey(action: Action): string {
+  switch (action.__typename) {
+    case 'NavigateToBlockAction':
+      return action.blockId
+    case 'LinkAction':
+      return `link:${action.url}`
+    case 'EmailAction':
+      return `email:${action.email}`
+  }
 }

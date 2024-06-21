@@ -4,6 +4,7 @@ export const STEP_NODE_HEIGHT = 152
 export const STEP_NODE_WIDTH_GAP = 200
 export const STEP_NODE_HEIGHT_GAP = 50
 export const STEP_NODE_WIDTH = 216
+export const STEP_NODE_CARD_MARGIN = 12
 
 // the offset required to make the start edge flat
 export const STEP_NODE_OFFSET = -8

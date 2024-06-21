@@ -208,7 +208,51 @@ describe('transformPlausibleBreakdown', () => {
           visitorsExitAtStep: 2,
           stepEvents: []
         }
-      ]
+      ],
+      actionEventMap: {
+        'button1.id->step2.id': {
+          blockId: 'button1.id',
+          event: 'buttonClick',
+          events: 5,
+          stepId: 'step1.id',
+          target: 'step2.id'
+        },
+        'radioOption1.id->link:https://google.com': {
+          blockId: 'radioOption1.id',
+          event: 'radioQuestionSubmit',
+          events: 5,
+          stepId: 'step1.id',
+          target: 'link:https://google.com'
+        },
+        'signUp1.id->link:https://bible.com': {
+          blockId: 'signUp1.id',
+          event: 'signUpSubmit',
+          events: 5,
+          stepId: 'step1.id',
+          target: 'link:https://bible.com'
+        },
+        'step1.id->': {
+          blockId: 'step1.id',
+          event: 'pageview',
+          events: 5,
+          stepId: 'step1.id',
+          target: ''
+        },
+        'step1.id->link:https://m.me/test': {
+          blockId: 'step1.id',
+          event: 'chatButtonClick',
+          events: 5,
+          stepId: 'step1.id',
+          target: 'link:https://m.me/test'
+        },
+        'step1.id->step2,id': {
+          blockId: 'step1.id',
+          event: 'navigateNextStep',
+          events: 5,
+          stepId: 'step1.id',
+          target: 'step2,id'
+        }
+      }
     }
 
     expect(

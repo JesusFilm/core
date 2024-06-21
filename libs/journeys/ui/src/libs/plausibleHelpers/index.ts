@@ -1,5 +1,4 @@
 export {
-  generateActionTargetKey,
   keyify,
   reverseKeyify
 } from './plausibleHelpers'
