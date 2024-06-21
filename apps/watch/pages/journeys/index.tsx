@@ -18,17 +18,17 @@ function JourneysPage(): ReactElement {
   return (
     <PageWrapper>
       <Box
-        sx={{ backgroundColor: 'background.default', overflow: 'hidden' }}
+        sx={{ backgroundColor: 'background.default' }}
         data-testid="JourneysPage"
       >
-        <Container maxWidth="xxl" sx={{ paddingY: '4rem' }}>
+        <Container maxWidth="xxl">
           <Stack gap={10}>
             <ThemeProvider
               themeName={ThemeName.journeysAdmin}
               themeMode={ThemeMode.light}
               nested
             >
-              <TemplateGallery />
+              <TemplateGallery hideOverflow />
             </ThemeProvider>
           </Stack>
         </Container>
