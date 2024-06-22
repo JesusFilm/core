@@ -206,15 +206,15 @@ describe('HostTitleFieldForm', () => {
     )
   })
 
-  it('should create host on render if defaultname prop provided and host does not exist', async () => {
+  it('should create host on render if defaulttitle prop provided and host does not exist', async () => {
     const cache = new InMemoryCache()
     cache.restore({})
 
-    const defaultName = 'new host name'
+    const defaultTitle = 'new host name'
 
     const host = {
       id: 'hostId',
-      title: defaultName
+      title: defaultTitle
     }
 
     const result = jest.fn(() => ({
@@ -267,7 +267,7 @@ describe('HostTitleFieldForm', () => {
         <JourneyProvider
           value={{ journey: { ...journey, host: null }, variant: 'admin' }}
         >
-          <HostTitleFieldForm defaultName={defaultName} />
+          <HostTitleFieldForm defaultTitle={defaultTitle} />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -277,11 +277,11 @@ describe('HostTitleFieldForm', () => {
     void waitFor(() => {
       expect(cache.extract()['Host:hostId']).toEqual({
         ...defaultHost,
-        title: defaultName
+        title: defaultTitle
       })
       expect(cache.extract()[`Journey:${journey.id}`]).toEqual({
         ...journey,
-        host: { ...defaultHost, title: defaultName }
+        host: { ...defaultHost, title: defaultTitle }
       })
       expect(cache.extract()?.ROOT_QUERY?.hosts).toEqual([
         { __ref: 'Host:hostId' }
@@ -289,15 +289,15 @@ describe('HostTitleFieldForm', () => {
     })
   })
 
-  it('should not create host on render if defaultname prop provided but host already exists', async () => {
+  it('should not create host on render if defaulttitle prop provided but host already exists', async () => {
     const cache = new InMemoryCache()
     cache.restore({})
 
-    const defaultName = 'new host name'
+    const defaultTitle = 'new host name'
 
     const host = {
       id: 'hostId',
-      title: defaultName
+      title: defaultTitle
     }
 
     const result = jest.fn(() => ({
@@ -348,7 +348,7 @@ describe('HostTitleFieldForm', () => {
         ]}
       >
         <JourneyProvider value={{ journey: { ...journey }, variant: 'admin' }}>
-          <HostTitleFieldForm defaultName={defaultName} />
+          <HostTitleFieldForm defaultTitle={defaultTitle} />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -388,5 +388,20 @@ describe('HostTitleFieldForm', () => {
       ).not.toBeInTheDocument() // default error message
       expect(screen.getByText('new error message')).toBeInTheDocument()
     })
+  })
+
+  it('should use host title instead of defaulttitle in initialvalue if host exists', () => {
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <HostTitleFieldForm defaultTitle="default host name" />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const hostTitleTextField = screen.getByRole('textbox')
+
+    expect(hostTitleTextField).not.toHaveValue('default host name')
+    expect(hostTitleTextField).toHaveValue(defaultHost.title)
   })
 })

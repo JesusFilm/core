@@ -20,13 +20,13 @@ export const CREATE_HOST = gql`
 `
 
 interface HostTitleFieldFormProps {
-  defaultName?: string
+  defaultTitle?: string
   label?: string
   hostTitleRequiredErrorMessage?: string
 }
 
 export function HostTitleFieldForm({
-  defaultName,
+  defaultTitle,
   label,
   hostTitleRequiredErrorMessage
 }: HostTitleFieldFormProps): ReactElement {
@@ -76,12 +76,12 @@ export function HostTitleFieldForm({
 
   useEffect(() => {
     async function createHostIfDefault(): Promise<void> {
-      if (journey?.host === null && journey?.team && defaultName) {
-        createHost(defaultName)
+      if (journey?.host == null && journey?.team && defaultTitle) {
+        createHost(defaultTitle)
       }
     }
     void createHostIfDefault()
-  }, [defaultName, createHost, journey])
+  }, [defaultTitle, createHost, journey])
 
   const titleSchema = object({
     hostTitle: string().required(
@@ -102,9 +102,7 @@ export function HostTitleFieldForm({
     <TextFieldForm
       id="hostTitle"
       label={label ?? t('Host Name')}
-      initialValue={
-        defaultName ?? (journey?.host == null ? '' : journey.host.title)
-      }
+      initialValue={journey?.host == null ? defaultTitle : journey.host.title}
       validationSchema={titleSchema}
       onSubmit={handleSubmit}
       data-testid="HostTitleFieldForm"
