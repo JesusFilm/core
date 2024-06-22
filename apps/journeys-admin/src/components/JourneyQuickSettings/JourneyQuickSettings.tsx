@@ -19,7 +19,13 @@ import { JourneyQuickSettingsChat } from './JourneyQuickSettingsChat'
 import { JourneyQuickSettingsGoals } from './JourneyQuickSettingsGoals'
 import { JourneyQuickSettingsTabs } from './JourneyQuickSettingsTabs'
 
-export function JourneyQuickSettings(): ReactElement {
+interface JourneyQuickSettingsProps {
+  displayName?: string
+}
+
+export function JourneyQuickSettings({
+  displayName
+}: JourneyQuickSettingsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const [shareDialogOpen, setShareDialogOpen] = useState(false)
@@ -97,7 +103,9 @@ export function JourneyQuickSettings(): ReactElement {
                 gap: 4
               }}
             >
-              {tabValue === 0 && <JourneyQuickSettingsChat />}
+              {tabValue === 0 && (
+                <JourneyQuickSettingsChat displayName={displayName} />
+              )}
               {tabValue === 1 && <JourneyQuickSettingsGoals />}
             </CardContent>
             <CardActions

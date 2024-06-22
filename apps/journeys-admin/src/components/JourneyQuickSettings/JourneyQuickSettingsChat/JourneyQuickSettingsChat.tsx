@@ -6,13 +6,18 @@ import { Chat } from '../../Editor/Slider/Settings/CanvasDetails/Footer/Chat'
 import { HostAvatarsButton } from '../../Editor/Slider/Settings/CanvasDetails/Footer/HostTab/HostForm/HostAvatarsButton'
 import { HostTitleFieldForm } from '../../Editor/Slider/Settings/CanvasDetails/Footer/HostTab/HostForm/HostTitleFieldForm'
 
-export function JourneyQuickSettingsChat(): ReactElement {
-  const { displayName } = useUser()
+interface JourneyQuickSettingsChatProps {
+  displayName?: string
+}
+
+export function JourneyQuickSettingsChat({
+  displayName
+}: JourneyQuickSettingsChatProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   return (
     <>
       <HostTitleFieldForm
-        defaultTitle={displayName ?? undefined}
+        defaultTitle={displayName}
         label={t('Your Name')}
         hostTitleRequiredErrorMessage={t('Please Enter Your Name')}
       />
