@@ -16,7 +16,6 @@ export function JourneyQuickSettings(): ReactElement {
 
       <HostTitleFieldForm />
 
-      {/* Use imageblock on journey?  */}
       <Typography variant="h4">Your Profile Image: </Typography>
 
       <HostAvatarsButton />
