@@ -39,7 +39,7 @@ describe('OnboardingStepper', () => {
     mockedUseRouter.mockReturnValue({
       pathname: '/users/sign-in',
       query: {
-        redirect: '/templates/journeyId/quick'
+        redirect: 'http://localhost/templates/journeyId/quick'
       }
     } as unknown as NextRouter)
 
