@@ -73,7 +73,7 @@ export function OnboardingStepper({
         },
     quick
       ? {
-          label: t('Express Settings')
+          label: t('Express Setup')
         }
       : undefined
   ])

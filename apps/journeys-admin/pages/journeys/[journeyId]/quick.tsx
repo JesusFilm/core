@@ -7,6 +7,7 @@ import { ReactElement } from 'react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import {
   GetAdminJourney,
   GetAdminJourneyVariables
@@ -15,6 +16,7 @@ import { GetCustomDomains } from '../../../__generated__/GetCustomDomains'
 import { UserJourneyOpen } from '../../../__generated__/UserJourneyOpen'
 import { AccessDenied } from '../../../src/components/AccessDenied'
 import { QuickGoals } from '../../../src/components/Editor/QuickGoals'
+import { JourneyQuickSettings } from '../../../src/components/JourneyQuickSettings'
 import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'
 import { GET_CUSTOM_DOMAINS } from '../../../src/libs/useCustomDomainsQuery/useCustomDomainsQuery'
 import { GET_ADMIN_JOURNEY, USER_JOURNEY_OPEN } from '../[journeyId]'
@@ -36,8 +38,8 @@ function JourneyQuickSettingsPage({ status }): ReactElement {
           status === 'noAccess'
             ? t('Request Access')
             : data?.journey?.title != null
-              ? t('{{title}} Quick Settings', { title: data.journey.title })
-              : t('Journey Quick Settings')
+              ? t('{{title}} Express Setup', { title: data.journey.title })
+              : t('Journey Express Setup')
         }
         description={data?.journey?.description ?? undefined}
       />
@@ -45,9 +47,7 @@ function JourneyQuickSettingsPage({ status }): ReactElement {
         <AccessDenied />
       ) : (
         <JourneyProvider value={{ journey: data?.journey, variant: 'admin' }}>
-          <EditorProvider>
-            <QuickGoals journey={data?.journey} />
-          </EditorProvider>
+          <JourneyQuickSettings />
         </JourneyProvider>
       )}
     </>
