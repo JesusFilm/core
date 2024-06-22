@@ -1,5 +1,10 @@
 import { useQuery } from '@apollo/client'
-import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
+import {
+  AuthAction,
+  useUser,
+  withUser,
+  withUserTokenSSR
+} from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
@@ -20,6 +25,7 @@ import { GET_CUSTOM_DOMAINS } from '../../../src/libs/useCustomDomainsQuery/useC
 import { GET_ADMIN_JOURNEY, USER_JOURNEY_OPEN } from '../[journeyId]'
 
 function JourneyQuickSettingsPage({ status }): ReactElement {
+  const { displayName } = useUser()
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const { data } = useQuery<GetAdminJourney, GetAdminJourneyVariables>(
@@ -46,7 +52,7 @@ function JourneyQuickSettingsPage({ status }): ReactElement {
       ) : (
         <JourneyProvider value={{ journey: data?.journey, variant: 'admin' }}>
           <EditorProvider>
-            <JourneyQuickSettings />
+            <JourneyQuickSettings displayName={displayName ?? undefined} />
           </EditorProvider>
         </JourneyProvider>
       )}
