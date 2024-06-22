@@ -35,8 +35,8 @@ function JourneyQuickSettingsPage({ status }): ReactElement {
           status === 'noAccess'
             ? t('Request Access')
             : data?.journey?.title != null
-              ? t('{{title}} Quick Settings', { title: data.journey.title })
-              : t('Journey Quick Settings')
+              ? t('{{title}} Express Setup', { title: data.journey.title })
+              : t('Journey Express Setup')
         }
         description={data?.journey?.description ?? undefined}
       />
