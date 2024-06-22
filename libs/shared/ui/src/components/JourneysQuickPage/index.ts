@@ -1,1 +1,0 @@
-export { JourneysQuickPage } from './JourneysQuickPage'
