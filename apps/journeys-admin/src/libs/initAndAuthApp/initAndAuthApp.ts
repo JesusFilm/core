@@ -91,8 +91,6 @@ export async function initAndAuthApp({
       ]?.replace('{{ name }}', user.displayName) ?? teamName
   }
 
-  console.log(teamName)
-
   const redirect =
     resolvedUrl != null
       ? await checkConditionalRedirect({
