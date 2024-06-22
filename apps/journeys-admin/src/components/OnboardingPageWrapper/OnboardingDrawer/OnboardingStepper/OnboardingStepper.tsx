@@ -12,6 +12,7 @@ import { useRouter } from 'next/router'
 import { ReactElement, ReactNode } from 'react'
 
 import Circle from '@core/shared/ui/icons/Circle'
+import compact from 'lodash/compact'
 
 type Variant = 'mobile' | 'desktop'
 interface OnboardingStepperProps {
@@ -49,21 +50,33 @@ export function OnboardingStepper({
   }
 
   const activeStep = getActiveStep()
+  const quick =
+    router.query?.redirect?.toString().match(/^\/templates\/[\w\-]+\/quick/) !=
+    null
 
-  const steps = [
+  const steps = compact([
     {
       label: t('Create an account')
     },
     {
       label: t('Terms and Conditions')
     },
-    {
-      label: t('User Insights')
-    },
-    {
-      label: t('Create Your Workspace')
-    }
-  ]
+    quick
+      ? undefined
+      : {
+          label: t('User Insights')
+        },
+    quick
+      ? undefined
+      : {
+          label: t('Create Your Workspace')
+        },
+    quick
+      ? {
+          label: t('Express Settings')
+        }
+      : undefined
+  ])
 
   const OnboardingStepperIcon = ({
     active,
