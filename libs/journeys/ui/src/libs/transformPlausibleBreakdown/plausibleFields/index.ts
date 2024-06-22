@@ -3,3 +3,4 @@ export { PLAUSIBLE_JOURNEY_REFERRER_FIELDS } from './plausibleJourneyReferrerFie
 export { PLAUSIBLE_JOURNEY_STEPS_ACTIONS_FIELDS } from './plausibleJourneyStepsActionsFields'
 export { PLAUSIBLE_JOURNEY_STEPS_FIELDS } from './plausibleJourneyStepsFields'
 export { PLAUSIBLE_JOURNEY_VISITORS_PAGE_EXITS_FIELDS } from './plausibleJourneyVisitorsPageExitsFields'
+export { PLAUSIBLE_JOURNEY_ACTIONS_SUMS_FIELDS } from './plausibleJourneyActionsSumsFields'

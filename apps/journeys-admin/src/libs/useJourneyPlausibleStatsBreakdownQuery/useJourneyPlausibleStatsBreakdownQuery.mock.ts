@@ -124,6 +124,50 @@ export const getJourneyPlausibleStatsBreakdown: MockedResponse<
           visitors: 2
         }
       ],
+      journeyActionsSums: [
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"pageview","blockId":"step1.id","target":""}',
+          events: 5
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"navigateNextStep","blockId":"step1.id","target":""}',
+          events: 5
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step2.id","event":"navigatePreviousStep","blockId":"step2.id","target":""}',
+          events: 5
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"buttonClick","blockId":"button1.id","target":"s"}',
+          events: 5
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"radioQuestionSubmit","blockId":"radioOption1.id","target":""}',
+          events: 5
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"signUpSubmit","blockId":"signUp1.id","target":""}',
+          events: 5
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"chatButtonClick","blockId":"step1.id","target":""}',
+          events: 5
+        }
+      ],
       journeyAggregateVisitors: {
         __typename: 'PlausibleStatsAggregateResponse',
         visitors: {
