@@ -22,13 +22,13 @@ import { GoalsListItem } from './GoalsListItem'
 interface GoalsListProps {
   goals: Goal[]
   variant?: 'minimal'
-  handleClose?(): void
+  onClose?(): void
 }
 
 export function GoalsList({
   goals,
   variant,
-  handleClose
+  onClose
 }: GoalsListProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { dispatch } = useEditor()
@@ -150,7 +150,7 @@ export function GoalsList({
                   key={goal.url}
                   variant={variant}
                   goal={goal}
-                  handleClose={handleClose}
+                  onClose={onClose}
                 />
               ))}
             </TableBody>

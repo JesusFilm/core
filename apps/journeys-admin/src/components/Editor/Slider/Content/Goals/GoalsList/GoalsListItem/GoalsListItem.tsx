@@ -18,13 +18,13 @@ import type { Goal } from '../../Goals'
 interface GoalsListItemProp {
   goal: Goal
   variant?: 'minimal'
-  handleClose?(): void
+  onClose?(): void
 }
 
 export function GoalsListItem({
   goal: { count, url, goalType },
   variant,
-  handleClose
+  onClose
 }: GoalsListItemProp): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const {
@@ -52,7 +52,7 @@ export function GoalsListItem({
         activeSlide: ActiveSlide.Drawer
       })
     }
-    handleClose?.()
+    onClose?.()
   }
 
   return (

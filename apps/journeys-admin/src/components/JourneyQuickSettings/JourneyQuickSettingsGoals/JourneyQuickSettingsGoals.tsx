@@ -64,16 +64,16 @@ export function JourneyQuickSettingsGoals(): ReactElement {
     dispatch({ type: 'SetSelectedGoalUrlAction', selectedGoalUrl: url })
   }
 
-  function onClose(): void {
+  function handleClose(): void {
     setOpen(!open)
   }
 
   return (
     <Stack>
-      <GoalsList variant="minimal" goals={goals} handleClose={onClose} />
+      <GoalsList variant="minimal" goals={goals} onClose={handleClose} />
       <Drawer
         open={open}
-        onClose={onClose}
+        onClose={handleClose}
         anchor="bottom"
         sx={{
           '& .MuiDrawer-paper': {
@@ -100,7 +100,7 @@ export function JourneyQuickSettingsGoals(): ReactElement {
               {t('Goal Details')}
             </Typography>
             <IconButton
-              onClick={onClose}
+              onClick={handleClose}
               sx={{ display: 'inline-flex' }}
               edge="end"
             >
