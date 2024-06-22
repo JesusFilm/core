@@ -77,6 +77,7 @@ module "api-gateway-stage" {
   env              = "stage"
   doppler_token    = data.aws_ssm_parameter.doppler_api_gateway_stage_token.value
   alb_listener_arn = module.stage.public_alb.alb_listener.arn
+  alb_dns_name     = module.stage.public_alb.dns_name
 }
 
 module "api-analytics" {
@@ -86,6 +87,10 @@ module "api-analytics" {
   doppler_token         = data.aws_ssm_parameter.doppler_api_analytics_stage_token.value
   subnet_group_name     = module.stage.vpc.db_subnet_group_name
   vpc_security_group_id = module.stage.private_rds_security_group_id
+  alb = {
+    arn      = module.stage.internal_alb.arn
+    dns_name = module.stage.internal_alb.dns_name
+  }
 }
 
 module "api-journeys" {
@@ -95,6 +100,10 @@ module "api-journeys" {
   doppler_token         = data.aws_ssm_parameter.doppler_api_journeys_stage_token.value
   subnet_group_name     = module.stage.vpc.db_subnet_group_name
   vpc_security_group_id = module.stage.private_rds_security_group_id
+  alb = {
+    arn      = module.stage.internal_alb.arn
+    dns_name = module.stage.internal_alb.dns_name
+  }
 }
 
 module "api-languages" {
@@ -104,6 +113,10 @@ module "api-languages" {
   doppler_token         = data.aws_ssm_parameter.doppler_api_languages_stage_token.value
   subnet_group_name     = module.stage.vpc.db_subnet_group_name
   vpc_security_group_id = module.stage.private_rds_security_group_id
+  alb = {
+    arn      = module.stage.internal_alb.arn
+    dns_name = module.stage.internal_alb.dns_name
+  }
 }
 
 module "api-tags" {
@@ -113,6 +126,10 @@ module "api-tags" {
   doppler_token         = data.aws_ssm_parameter.doppler_api_tags_stage_token.value
   subnet_group_name     = module.stage.vpc.db_subnet_group_name
   vpc_security_group_id = module.stage.private_rds_security_group_id
+  alb = {
+    arn      = module.stage.internal_alb.arn
+    dns_name = module.stage.internal_alb.dns_name
+  }
 }
 
 module "api-users" {
@@ -122,6 +139,10 @@ module "api-users" {
   doppler_token         = data.aws_ssm_parameter.doppler_api_users_stage_token.value
   subnet_group_name     = module.stage.vpc.db_subnet_group_name
   vpc_security_group_id = module.stage.private_rds_security_group_id
+  alb = {
+    arn      = module.stage.internal_alb.arn
+    dns_name = module.stage.internal_alb.dns_name
+  }
 }
 
 module "api-videos" {
@@ -131,6 +152,10 @@ module "api-videos" {
   doppler_token         = data.aws_ssm_parameter.doppler_api_videos_stage_token.value
   subnet_group_name     = module.stage.vpc.db_subnet_group_name
   vpc_security_group_id = module.stage.private_rds_security_group_id
+  alb = {
+    arn      = module.stage.internal_alb.arn
+    dns_name = module.stage.internal_alb.dns_name
+  }
 }
 
 module "api-media" {
@@ -140,6 +165,10 @@ module "api-media" {
   doppler_token         = data.aws_ssm_parameter.doppler_api_media_stage_token.value
   subnet_group_name     = module.stage.vpc.db_subnet_group_name
   vpc_security_group_id = module.stage.private_rds_security_group_id
+  alb = {
+    arn      = module.stage.internal_alb.arn
+    dns_name = module.stage.internal_alb.dns_name
+  }
 }
 
 module "api-nexus" {
@@ -149,6 +178,11 @@ module "api-nexus" {
   doppler_token         = data.aws_ssm_parameter.doppler_api_nexus_stage_token.value
   subnet_group_name     = module.stage.vpc.db_subnet_group_name
   vpc_security_group_id = module.stage.private_rds_security_group_id
+  alb = {
+    arn      = module.stage.internal_alb.arn
+    dns_name = module.stage.internal_alb.dns_name
+  }
+
 }
 
 module "bastion" {
@@ -231,13 +265,11 @@ module "journeys-admin" {
       health_check_path = "/api/health"
       health_check_port = "3000"
     })
-    alb = merge(local.public_ecs_config.alb, {
-      dns_name = "admin-stage.central.jesusfilm.org"
-    })
   })
   env              = "stage"
   doppler_token    = data.aws_ssm_parameter.doppler_journeys_admin_stage_token.value
   alb_listener_arn = module.stage.public_alb.alb_listener.arn
+  alb_dns_name     = "admin-stage.nextstep.is"
 }
 
 module "postgresql" {

@@ -22,10 +22,6 @@ variable "service_config" {
     desired_count  = number
     zone_id        = string
     is_public      = bool
-    alb = object({
-      arn      = string
-      dns_name = string
-    })
     alb_target_group = object({
       port              = number
       protocol          = string
@@ -69,5 +65,9 @@ variable "environment_variables" {
 }
 
 variable "alb_listener_arn" {
+  type = string
+}
+
+variable "alb_dns_name" {
   type = string
 }

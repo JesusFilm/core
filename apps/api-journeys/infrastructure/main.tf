@@ -1,6 +1,6 @@
 module "alb-listener" {
   source   = "../../../infrastructure/modules/aws/alb-listener"
-  alb_arn  = var.ecs_config.alb.arn
+  alb_arn  = var.alb.arn
   port     = local.port
   protocol = "HTTP"
 }
@@ -13,6 +13,8 @@ module "ecs-task" {
   doppler_token         = var.doppler_token
   environment_variables = local.environment_variables
   alb_listener_arn      = module.alb-listener.arn
+  alb_dns_name          = var.alb.dns_name
+
 }
 
 module "seed" {

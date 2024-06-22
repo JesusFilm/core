@@ -37,3 +37,7 @@ variable "doppler_token" {
 variable "alb_listener_arn" {
   type = string
 }
+
+variable "alb_dns_name" {
+  type = string
+}

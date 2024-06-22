@@ -13,7 +13,6 @@ locals {
     cpu            = 1024
     memory         = 2048
     desired_count  = 1
-    alb            = var.ecs_config.alb
     zone_id        = var.ecs_config.zone_id
     alb_target_group = merge(var.ecs_config.alb_target_group, {
       port = local.port

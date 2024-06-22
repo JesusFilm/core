@@ -244,7 +244,7 @@ resource "aws_alb_listener_rule" "alb_listener_rule" {
     host_header {
       values = [
         coalesce(
-          var.service_config.alb.dns_name,
+          var.alb_dns_name,
           format("%s.%s", var.service_config.name, data.aws_route53_zone.zone.name)
         )
       ]
@@ -322,5 +322,5 @@ resource "aws_route53_record" "record" {
   type    = "CNAME"
   ttl     = 300
   zone_id = var.service_config.zone_id
-  records = [var.service_config.alb.dns_name]
+  records = [var.alb_dns_name]
 }

@@ -12,10 +12,6 @@ locals {
     memory         = 1024
     desired_count  = 1
     zone_id        = var.ecs_config.zone_id
-    alb            = var.ecs_config.alb
-    alb_listener = merge(var.ecs_config.alb_listener, {
-      port = local.port
-    })
     alb_target_group = merge(var.ecs_config.alb_target_group, {
       port = local.port
     })
