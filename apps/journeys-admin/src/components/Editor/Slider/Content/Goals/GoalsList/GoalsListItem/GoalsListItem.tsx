@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography'
 import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Trans, useTranslation } from 'next-i18next'
-import { Fragment, ReactElement } from 'react'
+import { ReactElement } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
