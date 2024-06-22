@@ -3,6 +3,8 @@ import { useRouter } from 'next/router'
 
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 import { HeaderTabButtons } from './HeaderTabButtons'
 
 jest.mock('next/router', () => ({
@@ -74,15 +76,17 @@ describe('HeaderTabButtons', () => {
 
     it('should have Videos button selected when on /watch', () => {
       render(
-        <FlagsProvider flags={{ ...trueHeaderItemsFlags }}>
-          <HeaderTabButtons />
-        </FlagsProvider>
+        <ThemeProvider themeName={ThemeName.website} themeMode={ThemeMode.dark}>
+          <FlagsProvider flags={{ ...trueHeaderItemsFlags }}>
+            <HeaderTabButtons />
+          </FlagsProvider>
+        </ThemeProvider>
       )
       const router = useRouter()
       expect(router.pathname).toBe('/watch')
 
       const videosButton = screen.getByTestId('VideosButton')
-      expect(videosButton).toHaveStyle('border-color: red')
+      expect(videosButton).toHaveStyle('border-color: #EF3340')
 
       // other buttons shouldn't have red border
       const journeysButton = screen.getByTestId('JourneysButton')

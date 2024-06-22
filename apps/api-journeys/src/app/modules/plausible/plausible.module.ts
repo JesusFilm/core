@@ -6,7 +6,6 @@ import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 import { AppCaslFactory } from '../../lib/casl/caslFactory'
 import { PrismaService } from '../../lib/prisma.service'
 
-import { PlausibleConsumer } from './plausible.consumer'
 import { PlausibleResolver } from './plausible.resolver'
 import { PlausibleService } from './plausible.service'
 
@@ -15,11 +14,6 @@ import { PlausibleService } from './plausible.service'
     CaslAuthModule.register(AppCaslFactory),
     BullModule.registerQueue({ name: 'api-journeys-plausible' })
   ],
-  providers: [
-    PlausibleResolver,
-    PlausibleService,
-    PrismaService,
-    PlausibleConsumer
-  ]
+  providers: [PlausibleResolver, PlausibleService, PrismaService]
 })
 export class PlausibleModule {}

@@ -47,6 +47,11 @@ const nextConfig = {
   async redirects() {
     return [
       {
+        source: '/',
+        destination: '/watch',
+        permanent: false
+      },
+      {
         source: '/bin/jf/watch.html/:videoId/:languageId',
         destination: '/api/jf/watch.html/:videoId/:languageId',
         permanent: false

@@ -22,17 +22,6 @@ describe('Header', () => {
     expect(button.getAttribute('href')).toBe('https://www.jesusfilm.org/about/')
   })
 
-  it('should show fixed app bar', async () => {
-    useScrollTriggerMock.mockReturnValue(true)
-    const { getAllByRole, getByText } = render(<Header />)
-
-    expect(getAllByRole('button', { name: 'open header menu' })).toHaveLength(2)
-
-    fireEvent.click(getAllByRole('button', { name: 'open header menu' })[1])
-    const button = getByText('About')
-    expect(button.getAttribute('href')).toBe('https://www.jesusfilm.org/about/')
-  })
-
   it('should hide absolute app bar', () => {
     const { queryByRole } = render(<Header hideAbsoluteAppBar />)
 

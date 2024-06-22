@@ -50,7 +50,7 @@ describe('initAndAuthApp', () => {
 
   beforeEach(() => {
     // mock serverSideTranslation
-    serverSideTranslationsMock.mockResolvedValueOnce(mockSSRConfig)
+    serverSideTranslationsMock.mockResolvedValue(mockSSRConfig)
 
     // mock getLaunchDarklyClient
     getLaunchDarklyClientMock.mockResolvedValueOnce({
@@ -110,6 +110,112 @@ describe('initAndAuthApp', () => {
       flags: { termsAndConditions: true },
       redirect: undefined,
       translations: mockSSRConfig
+    })
+  })
+
+  it('should call checkConditionalRedirect with default teamName', async () => {
+    await initAndAuthApp({
+      user: {
+        id: null
+      } as unknown as User,
+      locale: 'en',
+      resolvedUrl: '/templates'
+    })
+    expect(checkConditionalRedirectMock).toHaveBeenCalledWith({
+      apolloClient: {
+        mutate: expect.any(Function)
+      },
+      resolvedUrl: '/templates',
+      teamName: 'My Team'
+    })
+  })
+
+  it('should call checkConditionalRedirect with default teamName if no translation', async () => {
+    serverSideTranslationsMock.mockResolvedValueOnce({
+      _nextI18Next: {
+        initialI18nStore: {
+          en: {
+            'apps-journeys-admin': {}
+          }
+        },
+        initialLocale: 'en',
+        ns: ['apps-journeys-admin', 'libs-journeys-ui'],
+        userConfig: i18nConfig
+      }
+    })
+
+    await initAndAuthApp({
+      user: mockUser,
+      locale: 'en',
+      resolvedUrl: '/templates'
+    })
+
+    expect(checkConditionalRedirectMock).toHaveBeenCalledWith({
+      apolloClient: {
+        mutate: expect.any(Function)
+      },
+      resolvedUrl: '/templates',
+      teamName: 'My Team'
+    })
+  })
+
+  it('should call checkConditionalRedirect with default teamName if no displayName', async () => {
+    serverSideTranslationsMock.mockResolvedValueOnce({
+      _nextI18Next: {
+        initialI18nStore: {
+          en: {
+            'apps-journeys-admin': {}
+          }
+        },
+        initialLocale: 'en',
+        ns: ['apps-journeys-admin', 'libs-journeys-ui'],
+        userConfig: i18nConfig
+      }
+    })
+
+    await initAndAuthApp({
+      user: { ...mockUser, displayName: null },
+      locale: 'en',
+      resolvedUrl: '/templates'
+    })
+
+    expect(checkConditionalRedirectMock).toHaveBeenCalledWith({
+      apolloClient: {
+        mutate: expect.any(Function)
+      },
+      resolvedUrl: '/templates',
+      teamName: 'My Team'
+    })
+  })
+
+  it('should call checkConditionalRedirect with teamName if translation', async () => {
+    serverSideTranslationsMock.mockResolvedValueOnce({
+      _nextI18Next: {
+        initialI18nStore: {
+          en: {
+            'apps-journeys-admin': {
+              "{{ name }}'s Team": "{{ name }}'s Team"
+            }
+          }
+        },
+        initialLocale: 'en',
+        ns: ['apps-journeys-admin', 'libs-journeys-ui'],
+        userConfig: i18nConfig
+      }
+    })
+
+    await initAndAuthApp({
+      user: mockUser,
+      locale: 'en',
+      resolvedUrl: '/templates'
+    })
+
+    expect(checkConditionalRedirectMock).toHaveBeenCalledWith({
+      apolloClient: {
+        mutate: expect.any(Function)
+      },
+      resolvedUrl: '/templates',
+      teamName: "test's Team"
     })
   })
 })
