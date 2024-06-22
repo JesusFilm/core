@@ -22,9 +22,14 @@ import { GoalsListItem } from './GoalsListItem'
 interface GoalsListProps {
   goals: Goal[]
   variant?: 'minimal'
+  handleClose?(): void
 }
 
-export function GoalsList({ goals, variant }: GoalsListProps): ReactElement {
+export function GoalsList({
+  goals,
+  variant,
+  handleClose
+}: GoalsListProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { dispatch } = useEditor()
 
@@ -141,7 +146,12 @@ export function GoalsList({ goals, variant }: GoalsListProps): ReactElement {
             </TableHead>
             <TableBody>
               {goals?.map((goal) => (
-                <GoalsListItem key={goal.url} variant={variant} goal={goal} />
+                <GoalsListItem
+                  key={goal.url}
+                  variant={variant}
+                  goal={goal}
+                  handleClose={handleClose}
+                />
               ))}
             </TableBody>
           </Table>

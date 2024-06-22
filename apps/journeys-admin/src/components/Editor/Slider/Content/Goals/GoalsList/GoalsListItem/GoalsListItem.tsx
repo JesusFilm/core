@@ -18,11 +18,13 @@ import type { Goal } from '../../Goals'
 interface GoalsListItemProp {
   goal: Goal
   variant?: 'minimal'
+  handleClose?(): void
 }
 
 export function GoalsListItem({
   goal: { count, url, goalType },
-  variant
+  variant,
+  handleClose
 }: GoalsListItemProp): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const {
@@ -50,6 +52,7 @@ export function GoalsListItem({
         activeSlide: ActiveSlide.Drawer
       })
     }
+    handleClose?.()
   }
 
   return (
@@ -69,6 +72,9 @@ export function GoalsListItem({
             '&:hover': {
               backgroundColor: 'rgba(255, 255, 255, 0.6)'
             }
+          },
+          '&:first-child > .MuiTableCell-root': {
+            pt: variant === 'minimal' ? 0 : 4
           }
         }}
       >
@@ -91,7 +97,8 @@ export function GoalsListItem({
             width: '100%',
             whiteSpace: 'nowrap',
             overflow: 'hidden',
-            textOverflow: 'ellipsis'
+            textOverflow: 'ellipsis',
+            px: variant === 'minimal' ? 0 : 4
           }}
         >
           <Typography
