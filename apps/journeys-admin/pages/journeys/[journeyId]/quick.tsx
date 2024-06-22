@@ -1,17 +1,54 @@
+import { gql, useQuery } from '@apollo/client'
 import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
+import { useTranslation } from 'next-i18next'
+import { NextSeo } from 'next-seo'
+import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 
-import { GetAdminJourney } from '../../../__generated__/GetAdminJourney'
+import {
+  GetAdminJourney,
+  GetAdminJourneyVariables
+} from '../../../__generated__/GetAdminJourney'
+import { GetCustomDomains } from '../../../__generated__/GetCustomDomains'
+import { UserJourneyOpen } from '../../../__generated__/UserJourneyOpen'
+import { AccessDenied } from '../../../src/components/AccessDenied'
 import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'
-import { GET_ADMIN_JOURNEY } from '../[journeyId]'
+import { GET_CUSTOM_DOMAINS } from '../../../src/libs/useCustomDomainsQuery/useCustomDomainsQuery'
+import { GET_ADMIN_JOURNEY, USER_JOURNEY_OPEN } from '../[journeyId]'
 
-function JourneyQuickPage(): ReactElement {
-  return <>Quick</>
+function JourneyQuickSettingsPage({ status }): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+  const router = useRouter()
+  const { data } = useQuery<GetAdminJourney, GetAdminJourneyVariables>(
+    GET_ADMIN_JOURNEY,
+    {
+      variables: { id: router.query.journeyId as string }
+    }
+  )
+
+  return (
+    <>
+      <NextSeo
+        title={
+          status === 'noAccess'
+            ? t('Request Access')
+            : data?.journey?.title != null
+              ? t('{{title}} Quick Settings', { title: data.journey.title })
+              : t('Journey Quick Settings')
+        }
+        description={data?.journey?.description ?? undefined}
+      />
+      {status === 'noAccess' ? <AccessDenied /> : <>JOURNEY QUICK SETTINGS</>}
+    </>
+  )
 }
 
 export const getServerSideProps = withUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
 })(async ({ user, locale, query, resolvedUrl }) => {
+  if (user == null)
+    return { redirect: { permanent: false, destination: '/users/sign-in' } }
+
   const { apolloClient, flags, redirect, translations } = await initAndAuthApp({
     user,
     locale,
@@ -28,6 +65,16 @@ export const getServerSideProps = withUserTokenSSR({
       }
     })
 
+    if (data.journey?.team?.id != null) {
+      // from: src/components/Editor/Properties/JourneyLink/JourneyLink.tsx
+      await apolloClient.query<GetCustomDomains>({
+        query: GET_CUSTOM_DOMAINS,
+        variables: {
+          teamId: data.journey.team.id
+        }
+      })
+    }
+
     if (data.journey?.template === true) {
       return {
         redirect: {
@@ -36,6 +83,10 @@ export const getServerSideProps = withUserTokenSSR({
         }
       }
     }
+    await apolloClient.mutate<UserJourneyOpen>({
+      mutation: USER_JOURNEY_OPEN,
+      variables: { id: data.journey?.id }
+    })
   } catch (error) {
     if (error.message === 'journey not found') {
       return {
@@ -59,10 +110,15 @@ export const getServerSideProps = withUserTokenSSR({
   }
 
   return {
-    props: {}
+    props: {
+      status: 'success',
+      ...translations,
+      flags,
+      initialApolloState: apolloClient.cache.extract()
+    }
   }
 })
 
 export default withUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(JourneyQuickPage)
+})(JourneyQuickSettingsPage)
