@@ -13,12 +13,12 @@ const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 describe('OnboardingStepper', () => {
   it('should render correct steps', () => {
     mockedUseRouter.mockReturnValue({
-      query: {
-        pathname: '/users/sign-in'
-      }
+      pathname: '/users/sign-in'
     } as unknown as NextRouter)
 
-    const { getByRole } = render(<OnboardingStepper variant="desktop" />)
+    const { getByRole, queryByRole } = render(
+      <OnboardingStepper variant="desktop" />
+    )
 
     expect(
       getByRole('heading', { name: 'Create an account' })
@@ -30,6 +30,38 @@ describe('OnboardingStepper', () => {
     expect(
       getByRole('heading', { name: 'Create Your Workspace' })
     ).toBeInTheDocument()
+    expect(
+      queryByRole('heading', { name: 'Express Settings' })
+    ).not.toBeInTheDocument()
+  })
+
+  it('should render correct steps for quick', () => {
+    mockedUseRouter.mockReturnValue({
+      pathname: '/users/sign-in',
+      query: {
+        redirect: '/templates/journeyId/quick'
+      }
+    } as unknown as NextRouter)
+
+    const { getByRole, queryByRole } = render(
+      <OnboardingStepper variant="desktop" />
+    )
+
+    expect(
+      getByRole('heading', { name: 'Create an account' })
+    ).toBeInTheDocument()
+    expect(
+      getByRole('heading', { name: 'Terms and Conditions' })
+    ).toBeInTheDocument()
+    expect(
+      getByRole('heading', { name: 'Express Settings' })
+    ).toBeInTheDocument()
+    expect(
+      queryByRole('heading', { name: 'User Insights' })
+    ).not.toBeInTheDocument()
+    expect(
+      queryByRole('heading', { name: 'Create Your Workspace' })
+    ).not.toBeInTheDocument()
   })
 
   it('should indicate the active step based on pathname', () => {
