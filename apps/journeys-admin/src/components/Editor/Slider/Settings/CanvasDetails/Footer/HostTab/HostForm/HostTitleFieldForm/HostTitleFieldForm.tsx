@@ -1,6 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect } from 'react'
+import { ReactElement, useCallback, useEffect } from 'react'
 import { object, string } from 'yup'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -27,7 +27,7 @@ interface HostTitleFieldFormProps {
 }
 
 export function HostTitleFieldForm({
-  defaultName = 'First host',
+  defaultName,
   label,
   hostTitleRequiredErrorMessage
 }: HostTitleFieldFormProps): ReactElement {
@@ -37,11 +37,11 @@ export function HostTitleFieldForm({
   const { updateHost } = useHostUpdateMutation()
   const { journey } = useJourney()
 
-  useEffect(() => {
-    async function createHostIfDefault(): Promise<void> {
-      if (journey?.host === null && journey?.team && defaultName) {
+  const createHost = useCallback(
+    async (value: string): Promise<void> => {
+      if (journey?.team != null) {
         const { data } = await hostCreate({
-          variables: { teamId: journey.team.id, input: { title: defaultName } },
+          variables: { teamId: journey.team.id, input: { title: value } },
           update(cache, { data }) {
             if (data?.hostCreate != null) {
               cache.modify({
@@ -71,9 +71,18 @@ export function HostTitleFieldForm({
           })
         }
       }
+    },
+    [hostCreate, journey, journeyHostUpdate]
+  )
+
+  useEffect(() => {
+    async function createHostIfDefault(): Promise<void> {
+      if (journey?.host === null && journey?.team && defaultName) {
+        createHost(defaultName)
+      }
     }
     void createHostIfDefault()
-  }, [defaultName, hostCreate, journeyHostUpdate, journey])
+  }, [defaultName, createHost, journey])
 
   const titleSchema = object({
     hostTitle: string().required(
@@ -85,34 +94,8 @@ export function HostTitleFieldForm({
     if (journey?.host != null) {
       const { id, teamId } = journey.host
       await updateHost({ id, teamId, input: { title: value } })
-    } else if (journey?.team != null) {
-      const { data } = await hostCreate({
-        variables: { teamId: journey.team.id, input: { title: value } },
-        update(cache, { data }) {
-          if (data?.hostCreate != null) {
-            cache.modify({
-              fields: {
-                hosts(existingTeamHosts = []) {
-                  const newHostRef = cache.writeFragment({
-                    data: data.hostCreate,
-                    fragment: gql`
-                      fragment NewHost on Host {
-                        id
-                      }
-                    `
-                  })
-                  return [...existingTeamHosts, newHostRef]
-                }
-              }
-            })
-          }
-        }
-      })
-      if (data?.hostCreate.id != null) {
-        await journeyHostUpdate({
-          variables: { id: journey?.id, input: { hostId: data.hostCreate.id } }
-        })
-      }
+    } else {
+      createHost(value)
     }
   }
 
