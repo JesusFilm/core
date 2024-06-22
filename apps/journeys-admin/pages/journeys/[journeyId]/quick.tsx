@@ -5,6 +5,7 @@ import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import {
   GetAdminJourney,
@@ -44,7 +45,9 @@ function JourneyQuickSettingsPage({ status }): ReactElement {
         <AccessDenied />
       ) : (
         <JourneyProvider value={{ journey: data?.journey, variant: 'admin' }}>
-          <JourneyQuickSettings />
+          <EditorProvider>
+            <JourneyQuickSettings />
+          </EditorProvider>
         </JourneyProvider>
       )}
     </>
