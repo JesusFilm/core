@@ -24,14 +24,14 @@ export function JourneyQuickSettings(): ReactElement {
       : undefined
   return (
     <Box sx={{ p: 4 }}>
-      <Typography variant="h3"> Journeys Form Page</Typography>
+      <Typography variant="h3"> {t('Journeys Form Page')}</Typography>
 
       <HostTitleFieldForm />
 
-      <Typography variant="h4">Your Profile Image: </Typography>
+      <Typography variant="h4">{t('Your Profile Image:')} </Typography>
 
       <HostAvatarsButton />
-      <Typography variant="h4"> Social media link: </Typography>
+      <Typography variant="h4"> {t('Social media link:')} </Typography>
       <Box sx={{ p: 4 }}>
         <Chat />
       </Box>
