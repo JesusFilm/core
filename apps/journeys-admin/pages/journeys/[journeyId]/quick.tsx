@@ -5,6 +5,8 @@ import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import {
   GetAdminJourney,
   GetAdminJourneyVariables
@@ -12,6 +14,7 @@ import {
 import { GetCustomDomains } from '../../../__generated__/GetCustomDomains'
 import { UserJourneyOpen } from '../../../__generated__/UserJourneyOpen'
 import { AccessDenied } from '../../../src/components/AccessDenied'
+import { QuickGoals } from '../../../src/components/Editor/QuickGoals'
 import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'
 import { GET_CUSTOM_DOMAINS } from '../../../src/libs/useCustomDomainsQuery/useCustomDomainsQuery'
 import { GET_ADMIN_JOURNEY, USER_JOURNEY_OPEN } from '../[journeyId]'
@@ -38,7 +41,15 @@ function JourneyQuickSettingsPage({ status }): ReactElement {
         }
         description={data?.journey?.description ?? undefined}
       />
-      {status === 'noAccess' ? <AccessDenied /> : <>JOURNEY QUICK SETTINGS</>}
+      {status === 'noAccess' ? (
+        <AccessDenied />
+      ) : (
+        <JourneyProvider value={{ journey: data?.journey, variant: 'admin' }}>
+          <EditorProvider>
+            <QuickGoals journey={data?.journey} />
+          </EditorProvider>
+        </JourneyProvider>
+      )}
     </>
   )
 }
