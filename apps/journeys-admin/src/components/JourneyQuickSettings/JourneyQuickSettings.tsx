@@ -15,6 +15,7 @@ import ShareIcon from '@core/shared/ui/icons/Share'
 
 import { Item } from '../Editor/Toolbar/Items/Item'
 import { PreviewItem } from '../Editor/Toolbar/Items/PreviewItem'
+import { OnboardingTemplateCard } from '../OnboardingPageWrapper/OnboardingDrawer/OnboardingTemplateCard'
 import { JourneyQuickSettingsChat } from './JourneyQuickSettingsChat'
 import { JourneyQuickSettingsGoals } from './JourneyQuickSettingsGoals'
 import { JourneyQuickSettingsTabs } from './JourneyQuickSettingsTabs'
@@ -41,46 +42,28 @@ export function JourneyQuickSettings(): ReactElement {
     >
       <Stack
         justifyContent="safe center"
-        alignItems="center"
         gap={{ xs: 4, sm: 12 }}
         sx={{
           m: { xs: 0, sm: 4 },
-          pt: 8,
+          pt: { xs: 4, sm: 0 },
+          py: { sm: 8 },
           overflowY: 'auto',
           flexGrow: 1,
           borderColor: 'divider',
           borderWidth: 'medium',
           borderRadius: { xs: 2, sm: 4 },
           borderStyle: { xs: 'none', sm: 'solid' },
-          backgroundColor: { xs: 'background.paper', md: 'background.default' }
+          backgroundColor: { xs: 'background.paper', md: 'background.default' },
+          flexDirection: { xs: 'column', md: 'row' },
+          alignItems: { xs: 'center', md: 'flex-start' }
         }}
       >
         <Stack
           sx={{
-            alignSelf: { xs: 'flex-start', sm: 'center' },
             alignItems: { sm: 'center' }
           }}
         >
-          <Typography
-            variant="h2"
-            sx={{
-              px: { xs: 8, sm: 0 },
-              overflowWrap: 'break-word'
-            }}
-          >
-            {t('Express Setup')}
-          </Typography>
-          {journey?.title != null && (
-            <Typography
-              sx={{
-                px: { xs: 8, sm: 0 },
-                alignSelf: { xs: 'flex-start', sm: 'center' },
-                overflowWrap: 'break-word'
-              }}
-            >
-              {journey.title}
-            </Typography>
-          )}
+          <OnboardingTemplateCard templateId={journey?.id} />
         </Stack>
         <Stack
           alignItems="center"
@@ -104,7 +87,7 @@ export function JourneyQuickSettings(): ReactElement {
               }
             }}
           >
-            <Box sx={{ mx: -4, mt: -4, pb: 3 }}>
+            <Box sx={{ mt: { xs: -4, sm: -2 }, pb: 3 }}>
               <JourneyQuickSettingsTabs
                 tabValue={tabValue}
                 setTabValue={setTabValue}
