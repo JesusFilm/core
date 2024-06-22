@@ -1,0 +1,1 @@
+export { JourneysShareableLinkPage } from './JourneysShareableLinkPage'
