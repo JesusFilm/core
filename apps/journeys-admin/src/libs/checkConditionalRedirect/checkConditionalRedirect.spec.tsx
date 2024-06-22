@@ -5,6 +5,7 @@ import { GetJourneyProfileAndTeams } from '../../../__generated__/GetJourneyProf
 import { GET_JOURNEY_PROFILE_AND_TEAMS } from './checkConditionalRedirect'
 
 import { checkConditionalRedirect } from '.'
+import { TEAM_CREATE } from '../useTeamCreateMutation/useTeamCreateMutation'
 
 const meData = {
   me: {
@@ -251,6 +252,37 @@ describe('checkConditionalRedirect', () => {
     })
   })
 
+  it('skips onboarding form if onboardingFormCompletedAt is null and template quick', async () => {
+    const data: GetJourneyProfileAndTeams = {
+      getJourneyProfile: {
+        id: 'profile.id',
+        userId: 'user.id',
+        acceptedTermsAt: '2023-10-07T00:00:00.000Z',
+        __typename: 'JourneyProfile',
+        onboardingFormCompletedAt: null
+      },
+      teams: []
+    }
+
+    const apolloClient = {
+      query: jest
+        .fn()
+        .mockResolvedValue({ data })
+        .mockResolvedValueOnce({ data: meData }),
+      mutate: jest.fn().mockResolvedValue({})
+    } as unknown as ApolloClient<NormalizedCacheObject>
+
+    expect(
+      await checkConditionalRedirect({
+        apolloClient,
+        resolvedUrl: '/?redirect=%2Ftemplates%2FjourneyId%2Fquick'
+      })
+    ).toEqual({
+      destination: '/templates/journeyId/quick',
+      permanent: false
+    })
+  })
+
   it('redirect to onboarding form with redirect parameter', async () => {
     const data: GetJourneyProfileAndTeams = {
       getJourneyProfile: {
@@ -384,5 +416,72 @@ describe('checkConditionalRedirect', () => {
     expect(
       await checkConditionalRedirect({ apolloClient, resolvedUrl: '/' })
     ).toBeUndefined()
+  })
+
+  it('skip teams new if teams empty and template quick with teamName', async () => {
+    const data: GetJourneyProfileAndTeams = {
+      getJourneyProfile: {
+        id: 'profile.id',
+        userId: 'user.id',
+        acceptedTermsAt: '1970-01-01T00:00:00.000Z',
+        __typename: 'JourneyProfile',
+        onboardingFormCompletedAt: null
+      },
+      teams: []
+    }
+    const apolloClient = {
+      query: jest
+        .fn()
+        .mockResolvedValue({ data })
+        .mockResolvedValueOnce({ data: meData }),
+      mutate: jest.fn().mockResolvedValue({})
+    } as unknown as ApolloClient<NormalizedCacheObject>
+    expect(
+      await checkConditionalRedirect({
+        apolloClient,
+        resolvedUrl: '/?redirect=%2Ftemplates%2FjourneyId%2Fquick',
+        teamName: 'teamName'
+      })
+    ).toEqual({
+      destination: '/templates/journeyId/quick',
+      permanent: false
+    })
+    expect(apolloClient.mutate).toHaveBeenCalledWith({
+      mutation: TEAM_CREATE,
+      variables: { input: { title: 'teamName' } }
+    })
+  })
+
+  it('skip teams new if teams empty and template quick without teamName', async () => {
+    const data: GetJourneyProfileAndTeams = {
+      getJourneyProfile: {
+        id: 'profile.id',
+        userId: 'user.id',
+        acceptedTermsAt: '1970-01-01T00:00:00.000Z',
+        __typename: 'JourneyProfile',
+        onboardingFormCompletedAt: null
+      },
+      teams: []
+    }
+    const apolloClient = {
+      query: jest
+        .fn()
+        .mockResolvedValue({ data })
+        .mockResolvedValueOnce({ data: meData }),
+      mutate: jest.fn().mockResolvedValue({})
+    } as unknown as ApolloClient<NormalizedCacheObject>
+    expect(
+      await checkConditionalRedirect({
+        apolloClient,
+        resolvedUrl: '/?redirect=%2Ftemplates%2FjourneyId%2Fquick'
+      })
+    ).toEqual({
+      destination: '/templates/journeyId/quick',
+      permanent: false
+    })
+    expect(apolloClient.mutate).toHaveBeenCalledWith({
+      mutation: TEAM_CREATE,
+      variables: { input: { title: 'My Team' } }
+    })
   })
 })
