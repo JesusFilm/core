@@ -1,6 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
@@ -204,5 +204,189 @@ describe('HostTitleFieldForm', () => {
         title: 'Host title'
       })
     )
+  })
+
+  it('should create host on render if defaultname prop provided and host does not exist', async () => {
+    const cache = new InMemoryCache()
+    cache.restore({})
+
+    const defaultName = 'new host name'
+
+    const host = {
+      id: 'hostId',
+      title: defaultName
+    }
+
+    const result = jest.fn(() => ({
+      data: {
+        hostCreate: host
+      }
+    }))
+
+    const journeyUpdate = jest.fn(() => ({
+      data: {
+        journeyUpdate: {
+          id: journey.id,
+          host: {
+            id: host.id
+          }
+        }
+      }
+    }))
+
+    render(
+      <MockedProvider
+        cache={cache}
+        mocks={[
+          {
+            request: {
+              query: CREATE_HOST,
+              variables: {
+                teamId: journey?.team?.id,
+                input: {
+                  title: 'new host name'
+                }
+              }
+            },
+            result
+          },
+          {
+            request: {
+              query: UPDATE_JOURNEY_HOST,
+              variables: {
+                id: journey.id,
+                input: {
+                  hostId: host.id
+                }
+              }
+            },
+            result: journeyUpdate
+          }
+        ]}
+      >
+        <JourneyProvider
+          value={{ journey: { ...journey, host: null }, variant: 'admin' }}
+        >
+          <HostTitleFieldForm defaultName={defaultName} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    await waitFor(() => expect(journeyUpdate).toHaveBeenCalled())
+
+    void waitFor(() => {
+      expect(cache.extract()['Host:hostId']).toEqual({
+        ...defaultHost,
+        title: defaultName
+      })
+      expect(cache.extract()[`Journey:${journey.id}`]).toEqual({
+        ...journey,
+        host: { ...defaultHost, title: defaultName }
+      })
+      expect(cache.extract()?.ROOT_QUERY?.hosts).toEqual([
+        { __ref: 'Host:hostId' }
+      ])
+    })
+  })
+
+  it('should not create host on render if defaultname prop provided but host already exists', async () => {
+    const cache = new InMemoryCache()
+    cache.restore({})
+
+    const defaultName = 'new host name'
+
+    const host = {
+      id: 'hostId',
+      title: defaultName
+    }
+
+    const result = jest.fn(() => ({
+      data: {
+        hostCreate: host
+      }
+    }))
+
+    const journeyUpdate = jest.fn(() => ({
+      data: {
+        journeyUpdate: {
+          id: journey.id,
+          host: {
+            id: host.id
+          }
+        }
+      }
+    }))
+
+    render(
+      <MockedProvider
+        cache={cache}
+        mocks={[
+          {
+            request: {
+              query: CREATE_HOST,
+              variables: {
+                teamId: journey?.team?.id,
+                input: {
+                  title: 'new host name'
+                }
+              }
+            },
+            result
+          },
+          {
+            request: {
+              query: UPDATE_JOURNEY_HOST,
+              variables: {
+                id: journey.id,
+                input: {
+                  hostId: host.id
+                }
+              }
+            },
+            result: journeyUpdate
+          }
+        ]}
+      >
+        <JourneyProvider value={{ journey: { ...journey }, variant: 'admin' }}>
+          <HostTitleFieldForm defaultName={defaultName} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    await waitFor(() => expect(result).not.toHaveBeenCalled())
+    await waitFor(() => expect(journeyUpdate).not.toHaveBeenCalled())
+  })
+
+  it('should change label if label prop provided', () => {
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <HostTitleFieldForm label="Please enter your name" />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.queryByText('Host Name')).not.toBeInTheDocument() // default label
+    expect(screen.getByText('Please enter your name')).toBeInTheDocument()
+  })
+
+  it('should show different error message when hosttitlerequirederrormessage prop is passed in', async () => {
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <HostTitleFieldForm hostTitleRequiredErrorMessage="new error message" />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const field = screen.getByRole('textbox')
+    fireEvent.change(field, { target: { value: '' } })
+    fireEvent.blur(field)
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText('Please enter a host name')
+      ).not.toBeInTheDocument() // default error message
+      expect(screen.getByText('new error message')).toBeInTheDocument()
+    })
   })
 })
