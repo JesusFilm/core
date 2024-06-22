@@ -81,14 +81,17 @@ export async function initAndAuthApp({
       }
     | null
     | undefined
-
   let teamName = 'My Team'
 
   // t("{{ name }}'s Team") leave this comment for extract-translation runner
-  if (i18nStore != null && user != null)
-    teamName = Object.values(i18nStore)[0]['apps-journeys-admin'][
-      "{{ name }}'s Team"
-    ].replace('{{ name }}', user.displayName ?? '')
+  if (i18nStore != null && user != null && user.displayName != null) {
+    teamName =
+      Object.values(i18nStore)[0]['apps-journeys-admin'][
+        "{{ name }}'s Team"
+      ]?.replace('{{ name }}', user.displayName) ?? teamName
+  }
+
+  console.log(teamName)
 
   const redirect =
     resolvedUrl != null
