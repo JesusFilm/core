@@ -1,1 +1,0 @@
-export { QuickGoals } from './QuickGoals'

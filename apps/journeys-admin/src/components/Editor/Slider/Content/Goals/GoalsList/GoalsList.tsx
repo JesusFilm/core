@@ -83,31 +83,33 @@ export function GoalsList({ goals, variant }: GoalsListProps): ReactElement {
           component={Paper}
           sx={{
             boxShadow: 'none',
-            border: '1px solid #DEDFE0',
+            border: variant !== 'minimal' ? '1px solid #DEDFE0' : 0,
             backgroundColor: 'transparent'
           }}
         >
           <Table>
-            <TableHead sx={{ borderBottom: '1.5px solid #DEDFE0' }}>
+            <TableHead
+              sx={{
+                borderBottom: variant !== 'minimal' ? '1.5px solid #DEDFE0' : 0
+              }}
+            >
               <TableRow sx={{ backgroundColor: 'background.paper' }}>
                 {variant !== 'minimal' ? (
-                  <TableCell
-                    sx={{
-                      display: {
-                        xs: 'none',
-                        sm: 'table-cell'
-                      }
-                    }}
-                    width={60}
-                  />
-                ) : null}
-                <TableCell width="100%">
-                  <Typography variant="subtitle2">
-                    {t('Target and Goal')}
-                  </Typography>
-                </TableCell>
-                {variant !== 'minimal' ? (
                   <>
+                    <TableCell
+                      sx={{
+                        display: {
+                          xs: 'none',
+                          sm: 'table-cell'
+                        }
+                      }}
+                      width={60}
+                    />
+                    <TableCell width="100%">
+                      <Typography variant="subtitle2">
+                        {t('Target and Goal')}
+                      </Typography>
+                    </TableCell>
                     <TableCell
                       sx={{
                         display: {

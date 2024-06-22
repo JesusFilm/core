@@ -7,7 +7,6 @@ import { ReactElement } from 'react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import {
   GetAdminJourney,
   GetAdminJourneyVariables
@@ -15,7 +14,6 @@ import {
 import { GetCustomDomains } from '../../../__generated__/GetCustomDomains'
 import { UserJourneyOpen } from '../../../__generated__/UserJourneyOpen'
 import { AccessDenied } from '../../../src/components/AccessDenied'
-import { QuickGoals } from '../../../src/components/Editor/QuickGoals'
 import { JourneyQuickSettings } from '../../../src/components/JourneyQuickSettings'
 import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'
 import { GET_CUSTOM_DOMAINS } from '../../../src/libs/useCustomDomainsQuery/useCustomDomainsQuery'
@@ -47,7 +45,9 @@ function JourneyQuickSettingsPage({ status }): ReactElement {
         <AccessDenied />
       ) : (
         <JourneyProvider value={{ journey: data?.journey, variant: 'admin' }}>
-          <JourneyQuickSettings />
+          <EditorProvider>
+            <JourneyQuickSettings />
+          </EditorProvider>
         </JourneyProvider>
       )}
     </>
