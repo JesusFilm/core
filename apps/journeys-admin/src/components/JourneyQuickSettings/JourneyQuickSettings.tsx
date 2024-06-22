@@ -3,7 +3,6 @@ import Card from '@mui/material/Card'
 import CardActions from '@mui/material/CardActions'
 import CardContent from '@mui/material/CardContent'
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { useTheme } from '@mui/material/styles'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
@@ -28,10 +27,7 @@ export function JourneyQuickSettings(): ReactElement {
   const [tabValue, setTabValue] = useState(0)
   const theme = useTheme()
 
-  const url =
-    typeof window !== 'undefined' && journey?.slug != null
-      ? window.location.href
-      : undefined
+  const url = `${process.env.NEXT_PUBLIC_JOURNEYS_URL ?? 'https://your.nextstep.is'}/${journey?.slug ?? ''}`
   return (
     <Stack
       direction={{ xs: 'column', md: 'row' }}
