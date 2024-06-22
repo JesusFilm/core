@@ -244,7 +244,7 @@ resource "aws_alb_listener_rule" "alb_listener_rule" {
     host_header {
       values = [
         coalesce(
-          var.alb_dns_name,
+          var.host_name,
           format("%s.%s", var.service_config.name, data.aws_route53_zone.zone.name)
         )
       ]

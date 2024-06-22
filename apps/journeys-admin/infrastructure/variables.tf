@@ -41,3 +41,7 @@ variable "alb_listener_arn" {
 variable "alb_dns_name" {
   type = string
 }
+
+variable "host_name" {
+  type = string
+}

@@ -227,7 +227,8 @@ module "journeys-admin" {
   })
   doppler_token    = data.aws_ssm_parameter.doppler_journeys_admin_prod_token.value
   alb_listener_arn = module.prod.public_alb.alb_listener.arn
-  alb_dns_name     = "admin.nextstep.is"
+  alb_dns_name     = module.prod.public_alb.dns_name
+  host_name        = "admin.nextstep.is"
 }
 
 module "postgresql" {

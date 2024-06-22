@@ -269,7 +269,8 @@ module "journeys-admin" {
   env              = "stage"
   doppler_token    = data.aws_ssm_parameter.doppler_journeys_admin_stage_token.value
   alb_listener_arn = module.stage.public_alb.alb_listener.arn
-  alb_dns_name     = "admin-stage.nextstep.is"
+  alb_dns_name     = module.stage.public_alb.dns_name
+  host_name     = "admin-stage.nextstep.is"
 }
 
 module "postgresql" {
