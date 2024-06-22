@@ -1,1 +1,1 @@
-export { JourneysQuickPage } from './JourneyQuickSettings'
+export { JourneyQuickSettings } from './JourneyQuickSettings'

@@ -1,4 +1,4 @@
-import { gql, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
@@ -12,6 +12,7 @@ import {
 import { GetCustomDomains } from '../../../__generated__/GetCustomDomains'
 import { UserJourneyOpen } from '../../../__generated__/UserJourneyOpen'
 import { AccessDenied } from '../../../src/components/AccessDenied'
+import { JourneyQuickSettings } from '../../../src/components/JourneyQuickSettings'
 import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'
 import { GET_CUSTOM_DOMAINS } from '../../../src/libs/useCustomDomainsQuery/useCustomDomainsQuery'
 import { GET_ADMIN_JOURNEY, USER_JOURNEY_OPEN } from '../[journeyId]'
@@ -38,7 +39,7 @@ function JourneyQuickSettingsPage({ status }): ReactElement {
         }
         description={data?.journey?.description ?? undefined}
       />
-      {status === 'noAccess' ? <AccessDenied /> : <>JOURNEY QUICK SETTINGS</>}
+      {status === 'noAccess' ? <AccessDenied /> : <JourneyQuickSettings />}
     </>
   )
 }
