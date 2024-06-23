@@ -59,7 +59,24 @@ describe('ConfigField', () => {
     expect(input).toHaveAttribute('type', 'password')
   })
 
-  it('should placeholder text on hover', () => {
+  it('should show add missing value text on hover', () => {
+    render(
+      <ConfigField
+        label={'Access Key'}
+        onChange={jest.fn()}
+      />
+    )
+    const input = screen.getByDisplayValue('')
+    fireEvent.mouseEnter(input)
+    expect(screen.getByText('Add missing value')).toBeInTheDocument()
+    fireEvent.mouseLeave(input)
+    expect(
+      screen.queryByText('Add missing value')
+    ).not.toBeInTheDocument()
+  
+  })
+
+  it('should show reveal secret text on hover', () => {
     render(
       <ConfigField
         label={'Access Key'}

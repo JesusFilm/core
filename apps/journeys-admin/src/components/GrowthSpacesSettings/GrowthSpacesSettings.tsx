@@ -11,6 +11,7 @@ export function GrowthSpacesSettings(): ReactElement {
   const [accessSecret, setAccessSecret] = useState<string | undefined>()
 
   function handleClick(): void {
+    // verify growth spaces settings
     console.log('accessId', accessId)
     console.log('accessSecret', accessSecret)
   }

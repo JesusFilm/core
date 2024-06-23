@@ -62,7 +62,10 @@ export function ConfigField({
               <TextField
                 type={visible ? 'text' : 'password'}
                 value={hover && !visible ? '' : values.value}
-                onChange={(e) => setFieldValue('value', e.target.value)}
+                onChange={(e) => {
+                  setFieldValue('value', e.target.value)
+                  handleSubmit(values)
+                }}
                 onClick={() => setVisible(true)}
                 onMouseEnter={() => setHover(true)}
                 onMouseLeave={() => setHover(false)}
@@ -93,7 +96,7 @@ export function ConfigField({
                     color: (theme) => theme.palette.grey[500]
                   }}
                 >
-                  {t('Click to reveal the secret')}
+                  {values.value != null ? t('Click to reveal the secret') : t('Add missing value')}
                 </Typography>
               )}
             </Form>
