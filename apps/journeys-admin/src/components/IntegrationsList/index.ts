@@ -1,1 +1,0 @@
-export { IntegrationsList } from './IntegrationsList'

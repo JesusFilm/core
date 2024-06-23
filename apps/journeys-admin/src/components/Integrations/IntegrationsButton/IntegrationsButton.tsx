@@ -9,21 +9,19 @@ import Image from 'next/image'
 import NextLink from 'next/link'
 import { ReactElement } from 'react'
 
-interface IntegrationItemProps {
+interface IntegrationsButtonProps {
   teamId: string
   src?: string
   title?: string
   integrationId?: string
-  showAddButton?: boolean
 }
 
-export function IntegrationsListItem({
+export function IntegrationsButton({
   teamId,
   src,
   title,
   integrationId,
-  showAddButton = false
-}: IntegrationItemProps): ReactElement {
+}: IntegrationsButtonProps): ReactElement {
   const href = `/teams/${teamId}/integrations/${integrationId != null ? integrationId : 'new/growth-spaces'}`
   return (
     <NextLink href={href} passHref legacyBehavior>
@@ -55,9 +53,7 @@ export function IntegrationsListItem({
             mb: 3
           }}
         >
-          {showAddButton ? (
-            <Plus1Icon />
-          ) : src != null ? (
+          { src != null ? (
             <Image
               src={src}
               alt={title ?? ''}
@@ -68,7 +64,7 @@ export function IntegrationsListItem({
             <InsertPhotoRoundedIcon />
           )}
         </Box>
-        {title != null || showAddButton ? (
+        {title != null ? (
           <Typography
             variant="body1"
             sx={{
@@ -79,7 +75,7 @@ export function IntegrationsListItem({
               textAlign: 'center'
             }}
           >
-            {showAddButton ? 'Add Integration' : title}
+            {title}
           </Typography>
         ) : (
           <Skeleton variant="text" width="80%" />
