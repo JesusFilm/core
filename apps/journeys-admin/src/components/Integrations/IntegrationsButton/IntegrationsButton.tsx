@@ -6,24 +6,26 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 
+import { useTranslation } from 'next-i18next'
 import NextLink from 'next/link'
 import { ReactElement } from 'react'
 
 interface IntegrationsButtonProps {
-  teamId: string
+  url: string,
   src?: string
-  title?: string
-  integrationId?: string
+  title?: string,
+  showAddButton?: boolean
 }
 
 export function IntegrationsButton({
-  teamId,
+  url,
   src,
   title,
-  integrationId,
+  showAddButton = false
 }: IntegrationsButtonProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   return (
-    <NextLink href={`/teams/${teamId}/integrations/${integrationId}`} passHref legacyBehavior>
+    <NextLink href={url} passHref legacyBehavior>
       <Stack
         justifyContent="center"
         alignItems="center"
@@ -34,7 +36,7 @@ export function IntegrationsButton({
           borderRadius: 2,
           '&:hover': {
             cursor: 'pointer',
-            backgroundColor: (theme) => theme.palette.grey[200]
+            backgroundColor: (theme) => theme.palette.grey[100]
           }
         }}
       >
@@ -52,7 +54,9 @@ export function IntegrationsButton({
             mb: 3
           }}
         >
-          { src != null ? (
+          {showAddButton ? (
+            <Plus1Icon />
+          ) : src != null ? (
             <Image
               src={src}
               alt={title ?? ''}
@@ -63,7 +67,7 @@ export function IntegrationsButton({
             <InsertPhotoRoundedIcon />
           )}
         </Box>
-        {title != null ? (
+        {title != null || showAddButton ? (
           <Typography
             variant="body1"
             sx={{
@@ -74,7 +78,7 @@ export function IntegrationsButton({
               textAlign: 'center'
             }}
           >
-            {title}
+            {showAddButton ? t('Add Integration') : title}
           </Typography>
         ) : (
           <Skeleton variant="text" width="80%" />

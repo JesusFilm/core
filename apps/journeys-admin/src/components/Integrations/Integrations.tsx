@@ -14,11 +14,15 @@ const integrations = [
 export function Integrations(): ReactElement {
   return (
     <Stack direction="row" gap={4} sx={{ flexWrap: 'wrap' }}>
+      <IntegrationsButton
+        url='/teams/[teamId]/integrations/new'
+        showAddButton
+      />
       {integrations.map((integration, index) => (
         <IntegrationsButton
           key={`${index}-${integration.title}`}
+          url="/teams/${teamId}/integrations/${integrationId}"
           title={integration.title}
-          teamId=""
         />
       ))}
     </Stack>
