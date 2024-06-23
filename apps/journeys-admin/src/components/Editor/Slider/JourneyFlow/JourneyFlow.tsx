@@ -58,6 +58,8 @@ import { StepBlockNode } from './nodes/StepBlockNode'
 import { STEP_NODE_CARD_HEIGHT } from './nodes/StepBlockNode/libs/sizes'
 
 import 'reactflow/dist/style.css'
+import { transformReferrers } from './libs/transformReferrers'
+import { ReferrerNode } from './nodes/ReferrerNode'
 
 // some styles can only be updated through css after render
 const additionalEdgeStyles = {
@@ -181,8 +183,12 @@ export function JourneyFlow(): ReactElement {
     if (!validSteps) return
 
     const { nodes, edges } = transformSteps(steps ?? [], positions)
-    setEdges(edges)
-    setNodes(nodes)
+    const { nodes: referrerNodes, edges: referrerEdges } = transformReferrers(
+      journeyStatsBreakdown?.referrers
+    )
+
+    setEdges([...edges, ...referrerEdges])
+    setNodes([...nodes, ...referrerNodes])
   }, [steps, data, theme, setEdges, setNodes, refetch])
 
   const onConnect = useCallback<OnConnect>(() => {
@@ -274,7 +280,8 @@ export function JourneyFlow(): ReactElement {
     () => ({
       StepBlock: StepBlockNode,
       SocialPreview: SocialPreviewNode,
-      Link: LinkNode
+      Link: LinkNode,
+      Referrer: ReferrerNode
     }),
     []
   )
