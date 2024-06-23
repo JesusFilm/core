@@ -74,8 +74,7 @@ export function TemplateGallery({
         maxWidth={false}
         sx={{
           overflow: hideOverflow ? 'hidden' : 'none',
-          maxWidth: { md: '90vw' },
-          px: { xs: 6, sm: 8, md: 0 },
+          px: { xs: 0 },
           py: { xs: 6, sm: 9 }
         }}
       >

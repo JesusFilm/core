@@ -51,11 +51,12 @@ function TemplateIndexPage(): ReactElement {
         showMainHeader={false}
         showAppHeader={user?.id != null}
         showNavBar={user?.id != null}
+        background="background.paper"
       >
         <Box
           sx={{
-            px: { md: 10 },
-            bgcolor: (theme) => theme.palette.background.paper
+            maxWidth: { md: '90vw' },
+            px: { xs: 6, sm: 8, md: 10 }
           }}
         >
           <TemplateGallery />
