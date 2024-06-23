@@ -128,12 +128,7 @@ export class TeamResolver {
   }
 
   @ResolveField()
-  async integrations(
-    @Parent() parent: Team,
-    @CaslAbility({ optional: true }) ability?: AppAbility
-  ): Promise<Integration[]> {
-    if (ability == null) return []
-
+  async integrations(@Parent() parent: Team): Promise<Integration[]> {
     const integrations = await this.prismaService.team
       .findUnique({
         where: { id: parent.id }
