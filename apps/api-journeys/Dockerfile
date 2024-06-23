@@ -10,7 +10,7 @@ RUN apk upgrade --update-cache --available && \
     apk add --no-cache bash curl gcompat && \
     rm -rf /var/cache/apk/*
 
-RUN curl -fsSL https://bun.sh/install | bash -s "bun-v1.1.13"
+RUN curl -fsSL https://bun.sh/install | bash -s "bun-v1.1.16"
 
 WORKDIR /app
 COPY ./dist/apps/api-journeys .

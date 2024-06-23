@@ -7,7 +7,7 @@ ENV VERCEL=true
 ENV BUN_INSTALL="/bun"
 ENV PATH=$BUN_INSTALL/bin:$PATH
 
-RUN curl -fsSL https://bun.sh/install | bash -s "bun-v1.1.13"
+RUN curl -fsSL https://bun.sh/install | bash -s "bun-v1.1.16"
 
 WORKDIR /app
 COPY ./dist/apps/journeys-admin .

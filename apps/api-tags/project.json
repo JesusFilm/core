@@ -11,6 +11,7 @@
         "outputPath": "dist/apps/api-tags",
         "main": "apps/api-tags/src/main.ts",
         "tsConfig": "apps/api-tags/tsconfig.app.json",
+        "generatePackageJson": true,
         "assets": [
           "apps/api-tags/src/assets",
           {

@@ -10,6 +10,7 @@
       "options": {
         "outputPath": "dist/apps/api-users",
         "main": "apps/api-users/src/main.ts",
+        "generatePackageJson": true,
         "tsConfig": "apps/api-users/tsconfig.app.json",
         "assets": [
           "apps/api-users/src/assets",

@@ -11,6 +11,7 @@
         "outputPath": "dist/apps/api-videos",
         "main": "apps/api-videos/src/main.ts",
         "tsConfig": "apps/api-videos/tsconfig.app.json",
+        "generatePackageJson": true,
         "assets": [
           "apps/api-videos/src/assets",
           {

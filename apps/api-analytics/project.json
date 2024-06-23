@@ -13,6 +13,7 @@
         "tsConfig": "apps/api-analytics/tsconfig.app.json",
         "compiler": "tsc",
         "target": "node",
+        "generatePackageJson": true,
         "webpackConfig": "apps/api-analytics/webpack.config.js"
       },
       "configurations": {

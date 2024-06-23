@@ -11,6 +11,7 @@
         "outputPath": "dist/apps/api-languages",
         "main": "apps/api-languages/src/main.ts",
         "tsConfig": "apps/api-languages/tsconfig.app.json",
+        "generatePackageJson": true,
         "assets": [
           "apps/api-languages/src/assets",
           {

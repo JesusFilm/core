@@ -7,7 +7,7 @@ sudo chgrp node -R /workspaces
 cd /workspaces/core
 
 # install bun CLI tool
-curl -fsSL https://bun.sh/install | bash -s "bun-v1.1.13"
+curl -fsSL https://bun.sh/install | bash -s "bun-v1.1.16"
 git config diff.lockb.textconv bun
 git config diff.lockb.binary true
 
