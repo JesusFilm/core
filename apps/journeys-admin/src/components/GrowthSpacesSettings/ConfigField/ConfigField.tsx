@@ -62,7 +62,6 @@ export function ConfigField({
               <TextField
                 type={visible ? 'text' : 'password'}
                 value={hover && !visible ? '' : values.value}
-                onBlur={(e) => setFieldValue('value', e.target.value)}
                 onChange={(e) => setFieldValue('value', e.target.value)}
                 onClick={() => setVisible(true)}
                 onMouseEnter={() => setHover(true)}
