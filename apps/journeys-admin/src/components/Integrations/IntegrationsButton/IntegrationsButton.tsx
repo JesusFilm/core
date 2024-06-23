@@ -22,9 +22,8 @@ export function IntegrationsButton({
   title,
   integrationId,
 }: IntegrationsButtonProps): ReactElement {
-  const href = `/teams/${teamId}/integrations/${integrationId != null ? integrationId : 'new/growth-spaces'}`
   return (
-    <NextLink href={href} passHref legacyBehavior>
+    <NextLink href={`/teams/${teamId}/integrations/${integrationId}`} passHref legacyBehavior>
       <Stack
         justifyContent="center"
         alignItems="center"
