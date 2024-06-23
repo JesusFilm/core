@@ -7,9 +7,12 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { object, string } from 'yup'
 
+import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../__generated__/BlockFields'
+
 interface AIPromptProps {
   handleSubmit: ({ prompt }) => void
   loading?: boolean
+  selectedBlock?: ImageBlock | null
 }
 
 interface AIPromptInput {
@@ -18,14 +21,21 @@ interface AIPromptInput {
 
 export function AIPrompt({
   handleSubmit,
-  loading
+  loading,
+  selectedBlock
 }: AIPromptProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const promptValidationSchema = object({
     prompt: string().required(t('Prompt must be at least one character'))
   })
 
-  const initialValues: AIPromptInput = { prompt: '' }
+  const initialValues: AIPromptInput = {
+    prompt:
+      selectedBlock?.alt != null &&
+      selectedBlock.alt.split(' ')[0] === 'Prompt:'
+        ? selectedBlock?.alt.substring(8)
+        : ''
+  }
 
   return (
     <Stack sx={{ p: 6 }} data-testid="AIPrompt">
