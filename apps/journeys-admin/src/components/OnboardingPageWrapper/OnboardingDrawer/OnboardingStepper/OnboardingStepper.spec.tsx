@@ -31,7 +31,7 @@ describe('OnboardingStepper', () => {
       getByRole('heading', { name: 'Create Your Workspace' })
     ).toBeInTheDocument()
     expect(
-      queryByRole('heading', { name: 'Express Settings' })
+      queryByRole('heading', { name: 'Express Setup' })
     ).not.toBeInTheDocument()
   })
 
@@ -39,7 +39,7 @@ describe('OnboardingStepper', () => {
     mockedUseRouter.mockReturnValue({
       pathname: '/users/sign-in',
       query: {
-        redirect: '/templates/journeyId/quick'
+        redirect: 'http://localhost/templates/journeyId/quick'
       }
     } as unknown as NextRouter)
 
@@ -53,9 +53,7 @@ describe('OnboardingStepper', () => {
     expect(
       getByRole('heading', { name: 'Terms and Conditions' })
     ).toBeInTheDocument()
-    expect(
-      getByRole('heading', { name: 'Express Settings' })
-    ).toBeInTheDocument()
+    expect(getByRole('heading', { name: 'Express Setup' })).toBeInTheDocument()
     expect(
       queryByRole('heading', { name: 'User Insights' })
     ).not.toBeInTheDocument()

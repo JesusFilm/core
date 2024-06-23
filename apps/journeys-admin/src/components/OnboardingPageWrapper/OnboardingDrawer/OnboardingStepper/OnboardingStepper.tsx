@@ -51,7 +51,7 @@ export function OnboardingStepper({
 
   const activeStep = getActiveStep()
   const quick =
-    router.query?.redirect?.toString().match(/^\/templates\/[\w\-]+\/quick/) !=
+    router.query?.redirect?.toString().match(/\/templates\/[\w\-]+\/quick/) !=
     null
 
   const steps = compact([
@@ -73,7 +73,7 @@ export function OnboardingStepper({
         },
     quick
       ? {
-          label: t('Express Settings')
+          label: t('Express Setup')
         }
       : undefined
   ])

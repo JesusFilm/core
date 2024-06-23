@@ -28,7 +28,7 @@ describe('OnboardingDrawer', () => {
 
     expect(getByRole('img').getAttribute('alt')).toBe('Next Steps')
     expect(getByRole('img').getAttribute('src')).toBe('logo.svg')
-    expect(getAllByText('Journey Template')[0]).toBeInTheDocument()
+    expect(getAllByText('Journey')[0]).toBeInTheDocument()
     expect(
       getByRole('heading', { name: `Let's get you on the journey` })
     ).toBeInTheDocument()

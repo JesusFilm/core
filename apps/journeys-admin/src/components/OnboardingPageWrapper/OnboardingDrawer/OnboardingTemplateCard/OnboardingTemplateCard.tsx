@@ -98,7 +98,8 @@ function OnboardingTemplateCardDetails({
         borderBottomLeftRadius: 12,
         borderBottomRightRadius: 12,
         width: 244,
-        height: { xs: 55, md: 100 }
+        height: { xs: 55, md: 100 },
+        justifyContent: 'center'
       }}
     >
       <Typography
@@ -108,7 +109,7 @@ function OnboardingTemplateCardDetails({
           color: (theme) => theme.palette.grey[700]
         }}
       >
-        {t('Journey Template')}
+        {journey?.template === true ? t('Journey Template') : t('Journey')}
       </Typography>
       <Typography
         variant="subtitle1"
@@ -142,7 +143,7 @@ function OnboardingTemplateCardDetails({
           color: (theme) => theme.palette.grey[700]
         }}
       >
-        {t('Journey Template')}
+        {journey?.template === true ? t('Journey Template') : t('Journey')}
       </Typography>
       <Typography
         variant="subtitle2"

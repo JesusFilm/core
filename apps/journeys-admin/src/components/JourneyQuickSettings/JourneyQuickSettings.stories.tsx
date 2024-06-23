@@ -1,0 +1,24 @@
+import { Meta, StoryObj } from '@storybook/react'
+import { SnackbarProvider } from 'notistack'
+import { simpleComponentConfig } from '../../../../../libs/shared/ui/src/libs/simpleComponentConfig'
+import { JourneyQuickSettings } from './JourneyQuickSettings'
+
+const JourneyQuickSettingsStory: Meta<typeof JourneyQuickSettings> = {
+  ...simpleComponentConfig,
+  component: JourneyQuickSettings,
+  title: 'Journeys-Admin/JourneyQuickSettings'
+}
+
+const Template: StoryObj<typeof JourneyQuickSettings> = {
+  render: () => (
+    <SnackbarProvider>
+      <JourneyQuickSettings />
+    </SnackbarProvider>
+  )
+}
+
+export const Default = {
+  ...Template
+}
+
+export default JourneyQuickSettingsStory
