@@ -4,6 +4,9 @@ import { PrismaService } from '../../lib/prisma.service'
 import { BlockService } from '../block/block.service'
 import { VisitorService } from '../visitor/visitor.service'
 
+import { CacheModule } from '@nestjs/cache-manager'
+import { GrowthSpacesIntegrationService } from '../integration/growthSpaces/growthSpaces.service'
+import { IntegrationService } from '../integration/integration.service'
 import {
   ButtonClickEventResolver,
   ChatOpenEventResolver
@@ -30,14 +33,15 @@ import {
 } from './video/video.resolver'
 
 @Module({
-  imports: [],
+  imports: [CacheModule.register()],
   providers: [
     BlockService,
-    VisitorService,
-    EventService,
-    EventResolver,
     ButtonClickEventResolver,
     ChatOpenEventResolver,
+    EventService,
+    EventResolver,
+    GrowthSpacesIntegrationService,
+    IntegrationService,
     JourneyViewEventResolver,
     PrismaService,
     RadioQuestionSubmissionEventResolver,
@@ -52,7 +56,8 @@ import {
     VideoCompleteEventResolver,
     VideoCollapseEventResolver,
     VideoExpandEventResolver,
-    VideoProgressEventResolver
+    VideoProgressEventResolver,
+    VisitorService
   ],
   exports: [EventService]
 })

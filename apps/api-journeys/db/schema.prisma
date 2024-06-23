@@ -462,6 +462,7 @@ model Block {
   x                       Int?
   y                       Int?
   routeId                 String?
+  integrationId           String?
   type                    TextResponseType?
   updatedAt               DateTime             @default(now()) @updatedAt
   journey                 Journey              @relation(fields: [journeyId], references: [id], onDelete: Cascade)

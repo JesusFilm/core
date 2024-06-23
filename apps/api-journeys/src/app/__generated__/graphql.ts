@@ -392,6 +392,7 @@ export class TextResponseBlockUpdateInput {
     minRows?: Nullable<number>;
     routeId?: Nullable<string>;
     type?: Nullable<TextResponseType>;
+    integrationId?: Nullable<string>;
 }
 
 export class TypographyBlockCreateInput {
@@ -1240,6 +1241,7 @@ export class TextResponseBlock implements Block {
     minRows?: Nullable<number>;
     type?: Nullable<TextResponseType>;
     routeId?: Nullable<string>;
+    integrationId?: Nullable<string>;
 }
 
 export class TypographyBlock implements Block {

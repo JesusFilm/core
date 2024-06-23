@@ -8,6 +8,7 @@ type TextResponseBlock implements Block {
   minRows: Int
   type: TextResponseType
   routeId: String
+  integrationId: String
 }
 
 enum TextResponseType {
@@ -29,6 +30,7 @@ input TextResponseBlockUpdateInput {
   minRows: Int
   routeId: String
   type: TextResponseType
+  integrationId: String
 }
 extend type Mutation {
   textResponseBlockCreate(

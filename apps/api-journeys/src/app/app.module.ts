@@ -10,6 +10,7 @@ import { GraphQLModule } from '@nestjs/graphql'
 import { DatadogTraceModule } from 'nestjs-ddtrace'
 import { LoggerModule } from 'nestjs-pino'
 
+import { CacheModule } from '@nestjs/cache-manager'
 import { ActionModule } from './modules/action/action.module'
 import { BlockModule } from './modules/block/block.module'
 import { CustomDomainModule } from './modules/customDomain/customDomain.module'
@@ -55,6 +56,7 @@ import { VisitorModule } from './modules/visitor/visitor.module'
     UserTeamModule,
     UserTeamInviteModule,
     VisitorModule,
+    CacheModule.register(),
     BullModule.forRoot({
       connection: {
         host: process.env.REDIS_URL ?? 'redis',

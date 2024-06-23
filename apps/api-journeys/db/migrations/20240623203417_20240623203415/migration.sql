@@ -5,7 +5,8 @@ CREATE TYPE "IntegrationType" AS ENUM ('growthSpaces');
 CREATE TYPE "TextResponseType" AS ENUM ('freeForm', 'name', 'email');
 
 -- AlterTable
-ALTER TABLE "Block" ADD COLUMN     "routeId" TEXT,
+ALTER TABLE "Block" ADD COLUMN     "integrationId" TEXT,
+ADD COLUMN     "routeId" TEXT,
 ADD COLUMN     "type" "TextResponseType";
 
 -- CreateTable

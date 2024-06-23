@@ -5,19 +5,22 @@ import { Args, Mutation, Resolver } from '@nestjs/graphql'
 
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
-
 import {
   TextResponseSubmissionEvent,
-  TextResponseSubmissionEventCreateInput
+  TextResponseSubmissionEventCreateInput,
+  TextResponseType
 } from '../../../__generated__/graphql'
 import { PrismaService } from '../../../lib/prisma.service'
+import { GrowthSpacesIntegrationService } from '../../integration/growthSpaces/growthSpaces.service'
 import { EventService } from '../event.service'
+import { Prisma } from '.prisma/api-journeys-client'
 
 @Resolver('TextResponseSubmissionEvent')
 export class TextResponseSubmissionEventResolver {
   constructor(
     private readonly eventService: EventService,
-    private readonly prismaService: PrismaService
+    private readonly prismaService: PrismaService,
+    private readonly growthSpacesIntegration: GrowthSpacesIntegrationService
   ) {}
 
   @Mutation()
@@ -32,8 +35,21 @@ export class TextResponseSubmissionEventResolver {
         input.blockId,
         input.stepId
       )
+    const visitorDataUpdate: Prisma.VisitorUpdateInput = {
+      lastTextResponse: input.value
+    }
 
-    // if block is of type email and has a route id - run a function that adds them to subscriber list in growth spaces
+    if (block.type === TextResponseType.name)
+      visitorDataUpdate.name = input.value
+
+    if (block.type === TextResponseType.email && block.routeId != null) {
+      visitorDataUpdate.email = input.value
+      await this.growthSpacesIntegration.addSubscriber(
+        journeyId,
+        block,
+        input.value
+      )
+    }
 
     const [textResponseSubmissionEvent] = await Promise.all([
       this.eventService.save({
@@ -47,9 +63,7 @@ export class TextResponseSubmissionEventResolver {
       }),
       this.prismaService.visitor.update({
         where: { id: visitor.id },
-        data: {
-          lastTextResponse: input.value
-        }
+        data: visitorDataUpdate
       }),
       this.prismaService.journeyVisitor.update({
         where: {
