@@ -182,6 +182,7 @@ const iconNames: IconName[] = [
   'ThumbsUp',
   'Tiktok',
   'Transform',
+  'TrendDown1',
   'TwitterLogo',
   'Type2',
   'Type3',
