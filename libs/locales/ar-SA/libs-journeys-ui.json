@@ -17,6 +17,10 @@
   "Terms & Conditions": "الشروط والأحكام",
   "All personal identifiable data registered on this website will be processed by journey creator: \"{{ teamTitle }}\".": "جميع بيانات التعريف الشخصية المسجلة على هذا الموقع الإلكتروني ستتم معالجتها من قبل منشئ الرحلة: \"{{ teamTitle }}\".",
   "NextSteps © {{year}}": "NextSteps © {{year}}",
+  "Start a Conversation": "ابدأ محادثة",
+  "Link to Bible": "رابط الكتاب المقدس",
+  "Send an Email": "إرسال بريد إلكتروني",
+  "Visit a Website": "زيارة الموقع الإلكتروني",
   "Untitled": "بدون عنوان",
   "Step {{number}}": "الخطوة {{number}}"
 }
