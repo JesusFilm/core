@@ -47,6 +47,7 @@ export class TextResponseSubmissionEventResolver {
       await this.growthSpacesIntegration.addSubscriber(
         journeyId,
         block,
+        visitor.name,
         input.value
       )
     }
