@@ -82,7 +82,7 @@ describe('JourneyFlow', () => {
 
     render(
       <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
-        <FlagsProvider flags={{ journeyFlowAnalytics: true }}>
+        <FlagsProvider flags={{ journeyAnalytics: true }}>
           <JourneyProvider value={{ journey: defaultJourney }}>
             <EditorProvider
               initialState={{ steps, activeSlide: ActiveSlide.JourneyFlow }}
