@@ -27,18 +27,13 @@ export class IntegrationService {
   }
 
   async decryptSymmetric(
-    ciphertext: string | null,
-    iv: string | null,
-    tag: string | null,
+    ciphertext: string,
+    iv: string,
+    tag: string,
     key?: string | undefined
   ): Promise<string> {
     if (key == null)
       throw new GraphQLError('no crypto key', {
-        extensions: { code: 'INTERNAL_SERVER_ERROR' }
-      })
-
-    if (ciphertext == null || iv == null || tag == null)
-      throw new GraphQLError('could not find ciphertext, iv or tag', {
         extensions: { code: 'INTERNAL_SERVER_ERROR' }
       })
     const decipher = crypto.createDecipheriv(
