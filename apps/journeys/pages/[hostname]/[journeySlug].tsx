@@ -1,8 +1,9 @@
 import { GetStaticPaths, GetStaticProps } from 'next'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import PlausibleProvider from 'next-plausible'
+import { NextSeo } from 'next-seo'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
-import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -39,7 +40,15 @@ function HostJourneyPage({
     void router.push('/embed/[journeySlug]', `/embed/${journey.slug}`)
   }
   return (
-    <>
+    <PlausibleProvider
+      enabled
+      trackLocalhost
+      manualPageviews
+      customDomain="/plausible"
+      domain={`api-journeys-journey-${journey.id}${
+        journey.team?.id != null ? `,api-journeys-team-${journey.team.id}` : ''
+      }`}
+    >
       <Head>
         <link
           rel="alternate"
@@ -88,7 +97,7 @@ function HostJourneyPage({
           )}
         </ThemeProvider>
       </JourneyProvider>
-    </>
+    </PlausibleProvider>
   )
 }
 

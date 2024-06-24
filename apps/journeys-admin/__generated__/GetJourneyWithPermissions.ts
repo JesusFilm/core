@@ -18,11 +18,18 @@ export interface GetJourneyWithPermissions_journey_team_userTeams_user {
   lastName: string | null;
 }
 
+export interface GetJourneyWithPermissions_journey_team_userTeams_journeyNotification {
+  __typename: "JourneyNotification";
+  id: string;
+  visitorInteractionEmail: boolean;
+}
+
 export interface GetJourneyWithPermissions_journey_team_userTeams {
   __typename: "UserTeam";
   id: string;
   role: UserTeamRole;
   user: GetJourneyWithPermissions_journey_team_userTeams_user;
+  journeyNotification: GetJourneyWithPermissions_journey_team_userTeams_journeyNotification | null;
 }
 
 export interface GetJourneyWithPermissions_journey_team {
@@ -40,11 +47,18 @@ export interface GetJourneyWithPermissions_journey_userJourneys_user {
   imageUrl: string | null;
 }
 
+export interface GetJourneyWithPermissions_journey_userJourneys_journeyNotification {
+  __typename: "JourneyNotification";
+  id: string;
+  visitorInteractionEmail: boolean;
+}
+
 export interface GetJourneyWithPermissions_journey_userJourneys {
   __typename: "UserJourney";
   id: string;
   role: UserJourneyRole;
   user: GetJourneyWithPermissions_journey_userJourneys_user | null;
+  journeyNotification: GetJourneyWithPermissions_journey_userJourneys_journeyNotification | null;
 }
 
 export interface GetJourneyWithPermissions_journey {

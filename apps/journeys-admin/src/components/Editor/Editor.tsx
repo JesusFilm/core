@@ -1,8 +1,8 @@
 import { ReactElement } from 'react'
 
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { transformer } from '@core/journeys/ui/transformer'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'

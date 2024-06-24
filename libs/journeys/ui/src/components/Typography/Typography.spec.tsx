@@ -7,8 +7,8 @@ import {
 } from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../libs/block'
 
-import { TypographyFields } from './__generated__/TypographyFields'
 import { Typography } from './Typography'
+import { TypographyFields } from './__generated__/TypographyFields'
 
 const block: TreeBlock<TypographyFields> = {
   __typename: 'TypographyBlock',

@@ -68,8 +68,6 @@ jobs:
           targets: lint,type-check,extract-translations,subgraph-check
         env:
           APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
-      - name: Prettier
-        run: npx prettier --check .
       - name: lint commit messages
         run: npx commitlint --from 9a45682 # earliest good commit to main
       - name: lint branch name
@@ -131,6 +129,7 @@ jobs:
       - name: fetch-secrets and build
         uses: mansagroup/nrwl-nx-action@v3
         env:
+          DOPPLER_API_ANALYTICS_TOKEN: ${{ secrets.DOPPLER_API_ANALYTICS_TOKEN }}
           DOPPLER_API_GATEWAY_TOKEN: ${{ secrets.DOPPLER_API_GATEWAY_TOKEN }}
           DOPPLER_API_JOURNEYS_TOKEN: ${{ secrets.DOPPLER_API_JOURNEYS_TOKEN }}
           DOPPLER_API_LANGUAGES_TOKEN: ${{ secrets.DOPPLER_API_LANGUAGES_TOKEN }}

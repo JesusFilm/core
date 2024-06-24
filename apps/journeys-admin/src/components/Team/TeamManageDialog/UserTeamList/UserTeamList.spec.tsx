@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
 
 import {
   GetUserTeamsAndInvites,
@@ -136,5 +137,22 @@ describe('UserTeamList', () => {
     )
     expect(getByRole('button', { name: 'Member' })).toBeDisabled()
     expect(getByRole('button', { name: 'Manager' })).toBeDisabled()
+  })
+
+  it('should not allow update of email notifications of users that is not current user', () => {
+    const { getAllByRole } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <UserTeamList
+            data={mockData}
+            currentUserTeam={mockCurrentUserTeam}
+            loading={false}
+            variant="readonly"
+            journeyId="journeyId"
+          />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    expect(getAllByRole('checkbox')[1]).toBeDisabled()
   })
 })

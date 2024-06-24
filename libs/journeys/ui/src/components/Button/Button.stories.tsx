@@ -139,7 +139,7 @@ const IconTemplate: IconStory = {
               label={`${variant} Icon`}
               startIconId="start"
               endIconId="end"
-              // eslint-disable-next-line react/no-children-prop
+              // biome-ignore lint/correctness/noChildrenProp: <explanation>
               children={
                 variant === 'Start'
                   ? [

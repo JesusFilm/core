@@ -6,8 +6,8 @@ import { ReactElement, useState } from 'react'
 
 import { journeysAdminConfig } from '../../../../../../libs/storybook'
 
-import { videos } from './VideoFromLocal/data'
 import { GET_VIDEOS } from './VideoFromLocal/VideoFromLocal'
+import { videos } from './VideoFromLocal/data'
 
 import { VideoLibrary } from '.'
 
