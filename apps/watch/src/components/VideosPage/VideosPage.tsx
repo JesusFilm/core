@@ -6,6 +6,8 @@ import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
 import { ReactElement, useEffect } from 'react'
 
+import { ThemeMode } from '@core/shared/ui/themes'
+
 import { GetLanguages } from '../../../__generated__/GetLanguages'
 import { VideoChildFields } from '../../../__generated__/VideoChildFields'
 import { PageWrapper } from '../PageWrapper'
@@ -63,12 +65,13 @@ export function VideosPage({ videos }: VideoProps): ReactElement {
     setQueryParam('subtitles', filter.subtitleLanguageIds?.[0])
     setQueryParam('title', filter.title)
 
-    void router.push(`/videos?${params.toString()}`, undefined, {
+    void router.push(`/watch/videos?${params.toString()}`, undefined, {
       shallow: true
     })
     void handleSearch(filter, 0)
   }
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     const { title, availableVariantLanguageIds, subtitleLanguageIds } = filter
     if (checkFilterApplied(filter)) {
@@ -81,11 +84,15 @@ export function VideosPage({ videos }: VideoProps): ReactElement {
         0
       )
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
-    <PageWrapper hero={<VideosHero />} testId="VideosPage">
+    <PageWrapper
+      hero={<VideosHero />}
+      testId="VideosPage"
+      headerThemeMode={ThemeMode.dark}
+      hideHeaderSpacer
+    >
       <Container maxWidth="xxl">
         <VideosSubHero />
       </Container>

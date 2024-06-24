@@ -39,6 +39,7 @@ import {
 } from '../../../../../__generated__/GetStepBlocksWithPosition'
 import { useStepBlockPositionUpdateMutation } from '../../../../libs/useStepBlockPositionUpdateMutation'
 
+import { NewStepButton } from './NewStepButton'
 import { CustomEdge } from './edges/CustomEdge'
 import { StartEdge } from './edges/StartEdge'
 import { PositionMap, arrangeSteps } from './libs/arrangeSteps'
@@ -47,7 +48,7 @@ import { useCreateStep } from './libs/useCreateStep'
 import { useDeleteEdge } from './libs/useDeleteEdge'
 import { useDeleteOnKeyPress } from './libs/useDeleteOnKeyPress'
 import { useUpdateEdge } from './libs/useUpdateEdge'
-import { NewStepButton } from './NewStepButton'
+import { LinkNode } from './nodes/LinkNode'
 import { SocialPreviewNode } from './nodes/SocialPreviewNode'
 import { StepBlockNode } from './nodes/StepBlockNode'
 import { STEP_NODE_CARD_HEIGHT } from './nodes/StepBlockNode/libs/sizes'
@@ -90,9 +91,10 @@ export function JourneyFlow(): ReactElement {
   const { onSelectionChange } = useDeleteOnKeyPress()
   const [stepBlockPositionUpdate] = useStepBlockPositionUpdateMutation()
 
-  async function blockPositionsUpdate(positions: PositionMap): Promise<void> {
+  async function blockPositionsUpdate(): Promise<void> {
     if (journey == null || steps == null) return
-    positions = arrangeSteps(steps)
+    const positions = arrangeSteps(steps)
+
     Object.entries(positions).forEach(([id, position]) => {
       void stepBlockPositionUpdate({
         variables: {
@@ -130,7 +132,7 @@ export function JourneyFlow(): ReactElement {
         )
       ) {
         // some steps have no x or y coordinates
-        void blockPositionsUpdate(positions)
+        void blockPositionsUpdate()
       } else {
         data.blocks.forEach((block) => {
           if (
@@ -244,9 +246,9 @@ export function JourneyFlow(): ReactElement {
       const { source, sourceHandle, target } = newConnection
       setEdges((prev) => reactFlowUpdateEdge(oldEdge, newConnection, prev))
       edgeUpdateSuccessful.current = true
-      void updateEdge({ source, sourceHandle, target })
+      void updateEdge({ source, sourceHandle, target, oldEdge })
     },
-    [updateEdge, setEdges]
+    [setEdges, updateEdge]
   )
 
   const onEdgeUpdateEnd = useCallback<
@@ -266,7 +268,8 @@ export function JourneyFlow(): ReactElement {
   const nodeTypes = useMemo(
     () => ({
       StepBlock: StepBlockNode,
-      SocialPreview: SocialPreviewNode
+      SocialPreview: SocialPreviewNode,
+      Link: LinkNode
     }),
     []
   )
@@ -320,9 +323,7 @@ export function JourneyFlow(): ReactElement {
               <NewStepButton />
             </Panel>
             <Controls showInteractive={false}>
-              <ControlButton
-                onClick={async () => await blockPositionsUpdate({})}
-              >
+              <ControlButton onClick={blockPositionsUpdate}>
                 <ArrowRefresh6Icon />
               </ControlButton>
             </Controls>

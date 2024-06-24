@@ -55,7 +55,6 @@ describe('CardForm', () => {
         { __ref: 'TypographyBlock:subtitleId' },
         { __ref: 'TypographyBlock:titleId' },
         { __ref: 'TextResponseBlock:textResponseId' },
-        { __ref: 'IconBlock:submitIconId' },
         { __ref: 'TypographyBlock:bodyId' }
       ])
     })

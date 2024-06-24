@@ -3,8 +3,10 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { TreeBlock } from '@core/journeys/ui/block'
 
 import { JourneyFields as Journey } from '../../../../../../../__generated__/JourneyFields'
+import { VideoBlockSource } from '../../../../../../../__generated__/globalTypes'
 import { TestEditorState } from '../../../../../../libs/TestEditorState'
 
 import { step } from './CardTemplates.data'

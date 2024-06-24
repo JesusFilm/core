@@ -51,6 +51,14 @@ module "api-gateway" {
   doppler_token = data.aws_ssm_parameter.doppler_api_gateway_prod_token.value
 }
 
+module "api-analytics" {
+  source                = "../../../apps/api-analytics/infrastructure"
+  ecs_config            = local.internal_ecs_config
+  doppler_token         = data.aws_ssm_parameter.doppler_api_analytics_prod_token.value
+  subnet_group_name     = module.prod.vpc.db_subnet_group_name
+  vpc_security_group_id = module.prod.private_rds_security_group_id
+}
+
 module "api-journeys" {
   source                = "../../../apps/api-journeys/infrastructure"
   ecs_config            = local.internal_ecs_config
@@ -192,4 +200,24 @@ module "journeys-admin" {
     })
   })
   doppler_token = data.aws_ssm_parameter.doppler_journeys_admin_prod_token.value
+}
+
+module "postgresql" {
+  source                  = "../../modules/aws/aurora"
+  name                    = "jfp-core"
+  env                     = "prod"
+  doppler_token           = data.aws_ssm_parameter.doppler_core_prod_token.value
+  doppler_project         = "core"
+  subnet_group_name       = module.prod.vpc.db_subnet_group_name
+  vpc_security_group_id   = module.prod.private_rds_security_group_id
+  PG_DATABASE_URL_ENV_VAR = "PRIVATE_DATABASE_URL"
+}
+
+module "eks" {
+  source             = "../../modules/aws/eks"
+  env                = "prod"
+  name               = "jfp-eks"
+  subnet_ids         = concat(module.prod.vpc.internal_subnets, module.prod.vpc.public_subnets)
+  security_group_ids = [module.prod.ecs.internal_ecs_security_group_id, module.prod.ecs.public_ecs_security_group_id]
+  vpc_id             = module.prod.vpc.id
 }

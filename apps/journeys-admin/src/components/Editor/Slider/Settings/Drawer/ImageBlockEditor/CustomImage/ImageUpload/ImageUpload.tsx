@@ -115,8 +115,8 @@ export function ImageUpload({
             isDragAccept || loading === true
               ? 'rgba(239, 239, 239, 0.9)'
               : uploadError
-              ? 'rgba(197, 45, 58, 0.08)'
-              : 'rgba(239, 239, 239, 0.35)',
+                ? 'rgba(197, 45, 58, 0.08)'
+                : 'rgba(239, 239, 239, 0.35)',
           borderColor: 'divider',
           borderStyle: noBorder ? undefined : 'dashed',
           borderRadius: 2,
@@ -144,18 +144,18 @@ export function ImageUpload({
             uploadSuccess
               ? 'success.main'
               : uploadError
-              ? 'error.main'
-              : 'secondary.main'
+                ? 'error.main'
+                : 'secondary.main'
           }
           sx={{ pb: 4 }}
         >
           {loading === true
             ? t('Uploading...')
             : uploadSuccess
-            ? t('Upload successful!')
-            : uploadError
-            ? t('Upload Failed!')
-            : t('Drop an image here')}
+              ? t('Upload successful!')
+              : uploadError
+                ? t('Upload Failed!')
+                : t('Drop an image here')}
         </Typography>
       </Box>
       <Stack

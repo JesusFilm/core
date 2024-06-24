@@ -3,6 +3,7 @@ services:
   app:
     build:
       context: .
+      target: final
       dockerfile: Dockerfile
       args:
         VARIANT: 20
@@ -10,7 +11,7 @@ services:
         USER_GID: 1000
     volumes:
       - ..:/workspaces:delegated
-      - core-node-doppler:/home/node/.doppler
+      - core-node-user:/home/node
     # Overrides default command so things don't shut down after the process ends.
     command: sleep infinity
     # Uncomment the next line to use a non-root user for all processes.
@@ -18,6 +19,7 @@ services:
     # Use "forwardPorts" in **devcontainer.json** to forward an app port locally.
     # (Adding the "ports" property to this file will not forward from a Codespace.)
     environment:
+      KUBECONFIG: /workspaces/core/.kube/config
       PGHOST: db
       PGPASSWORD: postgres
       PGUSER: postgres
@@ -62,7 +64,34 @@ services:
     ports:
       - 1080:1080
       - 1025:1025
+  clickhouse:
+    image: clickhouse/clickhouse-server:23.3.7.5-alpine
+    restart: always
+    volumes:
+      - event-data:/var/lib/clickhouse
+      - event-logs:/var/log/clickhouse-server
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+  plausible:
+    image: ghcr.io/plausible/community-edition:v2.1.1
+    restart: always
+    command: sh -c "sleep 10 && /entrypoint.sh db createdb && /entrypoint.sh db migrate && /entrypoint.sh run"
+    depends_on:
+      - db
+      - clickhouse
+    ports:
+      - 8000:8000
+    environment:
+      BASE_URL: http://localhost:8000
+      SECRET_KEY_BASE: LG7O7gVu6xg82I3mx/txm0VeTapsBOBl2Fb40+jgfL+OlKBsOOtwYQUus8Hm51mJ
+      TOTP_VAULT_KEY: GDaE8fBhEKJUveTDKv1DFPXIqf6EjVtcNwdUiy2i/MA=
+      DATABASE_URL: postgres://postgres:postgres@db:5432/plausible_db
+      CLICKHOUSE_DATABASE_URL: http://clickhouse:8123/plausible_events_db
 volumes:
-  core-node-doppler:
+  core-node-user:
   postgres-data:
   redis-data:
+  event-data:
+  event-logs:

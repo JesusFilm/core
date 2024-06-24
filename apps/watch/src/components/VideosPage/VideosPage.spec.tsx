@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 
 import { videos } from '../Videos/__generated__/testData'
@@ -115,9 +115,13 @@ describe('VideosPage', () => {
       fireEvent.click(getByRole('option', { name: 'French' }))
       expect(comboboxEl).toHaveValue('French')
       await waitFor(() =>
-        expect(push).toHaveBeenCalledWith('/videos?languages=496', undefined, {
-          shallow: true
-        })
+        expect(push).toHaveBeenCalledWith(
+          '/watch/videos?languages=496',
+          undefined,
+          {
+            shallow: true
+          }
+        )
       )
       expect(getByRole('heading', { name: 'The Savior' })).toBeInTheDocument()
     })
@@ -163,9 +167,13 @@ describe('VideosPage', () => {
       fireEvent.click(getByRole('option', { name: 'French' }))
       expect(comboboxEl).toHaveValue('French')
       await waitFor(() =>
-        expect(push).toHaveBeenCalledWith('/videos?subtitles=496', undefined, {
-          shallow: true
-        })
+        expect(push).toHaveBeenCalledWith(
+          '/watch/videos?subtitles=496',
+          undefined,
+          {
+            shallow: true
+          }
+        )
       )
       expect(getByRole('heading', { name: 'The Savior' })).toBeInTheDocument()
     })
@@ -181,7 +189,7 @@ describe('VideosPage', () => {
       })
       await waitFor(() =>
         expect(push).toHaveBeenCalledWith(
-          '/videos?title=The+Savior',
+          '/watch/videos?title=The+Savior',
           undefined,
           {
             shallow: true
@@ -214,7 +222,7 @@ describe('VideosPage', () => {
       })
       await waitFor(() =>
         expect(push).toHaveBeenCalledWith(
-          '/videos?title=The+Savior',
+          '/watch/videos?title=The+Savior',
           undefined,
           {
             shallow: true
@@ -224,6 +232,15 @@ describe('VideosPage', () => {
       expect(getByRole('heading', { name: 'The Savior' })).toBeInTheDocument()
       expect(getByRole('button', { name: 'No More Videos' })).toBeDisabled()
     })
+  })
+
+  it('should not render header spacer', () => {
+    render(
+      <MockedProvider>
+        <VideosPage videos={videos} />
+      </MockedProvider>
+    )
+    expect(screen.queryByTestId('HeaderSpacer')).not.toBeInTheDocument()
   })
 
   // TODO: add test for load more button

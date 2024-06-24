@@ -9,17 +9,15 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        "dbaeumer.vscode-eslint",
         "nrwl.angular-console",
         "eamodio.gitlens",
         "graphql.vscode-graphql",
-        "esbenp.prettier-vscode",
         "mtxr.sqltools",
         "mtxr.sqltools-driver-pg",
         "prisma.prisma",
         "firsttris.vscode-jest-runner",
-        "dbaeumer.vscode-eslint",
-        "redhat.vscode-yaml"
+        "redhat.vscode-yaml",
+        "biomejs.biome"
       ]
     }
   },
@@ -45,6 +43,12 @@
     "ghcr.io/devcontainers/features/node:1": {
       "nodeGypDependencies": true,
       "version": "lts"
-    }
+    },
+    "ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {
+      "version": "1.30",
+      "helm": "latest",
+      "minikube": "none"
+    },
+    "ghcr.io/casl0/devcontainer-features/eksctl:1": {}
   }
 }

@@ -131,7 +131,6 @@ export async function main(mode: string, target?: string): Promise<void> {
       console.log('no arclight video found for id:', target)
       return
     }
-
     ;({ resumed, errors } = await handleArclightMediaComponent(
       arclightVideo,
       importedVideos,

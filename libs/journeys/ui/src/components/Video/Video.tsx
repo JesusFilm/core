@@ -19,21 +19,21 @@ import {
   VideoBlockObjectFit,
   VideoBlockSource
 } from '../../../__generated__/globalTypes'
+import { useEditor } from '../../libs/EditorProvider'
 import {
   TreeBlock,
   isActiveBlockOrDescendant,
   useBlocks
 } from '../../libs/block'
 import { blurImage } from '../../libs/blurImage'
-import { useEditor } from '../../libs/EditorProvider'
 import { ImageFields } from '../Image/__generated__/ImageFields'
 import { VideoEvents } from '../VideoEvents'
 import { VideoTrigger } from '../VideoTrigger'
 import { VideoTriggerFields } from '../VideoTrigger/__generated__/VideoTriggerFields'
 
-import { VideoFields } from './__generated__/VideoFields'
 import { InitAndPlay } from './InitAndPlay'
 import { VideoControls } from './VideoControls'
+import { VideoFields } from './__generated__/VideoFields'
 import 'videojs-youtube'
 import 'video.js/dist/video-js.css'
 
@@ -196,6 +196,7 @@ export function Video({
             videoId={eventVideoId}
             startAt={startAt}
             endAt={videoEndTime}
+            action={action}
           />
         )}
 
@@ -207,16 +208,10 @@ export function Video({
               xs: isFillAndNotYoutube() ? hundredVh : '100%',
               sm: '100%'
             }}
-            width={{
-              xs: isFillAndNotYoutube() ? '300%' : '100%',
-              sm: '100%'
-            }}
+            width="100%"
             minHeight="-webkit-fill-available"
             overflow="hidden"
-            marginX={{
-              xs: isFillAndNotYoutube() ? '-100%' : 0,
-              sm: 0
-            }}
+            marginX={0}
             position={isFillAndNotYoutube() ? 'absolute' : 'inherit'}
             data-testid="video-container"
           >
@@ -289,6 +284,7 @@ export function Video({
           {/* Default navigate to next card on video end */}
           {action != null && (
             <VideoTrigger
+              blockId={blockId}
               player={player}
               triggerStart={videoEndTime}
               triggerAction={action}

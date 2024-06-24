@@ -9,9 +9,9 @@ import { filterActionBlocks } from '@core/journeys/ui/filterActionBlocks'
 import { BaseNode } from '../BaseNode'
 
 import { ActionButton } from './ActionButton'
-import { STEP_NODE_WIDTH } from './libs/sizes'
 import { StepBlockNodeCard } from './StepBlockNodeCard'
 import { StepBlockNodeMenu } from './StepBlockNodeMenu'
+import { STEP_NODE_WIDTH } from './libs/sizes'
 
 export function StepBlockNode({
   id,
@@ -38,6 +38,7 @@ export function StepBlockNode({
         yPos={yPos}
       />
       <Stack
+        data-testid={`StepBlockNode-${step.id}`}
         direction="column"
         sx={{
           background: (theme) =>
@@ -53,7 +54,7 @@ export function StepBlockNode({
       >
         <BaseNode
           id={step.id}
-          isTargetConnectable
+          targetHandle="show"
           selected={isSelected}
           isSourceConnected={step.nextBlockId != null}
           dragging={dragging}

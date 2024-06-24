@@ -196,6 +196,7 @@ model Team {
   publicTitle        String?
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt
+  plausibleToken     String?
   visitors           Visitor[]
   userTeams          UserTeam[]
   journeys           Journey[]
@@ -208,13 +209,14 @@ model Team {
 }
 
 model UserTeam {
-  id        String       @id @default(uuid())
-  teamId    String
-  team      Team         @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  userId    String
-  role      UserTeamRole @default(member)
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
+  id                   String                @id @default(uuid())
+  teamId               String
+  team                 Team                  @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  userId               String
+  role                 UserTeamRole          @default(member)
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  journeyNotifications JourneyNotification[]
 
   @@unique([teamId, userId])
   @@index(role)
@@ -251,13 +253,14 @@ enum UserJourneyRole {
 }
 
 model UserJourney {
-  id        String          @id @default(uuid())
-  userId    String
-  journeyId String
-  updatedAt DateTime        @default(now()) @updatedAt
-  journey   Journey         @relation(fields: [journeyId], references: [id], onDelete: Cascade)
-  role      UserJourneyRole
-  openedAt  DateTime?
+  id                  String               @id @default(uuid())
+  userId              String
+  journeyId           String
+  updatedAt           DateTime             @default(now()) @updatedAt
+  journey             Journey              @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+  role                UserJourneyRole
+  openedAt            DateTime?
+  journeyNotification JourneyNotification?
 
   @@unique([journeyId, userId])
   @@index(journeyId)
@@ -315,6 +318,8 @@ model Journey {
   themeMode                 ThemeMode?                  @default(light)
   themeName                 ThemeName?                  @default(base)
   updatedAt                 DateTime                    @default(now()) @updatedAt
+  strategySlug              String?
+  plausibleToken            String?
   userJourneys              UserJourney[]
   team                      Team                        @relation(fields: [teamId], references: [id])
   userInvites               UserInvite[]
@@ -326,8 +331,8 @@ model Journey {
   primaryImageBlock         Block?                      @relation("PrimaryImageBlock", fields: [primaryImageBlockId], references: [id], onDelete: SetNull)
   creatorImageBlock         Block?                      @relation("CreatorImageBlock", fields: [creatorImageBlockId], references: [id], onDelete: SetNull)
   journeyVisitors           JourneyVisitor[]
-  strategySlug              String?
   journeyCollectionJourneys JourneyCollectionJourneys[]
+  journeyNotifications      JourneyNotification[]
 
   @@index(title)
 }
@@ -475,6 +480,23 @@ model JourneysEmailPreference {
   accountNotifications Boolean @default(true)
 
   @@index(email)
+}
+
+model JourneyNotification {
+  id                      String       @id @default(uuid())
+  userId                  String
+  journeyId               String
+  userTeamId              String?
+  userJourneyId           String?      @unique
+  visitorInteractionEmail Boolean      @default(false)
+  journey                 Journey      @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+  userTeam                UserTeam?    @relation(fields: [userTeamId], references: [id], onDelete: Cascade)
+  userJourney             UserJourney? @relation(fields: [userJourneyId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, journeyId])
+  @@unique([userId, journeyId, userTeamId])
+  @@index(userId)
+  @@index(journeyId)
 }
 
 model CustomDomain {

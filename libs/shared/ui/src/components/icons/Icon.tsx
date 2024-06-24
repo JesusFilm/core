@@ -34,6 +34,7 @@ import Book from './Book'
 import Box from './Box'
 import Bulb from './Bulb'
 import Calendar1 from './Calendar1'
+import Calendar2 from './Calendar2'
 import Calendar4 from './Calendar4'
 import Check from './Check'
 import CheckBroken from './CheckBroken'
@@ -151,6 +152,7 @@ import Search2 from './Search2'
 import Send1 from './Send1'
 import Settings from './Settings'
 import Share from './Share'
+import ShieldCheck from './ShieldCheck'
 import Skype from './Skype'
 import SmileyNeutral from './SmileyNeutral'
 import Snapchat from './Snapchat'
@@ -165,6 +167,7 @@ import Tag from './Tag'
 import Target from './Target'
 import Target2 from './Target2'
 import Telegram from './Telegram'
+import Terminal from './Terminal'
 import TextInput1 from './TextInput1'
 import ThumbsDown from './ThumbsDown'
 import ThumbsUp from './ThumbsUp'
@@ -228,6 +231,7 @@ export type IconName =
   | 'Box'
   | 'Bulb'
   | 'Calendar1'
+  | 'Calendar2'
   | 'Calendar4'
   | 'CheckBroken'
   | 'CheckContained'
@@ -345,6 +349,7 @@ export type IconName =
   | 'Send1'
   | 'Settings'
   | 'Share'
+  | 'ShieldCheck'
   | 'Skype'
   | 'SmileyNeutral'
   | 'Snapchat'
@@ -359,6 +364,7 @@ export type IconName =
   | 'Target'
   | 'Target2'
   | 'Telegram'
+  | 'Terminal'
   | 'TextInput1'
   | 'Trash2'
   | 'ThumbsDown'
@@ -426,6 +432,7 @@ const iconComponents: IconComponents = {
   Box,
   Bulb,
   Calendar1,
+  Calendar2,
   Calendar4,
   CheckBroken,
   CheckContained,
@@ -543,6 +550,7 @@ const iconComponents: IconComponents = {
   Send1,
   Settings,
   Share,
+  ShieldCheck,
   Skype,
   SmileyNeutral,
   Snapchat,
@@ -557,6 +565,7 @@ const iconComponents: IconComponents = {
   Target,
   Target2,
   Telegram,
+  Terminal,
   TextInput1,
   Trash2,
   ThumbsDown,
