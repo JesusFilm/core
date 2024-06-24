@@ -1,19 +1,28 @@
+import { getTargetEventKey } from '@core/journeys/ui/plausibleHelpers/plausibleHelpers'
 import Box from '@mui/material/Box'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import Cursor4Icon from '@core/shared/ui/icons/Cursor4'
 
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { ActionBlock } from '@core/journeys/ui/isActionBlock'
 import { AnalyticsDataPoint } from '../../../AnalyticsDataPoint'
 
 interface LinkNodeAnalyticsProps {
-  clicksCount?: number
+  actionBlock?: ActionBlock
 }
 
 export function LinkNodeAnalytics({
-  clicksCount
+  actionBlock
 }: LinkNodeAnalyticsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const {
+    state: { analytics }
+  } = useEditor()
+
+  const key = getTargetEventKey(actionBlock?.action)
+  const clicksCount = analytics?.targetMap.get(key)
 
   return (
     <Box
@@ -31,7 +40,7 @@ export function LinkNodeAnalytics({
       <AnalyticsDataPoint
         value={clicksCount ?? '~'}
         Icon={Cursor4Icon}
-        tooltipLabel={t('Clicks')}
+        tooltipTitle={t('Clicks')}
       />
     </Box>
   )

@@ -1,10 +1,38 @@
 import { render, screen } from '@testing-library/react'
 
+import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
+import { TreeBlock } from '@core/journeys/ui/block'
 import { LinkNodeAnalytics } from '.'
+import { BlockFields_ButtonBlock } from '../../../../../../../../__generated__/BlockFields'
 
 describe('LinkNodeAnalytics', () => {
   it('should render with count', () => {
-    render(<LinkNodeAnalytics clicksCount={10} />)
+    const block = {
+      __typename: 'ButtonBlock',
+      id: 'button.id',
+      label: 'button',
+      action: {
+        __typename: 'LinkAction',
+        parentBlockId: 'button.id',
+        url: 'https://example.com',
+        gtmEventName: null
+      },
+      children: []
+    } as unknown as TreeBlock<BlockFields_ButtonBlock>
+
+    const targetMap = new Map([['button.id->link:https://example.com', 10]])
+
+    const initialState = {
+      analytics: {
+        targetMap
+      }
+    } as unknown as EditorState
+
+    render(
+      <EditorProvider initialState={initialState}>
+        <LinkNodeAnalytics actionBlock={block} />
+      </EditorProvider>
+    )
 
     const icon = screen.getByTestId('Cursor4Icon')
     const clickCount = screen.getByText('10')

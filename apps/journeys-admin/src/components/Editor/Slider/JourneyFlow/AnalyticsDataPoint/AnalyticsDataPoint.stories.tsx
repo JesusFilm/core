@@ -23,7 +23,7 @@ export const Default = {
   args: {
     value: 10,
     Icon: Cursor4Icon,
-    tooltipLabel: 'Clicks'
+    tooltipTitle: 'Clicks'
   }
 }
 
@@ -31,7 +31,7 @@ export const WithoutIcon = {
   ...Template,
   args: {
     value: '10',
-    tooltipLabel: 'Clicks'
+    tooltipTitle: 'Clicks'
   }
 }
 

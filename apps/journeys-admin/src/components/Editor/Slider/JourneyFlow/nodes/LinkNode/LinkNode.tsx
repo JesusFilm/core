@@ -10,7 +10,6 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { filterActionBlocks } from '@core/journeys/ui/filterActionBlocks'
 import { getGoalDetails } from '@core/journeys/ui/getGoalDetails'
 
-import { getTargetEventKey } from '@core/journeys/ui/plausibleHelpers/plausibleHelpers'
 import { Fade } from '@mui/material'
 import { BaseNode } from '../BaseNode'
 import { LINK_NODE_HEIGHT, LINK_NODE_WIDTH } from '../StepBlockNode/libs/sizes'
@@ -19,7 +18,7 @@ import { LinkNodeAnalytics } from './LinkNodeAnalytics'
 export function LinkNode({ id }: NodeProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const {
-    state: { steps, showAnalytics, analytics }
+    state: { steps, showAnalytics }
   } = useEditor()
   const strippedNodeId = id.replace('LinkNode-', '')
 
@@ -41,9 +40,6 @@ export function LinkNode({ id }: NodeProps): ReactElement {
   const actionDetail = getActionDetail(matchedActionBlock)
   const { label, icon } = getGoalDetails(getLinkActionGoal(actionDetail), t)
 
-  const key = getTargetEventKey(matchedActionBlock?.action)
-  const linkAnalytics = analytics?.targetMap.get(key)
-
   return (
     <BaseNode id={id} targetHandle="disabled">
       <Stack
@@ -63,7 +59,7 @@ export function LinkNode({ id }: NodeProps): ReactElement {
       >
         <Fade in={showAnalytics}>
           <div>
-            <LinkNodeAnalytics clicksCount={linkAnalytics} />
+            <LinkNodeAnalytics />
           </div>
         </Fade>
         {icon}

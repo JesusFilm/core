@@ -8,7 +8,7 @@ import { AnalyticsDataPoint } from '.'
 describe('AnalyticsDataPoint', () => {
   it('should render', async () => {
     render(
-      <AnalyticsDataPoint Icon={Cursor4Icon} tooltipLabel="Clicks" value={10} />
+      <AnalyticsDataPoint Icon={Cursor4Icon} tooltipTitle="Clicks" value={10} />
     )
 
     expect(screen.getByText('10')).toBeInTheDocument()
@@ -22,7 +22,7 @@ describe('AnalyticsDataPoint', () => {
   })
 
   it('should render without icon', () => {
-    render(<AnalyticsDataPoint tooltipLabel="Clicks" value={10} />)
+    render(<AnalyticsDataPoint tooltipTitle="Clicks" value={10} />)
 
     expect(screen.getByText('10')).toBeInTheDocument()
     expect(screen.queryByTestId('Cursor4Icon')).not.toBeInTheDocument()
