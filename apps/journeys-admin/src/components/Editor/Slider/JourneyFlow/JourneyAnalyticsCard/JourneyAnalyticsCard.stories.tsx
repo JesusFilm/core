@@ -3,6 +3,7 @@ import { ComponentPropsWithoutRef } from 'react'
 
 import { simpleComponentConfig } from '../../../../../libs/storybook'
 
+import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
 import { JourneyAnalyticsCard } from '.'
 
 const JourneyAnalyticsCardDemo = {
@@ -14,7 +15,18 @@ const JourneyAnalyticsCardDemo = {
 const Template: StoryObj<
   ComponentPropsWithoutRef<typeof JourneyAnalyticsCard>
 > = {
-  render: (args) => <JourneyAnalyticsCard {...args} />
+  render: ({ args }) => {
+    const initialState = {
+      analytics: {
+        ...args
+      }
+    } as unknown as EditorState
+    return (
+      <EditorProvider initialState={initialState}>
+        <JourneyAnalyticsCard />
+      </EditorProvider>
+    )
+  }
 }
 
 export const Default = {

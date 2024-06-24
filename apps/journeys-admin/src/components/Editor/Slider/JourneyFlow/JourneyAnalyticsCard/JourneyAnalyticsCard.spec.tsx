@@ -1,14 +1,20 @@
-import { render, screen, within } from '@testing-library/react'
+import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import { JourneyAnalyticsCard } from './JourneyAnalyticsCard'
 
 describe('JourneyAnalyticsCard', () => {
-  it('should render', () => {
+  it('should render', async () => {
+    const initialState = {
+      analytics: {
+        totalVisitors: 100,
+        chatsStarted: 100,
+        linksVisited: 100
+      }
+    } as unknown as EditorState
     render(
-      <JourneyAnalyticsCard
-        totalVisitors={100}
-        chatsStarted={100}
-        linksVisited={100}
-      />
+      <EditorProvider initialState={initialState}>
+        <JourneyAnalyticsCard />
+      </EditorProvider>
     )
 
     const stats = screen.getAllByTestId('JourneyAnalyticsCardStat')

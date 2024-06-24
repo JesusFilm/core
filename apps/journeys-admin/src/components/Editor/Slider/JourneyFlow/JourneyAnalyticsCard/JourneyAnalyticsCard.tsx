@@ -10,7 +10,6 @@ export function JourneyAnalyticsCard(): ReactElement {
   const {
     state: { analytics }
   } = useEditor()
-
   return (
     <Stack direction="row" sx={{ mt: 8 }}>
       <JourneyAnalyticsCardStat
