@@ -10,14 +10,14 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 export function AnalyticsOverlaySwitch(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const {
-    state: { showJourneyFlowAnalytics },
+    state: { showAnalytics },
     dispatch
   } = useEditor()
 
   function handleSwitchAnalytics(): void {
     dispatch({
-      type: 'SetShowJourneyFlowAnalyticsAction',
-      showJourneyFlowAnalytics: !showJourneyFlowAnalytics
+      type: 'SetshowAnalyticsAction',
+      showAnalytics: !showAnalytics
     })
   }
 
@@ -26,7 +26,7 @@ export function AnalyticsOverlaySwitch(): ReactElement {
       <FormControlLabel
         control={
           <Switch
-            checked={showJourneyFlowAnalytics}
+            checked={showAnalytics === true}
             onChange={handleSwitchAnalytics}
           />
         }

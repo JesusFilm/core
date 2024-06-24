@@ -58,8 +58,7 @@ describe('SocialPreview', () => {
       activeFab: ActiveFab.Add,
       activeSlide: ActiveSlide.JourneyFlow,
       activeContent: ActiveContent.Social,
-      activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.AddBlock,
-      showJourneyFlowAnalytics: false
+      activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.AddBlock
     }
 
     render(

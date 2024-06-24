@@ -183,7 +183,7 @@ describe('JourneyFlow', () => {
             initialState={{
               steps,
               activeSlide: ActiveSlide.JourneyFlow,
-              showJourneyFlowAnalytics: true
+              showAnalytics: true
             }}
           >
             <Box sx={{ width: '100vw', height: '100vh' }}>

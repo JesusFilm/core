@@ -79,7 +79,7 @@ export function JourneyFlow(): ReactElement {
   const { journeyFlowAnalytics } = useFlags()
   const theme = useTheme()
   const {
-    state: { steps, activeSlide, showJourneyFlowAnalytics }
+    state: { steps, activeSlide, showAnalytics }
   } = useEditor()
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance | null>(null)
@@ -303,7 +303,7 @@ export function JourneyFlow(): ReactElement {
         onConnectEnd={onConnectEnd}
         onConnectStart={onConnectStart}
         onNodeDragStop={onNodeDragStop}
-        onEdgeUpdate={showJourneyFlowAnalytics ? undefined : onEdgeUpdate}
+        onEdgeUpdate={showAnalytics === true ? undefined : onEdgeUpdate}
         onEdgeUpdateStart={onEdgeUpdateStart}
         onEdgeUpdateEnd={onEdgeUpdateEnd}
         onSelectionChange={onSelectionChange}
@@ -323,7 +323,7 @@ export function JourneyFlow(): ReactElement {
         {activeSlide === ActiveSlide.JourneyFlow && (
           <>
             <Panel position="top-right">
-              {!showJourneyFlowAnalytics && <NewStepButton />}
+              {showAnalytics !== true && <NewStepButton />}
             </Panel>
             {journeyFlowAnalytics && (
               <Panel position="top-left">

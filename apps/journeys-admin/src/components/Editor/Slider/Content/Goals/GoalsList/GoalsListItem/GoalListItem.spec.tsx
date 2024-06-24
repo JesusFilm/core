@@ -71,8 +71,7 @@ describe('GoalListItem', () => {
       activeSlide: ActiveSlide.JourneyFlow,
       activeContent: ActiveContent.Goals,
       activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
-      selectedGoalUrl: 'initialUrl',
-      showJourneyFlowAnalytics: false
+      selectedGoalUrl: 'initialUrl'
     }
     const goal = {
       url: 'https://websiteUrl.com',

@@ -215,7 +215,7 @@ describe('ActionButton', () => {
     } as unknown as TreeBlock<ButtonBlock>
 
     const initialState = {
-      showJourneyFlowAnalytics: true
+      showAnalytics: true
     } as unknown as EditorState
 
     render(

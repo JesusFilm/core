@@ -199,8 +199,7 @@ describe('StepBlockNode', () => {
             initialState={{
               steps: [step],
               selectedStep: step,
-              activeContent: ActiveContent.Canvas,
-              showJourneyFlowAnalytics: false
+              activeContent: ActiveContent.Canvas
             }}
           >
             <StepBlockNode {...props} />

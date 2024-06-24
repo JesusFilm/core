@@ -168,7 +168,7 @@ describe('StepBlockNodeCard', () => {
       selectedStep: step,
       activeFab: ActiveFab.Edit,
       selectedAttributeId: 'selectedAttributeId',
-      showJourneyFlowAnalytics: true
+      showAnalytics: true
     }
 
     render(

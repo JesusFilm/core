@@ -78,7 +78,7 @@ describe('BaseEdge', () => {
 
   it('should disable hover in analytics mode', () => {
     const initialState = {
-      showJourneyFlowAnalytics: true
+      showAnalytics: true
     } as unknown as EditorState
     render(
       <ReactFlowProvider>
