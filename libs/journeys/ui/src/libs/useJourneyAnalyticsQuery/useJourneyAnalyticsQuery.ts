@@ -127,7 +127,7 @@ export function useJourneyAnalyticsQuery(
       NoInfer<GetJourneyAnalyticsVariables>
     >,
     'onCompleted'
-  >
+  > & { onCompleted?: (data: JourneyAnalytics | undefined) => void }
 ): Omit<
   QueryResult<GetJourneyAnalytics, GetJourneyAnalyticsVariables>,
   'data'
@@ -138,7 +138,12 @@ export function useJourneyAnalyticsQuery(
     {
       ...options,
       onCompleted: (data) => {
-        setData(transformJourneyAnalytics(options?.variables?.id, data))
+        const journeyAnalytics = transformJourneyAnalytics(
+          options?.variables?.id,
+          data
+        )
+        setData(journeyAnalytics)
+        options?.onCompleted?.(journeyAnalytics)
       }
     }
   )

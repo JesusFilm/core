@@ -8,7 +8,6 @@ import { transformer } from '@core/journeys/ui/transformer'
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 
-import { useJourneyAnalyticsQuery } from '@core/journeys/ui/useJourneyAnalyticsQuery'
 import { Fab } from './Fab'
 import { Slider } from './Slider'
 import { Toolbar } from './Toolbar'
@@ -29,13 +28,6 @@ export function Editor({
   selectedStepId,
   initialState
 }: EditorProps): ReactElement {
-  const { data } = useJourneyAnalyticsQuery({
-    variables: {
-      id: journey?.id ?? ''
-    },
-    skip: journey?.id == null
-  })
-
   const steps =
     journey != null
       ? (transformer(journey.blocks ?? []) as Array<TreeBlock<StepBlock>>)
@@ -51,7 +43,6 @@ export function Editor({
         initialState={{
           steps,
           selectedStep,
-          analytics: data,
           ...initialState
         }}
       >

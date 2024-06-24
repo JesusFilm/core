@@ -192,31 +192,4 @@ describe('Editor', () => {
       expect(screen.getByText('Test selected step')).toBeInTheDocument()
     )
   })
-
-  it('should get journeyPlausibleStatsBreakdown', async () => {
-    const journeyPlausibleStatsBreakdownResult = jest
-      .fn()
-      .mockReturnValue(getJourneyAnalytics.result)
-
-    render(
-      <MockedProvider
-        mocks={[
-          {
-            ...getJourneyAnalytics,
-            result: journeyPlausibleStatsBreakdownResult
-          }
-        ]}
-      >
-        <SnackbarProvider>
-          <ThemeProvider>
-            <Editor journey={journey} />
-          </ThemeProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    await waitFor(() => {
-      expect(journeyPlausibleStatsBreakdownResult).toHaveBeenCalled()
-    })
-  })
 })

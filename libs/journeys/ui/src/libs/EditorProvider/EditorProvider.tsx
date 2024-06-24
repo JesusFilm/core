@@ -141,7 +141,7 @@ interface SetshowAnalyticsAction {
 }
 interface SetAnalyticsAction {
   type: 'SetAnalyticsAction'
-  analytics: JourneyAnalytics
+  analytics?: JourneyAnalytics
 }
 type EditorAction =
   | SetActiveCanvasDetailsDrawerAction
@@ -289,14 +289,6 @@ export function EditorProvider({
     if (initialState?.steps != null)
       dispatch({ type: 'SetStepsAction', steps: initialState.steps })
   }, [initialState?.steps])
-
-  useEffect(() => {
-    if (initialState?.analytics != null)
-      dispatch({
-        type: 'SetAnalyticsAction',
-        analytics: initialState.analytics
-      })
-  }, [initialState?.analytics])
 
   // only run once
   const stepRef = useRef(false)
