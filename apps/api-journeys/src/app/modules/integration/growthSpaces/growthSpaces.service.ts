@@ -105,7 +105,7 @@ export class GrowthSpacesIntegrationService {
         integration.accessSecretCipherText,
         integration.accessSecretIv,
         integration.accessSecretTag,
-        process.env.INTEGRATION_CRYPTO_KEY
+        process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET
       )
 
     const body = JSON.stringify({
