@@ -173,6 +173,34 @@ describe('GrowthSpacesIntegrationService', () => {
       )
     })
 
+    it('should throw error if api call to growth spaces fails', async () => {
+      process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET =
+        'dontbefooledbythiskryptokeyitisactuallyfake='
+      prismaService.integration.findUnique.mockResolvedValue(integration)
+
+      mockFetch.mockRejectedValue({
+        ok: true,
+        status: 401,
+        json: async () => await Promise.resolve()
+      } as unknown as Response)
+
+      jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
+        async () =>
+          await Promise.resolve({
+            data: {
+              language: {
+                id: 'languageId',
+                bcp47: 'en'
+              }
+            }
+          } as unknown as ApolloQueryResult<unknown>)
+      )
+
+      await expect(
+        service.addSubscriber('journeyId', block, 'john', 'johndoe@example.com')
+      ).rejects.toThrow('failed to fetch from Growth Spaces')
+    })
+
     it('should add subscriber', async () => {
       process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET =
         'dontbefooledbythiskryptokeyitisactuallyfake='
