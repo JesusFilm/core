@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render, screen } from '@testing-library/react'
 import { ReactFlowProvider } from 'reactflow'
 
+import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
 
 import {
@@ -206,5 +207,29 @@ describe('ActionButton', () => {
     )
 
     expect(screen.getByTestId('BaseNodeConnectionArrowIcon')).not.toBeVisible()
+  })
+
+  it('should disable source handle in analytics mode', () => {
+    const block = {
+      __typename: 'ButtonBlock'
+    } as unknown as TreeBlock<ButtonBlock>
+
+    const initialState = {
+      showAnalytics: true
+    } as unknown as EditorState
+
+    render(
+      <MockedProvider>
+        <ReactFlowProvider>
+          <EditorProvider initialState={initialState}>
+            <ActionButton block={block} />
+          </EditorProvider>
+        </ReactFlowProvider>
+      </MockedProvider>
+    )
+
+    expect(
+      screen.getByTestId('BaseNodeRightHandle-disabled')
+    ).toBeInTheDocument()
   })
 })

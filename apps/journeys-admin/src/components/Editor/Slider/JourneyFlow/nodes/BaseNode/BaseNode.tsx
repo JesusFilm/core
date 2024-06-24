@@ -2,7 +2,13 @@ import Box from '@mui/material/Box'
 import { styled } from '@mui/material/styles'
 import isFunction from 'lodash/isFunction'
 import { useTranslation } from 'next-i18next'
-import { ComponentProps, ReactElement, ReactNode, useState } from 'react'
+import {
+  ComponentProps,
+  ReactElement,
+  ReactNode,
+  useEffect,
+  useState
+} from 'react'
 import {
   Handle,
   OnConnect,
@@ -11,6 +17,7 @@ import {
   useStore
 } from 'reactflow'
 
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
 
 import {
@@ -59,6 +66,9 @@ export function BaseNode({
   dragging,
   children
 }: BaseNodeProps): ReactElement {
+  const {
+    state: { showAnalytics }
+  } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
   const connectionHandleId = useStore(connectionHandleIdSelector)
   const connectionNodeId = useStore(connectionNodeIdSelector)
@@ -68,9 +78,17 @@ export function BaseNode({
   const [targetSelected, setTargetSelected] = useState(false)
   const [sourceSelected, setSourceSelected] = useState(false)
 
+  useEffect(() => {
+    if (showAnalytics === true) {
+      setTargetSelected(false)
+      setSourceSelected(false)
+    }
+  }, [showAnalytics])
+
   useOnSelectionChange({
     onChange: (selected) => {
       const selectedEdge = selected.edges[0]
+      if (showAnalytics === true) return
       setTargetSelected(selectedEdge?.target === id)
       setSourceSelected(
         selectedEdge?.sourceHandle != null
@@ -101,11 +119,7 @@ export function BaseNode({
         <PulseWrapper show={isConnecting && targetHandle !== 'disabled'}>
           <StyledHandle
             type="target"
-            data-testid={
-              targetHandle === 'disabled'
-                ? 'BaseNodeLeftHandle-disabled'
-                : 'BaseNodeLeftHandle'
-            }
+            data-testid={`BaseNodeLeftHandle-${targetHandle}`}
             position={Position.Left}
             isConnectableStart={isConnecting && targetHandle !== 'disabled'}
             isConnectable={
@@ -138,14 +152,15 @@ export function BaseNode({
           />
         </PulseWrapper>
       )}
-      {sourceHandle === 'show' && (
+      {(sourceHandle === 'show' || sourceHandle === 'disabled') && (
         <StyledHandle
           id={id}
           type="source"
           title={t('Drag to connect')}
-          data-testid="BaseNodeRightHandle"
+          data-testid={`BaseNodeRightHandle-${sourceHandle}`}
           position={Position.Right}
           onConnect={onSourceConnect}
+          isConnectable={sourceHandle !== 'disabled'}
           {...sourceHandleProps}
           sx={{
             border: 'none',
@@ -171,20 +186,22 @@ export function BaseNode({
             }
           }}
         >
-          <ArrowRightIcon
-            data-testid="BaseNodeConnectionArrowIcon"
-            className="arrow"
-            sx={{
-              position: 'absolute',
-              borderRadius: '100%',
-              fontSize: 'large',
-              color: 'background.paper',
-              backgroundColor: 'primary.main',
-              top: -HANDLE_DIAMETER,
-              right: -HANDLE_DIAMETER,
-              pointerEvents: 'none'
-            }}
-          />
+          {sourceHandle === 'show' && (
+            <ArrowRightIcon
+              data-testid="BaseNodeConnectionArrowIcon"
+              className="arrow"
+              sx={{
+                position: 'absolute',
+                borderRadius: '100%',
+                fontSize: 'large',
+                color: 'background.paper',
+                backgroundColor: 'primary.main',
+                top: -HANDLE_DIAMETER,
+                right: -HANDLE_DIAMETER,
+                pointerEvents: 'none'
+              }}
+            />
+          )}
         </StyledHandle>
       )}
     </Box>
