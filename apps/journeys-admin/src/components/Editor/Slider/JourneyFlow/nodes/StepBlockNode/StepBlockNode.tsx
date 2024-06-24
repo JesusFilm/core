@@ -26,17 +26,25 @@ export function StepBlockNode({
   } = useEditor()
   const step = steps?.find((step) => step.id === id)
 
-  const stats = analytics?.stepsStats.find((step) => step.stepId === id)
+  const stepStats = analytics?.stepsStats.find((step) => step.stepId === id)
+  const stepEventAnalytics = analytics?.stepMap.get(id)
+
   const actionBlocks = useMemo(
     () => (step != null ? [step, ...filterActionBlocks(step)] : []),
     [step]
   )
 
-  const blockAnalyticsMap = {}
+  const getBlockAnalytics = (block) => {
+    const blockEventTotal = analytics?.blockMap.get(block.id) ?? 0
 
-  // const { blockAnalyticsMap } = useMemo(() => {
-  //   return getStepAnalytics(actionBlocks, journeyStatsBreakdown?.actionEventMap)
-  // }, [actionBlocks, journeyStatsBreakdown?.actionEventMap])
+    let percentage = blockEventTotal / (stepEventAnalytics?.total ?? 0)
+
+    if (Number.isNaN(percentage) || !Number.isFinite(percentage)) {
+      percentage = 0
+    }
+
+    return { percentage, total: blockEventTotal }
+  }
 
   const isSelected =
     activeContent === ActiveContent.Canvas && selectedStep?.id === step?.id
@@ -45,7 +53,7 @@ export function StepBlockNode({
     <Stack sx={{ position: 'relative' }}>
       <Fade in={showAnalytics === true}>
         <div>
-          <StepBlockNodeAnalytics {...stats} />
+          <StepBlockNodeAnalytics {...stepStats} />
         </div>
       </Fade>
       {showAnalytics !== true && (
@@ -57,7 +65,6 @@ export function StepBlockNode({
           yPos={yPos}
         />
       )}
-      {/* <div style={{ position: 'relative' }}> */}
       <Stack
         data-testid={`StepBlockNode-${step.id}`}
         direction="column"
@@ -71,8 +78,6 @@ export function StepBlockNode({
           borderRadius: 3,
           maxWidth: STEP_NODE_WIDTH,
           transition: (theme) => theme.transitions.create('background')
-          // overflow: 'hidden'
-          // boxSizing: 'border-box'
         }}
       >
         <BaseNode
@@ -90,12 +95,11 @@ export function StepBlockNode({
               key={block.id}
               block={block}
               selected={isSelected}
-              analytics={blockAnalyticsMap[block.id]}
+              analytics={getBlockAnalytics(block)}
             />
           ))}
         </Stack>
       </Stack>
-      {/* </div> */}
     </Stack>
   ) : (
     <></>
