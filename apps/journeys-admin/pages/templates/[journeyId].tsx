@@ -12,6 +12,7 @@ import { GET_JOURNEY, useJourneyQuery } from '@core/journeys/ui/useJourneyQuery'
 import { GET_JOURNEYS } from '@core/journeys/ui/useJourneysQuery'
 import { GET_TAGS } from '@core/journeys/ui/useTagsQuery'
 
+import { Box } from '@mui/material'
 import { GetJourney, GetJourneyVariables } from '../../__generated__/GetJourney'
 import {
   GetJourneys,
@@ -57,8 +58,16 @@ function TemplateDetailsPage(): ReactElement {
           showMainHeader={user?.id != null}
           showAppHeader={user?.id != null}
           showNavBar={user?.id != null}
+          background="background.paper"
         >
-          <TemplateView authUser={user} />
+          <Box
+            sx={{
+              maxWidth: { md: '90vw' },
+              px: { xs: 6, sm: 8, md: 10 }
+            }}
+          >
+            <TemplateView authUser={user} />
+          </Box>
         </PageWrapper>
       </JourneyProvider>
     </>
