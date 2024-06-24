@@ -1,5 +1,5 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
-import { IntegrationInput } from '../../__generated__/graphql'
+import { Args, Mutation, Query, ResolveField, Resolver } from '@nestjs/graphql'
+import { IntegrationInput, IntegrationType } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { Integration } from '.prisma/api-journeys-client'
@@ -7,6 +7,16 @@ import { Integration } from '.prisma/api-journeys-client'
 @Resolver('Integration')
 export class IntegrationResolver {
   constructor(private readonly prismaService: PrismaService) {}
+
+  @ResolveField()
+  __resolveType(obj: { type: IntegrationType }): string {
+    switch (obj.type) {
+      case 'growthSpaces':
+        return 'GrowthSpacesIntegration'
+      default:
+        return 'Integration'
+    }
+  }
 
   @Query()
   async integrations(@Args('teamId') teamId: string): Promise<Integration[]> {

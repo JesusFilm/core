@@ -22,16 +22,6 @@ export class GrowthSpacesIntegrationResolver {
     private readonly growthSpacesIntegrationService: GrowthSpacesIntegrationService
   ) {}
 
-  @ResolveField()
-  __resolveType(obj: { type: IntegrationType }): string {
-    switch (obj.type) {
-      case 'growthSpaces':
-        return 'GrowthSpacesIntegration'
-      default:
-        return 'Integration'
-    }
-  }
-
   @Mutation()
   async integrationGrowthSpacesCreate(
     @Args('teamId') teamId: string,
