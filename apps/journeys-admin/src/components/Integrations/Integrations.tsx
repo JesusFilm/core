@@ -2,13 +2,10 @@ import Stack from '@mui/material/Stack'
 import { ReactElement } from 'react'
 import { IntegrationsButton } from './IntegrationsButton'
 
-// fake data
+// temporary data
 const integrations = [
-  { title: 'Slack', url: '' },
-  { title: 'Google Workspace', url: '' },
-  { title: 'Growth Space', url: '' },
-  { title: 'Salesforce', url: '' },
-  { title: 'Mailchimp', url: '' }
+  { id: 'id1', teamId: 'teamId1', type: 'growthSpaces'},
+  { id: 'id2', teamId: 'teamId1', type: 'growthSpaces'}
 ]
 
 export function Integrations(): ReactElement {
@@ -20,9 +17,9 @@ export function Integrations(): ReactElement {
       />
       {integrations.map((integration, index) => (
         <IntegrationsButton
-          key={`${index}-${integration.title}`}
+          key={`${index}-${integration.id}`}
           url="/teams/${teamId}/integrations/${integrationId}"
-          title={integration.title}
+          title={integration.type}
         />
       ))}
     </Stack>
