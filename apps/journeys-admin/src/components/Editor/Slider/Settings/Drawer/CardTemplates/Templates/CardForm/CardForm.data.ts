@@ -5,7 +5,6 @@ import {
   CardFormCreateVariables
 } from '../../../../../../../../../__generated__/CardFormCreate'
 import {
-  IconName,
   TypographyColor,
   TypographyVariant
 } from '../../../../../../../../../__generated__/globalTypes'
@@ -51,30 +50,6 @@ const cardFormCreate: CardFormCreate = {
     label: 'Your answer here',
     hint: null,
     minRows: null,
-    submitLabel: 'Submit',
-    submitIconId: null,
-    action: null,
-    __typename: 'TextResponseBlock'
-  },
-  submitIcon: {
-    id: 'submitIconId',
-    parentBlockId: 'textResponseId',
-    parentOrder: null,
-    iconName: IconName.ArrowForwardRounded,
-    iconSize: null,
-    iconColor: null,
-    __typename: 'IconBlock'
-  },
-  textResponseBlockUpdate: {
-    id: 'textResponseId',
-    parentBlockId: 'cardId',
-    parentOrder: 2,
-    label: 'Your answer here',
-    hint: null,
-    minRows: null,
-    submitLabel: 'Submit',
-    submitIconId: 'submitIconId',
-    action: null,
     __typename: 'TextResponseBlock'
   },
   body: {
@@ -138,18 +113,7 @@ export const cardFormCreateMock: MockedResponse<
         id: 'textResponseId',
         journeyId: 'journeyId',
         parentBlockId: 'cardId',
-        label: 'Your answer here',
-        submitLabel: 'Submit'
-      },
-      submitIconInput: {
-        id: 'submitIconId',
-        journeyId: 'journeyId',
-        parentBlockId: 'textResponseId',
-        name: IconName.ArrowForwardRounded
-      },
-      textResponseId: 'textResponseId',
-      textResponseUpdateInput: {
-        submitIconId: 'submitIconId'
+        label: 'Your answer here'
       },
       bodyInput: {
         journeyId: 'journeyId',
