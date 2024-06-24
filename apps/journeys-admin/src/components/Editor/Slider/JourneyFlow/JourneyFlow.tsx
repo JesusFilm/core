@@ -76,7 +76,7 @@ export const GET_STEP_BLOCKS_WITH_POSITION = gql`
 
 export function JourneyFlow(): ReactElement {
   const { journey } = useJourney()
-  const { journeyFlowAnalytics } = useFlags()
+  const { editorAnalytics } = useFlags()
   const theme = useTheme()
   const {
     state: { steps, activeSlide, showAnalytics }
@@ -325,7 +325,7 @@ export function JourneyFlow(): ReactElement {
             <Panel position="top-right">
               {showAnalytics !== true && <NewStepButton />}
             </Panel>
-            {journeyFlowAnalytics && (
+            {editorAnalytics && (
               <Panel position="top-left">
                 <AnalyticsOverlaySwitch />
               </Panel>
