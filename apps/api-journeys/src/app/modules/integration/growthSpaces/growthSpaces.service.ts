@@ -1,5 +1,6 @@
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client'
 import { CACHE_MANAGER } from '@nestjs/cache-manager'
+import fetch from 'node-fetch'
 
 import { Inject, Injectable } from '@nestjs/common'
 import { Cache } from 'cache-manager'
@@ -69,7 +70,7 @@ export class GrowthSpacesIntegrationService {
     if (languageCode == null) {
       const { data } = await apollo.query({
         query: gql`         
-            query Languages($languageId: ID!) {
+            query Language($languageId: ID!) {
             language(id: $languageId) {
               bcp47
               id
@@ -79,7 +80,7 @@ export class GrowthSpacesIntegrationService {
         variables: { languageId: journey?.languageId }
       })
       if (data?.language?.bcp47 == null)
-        throw new GraphQLError('cannot find language by id', {
+        throw new GraphQLError('cannot find language code', {
           extensions: { code: 'NOT_FOUND' }
         })
       languageCode = data?.language?.bcp47

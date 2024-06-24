@@ -18,6 +18,7 @@ import { EmailModule } from './modules/email/email.module'
 import { EventModule } from './modules/event/event.module'
 import { NestHealthModule } from './modules/health/health.module'
 import { HostModule } from './modules/host/host.module'
+import { IntegrationModule } from './modules/integration/integration.module'
 import { JourneyModule } from './modules/journey/journey.module'
 import { JourneyCollectionModule } from './modules/journeyCollection/journeyCollection.module'
 import { JourneyNotificationModule } from './modules/journeyNotification/journeyNotification.module'
@@ -41,6 +42,7 @@ import { VisitorModule } from './modules/visitor/visitor.module'
     EmailModule,
     EventModule,
     HostModule,
+    IntegrationModule,
     JourneyCollectionModule,
     JourneysEmailPreferenceModule,
     JourneyModule,

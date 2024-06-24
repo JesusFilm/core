@@ -19,7 +19,11 @@ export class IntegrationService {
         extensions: { code: 'INTERNAL_SERVER_ERROR' }
       })
     const iv = crypto.randomBytes(12).toString('base64')
-    const cipher = crypto.createCipheriv('aes-256-gcm', key, iv)
+    const cipher = crypto.createCipheriv(
+      'aes-256-gcm',
+      Buffer.from(key, 'base64'),
+      Buffer.from(iv, 'base64')
+    )
     let ciphertext = cipher.update(plaintext, 'utf8', 'base64')
     ciphertext += cipher.final('base64')
     const tag = cipher.getAuthTag().toString('base64')
@@ -38,7 +42,7 @@ export class IntegrationService {
       })
     const decipher = crypto.createDecipheriv(
       'aes-256-gcm',
-      key,
+      Buffer.from(key, 'base64'),
       Buffer.from(iv, 'base64')
     )
 
