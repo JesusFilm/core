@@ -96,7 +96,9 @@ export function ConfigField({
                     color: (theme) => theme.palette.grey[500]
                   }}
                 >
-                  {values.value != null ? t('Click to reveal the secret') : t('Add missing value')}
+                  {values.value != null
+                    ? t('Click to reveal the secret')
+                    : t('Add missing value')}
                 </Typography>
               )}
             </Form>
