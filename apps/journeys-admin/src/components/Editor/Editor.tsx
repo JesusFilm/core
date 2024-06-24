@@ -51,7 +51,7 @@ export function Editor({
         initialState={{
           steps,
           selectedStep,
-          journeyAnalytics: data,
+          analytics: data,
           ...initialState
         }}
       >

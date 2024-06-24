@@ -64,9 +64,14 @@ export interface EditorState {
    * */
   showAnalytics?: boolean
   /**
+   * store the result of the transformed GetJourneyAnalytics query.
+   * */
+  analytics?: JourneyAnalytics
+  /**
    * selectedAttributeId indicates which attribute is current expanded on
    * Properties. Each attribute is in a collapsible accordion.
    */
+
   selectedAttributeId?: string
   /**
    * selectedBlock indicates which block is currently selected on the Canvas
@@ -85,7 +90,6 @@ export interface EditorState {
    */
   selectedStep?: TreeBlock<StepBlock>
   steps?: Array<TreeBlock<StepBlock>>
-  journeyAnalytics?: JourneyAnalytics
 }
 interface SetActiveContentAction {
   type: 'SetActiveContentAction'
@@ -135,9 +139,9 @@ interface SetshowAnalyticsAction {
   type: 'SetshowAnalyticsAction'
   showAnalytics: boolean
 }
-interface SetJourneyAnalyticsAction {
-  type: 'SetJourneyAnalyticsAction'
-  journeyAnalytics: JourneyAnalytics
+interface SetAnalyticsAction {
+  type: 'SetAnalyticsAction'
+  analytics: JourneyAnalytics
 }
 type EditorAction =
   | SetActiveCanvasDetailsDrawerAction
@@ -152,7 +156,7 @@ type EditorAction =
   | SetSelectedStepAction
   | SetStepsAction
   | SetshowAnalyticsAction
-  | SetJourneyAnalyticsAction
+  | SetAnalyticsAction
 
 export const reducer = (
   state: EditorState,
@@ -233,10 +237,10 @@ export const reducer = (
         ...state,
         showAnalytics: action.showAnalytics
       }
-    case 'SetJourneyAnalyticsAction': {
+    case 'SetAnalyticsAction': {
       return {
         ...state,
-        journeyAnalytics: action.journeyAnalytics
+        analytics: action.analytics
       }
     }
   }
@@ -287,12 +291,12 @@ export function EditorProvider({
   }, [initialState?.steps])
 
   useEffect(() => {
-    if (initialState?.journeyAnalytics != null)
+    if (initialState?.analytics != null)
       dispatch({
-        type: 'SetJourneyAnalyticsAction',
-        journeyAnalytics: initialState.journeyAnalytics
+        type: 'SetAnalyticsAction',
+        analytics: initialState.analytics
       })
-  }, [initialState?.journeyAnalytics])
+  }, [initialState?.analytics])
 
   // only run once
   const stepRef = useRef(false)

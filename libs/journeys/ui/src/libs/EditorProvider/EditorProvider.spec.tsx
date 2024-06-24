@@ -477,7 +477,7 @@ describe('EditorContext', () => {
       })
     })
 
-    describe('SetJourneyAnalyticsAction', () => {
+    describe('SetAnalyticsAction', () => {
       it('should set journey stats breakdown', () => {
         const state: EditorState = {
           steps: [],
@@ -487,7 +487,7 @@ describe('EditorContext', () => {
           activeContent: ActiveContent.Canvas
         }
 
-        const journeyAnalytics: JourneyAnalytics = {
+        const analytics: JourneyAnalytics = {
           totalVisitors: 0,
           chatsStarted: 0,
           linksVisited: 0,
@@ -500,12 +500,12 @@ describe('EditorContext', () => {
 
         expect(
           reducer(state, {
-            type: 'SetJourneyAnalyticsAction',
-            journeyAnalytics
+            type: 'SetAnalyticsAction',
+            analytics
           })
         ).toEqual({
           ...state,
-          journeyAnalytics
+          analytics
         })
       })
     })
