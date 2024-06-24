@@ -3,7 +3,6 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { getJourneyAnalytics } from '@core/journeys/ui/useJourneyAnalyticsQuery/useJourneyAnalyticsQuery.mock'
 
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import { GetStepBlocksWithPosition } from '../../../__generated__/GetStepBlocksWithPosition'
