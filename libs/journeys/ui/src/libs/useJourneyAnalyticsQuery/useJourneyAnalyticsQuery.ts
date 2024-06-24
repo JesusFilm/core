@@ -25,6 +25,7 @@ export const GET_JOURNEY_ANALYTICS = gql`
   ) {
     journeySteps: journeysPlausibleStatsBreakdown(
       id: $id
+      idType: databaseId
       where: {
         property: "event:page"
         period: $period
@@ -39,6 +40,7 @@ export const GET_JOURNEY_ANALYTICS = gql`
     }
     journeyStepsActions: journeysPlausibleStatsBreakdown(
       id: $id
+      idType: databaseId
       where: {
         property: "event:props:key"
         period: $period
@@ -52,6 +54,7 @@ export const GET_JOURNEY_ANALYTICS = gql`
     }
     journeyReferrer: journeysPlausibleStatsBreakdown(
       id: $id
+      idType: databaseId
       where: {
         property: "visit:referrer"
         period: $period
@@ -65,6 +68,7 @@ export const GET_JOURNEY_ANALYTICS = gql`
     }
     journeyVisitorsPageExits: journeysPlausibleStatsBreakdown(
       id: $id
+      idType: databaseId
       where: {
         property: "visit:exit_page"
         period: $period
@@ -78,6 +82,7 @@ export const GET_JOURNEY_ANALYTICS = gql`
     }
     journeyActionsSums: journeysPlausibleStatsBreakdown(
       id: $id
+      idType: databaseId
       where: {
         property: "event:props:simpleKey"
         period: $period
@@ -91,6 +96,7 @@ export const GET_JOURNEY_ANALYTICS = gql`
     }
     journeyAggregateVisitors: journeysPlausibleStatsAggregate(
       id: $id
+      idType: databaseId
       where: { period: $period, date: $date, interval: $interval }
     ) {
       visitors {
