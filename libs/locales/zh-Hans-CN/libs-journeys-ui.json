@@ -17,6 +17,10 @@
   "Terms & Conditions": "条款和条件",
   "All personal identifiable data registered on this website will be processed by journey creator: \"{{ teamTitle }}\".": "在本网站注册的所有个人身份信息将由旅程创建者处理：\"{{ teamTitle }}\"。",
   "NextSteps © {{year}}": "NextSteps © {{year}}",
+  "Start a Conversation": "开始对话",
+  "Link to Bible": "圣经链接",
+  "Send an Email": "发送电子邮件",
+  "Visit a Website": "访问网站",
   "Untitled": "无标题",
   "Step {{number}}": "步骤 {{number}}"
 }

@@ -28,7 +28,7 @@ export function CustomEdge({
   isSelected = false // for testing use
 }: EdgeProps & { isSelected?: boolean }): ReactElement {
   const {
-    state: { showJourneyFlowAnalytics }
+    state: { showAnalytics }
   } = useEditor()
   const deleteEdge = useDeleteEdge()
   const [selected, setSelected] = useState(isSelected)
@@ -42,14 +42,14 @@ export function CustomEdge({
   })
 
   useEffect(() => {
-    if (showJourneyFlowAnalytics) {
+    if (showAnalytics === true) {
       setSelected(false)
     }
-  }, [showJourneyFlowAnalytics])
+  }, [showAnalytics])
 
   useOnSelectionChange({
     onChange: ({ edges }) => {
-      if (showJourneyFlowAnalytics) return
+      if (showAnalytics === true) return
       setSelected(edges.find((edge) => edge.id === id) != null)
     }
   })
