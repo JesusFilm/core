@@ -17,7 +17,7 @@ export function AnalyticsOverlaySwitch(): ReactElement {
   function handleSwitchAnalytics(): void {
     dispatch({
       type: 'SetshowAnalyticsAction',
-      showAnalytics: !showAnalytics
+      showAnalytics: showAnalytics !== true
     })
   }
 
