@@ -7,17 +7,17 @@ import { ReactElement } from 'react'
 interface AnalyticsDataPointProps {
   value: number | string
   Icon?: typeof SvgIcon
-  tooltipLabel: string
+  tooltipTitle: string
 }
 
 export function AnalyticsDataPoint({
   value,
   Icon,
-  tooltipLabel = ''
+  tooltipTitle
 }: AnalyticsDataPointProps): ReactElement {
   return (
     <Tooltip
-      title={tooltipLabel}
+      title={tooltipTitle}
       placement="top"
       slotProps={{
         popper: {
