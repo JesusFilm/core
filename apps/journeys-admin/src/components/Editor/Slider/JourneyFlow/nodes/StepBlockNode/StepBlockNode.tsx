@@ -20,7 +20,7 @@ export function StepBlockNode({
   dragging
 }: NodeProps): ReactElement {
   const {
-    state: { steps, selectedStep, activeContent }
+    state: { steps, selectedStep, activeContent, showAnalytics }
   } = useEditor()
   const step = steps?.find((step) => step.id === id)
   const actionBlocks = filterActionBlocks(step)
@@ -30,13 +30,15 @@ export function StepBlockNode({
 
   return step != null ? (
     <>
-      <StepBlockNodeMenu
-        in={isSelected}
-        className="fab"
-        step={step}
-        xPos={xPos}
-        yPos={yPos}
-      />
+      {showAnalytics !== true && (
+        <StepBlockNodeMenu
+          in={isSelected}
+          className="fab"
+          step={step}
+          xPos={xPos}
+          yPos={yPos}
+        />
+      )}
       <Stack
         data-testid={`StepBlockNode-${step.id}`}
         direction="column"
@@ -54,7 +56,7 @@ export function StepBlockNode({
       >
         <BaseNode
           id={step.id}
-          targetHandle="show"
+          targetHandle={showAnalytics === true ? 'disabled' : 'show'}
           selected={isSelected}
           isSourceConnected={step.nextBlockId != null}
           dragging={dragging}
