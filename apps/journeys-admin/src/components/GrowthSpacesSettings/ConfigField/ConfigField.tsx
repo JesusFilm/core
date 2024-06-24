@@ -56,16 +56,15 @@ export function ConfigField({
           initialValues={{ value }}
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
+          enableReinitialize={true}
         >
           {({ values, errors, setFieldValue }) => (
             <Form>
               <TextField
                 type={visible ? 'text' : 'password'}
                 value={hover && !visible ? '' : values.value}
-                onChange={(e) => {
-                  setFieldValue('value', e.target.value)
-                  handleSubmit(values)
-                }}
+                onChange={(e) => setFieldValue('value', e.target.value)}
+                onBlur={() => handleSubmit(values)}
                 onClick={() => setVisible(true)}
                 onMouseEnter={() => setHover(true)}
                 onMouseLeave={() => setHover(false)}

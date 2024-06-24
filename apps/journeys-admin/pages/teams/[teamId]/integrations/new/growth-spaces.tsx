@@ -16,15 +16,12 @@ function GrowthSpacesConfigPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const user = useUser()
 
-  // update title to be the type of integration
   return (
     <>
-      <NextSeo title="Growth Spaces" />
-      <JourneyProvider>
-        <PageWrapper title="Growth Spaces" user={user} backHrefHistory>
-          <GrowthSpacesSettings />
-        </PageWrapper>
-      </JourneyProvider>
+      <NextSeo title={t('Growth Spaces')} />
+      <PageWrapper title={t('Growth Spaces')} user={user} backHrefHistory>
+        <GrowthSpacesSettings />
+      </PageWrapper>
     </>
   )
 }

@@ -126,6 +126,12 @@ export enum Service {
   apiVideos = "apiVideos",
 }
 
+export enum TextResponseType {
+  email = "email",
+  freeForm = "freeForm",
+  name = "name",
+}
+
 export enum ThemeMode {
   dark = "dark",
   light = "light",
@@ -363,6 +369,11 @@ export interface ImageBlockUpdateInput {
   height?: number | null;
 }
 
+export interface IntegrationGrowthSpaceCreateInput {
+  accessId: string;
+  accessSecret: string;
+}
+
 export interface JourneyCollectionCreateInput {
   id?: string | null;
   teamId: string;
@@ -559,6 +570,9 @@ export interface TextResponseBlockUpdateInput {
   label?: string | null;
   hint?: string | null;
   minRows?: number | null;
+  routeId?: string | null;
+  type?: TextResponseType | null;
+  integrationId?: string | null;
 }
 
 export interface TextResponseSubmissionEventCreateInput {

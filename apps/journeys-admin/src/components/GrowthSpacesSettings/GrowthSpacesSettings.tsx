@@ -3,17 +3,46 @@ import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import { ReactElement, useState } from 'react'
 
+import { gql, useMutation } from '@apollo/client'
+import { IntegrationGrowthSpacesCreate } from '../../../__generated__/IntegrationGrowthSpacesCreate'
+import { useTeam } from '../Team/TeamProvider'
 import { ConfigField } from './ConfigField'
+
+export const INTEGRATION_GROWTH_SPACES_CREATE = gql`
+  mutation IntegrationGrowthSpacesCreate($teamId: ID!, $input: IntegrationGrowthSpaceCreateInput!) {
+    integrationGrowthSpacesCreate(teamId: $teamId, input: $input) {
+      id
+    }
+  }
+`
 
 export function GrowthSpacesSettings(): ReactElement {
   // get initial values from backend
   const [accessId, setAccessId] = useState<string | undefined>()
   const [accessSecret, setAccessSecret] = useState<string | undefined>()
 
-  function handleClick(): void {
-    // verify growth spaces settings
-    console.log('accessId', accessId)
-    console.log('accessSecret', accessSecret)
+  const { activeTeam } = useTeam()
+
+  const [integrationGrowthSpacesCreate] =
+    useMutation<IntegrationGrowthSpacesCreate>(INTEGRATION_GROWTH_SPACES_CREATE)
+
+  async function handleClick(): Promise<void> {
+    if (activeTeam == null) return
+    if (accessId == null || accessSecret == null) return
+
+    const { data } = await integrationGrowthSpacesCreate({
+      variables: {
+        teamId: activeTeam.id,
+        input: {
+          accessId,
+          accessSecret
+        }
+      }
+    })
+    if (data?.integrationGrowthSpacesCreate != null) {
+      // todo: add snackbar notification and update access id and access secret to save that information
+      console.log('data', data)
+    }
   }
 
   return (
@@ -46,7 +75,7 @@ export function GrowthSpacesSettings(): ReactElement {
       <Button
         variant="contained"
         color="primary"
-        onClick={handleClick}
+        onClick={async () => await handleClick()}
         sx={{ width: '20%', alignSelf: 'flex-end' }}
       >
         Save
