@@ -105,7 +105,7 @@ export class GrowthSpacesIntegrationService {
         integration.accessSecretCipherText,
         integration.accessSecretIv,
         integration.accessSecretTag,
-        process.env.INTEGRATION_CRYPTO_KEY
+        process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET
       )
 
     const body = JSON.stringify({
@@ -128,9 +128,12 @@ export class GrowthSpacesIntegrationService {
         body
       })
     } catch (e) {
-      throw new GraphQLError(e.message, {
-        extensions: { code: 'INTERNAL SERVER ERROR' }
-      })
+      throw new GraphQLError(
+        e.message ?? 'failed to fetch from Growth Spaces',
+        {
+          extensions: { code: 'INTERNAL SERVER ERROR' }
+        }
+      )
     }
   }
 }

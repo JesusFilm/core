@@ -14,13 +14,23 @@ import { IntegrationService } from '../integration.service'
 import { GrowthSpacesIntegrationService } from './growthSpaces.service'
 import { Integration } from '.prisma/api-journeys-client'
 
-@Resolver('GrowthSpacesIntegration')
+@Resolver('GrowthSpacesIntegrationResolver')
 export class GrowthSpacesIntegrationResolver {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly integrationService: IntegrationService,
     private readonly growthSpacesIntegrationService: GrowthSpacesIntegrationService
   ) {}
+
+  @ResolveField()
+  __resolveType(obj: { type: IntegrationType }): string {
+    switch (obj.type) {
+      case 'growthSpaces':
+        return 'GrowthSpacesIntegration'
+      default:
+        return 'Integration'
+    }
+  }
 
   @Mutation()
   async integrationGrowthSpacesCreate(
@@ -35,7 +45,7 @@ export class GrowthSpacesIntegrationResolver {
     const { ciphertext, iv, tag } =
       await this.integrationService.encryptSymmetric(
         input.accessSecret,
-        process.env.INTEGRATION_CRYPTO_KEY
+        process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET
       )
     return await this.prismaService.integration.create({
       data: {
@@ -61,7 +71,7 @@ export class GrowthSpacesIntegrationResolver {
     const { ciphertext, iv, tag } =
       await this.integrationService.encryptSymmetric(
         input.accessSecret,
-        process.env.INTEGRATION_CRYPTO_KEY
+        process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET
       )
     return await this.prismaService.integration.update({
       where: { id },
@@ -103,7 +113,7 @@ export class GrowthSpacesIntegrationResolver {
         accessSecretCipherText,
         accessSecretIv,
         accessSecretTag,
-        process.env.INTEGRATION_CRYPTO_KEY
+        process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET
       )
 
     try {
@@ -148,7 +158,7 @@ export class GrowthSpacesIntegrationResolver {
         accessSecretCipherText,
         accessSecretIv,
         accessSecretTag,
-        process.env.INTEGRATION_CRYPTO_KEY
+        process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET
       )
     return decryptedAccessSecret.slice(0, 6)
   }
