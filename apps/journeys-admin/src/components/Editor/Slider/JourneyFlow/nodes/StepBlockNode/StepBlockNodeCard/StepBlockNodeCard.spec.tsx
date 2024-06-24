@@ -1,6 +1,10 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 
-import { ActiveFab, EditorProvider } from '@core/journeys/ui/EditorProvider'
+import {
+  ActiveContent,
+  ActiveFab,
+  EditorProvider
+} from '@core/journeys/ui/EditorProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
 
 import {
@@ -135,12 +139,47 @@ describe('StepBlockNodeCard', () => {
       </EditorProvider>
     )
 
+    expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
     fireEvent.click(screen.getByTestId('StepBlock'))
 
+    expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
     expect(screen.getByText('selectedBlock: step.id')).toBeInTheDocument()
     expect(screen.getByText('activeFab: Add')).toBeInTheDocument()
     expect(
       screen.getByText('selectedAttributeId: step.id-next-block')
     ).toBeInTheDocument()
+  })
+
+  it('should block select if in analytics mode', () => {
+    mockGetCardMetadata.mockReturnValue({
+      title: undefined,
+      subtitle: undefined,
+      description: undefined,
+      priorityBlock: undefined,
+      bgImage: undefined
+    })
+    const step = {
+      __typename: 'StepBlock',
+      id: 'step.id',
+      children: []
+    } as unknown as TreeBlock<StepBlock>
+
+    const initialState = {
+      selectedStep: step,
+      activeFab: ActiveFab.Edit,
+      selectedAttributeId: 'selectedAttributeId',
+      showAnalytics: true
+    }
+
+    render(
+      <EditorProvider initialState={initialState}>
+        <StepBlockNodeCard step={step} selected={false} />
+        <TestEditorState />
+      </EditorProvider>
+    )
+
+    expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('StepBlock'))
+    expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
   })
 })
