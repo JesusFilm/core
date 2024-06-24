@@ -65,8 +65,7 @@ describe('Canvas', () => {
     activeFab: ActiveFab.Add,
     activeSlide: ActiveSlide.JourneyFlow,
     activeContent: ActiveContent.Canvas,
-    activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
-    showJourneyFlowAnalytics: false
+    activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
   }
 
   it('should show border around selected step', () => {
@@ -215,7 +214,7 @@ describe('Canvas', () => {
               <EditorProvider
                 initialState={{
                   ...initialState,
-                  showJourneyFlowAnalytics: true
+                  showAnalytics: true
                 }}
               >
                 <TestEditorState />
@@ -338,7 +337,7 @@ describe('Canvas', () => {
               <EditorProvider
                 initialState={{
                   ...initialState,
-                  showJourneyFlowAnalytics: true
+                  showAnalytics: true
                 }}
               >
                 <Canvas />

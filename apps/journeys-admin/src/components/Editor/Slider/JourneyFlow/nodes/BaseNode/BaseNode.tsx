@@ -67,7 +67,7 @@ export function BaseNode({
   children
 }: BaseNodeProps): ReactElement {
   const {
-    state: { showJourneyFlowAnalytics }
+    state: { showAnalytics }
   } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
   const connectionHandleId = useStore(connectionHandleIdSelector)
@@ -79,16 +79,16 @@ export function BaseNode({
   const [sourceSelected, setSourceSelected] = useState(false)
 
   useEffect(() => {
-    if (showJourneyFlowAnalytics) {
+    if (showAnalytics === true) {
       setTargetSelected(false)
       setSourceSelected(false)
     }
-  }, [showJourneyFlowAnalytics])
+  }, [showAnalytics])
 
   useOnSelectionChange({
     onChange: (selected) => {
       const selectedEdge = selected.edges[0]
-      if (showJourneyFlowAnalytics) return
+      if (showAnalytics === true) return
       setTargetSelected(selectedEdge?.target === id)
       setSourceSelected(
         selectedEdge?.sourceHandle != null

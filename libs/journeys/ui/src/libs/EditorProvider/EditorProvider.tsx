@@ -13,7 +13,7 @@ import {
 import type { TreeBlock } from '../block'
 import { BlockFields_StepBlock as StepBlock } from '../block/__generated__/BlockFields'
 import { searchBlocks } from '../searchBlocks'
-import { JourneyStatsBreakdown } from '../transformPlausibleBreakdown/transformPlausibleBreakdown'
+import { type JourneyAnalytics } from '../useJourneyAnalyticsQuery'
 
 export enum ActiveContent {
   Canvas = 'canvas',
@@ -60,14 +60,18 @@ export interface EditorState {
    * */
   activeSlide: ActiveSlide
   /**
-   * journeyFlowAnalytics indicates if the analytics overlay should be shown
-   * in the journey flow.
+   * showAnalytics indicates if the analytics should be shown.
    * */
-  showJourneyFlowAnalytics: boolean
+  showAnalytics?: boolean
+  /**
+   * store the result of the transformed GetJourneyAnalytics query.
+   * */
+  analytics?: JourneyAnalytics
   /**
    * selectedAttributeId indicates which attribute is current expanded on
    * Properties. Each attribute is in a collapsible accordion.
    */
+
   selectedAttributeId?: string
   /**
    * selectedBlock indicates which block is currently selected on the Canvas
@@ -86,7 +90,6 @@ export interface EditorState {
    */
   selectedStep?: TreeBlock<StepBlock>
   steps?: Array<TreeBlock<StepBlock>>
-  journeyStatsBreakdown?: JourneyStatsBreakdown
 }
 interface SetActiveContentAction {
   type: 'SetActiveContentAction'
@@ -132,13 +135,13 @@ interface SetStepsAction {
   type: 'SetStepsAction'
   steps: Array<TreeBlock<StepBlock>>
 }
-interface SetShowJourneyFlowAnalyticsAction {
-  type: 'SetShowJourneyFlowAnalyticsAction'
-  showJourneyFlowAnalytics: boolean
+interface SetShowAnalyticsAction {
+  type: 'SetShowAnalyticsAction'
+  showAnalytics: boolean
 }
-interface SetJourneyStatsBreakdownAction {
-  type: 'SetJourneyStatsBreakdownAction'
-  journeyStatsBreakdown: JourneyStatsBreakdown
+interface SetAnalyticsAction {
+  type: 'SetAnalyticsAction'
+  analytics?: JourneyAnalytics
 }
 type EditorAction =
   | SetActiveCanvasDetailsDrawerAction
@@ -152,8 +155,8 @@ type EditorAction =
   | SetSelectedGoalUrlAction
   | SetSelectedStepAction
   | SetStepsAction
-  | SetShowJourneyFlowAnalyticsAction
-  | SetJourneyStatsBreakdownAction
+  | SetShowAnalyticsAction
+  | SetAnalyticsAction
 
 export const reducer = (
   state: EditorState,
@@ -229,15 +232,15 @@ export const reducer = (
             ? searchBlocks(action.steps, state.selectedBlock.id)
             : action.steps[0]
       }
-    case 'SetShowJourneyFlowAnalyticsAction':
+    case 'SetShowAnalyticsAction':
       return {
         ...state,
-        showJourneyFlowAnalytics: action.showJourneyFlowAnalytics
+        showAnalytics: action.showAnalytics
       }
-    case 'SetJourneyStatsBreakdownAction': {
+    case 'SetAnalyticsAction': {
       return {
         ...state,
-        journeyStatsBreakdown: action.journeyStatsBreakdown
+        analytics: action.analytics
       }
     }
   }
@@ -252,8 +255,7 @@ export const EditorContext = createContext<{
     activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
     activeFab: ActiveFab.Add,
     activeSlide: ActiveSlide.JourneyFlow,
-    activeContent: ActiveContent.Canvas,
-    showJourneyFlowAnalytics: false
+    activeContent: ActiveContent.Canvas
   },
   dispatch: () => null
 })
@@ -280,7 +282,6 @@ export function EditorProvider({
     activeFab: ActiveFab.Add,
     activeSlide: ActiveSlide.JourneyFlow,
     activeContent: ActiveContent.Canvas,
-    showJourneyFlowAnalytics: false,
     ...initialState
   })
 
@@ -288,14 +289,6 @@ export function EditorProvider({
     if (initialState?.steps != null)
       dispatch({ type: 'SetStepsAction', steps: initialState.steps })
   }, [initialState?.steps])
-
-  useEffect(() => {
-    if (initialState?.journeyStatsBreakdown != null)
-      dispatch({
-        type: 'SetJourneyStatsBreakdownAction',
-        journeyStatsBreakdown: initialState.journeyStatsBreakdown
-      })
-  }, [initialState?.journeyStatsBreakdown])
 
   // only run once
   const stepRef = useRef(false)

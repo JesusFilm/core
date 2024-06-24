@@ -14,7 +14,7 @@ export function useDeleteOnKeyPress(): {
   onSelectionChange: OnSelectionChangeFunc
 } {
   const {
-    state: { selectedBlock, activeSlide, showJourneyFlowAnalytics }
+    state: { selectedBlock, activeSlide, showAnalytics }
   } = useEditor()
   const deleteEdge = useDeleteEdge()
   const [blockDelete] = useBlockDeleteMutation()
@@ -45,7 +45,7 @@ export function useDeleteOnKeyPress(): {
       deleteEvent &&
       selected != null &&
       activeSlide === ActiveSlide.JourneyFlow &&
-      !showJourneyFlowAnalytics
+      showAnalytics !== true
     ) {
       if (isEdge(selected)) {
         void deleteEdge({

@@ -32,8 +32,7 @@ const state: EditorState = {
   activeFab: ActiveFab.Add,
   activeSlide: ActiveSlide.Drawer,
   activeContent: ActiveContent.Canvas,
-  activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
-  showJourneyFlowAnalytics: false
+  activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
 }
 
 const mockGetFormBlock: MockedResponse<GetFormBlock> = {

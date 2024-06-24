@@ -12,7 +12,6 @@ import {
   ThemeName
 } from '../../../__generated__/globalTypes'
 import { mockReactFlow } from '../../../test/mockReactFlow'
-import { getJourneyPlausibleStatsBreakdown } from '../../libs/useJourneyPlausibleStatsBreakdownQuery/useJourneyPlausibleStatsBreakdownQuery.mock'
 import { ThemeProvider } from '../ThemeProvider'
 
 import { GET_STEP_BLOCKS_WITH_POSITION } from './Slider/JourneyFlow/JourneyFlow'
@@ -191,32 +190,5 @@ describe('Editor', () => {
     await waitFor(() =>
       expect(screen.getByText('Test selected step')).toBeInTheDocument()
     )
-  })
-
-  it('should get journeyPlausibleStatsBreakdown', async () => {
-    const journeyPlausibleStatsBreakdownResult = jest
-      .fn()
-      .mockReturnValue(getJourneyPlausibleStatsBreakdown.result)
-
-    render(
-      <MockedProvider
-        mocks={[
-          {
-            ...getJourneyPlausibleStatsBreakdown,
-            result: journeyPlausibleStatsBreakdownResult
-          }
-        ]}
-      >
-        <SnackbarProvider>
-          <ThemeProvider>
-            <Editor journey={journey} />
-          </ThemeProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    await waitFor(() => {
-      expect(journeyPlausibleStatsBreakdownResult).toHaveBeenCalled()
-    })
   })
 })
