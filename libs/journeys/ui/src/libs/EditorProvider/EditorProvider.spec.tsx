@@ -455,7 +455,7 @@ describe('EditorContext', () => {
       })
     })
 
-    describe('SetshowAnalyticsAction', () => {
+    describe('SetShowAnalyticsAction', () => {
       it('should set showAnalytics', () => {
         const state: EditorState = {
           steps: [],
@@ -467,7 +467,7 @@ describe('EditorContext', () => {
 
         expect(
           reducer(state, {
-            type: 'SetshowAnalyticsAction',
+            type: 'SetShowAnalyticsAction',
             showAnalytics: true
           })
         ).toEqual({

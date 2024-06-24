@@ -32,7 +32,7 @@ export function AnalyticsOverlaySwitch(): ReactElement {
 
   function handleSwitchAnalytics(): void {
     dispatch({
-      type: 'SetshowAnalyticsAction',
+      type: 'SetShowAnalyticsAction',
       showAnalytics: showAnalytics !== true
     })
   }

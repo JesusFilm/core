@@ -135,8 +135,8 @@ interface SetStepsAction {
   type: 'SetStepsAction'
   steps: Array<TreeBlock<StepBlock>>
 }
-interface SetshowAnalyticsAction {
-  type: 'SetshowAnalyticsAction'
+interface SetShowAnalyticsAction {
+  type: 'SetShowAnalyticsAction'
   showAnalytics: boolean
 }
 interface SetAnalyticsAction {
@@ -155,7 +155,7 @@ type EditorAction =
   | SetSelectedGoalUrlAction
   | SetSelectedStepAction
   | SetStepsAction
-  | SetshowAnalyticsAction
+  | SetShowAnalyticsAction
   | SetAnalyticsAction
 
 export const reducer = (
@@ -232,7 +232,7 @@ export const reducer = (
             ? searchBlocks(action.steps, state.selectedBlock.id)
             : action.steps[0]
       }
-    case 'SetshowAnalyticsAction':
+    case 'SetShowAnalyticsAction':
       return {
         ...state,
         showAnalytics: action.showAnalytics
