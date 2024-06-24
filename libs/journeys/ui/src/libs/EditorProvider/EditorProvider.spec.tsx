@@ -2,7 +2,6 @@ import { renderHook } from '@testing-library/react'
 import { ReactNode, useContext } from 'react'
 
 import type { TreeBlock } from '../block'
-import { JourneyStatsBreakdown } from '../transformPlausibleBreakdown/transformPlausibleBreakdown'
 
 import { EditorContext, reducer } from './EditorProvider'
 
@@ -14,6 +13,7 @@ import {
   EditorProvider,
   EditorState
 } from '.'
+import { type JourneyAnalytics } from '../useJourneyPlausibleStatsBreakdownQuery'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -477,7 +477,7 @@ describe('EditorContext', () => {
       })
     })
 
-    describe('SetJourneyStatsBreakdownAction', () => {
+    describe('SetJourneyAnalyticsAction', () => {
       it('should set journey stats breakdown', () => {
         const state: EditorState = {
           steps: [],
@@ -487,7 +487,7 @@ describe('EditorContext', () => {
           activeContent: ActiveContent.Canvas
         }
 
-        const journeyStatsBreakdown: JourneyStatsBreakdown = {
+        const journeyAnalytics: JourneyAnalytics = {
           totalVisitors: 0,
           chatsStarted: 0,
           linksVisited: 0,
@@ -500,12 +500,12 @@ describe('EditorContext', () => {
 
         expect(
           reducer(state, {
-            type: 'SetJourneyStatsBreakdownAction',
-            journeyStatsBreakdown
+            type: 'SetJourneyAnalyticsAction',
+            journeyAnalytics
           })
         ).toEqual({
           ...state,
-          journeyStatsBreakdown
+          journeyAnalytics
         })
       })
     })

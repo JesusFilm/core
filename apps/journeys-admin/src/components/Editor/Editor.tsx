@@ -8,7 +8,7 @@ import { transformer } from '@core/journeys/ui/transformer'
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 
-import { useJourneyPlausibleStatsBreakdownQuery } from '@core/journeys/ui/useJourneyPlausibleStatsBreakdownQuery'
+import { useJourneyAnalyticsQuery } from '@core/journeys/ui/useJourneyAnalyticsQuery'
 import { Fab } from './Fab'
 import { Slider } from './Slider'
 import { Toolbar } from './Toolbar'
@@ -29,7 +29,7 @@ export function Editor({
   selectedStepId,
   initialState
 }: EditorProps): ReactElement {
-  const { data } = useJourneyPlausibleStatsBreakdownQuery({
+  const { data } = useJourneyAnalyticsQuery({
     variables: {
       id: journey?.id ?? ''
     },
@@ -51,7 +51,7 @@ export function Editor({
         initialState={{
           steps,
           selectedStep,
-          journeyStatsBreakdown: data,
+          journeyAnalytics: data,
           ...initialState
         }}
       >

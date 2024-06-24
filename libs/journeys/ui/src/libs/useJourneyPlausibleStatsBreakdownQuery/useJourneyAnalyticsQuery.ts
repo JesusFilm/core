@@ -7,15 +7,15 @@ import {
 } from '@apollo/client'
 import { useState } from 'react'
 
-import { transformPlausibleBreakdown } from '../transformPlausibleBreakdown'
-import { JourneyStatsBreakdown } from '../transformPlausibleBreakdown/transformPlausibleBreakdown'
 import {
-  GetJourneyPlausibleStatsBreakdown,
-  GetJourneyPlausibleStatsBreakdownVariables
-} from './__generated__/GetJourneyPlausibleStatsBreakdown'
+  GetJourneyAnalytics,
+  GetJourneyAnalyticsVariables,
+  GetJourneyAnalytics_journeyReferrer as JourneyReferrer
+} from './__generated__/GetJourneyAnalytics'
+import { transformJourneyAnalytics } from './transformJourneyAnalytics'
 
-export const GET_JOURNEY_PLAUSIBLE_STATS_BREAKDOWN = gql`
-  query GetJourneyPlausibleStatsBreakdown(
+export const GET_JOURNEY_ANALYTICS = gql`
+  query GetJourneyAnalytics(
     $id: ID!
     $period: String
     $date: String
@@ -100,35 +100,47 @@ export const GET_JOURNEY_PLAUSIBLE_STATS_BREAKDOWN = gql`
   }
 `
 
-export function useJourneyPlausibleStatsBreakdownQuery(
+type SumEventMap = Map<string, number>
+
+export interface StepStat {
+  stepId: string
+  visitors: number
+  timeOnPage: number
+  visitorsExitAtStep: number
+}
+
+export interface JourneyAnalytics {
+  totalVisitors: number
+  chatsStarted: number
+  linksVisited: number
+  referrers: JourneyReferrer[]
+  stepsStats: StepStat[]
+  stepMap: Map<string, { eventMap: SumEventMap; total: number }>
+  blockMap: SumEventMap
+  targetMap: SumEventMap
+}
+
+export function useJourneyAnalyticsQuery(
   options?: Omit<
     QueryHookOptions<
-      NoInfer<GetJourneyPlausibleStatsBreakdown>,
-      NoInfer<GetJourneyPlausibleStatsBreakdownVariables>
+      NoInfer<GetJourneyAnalytics>,
+      NoInfer<GetJourneyAnalyticsVariables>
     >,
     'onCompleted'
   >
 ): Omit<
-  QueryResult<
-    GetJourneyPlausibleStatsBreakdown,
-    GetJourneyPlausibleStatsBreakdownVariables
-  >,
+  QueryResult<GetJourneyAnalytics, GetJourneyAnalyticsVariables>,
   'data'
-> & { data: JourneyStatsBreakdown | undefined } {
-  const [data, setData] = useState<JourneyStatsBreakdown | undefined>()
-  const query = useQuery<
-    GetJourneyPlausibleStatsBreakdown,
-    GetJourneyPlausibleStatsBreakdownVariables
-  >(GET_JOURNEY_PLAUSIBLE_STATS_BREAKDOWN, {
-    ...options,
-    onCompleted: (data) => {
-      setData(
-        transformPlausibleBreakdown({
-          journeyId: options?.variables?.id,
-          data
-        })
-      )
+> & { data: JourneyAnalytics | undefined } {
+  const [data, setData] = useState<JourneyAnalytics | undefined>()
+  const query = useQuery<GetJourneyAnalytics, GetJourneyAnalyticsVariables>(
+    GET_JOURNEY_ANALYTICS,
+    {
+      ...options,
+      onCompleted: (data) => {
+        setData(transformJourneyAnalytics(options?.variables?.id, data))
+      }
     }
-  })
+  )
   return { ...query, data }
 }

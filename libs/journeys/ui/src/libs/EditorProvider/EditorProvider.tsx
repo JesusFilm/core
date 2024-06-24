@@ -13,7 +13,7 @@ import {
 import type { TreeBlock } from '../block'
 import { BlockFields_StepBlock as StepBlock } from '../block/__generated__/BlockFields'
 import { searchBlocks } from '../searchBlocks'
-import { JourneyStatsBreakdown } from '../transformPlausibleBreakdown/transformPlausibleBreakdown'
+import { type JourneyAnalytics } from '../useJourneyPlausibleStatsBreakdownQuery'
 
 export enum ActiveContent {
   Canvas = 'canvas',
@@ -85,7 +85,7 @@ export interface EditorState {
    */
   selectedStep?: TreeBlock<StepBlock>
   steps?: Array<TreeBlock<StepBlock>>
-  journeyStatsBreakdown?: JourneyStatsBreakdown
+  journeyAnalytics?: JourneyAnalytics
 }
 interface SetActiveContentAction {
   type: 'SetActiveContentAction'
@@ -135,9 +135,9 @@ interface SetshowAnalyticsAction {
   type: 'SetshowAnalyticsAction'
   showAnalytics: boolean
 }
-interface SetJourneyStatsBreakdownAction {
-  type: 'SetJourneyStatsBreakdownAction'
-  journeyStatsBreakdown: JourneyStatsBreakdown
+interface SetJourneyAnalyticsAction {
+  type: 'SetJourneyAnalyticsAction'
+  journeyAnalytics: JourneyAnalytics
 }
 type EditorAction =
   | SetActiveCanvasDetailsDrawerAction
@@ -152,7 +152,7 @@ type EditorAction =
   | SetSelectedStepAction
   | SetStepsAction
   | SetshowAnalyticsAction
-  | SetJourneyStatsBreakdownAction
+  | SetJourneyAnalyticsAction
 
 export const reducer = (
   state: EditorState,
@@ -233,10 +233,10 @@ export const reducer = (
         ...state,
         showAnalytics: action.showAnalytics
       }
-    case 'SetJourneyStatsBreakdownAction': {
+    case 'SetJourneyAnalyticsAction': {
       return {
         ...state,
-        journeyStatsBreakdown: action.journeyStatsBreakdown
+        journeyAnalytics: action.journeyAnalytics
       }
     }
   }
@@ -287,12 +287,12 @@ export function EditorProvider({
   }, [initialState?.steps])
 
   useEffect(() => {
-    if (initialState?.journeyStatsBreakdown != null)
+    if (initialState?.journeyAnalytics != null)
       dispatch({
-        type: 'SetJourneyStatsBreakdownAction',
-        journeyStatsBreakdown: initialState.journeyStatsBreakdown
+        type: 'SetJourneyAnalyticsAction',
+        journeyAnalytics: initialState.journeyAnalytics
       })
-  }, [initialState?.journeyStatsBreakdown])
+  }, [initialState?.journeyAnalytics])
 
   // only run once
   const stepRef = useRef(false)

@@ -4,10 +4,10 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GetJourneyPlausibleStatsBreakdown
+// GraphQL query operation: GetJourneyAnalytics
 // ====================================================
 
-export interface GetJourneyPlausibleStatsBreakdown_journeySteps {
+export interface GetJourneyAnalytics_journeySteps {
   __typename: "PlausibleStatsResponse";
   /**
    * On breakdown queries, this is the property that was broken down by.
@@ -25,7 +25,7 @@ export interface GetJourneyPlausibleStatsBreakdown_journeySteps {
   timeOnPage: number | null;
 }
 
-export interface GetJourneyPlausibleStatsBreakdown_journeyStepsActions {
+export interface GetJourneyAnalytics_journeyStepsActions {
   __typename: "PlausibleStatsResponse";
   /**
    * On breakdown queries, this is the property that was broken down by.
@@ -39,7 +39,7 @@ export interface GetJourneyPlausibleStatsBreakdown_journeyStepsActions {
   events: number | null;
 }
 
-export interface GetJourneyPlausibleStatsBreakdown_journeyReferrer {
+export interface GetJourneyAnalytics_journeyReferrer {
   __typename: "PlausibleStatsResponse";
   /**
    * On breakdown queries, this is the property that was broken down by.
@@ -52,7 +52,7 @@ export interface GetJourneyPlausibleStatsBreakdown_journeyReferrer {
   visitors: number | null;
 }
 
-export interface GetJourneyPlausibleStatsBreakdown_journeyVisitorsPageExits {
+export interface GetJourneyAnalytics_journeyVisitorsPageExits {
   __typename: "PlausibleStatsResponse";
   /**
    * On breakdown queries, this is the property that was broken down by.
@@ -65,7 +65,7 @@ export interface GetJourneyPlausibleStatsBreakdown_journeyVisitorsPageExits {
   visitors: number | null;
 }
 
-export interface GetJourneyPlausibleStatsBreakdown_journeyActionsSums {
+export interface GetJourneyAnalytics_journeyActionsSums {
   __typename: "PlausibleStatsResponse";
   /**
    * On breakdown queries, this is the property that was broken down by.
@@ -79,20 +79,20 @@ export interface GetJourneyPlausibleStatsBreakdown_journeyActionsSums {
   events: number | null;
 }
 
-export interface GetJourneyPlausibleStatsBreakdown_journeyAggregateVisitors_visitors {
+export interface GetJourneyAnalytics_journeyAggregateVisitors_visitors {
   __typename: "PlausibleStatsAggregateValue";
   value: number;
 }
 
-export interface GetJourneyPlausibleStatsBreakdown_journeyAggregateVisitors {
+export interface GetJourneyAnalytics_journeyAggregateVisitors {
   __typename: "PlausibleStatsAggregateResponse";
   /**
    * The number of unique visitors.
    */
-  visitors: GetJourneyPlausibleStatsBreakdown_journeyAggregateVisitors_visitors | null;
+  visitors: GetJourneyAnalytics_journeyAggregateVisitors_visitors | null;
 }
 
-export interface GetJourneyPlausibleStatsBreakdown {
+export interface GetJourneyAnalytics {
   /**
    * This endpoint allows you to break down your stats by some property.
    * If you are familiar with SQL family databases, this endpoint corresponds to
@@ -111,7 +111,7 @@ export interface GetJourneyPlausibleStatsBreakdown {
    * breakdown for every page, you would have to break down on `event:page` and
    * make multiple queries for each date.
    */
-  journeySteps: GetJourneyPlausibleStatsBreakdown_journeySteps[];
+  journeySteps: GetJourneyAnalytics_journeySteps[];
   /**
    * This endpoint allows you to break down your stats by some property.
    * If you are familiar with SQL family databases, this endpoint corresponds to
@@ -130,7 +130,7 @@ export interface GetJourneyPlausibleStatsBreakdown {
    * breakdown for every page, you would have to break down on `event:page` and
    * make multiple queries for each date.
    */
-  journeyStepsActions: GetJourneyPlausibleStatsBreakdown_journeyStepsActions[];
+  journeyStepsActions: GetJourneyAnalytics_journeyStepsActions[];
   /**
    * This endpoint allows you to break down your stats by some property.
    * If you are familiar with SQL family databases, this endpoint corresponds to
@@ -149,7 +149,7 @@ export interface GetJourneyPlausibleStatsBreakdown {
    * breakdown for every page, you would have to break down on `event:page` and
    * make multiple queries for each date.
    */
-  journeyReferrer: GetJourneyPlausibleStatsBreakdown_journeyReferrer[];
+  journeyReferrer: GetJourneyAnalytics_journeyReferrer[];
   /**
    * This endpoint allows you to break down your stats by some property.
    * If you are familiar with SQL family databases, this endpoint corresponds to
@@ -168,7 +168,7 @@ export interface GetJourneyPlausibleStatsBreakdown {
    * breakdown for every page, you would have to break down on `event:page` and
    * make multiple queries for each date.
    */
-  journeyVisitorsPageExits: GetJourneyPlausibleStatsBreakdown_journeyVisitorsPageExits[];
+  journeyVisitorsPageExits: GetJourneyAnalytics_journeyVisitorsPageExits[];
   /**
    * This endpoint allows you to break down your stats by some property.
    * If you are familiar with SQL family databases, this endpoint corresponds to
@@ -187,11 +187,11 @@ export interface GetJourneyPlausibleStatsBreakdown {
    * breakdown for every page, you would have to break down on `event:page` and
    * make multiple queries for each date.
    */
-  journeyActionsSums: GetJourneyPlausibleStatsBreakdown_journeyActionsSums[];
-  journeyAggregateVisitors: GetJourneyPlausibleStatsBreakdown_journeyAggregateVisitors;
+  journeyActionsSums: GetJourneyAnalytics_journeyActionsSums[];
+  journeyAggregateVisitors: GetJourneyAnalytics_journeyAggregateVisitors;
 }
 
-export interface GetJourneyPlausibleStatsBreakdownVariables {
+export interface GetJourneyAnalyticsVariables {
   id: string;
   period?: string | null;
   date?: string | null;

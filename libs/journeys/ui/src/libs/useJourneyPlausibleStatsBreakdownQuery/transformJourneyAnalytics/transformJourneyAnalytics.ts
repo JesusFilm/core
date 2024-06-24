@@ -1,14 +1,16 @@
 import replace from 'lodash/replace'
 
-import { JourneyPlausibleEvents, reverseKeyify } from '../plausibleHelpers'
+import { JourneyPlausibleEvents, reverseKeyify } from '../../plausibleHelpers'
 import {
-  GetJourneyPlausibleStatsBreakdown_journeyActionsSums as JourneyActionsSums,
-  GetJourneyPlausibleStatsBreakdown_journeyAggregateVisitors as JourneyAggregateVisitors,
-  GetJourneyPlausibleStatsBreakdown_journeyReferrer as JourneyReferrer,
-  GetJourneyPlausibleStatsBreakdown_journeySteps as JourneyStep,
-  GetJourneyPlausibleStatsBreakdown_journeyStepsActions as JourneyStepsAction,
-  GetJourneyPlausibleStatsBreakdown_journeyVisitorsPageExits as JourneyVisitorsPageExit
-} from '../useJourneyPlausibleStatsBreakdownQuery/__generated__/GetJourneyPlausibleStatsBreakdown'
+  GetJourneyAnalytics,
+  GetJourneyAnalytics_journeyActionsSums as JourneyActionsSums,
+  GetJourneyAnalytics_journeyStepsActions as JourneyStepsAction,
+  GetJourneyAnalytics_journeyVisitorsPageExits as JourneyVisitorsPageExit
+} from '../__generated__/GetJourneyAnalytics'
+import {
+  type JourneyAnalytics,
+  type StepStat
+} from '../useJourneyAnalyticsQuery'
 
 const ACTION_EVENTS: Array<keyof JourneyPlausibleEvents> = [
   'navigateNextStep',
@@ -20,35 +22,6 @@ const ACTION_EVENTS: Array<keyof JourneyPlausibleEvents> = [
   'chatButtonClick'
 ]
 
-export interface StatsBreakdown {
-  journeySteps: JourneyStep[]
-  journeyStepsActions: JourneyStepsAction[]
-  journeyReferrer: JourneyReferrer[]
-  journeyAggregateVisitors: JourneyAggregateVisitors
-  journeyVisitorsPageExits: JourneyVisitorsPageExit[]
-  journeyActionsSums: JourneyActionsSums[]
-}
-
-type SumEventMap = Map<string, number>
-
-export interface JourneyStatsBreakdown {
-  totalVisitors: number
-  chatsStarted: number
-  linksVisited: number
-  referrers: JourneyReferrer[]
-  stepsStats: StepStat[]
-  stepMap: Map<string, { eventMap: SumEventMap; total: number }>
-  blockMap: SumEventMap
-  targetMap: SumEventMap
-}
-
-interface StepStat {
-  stepId: string
-  visitors: number
-  timeOnPage: number
-  visitorsExitAtStep: number
-}
-
 interface PlausibleEvent {
   stepId: string
   event: keyof JourneyPlausibleEvents
@@ -57,15 +30,10 @@ interface PlausibleEvent {
   events: number
 }
 
-interface TransformPlausibleBreakdownProps {
-  journeyId?: string
-  data?: StatsBreakdown
-}
-
-export function transformPlausibleBreakdown({
-  journeyId,
-  data
-}: TransformPlausibleBreakdownProps): JourneyStatsBreakdown | undefined {
+export function transformJourneyAnalytics(
+  journeyId: string | undefined,
+  data: GetJourneyAnalytics
+): JourneyAnalytics | undefined {
   if (journeyId == null || data == null) return
   const {
     journeySteps,

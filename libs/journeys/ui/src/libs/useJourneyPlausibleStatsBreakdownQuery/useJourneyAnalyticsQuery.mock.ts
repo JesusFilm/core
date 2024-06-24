@@ -1,19 +1,18 @@
 import { MockedResponse } from '@apollo/client/testing'
 
 import {
-  GetJourneyPlausibleStatsBreakdown,
-  GetJourneyPlausibleStatsBreakdownVariables
-} from '../../../../../../apps/journeys-admin/__generated__/GetJourneyPlausibleStatsBreakdown'
-import { IdType } from '../../../../../../apps/journeys-admin/__generated__/globalTypes'
+  GetJourneyAnalytics,
+  GetJourneyAnalyticsVariables
+} from './__generated__/GetJourneyAnalytics'
 
-import { GET_JOURNEY_PLAUSIBLE_STATS_BREAKDOWN } from './useJourneyPlausibleStatsBreakdownQuery'
+import { GET_JOURNEY_ANALYTICS } from './useJourneyAnalyticsQuery'
 
-export const getJourneyPlausibleStatsBreakdown: MockedResponse<
-  GetJourneyPlausibleStatsBreakdown,
-  GetJourneyPlausibleStatsBreakdownVariables
+export const getJourneyAnalytics: MockedResponse<
+  GetJourneyAnalytics,
+  GetJourneyAnalyticsVariables
 > = {
   request: {
-    query: GET_JOURNEY_PLAUSIBLE_STATS_BREAKDOWN,
+    query: GET_JOURNEY_ANALYTICS,
     variables: {
       id: 'journeyId'
     }

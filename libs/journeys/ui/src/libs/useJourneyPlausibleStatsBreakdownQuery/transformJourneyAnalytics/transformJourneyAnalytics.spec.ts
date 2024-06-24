@@ -1,12 +1,9 @@
-import {
-  JourneyStatsBreakdown,
-  StatsBreakdown,
-  transformPlausibleBreakdown
-} from './transformPlausibleBreakdown'
+import { GetJourneyAnalytics } from '../__generated__/GetJourneyAnalytics'
+import { transformJourneyAnalytics } from './transformJourneyAnalytics'
 
-describe('transformPlausibleBreakdown', () => {
+describe('transformJourneyAnalytics', () => {
   it('should return journey stats breakdown', () => {
-    const data: StatsBreakdown = {
+    const data: GetJourneyAnalytics = {
       journeySteps: [
         {
           __typename: 'PlausibleStatsResponse',
@@ -158,7 +155,7 @@ describe('transformPlausibleBreakdown', () => {
       }
     }
 
-    const result: JourneyStatsBreakdown = {
+    const result = {
       totalVisitors: 10,
       chatsStarted: 5,
       linksVisited: 0,
@@ -237,8 +234,6 @@ describe('transformPlausibleBreakdown', () => {
       ])
     }
 
-    expect(
-      transformPlausibleBreakdown({ journeyId: 'journeyId', data })
-    ).toEqual(result)
+    expect(transformJourneyAnalytics('journeyId', data)).toEqual(result)
   })
 })

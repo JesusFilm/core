@@ -1,1 +1,4 @@
-export { useJourneyPlausibleStatsBreakdownQuery } from './useJourneyPlausibleStatsBreakdownQuery'
+export {
+  useJourneyAnalyticsQuery,
+  type JourneyAnalytics
+} from './useJourneyAnalyticsQuery'
