@@ -1,9 +1,9 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { NextRouter, useRouter } from 'next/router'
+import { type NextRouter, useRouter } from 'next/router'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
+import type { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
@@ -171,7 +171,7 @@ describe('CreateJourneyButton', () => {
         prefetch,
         push,
         query: { createNew: false },
-        asPath: '/templates/[journeyId]'
+        asPath: '/templates/journeyId'
       } as unknown as NextRouter)
 
       Object.defineProperty(window, 'location', {
@@ -203,10 +203,10 @@ describe('CreateJourneyButton', () => {
       await waitFor(() => {
         expect(push).toHaveBeenCalledWith(
           {
-            pathname: '/users/sign-in',
+            pathname: 'http://localhost:4200/users/sign-in',
             query: {
               redirect:
-                'http://localhost:4200/templates/[journeyId]?createNew=true',
+                'http://localhost:4200/templates/journeyId?createNew=true',
               login: true
             }
           },
@@ -225,10 +225,10 @@ describe('CreateJourneyButton', () => {
       await waitFor(() => {
         expect(push).toHaveBeenCalledWith(
           {
-            pathname: '/users/sign-in',
+            pathname: 'http://localhost:4200/users/sign-in',
             query: {
               redirect:
-                'http://localhost:4200/templates/[journeyId]?createNew=true',
+                'http://localhost:4200/templates/journeyId?createNew=true',
               login: false
             }
           },
@@ -258,7 +258,7 @@ describe('CreateJourneyButton', () => {
             prefetch,
             push,
             query: { createNew: false },
-            asPath: '/templates/[journeyId]'
+            asPath: '/templates/journeyId'
           } as unknown as NextRouter)
 
           Object.defineProperty(window, 'location', {
@@ -283,7 +283,7 @@ describe('CreateJourneyButton', () => {
                 pathname: 'http://localhost:4200/users/sign-in',
                 query: {
                   redirect:
-                    'http://localhost:4200/templates/[journeyId]?createNew=true',
+                    'http://localhost:4200/templates/journeyId?createNew=true',
                   login: true
                 }
               },
@@ -305,7 +305,7 @@ describe('CreateJourneyButton', () => {
                 pathname: 'http://localhost:4200/users/sign-in',
                 query: {
                   redirect:
-                    'http://localhost:4200/templates/[journeyId]?createNew=true',
+                    'http://localhost:4200/templates/journeyId?createNew=true',
                   login: false
                 }
               },
@@ -322,7 +322,7 @@ describe('CreateJourneyButton', () => {
             prefetch,
             push,
             query: { createNew: false },
-            asPath: '/journeys/[journeyId]'
+            asPath: '/journeys/journeyId'
           } as unknown as NextRouter)
 
           Object.defineProperty(window, 'location', {
@@ -347,7 +347,7 @@ describe('CreateJourneyButton', () => {
                 pathname: 'http://localhost:4200/users/sign-in',
                 query: {
                   redirect:
-                    'http://localhost:4300/journeys/[journeyId]?createNew=true',
+                    'http://localhost:4200/templates/journeyId?createNew=true',
                   login: true
                 }
               },
@@ -369,7 +369,7 @@ describe('CreateJourneyButton', () => {
                 pathname: 'http://localhost:4200/users/sign-in',
                 query: {
                   redirect:
-                    'http://localhost:4300/journeys/[journeyId]?createNew=true',
+                    'http://localhost:4200/templates/journeyId?createNew=true',
                   login: false
                 }
               },
