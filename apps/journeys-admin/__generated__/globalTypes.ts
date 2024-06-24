@@ -374,6 +374,11 @@ export interface IntegrationGrowthSpaceCreateInput {
   accessSecret: string;
 }
 
+export interface IntegrationGrowthSpaceUpdateInput {
+  accessId: string;
+  accessSecret: string;
+}
+
 export interface JourneyCollectionCreateInput {
   id?: string | null;
   teamId: string;
