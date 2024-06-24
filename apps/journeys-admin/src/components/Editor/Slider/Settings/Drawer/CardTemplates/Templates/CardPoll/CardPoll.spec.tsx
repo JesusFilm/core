@@ -6,10 +6,10 @@ import { v4 as uuidv4 } from 'uuid'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { JourneyFields as Journey } from '../../../../../../../../../__generated__/JourneyFields'
+import type { JourneyFields as Journey } from '../../../../../../../../../__generated__/JourneyFields'
 import { cachedJourney, step } from '../../CardTemplates.data'
 
-import { cardPollCreateMock, cardPollResult } from './CardPoll.data'
+import { cardPollCreateMock } from './CardPoll.data'
 
 import { CardPoll } from '.'
 
@@ -78,7 +78,7 @@ describe('CardPoll', () => {
     )
 
     fireEvent.click(getByRole('button', { name: 'Card Poll Template' }))
-    await waitFor(() => expect(cardPollResult).toHaveBeenCalled())
+    await waitFor(() => expect(cardPollCreateMock.result).toHaveBeenCalled())
     await waitFor(() => expect(setLoadingMock).toHaveBeenCalled())
   })
 })

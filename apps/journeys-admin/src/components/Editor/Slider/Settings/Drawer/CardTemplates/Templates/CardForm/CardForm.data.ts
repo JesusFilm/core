@@ -1,6 +1,6 @@
-import { MockedResponse } from '@apollo/client/testing'
+import type { MockedResponse } from '@apollo/client/testing'
 
-import {
+import type {
   CardFormCreate,
   CardFormCreateVariables
 } from '../../../../../../../../../__generated__/CardFormCreate'
@@ -76,10 +76,6 @@ const cardFormCreate: CardFormCreate = {
   }
 }
 
-export const cardFormResult = jest.fn(() => ({
-  data: cardFormCreate
-}))
-
 export const cardFormCreateMock: MockedResponse<
   CardFormCreate,
   CardFormCreateVariables
@@ -130,5 +126,7 @@ export const cardFormCreateMock: MockedResponse<
       }
     }
   },
-  result: cardFormResult
+  result: jest.fn(() => ({
+    data: cardFormCreate
+  }))
 }

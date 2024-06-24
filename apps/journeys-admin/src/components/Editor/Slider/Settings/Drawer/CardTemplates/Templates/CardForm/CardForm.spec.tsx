@@ -6,10 +6,10 @@ import { v4 as uuidv4 } from 'uuid'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { JourneyFields as Journey } from '../../../../../../../../../__generated__/JourneyFields'
+import type { JourneyFields as Journey } from '../../../../../../../../../__generated__/JourneyFields'
 import { cachedJourney, step } from '../../CardTemplates.data'
 
-import { cardFormCreateMock, cardFormResult } from './CardForm.data'
+import { cardFormCreateMock } from './CardForm.data'
 
 import { CardForm } from '.'
 
@@ -74,7 +74,7 @@ describe('CardForm', () => {
     )
 
     fireEvent.click(getByRole('button', { name: 'Card Form Template' }))
-    await waitFor(() => expect(cardFormResult).toHaveBeenCalled())
+    await waitFor(() => expect(cardFormCreateMock.result).toHaveBeenCalled())
     await waitFor(() => expect(setLoadingMock).toHaveBeenCalled())
   })
 })

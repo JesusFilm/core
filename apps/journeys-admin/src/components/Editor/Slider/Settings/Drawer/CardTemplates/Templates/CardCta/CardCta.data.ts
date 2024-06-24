@@ -1,6 +1,6 @@
-import { MockedResponse } from '@apollo/client/testing'
+import type { MockedResponse } from '@apollo/client/testing'
 
-import {
+import type {
   CardCtaCreate,
   CardCtaCreateVariables
 } from '../../../../../../../../../__generated__/CardCtaCreate'
@@ -191,10 +191,6 @@ const cardCtaCreate: CardCtaCreate = {
   }
 }
 
-export const cardCtaResult = jest.fn(() => ({
-  data: cardCtaCreate
-}))
-
 export const cardCtaCreateMock: MockedResponse<
   CardCtaCreate,
   CardCtaCreateVariables
@@ -304,5 +300,7 @@ export const cardCtaCreateMock: MockedResponse<
       }
     }
   },
-  result: cardCtaResult
+  result: jest.fn(() => ({
+    data: cardCtaCreate
+  }))
 }

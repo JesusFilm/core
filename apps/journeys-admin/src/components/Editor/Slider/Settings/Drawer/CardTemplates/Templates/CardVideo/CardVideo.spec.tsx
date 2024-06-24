@@ -5,10 +5,10 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { JourneyFields as Journey } from '../../../../../../../../../__generated__/JourneyFields'
+import type { JourneyFields as Journey } from '../../../../../../../../../__generated__/JourneyFields'
 import { cachedJourney, step } from '../../CardTemplates.data'
 
-import { cardVideoCreateMock, cardVideoResult } from './CardVideo.data'
+import { cardVideoCreateMock } from './CardVideo.data'
 
 import { CardVideo } from '.'
 
@@ -58,7 +58,7 @@ describe('CardVideo', () => {
     )
 
     fireEvent.click(getByRole('button', { name: 'Card Video Template' }))
-    await waitFor(() => expect(cardVideoResult).toHaveBeenCalled())
+    await waitFor(() => expect(cardVideoCreateMock.result).toHaveBeenCalled())
     await waitFor(() => expect(setLoadingMock).toHaveBeenCalled())
   })
 })

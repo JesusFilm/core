@@ -1,6 +1,6 @@
-import { MockedResponse } from '@apollo/client/testing'
+import type { MockedResponse } from '@apollo/client/testing'
 
-import {
+import type {
   CardPollCreate,
   CardPollCreateVariables
 } from '../../../../../../../../../__generated__/CardPollCreate'
@@ -104,10 +104,6 @@ const cardPollCreate: CardPollCreate = {
   }
 }
 
-export const cardPollResult = jest.fn(() => ({
-  data: cardPollCreate
-}))
-
 export const cardPollCreateMock: MockedResponse<
   CardPollCreate,
   CardPollCreateVariables
@@ -176,5 +172,7 @@ export const cardPollCreateMock: MockedResponse<
       }
     }
   },
-  result: cardPollResult
+  result: jest.fn(() => ({
+    data: cardPollCreate
+  }))
 }

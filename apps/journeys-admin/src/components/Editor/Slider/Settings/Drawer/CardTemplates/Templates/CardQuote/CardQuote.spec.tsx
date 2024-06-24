@@ -5,10 +5,10 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { JourneyFields as Journey } from '../../../../../../../../../__generated__/JourneyFields'
+import type { JourneyFields as Journey } from '../../../../../../../../../__generated__/JourneyFields'
 import { cachedJourney, step } from '../../CardTemplates.data'
 
-import { cardQuoteCreateMock, cardQuoteResult } from './CardQuote.data'
+import { cardQuoteCreateMock } from './CardQuote.data'
 
 import { CardQuote } from '.'
 
@@ -62,7 +62,7 @@ describe('CardQuote', () => {
     )
 
     fireEvent.click(getByRole('button', { name: 'Card Quote Template' }))
-    await waitFor(() => expect(cardQuoteResult).toHaveBeenCalled())
+    await waitFor(() => expect(cardQuoteCreateMock).toHaveBeenCalled())
     await waitFor(() => expect(setLoadingMock).toHaveBeenCalled())
   })
 })
