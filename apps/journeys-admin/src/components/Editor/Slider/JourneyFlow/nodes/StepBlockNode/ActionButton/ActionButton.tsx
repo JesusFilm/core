@@ -114,9 +114,8 @@ export function ActionButton({
               flexBasis: 0,
               flexShrink: '1px',
               transition: 'all 300ms ease',
-              flexGrow: showJourneyFlowAnalytics
-                ? `${analytics?.percentage ?? 0}`
-                : 0,
+              flexGrow:
+                showAnalytics === true ? `${analytics?.percentage ?? 0}` : 0,
               borderRadius: '0 4px 4px 0'
             }}
           />
@@ -129,7 +128,7 @@ export function ActionButton({
             alignItems: 'center',
             '&:hover': {
               '& .stats-overlay__event-count': {
-                opacity: showJourneyFlowAnalytics ? 1 : 0
+                opacity: showAnalytics === true ? 1 : 0
               }
             }
           }}

@@ -65,11 +65,10 @@ export function StepBlockNodeCard({
       title={t('Click to edit or drag')}
       onClick={handleClick}
       sx={{
-        opacity: showJourneyFlowAnalytics ? 0.8 : 1,
-        boxShadow: showJourneyFlowAnalytics ? 'none' : 3,
-        backgroundColor: showJourneyFlowAnalytics
-          ? 'transparent'
-          : 'background.paper',
+        opacity: showAnalytics === true ? 0.8 : 1,
+        boxShadow: showAnalytics === true ? 'none' : 3,
+        backgroundColor:
+          showAnalytics === true ? 'transparent' : 'background.paper',
         width: STEP_NODE_CARD_WIDTH,
         m: 1.5,
         '&:hover': {
