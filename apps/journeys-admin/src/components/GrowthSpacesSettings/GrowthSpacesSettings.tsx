@@ -21,7 +21,8 @@ export function GrowthSpacesSettings(): ReactElement {
       sx={{
         p: 6,
         gap: 4,
-        m: 'auto',
+        mt: 20,
+        mx: 'auto',
         width: '60%',
         display: 'flex',
         flexDirection: 'column',
