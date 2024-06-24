@@ -3,14 +3,11 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { TreeBlock } from '@core/journeys/ui/block'
 
-import { JourneyFields as Journey } from '../../../../../../../__generated__/JourneyFields'
-import { VideoBlockSource } from '../../../../../../../__generated__/globalTypes'
+import type { JourneyFields as Journey } from '../../../../../../../__generated__/JourneyFields'
 import { TestEditorState } from '../../../../../../libs/TestEditorState'
 
 import { step } from './CardTemplates.data'
-import { cardVideoCreateMock } from './Templates/CardVideo/CardVideo.data'
 
 import { CardTemplates } from '.'
 
@@ -19,8 +16,8 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: jest.fn()
 }))
 
-const cardTemplate = (
-  <MockedProvider mocks={[cardVideoCreateMock]}>
+const cardTemplates = (
+  <MockedProvider>
     <JourneyProvider
       value={{ journey: { id: 'journeyId' } as unknown as Journey }}
     >
@@ -32,52 +29,50 @@ const cardTemplate = (
   </MockedProvider>
 )
 
-async function expectCardContentToBeUpdated(getByText): Promise<void> {
-  await waitFor(() =>
-    expect(getByText('selectedBlock: stepId')).toBeInTheDocument()
-  )
+async function expectBlockToBeSelected(getByText): Promise<void> {
+  expect(getByText('selectedBlock: stepId')).toBeInTheDocument()
   expect(getByText('selectedAttributeId:')).toBeInTheDocument()
 }
 
 describe('CardTemplates', () => {
-  it('changes content of card when video template clicked', async () => {
-    const { getByRole, getByText } = render(cardTemplate)
-    fireEvent.click(getByRole('button', { name: 'Card Video Template' }))
-    await expectCardContentToBeUpdated(getByText)
+  it('renders cta template', async () => {
+    const { getByAltText, getByText } = render(cardTemplates)
+    expect(getByAltText('Card CTA Template')).toBeInTheDocument()
+    await expectBlockToBeSelected(getByText)
   })
 
-  it('changes content of card when intro template clicked', async () => {
-    const { getByRole, getByText } = render(cardTemplate)
-    fireEvent.click(getByRole('button', { name: 'Card Intro Template' }))
-    await expectCardContentToBeUpdated(getByText)
+  it('renders form template', async () => {
+    const { getByAltText, getByText } = render(cardTemplates)
+    expect(getByAltText('Card Form Template')).toBeInTheDocument()
+    await expectBlockToBeSelected(getByText)
   })
 
-  it('changes content of card when poll template clicked', async () => {
-    const { getByRole, getByText } = render(cardTemplate)
-    fireEvent.click(getByRole('button', { name: 'Card Poll Template' }))
-    await expectCardContentToBeUpdated(getByText)
+  it('renders intro template', async () => {
+    const { getByAltText, getByText } = render(cardTemplates)
+    expect(getByAltText('Card Intro Template')).toBeInTheDocument()
+    await expectBlockToBeSelected(getByText)
   })
 
-  it('changes content of card when form template clicked', async () => {
-    const { getByRole, getByText } = render(cardTemplate)
-    fireEvent.click(getByRole('button', { name: 'Card Form Template' }))
-    await expectCardContentToBeUpdated(getByText)
+  it('renders poll template', async () => {
+    const { getByAltText, getByText } = render(cardTemplates)
+    expect(getByAltText('Card Poll Template')).toBeInTheDocument()
+    await expectBlockToBeSelected(getByText)
   })
 
-  it('changes content of card when quote template clicked', async () => {
-    const { getByRole, getByText } = render(cardTemplate)
-    fireEvent.click(getByRole('button', { name: 'Card Quote Template' }))
-    await expectCardContentToBeUpdated(getByText)
+  it('renders quote template', async () => {
+    const { getByAltText, getByText } = render(cardTemplates)
+    expect(getByAltText('Card Quote Template')).toBeInTheDocument()
+    await expectBlockToBeSelected(getByText)
   })
 
-  it('changes content of card when cta template clicked', async () => {
-    const { getByRole, getByText } = render(cardTemplate)
-    fireEvent.click(getByRole('button', { name: 'Card CTA Template' }))
-    await expectCardContentToBeUpdated(getByText)
+  it('renders video template', async () => {
+    const { getByAltText, getByText } = render(cardTemplates)
+    expect(getByAltText('Card Video Template')).toBeInTheDocument()
+    await expectBlockToBeSelected(getByText)
   })
 
   it('updates loading state when video clicked', async () => {
-    const { getByRole, getAllByTestId } = render(cardTemplate)
+    const { getByRole, getAllByTestId } = render(cardTemplates)
     fireEvent.click(getByRole('button', { name: 'Card Video Template' }))
     await waitFor(() =>
       expect(getAllByTestId('card-template-skeleton')).toHaveLength(6)
@@ -85,7 +80,7 @@ describe('CardTemplates', () => {
   })
 
   it('updates loading state when intro clicked', async () => {
-    const { getByRole, getAllByTestId } = render(cardTemplate)
+    const { getByRole, getAllByTestId } = render(cardTemplates)
     fireEvent.click(getByRole('button', { name: 'Card Intro Template' }))
     await waitFor(() =>
       expect(getAllByTestId('card-template-skeleton')).toHaveLength(6)
@@ -93,7 +88,7 @@ describe('CardTemplates', () => {
   })
 
   it('updates loading state when poll clicked', async () => {
-    const { getByRole, getAllByTestId } = render(cardTemplate)
+    const { getByRole, getAllByTestId } = render(cardTemplates)
     fireEvent.click(getByRole('button', { name: 'Card Poll Template' }))
     await waitFor(() =>
       expect(getAllByTestId('card-template-skeleton')).toHaveLength(6)
@@ -101,7 +96,7 @@ describe('CardTemplates', () => {
   })
 
   it('updates loading state when form clicked', async () => {
-    const { getByRole, getAllByTestId } = render(cardTemplate)
+    const { getByRole, getAllByTestId } = render(cardTemplates)
     fireEvent.click(getByRole('button', { name: 'Card Form Template' }))
     await waitFor(() =>
       expect(getAllByTestId('card-template-skeleton')).toHaveLength(6)
@@ -109,7 +104,7 @@ describe('CardTemplates', () => {
   })
 
   it('updates loading state when quote clicked', async () => {
-    const { getByRole, getAllByTestId } = render(cardTemplate)
+    const { getByRole, getAllByTestId } = render(cardTemplates)
     fireEvent.click(getByRole('button', { name: 'Card Quote Template' }))
     await waitFor(() =>
       expect(getAllByTestId('card-template-skeleton')).toHaveLength(6)
@@ -117,7 +112,7 @@ describe('CardTemplates', () => {
   })
 
   it('updates loading state when cta clicked', async () => {
-    const { getByRole, getAllByTestId } = render(cardTemplate)
+    const { getByRole, getAllByTestId } = render(cardTemplates)
     fireEvent.click(getByRole('button', { name: 'Card CTA Template' }))
     await waitFor(() =>
       expect(getAllByTestId('card-template-skeleton')).toHaveLength(6)
