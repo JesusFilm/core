@@ -7,7 +7,6 @@ import { GraphQLError } from 'graphql/error'
 import { PrismaService } from '../../../lib/prisma.service'
 import { IntegrationService } from '../integration.service'
 
-import { TextResponseType } from '../../../__generated__/graphql'
 import { Block } from '.prisma/api-journeys-client'
 
 const ONE_DAY_MS = 86400000
