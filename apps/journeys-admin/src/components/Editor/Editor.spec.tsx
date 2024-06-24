@@ -3,6 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { getJourneyPlausibleStatsBreakdown } from '@core/journeys/ui/useJourneyPlausibleStatsBreakdownQuery/useJourneyPlausibleStatsBreakdownQuery.mock'
 
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import { GetStepBlocksWithPosition } from '../../../__generated__/GetStepBlocksWithPosition'
@@ -12,7 +13,6 @@ import {
   ThemeName
 } from '../../../__generated__/globalTypes'
 import { mockReactFlow } from '../../../test/mockReactFlow'
-import { getJourneyPlausibleStatsBreakdown } from '../../libs/useJourneyPlausibleStatsBreakdownQuery/useJourneyPlausibleStatsBreakdownQuery.mock'
 import { ThemeProvider } from '../ThemeProvider'
 
 import { GET_STEP_BLOCKS_WITH_POSITION } from './Slider/JourneyFlow/JourneyFlow'

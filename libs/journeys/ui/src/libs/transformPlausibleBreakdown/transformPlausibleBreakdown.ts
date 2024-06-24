@@ -1,13 +1,14 @@
 import replace from 'lodash/replace'
 
 import { JourneyPlausibleEvents, reverseKeyify } from '../plausibleHelpers'
-
-import { PlausibleJourneyActionsSumsFields as JourneyActionsSums } from './plausibleFields/__generated__/PlausibleJourneyActionsSumsFields'
-import { PlausibleJourneyAggregateVisitorsFields as JourneyAggregateVisitors } from './plausibleFields/__generated__/PlausibleJourneyAggregateVisitorsFields'
-import { PlausibleJourneyReferrerFields as JourneyReferrer } from './plausibleFields/__generated__/PlausibleJourneyReferrerFields'
-import { PlausibleJourneyStepsActionsFields as JourneyStepsAction } from './plausibleFields/__generated__/PlausibleJourneyStepsActionsFields'
-import { PlausibleJourneyStepsFields as JourneyStep } from './plausibleFields/__generated__/PlausibleJourneyStepsFields'
-import { PlausibleJourneyVisitorsPageExitsFields as JourneyVisitorsPageExit } from './plausibleFields/__generated__/PlausibleJourneyVisitorsPageExitsFields'
+import {
+  GetJourneyPlausibleStatsBreakdown_journeyActionsSums as JourneyActionsSums,
+  GetJourneyPlausibleStatsBreakdown_journeyAggregateVisitors as JourneyAggregateVisitors,
+  GetJourneyPlausibleStatsBreakdown_journeyReferrer as JourneyReferrer,
+  GetJourneyPlausibleStatsBreakdown_journeySteps as JourneyStep,
+  GetJourneyPlausibleStatsBreakdown_journeyStepsActions as JourneyStepsAction,
+  GetJourneyPlausibleStatsBreakdown_journeyVisitorsPageExits as JourneyVisitorsPageExit
+} from '../useJourneyPlausibleStatsBreakdownQuery/__generated__/GetJourneyPlausibleStatsBreakdown'
 
 const ACTION_EVENTS: Array<keyof JourneyPlausibleEvents> = [
   'navigateNextStep',

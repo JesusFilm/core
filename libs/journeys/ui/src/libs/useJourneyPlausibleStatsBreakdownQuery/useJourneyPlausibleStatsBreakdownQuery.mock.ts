@@ -3,8 +3,8 @@ import { MockedResponse } from '@apollo/client/testing'
 import {
   GetJourneyPlausibleStatsBreakdown,
   GetJourneyPlausibleStatsBreakdownVariables
-} from '../../../__generated__/GetJourneyPlausibleStatsBreakdown'
-import { IdType } from '../../../__generated__/globalTypes'
+} from '../../../../../../apps/journeys-admin/__generated__/GetJourneyPlausibleStatsBreakdown'
+import { IdType } from '../../../../../../apps/journeys-admin/__generated__/globalTypes'
 
 import { GET_JOURNEY_PLAUSIBLE_STATS_BREAKDOWN } from './useJourneyPlausibleStatsBreakdownQuery'
 
@@ -15,13 +15,7 @@ export const getJourneyPlausibleStatsBreakdown: MockedResponse<
   request: {
     query: GET_JOURNEY_PLAUSIBLE_STATS_BREAKDOWN,
     variables: {
-      id: 'journeyId',
-      idType: IdType.databaseId,
-      period: undefined,
-      date: undefined,
-      interval: undefined,
-      limit: undefined,
-      page: undefined
+      id: 'journeyId'
     }
   },
   result: {
