@@ -28,7 +28,7 @@ export function ActionButton({
 }: ActionButtonProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const {
-    state: { showJourneyFlowAnalytics }
+    state: { showAnalytics }
   } = useEditor()
   const updateEdge = useUpdateEdge()
 
@@ -72,7 +72,7 @@ export function ActionButton({
   return (
     <BaseNode
       id={block.id}
-      sourceHandle={showJourneyFlowAnalytics ? 'disabled' : 'show'}
+      sourceHandle={showAnalytics === true ? 'disabled' : 'show'}
       onSourceConnect={updateEdge}
       selected={selected}
       isSourceConnected={isSourceConnected}

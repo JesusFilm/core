@@ -57,8 +57,7 @@ describe('useDeleteOnKeyPress', () => {
 
     const initialState = {
       selectedBlock: null,
-      activeSlide: ActiveSlide.JourneyFlow,
-      showJourneyFlowAnalytics: false
+      activeSlide: ActiveSlide.JourneyFlow
     } as unknown as EditorState
     const edge = {
       source: 'source',
@@ -88,8 +87,7 @@ describe('useDeleteOnKeyPress', () => {
     } as unknown as TreeBlock<StepBlock>
     const initialState = {
       selectedBlock: stepBlock,
-      activeSlide: ActiveSlide.JourneyFlow,
-      showJourneyFlowAnalytics: false
+      activeSlide: ActiveSlide.JourneyFlow
     } as unknown as EditorState
 
     mockUseKeyPress.mockReturnValueOnce(true)

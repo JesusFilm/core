@@ -25,8 +25,7 @@ describe('StrategyItem', () => {
       activeFab: ActiveFab.Add,
       activeSlide: ActiveSlide.JourneyFlow,
       activeContent: ActiveContent.Canvas,
-      activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
-      showJourneyFlowAnalytics: false
+      activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
     }
     const mockJourney: JourneyFields = {
       id: 'journeyId',

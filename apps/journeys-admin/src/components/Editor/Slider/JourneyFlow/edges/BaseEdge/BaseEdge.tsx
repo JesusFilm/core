@@ -26,7 +26,7 @@ export function BaseEdge({
   isSelected = false
 }: BaseEdgeProps): ReactElement {
   const {
-    state: { showJourneyFlowAnalytics }
+    state: { showAnalytics }
   } = useEditor()
   const [edgeSelected, setEdgeSelected] = useState(isSelected)
   const [isHovering, setIsHovering] = useState(false)
@@ -35,7 +35,7 @@ export function BaseEdge({
   useOnSelectionChange({
     onChange: (selected) => {
       const selectedEdge = selected.edges.find((edge) => edge.id === id)
-      if (selectedEdge != null && !showJourneyFlowAnalytics) {
+      if (selectedEdge != null && showAnalytics !== true) {
         setEdgeSelected(true)
       } else {
         setEdgeSelected(false)
@@ -44,7 +44,7 @@ export function BaseEdge({
   })
 
   const props = !hasTouchScreen() &&
-    !showJourneyFlowAnalytics && {
+    showAnalytics !== true && {
       onMouseOver: () => setIsHovering(true),
       onMouseLeave: () => setIsHovering(false)
     }

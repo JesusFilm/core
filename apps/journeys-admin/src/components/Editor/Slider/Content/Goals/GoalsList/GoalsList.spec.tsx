@@ -46,8 +46,7 @@ describe('GoalsList', () => {
     activeSlide: ActiveSlide.JourneyFlow,
     activeContent: ActiveContent.Goals,
     activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
-    selectedGoalUrl: 'initialUrl',
-    showJourneyFlowAnalytics: false
+    selectedGoalUrl: 'initialUrl'
   }
 
   describe('GoalsList', () => {

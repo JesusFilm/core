@@ -133,8 +133,7 @@ describe('SocialPreviewNode', () => {
       activeFab: ActiveFab.Add,
       activeSlide: ActiveSlide.JourneyFlow,
       activeContent: ActiveContent.Canvas,
-      activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
-      showJourneyFlowAnalytics: false
+      activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
     }
 
     render(
