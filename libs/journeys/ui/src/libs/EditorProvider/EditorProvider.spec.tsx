@@ -478,7 +478,7 @@ describe('EditorContext', () => {
     })
 
     describe('SetAnalyticsAction', () => {
-      it('should set journey stats breakdown', () => {
+      it('should set analytics', () => {
         const state: EditorState = {
           steps: [],
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,

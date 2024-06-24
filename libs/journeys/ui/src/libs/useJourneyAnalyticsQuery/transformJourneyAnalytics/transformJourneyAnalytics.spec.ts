@@ -2,7 +2,7 @@ import { GetJourneyAnalytics } from '../__generated__/GetJourneyAnalytics'
 import { transformJourneyAnalytics } from './transformJourneyAnalytics'
 
 describe('transformJourneyAnalytics', () => {
-  it('should return journey stats breakdown', () => {
+  it('should return journey analytics', () => {
     const data: GetJourneyAnalytics = {
       journeySteps: [
         {
