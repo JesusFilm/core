@@ -13,7 +13,7 @@ import {
   EditorProvider,
   EditorState
 } from '.'
-import { type JourneyAnalytics } from '../useJourneyPlausibleStatsBreakdownQuery'
+import { type JourneyAnalytics } from '../useJourneyAnalyticsQuery'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,

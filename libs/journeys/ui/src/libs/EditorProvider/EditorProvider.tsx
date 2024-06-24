@@ -13,7 +13,7 @@ import {
 import type { TreeBlock } from '../block'
 import { BlockFields_StepBlock as StepBlock } from '../block/__generated__/BlockFields'
 import { searchBlocks } from '../searchBlocks'
-import { type JourneyAnalytics } from '../useJourneyPlausibleStatsBreakdownQuery'
+import { type JourneyAnalytics } from '../useJourneyAnalyticsQuery'
 
 export enum ActiveContent {
   Canvas = 'canvas',
