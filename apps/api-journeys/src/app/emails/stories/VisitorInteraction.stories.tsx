@@ -56,7 +56,7 @@ export const Default = {
   args: {
     title: 'Journey Title',
     visitor: {
-      createdAt: new Date(),
+      createdAt: new Date('2024-05-27T23:39:28.000Z'),
       duration: 10,
       events: [
         {
