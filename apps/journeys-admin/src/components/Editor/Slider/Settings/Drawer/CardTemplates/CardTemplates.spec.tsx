@@ -35,6 +35,16 @@ async function expectBlockToBeSelected(getByText): Promise<void> {
 }
 
 describe('CardTemplates', () => {
+  it('renders card template grid', async () => {
+    const { getByTestId } = render(cardTemplates)
+    expect(getByTestId('CardTemplates')).toBeInTheDocument()
+  })
+
+  it('renders skelenton when loading prop passed in', async () => {
+    const { queryAllByTestId } = render(<CardTemplates loading />)
+    expect(queryAllByTestId('card-template-skeleton')).toHaveLength(6)
+  })
+
   it('renders cta template', async () => {
     const { getByAltText, getByText } = render(cardTemplates)
     expect(getByAltText('Card CTA Template')).toBeInTheDocument()
