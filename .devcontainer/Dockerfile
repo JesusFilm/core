@@ -10,6 +10,9 @@ RUN if [ "$USER_GID" != "1000" ] || [ "$USER_UID" != "1000" ]; then groupmod --g
 
 FROM base as final
 
+ENV BUN_INSTALL="home/node/.bun"
+ENV PATH=$BUN_INSTALL/bin:$PATH
+
 # solves "failed to fetch URL Hash Sum mismatch error"
 # see: https://github.com/docker/for-mac/issues/7025
 RUN echo 'Acquire::http::Pipeline-Depth 0;\nAcquire::http::No-Cache true;\nAcquire::BrokenProxy true;\n' > /etc/apt/apt.conf.d/99fixbadproxy
@@ -34,7 +37,7 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
 # RUN su node -c "source /usr/local/share/nvm/nvm.sh && nvm install ${EXTRA_NODE_VERSION}"
 
 # [Optional] Uncomment if you want to install more global node modules
-RUN su node -c "npm install -g npm@latest"
+# RUN su node -c "npm install -g npm@latest"
 
 WORKDIR /home/node
 

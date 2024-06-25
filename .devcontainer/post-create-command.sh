@@ -6,26 +6,32 @@ sudo chgrp node -R /workspaces
 
 cd /workspaces/core
 
+# install bun CLI tool
+curl -fsSL https://bun.sh/install | bash -s "bun-v1.1.16"
+git config diff.lockb.textconv bun
+git config diff.lockb.binary true
+
 # add default user to postgres
 psql -c "CREATE USER \"test-user\" WITH PASSWORD 'test-password' CREATEDB;"
 
 # install Nx CLI tool
-npm install -g nx
+bun install -g nx
 
 # install Nest CLI tool
-npm install -g @nestjs/cli@^8.1.5
+bun install -g @nestjs/cli@^8.1.5
 
 # install Rover CLI tool
-npm install -g @apollo/rover@0.23.0
+bun install -g @apollo/rover@0.23.0
 
 # install Foreman CLI tool
-npm install -g foreman
+bun install -g foreman
 
 # install Apollo CLI tool for codegen
-npm install -g apollo graphql
+bun install -g apollo graphql
 
 # install all dependencies
-npm i
+rm -rf /workspaces/core/node_modules
+bun i
 
 # install router to api gateways
 # when updating router version you'll need to:
@@ -37,3 +43,6 @@ mv router apps/api-gateway/
 
 # update plausible db
 psql -U postgres -h db -d plausible_db < .devcontainer/plausible.sql
+
+# generate prisma clients
+bunx nx run-many --all --target=prisma-generate --parallel=1

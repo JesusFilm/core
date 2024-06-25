@@ -9,21 +9,21 @@
     "lint": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx @biomejs/biome check --diagnostic-level=warn",
+        "command": "bunx @biomejs/biome check --diagnostic-level=warn",
         "cwd": "libs/journeys/ui"
       }
     },
     "lint:fix": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx @biomejs/biome check --write",
+        "command": "bunx @biomejs/biome check --write",
         "cwd": "libs/journeys/ui"
       }
     },
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx tsc -b libs/journeys/ui/tsconfig.json"
+        "command": "bunx tsc -b libs/journeys/ui/tsconfig.json"
       }
     },
     "test": {
@@ -56,7 +56,7 @@
             "command": "rm -rf libs/journeys/ui/__generated__"
           },
           {
-            "command": "npx apollo client:codegen --config libs/journeys/ui/apollo.config.js --target typescript  --globalTypesFile=libs/journeys/ui/__generated__/globalTypes.ts"
+            "command": "bunx apollo client:codegen --config libs/journeys/ui/apollo.config.js --target typescript  --globalTypesFile=libs/journeys/ui/__generated__/globalTypes.ts"
           }
         ]
       }
@@ -66,7 +66,7 @@
       "options": {
         "commands": [
           {
-            "command": "npx i18next --config libs/journeys/ui/i18next-parser.config.js"
+            "command": "bunx i18next --config libs/journeys/ui/i18next-parser.config.js"
           }
         ]
       }

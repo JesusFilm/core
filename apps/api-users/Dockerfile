@@ -7,17 +7,22 @@ ENV PRISMA_LOCATION_USERS=/app/node_modules/.prisma/api-users-client
 RUN apk upgrade --update-cache --available && \
     rm -rf /var/cache/apk/*
 
+ENV BUN_INSTALL="/bun"
+ENV PATH=$BUN_INSTALL/bin:$PATH
+
+RUN curl -fsSL https://bun.sh/install | bash -s "bun-v1.1.16"
+
 WORKDIR /app
 COPY ./dist/apps/api-users .
 
 # dependencies that nestjs needs
-RUN npm install --production --silent
+RUN bun install --production --silent
 
 WORKDIR /prisma
 COPY ./apps/api-users/db .
-RUN npx prisma@^5.2.0 generate --generator client
+RUN bunx prisma@^5.2.0 generate --generator client
 
 WORKDIR /app
-RUN npm install tslib@^2.6.2 @nestjs/mapped-types @prisma/client@^5.2.0 pino-pretty@^10.2.0
+RUN bun install tslib@^2.6.2 @nestjs/mapped-types @prisma/client@^5.2.0 pino-pretty@^10.2.0
 
-CMD npx prisma@^5.2.0 migrate deploy --schema /prisma/schema.prisma; node ./main.js
+CMD bunx prisma@^5.2.0 migrate deploy --schema /prisma/schema.prisma; node ./main.js

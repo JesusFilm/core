@@ -11,9 +11,9 @@
         "outputPath": "dist/apps/api-analytics",
         "main": "apps/api-analytics/src/main.ts",
         "tsConfig": "apps/api-analytics/tsconfig.app.json",
-        "generatePackageJson": true,
         "compiler": "tsc",
         "target": "node",
+        "generatePackageJson": true,
         "webpackConfig": "apps/api-analytics/webpack.config.js"
       },
       "configurations": {

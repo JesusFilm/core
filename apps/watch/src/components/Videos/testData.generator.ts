@@ -75,7 +75,7 @@ async function testDataGenerator(): Promise<void> {
   )
   console.log('running prettier...')
   await promisify(exec)(
-    'npx @biomejs/biome format --write ./apps/watch/src/components/Videos/__generated__/testData.ts'
+    'bunx @biomejs/biome format --write ./apps/watch/src/components/Videos/__generated__/testData.ts'
   )
   console.log('done')
 }

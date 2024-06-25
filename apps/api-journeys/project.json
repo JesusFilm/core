@@ -11,6 +11,7 @@
         "outputPath": "dist/apps/api-journeys",
         "main": "apps/api-journeys/src/main.ts",
         "tsConfig": "apps/api-journeys/tsconfig.app.json",
+        "generatePackageJson": true,
         "assets": [
           "apps/api-journeys/src/assets",
           {
@@ -24,7 +25,6 @@
             "output": "./assets"
           }
         ],
-        "generatePackageJson": true,
         "compiler": "tsc",
         "target": "node",
         "webpackConfig": "apps/api-journeys/webpack.config.js"
@@ -34,6 +34,7 @@
           "optimization": true,
           "extractLicenses": true,
           "inspect": false,
+          "generatePackageJson": true,
           "fileReplacements": [
             {
               "replace": "apps/api-journeys/src/environments/environment.ts",
@@ -53,20 +54,20 @@
     "watcher": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npm run ts-node tools/scripts/generate-typings.ts api-journeys --transpileOnly"
+        "command": "bun run ts-node tools/scripts/generate-typings.ts api-journeys --transpileOnly"
       }
     },
     "lint": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx @biomejs/biome check --diagnostic-level=warn",
+        "command": "bunx @biomejs/biome check --diagnostic-level=warn",
         "cwd": "apps/api-journeys"
       }
     },
     "lint:fix": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx @biomejs/biome check --write",
+        "command": "bunx @biomejs/biome check --write",
         "cwd": "apps/api-journeys"
       }
     },
@@ -112,8 +113,8 @@
       "options": {
         "parallel": false,
         "commands": [
-          "npx prisma generate --schema apps/api-journeys/db/schema.prisma",
-          "npm run ts-node apps/api-journeys/src/app/lib/casl/caslPrismaGenerator.ts"
+          "bunx prisma generate --schema apps/api-journeys/db/schema.prisma",
+          "bunx ts-node apps/api-journeys/src/app/lib/casl/caslPrismaGenerator.ts"
         ]
       }
     },
@@ -121,13 +122,13 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "bash -c 'npx prisma migrate dev --schema apps/api-journeys/db/schema.prisma --name `date +\"%Y%m%d%H%M%S\"`'"
+          "bash -c 'bunx prisma migrate dev --schema apps/api-journeys/db/schema.prisma --name `date +\"%Y%m%d%H%M%S\"`'"
         ]
       },
       "configurations": {
         "production": {
           "commands": [
-            "npx prisma migrate deploy --schema apps/api-journeys/db/schema.prisma"
+            "bunx prisma migrate deploy --schema apps/api-journeys/db/schema.prisma"
           ]
         }
       }
@@ -136,21 +137,21 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx prisma migrate reset --schema apps/api-journeys/db/schema.prisma --force"
+          "bunx prisma migrate reset --schema apps/api-journeys/db/schema.prisma --force"
         ]
       }
     },
     "prisma-seed": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["npm run ts-node apps/api-journeys/db/seed.ts"]
+        "commands": ["bun run ts-node apps/api-journeys/db/seed.ts"]
       }
     },
     "prisma-studio": {
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx prisma studio --schema apps/api-journeys/db/schema.prisma"
+          "bunx prisma studio --schema apps/api-journeys/db/schema.prisma"
         ]
       }
     },
@@ -158,7 +159,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx prisma validate --schema apps/api-journeys/db/schema.prisma"
+          "bunx prisma validate --schema apps/api-journeys/db/schema.prisma"
         ]
       }
     },
@@ -166,14 +167,14 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx prisma migrate resolve --schema apps/api-journeys/db/schema.prisma --applied 20230711193802_20230711193801"
+          "bunx prisma migrate resolve --schema apps/api-journeys/db/schema.prisma --applied 20230711193802_20230711193801"
         ]
       }
     },
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx tsc -b apps/api-journeys/tsconfig.json"
+        "command": "bunx tsc -b apps/api-journeys/tsconfig.json"
       }
     },
     "codecov": {
