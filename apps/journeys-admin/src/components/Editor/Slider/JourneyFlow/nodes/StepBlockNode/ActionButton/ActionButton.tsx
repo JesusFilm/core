@@ -17,22 +17,19 @@ interface BlockUIProperties {
 }
 
 interface ActionButtonProps {
+  stepId: string
   block: TreeBlock<Block>
   selected?: boolean
-  analytics?: {
-    percentage: number
-    total: number
-  }
 }
 
 export function ActionButton({
+  stepId,
   block,
-  selected = false,
-  analytics
+  selected = false
 }: ActionButtonProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const {
-    state: { showAnalytics }
+    state: { showAnalytics, analytics }
   } = useEditor()
   const updateEdge = useUpdateEdge()
 
@@ -72,6 +69,23 @@ export function ActionButton({
   }
 
   const { title, isSourceConnected } = getTitleAndConnection()
+
+  function getBlockAnalytics(block: TreeBlock<Block>): {
+    percentage: number
+    total: number
+  } {
+    const stepEventAnalytics = analytics?.stepMap.get(stepId)
+    const blockEventTotal = analytics?.blockMap.get(block.id) ?? 0
+
+    let percentage = blockEventTotal / (stepEventAnalytics?.total ?? 0)
+
+    if (Number.isNaN(percentage) || !Number.isFinite(percentage)) {
+      percentage = 0
+    }
+
+    return { percentage, total: blockEventTotal }
+  }
+  const { percentage, total } = getBlockAnalytics(block)
 
   return (
     <BaseNode
@@ -114,8 +128,7 @@ export function ActionButton({
               flexBasis: 0,
               flexShrink: '1px',
               transition: 'all 300ms ease',
-              flexGrow:
-                showAnalytics === true ? `${analytics?.percentage ?? 0}` : 0,
+              flexGrow: showAnalytics === true ? `${percentage}` : 0,
               borderRadius: '0 4px 4px 0'
             }}
           />
@@ -158,7 +171,7 @@ export function ActionButton({
             }}
           >
             <Typography variant="body1" sx={{ fontSize: 12, lineHeight: 1 }}>
-              {analytics?.total}
+              {total}
             </Typography>
           </Box>
         </Box>

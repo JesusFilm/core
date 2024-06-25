@@ -26,24 +26,10 @@ export function StepBlockNode({
   } = useEditor()
   const step = steps?.find((step) => step.id === id)
 
-  // const stepEventAnalytics = analytics?.stepMap.get(id)
-
   const actionBlocks = useMemo(
     () => (step != null ? [step, ...filterActionBlocks(step)] : []),
     [step]
   )
-
-  // const getBlockAnalytics = (block) => {
-  //   const blockEventTotal = analytics?.blockMap.get(block.id) ?? 0
-
-  //   let percentage = blockEventTotal / (stepEventAnalytics?.total ?? 0)
-
-  //   if (Number.isNaN(percentage) || !Number.isFinite(percentage)) {
-  //     percentage = 0
-  //   }
-
-  //   return { percentage, total: blockEventTotal }
-  // }
 
   const isSelected =
     activeContent === ActiveContent.Canvas && selectedStep?.id === step?.id
@@ -92,9 +78,9 @@ export function StepBlockNode({
           {actionBlocks.map((block) => (
             <ActionButton
               key={block.id}
+              stepId={step.id}
               block={block}
               selected={isSelected}
-              // analytics={getBlockAnalytics(block)}
             />
           ))}
         </Stack>
