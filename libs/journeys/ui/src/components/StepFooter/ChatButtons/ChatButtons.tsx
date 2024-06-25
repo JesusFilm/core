@@ -28,6 +28,7 @@ import { useBlocks } from '../../../libs/block'
 import { JourneyPlausibleEvents, keyify } from '../../../libs/plausibleHelpers'
 import { getJourneyRTL } from '../../../libs/rtl'
 
+import { ChatIcon } from '../../../libs/ChatIcon/ChatIcon'
 import {
   ChatButtonEventCreate,
   ChatButtonEventCreateVariables
@@ -40,11 +41,6 @@ export const CHAT_BUTTON_EVENT_CREATE = gql`
     }
   }
 `
-
-interface ChatIconProps {
-  platform: MessagePlatform
-  index: number
-}
 
 export function ChatButtons(): ReactElement {
   const plausible = usePlausible<JourneyPlausibleEvents>()
@@ -113,25 +109,6 @@ export function ChatButtons(): ReactElement {
     }
   }
 
-  const ChatIcon = ({ platform, index }: ChatIconProps): ReactElement => {
-    const platformComponents = {
-      facebook: Facebook,
-      telegram: Telegram,
-      whatsApp: WhatsApp,
-      instagram: Instagram,
-      viber: Viber,
-      vk: Vk,
-      snapchat: Snapchat,
-      skype: Skype,
-      line: Line,
-      tikTok: Tiktok,
-      custom: MessageTyping
-    }
-
-    const IconComponent = platformComponents[platform]
-    return <IconComponent sx={{ color: getColor(index === 0, 'main') }} />
-  }
-
   return (
     <Stack
       data-testid="StepFooterChatButtons"
@@ -153,7 +130,7 @@ export function ChatButtons(): ReactElement {
         >
           <ChatIcon
             platform={chatButton.platform ?? MessagePlatform.custom}
-            index={index}
+            sx={{ color: getColor(index === 0, 'main') }}
           />
         </IconButton>
       ))}
