@@ -13,7 +13,7 @@ import { Block } from '.prisma/api-journeys-client'
 const ONE_DAY_MS = 86400000
 
 @Injectable()
-export class GrowthSpacesIntegrationService {
+export class IntegrationGrothSpacesService {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly integrationService: IntegrationService,

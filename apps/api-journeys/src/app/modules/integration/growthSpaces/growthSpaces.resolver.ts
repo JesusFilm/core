@@ -11,15 +11,15 @@ import {
 import { PrismaService } from '../../../lib/prisma.service'
 
 import { IntegrationService } from '../integration.service'
-import { GrowthSpacesIntegrationService } from './growthSpaces.service'
+import { IntegrationGrothSpacesService } from './growthSpaces.service'
 import { Integration } from '.prisma/api-journeys-client'
 
-@Resolver('GrowthSpacesIntegrationResolver')
-export class GrowthSpacesIntegrationResolver {
+@Resolver('IntegrationGrowthSpace')
+export class IntegrationGrowthSpaceResolver {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly integrationService: IntegrationService,
-    private readonly growthSpacesIntegrationService: GrowthSpacesIntegrationService
+    private readonly integrationGrowthSpacesService: IntegrationGrothSpacesService
   ) {}
 
   @Mutation()
@@ -27,7 +27,7 @@ export class GrowthSpacesIntegrationResolver {
     @Args('teamId') teamId: string,
     @Args('input') input: IntegrationGrowthSpaceCreateInput
   ): Promise<Integration> {
-    await this.growthSpacesIntegrationService.authenticate(
+    await this.integrationGrowthSpacesService.authenticate(
       input.accessId,
       input.accessSecret
     )
@@ -54,7 +54,7 @@ export class GrowthSpacesIntegrationResolver {
     @Args('id') id: string,
     @Args('input') input: IntegrationGrowthSpaceUpdateInput
   ): Promise<Integration> {
-    await this.growthSpacesIntegrationService.authenticate(
+    await this.integrationGrowthSpacesService.authenticate(
       input.accessId,
       input.accessSecret
     )
@@ -122,7 +122,7 @@ export class GrowthSpacesIntegrationResolver {
     }
   }
 
-  @ResolveField()
+  @ResolveField('accessSecretPart')
   async accessSecretPart(@Parent() integration: Integration): Promise<string> {
     const {
       accessId,

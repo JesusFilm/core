@@ -798,13 +798,6 @@ input IntegrationInput
   teamId: String!
 }
 
-input IntegrationsFilter
-  @join__type(graph: JOURNEYS)
-{
-  teamId: ID!
-  type: IntegrationType!
-}
-
 enum IntegrationType
   @join__type(graph: JOURNEYS)
 {
@@ -1603,7 +1596,7 @@ type Query
   customDomain(id: ID!): CustomDomain! @join__field(graph: JOURNEYS)
   customDomains(teamId: ID!): [CustomDomain!]! @join__field(graph: JOURNEYS)
   hosts(teamId: ID!): [Host!]! @join__field(graph: JOURNEYS)
-  integrations(input: IntegrationsFilter): [Integration!]! @join__field(graph: JOURNEYS)
+  integrations(teamId: ID!): [Integration!]! @join__field(graph: JOURNEYS)
 
   """
   returns all journeys that match the provided filters
@@ -2108,6 +2101,7 @@ type TextResponseBlock implements Block
   minRows: Int
   type: TextResponseType
   routeId: String
+  integrationId: String
 }
 
 input TextResponseBlockCreateInput
@@ -2128,6 +2122,7 @@ input TextResponseBlockUpdateInput
   minRows: Int
   routeId: String
   type: TextResponseType
+  integrationId: String
 }
 
 type TextResponseSubmissionEvent implements Event

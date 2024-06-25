@@ -353,7 +353,7 @@ extend type Query {
   customDomain(id: ID!): CustomDomain!
   customDomains(teamId: ID!): [CustomDomain!]!
   hosts(teamId: ID!): [Host!]!
-  integrations(input: IntegrationsFilter): [Integration!]!
+  integrations(teamId: ID!): [Integration!]!
 
   """
   returns all journeys that match the provided filters
@@ -861,6 +861,7 @@ type TextResponseBlock implements Block {
   minRows: Int
   type: TextResponseType
   routeId: String
+  integrationId: String
 }
 
 enum TextResponseType {
@@ -883,6 +884,7 @@ input TextResponseBlockUpdateInput {
   minRows: Int
   routeId: String
   type: TextResponseType
+  integrationId: String
 }
 
 enum TypographyVariant {
@@ -1976,11 +1978,6 @@ interface Integration {
 input IntegrationInput {
   id: ID!
   teamId: String!
-}
-
-input IntegrationsFilter {
-  teamId: ID!
-  type: IntegrationType!
 }
 
 extend type Tag

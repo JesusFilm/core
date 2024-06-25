@@ -4,8 +4,8 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import fetch, { Response } from 'node-fetch'
 import { PrismaService } from '../../../lib/prisma.service'
 import { IntegrationService } from '../integration.service'
-import { GrowthSpacesIntegrationResolver } from './growthSpaces.resolver'
-import { GrowthSpacesIntegrationService } from './growthSpaces.service'
+import { IntegrationGrowthSpaceResolver } from './growthSpaces.resolver'
+import { IntegrationGrothSpacesService } from './growthSpaces.service'
 import { Block, Integration } from '.prisma/api-journeys-client'
 
 jest.mock('node-fetch', () => {
@@ -49,21 +49,21 @@ const integration: Integration = {
   accessSecretTag: 'VondZ4B9TbgdwCQeqjnkfA=='
 }
 
-describe('GrowthSpacesIntegrationResolver', () => {
+describe('IntegrationGrowthSpaceResolver', () => {
   const OLD_ENV = process.env
 
-  let growthSpacesService: GrowthSpacesIntegrationService,
+  let growthSpacesService: IntegrationGrothSpacesService,
     prismaService: DeepMockProxy<PrismaService>,
     integrationService: IntegrationService,
-    resolver: GrowthSpacesIntegrationResolver
+    resolver: IntegrationGrowthSpaceResolver
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [CacheModule.register()],
       providers: [
-        GrowthSpacesIntegrationResolver,
+        IntegrationGrowthSpaceResolver,
         IntegrationService,
-        GrowthSpacesIntegrationService,
+        IntegrationGrothSpacesService,
         {
           provide: PrismaService,
           useValue: mockDeep<PrismaService>()
@@ -71,8 +71,8 @@ describe('GrowthSpacesIntegrationResolver', () => {
       ]
     }).compile()
     integrationService = module.get<IntegrationService>(IntegrationService)
-    growthSpacesService = await module.resolve(GrowthSpacesIntegrationService)
-    resolver = await module.resolve(GrowthSpacesIntegrationResolver)
+    growthSpacesService = await module.resolve(IntegrationGrothSpacesService)
+    resolver = await module.resolve(IntegrationGrowthSpaceResolver)
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>

@@ -11,7 +11,7 @@ import {
   TextResponseType
 } from '../../../__generated__/graphql'
 import { PrismaService } from '../../../lib/prisma.service'
-import { GrowthSpacesIntegrationService } from '../../integration/growthSpaces/growthSpaces.service'
+import { IntegrationGrothSpacesService } from '../../integration/growthSpaces/growthSpaces.service'
 import { EventService } from '../event.service'
 import { Prisma } from '.prisma/api-journeys-client'
 
@@ -20,7 +20,7 @@ export class TextResponseSubmissionEventResolver {
   constructor(
     private readonly eventService: EventService,
     private readonly prismaService: PrismaService,
-    private readonly growthSpacesIntegration: GrowthSpacesIntegrationService
+    private readonly integrationGrowthSpacesService: IntegrationGrothSpacesService
   ) {}
 
   @Mutation()
@@ -44,7 +44,7 @@ export class TextResponseSubmissionEventResolver {
 
     if (block.type === TextResponseType.email && block.routeId != null) {
       visitorDataUpdate.email = input.value
-      await this.growthSpacesIntegration.addSubscriber(
+      await this.integrationGrowthSpacesService.addSubscriber(
         journeyId,
         block,
         visitor.name,

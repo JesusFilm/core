@@ -5,7 +5,7 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import fetch, { Response } from 'node-fetch'
 import { PrismaService } from '../../../lib/prisma.service'
 import { IntegrationService } from '../integration.service'
-import { GrowthSpacesIntegrationService } from './growthSpaces.service'
+import { IntegrationGrothSpacesService } from './growthSpaces.service'
 import { Block, Integration } from '.prisma/api-journeys-client'
 
 jest.mock('node-fetch', () => {
@@ -49,10 +49,10 @@ const integration: Integration = {
   accessSecretTag: 'VondZ4B9TbgdwCQeqjnkfA=='
 }
 
-describe('GrowthSpacesIntegrationService', () => {
+describe('IntegrationGrothSpacesService', () => {
   const OLD_ENV = process.env
 
-  let service: GrowthSpacesIntegrationService,
+  let service: IntegrationGrothSpacesService,
     prismaService: DeepMockProxy<PrismaService>,
     integrationService: IntegrationService
 
@@ -61,7 +61,7 @@ describe('GrowthSpacesIntegrationService', () => {
       imports: [CacheModule.register()],
       providers: [
         IntegrationService,
-        GrowthSpacesIntegrationService,
+        IntegrationGrothSpacesService,
         {
           provide: PrismaService,
           useValue: mockDeep<PrismaService>()
@@ -69,7 +69,7 @@ describe('GrowthSpacesIntegrationService', () => {
       ]
     }).compile()
     integrationService = module.get<IntegrationService>(IntegrationService)
-    service = await module.resolve(GrowthSpacesIntegrationService)
+    service = await module.resolve(IntegrationGrothSpacesService)
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
