@@ -4,6 +4,7 @@ import { alpha } from '@mui/material/styles'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
 
 import { BlockFields as Block } from '../../../../../../../../__generated__/BlockFields'
@@ -14,7 +15,6 @@ import { ACTION_BUTTON_HEIGHT } from '../libs/sizes'
 interface BlockUIProperties {
   title: string
   isSourceConnected: boolean
-  typename?: string
 }
 
 interface ActionButtonProps {
@@ -27,6 +27,9 @@ export function ActionButton({
   selected = false
 }: ActionButtonProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const {
+    state: { showAnalytics }
+  } = useEditor()
   const updateEdge = useUpdateEdge()
 
   function getTitle(block, defaultTitle): string {
@@ -41,9 +44,8 @@ export function ActionButton({
       block.action?.__typename === 'NavigateToBlockAction' &&
       block.action?.blockId != null
     const title = getTitle(block, defaultTitle)
-    const typename = block.__typename
 
-    return { title, isSourceConnected, typename }
+    return { title, isSourceConnected }
   }
 
   function getTitleAndConnection(): BlockUIProperties {
@@ -70,7 +72,7 @@ export function ActionButton({
   return (
     <BaseNode
       id={block.id}
-      sourceHandle="show"
+      sourceHandle={showAnalytics === true ? 'disabled' : 'show'}
       onSourceConnect={updateEdge}
       selected={selected}
       isSourceConnected={isSourceConnected}
