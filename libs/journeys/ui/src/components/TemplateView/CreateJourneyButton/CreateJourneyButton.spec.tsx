@@ -103,7 +103,20 @@ const createJourneyButton = (
   </MockedProvider>
 )
 
+function defineWindowWithPath(path: string) {
+  Object.defineProperty(window, 'location', {
+    configurable: true,
+    enumerable: true,
+    value: { origin: path },
+    writable: true
+  })
+}
+
 describe('CreateJourneyButton', () => {
+  const prefetch = jest.fn()
+  const push = jest.fn().mockResolvedValueOnce('')
+  const originalEnv = process.env
+
   it('should open team dialog if url query set to createNew', async () => {
     mockUseRouter.mockReturnValue({
       query: { createNew: 'true' }
@@ -163,23 +176,14 @@ describe('CreateJourneyButton', () => {
   })
 
   describe('if not signed in', () => {
-    const prefetch = jest.fn()
-    const push = jest.fn().mockResolvedValueOnce('')
-
     beforeEach(() => {
       mockUseRouter.mockReturnValue({
         prefetch,
         push,
-        query: { createNew: false },
-        asPath: '/templates/journeyId'
+        query: { createNew: false }
       } as unknown as NextRouter)
 
-      Object.defineProperty(window, 'location', {
-        configurable: true,
-        enumerable: true,
-        value: { origin: 'http://localhost:4200' },
-        writable: true
-      })
+      defineWindowWithPath('http://localhost:4200')
     })
 
     afterEach(() => {
@@ -237,147 +241,134 @@ describe('CreateJourneyButton', () => {
         )
       })
     })
+  })
 
-    describe('if domain environment variable set', () => {
-      const originalEnv = process.env
+  describe('if not signed in and viewing from journeys admin', () => {
+    beforeAll(() => {
+      mockUseRouter.mockReturnValue({
+        prefetch,
+        push,
+        query: { createNew: false }
+      } as unknown as NextRouter)
 
-      beforeAll(() => {
-        process.env = {
-          ...originalEnv,
-          NEXT_PUBLIC_JOURNEYS_ADMIN_URL: 'http://localhost:4200'
-        }
+      defineWindowWithPath('http://localhost:4200')
+
+      process.env = {
+        ...originalEnv,
+        NEXT_PUBLIC_JOURNEYS_ADMIN_URL: 'http://localhost:4200'
+      }
+    })
+
+    afterAll(() => {
+      process.env = originalEnv
+    })
+
+    it('should open account check dialog and still redirect to sign in page when login is clicked', async () => {
+      const { getByRole } = render(createJourneyButton)
+
+      fireEvent.click(getByRole('button', { name: 'Use This Template' }))
+      fireEvent.click(getByRole('button', { name: 'Login with my account' }))
+
+      await waitFor(() => {
+        expect(push).toHaveBeenCalledWith(
+          {
+            pathname: 'http://localhost:4200/users/sign-in',
+            query: {
+              redirect:
+                'http://localhost:4200/templates/journeyId?createNew=true',
+              login: true
+            }
+          },
+          undefined,
+          { shallow: true }
+        )
       })
+    })
 
-      afterAll(() => {
-        process.env = originalEnv
+    it('should open account check dialog and still redirect to sign in page when create account is clicked', async () => {
+      const { getByRole } = render(createJourneyButton)
+
+      fireEvent.click(getByRole('button', { name: 'Use This Template' }))
+      fireEvent.click(getByRole('button', { name: 'Create a new account' }))
+
+      await waitFor(() => {
+        expect(push).toHaveBeenCalledWith(
+          {
+            pathname: 'http://localhost:4200/users/sign-in',
+            query: {
+              redirect:
+                'http://localhost:4200/templates/journeyId?createNew=true',
+              login: false
+            }
+          },
+          undefined,
+          { shallow: true }
+        )
       })
+    })
+  })
 
-      describe('if viewing within journeys admin', () => {
-        beforeEach(() => {
-          mockUseRouter.mockReturnValue({
-            prefetch,
-            push,
-            query: { createNew: false },
-            asPath: '/templates/journeyId'
-          } as unknown as NextRouter)
+  describe('if not signed in and viewing from another project', () => {
+    beforeEach(() => {
+      mockUseRouter.mockReturnValue({
+        prefetch,
+        push,
+        query: { createNew: false }
+      } as unknown as NextRouter)
 
-          Object.defineProperty(window, 'location', {
-            configurable: true,
-            enumerable: true,
-            value: { origin: 'http://localhost:4200' },
-            writable: true
-          })
-        })
+      defineWindowWithPath('http://localhost:4300')
 
-        it('should open account check dialog and still redirect to sign in page when login is clicked', async () => {
-          const { getByRole } = render(createJourneyButton)
+      process.env = {
+        ...originalEnv,
+        NEXT_PUBLIC_JOURNEYS_ADMIN_URL: 'http://localhost:4200'
+      }
+    })
 
-          fireEvent.click(getByRole('button', { name: 'Use This Template' }))
-          fireEvent.click(
-            getByRole('button', { name: 'Login with my account' })
-          )
+    afterAll(() => {
+      process.env = originalEnv
+    })
 
-          await waitFor(() => {
-            expect(push).toHaveBeenCalledWith(
-              {
-                pathname: 'http://localhost:4200/users/sign-in',
-                query: {
-                  redirect:
-                    'http://localhost:4200/templates/journeyId?createNew=true',
-                  login: true
-                }
-              },
-              undefined,
-              { shallow: true }
-            )
-          })
-        })
+    it('should open account check dialog and still redirect to sign in page when login is clicked', async () => {
+      const { getByRole } = render(createJourneyButton)
 
-        it('should open account check dialog and still redirect to sign in page when create account is clicked', async () => {
-          const { getByRole } = render(createJourneyButton)
+      fireEvent.click(getByRole('button', { name: 'Use This Template' }))
+      fireEvent.click(getByRole('button', { name: 'Login with my account' }))
 
-          fireEvent.click(getByRole('button', { name: 'Use This Template' }))
-          fireEvent.click(getByRole('button', { name: 'Create a new account' }))
-
-          await waitFor(() => {
-            expect(push).toHaveBeenCalledWith(
-              {
-                pathname: 'http://localhost:4200/users/sign-in',
-                query: {
-                  redirect:
-                    'http://localhost:4200/templates/journeyId?createNew=true',
-                  login: false
-                }
-              },
-              undefined,
-              { shallow: true }
-            )
-          })
-        })
+      await waitFor(() => {
+        expect(push).toHaveBeenCalledWith(
+          {
+            pathname: 'http://localhost:4200/users/sign-in',
+            query: {
+              redirect:
+                'http://localhost:4200/templates/journeyId?createNew=true',
+              login: true
+            }
+          },
+          undefined,
+          { shallow: true }
+        )
       })
+    })
 
-      describe('if viewing from another project', () => {
-        beforeEach(() => {
-          mockUseRouter.mockReturnValue({
-            prefetch,
-            push,
-            query: { createNew: false },
-            asPath: '/journeys/journeyId'
-          } as unknown as NextRouter)
+    it('should open account check dialog and still redirect to sign in page when create account is clicked', async () => {
+      const { getByRole } = render(createJourneyButton)
 
-          Object.defineProperty(window, 'location', {
-            configurable: true,
-            enumerable: true,
-            value: { origin: 'http://localhost:4300' },
-            writable: true
-          })
-        })
+      fireEvent.click(getByRole('button', { name: 'Use This Template' }))
+      fireEvent.click(getByRole('button', { name: 'Create a new account' }))
 
-        it('should open account check dialog and still redirect to sign in page when login is clicked', async () => {
-          const { getByRole } = render(createJourneyButton)
-
-          fireEvent.click(getByRole('button', { name: 'Use This Template' }))
-          fireEvent.click(
-            getByRole('button', { name: 'Login with my account' })
-          )
-
-          await waitFor(() => {
-            expect(push).toHaveBeenCalledWith(
-              {
-                pathname: 'http://localhost:4200/users/sign-in',
-                query: {
-                  redirect:
-                    'http://localhost:4200/templates/journeyId?createNew=true',
-                  login: true
-                }
-              },
-              undefined,
-              { shallow: true }
-            )
-          })
-        })
-
-        it('should open account check dialog and still redirect to sign in page when create account is clicked', async () => {
-          const { getByRole } = render(createJourneyButton)
-
-          fireEvent.click(getByRole('button', { name: 'Use This Template' }))
-          fireEvent.click(getByRole('button', { name: 'Create a new account' }))
-
-          await waitFor(() => {
-            expect(push).toHaveBeenCalledWith(
-              {
-                pathname: 'http://localhost:4200/users/sign-in',
-                query: {
-                  redirect:
-                    'http://localhost:4200/templates/journeyId?createNew=true',
-                  login: false
-                }
-              },
-              undefined,
-              { shallow: true }
-            )
-          })
-        })
+      await waitFor(() => {
+        expect(push).toHaveBeenCalledWith(
+          {
+            pathname: 'http://localhost:4200/users/sign-in',
+            query: {
+              redirect:
+                'http://localhost:4200/templates/journeyId?createNew=true',
+              login: false
+            }
+          },
+          undefined,
+          { shallow: true }
+        )
       })
     })
   })
