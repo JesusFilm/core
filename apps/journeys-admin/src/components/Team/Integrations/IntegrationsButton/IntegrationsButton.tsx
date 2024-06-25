@@ -11,9 +11,9 @@ import NextLink from 'next/link'
 import { ReactElement } from 'react'
 
 interface IntegrationsButtonProps {
-  url: string,
+  url: string
   src?: string
-  title?: string,
+  title?: string
   showAddButton?: boolean
 }
 

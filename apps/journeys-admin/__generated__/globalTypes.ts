@@ -71,6 +71,10 @@ export enum IconSize {
   xl = "xl",
 }
 
+export enum IntegrationType {
+  growthSpaces = "growthSpaces",
+}
+
 export enum JourneyStatus {
   archived = "archived",
   deleted = "deleted",
@@ -124,6 +128,12 @@ export enum Service {
   apiTags = "apiTags",
   apiUsers = "apiUsers",
   apiVideos = "apiVideos",
+}
+
+export enum TextResponseType {
+  email = "email",
+  freeForm = "freeForm",
+  name = "name",
 }
 
 export enum ThemeMode {
@@ -559,6 +569,9 @@ export interface TextResponseBlockUpdateInput {
   label?: string | null;
   hint?: string | null;
   minRows?: number | null;
+  routeId?: string | null;
+  type?: TextResponseType | null;
+  integrationId?: string | null;
 }
 
 export interface TextResponseSubmissionEventCreateInput {

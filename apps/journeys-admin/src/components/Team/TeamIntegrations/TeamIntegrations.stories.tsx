@@ -1,21 +1,21 @@
 import { Meta, StoryObj } from '@storybook/react'
 
-import { journeysAdminConfig } from '../../libs/storybook'
+import { journeysAdminConfig } from '../../../libs/storybook'
 
 import Box from '@mui/material/Box'
-import { Integrations } from '.'
+import { TeamIntegrations } from '.'
 
-const IntegrationsStory: Meta<typeof Integrations> = {
+const TeamIntegrationsStory: Meta<typeof TeamIntegrations> = {
   ...journeysAdminConfig,
-  component: Integrations,
-  title: 'Journeys-Admin/Integrations',
+  component: TeamIntegrations,
+  title: 'Journeys-Admin/TeamIntegrations',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
   }
 }
 
-const Template: StoryObj<typeof Integrations> = {
+const Template: StoryObj<typeof TeamIntegrations> = {
   render: ({ ...args }) => (
     <Box
       sx={{
@@ -24,13 +24,13 @@ const Template: StoryObj<typeof Integrations> = {
         p: 5
       }}
     >
-      <Integrations {...args} />
+      <TeamIntegrations {...args} />
     </Box>
   )
 }
 
 export const Default = {
-  ...Template,
+  ...Template
 }
 
-export default IntegrationsStory
+export default TeamIntegrationsStory
