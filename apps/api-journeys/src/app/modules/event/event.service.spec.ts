@@ -85,7 +85,8 @@ describe('EventService', () => {
       ).toEqual({
         visitor,
         journeyVisitor,
-        journeyId: 'journey.id'
+        journeyId: 'journey.id',
+        block
       })
     })
 
