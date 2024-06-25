@@ -57,19 +57,22 @@ describe('transformReferrers', () => {
           id: 'Facebook->SocialPreview',
           source: 'Facebook',
           target: 'SocialPreview',
-          type: 'Referrer'
+          type: 'Referrer',
+          updatable: false
         },
         {
           id: 'Google->SocialPreview',
           source: 'Google',
           target: 'SocialPreview',
-          type: 'Referrer'
+          type: 'Referrer',
+          updatable: false
         },
         {
           id: 'Other sources->SocialPreview',
           source: 'Other sources',
           target: 'SocialPreview',
-          type: 'Referrer'
+          type: 'Referrer',
+          updatable: false
         }
       ]
     })
@@ -123,19 +126,22 @@ describe('transformReferrers', () => {
           id: 'Facebook->SocialPreview',
           source: 'Facebook',
           target: 'SocialPreview',
-          type: 'Referrer'
+          type: 'Referrer',
+          updatable: false
         },
         {
           id: 'Google->SocialPreview',
           source: 'Google',
           target: 'SocialPreview',
-          type: 'Referrer'
+          type: 'Referrer',
+          updatable: false
         },
         {
           id: 'Direct / None->SocialPreview',
           source: 'Direct / None',
           target: 'SocialPreview',
-          type: 'Referrer'
+          type: 'Referrer',
+          updatable: false
         }
       ]
     })
@@ -177,13 +183,15 @@ describe('transformReferrers', () => {
           id: 'Facebook->SocialPreview',
           source: 'Facebook',
           target: 'SocialPreview',
-          type: 'Referrer'
+          type: 'Referrer',
+          updatable: false
         },
         {
           id: 'Direct / None->SocialPreview',
           source: 'Direct / None',
           target: 'SocialPreview',
-          type: 'Referrer'
+          type: 'Referrer',
+          updatable: false
         }
       ]
     })
@@ -213,7 +221,8 @@ describe('transformReferrers', () => {
           id: 'Direct / None->SocialPreview',
           source: 'Direct / None',
           target: 'SocialPreview',
-          type: 'Referrer'
+          type: 'Referrer',
+          updatable: false
         }
       ]
     })
