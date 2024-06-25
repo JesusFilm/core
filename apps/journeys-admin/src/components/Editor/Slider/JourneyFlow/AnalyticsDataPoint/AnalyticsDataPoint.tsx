@@ -7,17 +7,17 @@ import { ReactElement } from 'react'
 interface StatsOverlayDataPointProps {
   value: string | number
   Icon?: typeof SvgIcon
-  tooltipLabel: string
+  tooltipTitle: string
 }
 
 export function AnalyticsDataPoint({
   value,
   Icon,
-  tooltipLabel = ''
+  tooltipTitle
 }: StatsOverlayDataPointProps): ReactElement {
   return (
     <Tooltip
-      title={tooltipLabel}
+      title={tooltipTitle}
       placement="top"
       slotProps={{
         popper: {

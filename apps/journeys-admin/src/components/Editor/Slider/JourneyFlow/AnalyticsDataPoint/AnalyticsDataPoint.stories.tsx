@@ -22,7 +22,7 @@ export const Default = {
   args: {
     value: 10,
     Icon: TrendDown1,
-    tooltipLabel: 'Clicks'
+    tooltipTitle: 'Clicks'
   }
 }
 
@@ -30,7 +30,7 @@ export const WithoutIcon = {
   ...Template,
   args: {
     value: '10',
-    tooltipLabel: 'Clicks'
+    tooltipTitle: 'Clicks'
   }
 }
 

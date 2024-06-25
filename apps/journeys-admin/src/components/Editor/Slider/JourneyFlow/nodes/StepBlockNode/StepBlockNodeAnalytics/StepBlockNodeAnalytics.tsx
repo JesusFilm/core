@@ -74,17 +74,17 @@ export function StepBlockNodeAnalytics({
     >
       <AnalyticsDataPoint
         Icon={UserProfile3}
-        tooltipLabel={t('Unique visitors')}
+        tooltipTitle={t('Unique visitors')}
         value={visitors}
       />
       <AnalyticsDataPoint
         Icon={TrendDown1}
-        tooltipLabel={t('Bounce rate')}
+        tooltipTitle={t('Bounce rate')}
         value={getPercentage(visitorsExitAtStep, visitors)}
       />
       <AnalyticsDataPoint
         Icon={Clock1}
-        tooltipLabel={t('Visit duration')}
+        tooltipTitle={t('Visit duration')}
         value={formatTime(timeOnPage)}
       />
     </StatsOverlay>
