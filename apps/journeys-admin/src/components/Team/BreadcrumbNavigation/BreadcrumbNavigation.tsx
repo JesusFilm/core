@@ -2,6 +2,7 @@ import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
 import Box from '@mui/material/Box'
 import Breadcrumbs from '@mui/material/Breadcrumbs'
 import Typography from '@mui/material/Typography'
+import { get, isArray } from 'lodash'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
 import { string } from 'prop-types'
@@ -22,6 +23,18 @@ export function BreadcrumbNavigation(): ReactElement {
     return label.charAt(0).toUpperCase() + label.slice(1).replace(/-/g, ' ')
   }
 
+  function getLabel(segment: string): string {
+    const isDynamicSegment = segment.startsWith('[') && segment.endsWith(']')
+    if (isDynamicSegment) {
+      const queryValue = get(router.query, segment.slice(1, -1))
+      const dynamicLabel = isArray(queryValue)
+        ? queryValue.join(', ')
+        : queryValue
+      return dynamicLabel || segment
+    }
+    return formatLabel(segment)
+  }
+
   function processBreadcrumbItems() {
     if (activeTeam == null) return
     return asPath
@@ -30,22 +43,16 @@ export function BreadcrumbNavigation(): ReactElement {
       .reduce<BreadcrumbItem[]>((acc, segment, index, arr) => {
         if (segment === 'teams') return acc
 
-        let path: string | undefined = `/${arr.slice(0, index + 1).join('/')}`
-        let label = segment
+        const isTeamSegment = arr[index - 1] === 'teams'
+        const path = isTeamSegment
+          ? undefined
+          : `/${arr.slice(0, index + 1).join('/')}`
+        const label =
+          isTeamSegment && segment === activeTeam.id
+            ? `${activeTeam.title}'s Team`
+            : getLabel(segment)
 
-        if (arr[index - 1] === 'teams') {
-          if (segment === activeTeam.id) label = `${activeTeam.title}'s Team`
-          path = undefined
-        } else {
-          const isDynamic = segment.startsWith('[') && segment.endsWith(']')
-          const queryValue = router.query[segment.slice(1, -1)]
-          label = isDynamic
-            ? (Array.isArray(queryValue)
-                ? queryValue.join(', ')
-                : queryValue) || segment
-            : formatLabel(segment)
-        }
-        acc?.push({ label, path })
+        acc.push({ label, path })
         return acc
       }, [])
   }
@@ -53,10 +60,11 @@ export function BreadcrumbNavigation(): ReactElement {
 
   return (
     <Breadcrumbs aria-label="teams-breadcrumb" separator={<ChevronRightIcon />}>
-      {breadcrumbItems?.map((item, index) => (
-        <Box key={index}>
-          {index < breadcrumbItems?.length - 1 ? (
-            item.path ? (
+      {breadcrumbItems?.map((item, index) => {
+        const isLastItem = index === breadcrumbItems.length - 1
+        return (
+          <Box key={index}>
+            {item.path && !isLastItem ? (
               <NextLink href={item.path} passHref legacyBehavior>
                 <Typography
                   variant="h4"
@@ -67,17 +75,16 @@ export function BreadcrumbNavigation(): ReactElement {
                 </Typography>
               </NextLink>
             ) : (
-              <Typography variant="h4" color="primary.main">
+              <Typography
+                variant="h4"
+                color={isLastItem ? 'text.primary' : 'primary.main'}
+              >
                 {item.label}
               </Typography>
-            )
-          ) : (
-            <Typography variant="h4" color="text.primary">
-              {item.label}
-            </Typography>
-          )}
-        </Box>
-      ))}
+            )}
+          </Box>
+        )
+      })}
     </Breadcrumbs>
   )
 }
