@@ -1,0 +1,1 @@
+export { FooterAnalytics } from './FooterAnalytics'
