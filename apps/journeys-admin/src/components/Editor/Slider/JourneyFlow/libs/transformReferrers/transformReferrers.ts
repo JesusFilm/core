@@ -47,7 +47,8 @@ export function transformReferrers(referrers?: JourneyReferrer[]) {
         id: `${referrer.property}->SocialPreview`,
         source: referrer.property,
         target: 'SocialPreview',
-        type: 'Referrer'
+        type: 'Referrer',
+        updatable: false
       })
     })
 
@@ -63,7 +64,8 @@ export function transformReferrers(referrers?: JourneyReferrer[]) {
       id: 'Other sources->SocialPreview',
       source: 'Other sources',
       target: 'SocialPreview',
-      type: 'Referrer'
+      type: 'Referrer',
+      updatable: false
     })
   } else {
     sortedReferrers.forEach((referrer, idx) => {
@@ -82,7 +84,8 @@ export function transformReferrers(referrers?: JourneyReferrer[]) {
         id: `${referrer.property}->SocialPreview`,
         source: referrer.property,
         target: 'SocialPreview',
-        type: 'Referrer'
+        type: 'Referrer',
+        updatable: false
       })
     })
   }
