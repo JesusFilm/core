@@ -6,13 +6,9 @@ import ThumbsUpIcon from '@core/shared/ui/icons/ThumbsUp'
 import { Box, Typography } from '@mui/material'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
+import Tooltip from '@mui/material/Tooltip'
 import { ReactElement, ReactNode } from 'react'
 import { MessagePlatform } from '../../../../../../../../__generated__/globalTypes'
-
-interface StatsProps {
-  value: number
-  icon: ReactNode
-}
 
 export function CardAnalytics(): ReactElement {
   const {
@@ -43,11 +39,13 @@ export function CardAnalytics(): ReactElement {
       sx={{ justifyContent: 'space-between', width: '90%' }}
     >
       <Analytic
+        title="likes"
         value={thumbsUpClicks}
         icon={<ThumbsUpIcon sx={{ fontSize: 24 }} />}
       />
       <Divider orientation="vertical" flexItem />
       <Analytic
+        title="dislikes"
         value={thumbsDownClicks}
         icon={<ThumbsDownIcon sx={{ fontSize: 24 }} />}
       />
@@ -55,6 +53,7 @@ export function CardAnalytics(): ReactElement {
         <>
           <Divider orientation="vertical" flexItem />
           <Analytic
+            title="widget clicks"
             value={primaryChatClicks}
             icon={
               <ChatIcon
@@ -69,6 +68,7 @@ export function CardAnalytics(): ReactElement {
         <>
           <Divider orientation="vertical" flexItem />
           <Analytic
+            title="widget clicks"
             value={secondaryChatClicks}
             icon={
               <ChatIcon
@@ -83,11 +83,19 @@ export function CardAnalytics(): ReactElement {
   )
 }
 
-function Analytic({ value, icon }: StatsProps): ReactElement {
+interface StatsProps {
+  title: string
+  value: number
+  icon: ReactNode
+}
+
+function Analytic({ title, value, icon }: StatsProps): ReactElement {
   return (
-    <Stack direction="row" gap={2} sx={{ p: 3 }}>
-      {icon}
-      <Typography variant="subtitle1">{value}</Typography>
-    </Stack>
+    <Tooltip title={title} placement="bottom">
+      <Stack direction="row" gap={2} sx={{ p: 3 }}>
+        {icon}
+        <Typography variant="subtitle1">{value}</Typography>
+      </Stack>
+    </Tooltip>
   )
 }
