@@ -16,8 +16,10 @@ export const config = {
 
 export default async function middleware(
   req: NextRequest
-): Promise<NextResponse> {
+): Promise<NextResponse | undefined> {
   const url = req.nextUrl
+
+  if (url.pathname.startsWith('/plausible')) return
 
   // Get hostname of request
   // (e.g. your.nextstep.is, localhost:4100, example.com)
