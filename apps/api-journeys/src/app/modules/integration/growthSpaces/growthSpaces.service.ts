@@ -22,19 +22,27 @@ export class IntegrationGrothSpacesService {
 
   async authenticate(accessId: string, accessSecret: string): Promise<void> {
     try {
-      await fetch('https://api.growthspaces.org/api/v1/authentication', {
-        headers: {
-          'Access-Id': accessId,
-          'Access-Secret': accessSecret
-        }
-      })
-    } catch (e) {
-      throw new GraphQLError(
-        'incorrect access Id and access secret for Growth Space integration',
+      const res = await fetch(
+        'https://api.growthspaces.org/api/v1/authentication',
         {
-          extensions: { code: 'UNAUTHORIZED' }
+          headers: {
+            'Access-Id': accessId,
+            'Access-Secret': accessSecret
+          }
         }
       )
+      if (!res.ok) {
+        throw new GraphQLError(
+          'incorrect access Id and access secret for Growth Space integration',
+          {
+            extensions: { code: 'UNAUTHORIZED' }
+          }
+        )
+      }
+    } catch (e) {
+      throw new GraphQLError(e.message, {
+        extensions: { code: 'UNAUTHORIZED' }
+      })
     }
   }
 

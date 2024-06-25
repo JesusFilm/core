@@ -113,6 +113,14 @@ export class IntegrationGrowthSpaceResolver {
           'Access-Secret': decryptedAccessSecret
         }
       })
+      if (!res.ok) {
+        throw new GraphQLError(
+          'incorrect access Id and access secret for Growth Space integration',
+          {
+            extensions: { code: 'UNAUTHORIZED' }
+          }
+        )
+      }
       const data: GrowthSpacesRoute[] = await res.json()
       return data
     } catch (e) {

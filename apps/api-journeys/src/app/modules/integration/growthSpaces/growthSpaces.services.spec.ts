@@ -104,8 +104,8 @@ describe('IntegrationGrothSpacesService', () => {
       const data = {
         error: 'Unauthorized'
       }
-      mockFetch.mockRejectedValue({
-        ok: true,
+      mockFetch.mockResolvedValue({
+        ok: false,
         status: 401,
         json: async () => await Promise.resolve(data)
       } as unknown as Response)

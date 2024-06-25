@@ -117,9 +117,9 @@ describe('IntegrationGrowthSpaceResolver', () => {
       process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET =
         'dontbefooledbythiscryptokeyitisactuallyfake='
 
-      mockFetch.mockRejectedValue({
-        ok: true,
-        status: 200,
+      mockFetch.mockResolvedValue({
+        ok: false,
+        status: 404,
         json: async () => await Promise.resolve()
       } as unknown as Response)
 
