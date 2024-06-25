@@ -4,8 +4,8 @@ import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
-interface StatsOverlayDataPointProps {
-  value: string | number
+interface AnalyticsDataPointProps {
+  value: number | string
   Icon?: typeof SvgIcon
   tooltipTitle: string
 }
@@ -14,7 +14,7 @@ export function AnalyticsDataPoint({
   value,
   Icon,
   tooltipTitle
-}: StatsOverlayDataPointProps): ReactElement {
+}: AnalyticsDataPointProps): ReactElement {
   return (
     <Tooltip
       title={tooltipTitle}

@@ -64,6 +64,7 @@ const iconNames: IconName[] = [
   'CopyRight',
   'CopyTo',
   'Crop1',
+  'Cursor4',
   'Cursor6',
   'CursorPointer',
   'Dash',
