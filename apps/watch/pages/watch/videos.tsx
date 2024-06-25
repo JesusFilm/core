@@ -43,6 +43,7 @@ const videoIds = [
   '2_GOJ-0-0',
   'MAG1',
   '1_cl-0-0',
+  'IsItWorthIt',
   'Wonder',
   'Nua',
   '8_NBC',
