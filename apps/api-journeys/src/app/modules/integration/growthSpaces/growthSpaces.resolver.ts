@@ -10,6 +10,11 @@ import {
 
 import { PrismaService } from '../../../lib/prisma.service'
 
+import { subject } from '@casl/ability'
+import { CaslAbility } from '@core/nest/common/CaslAuthModule'
+import { UseGuards } from '@nestjs/common'
+import { Action, AppAbility } from '../../../lib/casl/caslFactory'
+import { AppCaslGuard } from '../../../lib/casl/caslGuard'
 import { IntegrationService } from '../integration.service'
 import { IntegrationGrothSpacesService } from './growthSpaces.service'
 import { Integration } from '.prisma/api-journeys-client'
@@ -23,11 +28,29 @@ export class IntegrationGrowthSpacesResolver {
   ) {}
 
   @Mutation()
-  //ACL HERE
+  @UseGuards(AppCaslGuard)
   async integrationGrowthSpacesCreate(
     @Args('teamId') teamId: string,
-    @Args('input') input: IntegrationGrowthSpacesCreateInput
+    @Args('input') input: IntegrationGrowthSpacesCreateInput,
+    @CaslAbility() ability: AppAbility
   ): Promise<Integration> {
+    const team = await this.prismaService.team.findUnique({
+      where: { id: teamId },
+      include: { userTeams: true }
+    })
+
+    if (team == null) {
+      throw new GraphQLError('team not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    }
+
+    if (!ability.can(Action.Read, subject('Team', team))) {
+      throw new GraphQLError('user is not allowed to create integration', {
+        extensions: { code: 'FORBIDDEN' }
+      })
+    }
+
     await this.integrationGrowthSpacesService.authenticate(
       input.accessId,
       input.accessSecret
@@ -51,11 +74,28 @@ export class IntegrationGrowthSpacesResolver {
   }
 
   @Mutation()
-  //ACL HERE
+  @UseGuards(AppCaslGuard)
   async integrationGrowthSpacesUpdate(
     @Args('id') id: string,
-    @Args('input') input: IntegrationGrowthSpacesUpdateInput
+    @Args('input') input: IntegrationGrowthSpacesUpdateInput,
+    @CaslAbility() ability: AppAbility
   ): Promise<Integration> {
+    const integration = await this.prismaService.integration.findUnique({
+      where: { id },
+      include: { team: { include: { userTeams: true } } }
+    })
+
+    if (integration == null)
+      throw new GraphQLError('integration not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+
+    if (!ability.can(Action.Manage, subject('Integration', integration))) {
+      throw new GraphQLError('user is not allowed to update integration', {
+        extensions: { code: 'FORBIDDEN' }
+      })
+    }
+
     await this.integrationGrowthSpacesService.authenticate(
       input.accessId,
       input.accessSecret
