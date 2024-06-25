@@ -22,6 +22,7 @@ import { setBeaconPageViewed } from '../../../../../libs/setBeaconPageViewed'
 import { FramePortal } from '../../../../FramePortal'
 import { Fab } from '../../../Fab'
 
+import { FooterAnalytics } from './CardAnalytics'
 import { CardWrapper } from './CardWrapper'
 import { FormWrapper } from './FormWrapper'
 import { InlineEditWrapper } from './InlineEditWrapper'
@@ -295,17 +296,26 @@ export function Canvas(): ReactElement {
                 </ThemeProvider>
               </FramePortal>
             </Box>
-            {showAnalytics !== true && (
-              <Box
-                sx={{
-                  mt: 4,
-                  alignSelf: 'end',
-                  transform: `scale(${scale})`
-                }}
-              >
-                <Fab variant="canvas" />
-              </Box>
-            )}
+            <Box
+              sx={{
+                mt: 4,
+                display: 'flex',
+                height: 48
+              }}
+            >
+              {showAnalytics ? (
+                <FooterAnalytics />
+              ) : (
+                <Box
+                  sx={{
+                    ml: 'auto',
+                    transform: `scale(${scale})`
+                  }}
+                >
+                  <Fab variant="canvas" />
+                </Box>
+              )}
+            </Box>
           </Box>
         </Stack>
       )}
