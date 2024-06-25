@@ -8,6 +8,7 @@ import Clock1 from '@core/shared/ui/icons/Clock1'
 import TrendDown1 from '@core/shared/ui/icons/TrendDown1'
 import UserProfile3 from '@core/shared/ui/icons/UserProfile3'
 
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { AnalyticsDataPoint } from '../../../AnalyticsDataPoint'
 
 const StatsOverlay = styled(Stack)(({ theme }) => ({
@@ -54,17 +55,20 @@ function getPercentage(dividend, divisor): string {
 }
 
 interface StepBlockNodeAnalyticsProps {
-  timeOnPage?: number
-  visitors?: number
-  visitorsExitAtStep?: number
+  id: string
 }
 
 export function StepBlockNodeAnalytics({
-  timeOnPage = 0,
-  visitors = 0,
-  visitorsExitAtStep = 0
+  id
 }: StepBlockNodeAnalyticsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const {
+    state: { analytics }
+  } = useEditor()
+  const stepStats = analytics?.stepsStats.find((step) => step.stepId === id)
+  const visitors = stepStats?.visitors ?? 0
+  const visitorsExitAtStep = stepStats?.visitorsExitAtStep ?? 0
+  const timeOnPage = stepStats?.timeOnPage ?? 0
 
   return (
     <StatsOverlay

@@ -22,29 +22,28 @@ export function StepBlockNode({
   dragging
 }: NodeProps): ReactElement {
   const {
-    state: { steps, selectedStep, activeContent, showAnalytics, analytics }
+    state: { steps, selectedStep, activeContent, showAnalytics }
   } = useEditor()
   const step = steps?.find((step) => step.id === id)
 
-  const stepStats = analytics?.stepsStats.find((step) => step.stepId === id)
-  const stepEventAnalytics = analytics?.stepMap.get(id)
+  // const stepEventAnalytics = analytics?.stepMap.get(id)
 
   const actionBlocks = useMemo(
     () => (step != null ? [step, ...filterActionBlocks(step)] : []),
     [step]
   )
 
-  const getBlockAnalytics = (block) => {
-    const blockEventTotal = analytics?.blockMap.get(block.id) ?? 0
+  // const getBlockAnalytics = (block) => {
+  //   const blockEventTotal = analytics?.blockMap.get(block.id) ?? 0
 
-    let percentage = blockEventTotal / (stepEventAnalytics?.total ?? 0)
+  //   let percentage = blockEventTotal / (stepEventAnalytics?.total ?? 0)
 
-    if (Number.isNaN(percentage) || !Number.isFinite(percentage)) {
-      percentage = 0
-    }
+  //   if (Number.isNaN(percentage) || !Number.isFinite(percentage)) {
+  //     percentage = 0
+  //   }
 
-    return { percentage, total: blockEventTotal }
-  }
+  //   return { percentage, total: blockEventTotal }
+  // }
 
   const isSelected =
     activeContent === ActiveContent.Canvas && selectedStep?.id === step?.id
@@ -53,7 +52,7 @@ export function StepBlockNode({
     <Stack sx={{ position: 'relative' }}>
       <Fade in={showAnalytics === true}>
         <div>
-          <StepBlockNodeAnalytics {...stepStats} />
+          <StepBlockNodeAnalytics id={id} />
         </div>
       </Fade>
       {showAnalytics !== true && (
@@ -95,7 +94,7 @@ export function StepBlockNode({
               key={block.id}
               block={block}
               selected={isSelected}
-              analytics={getBlockAnalytics(block)}
+              // analytics={getBlockAnalytics(block)}
             />
           ))}
         </Stack>

@@ -1,14 +1,26 @@
+import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
+import { Step } from '@core/journeys/ui/Step'
 import { render, screen } from '@testing-library/react'
 import { StepBlockNodeAnalytics } from '.'
 
 describe('StepBlockNodeAnalytics', () => {
   it('should render', () => {
+    const initialState = {
+      analytics: {
+        stepsStats: [
+          {
+            stepId: 'step.id',
+            visitors: 1000,
+            visitorsExitAtStep: 100,
+            timeOnPage: 72
+          }
+        ]
+      }
+    } as unknown as EditorState
     render(
-      <StepBlockNodeAnalytics
-        visitors={1000}
-        visitorsExitAtStep={100}
-        timeOnPage={72}
-      />
+      <EditorProvider initialState={initialState}>
+        <StepBlockNodeAnalytics id="step.id" />
+      </EditorProvider>
     )
 
     expect(screen.getByText('1000')).toBeInTheDocument()
@@ -17,7 +29,24 @@ describe('StepBlockNodeAnalytics', () => {
   })
 
   it('should render fallbacks', () => {
-    render(<StepBlockNodeAnalytics />)
+    const initialState = {
+      analytics: {
+        stepsStats: [
+          {
+            stepId: 'step.id',
+            visitors: null,
+            visitorsExitAtStep: null,
+            timeOnPage: null
+          }
+        ]
+      }
+    } as unknown as EditorState
+
+    render(
+      <EditorProvider initialState={initialState}>
+        <StepBlockNodeAnalytics id="step.id" />
+      </EditorProvider>
+    )
 
     expect(screen.getByText('0')).toBeInTheDocument()
     expect(screen.getByText('0%')).toBeInTheDocument()
