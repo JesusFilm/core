@@ -3,7 +3,7 @@ type IntegrationGrowthSpace implements Integration {
     teamId: String!
     type: IntegrationType!
     accessId: String!
-    accessSecretPart: String!,
+    accessSecretPart: String!
     routes: [GrowthSpacesRoute!]!
 }
 
