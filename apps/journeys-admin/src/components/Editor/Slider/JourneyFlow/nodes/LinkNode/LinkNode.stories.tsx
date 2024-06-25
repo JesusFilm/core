@@ -204,4 +204,22 @@ export const Email = {
   }
 }
 
+export const Analytics = {
+  ...Template,
+  args: {
+    ...defaultFlowProps,
+    nodes: [
+      {
+        id: 'someStep.id',
+        type: 'Link',
+        position: { x: 100, y: 0 }
+      }
+    ],
+    initialState: {
+      steps: [],
+      showAnalytics: true
+    }
+  }
+}
+
 export default Demo
