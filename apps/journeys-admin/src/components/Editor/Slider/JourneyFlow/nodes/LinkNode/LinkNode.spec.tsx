@@ -113,4 +113,19 @@ describe('LinkNode', () => {
     expect(screen.getByText('Send an Email')).toBeInTheDocument()
     expect(screen.getByText('email@example.com')).toBeInTheDocument()
   })
+
+  it('should render link node analytics', () => {
+    const props = {
+      id: 'LinkNode-button1.id'
+    } as unknown as NodeProps
+
+    render(
+      <ReactFlowProvider>
+        <EditorProvider initialState={{ steps, showAnalytics: true }}>
+          <LinkNode {...props} />
+        </EditorProvider>
+      </ReactFlowProvider>
+    )
+    expect(screen.getByTestId('LinkNodeAnalytics')).toBeInTheDocument()
+  })
 })
