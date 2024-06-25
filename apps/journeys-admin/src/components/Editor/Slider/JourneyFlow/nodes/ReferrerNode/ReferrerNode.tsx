@@ -1,35 +1,46 @@
-import { Box, Typography } from '@mui/material'
+import Box from '@mui/material/Box'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 
+import { GetJourneyAnalytics_journeyReferrer as JourneyReferrer } from '@core/journeys/ui/useJourneyAnalyticsQuery/__generated__/GetJourneyAnalytics'
+import { NodeProps } from 'reactflow'
 import { BaseNode } from '../BaseNode'
+import { BaseReferrer } from './BaseReferrer'
+import { OtherReferrer } from './OtherReferrer'
 
-export function ReferrerNode({ id, data, ...rest }) {
+interface ReferrerNodeProps extends NodeProps {
+  data:
+    | JourneyReferrer
+    | { property: 'Other sources'; referrers: JourneyReferrer[] }
+}
+
+export function ReferrerNode({ data }: ReferrerNodeProps) {
   const {
-    state: { showJourneyFlowAnalytics }
+    state: { showAnalytics }
   } = useEditor()
+
   return (
     <BaseNode
       id="referrer"
-      sourceHandle={showJourneyFlowAnalytics ? 'show' : 'hide'}
+      sourceHandle={showAnalytics ? 'show' : 'hide'}
       isSourceConnected
     >
-      <Box
-        sx={{
-          borderRadius: 50,
-          backgroundColor: 'background.paper',
-          px: 3,
-          py: 1,
-          display: 'flex',
-          gap: 6,
-          filter: 'drop-shadow(4px 4px 10px rgba(0,0,0,0.1))',
-          opacity: showJourneyFlowAnalytics ? 1 : 0,
-          transition: 'opacity 200ms ease-in-out'
-        }}
-      >
-        <Typography variant="body2">{data.property}</Typography>
-        <Typography variant="body2">{data.visitors}</Typography>
-      </Box>
+      <>
+        {'referrers' in data ? (
+          <OtherReferrer {...data} />
+        ) : (
+          <Box
+            sx={{
+              width: 160,
+              backgroundColor: 'background.paper',
+              borderRadius: 50,
+              boxShadow: 3
+            }}
+          >
+            <BaseReferrer {...data} />
+          </Box>
+        )}
+      </>
     </BaseNode>
   )
 }
