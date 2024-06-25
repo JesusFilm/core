@@ -5,9 +5,9 @@ import fetch, { Response } from 'node-fetch'
 import { GrowthSpacesRoute } from '../../../__generated__/graphql'
 import { PrismaService } from '../../../lib/prisma.service'
 import { IntegrationService } from '../integration.service'
-import { IntegrationGrowthSpaceResolver } from './growthSpaces.resolver'
+import { IntegrationGrowthSpacesResolver } from './growthSpaces.resolver'
 import { IntegrationGrothSpacesService } from './growthSpaces.service'
-import { Block, Integration } from '.prisma/api-journeys-client'
+import { Integration } from '.prisma/api-journeys-client'
 
 jest.mock('node-fetch', () => {
   const originalModule = jest.requireActual('node-fetch')
@@ -39,13 +39,13 @@ describe('IntegrationGrowthSpaceResolver', () => {
   let growthSpacesService: IntegrationGrothSpacesService,
     prismaService: DeepMockProxy<PrismaService>,
     integrationService: IntegrationService,
-    resolver: IntegrationGrowthSpaceResolver
+    resolver: IntegrationGrowthSpacesResolver
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [CacheModule.register()],
       providers: [
-        IntegrationGrowthSpaceResolver,
+        IntegrationGrowthSpacesResolver,
         IntegrationService,
         IntegrationGrothSpacesService,
         {
@@ -56,7 +56,7 @@ describe('IntegrationGrowthSpaceResolver', () => {
     }).compile()
     integrationService = module.get<IntegrationService>(IntegrationService)
     growthSpacesService = await module.resolve(IntegrationGrothSpacesService)
-    resolver = await module.resolve(IntegrationGrowthSpaceResolver)
+    resolver = await module.resolve(IntegrationGrowthSpacesResolver)
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>

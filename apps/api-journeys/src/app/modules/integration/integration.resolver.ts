@@ -12,7 +12,7 @@ export class IntegrationResolver {
   __resolveType(obj: { type: IntegrationType }): string {
     switch (obj.type) {
       case 'growthSpaces':
-        return 'IntegrationGrowthSpace'
+        return 'IntegrationGrowthSpaces'
       default:
         return 'Integration'
     }
