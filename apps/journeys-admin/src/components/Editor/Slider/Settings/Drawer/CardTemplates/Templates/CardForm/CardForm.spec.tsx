@@ -95,6 +95,5 @@ describe('CardForm', () => {
     await waitFor(() => expect(cardFormCreateErrorMock.error).toBeDefined())
     await waitFor(() => expect(setLoadingMock).toHaveBeenCalled())
     expect(getByAltText('Card Form Template')).toBeInTheDocument()
-
   })
 })
