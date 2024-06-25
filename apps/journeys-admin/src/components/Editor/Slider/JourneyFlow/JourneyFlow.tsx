@@ -15,6 +15,8 @@ import {
   Background,
   ControlButton,
   Controls,
+  Edge,
+  Node,
   NodeDragHandler,
   OnConnect,
   OnConnectEnd,
@@ -58,6 +60,7 @@ import { StepBlockNode } from './nodes/StepBlockNode'
 import { STEP_NODE_CARD_HEIGHT } from './nodes/StepBlockNode/libs/sizes'
 
 import 'reactflow/dist/style.css'
+import { ReferrerEdge } from './edges/ReferrerEdge'
 import { transformReferrers } from './libs/transformReferrers'
 import { ReferrerNode } from './nodes/ReferrerNode'
 
@@ -83,7 +86,7 @@ export function JourneyFlow(): ReactElement {
   const { editorAnalytics } = useFlags()
   const theme = useTheme()
   const {
-    state: { steps, activeSlide, showAnalytics }
+    state: { steps, activeSlide, showAnalytics, analytics }
   } = useEditor()
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance | null>(null)
@@ -183,12 +186,9 @@ export function JourneyFlow(): ReactElement {
     if (!validSteps) return
 
     const { nodes, edges } = transformSteps(steps ?? [], positions)
-    const { nodes: referrerNodes, edges: referrerEdges } = transformReferrers(
-      journeyStatsBreakdown?.referrers
-    )
 
-    setEdges([...edges, ...referrerEdges])
-    setNodes([...nodes, ...referrerNodes])
+    setEdges(edges)
+    setNodes(nodes)
   }, [steps, data, theme, setEdges, setNodes, refetch])
 
   const onConnect = useCallback<OnConnect>(() => {
@@ -289,10 +289,34 @@ export function JourneyFlow(): ReactElement {
   const edgeTypes = useMemo(
     () => ({
       Custom: CustomEdge,
-      Start: StartEdge
+      Start: StartEdge,
+      Referrer: ReferrerEdge
     }),
     []
   )
+
+  const hideReferrers =
+    <T extends Node | Edge>(hidden: boolean) =>
+    (nodeOrEdge: T) => {
+      if (nodeOrEdge.type === 'Referrer') {
+        nodeOrEdge.hidden = hidden
+      }
+      return nodeOrEdge
+    }
+
+  useEffect(() => {
+    if (analytics?.referrers) {
+      const { nodes, edges } = transformReferrers(analytics.referrers)
+
+      setEdges((prev) => [...prev, ...edges])
+      setNodes((prev) => [...prev, ...nodes])
+    }
+  }, [JSON.stringify(analytics?.referrers)])
+
+  useEffect(() => {
+    setNodes((nds) => nds.map(hideReferrers(!showAnalytics)))
+    setEdges((eds) => eds.map(hideReferrers(!showAnalytics)))
+  }, [showAnalytics])
 
   return (
     <Box
