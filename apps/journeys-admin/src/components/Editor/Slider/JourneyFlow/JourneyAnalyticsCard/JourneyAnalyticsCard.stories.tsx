@@ -21,6 +21,7 @@ const Template: StoryObj<
         ...args
       }
     } as unknown as EditorState
+
     return (
       <EditorProvider initialState={initialState}>
         <JourneyAnalyticsCard />
