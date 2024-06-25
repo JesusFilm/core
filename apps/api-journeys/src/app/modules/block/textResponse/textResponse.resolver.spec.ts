@@ -145,7 +145,7 @@ describe('TextResponseBlockResolver', () => {
       expect(service.update).toHaveBeenCalledWith('blockId', blockUpdateInput)
     })
 
-    it('throws error if trying to set routeId with no associated routeId', async () => {
+    it('throws error if trying to set routeId with no associated interationId', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
       await expect(
         resolver.textResponseBlockUpdate(ability, 'blockId', {
