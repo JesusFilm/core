@@ -1,6 +1,9 @@
 import crypto from 'node:crypto'
 import { Injectable } from '@nestjs/common'
 import { GraphQLError } from 'graphql/error'
+import { IntegrationInput } from '../../__generated__/graphql'
+import { PrismaService } from '../../lib/prisma.service'
+import { Integration } from '.prisma/api-journeys-client'
 
 export interface EncryptResponse {
   ciphertext: string
@@ -10,6 +13,7 @@ export interface EncryptResponse {
 
 @Injectable()
 export class IntegrationService {
+  constructor(private readonly prismaService: PrismaService) {}
   async encryptSymmetric(
     plaintext: string,
     key: string | undefined
@@ -52,5 +56,11 @@ export class IntegrationService {
     plaintext += decipher.final('utf8')
 
     return plaintext
+  }
+
+  async delete(input: IntegrationInput): Promise<Integration> {
+    return await this.prismaService.integration.delete({
+      where: { id: input.id }
+    })
   }
 }

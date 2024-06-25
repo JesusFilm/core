@@ -244,4 +244,61 @@ describe('IntegrationGrothSpacesService', () => {
       )
     })
   })
+
+  describe('create', () => {
+    it('should create growth spaces integration', async () => {
+      const data = 'ok'
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => await Promise.resolve(data)
+      } as unknown as Response)
+
+      process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET =
+        'dontbefooledbythiskryptokeyitisactuallyfake='
+
+      const input = { accessId: 'accessId', accessSecret: 'accessSecret' }
+
+      await service.create('teamId', input)
+      expect(prismaService.integration.create).toHaveBeenCalledWith({
+        data: {
+          accessId: 'accessId',
+          teamId: 'teamId',
+          type: 'growthSpaces',
+          accessSecretCipherText: expect.any(String),
+          accessSecretIv: expect.any(String),
+          accessSecretTag: expect.any(String)
+        }
+      })
+    })
+  })
+
+  describe('update', () => {
+    it('should update growth spaces integration', async () => {
+      const data = 'ok'
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => await Promise.resolve(data)
+      } as unknown as Response)
+
+      process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET =
+        'dontbefooledbythiskryptokeyitisactuallyfake='
+
+      const input = { accessId: 'accessId', accessSecret: 'accessSecret' }
+
+      await service.update('integrationId', input)
+      expect(prismaService.integration.update).toHaveBeenCalledWith({
+        data: {
+          accessId: 'accessId',
+          accessSecretCipherText: expect.any(String),
+          accessSecretIv: expect.any(String),
+          accessSecretTag: expect.any(String)
+        },
+        where: {
+          id: 'integrationId'
+        }
+      })
+    })
+  })
 })

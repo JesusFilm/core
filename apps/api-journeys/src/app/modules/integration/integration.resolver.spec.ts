@@ -6,11 +6,13 @@ import { IntegrationType, UserTeamRole } from '../../__generated__/graphql'
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
 import { PrismaService } from '../../lib/prisma.service'
 import { IntegrationResolver } from './integration.resolver'
+import { IntegrationService } from './integration.service'
 import { Integration } from '.prisma/api-journeys-client'
 
 describe('IntegrationResolver', () => {
   let resolver: IntegrationResolver,
     prismaService: DeepMockProxy<PrismaService>,
+    integrationService: IntegrationService,
     ability: AppAbility
 
   beforeEach(async () => {
@@ -21,6 +23,7 @@ describe('IntegrationResolver', () => {
       ],
       providers: [
         IntegrationResolver,
+        IntegrationService,
         { provide: PrismaService, useValue: mockDeep<PrismaService>() }
       ]
     }).compile()
@@ -29,6 +32,7 @@ describe('IntegrationResolver', () => {
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
+    integrationService = module.get<IntegrationService>(IntegrationService)
     ability = await new AppCaslFactory().createAbility({ id: 'userId' })
   })
 

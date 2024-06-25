@@ -8,7 +8,12 @@ import { GraphQLError } from 'graphql/error'
 import { PrismaService } from '../../../lib/prisma.service'
 import { IntegrationService } from '../integration.service'
 
-import { Block } from '.prisma/api-journeys-client'
+import {
+  IntegrationGrowthSpacesCreateInput,
+  IntegrationGrowthSpacesUpdateInput,
+  IntegrationType
+} from '../../../__generated__/graphql'
+import { Block, Integration } from '.prisma/api-journeys-client'
 
 const ONE_DAY_MS = 86400000
 
@@ -143,5 +148,50 @@ export class IntegrationGrothSpacesService {
         }
       )
     }
+  }
+
+  async create(
+    teamId: string,
+    input: IntegrationGrowthSpacesCreateInput
+  ): Promise<Integration> {
+    await this.authenticate(input.accessId, input.accessSecret)
+
+    const { ciphertext, iv, tag } =
+      await this.integrationService.encryptSymmetric(
+        input.accessSecret,
+        process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET
+      )
+
+    return await this.prismaService.integration.create({
+      data: {
+        type: IntegrationType.growthSpaces,
+        teamId: teamId,
+        accessId: input.accessId,
+        accessSecretCipherText: ciphertext,
+        accessSecretIv: iv,
+        accessSecretTag: tag
+      }
+    })
+  }
+
+  async update(
+    id: string,
+    input: IntegrationGrowthSpacesUpdateInput
+  ): Promise<Integration> {
+    await this.authenticate(input.accessId, input.accessSecret)
+    const { ciphertext, iv, tag } =
+      await this.integrationService.encryptSymmetric(
+        input.accessSecret,
+        process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET
+      )
+    return await this.prismaService.integration.update({
+      where: { id },
+      data: {
+        accessId: input.accessId,
+        accessSecretCipherText: ciphertext,
+        accessSecretIv: iv,
+        accessSecretTag: tag
+      }
+    })
   }
 }

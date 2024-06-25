@@ -51,26 +51,7 @@ export class IntegrationGrowthSpacesResolver {
       })
     }
 
-    await this.integrationGrowthSpacesService.authenticate(
-      input.accessId,
-      input.accessSecret
-    )
-
-    const { ciphertext, iv, tag } =
-      await this.integrationService.encryptSymmetric(
-        input.accessSecret,
-        process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET
-      )
-    return await this.prismaService.integration.create({
-      data: {
-        type: IntegrationType.growthSpaces,
-        teamId: teamId,
-        accessId: input.accessId,
-        accessSecretCipherText: ciphertext,
-        accessSecretIv: iv,
-        accessSecretTag: tag
-      }
-    })
+    return await this.integrationGrowthSpacesService.create(teamId, input)
   }
 
   @Mutation()
@@ -96,24 +77,7 @@ export class IntegrationGrowthSpacesResolver {
       })
     }
 
-    await this.integrationGrowthSpacesService.authenticate(
-      input.accessId,
-      input.accessSecret
-    )
-    const { ciphertext, iv, tag } =
-      await this.integrationService.encryptSymmetric(
-        input.accessSecret,
-        process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET
-      )
-    return await this.prismaService.integration.update({
-      where: { id },
-      data: {
-        accessId: input.accessId,
-        accessSecretCipherText: ciphertext,
-        accessSecretIv: iv,
-        accessSecretTag: tag
-      }
-    })
+    return await this.integrationGrowthSpacesService.update(id, input)
   }
 
   @ResolveField()

@@ -795,7 +795,6 @@ input IntegrationInput
   @join__type(graph: JOURNEYS)
 {
   id: ID!
-  teamId: String!
 }
 
 enum IntegrationType

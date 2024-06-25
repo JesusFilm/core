@@ -630,7 +630,6 @@ export class IntegrationGrowthSpacesUpdateInput {
 
 export class IntegrationInput {
     id: string;
-    teamId: string;
 }
 
 export class JourneysFilter {

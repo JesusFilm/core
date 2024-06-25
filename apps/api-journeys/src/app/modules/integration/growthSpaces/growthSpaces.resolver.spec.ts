@@ -38,7 +38,7 @@ const integration: Integration = {
 describe('IntegrationGrowthSpaceResolver', () => {
   const OLD_ENV = process.env
 
-  let growthSpacesService: IntegrationGrothSpacesService,
+  let integrationGrowthSpacesService: IntegrationGrothSpacesService,
     prismaService: DeepMockProxy<PrismaService>,
     integrationService: IntegrationService,
     resolver: IntegrationGrowthSpacesResolver,
@@ -61,7 +61,9 @@ describe('IntegrationGrowthSpaceResolver', () => {
       ]
     }).compile()
     integrationService = module.get<IntegrationService>(IntegrationService)
-    growthSpacesService = await module.resolve(IntegrationGrothSpacesService)
+    integrationGrowthSpacesService = await module.resolve(
+      IntegrationGrothSpacesService
+    )
     resolver = await module.resolve(IntegrationGrowthSpacesResolver)
     prismaService = module.get<PrismaService>(
       PrismaService

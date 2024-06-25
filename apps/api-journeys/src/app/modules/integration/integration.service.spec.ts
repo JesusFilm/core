@@ -1,19 +1,27 @@
 import { Test } from '@nestjs/testing'
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+import { PrismaService } from '../../lib/prisma.service'
 import { IntegrationService } from './integration.service'
 import { Integration } from '.prisma/api-journeys-client'
 
 describe('IntegrationService', () => {
   const OLD_ENV = process.env
 
-  let service: IntegrationService
+  let service: IntegrationService, prismaService: DeepMockProxy<PrismaService>
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
       imports: [],
-      providers: [IntegrationService]
+      providers: [
+        IntegrationService,
+        { provide: PrismaService, useValue: mockDeep<PrismaService>() }
+      ]
     }).compile()
 
     service = await module.get<IntegrationService>(IntegrationService)
+    prismaService = module.get<PrismaService>(
+      PrismaService
+    ) as DeepMockProxy<PrismaService>
 
     process.env = { ...OLD_ENV }
   })
@@ -90,6 +98,15 @@ describe('IntegrationService', () => {
           process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET
         )
       ).rejects.toThrow('no crypto key')
+    })
+  })
+
+  describe('delete', () => {
+    it('should delete integration', async () => {
+      await service.delete({ id: 'integrationId' })
+      expect(prismaService.integration.delete).toHaveBeenCalledWith({
+        where: { id: 'integrationId' }
+      })
     })
   })
 })

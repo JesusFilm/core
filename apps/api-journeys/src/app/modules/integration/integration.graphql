@@ -10,7 +10,6 @@ interface Integration {
 
 input IntegrationInput {
   id: ID!
-  teamId: String!
 }
 
 

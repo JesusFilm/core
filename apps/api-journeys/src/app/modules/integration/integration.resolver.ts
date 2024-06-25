@@ -9,11 +9,15 @@ import { UseGuards } from '@nestjs/common'
 import { GraphQLError } from 'graphql'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
+import { IntegrationService } from './integration.service'
 import { Integration } from '.prisma/api-journeys-client'
 
 @Resolver('Integration')
 export class IntegrationResolver {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly integrationService: IntegrationService
+  ) {}
 
   @ResolveField()
   __resolveType(obj: { type: IntegrationType }): string {
@@ -52,8 +56,6 @@ export class IntegrationResolver {
         extensions: { code: 'FORBIDDEN' }
       })
 
-    return this.prismaService.integration.delete({
-      where: { id: input.id }
-    })
+    return await this.integrationService.delete(input)
   }
 }
