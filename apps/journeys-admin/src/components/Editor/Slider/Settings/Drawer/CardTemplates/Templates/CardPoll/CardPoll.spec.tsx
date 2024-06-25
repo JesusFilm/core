@@ -9,7 +9,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import type { JourneyFields as Journey } from '../../../../../../../../../__generated__/JourneyFields'
 import { cachedJourney, step } from '../../CardTemplates.data'
 
-import { cardPollCreateMock } from './CardPoll.data'
+import { cardPollCreateErrorMock, cardPollCreateMock } from './CardPoll.data'
 
 import { CardPoll } from '.'
 
@@ -80,5 +80,24 @@ describe('CardPoll', () => {
     fireEvent.click(getByRole('button', { name: 'Card Poll Template' }))
     await waitFor(() => expect(cardPollCreateMock.result).toHaveBeenCalled())
     await waitFor(() => expect(setLoadingMock).toHaveBeenCalled())
+  })
+
+  it('updates loading state when error', async () => {
+    const { getByRole, getByAltText } = render(
+      <MockedProvider mocks={[cardPollCreateErrorMock]}>
+        <JourneyProvider
+          value={{ journey: { id: 'journeyId' } as unknown as Journey }}
+        >
+          <EditorProvider initialState={{ steps: [step] }}>
+            <CardPoll setCardTemplatesLoading={setLoadingMock} />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('button', { name: 'Card Poll Template' }))
+    await waitFor(() => expect(cardPollCreateErrorMock.error).toBeDefined())
+    await waitFor(() => expect(setLoadingMock).toHaveBeenCalled())
+    expect(getByAltText('Card Poll Template')).toBeInTheDocument()
   })
 })

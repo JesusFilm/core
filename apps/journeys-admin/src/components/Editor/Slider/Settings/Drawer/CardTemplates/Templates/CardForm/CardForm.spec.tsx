@@ -9,7 +9,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import type { JourneyFields as Journey } from '../../../../../../../../../__generated__/JourneyFields'
 import { cachedJourney, step } from '../../CardTemplates.data'
 
-import { cardFormCreateMock } from './CardForm.data'
+import { cardFormCreateErrorMock, cardFormCreateMock } from './CardForm.data'
 
 import { CardForm } from '.'
 
@@ -76,5 +76,25 @@ describe('CardForm', () => {
     fireEvent.click(getByRole('button', { name: 'Card Form Template' }))
     await waitFor(() => expect(cardFormCreateMock.result).toHaveBeenCalled())
     await waitFor(() => expect(setLoadingMock).toHaveBeenCalled())
+  })
+
+  it('updates loading state on error', async () => {
+    const { getByRole, getByAltText } = render(
+      <MockedProvider mocks={[cardFormCreateErrorMock]}>
+        <JourneyProvider
+          value={{ journey: { id: 'journeyId' } as unknown as Journey }}
+        >
+          <EditorProvider initialState={{ steps: [step] }}>
+            <CardForm setCardTemplatesLoading={setLoadingMock} />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('button', { name: 'Card Form Template' }))
+    await waitFor(() => expect(cardFormCreateErrorMock.error).toBeDefined())
+    await waitFor(() => expect(setLoadingMock).toHaveBeenCalled())
+    expect(getByAltText('Card Form Template')).toBeInTheDocument()
+
   })
 })

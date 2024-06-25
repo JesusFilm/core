@@ -130,69 +130,85 @@ const cardIntroCreate: CardIntroCreate = {
   }
 }
 
+const cardIntroCreateVars: CardIntroCreateVariables = {
+  journeyId: 'journeyId',
+  buttonId: 'buttonId',
+  subtitleInput: {
+    journeyId: 'journeyId',
+    parentBlockId: 'cardId',
+    content: 'Interactive Video',
+    variant: TypographyVariant.h6
+  },
+  titleInput: {
+    journeyId: 'journeyId',
+    parentBlockId: 'cardId',
+    content: "Jesus: History's Most Influential Figure?",
+    variant: TypographyVariant.h1
+  },
+  bodyInput: {
+    journeyId: 'journeyId',
+    parentBlockId: 'cardId',
+    content:
+      'Journey through time, from dusty roads to modern cities, to understand the lasting impact and relevance of Jesus.',
+    variant: TypographyVariant.body1
+  },
+  buttonInput: {
+    id: 'buttonId',
+    journeyId: 'journeyId',
+    parentBlockId: 'cardId',
+    label: 'Begin the Journey',
+    variant: ButtonVariant.contained
+  },
+  startIconInput: {
+    id: 'startIconId',
+    journeyId: 'journeyId',
+    parentBlockId: 'buttonId'
+  },
+  endIconInput: {
+    id: 'endIconId',
+    journeyId: 'journeyId',
+    parentBlockId: 'buttonId',
+    name: IconName.ArrowForwardRounded
+  },
+  buttonUpdateInput: {
+    startIconId: 'startIconId',
+    endIconId: 'endIconId'
+  },
+  videoInput: {
+    journeyId: 'journeyId',
+    parentBlockId: 'cardId',
+    videoId: '1_jf-0-0',
+    videoVariantLanguageId: '529',
+    startAt: 2048,
+    endAt: 2058,
+    isCover: true,
+    source: VideoBlockSource.internal
+  }
+}
+
 export const cardIntroCreateMock: MockedResponse<
   CardIntroCreate,
   CardIntroCreateVariables
 > = {
   request: {
     query: CARD_INTRO_CREATE,
-    variables: {
-      journeyId: 'journeyId',
-      buttonId: 'buttonId',
-      subtitleInput: {
-        journeyId: 'journeyId',
-        parentBlockId: 'cardId',
-        content: 'Interactive Video',
-        variant: TypographyVariant.h6
-      },
-      titleInput: {
-        journeyId: 'journeyId',
-        parentBlockId: 'cardId',
-        content: "Jesus: History's Most Influential Figure?",
-        variant: TypographyVariant.h1
-      },
-      bodyInput: {
-        journeyId: 'journeyId',
-        parentBlockId: 'cardId',
-        content:
-          'Journey through time, from dusty roads to modern cities, to understand the lasting impact and relevance of Jesus.',
-        variant: TypographyVariant.body1
-      },
-      buttonInput: {
-        id: 'buttonId',
-        journeyId: 'journeyId',
-        parentBlockId: 'cardId',
-        label: 'Begin the Journey',
-        variant: ButtonVariant.contained
-      },
-      startIconInput: {
-        id: 'startIconId',
-        journeyId: 'journeyId',
-        parentBlockId: 'buttonId'
-      },
-      endIconInput: {
-        id: 'endIconId',
-        journeyId: 'journeyId',
-        parentBlockId: 'buttonId',
-        name: IconName.ArrowForwardRounded
-      },
-      buttonUpdateInput: {
-        startIconId: 'startIconId',
-        endIconId: 'endIconId'
-      },
-      videoInput: {
-        journeyId: 'journeyId',
-        parentBlockId: 'cardId',
-        videoId: '1_jf-0-0',
-        videoVariantLanguageId: '529',
-        startAt: 2048,
-        endAt: 2058,
-        isCover: true,
-        source: VideoBlockSource.internal
-      }
-    }
+    variables: cardIntroCreateVars
   },
   result: jest.fn(() => ({
     data: cardIntroCreate
   }))
+}
+
+export const cardIntroCreateErrorMock: MockedResponse<
+  CardIntroCreate,
+  CardIntroCreateVariables
+> = {
+  request: {
+    query: CARD_INTRO_CREATE,
+    variables: cardIntroCreateVars
+  },
+  error: {
+    name: 'INTERNAL_SERVER_ERROR',
+    message: 'There was an error creating intro card'
+  }
 }

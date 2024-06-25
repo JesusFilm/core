@@ -1,6 +1,11 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import {
+  fireEvent,
+  getByAltText,
+  render,
+  waitFor
+} from '@testing-library/react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -8,7 +13,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import type { JourneyFields as Journey } from '../../../../../../../../../__generated__/JourneyFields'
 import { cachedJourney, step } from '../../CardTemplates.data'
 
-import { cardVideoCreateMock } from './CardVideo.data'
+import { cardVideoCreateErrorMock, cardVideoCreateMock } from './CardVideo.data'
 
 import { CardVideo } from '.'
 
@@ -60,5 +65,24 @@ describe('CardVideo', () => {
     fireEvent.click(getByRole('button', { name: 'Card Video Template' }))
     await waitFor(() => expect(cardVideoCreateMock.result).toHaveBeenCalled())
     await waitFor(() => expect(setLoadingMock).toHaveBeenCalled())
+  })
+
+  it('updates loading state when error', async () => {
+    const { getByRole, getByAltText } = render(
+      <MockedProvider mocks={[cardVideoCreateErrorMock]}>
+        <JourneyProvider
+          value={{ journey: { id: 'journeyId' } as unknown as Journey }}
+        >
+          <EditorProvider initialState={{ steps: [step] }}>
+            <CardVideo setCardTemplatesLoading={setLoadingMock} />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('button', { name: 'Card Video Template' }))
+    await waitFor(() => expect(cardVideoCreateErrorMock.error).toBeDefined())
+    await waitFor(() => expect(setLoadingMock).toHaveBeenCalled())
+    expect(getByAltText('Card Video Template')).toBeInTheDocument()
   })
 })

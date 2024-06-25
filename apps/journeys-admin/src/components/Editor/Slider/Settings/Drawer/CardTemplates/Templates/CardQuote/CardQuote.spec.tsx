@@ -8,7 +8,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import type { JourneyFields as Journey } from '../../../../../../../../../__generated__/JourneyFields'
 import { cachedJourney, step } from '../../CardTemplates.data'
 
-import { cardQuoteCreateMock } from './CardQuote.data'
+import { cardQuoteCreateErrorMock, cardQuoteCreateMock } from './CardQuote.data'
 
 import { CardQuote } from '.'
 
@@ -62,7 +62,26 @@ describe('CardQuote', () => {
     )
 
     fireEvent.click(getByRole('button', { name: 'Card Quote Template' }))
-    await waitFor(() => expect(cardQuoteCreateMock).toHaveBeenCalled())
+    await waitFor(() => expect(cardQuoteCreateMock.result).toHaveBeenCalled())
     await waitFor(() => expect(setLoadingMock).toHaveBeenCalled())
+  })
+
+  it('updates loading state when error', async () => {
+    const { getByRole, getByAltText } = render(
+      <MockedProvider mocks={[cardQuoteCreateErrorMock]}>
+        <JourneyProvider
+          value={{ journey: { id: 'journeyId' } as unknown as Journey }}
+        >
+          <EditorProvider initialState={{ steps: [step] }}>
+            <CardQuote setCardTemplatesLoading={setLoadingMock} />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('button', { name: 'Card Quote Template' }))
+    await waitFor(() => expect(cardQuoteCreateErrorMock.error).toBeDefined())
+    await waitFor(() => expect(setLoadingMock).toHaveBeenCalled())
+    expect(getByAltText('Card Quote Template')).toBeInTheDocument()
   })
 })

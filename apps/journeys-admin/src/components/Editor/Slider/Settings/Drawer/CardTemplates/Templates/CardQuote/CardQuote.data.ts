@@ -67,50 +67,66 @@ const cardQuoteCreate: CardQuoteCreate = {
   }
 }
 
+const cardQuoteCreateVars: CardQuoteCreateVariables = {
+  imageInput: {
+    journeyId: 'journeyId',
+    parentBlockId: 'cardId',
+    alt: 'photo-1552423310-ba74b8de5e6f',
+    blurhash: 'L99*0;01IAtk5R%MRie;t8D%-pa$',
+    height: 3396,
+    src: 'https://images.unsplash.com/photo-1552423310-ba74b8de5e6f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0MDYwNDN8MHwxfHNlYXJjaHwyOXx8aXNyYWVsfGVufDB8fHx8MTY5NTE3MDg5M3ww&ixlib=rb-4.0.3&q=80&w=1080',
+    width: 5094,
+    isCover: true
+  },
+  subtitleInput: {
+    journeyId: 'journeyId',
+    parentBlockId: 'cardId',
+    content: 'The Bible Says:',
+    variant: TypographyVariant.h6
+  },
+  titleInput: {
+    journeyId: 'journeyId',
+    parentBlockId: 'cardId',
+    content:
+      'Blessed are the peacemakers, for they shall be called sons of God.',
+    variant: TypographyVariant.h3
+  },
+  bodyInput: {
+    journeyId: 'journeyId',
+    parentBlockId: 'cardId',
+    content: '– Jesus Christ',
+    variant: TypographyVariant.body1,
+    color: TypographyColor.secondary
+  },
+  cardId: 'cardId',
+  cardInput: {
+    backgroundColor: '#0E1412'
+  }
+}
+
 export const cardQuoteCreateMock: MockedResponse<
   CardQuoteCreate,
   CardQuoteCreateVariables
 > = {
   request: {
     query: CARD_QUOTE_CREATE,
-    variables: {
-      imageInput: {
-        journeyId: 'journeyId',
-        parentBlockId: 'cardId',
-        alt: 'photo-1552423310-ba74b8de5e6f',
-        blurhash: 'L99*0;01IAtk5R%MRie;t8D%-pa$',
-        height: 3396,
-        src: 'https://images.unsplash.com/photo-1552423310-ba74b8de5e6f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0MDYwNDN8MHwxfHNlYXJjaHwyOXx8aXNyYWVsfGVufDB8fHx8MTY5NTE3MDg5M3ww&ixlib=rb-4.0.3&q=80&w=1080',
-        width: 5094,
-        isCover: true
-      },
-      subtitleInput: {
-        journeyId: 'journeyId',
-        parentBlockId: 'cardId',
-        content: 'The Bible Says:',
-        variant: TypographyVariant.h6
-      },
-      titleInput: {
-        journeyId: 'journeyId',
-        parentBlockId: 'cardId',
-        content:
-          'Blessed are the peacemakers, for they shall be called sons of God.',
-        variant: TypographyVariant.h3
-      },
-      bodyInput: {
-        journeyId: 'journeyId',
-        parentBlockId: 'cardId',
-        content: '– Jesus Christ',
-        variant: TypographyVariant.body1,
-        color: TypographyColor.secondary
-      },
-      cardId: 'cardId',
-      cardInput: {
-        backgroundColor: '#0E1412'
-      }
-    }
+    variables: cardQuoteCreateVars
   },
   result: jest.fn(() => ({
     data: cardQuoteCreate
   }))
+}
+
+export const cardQuoteCreateErrorMock: MockedResponse<
+  CardQuoteCreate,
+  CardQuoteCreateVariables
+> = {
+  request: {
+    query: CARD_QUOTE_CREATE,
+    variables: cardQuoteCreateVars
+  },
+  error: {
+    name: 'INTERNAL_SERVER_ERROR',
+    message: 'There was an error creating cta card'
+  }
 }

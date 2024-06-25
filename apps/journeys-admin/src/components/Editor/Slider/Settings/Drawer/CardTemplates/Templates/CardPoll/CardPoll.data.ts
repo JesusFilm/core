@@ -104,75 +104,91 @@ const cardPollCreate: CardPollCreate = {
   }
 }
 
+const cardPollCreateVars: CardPollCreateVariables = {
+  imageInput: {
+    journeyId: 'journeyId',
+    parentBlockId: 'cardId',
+    alt: 'photo-1488048924544-c818a467dacd',
+    blurhash: 'LuHo2rtSIUfl.TtRRiogXot6aekC',
+    height: 3456,
+    src: 'https://images.unsplash.com/photo-1488048924544-c818a467dacd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0MDYwNDN8MHwxfHNlYXJjaHwyMHx8aXNyYWVsfGVufDB8fHx8MTY5NTE3MDI2NHww&ixlib=rb-4.0.3&q=80&w=1080',
+    width: 5184,
+    isCover: true
+  },
+  subtitleInput: {
+    journeyId: 'journeyId',
+    parentBlockId: 'cardId',
+    content: 'Got an Opinion?',
+    variant: TypographyVariant.h6
+  },
+  titleInput: {
+    journeyId: 'journeyId',
+    parentBlockId: 'cardId',
+    content: "Which of Jesus' teachings challenges you the most?",
+    variant: TypographyVariant.h2
+  },
+  radioQuestionInput: {
+    id: 'radioQuestionId',
+    journeyId: 'journeyId',
+    parentBlockId: 'cardId'
+  },
+  radioOptionInput1: {
+    journeyId: 'journeyId',
+    parentBlockId: 'radioQuestionId',
+    label: 'Turning the other cheek'
+  },
+  radioOptionInput2: {
+    journeyId: 'journeyId',
+    parentBlockId: 'radioQuestionId',
+    label: 'Loving your enemies'
+  },
+  radioOptionInput3: {
+    journeyId: 'journeyId',
+    parentBlockId: 'radioQuestionId',
+    label: 'Not worrying about tomorrow'
+  },
+  radioOptionInput4: {
+    journeyId: 'journeyId',
+    parentBlockId: 'radioQuestionId',
+    label: 'Seeking first the kingdom of God'
+  },
+  bodyInput: {
+    journeyId: 'journeyId',
+    parentBlockId: 'cardId',
+    content: '↑ Select an answer to continue',
+    variant: TypographyVariant.caption,
+    color: TypographyColor.secondary
+  },
+  journeyId: 'journeyId',
+  cardId: 'cardId',
+  cardInput: {
+    fullscreen: true
+  }
+}
+
 export const cardPollCreateMock: MockedResponse<
   CardPollCreate,
   CardPollCreateVariables
 > = {
   request: {
     query: CARD_POLL_CREATE,
-    variables: {
-      imageInput: {
-        journeyId: 'journeyId',
-        parentBlockId: 'cardId',
-        alt: 'photo-1488048924544-c818a467dacd',
-        blurhash: 'LuHo2rtSIUfl.TtRRiogXot6aekC',
-        height: 3456,
-        src: 'https://images.unsplash.com/photo-1488048924544-c818a467dacd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0MDYwNDN8MHwxfHNlYXJjaHwyMHx8aXNyYWVsfGVufDB8fHx8MTY5NTE3MDI2NHww&ixlib=rb-4.0.3&q=80&w=1080',
-        width: 5184,
-        isCover: true
-      },
-      subtitleInput: {
-        journeyId: 'journeyId',
-        parentBlockId: 'cardId',
-        content: 'Got an Opinion?',
-        variant: TypographyVariant.h6
-      },
-      titleInput: {
-        journeyId: 'journeyId',
-        parentBlockId: 'cardId',
-        content: "Which of Jesus' teachings challenges you the most?",
-        variant: TypographyVariant.h2
-      },
-      radioQuestionInput: {
-        id: 'radioQuestionId',
-        journeyId: 'journeyId',
-        parentBlockId: 'cardId'
-      },
-      radioOptionInput1: {
-        journeyId: 'journeyId',
-        parentBlockId: 'radioQuestionId',
-        label: 'Turning the other cheek'
-      },
-      radioOptionInput2: {
-        journeyId: 'journeyId',
-        parentBlockId: 'radioQuestionId',
-        label: 'Loving your enemies'
-      },
-      radioOptionInput3: {
-        journeyId: 'journeyId',
-        parentBlockId: 'radioQuestionId',
-        label: 'Not worrying about tomorrow'
-      },
-      radioOptionInput4: {
-        journeyId: 'journeyId',
-        parentBlockId: 'radioQuestionId',
-        label: 'Seeking first the kingdom of God'
-      },
-      bodyInput: {
-        journeyId: 'journeyId',
-        parentBlockId: 'cardId',
-        content: '↑ Select an answer to continue',
-        variant: TypographyVariant.caption,
-        color: TypographyColor.secondary
-      },
-      journeyId: 'journeyId',
-      cardId: 'cardId',
-      cardInput: {
-        fullscreen: true
-      }
-    }
+    variables: cardPollCreateVars
   },
   result: jest.fn(() => ({
     data: cardPollCreate
   }))
+}
+
+export const cardPollCreateErrorMock: MockedResponse<
+  CardPollCreate,
+  CardPollCreateVariables
+> = {
+  request: {
+    query: CARD_POLL_CREATE,
+    variables: cardPollCreateVars
+  },
+  error: {
+    name: 'INTERNAL_SERVER_ERROR',
+    message: 'There was an error creating poll card'
+  }
 }

@@ -76,57 +76,73 @@ const cardFormCreate: CardFormCreate = {
   }
 }
 
+const cardFormCreateVars: CardFormCreateVariables = {
+  imageInput: {
+    journeyId: 'journeyId',
+    parentBlockId: 'cardId',
+    alt: 'photo-1488048924544-c818a467dacd',
+    blurhash: 'LuHo2rtSIUfl.TtRRiogXot6aekC',
+    height: 3456,
+    src: 'https://images.unsplash.com/photo-1488048924544-c818a467dacd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0MDYwNDN8MHwxfHNlYXJjaHwyMHx8aXNyYWVsfGVufDB8fHx8MTY5NTE3MDI2NHww&ixlib=rb-4.0.3&q=80&w=1080',
+    width: 5184,
+    isCover: true
+  },
+  subtitleInput: {
+    journeyId: 'journeyId',
+    parentBlockId: 'cardId',
+    content: 'Prayer Request',
+    variant: TypographyVariant.h6
+  },
+  titleInput: {
+    journeyId: 'journeyId',
+    parentBlockId: 'cardId',
+    content: 'How can we pray for you?',
+    variant: TypographyVariant.h1
+  },
+  textResponseInput: {
+    id: 'textResponseId',
+    journeyId: 'journeyId',
+    parentBlockId: 'cardId',
+    label: 'Your answer here'
+  },
+  bodyInput: {
+    journeyId: 'journeyId',
+    parentBlockId: 'cardId',
+    content:
+      "Each day, we pray for those in our city. We'd be grateful to include your personal needs.",
+    variant: TypographyVariant.caption,
+    color: TypographyColor.secondary
+  },
+  journeyId: 'journeyId',
+  cardId: 'cardId',
+  cardInput: {
+    fullscreen: true
+  }
+}
+
 export const cardFormCreateMock: MockedResponse<
   CardFormCreate,
   CardFormCreateVariables
 > = {
   request: {
     query: CARD_FORM_CREATE,
-    variables: {
-      imageInput: {
-        journeyId: 'journeyId',
-        parentBlockId: 'cardId',
-        alt: 'photo-1488048924544-c818a467dacd',
-        blurhash: 'LuHo2rtSIUfl.TtRRiogXot6aekC',
-        height: 3456,
-        src: 'https://images.unsplash.com/photo-1488048924544-c818a467dacd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0MDYwNDN8MHwxfHNlYXJjaHwyMHx8aXNyYWVsfGVufDB8fHx8MTY5NTE3MDI2NHww&ixlib=rb-4.0.3&q=80&w=1080',
-        width: 5184,
-        isCover: true
-      },
-      subtitleInput: {
-        journeyId: 'journeyId',
-        parentBlockId: 'cardId',
-        content: 'Prayer Request',
-        variant: TypographyVariant.h6
-      },
-      titleInput: {
-        journeyId: 'journeyId',
-        parentBlockId: 'cardId',
-        content: 'How can we pray for you?',
-        variant: TypographyVariant.h1
-      },
-      textResponseInput: {
-        id: 'textResponseId',
-        journeyId: 'journeyId',
-        parentBlockId: 'cardId',
-        label: 'Your answer here'
-      },
-      bodyInput: {
-        journeyId: 'journeyId',
-        parentBlockId: 'cardId',
-        content:
-          "Each day, we pray for those in our city. We'd be grateful to include your personal needs.",
-        variant: TypographyVariant.caption,
-        color: TypographyColor.secondary
-      },
-      journeyId: 'journeyId',
-      cardId: 'cardId',
-      cardInput: {
-        fullscreen: true
-      }
-    }
+    variables: cardFormCreateVars
   },
   result: jest.fn(() => ({
     data: cardFormCreate
   }))
+}
+
+export const cardFormCreateErrorMock: MockedResponse<
+  CardFormCreate,
+  CardFormCreateVariables
+> = {
+  request: {
+    query: CARD_FORM_CREATE,
+    variables: cardFormCreateVars
+  },
+  error: {
+    name: 'INTERNAL_SERVER_ERROR',
+    message: 'There was an error creating form card'
+  }
 }

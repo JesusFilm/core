@@ -9,7 +9,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import type { JourneyFields as Journey } from '../../../../../../../../../__generated__/JourneyFields'
 import { cachedJourney, step } from '../../CardTemplates.data'
 
-import { cardCtaCreateMock } from './CardCta.data'
+import { cardCtaCreateErrorMock, cardCtaCreateMock } from './CardCta.data'
 
 import { CardCta } from '.'
 
@@ -90,5 +90,24 @@ describe('CardCta', () => {
     fireEvent.click(getByRole('button', { name: 'Card CTA Template' }))
     await waitFor(() => expect(cardCtaCreateMock.result).toHaveBeenCalled())
     await waitFor(() => expect(setLoadingMock).toHaveBeenCalled())
+  })
+
+  it('updates loading state on error', async () => {
+    const { getByRole, getByAltText } = render(
+      <MockedProvider mocks={[cardCtaCreateErrorMock]}>
+        <JourneyProvider
+          value={{ journey: { id: 'journeyId' } as unknown as Journey }}
+        >
+          <EditorProvider initialState={{ steps: [step] }}>
+            <CardCta setCardTemplatesLoading={setLoadingMock} />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('button', { name: 'Card CTA Template' }))
+    await waitFor(() => expect(cardCtaCreateErrorMock.error).toBeDefined())
+    await waitFor(() => expect(setLoadingMock).toHaveBeenCalled())
+    expect(getByAltText('Card CTA Template')).toBeInTheDocument()
   })
 })
