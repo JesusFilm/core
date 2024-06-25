@@ -20,18 +20,8 @@ variable "service_config" {
     cpu            = number
     memory         = number
     desired_count  = number
-    alb_dns_name   = string
     zone_id        = string
     is_public      = bool
-
-    alb_listener = object({
-      alb_arn         = string
-      port            = number
-      protocol        = string
-      certificate_arn = optional(string)
-      dns_name        = optional(string)
-    })
-
     alb_target_group = object({
       port              = number
       protocol          = string
@@ -72,4 +62,17 @@ variable "doppler_token" {
 # We are unable to for_each sensitive values, so we must provide a list of secret env vars
 variable "environment_variables" {
   type = list(string)
+}
+
+variable "alb_listener_arn" {
+  type = string
+}
+
+variable "alb_dns_name" {
+  type = string
+}
+
+variable "host_name" {
+  type    = string
+  default = null
 }

@@ -35,12 +35,6 @@ locals {
   # Public ALB config
   public_alb_config = {
     name = "public-alb"
-    listeners = {
-      "HTTPS" = {
-        listener_port     = 443
-        listener_protocol = "HTTPS"
-      }
-    }
     redirects = {
       "HTTP" = {
         listener_port     = 80
