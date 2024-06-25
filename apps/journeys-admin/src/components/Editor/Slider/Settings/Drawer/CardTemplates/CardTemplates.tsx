@@ -51,13 +51,6 @@ export function CardTemplates(): ReactElement {
           </Grid>
         </>
       )}
-      <Button
-        onClick={() => {
-          setLoading(!loading)
-        }}
-      >
-        Toggle
-      </Button>
     </Grid>
   )
 }
