@@ -70,22 +70,11 @@ export function ActionButton({
 
   const { title, isSourceConnected } = getTitleAndConnection()
 
-  function getBlockAnalytics(block: TreeBlock<Block>): {
-    percentage: number
-    total: number
-  } {
-    const stepEventAnalytics = analytics?.stepMap.get(stepId)
-    const blockEventTotal = analytics?.blockMap.get(block.id) ?? 0
-
-    let percentage = blockEventTotal / (stepEventAnalytics?.total ?? 0)
-
-    if (Number.isNaN(percentage) || !Number.isFinite(percentage)) {
-      percentage = 0
-    }
-
-    return { percentage, total: blockEventTotal }
-  }
-  const { percentage, total } = getBlockAnalytics(block)
+  const total = analytics?.blockMap.get(block.id) ?? 0
+  const blockEventTotal = analytics?.blockMap.get(block.id) ?? 0
+  let percentage =
+    blockEventTotal / (analytics?.stepMap.get(stepId)?.total ?? 0)
+  if (Number.isNaN(percentage) || !Number.isFinite(percentage)) percentage = 0
 
   return (
     <BaseNode
