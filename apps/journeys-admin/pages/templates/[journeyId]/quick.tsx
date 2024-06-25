@@ -1,15 +1,20 @@
+import { gql } from '@apollo/client'
 import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
+import { useRouter } from 'next/router'
 import { ReactElement, useEffect } from 'react'
 
-import { gql } from '@apollo/client'
 import { JOURNEY_DUPLICATE } from '@core/journeys/ui/useJourneyDuplicateMutation'
-import { useRouter } from 'next/router'
 import { GetTeams } from '../../../__generated__/GetTeams'
 import {
   JourneyDuplicate,
   JourneyDuplicateVariables
 } from '../../../__generated__/JourneyDuplicate'
+import {
+  JourneyNotificationUpdate,
+  JourneyNotificationUpdateVariables
+} from '../../../__generated__/JourneyNotificationUpdate'
 import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'
+import { JOURNEY_NOTIFICATION_UPDATE } from '../../../src/libs/useJourneyNotificationUpdate/useJourneyNotificationUpdate'
 
 export const GET_TEAMS = gql`
   query GetTeams {
@@ -56,6 +61,18 @@ export const getServerSideProps = withUserTokenSSR({
       }
     })
     if (journeyDuplicate?.journeyDuplicate.id) {
+      await apolloClient.mutate<
+        JourneyNotificationUpdate,
+        JourneyNotificationUpdateVariables
+      >({
+        mutation: JOURNEY_NOTIFICATION_UPDATE,
+        variables: {
+          input: {
+            journeyId: journeyDuplicate.journeyDuplicate.id,
+            visitorInteractionEmail: true
+          }
+        }
+      })
       return {
         redirect: {
           destination: `/journeys/${journeyDuplicate.journeyDuplicate.id}/quick`,
