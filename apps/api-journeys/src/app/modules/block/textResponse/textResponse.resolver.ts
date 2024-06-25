@@ -87,14 +87,17 @@ export class TextResponseBlockResolver {
         extensions: { code: 'FORBIDDEN' }
       })
 
-    if (block.routeId != null) {
-      if (block.integrationId == null)
-        throw new GraphQLError(
-          'route is being set but it is not associated to an integration',
-          {
-            extensions: { code: 'BAD_USER_INPUT' }
-          }
-        )
+    if (input.routeId != null) {
+      if (block.integrationId == null) {
+        if (input.integrationId == null)
+          throw new GraphQLError(
+            'route is being set but it is not associated to an integration',
+            {
+              extensions: { code: 'BAD_USER_INPUT' }
+            }
+          )
+      }
+
       return await this.blockService.update(id, input)
     }
     return await this.blockService.update(id, input)
