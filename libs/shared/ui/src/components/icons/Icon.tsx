@@ -56,6 +56,7 @@ import CopyLeft from './CopyLeft'
 import CopyRight from './CopyRight'
 import CopyTo from './CopyTo'
 import Crop1 from './Crop1'
+import Cursor4 from './Cursor4'
 import Cursor6 from './Cursor6'
 import CursorPointer from './CursorPointer'
 import Dash from './Dash'
@@ -152,6 +153,7 @@ import Search2 from './Search2'
 import Send1 from './Send1'
 import Settings from './Settings'
 import Share from './Share'
+import ShieldCheck from './ShieldCheck'
 import Skype from './Skype'
 import SmileyNeutral from './SmileyNeutral'
 import Snapchat from './Snapchat'
@@ -252,6 +254,7 @@ export type IconName =
   | 'CopyRight'
   | 'CopyTo'
   | 'Crop1'
+  | 'Cursor4'
   | 'Cursor6'
   | 'CursorPointer'
   | 'Dash'
@@ -348,6 +351,7 @@ export type IconName =
   | 'Send1'
   | 'Settings'
   | 'Share'
+  | 'ShieldCheck'
   | 'Skype'
   | 'SmileyNeutral'
   | 'Snapchat'
@@ -452,6 +456,7 @@ const iconComponents: IconComponents = {
   CopyRight,
   CopyTo,
   Crop1,
+  Cursor4,
   Cursor6,
   CursorPointer,
   Dash,
@@ -548,6 +553,7 @@ const iconComponents: IconComponents = {
   Send1,
   Settings,
   Share,
+  ShieldCheck,
   Skype,
   SmileyNeutral,
   Snapchat,

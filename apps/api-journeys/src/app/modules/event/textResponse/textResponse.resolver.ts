@@ -80,6 +80,9 @@ export class TextResponseSubmissionEventResolver {
         }
       })
     ])
+
+    await this.eventService.sendEventsEmail(journeyId, visitor.id)
+
     return textResponseSubmissionEvent as TextResponseSubmissionEvent
   }
 }

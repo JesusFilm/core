@@ -1,3 +1,4 @@
+import { BullModule } from '@nestjs/bullmq'
 import { Module } from '@nestjs/common'
 
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
@@ -11,7 +12,10 @@ import { ChatButtonResolver } from '../chatButton/chatButton.resolver'
 import { JourneyResolver } from './journey.resolver'
 
 @Module({
-  imports: [CaslAuthModule.register(AppCaslFactory)],
+  imports: [
+    CaslAuthModule.register(AppCaslFactory),
+    BullModule.registerQueue({ name: 'api-journeys-plausible' })
+  ],
   providers: [
     JourneyResolver,
     BlockService,

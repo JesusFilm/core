@@ -1,3 +1,4 @@
+import { BullModule } from '@nestjs/bullmq'
 import { Module } from '@nestjs/common'
 
 import { PrismaService } from '../../lib/prisma.service'
@@ -33,7 +34,10 @@ import {
 } from './video/video.resolver'
 
 @Module({
-  imports: [CacheModule.register()],
+  imports: [
+    CacheModule.register(),
+    BullModule.registerQueue({ name: 'api-journeys-events-email' })
+  ],
   providers: [
     BlockService,
     ButtonClickEventResolver,
