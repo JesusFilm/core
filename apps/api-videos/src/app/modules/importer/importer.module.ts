@@ -9,7 +9,7 @@ import { ImporterVideoSnippetsService } from './importerVideoSnippets/importerVi
 import { ImporterVideoStudyQuestionsService } from './importerVideoStudyQuestions/importerVideoStudyQuestions.service'
 import { ImporterVideoTitleService } from './importerVideoTitles/importerVideoTitle.service'
 import { ImporterVideoVariantDownloadsService } from './importerVideoVariantDownloads/importerVideoVariantDownloads.service'
-import { ImporterVideoVariantSubtitlesService } from './importerVideoVariantSubtitle/importerVideovariantSubtitle.service'
+import { ImporterVideoVariantSubtitlesService } from './importerVideoSubtitle/importerVideovariantSubtitle.service'
 import { ImporterVideoVariantsService } from './importerVideoVariants/importerVideoVariants.service'
 import { ImporterVideosService } from './importerVideos/importerVideos.service'
 import { ImporterVideosChildrenService } from './importerVideosChildren/importerVideosChildren.service'
