@@ -55,17 +55,17 @@ function getPercentage(dividend, divisor): string {
 }
 
 interface StepBlockNodeAnalyticsProps {
-  id: string
+  stepId: string
 }
 
 export function StepBlockNodeAnalytics({
-  id
+  stepId
 }: StepBlockNodeAnalyticsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const {
     state: { analytics }
   } = useEditor()
-  const stepStats = analytics?.stepsStats.find((step) => step.stepId === id)
+  const stepStats = analytics?.stepsStats.find((step) => step.stepId === stepId)
   const visitors = stepStats?.visitors ?? 0
   const visitorsExitAtStep = stepStats?.visitorsExitAtStep ?? 0
   const timeOnPage = stepStats?.timeOnPage ?? 0

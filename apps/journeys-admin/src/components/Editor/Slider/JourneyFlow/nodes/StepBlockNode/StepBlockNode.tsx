@@ -38,7 +38,7 @@ export function StepBlockNode({
     <Stack sx={{ position: 'relative' }}>
       <Fade in={showAnalytics === true}>
         <div>
-          <StepBlockNodeAnalytics id={id} />
+          <StepBlockNodeAnalytics stepId={step.id} />
         </div>
       </Fade>
       {showAnalytics !== true && (

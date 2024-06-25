@@ -2,6 +2,7 @@ import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 import { StepBlockNodeAnalytics } from './StepBlockNodeAnalytics'
 
+import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
 import { ComponentPropsWithoutRef } from 'react'
 import { simpleComponentConfig } from '../../../../../../../libs/storybook'
 
@@ -15,25 +16,48 @@ const StepBlockNodeAnalyticsDemo: Meta<typeof StepBlockNodeAnalytics> = {
 const Template: StoryObj<
   ComponentPropsWithoutRef<typeof StepBlockNodeAnalytics>
 > = {
-  render: (args) => (
-    <Box sx={{ position: 'relative', top: 32 }}>
-      <StepBlockNodeAnalytics {...args} />
-    </Box>
-  )
+  render: (args) => {
+    const initialState = {
+      analytics: {
+        ...args
+      }
+    } as unknown as EditorState
+    return (
+      <Box sx={{ position: 'relative', top: 32 }}>
+        <EditorProvider initialState={initialState}>
+          <StepBlockNodeAnalytics stepId="step.id" />
+        </EditorProvider>
+      </Box>
+    )
+  }
 }
 
 export const Default = {
   ...Template,
   args: {
-    visitors: 1000,
-    visitorsExitAtStep: 100,
-    timeOnPage: 72
+    stepsStats: [
+      {
+        stepId: 'step.id',
+        visitors: 1000,
+        visitorsExitAtStep: 100,
+        timeOnPage: 72
+      }
+    ]
   }
 }
 
 export const Fallback = {
   ...Template,
-  args: {}
+  args: {
+    stepsStats: [
+      {
+        stepId: 'step.id',
+        visitors: null,
+        visitorsExitAtStep: null,
+        timeOnPage: null
+      }
+    ]
+  }
 }
 
 export default StepBlockNodeAnalyticsDemo

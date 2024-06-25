@@ -19,7 +19,7 @@ describe('StepBlockNodeAnalytics', () => {
     } as unknown as EditorState
     render(
       <EditorProvider initialState={initialState}>
-        <StepBlockNodeAnalytics id="step.id" />
+        <StepBlockNodeAnalytics stepId="step.id" />
       </EditorProvider>
     )
 
@@ -44,7 +44,7 @@ describe('StepBlockNodeAnalytics', () => {
 
     render(
       <EditorProvider initialState={initialState}>
-        <StepBlockNodeAnalytics id="step.id" />
+        <StepBlockNodeAnalytics stepId="step.id" />
       </EditorProvider>
     )
 
