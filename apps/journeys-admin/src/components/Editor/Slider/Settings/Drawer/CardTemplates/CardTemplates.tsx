@@ -1,7 +1,8 @@
 import Grid from '@mui/material/Grid'
 import Skeleton from '@mui/material/Skeleton'
-import { ReactElement, useState } from 'react'
+import { type ReactElement, useState } from 'react'
 
+import { Button } from '@mui/material'
 import { CardCta } from './Templates/CardCta'
 import { CardForm } from './Templates/CardForm'
 import { CardIntro } from './Templates/CardIntro'
@@ -23,7 +24,7 @@ export function CardTemplates(): ReactElement {
                 data-testid="card-template-skeleton"
                 width={126}
                 height={195}
-                sx={{ borderRadius: 4, marginLeft: 1 }}
+                sx={{ borderRadius: 4, margin: 'auto' }}
               />
             </Grid>
           ))}
@@ -50,6 +51,13 @@ export function CardTemplates(): ReactElement {
           </Grid>
         </>
       )}
+      <Button
+        onClick={() => {
+          setLoading(!loading)
+        }}
+      >
+        Toggle
+      </Button>
     </Grid>
   )
 }
