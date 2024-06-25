@@ -27,7 +27,6 @@ import {
   HANDLE_WITH_BORDER_DIAMETER,
   NODE_EXTRA_DETECTION_WIDTH,
   STEP_NODE_CARD_HEIGHT,
-  STEP_NODE_CARD_WIDTH,
   STEP_NODE_WIDTH
 } from '../StepBlockNode/libs/sizes'
 
@@ -118,7 +117,13 @@ export function BaseNode({
     >
       {isFunction(children) ? children({ selected }) : children}
       {(targetHandle === 'show' || targetHandle === 'disabled') && (
-        <PulseWrapper show={isConnecting && targetHandle !== 'disabled'}>
+        <PulseWrapper
+          show={
+            id !== 'SocialPreview' &&
+            isConnecting &&
+            targetHandle !== 'disabled'
+          }
+        >
           <StyledHandle
             type="target"
             data-testid={`BaseNodeLeftHandle-${targetHandle}`}
@@ -130,10 +135,6 @@ export function BaseNode({
             sx={{
               width: HANDLE_DIAMETER + HANDLE_BORDER_WIDTH,
               height: HANDLE_DIAMETER + HANDLE_BORDER_WIDTH,
-              // left: -HANDLE_WITH_BORDER_DIAMETER / 2,
-              // top: isFunction(children)
-              //   ? (STEP_NODE_CARD_HEIGHT + HANDLE_WITH_BORDER_DIAMETER) / 2
-              //   : null,
               ...(positionTargetHandle && {
                 left: -HANDLE_WITH_BORDER_DIAMETER / 2,
                 top: isFunction(children)
@@ -184,10 +185,10 @@ export function BaseNode({
               content: '""',
               position: 'absolute',
               top: -((ACTION_BUTTON_HEIGHT - HANDLE_DIAMETER) / 2),
-              width: HANDLE_DIAMETER,
-              // id === 'SocialPreview'
-              //   ? NODE_EXTRA_DETECTION_WIDTH * 2
-              //   : STEP_NODE_CARD_WIDTH + NODE_EXTRA_DETECTION_WIDTH,
+              width:
+                id === 'SocialPreview'
+                  ? NODE_EXTRA_DETECTION_WIDTH * 2
+                  : NODE_EXTRA_DETECTION_WIDTH,
               height: ACTION_BUTTON_HEIGHT,
               right: -NODE_EXTRA_DETECTION_WIDTH / 2,
               backgroundColor: 'transparent'
