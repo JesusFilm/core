@@ -50,6 +50,7 @@ interface BaseNodeProps {
   isSourceConnected?: boolean
   sourceHandleProps?: Partial<ComponentProps<typeof StyledHandle>>
   dragging?: boolean
+  positionTargetHandle?: boolean
   children?:
     | ((context: { selected: 'descendant' | boolean }) => ReactNode)
     | ReactNode
@@ -64,7 +65,8 @@ export function BaseNode({
   isSourceConnected = false,
   sourceHandleProps,
   dragging,
-  children
+  children,
+  positionTargetHandle = true
 }: BaseNodeProps): ReactElement {
   const {
     state: { showAnalytics }
@@ -128,10 +130,16 @@ export function BaseNode({
             sx={{
               width: HANDLE_DIAMETER + HANDLE_BORDER_WIDTH,
               height: HANDLE_DIAMETER + HANDLE_BORDER_WIDTH,
-              left: -HANDLE_WITH_BORDER_DIAMETER / 2,
-              top: isFunction(children)
-                ? (STEP_NODE_CARD_HEIGHT + HANDLE_WITH_BORDER_DIAMETER) / 2
-                : null,
+              // left: -HANDLE_WITH_BORDER_DIAMETER / 2,
+              // top: isFunction(children)
+              //   ? (STEP_NODE_CARD_HEIGHT + HANDLE_WITH_BORDER_DIAMETER) / 2
+              //   : null,
+              ...(positionTargetHandle && {
+                left: -HANDLE_WITH_BORDER_DIAMETER / 2,
+                top: isFunction(children)
+                  ? (STEP_NODE_CARD_HEIGHT + HANDLE_WITH_BORDER_DIAMETER) / 2
+                  : null
+              }),
               background: (theme) => theme.palette.background.default,
               border: (theme) =>
                 (isConnecting && targetHandle !== 'disabled') || targetSelected
@@ -176,10 +184,10 @@ export function BaseNode({
               content: '""',
               position: 'absolute',
               top: -((ACTION_BUTTON_HEIGHT - HANDLE_DIAMETER) / 2),
-              width:
-                id === 'SocialPreview'
-                  ? NODE_EXTRA_DETECTION_WIDTH * 2
-                  : STEP_NODE_CARD_WIDTH + NODE_EXTRA_DETECTION_WIDTH,
+              width: HANDLE_DIAMETER,
+              // id === 'SocialPreview'
+              //   ? NODE_EXTRA_DETECTION_WIDTH * 2
+              //   : STEP_NODE_CARD_WIDTH + NODE_EXTRA_DETECTION_WIDTH,
               height: ACTION_BUTTON_HEIGHT,
               right: -NODE_EXTRA_DETECTION_WIDTH / 2,
               backgroundColor: 'transparent'
