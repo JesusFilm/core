@@ -1,14 +1,27 @@
-import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
+import {
+  AuthAction,
+  useUser,
+  withUser,
+  withUserTokenSSR
+} from 'next-firebase-auth'
+import { useTranslation } from 'next-i18next'
+import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
+import { GrowthSpacesSettings } from '../../../../src/components/GrowthSpacesSettings'
+import { PageWrapper } from '../../../../src/components/PageWrapper'
 import { initAndAuthApp } from '../../../../src/libs/initAndAuthApp'
 
 function IntegrationPage(): ReactElement {
-  // this should render the right config component here for the selected integration
+  const { t } = useTranslation('apps-journeys-admin')
+  const user = useUser()
+
   return (
-    <div>
-      Integration Page: render correct config component depending on selected
-      integrations{' '}
-    </div>
+    <>
+      <NextSeo title={t('Growth Spaces')} />
+      <PageWrapper title={t('Growth Spaces')} user={user} backHrefHistory>
+        <GrowthSpacesSettings />
+      </PageWrapper>
+    </>
   )
 }
 
