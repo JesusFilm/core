@@ -1,0 +1,30 @@
+type IntegrationGrowthSpace implements Integration {
+    id: ID!       
+    teamId: String!
+    type: IntegrationType!
+    accessId: String!
+    accessSecretPart: String!
+    routes: [GrowthSpacesRoute!]!
+}
+
+
+input IntegrationGrowthSpaceCreateInput {
+    accessId: String!
+    accessSecret: String!
+}
+
+input IntegrationGrowthSpaceUpdateInput {
+    accessId: String!
+    accessSecret: String!
+}
+
+type GrowthSpacesRoute {
+    id: String!
+    name: String!
+}
+
+extend type Mutation {
+    integrationGrowthSpacesCreate(teamId: ID!, input: IntegrationGrowthSpaceCreateInput!): IntegrationGrowthSpace!
+    integrationGrowthSpacesUpdate(id: ID!, input: IntegrationGrowthSpaceUpdateInput!): IntegrationGrowthSpace!
+}
+
