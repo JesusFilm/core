@@ -79,8 +79,7 @@ describe('IntegrationResolver', () => {
       prismaService.integration.findUnique.mockResolvedValue(integration)
       await resolver.integrationDelete(
         {
-          id: 'integrationId',
-          teamId: 'teamId'
+          id: 'integrationId'
         },
         ability
       )
@@ -95,8 +94,7 @@ describe('IntegrationResolver', () => {
       await expect(
         resolver.integrationDelete(
           {
-            id: 'integrationId',
-            teamId: 'teamId'
+            id: 'integrationId'
           },
           ability
         )
@@ -116,8 +114,7 @@ describe('IntegrationResolver', () => {
       await expect(
         resolver.integrationDelete(
           {
-            id: 'integrationId',
-            teamId: 'teamId'
+            id: 'integrationId'
           },
           ability
         )
