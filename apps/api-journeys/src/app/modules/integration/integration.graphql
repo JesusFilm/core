@@ -1,0 +1,23 @@
+enum IntegrationType {
+  growthSpaces
+}
+
+interface Integration {
+  id:               ID!       
+  teamId:           String!
+  type:             IntegrationType!
+}
+
+input IntegrationInput {
+  id: ID!
+  teamId: String!
+}
+
+
+extend type Query {
+  integrations(teamId: ID!): [Integration!]!
+}
+
+extend type Mutation {
+  integrationDelete(input: IntegrationInput!): Integration!
+}
