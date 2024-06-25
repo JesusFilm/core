@@ -3,6 +3,8 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
+import { IntegrationType } from "./globalTypes";
+
 // ====================================================
 // GraphQL query operation: GetLastActiveTeamIdAndTeams
 // ====================================================
@@ -33,6 +35,12 @@ export interface GetLastActiveTeamIdAndTeams_teams_customDomains {
   name: string;
 }
 
+export interface GetLastActiveTeamIdAndTeams_teams_integrations {
+  __typename: "IntegrationGrowthSpace";
+  id: string;
+  type: IntegrationType;
+}
+
 export interface GetLastActiveTeamIdAndTeams_teams {
   __typename: "Team";
   id: string;
@@ -40,6 +48,7 @@ export interface GetLastActiveTeamIdAndTeams_teams {
   publicTitle: string | null;
   userTeams: GetLastActiveTeamIdAndTeams_teams_userTeams[];
   customDomains: GetLastActiveTeamIdAndTeams_teams_customDomains[];
+  integrations: GetLastActiveTeamIdAndTeams_teams_integrations[];
 }
 
 export interface GetLastActiveTeamIdAndTeams {
