@@ -1,1 +1,1 @@
-export { transformReferrers } from './tranformReferrers'
+export { transformReferrers } from './transformReferrers'
