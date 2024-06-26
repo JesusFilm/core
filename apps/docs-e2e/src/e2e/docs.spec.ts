@@ -9,7 +9,7 @@ test('sample docs e2e test', async ({ page }) => {
 
   // Get and log the current URL
   const url = page.url()
-  console.log('Current URL is:', url)
+  console.log('Current URL:', url)
 
   // Test the URL
   await expect(page).toHaveURL(/.*docs/)
