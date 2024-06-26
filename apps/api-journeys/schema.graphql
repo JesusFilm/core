@@ -229,8 +229,8 @@ type Mutation {
   hostCreate(teamId: ID!, input: HostCreateInput!): Host!
   hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host!
   hostDelete(id: ID!, teamId: ID!): Host!
-  integrationGrowthSpacesCreate(teamId: ID!, input: IntegrationGrowthSpaceCreateInput!): IntegrationGrowthSpace!
-  integrationGrowthSpacesUpdate(id: ID!, input: IntegrationGrowthSpaceUpdateInput!): IntegrationGrowthSpace!
+  integrationGrowthSpacesCreate(input: IntegrationGrowthSpacesCreateInput!): IntegrationGrowthSpaces!
+  integrationGrowthSpacesUpdate(id: ID!, input: IntegrationGrowthSpacesUpdateInput!): IntegrationGrowthSpaces!
   integrationDelete(input: IntegrationInput!): Integration!
   journeyCreate(input: JourneyCreateInput!, teamId: ID!): Journey!
   journeyDuplicate(id: ID!, teamId: ID!): Journey!
@@ -1973,26 +1973,27 @@ input HostCreateInput {
   src2: String
 }
 
-type IntegrationGrowthSpace implements Integration {
+type IntegrationGrowthSpaces implements Integration {
   id: ID!
-  teamId: String!
+  team: Team!
   type: IntegrationType!
   accessId: String!
   accessSecretPart: String!
-  routes: [GrowthSpacesRoute!]!
+  routes: [IntegrationGrowthSpacesRoute!]!
 }
 
-input IntegrationGrowthSpaceCreateInput {
+input IntegrationGrowthSpacesCreateInput {
+  accessId: String!
+  accessSecret: String!
+  teamId: String!
+}
+
+input IntegrationGrowthSpacesUpdateInput {
   accessId: String!
   accessSecret: String!
 }
 
-input IntegrationGrowthSpaceUpdateInput {
-  accessId: String!
-  accessSecret: String!
-}
-
-type GrowthSpacesRoute {
+type IntegrationGrowthSpacesRoute {
   id: String!
   name: String!
 }
@@ -2003,13 +2004,12 @@ enum IntegrationType {
 
 interface Integration {
   id: ID!
-  teamId: String!
+  team: Team!
   type: IntegrationType!
 }
 
 input IntegrationInput {
   id: ID!
-  teamId: String!
 }
 
 extend type Tag

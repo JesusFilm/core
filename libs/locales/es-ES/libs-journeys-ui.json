@@ -17,6 +17,10 @@
   "Terms & Conditions": "Condiciones generales",
   "All personal identifiable data registered on this website will be processed by journey creator: \"{{ teamTitle }}\".": "Todos los datos personales identificables registrados en este sitio web serán procesados por el creador del viaje: \"{{ teamTitle }}\".",
   "NextSteps © {{year}}": "Próximos pasos © {{year}}",
+  "Start a Conversation": "Inicia una conversación",
+  "Link to Bible": "Enlace a la Biblia",
+  "Send an Email": "Enviar un correo electrónico",
+  "Visit a Website": "Visita un sitio web",
   "Untitled": "Sin título",
   "Step {{number}}": "Paso {{number}}"
 }

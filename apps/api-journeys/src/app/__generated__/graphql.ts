@@ -618,19 +618,19 @@ export class HostCreateInput {
     src2?: Nullable<string>;
 }
 
-export class IntegrationGrowthSpaceCreateInput {
+export class IntegrationGrowthSpacesCreateInput {
     accessId: string;
     accessSecret: string;
+    teamId: string;
 }
 
-export class IntegrationGrowthSpaceUpdateInput {
+export class IntegrationGrowthSpacesUpdateInput {
     accessId: string;
     accessSecret: string;
 }
 
 export class IntegrationInput {
     id: string;
-    teamId: string;
 }
 
 export class JourneysFilter {
@@ -800,7 +800,7 @@ export interface Event {
 
 export interface Integration {
     id: string;
-    teamId: string;
+    team: Team;
     type: IntegrationType;
 }
 
@@ -943,9 +943,9 @@ export abstract class IMutation {
 
     abstract hostDelete(id: string, teamId: string): Host | Promise<Host>;
 
-    abstract integrationGrowthSpacesCreate(teamId: string, input: IntegrationGrowthSpaceCreateInput): IntegrationGrowthSpace | Promise<IntegrationGrowthSpace>;
+    abstract integrationGrowthSpacesCreate(input: IntegrationGrowthSpacesCreateInput): IntegrationGrowthSpaces | Promise<IntegrationGrowthSpaces>;
 
-    abstract integrationGrowthSpacesUpdate(id: string, input: IntegrationGrowthSpaceUpdateInput): IntegrationGrowthSpace | Promise<IntegrationGrowthSpace>;
+    abstract integrationGrowthSpacesUpdate(id: string, input: IntegrationGrowthSpacesUpdateInput): IntegrationGrowthSpaces | Promise<IntegrationGrowthSpaces>;
 
     abstract integrationDelete(input: IntegrationInput): Integration | Promise<Integration>;
 
@@ -1536,18 +1536,18 @@ export class Host {
     src2?: Nullable<string>;
 }
 
-export class IntegrationGrowthSpace implements Integration {
-    __typename?: 'IntegrationGrowthSpace';
+export class IntegrationGrowthSpaces implements Integration {
+    __typename?: 'IntegrationGrowthSpaces';
     id: string;
-    teamId: string;
+    team: Team;
     type: IntegrationType;
     accessId: string;
     accessSecretPart: string;
-    routes: GrowthSpacesRoute[];
+    routes: IntegrationGrowthSpacesRoute[];
 }
 
-export class GrowthSpacesRoute {
-    __typename?: 'GrowthSpacesRoute';
+export class IntegrationGrowthSpacesRoute {
+    __typename?: 'IntegrationGrowthSpacesRoute';
     id: string;
     name: string;
 }

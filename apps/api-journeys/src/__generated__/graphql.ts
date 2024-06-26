@@ -606,6 +606,47 @@ export type ImageBlockUpdateInput = {
   width?: InputMaybe<Scalars['Int']['input']>;
 };
 
+export type Integration = {
+  id: Scalars['ID']['output'];
+  team: Team;
+  type: IntegrationType;
+};
+
+export type IntegrationGrowthSpaces = Integration & {
+  __typename?: 'IntegrationGrowthSpaces';
+  accessId: Scalars['String']['output'];
+  accessSecretPart: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  routes: Array<IntegrationGrowthSpacesRoute>;
+  team: Team;
+  type: IntegrationType;
+};
+
+export type IntegrationGrowthSpacesCreateInput = {
+  accessId: Scalars['String']['input'];
+  accessSecret: Scalars['String']['input'];
+  teamId: Scalars['String']['input'];
+};
+
+export type IntegrationGrowthSpacesRoute = {
+  __typename?: 'IntegrationGrowthSpacesRoute';
+  id: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+};
+
+export type IntegrationGrowthSpacesUpdateInput = {
+  accessId: Scalars['String']['input'];
+  accessSecret: Scalars['String']['input'];
+};
+
+export type IntegrationInput = {
+  id: Scalars['ID']['input'];
+};
+
+export enum IntegrationType {
+  GrowthSpaces = 'growthSpaces'
+}
+
 export type Journey = {
   __typename?: 'Journey';
   archivedAt?: Maybe<Scalars['DateTime']['output']>;
@@ -1012,6 +1053,9 @@ export type Mutation = {
   iconBlockUpdate: IconBlock;
   imageBlockCreate: ImageBlock;
   imageBlockUpdate: ImageBlock;
+  integrationDelete: Integration;
+  integrationGrowthSpacesCreate: IntegrationGrowthSpaces;
+  integrationGrowthSpacesUpdate: IntegrationGrowthSpaces;
   journeyCollectionCreate: JourneyCollection;
   journeyCollectionDelete: JourneyCollection;
   journeyCollectionUpdate: JourneyCollection;
@@ -1309,6 +1353,22 @@ export type MutationImageBlockUpdateArgs = {
   id: Scalars['ID']['input'];
   input: ImageBlockUpdateInput;
   journeyId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type MutationIntegrationDeleteArgs = {
+  input: IntegrationInput;
+};
+
+
+export type MutationIntegrationGrowthSpacesCreateArgs = {
+  input: IntegrationGrowthSpacesCreateInput;
+};
+
+
+export type MutationIntegrationGrowthSpacesUpdateArgs = {
+  id: Scalars['ID']['input'];
+  input: IntegrationGrowthSpacesUpdateInput;
 };
 
 
@@ -1902,6 +1962,7 @@ export type Query = {
   getMyCloudflareVideos?: Maybe<Array<Maybe<CloudflareVideo>>>;
   getUserRole?: Maybe<UserRole>;
   hosts: Array<Host>;
+  integrations: Array<Integration>;
   journey: Journey;
   journeyCollection: JourneyCollection;
   journeyCollections: Array<Maybe<JourneyCollection>>;
@@ -2011,6 +2072,11 @@ export type QueryGetMyCloudflareVideoArgs = {
 
 
 export type QueryHostsArgs = {
+  teamId: Scalars['ID']['input'];
+};
+
+
+export type QueryIntegrationsArgs = {
   teamId: Scalars['ID']['input'];
 };
 
@@ -2497,6 +2563,7 @@ export type Team = {
   createdAt: Scalars['DateTime']['output'];
   customDomains: Array<CustomDomain>;
   id: Scalars['ID']['output'];
+  integrations: Array<Integration>;
   publicTitle?: Maybe<Scalars['String']['output']>;
   title: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
@@ -2517,11 +2584,14 @@ export type TextResponseBlock = Block & {
   __typename?: 'TextResponseBlock';
   hint?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
+  integrationId?: Maybe<Scalars['String']['output']>;
   journeyId: Scalars['ID']['output'];
   label: Scalars['String']['output'];
   minRows?: Maybe<Scalars['Int']['output']>;
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
+  routeId?: Maybe<Scalars['String']['output']>;
+  type?: Maybe<TextResponseType>;
 };
 
 export type TextResponseBlockCreateInput = {
@@ -2533,9 +2603,12 @@ export type TextResponseBlockCreateInput = {
 
 export type TextResponseBlockUpdateInput = {
   hint?: InputMaybe<Scalars['String']['input']>;
+  integrationId?: InputMaybe<Scalars['String']['input']>;
   label?: InputMaybe<Scalars['String']['input']>;
   minRows?: InputMaybe<Scalars['Int']['input']>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
+  routeId?: InputMaybe<Scalars['String']['input']>;
+  type?: InputMaybe<TextResponseType>;
 };
 
 export type TextResponseSubmissionEvent = Event & {
@@ -2564,6 +2637,12 @@ export type TextResponseSubmissionEventCreateInput = {
   /** response from the TextResponseBlock form */
   value: Scalars['String']['input'];
 };
+
+export enum TextResponseType {
+  Email = 'email',
+  FreeForm = 'freeForm',
+  Name = 'name'
+}
 
 export enum ThemeMode {
   Dark = 'dark',
@@ -3578,6 +3657,13 @@ export type UserQueryVariables = Exact<{
 
 export type UserQuery = { __typename?: 'Query', user?: { __typename?: 'User', id: string, firstName: string, email: string, imageUrl?: string | null } | null };
 
+export type GetLanguagesQueryVariables = Exact<{
+  languageId: Scalars['ID']['input'];
+}>;
+
+
+export type GetLanguagesQuery = { __typename?: 'Query', language?: { __typename?: 'Language', bcp47?: string | null, id: string } | null };
+
 export type SiteCreateMutationVariables = Exact<{
   input: SiteCreateInput;
 }>;
@@ -3589,4 +3675,5 @@ export type SiteCreateMutation = { __typename?: 'Mutation', siteCreate: { __type
 export const GetUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUser"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"user"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}}]}}]}}]} as unknown as DocumentNode<GetUserQuery, GetUserQueryVariables>;
 export const GetUserByEmailDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUserByEmail"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"email"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userByEmail"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"email"},"value":{"kind":"Variable","name":{"kind":"Name","value":"email"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}}]}}]}}]} as unknown as DocumentNode<GetUserByEmailQuery, GetUserByEmailQueryVariables>;
 export const UserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"User"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"user"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}}]}}]}}]} as unknown as DocumentNode<UserQuery, UserQueryVariables>;
+export const GetLanguagesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetLanguages"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"languageId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"language"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"languageId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bcp47"}},{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<GetLanguagesQuery, GetLanguagesQueryVariables>;
 export const SiteCreateDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SiteCreate"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteCreateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"siteCreate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Error"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}},{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MutationSiteCreateSuccess"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"domain"}},{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"Field","name":{"kind":"Name","value":"memberships"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}},{"kind":"Field","name":{"kind":"Name","value":"goals"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"eventName"}},{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}},{"kind":"Field","name":{"kind":"Name","value":"sharedLinks"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<SiteCreateMutation, SiteCreateMutationVariables>;

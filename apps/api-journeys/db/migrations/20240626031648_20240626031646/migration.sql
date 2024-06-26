@@ -15,12 +15,16 @@ CREATE TABLE "Integration" (
     "teamId" TEXT NOT NULL,
     "type" "IntegrationType" NOT NULL,
     "accessId" TEXT,
+    "accessSecretPart" TEXT,
     "accessSecretCipherText" TEXT,
     "accessSecretIv" TEXT,
     "accessSecretTag" TEXT,
 
     CONSTRAINT "Integration_pkey" PRIMARY KEY ("id")
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Integration_accessSecretCipherText_key" ON "Integration"("accessSecretCipherText");
 
 -- CreateIndex
 CREATE INDEX "Integration_teamId_idx" ON "Integration"("teamId");

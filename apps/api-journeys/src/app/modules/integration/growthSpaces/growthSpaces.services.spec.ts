@@ -5,7 +5,7 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import fetch, { Response } from 'node-fetch'
 import { PrismaService } from '../../../lib/prisma.service'
 import { IntegrationService } from '../integration.service'
-import { IntegrationGrothSpacesService } from './growthSpaces.service'
+import { IntegrationGrowthSpacesService } from './growthSpaces.service'
 import { Block, Integration } from '.prisma/api-journeys-client'
 
 jest.mock('node-fetch', () => {
@@ -16,8 +16,6 @@ jest.mock('node-fetch', () => {
     default: jest.fn()
   }
 })
-
-jest.mock('@apollo/client')
 
 const mockFetch = fetch as jest.MockedFunction<typeof fetch>
 
@@ -49,10 +47,10 @@ const integration: Integration = {
   accessSecretTag: 'VondZ4B9TbgdwCQeqjnkfA=='
 }
 
-describe('IntegrationGrothSpacesService', () => {
+describe('IntegrationGrowthSpacesService', () => {
   const OLD_ENV = process.env
 
-  let service: IntegrationGrothSpacesService,
+  let service: IntegrationGrowthSpacesService,
     prismaService: DeepMockProxy<PrismaService>,
     integrationService: IntegrationService
 
@@ -61,7 +59,7 @@ describe('IntegrationGrothSpacesService', () => {
       imports: [CacheModule.register()],
       providers: [
         IntegrationService,
-        IntegrationGrothSpacesService,
+        IntegrationGrowthSpacesService,
         {
           provide: PrismaService,
           useValue: mockDeep<PrismaService>()
@@ -69,7 +67,7 @@ describe('IntegrationGrothSpacesService', () => {
       ]
     }).compile()
     integrationService = module.get<IntegrationService>(IntegrationService)
-    service = await module.resolve(IntegrationGrothSpacesService)
+    service = await module.resolve(IntegrationGrowthSpacesService)
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
@@ -244,6 +242,63 @@ describe('IntegrationGrothSpacesService', () => {
           method: 'POST'
         }
       )
+    })
+  })
+
+  describe('create', () => {
+    it('should create growth spaces integration', async () => {
+      const data = 'ok'
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => await Promise.resolve(data)
+      } as unknown as Response)
+
+      process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET =
+        'dontbefooledbythiskryptokeyitisactuallyfake='
+
+      const input = { accessId: 'accessId', accessSecret: 'accessSecret' }
+
+      await service.create('teamId', input)
+      expect(prismaService.integration.create).toHaveBeenCalledWith({
+        data: {
+          accessId: 'accessId',
+          teamId: 'teamId',
+          type: 'growthSpaces',
+          accessSecretCipherText: expect.any(String),
+          accessSecretIv: expect.any(String),
+          accessSecretTag: expect.any(String)
+        }
+      })
+    })
+  })
+
+  describe('update', () => {
+    it('should update growth spaces integration', async () => {
+      const data = 'ok'
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => await Promise.resolve(data)
+      } as unknown as Response)
+
+      process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET =
+        'dontbefooledbythiskryptokeyitisactuallyfake='
+
+      const input = { accessId: 'accessId', accessSecret: 'accessSecret' }
+
+      await service.update('integrationId', input)
+      expect(prismaService.integration.update).toHaveBeenCalledWith({
+        data: {
+          accessId: 'accessId',
+          accessSecretCipherText: expect.any(String),
+          accessSecretIv: expect.any(String),
+          accessSecretTag: expect.any(String)
+        },
+        where: {
+          id: 'integrationId'
+        }
+      })
     })
   })
 })

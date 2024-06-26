@@ -6,4 +6,7 @@ module "ecs-task" {
   doppler_token         = var.doppler_token
   environment_variables = local.environment_variables
   dd_source             = "nextjs"
+  alb_listener_arn      = var.alb_listener_arn
+  alb_dns_name          = var.alb_dns_name
+  host_name             = var.host_name
 }

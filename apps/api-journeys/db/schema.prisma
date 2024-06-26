@@ -224,7 +224,8 @@ model Integration {
   teamId                 String
   type                   IntegrationType
   accessId               String?
-  accessSecretCipherText String?
+  accessSecretPart       String?
+  accessSecretCipherText String?         @unique
   accessSecretIv         String?
   accessSecretTag        String?
   team                   Team            @relation(fields: [teamId], references: [id], onDelete: Cascade)

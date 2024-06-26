@@ -3,14 +3,13 @@ enum IntegrationType {
 }
 
 interface Integration {
-  id:               ID!       
-  teamId:           String!
-  type:             IntegrationType!
+  id: ID!       
+  team: Team!
+  type: IntegrationType!
 }
 
 input IntegrationInput {
   id: ID!
-  teamId: String!
 }
 
 

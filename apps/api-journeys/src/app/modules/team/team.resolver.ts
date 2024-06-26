@@ -134,8 +134,7 @@ export class TeamResolver {
         where: { id: parent.id }
       })
       .integrations({
-        where: { teamId: parent.id },
-        include: { team: { include: { userTeams: true } } }
+        where: { teamId: parent.id }
       })
 
     return integrations != null ? integrations : []
