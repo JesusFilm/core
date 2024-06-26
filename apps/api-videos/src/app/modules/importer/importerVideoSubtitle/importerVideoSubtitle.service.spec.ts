@@ -1,17 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
-
 import { PrismaService } from '../../../lib/prisma.service'
 import { ImporterVideoVariantsService } from '../importerVideoVariants/importerVideoVariants.service'
 import { ImporterVideosService } from '../importerVideos/importerVideos.service'
-
-import { ImporterVideoVariantSubtitlesService } from './importerVideovariantSubtitle.service'
-
+import { ImporterVideoVariantSubtitlesService } from './importerVideoSubtitle.service'
 describe('ImporterVideoVariantSubtitlesService', () => {
   let service: ImporterVideoVariantSubtitlesService,
     prismaService: DeepMockProxy<PrismaService>,
     videoVariantsService: ImporterVideoVariantsService
-
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -24,7 +20,6 @@ describe('ImporterVideoVariantSubtitlesService', () => {
         }
       ]
     }).compile()
-
     service = module.get<ImporterVideoVariantSubtitlesService>(
       ImporterVideoVariantSubtitlesService
     )
@@ -35,7 +30,6 @@ describe('ImporterVideoVariantSubtitlesService', () => {
       PrismaService
     ) as DeepMockProxy<PrismaService>
   })
-
   describe('import', () => {
     it('should update video variant subtitle', async () => {
       videoVariantsService.ids = ['mockVideoVariantId']
@@ -68,7 +62,6 @@ describe('ImporterVideoVariantSubtitlesService', () => {
         }
       })
     })
-
     it('should save many video variant subtitles', async () => {
       videoVariantsService.ids = ['mockVideoVariantId', 'mockVideoVariantId1']
       await service.importMany([
@@ -109,7 +102,6 @@ describe('ImporterVideoVariantSubtitlesService', () => {
         skipDuplicates: true
       })
     })
-
     it('should throw error when row is invalid', async () => {
       await expect(
         service.import({
@@ -119,7 +111,6 @@ describe('ImporterVideoVariantSubtitlesService', () => {
         })
       ).rejects.toThrow('row does not match schema: mockValue0')
     })
-
     it('should throw error if video variant is not found', async () => {
       videoVariantsService.ids = []
       await expect(

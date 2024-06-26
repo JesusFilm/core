@@ -1,60 +1,53 @@
 import { Injectable } from '@nestjs/common'
 import { z } from 'zod'
-
 import { PrismaService } from '../../../lib/prisma.service'
 import { ImporterService } from '../importer.service'
-import { ImporterVideoVariantsService } from '../importerVideoVariants/importerVideoVariants.service'
+import { ImporterVideosService } from '../importerVideos/importerVideos.service'
 
-const videoVariantSubtitlesSchema = z.object({
-  value: z.string(),
-  primary: z.number().transform(Boolean),
-  languageId: z.number().transform(String),
-  videoVariantId: z.string()
+const videoSubtitlesSchema = z.object({
+  videoId: z.string(),
+  edition: z.string().nullable(),
+  vttSrc: z.string(),
+  srtSrc: z.string(),
+  primary: z.boolean(),
+  languageId: z.string()
 })
 
-type VideoVariantSubtitles = z.infer<typeof videoVariantSubtitlesSchema>
+type VideoSubtitles = z.infer<typeof videoSubtitlesSchema>
 
 @Injectable()
-export class ImporterVideoVariantSubtitlesService extends ImporterService<VideoVariantSubtitles> {
-  schema = videoVariantSubtitlesSchema
+export class ImporterVideoSubtitlesService extends ImporterService<VideoSubtitles> {
+  schema = videoSubtitlesSchema
 
   constructor(
     private readonly prismaService: PrismaService,
-    private readonly importerVideoVariantsService: ImporterVideoVariantsService
+    private readonly importerVideosService: ImporterVideosService
   ) {
     super()
   }
 
-  protected async save(
-    videoVariantSubtitles: VideoVariantSubtitles
-  ): Promise<void> {
-    if (
-      !this.importerVideoVariantsService.ids.includes(
-        videoVariantSubtitles.videoVariantId
-      )
-    )
-      throw new Error(
-        `Video variant with id ${videoVariantSubtitles.videoVariantId} not found`
-      )
+  protected async save(videoSubtitles: VideoSubtitles): Promise<void> {
+    if (!this.importerVideosService.ids.includes(videoSubtitles.videoId)) {
+      throw new Error(`Video with id ${videoSubtitles.videoId} not found`)
+    }
 
-    await this.prismaService.videoVariantSubtitle.upsert({
+    await this.prismaService.videoSubtitle.upsert({
       where: {
-        videoVariantId_languageId: {
-          videoVariantId: videoVariantSubtitles.videoVariantId,
-          languageId: videoVariantSubtitles.languageId
+        videoId_edition_languageId: {
+          videoId: videoSubtitles.videoId,
+          edition: videoSubtitles.edition,
+          languageId: videoSubtitles.languageId
         }
       },
-      update: videoVariantSubtitles,
-      create: videoVariantSubtitles
+      update: videoSubtitles,
+      create: videoSubtitles
     })
   }
 
-  protected async saveMany(
-    videoVariantSubtitles: VideoVariantSubtitles[]
-  ): Promise<void> {
-    await this.prismaService.videoVariantSubtitle.createMany({
-      data: videoVariantSubtitles.filter(({ videoVariantId }) =>
-        this.importerVideoVariantsService.ids.includes(videoVariantId)
+  protected async saveMany(videoSubtitles: VideoSubtitles[]): Promise<void> {
+    await this.prismaService.videoSubtitle.createMany({
+      data: videoSubtitles.filter(({ videoId }) =>
+        this.importerVideosService.ids.includes(videoId)
       ),
       skipDuplicates: true
     })
