@@ -40,8 +40,7 @@ export function transformReferrers(referrers?: JourneyReferrer[]) {
         type: 'Referrer',
         data: referrer,
         position: { x: -600, y: getYPos(idx) },
-        draggable: false,
-        connectable: false
+        draggable: false
       })
 
       edges.push({
@@ -58,8 +57,7 @@ export function transformReferrers(referrers?: JourneyReferrer[]) {
       type: 'Referrer',
       data: { property: 'Other sources', referrers: otherReferrers },
       position: { x: -600, y: getYPos(2) },
-      draggable: false,
-      connectable: false
+      draggable: false
     })
 
     edges.push({
@@ -79,8 +77,7 @@ export function transformReferrers(referrers?: JourneyReferrer[]) {
         type: 'Referrer',
         data: referrer,
         position: { x: -600, y: yPos },
-        draggable: false,
-        connectable: false
+        draggable: false
       })
 
       edges.push({
