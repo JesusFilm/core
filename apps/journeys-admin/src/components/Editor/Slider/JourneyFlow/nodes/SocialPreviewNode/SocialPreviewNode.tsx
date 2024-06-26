@@ -70,7 +70,7 @@ export function SocialPreviewNode(): ReactElement {
       id="SocialPreview"
       selected={activeContent === ActiveContent.Social}
       sourceHandle="show"
-      targetHandle={showAnalytics ? 'show' : 'hide'}
+      targetHandle="show"
       onSourceConnect={handleSourceConnect}
       isSourceConnected
       positionTargetHandle={false}

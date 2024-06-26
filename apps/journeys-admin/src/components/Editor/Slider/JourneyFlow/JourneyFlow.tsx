@@ -94,6 +94,8 @@ export function JourneyFlow(): ReactElement {
   const edgeUpdateSuccessful = useRef<boolean | null>(null)
   const [nodes, setNodes, onNodesChange] = useNodesState([])
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
+  const [referrerNodes, setReferrerNodes] = useNodesState([])
+  const [referrerEdges, setReferrerEdges] = useEdgesState([])
 
   const createStep = useCreateStep()
   const updateEdge = useUpdateEdge()
@@ -298,9 +300,8 @@ export function JourneyFlow(): ReactElement {
   const hideReferrers =
     <T extends Node | Edge>(hidden: boolean) =>
     (nodeOrEdge: T) => {
-      if (nodeOrEdge.type === 'Referrer') {
-        nodeOrEdge.hidden = hidden
-      }
+      nodeOrEdge.hidden = hidden
+
       return nodeOrEdge
     }
 
@@ -308,14 +309,14 @@ export function JourneyFlow(): ReactElement {
     if (analytics?.referrers) {
       const { nodes, edges } = transformReferrers(analytics.referrers)
 
-      setEdges((prev) => [...prev, ...edges])
-      setNodes((prev) => [...prev, ...nodes])
+      setReferrerEdges(edges)
+      setReferrerNodes(nodes)
     }
   }, [JSON.stringify(analytics?.referrers)])
 
   useEffect(() => {
-    setNodes((nds) => nds.map(hideReferrers(!showAnalytics)))
-    setEdges((eds) => eds.map(hideReferrers(!showAnalytics)))
+    setReferrerNodes((nds) => nds.map(hideReferrers(!showAnalytics)))
+    setReferrerEdges((eds) => eds.map(hideReferrers(!showAnalytics)))
   }, [showAnalytics])
 
   return (
@@ -328,8 +329,8 @@ export function JourneyFlow(): ReactElement {
       data-testid="JourneyFlow"
     >
       <ReactFlow
-        nodes={nodes}
-        edges={edges}
+        nodes={[...referrerNodes, ...nodes]}
+        edges={[...referrerEdges, ...edges]}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
