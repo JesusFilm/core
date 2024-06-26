@@ -9,13 +9,13 @@ exec(
       .split('\n')
       .filter((value) => value != null && value !== '')
 
-    let appsProject = services.filter(service => !service.endsWith('-e2e'))
-    const e2eProject = services.filter(service => service.endsWith('-e2e'))
+    let appsProjects = services.filter(service => !service.endsWith('-e2e'))
+    const e2eProjects = services.filter(service => service.endsWith('-e2e'))
 
-    // If each e2e project (after removing '-e2e') is not already included in apps project, add it
-    appsProject = appsProject.concat(e2eProject.map(each => each.replace('-e2e', ''))).filter((value, index, self) => self.indexOf(value) === index)
+    // If each e2e projects (after removing the word '-e2e') is not already included in apps project, add it
+    appsProjects = appsProjects.concat(e2eProjects.map(each => each.replace('-e2e', ''))).filter((value, index, self) => self.indexOf(value) === index)
 
-    const output = appsProject.join('","')
+    const output = appsProjects.join('","')
     if (output === '') {
       console.log('[]')
     } else {
