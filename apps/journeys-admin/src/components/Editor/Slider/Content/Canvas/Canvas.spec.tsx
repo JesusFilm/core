@@ -206,7 +206,8 @@ describe('Canvas', () => {
                     id: '529',
                     bcp47: 'en',
                     iso3: 'eng'
-                  }
+                  },
+                  chatButtons: []
                 } as unknown as Journey,
                 variant: 'admin'
               }}

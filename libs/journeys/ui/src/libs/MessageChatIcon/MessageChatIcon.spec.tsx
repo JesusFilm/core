@@ -41,7 +41,7 @@ describe('MessageChatIcon', () => {
   })
   it('should return tikTok icon', () => {
     render(<MessageChatIcon platform={MessagePlatform.tikTok} />)
-    expect(screen.getByTestId('TikTokIcon')).toBeInTheDocument()
+    expect(screen.getByTestId('TiktokIcon')).toBeInTheDocument()
   })
   it('should return custom icon', () => {
     render(<MessageChatIcon platform={MessagePlatform.custom} />)
