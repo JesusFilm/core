@@ -1,5 +1,6 @@
 import replace from 'lodash/replace'
 
+import { messagePlatforms } from '../../../components/Button/utils/findMessagePlatform'
 import { JourneyPlausibleEvents, reverseKeyify } from '../../plausibleHelpers'
 import {
   GetJourneyAnalytics,
@@ -155,14 +156,12 @@ function getLinkClicks(journeyEvents: PlausibleEvent[]): {
 
   journeyEvents.forEach((plausibleEvent) => {
     const { event, target, events } = plausibleEvent
-    const isChatEvent = event === 'chatButtonClick'
-    const isLinkEvent =
-      event === 'buttonClick' && target != null && target.includes('link')
-
-    if (isChatEvent) {
-      chatsStarted += events
-    } else if (isLinkEvent) {
-      linksVisited += events
+    if (target != null && target.includes('link')) {
+      if (messagePlatforms.find(({ url }) => target.includes(url))) {
+        chatsStarted += events
+      } else {
+        linksVisited += events
+      }
     }
   })
 

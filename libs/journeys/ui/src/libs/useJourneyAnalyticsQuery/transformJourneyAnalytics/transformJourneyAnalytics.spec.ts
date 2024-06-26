@@ -158,7 +158,7 @@ describe('transformJourneyAnalytics', () => {
     const result = {
       totalVisitors: 10,
       chatsStarted: 5,
-      linksVisited: 0,
+      linksVisited: 10,
       referrers: [
         {
           __typename: 'PlausibleStatsResponse',
