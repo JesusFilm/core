@@ -9,22 +9,13 @@ exec(
       .split('\n')
       .filter((value) => value != null && value !== '')
 
-      console.log('services: ', services)
+    let appsProject = services.filter(service => !service.endsWith('-e2e'))
+    const e2eProject = services.filter(service => service.endsWith('-e2e'))
 
-    // Filter out "-e2e" projects if their counterpart is also in the list
-    services = services.filter((service) => {
-      if (service.endsWith('-e2e')) {
-        const baseService = service.replace('-e2e', '')
-        return !services.includes(baseService)
-      }
-      return true
-    })
+    // If each e2e project (after removing '-e2e') is not already included in apps project, add it
+    appsProject = appsProject.concat(e2eProject.map(each => each.replace('-e2e', ''))).filter((value, index, self) => self.indexOf(value) === index)
 
-    // Filter out "-e2e" word in the projects if it exists. So, related project can be deployed subsequently it's e2e tests
-    services = services.map((service) => service.replace('-e2e', ''))
-
-
-    const output = services.join('","')
+    const output = appsProject.join('","')
     if (output === '') {
       console.log('[]')
     } else {
