@@ -98,7 +98,9 @@ export function PageWrapper({
               }
             }}
           >
-            {showAppHeader && <AppHeader onClick={() => setOpen(!open)} />}
+            {showAppHeader && (
+              <AppHeader user={user} onClick={() => setOpen(!open)} />
+            )}
 
             <Stack
               component="main"

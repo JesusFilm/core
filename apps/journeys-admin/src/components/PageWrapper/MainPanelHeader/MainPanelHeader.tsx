@@ -9,6 +9,7 @@ import { ReactElement, ReactNode } from 'react'
 
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 
+import { HelpScoutBeacon } from '../../HelpScoutBeacon'
 import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
 
 export interface MainPanelHeaderProps {
@@ -38,6 +39,9 @@ export function MainPanelHeader({
         }}
         data-testid="MainPanelHeader"
       >
+        {/* <HelpScoutBeacon
+          userInfo={{ name: user?.displayName, email: user?.email }}
+        /> */}
         <Toolbar variant={toolbar.variant}>
           {backHrefHistory ? (
             <Box onClick={() => router.back()}>

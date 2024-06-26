@@ -15,8 +15,8 @@ interface EventObject {
 }
 
 interface FormObject {
-  name: string
-  email: string
+  name?: string | null
+  email?: string | null
 }
 declare global {
   interface Window {
@@ -91,6 +91,8 @@ export function HelpScoutBeacon({
       router.events.off('routeChangeComplete', handleRouteChange)
     }
   }, [hasLoaded, router, userInfo])
+  console.log('userInfo', userInfo)
+  console.log('beaconOpen', beaconOpen)
 
   return (
     <>
@@ -122,12 +124,7 @@ export function HelpScoutBeacon({
         aria-label="Help"
         onClick={handleClick}
         sx={{
-          position: 'fixed',
-          top: { xs: 11.5, md: 11.5 },
           zIndex: zIndex.drawer + 2,
-          right: { xs: 20, md: 15 },
-          width: 24,
-          height: 24,
           color:
             mdUp || newUserPaths.includes(router.route)
               ? 'secondary.dark'
@@ -139,7 +136,6 @@ export function HelpScoutBeacon({
       <style>{`
         #beacon-container {
           z-index: ${zIndex.modal + 2} !important;
-          position: sticky;
         }
         .hsds-beacon .BeaconFabButtonFrame.is-configDisplayRight,
         .hsds-beacon .BeaconFabButtonFrame--left {
@@ -149,11 +145,11 @@ export function HelpScoutBeacon({
         }
 
         .hsds-beacon .BeaconContainer.is-configDisplayRight {
-          top: 47px;
+          top: 86px;
           right: 0px;
           width: 327px;
           max-height: none;
-          height: calc(100vh - 47px);
+          height: calc(100vh - 86px);
         }
         .hsds-beacon .c-BeaconCloseButton {
           display: none !important;

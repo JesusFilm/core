@@ -149,7 +149,6 @@ export function TeamMenu(): ReactElement {
           />
         </Box>
       )}
-
       <IconButton edge="end" color="inherit" onClick={handleShowMenu}>
         <MoreIcon />
       </IconButton>

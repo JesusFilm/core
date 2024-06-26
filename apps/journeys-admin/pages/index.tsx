@@ -19,6 +19,7 @@ import {
   UpdateLastActiveTeamIdVariables
 } from '../__generated__/UpdateLastActiveTeamId'
 import { JourneyStatus } from '../__generated__/globalTypes'
+import { HelpScoutBeacon } from '../src/components/HelpScoutBeacon'
 import { JourneyList } from '../src/components/JourneyList'
 import { OnboardingPanel } from '../src/components/OnboardingPanel'
 import { PageWrapper } from '../src/components/PageWrapper'

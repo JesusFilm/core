@@ -10,8 +10,11 @@ import { MouseEvent, ReactElement, useState } from 'react'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import MoreIcon from '@core/shared/ui/icons/More'
 
+import { GetMe } from '../../../../../__generated__/GetMe'
 import { GetRole } from '../../../../../__generated__/GetRole'
 import { Role } from '../../../../../__generated__/globalTypes'
+import { HelpScoutBeacon } from '../../../HelpScoutBeacon'
+import { GET_ME } from '../../../PageWrapper/NavigationDrawer/UserNavigation'
 import { AccessItem } from '../Items/AccessItem'
 import { AnalyticsItem } from '../Items/AnalyticsItem'
 import { CopyLinkItem } from '../Items/CopyLinkItem'
@@ -39,6 +42,7 @@ export function Menu(): ReactElement {
   const { journey } = useJourney()
   const { t } = useTranslation('apps-journeys-admin')
   const { data } = useQuery<GetRole>(GET_ROLE)
+  const { data: me } = useQuery<GetMe>(GET_ME)
   const isPublisher = data?.getUserRole?.roles?.includes(Role.publisher)
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
@@ -95,20 +99,31 @@ export function Menu(): ReactElement {
         {journey?.template !== true && isPublisher === true && (
           <CreateTemplateItem variant="menu-item" />
         )}
-        {!smUp && (
-          <>
-            <StrategyItem variant="menu-item" closeMenu={handleCloseMenu} />
-            <ShareItem variant="menu-item" closeMenu={handleCloseMenu} />
-          </>
-        )}
+        {!smUp &&
+          journey != null &&
+          (journey?.template !== true || isPublisher != null) && (
+            <>
+              <StrategyItem variant="menu-item" closeMenu={handleCloseMenu} />
+              <ShareItem variant="menu-item" closeMenu={handleCloseMenu} />
+              <CopyLinkItem variant="menu-item" onClose={handleCloseMenu} />
+            </>
+          )}
         {journey != null &&
           (journey?.template !== true || isPublisher != null) && (
             <Divider data-testid="menu-divider" />
           )}
-        {journey != null &&
-          (journey?.template !== true || isPublisher != null) && (
-            <CopyLinkItem variant="menu-item" onClose={handleCloseMenu} />
-          )}
+        {!smUp &&
+        journey != null &&
+        (journey?.template !== true || isPublisher != null) ? (
+          <HelpScoutBeacon
+            userInfo={{
+              name: `${me?.me?.firstName} ${me?.me?.lastName}`,
+              email: me?.me?.email
+            }}
+          />
+        ) : (
+          <CopyLinkItem variant="menu-item" onClose={handleCloseMenu} />
+        )}
       </MuiMenu>
     </>
   )
