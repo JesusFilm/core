@@ -241,7 +241,7 @@ describe('StepBlockNode', () => {
                 totalVisitors: 0,
                 chatsStarted: 0,
                 linksVisited: 0,
-                referrers: [],
+                referrers: { nodes: [], edges: [] },
                 stepsStats: [],
                 targetMap: new Map(),
                 stepMap: new Map([

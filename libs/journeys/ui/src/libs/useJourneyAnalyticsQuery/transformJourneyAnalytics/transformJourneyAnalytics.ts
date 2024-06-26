@@ -8,6 +8,7 @@ import {
   GetJourneyAnalytics_journeyStepsActions as JourneyStepsAction,
   GetJourneyAnalytics_journeyVisitorsPageExits as JourneyVisitorsPageExit
 } from '../__generated__/GetJourneyAnalytics'
+import { transformReferrers } from '../transformReferrers'
 import {
   type JourneyAnalytics,
   type StepStat
@@ -101,11 +102,13 @@ export function transformJourneyAnalytics(
     }
   })
 
+  const referrers = transformReferrers(journeyReferrer)
+
   return {
     totalVisitors: journeyAggregateVisitors.visitors?.value ?? 0,
     chatsStarted,
     linksVisited,
-    referrers: journeyReferrer,
+    referrers,
     stepsStats,
     stepMap,
     blockMap,
