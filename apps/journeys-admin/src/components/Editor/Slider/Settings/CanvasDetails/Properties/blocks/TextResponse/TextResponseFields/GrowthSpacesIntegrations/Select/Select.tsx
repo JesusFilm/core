@@ -21,7 +21,7 @@ export function Select({
   return (
     <Box>
       <FormControl fullWidth>
-        <InputLabel id="select-label">{label}</InputLabel>
+        <InputLabel>{label}</InputLabel>
         <MuiSelect label={label} value={value} onChange={onChange}>
           {options?.map((option) => (
             <MenuItem key={option} value={option}>

@@ -14,8 +14,6 @@ export function GrowthSpacesIntegrations(): ReactElement {
     | TreeBlock<TextResponseBlock>
     | undefined
 
-  console.log('selectedBlock', selectedBlock)
-
   return (
     <>
       {selectedBlock?.type === TextResponseType.email && (
