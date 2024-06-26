@@ -773,7 +773,7 @@ interface Integration
   type: IntegrationType!
 }
 
-type IntegrationGrowthSpace implements Integration
+type IntegrationGrowthSpaces implements Integration
   @join__implements(graph: JOURNEYS, interface: "Integration")
   @join__type(graph: JOURNEYS)
 {
@@ -785,14 +785,14 @@ type IntegrationGrowthSpace implements Integration
   routes: [GrowthSpacesRoute!]!
 }
 
-input IntegrationGrowthSpaceCreateInput
+input IntegrationGrowthSpacesCreateInput
   @join__type(graph: JOURNEYS)
 {
   accessId: String!
   accessSecret: String!
 }
 
-input IntegrationGrowthSpaceUpdateInput
+input IntegrationGrowthSpacesUpdateInput
   @join__type(graph: JOURNEYS)
 {
   accessId: String!
@@ -1463,8 +1463,8 @@ type Mutation
   hostCreate(teamId: ID!, input: HostCreateInput!): Host! @join__field(graph: JOURNEYS)
   hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host! @join__field(graph: JOURNEYS)
   hostDelete(id: ID!, teamId: ID!): Host! @join__field(graph: JOURNEYS)
-  integrationGrowthSpacesCreate(teamId: ID!, input: IntegrationGrowthSpaceCreateInput!): IntegrationGrowthSpace! @join__field(graph: JOURNEYS)
-  integrationGrowthSpacesUpdate(id: ID!, input: IntegrationGrowthSpaceUpdateInput!): IntegrationGrowthSpace! @join__field(graph: JOURNEYS)
+  integrationGrowthSpacesCreate(teamId: ID!, input: IntegrationGrowthSpacesCreateInput!): IntegrationGrowthSpaces! @join__field(graph: JOURNEYS)
+  integrationGrowthSpacesUpdate(id: ID!, input: IntegrationGrowthSpacesUpdateInput!): IntegrationGrowthSpaces! @join__field(graph: JOURNEYS)
   integrationDelete(input: IntegrationInput!): Integration! @join__field(graph: JOURNEYS)
   journeyCreate(input: JourneyCreateInput!, teamId: ID!): Journey! @join__field(graph: JOURNEYS)
   journeyDuplicate(id: ID!, teamId: ID!): Journey! @join__field(graph: JOURNEYS)

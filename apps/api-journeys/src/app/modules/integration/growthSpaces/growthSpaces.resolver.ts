@@ -3,8 +3,8 @@ import { GraphQLError } from 'graphql'
 import fetch from 'node-fetch'
 import {
   GrowthSpacesRoute,
-  IntegrationGrowthSpaceCreateInput,
-  IntegrationGrowthSpaceUpdateInput,
+  IntegrationGrowthSpacesCreateInput,
+  IntegrationGrowthSpacesUpdateInput,
   IntegrationType
 } from '../../../__generated__/graphql'
 
@@ -14,8 +14,8 @@ import { IntegrationService } from '../integration.service'
 import { IntegrationGrothSpacesService } from './growthSpaces.service'
 import { Integration } from '.prisma/api-journeys-client'
 
-@Resolver('IntegrationGrowthSpace')
-export class IntegrationGrowthSpaceResolver {
+@Resolver('IntegrationGrowthSpaces')
+export class IntegrationGrowthSpacesResolver {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly integrationService: IntegrationService,
@@ -25,7 +25,7 @@ export class IntegrationGrowthSpaceResolver {
   @Mutation()
   async integrationGrowthSpacesCreate(
     @Args('teamId') teamId: string,
-    @Args('input') input: IntegrationGrowthSpaceCreateInput
+    @Args('input') input: IntegrationGrowthSpacesCreateInput
   ): Promise<Integration> {
     await this.integrationGrowthSpacesService.authenticate(
       input.accessId,
@@ -52,7 +52,7 @@ export class IntegrationGrowthSpaceResolver {
   @Mutation()
   async integrationGrowthSpacesUpdate(
     @Args('id') id: string,
-    @Args('input') input: IntegrationGrowthSpaceUpdateInput
+    @Args('input') input: IntegrationGrowthSpacesUpdateInput
   ): Promise<Integration> {
     await this.integrationGrowthSpacesService.authenticate(
       input.accessId,

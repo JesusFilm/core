@@ -23,6 +23,9 @@ CREATE TABLE "Integration" (
 );
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Integration_accessSecretCipherText_key" ON "Integration"("accessSecretCipherText");
+
+-- CreateIndex
 CREATE INDEX "Integration_teamId_idx" ON "Integration"("teamId");
 
 -- AddForeignKey

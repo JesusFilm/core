@@ -2,11 +2,12 @@ import { CacheModule } from '@nestjs/cache-manager'
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import fetch, { Response } from 'node-fetch'
+import { GrowthSpacesRoute } from '../../../__generated__/graphql'
 import { PrismaService } from '../../../lib/prisma.service'
 import { IntegrationService } from '../integration.service'
-import { IntegrationGrowthSpaceResolver } from './growthSpaces.resolver'
+import { IntegrationGrowthSpacesResolver } from './growthSpaces.resolver'
 import { IntegrationGrothSpacesService } from './growthSpaces.service'
-import { Block, Integration } from '.prisma/api-journeys-client'
+import { Integration } from '.prisma/api-journeys-client'
 
 jest.mock('node-fetch', () => {
   const originalModule = jest.requireActual('node-fetch')
@@ -20,23 +21,6 @@ jest.mock('node-fetch', () => {
 jest.mock('@apollo/client')
 
 const mockFetch = fetch as jest.MockedFunction<typeof fetch>
-
-const block: Block = {
-  id: 'blockId',
-  journeyId: '2',
-  typename: 'ImageBlock',
-  parentBlockId: 'card1',
-  parentOrder: 0,
-  src: 'https://source.unsplash.com/random/1920x1080',
-  alt: 'random image from unsplash',
-  width: 1920,
-  height: 1080,
-  label: 'label',
-  description: 'description',
-  updatedAt: new Date(),
-  routeId: 'routeId',
-  integrationId: 'integrationId'
-} as unknown as Block
 
 const integration: Integration = {
   id: 'integrationId',
@@ -55,13 +39,13 @@ describe('IntegrationGrowthSpaceResolver', () => {
   let growthSpacesService: IntegrationGrothSpacesService,
     prismaService: DeepMockProxy<PrismaService>,
     integrationService: IntegrationService,
-    resolver: IntegrationGrowthSpaceResolver
+    resolver: IntegrationGrowthSpacesResolver
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [CacheModule.register()],
       providers: [
-        IntegrationGrowthSpaceResolver,
+        IntegrationGrowthSpacesResolver,
         IntegrationService,
         IntegrationGrothSpacesService,
         {
@@ -72,7 +56,7 @@ describe('IntegrationGrowthSpaceResolver', () => {
     }).compile()
     integrationService = module.get<IntegrationService>(IntegrationService)
     growthSpacesService = await module.resolve(IntegrationGrothSpacesService)
-    resolver = await module.resolve(IntegrationGrowthSpaceResolver)
+    resolver = await module.resolve(IntegrationGrowthSpacesResolver)
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
@@ -115,7 +99,7 @@ describe('IntegrationGrowthSpaceResolver', () => {
 
     it('should throw error if authentication fails', async () => {
       process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET =
-        'dontbefooledbythiscryptokeyitisactuallyfake='
+        'dontbefooledbythiskryptokeyitisactuallyfake='
 
       mockFetch.mockResolvedValue({
         ok: false,
@@ -147,6 +131,141 @@ describe('IntegrationGrowthSpaceResolver', () => {
           accessSecret: 'accessSecret'
         })
       ).rejects.toThrow('no crypto key')
+    })
+  })
+
+  describe('integrationGrowthSpacesUpdate', () => {
+    it('should throw error if authentication fails', async () => {
+      mockFetch.mockResolvedValue({
+        ok: false,
+        status: 404,
+        json: async () => await Promise.resolve()
+      } as unknown as Response)
+
+      await expect(
+        resolver.integrationGrowthSpacesUpdate('integrationId', {
+          accessId: 'accessId',
+          accessSecret: 'accessSecret'
+        })
+      ).rejects.toThrow(
+        'incorrect access Id and access secret for Growth Space integration'
+      )
+    })
+
+    it('should throw error if encryption fails', async () => {
+      mockFetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => await Promise.resolve()
+      } as unknown as Response)
+
+      await expect(
+        resolver.integrationGrowthSpacesUpdate('integrationId', {
+          accessId: 'accessId',
+          accessSecret: 'accessSecret'
+        })
+      ).rejects.toThrow('no crypto key')
+    })
+
+    it('should update integration', async () => {
+      process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET =
+        'dontbefooledbythiskryptokeyitisactuallyfake='
+      mockFetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => await Promise.resolve()
+      } as unknown as Response)
+
+      await resolver.integrationGrowthSpacesUpdate('integrationId', {
+        accessId: 'accessId',
+        accessSecret: 'accessSecret'
+      })
+
+      expect(prismaService.integration.update).toHaveBeenCalledWith({
+        data: {
+          accessId: 'accessId',
+          accessSecretCipherText: expect.any(String),
+          accessSecretIv: expect.any(String),
+          accessSecretTag: expect.any(String)
+        },
+        where: {
+          id: 'integrationId'
+        }
+      })
+    })
+  })
+
+  describe('accessSecretPart', () => {
+    it('should return accessSecretPart', async () => {
+      process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET =
+        'dontbefooledbythiskryptokeyitisactuallyfake='
+      const res = await resolver.accessSecretPart(integration)
+      expect(res).toEqual('plaint')
+    })
+
+    it('should throw error if crypto variables missing', async () => {
+      process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET =
+        'dontbefooledbythiskryptokeyitisactuallyfake='
+
+      await expect(
+        resolver.accessSecretPart({
+          ...integration,
+          accessId: null,
+          accessSecretCipherText: null
+        })
+      ).rejects.toThrow(
+        'incorrect access Id and access secret for Growth Space integration'
+      )
+    })
+  })
+
+  describe('routes', () => {
+    it('should return routes', async () => {
+      process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET =
+        'dontbefooledbythiskryptokeyitisactuallyfake='
+
+      const data: GrowthSpacesRoute[] = [
+        { __typename: 'GrowthSpacesRoute', id: '1', name: 'route' }
+      ]
+
+      mockFetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => await Promise.resolve(data)
+      } as unknown as Response)
+
+      const res = await resolver.routes(integration)
+      expect(res).toEqual(data)
+    })
+
+    it('should throw error if fetch response is not 200', async () => {
+      process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET =
+        'dontbefooledbythiskryptokeyitisactuallyfake='
+
+      mockFetch.mockResolvedValue({
+        ok: false,
+        status: 401,
+        json: async () => await Promise.resolve()
+      } as unknown as Response)
+
+      await expect(resolver.routes(integration)).rejects.toThrow(
+        'incorrect access Id and access secret for Growth Space integration'
+      )
+    })
+
+    it('should throw error if crypto variables missing', async () => {
+      process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET =
+        'dontbefooledbythiskryptokeyitisactuallyfake='
+
+      await expect(
+        resolver.routes({
+          ...integration,
+          accessId: null,
+          accessSecretCipherText: null
+        })
+      ).rejects.toThrow(
+        'incorrect access Id and access secret for Growth Space integration'
+      )
     })
   })
 })

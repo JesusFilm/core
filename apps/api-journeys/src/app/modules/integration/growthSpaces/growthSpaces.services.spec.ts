@@ -17,8 +17,6 @@ jest.mock('node-fetch', () => {
   }
 })
 
-jest.mock('@apollo/client')
-
 const mockFetch = fetch as jest.MockedFunction<typeof fetch>
 
 const block: Block = {
