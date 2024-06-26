@@ -175,6 +175,7 @@ import ThumbsUp from './ThumbsUp'
 import Tiktok from './Tiktok'
 import Transform from './Transform'
 import Trash2 from './Trash2'
+import TrendDown1 from './TrendDown1'
 import TwitterLogo from './TwitterLogo'
 import Type2 from './Type2'
 import Type3 from './Type3'
@@ -373,6 +374,7 @@ export type IconName =
   | 'ThumbsUp'
   | 'Tiktok'
   | 'Transform'
+  | 'TrendDown1'
   | 'TwitterLogo'
   | 'Type2'
   | 'Type3'
@@ -575,6 +577,7 @@ const iconComponents: IconComponents = {
   ThumbsUp,
   Tiktok,
   Transform,
+  TrendDown1,
   TwitterLogo,
   Type2,
   Type3,
