@@ -44,16 +44,9 @@ export class TextResponseSubmissionEventResolver {
 
     if (block.type === TextResponseType.email) {
       visitorDataUpdate.email = input.value
-      if (block.routeId != null && block.integrationId != null)
-        await this.integrationGrowthSpacesService.addSubscriber(
-          journeyId,
-          block,
-          visitor.name,
-          input.value
-        )
     }
 
-    const [textResponseSubmissionEvent] = await Promise.all([
+    const [textResponseSubmissionEvent, updatedVisitor] = await Promise.all([
       this.eventService.save({
         ...input,
         id: input.id ?? undefined,
@@ -80,6 +73,19 @@ export class TextResponseSubmissionEventResolver {
         }
       })
     ])
+
+    if (
+      block.routeId != null &&
+      block.integrationId != null &&
+      updatedVisitor?.email != null &&
+      updatedVisitor?.name != null
+    )
+      await this.integrationGrowthSpacesService.addSubscriber(
+        journeyId,
+        block,
+        updatedVisitor.name,
+        updatedVisitor.email
+      )
 
     await this.eventService.sendEventsEmail(journeyId, visitor.id)
 

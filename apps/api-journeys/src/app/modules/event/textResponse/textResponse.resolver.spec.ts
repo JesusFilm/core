@@ -161,12 +161,20 @@ describe('TextResponseEventResolver', () => {
         ...response,
         block: textResponseBlockType
       })
+
+      const mockVisitor = {
+        id: 'visitorId',
+        name: 'Name',
+        email: 'example@example.com'
+      } as unknown as Visitor
+      prismaService.visitor.update.mockResolvedValue(mockVisitor)
+
       await resolver.textResponseSubmissionEventCreate('userId', input)
       expect(integrationGrowthSpacesService.addSubscriber).toHaveBeenCalledWith(
         'journey.id',
         textResponseBlockType,
-        undefined,
-        input.value
+        mockVisitor.name,
+        mockVisitor.email
       )
     })
 
