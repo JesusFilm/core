@@ -47,7 +47,7 @@ export const BUTTON_BLOCK_CREATE = gql`
 
 export function NewButtonButton(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [buttonBlockCreate] =
+  const [buttonBlockCreate, { loading }] =
     useMutation<ButtonBlockCreate>(BUTTON_BLOCK_CREATE)
   const { journey } = useJourney()
   const {
@@ -154,6 +154,7 @@ export function NewButtonButton(): ReactElement {
       value={t('Button')}
       onClick={handleClick}
       testId="NewButton"
+      disabled={loading}
     />
   )
 }

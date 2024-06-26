@@ -21,7 +21,8 @@ export const FORM_BLOCK_CREATE = gql`
 `
 
 export function NewFormButton(): ReactElement {
-  const [formBlockCreate] = useMutation<FormBlockCreate>(FORM_BLOCK_CREATE)
+  const [formBlockCreate, { loading }] =
+    useMutation<FormBlockCreate>(FORM_BLOCK_CREATE)
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const {
@@ -85,6 +86,7 @@ export function NewFormButton(): ReactElement {
       value={t('Form')}
       onClick={handleClick}
       testId="NewFormiumFormIcon"
+      disabled={loading}
     />
   )
 }

@@ -45,9 +45,8 @@ export const RADIO_QUESTION_BLOCK_CREATE = gql`
 
 export function NewRadioQuestionButton(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [radioQuestionBlockCreate] = useMutation<RadioQuestionBlockCreate>(
-    RADIO_QUESTION_BLOCK_CREATE
-  )
+  const [radioQuestionBlockCreate, { loading }] =
+    useMutation<RadioQuestionBlockCreate>(RADIO_QUESTION_BLOCK_CREATE)
   const { journey } = useJourney()
   const {
     state: { selectedStep },
@@ -136,6 +135,7 @@ export function NewRadioQuestionButton(): ReactElement {
       value={t('Poll')}
       onClick={handleClick}
       testId="NewRadioQuestionButton"
+      disabled={loading}
     />
   )
 }

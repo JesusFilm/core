@@ -29,7 +29,8 @@ export function NewVideoButton({
   disabled = false
 }: NewVideoButtonProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [videoBlockCreate] = useMutation<VideoBlockCreate>(VIDEO_BLOCK_CREATE)
+  const [videoBlockCreate, { loading }] =
+    useMutation<VideoBlockCreate>(VIDEO_BLOCK_CREATE)
   const { journey } = useJourney()
   const {
     state: { selectedStep },
@@ -88,7 +89,7 @@ export function NewVideoButton({
       value={t('Video')}
       onClick={handleClick}
       testId="NewVideoButton"
-      disabled={disabled}
+      disabled={disabled || loading}
     />
   )
 }

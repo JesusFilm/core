@@ -27,9 +27,8 @@ export const TEXT_RESPONSE_BLOCK_CREATE = gql`
 
 export function NewTextResponseButton(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [textResponseBlockCreate] = useMutation<TextResponseBlockCreate>(
-    TEXT_RESPONSE_BLOCK_CREATE
-  )
+  const [textResponseBlockCreate, { loading }] =
+    useMutation<TextResponseBlockCreate>(TEXT_RESPONSE_BLOCK_CREATE)
   const { journey } = useJourney()
   const {
     state: { selectedStep },
@@ -88,6 +87,7 @@ export function NewTextResponseButton(): ReactElement {
       value={t('Text Input')}
       onClick={handleClick}
       testId="NewTextResponseButton"
+      disabled={loading}
     />
   )
 }
