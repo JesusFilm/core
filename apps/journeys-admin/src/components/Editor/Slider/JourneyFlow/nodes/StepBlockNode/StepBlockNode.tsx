@@ -1,6 +1,7 @@
+import Fade from '@mui/material/Fade'
 import Stack from '@mui/material/Stack'
 import { alpha } from '@mui/material/styles'
-import { ReactElement } from 'react'
+import { ReactElement, useMemo } from 'react'
 import { NodeProps } from 'reactflow'
 
 import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
@@ -9,6 +10,7 @@ import { filterActionBlocks } from '@core/journeys/ui/filterActionBlocks'
 import { BaseNode } from '../BaseNode'
 
 import { ActionButton } from './ActionButton'
+import { StepBlockNodeAnalytics } from './StepBlockNodeAnalytics'
 import { StepBlockNodeCard } from './StepBlockNodeCard'
 import { StepBlockNodeMenu } from './StepBlockNodeMenu'
 import { STEP_NODE_WIDTH } from './libs/sizes'
@@ -20,17 +22,26 @@ export function StepBlockNode({
   dragging
 }: NodeProps): ReactElement {
   const {
-    state: { steps, selectedStep, activeContent, showJourneyFlowAnalytics }
+    state: { steps, selectedStep, activeContent, showAnalytics }
   } = useEditor()
   const step = steps?.find((step) => step.id === id)
-  const actionBlocks = filterActionBlocks(step)
+
+  const actionBlocks = useMemo(
+    () => (step != null ? [step, ...filterActionBlocks(step)] : []),
+    [step]
+  )
 
   const isSelected =
     activeContent === ActiveContent.Canvas && selectedStep?.id === step?.id
 
   return step != null ? (
-    <>
-      {!showJourneyFlowAnalytics && (
+    <Stack sx={{ position: 'relative' }}>
+      <Fade in={showAnalytics === true}>
+        <div>
+          <StepBlockNodeAnalytics stepId={step.id} />
+        </div>
+      </Fade>
+      {showAnalytics !== true && (
         <StepBlockNodeMenu
           in={isSelected}
           className="fab"
@@ -56,25 +67,25 @@ export function StepBlockNode({
       >
         <BaseNode
           id={step.id}
-          targetHandle={showJourneyFlowAnalytics ? 'disabled' : 'show'}
+          targetHandle={showAnalytics === true ? 'disabled' : 'show'}
           selected={isSelected}
           isSourceConnected={step.nextBlockId != null}
           dragging={dragging}
         >
-          {() => (
-            <>
-              <StepBlockNodeCard step={step} selected={isSelected} />
-              <ActionButton block={step} selected={isSelected} />
-            </>
-          )}
+          {() => <StepBlockNodeCard step={step} selected={isSelected} />}
         </BaseNode>
-        <Stack direction="column">
+        <Stack direction="column" sx={{}}>
           {actionBlocks.map((block) => (
-            <ActionButton key={block.id} block={block} selected={isSelected} />
+            <ActionButton
+              key={block.id}
+              stepId={step.id}
+              block={block}
+              selected={isSelected}
+            />
           ))}
         </Stack>
       </Stack>
-    </>
+    </Stack>
   ) : (
     <></>
   )
