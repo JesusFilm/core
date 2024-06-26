@@ -9,7 +9,7 @@ import { EventService } from '../event.service'
 import { Block, JourneyVisitor, Visitor } from '.prisma/api-journeys-client'
 
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
-import { IntegrationGrothSpacesService } from '../../integration/growthSpaces/growthSpaces.service'
+import { IntegrationGrowthSpacesService } from '../../integration/growthSpaces/growthSpaces.service'
 import { TextResponseSubmissionEventResolver } from './textResponse.resolver'
 
 describe('TextResponseEventResolver', () => {
@@ -24,7 +24,7 @@ describe('TextResponseEventResolver', () => {
 
   let resolver: TextResponseSubmissionEventResolver,
     prismaService: DeepMockProxy<PrismaService>,
-    integrationGrowthSpacesService: DeepMockProxy<IntegrationGrothSpacesService>,
+    integrationGrowthSpacesService: DeepMockProxy<IntegrationGrowthSpacesService>,
     eventService: DeepMockProxy<EventService>
 
   const block: Block = {
@@ -61,8 +61,8 @@ describe('TextResponseEventResolver', () => {
       providers: [
         TextResponseSubmissionEventResolver,
         {
-          provide: IntegrationGrothSpacesService,
-          useValue: mockDeep<IntegrationGrothSpacesService>()
+          provide: IntegrationGrowthSpacesService,
+          useValue: mockDeep<IntegrationGrowthSpacesService>()
         },
         { provide: EventService, useValue: mockDeep<EventService>() },
         { provide: PrismaService, useValue: mockDeep<PrismaService>() }
@@ -74,9 +74,9 @@ describe('TextResponseEventResolver', () => {
     eventService = module.get<EventService>(
       EventService
     ) as DeepMockProxy<EventService>
-    integrationGrowthSpacesService = module.get<IntegrationGrothSpacesService>(
-      IntegrationGrothSpacesService
-    ) as DeepMockProxy<IntegrationGrothSpacesService>
+    integrationGrowthSpacesService = module.get<IntegrationGrowthSpacesService>(
+      IntegrationGrowthSpacesService
+    ) as DeepMockProxy<IntegrationGrowthSpacesService>
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>

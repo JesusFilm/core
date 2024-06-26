@@ -6,7 +6,7 @@ import { BlockService } from '../block/block.service'
 import { VisitorService } from '../visitor/visitor.service'
 
 import { CacheModule } from '@nestjs/cache-manager'
-import { IntegrationGrothSpacesService } from '../integration/growthSpaces/growthSpaces.service'
+import { IntegrationGrowthSpacesService } from '../integration/growthSpaces/growthSpaces.service'
 import { IntegrationService } from '../integration/integration.service'
 import {
   ButtonClickEventResolver,
@@ -44,7 +44,7 @@ import {
     ChatOpenEventResolver,
     EventService,
     EventResolver,
-    IntegrationGrothSpacesService,
+    IntegrationGrowthSpacesService,
     IntegrationService,
     JourneyViewEventResolver,
     PrismaService,

@@ -8,7 +8,7 @@ import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
 import { PrismaService } from '../../../lib/prisma.service'
 import { IntegrationService } from '../integration.service'
 import { IntegrationGrowthSpacesResolver } from './growthSpaces.resolver'
-import { IntegrationGrothSpacesService } from './growthSpaces.service'
+import { IntegrationGrowthSpacesService } from './growthSpaces.service'
 import { Integration, Team } from '.prisma/api-journeys-client'
 
 jest.mock('node-fetch', () => {
@@ -38,7 +38,7 @@ const integration: Integration = {
 describe('IntegrationGrowthSpaceResolver', () => {
   const OLD_ENV = process.env
 
-  let integrationGrowthSpacesService: IntegrationGrothSpacesService,
+  let integrationGrowthSpacesService: IntegrationGrowthSpacesService,
     prismaService: DeepMockProxy<PrismaService>,
     integrationService: IntegrationService,
     resolver: IntegrationGrowthSpacesResolver,
@@ -53,7 +53,7 @@ describe('IntegrationGrowthSpaceResolver', () => {
       providers: [
         IntegrationGrowthSpacesResolver,
         IntegrationService,
-        IntegrationGrothSpacesService,
+        IntegrationGrowthSpacesService,
         {
           provide: PrismaService,
           useValue: mockDeep<PrismaService>()
@@ -62,7 +62,7 @@ describe('IntegrationGrowthSpaceResolver', () => {
     }).compile()
     integrationService = module.get<IntegrationService>(IntegrationService)
     integrationGrowthSpacesService = await module.resolve(
-      IntegrationGrothSpacesService
+      IntegrationGrowthSpacesService
     )
     resolver = await module.resolve(IntegrationGrowthSpacesResolver)
     prismaService = module.get<PrismaService>(

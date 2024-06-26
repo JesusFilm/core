@@ -16,7 +16,7 @@ import { UseGuards } from '@nestjs/common'
 import { Action, AppAbility } from '../../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../../lib/casl/caslGuard'
 import { IntegrationService } from '../integration.service'
-import { IntegrationGrothSpacesService } from './growthSpaces.service'
+import { IntegrationGrowthSpacesService } from './growthSpaces.service'
 import { Integration } from '.prisma/api-journeys-client'
 
 @Resolver('IntegrationGrowthSpaces')
@@ -24,7 +24,7 @@ export class IntegrationGrowthSpacesResolver {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly integrationService: IntegrationService,
-    private readonly integrationGrowthSpacesService: IntegrationGrothSpacesService
+    private readonly integrationGrowthSpacesService: IntegrationGrowthSpacesService
   ) {}
 
   @Mutation()
