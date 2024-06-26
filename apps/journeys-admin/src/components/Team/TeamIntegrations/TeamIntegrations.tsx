@@ -24,13 +24,7 @@ export const GET_TEAM_INTEGRATIONS = gql`
   }
 `
 
-interface TeamIntegrationsProps {
-  showAddButton?: boolean
-}
-
-export function TeamIntegrations({
-  showAddButton = false
-}: TeamIntegrationsProps): ReactElement {
+export function TeamIntegrations(): ReactElement {
   const router = useRouter()
   const teamId = router.query.teamId as string
   const { data } = useQuery<GetTeamIntegrations, GetTeamIntegrationsVariables>(
@@ -58,13 +52,11 @@ export function TeamIntegrations({
       >
         <BreadcrumbNavigation />
         <Stack direction="row" gap={4} sx={{ flexWrap: 'wrap', mt: 10 }}>
-          {showAddButton && (
-            <IntegrationsButton
-              title="Add Integration"
-              url={`/teams/${teamId}/integrations/new`}
-              showAddButton={showAddButton}
-            />
-          )}
+          <IntegrationsButton
+            title="Add Integration"
+            url={`/teams/${teamId}/integrations/new`}
+            showAddButton
+          />
           {integrations != null &&
             integrations.map((integration) => (
               <IntegrationsButton

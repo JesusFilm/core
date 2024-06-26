@@ -25,7 +25,7 @@ function IntegrationsIndexPage(): ReactElement {
         backHrefHistory
         mainBodyPadding={false}
       >
-        <TeamIntegrations showAddButton />
+        <TeamIntegrations />
       </PageWrapper>
     </>
   )
