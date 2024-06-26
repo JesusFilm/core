@@ -5,18 +5,7 @@ import { useTheme } from '@mui/material/styles'
 import { usePlausible } from 'next-plausible'
 import { ReactElement } from 'react'
 
-import Facebook from '@core/shared/ui/icons/Facebook'
-import Instagram from '@core/shared/ui/icons/Instagram'
-import Line from '@core/shared/ui/icons/Line'
-import MessageTyping from '@core/shared/ui/icons/MessageTyping'
 import Plus2 from '@core/shared/ui/icons/Plus2'
-import Skype from '@core/shared/ui/icons/Skype'
-import Snapchat from '@core/shared/ui/icons/Snapchat'
-import Telegram from '@core/shared/ui/icons/Telegram'
-import Tiktok from '@core/shared/ui/icons/Tiktok'
-import Viber from '@core/shared/ui/icons/Viber'
-import Vk from '@core/shared/ui/icons/Vk'
-import WhatsApp from '@core/shared/ui/icons/WhatsApp'
 
 import {
   ChatOpenEventCreateInput,
@@ -28,7 +17,7 @@ import { useBlocks } from '../../../libs/block'
 import { JourneyPlausibleEvents, keyify } from '../../../libs/plausibleHelpers'
 import { getJourneyRTL } from '../../../libs/rtl'
 
-import { ChatIcon } from '../../../libs/ChatIcon/ChatIcon'
+import { MessageChatIcon } from '../../../libs/MessageChatIcon'
 import {
   ChatButtonEventCreate,
   ChatButtonEventCreateVariables
@@ -128,7 +117,7 @@ export function ChatButtons(): ReactElement {
             }
           }}
         >
-          <ChatIcon
+          <MessageChatIcon
             platform={chatButton.platform ?? MessagePlatform.custom}
             sx={{ color: getColor(index === 0, 'main') }}
           />

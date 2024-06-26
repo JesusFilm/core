@@ -19,7 +19,7 @@ interface ChatIconProps {
   sx?: SxProps
 }
 
-export function ChatIcon({ platform, sx }: ChatIconProps): ReactElement {
+export function MessageChatIcon({ platform, sx }: ChatIconProps): ReactElement {
   const platformComponents = {
     facebook: Facebook,
     telegram: Telegram,

@@ -280,7 +280,7 @@ describe('Canvas', () => {
     })
   })
 
-  it('should show fab', () => {
+  it('should show canvas footer', () => {
     render(
       <MockedProvider>
         <SnackbarProvider>
@@ -309,45 +309,6 @@ describe('Canvas', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-
-    expect(screen.getByTestId('Fab')).toBeInTheDocument()
-  })
-
-  it('should hide fab in analytics mode', () => {
-    render(
-      <MockedProvider>
-        <SnackbarProvider>
-          <ThemeProvider>
-            <JourneyProvider
-              value={{
-                journey: {
-                  id: 'journeyId',
-                  themeMode: ThemeMode.dark,
-                  themeName: ThemeName.base,
-                  language: {
-                    __typename: 'Language',
-                    id: '529',
-                    bcp47: 'en',
-                    iso3: 'eng'
-                  }
-                } as unknown as Journey,
-                variant: 'admin'
-              }}
-            >
-              <EditorProvider
-                initialState={{
-                  ...initialState,
-                  showAnalytics: true
-                }}
-              >
-                <Canvas />
-              </EditorProvider>
-            </JourneyProvider>
-          </ThemeProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    expect(screen.queryByTestId('Fab')).not.toBeInTheDocument()
+    expect(screen.getByTestId('CanvasFooter')).toBeInTheDocument()
   })
 })

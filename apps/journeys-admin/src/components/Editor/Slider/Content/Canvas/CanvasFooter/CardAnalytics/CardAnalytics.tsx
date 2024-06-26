@@ -1,16 +1,18 @@
-import { ChatIcon } from '@core/journeys/ui/ChatIcon/ChatIcon'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { MessageChatIcon } from '@core/journeys/ui/MessageChatIcon'
 import ThumbsDownIcon from '@core/shared/ui/icons/ThumbsDown'
 import ThumbsUpIcon from '@core/shared/ui/icons/ThumbsUp'
-import { Box, Typography } from '@mui/material'
+import { Typography } from '@mui/material'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import Tooltip from '@mui/material/Tooltip'
 import { ReactElement, ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 import { MessagePlatform } from '../../../../../../../../__generated__/globalTypes'
 
 export function CardAnalytics(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const {
     state: { selectedStep, analytics }
   } = useEditor()
@@ -35,17 +37,18 @@ export function CardAnalytics(): ReactElement {
 
   return (
     <Stack
+      data-testid="CardAnalytics"
       direction="row"
       sx={{ justifyContent: 'space-between', width: '90%' }}
     >
       <Analytic
-        title="likes"
+        title={t('likes')}
         value={thumbsUpClicks}
         icon={<ThumbsUpIcon sx={{ fontSize: 24 }} />}
       />
       <Divider orientation="vertical" flexItem />
       <Analytic
-        title="dislikes"
+        title={t('dislikes')}
         value={thumbsDownClicks}
         icon={<ThumbsDownIcon sx={{ fontSize: 24 }} />}
       />
@@ -53,10 +56,10 @@ export function CardAnalytics(): ReactElement {
         <>
           <Divider orientation="vertical" flexItem />
           <Analytic
-            title="widget clicks"
+            title={t('widget clicks')}
             value={primaryChatClicks}
             icon={
-              <ChatIcon
+              <MessageChatIcon
                 platform={primaryChat.platform ?? MessagePlatform.custom}
                 sx={{ fontSize: 24 }}
               />
@@ -68,10 +71,10 @@ export function CardAnalytics(): ReactElement {
         <>
           <Divider orientation="vertical" flexItem />
           <Analytic
-            title="widget clicks"
+            title={t('widget clicks')}
             value={secondaryChatClicks}
             icon={
-              <ChatIcon
+              <MessageChatIcon
                 platform={secondaryChat.platform ?? MessagePlatform.custom}
                 sx={{ fontSize: 24 }}
               />
@@ -91,7 +94,7 @@ interface StatsProps {
 
 function Analytic({ title, value, icon }: StatsProps): ReactElement {
   return (
-    <Tooltip title={title} placement="bottom">
+    <Tooltip title={`${value} ${title}`} placement="bottom">
       <Stack direction="row" gap={2} sx={{ p: 3 }}>
         {icon}
         <Typography variant="subtitle1">{value}</Typography>

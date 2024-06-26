@@ -14,25 +14,16 @@ export function CanvasFooter({ scale }: CanvasFooterProps): ReactElement {
     state: { showAnalytics }
   } = useEditor()
 
-  return showAnalytics !== true ? (
+  return (
     <Box
+      data-testid="CanvasFooter"
       sx={{
         mt: 4,
-        alignSelf: 'end',
+        alignSelf: showAnalytics ? 'center' : 'end',
         transform: `scale(${scale})`
       }}
     >
-      <Fab variant="canvas" />
-    </Box>
-  ) : (
-    <Box
-      sx={{
-        mt: 4,
-        alignSelf: 'center',
-        transform: `scale(${scale})`
-      }}
-    >
-      <CardAnalytics />
+      {showAnalytics ? <CardAnalytics /> : <Fab variant="canvas" />}
     </Box>
   )
 }
