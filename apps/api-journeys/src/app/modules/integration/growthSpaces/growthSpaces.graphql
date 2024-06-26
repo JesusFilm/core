@@ -1,16 +1,17 @@
 type IntegrationGrowthSpaces implements Integration {
     id: ID!       
-    teamId: String!
+    team: Team!
     type: IntegrationType!
     accessId: String!
     accessSecretPart: String!
-    routes: [GrowthSpacesRoute!]!
+    routes: [IntegrationGrowthSpacesRoute!]!
 }
 
 
 input IntegrationGrowthSpacesCreateInput {
     accessId: String!
     accessSecret: String!
+    teamId: String!
 }
 
 input IntegrationGrowthSpacesUpdateInput {
@@ -18,13 +19,13 @@ input IntegrationGrowthSpacesUpdateInput {
     accessSecret: String!
 }
 
-type GrowthSpacesRoute {
+type IntegrationGrowthSpacesRoute {
     id: String!
     name: String!
 }
 
 extend type Mutation {
-    integrationGrowthSpacesCreate(teamId: ID!, input: IntegrationGrowthSpacesCreateInput!): IntegrationGrowthSpaces!
+    integrationGrowthSpacesCreate(input: IntegrationGrowthSpacesCreateInput!): IntegrationGrowthSpaces!
     integrationGrowthSpacesUpdate(id: ID!, input: IntegrationGrowthSpacesUpdateInput!): IntegrationGrowthSpaces!
 }
 

@@ -640,7 +640,6 @@ export type IntegrationGrowthSpacesUpdateInput = {
 
 export type IntegrationInput = {
   id: Scalars['ID']['input'];
-  teamId: Scalars['String']['input'];
 };
 
 export enum IntegrationType {

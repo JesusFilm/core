@@ -11,7 +11,7 @@ import {
   TextResponseType
 } from '../../../__generated__/graphql'
 import { PrismaService } from '../../../lib/prisma.service'
-import { IntegrationGrothSpacesService } from '../../integration/growthSpaces/growthSpaces.service'
+import { IntegrationGrowthSpacesService } from '../../integration/growthSpaces/growthSpaces.service'
 import { EventService } from '../event.service'
 import { Prisma } from '.prisma/api-journeys-client'
 
@@ -20,7 +20,7 @@ export class TextResponseSubmissionEventResolver {
   constructor(
     private readonly eventService: EventService,
     private readonly prismaService: PrismaService,
-    private readonly integrationGrowthSpacesService: IntegrationGrothSpacesService
+    private readonly integrationGrowthSpacesService: IntegrationGrowthSpacesService
   ) {}
 
   @Mutation()
@@ -44,16 +44,9 @@ export class TextResponseSubmissionEventResolver {
 
     if (block.type === TextResponseType.email) {
       visitorDataUpdate.email = input.value
-      if (block.routeId != null && block.integrationId != null)
-        await this.integrationGrowthSpacesService.addSubscriber(
-          journeyId,
-          block,
-          visitor.name,
-          input.value
-        )
     }
 
-    const [textResponseSubmissionEvent] = await Promise.all([
+    const [textResponseSubmissionEvent, updatedVisitor] = await Promise.all([
       this.eventService.save({
         ...input,
         id: input.id ?? undefined,
@@ -80,6 +73,19 @@ export class TextResponseSubmissionEventResolver {
         }
       })
     ])
+
+    if (
+      block.routeId != null &&
+      block.integrationId != null &&
+      updatedVisitor?.email != null &&
+      updatedVisitor?.name != null
+    )
+      await this.integrationGrowthSpacesService.addSubscriber(
+        journeyId,
+        block,
+        updatedVisitor.name,
+        updatedVisitor.email
+      )
 
     await this.eventService.sendEventsEmail(journeyId, visitor.id)
 

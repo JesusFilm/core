@@ -1,48 +1,85 @@
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client'
 import { CACHE_MANAGER } from '@nestjs/cache-manager'
-import fetch from 'node-fetch'
 
+import { decryptSymmetric, encryptSymmetric } from '@core/nest/common/crypto'
 import { Inject, Injectable } from '@nestjs/common'
 import { Cache } from 'cache-manager'
 import { GraphQLError } from 'graphql/error'
 import { PrismaService } from '../../../lib/prisma.service'
-import { IntegrationService } from '../integration.service'
 
-import { Block } from '.prisma/api-journeys-client'
+import axios, { AxiosInstance } from 'axios'
+import {
+  GetLanguagesQuery,
+  GetLanguagesQueryVariables
+} from '../../../../__generated__/graphql'
+import {
+  IntegrationGrowthSpacesCreateInput,
+  IntegrationGrowthSpacesRoute,
+  IntegrationGrowthSpacesUpdateInput,
+  IntegrationType
+} from '../../../__generated__/graphql'
+import { Block, Integration, Prisma } from '.prisma/api-journeys-client'
 
 const ONE_DAY_MS = 86400000
 
+const GET_LANGUAGES = gql`         
+    query GetLanguages($languageId: ID!) {
+    language(id: $languageId) {
+      bcp47
+      id
+    }
+  }
+`
+
 @Injectable()
-export class IntegrationGrothSpacesService {
+export class IntegrationGrowthSpacesService {
   constructor(
     private readonly prismaService: PrismaService,
-    private readonly integrationService: IntegrationService,
     @Inject(CACHE_MANAGER) private readonly cacheManager: Cache
   ) {}
 
-  async authenticate(accessId: string, accessSecret: string): Promise<void> {
+  async getAPIClient(
+    integration: Integration | { accessId: string; accessSecret: string }
+  ): Promise<AxiosInstance> {
+    let accessSecret: string | undefined =
+      'accessSecret' in integration ? integration.accessSecret : undefined
+
+    if (
+      'accessSecretCipherText' in integration &&
+      integration.accessSecretCipherText != null &&
+      integration.accessSecretIv != null &&
+      integration.accessSecretTag != null
+    )
+      accessSecret = await decryptSymmetric(
+        integration.accessSecretCipherText,
+        integration.accessSecretIv,
+        integration.accessSecretTag,
+        process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET
+      )
+
+    return axios.create({
+      baseURL: process.env.GROWTH_SPACES_URL,
+      headers: {
+        'Access-Id': integration.accessId,
+        'Access-Secret': accessSecret
+      }
+    })
+  }
+
+  async authenticate(input: {
+    accessId: string
+    accessSecret: string
+  }): Promise<void> {
+    const client = await this.getAPIClient(input)
     try {
-      const res = await fetch(
-        'https://api.growthspaces.org/api/v1/authentication',
+      await client.get('/authentication')
+    } catch (e) {
+      throw new GraphQLError(
+        'invalid credentials for Growth Spaces integration',
         {
-          headers: {
-            'Access-Id': accessId,
-            'Access-Secret': accessSecret
-          }
+          extensions: { code: 'UNAUTHORIZED' }
         }
       )
-      if (!res.ok) {
-        throw new GraphQLError(
-          'incorrect access Id and access secret for Growth Space integration',
-          {
-            extensions: { code: 'UNAUTHORIZED' }
-          }
-        )
-      }
-    } catch (e) {
-      throw new GraphQLError(e.message, {
-        extensions: { code: 'UNAUTHORIZED' }
-      })
     }
   }
 
@@ -52,96 +89,123 @@ export class IntegrationGrothSpacesService {
     name: string | null,
     email: string
   ): Promise<void> {
-    if (block.integrationId == null || block.routeId == null)
-      throw new GraphQLError(
-        'trying to add subscriber but the integration or route id is not set',
-        {
-          extensions: { code: 'BAD_USER_INPUT' }
-        }
-      )
-
-    const apollo = new ApolloClient({
-      uri: process.env.GATEWAY_URL,
-      cache: new InMemoryCache()
-    })
+    if (block.integrationId == null || block.routeId == null) return
 
     const integration = await this.prismaService.integration.findUnique({
       where: { id: block.integrationId }
     })
 
+    if (integration == null) return
+
     const journey = await this.prismaService.journey.findUnique({
-      where: { id: journeyId }
+      where: { id: journeyId },
+      select: { languageId: true }
     })
 
-    const key = `journey-language-${journey?.id}`
+    if (journey == null) return
+
+    const key = `language-${journey.languageId}`
     let languageCode = await this.cacheManager.get<string>(key)
     if (languageCode == null) {
-      const { data } = await apollo.query({
-        query: gql`         
-            query Language($languageId: ID!) {
-            language(id: $languageId) {
-              bcp47
-              id
-            }
-          }
-        `,
+      const apollo = new ApolloClient({
+        uri: process.env.GATEWAY_URL,
+        cache: new InMemoryCache()
+      })
+
+      const { data } = await apollo.query<
+        GetLanguagesQuery,
+        GetLanguagesQueryVariables
+      >({
+        query: GET_LANGUAGES,
         variables: { languageId: journey?.languageId }
       })
-      if (data?.language?.bcp47 == null)
-        throw new GraphQLError('cannot find language code', {
-          extensions: { code: 'NOT_FOUND' }
-        })
-      languageCode = data?.language?.bcp47
+
+      if (data?.language?.bcp47 == null) {
+        console.error('cannot find language code')
+        return
+      }
+
+      languageCode = data.language.bcp47
       await this.cacheManager.set(key, languageCode, ONE_DAY_MS)
     }
 
-    if (
-      integration?.accessId == null ||
-      integration?.accessSecretCipherText == null ||
-      integration?.accessSecretIv == null ||
-      integration?.accessSecretTag == null
-    )
+    const client = await this.getAPIClient(integration)
+
+    try {
+      await client.post('/subscribers', {
+        subscriber: {
+          route_id: block.routeId,
+          language_code: languageCode,
+          email,
+          first_name: name
+        }
+      })
+    } catch (e) {
+      // do not return any errors so that it does not interrupt text response event create
+      // console.error so it shows up in data dog
+      console.error(e.message)
+    }
+  }
+
+  async routes(
+    integration: Integration
+  ): Promise<IntegrationGrowthSpacesRoute[]> {
+    const client = await this.getAPIClient(integration)
+    try {
+      return await client.get('/routes')
+    } catch (e) {
       throw new GraphQLError(
-        'incorrect access Id and access secret for Growth Space integration',
+        'invalid credentials for Growth Spaces integration',
         {
           extensions: { code: 'UNAUTHORIZED' }
         }
       )
+    }
+  }
 
-    const decryptedAccessSecret =
-      await this.integrationService.decryptSymmetric(
-        integration.accessSecretCipherText,
-        integration.accessSecretIv,
-        integration.accessSecretTag,
-        process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET
-      )
+  async create(
+    input: IntegrationGrowthSpacesCreateInput,
+    tx: Prisma.TransactionClient
+  ): Promise<Integration> {
+    await this.authenticate(input)
 
-    const body = JSON.stringify({
-      subscriber: {
-        route_id: block.routeId,
-        language_code: languageCode,
-        email,
-        first_name: name
+    const { ciphertext, iv, tag } = await encryptSymmetric(
+      input.accessSecret,
+      process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET
+    )
+
+    return await tx.integration.create({
+      data: {
+        type: IntegrationType.growthSpaces,
+        teamId: input.teamId,
+        accessId: input.accessId,
+        accessSecretPart: input.accessSecret.slice(0, 6),
+        accessSecretCipherText: ciphertext,
+        accessSecretIv: iv,
+        accessSecretTag: tag
+      },
+      include: { team: { include: { userTeams: true } } }
+    })
+  }
+
+  async update(
+    id: string,
+    input: IntegrationGrowthSpacesUpdateInput
+  ): Promise<Integration> {
+    await this.authenticate(input)
+    const { ciphertext, iv, tag } = await encryptSymmetric(
+      input.accessSecret,
+      process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET
+    )
+    return await this.prismaService.integration.update({
+      where: { id },
+      data: {
+        accessId: input.accessId,
+        accessSecretPart: input.accessSecret.slice(0, 6),
+        accessSecretCipherText: ciphertext,
+        accessSecretIv: iv,
+        accessSecretTag: tag
       }
     })
-
-    try {
-      await fetch('https://api.growthspaces.org/api/v1/subscribers', {
-        method: 'POST',
-        headers: {
-          'Access-Id': integration.accessId,
-          'Access-Secret': decryptedAccessSecret,
-          'Content-Type': 'application/json'
-        },
-        body
-      })
-    } catch (e) {
-      throw new GraphQLError(
-        e.message ?? 'failed to fetch from Growth Spaces',
-        {
-          extensions: { code: 'INTERNAL SERVER ERROR' }
-        }
-      )
-    }
   }
 }
