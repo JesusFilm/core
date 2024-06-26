@@ -1,13 +1,9 @@
-import { gql, useQuery } from '@apollo/client'
 import Container from '@mui/material/Container'
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
-import {
-  GetTeamIntegrations,
-  GetTeamIntegrationsVariables
-} from '../../../../__generated__/GetTeamIntegrations'
+
 import { useIntegrationQuery } from '../../../libs/useIntegrationQuery'
 import { BreadcrumbNavigation } from '../BreadcrumbNavigation'
 import { IntegrationsButton } from '../Integrations/IntegrationsButton'
