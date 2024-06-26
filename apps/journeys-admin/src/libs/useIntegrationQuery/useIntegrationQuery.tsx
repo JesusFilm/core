@@ -8,11 +8,12 @@ export const GET_INTEGRATION = gql`
   query GetIntegration($teamId: ID!) {
     integrations(teamId: $teamId) {
       id
-      teamId
+      team {
+        id
+      }
       type
       ... on IntegrationGrowthSpaces {
         id
-        teamId
         accessId
         type
         accessSecretPart
