@@ -28,7 +28,7 @@ export function transformReferrers(referrers?: JourneyReferrer[]) {
     const topReferrers = sortedReferrers.slice(0, 2)
     const otherReferrers = sortedReferrers.slice(2, referrers.length)
 
-    function getYPos(idx) {
+    function getYPos(idx: number) {
       return (
         START_OF_SOCIAL_PREVIEW + ((idx + 1) / 4) * SOCIAL_PREVIEW_CARD_HEIGHT
       )
@@ -40,7 +40,8 @@ export function transformReferrers(referrers?: JourneyReferrer[]) {
         type: 'Referrer',
         data: referrer,
         position: { x: -600, y: getYPos(idx) },
-        draggable: false
+        draggable: false,
+        connectable: false
       })
 
       edges.push({
@@ -57,7 +58,8 @@ export function transformReferrers(referrers?: JourneyReferrer[]) {
       type: 'Referrer',
       data: { property: 'Other sources', referrers: otherReferrers },
       position: { x: -600, y: getYPos(2) },
-      draggable: false
+      draggable: false,
+      connectable: false
     })
 
     edges.push({
@@ -77,7 +79,8 @@ export function transformReferrers(referrers?: JourneyReferrer[]) {
         type: 'Referrer',
         data: referrer,
         position: { x: -600, y: yPos },
-        draggable: false
+        draggable: false,
+        connectable: false
       })
 
       edges.push({

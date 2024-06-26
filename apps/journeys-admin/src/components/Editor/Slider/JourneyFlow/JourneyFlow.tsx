@@ -307,7 +307,7 @@ export function JourneyFlow(): ReactElement {
 
   useEffect(() => {
     if (analytics?.referrers) {
-      const { nodes, edges } = transformReferrers(analytics.referrers)
+      const { nodes, edges } = analytics.referrers
 
       setReferrerEdges(edges)
       setReferrerNodes(nodes)
