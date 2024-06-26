@@ -200,4 +200,28 @@ describe('JourneyFlow', () => {
       screen.queryByRole('button', { name: 'Add Step' })
     ).not.toBeInTheDocument()
   })
+
+  it('should change background color when in analytics mode', () => {
+    render(
+      <MockedProvider mocks={[]}>
+        <JourneyProvider value={{ journey: defaultJourney }}>
+          <EditorProvider
+            initialState={{
+              steps,
+              activeSlide: ActiveSlide.JourneyFlow,
+              showAnalytics: true
+            }}
+          >
+            <Box sx={{ width: '100vw', height: '100vh' }}>
+              <JourneyFlow />
+            </Box>
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByTestId('rf__background')).toHaveStyle({
+      'background-color': 'rgb(222, 232, 239)'
+    })
+  })
 })

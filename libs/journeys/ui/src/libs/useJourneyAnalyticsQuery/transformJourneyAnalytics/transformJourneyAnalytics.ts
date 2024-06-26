@@ -19,7 +19,8 @@ const ACTION_EVENTS: Array<keyof JourneyPlausibleEvents> = [
   'signUpSubmit',
   'radioQuestionSubmit',
   'videoComplete',
-  'chatButtonClick'
+  'chatButtonClick',
+  'footerChatButtonClick'
 ]
 
 interface PlausibleEvent {

@@ -262,7 +262,8 @@ export function Slider(): ReactElement {
             }),
             backgroundSize: '20px 20px',
             backgroundColor: '#eff2f5',
-            height: '100%'
+            height: '100%',
+            overflow: 'hidden'
           }}
         >
           <JourneyFlow />
@@ -312,7 +313,7 @@ export function Slider(): ReactElement {
           p: { xs: 0, sm: 4 },
           width: (theme) => ({
             xs: '100%',
-            sm: DRAWER_WIDTH + parseInt(theme.spacing(8)) // 328 DRAWER_WIDTH + 16px * 2 (padding L & R)
+            sm: DRAWER_WIDTH + Number.parseInt(theme.spacing(8)) // 328 DRAWER_WIDTH + 16px * 2 (padding L & R)
           }),
           height: {
             xs: `calc(100svh - ${EDIT_TOOLBAR_HEIGHT}px - 50px)`,
