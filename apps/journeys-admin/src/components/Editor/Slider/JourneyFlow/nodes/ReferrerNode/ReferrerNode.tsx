@@ -22,7 +22,7 @@ export function ReferrerNode({ data }: ReferrerNodeProps) {
   return (
     <BaseNode
       id="referrer"
-      sourceHandle={showAnalytics ? 'show' : 'hide'}
+      sourceHandle={showAnalytics ? 'disabled' : 'hide'}
       isSourceConnected
     >
       <>
