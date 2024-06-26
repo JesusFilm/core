@@ -63,6 +63,7 @@ export default defineConfig({
             : 'chrome'
       }
     }
+    //
     // {
     //   name: 'Mobile Safari',
     //   use: { ...devices['iPhone 12'] },

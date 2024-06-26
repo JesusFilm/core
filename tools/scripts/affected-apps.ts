@@ -9,6 +9,8 @@ exec(
       .split('\n')
       .filter((value) => value != null && value !== '')
 
+      console.log('services: ', services)
+
     // Filter out "-e2e" projects if their counterpart is also in the list
     services = services.filter((service) => {
       if (service.endsWith('-e2e')) {
@@ -17,6 +19,10 @@ exec(
       }
       return true
     })
+
+    // Filter out "-e2e" word in the projects if it exists. So, related project can be deployed subsequently it's e2e tests
+    services = services.map((service) => service.replace('-e2e', ''))
+
 
     const output = services.join('","')
     if (output === '') {
