@@ -2,7 +2,7 @@ import Button from '@mui/material/Button'
 import { useTranslation } from 'next-i18next'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
-import { ReactElement, useCallback, useEffect, useState } from 'react'
+import { type ReactElement, useCallback, useEffect, useState } from 'react'
 import TagManager from 'react-gtm-module'
 
 import { useJourney } from '../../../libs/JourneyProvider'
@@ -77,8 +77,10 @@ export function CreateJourneyButton({
   }
 
   const handleSignIn = (login: boolean): void => {
-    const url = window.location.origin + router.asPath
-    const domain = process.env.NEXT_PUBLIC_JOURNEYS_ADMIN_URL ?? ''
+    // Use env var if outside journeys-admin project
+    const domain =
+      process.env.NEXT_PUBLIC_JOURNEYS_ADMIN_URL ?? window.location.origin
+    const url = `${domain}/templates/${journey?.id ?? ''}`
 
     void router.push(
       {
