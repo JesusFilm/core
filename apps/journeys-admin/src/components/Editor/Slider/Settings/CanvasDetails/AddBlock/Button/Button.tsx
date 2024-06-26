@@ -30,7 +30,7 @@ const StyledTooltip = styled(({ className, ...props }: TooltipProps) => (
   },
   [`& .${tooltipClasses.arrow}`]: {
     '&:before': {
-      backgroundColor: `#30313C`
+      backgroundColor: '#30313C'
     }
   }
 }))
