@@ -18,8 +18,6 @@ export function Select({
   options,
   onChange
 }: SelectProps): ReactElement {
-  console.log('label', label)
-  console.log('value', value)
   return (
     <Box>
       <FormControl fullWidth>

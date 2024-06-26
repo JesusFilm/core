@@ -23,6 +23,7 @@ export const TEXT_RESPONSE_ROUTE_UPDATE = gql`
   ) {
     textResponseBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
       id
+      routeId
     }
   }
 `
@@ -73,7 +74,8 @@ export function Route(): ReactElement {
       optimisticResponse: {
         textResponseBlockUpdate: {
           id: selectedBlock.id,
-          __typename: 'TextResponseBlock'
+          __typename: 'TextResponseBlock',
+          routeId: route.id
         }
       }
     })

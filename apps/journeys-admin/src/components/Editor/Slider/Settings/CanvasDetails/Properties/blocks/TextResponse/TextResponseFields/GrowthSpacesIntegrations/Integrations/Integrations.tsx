@@ -23,6 +23,7 @@ export const TEXT_RESPONSE_INTEGRATION_UPDATE = gql`
   ) {
     textResponseBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
       id
+      integrationId
     }
   }
 `
@@ -73,7 +74,8 @@ export function Integrations(): ReactElement {
       optimisticResponse: {
         textResponseBlockUpdate: {
           id: selectedBlock.id,
-          __typename: 'TextResponseBlock'
+          __typename: 'TextResponseBlock',
+          integrationId
         }
       }
     })

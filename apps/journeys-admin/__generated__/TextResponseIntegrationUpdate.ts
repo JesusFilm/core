@@ -12,6 +12,7 @@ import { TextResponseBlockUpdateInput } from "./globalTypes";
 export interface TextResponseIntegrationUpdate_textResponseBlockUpdate {
   __typename: "TextResponseBlock";
   id: string;
+  integrationId: string | null;
 }
 
 export interface TextResponseIntegrationUpdate {
