@@ -21,8 +21,7 @@ import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeName } from '@core/shared/ui/themes'
 
-import { Fab } from '../../../Fab'
-
+import { CanvasFooter } from './CanvasFooter'
 import { CardWrapper } from './CardWrapper'
 import { FormWrapper } from './FormWrapper'
 import { InlineEditWrapper } from './InlineEditWrapper'
@@ -295,17 +294,7 @@ export function Canvas(): ReactElement {
                 </ThemeProvider>
               </FramePortal>
             </Box>
-            {showAnalytics !== true && (
-              <Box
-                sx={{
-                  mt: 4,
-                  alignSelf: 'end',
-                  transform: `scale(${scale})`
-                }}
-              >
-                <Fab variant="canvas" />
-              </Box>
-            )}
+            <CanvasFooter scale={scale} />
           </Box>
         </Stack>
       )}
