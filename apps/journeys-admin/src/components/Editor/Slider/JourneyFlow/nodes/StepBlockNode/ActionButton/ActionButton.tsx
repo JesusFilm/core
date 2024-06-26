@@ -6,7 +6,6 @@ import { ReactElement } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
-
 import { BlockFields as Block } from '../../../../../../../../__generated__/BlockFields'
 import { useUpdateEdge } from '../../../libs/useUpdateEdge'
 import { BaseNode } from '../../BaseNode'
@@ -18,17 +17,19 @@ interface BlockUIProperties {
 }
 
 interface ActionButtonProps {
+  stepId: string
   block: TreeBlock<Block>
   selected?: boolean
 }
 
 export function ActionButton({
+  stepId,
   block,
   selected = false
 }: ActionButtonProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const {
-    state: { showAnalytics }
+    state: { showAnalytics, analytics }
   } = useEditor()
   const updateEdge = useUpdateEdge()
 
@@ -69,6 +70,12 @@ export function ActionButton({
 
   const { title, isSourceConnected } = getTitleAndConnection()
 
+  const total = analytics?.blockMap.get(block.id) ?? 0
+  const blockEventTotal = analytics?.blockMap.get(block.id) ?? 0
+  let percentage =
+    blockEventTotal / (analytics?.stepMap.get(stepId)?.total ?? 0)
+  if (Number.isNaN(percentage) || !Number.isFinite(percentage)) percentage = 0
+
   return (
     <BaseNode
       id={block.id}
@@ -87,21 +94,76 @@ export function ActionButton({
           borderTop: (theme) =>
             `1px solid ${alpha(theme.palette.secondary.dark, 0.1)}`,
           height: ACTION_BUTTON_HEIGHT,
-          width: '100%'
+          position: 'relative'
         }}
       >
-        <Typography
-          align="left"
-          noWrap
+        <Box
           sx={{
-            fontWeight: 'bold',
-            fontSize: 10,
-            lineHeight: `${ACTION_BUTTON_HEIGHT - 1}px`
+            opacity: 0.2,
+            width: '100%',
+            height: 'calc(100% - 2px)',
+            position: 'absolute',
+            left: 0,
+            top: 1,
+            display: 'flex'
           }}
-          variant="body2"
         >
-          {title}
-        </Typography>
+          <Box
+            className="stats-overlay__bar"
+            data-testid="AnalyticsOverlayBar"
+            sx={{
+              backgroundColor: 'info.main',
+              position: 'relative',
+              flexBasis: 0,
+              flexShrink: '1px',
+              transition: 'all 300ms ease',
+              flexGrow: showAnalytics === true ? `${percentage}` : 0,
+              borderRadius: '0 4px 4px 0'
+            }}
+          />
+        </Box>
+        <Box
+          sx={{
+            position: 'relative',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            '&:hover': {
+              '& .stats-overlay__event-count': {
+                opacity: showAnalytics === true ? 1 : 0
+              }
+            }
+          }}
+        >
+          <Typography
+            align="left"
+            noWrap
+            sx={{
+              fontWeight: 'bold',
+              fontSize: 10,
+              lineHeight: `${ACTION_BUTTON_HEIGHT - 1}px`
+            }}
+            variant="body2"
+          >
+            {title}
+          </Typography>
+          <Box
+            className="stats-overlay__event-count"
+            data-testid="AnalyticsEventCount"
+            sx={{
+              transition: 'opacity 200ms ease-in-out',
+              borderRadius: 50,
+              backgroundColor: 'background.paper',
+              px: 1,
+              py: 1,
+              opacity: 0
+            }}
+          >
+            <Typography variant="body1" sx={{ fontSize: 12, lineHeight: 1 }}>
+              {total}
+            </Typography>
+          </Box>
+        </Box>
       </Box>
     </BaseNode>
   )
