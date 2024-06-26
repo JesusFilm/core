@@ -39,6 +39,7 @@ export function IntegrationsButton({
             backgroundColor: (theme) => theme.palette.grey[100]
           }
         }}
+        data-testid={`${title}-IntegrationsButton`}
       >
         <Box
           sx={{

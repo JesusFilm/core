@@ -9,12 +9,7 @@ import { IntegrationsButton } from './IntegrationsButton'
 export function Integrations(): ReactElement {
   const router = useRouter()
   return (
-    <Paper
-      elevation={0}
-      square
-      sx={{ height: '100%' }}
-      data-testid="TemplateGallery"
-    >
+    <Paper elevation={0} square sx={{ height: '100%' }}>
       <Container
         maxWidth={false}
         sx={{

@@ -8,40 +8,19 @@ import {
   GetTeamIntegrations,
   GetTeamIntegrationsVariables
 } from '../../../../__generated__/GetTeamIntegrations'
+import { useIntegrationQuery } from '../../../libs/useIntegrationQuery'
 import { BreadcrumbNavigation } from '../BreadcrumbNavigation'
 import { IntegrationsButton } from '../Integrations/IntegrationsButton'
-
-export const GET_TEAM_INTEGRATIONS = gql`
-  query GetTeamIntegrations($teamId: ID!) {
-    team(id: $teamId) {
-      id
-      title
-      integrations {
-        id
-        type
-      }
-    }
-  }
-`
 
 export function TeamIntegrations(): ReactElement {
   const router = useRouter()
   const teamId = router.query.teamId as string
-  const { data } = useQuery<GetTeamIntegrations, GetTeamIntegrationsVariables>(
-    GET_TEAM_INTEGRATIONS,
-    {
-      variables: { teamId: router.query.teamId as string }
-    }
-  )
-  const integrations = data?.team?.integrations
+  const { data } = useIntegrationQuery({
+    teamId
+  })
 
   return (
-    <Paper
-      elevation={0}
-      square
-      sx={{ height: '100%' }}
-      data-testid="TemplateGallery"
-    >
+    <Paper elevation={0} square sx={{ height: '100%' }}>
       <Container
         maxWidth={false}
         sx={{
@@ -57,8 +36,8 @@ export function TeamIntegrations(): ReactElement {
             url={`/teams/${teamId}/integrations/new`}
             showAddButton
           />
-          {integrations != null &&
-            integrations.map((integration) => (
+          {data?.integrations != null &&
+            data?.integrations.map((integration) => (
               <IntegrationsButton
                 key={`${integration.id}`}
                 url={`/teams/${teamId}/integrations/${integration.id}`}

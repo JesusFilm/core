@@ -10,7 +10,7 @@ import { IntegrationType } from "./globalTypes";
 // ====================================================
 
 export interface GetTeamIntegrations_team_integrations {
-  __typename: "IntegrationGrowthSpace";
+  __typename: "IntegrationGrowthSpaces";
   id: string;
   type: IntegrationType;
 }
