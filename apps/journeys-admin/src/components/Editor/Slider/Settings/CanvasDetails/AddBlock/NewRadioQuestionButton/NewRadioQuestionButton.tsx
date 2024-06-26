@@ -1,6 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import type { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -10,8 +10,8 @@ import { RADIO_QUESTION_FIELDS } from '@core/journeys/ui/RadioQuestion/radioQues
 import type { TreeBlock } from '@core/journeys/ui/block'
 import CheckContainedIcon from '@core/shared/ui/icons/CheckContained'
 
-import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../__generated__/BlockFields'
-import { RadioQuestionBlockCreate } from '../../../../../../../../__generated__/RadioQuestionBlockCreate'
+import type { BlockFields_CardBlock as CardBlock } from '../../../../../../../../__generated__/BlockFields'
+import type { RadioQuestionBlockCreate } from '../../../../../../../../__generated__/RadioQuestionBlockCreate'
 import { Button } from '../Button'
 
 export const RADIO_QUESTION_BLOCK_CREATE = gql`

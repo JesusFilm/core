@@ -1,6 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import type { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import { ActiveFab, useEditor } from '@core/journeys/ui/EditorProvider'
@@ -8,7 +8,7 @@ import { FORM_FIELDS } from '@core/journeys/ui/Form/formFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import File5Icon from '@core/shared/ui/icons/File5'
 
-import { FormBlockCreate } from '../../../../../../../../__generated__/FormBlockCreate'
+import type { FormBlockCreate } from '../../../../../../../../__generated__/FormBlockCreate'
 import { Button } from '../Button'
 
 export const FORM_BLOCK_CREATE = gql`

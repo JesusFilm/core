@@ -1,6 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import type { ReactElement } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -8,8 +8,8 @@ import { VIDEO_FIELDS } from '@core/journeys/ui/Video/videoFields'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import VideoOnIcon from '@core/shared/ui/icons/VideoOn'
 
-import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../__generated__/BlockFields'
-import { VideoBlockCreate } from '../../../../../../../../__generated__/VideoBlockCreate'
+import type { BlockFields_CardBlock as CardBlock } from '../../../../../../../../__generated__/BlockFields'
+import type { VideoBlockCreate } from '../../../../../../../../__generated__/VideoBlockCreate'
 import { Button } from '../Button'
 
 interface NewVideoButtonProps {
