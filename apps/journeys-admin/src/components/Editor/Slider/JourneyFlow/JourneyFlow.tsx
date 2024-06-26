@@ -61,7 +61,6 @@ import { STEP_NODE_CARD_HEIGHT } from './nodes/StepBlockNode/libs/sizes'
 
 import 'reactflow/dist/style.css'
 import { ReferrerEdge } from './edges/ReferrerEdge'
-import { transformReferrers } from './libs/transformReferrers'
 import { ReferrerNode } from './nodes/ReferrerNode'
 
 // some styles can only be updated through css after render
