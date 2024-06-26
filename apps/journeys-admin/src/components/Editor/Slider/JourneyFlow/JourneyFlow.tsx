@@ -346,7 +346,17 @@ export function JourneyFlow(): ReactElement {
             </Controls>
           </>
         )}
-        <Background color="#aaa" gap={16} />
+        <Background
+          color="#aaa"
+          gap={16}
+          style={
+            showAnalytics
+              ? {
+                  backgroundColor: '#DEE8EF'
+                }
+              : {}
+          }
+        />
       </ReactFlow>
     </Box>
   )
