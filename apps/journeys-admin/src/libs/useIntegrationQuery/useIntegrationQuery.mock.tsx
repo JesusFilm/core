@@ -22,18 +22,21 @@ export const getIntegrationMock: MockedResponse<
         {
           __typename: 'IntegrationGrowthSpaces',
           id: 'integration.id',
-          teamId: 'team.id',
+          team: {
+            __typename: 'Team',
+            id: 'team.id'
+          },
           type: IntegrationType.growthSpaces,
           accessId: 'access.id',
           accessSecretPart: 'access.secret',
           routes: [
             {
-              __typename: 'GrowthSpacesRoute',
+              __typename: 'IntegrationGrowthSpacesRoute',
               id: 'route.id',
               name: 'route.name'
             },
             {
-              __typename: 'GrowthSpacesRoute',
+              __typename: 'IntegrationGrowthSpacesRoute',
               id: 'route2.id',
               name: 'route2.name'
             }
