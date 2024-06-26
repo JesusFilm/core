@@ -224,6 +224,7 @@ model Integration {
   teamId                 String
   type                   IntegrationType
   accessId               String?
+  accessSecretPart       String?
   accessSecretCipherText String?         @unique
   accessSecretIv         String?
   accessSecretTag        String?

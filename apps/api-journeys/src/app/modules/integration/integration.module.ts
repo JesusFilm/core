@@ -8,18 +8,16 @@ import { PrismaService } from '../../lib/prisma.service'
 import { IntegrationGrowthSpacesResolver } from './growthSpaces/growthSpaces.resolver'
 import { IntegrationGrowthSpacesService } from './growthSpaces/growthSpaces.service'
 import { IntegrationResolver } from './integration.resolver'
-import { IntegrationService } from './integration.service'
 
 @Global()
 @Module({
   imports: [CaslAuthModule.register(AppCaslFactory), CacheModule.register()],
   providers: [
     PrismaService,
-    IntegrationService,
     IntegrationResolver,
     IntegrationGrowthSpacesService,
     IntegrationGrowthSpacesResolver
   ],
-  exports: [IntegrationService, IntegrationGrowthSpacesService]
+  exports: [IntegrationGrowthSpacesService]
 })
 export class IntegrationModule {}

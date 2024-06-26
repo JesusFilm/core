@@ -1,28 +1,9 @@
-import { Test } from '@nestjs/testing'
-import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
-import { PrismaService } from '../../lib/prisma.service'
-import { IntegrationService } from './integration.service'
+import { decryptSymmetric, encryptSymmetric } from './crypto'
 import { Integration } from '.prisma/api-journeys-client'
-
-describe('IntegrationService', () => {
+describe('crypto', () => {
   const OLD_ENV = process.env
 
-  let service: IntegrationService, prismaService: DeepMockProxy<PrismaService>
-
-  beforeEach(async () => {
-    const module = await Test.createTestingModule({
-      imports: [],
-      providers: [
-        IntegrationService,
-        { provide: PrismaService, useValue: mockDeep<PrismaService>() }
-      ]
-    }).compile()
-
-    service = await module.get<IntegrationService>(IntegrationService)
-    prismaService = module.get<PrismaService>(
-      PrismaService
-    ) as DeepMockProxy<PrismaService>
-
+  beforeEach(() => {
     process.env = { ...OLD_ENV }
   })
 
@@ -37,10 +18,12 @@ describe('IntegrationService', () => {
     type: 'growthSpaces',
     accessId: 'accessId',
     // decrypted value for accessSecretCipherText should be "plaintext"
+    accessSecretPart: 'plaint',
     accessSecretCipherText: 'saeRCBy44pMT',
     accessSecretIv: 'dx+2iBr7yYvilLIC',
     accessSecretTag: 'VondZ4B9TbgdwCQeqjnkfA=='
   }
+
   describe('encryptSymmetric', () => {
     it('should encrypt plaintext', async () => {
       process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET =
@@ -48,7 +31,7 @@ describe('IntegrationService', () => {
 
       const plainTextToBeEncrypted = 'plaintext'
 
-      const res = await service.encryptSymmetric(
+      const res = await encryptSymmetric(
         plainTextToBeEncrypted,
         process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET
       )
@@ -64,7 +47,7 @@ describe('IntegrationService', () => {
       const plainTextToBeEncrypted = 'plaintext'
 
       await expect(
-        service.encryptSymmetric(
+        encryptSymmetric(
           plainTextToBeEncrypted,
           process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET
         )
@@ -77,7 +60,7 @@ describe('IntegrationService', () => {
       process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET =
         'dontbefooledbythiskryptokeyitisactuallyfake='
 
-      const res = await service.decryptSymmetric(
+      const res = await decryptSymmetric(
         integration.accessSecretCipherText as string,
         integration.accessSecretIv as string,
         integration.accessSecretTag as string,
@@ -91,22 +74,13 @@ describe('IntegrationService', () => {
       process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET = undefined
 
       await expect(
-        service.decryptSymmetric(
+        decryptSymmetric(
           integration.accessSecretCipherText as string,
           integration.accessSecretIv as string,
           integration.accessSecretTag as string,
           process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET
         )
       ).rejects.toThrow('no crypto key')
-    })
-  })
-
-  describe('delete', () => {
-    it('should delete integration', async () => {
-      await service.delete({ id: 'integrationId' })
-      expect(prismaService.integration.delete).toHaveBeenCalledWith({
-        where: { id: 'integrationId' }
-      })
     })
   })
 })

@@ -15,6 +15,7 @@ CREATE TABLE "Integration" (
     "teamId" TEXT NOT NULL,
     "type" "IntegrationType" NOT NULL,
     "accessId" TEXT,
+    "accessSecretPart" TEXT,
     "accessSecretCipherText" TEXT,
     "accessSecretIv" TEXT,
     "accessSecretTag" TEXT,

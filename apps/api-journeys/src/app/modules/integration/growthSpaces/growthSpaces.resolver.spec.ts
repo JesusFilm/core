@@ -9,7 +9,6 @@ import {
 } from '../../../__generated__/graphql'
 import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
 import { PrismaService } from '../../../lib/prisma.service'
-import { IntegrationService } from '../integration.service'
 import { IntegrationGrowthSpacesResolver } from './growthSpaces.resolver'
 import { IntegrationGrowthSpacesService } from './growthSpaces.service'
 import { Integration, Team } from '.prisma/api-journeys-client'
@@ -32,6 +31,7 @@ const integration: Integration = {
   teamId: 'teamId',
   type: 'growthSpaces',
   accessId: 'accessId',
+  accessSecretPart: 'plaint',
   // decrypted value for accessSecretCipherText should be "plaintext"
   accessSecretCipherText: 'saeRCBy44pMT',
   accessSecretIv: 'dx+2iBr7yYvilLIC',
@@ -43,7 +43,6 @@ describe('IntegrationGrowthSpaceResolver', () => {
 
   let integrationGrowthSpacesService: IntegrationGrowthSpacesService,
     prismaService: DeepMockProxy<PrismaService>,
-    integrationService: IntegrationService,
     resolver: IntegrationGrowthSpacesResolver,
     ability: AppAbility
 
@@ -55,7 +54,6 @@ describe('IntegrationGrowthSpaceResolver', () => {
       ],
       providers: [
         IntegrationGrowthSpacesResolver,
-        IntegrationService,
         IntegrationGrowthSpacesService,
         {
           provide: PrismaService,
@@ -63,7 +61,6 @@ describe('IntegrationGrowthSpaceResolver', () => {
         }
       ]
     }).compile()
-    integrationService = module.get<IntegrationService>(IntegrationService)
     integrationGrowthSpacesService = await module.resolve(
       IntegrationGrowthSpacesService
     )
@@ -74,6 +71,9 @@ describe('IntegrationGrowthSpaceResolver', () => {
     ability = await new AppCaslFactory().createAbility({ id: 'userId' })
 
     process.env = { ...OLD_ENV }
+    jest
+      .spyOn(prismaService, '$transaction')
+      .mockImplementation((callback) => callback(prismaService))
   })
 
   afterEach(() => {
