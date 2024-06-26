@@ -29,6 +29,11 @@ export function AnalyticsDataPoint({
               }
             }
           ]
+        },
+        tooltip: {
+          sx: {
+            py: 0
+          }
         }
       }}
     >

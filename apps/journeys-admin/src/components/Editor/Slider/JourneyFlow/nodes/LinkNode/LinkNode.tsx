@@ -59,7 +59,7 @@ export function LinkNode({ id }: NodeProps): ReactElement {
       >
         <Fade in={showAnalytics}>
           <div>
-            <LinkNodeAnalytics />
+            <LinkNodeAnalytics actionBlock={matchedActionBlock} />
           </div>
         </Fade>
         {icon}
