@@ -151,7 +151,6 @@ export class IntegrationGrowthSpacesService {
   }
 
   async create(
-    teamId: string,
     input: IntegrationGrowthSpacesCreateInput
   ): Promise<Integration> {
     await this.authenticate(input.accessId, input.accessSecret)
@@ -165,7 +164,7 @@ export class IntegrationGrowthSpacesService {
     return await this.prismaService.integration.create({
       data: {
         type: IntegrationType.growthSpaces,
-        teamId: teamId,
+        teamId: input.teamId,
         accessId: input.accessId,
         accessSecretCipherText: ciphertext,
         accessSecretIv: iv,

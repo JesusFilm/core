@@ -579,13 +579,6 @@ enum GridJustifyContent
   center @join__enumValue(graph: JOURNEYS)
 }
 
-type GrowthSpacesRoute
-  @join__type(graph: JOURNEYS)
-{
-  id: String!
-  name: String!
-}
-
 type Host
   @join__type(graph: JOURNEYS)
 {
@@ -769,7 +762,7 @@ interface Integration
   @join__type(graph: JOURNEYS)
 {
   id: ID!
-  teamId: String!
+  team: Team!
   type: IntegrationType!
 }
 
@@ -778,11 +771,11 @@ type IntegrationGrowthSpaces implements Integration
   @join__type(graph: JOURNEYS)
 {
   id: ID!
-  teamId: String!
+  team: Team!
   type: IntegrationType!
   accessId: String!
   accessSecretPart: String!
-  routes: [GrowthSpacesRoute!]!
+  routes: [IntegrationGrowthSpacesRoute!]!
 }
 
 input IntegrationGrowthSpacesCreateInput
@@ -790,6 +783,14 @@ input IntegrationGrowthSpacesCreateInput
 {
   accessId: String!
   accessSecret: String!
+  teamId: String!
+}
+
+type IntegrationGrowthSpacesRoute
+  @join__type(graph: JOURNEYS)
+{
+  id: String!
+  name: String!
 }
 
 input IntegrationGrowthSpacesUpdateInput
@@ -1462,7 +1463,7 @@ type Mutation
   hostCreate(teamId: ID!, input: HostCreateInput!): Host! @join__field(graph: JOURNEYS)
   hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host! @join__field(graph: JOURNEYS)
   hostDelete(id: ID!, teamId: ID!): Host! @join__field(graph: JOURNEYS)
-  integrationGrowthSpacesCreate(teamId: ID!, input: IntegrationGrowthSpacesCreateInput!): IntegrationGrowthSpaces! @join__field(graph: JOURNEYS)
+  integrationGrowthSpacesCreate(input: IntegrationGrowthSpacesCreateInput!): IntegrationGrowthSpaces! @join__field(graph: JOURNEYS)
   integrationGrowthSpacesUpdate(id: ID!, input: IntegrationGrowthSpacesUpdateInput!): IntegrationGrowthSpaces! @join__field(graph: JOURNEYS)
   integrationDelete(input: IntegrationInput!): Integration! @join__field(graph: JOURNEYS)
   journeyCreate(input: JourneyCreateInput!, teamId: ID!): Journey! @join__field(graph: JOURNEYS)

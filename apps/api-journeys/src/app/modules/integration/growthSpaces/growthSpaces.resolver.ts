@@ -2,10 +2,9 @@ import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 import fetch from 'node-fetch'
 import {
-  GrowthSpacesRoute,
   IntegrationGrowthSpacesCreateInput,
-  IntegrationGrowthSpacesUpdateInput,
-  IntegrationType
+  IntegrationGrowthSpacesRoute,
+  IntegrationGrowthSpacesUpdateInput
 } from '../../../__generated__/graphql'
 
 import { PrismaService } from '../../../lib/prisma.service'
@@ -30,12 +29,11 @@ export class IntegrationGrowthSpacesResolver {
   @Mutation()
   @UseGuards(AppCaslGuard)
   async integrationGrowthSpacesCreate(
-    @Args('teamId') teamId: string,
     @Args('input') input: IntegrationGrowthSpacesCreateInput,
     @CaslAbility() ability: AppAbility
   ): Promise<Integration> {
     const team = await this.prismaService.team.findUnique({
-      where: { id: teamId },
+      where: { id: input.teamId },
       include: { userTeams: true }
     })
 
@@ -51,7 +49,7 @@ export class IntegrationGrowthSpacesResolver {
       })
     }
 
-    return await this.integrationGrowthSpacesService.create(teamId, input)
+    return await this.integrationGrowthSpacesService.create(input)
   }
 
   @Mutation()
@@ -83,7 +81,7 @@ export class IntegrationGrowthSpacesResolver {
   @ResolveField()
   async routes(
     @Parent() integration: Integration
-  ): Promise<GrowthSpacesRoute[]> {
+  ): Promise<IntegrationGrowthSpacesRoute[]> {
     const {
       accessId,
       accessSecretCipherText,
@@ -127,7 +125,7 @@ export class IntegrationGrowthSpacesResolver {
           }
         )
       }
-      const data: GrowthSpacesRoute[] = await res.json()
+      const data: IntegrationGrowthSpacesRoute[] = await res.json()
       return data
     } catch (e) {
       throw new GraphQLError(e.message, {

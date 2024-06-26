@@ -4,7 +4,7 @@ enum IntegrationType {
 
 interface Integration {
   id: ID!       
-  teamId: String!
+  team: Team!
   type: IntegrationType!
 }
 

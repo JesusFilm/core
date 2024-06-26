@@ -3,7 +3,10 @@ import { CacheModule } from '@nestjs/cache-manager'
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import fetch, { Response } from 'node-fetch'
-import { GrowthSpacesRoute, UserTeamRole } from '../../../__generated__/graphql'
+import {
+  IntegrationGrowthSpacesRoute,
+  UserTeamRole
+} from '../../../__generated__/graphql'
 import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
 import { PrismaService } from '../../../lib/prisma.service'
 import { IntegrationService } from '../integration.service'
@@ -99,10 +102,10 @@ describe('IntegrationGrowthSpaceResolver', () => {
 
       prismaService.integration.create.mockResolvedValue(integration)
       await resolver.integrationGrowthSpacesCreate(
-        'teamId',
         {
           accessId: 'accessId',
-          accessSecret: 'accessSecret'
+          accessSecret: 'accessSecret',
+          teamId: 'teamId'
         },
         ability
       )
@@ -137,10 +140,10 @@ describe('IntegrationGrowthSpaceResolver', () => {
 
       await expect(
         resolver.integrationGrowthSpacesCreate(
-          'teamId',
           {
             accessId: 'accessId',
-            accessSecret: 'accessSecret'
+            accessSecret: 'accessSecret',
+            teamId: 'teamId'
           },
           ability
         )
@@ -152,10 +155,10 @@ describe('IntegrationGrowthSpaceResolver', () => {
     it('should throw error if team not found', async () => {
       await expect(
         resolver.integrationGrowthSpacesCreate(
-          'teamId',
           {
             accessId: 'accessId',
-            accessSecret: 'accessSecret'
+            accessSecret: 'accessSecret',
+            teamId: 'teamId'
           },
           ability
         )
@@ -164,21 +167,21 @@ describe('IntegrationGrowthSpaceResolver', () => {
 
     it('should throw error if user is not in team', async () => {
       prismaService.team.findUnique.mockResolvedValue({
-        id: 'teamId',
         userTeams: [
           {
             id: 'userTeamId',
             userId: 'user id not in team',
-            role: UserTeamRole.member
+            role: UserTeamRole.member,
+            teamId: 'teamId'
           }
         ]
       } as unknown as Team)
       await expect(
         resolver.integrationGrowthSpacesCreate(
-          'teamId',
           {
             accessId: 'accessId',
-            accessSecret: 'accessSecret'
+            accessSecret: 'accessSecret',
+            teamId: 'teamId'
           },
           ability
         )
@@ -202,10 +205,10 @@ describe('IntegrationGrowthSpaceResolver', () => {
 
       await expect(
         resolver.integrationGrowthSpacesCreate(
-          'teamId',
           {
             accessId: 'accessId',
-            accessSecret: 'accessSecret'
+            accessSecret: 'accessSecret',
+            teamId: 'teamId'
           },
           ability
         )
@@ -384,8 +387,8 @@ describe('IntegrationGrowthSpaceResolver', () => {
       process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET =
         'dontbefooledbythiskryptokeyitisactuallyfake='
 
-      const data: GrowthSpacesRoute[] = [
-        { __typename: 'GrowthSpacesRoute', id: '1', name: 'route' }
+      const data: IntegrationGrowthSpacesRoute[] = [
+        { __typename: 'IntegrationGrowthSpacesRoute', id: '1', name: 'route' }
       ]
 
       mockFetch.mockResolvedValue({
