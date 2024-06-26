@@ -1,6 +1,7 @@
 import Stack from '@mui/material/Stack'
 import { ReactElement } from 'react'
 
+import { GrowthSpacesIntegrations } from './GrowthSpacesIntegrations'
 import { Hint } from './Hint'
 import { Label } from './Label'
 import { MinRows } from './MinRows'
@@ -13,6 +14,7 @@ export function TextResponseFields(): ReactElement {
       <Hint />
       <MinRows />
       <Type />
+      <GrowthSpacesIntegrations />
     </Stack>
   )
 }

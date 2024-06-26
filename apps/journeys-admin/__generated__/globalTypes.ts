@@ -71,6 +71,10 @@ export enum IconSize {
   xl = "xl",
 }
 
+export enum IntegrationType {
+  growthSpaces = "growthSpaces",
+}
+
 export enum JourneyStatus {
   archived = "archived",
   deleted = "deleted",

@@ -1,0 +1,25 @@
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+import { TextResponseBlockUpdateInput } from "./globalTypes";
+
+// ====================================================
+// GraphQL mutation operation: TextResponseRouteUpdate
+// ====================================================
+
+export interface TextResponseRouteUpdate_textResponseBlockUpdate {
+  __typename: "TextResponseBlock";
+  id: string;
+}
+
+export interface TextResponseRouteUpdate {
+  textResponseBlockUpdate: TextResponseRouteUpdate_textResponseBlockUpdate | null;
+}
+
+export interface TextResponseRouteUpdateVariables {
+  id: string;
+  journeyId: string;
+  input: TextResponseBlockUpdateInput;
+}
