@@ -10,7 +10,7 @@ import { GET_INTEGRATION, useIntegrationQuery } from './useIntegrationQuery'
 
 describe('useIntegrationQuery', () => {
   const route: Route = {
-    __typename: 'GrowthSpacesRoute',
+    __typename: 'IntegrationGrowthSpacesRoute',
     id: 'route.id',
     name: 'route.name'
   }
@@ -18,7 +18,10 @@ describe('useIntegrationQuery', () => {
   const integration: Integration = {
     __typename: 'IntegrationGrowthSpaces',
     id: 'integration.id',
-    teamId: 'team.id',
+    team: {
+      __typename: 'Team',
+      id: 'team.id'
+    },
     type: IntegrationType.growthSpaces,
     accessId: 'access.id',
     accessSecretPart: 'access.secret',
