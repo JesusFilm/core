@@ -3,14 +3,14 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { IntegrationGrowthSpaceUpdateInput } from "./globalTypes";
+import { IntegrationGrowthSpacesUpdateInput } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: IntegrationGrowthSpacesUpdate
 // ====================================================
 
 export interface IntegrationGrowthSpacesUpdate_integrationGrowthSpacesUpdate {
-  __typename: "IntegrationGrowthSpace";
+  __typename: "IntegrationGrowthSpaces";
   id: string;
 }
 
@@ -20,5 +20,5 @@ export interface IntegrationGrowthSpacesUpdate {
 
 export interface IntegrationGrowthSpacesUpdateVariables {
   id: string;
-  input: IntegrationGrowthSpaceUpdateInput;
+  input: IntegrationGrowthSpacesUpdateInput;
 }

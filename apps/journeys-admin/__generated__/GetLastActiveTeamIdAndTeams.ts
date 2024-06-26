@@ -36,7 +36,7 @@ export interface GetLastActiveTeamIdAndTeams_teams_customDomains {
 }
 
 export interface GetLastActiveTeamIdAndTeams_teams_integrations {
-  __typename: "IntegrationGrowthSpace";
+  __typename: "IntegrationGrowthSpaces";
   id: string;
   type: IntegrationType;
 }

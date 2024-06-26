@@ -12,15 +12,15 @@ import { useTeam } from '../Team/TeamProvider'
 import { ConfigField } from './ConfigField'
 
 export const INTEGRATION_GROWTH_SPACES_CREATE = gql`
-  mutation IntegrationGrowthSpacesCreate($teamId: ID!, $input: IntegrationGrowthSpaceCreateInput!) {
-    integrationGrowthSpacesCreate(teamId: $teamId, input: $input) {
+  mutation IntegrationGrowthSpacesCreate($input: IntegrationGrowthSpacesCreateInput!) {
+    integrationGrowthSpacesCreate(input: $input) {
       id
     }
   }
 `
 
 export const INTEGRATION_GROWTH_SPACES_UPDATE = gql`
-  mutation IntegrationGrowthSpacesUpdate($id: ID!, $input: IntegrationGrowthSpaceUpdateInput!) {
+  mutation IntegrationGrowthSpacesUpdate($id: ID!, $input: IntegrationGrowthSpacesUpdateInput!) {
     integrationGrowthSpacesUpdate(id: $id, input: $input) {
       id
     }
@@ -65,16 +65,15 @@ export function GrowthSpacesSettings(): ReactElement {
     }
   }
 
-  async function handleIntegrationsCreate(teamId: string): Promise<void> {
-    console.log('accessId', accessId)
-    console.log('accessSecret', accessSecret)
+  async function handleIntegrationsCreate(): Promise<void> {
+    if (activeTeam == null) return
     try {
       const { data } = await integrationGrowthSpacesCreate({
         variables: {
-          teamId: teamId,
           input: {
             accessId,
-            accessSecret
+            accessSecret,
+            teamId: activeTeam.id
           }
         }
       })
@@ -110,7 +109,6 @@ export function GrowthSpacesSettings(): ReactElement {
   }
 
   async function handleClick(): Promise<void> {
-    if (activeTeam == null) return
     if (accessId == null) return
     if (accessSecret == null) return
 
@@ -120,7 +118,7 @@ export function GrowthSpacesSettings(): ReactElement {
     //   return
     // }
 
-    await handleIntegrationsCreate(activeTeam.id)
+    await handleIntegrationsCreate()
   }
 
   return (
