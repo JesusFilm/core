@@ -19,8 +19,6 @@ export function BreadcrumbNavigation(): ReactElement {
   const { asPath } = router
   const { activeTeam } = useTeam()
 
-  console.log('asPath', asPath)
-
   function formatLabel(label: string): string {
     return label.charAt(0).toUpperCase() + label.slice(1).replace(/-/g, ' ')
   }
