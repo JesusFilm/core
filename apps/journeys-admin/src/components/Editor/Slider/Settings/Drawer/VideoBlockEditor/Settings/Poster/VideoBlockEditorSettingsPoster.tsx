@@ -1,10 +1,10 @@
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
-import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import dynamic from 'next/dynamic'
+import { useTheme } from '@mui/material/styles'
 import { useTranslation } from 'next-i18next'
+import dynamic from 'next/dynamic'
 import { ReactElement, useState } from 'react'
 
 import Edit2Icon from '@core/shared/ui/icons/Edit2'

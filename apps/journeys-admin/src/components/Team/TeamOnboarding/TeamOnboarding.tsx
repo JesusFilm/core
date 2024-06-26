@@ -4,8 +4,8 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Form } from 'formik'
-import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
+import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 
 import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
@@ -117,7 +117,7 @@ export function TeamOnboarding(): ReactElement {
 
             <Typography gutterBottom>
               {t(
-                'Create a team to hold your NextStep journeys and collaborate with others.'
+                'Create your workspace to hold your NextStep journeys and collaborate with others.'
               )}
             </Typography>
             <Button

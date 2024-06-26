@@ -1,5 +1,6 @@
 import { gql, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
+import Fade from '@mui/material/Fade'
 import { useTheme } from '@mui/material/styles'
 import {
   MouseEvent,
@@ -29,8 +30,9 @@ import {
   useNodesState
 } from 'reactflow'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import ArrowRefresh6Icon from '@core/shared/ui/icons/ArrowRefresh6'
 
 import {
@@ -39,6 +41,9 @@ import {
 } from '../../../../../__generated__/GetStepBlocksWithPosition'
 import { useStepBlockPositionUpdateMutation } from '../../../../libs/useStepBlockPositionUpdateMutation'
 
+import { AnalyticsOverlaySwitch } from './AnalyticsOverlaySwitch'
+import { JourneyAnalyticsCard } from './JourneyAnalyticsCard'
+import { NewStepButton } from './NewStepButton'
 import { CustomEdge } from './edges/CustomEdge'
 import { StartEdge } from './edges/StartEdge'
 import { PositionMap, arrangeSteps } from './libs/arrangeSteps'
@@ -47,7 +52,7 @@ import { useCreateStep } from './libs/useCreateStep'
 import { useDeleteEdge } from './libs/useDeleteEdge'
 import { useDeleteOnKeyPress } from './libs/useDeleteOnKeyPress'
 import { useUpdateEdge } from './libs/useUpdateEdge'
-import { NewStepButton } from './NewStepButton'
+import { LinkNode } from './nodes/LinkNode'
 import { SocialPreviewNode } from './nodes/SocialPreviewNode'
 import { StepBlockNode } from './nodes/StepBlockNode'
 import { STEP_NODE_CARD_HEIGHT } from './nodes/StepBlockNode/libs/sizes'
@@ -73,9 +78,10 @@ export const GET_STEP_BLOCKS_WITH_POSITION = gql`
 
 export function JourneyFlow(): ReactElement {
   const { journey } = useJourney()
+  const { editorAnalytics } = useFlags()
   const theme = useTheme()
   const {
-    state: { steps }
+    state: { steps, activeSlide, showAnalytics }
   } = useEditor()
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance | null>(null)
@@ -90,9 +96,10 @@ export function JourneyFlow(): ReactElement {
   const { onSelectionChange } = useDeleteOnKeyPress()
   const [stepBlockPositionUpdate] = useStepBlockPositionUpdateMutation()
 
-  async function blockPositionsUpdate(positions: PositionMap): Promise<void> {
+  async function blockPositionsUpdate(): Promise<void> {
     if (journey == null || steps == null) return
-    positions = arrangeSteps(steps)
+    const positions = arrangeSteps(steps)
+
     Object.entries(positions).forEach(([id, position]) => {
       void stepBlockPositionUpdate({
         variables: {
@@ -130,7 +137,7 @@ export function JourneyFlow(): ReactElement {
         )
       ) {
         // some steps have no x or y coordinates
-        void blockPositionsUpdate(positions)
+        void blockPositionsUpdate()
       } else {
         data.blocks.forEach((block) => {
           if (
@@ -244,9 +251,9 @@ export function JourneyFlow(): ReactElement {
       const { source, sourceHandle, target } = newConnection
       setEdges((prev) => reactFlowUpdateEdge(oldEdge, newConnection, prev))
       edgeUpdateSuccessful.current = true
-      void updateEdge({ source, sourceHandle, target })
+      void updateEdge({ source, sourceHandle, target, oldEdge })
     },
-    [updateEdge, setEdges]
+    [setEdges, updateEdge]
   )
 
   const onEdgeUpdateEnd = useCallback<
@@ -266,7 +273,8 @@ export function JourneyFlow(): ReactElement {
   const nodeTypes = useMemo(
     () => ({
       StepBlock: StepBlockNode,
-      SocialPreview: SocialPreviewNode
+      SocialPreview: SocialPreviewNode,
+      Link: LinkNode
     }),
     []
   )
@@ -297,7 +305,7 @@ export function JourneyFlow(): ReactElement {
         onConnectEnd={onConnectEnd}
         onConnectStart={onConnectStart}
         onNodeDragStop={onNodeDragStop}
-        onEdgeUpdate={onEdgeUpdate}
+        onEdgeUpdate={showAnalytics === true ? undefined : onEdgeUpdate}
         onEdgeUpdateStart={onEdgeUpdateStart}
         onEdgeUpdateEnd={onEdgeUpdateEnd}
         onSelectionChange={onSelectionChange}
@@ -314,14 +322,30 @@ export function JourneyFlow(): ReactElement {
         }}
         elevateEdgesOnSelect
       >
-        <Panel position="top-right">
-          <NewStepButton />
-        </Panel>
-        <Controls showInteractive={false}>
-          <ControlButton onClick={async () => await blockPositionsUpdate({})}>
-            <ArrowRefresh6Icon />
-          </ControlButton>
-        </Controls>
+        {activeSlide === ActiveSlide.JourneyFlow && (
+          <>
+            <Panel position="top-right">
+              {showAnalytics !== true && <NewStepButton />}
+            </Panel>
+            {editorAnalytics && (
+              <Panel position="top-left">
+                <>
+                  <AnalyticsOverlaySwitch />
+                  <Fade in={showAnalytics}>
+                    <Box>
+                      <JourneyAnalyticsCard />
+                    </Box>
+                  </Fade>
+                </>
+              </Panel>
+            )}
+            <Controls showInteractive={false}>
+              <ControlButton onClick={blockPositionsUpdate}>
+                <ArrowRefresh6Icon />
+              </ControlButton>
+            </Controls>
+          </>
+        )}
         <Background color="#aaa" gap={16} />
       </ReactFlow>
     </Box>

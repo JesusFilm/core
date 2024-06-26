@@ -1,9 +1,9 @@
 import Box from '@mui/material/Box'
 import { MouseEvent, ReactElement, useEffect, useRef, useState } from 'react'
 
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { WrapperProps } from '@core/journeys/ui/BlockRenderer'
 import { ActiveFab, useEditor } from '@core/journeys/ui/EditorProvider'
+import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { QuickControls } from '../QuickControls'
 

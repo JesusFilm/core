@@ -2,8 +2,8 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render, screen } from '@testing-library/react'
 import { NodeProps, ReactFlowProvider } from 'reactflow'
 
-import { TreeBlock } from '@core/journeys/ui/block'
 import { ActiveContent, EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { TreeBlock } from '@core/journeys/ui/block'
 
 import {
   BlockFields_ButtonBlock as ButtonBlock,
@@ -172,5 +172,41 @@ describe('StepBlockNode', () => {
     expect(
       screen.getByTestId(`ActionButton-${textResponse.id}`)
     ).toBeInTheDocument()
+  })
+
+  it('should show edit step fab', () => {
+    const step: TreeBlock<StepBlock> = {
+      __typename: 'StepBlock',
+      id: 'step.id',
+      parentBlockId: null,
+      parentOrder: 0,
+      locked: false,
+      nextBlockId: null,
+      children: []
+    }
+
+    const props = {
+      id: 'step.id',
+      xPos: 0,
+      yPos: 0,
+      dragging: false
+    } as unknown as NodeProps
+
+    render(
+      <MockedProvider>
+        <ReactFlowProvider>
+          <EditorProvider
+            initialState={{
+              steps: [step],
+              selectedStep: step,
+              activeContent: ActiveContent.Canvas
+            }}
+          >
+            <StepBlockNode {...props} />
+          </EditorProvider>
+        </ReactFlowProvider>
+      </MockedProvider>
+    )
+    expect(screen.getByTestId('EditStepFab')).toBeInTheDocument()
   })
 })

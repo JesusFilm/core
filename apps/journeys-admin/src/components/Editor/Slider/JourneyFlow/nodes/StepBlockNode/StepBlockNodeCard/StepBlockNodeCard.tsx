@@ -6,16 +6,16 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import { TreeBlock } from '@core/journeys/ui/block'
 import { ActiveFab, useEditor } from '@core/journeys/ui/EditorProvider'
+import { TreeBlock } from '@core/journeys/ui/block'
 
 import {
   BlockFields_CardBlock as CardBlock,
   BlockFields_StepBlock as StepBlock
 } from '../../../../../../../../__generated__/BlockFields'
+import { StepBlockNodeIcon } from '../StepBlockNodeIcon'
 import { getCardMetadata } from '../libs/getCardMetadata'
 import { STEP_NODE_CARD_HEIGHT, STEP_NODE_CARD_WIDTH } from '../libs/sizes'
-import { StepBlockNodeIcon } from '../StepBlockNodeIcon'
 
 interface StepBlockNodeCardProps {
   step: TreeBlock<StepBlock>
@@ -27,17 +27,23 @@ export function StepBlockNodeCard({
   selected
 }: StepBlockNodeCardProps): ReactElement {
   const {
-    state: { selectedStep },
+    state: { selectedStep, showAnalytics },
     dispatch
   } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
 
   const card = step?.children[0] as TreeBlock<CardBlock> | undefined
-  const { title, subtitle, description, priorityBlock, bgImage } =
-    getCardMetadata(card)
+  const {
+    title,
+    subtitle,
+    description,
+    priorityBlock,
+    bgImage,
+    hasMultipleActions
+  } = getCardMetadata(card)
 
   function handleClick(): void {
-    if (selectedStep?.id === step?.id) {
+    if (selectedStep?.id === step?.id && showAnalytics !== true) {
       dispatch({
         type: 'SetSelectedBlockAction',
         selectedBlock: selectedStep
@@ -97,7 +103,10 @@ export function StepBlockNodeCard({
           }}
         >
           {priorityBlock != null && (
-            <StepBlockNodeIcon typename={priorityBlock.__typename} />
+            <StepBlockNodeIcon
+              typename={priorityBlock.__typename}
+              showMultiIcon={hasMultipleActions}
+            />
           )}
         </Box>
         <Box

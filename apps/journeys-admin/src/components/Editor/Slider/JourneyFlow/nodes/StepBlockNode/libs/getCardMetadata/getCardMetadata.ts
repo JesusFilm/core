@@ -1,4 +1,5 @@
 import { TreeBlock } from '@core/journeys/ui/block'
+import { isActionBlock } from '@core/journeys/ui/isActionBlock'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
 import {
@@ -6,8 +7,8 @@ import {
   BlockFields_ImageBlock as ImageBlock,
   BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../../../__generated__/BlockFields'
-import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
 import { VideoFields_video_variantLanguages } from '../../../../../../../../../__generated__/VideoFields'
+import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
 import { getBackgroundImage } from '../getBackgroundImage'
 import { getCardHeadings } from '../getCardHeadings'
 import { getPriorityBlock } from '../getPriorityBlock'
@@ -18,6 +19,7 @@ interface CardMetadata {
   description?: string
   priorityBlock?: TreeBlock
   bgImage?: string
+  hasMultipleActions?: boolean
 }
 
 function getVideoVariantLanguage(
@@ -58,6 +60,14 @@ export function getCardMetadata(
 
   const priorityBlock = getPriorityBlock(card)
 
+  const hasMultipleActions =
+    card.children
+      .flatMap((block) =>
+        block.__typename === 'RadioQuestionBlock' ? block.children : block
+      )
+      .filter((child) => card.coverBlockId !== child.id && isActionBlock(child))
+      .length > 1
+
   if (priorityBlock?.__typename === 'VideoBlock') {
     const title =
       priorityBlock.video?.title?.[0]?.value ?? priorityBlock.title ?? undefined
@@ -88,11 +98,18 @@ export function getCardMetadata(
       priorityBlock.image ??
       undefined
 
-    return { description, title, subtitle, priorityBlock, bgImage }
+    return {
+      description,
+      title,
+      subtitle,
+      priorityBlock,
+      bgImage,
+      hasMultipleActions
+    }
   } else {
     const [title, subtitle] = getCardHeadings(card.children)
     const bgImage = getBackgroundImage(card)
 
-    return { title, subtitle, priorityBlock, bgImage }
+    return { title, subtitle, priorityBlock, bgImage, hasMultipleActions }
   }
 }

@@ -22,7 +22,7 @@ const step1: TreeBlock<StepBlock> = {
   parentBlockId: null,
   parentOrder: 0,
   locked: false,
-  nextBlockId: null,
+  nextBlockId: 'step2.id',
   children: []
 }
 const step2: TreeBlock<StepBlock> = {
@@ -31,7 +31,7 @@ const step2: TreeBlock<StepBlock> = {
   parentBlockId: null,
   parentOrder: 1,
   locked: false,
-  nextBlockId: null,
+  nextBlockId: 'step3.id',
   children: []
 }
 const step3: TreeBlock<StepBlock> = {
@@ -40,7 +40,7 @@ const step3: TreeBlock<StepBlock> = {
   parentBlockId: null,
   parentOrder: 2,
   locked: false,
-  nextBlockId: null,
+  nextBlockId: 'step4.id',
   children: []
 }
 const step4: TreeBlock<StepBlock> = {
@@ -49,7 +49,7 @@ const step4: TreeBlock<StepBlock> = {
   parentBlockId: null,
   parentOrder: 3,
   locked: false,
-  nextBlockId: null,
+  nextBlockId: 'step5.id',
   children: []
 }
 const step5: TreeBlock<StepBlock> = {

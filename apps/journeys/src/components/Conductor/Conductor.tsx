@@ -6,19 +6,19 @@ import { ReactElement, useEffect } from 'react'
 import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { StepFooter } from '@core/journeys/ui/StepFooter'
+import { StepHeader } from '@core/journeys/ui/StepHeader'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useBlocks } from '@core/journeys/ui/block'
 import { getStepTheme } from '@core/journeys/ui/getStepTheme'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
-import { StepFooter } from '@core/journeys/ui/StepFooter'
-import { StepHeader } from '@core/journeys/ui/StepHeader'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeName } from '@core/shared/ui/themes'
 
-import { VisitorUpdateInput } from '../../../__generated__/globalTypes'
 import { JourneyViewEventCreate } from '../../../__generated__/JourneyViewEventCreate'
 import { StepFields } from '../../../__generated__/StepFields'
+import { VisitorUpdateInput } from '../../../__generated__/globalTypes'
 
 import { DynamicCardList } from './DynamicCardList'
 import { NavigationButton } from './NavigationButton'
@@ -60,6 +60,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     JOURNEY_VISITOR_UPDATE
   )
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if ((variant === 'default' || variant === 'embed') && journey != null) {
       const id = uuidv4()
@@ -112,12 +113,13 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         }
       })
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [journey])
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     setTreeBlocks(blocks)
-  }, [setTreeBlocks, blocks])
+    // multiple re-renders causes block history to be incorrect so do not pass in 'blocks' variable to deps array
+  }, [setTreeBlocks])
 
   const mobileNotchStyling: SxProps = {
     width: {

@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import {
   EdgeLabelRenderer,
   EdgeProps,
@@ -8,6 +8,7 @@ import {
   useOnSelectionChange
 } from 'reactflow'
 
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import X3Icon from '@core/shared/ui/icons/X3'
 
 import { useDeleteEdge } from '../../libs/useDeleteEdge'
@@ -23,10 +24,14 @@ export function CustomEdge({
   targetPosition,
   source,
   sourceHandleId,
-  style = {}
-}: EdgeProps): ReactElement {
+  style = {},
+  isSelected = false // for testing use
+}: EdgeProps & { isSelected?: boolean }): ReactElement {
+  const {
+    state: { showAnalytics }
+  } = useEditor()
   const deleteEdge = useDeleteEdge()
-  const [selected, setSelected] = useState(false)
+  const [selected, setSelected] = useState(isSelected)
   const [edgePath, labelX, labelY] = getBezierPath({
     sourceX,
     sourceY,
@@ -36,12 +41,20 @@ export function CustomEdge({
     targetPosition
   })
 
+  useEffect(() => {
+    if (showAnalytics === true) {
+      setSelected(false)
+    }
+  }, [showAnalytics])
+
   useOnSelectionChange({
-    onChange: (selected) =>
-      setSelected(selected.edges.find((edge) => edge.id === id) != null)
+    onChange: ({ edges }) => {
+      if (showAnalytics === true) return
+      setSelected(edges.find((edge) => edge.id === id) != null)
+    }
   })
 
-  const onEdgeClick = (): void => {
+  const handleEdgeDelete = (): void => {
     void deleteEdge({
       source,
       sourceHandle: sourceHandleId
@@ -61,7 +74,7 @@ export function CustomEdge({
             }}
           >
             <IconButton
-              onClick={onEdgeClick}
+              onClick={handleEdgeDelete}
               sx={{
                 borderRadius: '100%',
                 backgroundColor: 'primary.main',

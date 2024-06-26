@@ -1,3 +1,5 @@
+import { time } from 'console'
+
 import { expect } from '@playwright/test'
 import dayjs from 'dayjs'
 import { Page } from 'playwright-core'
@@ -6,6 +8,7 @@ import testData from '../utils/testData.json'
 
 let randomNumber = ''
 const thirtySecondsTimeout = 30000
+const fifteenSecondsTimeout = 30000
 export class TeamsPage {
   readonly page: Page
   constructor(page: Page) {
@@ -133,8 +136,10 @@ export class TeamsPage {
 
   async enterTeamRename() {
     this.renameTeamName = testData.teams.teamRename + randomNumber
-    await this.page.locator('input#title').clear()
-    await this.page.locator('input#title').fill(this.renameTeamName)
+    await this.page.getByLabel('Team Name', { exact: true }).clear()
+    await this.page
+      .getByLabel('Team Name', { exact: true })
+      .fill(this.renameTeamName)
   }
 
   async clickSaveBtn() {
@@ -169,7 +174,7 @@ export class TeamsPage {
 
   async verifyMemberAddedInMemberList() {
     await expect(
-      this.page.locator('li[data-testid*="UserTeamInviteListItem"] p', {
+      this.page.locator('div[data-testid*="UserTeamInviteListItem"] p', {
         hasText: this.memberEmail
       })
     ).toBeVisible()

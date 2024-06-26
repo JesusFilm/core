@@ -11,10 +11,10 @@ import {
   ActiveSlide,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
-import { getStepTheme } from '@core/journeys/ui/getStepTheme'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { StepFooter } from '@core/journeys/ui/StepFooter'
+import { getStepTheme } from '@core/journeys/ui/getStepTheme'
+import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeName } from '@core/shared/ui/themes'
 
@@ -26,6 +26,7 @@ import { CardWrapper } from './CardWrapper'
 import { FormWrapper } from './FormWrapper'
 import { InlineEditWrapper } from './InlineEditWrapper'
 import { SelectableWrapper } from './SelectableWrapper'
+import { VideoWrapper } from './VideoWrapper'
 import {
   CARD_HEIGHT,
   CARD_WIDTH,
@@ -33,7 +34,6 @@ import {
   calculateScaledHeight,
   calculateScaledMargin
 } from './utils/calculateDimensions'
-import { VideoWrapper } from './VideoWrapper'
 
 export function Canvas(): ReactElement {
   const frameRef = useRef<HTMLIFrameElement>(null)
@@ -45,7 +45,8 @@ export function Canvas(): ReactElement {
       selectedStep,
       selectedBlock,
       activeSlide,
-      activeCanvasDetailsDrawer
+      activeCanvasDetailsDrawer,
+      showAnalytics
     },
     dispatch
   } = useEditor()
@@ -65,6 +66,7 @@ export function Canvas(): ReactElement {
   }, [])
 
   function handleFooterClick(): void {
+    if (showAnalytics === true) return
     dispatch({
       type: 'SetActiveCanvasDetailsDrawerAction',
       activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer
@@ -91,6 +93,7 @@ export function Canvas(): ReactElement {
   }
 
   function handleSelectCard(): void {
+    if (showAnalytics === true) return
     const iframeDocument =
       frameRef.current?.contentDocument ??
       frameRef.current?.contentWindow?.document
@@ -292,15 +295,17 @@ export function Canvas(): ReactElement {
                 </ThemeProvider>
               </FramePortal>
             </Box>
-            <Box
-              sx={{
-                mt: 4,
-                alignSelf: 'end',
-                transform: `scale(${scale})`
-              }}
-            >
-              <Fab variant="canvas" />
-            </Box>
+            {showAnalytics !== true && (
+              <Box
+                sx={{
+                  mt: 4,
+                  alignSelf: 'end',
+                  transform: `scale(${scale})`
+                }}
+              >
+                <Fab variant="canvas" />
+              </Box>
+            )}
           </Box>
         </Stack>
       )}

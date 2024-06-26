@@ -4,14 +4,14 @@ import { ReactElement } from 'react'
 import { NodeProps } from 'reactflow'
 
 import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
+import { filterActionBlocks } from '@core/journeys/ui/filterActionBlocks'
 
-import { filterActionBlocks } from '../../libs/filterActionBlocks'
 import { BaseNode } from '../BaseNode'
 
 import { ActionButton } from './ActionButton'
-import { STEP_NODE_WIDTH } from './libs/sizes'
 import { StepBlockNodeCard } from './StepBlockNodeCard'
 import { StepBlockNodeMenu } from './StepBlockNodeMenu'
+import { STEP_NODE_WIDTH } from './libs/sizes'
 
 export function StepBlockNode({
   id,
@@ -20,7 +20,7 @@ export function StepBlockNode({
   dragging
 }: NodeProps): ReactElement {
   const {
-    state: { steps, selectedStep, activeContent }
+    state: { steps, selectedStep, activeContent, showAnalytics }
   } = useEditor()
   const step = steps?.find((step) => step.id === id)
   const actionBlocks = filterActionBlocks(step)
@@ -30,14 +30,17 @@ export function StepBlockNode({
 
   return step != null ? (
     <>
-      <StepBlockNodeMenu
-        in={isSelected}
-        className="fab"
-        step={step}
-        xPos={xPos}
-        yPos={yPos}
-      />
+      {showAnalytics !== true && (
+        <StepBlockNodeMenu
+          in={isSelected}
+          className="fab"
+          step={step}
+          xPos={xPos}
+          yPos={yPos}
+        />
+      )}
       <Stack
+        data-testid={`StepBlockNode-${step.id}`}
         direction="column"
         sx={{
           background: (theme) =>
@@ -53,7 +56,7 @@ export function StepBlockNode({
       >
         <BaseNode
           id={step.id}
-          isTargetConnectable
+          targetHandle={showAnalytics === true ? 'disabled' : 'show'}
           selected={isSelected}
           isSourceConnected={step.nextBlockId != null}
           dragging={dragging}

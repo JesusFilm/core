@@ -4,8 +4,8 @@ import NoSsr from '@mui/material/NoSsr'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useRouter } from 'next/router'
 import { Trans, useTranslation } from 'next-i18next'
+import { useRouter } from 'next/router'
 import {
   ComponentProps,
   ReactElement,
@@ -21,8 +21,8 @@ import { GetLanguages_languages } from '../../../../__generated__/GetLanguages'
 import { setBeaconPageViewed } from '../../../libs/setBeaconPageViewed'
 import { useLanguagesQuery } from '../../../libs/useLanguagesQuery'
 
-import { convertLanguagesToOptions } from './convertLanguagesToOptions'
 import { LanguagesFilterPopper } from './LanguagesFilterPopper/LanguagesFilterPopper'
+import { convertLanguagesToOptions } from './convertLanguagesToOptions'
 
 interface LocalTypographyProps extends ComponentProps<typeof Typography> {}
 
@@ -189,7 +189,8 @@ export function HeaderAndLanguageFilter({
         '13169', // Thai
         '6464', // Hindi
         '12876', // Ukrainian
-        '53441' // Arabic, Egyptian Modern Standard
+        '53441', // Arabic, Egyptian Modern Standard
+        '1942' // Türkçe, Turkish
       ]
     }
   })

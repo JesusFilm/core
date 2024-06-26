@@ -1,7 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { ReactFlowProvider } from 'reactflow'
 
+import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
 
 import {
@@ -10,7 +11,6 @@ import {
   BlockFields_RadioOptionBlock as RadioOptionBlock,
   BlockFields_SignUpBlock as SignUpBlock,
   BlockFields_StepBlock as StepBlock,
-  BlockFields_TextResponseBlock as TextResponseBlock,
   BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../../__generated__/BlockFields'
 import { mockReactFlow } from '../../../../../../../../test/mockReactFlow'
@@ -121,22 +121,6 @@ describe('ActionButton', () => {
     expect(screen.getByText('Subscribe')).toBeInTheDocument()
   })
 
-  it('should render label for TextResponseBlock', () => {
-    const block = {
-      __typename: 'TextResponseBlock'
-    } as unknown as TreeBlock<TextResponseBlock>
-
-    render(
-      <MockedProvider>
-        <ReactFlowProvider>
-          <ActionButton block={block} />
-        </ReactFlowProvider>
-      </MockedProvider>
-    )
-
-    expect(screen.getByText('Feedback')).toBeInTheDocument()
-  })
-
   it('should render video label for VideoBlock', () => {
     const block = {
       __typename: 'VideoBlock',
@@ -205,56 +189,6 @@ describe('ActionButton', () => {
     expect(screen.getByText('Default Next Step →')).toBeInTheDocument()
   })
 
-  it('should render icon and tooltip for link action', async () => {
-    const block = {
-      __typename: 'ButtonBlock',
-      action: {
-        __typename: 'LinkAction',
-        url: 'https://example.com'
-      }
-    } as unknown as TreeBlock<ButtonBlock>
-
-    render(
-      <MockedProvider>
-        <ReactFlowProvider>
-          <ActionButton block={block} />
-        </ReactFlowProvider>
-      </MockedProvider>
-    )
-
-    expect(screen.getByTestId('LinkIcon')).toBeInTheDocument()
-    fireEvent.mouseOver(screen.getByTestId('LinkIcon'))
-    await waitFor(() => {
-      expect(screen.getByRole('tooltip')).toHaveTextContent(
-        'https://example.com'
-      )
-    })
-  })
-
-  it('should render icon and tooltip for email action', async () => {
-    const block = {
-      __typename: 'ButtonBlock',
-      action: {
-        __typename: 'EmailAction',
-        email: 'example@email.com'
-      }
-    } as unknown as TreeBlock<ButtonBlock>
-
-    render(
-      <MockedProvider>
-        <ReactFlowProvider>
-          <ActionButton block={block} />
-        </ReactFlowProvider>
-      </MockedProvider>
-    )
-
-    expect(screen.getByTestId('EmailIcon')).toBeInTheDocument()
-    fireEvent.mouseOver(screen.getByTestId('EmailIcon'))
-    await waitFor(() => {
-      expect(screen.getByRole('tooltip')).toHaveTextContent('example@email.com')
-    })
-  })
-
   it('should hide hover arrow if connected to next card', () => {
     const block = {
       __typename: 'ButtonBlock',
@@ -273,5 +207,29 @@ describe('ActionButton', () => {
     )
 
     expect(screen.getByTestId('BaseNodeConnectionArrowIcon')).not.toBeVisible()
+  })
+
+  it('should disable source handle in analytics mode', () => {
+    const block = {
+      __typename: 'ButtonBlock'
+    } as unknown as TreeBlock<ButtonBlock>
+
+    const initialState = {
+      showAnalytics: true
+    } as unknown as EditorState
+
+    render(
+      <MockedProvider>
+        <ReactFlowProvider>
+          <EditorProvider initialState={initialState}>
+            <ActionButton block={block} />
+          </EditorProvider>
+        </ReactFlowProvider>
+      </MockedProvider>
+    )
+
+    expect(
+      screen.getByTestId('BaseNodeRightHandle-disabled')
+    ).toBeInTheDocument()
   })
 })

@@ -53,6 +53,30 @@ const nextConfig = {
       }
     ]
   },
+  async rewrites() {
+    return [
+      {
+        source: '/share/:slug',
+        destination: `${process.env.PLAUSIBLE_URL}/share/:slug`
+      },
+      {
+        source: '/js/:slug',
+        destination: `${process.env.PLAUSIBLE_URL}/js/:slug`
+      },
+      {
+        source: '/css/:slug',
+        destination: `${process.env.PLAUSIBLE_URL}/css/:slug`
+      },
+      {
+        source: '/api/stats/:path*',
+        destination: `${process.env.PLAUSIBLE_URL}/api/stats/:path*`
+      },
+      {
+        source: '/favicon/sources/:slug',
+        destination: `${process.env.PLAUSIBLE_URL}/favicon/sources/:slug`
+      }
+    ]
+  },
   productionBrowserSourceMaps: true,
   typescript: {
     // handled by github actions
