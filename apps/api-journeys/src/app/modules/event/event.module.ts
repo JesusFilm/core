@@ -6,8 +6,7 @@ import { BlockService } from '../block/block.service'
 import { VisitorService } from '../visitor/visitor.service'
 
 import { CacheModule } from '@nestjs/cache-manager'
-import { IntegrationGrothSpacesService } from '../integration/growthSpaces/growthSpaces.service'
-import { IntegrationService } from '../integration/integration.service'
+import { IntegrationGrowthSpacesService } from '../integration/growthSpaces/growthSpaces.service'
 import {
   ButtonClickEventResolver,
   ChatOpenEventResolver
@@ -35,8 +34,8 @@ import {
 
 @Module({
   imports: [
-    BullModule.registerQueue({ name: 'api-journeys-events-email' }),
-    CacheModule.register()
+    CacheModule.register(),
+    BullModule.registerQueue({ name: 'api-journeys-events-email' })
   ],
   providers: [
     BlockService,
@@ -44,8 +43,7 @@ import {
     ChatOpenEventResolver,
     EventService,
     EventResolver,
-    IntegrationGrothSpacesService,
-    IntegrationService,
+    IntegrationGrowthSpacesService,
     JourneyViewEventResolver,
     PrismaService,
     RadioQuestionSubmissionEventResolver,

@@ -1,13 +1,17 @@
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 import { CacheModule } from '@nestjs/cache-manager'
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import fetch, { Response } from 'node-fetch'
-import { GrowthSpacesRoute } from '../../../__generated__/graphql'
+import {
+  IntegrationGrowthSpacesRoute,
+  UserTeamRole
+} from '../../../__generated__/graphql'
+import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
 import { PrismaService } from '../../../lib/prisma.service'
-import { IntegrationService } from '../integration.service'
 import { IntegrationGrowthSpacesResolver } from './growthSpaces.resolver'
-import { IntegrationGrothSpacesService } from './growthSpaces.service'
-import { Integration } from '.prisma/api-journeys-client'
+import { IntegrationGrowthSpacesService } from './growthSpaces.service'
+import { Integration, Team } from '.prisma/api-journeys-client'
 
 jest.mock('node-fetch', () => {
   const originalModule = jest.requireActual('node-fetch')
@@ -27,6 +31,7 @@ const integration: Integration = {
   teamId: 'teamId',
   type: 'growthSpaces',
   accessId: 'accessId',
+  accessSecretPart: 'plaint',
   // decrypted value for accessSecretCipherText should be "plaintext"
   accessSecretCipherText: 'saeRCBy44pMT',
   accessSecretIv: 'dx+2iBr7yYvilLIC',
@@ -36,32 +41,39 @@ const integration: Integration = {
 describe('IntegrationGrowthSpaceResolver', () => {
   const OLD_ENV = process.env
 
-  let growthSpacesService: IntegrationGrothSpacesService,
+  let integrationGrowthSpacesService: IntegrationGrowthSpacesService,
     prismaService: DeepMockProxy<PrismaService>,
-    integrationService: IntegrationService,
-    resolver: IntegrationGrowthSpacesResolver
+    resolver: IntegrationGrowthSpacesResolver,
+    ability: AppAbility
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [CacheModule.register()],
+      imports: [
+        CacheModule.register(),
+        CaslAuthModule.register(AppCaslFactory)
+      ],
       providers: [
         IntegrationGrowthSpacesResolver,
-        IntegrationService,
-        IntegrationGrothSpacesService,
+        IntegrationGrowthSpacesService,
         {
           provide: PrismaService,
           useValue: mockDeep<PrismaService>()
         }
       ]
     }).compile()
-    integrationService = module.get<IntegrationService>(IntegrationService)
-    growthSpacesService = await module.resolve(IntegrationGrothSpacesService)
+    integrationGrowthSpacesService = await module.resolve(
+      IntegrationGrowthSpacesService
+    )
     resolver = await module.resolve(IntegrationGrowthSpacesResolver)
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
+    ability = await new AppCaslFactory().createAbility({ id: 'userId' })
 
     process.env = { ...OLD_ENV }
+    jest
+      .spyOn(prismaService, '$transaction')
+      .mockImplementation((callback) => callback(prismaService))
   })
 
   afterEach(() => {
@@ -73,6 +85,14 @@ describe('IntegrationGrowthSpaceResolver', () => {
     it('should create a growth spaces integration', async () => {
       process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET =
         'dontbefooledbythiscryptokeyitisactuallyfake='
+
+      prismaService.team.findUnique.mockResolvedValue({
+        id: 'teamId',
+        userTeams: [
+          { id: 'userTeamId', userId: 'userId', role: UserTeamRole.manager }
+        ]
+      } as unknown as Team)
+
       const data = 'ok'
       mockFetch.mockResolvedValueOnce({
         ok: true,
@@ -81,10 +101,14 @@ describe('IntegrationGrowthSpaceResolver', () => {
       } as unknown as Response)
 
       prismaService.integration.create.mockResolvedValue(integration)
-      await resolver.integrationGrowthSpacesCreate('teamId', {
-        accessId: 'accessId',
-        accessSecret: 'accessSecret'
-      })
+      await resolver.integrationGrowthSpacesCreate(
+        {
+          accessId: 'accessId',
+          accessSecret: 'accessSecret',
+          teamId: 'teamId'
+        },
+        ability
+      )
       expect(prismaService.integration.create).toHaveBeenCalledWith({
         data: {
           accessId: 'accessId',
@@ -101,6 +125,13 @@ describe('IntegrationGrowthSpaceResolver', () => {
       process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET =
         'dontbefooledbythiskryptokeyitisactuallyfake='
 
+      prismaService.team.findUnique.mockResolvedValue({
+        id: 'teamId',
+        userTeams: [
+          { id: 'userTeamId', userId: 'userId', role: UserTeamRole.member }
+        ]
+      } as unknown as Team)
+
       mockFetch.mockResolvedValue({
         ok: false,
         status: 404,
@@ -108,13 +139,53 @@ describe('IntegrationGrowthSpaceResolver', () => {
       } as unknown as Response)
 
       await expect(
-        resolver.integrationGrowthSpacesCreate('teamId', {
-          accessId: 'accessId',
-          accessSecret: 'accessSecret'
-        })
+        resolver.integrationGrowthSpacesCreate(
+          {
+            accessId: 'accessId',
+            accessSecret: 'accessSecret',
+            teamId: 'teamId'
+          },
+          ability
+        )
       ).rejects.toThrow(
         'incorrect access Id and access secret for Growth Space integration'
       )
+    })
+
+    it('should throw error if team not found', async () => {
+      await expect(
+        resolver.integrationGrowthSpacesCreate(
+          {
+            accessId: 'accessId',
+            accessSecret: 'accessSecret',
+            teamId: 'teamId'
+          },
+          ability
+        )
+      ).rejects.toThrow('team not found')
+    })
+
+    it('should throw error if user is not in team', async () => {
+      prismaService.team.findUnique.mockResolvedValue({
+        userTeams: [
+          {
+            id: 'userTeamId',
+            userId: 'user id not in team',
+            role: UserTeamRole.member,
+            teamId: 'teamId'
+          }
+        ]
+      } as unknown as Team)
+      await expect(
+        resolver.integrationGrowthSpacesCreate(
+          {
+            accessId: 'accessId',
+            accessSecret: 'accessSecret',
+            teamId: 'teamId'
+          },
+          ability
+        )
+      ).rejects.toThrow('user is not allowed to create integration')
     })
 
     it('should throw error if encryption fails', async () => {
@@ -125,11 +196,22 @@ describe('IntegrationGrowthSpaceResolver', () => {
         json: async () => await Promise.resolve(data)
       } as unknown as Response)
 
+      prismaService.team.findUnique.mockResolvedValue({
+        id: 'teamId',
+        userTeams: [
+          { id: 'userTeamId', userId: 'userId', role: UserTeamRole.manager }
+        ]
+      } as unknown as Team)
+
       await expect(
-        resolver.integrationGrowthSpacesCreate('teamId', {
-          accessId: 'accessId',
-          accessSecret: 'accessSecret'
-        })
+        resolver.integrationGrowthSpacesCreate(
+          {
+            accessId: 'accessId',
+            accessSecret: 'accessSecret',
+            teamId: 'teamId'
+          },
+          ability
+        )
       ).rejects.toThrow('no crypto key')
     })
   })
@@ -142,11 +224,25 @@ describe('IntegrationGrowthSpaceResolver', () => {
         json: async () => await Promise.resolve()
       } as unknown as Response)
 
+      prismaService.integration.findUnique.mockResolvedValue({
+        id: 'integrationId',
+        team: {
+          id: 'teamId',
+          userTeams: [
+            { id: 'userTeamId', userId: 'userId', role: UserTeamRole.manager }
+          ]
+        }
+      } as unknown as Integration)
+
       await expect(
-        resolver.integrationGrowthSpacesUpdate('integrationId', {
-          accessId: 'accessId',
-          accessSecret: 'accessSecret'
-        })
+        resolver.integrationGrowthSpacesUpdate(
+          'integrationId',
+          {
+            accessId: 'accessId',
+            accessSecret: 'accessSecret'
+          },
+          ability
+        )
       ).rejects.toThrow(
         'incorrect access Id and access secret for Growth Space integration'
       )
@@ -159,12 +255,65 @@ describe('IntegrationGrowthSpaceResolver', () => {
         json: async () => await Promise.resolve()
       } as unknown as Response)
 
+      prismaService.integration.findUnique.mockResolvedValue({
+        id: 'integrationId',
+        team: {
+          id: 'teamId',
+          userTeams: [
+            { id: 'userTeamId', userId: 'userId', role: UserTeamRole.manager }
+          ]
+        }
+      } as unknown as Integration)
+
       await expect(
-        resolver.integrationGrowthSpacesUpdate('integrationId', {
-          accessId: 'accessId',
-          accessSecret: 'accessSecret'
-        })
+        resolver.integrationGrowthSpacesUpdate(
+          'integrationId',
+          {
+            accessId: 'accessId',
+            accessSecret: 'accessSecret'
+          },
+          ability
+        )
       ).rejects.toThrow('no crypto key')
+    })
+
+    it('should throw error if integration can not be found', async () => {
+      await expect(
+        resolver.integrationGrowthSpacesUpdate(
+          'integrationId',
+          {
+            accessId: 'accessId',
+            accessSecret: 'accessSecret'
+          },
+          ability
+        )
+      ).rejects.toThrow('integration not found')
+    })
+
+    it('should throw error if user is not in the team', async () => {
+      prismaService.integration.findUnique.mockResolvedValue({
+        id: 'integrationId',
+        team: {
+          id: 'teamId',
+          userTeams: [
+            {
+              id: 'userTeamId',
+              userId: 'user id not in the team',
+              role: UserTeamRole.manager
+            }
+          ]
+        }
+      } as unknown as Integration)
+      await expect(
+        resolver.integrationGrowthSpacesUpdate(
+          'integrationId',
+          {
+            accessId: 'accessId',
+            accessSecret: 'accessSecret'
+          },
+          ability
+        )
+      ).rejects.toThrow('user is not allowed to update integration')
     })
 
     it('should update integration', async () => {
@@ -176,10 +325,24 @@ describe('IntegrationGrowthSpaceResolver', () => {
         json: async () => await Promise.resolve()
       } as unknown as Response)
 
-      await resolver.integrationGrowthSpacesUpdate('integrationId', {
-        accessId: 'accessId',
-        accessSecret: 'accessSecret'
-      })
+      prismaService.integration.findUnique.mockResolvedValue({
+        id: 'integrationId',
+        team: {
+          id: 'teamId',
+          userTeams: [
+            { id: 'userTeamId', userId: 'userId', role: UserTeamRole.manager }
+          ]
+        }
+      } as unknown as Integration)
+
+      await resolver.integrationGrowthSpacesUpdate(
+        'integrationId',
+        {
+          accessId: 'accessId',
+          accessSecret: 'accessSecret'
+        },
+        ability
+      )
 
       expect(prismaService.integration.update).toHaveBeenCalledWith({
         data: {
@@ -224,8 +387,8 @@ describe('IntegrationGrowthSpaceResolver', () => {
       process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET =
         'dontbefooledbythiskryptokeyitisactuallyfake='
 
-      const data: GrowthSpacesRoute[] = [
-        { __typename: 'GrowthSpacesRoute', id: '1', name: 'route' }
+      const data: IntegrationGrowthSpacesRoute[] = [
+        { __typename: 'IntegrationGrowthSpacesRoute', id: '1', name: 'route' }
       ]
 
       mockFetch.mockResolvedValue({
