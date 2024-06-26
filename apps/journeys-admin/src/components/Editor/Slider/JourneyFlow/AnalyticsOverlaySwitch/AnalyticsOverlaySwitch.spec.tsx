@@ -45,7 +45,7 @@ describe('AnalyticsOverlaySwitch', () => {
       totalVisitors: 10,
       chatsStarted: 5,
       linksVisited: 0,
-      referrers: expect.any(Array),
+      referrers: { nodes: expect.any(Array), edges: expect.any(Array) },
       stepsStats: expect.any(Array),
       stepMap: {},
       blockMap: {},
