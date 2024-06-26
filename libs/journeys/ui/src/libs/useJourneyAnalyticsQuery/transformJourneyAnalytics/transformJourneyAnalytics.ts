@@ -1,5 +1,6 @@
 import replace from 'lodash/replace'
 
+import { messagePlatforms } from '../../../components/Button/utils/findMessagePlatform'
 import { JourneyPlausibleEvents, reverseKeyify } from '../../plausibleHelpers'
 import {
   GetJourneyAnalytics,
@@ -7,6 +8,7 @@ import {
   GetJourneyAnalytics_journeyStepsActions as JourneyStepsAction,
   GetJourneyAnalytics_journeyVisitorsPageExits as JourneyVisitorsPageExit
 } from '../__generated__/GetJourneyAnalytics'
+import { transformReferrers } from '../transformReferrers'
 import {
   type JourneyAnalytics,
   type StepStat
@@ -100,11 +102,13 @@ export function transformJourneyAnalytics(
     }
   })
 
+  const referrers = transformReferrers(journeyReferrer)
+
   return {
     totalVisitors: journeyAggregateVisitors.visitors?.value ?? 0,
     chatsStarted,
     linksVisited,
-    referrers: journeyReferrer,
+    referrers,
     stepsStats,
     stepMap,
     blockMap,
@@ -155,14 +159,12 @@ function getLinkClicks(journeyEvents: PlausibleEvent[]): {
 
   journeyEvents.forEach((plausibleEvent) => {
     const { event, target, events } = plausibleEvent
-    const isChatEvent = event === 'chatButtonClick'
-    const isLinkEvent =
-      event === 'buttonClick' && target != null && target.includes('link')
-
-    if (isChatEvent) {
-      chatsStarted += events
-    } else if (isLinkEvent) {
-      linksVisited += events
+    if (target != null && target.includes('link')) {
+      if (messagePlatforms.find(({ url }) => target.includes(url))) {
+        chatsStarted += events
+      } else {
+        linksVisited += events
+      }
     }
   })
 
