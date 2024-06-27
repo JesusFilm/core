@@ -14,7 +14,7 @@ import { UseGuards } from '@nestjs/common'
 import { Action, AppAbility } from '../../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../../lib/casl/caslGuard'
 import { IntegrationGrowthSpacesService } from './growthSpaces.service'
-import { Integration } from '.prisma/api-journeys-client'
+import { Integration, Team } from '.prisma/api-journeys-client'
 
 @Resolver('IntegrationGrowthSpaces')
 export class IntegrationGrowthSpacesResolver {
@@ -76,5 +76,13 @@ export class IntegrationGrowthSpacesResolver {
     @Parent() integration: Integration
   ): Promise<IntegrationGrowthSpacesRoute[]> {
     return await this.integrationGrowthSpacesService.routes(integration)
+  }
+
+  @ResolveField()
+  async team(@Parent() integration: Integration): Promise<Team> {
+    const res = await this.prismaService.integration
+      .findUnique({ where: { id: integration.id } })
+      .team()
+    return res as Team
   }
 }
