@@ -139,6 +139,7 @@ const iconNames: IconName[] = [
   'MessageChat1',
   'MessageCircle',
   'MessageText1',
+  'MessageText2',
   'MessageTyping',
   'Minimise1',
   'Minimise2',

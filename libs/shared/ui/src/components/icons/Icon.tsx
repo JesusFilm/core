@@ -131,6 +131,7 @@ import Menu1 from './Menu1'
 import MessageChat1 from './MessageChat1'
 import MessageCircle from './MessageCircle'
 import MessageText1 from './MessageText1'
+import MessageText2 from './MessageText2'
 import MessageTyping from './MessageTyping'
 import Minimise1 from './Minimise1'
 import Minimise2 from './Minimise2'
@@ -330,6 +331,7 @@ export type IconName =
   | 'MessageChat1'
   | 'MessageCircle'
   | 'MessageText1'
+  | 'MessageText2'
   | 'MessageTyping'
   | 'Minimise1'
   | 'Minimise2'
@@ -532,6 +534,7 @@ const iconComponents: IconComponents = {
   MessageChat1,
   MessageCircle,
   MessageText1,
+  MessageText2,
   MessageTyping,
   Minimise1,
   Minimise2,
