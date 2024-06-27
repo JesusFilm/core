@@ -7,7 +7,7 @@ import {
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
-import { GrowthSpacesSettings } from '../../../../src/components/GrowthSpacesSettings'
+import { GrowthSpacesIntegrationDetails } from '../../../../src/components/GrowthSpaces'
 import { PageWrapper } from '../../../../src/components/PageWrapper'
 import { initAndAuthApp } from '../../../../src/libs/initAndAuthApp'
 
@@ -19,7 +19,7 @@ function IntegrationPage(): ReactElement {
     <>
       <NextSeo title={t('Growth Spaces')} />
       <PageWrapper title={t('Growth Spaces')} user={user} backHrefHistory>
-        <GrowthSpacesSettings />
+        <GrowthSpacesIntegrationDetails />
       </PageWrapper>
     </>
   )
