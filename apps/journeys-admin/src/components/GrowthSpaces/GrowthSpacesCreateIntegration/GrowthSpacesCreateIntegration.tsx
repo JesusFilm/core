@@ -4,7 +4,6 @@ import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { IntegrationGrowthSpacesCreate } from '../../../../__generated__/IntegrationGrowthSpacesCreate'
-import { useTeam } from '../../Team/TeamProvider'
 import { GrowthSpacesSettings } from '../GrowthSpacesSettings'
 
 export const INTEGRATION_GROWTH_SPACES_CREATE = gql`
@@ -17,10 +16,9 @@ export const INTEGRATION_GROWTH_SPACES_CREATE = gql`
 
 export function GrowthSpacesCreateIntegration(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { activeTeam } = useTeam()
   const { enqueueSnackbar } = useSnackbar()
   const router = useRouter()
-
+  const teamId = router.query.teamId
   const [accessId, setAccessId] = useState<string | undefined>()
   const [accessSecret, setAccessSecret] = useState<string | undefined>()
 
@@ -28,23 +26,24 @@ export function GrowthSpacesCreateIntegration(): ReactElement {
     useMutation<IntegrationGrowthSpacesCreate>(INTEGRATION_GROWTH_SPACES_CREATE)
 
   async function handleClick(): Promise<void> {
-    if (activeTeam == null) return
+    if (teamId == null) return
     try {
       const { data } = await integrationGrowthSpacesCreate({
         variables: {
           input: {
             accessId,
             accessSecret,
-            teamId: activeTeam.id
+            teamId
           }
         }
       })
       if (data?.integrationGrowthSpacesCreate != null) {
         enqueueSnackbar(t('Growth Spaces settings saved'), {
-          variant: 'success'
+          variant: 'success',
+          preventDuplicate: true
         })
         await router.push(
-          `/teams/${activeTeam.id}/integrations/${data.integrationGrowthSpacesCreate.id}`
+          `/teams/${teamId}/integrations/${data.integrationGrowthSpacesCreate.id}`
         )
       }
     } catch (error) {
@@ -73,8 +72,8 @@ export function GrowthSpacesCreateIntegration(): ReactElement {
     <GrowthSpacesSettings
       accessId={accessId}
       accessSecret={accessSecret}
-      setAccessId={setAccessId}
-      setAccessSecret={setAccessSecret}
+      setAccessId={(value) => setAccessId(value)}
+      setAccessSecret={(value) => setAccessSecret(value)}
       disabled={loading}
       onClick={handleClick}
     />

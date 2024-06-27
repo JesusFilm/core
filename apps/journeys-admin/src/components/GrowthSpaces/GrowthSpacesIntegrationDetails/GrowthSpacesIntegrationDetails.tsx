@@ -76,7 +76,8 @@ export function GrowthSpacesIntegrationDetails(): ReactElement {
       })
       if (data?.integrationGrowthSpacesUpdate != null) {
         enqueueSnackbar(t('Growth Spaces settings saved'), {
-          variant: 'success'
+          variant: 'success',
+          preventDuplicate: true
         })
       }
     } catch (error) {

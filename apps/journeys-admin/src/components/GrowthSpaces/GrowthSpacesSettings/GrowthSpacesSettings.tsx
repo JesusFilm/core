@@ -3,6 +3,7 @@ import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
 import { ConfigField } from './ConfigField'
 
 interface GrowthSpacesSettingsProps {
@@ -24,6 +25,7 @@ export function GrowthSpacesSettings({
   onClick,
   onDelete: handleDelete
 }: GrowthSpacesSettingsProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   return (
     <Box
       sx={{
@@ -40,7 +42,7 @@ export function GrowthSpacesSettings({
         backgroundColor: 'background.paper'
       }}
     >
-      <Typography variant="h5">App Settings</Typography>
+      <Typography variant="h5">{t('App Settings')}</Typography>
       <ConfigField
         label="Access ID"
         value={accessId}
@@ -57,15 +59,17 @@ export function GrowthSpacesSettings({
         justifyContent="flex-end"
         sx={{ width: '40%', alignSelf: 'flex-end' }}
       >
-        <Button
-          onClick={handleDelete}
-          disabled={disabled}
-          sx={{
-            width: '50%'
-          }}
-        >
-          Remove
-        </Button>
+        {handleDelete != null && (
+          <Button
+            onClick={handleDelete}
+            disabled={disabled}
+            sx={{
+              width: '50%'
+            }}
+          >
+            Remove
+          </Button>
+        )}
         <Button
           variant="contained"
           onClick={onClick}
