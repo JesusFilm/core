@@ -230,7 +230,6 @@ model Integration {
   accessSecretTag        String?
   team                   Team            @relation(fields: [teamId], references: [id], onDelete: Cascade)
 
-  @@unique([accessId, accessSecretCipherText])
   @@index([teamId])
 }
 
