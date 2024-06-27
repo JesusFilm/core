@@ -1,5 +1,5 @@
 import { Args, Mutation, Query, ResolveField, Resolver } from '@nestjs/graphql'
-import { IntegrationInput, IntegrationType } from '../../__generated__/graphql'
+import { IntegrationType } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { subject } from '@casl/ability'
@@ -41,11 +41,11 @@ export class IntegrationResolver {
   @Mutation()
   @UseGuards(AppCaslGuard)
   async integrationDelete(
-    @Args('input') input: IntegrationInput,
+    @Args('id') id: string,
     @CaslAbility() ability: AppAbility
   ): Promise<Integration> {
     const integration = await this.prismaService.integration.findUnique({
-      where: { id: input.id },
+      where: { id },
       include: { team: { include: { userTeams: true } } }
     })
     if (integration == null)
@@ -59,7 +59,7 @@ export class IntegrationResolver {
       })
 
     return await this.prismaService.integration.delete({
-      where: { id: input.id }
+      where: { id }
     })
   }
 }

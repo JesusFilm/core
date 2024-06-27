@@ -800,12 +800,6 @@ input IntegrationGrowthSpacesUpdateInput
   accessSecret: String!
 }
 
-input IntegrationInput
-  @join__type(graph: JOURNEYS)
-{
-  id: ID!
-}
-
 enum IntegrationType
   @join__type(graph: JOURNEYS)
 {
@@ -1465,7 +1459,7 @@ type Mutation
   hostDelete(id: ID!, teamId: ID!): Host! @join__field(graph: JOURNEYS)
   integrationGrowthSpacesCreate(input: IntegrationGrowthSpacesCreateInput!): IntegrationGrowthSpaces! @join__field(graph: JOURNEYS)
   integrationGrowthSpacesUpdate(id: ID!, input: IntegrationGrowthSpacesUpdateInput!): IntegrationGrowthSpaces! @join__field(graph: JOURNEYS)
-  integrationDelete(input: IntegrationInput!): Integration! @join__field(graph: JOURNEYS)
+  integrationDelete(id: ID!): Integration! @join__field(graph: JOURNEYS)
   journeyCreate(input: JourneyCreateInput!, teamId: ID!): Journey! @join__field(graph: JOURNEYS)
   journeyDuplicate(id: ID!, teamId: ID!): Journey! @join__field(graph: JOURNEYS)
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey! @join__field(graph: JOURNEYS)

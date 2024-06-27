@@ -231,7 +231,7 @@ type Mutation {
   hostDelete(id: ID!, teamId: ID!): Host!
   integrationGrowthSpacesCreate(input: IntegrationGrowthSpacesCreateInput!): IntegrationGrowthSpaces!
   integrationGrowthSpacesUpdate(id: ID!, input: IntegrationGrowthSpacesUpdateInput!): IntegrationGrowthSpaces!
-  integrationDelete(input: IntegrationInput!): Integration!
+  integrationDelete(id: ID!): Integration!
   journeyCreate(input: JourneyCreateInput!, teamId: ID!): Journey!
   journeyDuplicate(id: ID!, teamId: ID!): Journey!
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
@@ -2006,10 +2006,6 @@ interface Integration {
   id: ID!
   team: Team!
   type: IntegrationType!
-}
-
-input IntegrationInput {
-  id: ID!
 }
 
 extend type Tag
