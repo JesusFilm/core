@@ -50,7 +50,7 @@ describe('useIntegrationQuery', () => {
       }
     })
 
-    const { result } = renderHook(
+    renderHook(
       () => {
         return useIntegrationQuery({
           teamId: 'team.id'
