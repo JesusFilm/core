@@ -32,7 +32,7 @@ describe('BaseNode', () => {
       </ReactFlowProvider>
     )
 
-    expect(screen.getByTestId('BaseNodeLeftHandle')).toBeInTheDocument()
+    expect(screen.getByTestId('BaseNodeLeftHandle-show')).toBeInTheDocument()
   })
 
   it('should render disabled target handle', () => {
@@ -58,7 +58,21 @@ describe('BaseNode', () => {
       </ReactFlowProvider>
     )
 
-    expect(screen.getByTestId('BaseNodeRightHandle')).toBeInTheDocument()
+    expect(screen.getByTestId('BaseNodeRightHandle-show')).toBeInTheDocument()
+  })
+
+  it('should render disabled source handle', () => {
+    render(
+      <ReactFlowProvider>
+        <MockedProvider>
+          <BaseNode sourceHandle="disabled" />
+        </MockedProvider>
+      </ReactFlowProvider>
+    )
+
+    expect(
+      screen.getByTestId('BaseNodeRightHandle-disabled')
+    ).toBeInTheDocument()
   })
 
   it('should render arrow icon', () => {
