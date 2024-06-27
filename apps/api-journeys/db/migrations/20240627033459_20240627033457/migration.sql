@@ -24,10 +24,10 @@ CREATE TABLE "Integration" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Integration_accessSecretCipherText_key" ON "Integration"("accessSecretCipherText");
+CREATE INDEX "Integration_teamId_idx" ON "Integration"("teamId");
 
 -- CreateIndex
-CREATE INDEX "Integration_teamId_idx" ON "Integration"("teamId");
+CREATE UNIQUE INDEX "Integration_accessId_accessSecretCipherText_key" ON "Integration"("accessId", "accessSecretCipherText");
 
 -- AddForeignKey
 ALTER TABLE "Integration" ADD CONSTRAINT "Integration_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "Team"("id") ON DELETE CASCADE ON UPDATE CASCADE;

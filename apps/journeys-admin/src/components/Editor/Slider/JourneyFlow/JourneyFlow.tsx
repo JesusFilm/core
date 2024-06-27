@@ -362,7 +362,7 @@ export function JourneyFlow(): ReactElement {
               <Panel position="top-left">
                 <>
                   <AnalyticsOverlaySwitch />
-                  <Fade in={showAnalytics}>
+                  <Fade in={showAnalytics} unmountOnExit>
                     <Box>
                       <JourneyAnalyticsCard />
                     </Box>
