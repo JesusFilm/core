@@ -5,11 +5,12 @@ import {
   useMutation
 } from '@apollo/client'
 
+import { useTeam } from '@core/journeys/ui/TeamProvider'
+
 import {
   TeamCreate,
   TeamCreateVariables
 } from '../../../__generated__/TeamCreate'
-import { useTeam } from '../../components/Team/TeamProvider'
 
 export const TEAM_CREATE = gql`
   mutation TeamCreate($input: TeamCreateInput!) {

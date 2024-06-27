@@ -6,6 +6,7 @@ import { ReactElement } from 'react'
 
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import { ActiveFab, useEditor } from '@core/journeys/ui/EditorProvider'
+import { FramePortal } from '@core/journeys/ui/FramePortal'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
@@ -20,7 +21,6 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../__generated__/globalTypes'
-import { FramePortal } from '../../../../../FramePortal'
 
 interface ActionCardsProps {
   url: string

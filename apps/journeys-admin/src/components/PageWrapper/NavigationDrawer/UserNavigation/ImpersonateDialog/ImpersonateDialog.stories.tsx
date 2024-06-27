@@ -2,7 +2,7 @@ import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 import { ReactElement, useState } from 'react'
 
-import { journeysAdminConfig } from '../../../../../libs/storybook'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { ImpersonateDialog, USER_IMPERSONATE } from './ImpersonateDialog'
 

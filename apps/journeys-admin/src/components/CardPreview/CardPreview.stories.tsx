@@ -9,6 +9,7 @@ import { DragDropContext } from 'react-beautiful-dnd'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import {
   GetJourney_journey as Journey,
@@ -25,7 +26,6 @@ import {
   TypographyVariant,
   VideoBlockSource
 } from '../../../__generated__/globalTypes'
-import { journeysAdminConfig } from '../../libs/storybook'
 
 import { CardPreview } from '.'
 

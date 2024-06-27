@@ -8,11 +8,11 @@ import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 import { object, string } from 'yup'
 
+import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
 import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
 
 import { TeamUpdate } from '../../../../__generated__/TeamUpdate'
-import { useTeam } from '../TeamProvider'
 
 export const TEAM_UPDATE = gql`
   mutation TeamUpdate($id: ID!, $input: TeamUpdateInput!) {

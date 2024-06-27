@@ -2,7 +2,7 @@ import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import { Meta, StoryObj } from '@storybook/react'
 
-import { simpleComponentConfig } from '../../libs/storybook'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { Avatar } from '.'
 

@@ -3,6 +3,7 @@ import { renderHook, waitFor } from '@testing-library/react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 import { TreeBlock } from '@core/journeys/ui/block'
 
 import {
@@ -11,7 +12,6 @@ import {
 } from '../../../../../../../__generated__/BlockFields'
 import { blockActionDeleteMock } from '../../../../../../libs/useBlockActionDeleteMutation/useBlockActionDeleteMutation.mock'
 import { stepBlockNextBlockUpdateMock } from '../../../../../../libs/useStepBlockNextBlockUpdateMutation/useStepBlockNextBlockUpdateMutation.mock'
-import { defaultJourney } from '../../../../data'
 
 import { useDeleteEdge } from './useDeleteEdge'
 

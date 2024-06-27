@@ -9,7 +9,9 @@ import { ReactElement, useEffect, useState } from 'react'
 
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { FramePortal } from '@core/journeys/ui/FramePortal'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { VideoWrapper } from '@core/journeys/ui/VideoWrapper'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
@@ -22,9 +24,7 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../../../../../__generated__/globalTypes'
-import { FramePortal } from '../../../../../../../../../FramePortal'
 import { CardWrapper } from '../../../../../../../Content/Canvas/CardWrapper'
-import { VideoWrapper } from '../../../../../../../Content/Canvas/VideoWrapper'
 
 export const STEP_BLOCK_DEFAULT_NEXT_BLOCK_UPDATE = gql`
   mutation StepBlockDefaultNextBlockUpdate(
