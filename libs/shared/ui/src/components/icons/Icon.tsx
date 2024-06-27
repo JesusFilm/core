@@ -95,6 +95,7 @@ import Hash1 from './Hash1'
 import Hash2 from './Hash2'
 import HelpCircleContained from './HelpCircleContained'
 import HelpSquareContained from './HelpSquareContained'
+import Home3 from './Home3'
 import Home4 from './Home4'
 import Image3 from './Image3'
 import ImageX from './ImageX'
@@ -300,6 +301,7 @@ export type IconName =
   | 'Hash2'
   | 'HelpCircleContained'
   | 'HelpSquareContained'
+  | 'Home3'
   | 'Home4'
   | 'Image3'
   | 'ImageX'
@@ -509,6 +511,7 @@ const iconComponents: IconComponents = {
   Hash2,
   HelpCircleContained,
   HelpSquareContained,
+  Home3,
   Home4,
   Image3,
   ImageX,
