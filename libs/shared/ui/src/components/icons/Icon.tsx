@@ -152,6 +152,7 @@ import Presentation1 from './Presentation1'
 import Search1 from './Search1'
 import Search2 from './Search2'
 import Send1 from './Send1'
+import Send2 from './Send2'
 import Settings from './Settings'
 import Share from './Share'
 import ShieldCheck from './ShieldCheck'
@@ -352,6 +353,7 @@ export type IconName =
   | 'Search1'
   | 'Search2'
   | 'Send1'
+  | 'Send2'
   | 'Settings'
   | 'Share'
   | 'ShieldCheck'
@@ -556,6 +558,7 @@ const iconComponents: IconComponents = {
   Search1,
   Search2,
   Send1,
+  Send2,
   Settings,
   Share,
   ShieldCheck,

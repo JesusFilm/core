@@ -160,6 +160,7 @@ const iconNames: IconName[] = [
   'Search1',
   'Search2',
   'Send1',
+  'Send2',
   'Settings',
   'Share',
   'ShieldCheck',
