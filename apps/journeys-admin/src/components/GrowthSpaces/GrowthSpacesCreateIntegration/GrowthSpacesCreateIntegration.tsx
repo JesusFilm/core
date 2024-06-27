@@ -24,7 +24,7 @@ export function GrowthSpacesCreateIntegration(): ReactElement {
   const [accessId, setAccessId] = useState<string | undefined>()
   const [accessSecret, setAccessSecret] = useState<string | undefined>()
 
-  const [integrationGrowthSpacesCreate] =
+  const [integrationGrowthSpacesCreate, { loading }] =
     useMutation<IntegrationGrowthSpacesCreate>(INTEGRATION_GROWTH_SPACES_CREATE)
 
   async function handleClick(): Promise<void> {
@@ -75,6 +75,7 @@ export function GrowthSpacesCreateIntegration(): ReactElement {
       accessSecret={accessSecret}
       setAccessId={setAccessId}
       setAccessSecret={setAccessSecret}
+      disabled={loading}
       onClick={handleClick}
     />
   )
