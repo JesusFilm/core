@@ -27,7 +27,6 @@ import {
   HANDLE_WITH_BORDER_DIAMETER,
   NODE_EXTRA_DETECTION_WIDTH,
   STEP_NODE_CARD_HEIGHT,
-  STEP_NODE_CARD_WIDTH,
   STEP_NODE_WIDTH
 } from '../StepBlockNode/libs/sizes'
 
@@ -50,6 +49,7 @@ interface BaseNodeProps {
   isSourceConnected?: boolean
   sourceHandleProps?: Partial<ComponentProps<typeof StyledHandle>>
   dragging?: boolean
+  positionTargetHandle?: boolean
   children?:
     | ((context: { selected: 'descendant' | boolean }) => ReactNode)
     | ReactNode
@@ -64,7 +64,8 @@ export function BaseNode({
   isSourceConnected = false,
   sourceHandleProps,
   dragging,
-  children
+  children,
+  positionTargetHandle = true
 }: BaseNodeProps): ReactElement {
   const {
     state: { showAnalytics }
@@ -116,7 +117,13 @@ export function BaseNode({
     >
       {isFunction(children) ? children({ selected }) : children}
       {(targetHandle === 'show' || targetHandle === 'disabled') && (
-        <PulseWrapper show={isConnecting && targetHandle !== 'disabled'}>
+        <PulseWrapper
+          show={
+            id !== 'SocialPreview' &&
+            isConnecting &&
+            targetHandle !== 'disabled'
+          }
+        >
           <StyledHandle
             type="target"
             data-testid={`BaseNodeLeftHandle-${targetHandle}`}
@@ -128,10 +135,12 @@ export function BaseNode({
             sx={{
               width: HANDLE_DIAMETER + HANDLE_BORDER_WIDTH,
               height: HANDLE_DIAMETER + HANDLE_BORDER_WIDTH,
-              left: -HANDLE_WITH_BORDER_DIAMETER / 2,
-              top: isFunction(children)
-                ? (STEP_NODE_CARD_HEIGHT + HANDLE_WITH_BORDER_DIAMETER) / 2
-                : null,
+              ...(positionTargetHandle && {
+                left: -HANDLE_WITH_BORDER_DIAMETER / 2,
+                top: isFunction(children)
+                  ? (STEP_NODE_CARD_HEIGHT + HANDLE_WITH_BORDER_DIAMETER) / 2
+                  : null
+              }),
               background: (theme) => theme.palette.background.default,
               border: (theme) =>
                 (isConnecting && targetHandle !== 'disabled') || targetSelected
@@ -179,7 +188,7 @@ export function BaseNode({
               width:
                 id === 'SocialPreview'
                   ? NODE_EXTRA_DETECTION_WIDTH * 2
-                  : STEP_NODE_CARD_WIDTH + NODE_EXTRA_DETECTION_WIDTH,
+                  : NODE_EXTRA_DETECTION_WIDTH,
               height: ACTION_BUTTON_HEIGHT,
               right: -NODE_EXTRA_DETECTION_WIDTH / 2,
               backgroundColor: 'transparent'
