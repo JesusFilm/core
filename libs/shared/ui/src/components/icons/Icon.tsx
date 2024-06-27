@@ -133,6 +133,7 @@ import MessageChat2 from './MessageChat2'
 import MessageCircle from './MessageCircle'
 import MessageNotifyCircle from './MessageNotifyCircle'
 import MessageNotifySquare from './MessageNotifySquare'
+import MessageSquare from './MessageSquare'
 import MessageText1 from './MessageText1'
 import MessageText2 from './MessageText2'
 import MessageTyping from './MessageTyping'
@@ -337,6 +338,7 @@ export type IconName =
   | 'MessageCircle'
   | 'MessageNotifyCircle'
   | 'MessageNotifySquare'
+  | 'MessageSquare'
   | 'MessageText1'
   | 'MessageText2'
   | 'MessageTyping'
@@ -544,6 +546,7 @@ const iconComponents: IconComponents = {
   MessageCircle,
   MessageNotifyCircle,
   MessageNotifySquare,
+  MessageSquare,
   MessageText1,
   MessageText2,
   MessageTyping,
