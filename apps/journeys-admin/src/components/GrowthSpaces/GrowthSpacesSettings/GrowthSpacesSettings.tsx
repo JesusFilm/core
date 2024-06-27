@@ -12,6 +12,7 @@ interface GrowthSpacesSettingsProps {
   onClick?: () => void
 }
 
+// TODO: add remove button
 export function GrowthSpacesSettings({
   accessId,
   accessSecret,

@@ -1,4 +1,5 @@
 import { ApolloError, gql, useMutation } from '@apollo/client'
+import { useRouter } from 'next/router'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -18,6 +19,7 @@ export function GrowthSpacesCreateIntegration(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
   const { enqueueSnackbar } = useSnackbar()
+  const router = useRouter()
 
   const [accessId, setAccessId] = useState<string | undefined>()
   const [accessSecret, setAccessSecret] = useState<string | undefined>()
@@ -26,8 +28,6 @@ export function GrowthSpacesCreateIntegration(): ReactElement {
     useMutation<IntegrationGrowthSpacesCreate>(INTEGRATION_GROWTH_SPACES_CREATE)
 
   async function handleClick(): Promise<void> {
-    console.log('accessId', accessId)
-    console.log('accessSecret', accessSecret)
     if (activeTeam == null) return
     try {
       const { data } = await integrationGrowthSpacesCreate({
@@ -43,6 +43,9 @@ export function GrowthSpacesCreateIntegration(): ReactElement {
         enqueueSnackbar(t('Growth Spaces settings saved'), {
           variant: 'success'
         })
+        await router.push(
+          `/teams/${activeTeam.id}/integrations/${data.integrationGrowthSpacesCreate.id}`
+        )
       }
     } catch (error) {
       if (error instanceof ApolloError) {

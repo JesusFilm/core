@@ -16,14 +16,16 @@ export const INTEGRATION_GROWTH_SPACES_UPDATE = gql`
   }
 `
 
+// TODO:
+// get access id and secret from backend if already exists
+// add delete function
+
 export function GrowthSpacesIntegrationDetails(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
   const router = useRouter()
   const integrationId = router.query.integrationId
   const { activeTeam } = useTeam()
-
-  // get values from backend
 
   const [accessId, setAccessId] = useState<string | undefined>()
   const [accessSecret, setAccessSecret] = useState<string | undefined>()
