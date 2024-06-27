@@ -9,6 +9,8 @@ import { PrismaService } from '../../lib/prisma.service'
 import { BlockService } from '../block/block.service'
 import { ChatButtonResolver } from '../chatButton/chatButton.resolver'
 
+import { PlausibleConsumer } from '../plausible/plausible.consumer'
+import { PlausibleService } from '../plausible/plausible.service'
 import { JourneyResolver } from './journey.resolver'
 
 @Module({
@@ -21,7 +23,9 @@ import { JourneyResolver } from './journey.resolver'
     BlockService,
     DateTimeScalar,
     ChatButtonResolver,
-    PrismaService
+    PrismaService,
+    PlausibleService,
+    PlausibleConsumer
   ]
 })
 export class JourneyModule {}
