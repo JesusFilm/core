@@ -225,11 +225,12 @@ model Integration {
   type                   IntegrationType
   accessId               String?
   accessSecretPart       String?
-  accessSecretCipherText String?         @unique
+  accessSecretCipherText String?
   accessSecretIv         String?
   accessSecretTag        String?
   team                   Team            @relation(fields: [teamId], references: [id], onDelete: Cascade)
 
+  @@unique([accessId, accessSecretCipherText])
   @@index([teamId])
 }
 
