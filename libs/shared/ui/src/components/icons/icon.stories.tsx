@@ -137,6 +137,7 @@ const iconNames: IconName[] = [
   'MediaStrip1',
   'Menu1',
   'MessageChat1',
+  'MessageChat2',
   'MessageCircle',
   'MessageText1',
   'MessageText2',

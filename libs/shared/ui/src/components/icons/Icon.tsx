@@ -129,6 +129,7 @@ import Maximise2 from './Maximise2'
 import MediaStrip1 from './MediaStrip1'
 import Menu1 from './Menu1'
 import MessageChat1 from './MessageChat1'
+import MessageChat2 from './MessageChat2'
 import MessageCircle from './MessageCircle'
 import MessageText1 from './MessageText1'
 import MessageText2 from './MessageText2'
@@ -330,6 +331,7 @@ export type IconName =
   | 'MediaStrip1'
   | 'Menu1'
   | 'MessageChat1'
+  | 'MessageChat2'
   | 'MessageCircle'
   | 'MessageText1'
   | 'MessageText2'
@@ -534,6 +536,7 @@ const iconComponents: IconComponents = {
   Maximise2,
   Menu1,
   MessageChat1,
+  MessageChat2,
   MessageCircle,
   MessageText1,
   MessageText2,
