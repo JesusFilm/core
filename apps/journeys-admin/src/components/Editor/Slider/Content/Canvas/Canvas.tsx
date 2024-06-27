@@ -20,8 +20,8 @@ import { ThemeName } from '@core/shared/ui/themes'
 
 import { setBeaconPageViewed } from '../../../../../libs/setBeaconPageViewed'
 import { FramePortal } from '../../../../FramePortal'
-import { Fab } from '../../../Fab'
 
+import { CanvasFooter } from './CanvasFooter'
 import { CardWrapper } from './CardWrapper'
 import { FormWrapper } from './FormWrapper'
 import { InlineEditWrapper } from './InlineEditWrapper'
@@ -295,17 +295,7 @@ export function Canvas(): ReactElement {
                 </ThemeProvider>
               </FramePortal>
             </Box>
-            {showAnalytics !== true && (
-              <Box
-                sx={{
-                  mt: 4,
-                  alignSelf: 'end',
-                  transform: `scale(${scale})`
-                }}
-              >
-                <Fab variant="canvas" />
-              </Box>
-            )}
+            <CanvasFooter scale={scale} />
           </Box>
         </Stack>
       )}
