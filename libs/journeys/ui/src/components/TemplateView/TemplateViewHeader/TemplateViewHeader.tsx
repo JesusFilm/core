@@ -16,7 +16,7 @@ import { TemplateEditButton } from './TemplateEditButton/TemplateEditButton'
 
 interface TemplateViewHeaderProps {
   isPublisher: boolean | undefined
-  authUser: User
+  authUser: User | undefined
   openTeamDialog: boolean
   setOpenTeamDialog: Dispatch<SetStateAction<boolean>>
 }

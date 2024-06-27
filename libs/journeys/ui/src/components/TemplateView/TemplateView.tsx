@@ -9,13 +9,13 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 import { SwiperOptions } from 'swiper/types'
 
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { StrategySection } from '@core/journeys/ui/StrategySection'
-import { TemplateGalleryCarousel } from '@core/journeys/ui/TemplateGallery/TemplateGalleryCarousel'
-import { TemplateGalleryCard } from '@core/journeys/ui/TemplateGalleryCard'
-import { useJourneysQuery } from '@core/journeys/ui/useJourneysQuery'
-import { useUserRoleQuery } from '@core/journeys/ui/useUserRoleQuery'
 import { Role } from '../../../__generated__/globalTypes'
+import { useJourney } from '../../libs/JourneyProvider'
+import { useJourneysQuery } from '../../libs/useJourneysQuery'
+import { useUserRoleQuery } from '../../libs/useUserRoleQuery'
+import { StrategySection } from '../StrategySection'
+import { TemplateGalleryCarousel } from '../TemplateGallery/TemplateGalleryCarousel'
+import { TemplateGalleryCard } from '../TemplateGalleryCard'
 
 import { TemplateFooter } from './TemplateFooter'
 import { TemplatePreviewTabs } from './TemplatePreviewTabs'
@@ -24,10 +24,14 @@ import { TemplateViewHeader } from './TemplateViewHeader'
 import { TemplateCreatorDetails } from './TemplateViewHeader/TemplateCreatorDetails'
 
 interface TemplateViewProps {
-  authUser: User
+  authUser?: User
+  hideOverflow?: boolean
 }
 
-export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
+export function TemplateView({
+  authUser,
+  hideOverflow
+}: TemplateViewProps): ReactElement {
   const { journey } = useJourney()
   const { breakpoints } = useTheme()
   const { t } = useTranslation('libs-journeys-ui')
@@ -90,12 +94,15 @@ export function TemplateView({ authUser }: TemplateViewProps): ReactElement {
       data-testid="JourneysAdminTemplateView"
     >
       <Container
+        maxWidth={false}
         sx={{
-          px: { xs: 6, sm: 8 },
+          overflow: hideOverflow ? 'hidden' : 'none',
+          mx: { xs: 0 },
+          px: { xs: 0 },
           py: { xs: 6, sm: 9 }
         }}
       >
-        <Stack sx={{ gap: { xs: 3, sm: 7 } }}>
+        <Stack sx={{ gap: { xs: 3, sm: 7, md: 0 } }}>
           <TemplateViewHeader
             isPublisher={isPublisher}
             authUser={authUser}

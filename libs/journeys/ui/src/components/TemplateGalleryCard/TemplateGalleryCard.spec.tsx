@@ -9,49 +9,66 @@ import { GetJourneys_journeys as Journey } from '../../libs/useJourneysQuery/__g
 
 import { TemplateGalleryCard } from '.'
 import '../../../test/i18n'
+import { NextRouter, useRouter } from 'next/router'
+
+jest.mock('next/router', () => ({
+  __esModule: true,
+  useRouter: jest.fn()
+}))
+const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+
+const journey: Journey = {
+  __typename: 'Journey',
+  id: 'template-id',
+  title: 'A Template Heading',
+  description: null,
+  slug: 'default',
+  template: true,
+  language: {
+    __typename: 'Language',
+    id: '529',
+    name: [
+      {
+        __typename: 'Translation',
+        value: 'English',
+        primary: true
+      }
+    ]
+  },
+  status: JourneyStatus.published,
+  userJourneys: [],
+  seoTitle: null,
+  seoDescription: null,
+  themeName: ThemeName.base,
+  themeMode: ThemeMode.dark,
+  tags: [],
+  trashedAt: null,
+  primaryImageBlock: {
+    id: 'image1.id',
+    __typename: 'ImageBlock',
+    parentBlockId: null,
+    parentOrder: 0,
+    src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
+    alt: 'random image from unsplash',
+    width: 1920,
+    height: 1080,
+    blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
+  },
+  publishedAt: '2023-08-14T04:24:24.392Z',
+  createdAt: '2023-08-14T04:24:24.392Z',
+  featuredAt: '2023-08-14T04:24:24.392Z'
+}
 
 describe('TemplateGalleryCard', () => {
-  const journey: Journey = {
-    __typename: 'Journey',
-    id: 'template-id',
-    title: 'A Template Heading',
-    description: null,
-    slug: 'default',
-    template: true,
-    language: {
-      __typename: 'Language',
-      id: '529',
-      name: [
-        {
-          __typename: 'Translation',
-          value: 'English',
-          primary: true
-        }
-      ]
-    },
-    status: JourneyStatus.published,
-    userJourneys: [],
-    seoTitle: null,
-    seoDescription: null,
-    themeName: ThemeName.base,
-    themeMode: ThemeMode.dark,
-    tags: [],
-    trashedAt: null,
-    primaryImageBlock: {
-      id: 'image1.id',
-      __typename: 'ImageBlock',
-      parentBlockId: null,
-      parentOrder: 0,
-      src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
-      alt: 'random image from unsplash',
-      width: 1920,
-      height: 1080,
-      blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
-    },
-    publishedAt: '2023-08-14T04:24:24.392Z',
-    createdAt: '2023-08-14T04:24:24.392Z',
-    featuredAt: '2023-08-14T04:24:24.392Z'
-  }
+  beforeEach(() => {
+    mockUseRouter.mockReturnValue({
+      pathname: '/templates'
+    } as unknown as NextRouter)
+  })
+
+  afterEach(() => {
+    jest.resetAllMocks()
+  })
 
   it('should render Template Gallery Card', () => {
     const { getByRole, getByText } = render(
@@ -111,5 +128,35 @@ describe('TemplateGalleryCard', () => {
   it('should not prioritize image loading', () => {
     const { getByRole } = render(<TemplateGalleryCard item={journey} />)
     expect(getByRole('img')).not.toHaveAttribute('rel')
+  })
+})
+
+describe('TemplateGalleryCard from different route', () => {
+  afterEach(() => {
+    jest.resetAllMocks()
+  })
+
+  it('should link to journeys details when not at /templates', () => {
+    mockUseRouter.mockReturnValue({
+      pathname: '/blah'
+    } as unknown as NextRouter)
+
+    const { getByTestId } = render(<TemplateGalleryCard item={journey} />)
+    expect(getByTestId('templateGalleryCard')).toHaveAttribute(
+      'href',
+      '/templates/template-id'
+    )
+  })
+
+  it('should link to journeys details when in watch', () => {
+    mockUseRouter.mockReturnValue({
+      pathname: '/journeys'
+    } as unknown as NextRouter)
+
+    const { getByTestId } = render(<TemplateGalleryCard item={journey} />)
+    expect(getByTestId('templateGalleryCard')).toHaveAttribute(
+      'href',
+      '/journeys/template-id'
+    )
   })
 })

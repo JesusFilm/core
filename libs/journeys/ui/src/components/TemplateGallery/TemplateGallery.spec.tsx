@@ -22,7 +22,10 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 jest.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
+  useRouter: jest.fn(() => ({
+    pathname: '/templates',
+    query: { tab: 'active' }
+  }))
 }))
 
 const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
@@ -61,6 +64,7 @@ describe('TemplateGallery', () => {
     const push = jest.fn()
     mockedUseRouter.mockReturnValue({
       push,
+      pathname: '/templates',
       query: { tagIds: [], languageIds: ['529'] }
     } as unknown as NextRouter)
 
@@ -110,6 +114,7 @@ describe('TemplateGallery', () => {
     const on = jest.fn()
     mockedUseRouter.mockReturnValue({
       push,
+      pathname: '/templates',
       events: {
         on
       },
@@ -152,6 +157,7 @@ describe('TemplateGallery', () => {
     const push = jest.fn()
     mockedUseRouter.mockReturnValue({
       push,
+      pathname: '/templates',
       query: { tagIds: [], languageIds: ['529'] }
     } as unknown as NextRouter)
 

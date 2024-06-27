@@ -13,7 +13,13 @@ import { HeaderAndLanguageFilter } from './HeaderAndLanguageFilter'
 import { TagCarousels } from './TagCarousels'
 import { TagsFilter } from './TagsFilter'
 
-export function TemplateGallery(): ReactElement {
+interface TemplateGalleryProps {
+  hideOverflow?: boolean
+}
+
+export function TemplateGallery({
+  hideOverflow
+}: TemplateGalleryProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const router = useRouter()
   const [selectedLanguageIds, setSelectedLanguageIds] = useState<string[]>(
@@ -67,8 +73,8 @@ export function TemplateGallery(): ReactElement {
       <Container
         maxWidth={false}
         sx={{
-          maxWidth: { md: '90vw' },
-          px: { xs: 6, sm: 8 },
+          overflow: hideOverflow ? 'hidden' : 'none',
+          px: { xs: 0 },
           py: { xs: 6, sm: 9 }
         }}
       >

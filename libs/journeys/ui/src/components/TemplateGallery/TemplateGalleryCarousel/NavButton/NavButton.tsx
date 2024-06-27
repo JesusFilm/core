@@ -31,8 +31,8 @@ export const NavButton = forwardRef<HTMLButtonElement, NavButtonProps>(
             xs: 0,
             md: hovered && !disabled ? 1 : 0
           },
-          left: variant === 'prev' ? -20 : undefined,
-          right: variant === 'next' ? -20 : undefined,
+          left: variant === 'prev' ? 10 : undefined,
+          right: variant === 'next' ? 10 : undefined,
           top: '37%',
           transition: 'opacity 0.2s ease-out',
           backgroundColor: theme.palette.background.paper,
