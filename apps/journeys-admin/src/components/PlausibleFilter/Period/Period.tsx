@@ -9,6 +9,7 @@ import sub from 'date-fns/sub'
 import { useTranslation } from 'next-i18next'
 import { MouseEvent, ReactElement, useRef, useState } from 'react'
 import { DateRange } from 'react-day-picker'
+import { FilterType } from '../PlausibleFilter'
 
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
@@ -23,13 +24,17 @@ import { RangePicker } from '../RangePicker'
 import { MenuItem } from './MenuItem'
 import 'react-day-picker/dist/style.css'
 
-export function Period(): ReactElement {
+interface PeriodProps {
+  filterType: FilterType
+}
+
+export function Period({ filterType }: PeriodProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const ref = useRef<HTMLButtonElement | null>(null)
   const [rangePickerOpen, setRangePickerOpen] = useState(false)
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
   const {
-    state: { period, comparison, periodRange, date, showComparison },
+    state: { period, comparison, periodRange, date },
     dispatch
   } = usePlausibleLocal()
 
@@ -136,9 +141,11 @@ export function Period(): ReactElement {
         >
           {t('Today')}
         </MenuItem>
-        <MenuItem value="realtime" setAnchorEl={setAnchorEl}>
-          {t('Realtime')}
-        </MenuItem>
+        {filterType === 'dashboard' && (
+          <MenuItem value="realtime" setAnchorEl={setAnchorEl}>
+            {t('Realtime')}
+          </MenuItem>
+        )}
         <Divider />
         <MenuItem value="7d" setAnchorEl={setAnchorEl}>
           {t('Last 7 days')}
@@ -165,13 +172,15 @@ export function Period(): ReactElement {
           {t('Last month')}
         </MenuItem>
         <Divider />
-        <MenuItem
-          value="year"
-          setAnchorEl={setAnchorEl}
-          selected={({ date }) => isSameYear(date, new Date())}
-        >
-          {t('Year to Date')}
-        </MenuItem>
+        {filterType === 'dashboard' && (
+          <MenuItem
+            value="year"
+            setAnchorEl={setAnchorEl}
+            selected={({ date }) => isSameYear(date, new Date())}
+          >
+            {t('Year to Date')}
+          </MenuItem>
+        )}
         <MenuItem value="12mo" setAnchorEl={setAnchorEl}>
           {t('Last 12 months')}
         </MenuItem>
@@ -190,7 +199,7 @@ export function Period(): ReactElement {
         >
           {t('Custom range')}
         </MuiMenuItem>
-        {showComparison && period !== 'all' && (
+        {filterType === 'dashboard' && period !== 'all' && (
           <>
             <Divider />
             <MuiMenuItem

@@ -62,7 +62,7 @@ function JourneyEditPage({ status }): ReactElement {
       {status === 'noAccess' ? (
         <AccessDenied />
       ) : (
-        <PlausibleLocalProvider>
+        <PlausibleLocalProvider initialState={{ period: '30d' }}>
           <Editor
             journey={data?.journey ?? undefined}
             selectedStepId={router.query.stepId as string | undefined}

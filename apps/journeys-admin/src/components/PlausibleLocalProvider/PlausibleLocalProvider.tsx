@@ -18,7 +18,7 @@ export type PlausiblePeriod =
   | 'year'
   | '6mo'
   | '12mo'
-  | 'all'
+  | 'all' // nope
   | 'custom'
 
 export type PlausibleComparison =
@@ -34,7 +34,6 @@ export interface PlausibleLocalState {
   comparison: PlausibleComparison
   comparisonRange?: DateRange
   matchDayOfWeek: boolean
-  showComparison: boolean
 }
 
 interface SetPeriodAction {
@@ -112,8 +111,7 @@ export const PlausibleLocalContext = createContext<{
     date: new Date(),
     period: '7d',
     comparison: undefined,
-    matchDayOfWeek: true,
-    showComparison: false
+    matchDayOfWeek: true
   },
   dispatch: () => null
 })
@@ -132,7 +130,6 @@ export function PlausibleLocalProvider({
     period: '7d',
     comparison: undefined,
     matchDayOfWeek: true,
-    showComparison: false,
     ...initialState
   })
 

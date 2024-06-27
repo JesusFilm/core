@@ -9,7 +9,16 @@ import { Arrows } from './Arrows'
 import { Comparison } from './Comparison'
 import { Period } from './Period'
 
-export function PlausibleFilter(): ReactElement {
+export enum FilterType {
+  Flow = 'flow',
+  Dashboard = 'dashboard'
+}
+
+interface PlausibleProps {
+  filterType: FilterType
+}
+
+export function PlausibleFilter({ filterType }: PlausibleProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const {
     state: { period, comparison }
@@ -24,8 +33,8 @@ export function PlausibleFilter(): ReactElement {
       }}
     >
       {['day', 'month', 'year'].includes(period) && <Arrows />}
-      <Period />
-      {comparison != null && (
+      <Period filterType={filterType} />
+      {filterType === 'dashboard' && (
         <>
           <Typography>{t('vs.')}</Typography>
           <Comparison />

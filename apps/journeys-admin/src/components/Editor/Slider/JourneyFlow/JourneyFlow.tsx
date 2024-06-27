@@ -61,6 +61,7 @@ import { StepBlockNode } from './nodes/StepBlockNode'
 import { STEP_NODE_CARD_HEIGHT } from './nodes/StepBlockNode/libs/sizes'
 
 import 'reactflow/dist/style.css'
+import { FilterType } from '../../../PlausibleFilter/PlausibleFilter'
 import { ReferrerEdge } from './edges/ReferrerEdge'
 import { ReferrerNode } from './nodes/ReferrerNode'
 
@@ -357,7 +358,11 @@ export function JourneyFlow(): ReactElement {
         {activeSlide === ActiveSlide.JourneyFlow && (
           <>
             <Panel position="top-right">
-              {showAnalytics !== true ? <NewStepButton /> : <PlausibleFilter />}
+              {showAnalytics !== true ? (
+                <NewStepButton />
+              ) : (
+                <PlausibleFilter filterType={FilterType.Flow} />
+              )}
             </Panel>
             {editorAnalytics && (
               <Panel position="top-left">
