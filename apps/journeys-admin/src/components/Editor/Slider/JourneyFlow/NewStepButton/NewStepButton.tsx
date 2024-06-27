@@ -16,9 +16,6 @@ import {
 export function NewStepButton(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
-  const {
-    state: { showJourneyFlowAnalytics }
-  } = useEditor()
   const createStep = useCreateStep()
   const reactFlowInstance = useReactFlow()
 
@@ -41,7 +38,6 @@ export function NewStepButton(): ReactElement {
       icon={<Plus3Icon />}
       onClick={handleClick}
       ButtonProps={{
-        disabled: showJourneyFlowAnalytics,
         sx: {
           backgroundColor: 'background.paper',
           ':hover': {

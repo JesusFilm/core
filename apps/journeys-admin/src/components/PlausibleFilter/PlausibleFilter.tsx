@@ -34,7 +34,7 @@ export function PlausibleFilter({ filterType }: PlausibleProps): ReactElement {
     >
       {['day', 'month', 'year'].includes(period) && <Arrows />}
       <Period filterType={filterType} />
-      {filterType === 'dashboard' && (
+      {comparison != null && filterType === 'dashboard' && (
         <>
           <Typography>{t('vs.')}</Typography>
           <Comparison />
