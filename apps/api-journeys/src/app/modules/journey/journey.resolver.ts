@@ -635,6 +635,14 @@ export class JourneyResolver {
           })
         }
         retry = false
+        await this.plausibleQueue.add('create-journey-site', {
+          __typename: 'plausibleCreateJourneySite',
+          journeyId: duplicateJourneyId
+        })
+        await this.plausibleQueue.add('create-team-site', {
+          __typename: 'plausibleCreateTeamSite',
+          teamId: teamId
+        })
         return duplicateJourney
       } catch (err) {
         if (err.code === ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED) {
