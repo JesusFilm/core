@@ -3,10 +3,10 @@ import { ReferrerEdge } from './ReferrerEdge'
 
 import { MockedProvider } from '@apollo/client/testing'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 import { Box } from '@mui/material'
 import { ComponentPropsWithoutRef } from 'react'
 import ReactFlow, { Background, Position } from 'reactflow'
-import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 const Demo: Meta<typeof ReferrerEdge> = {
   ...simpleComponentConfig,
