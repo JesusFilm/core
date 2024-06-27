@@ -6,7 +6,7 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { Box } from '@mui/material'
 import { ComponentPropsWithoutRef } from 'react'
 import ReactFlow, { Background, Position } from 'reactflow'
-import { simpleComponentConfig } from '../../../../../../libs/storybook'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 const Demo: Meta<typeof ReferrerEdge> = {
   ...simpleComponentConfig,
