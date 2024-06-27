@@ -6,7 +6,10 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
 import { TextResponseTypeUpdate } from '../../../../../../../../../../../__generated__/TextResponseTypeUpdate'
-import { TextResponseType } from '../../../../../../../../../../../__generated__/globalTypes'
+import {
+  TextResponseBlockUpdateInput,
+  TextResponseType
+} from '../../../../../../../../../../../__generated__/globalTypes'
 import { ToggleButtonGroup } from '../../../../controls/ToggleButtonGroup'
 
 export const TEXT_RESPONSE_TYPE_UPDATE = gql`
@@ -18,6 +21,8 @@ export const TEXT_RESPONSE_TYPE_UPDATE = gql`
     textResponseBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
       id
       type
+      integrationId
+      routeId
     }
   }
 `
@@ -36,19 +41,31 @@ export function Type(): ReactElement {
 
   async function handleChange(type: TextResponseType): Promise<void> {
     if (journey == null || selectedBlock == null) return
+
+    let input: TextResponseBlockUpdateInput = {
+      type
+    }
+    if (type !== TextResponseType.email) {
+      input = {
+        ...input,
+        integrationId: null,
+        routeId: null
+      }
+    }
+
     await textResponseTypeUpdate({
       variables: {
         id: selectedBlock.id,
         journeyId: journey.id,
-        input: {
-          type
-        }
+        input
       },
       optimisticResponse: {
         textResponseBlockUpdate: {
           id: selectedBlock.id,
           __typename: 'TextResponseBlock',
-          type
+          type,
+          integrationId: null,
+          routeId: null
         }
       }
     })

@@ -69,4 +69,58 @@ describe('Type', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Email' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
+
+  it('should reset integrationId and routeId to null if type is not email', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        textResponseBlockUpdate: {
+          id: selectedBlock.id,
+          __typename: 'TextResponseBlock',
+          type: TextResponseType.freeForm,
+          integrationId: null,
+          routeId: null
+        }
+      }
+    }))
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: TEXT_RESPONSE_TYPE_UPDATE,
+              variables: {
+                id: selectedBlock.id,
+                journeyId: 'journey.id',
+                input: {
+                  type: TextResponseType.freeForm,
+                  integrationId: null,
+                  routeId: null
+                }
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <JourneyProvider
+          value={{
+            journey: { id: 'journey.id' } as unknown as Journey,
+            variant: 'admin'
+          }}
+        >
+          <EditorProvider
+            initialState={{
+              selectedBlock: { ...selectedBlock, type: TextResponseType.email }
+            }}
+          >
+            <Type />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Freeform' }))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+  })
 })
