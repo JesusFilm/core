@@ -119,7 +119,6 @@ export class IntegrationGrowthSpacesService {
         query: GET_LANGUAGES,
         variables: { languageId: journey?.languageId }
       })
-
       if (data?.language?.bcp47 == null) {
         console.error('cannot find language code')
         return
@@ -128,10 +127,8 @@ export class IntegrationGrowthSpacesService {
       languageCode = data.language.bcp47
       await this.cacheManager.set(key, languageCode, ONE_DAY_MS)
     }
-
-    const client = await this.getAPIClient(integration)
-
     try {
+      const client = await this.getAPIClient(integration)
       await client.post('/subscribers', {
         subscriber: {
           route_id: block.routeId,
@@ -152,7 +149,8 @@ export class IntegrationGrowthSpacesService {
   ): Promise<IntegrationGrowthSpacesRoute[]> {
     const client = await this.getAPIClient(integration)
     try {
-      return await client.get('/routes')
+      const res = await client.get('/routes')
+      return res.data
     } catch (e) {
       throw new GraphQLError(
         'invalid credentials for Growth Spaces integration',

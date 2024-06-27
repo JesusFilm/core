@@ -1,12 +1,11 @@
 import { ApolloClient, ApolloQueryResult } from '@apollo/client'
 import { CacheModule } from '@nestjs/cache-manager'
 import { Test, TestingModule } from '@nestjs/testing'
+import axios from 'axios'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
-import fetch, { Response } from 'node-fetch'
 import { PrismaService } from '../../../lib/prisma.service'
-import { IntegrationService } from '../integration.service'
 import { IntegrationGrowthSpacesService } from './growthSpaces.service'
-import { Block, Integration } from '.prisma/api-journeys-client'
+import { Block, Integration, Journey } from '.prisma/api-journeys-client'
 
 jest.mock('node-fetch', () => {
   const originalModule = jest.requireActual('node-fetch')
@@ -17,7 +16,14 @@ jest.mock('node-fetch', () => {
   }
 })
 
-const mockFetch = fetch as jest.MockedFunction<typeof fetch>
+jest.mock('axios', () => {
+  const originalModule = jest.requireActual('axios')
+  return {
+    __esModule: true,
+    ...originalModule,
+    default: jest.fn()
+  }
+})
 
 const block: Block = {
   id: 'blockId',
@@ -41,24 +47,37 @@ const integration: Integration = {
   teamId: 'teamId',
   type: 'growthSpaces',
   accessId: 'accessId',
+  accessSecretPart: 'plaint',
   // decrypted value for accessSecretCipherText should be "plaintext"
   accessSecretCipherText: 'saeRCBy44pMT',
   accessSecretIv: 'dx+2iBr7yYvilLIC',
   accessSecretTag: 'VondZ4B9TbgdwCQeqjnkfA=='
 }
 
-describe('IntegrationGrowthSpacesService', () => {
+const journey: Journey = {
+  id: 'journeyId',
+  languageId: '529'
+} as unknown as Journey
+
+const mockAxios = axios as jest.MockedFunction<typeof axios>
+const mockAxiosGet = jest.fn()
+const mockAxiosPost = jest.fn()
+mockAxios.create = jest
+  .fn()
+  .mockImplementation(
+    async () => await { get: mockAxiosGet, post: mockAxiosPost }
+  )
+
+describe('IntegrationGrothSpacesService', () => {
   const OLD_ENV = process.env
 
   let service: IntegrationGrowthSpacesService,
-    prismaService: DeepMockProxy<PrismaService>,
-    integrationService: IntegrationService
+    prismaService: DeepMockProxy<PrismaService>
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [CacheModule.register()],
       providers: [
-        IntegrationService,
         IntegrationGrowthSpacesService,
         {
           provide: PrismaService,
@@ -66,7 +85,6 @@ describe('IntegrationGrowthSpacesService', () => {
         }
       ]
     }).compile()
-    integrationService = module.get<IntegrationService>(IntegrationService)
     service = await module.resolve(IntegrationGrowthSpacesService)
     prismaService = module.get<PrismaService>(
       PrismaService
@@ -77,111 +95,146 @@ describe('IntegrationGrowthSpacesService', () => {
 
   afterEach(() => {
     jest.clearAllMocks()
+    jest.restoreAllMocks()
     process.env = OLD_ENV
   })
 
   describe('authenticate', () => {
     it('should check if growth spaces integration config is correct', async () => {
-      const data = 'ok'
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        json: async () => await Promise.resolve(data)
-      } as unknown as Response)
-
-      await service.authenticate('accessId', 'accessSecret')
-      expect(mockFetch).toHaveBeenCalledWith(
-        'https://api.growthspaces.org/api/v1/authentication',
-        {
-          headers: { 'Access-Id': 'accessId', 'Access-Secret': 'accessSecret' }
-        }
-      )
+      process.env.GROWTH_SPACES_URL = 'https://example.url.api/v1'
+      await service.authenticate({
+        accessId: 'accessId',
+        accessSecret: 'accessSecret'
+      })
+      expect(mockAxios.create).toHaveBeenCalledWith({
+        baseURL: 'https://example.url.api/v1',
+        headers: { 'Access-Id': 'accessId', 'Access-Secret': 'accessSecret' }
+      })
+      expect(mockAxiosGet).toHaveBeenCalledWith('/authentication')
     })
 
     it('should throw error if growth spaces integration is incorrect', async () => {
-      const data = {
-        error: 'Unauthorized'
-      }
-      mockFetch.mockResolvedValue({
-        ok: false,
-        status: 401,
-        json: async () => await Promise.resolve(data)
-      } as unknown as Response)
+      mockAxiosGet.mockRejectedValueOnce({})
 
       await expect(
-        service.authenticate('accessId', 'accessSecret')
-      ).rejects.toThrow(
-        'incorrect access Id and access secret for Growth Space integration'
-      )
+        service.authenticate({
+          accessId: 'accessId',
+          accessSecret: 'accessSecret'
+        })
+      ).rejects.toThrow('invalid credentials for Growth Spaces integration')
     })
   })
 
   describe('addSubscriber', () => {
-    it('should throw an error if block is missing the integration id or route id', async () => {
+    it('should silently exit function if block is missing the integration id or route id', async () => {
       const blockWithoutRouteOrIntegration = {
         ...block,
         integrationId: null,
         routeId: null
       }
 
-      await expect(
-        service.addSubscriber(
-          'journeyId',
-          blockWithoutRouteOrIntegration,
-          'john',
-          'johndoe@example.com'
+      await service.addSubscriber(
+        'journeyId',
+        blockWithoutRouteOrIntegration,
+        'john',
+        'johndoe@example.com'
+      )
+
+      expect(prismaService.integration.findUnique).not.toHaveBeenCalled()
+    })
+
+    it('should silently exit function if integration cannot be found', async () => {
+      await service.addSubscriber(
+        'journeyId',
+        block,
+        'john',
+        'johndoe@example.com'
+      )
+      prismaService.integration.findUnique.mockResolvedValue(null)
+
+      expect(prismaService.integration.findUnique).toHaveBeenCalledWith({
+        where: { id: 'integrationId' }
+      })
+
+      expect(prismaService.journey.findUnique).not.toHaveBeenCalled()
+    })
+
+    it('should silently exit function if integration cannot be found', async () => {
+      prismaService.integration.findUnique.mockResolvedValue(null)
+      await service.addSubscriber(
+        'journeyId',
+        block,
+        'john',
+        'johndoe@example.com'
+      )
+
+      expect(prismaService.integration.findUnique).toHaveBeenCalledWith({
+        where: { id: 'integrationId' }
+      })
+
+      expect(prismaService.journey.findUnique).not.toHaveBeenCalled()
+    })
+
+    it('should silently exit function if journey cannot be found', async () => {
+      prismaService.integration.findUnique.mockResolvedValue(integration)
+      prismaService.journey.findUnique.mockResolvedValue(null)
+      const mockApollo = jest
+        .spyOn(ApolloClient.prototype, 'query')
+        .mockImplementationOnce(
+          async () =>
+            await Promise.resolve({
+              data: {
+                language: null
+              }
+            } as unknown as ApolloQueryResult<unknown>)
         )
-      ).rejects.toThrow(
-        'trying to add subscriber but the integration or route id is not set'
-      )
-    })
-
-    it('should throw error if it can not find language', async () => {
-      jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
-        async () =>
-          await Promise.resolve({
-            data: {
-              language: null
-            }
-          } as unknown as ApolloQueryResult<unknown>)
+      await service.addSubscriber(
+        'journeyId',
+        block,
+        'john',
+        'johndoe@example.com'
       )
 
-      await expect(
-        service.addSubscriber('journeyId', block, 'john', 'johndoe@example.com')
-      ).rejects.toThrow('cannot find language code')
+      expect(prismaService.integration.findUnique).toHaveBeenCalledWith({
+        where: { id: 'integrationId' }
+      })
+
+      expect(prismaService.journey.findUnique).toHaveBeenCalledWith({
+        select: { languageId: true },
+        where: { id: 'journeyId' }
+      })
+      expect(mockApollo).not.toHaveBeenCalled()
     })
 
-    it('should throw error if integration variables are null', async () => {
-      jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
-        async () =>
-          await Promise.resolve({
-            data: {
-              language: {
-                id: 'languageId',
-                bcp47: 'en'
+    it('should silently exit function if it can not find language', async () => {
+      prismaService.integration.findUnique.mockResolvedValue(integration)
+      prismaService.journey.findUnique.mockResolvedValue(journey)
+
+      const mockApollo = jest
+        .spyOn(ApolloClient.prototype, 'query')
+        .mockImplementationOnce(
+          async () =>
+            await Promise.resolve({
+              data: {
+                language: null
               }
-            }
-          } as unknown as ApolloQueryResult<unknown>)
+            } as unknown as ApolloQueryResult<unknown>)
+        )
+      await service.addSubscriber(
+        'journeyId',
+        block,
+        'john',
+        'johndoe@example.com'
       )
 
-      await expect(
-        service.addSubscriber('journeyId', block, 'john', 'johndoe@example.com')
-      ).rejects.toThrow(
-        'incorrect access Id and access secret for Growth Space integration'
-      )
+      expect(mockApollo).toHaveBeenCalled()
     })
-
-    it('should throw error if api call to growth spaces fails', async () => {
+    it('should silently exit function if it cannot authenticate to Growth Spaces', async () => {
+      prismaService.integration.findUnique.mockResolvedValue(integration)
+      prismaService.journey.findUnique.mockResolvedValue(journey)
+      mockAxiosPost.mockRejectedValueOnce({})
       process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET =
         'dontbefooledbythiskryptokeyitisactuallyfake='
-      prismaService.integration.findUnique.mockResolvedValue(integration)
-
-      mockFetch.mockRejectedValue({
-        ok: true,
-        status: 401,
-        json: async () => await Promise.resolve()
-      } as unknown as Response)
-
       jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
         async () =>
           await Promise.resolve({
@@ -193,36 +246,7 @@ describe('IntegrationGrowthSpacesService', () => {
             }
           } as unknown as ApolloQueryResult<unknown>)
       )
-
-      await expect(
-        service.addSubscriber('journeyId', block, 'john', 'johndoe@example.com')
-      ).rejects.toThrow('failed to fetch from Growth Spaces')
-    })
-
-    it('should add subscriber', async () => {
-      process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET =
-        'dontbefooledbythiskryptokeyitisactuallyfake='
-
-      prismaService.integration.findUnique.mockResolvedValue(integration)
-
-      jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
-        async () =>
-          await Promise.resolve({
-            data: {
-              language: {
-                id: 'languageId',
-                bcp47: 'en'
-              }
-            }
-          } as unknown as ApolloQueryResult<unknown>)
-      )
-
-      const data = 'ok'
-      mockFetch.mockResolvedValue({
-        ok: true,
-        status: 200,
-        json: async () => await Promise.resolve(data)
-      } as unknown as Response)
+      const consoleMock = jest.spyOn(global.console, 'error')
 
       await service.addSubscriber(
         'journeyId',
@@ -230,67 +254,90 @@ describe('IntegrationGrowthSpacesService', () => {
         'john',
         'johndoe@example.com'
       )
-      expect(mockFetch).toHaveBeenCalledWith(
-        'https://api.growthspaces.org/api/v1/subscribers',
-        {
-          body: '{"subscriber":{"route_id":"routeId","language_code":"en","email":"johndoe@example.com","first_name":"john"}}',
-          headers: {
-            'Access-Id': 'accessId',
-            'Access-Secret': 'plaintext',
-            'Content-Type': 'application/json'
-          },
-          method: 'POST'
-        }
+
+      expect(mockAxiosPost).toHaveBeenCalled()
+      expect(consoleMock).toHaveBeenCalled()
+    })
+
+    it('should add subscriber', async () => {
+      prismaService.integration.findUnique.mockResolvedValue(integration)
+      prismaService.journey.findUnique.mockResolvedValue(journey)
+      process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET =
+        'dontbefooledbythiskryptokeyitisactuallyfake='
+      jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
+        async () =>
+          await Promise.resolve({
+            data: {
+              language: {
+                id: 'languageId',
+                bcp47: 'en'
+              }
+            }
+          } as unknown as ApolloQueryResult<unknown>)
       )
+      const consoleMock = jest.spyOn(console, 'error')
+      mockAxiosPost.mockResolvedValue({})
+      await service.addSubscriber(
+        'journeyId',
+        block,
+        'john',
+        'johndoe@example.com'
+      )
+
+      expect(mockAxiosPost).toHaveBeenCalledWith('/subscribers', {
+        subscriber: {
+          email: 'johndoe@example.com',
+          first_name: 'john',
+          language_code: 'en',
+          route_id: 'routeId'
+        }
+      })
+      expect(consoleMock).not.toHaveBeenCalled()
     })
   })
 
   describe('create', () => {
     it('should create growth spaces integration', async () => {
-      const data = 'ok'
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        json: async () => await Promise.resolve(data)
-      } as unknown as Response)
-
       process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET =
         'dontbefooledbythiskryptokeyitisactuallyfake='
 
-      const input = { accessId: 'accessId', accessSecret: 'accessSecret' }
+      const input = {
+        accessId: 'accessId',
+        accessSecret: 'accessSecret',
+        teamId: 'teamId'
+      }
 
-      await service.create('teamId', input)
+      mockAxiosGet.mockResolvedValueOnce({})
+
+      await service.create(input, prismaService)
       expect(prismaService.integration.create).toHaveBeenCalledWith({
         data: {
           accessId: 'accessId',
           teamId: 'teamId',
           type: 'growthSpaces',
+          accessSecretPart: input.accessSecret.slice(0, 6),
           accessSecretCipherText: expect.any(String),
           accessSecretIv: expect.any(String),
           accessSecretTag: expect.any(String)
-        }
+        },
+        include: { team: { include: { userTeams: true } } }
       })
     })
   })
 
   describe('update', () => {
     it('should update growth spaces integration', async () => {
-      const data = 'ok'
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        json: async () => await Promise.resolve(data)
-      } as unknown as Response)
-
       process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET =
         'dontbefooledbythiskryptokeyitisactuallyfake='
 
       const input = { accessId: 'accessId', accessSecret: 'accessSecret' }
+      mockAxiosGet.mockResolvedValueOnce({})
 
       await service.update('integrationId', input)
       expect(prismaService.integration.update).toHaveBeenCalledWith({
         data: {
           accessId: 'accessId',
+          accessSecretPart: input.accessSecret.slice(0, 6),
           accessSecretCipherText: expect.any(String),
           accessSecretIv: expect.any(String),
           accessSecretTag: expect.any(String)
