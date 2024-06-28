@@ -639,10 +639,6 @@ export type IntegrationGrowthSpacesUpdateInput = {
   accessSecret: Scalars['String']['input'];
 };
 
-export type IntegrationInput = {
-  id: Scalars['ID']['input'];
-};
-
 export enum IntegrationType {
   GrowthSpaces = 'growthSpaces'
 }
@@ -1357,7 +1353,7 @@ export type MutationImageBlockUpdateArgs = {
 
 
 export type MutationIntegrationDeleteArgs = {
-  input: IntegrationInput;
+  id: Scalars['ID']['input'];
 };
 
 
