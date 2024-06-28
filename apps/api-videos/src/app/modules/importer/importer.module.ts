@@ -7,9 +7,9 @@ import { ImporterVideoDescriptionService } from './importerVideoDescriptions/imp
 import { ImporterVideoImageAltService } from './importerVideoImageAlt/importerVideoImageAlt.service'
 import { ImporterVideoSnippetsService } from './importerVideoSnippets/importerVideoSnippets.service'
 import { ImporterVideoStudyQuestionsService } from './importerVideoStudyQuestions/importerVideoStudyQuestions.service'
+import { ImporterVideoSubtitlesService } from './importerVideoSubtitle/importerVideoSubtitle.service'
 import { ImporterVideoTitleService } from './importerVideoTitles/importerVideoTitle.service'
 import { ImporterVideoVariantDownloadsService } from './importerVideoVariantDownloads/importerVideoVariantDownloads.service'
-import { ImporterVideoVariantSubtitlesService } from './importerVideoSubtitle/importerVideovariantSubtitle.service'
 import { ImporterVideoVariantsService } from './importerVideoVariants/importerVideoVariants.service'
 import { ImporterVideosService } from './importerVideos/importerVideos.service'
 import { ImporterVideosChildrenService } from './importerVideosChildren/importerVideosChildren.service'
@@ -26,7 +26,7 @@ import { ImporterVideosChildrenService } from './importerVideosChildren/importer
     ImporterVideoImageAltService,
     ImporterVideoVariantsService,
     ImporterVideoVariantDownloadsService,
-    ImporterVideoVariantSubtitlesService,
+    ImporterVideoSubtitlesService,
     ImporterBibleBooksService
   ],
   exports: [
@@ -39,7 +39,7 @@ import { ImporterVideosChildrenService } from './importerVideosChildren/importer
     ImporterVideoImageAltService,
     ImporterVideoVariantsService,
     ImporterVideoVariantDownloadsService,
-    ImporterVideoVariantSubtitlesService,
+    ImporterVideoSubtitlesService,
     ImporterBibleBooksService
   ]
 })

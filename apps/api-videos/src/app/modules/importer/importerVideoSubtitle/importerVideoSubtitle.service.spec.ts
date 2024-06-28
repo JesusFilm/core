@@ -3,15 +3,15 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { PrismaService } from '../../../lib/prisma.service'
 import { ImporterVideoVariantsService } from '../importerVideoVariants/importerVideoVariants.service'
 import { ImporterVideosService } from '../importerVideos/importerVideos.service'
-import { ImporterVideoVariantSubtitlesService } from './importerVideoSubtitle.service'
-describe('ImporterVideoVariantSubtitlesService', () => {
-  let service: ImporterVideoVariantSubtitlesService,
+import { ImporterVideoSubtitlesService } from './importerVideoSubtitle.service'
+describe('ImporterVideoSubtitlesService', () => {
+  let service: ImporterVideoSubtitlesService,
     prismaService: DeepMockProxy<PrismaService>,
     videoVariantsService: ImporterVideoVariantsService
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        ImporterVideoVariantSubtitlesService,
+        ImporterVideoSubtitlesService,
         ImporterVideoVariantsService,
         ImporterVideosService,
         {
@@ -20,8 +20,8 @@ describe('ImporterVideoVariantSubtitlesService', () => {
         }
       ]
     }).compile()
-    service = module.get<ImporterVideoVariantSubtitlesService>(
-      ImporterVideoVariantSubtitlesService
+    service = module.get<ImporterVideoSubtitlesService>(
+      ImporterVideoSubtitlesService
     )
     videoVariantsService = module.get<ImporterVideoVariantsService>(
       ImporterVideoVariantsService

@@ -8,9 +8,9 @@ import { ImporterVideoDescriptionService } from '../importer/importerVideoDescri
 import { ImporterVideoImageAltService } from '../importer/importerVideoImageAlt/importerVideoImageAlt.service'
 import { ImporterVideoSnippetsService } from '../importer/importerVideoSnippets/importerVideoSnippets.service'
 import { ImporterVideoStudyQuestionsService } from '../importer/importerVideoStudyQuestions/importerVideoStudyQuestions.service'
+import { ImporterVideoSubtitlesService } from '../importer/importerVideoSubtitle/importerVideoSubtitle.service'
 import { ImporterVideoTitleService } from '../importer/importerVideoTitles/importerVideoTitle.service'
 import { ImporterVideoVariantDownloadsService } from '../importer/importerVideoVariantDownloads/importerVideoVariantDownloads.service'
-import { ImporterVideoVariantSubtitlesService } from '../importer/importerVideoSubtitle/importerVideovariantSubtitle.service'
 import { ImporterVideoVariantsService } from '../importer/importerVideoVariants/importerVideoVariants.service'
 import { ImporterVideosService } from '../importer/importerVideos/importerVideos.service'
 import { ImporterVideosChildrenService } from '../importer/importerVideosChildren/importerVideosChildren.service'
@@ -62,8 +62,8 @@ describe('BigQueryConsumer', () => {
           useValue: mockDeep<ImporterVideoVariantDownloadsService>()
         },
         {
-          provide: ImporterVideoVariantSubtitlesService,
-          useValue: mockDeep<ImporterVideoVariantSubtitlesService>()
+          provide: ImporterVideoSubtitlesService,
+          useValue: mockDeep<ImporterVideoSubtitlesService>()
         },
         {
           provide: ImporterVideoVariantsService,
