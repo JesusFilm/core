@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { z } from 'zod'
+import omit from 'lodash/omit'
 
 import { Prisma } from '.prisma/api-videos-client'
 
@@ -8,18 +9,24 @@ import { PrismaService } from '../../../lib/prisma.service'
 import { ImporterService } from '../importer.service'
 import { ImporterVideosService } from '../importerVideos/importerVideos.service'
 
-const videoVariantsSchema = z.object({
-  id: z.string(),
-  hls: z.string().nullable(),
-  duration: z
-    .custom()
-    .transform(String)
-    .transform<number>((value: string) => Math.round(Number(value))),
-  languageId: z.number().transform(String),
-  videoId: z.string(),
-  slug: z.string(),
-  languageName: z.string()
-})
+const videoVariantsSchema = z
+  .object({
+    id: z.string(),
+    hls: z.string().nullable(),
+    duration: z
+      .custom()
+      .transform(String)
+      .transform<number>((value: string) => Math.round(Number(value))),
+    languageId: z.number().transform(String),
+    videoId: z.string(),
+    slug: z.string(),
+    languageName: z.string(),
+    edition: z.string().nullable()
+  })
+  .transform((data) => ({
+    ...omit(data, ['edition']),
+    editionId: data.edition
+  }))
 
 type VideoVariants = z.infer<typeof videoVariantsSchema>
 

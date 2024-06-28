@@ -42,9 +42,8 @@ describe('ImporterVideoVariantDownloadsService', () => {
       await service.import({
         quality: 'low',
         size: 1111112,
-        url: 'www.example.com',
-        videoVariantId: 'mockVariantId',
-        extraStuff: 'randomData'
+        uri: 'www.example.com',
+        videoVariantId: 'mockVariantId'
       })
       expect(prismaService.videoVariantDownload.upsert).toHaveBeenCalledWith({
         where: {
@@ -74,16 +73,14 @@ describe('ImporterVideoVariantDownloadsService', () => {
         {
           quality: 'low',
           size: 1111112,
-          url: 'www.example.com',
-          videoVariantId: 'mockVariantId',
-          extraStuff: 'randomData'
+          uri: 'www.example.com',
+          videoVariantId: 'mockVariantId'
         },
         {
           quality: 'low',
           size: 1111112,
-          url: 'www.example.com',
-          videoVariantId: 'mockVariantId2',
-          extraStuff: 'randomData'
+          uri: 'www.example.com',
+          videoVariantId: 'mockVariantId2'
         }
       ])
       expect(
@@ -132,9 +129,8 @@ describe('ImporterVideoVariantDownloadsService', () => {
         service.import({
           quality: 'low',
           size: 1111112,
-          url: 'www.example.com',
-          videoVariantId: 'mockVariantId',
-          extraStuff: 'randomData'
+          uri: 'www.example.com',
+          videoVariantId: 'mockVariantId'
         })
       ).rejects.toThrow('Video variant with id mockVariantId not found')
     })

@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common'
+import omit from 'lodash/omit'
 import { z } from 'zod'
 
 import { VideoVariantDownloadQuality } from '.prisma/api-videos-client'
@@ -7,16 +8,21 @@ import { PrismaService } from '../../../lib/prisma.service'
 import { ImporterService } from '../importer.service'
 import { ImporterVideoVariantsService } from '../importerVideoVariants/importerVideoVariants.service'
 
-const videoVariantDownloadsSchema = z.object({
-  quality: z
-    .custom()
-    .transform<VideoVariantDownloadQuality>(
-      (value: string) => VideoVariantDownloadQuality[value]
-    ),
-  size: z.number(),
-  url: z.string(),
-  videoVariantId: z.string()
-})
+const videoVariantDownloadsSchema = z
+  .object({
+    quality: z
+      .custom()
+      .transform<VideoVariantDownloadQuality>(
+        (value: string) => VideoVariantDownloadQuality[value]
+      ),
+    size: z.number(),
+    uri: z.string(),
+    videoVariantId: z.string()
+  })
+  .transform((data) => ({
+    ...omit(data, 'uri'),
+    url: data.uri
+  }))
 
 type VideoVariantDownloads = z.infer<typeof videoVariantDownloadsSchema>
 

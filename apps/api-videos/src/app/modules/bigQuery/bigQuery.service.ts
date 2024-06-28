@@ -22,9 +22,10 @@ export class BigQueryService {
   async *getRowsFromTable(
     table: string,
     lastImport: Date | undefined,
+    hasUpdatedAt: boolean,
     singleRow = true
   ): AsyncGenerator<RowMetadata | RowMetadata[], void, unknown> {
-    const job = await this.createQueryJob(table, lastImport)
+    const job = await this.createQueryJob(table, lastImport, hasUpdatedAt)
     let results: QueryResults = { data: [] }
 
     do {
@@ -41,15 +42,23 @@ export class BigQueryService {
 
   private async createQueryJob(
     table: string,
-    lastImport: Date | undefined
+    lastImport: Date | undefined,
+    hasUpdatedAt: boolean
   ): Promise<Job> {
     try {
-      const query = `SELECT * FROM \`${table}\`${
-        lastImport != null
-          ? ` WHERE updatedAt > \`${lastImport.toISOString()}\``
-          : ``
+      const query = `SELECT * FROM \`${table}\` ${
+        hasUpdatedAt && lastImport !== undefined
+          ? 'WHERE updatedAt > @updatedAt'
+          : ''
       }`
-      const [job] = await this.client.createQueryJob({ query })
+      const params = {
+        updatedAt: lastImport
+      }
+      const [job] = await this.client.createQueryJob({
+        query,
+        params,
+        location: 'US'
+      })
 
       return job
     } catch (e) {
@@ -73,5 +82,11 @@ export class BigQueryService {
     } catch (e) {
       throw new Error(`failed to create job in Big Query: ${e.message}`)
     }
+  }
+
+  async getCurrentTimeStamp(): Promise<string> {
+    const [result] = await this.client.query('SELECT CURRENT_TIMESTAMP()')
+    console.log('result', result)
+    return result[0].f0_.value
   }
 }
