@@ -48,7 +48,8 @@ describe('ImporterVideoVariantsService', () => {
         slug: 'variant-title',
         languageName: 'english',
         otherValues: 'some otherValue',
-        someValue: 'otherValue'
+        someValue: 'otherValue',
+        edition: 'mockEdition'
       })
 
       expect(prismaService.videoVariant.upsert).toHaveBeenCalledWith({
@@ -85,7 +86,8 @@ describe('ImporterVideoVariantsService', () => {
           slug: 'variant-title',
           languageName: 'english',
           otherValues: 'some otherValue',
-          someValue: 'otherValue'
+          someValue: 'otherValue',
+          edition: 'mockEdition'
         },
         {
           id: 'mockId',
@@ -96,7 +98,8 @@ describe('ImporterVideoVariantsService', () => {
           slug: 'variant-title',
           languageName: 'korean',
           otherValues: 'some otherValue',
-          someValue: 'otherValue'
+          someValue: 'otherValue',
+          edition: 'mockEdition'
         }
       ])
 
@@ -136,7 +139,8 @@ describe('ImporterVideoVariantsService', () => {
           slug: 'Variant-Title',
           languageName: 'english',
           otherValues: 'some otherValue',
-          someValue: 'otherValue'
+          someValue: 'otherValue',
+          edition: 'mockEdition'
         })
       ).toBeUndefined()
     })

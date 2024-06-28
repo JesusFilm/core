@@ -25,7 +25,11 @@ interface BigQueryRowError {
 }
 @Processor('api-videos-arclight')
 export class BigQueryConsumer extends WorkerHost {
-  tables: Record<string, ImporterService<unknown>> = {}
+  tables: Array<{
+    table: string
+    service: ImporterService<unknown>
+    hasUpdatedAt: boolean
+  }> = []
 
   constructor(
     private readonly prismaService: PrismaService,
@@ -43,36 +47,74 @@ export class BigQueryConsumer extends WorkerHost {
     private readonly importerBibleBooksService: ImporterBibleBooksService
   ) {
     super()
-    this.tables = {
-      'jfp-data-warehouse.jfp_mmdb_prod.core_video_arclight_data':
-        this.importerVideosService,
-      'jfp-data-warehouse.jfp_mmdb_prod.core_videoTitle_arclight_data':
-        this.importerVideoTitleService,
-      'jfp-data-warehouse.jfp_mmdb_prod.core_videoDescription_arclight_data':
-        this.importerVideoDescriptionService,
-      'jfp-data-warehouse.jfp_mmdb_prod.core_videoStudyQuestions_arclight_data':
-        this.importerVideoStudyQuestionsService,
-      'jfp-data-warehouse.jfp_mmdb_prod.core_videoSnippet_arclight_data':
-        this.importerVideoSnippetsService,
-      'jfp-data-warehouse.jfp_mmdb_prod.core_videoImageAlt_arclight_data':
-        this.importerVideoImageAltService,
-      'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariant_arclight_data':
-        this.importerVideoVariantsService,
-      'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariantDownload_arclight_data':
-        this.importerVideoVariantsDownloadService,
-      'jfp-data-warehouse.jfp_mmdb_prod.core_bibleBooks_arclight_data':
-        this.importerBibleBooksService
-      // 'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariantSubtitles_arclight_data':
-      //   this.importerVideoVariantsSubtitleService
-    }
+    this.tables = [
+      {
+        table: 'jfp-data-warehouse.jfp_mmdb_prod.core_video_arclight_data',
+        service: this.importerVideosService,
+        hasUpdatedAt: true
+      },
+      {
+        table: 'jfp-data-warehouse.jfp_mmdb_prod.core_videoTitle_arclight_data',
+        service: this.importerVideoTitleService,
+        hasUpdatedAt: true
+      },
+      {
+        table:
+          'jfp-data-warehouse.jfp_mmdb_prod.core_videoDescription_arclight_data',
+        service: this.importerVideoDescriptionService,
+        hasUpdatedAt: true
+      },
+      {
+        table:
+          'jfp-data-warehouse.jfp_mmdb_prod.core_videoStudyQuestions_arclight_data',
+        service: this.importerVideoStudyQuestionsService,
+        hasUpdatedAt: true
+      },
+      {
+        table:
+          'jfp-data-warehouse.jfp_mmdb_prod.core_videoSnippet_arclight_data',
+        service: this.importerVideoSnippetsService,
+        hasUpdatedAt: true
+      },
+      {
+        table:
+          'jfp-data-warehouse.jfp_mmdb_prod.core_videoImageAlt_arclight_data',
+        service: this.importerVideoImageAltService,
+        hasUpdatedAt: true
+      },
+      {
+        table:
+          'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariant_arclight_data',
+        service: this.importerVideoVariantsService,
+        hasUpdatedAt: true
+      },
+      {
+        table:
+          'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariantDownload_arclight_data',
+        service: this.importerVideoVariantsDownloadService,
+        hasUpdatedAt: true
+      },
+      {
+        table: 'jfp-data-warehouse.jfp_mmdb_prod.core_bibleBooks_arclight_data',
+        service: this.importerBibleBooksService,
+        hasUpdatedAt: false
+      }
+    ]
+    // 'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariantSubtitles_arclight_data':
+    //   this.importerVideoVariantsSubtitleService
   }
 
   async process(_job: Job): Promise<void> {
     await this.importerVideosService.getUsedSlugs()
     await this.importerVideoVariantsService.getExistingIds()
 
-    for (const [bigQueryTableName, service] of Object.entries(this.tables)) {
-      await this.processTable(bigQueryTableName, service)
+    for (const index in this.tables) {
+      const {
+        table: bigQueryTableName,
+        service,
+        hasUpdatedAt
+      } = this.tables[index]
+      await this.processTable(bigQueryTableName, service, hasUpdatedAt)
     }
 
     // cleanup for future runs
@@ -86,17 +128,19 @@ export class BigQueryConsumer extends WorkerHost {
 
   async processTable(
     bigQueryTableName: string,
-    service: ImporterService<any>
+    service: ImporterService<unknown>,
+    hasUpdatedAt: boolean
   ): Promise<void> {
     const errors: BigQueryRowError[] = []
     const importTime = await this.prismaService.importTimes.findUnique({
       where: { modelName: bigQueryTableName }
     })
-    // const updateTime = new Date()
-    if (importTime != null) {
+    const updateTime = await this.bigQueryService.getCurrentTimeStamp()
+    if (importTime != null || !hasUpdatedAt) {
       for await (const row of this.bigQueryService.getRowsFromTable(
         bigQueryTableName,
-        importTime.lastImport
+        importTime?.lastImport,
+        hasUpdatedAt
       )) {
         try {
           await service.import(row)
@@ -110,10 +154,11 @@ export class BigQueryConsumer extends WorkerHost {
       }
     } else {
       let page = 0
-      console.log('importing', bigQueryTableName)
+      console.log('mass importing', bigQueryTableName)
       for await (const rows of this.bigQueryService.getRowsFromTable(
         bigQueryTableName,
         undefined,
+        hasUpdatedAt,
         false
       )) {
         try {
@@ -125,11 +170,14 @@ export class BigQueryConsumer extends WorkerHost {
         }
       }
     }
-    // await this.prismaService.importTimes.upsert({
-    //   where: { modelName: bigQueryTableName },
-    //   create: { modelName: bigQueryTableName, lastImport: updateTime },
-    //   update: { lastImport: updateTime }
-    // })
+    await this.prismaService.importTimes.upsert({
+      where: { modelName: bigQueryTableName },
+      create: {
+        modelName: bigQueryTableName,
+        lastImport: updateTime
+      },
+      update: { lastImport: updateTime }
+    })
 
     console.log(`finished processing ${bigQueryTableName}`, errors)
   }

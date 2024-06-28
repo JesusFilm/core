@@ -109,16 +109,35 @@ describe('BigQueryConsumer', () => {
         modelName: '',
         lastImport: new Date()
       })
+      prisma.importTimes.upsert.mockResolvedValue({
+        modelName: '',
+        lastImport: new Date()
+      })
       bigQueryService.getRowsFromTable = jest.fn(async function* generator() {
         for (let index = 0; index < data.length; index++) {
           yield data[index]
         }
       })
+      bigQueryService.getCurrentTimeStamp = jest
+        .fn()
+        .mockResolvedValue('mockCurrentTime')
       videosService.import.mockResolvedValue()
       await consumer.process({ name: 'mockjob' } as unknown as Job)
       expect(bigQueryService.getRowsFromTable).toHaveBeenCalled()
       expect(videosService.import).toHaveBeenCalledWith(data[0])
       expect(videosService.import).toHaveBeenCalledWith(data[1])
+      expect(prisma.importTimes.upsert).toHaveBeenCalledWith({
+        create: {
+          lastImport: 'mockCurrentTime',
+          modelName: 'jfp-data-warehouse.jfp_mmdb_prod.core_video_arclight_data'
+        },
+        update: {
+          lastImport: 'mockCurrentTime'
+        },
+        where: {
+          modelName: 'jfp-data-warehouse.jfp_mmdb_prod.core_video_arclight_data'
+        }
+      })
     })
   })
 })
