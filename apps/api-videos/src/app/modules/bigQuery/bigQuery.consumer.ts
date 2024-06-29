@@ -8,9 +8,9 @@ import { ImporterVideoDescriptionService } from '../importer/importerVideoDescri
 import { ImporterVideoImageAltService } from '../importer/importerVideoImageAlt/importerVideoImageAlt.service'
 import { ImporterVideoSnippetsService } from '../importer/importerVideoSnippets/importerVideoSnippets.service'
 import { ImporterVideoStudyQuestionsService } from '../importer/importerVideoStudyQuestions/importerVideoStudyQuestions.service'
+import { ImporterVideoSubtitlesService } from '../importer/importerVideoSubtitle/importerVideoSubtitle.service'
 import { ImporterVideoTitleService } from '../importer/importerVideoTitles/importerVideoTitle.service'
 import { ImporterVideoVariantDownloadsService } from '../importer/importerVideoVariantDownloads/importerVideoVariantDownloads.service'
-import { ImporterVideoVariantSubtitlesService } from '../importer/importerVideoVariantSubtitle/importerVideovariantSubtitle.service'
 import { ImporterVideoVariantsService } from '../importer/importerVideoVariants/importerVideoVariants.service'
 import { ImporterVideosService } from '../importer/importerVideos/importerVideos.service'
 import { ImporterVideosChildrenService } from '../importer/importerVideosChildren/importerVideosChildren.service'
@@ -42,7 +42,7 @@ export class BigQueryConsumer extends WorkerHost {
     private readonly importerVideoVariantsService: ImporterVideoVariantsService,
     private readonly importerVideoImageAltService: ImporterVideoImageAltService,
     private readonly importerVideoVariantsDownloadService: ImporterVideoVariantDownloadsService,
-    private readonly importerVideoVariantsSubtitleService: ImporterVideoVariantSubtitlesService,
+    private readonly importerVideoSubtitleService: ImporterVideoSubtitlesService,
     private readonly importerVideosChildrenService: ImporterVideosChildrenService,
     private readonly importerBibleBooksService: ImporterBibleBooksService
   ) {
@@ -95,13 +95,17 @@ export class BigQueryConsumer extends WorkerHost {
         hasUpdatedAt: true
       },
       {
+        table:
+          'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariantSubtitles_arclight_data',
+        service: this.importerVideoSubtitleService,
+        hasUpdatedAt: true
+      },
+      {
         table: 'jfp-data-warehouse.jfp_mmdb_prod.core_bibleBooks_arclight_data',
         service: this.importerBibleBooksService,
         hasUpdatedAt: false
       }
     ]
-    // 'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariantSubtitles_arclight_data':
-    //   this.importerVideoVariantsSubtitleService
   }
 
   async process(_job: Job): Promise<void> {
