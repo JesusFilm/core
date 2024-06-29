@@ -1,17 +1,26 @@
 import { Injectable } from '@nestjs/common'
+import omit from 'lodash/omit'
 import { z } from 'zod'
 import { PrismaService } from '../../../lib/prisma.service'
 import { ImporterService } from '../importer.service'
 import { ImporterVideosService } from '../importerVideos/importerVideos.service'
 
-const videoSubtitlesSchema = z.object({
-  videoId: z.string(),
-  edition: z.string().nullable(),
-  vttSrc: z.string(),
-  srtSrc: z.string(),
-  primary: z.boolean(),
-  languageId: z.string()
-})
+const videoSubtitlesSchema = z
+  .object({
+    video: z.string(),
+    edition: z
+      .string()
+      .nullable()
+      .transform((value) => value ?? 'base'),
+    vttSrc: z.string(),
+    srtSrc: z.string(),
+    primary: z.number().transform(Boolean),
+    languageId: z.number().transform(String)
+  })
+  .transform((data) => ({
+    ...omit(data, 'video'),
+    videoId: data.video
+  }))
 
 type VideoSubtitles = z.infer<typeof videoSubtitlesSchema>
 

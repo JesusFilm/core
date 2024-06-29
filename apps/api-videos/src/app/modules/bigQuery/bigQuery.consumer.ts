@@ -95,13 +95,17 @@ export class BigQueryConsumer extends WorkerHost {
         hasUpdatedAt: true
       },
       {
+        table:
+          'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariantSubtitles_arclight_data',
+        service: this.importerVideoSubtitleService,
+        hasUpdatedAt: true
+      },
+      {
         table: 'jfp-data-warehouse.jfp_mmdb_prod.core_bibleBooks_arclight_data',
         service: this.importerBibleBooksService,
         hasUpdatedAt: false
       }
     ]
-    // 'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariantSubtitles_arclight_data':
-    //   this.importerVideoVariantsSubtitleService
   }
 
   async process(_job: Job): Promise<void> {

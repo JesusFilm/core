@@ -1,18 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { PrismaService } from '../../../lib/prisma.service'
-import { ImporterVideoVariantsService } from '../importerVideoVariants/importerVideoVariants.service'
 import { ImporterVideosService } from '../importerVideos/importerVideos.service'
 import { ImporterVideoSubtitlesService } from './importerVideoSubtitle.service'
 describe('ImporterVideoSubtitlesService', () => {
   let service: ImporterVideoSubtitlesService,
     prismaService: DeepMockProxy<PrismaService>,
-    videoVariantsService: ImporterVideoVariantsService
+    importerVideosService: ImporterVideosService
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ImporterVideoSubtitlesService,
-        ImporterVideoVariantsService,
         ImporterVideosService,
         {
           provide: PrismaService,
@@ -23,80 +21,89 @@ describe('ImporterVideoSubtitlesService', () => {
     service = module.get<ImporterVideoSubtitlesService>(
       ImporterVideoSubtitlesService
     )
-    videoVariantsService = module.get<ImporterVideoVariantsService>(
-      ImporterVideoVariantsService
+    importerVideosService = module.get<ImporterVideosService>(
+      ImporterVideosService
     )
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
   })
   describe('import', () => {
-    it('should update video variant subtitle', async () => {
-      videoVariantsService.ids = ['mockVideoVariantId']
+    it('should update video subtitle', async () => {
+      importerVideosService.ids = ['mockVideoId']
       await service.import({
-        value: 'mockValue',
         primary: 1,
         languageId: 529,
-        videoVariantId: 'mockVideoVariantId',
-        format: 'VTT',
-        extraStuff: 'randomData'
+        video: 'mockVideoId',
+        vttSrc: 'mockVttSrc',
+        srtSrc: 'mockSrtSrc',
+        edition: null
       })
-      expect(prismaService.videoVariantSubtitle.upsert).toHaveBeenCalledWith({
+      expect(prismaService.videoSubtitle.upsert).toHaveBeenCalledWith({
         where: {
-          videoVariantId_languageId: {
+          videoId_edition_languageId: {
             languageId: '529',
-            videoVariantId: 'mockVideoVariantId'
+            videoId: 'mockVideoId',
+            edition: 'base'
           }
         },
         create: {
           languageId: '529',
           primary: true,
-          value: 'mockValue',
-          videoVariantId: 'mockVideoVariantId'
+          videoId: 'mockVideoId',
+          vttSrc: 'mockVttSrc',
+          srtSrc: 'mockSrtSrc',
+          edition: 'base'
         },
         update: {
           languageId: '529',
           primary: true,
-          value: 'mockValue',
-          videoVariantId: 'mockVideoVariantId'
+          videoId: 'mockVideoId',
+          vttSrc: 'mockVttSrc',
+          srtSrc: 'mockSrtSrc',
+          edition: 'base'
         }
       })
     })
-    it('should save many video variant subtitles', async () => {
-      videoVariantsService.ids = ['mockVideoVariantId', 'mockVideoVariantId1']
+    it('should save many video subtitles', async () => {
+      importerVideosService.ids = ['mockVideoId', 'mockVideoId1']
       await service.importMany([
         {
           value: 'mockValue',
           primary: 1,
           languageId: 529,
-          videoVariantId: 'mockVideoVariantId',
-          format: 'VTT',
-          extraStuff: 'randomData'
+          video: 'mockVideoId',
+          vttSrc: 'mockVttSrc',
+          srtSrc: 'mockSrtSrc',
+          edition: null
         },
         {
           value: 'mockValue1',
           primary: 1,
           languageId: 529,
-          videoVariantId: 'mockVideoVariantId1',
-          format: 'VTT',
-          extraStuff: 'randomData'
+          video: 'mockVideoId1',
+          vttSrc: 'mockVttSrc',
+          srtSrc: 'mockSrtSrc',
+          edition: 'ct'
         }
       ])
-      expect(
-        prismaService.videoVariantSubtitle.createMany
-      ).toHaveBeenCalledWith({
+      expect(prismaService.videoSubtitle.createMany).toHaveBeenCalledWith({
         data: [
           {
-            value: 'mockValue',
             primary: true,
             languageId: '529',
-            videoVariantId: 'mockVideoVariantId'
+            videoId: 'mockVideoId',
+            vttSrc: 'mockVttSrc',
+            srtSrc: 'mockSrtSrc',
+            edition: 'base'
           },
           {
-            value: 'mockValue1',
             primary: true,
             languageId: '529',
-            videoVariantId: 'mockVideoVariantId1'
+            videoId: 'mockVideoId1',
+            vttSrc: 'mockVttSrc',
+            srtSrc: 'mockSrtSrc',
+            edition: 'ct'
           }
         ],
         skipDuplicates: true
@@ -111,18 +118,18 @@ describe('ImporterVideoSubtitlesService', () => {
         })
       ).rejects.toThrow('row does not match schema: mockValue0')
     })
-    it('should throw error if video variant is not found', async () => {
-      videoVariantsService.ids = []
+    it('should throw error if video is not found', async () => {
+      importerVideosService.ids = []
       await expect(
         service.import({
-          value: 'mockValue',
           primary: 1,
           languageId: 529,
-          videoVariantId: 'mockVideoVariantId',
-          format: 'VTT',
-          extraStuff: 'randomData'
+          video: 'mockVideoId',
+          vttSrc: 'mockVttSrc',
+          srtSrc: 'mockSrtSrc',
+          edition: null
         })
-      ).rejects.toThrow('Video variant with id mockVideoVariantId not found')
+      ).rejects.toThrow('Video with id mockVideoId not found')
     })
   })
 })
