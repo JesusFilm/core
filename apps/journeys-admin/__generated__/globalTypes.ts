@@ -126,6 +126,12 @@ export enum Service {
   apiVideos = "apiVideos",
 }
 
+export enum TextResponseType {
+  email = "email",
+  freeForm = "freeForm",
+  name = "name",
+}
+
 export enum ThemeMode {
   dark = "dark",
   light = "light",
@@ -559,6 +565,9 @@ export interface TextResponseBlockUpdateInput {
   label?: string | null;
   hint?: string | null;
   minRows?: number | null;
+  routeId?: string | null;
+  type?: TextResponseType | null;
+  integrationId?: string | null;
 }
 
 export interface TextResponseSubmissionEventCreateInput {

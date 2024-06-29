@@ -20,8 +20,8 @@ import { ThemeName } from '@core/shared/ui/themes'
 
 import { setBeaconPageViewed } from '../../../../../libs/setBeaconPageViewed'
 import { FramePortal } from '../../../../FramePortal'
-import { Fab } from '../../../Fab'
 
+import { CanvasFooter } from './CanvasFooter'
 import { CardWrapper } from './CardWrapper'
 import { FormWrapper } from './FormWrapper'
 import { InlineEditWrapper } from './InlineEditWrapper'
@@ -45,7 +45,8 @@ export function Canvas(): ReactElement {
       selectedStep,
       selectedBlock,
       activeSlide,
-      activeCanvasDetailsDrawer
+      activeCanvasDetailsDrawer,
+      showAnalytics
     },
     dispatch
   } = useEditor()
@@ -65,6 +66,7 @@ export function Canvas(): ReactElement {
   }, [])
 
   function handleFooterClick(): void {
+    if (showAnalytics === true) return
     dispatch({
       type: 'SetActiveCanvasDetailsDrawerAction',
       activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer
@@ -91,6 +93,7 @@ export function Canvas(): ReactElement {
   }
 
   function handleSelectCard(): void {
+    if (showAnalytics === true) return
     const iframeDocument =
       frameRef.current?.contentDocument ??
       frameRef.current?.contentWindow?.document
@@ -292,15 +295,7 @@ export function Canvas(): ReactElement {
                 </ThemeProvider>
               </FramePortal>
             </Box>
-            <Box
-              sx={{
-                mt: 4,
-                alignSelf: 'end',
-                transform: `scale(${scale})`
-              }}
-            >
-              <Fab variant="canvas" />
-            </Box>
+            <CanvasFooter scale={scale} />
           </Box>
         </Stack>
       )}

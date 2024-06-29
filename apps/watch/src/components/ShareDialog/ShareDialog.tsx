@@ -51,7 +51,7 @@ export function ShareDialog({
       ? `${
           process.env.NEXT_PUBLIC_WATCH_URL ??
           'https://watch-jesusfilm.vercel.app'
-        }/watch/${Object.values(router?.query).join('/')}`.trim()
+        }/${Object.values(router?.query).join('/')}`.trim()
       : ''
 
   const handleShareLinkClick = async (): Promise<void> => {

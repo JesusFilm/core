@@ -17,6 +17,10 @@
   "Terms & Conditions": "ご利用条件",
   "All personal identifiable data registered on this website will be processed by journey creator: \"{{ teamTitle }}\".": "本サイトに登録された個人情報は、旅クリエイターによって処理されます：\"{{ teamTitle }}\".",
   "NextSteps © {{year}}": "NextSteps © {{year}}",
+  "Start a Conversation": "会話を始める",
+  "Link to Bible": "聖書へのリンク",
+  "Send an Email": "メールを送る",
+  "Visit a Website": "ウェブサイトを見る",
   "Untitled": "無題",
   "Step {{number}}": "ステップ {{number}}"
 }

@@ -17,6 +17,10 @@
   "Terms & Conditions": "Şartlar ve Koşullar",
   "All personal identifiable data registered on this website will be processed by journey creator: \"{{ teamTitle }}\".": "Bu web sitesinde kayıtlı tüm kişisel tanımlanabilir veriler, yolculuk yaratıcısı tarafından işlenecektir: \"{{ teamTitle }}\".",
   "NextSteps © {{year}}": "NextSteps © {{year}}",
+  "Start a Conversation": "Bir Konuşma Başlatın",
+  "Link to Bible": "İncil'e bağlantı",
+  "Send an Email": "E-posta Gönderin",
+  "Visit a Website": "Bir Web Sitesini Ziyaret Edin",
   "Untitled": "İsimsiz",
   "Step {{number}}": "Adım {{number}}"
 }

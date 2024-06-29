@@ -17,6 +17,10 @@
   "Terms & Conditions": "Правила и условия",
   "All personal identifiable data registered on this website will be processed by journey creator: \"{{ teamTitle }}\".": "Все персональные идентифицируемые данные, зарегистрированные на этом сайте, будут обрабатываться создателем journey: \"{{ teamTitle }}\".",
   "NextSteps © {{year}}": "NextSteps © {{year}}",
+  "Start a Conversation": "Начать разговор",
+  "Link to Bible": "Ссылка на Библию",
+  "Send an Email": "Отправить письмо",
+  "Visit a Website": "Посетите веб-сайт",
   "Untitled": "Без названия",
   "Step {{number}}": "Шаг {{number}}"
 }

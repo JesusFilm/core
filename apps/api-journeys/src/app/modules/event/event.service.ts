@@ -4,7 +4,12 @@ import { Queue } from 'bullmq'
 import { GraphQLError } from 'graphql'
 
 import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
-import { JourneyVisitor, Prisma, Visitor } from '.prisma/api-journeys-client'
+import {
+  Block,
+  JourneyVisitor,
+  Prisma,
+  Visitor
+} from '.prisma/api-journeys-client'
 
 import { PrismaService } from '../../lib/prisma.service'
 import { BlockService } from '../block/block.service'
@@ -29,6 +34,7 @@ export class EventService {
     visitor: Visitor
     journeyVisitor: JourneyVisitor
     journeyId: string
+    block: Block
   }> {
     const block = await this.prismaService.block.findUnique({
       where: { id: blockId },
@@ -68,7 +74,7 @@ export class EventService {
       )
     }
 
-    return { visitor, journeyVisitor, journeyId }
+    return { visitor, journeyVisitor, journeyId, block }
   }
 
   @FromPostgresql()

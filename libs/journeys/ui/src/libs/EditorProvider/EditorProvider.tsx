@@ -13,6 +13,7 @@ import {
 import type { TreeBlock } from '../block'
 import { BlockFields_StepBlock as StepBlock } from '../block/__generated__/BlockFields'
 import { searchBlocks } from '../searchBlocks'
+import { type JourneyAnalytics } from '../useJourneyAnalyticsQuery'
 
 export enum ActiveContent {
   Canvas = 'canvas',
@@ -59,9 +60,18 @@ export interface EditorState {
    * */
   activeSlide: ActiveSlide
   /**
+   * showAnalytics indicates if the analytics should be shown.
+   * */
+  showAnalytics?: boolean
+  /**
+   * store the result of the transformed GetJourneyAnalytics query.
+   * */
+  analytics?: JourneyAnalytics
+  /**
    * selectedAttributeId indicates which attribute is current expanded on
    * Properties. Each attribute is in a collapsible accordion.
    */
+
   selectedAttributeId?: string
   /**
    * selectedBlock indicates which block is currently selected on the Canvas
@@ -125,6 +135,14 @@ interface SetStepsAction {
   type: 'SetStepsAction'
   steps: Array<TreeBlock<StepBlock>>
 }
+interface SetShowAnalyticsAction {
+  type: 'SetShowAnalyticsAction'
+  showAnalytics: boolean
+}
+interface SetAnalyticsAction {
+  type: 'SetAnalyticsAction'
+  analytics?: JourneyAnalytics
+}
 type EditorAction =
   | SetActiveCanvasDetailsDrawerAction
   | SetActiveContentAction
@@ -137,6 +155,8 @@ type EditorAction =
   | SetSelectedGoalUrlAction
   | SetSelectedStepAction
   | SetStepsAction
+  | SetShowAnalyticsAction
+  | SetAnalyticsAction
 
 export const reducer = (
   state: EditorState,
@@ -212,6 +232,17 @@ export const reducer = (
             ? searchBlocks(action.steps, state.selectedBlock.id)
             : action.steps[0]
       }
+    case 'SetShowAnalyticsAction':
+      return {
+        ...state,
+        showAnalytics: action.showAnalytics
+      }
+    case 'SetAnalyticsAction': {
+      return {
+        ...state,
+        analytics: action.analytics
+      }
+    }
   }
 }
 

@@ -22,11 +22,11 @@ describe('VideoHeading', () => {
     )
     expect(getByRole('link', { name: 'JESUS' })).toHaveAttribute(
       'href',
-      `/jesus/english`
+      '/watch/jesus/english'
     )
     expect(getByRole('link', { name: 'Watch Full Film' })).toHaveAttribute(
       'href',
-      `/jesus/english`
+      '/watch/jesus/english'
     )
   })
 
@@ -46,13 +46,13 @@ describe('VideoHeading', () => {
     await waitFor(() =>
       expect(getByRole('link', { name: 'LUMO' })).toHaveAttribute(
         'href',
-        `/lumo/english`
+        '/watch/lumo/english'
       )
     )
 
     expect(getByRole('link', { name: 'See All' })).toHaveAttribute(
       'href',
-      `/lumo/english`
+      '/watch/lumo/english'
     )
   })
 

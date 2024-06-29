@@ -14,18 +14,15 @@ locals {
     security_group_id       = module.prod.ecs.public_ecs_security_group_id
     task_execution_role_arn = data.aws_iam_role.ecs_task_execution_role.arn
     cluster                 = module.prod.ecs.ecs_cluster
-    alb_dns_name            = module.prod.public_alb.dns_name
-    zone_id                 = data.aws_route53_zone.route53_central_jesusfilm_org.zone_id
+    alb = {
+      arn      = module.prod.public_alb.arn
+      dns_name = module.prod.public_alb.dns_name
+    }
+    zone_id = data.aws_route53_zone.route53_central_jesusfilm_org.zone_id
     alb_target_group = merge(local.alb_target_group, {
       health_check_path = "/health"
       health_check_port = "8088"
     })
-    alb_listener = {
-      alb_arn         = module.prod.public_alb.arn
-      port            = 443
-      protocol        = "HTTPS"
-      certificate_arn = data.aws_acm_certificate.acm_central_jesusfilm_org.arn
-    }
   }
 
   internal_ecs_config = {
@@ -35,20 +32,21 @@ locals {
     security_group_id       = module.prod.ecs.internal_ecs_security_group_id
     task_execution_role_arn = data.aws_iam_role.ecs_task_execution_role.arn
     cluster                 = module.prod.ecs.ecs_cluster
-    alb_dns_name            = module.prod.internal_alb.dns_name
     zone_id                 = module.prod.route53_private_zone_id
-    alb_target_group        = local.alb_target_group
-    alb_listener = {
-      alb_arn  = module.prod.internal_alb.arn
-      protocol = "HTTP"
+    alb = {
+      arn      = module.prod.internal_alb.arn
+      dns_name = module.prod.internal_alb.dns_name
     }
+    alb_target_group = local.alb_target_group
   }
 }
 
 module "api-gateway" {
-  source        = "../../../apps/api-gateway/infrastructure"
-  ecs_config    = local.public_ecs_config
-  doppler_token = data.aws_ssm_parameter.doppler_api_gateway_prod_token.value
+  source           = "../../../apps/api-gateway/infrastructure"
+  ecs_config       = local.public_ecs_config
+  doppler_token    = data.aws_ssm_parameter.doppler_api_gateway_prod_token.value
+  alb_listener_arn = module.prod.public_alb.alb_listener.arn
+  alb_dns_name     = module.prod.public_alb.dns_name
 }
 
 module "api-analytics" {
@@ -57,6 +55,10 @@ module "api-analytics" {
   doppler_token         = data.aws_ssm_parameter.doppler_api_analytics_prod_token.value
   subnet_group_name     = module.prod.vpc.db_subnet_group_name
   vpc_security_group_id = module.prod.private_rds_security_group_id
+  alb = {
+    arn      = module.prod.internal_alb.arn
+    dns_name = module.prod.internal_alb.dns_name
+  }
 }
 
 module "api-journeys" {
@@ -65,6 +67,10 @@ module "api-journeys" {
   doppler_token         = data.aws_ssm_parameter.doppler_api_journeys_prod_token.value
   subnet_group_name     = module.prod.vpc.db_subnet_group_name
   vpc_security_group_id = module.prod.private_rds_security_group_id
+  alb = {
+    arn      = module.prod.internal_alb.arn
+    dns_name = module.prod.internal_alb.dns_name
+  }
 }
 
 module "api-languages" {
@@ -73,6 +79,10 @@ module "api-languages" {
   doppler_token         = data.aws_ssm_parameter.doppler_api_languages_prod_token.value
   subnet_group_name     = module.prod.vpc.db_subnet_group_name
   vpc_security_group_id = module.prod.private_rds_security_group_id
+  alb = {
+    arn      = module.prod.internal_alb.arn
+    dns_name = module.prod.internal_alb.dns_name
+  }
 }
 
 module "api-tags" {
@@ -81,6 +91,10 @@ module "api-tags" {
   doppler_token         = data.aws_ssm_parameter.doppler_api_tags_prod_token.value
   subnet_group_name     = module.prod.vpc.db_subnet_group_name
   vpc_security_group_id = module.prod.private_rds_security_group_id
+  alb = {
+    arn      = module.prod.internal_alb.arn
+    dns_name = module.prod.internal_alb.dns_name
+  }
 }
 
 module "api-users" {
@@ -89,6 +103,10 @@ module "api-users" {
   doppler_token         = data.aws_ssm_parameter.doppler_api_users_prod_token.value
   subnet_group_name     = module.prod.vpc.db_subnet_group_name
   vpc_security_group_id = module.prod.private_rds_security_group_id
+  alb = {
+    arn      = module.prod.internal_alb.arn
+    dns_name = module.prod.internal_alb.dns_name
+  }
 }
 
 module "api-videos" {
@@ -97,6 +115,10 @@ module "api-videos" {
   doppler_token         = data.aws_ssm_parameter.doppler_api_videos_prod_token.value
   subnet_group_name     = module.prod.vpc.db_subnet_group_name
   vpc_security_group_id = module.prod.private_rds_security_group_id
+  alb = {
+    arn      = module.prod.internal_alb.arn
+    dns_name = module.prod.internal_alb.dns_name
+  }
 }
 
 module "api-media" {
@@ -105,6 +127,10 @@ module "api-media" {
   doppler_token         = data.aws_ssm_parameter.doppler_api_media_prod_token.value
   subnet_group_name     = module.prod.vpc.db_subnet_group_name
   vpc_security_group_id = module.prod.private_rds_security_group_id
+  alb = {
+    arn      = module.prod.internal_alb.arn
+    dns_name = module.prod.internal_alb.dns_name
+  }
 }
 
 module "api-nexus" {
@@ -113,6 +139,10 @@ module "api-nexus" {
   doppler_token         = data.aws_ssm_parameter.doppler_api_nexus_prod_token.value
   subnet_group_name     = module.prod.vpc.db_subnet_group_name
   vpc_security_group_id = module.prod.private_rds_security_group_id
+  alb = {
+    arn      = module.prod.internal_alb.arn
+    dns_name = module.prod.internal_alb.dns_name
+  }
 }
 
 module "bastion" {
@@ -123,6 +153,7 @@ module "bastion" {
   subnet_id          = module.prod.vpc.public_subnets[0]
   zone_id            = data.aws_route53_zone.route53_central_jesusfilm_org.zone_id
   security_group_ids = [module.prod.public_bastion_security_group_id]
+  instance_type      = "t3.medium"
 }
 
 
@@ -194,12 +225,11 @@ module "journeys-admin" {
       health_check_path = "/api/health"
       health_check_port = "3000"
     })
-    alb_listener = merge(local.public_ecs_config.alb_listener, {
-      dns_name        = "admin.nextstep.is"
-      certificate_arn = data.aws_acm_certificate.acm_nextstep_is.arn
-    })
   })
-  doppler_token = data.aws_ssm_parameter.doppler_journeys_admin_prod_token.value
+  doppler_token    = data.aws_ssm_parameter.doppler_journeys_admin_prod_token.value
+  alb_listener_arn = module.prod.public_alb.alb_listener.arn
+  alb_dns_name     = module.prod.public_alb.dns_name
+  host_name        = "admin.nextstep.is"
 }
 
 module "postgresql" {
