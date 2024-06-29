@@ -110,8 +110,8 @@ model VideoSubtitle {
   id         String  @id @default(uuid())
   videoId    String
   edition    String  @default("base")
-  vttSrc     String
-  srtSrc     String
+  vttSrc     String?
+  srtSrc     String?
   primary    Boolean
   languageId String
   Video      Video   @relation(fields: [videoId], references: [id])

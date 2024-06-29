@@ -7,7 +7,9 @@
 */
 -- AlterTable
 ALTER TABLE "VideoSubtitle" ALTER COLUMN "edition" SET NOT NULL,
-ALTER COLUMN "edition" SET DEFAULT 'base';
+ALTER COLUMN "edition" SET DEFAULT 'base',
+ALTER COLUMN "vttSrc" DROP NOT NULL,
+ALTER COLUMN "srtSrc" DROP NOT NULL;
 
 -- AlterTable
 ALTER TABLE "VideoVariant" DROP COLUMN "editionId",
