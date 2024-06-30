@@ -1,5 +1,6 @@
 import { gql, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
+import Fade from '@mui/material/Fade'
 import { useTheme } from '@mui/material/styles'
 import {
   MouseEvent,
@@ -14,6 +15,8 @@ import {
   Background,
   ControlButton,
   Controls,
+  Edge,
+  Node,
   NodeDragHandler,
   OnConnect,
   OnConnectEnd,
@@ -41,6 +44,7 @@ import {
 import { useStepBlockPositionUpdateMutation } from '../../../../libs/useStepBlockPositionUpdateMutation'
 
 import { AnalyticsOverlaySwitch } from './AnalyticsOverlaySwitch'
+import { JourneyAnalyticsCard } from './JourneyAnalyticsCard'
 import { NewStepButton } from './NewStepButton'
 import { CustomEdge } from './edges/CustomEdge'
 import { StartEdge } from './edges/StartEdge'
@@ -56,6 +60,8 @@ import { StepBlockNode } from './nodes/StepBlockNode'
 import { STEP_NODE_CARD_HEIGHT } from './nodes/StepBlockNode/libs/sizes'
 
 import 'reactflow/dist/style.css'
+import { ReferrerEdge } from './edges/ReferrerEdge'
+import { ReferrerNode } from './nodes/ReferrerNode'
 
 // some styles can only be updated through css after render
 const additionalEdgeStyles = {
@@ -79,7 +85,7 @@ export function JourneyFlow(): ReactElement {
   const { editorAnalytics } = useFlags()
   const theme = useTheme()
   const {
-    state: { steps, activeSlide, showAnalytics }
+    state: { steps, activeSlide, showAnalytics, analytics }
   } = useEditor()
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance | null>(null)
@@ -87,6 +93,8 @@ export function JourneyFlow(): ReactElement {
   const edgeUpdateSuccessful = useRef<boolean | null>(null)
   const [nodes, setNodes, onNodesChange] = useNodesState([])
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
+  const [referrerNodes, setReferrerNodes] = useNodesState([])
+  const [referrerEdges, setReferrerEdges] = useEdgesState([])
 
   const createStep = useCreateStep()
   const updateEdge = useUpdateEdge()
@@ -179,6 +187,7 @@ export function JourneyFlow(): ReactElement {
     if (!validSteps) return
 
     const { nodes, edges } = transformSteps(steps ?? [], positions)
+
     setEdges(edges)
     setNodes(nodes)
   }, [steps, data, theme, setEdges, setNodes, refetch])
@@ -272,7 +281,8 @@ export function JourneyFlow(): ReactElement {
     () => ({
       StepBlock: StepBlockNode,
       SocialPreview: SocialPreviewNode,
-      Link: LinkNode
+      Link: LinkNode,
+      Referrer: ReferrerNode
     }),
     []
   )
@@ -280,10 +290,33 @@ export function JourneyFlow(): ReactElement {
   const edgeTypes = useMemo(
     () => ({
       Custom: CustomEdge,
-      Start: StartEdge
+      Start: StartEdge,
+      Referrer: ReferrerEdge
     }),
     []
   )
+
+  const hideReferrers =
+    <T extends Node | Edge>(hidden: boolean) =>
+    (nodeOrEdge: T) => {
+      nodeOrEdge.hidden = hidden
+
+      return nodeOrEdge
+    }
+
+  useEffect(() => {
+    if (analytics?.referrers) {
+      const { nodes, edges } = analytics.referrers
+
+      setReferrerEdges(edges)
+      setReferrerNodes(nodes)
+    }
+  }, [JSON.stringify(analytics?.referrers)])
+
+  useEffect(() => {
+    setReferrerNodes((nds) => nds.map(hideReferrers(!showAnalytics)))
+    setReferrerEdges((eds) => eds.map(hideReferrers(!showAnalytics)))
+  }, [showAnalytics])
 
   return (
     <Box
@@ -295,8 +328,8 @@ export function JourneyFlow(): ReactElement {
       data-testid="JourneyFlow"
     >
       <ReactFlow
-        nodes={nodes}
-        edges={edges}
+        nodes={[...referrerNodes, ...nodes]}
+        edges={[...referrerEdges, ...edges]}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
@@ -327,7 +360,14 @@ export function JourneyFlow(): ReactElement {
             </Panel>
             {editorAnalytics && (
               <Panel position="top-left">
-                <AnalyticsOverlaySwitch />
+                <>
+                  <AnalyticsOverlaySwitch />
+                  <Fade in={showAnalytics} unmountOnExit>
+                    <Box>
+                      <JourneyAnalyticsCard />
+                    </Box>
+                  </Fade>
+                </>
               </Panel>
             )}
             <Controls showInteractive={false}>
@@ -337,7 +377,17 @@ export function JourneyFlow(): ReactElement {
             </Controls>
           </>
         )}
-        <Background color="#aaa" gap={16} />
+        <Background
+          color="#aaa"
+          gap={16}
+          style={
+            showAnalytics
+              ? {
+                  backgroundColor: '#DEE8EF'
+                }
+              : {}
+          }
+        />
       </ReactFlow>
     </Box>
   )

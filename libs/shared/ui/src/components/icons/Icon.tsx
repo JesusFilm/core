@@ -56,6 +56,7 @@ import CopyLeft from './CopyLeft'
 import CopyRight from './CopyRight'
 import CopyTo from './CopyTo'
 import Crop1 from './Crop1'
+import Cursor4 from './Cursor4'
 import Cursor6 from './Cursor6'
 import CursorPointer from './CursorPointer'
 import Dash from './Dash'
@@ -174,6 +175,7 @@ import ThumbsUp from './ThumbsUp'
 import Tiktok from './Tiktok'
 import Transform from './Transform'
 import Trash2 from './Trash2'
+import TrendDown1 from './TrendDown1'
 import TwitterLogo from './TwitterLogo'
 import Type2 from './Type2'
 import Type3 from './Type3'
@@ -253,6 +255,7 @@ export type IconName =
   | 'CopyRight'
   | 'CopyTo'
   | 'Crop1'
+  | 'Cursor4'
   | 'Cursor6'
   | 'CursorPointer'
   | 'Dash'
@@ -371,6 +374,7 @@ export type IconName =
   | 'ThumbsUp'
   | 'Tiktok'
   | 'Transform'
+  | 'TrendDown1'
   | 'TwitterLogo'
   | 'Type2'
   | 'Type3'
@@ -454,6 +458,7 @@ const iconComponents: IconComponents = {
   CopyRight,
   CopyTo,
   Crop1,
+  Cursor4,
   Cursor6,
   CursorPointer,
   Dash,
@@ -572,6 +577,7 @@ const iconComponents: IconComponents = {
   ThumbsUp,
   Tiktok,
   Transform,
+  TrendDown1,
   TwitterLogo,
   Type2,
   Type3,
