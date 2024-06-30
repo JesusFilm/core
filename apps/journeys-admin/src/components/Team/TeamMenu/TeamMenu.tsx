@@ -65,7 +65,6 @@ export function TeamMenu(): ReactElement {
   const [customDomainOpen, setCustomDomainOpen] = useState<
     boolean | undefined
   >()
-
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const handleShowMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
     setAnchorEl(event.currentTarget)
