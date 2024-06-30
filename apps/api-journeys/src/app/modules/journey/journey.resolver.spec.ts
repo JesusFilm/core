@@ -1133,6 +1133,14 @@ describe('JourneyResolver', () => {
 
     it('duplicates your journey', async () => {
       await resolver.journeyDuplicate(ability, 'journeyId', 'userId', 'teamId')
+      expect(plausibleQueue.add).toHaveBeenCalledWith('create-journey-site', {
+        __typename: 'plausibleCreateJourneySite',
+        journeyId: 'duplicateJourneyId'
+      })
+      expect(plausibleQueue.add).toHaveBeenCalledWith('create-team-site', {
+        __typename: 'plausibleCreateTeamSite',
+        teamId: 'teamId'
+      })
       expect(prismaService.journey.create).toHaveBeenCalledWith({
         data: {
           ...omit(journey, [
@@ -1228,6 +1236,15 @@ describe('JourneyResolver', () => {
           }
         }
       }
+
+      expect(plausibleQueue.add).toHaveBeenCalledWith('create-journey-site', {
+        __typename: 'plausibleCreateJourneySite',
+        journeyId: 'duplicateJourneyId'
+      })
+      expect(plausibleQueue.add).toHaveBeenCalledWith('create-team-site', {
+        __typename: 'plausibleCreateTeamSite',
+        teamId: 'teamId'
+      })
 
       expect(prismaService.journey.create).toHaveBeenNthCalledWith(1, { data })
       expect(prismaService.journey.create).toHaveBeenLastCalledWith({
