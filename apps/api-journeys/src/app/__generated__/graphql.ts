@@ -629,10 +629,6 @@ export class IntegrationGrowthSpacesUpdateInput {
     accessSecret: string;
 }
 
-export class IntegrationInput {
-    id: string;
-}
-
 export class JourneysFilter {
     featured?: Nullable<boolean>;
     template?: Nullable<boolean>;
@@ -947,7 +943,7 @@ export abstract class IMutation {
 
     abstract integrationGrowthSpacesUpdate(id: string, input: IntegrationGrowthSpacesUpdateInput): IntegrationGrowthSpaces | Promise<IntegrationGrowthSpaces>;
 
-    abstract integrationDelete(input: IntegrationInput): Integration | Promise<Integration>;
+    abstract integrationDelete(id: string): Integration | Promise<Integration>;
 
     abstract journeyCreate(input: JourneyCreateInput, teamId: string): Journey | Promise<Journey>;
 

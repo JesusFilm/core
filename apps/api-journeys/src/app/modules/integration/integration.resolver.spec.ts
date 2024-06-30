@@ -86,12 +86,7 @@ describe('IntegrationResolver', () => {
     it('should delete integration', async () => {
       prismaService.integration.delete.mockResolvedValue(integration)
       prismaService.integration.findUnique.mockResolvedValue(integration)
-      await resolver.integrationDelete(
-        {
-          id: 'integrationId'
-        },
-        ability
-      )
+      await resolver.integrationDelete('integrationId', ability)
       expect(prismaService.integration.delete).toHaveBeenCalledWith({
         where: {
           id: 'integrationId'
@@ -101,12 +96,7 @@ describe('IntegrationResolver', () => {
 
     it('should throw error if integration not found', async () => {
       await expect(
-        resolver.integrationDelete(
-          {
-            id: 'integrationId'
-          },
-          ability
-        )
+        resolver.integrationDelete('integrationId', ability)
       ).rejects.toThrow('integration not found')
     })
 
@@ -121,12 +111,7 @@ describe('IntegrationResolver', () => {
         }
       } as unknown as Integration)
       await expect(
-        resolver.integrationDelete(
-          {
-            id: 'integrationId'
-          },
-          ability
-        )
+        resolver.integrationDelete('integrationId', ability)
       ).rejects.toThrow('user is not allowed to delete integration')
     })
   })

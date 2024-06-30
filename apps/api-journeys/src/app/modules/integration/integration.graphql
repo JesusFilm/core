@@ -8,9 +8,6 @@ interface Integration {
   type: IntegrationType!
 }
 
-input IntegrationInput {
-  id: ID!
-}
 
 
 extend type Query {
@@ -18,5 +15,5 @@ extend type Query {
 }
 
 extend type Mutation {
-  integrationDelete(input: IntegrationInput!): Integration!
+  integrationDelete(id: ID!): Integration!
 }
