@@ -321,6 +321,6 @@ describe('TeamMenu', () => {
     await waitFor(() => {
       fireEvent.click(getByRole('menuitem', { name: 'Integrations' }))
     })
-    expect(push).toHaveBeenNthCalledWith(1, 'teams/teamId1/integrations')
+    expect(push).toHaveBeenCalledWith('teams/teamId1/integrations')
   })
 })
