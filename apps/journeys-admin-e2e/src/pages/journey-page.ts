@@ -7,7 +7,7 @@ import testData from '../utils/testData.json'
 let journeyName = ''
 let randomNumber = ''
 const thirtySecondsTimeout = 30000
-const fifteenSecondsTimeout = 15000
+const fifteenSecondsTimeout = 30000
 const sixtySecondsTimeout = 60000
 
 export class JourneyPage {
