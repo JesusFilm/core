@@ -469,12 +469,6 @@ export enum GridJustifyContent {
   FlexStart = 'flexStart'
 }
 
-export type GrowthSpacesRoute = {
-  __typename?: 'GrowthSpacesRoute';
-  id: Scalars['String']['output'];
-  name: Scalars['String']['output'];
-};
-
 export type Host = {
   __typename?: 'Host';
   id: Scalars['ID']['output'];
