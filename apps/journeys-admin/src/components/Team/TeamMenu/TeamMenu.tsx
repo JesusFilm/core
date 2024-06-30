@@ -58,7 +58,6 @@ export function TeamMenu(): ReactElement {
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
-  console.log(activeTeam?.id)
 
   const [teamCreateOpen, setTeamCreateOpen] = useState<boolean | undefined>()
   const [teamUpdateOpen, setTeamUpdateOpen] = useState<boolean | undefined>()
