@@ -10,6 +10,7 @@ import {
   TeamProvider
 } from '../TeamProvider'
 
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { TeamMenu } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -309,11 +310,13 @@ describe('TeamMenu', () => {
 
     const { getByRole } = render(
       <MockedProvider mocks={[{ ...getTeamsMock, result }]}>
-        <SnackbarProvider>
-          <TeamProvider>
-            <TeamMenu />
-          </TeamProvider>
-        </SnackbarProvider>
+        <FlagsProvider flags={{ integrations: true }}>
+          <SnackbarProvider>
+            <TeamProvider>
+              <TeamMenu />
+            </TeamProvider>
+          </SnackbarProvider>
+        </FlagsProvider>
       </MockedProvider>
     )
     fireEvent.click(getByRole('button'))
