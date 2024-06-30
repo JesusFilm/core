@@ -7,7 +7,7 @@ import testData from '../utils/testData.json'
 let journeyName = ''
 let randomNumber = ''
 const thirtySecondsTimeout = 30000
-const fifteenSecondsTimeout = 30000
+const fifteenSecondsTimeout = 15000
 const sixtySecondsTimeout = 60000
 
 export class JourneyPage {
@@ -213,7 +213,7 @@ export class JourneyPage {
       this.page.locator(
         'div[data-testid="JourneysAdminContainedIconButton"] button'
       )
-    ).toBeVisible({ timeout: fifteenSecondsTimeout })
+    ).toBeVisible({ timeout: thirtySecondsTimeout })
     await expect(
       this.page.locator(
         'div[data-testid="JourneysAdminImageThumbnail"] span[class*="MuiCircularProgress"]'
