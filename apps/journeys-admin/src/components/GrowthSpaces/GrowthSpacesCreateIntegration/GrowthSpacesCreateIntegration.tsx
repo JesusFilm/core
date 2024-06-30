@@ -37,7 +37,8 @@ export function GrowthSpacesCreateIntegration(): ReactElement {
           }
         }
       })
-      if (data?.integrationGrowthSpacesCreate != null) {
+
+      if (data?.integrationGrowthSpacesCreate?.id != null) {
         enqueueSnackbar(t('Growth Spaces settings saved'), {
           variant: 'success',
           preventDuplicate: true
@@ -45,20 +46,16 @@ export function GrowthSpacesCreateIntegration(): ReactElement {
         await router.push(
           `/teams/${teamId}/integrations/${data.integrationGrowthSpacesCreate.id}`
         )
+      } else {
+        enqueueSnackbar(
+          t('Growth Spaces settings failed. Reload the page or try again.'),
+          {
+            variant: 'error',
+            preventDuplicate: true
+          }
+        )
       }
     } catch (error) {
-      if (error instanceof ApolloError) {
-        if (error.networkError != null) {
-          enqueueSnackbar(
-            t('Growth Spaces settings failed. Reload the page or try again.'),
-            {
-              variant: 'error',
-              preventDuplicate: true
-            }
-          )
-          return
-        }
-      }
       if (error instanceof Error) {
         enqueueSnackbar(error.message, {
           variant: 'error',

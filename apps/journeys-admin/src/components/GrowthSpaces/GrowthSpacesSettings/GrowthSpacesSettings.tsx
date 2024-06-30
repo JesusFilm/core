@@ -21,7 +21,7 @@ export function GrowthSpacesSettings({
   accessSecret,
   setAccessId,
   setAccessSecret,
-  disabled,
+  disabled = false,
   onClick,
   onDelete: handleDelete
 }: GrowthSpacesSettingsProps): ReactElement {
@@ -67,7 +67,7 @@ export function GrowthSpacesSettings({
               width: '50%'
             }}
           >
-            Remove
+            {t('Remove')}
           </Button>
         )}
         <Button
@@ -76,7 +76,7 @@ export function GrowthSpacesSettings({
           disabled={disabled}
           sx={{ width: '50%' }}
         >
-          Save
+          {t('Save')}
         </Button>
       </Stack>
     </Box>

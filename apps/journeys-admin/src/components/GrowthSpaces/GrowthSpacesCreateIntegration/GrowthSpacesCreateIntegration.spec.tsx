@@ -41,7 +41,7 @@ describe('GrowthSpacesCreateIntegration', () => {
               variables: {
                 input: {
                   accessId: 'access.id',
-                  accessSecretPart: 'access.secret.part',
+                  accessSecret: 'access.secret.part',
                   teamId: 'team.id'
                 }
               }
@@ -57,25 +57,32 @@ describe('GrowthSpacesCreateIntegration', () => {
     )
 
     const accessIdInput = screen.getAllByDisplayValue('')[0]
-    expect(accessIdInput).toHaveAttribute('type', 'password')
     fireEvent.click(screen.getAllByTestId('EyeClosedIcon')[0])
-    fireEvent.click(accessIdInput, {
+    fireEvent.change(accessIdInput, {
       target: { value: 'access.id' }
     })
     fireEvent.submit(accessIdInput)
+    await waitFor(() =>
+      expect(screen.getByDisplayValue('access.id')).toBeInTheDocument()
+    )
 
     const accessSecretPartInput = screen.getByDisplayValue('')
-    expect(accessSecretPartInput).toHaveAttribute('type', 'password')
-    fireEvent.click(screen.getAllByTestId('EyeClosedIcon')[0])
-    fireEvent.click(accessSecretPartInput, {
+    fireEvent.click(screen.getByTestId('EyeClosedIcon'))
+    fireEvent.change(accessSecretPartInput, {
       target: { value: 'access.secret.part' }
     })
     fireEvent.submit(accessSecretPartInput)
-
     await waitFor(() =>
-      fireEvent.click(screen.getByRole('button', { name: 'Save' }))
+      expect(screen.getByDisplayValue('access.secret.part')).toBeInTheDocument()
     )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(screen.getByText('Growth Spaces settings saved')).toBeInTheDocument()
+
+    expect(push).toHaveBeenCalledWith(
+      '/teams/team.id/integrations/integration.id'
+    )
   })
 
   it('should show notistack error on network error', async () => {
@@ -87,8 +94,72 @@ describe('GrowthSpacesCreateIntegration', () => {
       }
     } as unknown as NextRouter)
 
+    const result = jest.fn(() => ({
+      data: {
+        integrationGrowthSpacesCreate: {
+          id: null
+        }
+      }
+    }))
+
     render(
-      <MockedProvider>
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: INTEGRATION_GROWTH_SPACES_CREATE,
+              variables: {
+                input: {
+                  accessId: 'access.id',
+                  accessSecret: 'access.secret.part',
+                  teamId: 'team.id'
+                }
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <GrowthSpacesCreateIntegration />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    const accessIdInput = screen.getAllByDisplayValue('')[0]
+    fireEvent.click(screen.getAllByTestId('EyeClosedIcon')[0])
+    fireEvent.change(accessIdInput, {
+      target: { value: 'access.id' }
+    })
+    fireEvent.submit(accessIdInput)
+    await waitFor(() =>
+      expect(screen.getByDisplayValue('access.id')).toBeInTheDocument()
+    )
+
+    const accessSecretPartInput = screen.getByDisplayValue('')
+    fireEvent.click(screen.getByTestId('EyeClosedIcon'))
+    fireEvent.change(accessSecretPartInput, {
+      target: { value: 'access.secret.part' }
+    })
+    fireEvent.submit(accessSecretPartInput)
+    await waitFor(() =>
+      expect(screen.getByDisplayValue('access.secret.part')).toBeInTheDocument()
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }))
+    await waitFor(() => {
+      expect(result).toHaveBeenCalled()
+      expect(
+        screen.getByText(
+          'Growth Spaces settings failed. Reload the page or try again.'
+        )
+      ).toBeInTheDocument()
+    })
+  })
+
+  it('should show error snackbar on request failure', async () => {
+    render(
+      <MockedProvider mocks={[]}>
         <SnackbarProvider>
           <GrowthSpacesCreateIntegration />s
         </SnackbarProvider>
@@ -96,12 +167,6 @@ describe('GrowthSpacesCreateIntegration', () => {
     )
 
     fireEvent.click(screen.getByRole('button', { name: 'Save' }))
-    await waitFor(() => {
-      expect(
-        screen.getByText(
-          'Growth Spaces settings failed. Reload the page or try again.'
-        )
-      )
-    })
+    await waitFor(() => expect(screen.getByRole('alert')).toBeInTheDocument())
   })
 })

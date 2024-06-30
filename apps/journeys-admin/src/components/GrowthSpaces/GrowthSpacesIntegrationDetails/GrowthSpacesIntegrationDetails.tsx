@@ -1,6 +1,6 @@
 import { ReactElement, useEffect, useState } from 'react'
 
-import { ApolloError, gql, useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import { useTranslation } from 'next-i18next'
 import { useRouter } from 'next/router'
 import { useSnackbar } from 'notistack'
@@ -42,27 +42,6 @@ export function GrowthSpacesIntegrationDetails(): ReactElement {
   const [integrationsGrowthSpacesDelete, { loading: deleteLoading }] =
     useMutation<IntegrationGrowthSpacesDelete>(INTEGRATION_GROWTH_SPACES_DELETE)
 
-  function handleError(error: ApolloError | Error): void {
-    if (error instanceof ApolloError) {
-      if (error.networkError != null) {
-        enqueueSnackbar(
-          t('Growth Spaces settings failed. Reload the page or try again.'),
-          {
-            variant: 'error',
-            preventDuplicate: true
-          }
-        )
-        return
-      }
-    }
-    if (error instanceof Error) {
-      enqueueSnackbar(error.message, {
-        variant: 'error',
-        preventDuplicate: true
-      })
-    }
-  }
-
   async function handleClick(): Promise<void> {
     try {
       const { data } = await integrationsGrowthSpacesUpdate({
@@ -74,14 +53,27 @@ export function GrowthSpacesIntegrationDetails(): ReactElement {
           }
         }
       })
-      if (data?.integrationGrowthSpacesUpdate != null) {
+      if (data?.integrationGrowthSpacesUpdate?.id != null) {
         enqueueSnackbar(t('Growth Spaces settings saved'), {
           variant: 'success',
           preventDuplicate: true
         })
+      } else {
+        enqueueSnackbar(
+          t('Growth Spaces settings failed. Reload the page or try again.'),
+          {
+            variant: 'error',
+            preventDuplicate: true
+          }
+        )
       }
     } catch (error) {
-      handleError(error)
+      if (error instanceof Error) {
+        enqueueSnackbar(error.message, {
+          variant: 'error',
+          preventDuplicate: true
+        })
+      }
     }
   }
 
@@ -92,14 +84,28 @@ export function GrowthSpacesIntegrationDetails(): ReactElement {
           id: integrationId
         }
       })
-      if (data?.integrationDelete != null) {
+      if (data?.integrationDelete?.id != null) {
         enqueueSnackbar(t('Growth Spaces integration deleted'), {
-          variant: 'success'
+          variant: 'success',
+          preventDuplicate: true
         })
-        router.push(`/teams/${router.query.teamId}/integrations`)
+        await router.push(`/teams/${router.query.teamId}/integrations`)
+      } else {
+        enqueueSnackbar(
+          t('Growth Spaces settings failed. Reload the page or try again.'),
+          {
+            variant: 'error',
+            preventDuplicate: true
+          }
+        )
       }
     } catch (error) {
-      handleError(error)
+      if (error instanceof Error) {
+        enqueueSnackbar(error.message, {
+          variant: 'error',
+          preventDuplicate: true
+        })
+      }
     }
   }
 
