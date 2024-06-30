@@ -28,10 +28,11 @@ describe('TeamIntegrations', () => {
       screen.getByTestId('Add Integration-IntegrationsButton')
     ).toHaveAttribute('href', '/teams/team.id/integrations/new')
 
-    await waitFor(() =>
+    await waitFor(() => {
+      expect(screen.getByText('Growth Spaces')).toBeInTheDocument()
       expect(
-        screen.getByTestId('growthSpaces-IntegrationsButton')
+        screen.getByTestId('Growth Spaces-IntegrationsButton')
       ).toHaveAttribute('href', '/teams/team.id/integrations/integration.id')
-    )
+    })
   })
 })
