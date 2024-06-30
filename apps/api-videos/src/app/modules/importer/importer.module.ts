@@ -13,6 +13,7 @@ import { ImporterVideoVariantDownloadsService } from './importerVideoVariantDown
 import { ImporterVideoVariantsService } from './importerVideoVariants/importerVideoVariants.service'
 import { ImporterVideosService } from './importerVideos/importerVideos.service'
 import { ImporterVideosChildrenService } from './importerVideosChildren/importerVideosChildren.service'
+import { ImporterBibleCitationsService } from './importerBibleCitations/importerBibleCitations.service'
 
 @Module({
   providers: [
@@ -27,7 +28,8 @@ import { ImporterVideosChildrenService } from './importerVideosChildren/importer
     ImporterVideoVariantsService,
     ImporterVideoVariantDownloadsService,
     ImporterVideoSubtitlesService,
-    ImporterBibleBooksService
+    ImporterBibleBooksService,
+    ImporterBibleCitationsService
   ],
   exports: [
     ImporterVideosService,
@@ -40,7 +42,8 @@ import { ImporterVideosChildrenService } from './importerVideosChildren/importer
     ImporterVideoVariantsService,
     ImporterVideoVariantDownloadsService,
     ImporterVideoSubtitlesService,
-    ImporterBibleBooksService
+    ImporterBibleBooksService,
+    ImporterBibleCitationsService
   ]
 })
 export class ImporterModule {}

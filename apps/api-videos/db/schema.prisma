@@ -207,17 +207,17 @@ enum BibleCitationType {
 }
 
 model BibleCitation {
-  id                 String            @id @default(uuid())
-  type               BibleCitationType
-  bibleBookId        String
-  chapStart          Int
-  chapEnd            Int?
-  verseStart         Int
-  verseEnd           Int?
-  verseGroupParentId Int
-  videoId            String
-  video              Video             @relation(fields: [videoId], references: [id])
-  bibleBook          BibleBook         @relation(fields: [bibleBookId], references: [id])
+  id           String    @id @default(uuid())
+  bibleBookId  String
+  osisId       String
+  chapterStart Int
+  chapterEnd   Int?
+  verseStart   Int
+  verseEnd     Int?
+  videoId      String
+  order        Int
+  video        Video     @relation(fields: [videoId], references: [id])
+  bibleBook    BibleBook @relation(fields: [bibleBookId], references: [id])
 }
 
 model BibleBook {
