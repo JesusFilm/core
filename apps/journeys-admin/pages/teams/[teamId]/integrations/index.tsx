@@ -1,14 +1,33 @@
-import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
+import {
+  AuthAction,
+  useUser,
+  withUser,
+  withUserTokenSSR
+} from 'next-firebase-auth'
+import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
+
+import { PageWrapper } from '../../../../src/components/PageWrapper'
+import { TeamIntegrations } from '../../../../src/components/Team/TeamIntegrations'
 import { initAndAuthApp } from '../../../../src/libs/initAndAuthApp'
 
-function IntegrationIndexPage(): ReactElement {
-  // add IntegrationsList component here once merged to prod
+function IntegrationsIndexPage(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+  const user = useUser()
+
   return (
-    <div>
-      Integration Index Page: render all the teams integration with a button
-      that enables them to add more
-    </div>
+    <>
+      <NextSeo title={t('Team Integrations')} />
+      <PageWrapper
+        title={t('Team Integrations')}
+        user={user}
+        backHrefHistory
+        mainBodyPadding={false}
+      >
+        <TeamIntegrations />
+      </PageWrapper>
+    </>
   )
 }
 
@@ -35,4 +54,4 @@ export const getServerSideProps = withUserTokenSSR({
 
 export default withUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(IntegrationIndexPage)
+})(IntegrationsIndexPage)
