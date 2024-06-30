@@ -469,12 +469,6 @@ export enum GridJustifyContent {
   FlexStart = 'flexStart'
 }
 
-export type GrowthSpacesRoute = {
-  __typename?: 'GrowthSpacesRoute';
-  id: Scalars['String']['output'];
-  name: Scalars['String']['output'];
-};
-
 export type Host = {
   __typename?: 'Host';
   id: Scalars['ID']['output'];
@@ -614,7 +608,7 @@ export type ImageBlockUpdateInput = {
 
 export type Integration = {
   id: Scalars['ID']['output'];
-  teamId: Scalars['String']['output'];
+  team: Team;
   type: IntegrationType;
 };
 
@@ -623,23 +617,26 @@ export type IntegrationGrowthSpaces = Integration & {
   accessId: Scalars['String']['output'];
   accessSecretPart: Scalars['String']['output'];
   id: Scalars['ID']['output'];
-  routes: Array<GrowthSpacesRoute>;
-  teamId: Scalars['String']['output'];
+  routes: Array<IntegrationGrowthSpacesRoute>;
+  team: Team;
   type: IntegrationType;
 };
 
 export type IntegrationGrowthSpacesCreateInput = {
   accessId: Scalars['String']['input'];
   accessSecret: Scalars['String']['input'];
+  teamId: Scalars['String']['input'];
+};
+
+export type IntegrationGrowthSpacesRoute = {
+  __typename?: 'IntegrationGrowthSpacesRoute';
+  id: Scalars['String']['output'];
+  name: Scalars['String']['output'];
 };
 
 export type IntegrationGrowthSpacesUpdateInput = {
   accessId: Scalars['String']['input'];
   accessSecret: Scalars['String']['input'];
-};
-
-export type IntegrationInput = {
-  id: Scalars['ID']['input'];
 };
 
 export enum IntegrationType {
@@ -1356,13 +1353,12 @@ export type MutationImageBlockUpdateArgs = {
 
 
 export type MutationIntegrationDeleteArgs = {
-  input: IntegrationInput;
+  id: Scalars['ID']['input'];
 };
 
 
 export type MutationIntegrationGrowthSpacesCreateArgs = {
   input: IntegrationGrowthSpacesCreateInput;
-  teamId: Scalars['ID']['input'];
 };
 
 

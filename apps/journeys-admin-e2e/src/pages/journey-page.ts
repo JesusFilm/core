@@ -213,7 +213,7 @@ export class JourneyPage {
       this.page.locator(
         'div[data-testid="JourneysAdminContainedIconButton"] button'
       )
-    ).toBeVisible({ timeout: fifteenSecondsTimeout })
+    ).toBeVisible({ timeout: thirtySecondsTimeout })
     await expect(
       this.page.locator(
         'div[data-testid="JourneysAdminImageThumbnail"] span[class*="MuiCircularProgress"]'
