@@ -28,7 +28,10 @@ describe('TeamMenu', () => {
   const push = jest.fn()
   const on = jest.fn()
 
-  beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
+  beforeEach(() => {
+    ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
+    jest.clearAllMocks()
+  })
 
   const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
     request: {
@@ -57,7 +60,7 @@ describe('TeamMenu', () => {
         getJourneyProfile: {
           __typename: 'JourneyProfile',
           id: 'journeyProfileId',
-          lastActiveTeamId: null
+          lastActiveTeamId: 'teamId1'
         }
       }
     }
@@ -265,5 +268,59 @@ describe('TeamMenu', () => {
       expect(mockTeamWithCustomDomain.result).toHaveBeenCalled()
     )
     expect(getByText('example.com')).toBeInTheDocument()
+  })
+
+  it('takes user to the teams integration page when clicking integrations', async () => {
+    mockedUseRouter.mockReturnValue({
+      query: { param: null },
+      push,
+      events: {
+        on
+      }
+    } as unknown as NextRouter)
+
+    const result = jest.fn(() => ({
+      data: {
+        teams: [
+          {
+            id: 'teamId1',
+            title: 'Team Title',
+            publicTitle: null,
+            __typename: 'Team',
+            userTeams: [],
+            customDomains: []
+          },
+          {
+            id: 'teamId2',
+            title: 'Team Title2',
+            publicTitle: null,
+            __typename: 'Team',
+            userTeams: [],
+            customDomains: []
+          }
+        ],
+        getJourneyProfile: {
+          __typename: 'JourneyProfile',
+          id: 'journeyProfileId',
+          lastActiveTeamId: 'teamId1'
+        }
+      }
+    }))
+
+    const { getByRole } = render(
+      <MockedProvider mocks={[{ ...getTeamsMock, result }]}>
+        <SnackbarProvider>
+          <TeamProvider>
+            <TeamMenu />
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('button'))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    await waitFor(() => {
+      fireEvent.click(getByRole('menuitem', { name: 'Integrations' }))
+    })
+    expect(push).toHaveBeenNthCalledWith(1, 'teams/teamId1/integrations')
   })
 })
