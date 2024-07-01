@@ -151,7 +151,7 @@ describe('messagePlatformToLabel', () => {
   })
 
   it('returns Menu', () => {
-    expect(messagePlatformToLabel(MessagePlatform.menu, t)).toBe('Menu')
+    expect(messagePlatformToLabel(MessagePlatform.menu1, t)).toBe('Menu 1')
   })
 
   it('returns Check Broken', () => {
