@@ -136,6 +136,7 @@ import Minimise1 from './Minimise1'
 import Minimise2 from './Minimise2'
 import MinusCircleContained from './MinusCircleContained'
 import More from './More'
+import PackagePlus from './PackagePlus'
 import Palette from './Palette'
 import Passport from './Passport'
 import Pause1 from './Pause1'
@@ -335,6 +336,7 @@ export type IconName =
   | 'Minimise2'
   | 'MinusCircleContained'
   | 'More'
+  | 'PackagePlus'
   | 'Palette'
   | 'Passport'
   | 'Pause1'
@@ -538,6 +540,7 @@ const iconComponents: IconComponents = {
   MediaStrip1,
   MinusCircleContained,
   More,
+  PackagePlus,
   Palette,
   Passport,
   Pause1,

@@ -144,6 +144,7 @@ const iconNames: IconName[] = [
   'Minimise2',
   'MinusCircleContained',
   'More',
+  'PackagePlus',
   'Palette',
   'Passport',
   'Pause1',
