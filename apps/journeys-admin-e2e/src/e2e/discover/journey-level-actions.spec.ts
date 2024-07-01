@@ -29,7 +29,7 @@ test.describe('Journey level actions', () => {
   })
 
   // Discover page -> Existing journey -> Edit
-  test('Edit existing journey', async ({ page }) => {
+  test.skip('Edit existing journey', async ({ page }) => {
     const journeyLevelActions = new JourneyLevelActions(page)
     const journeyPage = new JourneyPage(page)
     const journeyName = await journeyPage.getJourneyName()

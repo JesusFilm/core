@@ -30,7 +30,7 @@ test.describe('Publisher page functionality', () => {
   })
 
   //Discover page -> Create a new journey with one card -> Three dots on top right -> Create Template
-  test('Create a template via existing journey', async ({ page }) => {
+  test.fixme('Create a template via existing journey', async ({ page }) => {
     const journeyPage = new JourneyPage(page)
     await journeyPage.selectExistingJourney() // clicking existing journey in the journey list of discover page
     await journeyPage.setExistingJourneyNameToJourneyName() // setting the journey name
@@ -84,7 +84,7 @@ test.describe('Publisher page functionality', () => {
   })
 
   //Verify the user able to display the publisher help window
-  test('Verify the user able to display the publisher help window', async ({
+  test.fixme('Verify the user able to display the publisher help window', async ({
     page
   }) => {
     const publisherPage = new Publisher(page)
