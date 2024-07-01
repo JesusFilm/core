@@ -55,7 +55,8 @@ export const textResponseSubmissionEvent: TimelineItem = {
     label: 'How do you feel about your adventure?',
     value:
       'It was basically the worst. Stabbed, lost, hungry, betrayed, and I lost a finger.',
-    createdAt: '2022-11-02T03:20:26.368Z'
+    createdAt: '2022-11-02T03:20:26.368Z',
+    blockId: 'blockId'
   },
   duration: '0.01'
 }
