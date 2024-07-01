@@ -30,6 +30,7 @@ export class BatchService {
           resourceChannels: { where: { channel: { youtubeId: row.videoId } } },
         },
       });
+
       if (resource != null) {
         // Update Resource
         await this.prismaService.resource.update({
@@ -54,6 +55,7 @@ export class BatchService {
         });
       }
       if (resource?.resourceLocalizations?.length === 0) {
+        console.log("Creating localization");
         // Create Localization is it is not existing
         await this.prismaService.resourceLocalization.create({
           data: {
@@ -96,7 +98,7 @@ export class BatchService {
       }
     }
 
-    const batches: Array<{
+    const updateResourceBatches: Array<{
       channel: string;
       resourceIds: string[];
     }> = [];
@@ -115,8 +117,8 @@ export class BatchService {
           (item) => item.channelData?.id === channel && item.resourceData?.id
         )
         .map((item) => item.resourceData?.id ?? "");
-      batches.push({ channel, resourceIds });
+      updateResourceBatches.push({ channel, resourceIds });
     }
-    return batches;
+    return updateResourceBatches;
   }
 }

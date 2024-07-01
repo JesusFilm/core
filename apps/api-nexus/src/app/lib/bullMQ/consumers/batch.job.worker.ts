@@ -3,9 +3,7 @@ import { unlink } from 'fs'
 import { Process, Processor } from '@nestjs/bull'
 import { Job } from 'bull'
 
-import { BucketService } from '../../bucket/bucket.service'
 import { GoogleDriveService } from '../../google/drive.service'
-import { GoogleOAuthService } from '../../google/oauth.service'
 import { GoogleYoutubeService } from '../../google/youtube.service'
 import { PrismaService } from '../../prisma.service'
 import {
@@ -17,8 +15,6 @@ import {
 export class BatchJobWorker {
   constructor(
     private readonly googleDriveService: GoogleDriveService,
-    private readonly googleOAuthService: GoogleOAuthService,
-    private readonly bucketService: BucketService,
     private readonly youtubeService: GoogleYoutubeService,
     private readonly prismaService: PrismaService
   ) {}

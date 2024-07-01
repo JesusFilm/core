@@ -54,7 +54,7 @@ export class NexusJobListener implements OnModuleInit {
               id: job.data.batchId,
               batchTasks: { every: { progress: 100 } }
             },
-            data: { progress: 100, status: 'completed' }
+            data: { status: 'completed' }
           })
         ])
 

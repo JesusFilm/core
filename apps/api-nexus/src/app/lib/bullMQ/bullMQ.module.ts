@@ -2,7 +2,6 @@ import { BullModule } from '@nestjs/bull'
 import { Global, Module } from '@nestjs/common'
 
 import { BatchService } from '../../modules/batch/batch.service'
-import { BucketService } from '../bucket/bucket.service'
 import { GoogleDriveService } from '../google/drive.service'
 import { GoogleOAuthService } from '../google/oauth.service'
 import { GoogleSheetsService } from '../google/sheets.service'
@@ -32,7 +31,6 @@ import { NexusJobListener } from './listener/jobListener'
     GoogleDriveService,
     GoogleYoutubeService,
     BatchService,
-    BucketService,
     PrismaService,
     NexusJobListener
   ],

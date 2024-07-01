@@ -99,16 +99,12 @@ enum BatchStatus {
 }
 
 model Batch {
-    id             String      @id @default(uuid())
-    name           String
-    status         BatchStatus @default(pending)
-    totalTasks     Int         @default(0)
-    completedTasks Int         @default(0)
-    failedTasks    Int         @default(0)
-    progress       Float       @default(0)
-    createdAt      DateTime    @default(now())
-    updatedAt      DateTime    @updatedAt
-    batchTasks     BatchTask[]
+    id         String       @id @default(uuid())
+    name       String
+    status     BatchStatus? @default(pending)
+    createdAt  DateTime     @default(now())
+    updatedAt  DateTime?    @updatedAt
+    batchTasks BatchTask[]
 }
 
 enum BatchTaskStatus {
@@ -128,7 +124,7 @@ model BatchTask {
     status    BatchTaskStatus @default(pending)
     batch     Batch           @relation(fields: [batchId], references: [id])
     createdAt DateTime        @default(now())
-    updatedAt DateTime        @updatedAt
+    updatedAt DateTime?       @updatedAt
 }
 
 enum Role {
