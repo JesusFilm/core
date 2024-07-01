@@ -50,7 +50,7 @@ export function messagePlatformToLabel(
     case MessagePlatform.messageNotifySquare:
       return t('Message Notify Square')
     case MessagePlatform.messageSquare:
-      return t('Message Sqaure')
+      return t('Message Square')
     case MessagePlatform.mail1:
       return t('Mail 1')
     case MessagePlatform.linkExternal:
