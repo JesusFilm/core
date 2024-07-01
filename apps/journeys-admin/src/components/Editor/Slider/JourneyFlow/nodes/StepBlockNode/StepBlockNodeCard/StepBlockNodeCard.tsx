@@ -40,7 +40,6 @@ export function StepBlockNodeCard({
     priorityBlock,
     bgImage,
     hasMultipleActions,
-    expanded,
     priorityImage
   } = getCardMetadata(card)
 
