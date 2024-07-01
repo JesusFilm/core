@@ -5,16 +5,35 @@ import { getJourneyAnalytics } from '@core/journeys/ui/useJourneyAnalyticsQuery/
 import { render, screen, waitFor } from '@testing-library/react'
 import { AnalyticsOverlaySwitch } from '.'
 import { GetJourney_journey } from '../../../../../../__generated__/GetJourney'
+import { earliestStatsCollected } from './AnalyticsOverlaySwitch'
+
+const mockCurrentDate = '2024-06-02'
 
 describe('AnalyticsOverlaySwitch', () => {
+  beforeAll(() => {
+    jest.useFakeTimers()
+    jest.setSystemTime(new Date('2024-06-02'))
+  })
+  afterAll(() => {
+    jest.useRealTimers()
+  })
+
   it('toggles showAnalytics', async () => {
     const result = jest.fn().mockReturnValue(getJourneyAnalytics.result)
     const journey = { id: 'journeyId' } as unknown as GetJourney_journey
+    const request = {
+      ...getJourneyAnalytics.request,
+      variables: {
+        ...getJourneyAnalytics.request.variables,
+        period: 'custom',
+        date: `${earliestStatsCollected},${mockCurrentDate}`
+      }
+    }
     render(
       <MockedProvider
         mocks={[
           {
-            ...getJourneyAnalytics,
+            request,
             result
           }
         ]}
