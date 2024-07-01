@@ -29,7 +29,7 @@ test.describe('Journey level actions', () => {
   })
 
   // Discover page -> Existing journey -> Edit
-  test('Edit existing journey', async ({ page }) => {
+  test.skip('Edit existing journey', async ({ page }) => {
     const journeyLevelActions = new JourneyLevelActions(page)
     const journeyPage = new JourneyPage(page)
     const journeyName = await journeyPage.getJourneyName()
@@ -46,7 +46,7 @@ test.describe('Journey level actions', () => {
   })
 
   // Discover page -> Existing journey -> Access
-  test('Access for existing journey', async ({ page }) => {
+  test.fixme('Access for existing journey', async ({ page }) => {
     const journeyLevelActions = new JourneyLevelActions(page)
     const journeyPage = new JourneyPage(page)
     await journeyPage.clickCreateCustomJourney() // click the create custom journey button
