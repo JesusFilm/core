@@ -21,6 +21,7 @@ interface CardMetadata {
   priorityBlock?: TreeBlock
   bgImage?: string
   hasMultipleActions?: boolean
+  expanded?: boolean
   priorityImage?: string | null
 }
 
@@ -108,6 +109,7 @@ export function getCardMetadata(
   }
   const [title, subtitle] = getCardHeadings(card.children)
   const bgImage = getBackgroundImage(card)
+  const expanded = card.fullscreen
   const priorityImage = getPriorityImage(card.children)
 
   return {
@@ -116,6 +118,7 @@ export function getCardMetadata(
     priorityBlock,
     bgImage,
     hasMultipleActions,
+    expanded,
     priorityImage
   }
 }
