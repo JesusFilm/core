@@ -1336,6 +1336,28 @@ enum MessagePlatform {
   line
   tikTok
   custom
+  globe2
+  globe3
+  messageText1
+  messageText2
+  send1
+  send2
+  messageChat2
+  messageCircle
+  messageNotifyCircle
+  messageNotifySquare
+  messageSquare
+  mail1
+  linkExternal
+  home4
+  home3
+  helpCircle
+  helpSquare
+  shieldCheck
+  menu
+  checkBroken
+  checkContained
+  settings
 }
 
 input ChatOpenEventCreateInput {
