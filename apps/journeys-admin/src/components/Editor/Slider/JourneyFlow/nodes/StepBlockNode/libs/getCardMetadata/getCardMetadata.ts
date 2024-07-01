@@ -101,23 +101,21 @@ export function getCardMetadata(
       priorityBlock.image ??
       undefined
 
-    const expanded = card.fullscreen
-    const priorityImage = getPriorityImage(card.children)
     return {
       description,
       title,
       subtitle,
       priorityBlock,
       bgImage,
-      hasMultipleActions,
-      expanded,
-      priorityImage
+      hasMultipleActions
     }
   } else {
     const [title, subtitle] = getCardHeadings(card.children)
     const bgImage = getBackgroundImage(card)
     const expanded = card.fullscreen
-    const priorityImage = getPriorityImage(card.children)
+    const priorityImage = expanded ? getPriorityImage(card.children) : undefined
+
+    console.log('card.children:  ', card.children)
     return {
       title,
       subtitle,

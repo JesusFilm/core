@@ -1,20 +1,22 @@
-import sortBy from 'lodash/sortBy'
-
 import { TreeBlock } from '@core/journeys/ui/block'
-import { BlockFields } from '@core/journeys/ui/block/__generated__/BlockFields'
+import {
+  BlockFields,
+  BlockFields_ImageBlock as ImageBlock
+} from '@core/journeys/ui/block/__generated__/BlockFields'
 
 export function getPriorityImage(
-  card: TreeBlock<BlockFields>
+  card: Array<TreeBlock<BlockFields>>
 ): string | undefined {
   if (card == null) return
 
-  const imageBlock = sortBy(card.children, (block) => {
-    if (block.__typename === 'ImageBlock') {
-      block.__typename = 'ImageBlock'
-      return block.src
-    }
-    return Infinity
-  }).find((block) => block.__typename === 'ImageBlock')
+  const imageBlock =
+    card != null
+      ? (
+          card.find(
+            (block) => block.__typename === 'ImageBlock'
+          ) as TreeBlock<ImageBlock>
+        )?.src
+      : undefined
 
-  return imageBlock
+  return imageBlock != null ? imageBlock : undefined
 }

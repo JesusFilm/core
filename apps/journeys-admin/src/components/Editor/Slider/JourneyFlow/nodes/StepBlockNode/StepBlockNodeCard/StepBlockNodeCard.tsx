@@ -59,7 +59,6 @@ export function StepBlockNodeCard({
       dispatch({ type: 'SetSelectedStepAction', selectedStep: step })
     }
   }
-  console.log('expanded: ', expanded)
 
   const nodeBgImage = expanded === false ? bgImage : priorityImage
 
