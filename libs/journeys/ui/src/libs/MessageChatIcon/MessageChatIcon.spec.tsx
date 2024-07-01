@@ -47,4 +47,44 @@ describe('MessageChatIcon', () => {
     render(<MessageChatIcon platform={MessagePlatform.custom} />)
     expect(screen.getByTestId('MessageTypingIcon')).toBeInTheDocument()
   })
+
+  it('should return globe2 icon', () => {
+    render(<MessageChatIcon platform={MessagePlatform.globe2} />)
+    expect(screen.getByTestId('Globe2Icon')).toBeInTheDocument()
+  })
+
+  it('should return globe3 icon', () => {
+    render(<MessageChatIcon platform={MessagePlatform.globe3} />)
+    expect(screen.getByTestId('Globe3Icon')).toBeInTheDocument()
+  })
+
+  it('should return messageText1 icon', () => {
+    render(<MessageChatIcon platform={MessagePlatform.messageText1} />)
+    expect(screen.getByTestId('MessageText1Icon')).toBeInTheDocument()
+  })
+
+  it('should return messageText2 icon', () => {
+    render(<MessageChatIcon platform={MessagePlatform.messageText2} />)
+    expect(screen.getByTestId('MessageText2Icon')).toBeInTheDocument()
+  })
+
+  it('should return send1 icon', () => {
+    render(<MessageChatIcon platform={MessagePlatform.send1} />)
+    expect(screen.getByTestId('Send1Icon')).toBeInTheDocument()
+  })
+
+  it('should return send2 icon', () => {
+    render(<MessageChatIcon platform={MessagePlatform.send2} />)
+    expect(screen.getByTestId('Send2Icon')).toBeInTheDocument()
+  })
+
+  it('should return messageChat2 icon', () => {
+    render(<MessageChatIcon platform={MessagePlatform.messageChat2} />)
+    expect(screen.getByTestId('MessageChat2Icon')).toBeInTheDocument()
+  })
+
+  it('should return messageCircle icon', () => {
+    render(<MessageChatIcon platform={MessagePlatform.messageCircle} />)
+    expect(screen.getByTestId('MessageCircleIcon')).toBeInTheDocument()
+  })
 })
