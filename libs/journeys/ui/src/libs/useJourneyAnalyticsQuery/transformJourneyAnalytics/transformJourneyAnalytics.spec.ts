@@ -77,12 +77,12 @@ describe('transformJourneyAnalytics', () => {
         {
           __typename: 'PlausibleStatsResponse',
           property: 'facebook',
-          visitors: 3
+          visitors: 2
         },
         {
           __typename: 'PlausibleStatsResponse',
           property: 'tiktok',
-          visitors: 2
+          visitors: 3
         }
       ],
       journeyVisitorsPageExits: [
@@ -158,24 +158,76 @@ describe('transformJourneyAnalytics', () => {
     const result = {
       totalVisitors: 10,
       chatsStarted: 5,
-      linksVisited: 0,
-      referrers: [
-        {
-          __typename: 'PlausibleStatsResponse',
-          property: 'Direct / None',
-          visitors: 5
-        },
-        {
-          __typename: 'PlausibleStatsResponse',
-          property: 'facebook',
-          visitors: 3
-        },
-        {
-          __typename: 'PlausibleStatsResponse',
-          property: 'tiktok',
-          visitors: 2
-        }
-      ],
+      linksVisited: 10,
+      referrers: {
+        edges: [
+          {
+            id: 'Direct / None->SocialPreview',
+            source: 'Direct / None',
+            target: 'SocialPreview',
+            type: 'Referrer',
+            updatable: false
+          },
+          {
+            id: 'tiktok->SocialPreview',
+            source: 'tiktok',
+            target: 'SocialPreview',
+            type: 'Referrer',
+            updatable: false
+          },
+          {
+            id: 'facebook->SocialPreview',
+            source: 'facebook',
+            target: 'SocialPreview',
+            type: 'Referrer',
+            updatable: false
+          }
+        ],
+        nodes: [
+          {
+            data: {
+              __typename: 'PlausibleStatsResponse',
+              property: 'Direct / None',
+              visitors: 5
+            },
+            draggable: false,
+            id: 'Direct / None',
+            position: {
+              x: -600,
+              y: -18
+            },
+            type: 'Referrer'
+          },
+          {
+            data: {
+              __typename: 'PlausibleStatsResponse',
+              property: 'tiktok',
+              visitors: 3
+            },
+            draggable: false,
+            id: 'tiktok',
+            position: {
+              x: -600,
+              y: 24
+            },
+            type: 'Referrer'
+          },
+          {
+            data: {
+              __typename: 'PlausibleStatsResponse',
+              property: 'facebook',
+              visitors: 2
+            },
+            draggable: false,
+            id: 'facebook',
+            position: {
+              x: -600,
+              y: 66
+            },
+            type: 'Referrer'
+          }
+        ]
+      },
       stepsStats: [
         {
           stepId: 'step1.id',
