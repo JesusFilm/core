@@ -87,4 +87,39 @@ describe('MessageChatIcon', () => {
     render(<MessageChatIcon platform={MessagePlatform.messageCircle} />)
     expect(screen.getByTestId('MessageCircleIcon')).toBeInTheDocument()
   })
+
+  it('should return messageCircle icon', () => {
+    render(<MessageChatIcon platform={MessagePlatform.messageNotifyCircle} />)
+    expect(screen.getByTestId('MessageNotifyCircleIcon')).toBeInTheDocument()
+  })
+
+  it('should return messageNotifySquare icon', () => {
+    render(<MessageChatIcon platform={MessagePlatform.messageNotifySquare} />)
+    expect(screen.getByTestId('MessageNotifySquareIcon')).toBeInTheDocument()
+  })
+
+  it('should return messageNotifySquare icon', () => {
+    render(<MessageChatIcon platform={MessagePlatform.shieldCheck} />)
+    expect(screen.getByTestId('ShieldCheckIcon')).toBeInTheDocument()
+  })
+
+  it('should return menu icon', () => {
+    render(<MessageChatIcon platform={MessagePlatform.menu} />)
+    expect(screen.getByTestId('Menu1Icon')).toBeInTheDocument()
+  })
+
+  it('should return menu icon', () => {
+    render(<MessageChatIcon platform={MessagePlatform.checkBroken} />)
+    expect(screen.getByTestId('CheckBrokenIcon')).toBeInTheDocument()
+  })
+
+  it('should return menu icon', () => {
+    render(<MessageChatIcon platform={MessagePlatform.checkContained} />)
+    expect(screen.getByTestId('CheckContainedIcon')).toBeInTheDocument()
+  })
+
+  it('should return menu icon', () => {
+    render(<MessageChatIcon platform={MessagePlatform.settings} />)
+    expect(screen.getByTestId('SettingsIcon')).toBeInTheDocument()
+  })
 })
