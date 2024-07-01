@@ -157,8 +157,7 @@ describe('getCardMetadata', () => {
       bgImage: 'https://imagedelivery.net/cloudflare-key/uploadId/public',
       priorityImage: 'https://imagedelivery.net/cloudflare-key/uploadId/public',
       priorityBlock: button1,
-      hasMultipleActions: true,
-      expanded: false
+      hasMultipleActions: true
     })
   })
 

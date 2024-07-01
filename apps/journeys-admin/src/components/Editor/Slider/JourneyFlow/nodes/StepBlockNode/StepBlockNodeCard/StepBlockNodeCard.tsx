@@ -40,7 +40,6 @@ export function StepBlockNodeCard({
     priorityBlock,
     bgImage,
     hasMultipleActions,
-    expanded,
     priorityImage
   } = getCardMetadata(card)
 
@@ -59,8 +58,6 @@ export function StepBlockNodeCard({
       dispatch({ type: 'SetSelectedStepAction', selectedStep: step })
     }
   }
-
-  const nodeBgImage = expanded ? priorityImage : bgImage
 
   return (
     <Card
@@ -108,7 +105,7 @@ export function StepBlockNodeCard({
             justifyContent: 'center',
             bgcolor: card?.backgroundColor ?? 'background.default',
             backgroundImage:
-              nodeBgImage != null ? `url(${nodeBgImage})` : undefined
+              priorityImage != null ? `url(${priorityImage})` : undefined
           }}
         >
           {priorityBlock != null && (
