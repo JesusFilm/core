@@ -84,15 +84,16 @@ test.describe('Publisher page functionality', () => {
   })
 
   //Verify the user able to display the publisher help window
-  test.fixme('Verify the user able to display the publisher help window', async ({
-    page
-  }) => {
-    const publisherPage = new Publisher(page)
-    const journeyLevelActions = new JourneyLevelActions(page)
-    await publisherPage.navigateToPublisherPage() // navigating to the publisher page
-    await journeyLevelActions.clickHelpBtn() // clicking on help button at top of the right corner
-    await journeyLevelActions.verifyHelpWindowOpened() // verifying the help window is showing in the publisher page
-  })
+  test.fixme(
+    'Verify the user able to display the publisher help window',
+    async ({ page }) => {
+      const publisherPage = new Publisher(page)
+      const journeyLevelActions = new JourneyLevelActions(page)
+      await publisherPage.navigateToPublisherPage() // navigating to the publisher page
+      await journeyLevelActions.clickHelpBtn() // clicking on help button at top of the right corner
+      await journeyLevelActions.verifyHelpWindowOpened() // verifying the help window is showing in the publisher page
+    }
+  )
 
   // Skip flaky test
   test.skip('Publisher-> Select existing template -> Three dots on top right -> Template Settings -> Metadata', async ({
