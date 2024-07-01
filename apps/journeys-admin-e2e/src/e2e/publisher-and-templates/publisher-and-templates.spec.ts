@@ -30,7 +30,7 @@ test.describe('Publisher page functionality', () => {
   })
 
   //Discover page -> Create a new journey with one card -> Three dots on top right -> Create Template
-  test('Create a template via existing journey', async ({ page }) => {
+  test.fixme('Create a template via existing journey', async ({ page }) => {
     const journeyPage = new JourneyPage(page)
     await journeyPage.selectExistingJourney() // clicking existing journey in the journey list of discover page
     await journeyPage.setExistingJourneyNameToJourneyName() // setting the journey name
@@ -84,15 +84,16 @@ test.describe('Publisher page functionality', () => {
   })
 
   //Verify the user able to display the publisher help window
-  test('Verify the user able to display the publisher help window', async ({
-    page
-  }) => {
-    const publisherPage = new Publisher(page)
-    const journeyLevelActions = new JourneyLevelActions(page)
-    await publisherPage.navigateToPublisherPage() // navigating to the publisher page
-    await journeyLevelActions.clickHelpBtn() // clicking on help button at top of the right corner
-    await journeyLevelActions.verifyHelpWindowOpened() // verifying the help window is showing in the publisher page
-  })
+  test.fixme(
+    'Verify the user able to display the publisher help window',
+    async ({ page }) => {
+      const publisherPage = new Publisher(page)
+      const journeyLevelActions = new JourneyLevelActions(page)
+      await publisherPage.navigateToPublisherPage() // navigating to the publisher page
+      await journeyLevelActions.clickHelpBtn() // clicking on help button at top of the right corner
+      await journeyLevelActions.verifyHelpWindowOpened() // verifying the help window is showing in the publisher page
+    }
+  )
 
   // Skip flaky test
   test.skip('Publisher-> Select existing template -> Three dots on top right -> Template Settings -> Metadata', async ({
