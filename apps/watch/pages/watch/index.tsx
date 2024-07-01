@@ -10,8 +10,9 @@ import {
 } from '../../__generated__/GetHomeVideos'
 import { VideoChildFields } from '../../__generated__/VideoChildFields'
 import i18nConfig from '../../next-i18next.config'
-import { HomePage as VideoHomePage } from '../../src/components/HomePage'
+import { WatchHomePage as VideoHomePage } from '../../src/components/WatchHomePage'
 import { createApolloClient } from '../../src/libs/apolloClient'
+import { getFlags } from '../../src/libs/getFlags'
 import { VIDEO_CHILD_FIELDS } from '../../src/libs/videoChildFields'
 
 export const GET_HOME_VIDEOS = gql`
@@ -40,6 +41,7 @@ const videoIds = [
   'GOMarkCollection',
   'GOLukeCollection',
   'GOJohnCollection',
+  'IsItWorthIt',
   '8_NBC',
   '1_cl1309-0-0',
   '1_jf6102-0-0',
@@ -78,6 +80,7 @@ export const getStaticProps: GetStaticProps<HomePageProps> = async ({
   return {
     revalidate: 3600,
     props: {
+      flags: await getFlags(),
       videos: compact(videos),
       ...(await serverSideTranslations(
         locale ?? 'en',

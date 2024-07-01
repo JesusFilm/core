@@ -1,7 +1,15 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render, screen } from '@testing-library/react'
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within
+} from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { ReactFlowProvider } from 'reactflow'
 
+import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
 
 import {
@@ -30,7 +38,7 @@ describe('ActionButton', () => {
     render(
       <MockedProvider>
         <ReactFlowProvider>
-          <ActionButton block={block} />
+          <ActionButton stepId="step.id" block={block} />
         </ReactFlowProvider>
       </MockedProvider>
     )
@@ -47,7 +55,7 @@ describe('ActionButton', () => {
     render(
       <MockedProvider>
         <ReactFlowProvider>
-          <ActionButton block={block} />
+          <ActionButton stepId="step.id" block={block} />
         </ReactFlowProvider>
       </MockedProvider>
     )
@@ -63,7 +71,7 @@ describe('ActionButton', () => {
     render(
       <MockedProvider>
         <ReactFlowProvider>
-          <ActionButton block={block} />
+          <ActionButton stepId="step.id" block={block} />
         </ReactFlowProvider>
       </MockedProvider>
     )
@@ -80,7 +88,7 @@ describe('ActionButton', () => {
     render(
       <MockedProvider>
         <ReactFlowProvider>
-          <ActionButton block={block} />
+          <ActionButton stepId="step.id" block={block} />
         </ReactFlowProvider>
       </MockedProvider>
     )
@@ -96,7 +104,7 @@ describe('ActionButton', () => {
     render(
       <MockedProvider>
         <ReactFlowProvider>
-          <ActionButton block={block} />
+          <ActionButton stepId="step.id" block={block} />
         </ReactFlowProvider>
       </MockedProvider>
     )
@@ -112,7 +120,7 @@ describe('ActionButton', () => {
     render(
       <MockedProvider>
         <ReactFlowProvider>
-          <ActionButton block={block} />
+          <ActionButton stepId="step.id" block={block} />
         </ReactFlowProvider>
       </MockedProvider>
     )
@@ -131,7 +139,7 @@ describe('ActionButton', () => {
     render(
       <MockedProvider>
         <ReactFlowProvider>
-          <ActionButton block={block} />
+          <ActionButton stepId="step.id" block={block} />
         </ReactFlowProvider>
       </MockedProvider>
     )
@@ -148,7 +156,7 @@ describe('ActionButton', () => {
     render(
       <MockedProvider>
         <ReactFlowProvider>
-          <ActionButton block={block} />
+          <ActionButton stepId="step.id" block={block} />
         </ReactFlowProvider>
       </MockedProvider>
     )
@@ -164,7 +172,7 @@ describe('ActionButton', () => {
     render(
       <MockedProvider>
         <ReactFlowProvider>
-          <ActionButton block={block} />
+          <ActionButton stepId="step.id" block={block} />
         </ReactFlowProvider>
       </MockedProvider>
     )
@@ -180,7 +188,7 @@ describe('ActionButton', () => {
     render(
       <MockedProvider>
         <ReactFlowProvider>
-          <ActionButton block={block} />
+          <ActionButton stepId="step.id" block={block} />
         </ReactFlowProvider>
       </MockedProvider>
     )
@@ -200,11 +208,66 @@ describe('ActionButton', () => {
     render(
       <MockedProvider>
         <ReactFlowProvider>
-          <ActionButton block={block} />
+          <ActionButton stepId="step.id" block={block} />
         </ReactFlowProvider>
       </MockedProvider>
     )
 
     expect(screen.getByTestId('BaseNodeConnectionArrowIcon')).not.toBeVisible()
+  })
+
+  it('should disable source handle in analytics mode', () => {
+    const block = {
+      __typename: 'ButtonBlock'
+    } as unknown as TreeBlock<ButtonBlock>
+
+    const initialState = {
+      showAnalytics: true
+    } as unknown as EditorState
+
+    render(
+      <MockedProvider>
+        <ReactFlowProvider>
+          <EditorProvider initialState={initialState}>
+            <ActionButton stepId="step.id" block={block} />
+          </EditorProvider>
+        </ReactFlowProvider>
+      </MockedProvider>
+    )
+
+    expect(
+      screen.getByTestId('BaseNodeRightHandle-disabled')
+    ).toBeInTheDocument()
+  })
+
+  it('should show bar in analytics mode', () => {
+    const block = {
+      __typename: 'ButtonBlock',
+      id: 'button.id'
+    } as unknown as TreeBlock<ButtonBlock>
+    const stepMap = new Map([['step.id', { total: 10 }]])
+    const blockMap = new Map([['button.id', 5]])
+
+    const initialState = {
+      showAnalytics: true,
+      analytics: {
+        stepMap,
+        blockMap
+      }
+    } as unknown as EditorState
+
+    render(
+      <MockedProvider>
+        <ReactFlowProvider>
+          <EditorProvider initialState={initialState}>
+            <ActionButton stepId="step.id" block={block} />
+          </EditorProvider>
+        </ReactFlowProvider>
+      </MockedProvider>
+    )
+
+    const bar = screen.getByTestId('AnalyticsOverlayBar')
+    expect(bar).toBeInTheDocument()
+    expect(bar).toHaveStyle('flex-grow: 0.5')
   })
 })
