@@ -5,11 +5,11 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { searchBlocks } from '@core/journeys/ui/searchBlocks'
 
+import { StepAndCardBlockCreate } from '../../../../../../../__generated__/StepAndCardBlockCreate'
 import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../__generated__/globalTypes'
-import { StepAndCardBlockCreate } from '../../../../../../../__generated__/StepAndCardBlockCreate'
 import { useBlockOrderUpdateMutation } from '../../../../../../libs/useBlockOrderUpdateMutation'
 import { useNavigateToBlockActionUpdateMutation } from '../../../../../../libs/useNavigateToBlockActionUpdateMutation'
 import { useStepAndCardBlockCreateMutation } from '../../../../../../libs/useStepAndCardBlockCreateMutation'

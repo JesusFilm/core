@@ -6,9 +6,9 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { object, string } from 'yup'
 
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import Mail2Icon from '@core/shared/ui/icons/Mail2'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'

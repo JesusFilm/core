@@ -61,7 +61,6 @@ export async function main(mode: string, target?: string): Promise<void> {
       const videos = await getArclightMediaComponents(page)
       count = videos.length
       for (const arclightVideo of videos) {
-        // eslint-disable-next-line @typescript-eslint/no-extra-semi
         ;({ resumed, errors } = await handleArclightMediaComponent(
           arclightVideo,
           importedVideos,
@@ -84,7 +83,6 @@ export async function main(mode: string, target?: string): Promise<void> {
       const videos = await getArclightMediaComponents(page)
       count = videos.length
       for (const arclightVideo of videos) {
-        // eslint-disable-next-line @typescript-eslint/no-extra-semi
         ;({ resumed, errors } = await handleArclightMediaComponent(
           arclightVideo,
           importedVideos,
@@ -112,7 +110,6 @@ export async function main(mode: string, target?: string): Promise<void> {
       console.log('no arclight video found for id:', target)
       return
     }
-    // eslint-disable-next-line @typescript-eslint/no-extra-semi
     ;({ resumed, errors } = await handleArclightMediaComponent(
       arclightVideo,
       importedVideos,
@@ -134,8 +131,6 @@ export async function main(mode: string, target?: string): Promise<void> {
       console.log('no arclight video found for id:', target)
       return
     }
-
-    // eslint-disable-next-line @typescript-eslint/no-extra-semi
     ;({ resumed, errors } = await handleArclightMediaComponent(
       arclightVideo,
       importedVideos,

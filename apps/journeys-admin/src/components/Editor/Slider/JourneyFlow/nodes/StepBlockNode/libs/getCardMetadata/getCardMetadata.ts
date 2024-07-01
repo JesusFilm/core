@@ -7,8 +7,8 @@ import {
   BlockFields_ImageBlock as ImageBlock,
   BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../../../__generated__/BlockFields'
-import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
 import { VideoFields_video_variantLanguages } from '../../../../../../../../../__generated__/VideoFields'
+import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
 import { getBackgroundImage } from '../getBackgroundImage'
 import { getCardHeadings } from '../getCardHeadings'
 import { getPriorityBlock } from '../getPriorityBlock'

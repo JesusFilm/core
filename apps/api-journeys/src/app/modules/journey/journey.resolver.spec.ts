@@ -1,8 +1,11 @@
+import { BullModule, getQueueToken } from '@nestjs/bullmq'
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import omit from 'lodash/omit'
 import { v4 as uuidv4 } from 'uuid'
 
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+import { getPowerBiEmbed } from '@core/nest/powerBi/getPowerBiEmbed'
 import {
   Action,
   Block,
@@ -19,8 +22,6 @@ import {
   UserJourneyRole,
   UserTeamRole
 } from '.prisma/api-journeys-client'
-import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
-import { getPowerBiEmbed } from '@core/nest/powerBi/getPowerBiEmbed'
 
 import {
   IdType,
@@ -58,7 +59,8 @@ describe('JourneyResolver', () => {
     blockService: DeepMockProxy<BlockService>,
     prismaService: DeepMockProxy<PrismaService>,
     ability: AppAbility,
-    abilityWithPublisher: AppAbility
+    abilityWithPublisher: AppAbility,
+    plausibleQueue: { add: jest.Mock }
 
   const journey: Journey = {
     id: 'journeyId',
@@ -84,7 +86,8 @@ describe('JourneyResolver', () => {
     seoDescription: null,
     template: false,
     hostId: null,
-    strategySlug: null
+    strategySlug: null,
+    plausibleToken: null
   }
   const journeyWithUserTeam = {
     ...journey,
@@ -113,8 +116,15 @@ describe('JourneyResolver', () => {
   })
 
   beforeEach(async () => {
+    plausibleQueue = {
+      add: jest.fn()
+    }
+
     const module: TestingModule = await Test.createTestingModule({
-      imports: [CaslAuthModule.register(AppCaslFactory)],
+      imports: [
+        CaslAuthModule.register(AppCaslFactory),
+        BullModule.registerQueue({ name: 'api-journeys-plausible' })
+      ],
       providers: [
         JourneyResolver,
         {
@@ -129,7 +139,10 @@ describe('JourneyResolver', () => {
           useValue: mockDeep<PrismaService>()
         }
       ]
-    }).compile()
+    })
+      .overrideProvider(getQueueToken('api-journeys-plausible'))
+      .useValue(plausibleQueue)
+      .compile()
     resolver = module.get<JourneyResolver>(JourneyResolver)
     blockService = module.get<BlockService>(
       BlockService
@@ -797,6 +810,14 @@ describe('JourneyResolver', () => {
           'teamId'
         )
       ).toEqual(journeyWithUserTeam)
+      expect(plausibleQueue.add).toHaveBeenCalledWith('create-journey-site', {
+        __typename: 'plausibleCreateJourneySite',
+        journeyId: 'journeyId'
+      })
+      expect(plausibleQueue.add).toHaveBeenCalledWith('create-team-site', {
+        __typename: 'plausibleCreateTeamSite',
+        teamId: 'teamId'
+      })
       expect(prismaService.journey.create).toHaveBeenCalledWith({
         data: {
           id: 'journeyId',
@@ -1112,6 +1133,14 @@ describe('JourneyResolver', () => {
 
     it('duplicates your journey', async () => {
       await resolver.journeyDuplicate(ability, 'journeyId', 'userId', 'teamId')
+      expect(plausibleQueue.add).toHaveBeenCalledWith('create-journey-site', {
+        __typename: 'plausibleCreateJourneySite',
+        journeyId: 'duplicateJourneyId'
+      })
+      expect(plausibleQueue.add).toHaveBeenCalledWith('create-team-site', {
+        __typename: 'plausibleCreateTeamSite',
+        teamId: 'teamId'
+      })
       expect(prismaService.journey.create).toHaveBeenCalledWith({
         data: {
           ...omit(journey, [
@@ -1207,6 +1236,15 @@ describe('JourneyResolver', () => {
           }
         }
       }
+
+      expect(plausibleQueue.add).toHaveBeenCalledWith('create-journey-site', {
+        __typename: 'plausibleCreateJourneySite',
+        journeyId: 'duplicateJourneyId'
+      })
+      expect(plausibleQueue.add).toHaveBeenCalledWith('create-team-site', {
+        __typename: 'plausibleCreateTeamSite',
+        teamId: 'teamId'
+      })
 
       expect(prismaService.journey.create).toHaveBeenNthCalledWith(1, { data })
       expect(prismaService.journey.create).toHaveBeenLastCalledWith({
@@ -1911,7 +1949,8 @@ describe('JourneyResolver', () => {
         title: 'My Cool Team',
         publicTitle: null,
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
+        plausibleToken: null
       }
       const journeyWithTeam = {
         ...journeyWithUserTeam,
@@ -2122,6 +2161,28 @@ describe('JourneyResolver', () => {
           journeyCollectionJourneys: { some: { journeyId: 'journeyId' } }
         }
       })
+    })
+  })
+
+  describe('plausibleToken', () => {
+    it('returns plausibleToken', async () => {
+      const journeyWithToken = {
+        ...journeyWithUserTeam,
+        plausibleToken: 'plausibleToken'
+      }
+      expect(await resolver.plausibleToken(ability, journeyWithToken)).toBe(
+        'plausibleToken'
+      )
+    })
+
+    it('returns null', async () => {
+      const journeyWithToken = {
+        ...journey,
+        plausibleToken: 'plausibleToken'
+      }
+      expect(await resolver.plausibleToken(ability, journeyWithToken)).toBe(
+        null
+      )
     })
   })
 })

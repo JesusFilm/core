@@ -6,16 +6,16 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import { TreeBlock } from '@core/journeys/ui/block'
 import { ActiveFab, useEditor } from '@core/journeys/ui/EditorProvider'
+import { TreeBlock } from '@core/journeys/ui/block'
 
 import {
   BlockFields_CardBlock as CardBlock,
   BlockFields_StepBlock as StepBlock
 } from '../../../../../../../../__generated__/BlockFields'
+import { StepBlockNodeIcon } from '../StepBlockNodeIcon'
 import { getCardMetadata } from '../libs/getCardMetadata'
 import { STEP_NODE_CARD_HEIGHT, STEP_NODE_CARD_WIDTH } from '../libs/sizes'
-import { StepBlockNodeIcon } from '../StepBlockNodeIcon'
 
 interface StepBlockNodeCardProps {
   step: TreeBlock<StepBlock>
@@ -27,7 +27,7 @@ export function StepBlockNodeCard({
   selected
 }: StepBlockNodeCardProps): ReactElement {
   const {
-    state: { selectedStep },
+    state: { selectedStep, showAnalytics },
     dispatch
   } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
@@ -45,7 +45,7 @@ export function StepBlockNodeCard({
   } = getCardMetadata(card)
 
   function handleClick(): void {
-    if (selectedStep?.id === step?.id) {
+    if (selectedStep?.id === step?.id && showAnalytics !== true) {
       dispatch({
         type: 'SetSelectedBlockAction',
         selectedBlock: selectedStep
@@ -69,6 +69,10 @@ export function StepBlockNodeCard({
       title={t('Click to edit or drag')}
       onClick={handleClick}
       sx={{
+        opacity: showAnalytics === true ? 0.8 : 1,
+        boxShadow: showAnalytics === true ? 'none' : 3,
+        backgroundColor:
+          showAnalytics === true ? 'transparent' : 'background.paper',
         width: STEP_NODE_CARD_WIDTH,
         m: 1.5,
         '&:hover': {

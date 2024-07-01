@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true'
 })
@@ -26,7 +25,6 @@ const nextConfig = {
     // See: https://github.com/gregberge/svgr
     svgr: false
   },
-  basePath: '/watch',
   productionBrowserSourceMaps: true,
   typescript: {
     // handled by github actions
@@ -51,13 +49,6 @@ const nextConfig = {
       {
         source: '/',
         destination: '/watch',
-        basePath: false,
-        permanent: false
-      },
-      {
-        source: '/:path((?!watch).*)',
-        destination: '/watch/:path',
-        basePath: false,
         permanent: false
       },
       {

@@ -13,6 +13,7 @@ import {
   TeamProvider,
   useTeam
 } from '../TeamProvider'
+import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../TeamSelect/TeamSelect'
 
 import { TeamCreateDialog } from '.'
 
@@ -23,7 +24,6 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 describe('TeamCreateDialog', () => {
   beforeEach(() => {
-    // eslint-disable-next-line @typescript-eslint/no-extra-semi
     ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
   })
 
@@ -82,6 +82,23 @@ describe('TeamCreateDialog', () => {
       }
     }
   }
+  const updateLastActiveTeamIdMock = {
+    request: {
+      query: UPDATE_LAST_ACTIVE_TEAM_ID,
+      variables: {
+        input: {
+          lastActiveTeamId: 'teamId'
+        }
+      }
+    },
+    result: {
+      data: {
+        journeyProfileUpdate: {
+          id: 'teamId'
+        }
+      }
+    }
+  }
   function TestComponent(): ReactElement {
     const { activeTeam } = useTeam()
 
@@ -99,7 +116,10 @@ describe('TeamCreateDialog', () => {
       }
     })
     const { getByRole, getByTestId, getByText, getAllByRole } = render(
-      <MockedProvider mocks={[teamCreateMock, getTeamsMock]} cache={cache}>
+      <MockedProvider
+        mocks={[teamCreateMock, getTeamsMock, updateLastActiveTeamIdMock]}
+        cache={cache}
+      >
         <SnackbarProvider>
           <TeamProvider>
             <TeamCreateDialog
