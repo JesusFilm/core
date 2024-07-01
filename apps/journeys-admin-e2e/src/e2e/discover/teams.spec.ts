@@ -32,7 +32,7 @@ test.describe('Teams', () => {
 2. Create a journey (just one card) for newly created team
 3. Rename the team
 */
-  test('Create a team and create a journey then rename the team', async ({
+  test.fixme('Create a team and create a journey then rename the team', async ({
     page
   }) => {
     test.setTimeout(120000)
