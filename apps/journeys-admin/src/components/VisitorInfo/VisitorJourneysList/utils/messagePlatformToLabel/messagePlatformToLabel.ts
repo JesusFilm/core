@@ -65,8 +65,8 @@ export function messagePlatformToLabel(
       return t('Help Square')
     case MessagePlatform.shieldCheck:
       return t('Shield Check')
-    case MessagePlatform.menu:
-      return t('Menu')
+    case MessagePlatform.menu1:
+      return t('Menu 1')
     case MessagePlatform.checkBroken:
       return t('Check Broken')
     case MessagePlatform.checkContained:
