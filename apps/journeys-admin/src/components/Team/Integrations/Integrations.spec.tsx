@@ -18,7 +18,7 @@ describe('Integrations', () => {
     render(<Integrations />)
     expect(screen.getByText('Growth Spaces')).toBeInTheDocument()
     expect(
-      screen.getByTestId('Growth Spaces-IntegrationsButton')
+      screen.getByTestId('growthSpaces-IntegrationsButton')
     ).toHaveAttribute('href', '/teams/teamId/integrations/new/growth-spaces')
   })
 })
