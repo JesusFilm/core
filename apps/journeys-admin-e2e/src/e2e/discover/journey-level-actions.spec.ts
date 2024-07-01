@@ -147,24 +147,24 @@ test.describe('Journey level actions', () => {
   })
 
   // Discover page -> Select an existing journey -> Three dots on top right -> Copy Link
-  test.fixme('Verify copy link option from three dot options on top right in the selected journey page', async ({
-    page,
-    context
-  }) => {
-    const journeyLevelActions = new JourneyLevelActions(page)
-    const journeyPage = new JourneyPage(page)
-    const journeyName = await journeyPage.getJourneyName() // getting the journey name
-    await journeyLevelActions.setBrowserContext(context) // setting the context
-    await journeyPage.clickCreateCustomJourney() // clicking on the create custom journey button
-    await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
-    await journeyLevelActions.selectCreatedJourney(journeyName) // clicking on the created journey in the journey list
-    await journeyPage.clickThreeDotBtnOfCustomJourney() // clicking on the three dot at top right corner of the custom journey page
-    await journeyLevelActions.clickThreeDotOptionsOfJourneyCreationPage(
-      'Copy Link'
-    ) // clicking on the Copy Link option of the three dot options
-    await journeyLevelActions.verifySnackBarMsg('Link Copied') // verifying the toast message
-    await journeyLevelActions.verifyLinkIsCopied() // verifying the copied link by opening a new tab and load the copied link
-  })
+  test.fixme(
+    'Verify copy link option from three dot options on top right in the selected journey page',
+    async ({ page, context }) => {
+      const journeyLevelActions = new JourneyLevelActions(page)
+      const journeyPage = new JourneyPage(page)
+      const journeyName = await journeyPage.getJourneyName() // getting the journey name
+      await journeyLevelActions.setBrowserContext(context) // setting the context
+      await journeyPage.clickCreateCustomJourney() // clicking on the create custom journey button
+      await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
+      await journeyLevelActions.selectCreatedJourney(journeyName) // clicking on the created journey in the journey list
+      await journeyPage.clickThreeDotBtnOfCustomJourney() // clicking on the three dot at top right corner of the custom journey page
+      await journeyLevelActions.clickThreeDotOptionsOfJourneyCreationPage(
+        'Copy Link'
+      ) // clicking on the Copy Link option of the three dot options
+      await journeyLevelActions.verifySnackBarMsg('Link Copied') // verifying the toast message
+      await journeyLevelActions.verifyLinkIsCopied() // verifying the copied link by opening a new tab and load the copied link
+    }
+  )
 
   // Verify the user able to navigate to journey goal page
   test('Navigate to journey goal page', async ({ page }) => {
