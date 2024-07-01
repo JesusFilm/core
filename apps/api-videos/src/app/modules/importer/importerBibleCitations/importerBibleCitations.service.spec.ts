@@ -1,16 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { PrismaService } from '../../../lib/prisma.service'
-import { ImporterBibleBooksService } from './importerBibleBooks.service'
+import { ImporterBibleCitationsService } from './importerBibleCitations.service'
 
-describe('ImporterBibleBooksService', () => {
-  let service: ImporterBibleBooksService,
+describe('ImporterBibleCitationsService', () => {
+  let service: ImporterBibleCitationsService,
     prismaService: DeepMockProxy<PrismaService>
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        ImporterBibleBooksService,
+        ImporterBibleCitationsService,
         {
           provide: PrismaService,
           useValue: mockDeep<PrismaService>()
@@ -18,131 +18,111 @@ describe('ImporterBibleBooksService', () => {
       ]
     }).compile()
 
-    service = module.get<ImporterBibleBooksService>(ImporterBibleBooksService)
+    service = module.get<ImporterBibleCitationsService>(
+      ImporterBibleCitationsService
+    )
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
   })
 
   describe('import', () => {
-    it('should upsert bible book', async () => {
+    it('should upsert bible citation', async () => {
       await service.import({
-        id: 1,
-        name: 'Genesis',
+        videoId: 'mockVideoId',
         osisId: 'Gen',
-        alternateName: null,
-        paratextAbbreviation: 'GEN',
-        isNewTestament: 0,
+        bibleBookId: 1,
         order: 1,
-        languageId: 529,
-        extraStuff: 'randomData'
+        chapterStart: 1,
+        chapterEnd: null,
+        verseStart: 1,
+        verseEnd: null,
+        position: 1,
+        datastream_metadata: {
+          uuid: 'mockUuid'
+        }
       })
-      expect(prismaService.bibleBook.upsert).toHaveBeenCalledWith({
-        where: { id: '1' },
+      expect(prismaService.bibleCitation.upsert).toHaveBeenCalledWith({
+        where: { id: 'mockUuid' },
         update: {
-          id: '1',
+          id: 'mockUuid',
+          videoId: 'mockVideoId',
           osisId: 'Gen',
-          alternateName: null,
-          paratextAbbreviation: 'GEN',
-          isNewTestament: false,
+          bibleBookId: '1',
           order: 1,
-          name: {
-            upsert: {
-              where: {
-                bibleBookId_languageId: {
-                  bibleBookId: '1',
-                  languageId: '529'
-                }
-              },
-              update: {
-                value: 'Genesis',
-                primary: true
-              },
-              create: {
-                value: 'Genesis',
-                languageId: '529',
-                primary: true
-              }
-            }
-          }
+          chapterStart: 1,
+          chapterEnd: null,
+          verseStart: 1,
+          verseEnd: null
         },
         create: {
-          id: '1',
+          id: 'mockUuid',
+          videoId: 'mockVideoId',
           osisId: 'Gen',
-          alternateName: null,
-          paratextAbbreviation: 'GEN',
-          isNewTestament: false,
+          bibleBookId: '1',
           order: 1,
-          name: {
-            create: {
-              value: 'Genesis',
-              languageId: '529',
-              primary: true
-            }
-          }
+          chapterStart: 1,
+          chapterEnd: null,
+          verseStart: 1,
+          verseEnd: null
         }
       })
     })
 
-    it('should save many bible books', async () => {
+    it('should save many bible citations', async () => {
       await service.importMany([
         {
-          id: 1,
-          name: 'Genesis',
+          videoId: 'mockVideoId',
           osisId: 'Gen',
-          alternateName: null,
-          paratextAbbreviation: 'GEN',
-          isNewTestament: 0,
+          bibleBookId: 1,
           order: 1,
-          languageId: 529,
-          extraStuff: 'randomData'
+          chapterStart: 1,
+          chapterEnd: null,
+          verseStart: 1,
+          verseEnd: null,
+          position: 1,
+          datastream_metadata: {
+            uuid: 'mockUuid'
+          }
         },
         {
-          id: 21,
-          name: 'Ecclesiastes',
-          osisId: 'Eccl',
-          alternateName: 'Qohelet',
-          paratextAbbreviation: 'ECC',
-          isNewTestament: 0,
-          order: 21,
-          languageId: 529,
-          extraStuff: 'randomData'
+          videoId: 'mockVideoId',
+          osisId: 'Gen',
+          bibleBookId: 1,
+          order: 1,
+          chapterStart: 1,
+          chapterEnd: null,
+          verseStart: 1,
+          verseEnd: null,
+          position: 1,
+          datastream_metadata: {
+            uuid: 'mockUuid1'
+          }
         }
       ])
-      expect(prismaService.bibleBook.createMany).toBeCalledWith({
+      expect(prismaService.bibleCitation.createMany).toBeCalledWith({
         data: [
           {
-            id: '1',
+            id: 'mockUuid',
+            videoId: 'mockVideoId',
             osisId: 'Gen',
-            alternateName: null,
-            paratextAbbreviation: 'GEN',
-            isNewTestament: false,
-            order: 1
+            bibleBookId: '1',
+            order: 1,
+            chapterStart: 1,
+            chapterEnd: null,
+            verseStart: 1,
+            verseEnd: null
           },
           {
-            id: '21',
-            osisId: 'Eccl',
-            alternateName: 'Qohelet',
-            paratextAbbreviation: 'ECC',
-            isNewTestament: false,
-            order: 21
-          }
-        ],
-        skipDuplicates: true
-      })
-      expect(prismaService.bibleBookName.createMany).toBeCalledWith({
-        data: [
-          {
-            value: 'Genesis',
-            languageId: '529',
-            primary: true,
-            bibleBookId: '1'
-          },
-          {
-            value: 'Ecclesiastes',
-            languageId: '529',
-            primary: true,
-            bibleBookId: '21'
+            id: 'mockUuid1',
+            videoId: 'mockVideoId',
+            osisId: 'Gen',
+            bibleBookId: '1',
+            order: 1,
+            chapterStart: 1,
+            chapterEnd: null,
+            verseStart: 1,
+            verseEnd: null
           }
         ],
         skipDuplicates: true
@@ -162,21 +142,13 @@ describe('ImporterBibleBooksService', () => {
       await expect(
         service.importMany([
           {
-            id: 1,
-            name: 'Genesis',
-            osisId: 'Gen',
-            alternateName: null,
-            paratextAbbreviation: 'GEN',
-            isNewTestament: 0,
-            order: 1,
-            languageId: 529,
-            extraStuff: 'randomData'
+            id: 1
           },
           {
             osisId: 'Eccl'
           }
         ])
-      ).rejects.toThrow('some rows do not match schema: unknownId')
+      ).rejects.toThrow('some rows do not match schema: 1,unknownId')
     })
   })
 })
