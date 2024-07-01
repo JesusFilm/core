@@ -60,7 +60,7 @@ export function StepBlockNodeCard({
     }
   }
 
-  const nodeBgImage = expanded === false ? bgImage : priorityImage
+  const nodeBgImage = expanded ? priorityImage : bgImage
 
   return (
     <Card
@@ -108,7 +108,9 @@ export function StepBlockNodeCard({
             justifyContent: 'center',
             bgcolor: card?.backgroundColor ?? 'background.default',
             backgroundImage:
-              nodeBgImage != null ? `url(${nodeBgImage})` : undefined
+              nodeBgImage != null
+                ? `url(${nodeBgImage})`
+                : `url(${priorityImage})`
           }}
         >
           {priorityBlock != null && (
