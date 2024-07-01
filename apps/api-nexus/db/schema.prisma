@@ -65,7 +65,6 @@ model ResourceChannel {
     id         String   @id @default(uuid())
     resourceId String
     channelId  String
-    youtubeId  String
     resource   Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
     channel    Channel  @relation(fields: [channelId], references: [id], onDelete: Cascade)
 }

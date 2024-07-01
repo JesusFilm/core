@@ -127,7 +127,6 @@ export class BatchJobWorker {
       data: {
         channelId: job.data.channel.id,
         resourceId: job.data.resource?.id,
-        youtubeId: youtubeData.data.id ?? ''
       }
     })
 
