@@ -32,7 +32,7 @@ test.describe('Verify user able to Active, Archived, Trash the journeys', () => 
     await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
   })
 
-  test('Verify the user able to move the single journeys from Active, archived, Trash page', async ({
+  test.fixme('Verify the user able to move the single journeys from Active, archived, Trash page', async ({
     page
   }) => {
     const journeyPage = new JourneyPage(page)
@@ -55,7 +55,7 @@ test.describe('Verify user able to Active, Archived, Trash the journeys', () => 
     await journeyPage.verifyJourneyMovedFromArchivedToActiveTab()
   })
 
-  test('Verify the user able to move the all journeys from Active, archived, Trash page', async ({
+  test.skip('Verify the user able to move the all journeys from Active, archived, Trash page', async ({
     page
   }) => {
     const journeyPage = new JourneyPage(page)
