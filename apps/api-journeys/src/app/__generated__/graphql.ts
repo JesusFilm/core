@@ -167,7 +167,7 @@ export enum MessagePlatform {
     helpCircle = "helpCircle",
     helpSquare = "helpSquare",
     shieldCheck = "shieldCheck",
-    menu = "menu",
+    menu1 = "menu1",
     checkBroken = "checkBroken",
     checkContained = "checkContained",
     settings = "settings"

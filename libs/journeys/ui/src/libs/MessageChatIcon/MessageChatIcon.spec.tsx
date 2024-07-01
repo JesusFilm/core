@@ -103,8 +103,8 @@ describe('MessageChatIcon', () => {
     expect(screen.getByTestId('ShieldCheckIcon')).toBeInTheDocument()
   })
 
-  it('should return menu icon', () => {
-    render(<MessageChatIcon platform={MessagePlatform.menu} />)
+  it('should return menu1 icon', () => {
+    render(<MessageChatIcon platform={MessagePlatform.menu1} />)
     expect(screen.getByTestId('Menu1Icon')).toBeInTheDocument()
   })
 

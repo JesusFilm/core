@@ -11,7 +11,7 @@ import Instagram from '@core/shared/ui/icons/Instagram'
 import Line from '@core/shared/ui/icons/Line'
 import LinkExternal from '@core/shared/ui/icons/LinkExternal'
 import Mail1 from '@core/shared/ui/icons/Mail1'
-import Menu from '@core/shared/ui/icons/Menu1'
+import Menu1 from '@core/shared/ui/icons/Menu1'
 import MessageChat2 from '@core/shared/ui/icons/MessageChat2'
 import MessageCircle from '@core/shared/ui/icons/MessageCircle'
 import MessageNotifyCircle from '@core/shared/ui/icons/MessageNotifyCircle'
@@ -72,7 +72,7 @@ export function MessageChatIcon({ platform, sx }: ChatIconProps): ReactElement {
     helpCircle: HelpCircle,
     helpSquare: HelpSquare,
     shieldCheck: ShieldCheck,
-    menu: Menu,
+    menu1: Menu1,
     checkBroken: CheckBroken,
     checkContained: CheckContained,
     settings: Settings

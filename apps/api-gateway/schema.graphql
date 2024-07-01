@@ -1253,7 +1253,7 @@ enum MessagePlatform
   helpCircle @join__enumValue(graph: JOURNEYS)
   helpSquare @join__enumValue(graph: JOURNEYS)
   shieldCheck @join__enumValue(graph: JOURNEYS)
-  menu @join__enumValue(graph: JOURNEYS)
+  menu1 @join__enumValue(graph: JOURNEYS)
   checkBroken @join__enumValue(graph: JOURNEYS)
   checkContained @join__enumValue(graph: JOURNEYS)
   settings @join__enumValue(graph: JOURNEYS)

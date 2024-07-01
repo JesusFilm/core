@@ -971,7 +971,7 @@ export enum MessagePlatform {
   Line = 'line',
   LinkExternal = 'linkExternal',
   Mail1 = 'mail1',
-  Menu = 'menu',
+  Menu1 = 'menu1',
   MessageChat2 = 'messageChat2',
   MessageCircle = 'messageCircle',
   MessageNotifyCircle = 'messageNotifyCircle',

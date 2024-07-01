@@ -1354,7 +1354,7 @@ enum MessagePlatform {
   helpCircle
   helpSquare
   shieldCheck
-  menu
+  menu1
   checkBroken
   checkContained
   settings
