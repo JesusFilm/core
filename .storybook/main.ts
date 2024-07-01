@@ -22,6 +22,12 @@ const storiesForProject = {
   ],
   'api-users': [
     '../apps/api-users/src/app/emails/stories/*.stories.@(js|jsx|ts|tsx)'
+  ],
+  'nexus-admin': [
+    '../apps/nexus-admin/src/**/*.stories.@(js|jsx|ts|tsx)',
+    '../apps/nexus-admin/src/components/**/*.stories.mdx',
+    '../apps/nexus-admin/src/components/**/*.stories.@(js|jsx|ts|tsx)',
+    '../apps/nexus-admin/src/components/**/**/*.stories.@(js|jsx|ts|tsx)'
   ]
   // Add new UI projects here and in allStories
 }
@@ -33,7 +39,8 @@ const stories = [
   ...storiesForProject['watch'],
   ...storiesForProject['shared-ui'],
   ...storiesForProject['api-journeys'],
-  ...storiesForProject['api-users']
+  ...storiesForProject['api-users'],
+  ...storiesForProject['nexus-admin']
 ]
 
 const config: StorybookConfig = {

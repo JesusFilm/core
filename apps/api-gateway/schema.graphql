@@ -81,6 +81,7 @@ enum BatchStatus
   processing @join__enumValue(graph: NEXUS)
   completed @join__enumValue(graph: NEXUS)
   failed @join__enumValue(graph: NEXUS)
+  error @join__enumValue(graph: NEXUS)
 }
 
 type BatchTask
@@ -104,6 +105,7 @@ enum BatchTaskStatus
   processing @join__enumValue(graph: NEXUS)
   completed @join__enumValue(graph: NEXUS)
   failed @join__enumValue(graph: NEXUS)
+  error @join__enumValue(graph: NEXUS)
 }
 
 interface Block
@@ -2255,6 +2257,7 @@ enum ResourceStatus
   processing @join__enumValue(graph: NEXUS)
   error @join__enumValue(graph: NEXUS)
   uploaded @join__enumValue(graph: NEXUS)
+  done @join__enumValue(graph: NEXUS)
 }
 
 input ResourceUpdateInput
@@ -2364,42 +2367,28 @@ input SignUpSubmissionEventCreateInput
   email: String!
 }
 
-type Site
-  @join__type(graph: ANALYTICS)
+input SpreadsheetRowInput
+  @join__type(graph: NEXUS)
 {
-  id: String!
-  domain: String!
-  memberships: [SiteMembership!]!
-  sharedLinks: [SiteSharedLink!]!
-  goals: [SiteGoal!]!
-}
-
-input SiteCreateInput
-  @join__type(graph: ANALYTICS)
-{
-  domain: String!
-  goals: [String!]
-}
-
-type SiteGoal
-  @join__type(graph: ANALYTICS)
-{
-  id: String!
-  eventName: String
-}
-
-type SiteMembership
-  @join__type(graph: ANALYTICS)
-{
-  id: String!
-  role: String!
-}
-
-type SiteSharedLink
-  @join__type(graph: ANALYTICS)
-{
-  id: String!
-  slug: String!
+  channel: String
+  filename: String
+  title: String
+  description: String
+  customThumbnail: String
+  keywords: String
+  category: String
+  privacy: String
+  spokenLanguage: String
+  videoId: String
+  captionFile: String
+  audioTrackFile: String
+  language: String
+  captionLanguage: String
+  notifySubscribers: String
+  playlistId: String
+  isMadeForKids: String
+  mediaComponentId: String
+  textLanguage: String
 }
 
 type StepBlock implements Block

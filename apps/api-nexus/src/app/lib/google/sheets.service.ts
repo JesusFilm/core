@@ -159,10 +159,82 @@ export class GoogleSheetsService {
               );
           }
         }
+
+        if (row.channel != null) {
+          row.channelData = (await this.prismaService.channel.findFirst({
+            where: { youtubeId: row.channel }
+          })) as Channel
+        }
+
+        if (row.videoId != null) {
+          // Populate Resource Data
+          row.resourceData = (await this.prismaService.resource.findFirst({
+            where: {
+              resourceLocalizations: { some: { videoId: row.videoId } }
+            },
+            include: {
+              resourceLocalizations: true,
+              resourceChannels: { where: { youtubeId: row.videoId } }
+            }
+          })) as Resource
+
+          // Populate Channel Data
+          row.channelData =
+            (
+              await this.prismaService.resource.findFirst({
+                where: {
+                  resourceLocalizations: { some: { videoId: row.videoId } }
+                },
+                include: {
+                  resourceLocalizations: true,
+                  resourceChannels: {
+                    where: { youtubeId: row.videoId },
+                    include: { channel: true }
+                  }
+                }
+              })
+            )?.resourceChannels[0]?.channel ?? undefined
+        }
+
+        if (row.channel != null) {
+          row.channelData = (await this.prismaService.channel.findFirst({
+            where: { youtubeId: row.channel }
+          })) as Channel
+        }
+
+        if (row.videoId != null) {
+          // Populate Resource Data
+          row.resourceData = (await this.prismaService.resource.findFirst({
+            where: {
+              resourceLocalizations: { some: { videoId: row.videoId } }
+            },
+            include: {
+              resourceLocalizations: true,
+              resourceChannels: { where: { youtubeId: row.videoId } }
+            }
+          })) as Resource
+
+          // Populate Channel Data
+          row.channelData =
+            (
+              await this.prismaService.resource.findFirst({
+                where: {
+                  resourceLocalizations: { some: { videoId: row.videoId } }
+                },
+                include: {
+                  resourceLocalizations: true,
+                  resourceChannels: {
+                    where: { youtubeId: row.videoId },
+                    include: { channel: true }
+                  }
+                }
+              })
+            )?.resourceChannels[0]?.channel ?? undefined
+        }
       }
 
-      let templateType = SpreadsheetTemplateType.UPLOAD;
-      const inputData = input.data ?? [];
+      let templateType = SpreadsheetTemplateType.UPLOAD
+      const inputData = input.data ?? []
       if (inputData?.length > 0 && inputData[0]?.videoId != null) {
         templateType = SpreadsheetTemplateType.LOCALIZATION;
       }
@@ -213,7 +285,8 @@ export class GoogleSheetsService {
           .filter((spreadsheetRow) => spreadsheetRow.channelData != null)
           .map((spreadsheetRow) => spreadsheetRow.channelData?.id)
       )
-    );
+    )
+
     for (const channel of channels) {
       const resources = await this.createResourceFromSpreadsheet(
         spreadsheetRows.filter(

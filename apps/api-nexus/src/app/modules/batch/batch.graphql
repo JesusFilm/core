@@ -18,6 +18,7 @@ enum BatchStatus {
   processing
   completed
   failed
+  error
 }
 
 type BatchTask @key(fields: "id") {
@@ -37,6 +38,7 @@ enum BatchTaskStatus {
   processing
   completed
   failed
+  error
 }
 
 input BatchFilter {

@@ -89,6 +89,7 @@ export class GoogleYoutubeService {
   ): GaxiosPromise<youtube_v3.Schema$Video> {
     const service = google.youtube('v3')
     const fileSize = statSync(youtubeData.filePath).size
+
     try {
       return await service.videos.insert(
         {

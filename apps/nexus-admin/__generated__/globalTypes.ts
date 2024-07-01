@@ -7,272 +7,110 @@
 // START Enums and Input Objects
 //==============================================================
 
-export enum ButtonAction {
-  EmailAction = "EmailAction",
-  LinkAction = "LinkAction",
-  NavigateToBlockAction = "NavigateToBlockAction",
-}
-
-export enum ButtonColor {
+export enum BatchStatus {
+  completed = "completed",
   error = "error",
-  inherit = "inherit",
-  primary = "primary",
-  secondary = "secondary",
+  failed = "failed",
+  pending = "pending",
+  processing = "processing",
 }
 
-export enum ButtonSize {
-  large = "large",
-  medium = "medium",
-  small = "small",
-}
-
-export enum ButtonVariant {
-  contained = "contained",
-  text = "text",
-}
-
-export enum IconColor {
-  action = "action",
-  disabled = "disabled",
+export enum BatchTaskStatus {
+  completed = "completed",
   error = "error",
-  inherit = "inherit",
-  primary = "primary",
-  secondary = "secondary",
+  failed = "failed",
+  pending = "pending",
+  processing = "processing",
 }
 
-/**
- * IconName is equivalent to the icons found in @mui/icons-material
- */
-export enum IconName {
-  ArrowBackRounded = "ArrowBackRounded",
-  ArrowForwardRounded = "ArrowForwardRounded",
-  BeenhereRounded = "BeenhereRounded",
-  ChatBubbleOutlineRounded = "ChatBubbleOutlineRounded",
-  CheckCircleRounded = "CheckCircleRounded",
-  ChevronLeftRounded = "ChevronLeftRounded",
-  ChevronRightRounded = "ChevronRightRounded",
-  ContactSupportRounded = "ContactSupportRounded",
-  FormatQuoteRounded = "FormatQuoteRounded",
-  LiveTvRounded = "LiveTvRounded",
-  LockOpenRounded = "LockOpenRounded",
-  MenuBookRounded = "MenuBookRounded",
-  PlayArrowRounded = "PlayArrowRounded",
-  RadioButtonUncheckedRounded = "RadioButtonUncheckedRounded",
-  SendRounded = "SendRounded",
-  SubscriptionsRounded = "SubscriptionsRounded",
-  TranslateRounded = "TranslateRounded",
-}
-
-export enum IconSize {
-  inherit = "inherit",
-  lg = "lg",
-  md = "md",
-  sm = "sm",
-  xl = "xl",
-}
-
-export enum JourneyStatus {
-  archived = "archived",
+export enum ChannelStatus {
+  created = "created",
   deleted = "deleted",
-  draft = "draft",
   published = "published",
-  trashed = "trashed",
 }
 
-export enum MessagePlatform {
-  custom = "custom",
-  facebook = "facebook",
-  instagram = "instagram",
-  line = "line",
-  skype = "skype",
-  snapchat = "snapchat",
-  telegram = "telegram",
-  tikTok = "tikTok",
-  viber = "viber",
-  vk = "vk",
-  whatsApp = "whatsApp",
-}
-
-export enum ThemeMode {
-  dark = "dark",
-  light = "light",
-}
-
-export enum ThemeName {
-  base = "base",
-}
-
-export enum TypographyAlign {
-  center = "center",
-  left = "left",
-  right = "right",
-}
-
-export enum TypographyColor {
+export enum ResourceStatus {
+  created = "created",
+  deleted = "deleted",
+  done = "done",
   error = "error",
-  primary = "primary",
-  secondary = "secondary",
+  processing = "processing",
+  published = "published",
+  uploaded = "uploaded",
 }
 
-export enum TypographyVariant {
-  body1 = "body1",
-  body2 = "body2",
-  caption = "caption",
-  h1 = "h1",
-  h2 = "h2",
-  h3 = "h3",
-  h4 = "h4",
-  h5 = "h5",
-  h6 = "h6",
-  overline = "overline",
-  subtitle1 = "subtitle1",
-  subtitle2 = "subtitle2",
+export interface BatchFilter {
+  ids?: string[] | null;
+  name?: string | null;
+  status?: BatchStatus | null;
+  limit?: number | null;
 }
 
-export enum UserJourneyRole {
-  editor = "editor",
-  inviteRequested = "inviteRequested",
-  owner = "owner",
-}
-
-export enum VideoBlockObjectFit {
-  fill = "fill",
-  fit = "fit",
-  zoomed = "zoomed",
-}
-
-export enum VideoBlockSource {
-  cloudflare = "cloudflare",
-  internal = "internal",
-  youTube = "youTube",
-}
-
-export interface ButtonClickEventCreateInput {
-  id?: string | null;
-  blockId: string;
-  stepId?: string | null;
-  label?: string | null;
-  value?: string | null;
-  action?: ButtonAction | null;
-  actionValue?: string | null;
-}
-
-export interface ChatOpenEventCreateInput {
-  id?: string | null;
-  blockId: string;
-  stepId?: string | null;
-  value?: MessagePlatform | null;
-}
-
-export interface RadioQuestionSubmissionEventCreateInput {
-  id?: string | null;
-  blockId: string;
-  radioOptionBlockId: string;
-  stepId?: string | null;
-  label?: string | null;
-  value?: string | null;
-}
-
-export interface SignUpSubmissionEventCreateInput {
-  id?: string | null;
-  blockId: string;
-  stepId?: string | null;
+export interface ChannelCreateInput {
   name: string;
-  email: string;
+  platform: string;
 }
 
-export interface StepNextEventCreateInput {
-  id?: string | null;
-  blockId: string;
-  nextStepId: string;
-  label?: string | null;
-  value?: string | null;
+export interface ChannelFilter {
+  ids?: string[] | null;
+  name?: string | null;
+  limit?: number | null;
+  connected?: boolean | null;
+  status?: ChannelStatus | null;
 }
 
-export interface StepPreviousEventCreateInput {
-  id?: string | null;
-  blockId: string;
-  previousStepId: string;
-  label?: string | null;
-  value?: string | null;
+export interface ChannelUpdateInput {
+  name?: string | null;
+  platform?: string | null;
 }
 
-export interface StepViewEventCreateInput {
-  id?: string | null;
-  blockId: string;
-  value?: string | null;
+export interface ConnectYoutubeChannelInput {
+  channelId: string;
+  accessToken: string;
 }
 
-export interface TextResponseSubmissionEventCreateInput {
-  id?: string | null;
-  blockId: string;
-  stepId?: string | null;
-  label?: string | null;
-  value: string;
+export interface ResourceFilter {
+  ids?: string[] | null;
+  name?: string | null;
+  status?: ResourceStatus | null;
+  limit?: number | null;
 }
 
-export interface VideoCollapseEventCreateInput {
-  id?: string | null;
-  blockId: string;
-  stepId?: string | null;
-  position?: number | null;
-  label?: string | null;
-  value?: VideoBlockSource | null;
+export interface ResourceFromArrayInput {
+  accessToken: string;
+  spreadsheetData: SpreadsheetRowInput[];
 }
 
-export interface VideoCompleteEventCreateInput {
-  id?: string | null;
-  blockId: string;
-  stepId?: string | null;
-  position?: number | null;
-  label?: string | null;
-  value?: VideoBlockSource | null;
+export interface ResourceFromTemplateInput {
+  accessToken: string;
+  spreadsheetId: string;
+  drivefolderId: string;
 }
 
-export interface VideoExpandEventCreateInput {
-  id?: string | null;
-  blockId: string;
-  stepId?: string | null;
-  position?: number | null;
-  label?: string | null;
-  value?: VideoBlockSource | null;
+export interface ResourceUpdateInput {
+  name?: string | null;
 }
 
-export interface VideoPauseEventCreateInput {
-  id?: string | null;
-  blockId: string;
-  stepId?: string | null;
-  position?: number | null;
-  label?: string | null;
-  value?: VideoBlockSource | null;
-}
-
-export interface VideoPlayEventCreateInput {
-  id?: string | null;
-  blockId: string;
-  stepId?: string | null;
-  position?: number | null;
-  label?: string | null;
-  value?: VideoBlockSource | null;
-}
-
-export interface VideoProgressEventCreateInput {
-  id?: string | null;
-  blockId: string;
-  stepId?: string | null;
-  position?: number | null;
-  progress: number;
-  label?: string | null;
-  value?: VideoBlockSource | null;
-}
-
-export interface VideoStartEventCreateInput {
-  id?: string | null;
-  blockId: string;
-  stepId?: string | null;
-  position?: number | null;
-  label?: string | null;
-  value?: VideoBlockSource | null;
+export interface SpreadsheetRowInput {
+  channel?: string | null;
+  filename?: string | null;
+  title?: string | null;
+  description?: string | null;
+  customThumbnail?: string | null;
+  keywords?: string | null;
+  category?: string | null;
+  privacy?: string | null;
+  spokenLanguage?: string | null;
+  videoId?: string | null;
+  captionFile?: string | null;
+  audioTrackFile?: string | null;
+  language?: string | null;
+  captionLanguage?: string | null;
+  notifySubscribers?: string | null;
+  playlistId?: string | null;
+  isMadeForKids?: string | null;
+  mediaComponentId?: string | null;
+  textLanguage?: string | null;
 }
 
 //==============================================================
