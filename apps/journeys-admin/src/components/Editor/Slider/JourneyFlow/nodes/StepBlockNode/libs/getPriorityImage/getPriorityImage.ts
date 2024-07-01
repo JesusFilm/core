@@ -5,18 +5,13 @@ import {
 } from '@core/journeys/ui/block/__generated__/BlockFields'
 
 export function getPriorityImage(
-  card: Array<TreeBlock<BlockFields>>
-): string | undefined {
-  if (card == null) return
+  cardChildrenBlocks: Array<TreeBlock<BlockFields>>
+): string | null | undefined {
+  const imageBlock = (
+    cardChildrenBlocks.find(
+      (block) => block.__typename === 'ImageBlock'
+    ) as TreeBlock<ImageBlock>
+  )?.src
 
-  const imageBlock =
-    card != null
-      ? (
-          card.find(
-            (block) => block.__typename === 'ImageBlock'
-          ) as TreeBlock<ImageBlock>
-        )?.src
-      : undefined
-
-  return imageBlock != null ? imageBlock : undefined
+  return imageBlock
 }

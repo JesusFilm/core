@@ -12,7 +12,7 @@ import { VideoBlockSource } from '../../../../../../../../../__generated__/globa
 import { getBackgroundImage } from '../getBackgroundImage'
 import { getCardHeadings } from '../getCardHeadings'
 import { getPriorityBlock } from '../getPriorityBlock'
-import { getPriorityImage } from '../getPriorityImage/getPriorityImage'
+import { getPriorityImage } from '../getPriorityImage'
 
 interface CardMetadata {
   title?: string
@@ -22,7 +22,7 @@ interface CardMetadata {
   bgImage?: string
   hasMultipleActions?: boolean
   expanded?: boolean
-  priorityImage?: string
+  priorityImage?: string | null
 }
 
 function getVideoVariantLanguage(
@@ -115,7 +115,6 @@ export function getCardMetadata(
     const expanded = card.fullscreen
     const priorityImage = expanded ? getPriorityImage(card.children) : undefined
 
-    console.log('card.children:  ', card.children)
     return {
       title,
       subtitle,
