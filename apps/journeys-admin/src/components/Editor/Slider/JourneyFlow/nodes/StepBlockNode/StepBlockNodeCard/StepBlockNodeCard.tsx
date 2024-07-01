@@ -108,9 +108,7 @@ export function StepBlockNodeCard({
             justifyContent: 'center',
             bgcolor: card?.backgroundColor ?? 'background.default',
             backgroundImage:
-              nodeBgImage != null
-                ? `url(${nodeBgImage})`
-                : `url(${priorityImage})`
+              nodeBgImage != null ? `url(${nodeBgImage})` : undefined
           }}
         >
           {priorityBlock != null && (
