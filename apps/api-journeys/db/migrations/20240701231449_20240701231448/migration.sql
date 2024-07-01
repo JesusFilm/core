@@ -24,7 +24,7 @@ ALTER TYPE "MessagePlatform" ADD VALUE 'home3';
 ALTER TYPE "MessagePlatform" ADD VALUE 'helpCircle';
 ALTER TYPE "MessagePlatform" ADD VALUE 'helpSquare';
 ALTER TYPE "MessagePlatform" ADD VALUE 'shieldCheck';
-ALTER TYPE "MessagePlatform" ADD VALUE 'menu';
+ALTER TYPE "MessagePlatform" ADD VALUE 'menu1';
 ALTER TYPE "MessagePlatform" ADD VALUE 'checkBroken';
 ALTER TYPE "MessagePlatform" ADD VALUE 'checkContained';
 ALTER TYPE "MessagePlatform" ADD VALUE 'settings';
