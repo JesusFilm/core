@@ -4,26 +4,47 @@ import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import Image from 'next/image'
+import Image, { StaticImageData } from 'next/image'
 
 import { useTranslation } from 'next-i18next'
 import NextLink from 'next/link'
 import { ReactElement } from 'react'
+import { IntegrationType } from '../../../../../__generated__/globalTypes'
+import growthSpacesLogo from '../../../../../public/growth-spaces-logo.png'
+
+interface IntegrationContentProps {
+  title: string
+  src?: StaticImageData
+}
 
 interface IntegrationsButtonProps {
   url: string
-  src?: string
-  title?: string
+  type?: IntegrationType
   showAddButton?: boolean
 }
 
 export function IntegrationsButton({
   url,
-  src,
-  title,
+  type,
   showAddButton = false
 }: IntegrationsButtonProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+
+  const IntegrationContent = {
+    [IntegrationType.growthSpaces]: {
+      title: 'Growth Spaces',
+      src: growthSpacesLogo
+    }
+  }
+
+  function getIntegrationContent(): IntegrationContentProps {
+    const defaultContent = { title: '', src: undefined }
+    if (type == null) return defaultContent
+    return IntegrationContent[type]
+  }
+
+  const { title, src } = getIntegrationContent()
+
   return (
     <NextLink href={url} passHref legacyBehavior>
       <Stack
@@ -39,7 +60,7 @@ export function IntegrationsButton({
             backgroundColor: (theme) => theme.palette.grey[100]
           }
         }}
-        data-testid={`${title}-IntegrationsButton`}
+        data-testid={`${type != null ? type : 'Add'}-IntegrationsButton`}
       >
         <Box
           sx={{
@@ -58,12 +79,7 @@ export function IntegrationsButton({
           {showAddButton ? (
             <Plus1Icon />
           ) : src != null ? (
-            <Image
-              src={src}
-              alt={title ?? ''}
-              layout="fill"
-              objectFit="cover"
-            />
+            <Image src={src} alt={title ?? ''} height={65} width={65} />
           ) : (
             <InsertPhotoRoundedIcon />
           )}
