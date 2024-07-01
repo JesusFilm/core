@@ -1,6 +1,6 @@
 const withBundleAnalyzer = require('@next/bundle-analyzer')
 const { composePlugins, withNx } = require('@nx/next')
-// just to deploy app
+
 const { i18n } = require('./next-i18next.config')
 
 /**
