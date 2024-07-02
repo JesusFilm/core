@@ -214,10 +214,23 @@ export function JourneyFlow(): ReactElement {
       const targetIsPane = (event.target as Element)?.classList.contains(
         'react-flow__pane'
       )
-      if (targetIsPane) {
+
+      let clientX, clientY
+
+      // Type guard for MouseEvent
+      if ('clientX' in event && 'clientY' in event) {
+        clientX = event.clientX
+        clientY = event.clientY
+      } else if ('touches' in event) {
+        // Type guard for TouchEvent
+        clientX = event.touches[0].clientX
+        clientY = event.touches[0].clientY
+      }
+
+      if (targetIsPane && clientX !== undefined && clientY !== undefined) {
         const { x, y } = reactFlowInstance.screenToFlowPosition({
-          x: (event as unknown as MouseEvent).clientX,
-          y: (event as unknown as MouseEvent).clientY
+          x: clientX,
+          y: clientY
         })
 
         void createStep({
@@ -230,6 +243,7 @@ export function JourneyFlow(): ReactElement {
     },
     [reactFlowInstance, connectingParams, createStep]
   )
+
   const onNodeDragStop: NodeDragHandler = async (
     _event,
     node
