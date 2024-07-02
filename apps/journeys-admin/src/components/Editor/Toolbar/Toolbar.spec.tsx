@@ -8,7 +8,10 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { Slider } from '@mui/material'
 import { Toolbar } from '.'
+import { TestEditorState } from '../../../libs/TestEditorState'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -86,26 +89,74 @@ describe('Toolbar', () => {
     expect(getByAltText('random image from unsplash')).toBeInTheDocument()
     expect(queryByTestId('ThumbsUpIcon')).not.toBeInTheDocument()
   })
-})
 
-function toolbar(): ReactElement {
-  return (
-    <SnackbarProvider>
+  it('should open the tooltip when the image is hovered over', async () => {
+    const { getByTestId, getByText } = render(toolbar())
+    fireEvent.mouseOver(getByTestId('ToolbarSocialImage'))
+    await waitFor(() => {
+      expect(getByText('Social Image')).toBeInTheDocument()
+    })
+  })
+
+  it('should open the social preview when the image is clicked', async () => {
+    const { getByText, getByTestId } = render(
       <MockedProvider>
-        <JourneyProvider
-          value={{
-            journey: {
-              title: 'My Awesome Journey Title',
-              description: 'My Awesome Journey Description',
-              primaryImageBlock: null,
-              status: JourneyStatus.draft
-            } as unknown as Journey,
-            variant: 'admin'
-          }}
-        >
-          <Toolbar />
-        </JourneyProvider>
+        <SnackbarProvider>
+          <EditorProvider>
+            <JourneyProvider
+              value={{
+                journey: {
+                  title: 'My Awesome Journey Title',
+                  description: 'My Awesome Journey Description',
+                  primaryImageBlock: {
+                    id: 'image1.id',
+                    __typeame: 'ImageBlock',
+                    parentBlockId: null,
+                    parentOrder: 0,
+                    src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
+                    alt: 'random image from unsplash',
+                    width: 1920,
+                    height: 1080,
+                    blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
+                  },
+                  status: JourneyStatus.draft
+                } as unknown as Journey,
+                variant: 'admin'
+              }}
+            >
+              <TestEditorState />
+              <Toolbar />
+              <Slider />
+            </JourneyProvider>
+          </EditorProvider>
+        </SnackbarProvider>
       </MockedProvider>
-    </SnackbarProvider>
-  )
-}
+    )
+
+    expect(getByText('activeSlide: 0')).toBeInTheDocument()
+    fireEvent.click(getByTestId('ToolbarSocialImage'))
+    expect(getByText('activeSlide: 1')).toBeInTheDocument()
+  })
+
+  function toolbar(): ReactElement {
+    return (
+      <SnackbarProvider>
+        <MockedProvider>
+          <JourneyProvider
+            value={{
+              journey: {
+                title: 'My Awesome Journey Title',
+                description: 'My Awesome Journey Description',
+                primaryImageBlock: null,
+                status: JourneyStatus.draft
+              } as unknown as Journey,
+              variant: 'admin'
+            }}
+          >
+            <Toolbar />
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+  }
+})

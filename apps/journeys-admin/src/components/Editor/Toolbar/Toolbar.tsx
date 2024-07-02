@@ -74,7 +74,7 @@ export function Toolbar(): ReactElement {
       {journey != null && (
         <>
           <Tooltip title={t('Social Image')} arrow>
-            <Button onClick={handleSelect}>
+            <Button onClick={handleSelect} data-testid="ToolbarSocialImage">
               <Box
                 bgcolor={(theme) => theme.palette.background.default}
                 borderRadius="4px"
