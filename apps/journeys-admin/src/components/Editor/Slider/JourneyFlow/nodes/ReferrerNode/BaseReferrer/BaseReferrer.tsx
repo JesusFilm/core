@@ -29,6 +29,8 @@ export function BaseReferrer({ property, visitors }) {
     <Box
       sx={{
         display: 'flex',
+        //         display: 'grid',
+        //         gridTemplateColumns: 'min-content auto 1fr',
         alignItems: 'center',
         padding: '8px 12px',
         gap: 2,
@@ -84,6 +86,41 @@ export function BaseReferrer({ property, visitors }) {
           {visitors}
         </Typography>
       </Box>
+      {/* <Tooltip
+        title={property}
+        placement="top"
+        slotProps={{
+          popper: {
+            modifiers: [
+              {
+                name: 'offset',
+                options: {
+                  offset: [0, -8]
+                }
+              }
+            ]
+          },
+          tooltip: {
+            sx: {
+              py: 0
+            }
+          }
+        }}
+      >
+        <Typography noWrap sx={textStyles}>
+          {property}
+        </Typography>
+      </Tooltip>
+      <Typography
+        variant="body2"
+        sx={{
+          ...textStyles,
+          fontWeight: 600,
+          placeSelf: 'end'
+        }}
+      >
+        {visitors}
+      </Typography> */}
     </Box>
   )
 }
