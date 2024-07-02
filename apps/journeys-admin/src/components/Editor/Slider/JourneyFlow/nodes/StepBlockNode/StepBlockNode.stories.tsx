@@ -886,4 +886,21 @@ export const Hover = {
   }
 }
 
+export const Analytics = {
+  ...Template,
+  args: {
+    ...defaultFlowProps,
+    nodes: [defaultNode],
+    nodeTypes: {
+      StepBlock: StepBlockNode
+    },
+    initialState: {
+      steps: [...defaultNode.data.steps],
+      selectedStep: defaultNode.data.steps[0],
+      activeContent: ActiveContent.Canvas,
+      showAnalytics: true
+    }
+  }
+}
+
 export default StepBlockNodeStory
