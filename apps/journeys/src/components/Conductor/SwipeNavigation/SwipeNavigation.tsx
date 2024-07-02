@@ -107,6 +107,7 @@ export function SwipeNavigation({
 
         if (journey != null)
           plausible('navigateNextStep', {
+            u: `${journey.id}/${input.blockId}`,
             props: {
               ...input,
               key: keyify({
@@ -172,6 +173,7 @@ export function SwipeNavigation({
         })
         if (journey != null)
           plausible('navigatePreviousStep', {
+            u: `${journey.id}/${input.blockId}`,
             props: {
               ...input,
               key: keyify({
