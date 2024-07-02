@@ -6,6 +6,7 @@ type Team @key(fields: "id") {
   updatedAt: DateTime!
   userTeams: [UserTeam!]!
   customDomains: [CustomDomain!]!
+  integrations: [Integration!]!
 }
 
 extend type Query {

@@ -20,6 +20,7 @@ import {
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import {
   CustomDomain,
+  Integration,
   Prisma,
   Team,
   UserTeam
@@ -124,6 +125,19 @@ export class TeamResolver {
     return await this.prismaService.customDomain.findMany({
       where: { teamId: parent.id }
     })
+  }
+
+  @ResolveField()
+  async integrations(@Parent() parent: Team): Promise<Integration[]> {
+    const integrations = await this.prismaService.team
+      .findUnique({
+        where: { id: parent.id }
+      })
+      .integrations({
+        where: { teamId: parent.id }
+      })
+
+    return integrations != null ? integrations : []
   }
 
   @ResolveReference()
