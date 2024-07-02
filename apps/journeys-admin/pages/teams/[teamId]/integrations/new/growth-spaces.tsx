@@ -1,14 +1,28 @@
-import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import {
+  AuthAction,
+  useUser,
+  withUser,
+  withUserTokenSSR
+} from 'next-firebase-auth'
+import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
+import { GrowthSpacesCreateIntegration } from '../../../../../src/components/GrowthSpaces'
+import { PageWrapper } from '../../../../../src/components/PageWrapper'
 import { initAndAuthApp } from '../../../../../src/libs/initAndAuthApp'
 
 function GrowthSpacesConfigPage(): ReactElement {
-  // add IntegrationsList component here once merged to prod
+  const { t } = useTranslation('apps-journeys-admin')
+  const user = useUser()
+
   return (
-    <div>
-      GrowthSpaces Config Page: render component that enables user to set up
-      GrowthSpaces
-    </div>
+    <>
+      <NextSeo title={t('Growth Spaces')} />
+      <PageWrapper title={t('Growth Spaces')} user={user} backHrefHistory>
+        <GrowthSpacesCreateIntegration />
+      </PageWrapper>
+    </>
   )
 }
 
