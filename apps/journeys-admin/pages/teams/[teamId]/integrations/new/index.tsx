@@ -28,9 +28,13 @@ export const getServerSideProps = withUserTokenSSR({
 
   if (flags.teamIntegrations !== true)
     return {
-      revalidate: 60,
-      redirect: '/',
-      props: {}
+      redirect: {
+        destination: '/',
+        permanent: false
+      },
+      props: {
+        ...translations
+      }
     }
 
   return {
