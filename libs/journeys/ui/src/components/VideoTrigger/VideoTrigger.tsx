@@ -8,7 +8,7 @@ import { isIPhone } from '@core/shared/ui/deviceUtils'
 
 import { useJourney } from '../../libs/JourneyProvider'
 import { handleAction } from '../../libs/action'
-import type { TreeBlock } from '../../libs/block'
+import { type TreeBlock, useBlocks } from '../../libs/block'
 import { JourneyPlausibleEvents, keyify } from '../../libs/plausibleHelpers'
 
 import { VideoTriggerFields } from './__generated__/VideoTriggerFields'
@@ -30,6 +30,8 @@ export function VideoTrigger({
   const router = useRouter()
   const { journey, variant } = useJourney()
   const [triggered, setTriggered] = useState(false)
+  const { blockHistory } = useBlocks()
+  const activeBlock = blockHistory[blockHistory.length - 1]
   const plausible = usePlausible<JourneyPlausibleEvents>()
 
   useEffect(() => {
@@ -60,7 +62,7 @@ export function VideoTrigger({
           if (variant === 'embed' && !isIPhone()) {
             handleAction(router, triggerAction)
             plausible('videoTrigger', {
-              u: `${journey?.id ?? ''}/${blockId}`,
+              u: `${journey?.id ?? ''}/${activeBlock.id}`,
               props: input
             })
             return

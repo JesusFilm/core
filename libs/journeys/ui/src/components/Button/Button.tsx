@@ -122,7 +122,7 @@ export function Button({
       })
       if (journey != null) {
         plausible('buttonClick', {
-          u: `${journey.id}/${blockId}`,
+          u: `${journey.id}/${input.stepId}`,
           props: {
             ...input,
             key: keyify({
@@ -159,7 +159,7 @@ export function Button({
       })
       if (journey != null)
         plausible('chatButtonClick', {
-          u: `${journey.id}/${blockId}`,
+          u: `${journey.id}/${input.stepId}`,
           props: {
             ...input,
             key: keyify({
