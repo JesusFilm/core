@@ -1,7 +1,6 @@
 import {
   Body,
   Column,
-  Head,
   Html,
   Preview,
   Row,
@@ -16,6 +15,7 @@ import {
   BodyWrapper,
   EmailContainer,
   Footer,
+  Head,
   Header,
   UnsubscribeLink
 } from '@core/nest/common/email/components'
