@@ -111,6 +111,21 @@ module "public_alb_listener" {
   protocol        = "HTTPS"
   certificate_arn = var.certificate_arn
 }
+resource "aws_lb_listener" "ssl_forwarder" {
+  load_balancer_arn = module.public_alb.arn
+  port              = "80"
+  protocol          = "HTTP"
+
+  default_action {
+    type = "redirect"
+
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
+  }
+}
 
 resource "aws_lb_listener_certificate" "acm_nextstep_is" {
   listener_arn    = module.public_alb_listener.arn
