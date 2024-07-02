@@ -31,7 +31,7 @@ export function ReferrerNode({ data }: ReferrerNodeProps) {
         ) : (
           <Box
             sx={{
-              width: 160,
+              width: 180,
               backgroundColor: 'background.paper',
               borderRadius: 50,
               boxShadow: 3
