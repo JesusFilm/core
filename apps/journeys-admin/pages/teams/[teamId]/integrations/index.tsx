@@ -26,7 +26,7 @@ export const getServerSideProps = withUserTokenSSR({
 
   if (redirect != null) return { redirect }
 
-  if (flags.integrations !== true)
+  if (flags.teamIntegrations !== true)
     return {
       revalidate: 60,
       redirect: '/',
