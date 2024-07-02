@@ -32,7 +32,7 @@ export function IntegrationsButton({
 
   const IntegrationContent = {
     [IntegrationType.growthSpaces]: {
-      title: 'Growth Spaces',
+      title: t('Growth Spaces'),
       src: growthSpacesLogo
     }
   }
