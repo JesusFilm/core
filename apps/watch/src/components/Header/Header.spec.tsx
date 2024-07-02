@@ -34,4 +34,12 @@ describe('Header', () => {
     render(<Header hideAbsoluteAppBar hideSpacer />)
     expect(screen.queryByTestId('HeaderSpacer')).not.toBeInTheDocument()
   })
+
+  it('should have ::before div', () => {
+    render(<Header />)
+
+    const localAppBar = screen.getByTestId('Header')
+    const beforeStyles = window.getComputedStyle(localAppBar, '::before')
+    expect(beforeStyles).toBeDefined()
+  })
 })

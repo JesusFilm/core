@@ -155,7 +155,6 @@ export function Header({
   }
 
   const appBarStyles = lightTheme ? lightStyles : darkStyles
-
   const trigger = useScrollTrigger({ disableHysteresis: true })
   return (
     <>
@@ -181,8 +180,18 @@ export function Header({
             sx={{
               background: 'transparent',
               boxShadow: 'none',
-              // ...appBarStyles
-              ...(trigger ? appBarStyles : {})
+              '&::before': {
+                // content must have empty space https://developer.mozilla.org/en-US/docs/Web/CSS/::before#syntax
+                content: "' '",
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                bottom: 0,
+                right: 0,
+                opacity: trigger ? 1 : 0,
+                ...appBarStyles,
+                transition: 'opacity 0.3s ease'
+              }
             }}
             data-testid="Header"
             position="fixed"
