@@ -16,7 +16,8 @@ export function GrowthSpacesIntegrations(): ReactElement {
 
   return (
     <>
-      {selectedBlock?.type === TextResponseType.email && (
+      {(selectedBlock?.type === TextResponseType.email ||
+        selectedBlock?.type === TextResponseType.name) && (
         <Stack gap={4} sx={{ p: 4, pt: 0 }}>
           <Integrations />
           <Route />

@@ -20,32 +20,70 @@ describe('GrowthSpacesIntegrations', () => {
     type: TextResponseType.email,
     children: []
   }
-  it('should render Growth Spaces Integrations if type is email', () => {
-    render(
-      <MockedProvider>
-        <EditorProvider initialState={{ selectedBlock }}>
-          <GrowthSpacesIntegrations />
-        </EditorProvider>
-      </MockedProvider>
-    )
-    expect(screen.getByText('Growth Spaces Integrations')).toBeInTheDocument()
+  describe('Email', () => {
+    it('should render Growth Spaces Integrations if type is email', () => {
+      render(
+        <MockedProvider>
+          <EditorProvider initialState={{ selectedBlock }}>
+            <GrowthSpacesIntegrations />
+          </EditorProvider>
+        </MockedProvider>
+      )
+      expect(screen.getByText('Growth Spaces Integrations')).toBeInTheDocument()
+    })
+
+    it('should render Routes if integrationId is set', () => {
+      const selectedBlockWithIntegrationId: TreeBlock<TextResponseBlock> = {
+        ...selectedBlock,
+        integrationId: 'integration.id'
+      }
+      render(
+        <MockedProvider>
+          <EditorProvider
+            initialState={{ selectedBlock: selectedBlockWithIntegrationId }}
+          >
+            <GrowthSpacesIntegrations />
+          </EditorProvider>
+        </MockedProvider>
+      )
+      expect(screen.getByText('Growth Spaces Integrations')).toBeInTheDocument()
+      expect(screen.getByText('Route')).toBeInTheDocument()
+    })
   })
 
-  it('should render Routes if integrationId is set', () => {
-    const selectedBlockWithIntegrationId: TreeBlock<TextResponseBlock> = {
-      ...selectedBlock,
-      integrationId: 'integration.id'
-    }
-    render(
-      <MockedProvider>
-        <EditorProvider
-          initialState={{ selectedBlock: selectedBlockWithIntegrationId }}
-        >
-          <GrowthSpacesIntegrations />
-        </EditorProvider>
-      </MockedProvider>
-    )
-    expect(screen.getByText('Growth Spaces Integrations')).toBeInTheDocument()
-    expect(screen.getByText('Route')).toBeInTheDocument()
+  describe('Name', () => {
+    it('should render Growth Spaces Integrations if type is name', () => {
+      render(
+        <MockedProvider>
+          <EditorProvider
+            initialState={{
+              selectedBlock: { ...selectedBlock, type: TextResponseType.name }
+            }}
+          >
+            <GrowthSpacesIntegrations />
+          </EditorProvider>
+        </MockedProvider>
+      )
+      expect(screen.getByText('Growth Spaces Integrations')).toBeInTheDocument()
+    })
+
+    it('should render Routes if integrationId is set', () => {
+      const selectedBlockWithIntegrationId: TreeBlock<TextResponseBlock> = {
+        ...selectedBlock,
+        type: TextResponseType.name,
+        integrationId: 'integration.id'
+      }
+      render(
+        <MockedProvider>
+          <EditorProvider
+            initialState={{ selectedBlock: selectedBlockWithIntegrationId }}
+          >
+            <GrowthSpacesIntegrations />
+          </EditorProvider>
+        </MockedProvider>
+      )
+      expect(screen.getByText('Growth Spaces Integrations')).toBeInTheDocument()
+      expect(screen.getByText('Route')).toBeInTheDocument()
+    })
   })
 })
