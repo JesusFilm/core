@@ -1,19 +1,19 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { MockedProvider } from '@apollo/client/testing'
+import {
+  fireEvent,
+  getByAltText,
+  render,
+  waitFor
+} from '@testing-library/react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { TreeBlock } from '@core/journeys/ui/block'
 
-import {
-  CardVideoCreate,
-  CardVideoCreateVariables
-} from '../../../../../../../../../__generated__/CardVideoCreate'
-import { JourneyFields as Journey } from '../../../../../../../../../__generated__/JourneyFields'
-import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
+import type { JourneyFields as Journey } from '../../../../../../../../../__generated__/JourneyFields'
+import { cachedJourney, step } from '../../CardTemplates.data'
 
-import { CARD_VIDEO_CREATE } from './CardVideo'
+import { cardVideoCreateErrorMock, cardVideoCreateMock } from './CardVideo.data'
 
 import { CardVideo } from '.'
 
@@ -22,91 +22,19 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: jest.fn()
 }))
 
+const setLoadingMock = jest.fn()
+
 describe('CardVideo', () => {
-  it('updates card content and updates local cache', async () => {
+  it('updates local cache with card content', async () => {
     const cache = new InMemoryCache()
-    cache.restore({
-      'Journey:journeyId': {
-        blocks: [{ __ref: 'StepBlock:stepId' }, { __ref: 'CardBlock:cardId' }],
-        id: 'journeyId',
-        __typename: 'Journey'
-      }
-    })
-    const card: TreeBlock = {
-      id: 'cardId',
-      __typename: 'CardBlock',
-      parentBlockId: 'stepId',
-      coverBlockId: null,
-      parentOrder: 0,
-      backgroundColor: null,
-      themeMode: null,
-      themeName: null,
-      fullscreen: false,
-      children: []
-    }
-    const step: TreeBlock = {
-      id: 'stepId',
-      __typename: 'StepBlock',
-      parentBlockId: null,
-      parentOrder: 0,
-      locked: false,
-      nextBlockId: null,
-      children: [card]
-    }
-    const cardVideoCreateMock: MockedResponse<
-      CardVideoCreate,
-      CardVideoCreateVariables
-    > = {
-      request: {
-        query: CARD_VIDEO_CREATE,
-        variables: {
-          videoInput: {
-            journeyId: 'journeyId',
-            parentBlockId: 'cardId',
-            videoId: '1_jf-0-0',
-            videoVariantLanguageId: '529',
-            startAt: 2048,
-            endAt: 2058,
-            autoplay: true,
-            muted: false,
-            source: VideoBlockSource.internal
-          }
-        }
-      },
-      result: {
-        data: {
-          video: {
-            __typename: 'VideoBlock',
-            id: 'videoBlockId',
-            parentBlockId: 'cardId',
-            parentOrder: 0,
-            muted: false,
-            autoplay: true,
-            startAt: 2048,
-            endAt: 2058,
-            posterBlockId: null,
-            fullsize: true,
-            videoId: '1_jf-0-0',
-            videoVariantLanguageId: '529',
-            source: VideoBlockSource.internal,
-            title: null,
-            description: null,
-            image: null,
-            duration: null,
-            objectFit: null,
-            video: null,
-            action: null
-          }
-        }
-      }
-    }
+    cache.restore(cachedJourney)
     const { getByRole } = render(
       <MockedProvider cache={cache} mocks={[cardVideoCreateMock]}>
         <JourneyProvider
           value={{ journey: { id: 'journeyId' } as unknown as Journey }}
         >
           <EditorProvider initialState={{ steps: [step] }}>
-            <CardVideo />
+            <CardVideo setCardTemplatesLoading={setLoadingMock} />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>
@@ -119,5 +47,42 @@ describe('CardVideo', () => {
         { __ref: 'VideoBlock:videoBlockId' }
       ])
     })
+  })
+
+  it('updates loading state when clicked', async () => {
+    const { getByRole } = render(
+      <MockedProvider mocks={[cardVideoCreateMock]}>
+        <JourneyProvider
+          value={{ journey: { id: 'journeyId' } as unknown as Journey }}
+        >
+          <EditorProvider initialState={{ steps: [step] }}>
+            <CardVideo setCardTemplatesLoading={setLoadingMock} />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('button', { name: 'Card Video Template' }))
+    await waitFor(() => expect(cardVideoCreateMock.result).toHaveBeenCalled())
+    await waitFor(() => expect(setLoadingMock).toHaveBeenCalled())
+  })
+
+  it('updates loading state when error', async () => {
+    const { getByRole, getByAltText } = render(
+      <MockedProvider mocks={[cardVideoCreateErrorMock]}>
+        <JourneyProvider
+          value={{ journey: { id: 'journeyId' } as unknown as Journey }}
+        >
+          <EditorProvider initialState={{ steps: [step] }}>
+            <CardVideo setCardTemplatesLoading={setLoadingMock} />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('button', { name: 'Card Video Template' }))
+    await waitFor(() => expect(cardVideoCreateErrorMock.error).toBeDefined())
+    await waitFor(() => expect(setLoadingMock).toHaveBeenCalled())
+    expect(getByAltText('Card Video Template')).toBeInTheDocument()
   })
 })
