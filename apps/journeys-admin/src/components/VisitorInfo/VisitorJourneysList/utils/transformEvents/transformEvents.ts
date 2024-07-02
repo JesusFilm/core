@@ -2,6 +2,7 @@ import differenceInMilliseconds from 'date-fns/differenceInMilliseconds'
 import parseISO from 'date-fns/parseISO'
 import forEachRight from 'lodash/forEachRight'
 
+import { filterRecentTextResponseEvents } from '@core/journeys/ui/filterRecentTextResponseEvents'
 import { GetVisitorEvents_visitor_events as Event } from '../../../../../../__generated__/GetVisitorEvents'
 
 export interface TimelineItem {
@@ -18,9 +19,11 @@ export function transformEvents(events: Event[]): TransformedEvents {
   const sortedEvents = events.sort((a, b) => {
     if (a.createdAt < b.createdAt) {
       return -1
-    } else if (a.createdAt > b.createdAt) {
+    }
+    if (a.createdAt > b.createdAt) {
       return 1
-    } else return 0
+    }
+    return 0
   })
 
   const featured: Array<Event['__typename']> = [
@@ -44,9 +47,11 @@ export function transformEvents(events: Event[]): TransformedEvents {
     'VideoCompleteEvent'
   ]
 
-  const filteredEvents = sortedEvents.filter((event) =>
+  const includedEvents = sortedEvents.filter((event) =>
     eventTypesFilter.includes(event.__typename)
   )
+
+  const filteredEvents = filterRecentTextResponseEvents<Event>(includedEvents)
 
   const eventsWithDuration: TimelineItem[] = []
   filteredEvents.forEach((event, i) => {
