@@ -12,6 +12,7 @@ import { VideoBlockSource } from '../../../../../../../../../__generated__/globa
 import { getBackgroundImage } from '../getBackgroundImage'
 import { getCardHeadings } from '../getCardHeadings'
 import { getPriorityBlock } from '../getPriorityBlock'
+import { getPriorityImage } from '../getPriorityImage'
 
 interface CardMetadata {
   title?: string
@@ -20,6 +21,7 @@ interface CardMetadata {
   priorityBlock?: TreeBlock
   bgImage?: string
   hasMultipleActions?: boolean
+  priorityImage?: string | null
 }
 
 function getVideoVariantLanguage(
@@ -57,7 +59,6 @@ export function getCardMetadata(
   card: TreeBlock<CardBlock> | undefined
 ): CardMetadata {
   if (card == null) return {}
-
   const priorityBlock = getPriorityBlock(card)
 
   const hasMultipleActions =
@@ -73,9 +74,7 @@ export function getCardMetadata(
       priorityBlock.video?.title?.[0]?.value ?? priorityBlock.title ?? undefined
     const subtitle =
       priorityBlock.startAt !== null && priorityBlock.endAt !== null
-        ? secondsToTimeFormat(priorityBlock.startAt, { trimZeroes: true }) +
-          '-' +
-          secondsToTimeFormat(priorityBlock.endAt, { trimZeroes: true })
+        ? `${secondsToTimeFormat(priorityBlock.startAt, { trimZeroes: true })}-${secondsToTimeFormat(priorityBlock.endAt, { trimZeroes: true })}`
         : undefined
 
     const description = getVideoDescription(priorityBlock)
@@ -106,10 +105,17 @@ export function getCardMetadata(
       bgImage,
       hasMultipleActions
     }
-  } else {
-    const [title, subtitle] = getCardHeadings(card.children)
-    const bgImage = getBackgroundImage(card)
+  }
+  const [title, subtitle] = getCardHeadings(card.children)
+  const bgImage = getBackgroundImage(card)
+  const priorityImage = getPriorityImage(card.children)
 
-    return { title, subtitle, priorityBlock, bgImage, hasMultipleActions }
+  return {
+    title,
+    subtitle,
+    priorityBlock,
+    bgImage,
+    hasMultipleActions,
+    priorityImage
   }
 }
