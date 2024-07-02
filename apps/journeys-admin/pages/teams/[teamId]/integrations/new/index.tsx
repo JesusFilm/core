@@ -1,14 +1,33 @@
-import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
+import {
+  AuthAction,
+  useUser,
+  withUser,
+  withUserTokenSSR
+} from 'next-firebase-auth'
+import { NextSeo } from 'next-seo'
+import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
+import { useTranslation } from 'react-i18next'
+import { PageWrapper } from '../../../../../src/components/PageWrapper'
+import { Integrations } from '../../../../../src/components/Team/Integrations'
 import { initAndAuthApp } from '../../../../../src/libs/initAndAuthApp'
 
 function IntegrationsIndexPage(): ReactElement {
-  // add IntegrationsList component here once merged to prod
+  const { t } = useTranslation('apps-journeys-admin')
+  const user = useUser()
+
   return (
-    <div>
-      Integrations Index Page: render all the integrations available for
-      selection
-    </div>
+    <>
+      <NextSeo title={t('Integrations')} />
+      <PageWrapper
+        title={t('Integrations')}
+        user={user}
+        backHrefHistory
+        mainBodyPadding={false}
+      >
+        <Integrations />
+      </PageWrapper>
+    </>
   )
 }
 
