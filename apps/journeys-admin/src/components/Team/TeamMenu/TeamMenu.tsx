@@ -59,7 +59,7 @@ export function TeamMenu(): ReactElement {
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
-  const { integrations } = useFlags()
+  const { teamIntegrations } = useFlags()
 
   const [teamCreateOpen, setTeamCreateOpen] = useState<boolean | undefined>()
   const [teamUpdateOpen, setTeamUpdateOpen] = useState<boolean | undefined>()
@@ -217,7 +217,7 @@ export function TeamMenu(): ReactElement {
             setAnchorEl(null)
           }}
         />
-        {integrations && (
+        {teamIntegrations && (
           <MenuItem
             key="integrations"
             label={t('Integrations')}
