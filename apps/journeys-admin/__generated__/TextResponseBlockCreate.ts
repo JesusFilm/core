@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { TextResponseBlockCreateInput } from "./globalTypes";
+import { TextResponseBlockCreateInput, TextResponseType } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: TextResponseBlockCreate
@@ -17,6 +17,9 @@ export interface TextResponseBlockCreate_textResponseBlockCreate {
   label: string;
   hint: string | null;
   minRows: number | null;
+  type: TextResponseType | null;
+  routeId: string | null;
+  integrationId: string | null;
 }
 
 export interface TextResponseBlockCreate {

@@ -3,6 +3,8 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
+import { TextResponseType } from "./globalTypes";
+
 // ====================================================
 // GraphQL fragment: TextResponseFields
 // ====================================================
@@ -15,4 +17,7 @@ export interface TextResponseFields {
   label: string;
   hint: string | null;
   minRows: number | null;
+  type: TextResponseType | null;
+  routeId: string | null;
+  integrationId: string | null;
 }

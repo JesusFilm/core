@@ -35,6 +35,9 @@ const block: TreeBlock<TextResponseFields> = {
   label: 'Your answer here',
   hint: null,
   minRows: null,
+  integrationId: null,
+  type: null,
+  routeId: null,
   children: []
 }
 
