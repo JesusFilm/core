@@ -262,7 +262,8 @@ export function Slider(): ReactElement {
             }),
             backgroundSize: '20px 20px',
             backgroundColor: '#eff2f5',
-            height: '100%'
+            height: '100%',
+            overflow: 'hidden'
           }}
         >
           <JourneyFlow />
