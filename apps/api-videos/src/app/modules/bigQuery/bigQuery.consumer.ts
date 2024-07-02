@@ -3,7 +3,15 @@ import { Job } from 'bullmq'
 import get from 'lodash/get'
 
 import { ImporterService } from '../importer/importer.service'
-import { VideosService } from '../importer/videos/videos.service'
+import { ImporterVideoDescriptionService } from '../importer/importerVideoDescriptions/importerVideoDescriptions.service'
+import { ImporterVideoImageAltService } from '../importer/importerVideoImageAlt/importerVideoImageAlt.service'
+import { ImporterVideosService } from '../importer/importerVideos/importerVideos.service'
+import { ImporterVideoSnippetsService } from '../importer/importerVideoSnippets/importerVideoSnippets.service'
+import { ImporterVideoStudyQuestionsService } from '../importer/importerVideoStudyQuestions/importerVideoStudyQuestions.service'
+import { ImporterVideoTitleService } from '../importer/importerVideoTitles/importerVideoTitle.service'
+import { ImporterVideoVariantDownloadsService } from '../importer/importerVideoVariantDownloads/importerVideoVariantDownloads.service'
+import { ImporterVideoVariantsService } from '../importer/importerVideoVariants/importerVideoVariants.service'
+import { ImporterVideoVariantSubtitlesService } from '../importer/importerVideoVariantSubtitle/importerVideovariantSubtitile.service'
 
 import { BigQueryService } from './bigQuery.service'
 
@@ -18,12 +26,36 @@ export class BigQueryConsumer extends WorkerHost {
 
   constructor(
     private readonly bigQueryService: BigQueryService,
-    private readonly videosService: VideosService
+    private readonly importerVideosService: ImporterVideosService,
+    private readonly importerVideoTitleService: ImporterVideoTitleService,
+    private readonly importerVideoDescriptionService: ImporterVideoDescriptionService,
+    private readonly importerVideoStudyQuestionsService: ImporterVideoStudyQuestionsService,
+    private readonly importerVideoSnippetsService: ImporterVideoSnippetsService,
+    private readonly importerVideoVariantsService: ImporterVideoVariantsService,
+    private readonly importerVideoImageAltService: ImporterVideoImageAltService,
+    private readonly importerVideoVariantsDownloadService: ImporterVideoVariantDownloadsService,
+    private readonly importerVideoVariantsSubtitleService: ImporterVideoVariantSubtitlesService
   ) {
     super()
     this.tables = {
       'jfp-data-warehouse.jfp_mmdb_prod.core_video_arclight_data':
-        this.videosService
+        this.importerVideosService,
+      'jfp-data-warehouse.jfp_mmdb_prod.core_videoTitle_arclight_data':
+        this.importerVideoTitleService,
+      'jfp-data-warehouse.jfp_mmdb_prod.core_videoDescription_arclight_data':
+        this.importerVideoDescriptionService,
+      'jfp-data-warehouse.jfp_mmdb_prod.core_videoStudyQuestions_arclight_data':
+        this.importerVideoStudyQuestionsService,
+      'jfp-data-warehouse.jfp_mmdb_prod.core_videoSnippet_arclight_data':
+        this.importerVideoSnippetsService,
+      'jfp-data-warehouse.jfp_mmdb_prod.core_videoImageAlt_arclight_data':
+        this.importerVideoImageAltService,
+      'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariant_arclight_data':
+        this.importerVideoVariantsService,
+      'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariantDownload_arclight_data':
+        this.importerVideoVariantsDownloadService,
+      'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariantSubtitles_arclight_data':
+        this.importerVideoVariantsSubtitleService
     }
   }
 
@@ -38,7 +70,7 @@ export class BigQueryConsumer extends WorkerHost {
         } catch (error) {
           errors.push({
             bigQueryTableName,
-            id: get(row, 'id') ?? 'unknownId',
+            id: get(row, 'id') ?? get(row, 'videoId'),
             message: error.message
           })
         }
