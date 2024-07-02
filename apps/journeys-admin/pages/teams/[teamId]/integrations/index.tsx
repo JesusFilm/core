@@ -18,13 +18,20 @@ export const getServerSideProps = withUserTokenSSR({
   if (user == null)
     return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
-  const { redirect, translations } = await initAndAuthApp({
+  const { redirect, translations, flags } = await initAndAuthApp({
     user,
     locale,
     resolvedUrl
   })
 
   if (redirect != null) return { redirect }
+
+  if (flags.integrations !== true)
+    return {
+      revalidate: 60,
+      redirect: '/',
+      props: {}
+    }
 
   return {
     props: {
