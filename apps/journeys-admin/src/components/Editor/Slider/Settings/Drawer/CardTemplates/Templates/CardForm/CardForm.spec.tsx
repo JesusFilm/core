@@ -156,6 +156,9 @@ describe('CardForm', () => {
             label: 'Your answer here',
             hint: null,
             minRows: null,
+            integrationId: null,
+            type: null,
+            routeId: null,
             __typename: 'TextResponseBlock'
           },
           body: {

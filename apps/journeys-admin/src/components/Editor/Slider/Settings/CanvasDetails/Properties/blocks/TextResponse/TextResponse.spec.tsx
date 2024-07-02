@@ -24,6 +24,9 @@ describe('TextResponse', () => {
     label: 'default label',
     hint: null,
     minRows: null,
+    integrationId: null,
+    type: null,
+    routeId: null,
     children: []
   }
 
@@ -35,6 +38,9 @@ describe('TextResponse', () => {
     label: 'complete label',
     hint: 'hint text',
     minRows: 2,
+    integrationId: null,
+    type: null,
+    routeId: null,
     children: [
       {
         id: 'icon.id',
