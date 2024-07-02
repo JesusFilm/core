@@ -13,6 +13,7 @@ import {
   EditorProvider,
   EditorState
 } from '.'
+import { type JourneyAnalytics } from '../useJourneyAnalyticsQuery'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -453,6 +454,61 @@ describe('EditorContext', () => {
         })
       })
     })
+
+    describe('SetShowAnalyticsAction', () => {
+      it('should set showAnalytics', () => {
+        const state: EditorState = {
+          steps: [],
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+          activeFab: ActiveFab.Add,
+          activeSlide: ActiveSlide.Content,
+          activeContent: ActiveContent.Social
+        }
+
+        expect(
+          reducer(state, {
+            type: 'SetShowAnalyticsAction',
+            showAnalytics: true
+          })
+        ).toEqual({
+          ...state,
+          showAnalytics: true
+        })
+      })
+    })
+
+    describe('SetAnalyticsAction', () => {
+      it('should set analytics', () => {
+        const state: EditorState = {
+          steps: [],
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+          activeFab: ActiveFab.Add,
+          activeSlide: ActiveSlide.JourneyFlow,
+          activeContent: ActiveContent.Canvas
+        }
+
+        const analytics: JourneyAnalytics = {
+          totalVisitors: 0,
+          chatsStarted: 0,
+          linksVisited: 0,
+          referrers: { nodes: [], edges: [] },
+          stepsStats: [],
+          stepMap: new Map(),
+          blockMap: new Map(),
+          targetMap: new Map()
+        }
+
+        expect(
+          reducer(state, {
+            type: 'SetAnalyticsAction',
+            analytics
+          })
+        ).toEqual({
+          ...state,
+          analytics
+        })
+      })
+    })
   })
 
   describe('EditorProvider', () => {
@@ -470,8 +526,7 @@ describe('EditorContext', () => {
       const initialState = {
         steps: [block],
         selectedBlock: block,
-        selectedStep: block,
-        showJourneyFlowAnalytics: false
+        selectedStep: block
       }
 
       const wrapper = ({ children }: { children: ReactNode }): ReactNode => (
@@ -488,8 +543,7 @@ describe('EditorContext', () => {
         activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
         activeFab: ActiveFab.Add,
         activeSlide: ActiveSlide.Content,
-        activeContent: ActiveContent.Canvas,
-        showJourneyFlowAnalytics: false
+        activeContent: ActiveContent.Canvas
       })
     })
   })
