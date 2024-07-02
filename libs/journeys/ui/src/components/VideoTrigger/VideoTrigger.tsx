@@ -28,7 +28,7 @@ export function VideoTrigger({
   triggerStart
 }: VideoTriggerProps): ReactElement {
   const router = useRouter()
-  const { variant } = useJourney()
+  const { journey, variant } = useJourney()
   const [triggered, setTriggered] = useState(false)
   const plausible = usePlausible<JourneyPlausibleEvents>()
 
@@ -59,7 +59,10 @@ export function VideoTrigger({
 
           if (variant === 'embed' && !isIPhone()) {
             handleAction(router, triggerAction)
-            plausible('videoTrigger', { props: input })
+            plausible('videoTrigger', {
+              u: `${journey?.id ?? ''}/${blockId}`,
+              props: input
+            })
             return
           }
           if (player.isFullscreen() ?? false) {
