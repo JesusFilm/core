@@ -1,3 +1,4 @@
+import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
@@ -14,11 +15,32 @@ import ThumbsUpIcon from '@core/shared/ui/icons/ThumbsUp'
 import logo from '../../../../public/taskbar-icon.svg'
 import { EDIT_TOOLBAR_HEIGHT } from '../constants'
 
+import { ActiveContent } from '@core/journeys/ui/EditorProvider'
+import Button from '@mui/material/Button'
+import { useTranslation } from 'react-i18next'
 import { Items } from './Items'
 import { Menu } from './Menu'
 
 export function Toolbar(): ReactElement {
   const { journey } = useJourney()
+  const { t } = useTranslation('journeys-admin')
+
+  const {
+    state: { activeSlide },
+    dispatch
+  } = useEditor()
+
+  function handleSelect(): void {
+    dispatch({
+      type: 'SetActiveSlideAction',
+      activeSlide: ActiveSlide.Content
+    })
+    dispatch({
+      type: 'SetActiveContentAction',
+      activeContent: ActiveContent.Social
+    })
+  }
+
   return (
     <Stack
       data-testid="Toolbar"
@@ -51,30 +73,35 @@ export function Toolbar(): ReactElement {
       </NextLink>
       {journey != null && (
         <>
-          <Box
-            bgcolor={(theme) => theme.palette.background.default}
-            borderRadius="4px"
-            width={50}
-            height={50}
-            justifyContent="center"
-            alignItems="center"
-            sx={{ display: { xs: 'none', sm: 'flex' } }}
-          >
-            {journey?.primaryImageBlock?.src == null ? (
-              <ThumbsUpIcon color="error" />
-            ) : (
-              <Image
-                src={journey.primaryImageBlock.src}
-                alt={journey.primaryImageBlock.alt}
+          <Tooltip title={t('Social Image')} arrow>
+            <Button onClick={handleSelect}>
+              <Box
+                bgcolor={(theme) => theme.palette.background.default}
+                borderRadius="4px"
                 width={50}
                 height={50}
-                style={{
-                  borderRadius: '4px',
-                  objectFit: 'cover'
-                }}
-              />
-            )}
-          </Box>
+                justifyContent="center"
+                alignItems="center"
+                sx={{ display: { xs: 'none', sm: 'flex' } }}
+              >
+                {journey?.primaryImageBlock?.src == null ? (
+                  <ThumbsUpIcon color="error" />
+                ) : (
+                  <Image
+                    src={journey.primaryImageBlock.src}
+                    alt={journey.primaryImageBlock.alt}
+                    width={50}
+                    height={50}
+                    style={{
+                      borderRadius: '4px',
+                      objectFit: 'cover'
+                    }}
+                  />
+                )}
+              </Box>
+            </Button>
+          </Tooltip>
+
           <Stack flexGrow={1} sx={{ minWidth: 0 }}>
             <Typography
               variant="subtitle1"
