@@ -3,10 +3,11 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
-import { TreeBlock } from '@core/journeys/ui/block'
 import { ActiveSlide, EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { TreeBlock } from '@core/journeys/ui/block'
 import { transformer } from '@core/journeys/ui/transformer'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import {
   GetStepBlocksWithPosition,
@@ -81,15 +82,17 @@ describe('JourneyFlow', () => {
 
     render(
       <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
-        <JourneyProvider value={{ journey: defaultJourney }}>
-          <EditorProvider
-            initialState={{ steps, activeSlide: ActiveSlide.JourneyFlow }}
-          >
-            <Box sx={{ width: '100vw', height: '100vh' }}>
-              <JourneyFlow />
-            </Box>
-          </EditorProvider>
-        </JourneyProvider>
+        <FlagsProvider flags={{ editorAnalytics: true }}>
+          <JourneyProvider value={{ journey: defaultJourney }}>
+            <EditorProvider
+              initialState={{ steps, activeSlide: ActiveSlide.JourneyFlow }}
+            >
+              <Box sx={{ width: '100vw', height: '100vh' }}>
+                <JourneyFlow />
+              </Box>
+            </EditorProvider>
+          </JourneyProvider>
+        </FlagsProvider>
       </MockedProvider>
     )
 
@@ -98,6 +101,9 @@ describe('JourneyFlow', () => {
     expect(screen.getByTestId('JourneyFlow')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Add Step' })).toBeInTheDocument()
     expect(screen.getAllByTestId('StepBlockNodeCard')).toHaveLength(7)
+    expect(
+      screen.getByRole('checkbox', { name: 'Analytics Overlay' })
+    ).toBeInTheDocument()
   })
 
   it('should update step positions if any step does not have a position', async () => {
@@ -163,5 +169,59 @@ describe('JourneyFlow', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
     fireEvent.click(screen.getByTestId('ArrowRefresh6Icon'))
     expect(mockUpdate).toHaveBeenCalled()
+  })
+
+  it('should hide new step button if in analytics mode', async () => {
+    const result = jest
+      .fn()
+      .mockReturnValue(mockGetStepBlocksWithPosition.result)
+
+    render(
+      <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
+        <JourneyProvider value={{ journey: defaultJourney }}>
+          <EditorProvider
+            initialState={{
+              steps,
+              activeSlide: ActiveSlide.JourneyFlow,
+              showAnalytics: true
+            }}
+          >
+            <Box sx={{ width: '100vw', height: '100vh' }}>
+              <JourneyFlow />
+            </Box>
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => expect(result).toHaveBeenCalled())
+
+    expect(
+      screen.queryByRole('button', { name: 'Add Step' })
+    ).not.toBeInTheDocument()
+  })
+
+  it('should change background color when in analytics mode', () => {
+    render(
+      <MockedProvider mocks={[]}>
+        <JourneyProvider value={{ journey: defaultJourney }}>
+          <EditorProvider
+            initialState={{
+              steps,
+              activeSlide: ActiveSlide.JourneyFlow,
+              showAnalytics: true
+            }}
+          >
+            <Box sx={{ width: '100vw', height: '100vh' }}>
+              <JourneyFlow />
+            </Box>
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByTestId('rf__background')).toHaveStyle({
+      'background-color': 'rgb(222, 232, 239)'
+    })
   })
 })

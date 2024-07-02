@@ -231,7 +231,7 @@ export class JourneyPage {
 
   async setJourneyName(journey: string) {
     journeyName =
-      (journey == 'firstJourneyName'
+      (journey === 'firstJourneyName'
         ? testData.journey.firstJourneyName
         : testData.journey.secondJourneyName) + randomNumber
   }
@@ -608,7 +608,7 @@ export class JourneyPage {
         matchCount = matchCount + 1
       }
     }
-    expect(matchCount == this.journeyList.length).toBeTruthy()
+    expect(matchCount === this.journeyList.length).toBeTruthy()
   }
 
   async verifyActiveTabShowsEmptyMessage() {
@@ -653,7 +653,7 @@ export class JourneyPage {
         matchCount = matchCount + 1
       }
     }
-    expect(matchCount == this.journeyList.length).toBeTruthy()
+    expect(matchCount === this.journeyList.length).toBeTruthy()
   }
 
   async getJourneyListOfTrashTab() {
@@ -690,7 +690,7 @@ export class JourneyPage {
         matchCount = matchCount + 1
       }
     }
-    expect(matchCount == this.journeyList.length).toBeTruthy()
+    expect(matchCount === this.journeyList.length).toBeTruthy()
   }
 
   async verifyAlljourneysAreDeletedFromTrashTab() {
@@ -781,7 +781,7 @@ export class JourneyPage {
     expectedSortedList: string[]
   ) {
     list.map((str) => str.toLowerCase()).sort(Intl.Collator().compare)
-    expect(list.join().trim() == expectedSortedList.join().trim()).toBeTruthy()
+    expect(list.join().trim() === expectedSortedList.join().trim()).toBeTruthy()
   }
 
   async verifyNewlyJouyneysAreSortedByNames() {
@@ -796,7 +796,7 @@ export class JourneyPage {
       )
       .locator('span[data-testid="new-journey-badge"] div')
       .count()
-    if (journeyListCount != 0) {
+    if (journeyListCount !== 0) {
       const journeyList = await this.page
         .locator(
           'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"]',
@@ -857,12 +857,12 @@ export class JourneyPage {
     expectedSortedList: string[],
     list: string[]
   ) {
-    list.sort(function (a: string, b: string) {
+    list.sort((a: string, b: string) => {
       const dateA = new Date(a)
       const dateB = new Date(b)
       return dateB.getTime() - dateA.getTime()
     })
-    expect(list.join().trim() == expectedSortedList.join().trim()).toBeTruthy()
+    expect(list.join().trim() === expectedSortedList.join().trim()).toBeTruthy()
   }
 
   async verifyNewlyJourneyAreSortedByDates() {
@@ -877,7 +877,7 @@ export class JourneyPage {
       )
       .locator('span[data-testid="new-journey-badge"] + span')
       .count()
-    if (journeysDescriptionCount != 0) {
+    if (journeysDescriptionCount !== 0) {
       const journeysDescriptionList = await this.page
         .locator(
           'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"]',

@@ -35,12 +35,6 @@ locals {
   # Public ALB config
   public_alb_config = {
     name = "public-alb"
-    listeners = {
-      "HTTPS" = {
-        listener_port     = 443
-        listener_protocol = "HTTPS"
-      }
-    }
     redirects = {
       "HTTP" = {
         listener_port     = 80
@@ -53,6 +47,12 @@ locals {
       {
         from_port   = 443
         to_port     = 443
+        protocol    = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+      },
+      {
+        from_port   = 80
+        to_port     = 80
         protocol    = "tcp"
         cidr_blocks = ["0.0.0.0/0"]
       }

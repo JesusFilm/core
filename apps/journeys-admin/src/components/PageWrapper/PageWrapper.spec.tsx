@@ -113,7 +113,6 @@ describe('PageWrapper', () => {
     })
 
     it('should show the side nav bar', () => {
-      // eslint-disable-next-line @typescript-eslint/no-extra-semi
       ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
 
       const { getByTestId, getByText, queryByRole } = render(

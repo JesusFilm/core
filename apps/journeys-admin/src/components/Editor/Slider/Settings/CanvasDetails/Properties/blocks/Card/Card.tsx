@@ -1,11 +1,11 @@
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
-import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next'
+import dynamic from 'next/dynamic'
 import { ReactElement } from 'react'
 
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import FlexAlignBottom1Icon from '@core/shared/ui/icons/FlexAlignBottom1'
 import Image3Icon from '@core/shared/ui/icons/Image3'
@@ -140,8 +140,8 @@ export function Card({
           themeMode == null
             ? t('Default')
             : themeMode === ThemeMode.light
-            ? t('Light')
-            : t('Dark')
+              ? t('Light')
+              : t('Dark')
         }
       >
         <CardStyling />

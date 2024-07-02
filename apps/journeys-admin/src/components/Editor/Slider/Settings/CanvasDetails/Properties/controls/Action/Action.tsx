@@ -8,9 +8,9 @@ import { init, t } from 'i18next'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
 
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 import { ActionDelete } from '../../../../../../../../../__generated__/ActionDelete'

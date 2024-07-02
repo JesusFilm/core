@@ -1,24 +1,38 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import MuiButton from '@mui/material/Button'
-import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
+import { usePlausible } from 'next-plausible'
+import { useRouter } from 'next/router'
 import { MouseEvent, ReactElement, useMemo } from 'react'
 import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
-import { ButtonVariant } from '../../../__generated__/globalTypes'
+import {
+  ButtonAction,
+  ButtonClickEventCreateInput,
+  ButtonVariant,
+  ChatOpenEventCreateInput
+} from '../../../__generated__/globalTypes'
+import { useJourney } from '../../libs/JourneyProvider'
 import { handleAction } from '../../libs/action'
 import type { TreeBlock } from '../../libs/block'
 import { useBlocks } from '../../libs/block'
 import { getStepHeading } from '../../libs/getStepHeading'
-import { useJourney } from '../../libs/JourneyProvider'
+import { JourneyPlausibleEvents } from '../../libs/plausibleHelpers'
+import { keyify } from '../../libs/plausibleHelpers/plausibleHelpers'
 import { Icon } from '../Icon'
 import { IconFields } from '../Icon/__generated__/IconFields'
 
-import { ButtonClickEventCreate } from './__generated__/ButtonClickEventCreate'
+import {
+  ButtonClickEventCreate,
+  ButtonClickEventCreateVariables
+} from './__generated__/ButtonClickEventCreate'
 import { ButtonFields } from './__generated__/ButtonFields'
-import { ChatOpenEventCreate } from './__generated__/ChatOpenEventCreate'
+import {
+  ChatOpenEventCreate,
+  ChatOpenEventCreateVariables
+} from './__generated__/ChatOpenEventCreate'
 import { findMessagePlatform } from './utils/findMessagePlatform'
 import { getActionLabel } from './utils/getActionLabel'
 import { getLinkActionGoal } from './utils/getLinkActionGoal'
@@ -55,14 +69,17 @@ export function Button({
   children,
   editableLabel
 }: ButtonProps): ReactElement {
-  const [buttonClickEventCreate] = useMutation<ButtonClickEventCreate>(
-    BUTTON_CLICK_EVENT_CREATE
-  )
-  const [chatOpenEventCreate] = useMutation<ChatOpenEventCreate>(
-    CHAT_OPEN_EVENT_CREATE
-  )
+  const [buttonClickEventCreate] = useMutation<
+    ButtonClickEventCreate,
+    ButtonClickEventCreateVariables
+  >(BUTTON_CLICK_EVENT_CREATE)
+  const [chatOpenEventCreate] = useMutation<
+    ChatOpenEventCreate,
+    ChatOpenEventCreateVariables
+  >(CHAT_OPEN_EVENT_CREATE)
 
-  const { variant } = useJourney()
+  const plausible = usePlausible<JourneyPlausibleEvents>()
+  const { variant, journey } = useJourney()
   const { treeBlocks, blockHistory } = useBlocks()
   const { t } = useTranslation('libs-journeys-ui')
   const activeBlock = blockHistory[blockHistory.length - 1]
@@ -89,19 +106,38 @@ export function Button({
   function createClickEvent(): void {
     if (variant === 'default' || variant === 'embed') {
       const id = uuidv4()
+      const input: ButtonClickEventCreateInput = {
+        id,
+        blockId,
+        stepId: activeBlock?.id,
+        label: heading,
+        value: label,
+        action: action?.__typename as ButtonAction | undefined,
+        actionValue
+      }
       void buttonClickEventCreate({
         variables: {
-          input: {
-            id,
-            blockId,
-            stepId: activeBlock?.id,
-            label: heading,
-            value: label,
-            action: action?.__typename,
-            actionValue
-          }
+          input
         }
       })
+      if (journey != null) {
+        plausible('buttonClick', {
+          props: {
+            ...input,
+            key: keyify({
+              stepId: input.stepId ?? '',
+              event: 'buttonClick',
+              blockId: input.blockId,
+              target: action
+            }),
+            simpleKey: keyify({
+              stepId: input.stepId ?? '',
+              event: 'buttonClick',
+              blockId: input.blockId
+            })
+          }
+        })
+      }
       addEventToDataLayer(id)
     }
   }
@@ -109,16 +145,34 @@ export function Button({
   function createChatEvent(): void {
     if (variant === 'default' || variant === 'embed') {
       const id = uuidv4()
+      const input: ChatOpenEventCreateInput = {
+        id,
+        blockId,
+        stepId: activeBlock?.id,
+        value: messagePlatform
+      }
       void chatOpenEventCreate({
         variables: {
-          input: {
-            id,
-            blockId,
-            stepId: activeBlock?.id,
-            value: messagePlatform
-          }
+          input
         }
       })
+      if (journey != null)
+        plausible('chatButtonClick', {
+          props: {
+            ...input,
+            key: keyify({
+              stepId: input.stepId ?? '',
+              event: 'chatButtonClick',
+              blockId: input.blockId,
+              target: action
+            }),
+            simpleKey: keyify({
+              stepId: input.stepId ?? '',
+              event: 'chatButtonClick',
+              blockId: input.blockId
+            })
+          }
+        })
       addEventToDataLayer(id)
     }
   }
@@ -171,10 +225,10 @@ export function Button({
           size === 'large'
             ? 6
             : size === 'medium'
-            ? 5
-            : size === 'small'
-            ? 4
-            : 5
+              ? 5
+              : size === 'small'
+                ? 4
+                : 5
       }}
       data-testid={`JourneysButton-${blockId}`}
     >

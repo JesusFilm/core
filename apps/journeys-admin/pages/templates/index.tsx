@@ -1,9 +1,9 @@
 import { useQuery } from '@apollo/client'
 import { GetStaticProps } from 'next'
-import { useRouter } from 'next/router'
 import { useUser, withUser } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
+import { useRouter } from 'next/router'
 import { ReactElement, useEffect } from 'react'
 
 import {
@@ -88,7 +88,8 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
             '6464', // Hindi
             '12876', // Ukrainian
             '53441', // Arabic, Egyptian Modern Standard
-            '1942' // Türkçe, Turkish
+            '1942', // Türkçe, Turkish
+            '5541' // Serbian
           ]
         }
       }

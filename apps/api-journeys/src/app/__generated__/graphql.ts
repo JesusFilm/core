@@ -591,14 +591,6 @@ export class VideoProgressEventCreateInput {
     value?: Nullable<VideoBlockSource>;
 }
 
-export class EventEmailNotificationsUpdateInput {
-    userId: string;
-    journeyId: string;
-    userTeamId?: Nullable<string>;
-    userJourneyId?: Nullable<string>;
-    value: boolean;
-}
-
 export class HostUpdateInput {
     title?: Nullable<string>;
     location?: Nullable<string>;
@@ -672,6 +664,11 @@ export class JourneyCollectionUpdateInput {
     journeyIds?: Nullable<string[]>;
 }
 
+export class JourneyNotificationUpdateInput {
+    journeyId: string;
+    visitorInteractionEmail: boolean;
+}
+
 export class JourneyProfileUpdateInput {
     lastActiveTeamId?: Nullable<string>;
     journeyFlowBackButtonClicked?: Nullable<boolean>;
@@ -691,6 +688,29 @@ export class JourneysEmailPreferenceUpdateInput {
     email: string;
     preference: string;
     value: boolean;
+}
+
+export class PlausibleStatsAggregateFilter {
+    period?: Nullable<string>;
+    date?: Nullable<string>;
+    filters?: Nullable<string>;
+    interval?: Nullable<string>;
+}
+
+export class PlausibleStatsBreakdownFilter {
+    property: string;
+    period?: Nullable<string>;
+    date?: Nullable<string>;
+    limit?: Nullable<number>;
+    page?: Nullable<number>;
+    filters?: Nullable<string>;
+}
+
+export class PlausibleStatsTimeseriesFilter {
+    period?: Nullable<string>;
+    date?: Nullable<string>;
+    filters?: Nullable<string>;
+    interval?: Nullable<string>;
 }
 
 export class TeamCreateInput {
@@ -883,8 +903,6 @@ export abstract class IMutation {
 
     abstract videoProgressEventCreate(input: VideoProgressEventCreateInput): VideoProgressEvent | Promise<VideoProgressEvent>;
 
-    abstract eventEmailNotificationsUpdate(input: EventEmailNotificationsUpdateInput): EventEmailNotifications | Promise<EventEmailNotifications>;
-
     abstract hostCreate(teamId: string, input: HostCreateInput): Host | Promise<Host>;
 
     abstract hostUpdate(id: string, teamId: string, input?: Nullable<HostUpdateInput>): Host | Promise<Host>;
@@ -916,6 +934,8 @@ export abstract class IMutation {
     abstract journeyCollectionUpdate(id: string, input: JourneyCollectionUpdateInput): JourneyCollection | Promise<JourneyCollection>;
 
     abstract journeyCollectionDelete(id: string): JourneyCollection | Promise<JourneyCollection>;
+
+    abstract journeyNotificationUpdate(input: JourneyNotificationUpdateInput): JourneyNotification | Promise<JourneyNotification>;
 
     abstract journeyProfileCreate(): JourneyProfile | Promise<JourneyProfile>;
 
@@ -991,6 +1011,7 @@ export class Journey {
     strategySlug?: Nullable<string>;
     tags: Tag[];
     journeyCollections: JourneyCollection[];
+    plausibleToken?: Nullable<string>;
     userJourneys?: Nullable<UserJourney[]>;
 }
 
@@ -1004,8 +1025,6 @@ export abstract class IQuery {
     abstract customDomain(id: string): CustomDomain | Promise<CustomDomain>;
 
     abstract customDomains(teamId: string): CustomDomain[] | Promise<CustomDomain[]>;
-
-    abstract eventEmailNotificationsByJourney(journeyId: string): EventEmailNotifications[] | Promise<EventEmailNotifications[]>;
 
     abstract hosts(teamId: string): Host[] | Promise<Host[]>;
 
@@ -1030,6 +1049,14 @@ export abstract class IQuery {
     abstract journeyVisitorCount(filter: JourneyVisitorFilter): number | Promise<number>;
 
     abstract journeysEmailPreference(email: string): Nullable<JourneysEmailPreference> | Promise<Nullable<JourneysEmailPreference>>;
+
+    abstract journeysPlausibleStatsRealtimeVisitors(id: string, idType?: Nullable<IdType>): number | Promise<number>;
+
+    abstract journeysPlausibleStatsAggregate(where: PlausibleStatsAggregateFilter, id: string, idType?: Nullable<IdType>): PlausibleStatsAggregateResponse | Promise<PlausibleStatsAggregateResponse>;
+
+    abstract journeysPlausibleStatsBreakdown(where: PlausibleStatsBreakdownFilter, id: string, idType?: Nullable<IdType>): PlausibleStatsResponse[] | Promise<PlausibleStatsResponse[]>;
+
+    abstract journeysPlausibleStatsTimeseries(where: PlausibleStatsTimeseriesFilter, id: string, idType?: Nullable<IdType>): PlausibleStatsResponse[] | Promise<PlausibleStatsResponse[]>;
 
     abstract teams(): Team[] | Promise<Team[]>;
 
@@ -1454,16 +1481,6 @@ export class VideoProgressEvent implements Event {
     progress: number;
 }
 
-export class EventEmailNotifications {
-    __typename?: 'EventEmailNotifications';
-    id: string;
-    userId: string;
-    journeyId: string;
-    userTeamId?: Nullable<string>;
-    userJourneyId?: Nullable<string>;
-    value: boolean;
-}
-
 export class Host {
     __typename?: 'Host';
     id: string;
@@ -1486,6 +1503,7 @@ export class PowerBiEmbed {
 export class UserJourney {
     __typename?: 'UserJourney';
     journey?: Nullable<Journey>;
+    journeyNotification?: Nullable<JourneyNotification>;
     id: string;
     userId: string;
     journeyId: string;
@@ -1501,6 +1519,26 @@ export class JourneyCollection {
     title?: Nullable<string>;
     customDomains?: Nullable<CustomDomain[]>;
     journeys?: Nullable<Journey[]>;
+}
+
+export class JourneyNotification {
+    __typename?: 'JourneyNotification';
+    id: string;
+    userId: string;
+    journeyId: string;
+    userTeamId?: Nullable<string>;
+    userJourneyId?: Nullable<string>;
+    visitorInteractionEmail: boolean;
+}
+
+export class UserTeam {
+    __typename?: 'UserTeam';
+    journeyNotification?: Nullable<JourneyNotification>;
+    id: string;
+    user: User;
+    role: UserTeamRole;
+    createdAt: DateTime;
+    updatedAt: DateTime;
 }
 
 export class JourneyProfile {
@@ -1552,6 +1590,39 @@ export class JourneysEmailPreference {
     accountNotifications: boolean;
 }
 
+export class PlausibleStatsAggregateValue {
+    __typename?: 'PlausibleStatsAggregateValue';
+    value: number;
+    change?: Nullable<number>;
+}
+
+export class PlausibleStatsAggregateResponse {
+    __typename?: 'PlausibleStatsAggregateResponse';
+    visitors?: Nullable<PlausibleStatsAggregateValue>;
+    visits?: Nullable<PlausibleStatsAggregateValue>;
+    pageviews?: Nullable<PlausibleStatsAggregateValue>;
+    viewsPerVisit?: Nullable<PlausibleStatsAggregateValue>;
+    bounceRate?: Nullable<PlausibleStatsAggregateValue>;
+    visitDuration?: Nullable<PlausibleStatsAggregateValue>;
+    events?: Nullable<PlausibleStatsAggregateValue>;
+    conversionRate?: Nullable<PlausibleStatsAggregateValue>;
+    timeOnPage?: Nullable<PlausibleStatsAggregateValue>;
+}
+
+export class PlausibleStatsResponse {
+    __typename?: 'PlausibleStatsResponse';
+    property: string;
+    visitors?: Nullable<number>;
+    visits?: Nullable<number>;
+    pageviews?: Nullable<number>;
+    viewsPerVisit?: Nullable<number>;
+    bounceRate?: Nullable<number>;
+    visitDuration?: Nullable<number>;
+    events?: Nullable<number>;
+    conversionRate?: Nullable<number>;
+    timeOnPage?: Nullable<number>;
+}
+
 export class Team {
     __typename?: 'Team';
     id: string;
@@ -1578,15 +1649,6 @@ export class UserRole {
     id: string;
     userId: string;
     roles?: Nullable<Role[]>;
-}
-
-export class UserTeam {
-    __typename?: 'UserTeam';
-    id: string;
-    user: User;
-    role: UserTeamRole;
-    createdAt: DateTime;
-    updatedAt: DateTime;
 }
 
 export class UserTeamInvite {

@@ -11,7 +11,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: () => true
 }))
 
-const user1 = { id: 'userId1', email: 'admin@email.com' }
+const user1 = { id: 'userTeamId', email: 'kujojotaro@example.com' }
 
 jest.mock('../../libs/useCurrentUserLazyQuery', () => ({
   __esModule: true,
@@ -52,6 +52,10 @@ const mocks = [
                   imageUrl:
                     'https://lh3.googleusercontent.com/a/AGNmyxbPtShdH3_xxjpnfHLlo0w-KxDBa9Ah1Qn_ZwpUrA=s96-c',
                   lastName: 'Kujo'
+                },
+                journeyNotification: {
+                  id: 'journeyNotificationId',
+                  visitorInteractionEmail: true
                 }
               },
               {
@@ -65,6 +69,10 @@ const mocks = [
                   id: 'userId1',
                   imageUrl: null,
                   lastName: 'Higashikata'
+                },
+                journeyNotification: {
+                  id: 'journeyNotificationId',
+                  visitorInteractionEmail: false
                 }
               },
               {
@@ -78,6 +86,10 @@ const mocks = [
                   id: 'userId2',
                   imageUrl: null,
                   lastName: 'Hirose'
+                },
+                journeyNotification: {
+                  id: 'journeyNotificationId',
+                  visitorInteractionEmail: true
                 }
               }
             ]
@@ -92,6 +104,10 @@ const mocks = [
                 firstName: 'Amin',
                 lastName: 'One',
                 imageUrl: 'https://bit.ly/3Gth4Yf'
+              },
+              journeyNotification: {
+                id: 'journeyNotificationId',
+                visitorInteractionEmail: true
               }
             },
             {
@@ -104,6 +120,10 @@ const mocks = [
                 lastName: 'Two',
                 imageUrl: 'https://bit.ly/3rgHd6a',
                 email: 'horace@email.com'
+              },
+              journeyNotification: {
+                id: 'journeyNotificationId',
+                visitorInteractionEmail: false
               }
             },
             {
@@ -116,6 +136,28 @@ const mocks = [
                 lastName: 'Three',
                 imageUrl: 'https://bit.ly/3nlwUwJ',
                 email: 'coral@email.com'
+              },
+              journeyNotification: {
+                id: 'journeyNotificationId',
+                visitorInteractionEmail: true
+              }
+            },
+            {
+              __typename: 'UserJourney',
+              id: 'userJourneyId4',
+              role: 'editor',
+              user: {
+                __typename: 'User',
+                email: 'kujojotaro@example.com',
+                firstName: 'Jotaro',
+                id: 'userId',
+                imageUrl:
+                  'https://lh3.googleusercontent.com/a/AGNmyxbPtShdH3_xxjpnfHLlo0w-KxDBa9Ah1Qn_ZwpUrA=s96-c',
+                lastName: 'Kujo'
+              },
+              journeyNotification: {
+                id: 'journeyNotificationId',
+                visitorInteractionEmail: false
               }
             }
           ]
@@ -150,25 +192,6 @@ const mocks = [
 describe('AccessDialog', () => {
   it('should display users and requested users', async () => {
     const handleClose = jest.fn()
-    const { getByRole } = render(
-      <SnackbarProvider>
-        <MockedProvider addTypename mocks={mocks}>
-          <AccessDialog journeyId="journeyId" open onClose={handleClose} />
-        </MockedProvider>
-      </SnackbarProvider>
-    )
-
-    await waitFor(() => {
-      expect(getByRole('heading', { name: 'Editors' })).toBeInTheDocument()
-      expect(
-        getByRole('heading', { name: 'Requested Access' })
-      ).toBeInTheDocument()
-    })
-    expect(getByRole('heading', { name: 'Add editor by' })).toBeInTheDocument()
-  })
-
-  it('should display team members', async () => {
-    const handleClose = jest.fn()
     const { getByRole, getByText } = render(
       <SnackbarProvider>
         <MockedProvider addTypename mocks={mocks}>
@@ -178,16 +201,15 @@ describe('AccessDialog', () => {
     )
 
     await waitFor(() => {
-      expect(getByRole('heading', { name: 'Team Members' })).toBeInTheDocument()
-      expect(getByText('Jotaro Kujo')).toBeInTheDocument()
-      expect(getByText('Koichi Hirose')).toBeInTheDocument()
-      expect(getByText('Josuke Higashikata')).toBeInTheDocument()
+      expect(getByText('Guests')).toBeInTheDocument()
+      expect(getByText('Requested Access')).toBeInTheDocument()
     })
+    expect(getByRole('heading', { name: 'Add editor by' })).toBeInTheDocument()
   })
 
-  it('team members list should be read only', async () => {
+  it('should not display users that are part of the team as guests', async () => {
     const handleClose = jest.fn()
-    const { getByRole, getAllByRole } = render(
+    const { getByText, getAllByText } = render(
       <SnackbarProvider>
         <MockedProvider addTypename mocks={mocks}>
           <AccessDialog journeyId="journeyId" open onClose={handleClose} />
@@ -196,12 +218,64 @@ describe('AccessDialog', () => {
     )
 
     await waitFor(() => {
-      expect(getByRole('heading', { name: 'Team Members' })).toBeInTheDocument()
+      expect(getByText('Guests')).toBeInTheDocument()
+      expect(getByText('Requested Access')).toBeInTheDocument()
+    })
+    expect(getAllByText('Jotaro Kujo')).toHaveLength(1)
+  })
+
+  it('should display team members', async () => {
+    const handleClose = jest.fn()
+    const { getByText } = render(
+      <SnackbarProvider>
+        <MockedProvider addTypename mocks={mocks}>
+          <AccessDialog journeyId="journeyId" open onClose={handleClose} />
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    await waitFor(() => {
+      expect(getByText('Team Members')).toBeInTheDocument()
+      expect(getByText('Jotaro Kujo')).toBeInTheDocument()
+      expect(getByText('Koichi Hirose')).toBeInTheDocument()
+      expect(getByText('Josuke Higashikata')).toBeInTheDocument()
+    })
+  })
+
+  it('team members list should be read only', async () => {
+    const handleClose = jest.fn()
+    const { getByRole, getAllByRole, getByText } = render(
+      <SnackbarProvider>
+        <MockedProvider addTypename mocks={mocks}>
+          <AccessDialog journeyId="journeyId" open onClose={handleClose} />
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    await waitFor(() => {
+      expect(getByText('Team Members')).toBeInTheDocument()
     })
 
     expect(getByRole('button', { name: 'Manager' })).toBeDisabled()
     expect(getAllByRole('button', { name: 'Member' })[0]).toBeDisabled()
     expect(getAllByRole('button', { name: 'Member' })[1]).toBeDisabled()
+  })
+
+  it('if user is part of user team, should filter them out of user journey', async () => {
+    const handleClose = jest.fn()
+    const { getByText, getAllByText } = render(
+      <SnackbarProvider>
+        <MockedProvider addTypename mocks={mocks}>
+          <AccessDialog journeyId="journeyId" open onClose={handleClose} />
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    await waitFor(() => {
+      expect(getByText('Team Members')).toBeInTheDocument()
+    })
+
+    expect(getAllByText('Jotaro Kujo')).toHaveLength(1)
   })
 
   it('calls on close', () => {

@@ -9,7 +9,7 @@ export interface User {
   firstName: string
   lastName?: string
   email: string
-  imageUrl?: string
+  imageUrl?: string | null
   emailVerified: boolean
 }
 
@@ -53,9 +53,8 @@ export async function contextToUser(
   const userId = await contextToUserId(context)
 
   if (userId != null) {
-    const { displayName, email, photoURL, emailVerified } = await auth.getUser(
-      userId
-    )
+    const { displayName, email, photoURL, emailVerified } =
+      await auth.getUser(userId)
 
     const firstName = displayName?.split(' ')?.slice(0, -1)?.join(' ') ?? ''
     const lastName = displayName?.split(' ')?.slice(-1)?.join(' ') ?? ''

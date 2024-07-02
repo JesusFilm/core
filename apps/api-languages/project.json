@@ -38,8 +38,18 @@
       }
     },
     "lint": {
-      "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx @biomejs/biome check --diagnostic-level=warn",
+        "cwd": "apps/api-languages"
+      }
+    },
+    "lint:fix": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx @biomejs/biome check --write",
+        "cwd": "apps/api-languages"
+      }
     },
     "test": {
       "executor": "@nx/jest:jest",
