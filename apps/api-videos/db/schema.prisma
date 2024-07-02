@@ -201,11 +201,6 @@ model ImportTimes {
   lastImport DateTime
 }
 
-enum BibleCitationType {
-  keyword
-  citation
-}
-
 model BibleCitation {
   id           String    @id @default(uuid())
   bibleBookId  String
