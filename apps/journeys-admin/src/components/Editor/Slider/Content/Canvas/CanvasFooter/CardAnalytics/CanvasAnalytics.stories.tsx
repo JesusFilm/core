@@ -1,5 +1,6 @@
 import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentPropsWithRef } from 'react'
 import {
@@ -7,7 +8,6 @@ import {
   JourneyFields as Journey
 } from '../../../../../../../../__generated__/JourneyFields'
 import { MessagePlatform } from '../../../../../../../../__generated__/globalTypes'
-import { simpleComponentConfig } from '../../../../../../../libs/storybook'
 import { CardAnalytics } from './CardAnalytics'
 
 const CardAnalyticsStory: Meta<typeof CardAnalytics> = {

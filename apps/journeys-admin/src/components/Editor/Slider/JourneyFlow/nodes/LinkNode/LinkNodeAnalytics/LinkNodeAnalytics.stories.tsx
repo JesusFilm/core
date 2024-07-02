@@ -1,7 +1,7 @@
-import { StoryObj } from '@storybook/react'
-import { ComponentPropsWithoutRef } from 'react'
+import type { StoryObj } from '@storybook/react'
+import type { ComponentPropsWithoutRef } from 'react'
 
-import { simpleComponentConfig } from '../../../../../../../libs/storybook'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { LinkNodeAnalytics } from '.'
 

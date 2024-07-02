@@ -10,10 +10,10 @@ import { StyledRadioOption } from '@core/journeys/ui/RadioOption'
 import { RadioQuestion } from '@core/journeys/ui/RadioQuestion'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import AddSquare4Icon from '@core/shared/ui/icons/AddSquare4'
+import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
 
 import { RadioOptionBlockCreate } from '../../../../../../../../__generated__/RadioOptionBlockCreate'
 import { RadioQuestionFields } from '../../../../../../../../__generated__/RadioQuestionFields'
-import { adminTheme } from '../../../../../../ThemeProvider/admin/theme'
 
 const adminPrimaryColor = adminTheme.palette
   .primary as SimplePaletteColorOptions

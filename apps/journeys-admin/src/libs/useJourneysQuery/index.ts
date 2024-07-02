@@ -1,1 +1,0 @@
-export { useJourneysQuery } from './useJourneysQuery'

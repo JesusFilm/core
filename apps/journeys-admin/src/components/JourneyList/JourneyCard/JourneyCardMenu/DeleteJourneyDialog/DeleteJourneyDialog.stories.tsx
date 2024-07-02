@@ -3,8 +3,8 @@ import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
 
-import { simpleComponentConfig } from '../../../../../libs/storybook'
-import { TeamProvider } from '../../../../Team/TeamProvider'
+import { TeamProvider } from '@core/journeys/ui/TeamProvider'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { DeleteJourneyDialog } from '.'
 

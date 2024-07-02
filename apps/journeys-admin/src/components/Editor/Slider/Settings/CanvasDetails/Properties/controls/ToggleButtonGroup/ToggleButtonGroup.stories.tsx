@@ -6,12 +6,12 @@ import AlignCenterIcon from '@core/shared/ui/icons/AlignCenter'
 import AlignLeftIcon from '@core/shared/ui/icons/AlignLeft'
 import AlignRightIcon from '@core/shared/ui/icons/AlignRight'
 import DashIcon from '@core/shared/ui/icons/Dash'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import {
   TypographyAlign,
   TypographyVariant
 } from '../../../../../../../../../__generated__/globalTypes'
-import { simpleComponentConfig } from '../../../../../../../../libs/storybook'
 
 import { ToggleButtonGroup } from '.'
 

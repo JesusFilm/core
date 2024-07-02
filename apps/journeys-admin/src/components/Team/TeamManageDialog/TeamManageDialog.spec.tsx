@@ -2,14 +2,15 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { act, fireEvent, render, waitFor } from '@testing-library/react'
 
-import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
-import { GetUserTeamsAndInvites } from '../../../../__generated__/GetUserTeamsAndInvites'
-import { UserTeamRole } from '../../../../__generated__/globalTypes'
-import { GET_USER_TEAMS_AND_INVITES } from '../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
-} from '../TeamProvider'
+} from '@core/journeys/ui/TeamProvider'
+import { GetLastActiveTeamIdAndTeams } from '@core/journeys/ui/TeamProvider/__generated__/GetLastActiveTeamIdAndTeams'
+
+import { GetUserTeamsAndInvites } from '../../../../__generated__/GetUserTeamsAndInvites'
+import { UserTeamRole } from '../../../../__generated__/globalTypes'
+import { GET_USER_TEAMS_AND_INVITES } from '../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
 
 import { TeamManageDialog } from './TeamManageDialog'
 

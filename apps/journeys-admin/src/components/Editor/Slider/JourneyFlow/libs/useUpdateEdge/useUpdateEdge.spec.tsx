@@ -4,6 +4,7 @@ import { act } from 'react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 import { TreeBlock } from '@core/journeys/ui/block'
 
 import {
@@ -14,7 +15,6 @@ import { GetJourney_journey as Journey } from '../../../../../../../__generated_
 import { blockOrderUpdateMock } from '../../../../../../libs/useBlockOrderUpdateMutation/useBlockOrderUpdateMutation.mock'
 import { navigateToBlockActionUpdateMock } from '../../../../../../libs/useNavigateToBlockActionUpdateMutation/useNavigateToBlockActionUpdate.mock'
 import { stepBlockNextBlockUpdateMock } from '../../../../../../libs/useStepBlockNextBlockUpdateMutation/useStepBlockNextBlockUpdateMutation.mock'
-import { defaultJourney } from '../../../../data'
 
 import { useUpdateEdge } from './useUpdateEdge'
 
