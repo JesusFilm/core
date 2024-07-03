@@ -3,10 +3,11 @@ import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 
+import { GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS } from '@core/journeys/ui/TeamProvider'
+import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
+
 import { OnboardingPageWrapper } from '../../src/components/OnboardingPageWrapper'
 import { TeamOnboarding } from '../../src/components/Team/TeamOnboarding'
-import { GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS } from '../../src/components/Team/TeamProvider'
-import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../../src/components/Team/TeamSelect/TeamSelect'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { GET_CURRENT_USER } from '../../src/libs/useCurrentUserLazyQuery'
 import { useHandleNewAccountRedirect } from '../../src/libs/useRedirectNewAccount'
