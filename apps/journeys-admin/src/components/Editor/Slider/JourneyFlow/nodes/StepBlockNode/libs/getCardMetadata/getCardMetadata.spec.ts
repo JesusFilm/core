@@ -184,7 +184,6 @@ describe('getCardMetadata', () => {
       coverBlockId: null,
       children: [image]
     }
-    console.log(imageCard)
     const cardMetadata = getCardMetadata(imageCard)
     expect(cardMetadata).toEqual({
       title: 'Image',

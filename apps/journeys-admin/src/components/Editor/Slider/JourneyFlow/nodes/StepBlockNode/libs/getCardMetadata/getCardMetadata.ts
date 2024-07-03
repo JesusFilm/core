@@ -111,14 +111,11 @@ export function getCardMetadata(
   let imageSubititle
 
   if (priorityBlock?.__typename === 'ImageBlock') {
-    console.log('Priority image')
-    const width = priorityBlock?.width
-    const height = priorityBlock?.height
+    const width = priorityBlock.width
+    const height = priorityBlock.height
     imageTitle = 'Image'
     imageSubititle = `${width} x ${height} pixels`
   }
-
-  console.log(priorityBlock?.__typename)
 
   const [title, subtitle] = getCardHeadings(card.children)
   const bgImage = getBackgroundImage(card)
