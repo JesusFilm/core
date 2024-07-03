@@ -2,7 +2,9 @@ import sortBy from 'lodash/sortBy'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { BlockFields_TypographyBlock as TypographyBlock } from '@core/journeys/ui/block/__generated__/BlockFields'
+import { BlockFields_CardBlock as CardBlock } from '@core/journeys/ui/block/__generated__/BlockFields'
 import { ORDERED_TYPOGRAPHY_VARIANTS } from '@core/journeys/ui/getStepHeading'
+import { getPriorityBlock } from '../getPriorityBlock'
 
 function flatten(children: TreeBlock[]): TreeBlock[] {
   return children.reduce<TreeBlock[]>(
@@ -12,12 +14,21 @@ function flatten(children: TreeBlock[]): TreeBlock[] {
 }
 
 export function getCardHeadings(
-  children: TreeBlock[]
+  card: TreeBlock<CardBlock>
 ): [title?: string, heading?: string] {
+  const priorityBlock = getPriorityBlock(card)
+  if (priorityBlock?.__typename === 'ImageBlock') {
+    const width = priorityBlock?.width
+    const height = priorityBlock?.height
+    const imageTitle = 'Image'
+    const imageSubititle = `${width} x ${height} pixels`
+    return [imageTitle, imageSubititle]
+  }
+
   const orderedTypographyVariants =
     ORDERED_TYPOGRAPHY_VARIANTS.slice().reverse()
 
-  const flattenedChildren = flatten(children).filter(
+  const flattenedChildren = flatten(card.children).filter(
     (block) => block.__typename === 'TypographyBlock'
   ) as Array<TreeBlock<TypographyBlock>>
 

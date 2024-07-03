@@ -106,7 +106,8 @@ export function getCardMetadata(
       hasMultipleActions
     }
   }
-  const [title, subtitle] = getCardHeadings(card.children)
+
+  const [title, subtitle] = getCardHeadings(card)
   const bgImage = getBackgroundImage(card)
   const priorityImage = getPriorityImage(card.children)
 
