@@ -2,7 +2,7 @@ import CssBaseline from '@mui/material/CssBaseline'
 import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles'
 import { ReactElement, ReactNode } from 'react'
 
-import { adminLight } from './admin/theme'
+import { adminLight } from '@core/shared/ui/themes/journeysAdmin/theme'
 
 interface ThemeProviderProps {
   children?: ReactNode

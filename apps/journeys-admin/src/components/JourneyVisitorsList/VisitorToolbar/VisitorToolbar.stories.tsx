@@ -2,8 +2,7 @@ import { Meta, StoryObj } from '@storybook/react'
 import { ReactElement, useState } from 'react'
 
 import FilterIcon from '@core/shared/ui/icons/Filter'
-
-import { journeysAdminConfig } from '../../../libs/storybook'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { VisitorToolbar } from './VisitorToolbar'
 

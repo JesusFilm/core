@@ -2,7 +2,7 @@ import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
 import { ReactElement, useState } from 'react'
 
-import { simpleComponentConfig } from '../../../../../libs/storybook'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { UserMenu } from '.'
 
