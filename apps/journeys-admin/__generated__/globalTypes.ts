@@ -373,6 +373,17 @@ export interface ImageBlockUpdateInput {
   height?: number | null;
 }
 
+export interface IntegrationGrowthSpacesCreateInput {
+  accessId: string;
+  accessSecret: string;
+  teamId: string;
+}
+
+export interface IntegrationGrowthSpacesUpdateInput {
+  accessId: string;
+  accessSecret: string;
+}
+
 export interface JourneyCollectionCreateInput {
   id?: string | null;
   teamId: string;
