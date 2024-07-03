@@ -6,9 +6,9 @@ import {
   EditorState
 } from '@core/journeys/ui/EditorProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourney'
-import { journeysAdminConfig } from '../../../libs/storybook'
 
 import { Slider } from '.'
 
