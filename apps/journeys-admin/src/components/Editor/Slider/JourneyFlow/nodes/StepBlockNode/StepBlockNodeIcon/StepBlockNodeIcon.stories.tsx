@@ -1,7 +1,7 @@
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentPropsWithoutRef } from 'react'
 
-import { simpleComponentConfig } from '../../../../../../../libs/storybook'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { StepBlockNodeIcon } from '.'
 

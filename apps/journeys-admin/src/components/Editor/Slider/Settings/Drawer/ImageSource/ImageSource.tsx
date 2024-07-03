@@ -4,8 +4,9 @@ import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
 
+import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
+
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../__generated__/BlockFields'
-import { setBeaconPageViewed } from '../../../../../../libs/setBeaconPageViewed'
 import { ImageBlockHeader } from '../ImageBlockHeader'
 
 const ImageLibrary = dynamic(
