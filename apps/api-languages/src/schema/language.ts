@@ -1,6 +1,6 @@
 import { Prisma } from '.prisma/api-languages-client'
 
-import { db } from '../db'
+import { prisma } from '../lib/prisma'
 
 import { builder } from './builder'
 
@@ -59,14 +59,13 @@ export const Language = builder.prismaObject('Language', {
 builder.asEntity(Language, {
   key: builder.selection<{ id: string }>('id'),
   resolveReference: async ({ id }) =>
-    await db.language.findUnique({ where: { id } })
+    await prisma.language.findUnique({ where: { id } })
 })
 
 builder.queryType({
   fields: (t) => ({
     language: t.prismaField({
       type: 'Language',
-      nullable: true,
       args: {
         id: t.arg.id({ required: true }),
         idType: t.arg({
@@ -83,11 +82,11 @@ builder.queryType({
         { id, idType }
       ) =>
         idType === LanguageIdType.bcp47
-          ? await db.language.findFirst({
+          ? prisma.language.findFirstOrThrow({
               ...query,
               where: { bcp47: id }
             })
-          : await db.language.findUnique({
+          : prisma.language.findUniqueOrThrow({
               ...query,
               where: { id }
             })
@@ -110,7 +109,7 @@ builder.queryType({
       ) => {
         const filter: Prisma.LanguageWhereInput = {}
         if (where?.ids != null) filter.id = { in: where?.ids }
-        return await db.language.findMany({
+        return await prisma.language.findMany({
           ...query,
           where: filter,
           skip: offset ?? undefined,
