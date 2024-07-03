@@ -76,6 +76,10 @@ export enum IdType {
   slug = "slug",
 }
 
+export enum IntegrationType {
+  growthSpaces = "growthSpaces",
+}
+
 export enum JourneyStatus {
   archived = "archived",
   deleted = "deleted",

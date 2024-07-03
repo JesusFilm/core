@@ -111,6 +111,12 @@ export enum Service {
   apiVideos = "apiVideos",
 }
 
+export enum TextResponseType {
+  email = "email",
+  freeForm = "freeForm",
+  name = "name",
+}
+
 export enum ThemeMode {
   dark = "dark",
   light = "light",
