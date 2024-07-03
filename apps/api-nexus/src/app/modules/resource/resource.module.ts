@@ -5,9 +5,9 @@ import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 import { BullMQModule } from '../../lib/bullMQ/bullMQ.module'
 import { AppCaslFactory } from '../../lib/casl/caslFactory'
 import { CloudFlareService } from '../../lib/cloudFlare/cloudFlareService'
-import { GoogleDriveService } from '../../lib/google/drive.service'
+import { FileService } from '../../lib/file/file.service'
 import { GoogleOAuthService } from '../../lib/google/oauth.service'
-import { GoogleSheetsService } from '../../lib/google/sheets.service'
+import { SpreadSheetsService } from '../../lib/file/sheets.service'
 import { GoogleYoutubeService } from '../../lib/google/youtube.service'
 import { PrismaService } from '../../lib/prisma.service'
 import { BatchModule } from '../batch/batch.module'
@@ -21,8 +21,8 @@ import { ResourceResolver } from './resource.resolver'
     ResourceResolver,
     PrismaService,
     GoogleOAuthService,
-    GoogleDriveService,
-    GoogleSheetsService,
+    FileService,
+    SpreadSheetsService,
     GoogleYoutubeService,
     CloudFlareService,
     BullMQModule,

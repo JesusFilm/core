@@ -9,9 +9,9 @@ import { PrivacyStatus } from '../../__generated__/graphql'
 import { BullMQService } from '../../lib/bullMQ/bullMQ.service'
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
 import { CloudFlareService } from '../../lib/cloudFlare/cloudFlareService'
-import { GoogleDriveService } from '../../lib/google/drive.service'
+import { FileService } from '../../lib/file/file.service'
 import { GoogleOAuthService } from '../../lib/google/oauth.service'
-import { GoogleSheetsService } from '../../lib/google/sheets.service'
+import { SpreadSheetsService } from '../../lib/file/sheets.service'
 import { GoogleYoutubeService } from '../../lib/google/youtube.service'
 import { PrismaService } from '../../lib/prisma.service'
 
@@ -45,9 +45,7 @@ describe('ResourceResolver', () => {
     mediaComponentId: null,
     notifySubscribers: false,
     publishedAt: null,
-    videoGoogleDriveId: null,
     videoMimeType: null,
-    thumbnailGoogleDriveId: null,
     thumbnailMimeType: null
   }
   const resourceWithNexusUserNexus = {
@@ -65,12 +63,12 @@ describe('ResourceResolver', () => {
           useValue: mockDeep<GoogleOAuthService>()
         },
         {
-          provide: GoogleDriveService,
-          useValue: mockDeep<GoogleDriveService>()
+          provide: FileService,
+          useValue: mockDeep<FileService>()
         },
         {
-          provide: GoogleSheetsService,
-          useValue: mockDeep<GoogleSheetsService>()
+          provide: SpreadSheetsService,
+          useValue: mockDeep<SpreadSheetsService>()
         },
         {
           provide: GoogleYoutubeService,

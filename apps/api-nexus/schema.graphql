@@ -136,7 +136,6 @@ extend type Mutation {
   resourceCreate(input: ResourceCreateInput!): Resource!
   resourceUpdate(id: ID!, input: ResourceUpdateInput!): Resource!
   resourceDelete(id: ID!): Resource!
-  resourceFromTemplate(input: ResourceFromTemplateInput!): [Resource]
   uploadToYoutube(channelId: String!, resourceId: String!): Boolean
   resourceFromArray(input: ResourceFromArrayInput!): [Resource]
 }
@@ -243,12 +242,6 @@ input ResourceFilter {
   name: String
   status: ResourceStatus
   limit: Int
-}
-
-input ResourceFromTemplateInput {
-  accessToken: String!
-  spreadsheetId: String!
-  drivefolderId: String!
 }
 
 input BatchJobBatch {

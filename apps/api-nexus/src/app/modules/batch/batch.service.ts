@@ -3,7 +3,7 @@ import { Injectable } from "@nestjs/common";
 import { Resource } from ".prisma/api-nexus-client";
 
 import { PrivacyStatus } from "../../__generated__/graphql";
-import { SpreadsheetRow } from "../../lib/google/sheets.service";
+import { SpreadsheetRow } from "../../lib/file/sheets.service";
 import { PrismaService } from "../../lib/prisma.service";
 
 @Injectable()
@@ -11,7 +11,6 @@ export class BatchService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async createUpdateResourcesLocalization(
-    token: string,
     spreadsheetRows: SpreadsheetRow[]
   ): Promise<
     Array<{
@@ -48,8 +47,6 @@ export class BatchService {
                     row.notifySubscribers.toLocaleLowerCase()
                   )
                 : undefined,
-            thumbnailGoogleDriveId: row.customThumbnailDriveFile?.id,
-            thumbnailMimeType: row.customThumbnailDriveFile?.mimeType,
           },
         });
       }
@@ -65,10 +62,6 @@ export class BatchService {
             captionFile: row.captionFile ?? "",
             audioTrackFile: row.audioTrackFile ?? "",
             videoId: row.videoId ?? "",
-            captionGoogleDriveId: row.captionDriveFile?.id ?? "",
-            captionMimeType: row.captionDriveFile?.mimeType ?? "",
-            audioTrackGoogleDriveId: row.audioTrackDriveFile?.id ?? "",
-            audioTrackMimeType: row.audioTrackDriveFile?.mimeType ?? "",
           },
           include: { resource: true },
         });
@@ -83,10 +76,6 @@ export class BatchService {
             audioTrackFile: row.audioTrackFile,
             language: row.language ?? "en",
             videoId: row.videoId,
-            captionGoogleDriveId: row.captionDriveFile?.id,
-            captionMimeType: row.captionDriveFile?.mimeType,
-            audioTrackGoogleDriveId: row.audioTrackDriveFile?.id,
-            audioTrackMimeType: row.audioTrackDriveFile?.mimeType,
           },
           include: { resource: true },
         });

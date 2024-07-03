@@ -3,9 +3,9 @@ import { Global, Module } from '@nestjs/common'
 
 import { BatchService } from '../../modules/batch/batch.service'
 import { BucketService } from '../bucket/bucket.service'
-import { GoogleDriveService } from '../google/drive.service'
+import { FileService } from '../file/file.service'
 import { GoogleOAuthService } from '../google/oauth.service'
-import { GoogleSheetsService } from '../google/sheets.service'
+import { SpreadSheetsService } from '../file/sheets.service'
 import { GoogleYoutubeService } from '../google/youtube.service'
 import { PrismaService } from '../prisma.service'
 
@@ -28,8 +28,8 @@ import { NexusJobListener } from './listener/jobListener'
     BullMQService,
     BatchJobWorker,
     GoogleOAuthService,
-    GoogleSheetsService,
-    GoogleDriveService,
+    SpreadSheetsService,
+    FileService,
     GoogleYoutubeService,
     BatchService,
     BucketService,
