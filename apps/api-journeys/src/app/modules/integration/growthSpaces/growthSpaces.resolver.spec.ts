@@ -1,7 +1,7 @@
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 import { CacheModule } from '@nestjs/cache-manager'
 import { Test, TestingModule } from '@nestjs/testing'
-import axios from 'axios'
+import axios, { AxiosError, AxiosResponse } from 'axios'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { IntegrationGrowthSpacesCreateInput } from '../../../../__generated__/graphql'
 import {
@@ -24,13 +24,8 @@ jest.mock('axios', () => {
 })
 
 const mockAxios = axios as jest.MockedFunction<typeof axios>
-const mockAxiosGet = jest.fn()
-const mockAxiosPost = jest.fn()
-mockAxios.create = jest
-  .fn()
-  .mockImplementation(
-    async () => await { get: mockAxiosGet, post: mockAxiosPost }
-  )
+let mockAxiosGet: jest.Mock
+let mockAxiosPost: jest.Mock
 
 const integration: Integration = {
   id: 'integrationId',
@@ -85,11 +80,18 @@ describe('IntegrationGrowthSpaceResolver', () => {
       PrismaService
     ) as DeepMockProxy<PrismaService>
     ability = await new AppCaslFactory().createAbility({ id: 'userId' })
-
-    process.env = { ...OLD_ENV }
     jest
       .spyOn(prismaService, '$transaction')
       .mockImplementation((callback) => callback(prismaService))
+
+    mockAxiosGet = jest.fn()
+    mockAxiosPost = jest.fn()
+    mockAxios.create = jest
+      .fn()
+      .mockImplementation(
+        async () => await { get: mockAxiosGet, post: mockAxiosPost }
+      )
+    process.env = { ...OLD_ENV }
   })
 
   afterEach(() => {
@@ -163,11 +165,28 @@ describe('IntegrationGrowthSpaceResolver', () => {
 
       prismaService.integration.create.mockResolvedValue(integrationWithTeam)
 
-      mockAxiosGet.mockRejectedValueOnce({})
+      mockAxiosGet.mockRejectedValueOnce(
+        new AxiosError(undefined, undefined, undefined, undefined, {
+          status: 401
+        } as unknown as AxiosResponse<unknown, unknown>)
+      )
 
       await expect(
         resolver.integrationGrowthSpacesCreate(input, ability)
       ).rejects.toThrow('invalid credentials for Growth Spaces integration')
+    })
+
+    it('should throw error if growth spaces call fails', async () => {
+      process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET =
+        'dontbefooledbythiskryptokeyitisactuallyfake='
+
+      prismaService.integration.create.mockResolvedValue(integrationWithTeam)
+
+      mockAxiosGet.mockRejectedValueOnce({})
+
+      await expect(
+        resolver.integrationGrowthSpacesCreate(input, ability)
+      ).rejects.toThrow()
     })
 
     it('should throw error if encryption fails', async () => {
@@ -186,7 +205,11 @@ describe('IntegrationGrowthSpaceResolver', () => {
       process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET =
         'dontbefooledbythiskryptokeyitisactuallyfake='
 
-      mockAxiosGet.mockRejectedValueOnce({})
+      mockAxiosGet.mockRejectedValueOnce(
+        new AxiosError(undefined, undefined, undefined, undefined, {
+          status: 401
+        } as unknown as AxiosResponse<unknown, unknown>)
+      )
 
       await expect(
         resolver.integrationGrowthSpacesUpdate(
@@ -198,6 +221,28 @@ describe('IntegrationGrowthSpaceResolver', () => {
           ability
         )
       ).rejects.toThrow('invalid credentials for Growth Spaces integration')
+    })
+
+    it('should throw error if api call fails', async () => {
+      prismaService.integration.findUnique.mockResolvedValue(
+        integrationWithTeam
+      )
+
+      process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET =
+        'dontbefooledbythiskryptokeyitisactuallyfake='
+
+      mockAxiosGet.mockRejectedValueOnce({})
+
+      await expect(
+        resolver.integrationGrowthSpacesUpdate(
+          'integrationId',
+          {
+            accessId: 'accessId',
+            accessSecret: 'accessSecret'
+          },
+          ability
+        )
+      ).rejects.toThrow()
     })
 
     it('should throw error if encryption fails', async () => {
@@ -313,14 +358,12 @@ describe('IntegrationGrowthSpaceResolver', () => {
       process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET =
         'dontbefooledbythiskryptokeyitisactuallyfake='
 
-      await expect(resolver.routes(integration)).rejects.toThrow(
-        'invalid credentials for Growth Spaces integration'
-      )
+      await expect(resolver.routes(integration)).rejects.toThrow()
     })
   })
 
   describe('team', () => {
-    it('should return routes', async () => {
+    it('should return team', async () => {
       const integration = {
         id: 'integrationId',
         team: {
@@ -337,15 +380,6 @@ describe('IntegrationGrowthSpaceResolver', () => {
 
       const res = await resolver.team(integration as unknown as Integration)
       expect(res).toEqual(integration.team)
-    })
-
-    it('should throw error if fetch response is not 200', async () => {
-      process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET =
-        'dontbefooledbythiskryptokeyitisactuallyfake='
-
-      await expect(resolver.routes(integration)).rejects.toThrow(
-        'invalid credentials for Growth Spaces integration'
-      )
     })
   })
 })
