@@ -20,28 +20,36 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 describe('Toolbar', () => {
   const defaultJourney = {
-    title: 'My Awesome Journey Title',
-    description: 'My Awesome Journey Description',
-    primaryImageBlock: null,
-    status: JourneyStatus.draft
-  } as unknown as Journey
+    journey: {
+      title: 'My Awesome Journey Title',
+      description: 'My Awesome Journey Description',
+      primaryImageBlock: null,
+      status: JourneyStatus.draft
+    } as unknown as Journey,
+    variant: 'admin'
+  }
 
   const socialImageJourney = {
-    title: 'My Awesome Journey Title',
-    description: 'My Awesome Journey Description',
-    primaryImageBlock: {
-      id: 'image1.id',
-      __typeame: 'ImageBlock',
-      parentBlockId: null,
-      parentOrder: 0,
-      src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
-      alt: 'random image from unsplash',
-      width: 1920,
-      height: 1080,
-      blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
-    },
-    status: JourneyStatus.draft
-  } as unknown as Journey
+    journey: {
+      title: 'My Awesome Journey Title',
+      description: 'My Awesome Journey Description',
+      primaryImageBlock: {
+        id: 'image1.id',
+        __typeame: 'ImageBlock',
+        parentBlockId: null,
+        parentOrder: 0,
+        src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
+        alt: 'random image from unsplash',
+        width: 1920,
+        height: 1080,
+        blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
+      },
+      status: JourneyStatus.draft,
+      variant: 'admin'
+    } as unknown as Journey,
+
+    variant: 'admin'
+  }
 
   it('should render NextSteps logo on Toolbar', () => {
     const { getByAltText } = render(toolbar(defaultJourney))
@@ -107,27 +115,7 @@ describe('Toolbar', () => {
       <MockedProvider>
         <SnackbarProvider>
           <EditorProvider>
-            <JourneyProvider
-              value={{
-                journey: {
-                  title: 'My Awesome Journey Title',
-                  description: 'My Awesome Journey Description',
-                  primaryImageBlock: {
-                    id: 'image1.id',
-                    __typeame: 'ImageBlock',
-                    parentBlockId: null,
-                    parentOrder: 0,
-                    src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
-                    alt: 'random image from unsplash',
-                    width: 1920,
-                    height: 1080,
-                    blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
-                  },
-                  status: JourneyStatus.draft
-                } as unknown as Journey,
-                variant: 'admin'
-              }}
-            >
+            <JourneyProvider value={journey}>
               <TestEditorState />
               <Toolbar />
               <Slider />
