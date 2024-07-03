@@ -45,8 +45,8 @@ enum MessagePlatform {
   linkExternal
   home4
   home3
-  helpCircle
-  helpSquare
+  helpCircleContained
+  helpSquareContained
   shieldCheck
   menu1
   checkBroken
