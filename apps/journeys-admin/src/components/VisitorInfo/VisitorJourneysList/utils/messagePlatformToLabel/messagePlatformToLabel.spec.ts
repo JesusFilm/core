@@ -57,22 +57,22 @@ describe('messagePlatformToLabel', () => {
   })
 
   it('returns Globe 2', () => {
-    expect(messagePlatformToLabel(MessagePlatform.globe2, t)).toBe('Globe 2')
+    expect(messagePlatformToLabel(MessagePlatform.globe2, t)).toBe('Globe 1')
   })
 
   it('returns Globe 3', () => {
-    expect(messagePlatformToLabel(MessagePlatform.globe3, t)).toBe('Globe 3')
+    expect(messagePlatformToLabel(MessagePlatform.globe3, t)).toBe('Globe 2')
   })
 
   it('returns Message Text 1', () => {
     expect(messagePlatformToLabel(MessagePlatform.messageText1, t)).toBe(
-      'Message Text 1'
+      'Message Text Circle'
     )
   })
 
   it('returns Message Text 2', () => {
     expect(messagePlatformToLabel(MessagePlatform.messageText2, t)).toBe(
-      'Message Text 2'
+      'Message Text Square'
     )
   })
 
@@ -86,7 +86,7 @@ describe('messagePlatformToLabel', () => {
 
   it('returns Message Chat 2', () => {
     expect(messagePlatformToLabel(MessagePlatform.messageChat2, t)).toBe(
-      'Message Chat 2'
+      'Message Chat Circle'
     )
   })
 
@@ -115,7 +115,7 @@ describe('messagePlatformToLabel', () => {
   })
 
   it('returns Mail 1', () => {
-    expect(messagePlatformToLabel(MessagePlatform.mail1, t)).toBe('Mail 1')
+    expect(messagePlatformToLabel(MessagePlatform.mail1, t)).toBe('Mail')
   })
 
   it('returns Link External', () => {
@@ -125,11 +125,11 @@ describe('messagePlatformToLabel', () => {
   })
 
   it('returns Home 3', () => {
-    expect(messagePlatformToLabel(MessagePlatform.home3, t)).toBe('Home 3')
+    expect(messagePlatformToLabel(MessagePlatform.home3, t)).toBe('Home 1')
   })
 
   it('returns Home 4', () => {
-    expect(messagePlatformToLabel(MessagePlatform.home4, t)).toBe('Home 4')
+    expect(messagePlatformToLabel(MessagePlatform.home4, t)).toBe('Home 2')
   })
 
   it('returns Help Circle', () => {
@@ -151,7 +151,7 @@ describe('messagePlatformToLabel', () => {
   })
 
   it('returns Menu', () => {
-    expect(messagePlatformToLabel(MessagePlatform.menu1, t)).toBe('Menu 1')
+    expect(messagePlatformToLabel(MessagePlatform.menu1, t)).toBe('Menu')
   })
 
   it('returns Check Broken', () => {
