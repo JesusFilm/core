@@ -3,10 +3,10 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { TeamProvider } from '@core/journeys/ui/TeamProvider'
+import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
 import { getCustomDomainMock } from '../../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
-import { TeamProvider } from '../../../../Team/TeamProvider'
-import { defaultJourney } from '../../../data'
 
 import { CopyLinkItem } from './CopyLinkItem'
 
