@@ -310,7 +310,7 @@ describe('TeamMenu', () => {
 
     const { getByRole } = render(
       <MockedProvider mocks={[{ ...getTeamsMock, result }]}>
-        <FlagsProvider flags={{ integrations: true }}>
+        <FlagsProvider flags={{ teamIntegrations: true }}>
           <SnackbarProvider>
             <TeamProvider>
               <TeamMenu />
