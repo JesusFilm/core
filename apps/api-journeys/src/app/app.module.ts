@@ -10,6 +10,7 @@ import { GraphQLModule } from '@nestjs/graphql'
 import { DatadogTraceModule } from 'nestjs-ddtrace'
 import { LoggerModule } from 'nestjs-pino'
 
+import { CacheModule } from '@nestjs/cache-manager'
 import { ActionModule } from './modules/action/action.module'
 import { BlockModule } from './modules/block/block.module'
 import { CustomDomainModule } from './modules/customDomain/customDomain.module'
@@ -17,6 +18,7 @@ import { EmailModule } from './modules/email/email.module'
 import { EventModule } from './modules/event/event.module'
 import { NestHealthModule } from './modules/health/health.module'
 import { HostModule } from './modules/host/host.module'
+import { IntegrationModule } from './modules/integration/integration.module'
 import { JourneyModule } from './modules/journey/journey.module'
 import { JourneyCollectionModule } from './modules/journeyCollection/journeyCollection.module'
 import { JourneyNotificationModule } from './modules/journeyNotification/journeyNotification.module'
@@ -41,6 +43,7 @@ import { VisitorModule } from './modules/visitor/visitor.module'
     EmailModule,
     EventModule,
     HostModule,
+    IntegrationModule,
     JourneyCollectionModule,
     JourneysEmailPreferenceModule,
     JourneyModule,
@@ -57,6 +60,7 @@ import { VisitorModule } from './modules/visitor/visitor.module'
     UserTeamModule,
     UserTeamInviteModule,
     VisitorModule,
+    CacheModule.register(),
     BullModule.forRoot({
       connection: {
         host: process.env.REDIS_URL ?? 'redis',
