@@ -43,19 +43,23 @@ export class IntegrationGrowthSpacesService {
   ): Promise<AxiosInstance> {
     let accessSecret: string | undefined =
       'accessSecret' in integration ? integration.accessSecret : undefined
-
     if (
       'accessSecretCipherText' in integration &&
       integration.accessSecretCipherText != null &&
       integration.accessSecretIv != null &&
       integration.accessSecretTag != null
-    )
+    ) {
+      console.log('not meant to be in decrypt')
       accessSecret = await decryptSymmetric(
         integration.accessSecretCipherText,
         integration.accessSecretIv,
         integration.accessSecretTag,
         process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET
       )
+    }
+    console.log('is access secret not undefined?', accessSecret != null)
+
+    console.log('is url valid?', process.env.GROWTH_SPACES_URL != null)
 
     return axios.create({
       baseURL: process.env.GROWTH_SPACES_URL,
@@ -72,8 +76,10 @@ export class IntegrationGrowthSpacesService {
   }): Promise<void> {
     const client = await this.getAPIClient(input)
     try {
+      console.log('client created successfully, now doing get')
       await client.get('/authentication')
     } catch (e) {
+      console.log(e)
       if (e instanceof AxiosError && e.response?.status === 401) {
         throw new GraphQLError(
           'invalid credentials for Growth Spaces integration',
@@ -175,6 +181,7 @@ export class IntegrationGrowthSpacesService {
     input: IntegrationGrowthSpacesCreateInput,
     tx: Prisma.TransactionClient
   ): Promise<Integration> {
+    console.error(input)
     await this.authenticate(input)
 
     const { ciphertext, iv, tag } = await encryptSymmetric(
