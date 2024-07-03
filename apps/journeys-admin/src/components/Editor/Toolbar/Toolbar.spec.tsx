@@ -102,7 +102,7 @@ describe('Toolbar', () => {
     expect(getByText('activeSlide: 1')).toBeInTheDocument()
   })
 
-  function toolbar(defaultJourney): ReactElement {
+  function toolbar(journey): ReactElement {
     return (
       <MockedProvider>
         <SnackbarProvider>
