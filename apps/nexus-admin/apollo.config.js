@@ -1,6 +1,6 @@
 module.exports = {
   client: {
-    includes: ['./pages/**', './src/**'],
+    includes: ['./pages/**', './src/**', '../../libs/journeys/ui/**'],
     excludes: ['./**/*.test.tsx'],
     service: {
       name: 'api-gateway',

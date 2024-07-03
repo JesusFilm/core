@@ -17,31 +17,9 @@ if (isBrowser) {
 const i18nConfig = {
   i18n: {
     defaultLocale: 'en',
-    locales: [
-      'en', // English
-      'es', // Spanish
-      'fr', // French
-      'id', // Indonesian
-      'ja', // Japanese
-      'ru', // Russian
-      'tr', // Turkish
-      'zh', // Chinese
-      'zh-Hans-CN' // Chinese, Simplified
-    ],
-    localeDetection: false
+    locales: ['en']
   },
-  fallbackLng: {
-    default: ['en'],
-    es: ['es-ES'],
-    fr: ['fr-FR'],
-    id: ['id-ID'],
-    ja: ['ja-JP'],
-    ru: ['ru-RU'],
-    tr: ['tr-TR'],
-    zh: ['zh-Hans-CN']
-  },
-  localePath,
-  react: { useSuspense: false }
+  localePath
 }
 
 module.exports = i18nConfig
