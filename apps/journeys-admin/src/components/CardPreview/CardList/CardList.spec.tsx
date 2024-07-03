@@ -4,6 +4,7 @@ import { DragDropContext, DroppableProvided } from 'react-beautiful-dnd'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { GET_USER_ROLE } from '@core/journeys/ui/useUserRoleQuery'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
 import { JourneyFields as Journey } from '../../../../__generated__/JourneyFields'
@@ -13,7 +14,6 @@ import {
   ThemeName,
   VideoBlockSource
 } from '../../../../__generated__/globalTypes'
-import { GET_USER_ROLE } from '../../../libs/useUserRoleQuery/useUserRoleQuery'
 
 import { CardList } from '.'
 

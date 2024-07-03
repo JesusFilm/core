@@ -1,8 +1,9 @@
 import { Meta, StoryObj } from '@storybook/react'
 import { SnackbarProvider } from 'notistack'
 
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
+
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
-import { journeysAdminConfig } from '../../libs/storybook'
 
 import { MultipleSummaryReport } from '.'
 
