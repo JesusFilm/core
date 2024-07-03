@@ -22,6 +22,12 @@ interface StepBlockNodeCardProps {
   selected: boolean
 }
 
+const analyticStyles = {
+  opacity: 0.8,
+  boxShadow: 'none',
+  bgcolor: 'transparent'
+}
+
 export function StepBlockNodeCard({
   step,
   selected
@@ -61,22 +67,30 @@ export function StepBlockNodeCard({
 
   const nodeBgImage = priorityImage ?? bgImage
 
+  const conditionalStyles = showAnalytics
+    ? {
+        opacity: 0.8,
+        bgcolor: 'transparent',
+        boxShadow: 'none',
+        pointerEvents: 'none'
+      }
+    : {
+        opacity: 1,
+        bgcolor: 'background.paper'
+      }
+
   return (
     <Card
       data-testid="StepBlockNodeCard"
       elevation={selected ? 6 : 1}
-      title={t('Click to edit or drag')}
+      title={showAnalytics ? '' : t('Click to edit or drag')}
       onClick={handleClick}
       sx={{
-        opacity: showAnalytics === true ? 0.8 : 1,
-        boxShadow: showAnalytics === true ? 'none' : 3,
-        backgroundColor:
-          showAnalytics === true ? 'transparent' : 'background.paper',
         width: STEP_NODE_CARD_WIDTH,
         m: 1.5,
-        '&:hover': {
-          boxShadow: selected ? 6 : 3
-        }
+        boxShadow: 3,
+        '&:hover': { boxShadow: selected ? 6 : 3 },
+        ...conditionalStyles
       }}
     >
       <CardContent

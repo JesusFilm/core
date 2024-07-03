@@ -27,7 +27,10 @@ export function BaseReferrer({ property, visitors }) {
         display: 'flex',
         justifyContent: 'space-between',
         gap: 2,
-        padding: '3px 6px'
+        padding: '3px 6px',
+        ':hover': {
+          cursor: 'default'
+        }
       }}
       data-testid="BaseReferrer"
     >
