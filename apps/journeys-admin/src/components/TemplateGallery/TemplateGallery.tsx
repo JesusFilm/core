@@ -16,14 +16,8 @@ import { TagsFilter } from './TagsFilter'
 export function TemplateGallery(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
-  const [selectedLanguageIds, setSelectedLanguageIds] = useState<string[]>(
-    router.query.languageIds != null
-      ? castArray(router.query.languageIds)
-      : ['529']
-  )
-  const [selectedTagIds, setSelectedTagIds] = useState<string[]>(
-    router.query.tagIds != null ? castArray(router.query.tagIds) : []
-  )
+  const selectedLanguageIds = castArray(router.query.languageIds ?? ['529'])
+  const selectedTagIds = castArray(router.query.tagIds ?? [])
 
   function handleTagIdsChange(
     newSelectedTagIds: string[],
@@ -33,14 +27,12 @@ export function TemplateGallery(): ReactElement {
       ...difference(selectedTagIds, availableTagIds),
       ...newSelectedTagIds
     ]
-    setSelectedTagIds(tagIds)
     void router.push({ query: { ...router.query, tagIds } }, undefined, {
       shallow: true
     })
   }
 
   function handleTagIdChange(selectedTagId: string): void {
-    setSelectedTagIds([selectedTagId])
     void router.push(
       { query: { ...router.query, tagIds: selectedTagId } },
       undefined,
@@ -49,7 +41,6 @@ export function TemplateGallery(): ReactElement {
   }
 
   function handleLanguageIdsChange(values: string[]): void {
-    setSelectedLanguageIds(values)
     void router.push(
       { query: { ...router.query, languageIds: values } },
       undefined,
