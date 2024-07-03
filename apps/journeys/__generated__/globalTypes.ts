@@ -71,6 +71,11 @@ export enum IconSize {
   xl = "xl",
 }
 
+export enum IdType {
+  databaseId = "databaseId",
+  slug = "slug",
+}
+
 export enum JourneyStatus {
   archived = "archived",
   deleted = "deleted",
@@ -91,6 +96,19 @@ export enum MessagePlatform {
   viber = "viber",
   vk = "vk",
   whatsApp = "whatsApp",
+}
+
+export enum Role {
+  publisher = "publisher",
+}
+
+export enum Service {
+  apiJourneys = "apiJourneys",
+  apiLanguages = "apiLanguages",
+  apiMedia = "apiMedia",
+  apiTags = "apiTags",
+  apiUsers = "apiUsers",
+  apiVideos = "apiVideos",
 }
 
 export enum TextResponseType {
@@ -188,6 +206,11 @@ export interface ChatOpenEventCreateInput {
   value?: MessagePlatform | null;
 }
 
+export interface JourneyProfileUpdateInput {
+  lastActiveTeamId?: string | null;
+  journeyFlowBackButtonClicked?: boolean | null;
+}
+
 export interface JourneyViewEventCreateInput {
   id?: string | null;
   journeyId: string;
@@ -195,10 +218,24 @@ export interface JourneyViewEventCreateInput {
   value?: string | null;
 }
 
+export interface JourneysFilter {
+  featured?: boolean | null;
+  template?: boolean | null;
+  ids?: string[] | null;
+  tagIds?: string[] | null;
+  languageIds?: string[] | null;
+  limit?: number | null;
+  orderByRecent?: boolean | null;
+}
+
 export interface JourneysQueryOptions {
   hostname?: string | null;
   embedded?: boolean | null;
   journeyCollection?: boolean | null;
+}
+
+export interface LanguagesFilter {
+  ids?: string[] | null;
 }
 
 export interface RadioQuestionSubmissionEventCreateInput {

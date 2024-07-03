@@ -3,6 +3,7 @@ import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useRouter } from 'next/router'
 import { ReactElement, useEffect } from 'react'
 
+import { JOURNEY_DUPLICATE } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import { GetTeams } from '../../../__generated__/GetTeams'
 import {
   JourneyDuplicate,
@@ -13,7 +14,6 @@ import {
   JourneyNotificationUpdateVariables
 } from '../../../__generated__/JourneyNotificationUpdate'
 import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'
-import { JOURNEY_DUPLICATE } from '../../../src/libs/useJourneyDuplicateMutation'
 import { JOURNEY_NOTIFICATION_UPDATE } from '../../../src/libs/useJourneyNotificationUpdate/useJourneyNotificationUpdate'
 
 export const GET_TEAMS = gql`
