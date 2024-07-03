@@ -3,8 +3,8 @@ import { Meta, StoryObj } from '@storybook/react'
 import { StepBlockNodeAnalytics } from './StepBlockNodeAnalytics'
 
 import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 import { ComponentPropsWithoutRef } from 'react'
-import { simpleComponentConfig } from '../../../../../../../libs/storybook'
 
 const StepBlockNodeAnalyticsDemo: Meta<typeof StepBlockNodeAnalytics> = {
   ...simpleComponentConfig,

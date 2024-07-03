@@ -6,7 +6,7 @@ import { Background, ReactFlow } from 'reactflow'
 
 import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
 
-import { simpleComponentConfig } from '../../../../../../libs/storybook'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { ReferrerNode } from '.'
 

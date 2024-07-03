@@ -1,7 +1,7 @@
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps, useState } from 'react'
 
-import { simpleComponentConfig } from '../../../libs/storybook'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { JourneyQuickSettingsTabs } from './JourneyQuickSettingsTabs'
 
