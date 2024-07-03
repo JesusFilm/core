@@ -2,8 +2,6 @@ import { TreeBlock } from '@core/journeys/ui/block/TreeBlock'
 
 import {
   BlockFields,
-  BlockFields_CardBlock as CardBlock,
-  BlockFields_ImageBlock as ImageBlock,
   BlockFields_TypographyBlock as TypographyBlock
 } from '../../../../../../../../../__generated__/BlockFields'
 import { TypographyVariant } from '../../../../../../../../../__generated__/globalTypes'
