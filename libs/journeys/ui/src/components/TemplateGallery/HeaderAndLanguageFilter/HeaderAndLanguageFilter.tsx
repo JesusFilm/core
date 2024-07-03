@@ -258,9 +258,6 @@ export function HeaderAndLanguageFilter({
     return []
   }, [options])
 
-  console.log('count', count)
-  console.log('languageNames', languageNames)
-
   return (
     <>
       <Stack
