@@ -143,17 +143,17 @@ describe('MessageChatIcon', () => {
     expect(screen.getByTestId('Menu1Icon')).toBeInTheDocument()
   })
 
-  it('should return menu icon', () => {
+  it('should return checkBroken icon', () => {
     render(<MessageChatIcon platform={MessagePlatform.checkBroken} />)
     expect(screen.getByTestId('CheckBrokenIcon')).toBeInTheDocument()
   })
 
-  it('should return menu icon', () => {
+  it('should return checkContained icon', () => {
     render(<MessageChatIcon platform={MessagePlatform.checkContained} />)
     expect(screen.getByTestId('CheckContainedIcon')).toBeInTheDocument()
   })
 
-  it('should return menu icon', () => {
+  it('should return settings icon', () => {
     render(<MessageChatIcon platform={MessagePlatform.settings} />)
     expect(screen.getByTestId('SettingsIcon')).toBeInTheDocument()
   })
