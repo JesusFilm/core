@@ -1,11 +1,10 @@
 import SchemaBuilder from '@pothos/core'
-import DirectivesPlugin from '@pothos/plugin-directives'
 import FederationPlugin from '@pothos/plugin-federation'
-// eslint-disable-next-line import/no-named-as-default
 import PrismaPlugin from '@pothos/plugin-prisma'
+import SimpleObjectsPlugin from '@pothos/plugin-simple-objects'
 
 import type PrismaTypes from '../__generated__/pothos-types'
-import { db } from '../db'
+import { prisma } from '../lib/prisma'
 
 export const builder = new SchemaBuilder<{
   PrismaTypes: PrismaTypes
@@ -13,9 +12,11 @@ export const builder = new SchemaBuilder<{
     ID: { Input: string; Output: number | string }
   }
 }>({
-  plugins: [DirectivesPlugin, PrismaPlugin, FederationPlugin],
+  plugins: [PrismaPlugin, FederationPlugin, SimpleObjectsPlugin],
   prisma: {
-    client: db,
+    client: prisma,
     onUnusedQuery: process.env.NODE_ENV === 'production' ? null : 'warn'
   }
 })
+
+builder.queryType({})

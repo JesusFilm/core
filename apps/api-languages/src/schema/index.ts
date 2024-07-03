@@ -1,14 +1,6 @@
-import { writeFileSync } from 'fs'
+import { generate } from './generate'
 
-import { printSubgraphSchema } from '@apollo/subgraph'
-import { lexicographicSortSchema } from 'graphql'
+export { schema } from './schema'
 
-import './language'
-import './country'
-import { builder } from './builder'
-
-export const schema = builder.toSubGraphSchema({})
-
-const schemaAsString = printSubgraphSchema(lexicographicSortSchema(schema))
-
-writeFileSync('apps/api-languages/schema.graphql', schemaAsString)
+if (process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'test')
+  generate()

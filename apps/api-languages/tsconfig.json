@@ -9,5 +9,14 @@
     {
       "path": "./tsconfig.spec.json"
     }
-  ]
+  ],
+  "compilerOptions": {
+    "plugins": [
+      {
+        "name": "@0no-co/graphqlsp",
+        "schema": "../../apps/api-languages/schema.graphql",
+        "tadaOutputLocation": "./__generated__/graphql-env.d.ts"
+      }
+    ]
+  }
 }
