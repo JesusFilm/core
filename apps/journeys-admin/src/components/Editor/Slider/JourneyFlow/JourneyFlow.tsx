@@ -198,9 +198,11 @@ export function JourneyFlow(): ReactElement {
   }, [])
   const onConnectStart = useCallback<OnConnectStart>((_, params) => {
     connectingParams.current = params
+    console.log('onConnectStart')
   }, [])
   const onConnectEnd = useCallback<OnConnectEnd>(
     async (event) => {
+      console.log('onConnectEnd')
       if (
         reactFlowInstance == null ||
         connectingParams.current == null ||
@@ -215,24 +217,12 @@ export function JourneyFlow(): ReactElement {
         'react-flow__pane'
       )
 
-      let clientX, clientY
-
-      // Type guard for MouseEvent
-      if ('clientX' in event && 'clientY' in event) {
-        clientX = event.clientX
-        clientY = event.clientY
-      } else if ('touches' in event) {
-        // Type guard for TouchEvent
-        clientX = event.touches[0].clientX
-        clientY = event.touches[0].clientY
-      }
-
-      if (targetIsPane && clientX !== undefined && clientY !== undefined) {
+      if (targetIsPane) {
         const { x, y } = reactFlowInstance.screenToFlowPosition({
-          x: clientX,
-          y: clientY
+          x: (event as unknown as MouseEvent | Touch).clientX,
+          y: (event as unknown as MouseEvent | Touch).clientY
         })
-
+        console.log('x y: ', x, y)
         void createStep({
           x: Math.trunc(x),
           y: Math.trunc(y) - STEP_NODE_CARD_HEIGHT / 2,
