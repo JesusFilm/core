@@ -71,6 +71,11 @@ export enum IconSize {
   xl = "xl",
 }
 
+export enum IdType {
+  databaseId = "databaseId",
+  slug = "slug",
+}
+
 export enum JourneyStatus {
   archived = "archived",
   deleted = "deleted",
@@ -124,6 +129,12 @@ export enum Service {
   apiTags = "apiTags",
   apiUsers = "apiUsers",
   apiVideos = "apiVideos",
+}
+
+export enum TextResponseType {
+  email = "email",
+  freeForm = "freeForm",
+  name = "name",
 }
 
 export enum ThemeMode {
@@ -432,6 +443,12 @@ export interface JourneysFilter {
   orderByRecent?: boolean | null;
 }
 
+export interface JourneysQueryOptions {
+  hostname?: string | null;
+  embedded?: boolean | null;
+  journeyCollection?: boolean | null;
+}
+
 export interface LanguagesFilter {
   ids?: string[] | null;
 }
@@ -559,6 +576,9 @@ export interface TextResponseBlockUpdateInput {
   label?: string | null;
   hint?: string | null;
   minRows?: number | null;
+  routeId?: string | null;
+  type?: TextResponseType | null;
+  integrationId?: string | null;
 }
 
 export interface TextResponseSubmissionEventCreateInput {

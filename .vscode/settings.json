@@ -95,5 +95,8 @@
   "javascript.preferences.importModuleSpecifier": "project-relative",
   "remote.localPortHost": "allInterfaces",
   "typescript.tsdk": "node_modules/typescript/lib",
-  "typescript.enablePromptUseWorkspaceTsdk": true
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  }
 }
