@@ -5,8 +5,7 @@ import noop from 'lodash/noop'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import FilePlus1Icon from '@core/shared/ui/icons/FilePlus1'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
-
-import { simpleComponentConfig } from '../../libs/storybook'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { ContainedIconButton } from '.'
 

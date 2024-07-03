@@ -1,4 +1,4 @@
-import { gql, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Divider from '@mui/material/Divider'
@@ -6,6 +6,7 @@ import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
 import { ReactElement, useEffect } from 'react'
 
+import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 import { ThemeMode } from '@core/shared/ui/themes'
 
 import { GetLanguages } from '../../../__generated__/GetLanguages'
@@ -20,18 +21,6 @@ import { checkFilterApplied } from './utils/checkFilterApplied'
 import { getQueryParameters } from './utils/getQueryParameters'
 import type { VideoPageFilter } from './utils/getQueryParameters'
 import { useVideoSearch } from './utils/useVideoSearch'
-
-export const GET_LANGUAGES = gql`
-  query GetLanguages($languageId: ID) {
-    languages(limit: 5000) {
-      id
-      name(languageId: $languageId, primary: true) {
-        value
-        primary
-      }
-    }
-  }
-`
 
 interface VideoProps {
   videos: VideoChildFields[]
