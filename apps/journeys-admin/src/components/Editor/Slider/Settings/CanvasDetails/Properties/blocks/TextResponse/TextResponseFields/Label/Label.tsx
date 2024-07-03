@@ -29,7 +29,8 @@ export const TEXT_RESPONSE_LABEL_UPDATE = gql`
 export function Label(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [textResponseLabelUpdate] = useMutation<TextResponseLabelUpdate>(
-    TEXT_RESPONSE_LABEL_UPDATE
+    TEXT_RESPONSE_LABEL_UPDATE,
+    { notifyOnNetworkStatusChange: true }
   )
   const { journey } = useJourney()
   const { state } = useEditor()
@@ -65,7 +66,11 @@ export function Label(): ReactElement {
   return (
     <Box sx={{ p: 4, pt: 0 }} data-testid="Label">
       {selectedBlock != null ? (
-        <Formik initialValues={initialValues} onSubmit={noop}>
+        <Formik
+          initialValues={initialValues}
+          onSubmit={noop}
+          enableReinitialize
+        >
           {({ values, errors, handleChange, handleBlur, setValues }) => (
             <Form>
               <TextField

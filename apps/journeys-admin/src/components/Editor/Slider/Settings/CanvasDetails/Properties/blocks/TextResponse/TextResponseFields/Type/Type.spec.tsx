@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -6,7 +6,10 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../../../../../../../../../__generated__/GetJourney'
+import { TextResponseLabelUpdate } from '../../../../../../../../../../../__generated__/TextResponseLabelUpdate'
+import { TextResponseTypeUpdate } from '../../../../../../../../../../../__generated__/TextResponseTypeUpdate'
 import { TextResponseType } from '../../../../../../../../../../../__generated__/globalTypes'
+import { TEXT_RESPONSE_LABEL_UPDATE } from '../Label/Label'
 import { TEXT_RESPONSE_TYPE_UPDATE, Type } from './Type'
 
 describe('Type', () => {
@@ -24,34 +27,88 @@ describe('Type', () => {
     children: []
   }
 
-  it('should change type of text response', async () => {
-    const result = jest.fn(() => ({
+  const textResponseLabelUpdateMock: MockedResponse<TextResponseLabelUpdate> = {
+    request: {
+      query: TEXT_RESPONSE_LABEL_UPDATE,
+      variables: {
+        id: selectedBlock.id,
+        journeyId: 'journey.id',
+        input: {
+          label: 'Updated label'
+        }
+      }
+    },
+    result: jest.fn(() => ({
+      data: {
+        textResponseBlockUpdate: {
+          __typename: 'TextResponseBlock',
+          id: selectedBlock.id,
+          label: 'Updated label'
+        }
+      }
+    }))
+  }
+
+  const textResponseTypeUpdateMock: MockedResponse<TextResponseTypeUpdate> = {
+    request: {
+      query: TEXT_RESPONSE_TYPE_UPDATE,
+      variables: {
+        id: selectedBlock.id,
+        journeyId: 'journey.id',
+        input: {
+          type: TextResponseType.email
+        }
+      }
+    },
+    result: jest.fn(() => ({
       data: {
         textResponseBlockUpdate: {
           id: selectedBlock.id,
           __typename: 'TextResponseBlock',
-          type: TextResponseType.email
+          type: TextResponseType.email,
+          integrationId: 'integrationId',
+          routeId: 'routeId'
         }
       }
     }))
+  }
+
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
+  it('should change type of text response', async () => {
+    const emailLabelUpdateMock: MockedResponse<TextResponseLabelUpdate> = {
+      ...textResponseLabelUpdateMock,
+      request: {
+        query: TEXT_RESPONSE_LABEL_UPDATE,
+        variables: {
+          id: selectedBlock.id,
+          journeyId: 'journey.id',
+          input: {
+            label: 'Email'
+          }
+        }
+      }
+    }
+
+    const emailTextResponseTypeUpdateMock = {
+      ...textResponseTypeUpdateMock,
+      request: {
+        query: TEXT_RESPONSE_TYPE_UPDATE,
+        variables: {
+          id: selectedBlock.id,
+          journeyId: 'journey.id',
+          input: {
+            type: TextResponseType.email
+          }
+        }
+      }
+    }
 
     render(
       <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: TEXT_RESPONSE_TYPE_UPDATE,
-              variables: {
-                id: selectedBlock.id,
-                journeyId: 'journey.id',
-                input: {
-                  type: TextResponseType.email
-                }
-              }
-            },
-            result
-          }
-        ]}
+        mocks={[emailLabelUpdateMock, emailTextResponseTypeUpdateMock]}
       >
         <JourneyProvider
           value={{
@@ -67,42 +124,45 @@ describe('Type', () => {
     )
 
     fireEvent.click(screen.getByRole('button', { name: 'Email' }))
-    await waitFor(() => expect(result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(emailTextResponseTypeUpdateMock.result).toHaveBeenCalled()
+    )
+    await waitFor(() => expect(emailLabelUpdateMock.result).toHaveBeenCalled())
   })
 
   it('should reset integrationId and routeId to null if type is not email', async () => {
-    const result = jest.fn(() => ({
-      data: {
-        textResponseBlockUpdate: {
+    const freeFormTypeUpdateMock = {
+      ...textResponseTypeUpdateMock,
+      request: {
+        query: TEXT_RESPONSE_TYPE_UPDATE,
+        variables: {
           id: selectedBlock.id,
-          __typename: 'TextResponseBlock',
-          type: TextResponseType.freeForm,
-          integrationId: null,
-          routeId: null
+          journeyId: 'journey.id',
+          input: {
+            type: TextResponseType.freeForm,
+            integrationId: null,
+            routeId: null
+          }
         }
       }
-    }))
+    }
+
+    const freeFormLabelUpdateMock = {
+      ...textResponseLabelUpdateMock,
+      request: {
+        query: TEXT_RESPONSE_LABEL_UPDATE,
+        variables: {
+          id: selectedBlock.id,
+          journeyId: 'journey.id',
+          input: {
+            label: 'Your answer here'
+          }
+        }
+      }
+    }
 
     render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: TEXT_RESPONSE_TYPE_UPDATE,
-              variables: {
-                id: selectedBlock.id,
-                journeyId: 'journey.id',
-                input: {
-                  type: TextResponseType.freeForm,
-                  integrationId: null,
-                  routeId: null
-                }
-              }
-            },
-            result
-          }
-        ]}
-      >
+      <MockedProvider mocks={[freeFormTypeUpdateMock, freeFormLabelUpdateMock]}>
         <JourneyProvider
           value={{
             journey: { id: 'journey.id' } as unknown as Journey,
@@ -121,6 +181,8 @@ describe('Type', () => {
     )
 
     fireEvent.click(screen.getByRole('button', { name: 'Freeform' }))
-    await waitFor(() => expect(result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(freeFormTypeUpdateMock.result).toHaveBeenCalled()
+    )
   })
 })
