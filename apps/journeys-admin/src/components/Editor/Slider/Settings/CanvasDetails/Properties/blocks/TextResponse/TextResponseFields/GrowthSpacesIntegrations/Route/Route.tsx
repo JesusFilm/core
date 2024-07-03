@@ -9,10 +9,11 @@ import { gql, useMutation } from '@apollo/client'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { SelectChangeEvent } from '@mui/material/Select'
 
+import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../../__generated__/BlockFields'
 import { TextResponseRouteUpdate } from '../../../../../../../../../../../../__generated__/TextResponseRouteUpdate'
 import { useIntegrationQuery } from '../../../../../../../../../../../libs/useIntegrationQuery'
-import { useTeam } from '../../../../../../../../../../Team/TeamProvider'
+
 import { Select } from '../Select'
 
 export const TEXT_RESPONSE_ROUTE_UPDATE = gql`

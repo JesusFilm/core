@@ -1,3 +1,4 @@
+import { useTeam } from '@core/journeys/ui/TeamProvider'
 import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
 import Box from '@mui/material/Box'
 import Breadcrumbs from '@mui/material/Breadcrumbs'
@@ -7,7 +8,6 @@ import NextLink from 'next/link'
 import { useRouter } from 'next/router'
 import { string } from 'prop-types'
 import { ReactElement } from 'react'
-import { useTeam } from '../TeamProvider'
 
 interface BreadcrumbItem {
   label: string

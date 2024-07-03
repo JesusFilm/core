@@ -6,10 +6,10 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'react-i18next'
 
+import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../../__generated__/BlockFields'
 import { TextResponseIntegrationUpdate } from '../../../../../../../../../../../../__generated__/TextResponseIntegrationUpdate'
 import { useIntegrationQuery } from '../../../../../../../../../../../libs/useIntegrationQuery'
-import { useTeam } from '../../../../../../../../../../Team/TeamProvider'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { SelectChangeEvent } from '@mui/material/Select'
