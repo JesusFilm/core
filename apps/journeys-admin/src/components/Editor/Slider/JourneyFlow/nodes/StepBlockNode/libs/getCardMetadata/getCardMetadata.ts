@@ -107,13 +107,26 @@ export function getCardMetadata(
     }
   }
 
-  const [title, subtitle] = getCardHeadings(card)
+  let imageTitle
+  let imageSubititle
+
+  if (priorityBlock?.__typename === 'ImageBlock') {
+    console.log('Priority image')
+    const width = priorityBlock?.width
+    const height = priorityBlock?.height
+    imageTitle = 'Image'
+    imageSubititle = `${width} x ${height} pixels`
+  }
+
+  console.log(priorityBlock?.__typename)
+
+  const [title, subtitle] = getCardHeadings(card.children)
   const bgImage = getBackgroundImage(card)
   const priorityImage = getPriorityImage(card.children)
 
   return {
-    title,
-    subtitle,
+    title: imageTitle || title,
+    subtitle: imageSubititle || subtitle,
     priorityBlock,
     bgImage,
     hasMultipleActions,

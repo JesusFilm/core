@@ -177,4 +177,22 @@ describe('getCardMetadata', () => {
       hasMultipleActions: false
     })
   })
+
+  it('should have image title and subtitle in metadata when image is only child on card', () => {
+    const imageCard = {
+      ...card,
+      coverBlockId: null,
+      children: [image]
+    }
+    console.log(imageCard)
+    const cardMetadata = getCardMetadata(imageCard)
+    expect(cardMetadata).toEqual({
+      title: 'Image',
+      subtitle: `${image.width} x ${image.height} pixels`,
+      bgImage: undefined,
+      priorityImage: image.src,
+      priorityBlock: image,
+      hasMultipleActions: false
+    })
+  })
 })
