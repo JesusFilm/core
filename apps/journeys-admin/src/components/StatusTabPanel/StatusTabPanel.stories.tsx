@@ -2,7 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
 
-import { journeysAdminConfig } from '../../libs/storybook'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { StatusTabPanelProps } from './StatusTabPanel'
 
