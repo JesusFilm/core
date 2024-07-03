@@ -363,7 +363,7 @@ describe('IntegrationGrowthSpaceResolver', () => {
   })
 
   describe('team', () => {
-    it('should return routes', async () => {
+    it('should return team', async () => {
       const integration = {
         id: 'integrationId',
         team: {
@@ -380,13 +380,6 @@ describe('IntegrationGrowthSpaceResolver', () => {
 
       const res = await resolver.team(integration as unknown as Integration)
       expect(res).toEqual(integration.team)
-    })
-
-    it('should throw error if fetch response is not 200', async () => {
-      process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET =
-        'dontbefooledbythiskryptokeyitisactuallyfake='
-
-      await expect(resolver.routes(integration)).rejects.toThrow()
     })
   })
 })
