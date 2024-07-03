@@ -1,7 +1,7 @@
 import { ApolloClient, ApolloQueryResult } from '@apollo/client'
 import { CacheModule } from '@nestjs/cache-manager'
 import { Test, TestingModule } from '@nestjs/testing'
-import axios from 'axios'
+import axios, { AxiosError, AxiosResponse } from 'axios'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { PrismaService } from '../../../lib/prisma.service'
 import { IntegrationGrowthSpacesService } from './growthSpaces.service'
@@ -60,13 +60,8 @@ const journey: Journey = {
 } as unknown as Journey
 
 const mockAxios = axios as jest.MockedFunction<typeof axios>
-const mockAxiosGet = jest.fn()
-const mockAxiosPost = jest.fn()
-mockAxios.create = jest
-  .fn()
-  .mockImplementation(
-    async () => await { get: mockAxiosGet, post: mockAxiosPost }
-  )
+let mockAxiosGet: jest.Mock
+let mockAxiosPost: jest.Mock
 
 describe('IntegrationGrothSpacesService', () => {
   const OLD_ENV = process.env
@@ -89,6 +84,13 @@ describe('IntegrationGrothSpacesService', () => {
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
+    mockAxiosGet = jest.fn()
+    mockAxiosPost = jest.fn()
+    mockAxios.create = jest
+      .fn()
+      .mockImplementation(
+        async () => await { get: mockAxiosGet, post: mockAxiosPost }
+      )
 
     process.env = { ...OLD_ENV }
   })
@@ -113,8 +115,22 @@ describe('IntegrationGrothSpacesService', () => {
       expect(mockAxiosGet).toHaveBeenCalledWith('/authentication')
     })
 
-    it('should throw error if growth spaces integration is incorrect', async () => {
+    it('should throw error if api sends error', async () => {
       mockAxiosGet.mockRejectedValueOnce({})
+      await expect(
+        service.authenticate({
+          accessId: 'accessId',
+          accessSecret: 'accessSecret'
+        })
+      ).rejects.toThrow()
+    })
+
+    it('should throw error if growth spaces integration details are incorrect', async () => {
+      await mockAxiosGet.mockRejectedValueOnce(
+        new AxiosError(undefined, undefined, undefined, undefined, {
+          status: 401
+        } as unknown as AxiosResponse<unknown, unknown>)
+      )
 
       await expect(
         service.authenticate({
@@ -122,6 +138,48 @@ describe('IntegrationGrothSpacesService', () => {
           accessSecret: 'accessSecret'
         })
       ).rejects.toThrow('invalid credentials for Growth Spaces integration')
+    })
+  })
+
+  describe('routes', () => {
+    it('it should return routes', async () => {
+      process.env.GROWTH_SPACES_URL = 'https://example.url.api/v1'
+      process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET =
+        'dontbefooledbythiskryptokeyitisactuallyfake='
+
+      mockAxiosGet.mockResolvedValueOnce({})
+
+      await service.routes(integration)
+      expect(mockAxios.create).toHaveBeenCalledWith({
+        baseURL: 'https://example.url.api/v1',
+        headers: { 'Access-Id': 'accessId', 'Access-Secret': 'plaintext' }
+      })
+      expect(mockAxiosGet).toHaveBeenCalledWith('/routes')
+    })
+
+    it('should throw error if api sends error', async () => {
+      await expect(service.routes(integration)).rejects.toThrow()
+    })
+
+    it('should throw error if growth spaces integration details are incorrect', async () => {
+      process.env.GROWTH_SPACES_URL = 'https://example.url.api/v1'
+      process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET =
+        'dontbefooledbythiskryptokeyitisactuallyfake='
+
+      mockAxiosGet.mockRejectedValueOnce(
+        new AxiosError(undefined, undefined, undefined, undefined, {
+          status: 401
+        } as unknown as AxiosResponse<unknown, unknown>)
+      )
+
+      await expect(service.routes(integration)).rejects.toThrow(
+        'invalid credentials for Growth Spaces integration'
+      )
+
+      expect(mockAxios.create).toHaveBeenCalledWith({
+        baseURL: 'https://example.url.api/v1',
+        headers: { 'Access-Id': 'accessId', 'Access-Secret': 'plaintext' }
+      })
     })
   })
 
