@@ -71,7 +71,6 @@ describe('TemplateGallery', () => {
     const { getByRole, queryByRole } = render(
       <MockedProvider
         mocks={[
-          getJourneysMock,
           getLanguagesMock,
           getTagsMock,
           getJourneysMockWithAcceptanceTag
