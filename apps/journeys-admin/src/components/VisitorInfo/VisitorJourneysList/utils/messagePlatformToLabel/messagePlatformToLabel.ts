@@ -59,9 +59,9 @@ export function messagePlatformToLabel(
       return t('Home 1')
     case MessagePlatform.home4:
       return t('Home 2')
-    case MessagePlatform.helpCircle:
+    case MessagePlatform.helpCircleContained:
       return t('Help Circle')
-    case MessagePlatform.helpSquare:
+    case MessagePlatform.helpSquareContained:
       return t('Help Square')
     case MessagePlatform.shieldCheck:
       return t('Shield Check')

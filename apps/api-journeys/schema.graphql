@@ -1365,10 +1365,10 @@ enum MessagePlatform {
   messageSquare
   mail1
   linkExternal
-  home4
   home3
-  helpCircle
-  helpSquare
+  home4
+  helpCircleContained
+  helpSquareContained
   shieldCheck
   menu1
   checkBroken

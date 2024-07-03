@@ -3,8 +3,8 @@ import CheckContained from '@core/shared/ui/icons/CheckContained'
 import Facebook from '@core/shared/ui/icons/Facebook'
 import Globe2 from '@core/shared/ui/icons/Globe2'
 import Globe3 from '@core/shared/ui/icons/Globe3'
-import HelpCircle from '@core/shared/ui/icons/HelpCircleContained'
-import HelpSquare from '@core/shared/ui/icons/HelpSquareContained'
+import HelpCircleContained from '@core/shared/ui/icons/HelpCircleContained'
+import HelpSquareContained from '@core/shared/ui/icons/HelpSquareContained'
 import Home3 from '@core/shared/ui/icons/Home3'
 import Home4 from '@core/shared/ui/icons/Home4'
 import Instagram from '@core/shared/ui/icons/Instagram'
@@ -69,8 +69,8 @@ export function MessageChatIcon({ platform, sx }: ChatIconProps): ReactElement {
     linkExternal: LinkExternal,
     home3: Home3,
     home4: Home4,
-    helpCircle: HelpCircle,
-    helpSquare: HelpSquare,
+    helpCircleContained: HelpCircleContained,
+    helpSquareContained: HelpSquareContained,
     shieldCheck: ShieldCheck,
     menu1: Menu1,
     checkBroken: CheckBroken,

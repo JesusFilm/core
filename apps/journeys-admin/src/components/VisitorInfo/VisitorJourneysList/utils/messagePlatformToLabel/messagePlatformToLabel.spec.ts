@@ -133,13 +133,13 @@ describe('messagePlatformToLabel', () => {
   })
 
   it('returns Help Circle', () => {
-    expect(messagePlatformToLabel(MessagePlatform.helpCircle, t)).toBe(
+    expect(messagePlatformToLabel(MessagePlatform.helpCircleContained, t)).toBe(
       'Help Circle'
     )
   })
 
   it('returns Help Square', () => {
-    expect(messagePlatformToLabel(MessagePlatform.helpSquare, t)).toBe(
+    expect(messagePlatformToLabel(MessagePlatform.helpSquareContained, t)).toBe(
       'Help Square'
     )
   })

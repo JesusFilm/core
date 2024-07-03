@@ -88,7 +88,7 @@ describe('MessageChatIcon', () => {
     expect(screen.getByTestId('MessageCircleIcon')).toBeInTheDocument()
   })
 
-  it('should return messageCircle icon', () => {
+  it('should return messageNotifyCircle icon', () => {
     render(<MessageChatIcon platform={MessagePlatform.messageNotifyCircle} />)
     expect(screen.getByTestId('MessageNotifyCircleIcon')).toBeInTheDocument()
   })
@@ -98,7 +98,42 @@ describe('MessageChatIcon', () => {
     expect(screen.getByTestId('MessageNotifySquareIcon')).toBeInTheDocument()
   })
 
-  it('should return messageNotifySquare icon', () => {
+  it('should return messageSquare icon', () => {
+    render(<MessageChatIcon platform={MessagePlatform.messageSquare} />)
+    expect(screen.getByTestId('MessageSquareIcon')).toBeInTheDocument()
+  })
+
+  it('should return mail1 icon', () => {
+    render(<MessageChatIcon platform={MessagePlatform.mail1} />)
+    expect(screen.getByTestId('Mail1Icon')).toBeInTheDocument()
+  })
+
+  it('should return linkExternal icon', () => {
+    render(<MessageChatIcon platform={MessagePlatform.linkExternal} />)
+    expect(screen.getByTestId('LinkExternalIcon')).toBeInTheDocument()
+  })
+
+  it('should return home3 icon', () => {
+    render(<MessageChatIcon platform={MessagePlatform.home3} />)
+    expect(screen.getByTestId('Home3Icon')).toBeInTheDocument()
+  })
+
+  it('should return home4 icon', () => {
+    render(<MessageChatIcon platform={MessagePlatform.home4} />)
+    expect(screen.getByTestId('Home4Icon')).toBeInTheDocument()
+  })
+
+  it('should return helpCircleContained icon', () => {
+    render(<MessageChatIcon platform={MessagePlatform.helpCircleContained} />)
+    expect(screen.getByTestId('HelpCircleContainedIcon')).toBeInTheDocument()
+  })
+
+  it('should return helpCircleSquare icon', () => {
+    render(<MessageChatIcon platform={MessagePlatform.helpSquareContained} />)
+    expect(screen.getByTestId('HelpSquareContainedIcon')).toBeInTheDocument()
+  })
+
+  it('should return shieldCheck icon', () => {
     render(<MessageChatIcon platform={MessagePlatform.shieldCheck} />)
     expect(screen.getByTestId('ShieldCheckIcon')).toBeInTheDocument()
   })

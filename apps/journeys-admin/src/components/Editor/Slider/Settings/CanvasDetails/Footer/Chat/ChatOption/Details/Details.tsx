@@ -213,12 +213,12 @@ export function Details({
       icon: <Home4 />
     },
     {
-      value: MessagePlatform.helpCircle,
+      value: MessagePlatform.helpCircleContained,
       label: t('Help Circle'),
       icon: <HelpCircleContained />
     },
     {
-      value: MessagePlatform.helpSquare,
+      value: MessagePlatform.helpSquareContained,
       label: t('Help Square'),
       icon: <HelpSquareContained />
     },
