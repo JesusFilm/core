@@ -5,10 +5,10 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { TreeBlock } from '@core/journeys/ui/block'
+import type { TreeBlock } from '@core/journeys/ui/block'
 
-import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../__generated__/BlockFields'
-import { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
+import type { BlockFields_StepBlock as StepBlock } from '../../../../../../../../__generated__/BlockFields'
+import type { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
 
 import { TEXT_RESPONSE_BLOCK_CREATE } from './NewTextResponseButton'
 
@@ -147,5 +147,24 @@ describe('NewTextResponseButton', () => {
         { __ref: 'TextResponseBlock:textResponseBlock.id' }
       ])
     )
+  })
+
+  it('should disable when loading', async () => {
+    const { getByRole } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            variant: 'admin'
+          }}
+        >
+          <EditorProvider initialState={{ selectedStep }}>
+            <NewTextResponseButton />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('button'))
+    expect(getByRole('button')).toBeDisabled()
   })
 })

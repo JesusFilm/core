@@ -3,13 +3,13 @@ import { Meta, StoryObj } from '@storybook/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import FilePlus1Icon from '@core/shared/ui/icons/FilePlus1'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
   GetJourney_journey_blocks_ImageBlock as ImageBlock
 } from '../../../__generated__/GetJourney'
 import { ThemeMode } from '../../../__generated__/globalTypes'
-import { simpleComponentConfig } from '../../libs/storybook'
 
 import { ImageThumbnail } from './ImageThumbnail'
 

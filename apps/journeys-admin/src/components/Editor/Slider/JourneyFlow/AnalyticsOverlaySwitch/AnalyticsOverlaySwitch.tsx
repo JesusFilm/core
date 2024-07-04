@@ -7,6 +7,10 @@ import { ReactElement } from 'react'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useJourneyAnalyticsQuery } from '@core/journeys/ui/useJourneyAnalyticsQuery'
+import { formatISO } from 'date-fns'
+
+// Used to for filter all time stats
+export const earliestStatsCollected = '2024-06-01'
 
 export function AnalyticsOverlaySwitch(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -15,10 +19,13 @@ export function AnalyticsOverlaySwitch(): ReactElement {
     state: { showAnalytics },
     dispatch
   } = useEditor()
+  const currentDate = formatISO(new Date(), { representation: 'date' })
 
   useJourneyAnalyticsQuery({
     variables: {
-      id: journey?.id ?? ''
+      id: journey?.id ?? '',
+      period: 'custom',
+      date: `${earliestStatsCollected},${currentDate}`
     },
     skip: journey?.id == null || showAnalytics !== true,
     onCompleted: (analytics) => {

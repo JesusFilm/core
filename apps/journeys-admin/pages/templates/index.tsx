@@ -6,6 +6,13 @@ import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
 import { ReactElement, useEffect } from 'react'
 
+import { useTeam } from '@core/journeys/ui/TeamProvider'
+import { TemplateGallery } from '@core/journeys/ui/TemplateGallery'
+import { GET_JOURNEYS } from '@core/journeys/ui/useJourneysQuery'
+import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
+import { GET_TAGS } from '@core/journeys/ui/useTagsQuery'
+
+import { Box } from '@mui/material'
 import {
   GetJourneys,
   GetJourneysVariables
@@ -18,12 +25,7 @@ import { GetMe } from '../../__generated__/GetMe'
 import { GetTags } from '../../__generated__/GetTags'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { GET_ME } from '../../src/components/PageWrapper/NavigationDrawer/UserNavigation'
-import { useTeam } from '../../src/components/Team/TeamProvider'
-import { TemplateGallery } from '../../src/components/TemplateGallery'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
-import { GET_JOURNEYS } from '../../src/libs/useJourneysQuery/useJourneysQuery'
-import { GET_LANGUAGES } from '../../src/libs/useLanguagesQuery'
-import { GET_TAGS } from '../../src/libs/useTagsQuery/useTagsQuery'
 
 function TemplateIndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -49,8 +51,16 @@ function TemplateIndexPage(): ReactElement {
         showMainHeader={false}
         showAppHeader={user?.id != null}
         showNavBar={user?.id != null}
+        background="background.paper"
       >
-        <TemplateGallery />
+        <Box
+          sx={{
+            maxWidth: { md: '90vw' },
+            px: { xs: 6, sm: 8, md: 10 }
+          }}
+        >
+          <TemplateGallery />
+        </Box>
       </PageWrapper>
     </>
   )
@@ -88,7 +98,9 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
             '6464', // Hindi
             '12876', // Ukrainian
             '53441', // Arabic, Egyptian Modern Standard
-            '1942' // Türkçe, Turkish
+            '1942', // Türkçe, Turkish
+            '5541', // Serbian
+            '6788' // Farsi, Western
           ]
         }
       }

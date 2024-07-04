@@ -4,9 +4,9 @@ import { ComponentProps } from 'react'
 
 import { ActiveSlide, EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
-import { journeysAdminConfig } from '../../../../../libs/storybook'
 
 import { SocialPreview } from './SocialPreview'
 

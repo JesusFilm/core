@@ -14,19 +14,22 @@ const nextConfig = {
   },
   i18n,
   images: {
-    domains: [
-      'images.unsplash.com',
-      'localhost',
-      'unsplash.com',
-      'imagizer.imageshack.com',
+    remotePatterns: [
+      { protocol: 'http', hostname: 'localhost' },
+      { protocol: 'https', hostname: 'unsplash.com' },
+      { protocol: 'https', hostname: 'images.unsplash.com' },
+      { protocol: 'https', hostname: 'imagizer.imageshack.com' },
+      { protocol: 'https', hostname: 'i.ytimg.com' },
       // arclight image provider - cloudfront
-      'd1wl257kev7hsz.cloudfront.net',
-      'i.ytimg.com',
+      { protocol: 'https', hostname: 'd1wl257kev7hsz.cloudfront.net' },
       // cloudflare
-      'imagedelivery.net',
-      `customer-${
-        process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ?? ''
-      }.cloudflarestream.com`
+      { protocol: 'https', hostname: 'imagedelivery.net' },
+      {
+        protocol: 'https',
+        hostname: `customer-${
+          process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ?? ''
+        }.cloudflarestream.com`
+      }
     ]
   },
   async redirects() {

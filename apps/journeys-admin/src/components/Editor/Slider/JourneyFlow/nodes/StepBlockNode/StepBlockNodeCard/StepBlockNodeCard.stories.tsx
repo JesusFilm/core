@@ -2,10 +2,10 @@ import { Meta, StoryObj } from '@storybook/react'
 import { ComponentPropsWithRef } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../__generated__/BlockFields'
 import { TypographyVariant } from '../../../../../../../../__generated__/globalTypes'
-import { simpleComponentConfig } from '../../../../../../../libs/storybook'
 
 import { StepBlockNodeCard } from '.'
 

@@ -217,22 +217,6 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
   tags = {}
 }
 
-resource "aws_alb_listener" "alb_listener" {
-  load_balancer_arn = var.service_config.alb_listener.alb_arn
-  port              = var.service_config.alb_listener.port
-  protocol          = var.service_config.alb_listener.protocol
-  certificate_arn   = var.service_config.alb_listener.protocol == "HTTPS" ? var.service_config.alb_listener.certificate_arn : null
-
-  default_action {
-    type = "fixed-response"
-    fixed_response {
-      content_type = "text/plain"
-      message_body = "No routes defined"
-      status_code  = "200"
-    }
-  }
-}
-
 resource "aws_alb_target_group" "alb_target_group" {
   name        = "${local.service_config_name_env}-tg"
   port        = var.service_config.alb_target_group.port
@@ -251,7 +235,7 @@ resource "aws_alb_target_group" "alb_target_group" {
 }
 
 resource "aws_alb_listener_rule" "alb_listener_rule" {
-  listener_arn = aws_alb_listener.alb_listener.arn
+  listener_arn = var.alb_listener_arn
   action {
     type             = "forward"
     target_group_arn = aws_alb_target_group.alb_target_group.arn
@@ -260,7 +244,7 @@ resource "aws_alb_listener_rule" "alb_listener_rule" {
     host_header {
       values = [
         coalesce(
-          var.service_config.alb_listener.dns_name,
+          var.host_name,
           format("%s.%s", var.service_config.name, data.aws_route53_zone.zone.name)
         )
       ]
@@ -338,5 +322,5 @@ resource "aws_route53_record" "record" {
   type    = "CNAME"
   ttl     = 300
   zone_id = var.service_config.zone_id
-  records = [var.service_config.alb_dns_name]
+  records = [var.alb_dns_name]
 }

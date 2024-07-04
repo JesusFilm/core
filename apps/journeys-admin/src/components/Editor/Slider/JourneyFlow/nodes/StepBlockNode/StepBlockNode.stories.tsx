@@ -11,8 +11,7 @@ import {
   EditorProvider,
   EditorState
 } from '@core/journeys/ui/EditorProvider'
-
-import { simpleComponentConfig } from '../../../../../../libs/storybook'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { StepBlockNode } from '.'
 
@@ -883,6 +882,23 @@ export const Hover = {
     await waitFor(async () => {
       await userEvent.hover(canvas.getAllByTestId('BaseNode')[0])
     })
+  }
+}
+
+export const Analytics = {
+  ...Template,
+  args: {
+    ...defaultFlowProps,
+    nodes: [defaultNode],
+    nodeTypes: {
+      StepBlock: StepBlockNode
+    },
+    initialState: {
+      steps: [...defaultNode.data.steps],
+      selectedStep: defaultNode.data.steps[0],
+      activeContent: ActiveContent.Canvas,
+      showAnalytics: true
+    }
   }
 }
 

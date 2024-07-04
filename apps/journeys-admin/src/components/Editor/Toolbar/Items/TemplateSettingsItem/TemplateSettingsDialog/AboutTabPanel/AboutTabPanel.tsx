@@ -5,9 +5,9 @@ import TextField from '@mui/material/TextField'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
+import { StrategySection } from '@core/journeys/ui/StrategySection'
 import LinkAngled from '@core/shared/ui/icons/LinkAngled'
 
-import { StrategySection } from '../../../../../../StrategySection'
 import { ImageEdit } from '../../../../../Slider/Settings/Drawer/ImageEdit/ImageEdit'
 import { useTemplateSettingsForm } from '../useTemplateSettingsForm'
 

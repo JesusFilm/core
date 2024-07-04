@@ -8,6 +8,7 @@ import { TreeBlock } from '@core/journeys/ui/block'
 import { getStepTheme } from '@core/journeys/ui/getStepTheme'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { transformer } from '@core/journeys/ui/transformer'
+import { GET_JOURNEY } from '@core/journeys/ui/useJourneyQuery'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 import {
@@ -16,10 +17,10 @@ import {
   GetJourney_journey as Journey
 } from '../../../__generated__/GetJourney'
 import { StepFields } from '../../../__generated__/StepFields'
+import { IdType } from '../../../__generated__/globalTypes'
 import i18nConfig from '../../../next-i18next.config'
 import { EmbeddedPreview } from '../../../src/components/EmbeddedPreview'
 import { createApolloClient } from '../../../src/libs/apolloClient'
-import { GET_JOURNEY } from '../[journeySlug]'
 
 interface JourneyPageProps {
   journey: Journey
@@ -99,6 +100,7 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async (
       query: GET_JOURNEY,
       variables: {
         id: context.params?.journeySlug?.toString() ?? '',
+        idType: IdType.slug,
         options: {
           embedded: true
         }

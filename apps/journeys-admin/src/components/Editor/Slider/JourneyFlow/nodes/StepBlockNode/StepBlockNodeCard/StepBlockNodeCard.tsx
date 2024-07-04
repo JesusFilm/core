@@ -39,7 +39,8 @@ export function StepBlockNodeCard({
     description,
     priorityBlock,
     bgImage,
-    hasMultipleActions
+    hasMultipleActions,
+    priorityImage
   } = getCardMetadata(card)
 
   function handleClick(): void {
@@ -58,6 +59,8 @@ export function StepBlockNodeCard({
     }
   }
 
+  const nodeBgImage = priorityImage ?? bgImage
+
   return (
     <Card
       data-testid="StepBlockNodeCard"
@@ -65,6 +68,10 @@ export function StepBlockNodeCard({
       title={t('Click to edit or drag')}
       onClick={handleClick}
       sx={{
+        opacity: showAnalytics === true ? 0.8 : 1,
+        boxShadow: showAnalytics === true ? 'none' : 3,
+        backgroundColor:
+          showAnalytics === true ? 'transparent' : 'background.paper',
         width: STEP_NODE_CARD_WIDTH,
         m: 1.5,
         '&:hover': {
@@ -99,7 +106,8 @@ export function StepBlockNodeCard({
             alignItems: 'center',
             justifyContent: 'center',
             bgcolor: card?.backgroundColor ?? 'background.default',
-            backgroundImage: bgImage != null ? `url(${bgImage})` : undefined
+            backgroundImage:
+              nodeBgImage != null ? `url(${nodeBgImage})` : undefined
           }}
         >
           {priorityBlock != null && (

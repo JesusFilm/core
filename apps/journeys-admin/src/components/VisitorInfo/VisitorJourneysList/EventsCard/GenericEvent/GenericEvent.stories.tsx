@@ -6,8 +6,8 @@ import CheckContainedIcon from '@core/shared/ui/icons/CheckContained'
 import CircleIcon from '@core/shared/ui/icons/Circle'
 import Marker1Icon from '@core/shared/ui/icons/Marker1'
 import MessageText1Icon from '@core/shared/ui/icons/MessageText1'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
-import { journeysAdminConfig } from '../../../../../libs/storybook'
 import { EventVariant } from '../../utils'
 
 import { GenericEvent } from '.'

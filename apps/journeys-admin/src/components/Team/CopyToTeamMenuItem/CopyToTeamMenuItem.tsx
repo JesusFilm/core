@@ -3,12 +3,12 @@ import { useRouter } from 'next/router'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
+import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
+import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import CopyToIcon from '@core/shared/ui/icons/CopyTo'
 
-import { setBeaconPageViewed } from '../../../libs/setBeaconPageViewed'
-import { useJourneyDuplicateMutation } from '../../../libs/useJourneyDuplicateMutation'
+import { CopyToTeamDialog } from '@core/journeys/ui/CopyToTeamDialog'
 import { MenuItem } from '../../MenuItem'
-import { CopyToTeamDialog } from '../CopyToTeamDialog'
 
 interface DuplicateJourneyMenuItemProps {
   id?: string

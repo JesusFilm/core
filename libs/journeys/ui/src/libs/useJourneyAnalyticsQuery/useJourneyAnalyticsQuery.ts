@@ -7,6 +7,7 @@ import {
 } from '@apollo/client'
 import { useState } from 'react'
 
+import { Edge, Node } from 'reactflow'
 import {
   GetJourneyAnalytics,
   GetJourneyAnalyticsVariables,
@@ -119,7 +120,7 @@ export interface JourneyAnalytics {
   totalVisitors: number
   chatsStarted: number
   linksVisited: number
-  referrers: JourneyReferrer[]
+  referrers: { nodes: Node[]; edges: Edge[] }
   stepsStats: StepStat[]
   stepMap: Map<string, { eventMap: SumEventMap; total: number }>
   blockMap: SumEventMap

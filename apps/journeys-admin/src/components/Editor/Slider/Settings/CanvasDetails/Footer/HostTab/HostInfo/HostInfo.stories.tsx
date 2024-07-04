@@ -4,7 +4,8 @@ import { jest } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
-import { journeysAdminConfig } from '../../../../../../../../libs/storybook'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
+
 import { DRAWER_WIDTH } from '../../../../../../constants'
 
 import { HostInfo } from './HostInfo'

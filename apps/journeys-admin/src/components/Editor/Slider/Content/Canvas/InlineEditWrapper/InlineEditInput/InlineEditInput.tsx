@@ -1,7 +1,7 @@
 import InputBase, { InputBaseProps } from '@mui/material/InputBase'
 import { SimplePaletteColorOptions, styled } from '@mui/material/styles'
 
-import { adminTheme } from '../../../../../../ThemeProvider/admin/theme'
+import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
 
 interface StyledInputProps extends InputBaseProps {}
 

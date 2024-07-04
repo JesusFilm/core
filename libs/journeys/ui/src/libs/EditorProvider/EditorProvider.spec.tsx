@@ -491,7 +491,7 @@ describe('EditorContext', () => {
           totalVisitors: 0,
           chatsStarted: 0,
           linksVisited: 0,
-          referrers: [],
+          referrers: { nodes: [], edges: [] },
           stepsStats: [],
           stepMap: new Map(),
           blockMap: new Map(),

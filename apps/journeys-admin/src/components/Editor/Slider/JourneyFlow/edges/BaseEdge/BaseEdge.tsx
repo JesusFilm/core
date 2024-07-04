@@ -14,7 +14,8 @@ interface BaseEdgeProps {
   id: string
   edgePath: string
   style: CSSProperties
-  children: ReactNode
+  children?: ReactNode
+  showMarkerEnd?: boolean
   isSelected?: boolean // for testing only
 }
 
@@ -23,6 +24,7 @@ export function BaseEdge({
   style,
   edgePath,
   children,
+  showMarkerEnd = true,
   isSelected = false
 }: BaseEdgeProps): ReactElement {
   const {
@@ -61,13 +63,19 @@ export function BaseEdge({
     }
   }
 
+  let markerEnd
+
+  if (showMarkerEnd) {
+    markerEnd = `url(#1__color=${
+      edgeSelected ? MARKER_END_SELECTED_COLOR : MARKER_END_DEFAULT_COLOR
+    }&height=10&type=arrowclosed&width=10)`
+  }
+
   return (
     <g {...props} data-testid={`BaseEdge-${id}`}>
       <DefaultBaseEdge
         path={edgePath}
-        markerEnd={`url(#1__color=${
-          edgeSelected ? MARKER_END_SELECTED_COLOR : MARKER_END_DEFAULT_COLOR
-        }&height=10&type=arrowclosed&width=10)`}
+        markerEnd={markerEnd}
         style={{
           strokeWidth: 2,
           stroke,

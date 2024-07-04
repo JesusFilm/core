@@ -181,7 +181,7 @@ export function getIteration(slug: string, collection: string[]): string {
   const exists = collection.find((t) => t === slug)
   if (exists != null && slug !== '') {
     const regex = slug.match(/^(.*?)-(\d+)$/)
-    const iteration = parseInt(regex?.[2] ?? '1') + 1
+    const iteration = Number.parseInt(regex?.[2] ?? '1') + 1
     const title = regex?.[1] ?? slug
     const value = `${title}-${iteration}`
     return getIteration(value, collection)

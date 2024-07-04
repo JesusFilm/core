@@ -8,12 +8,12 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
 import {
   LanguageAutocomplete,
   LanguageOption
 } from '@core/shared/ui/LanguageAutocomplete'
 
-import { useLanguagesQuery } from '../../../../../../../libs/useLanguagesQuery'
 import { useTemplateSettingsForm } from '../useTemplateSettingsForm'
 
 export function MetadataTabPanel(): ReactElement {

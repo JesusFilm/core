@@ -4,11 +4,11 @@ import { useRouter } from 'next/router'
 import { ComponentProps, ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import Bag5Icon from '@core/shared/ui/icons/Bag5'
 
 import { CreateTemplate } from '../../../../../../__generated__/CreateTemplate'
 import { RemoveUserJourney } from '../../../../../../__generated__/RemoveUserJourney'
-import { useJourneyDuplicateMutation } from '../../../../../libs/useJourneyDuplicateMutation'
 import { Item } from '../Item/Item'
 
 export const REMOVE_USER_JOURNEY = gql`

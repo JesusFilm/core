@@ -10,6 +10,7 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { ObjectSchema, object, string } from 'yup'
 
+import { useTeam } from '@core/journeys/ui/TeamProvider'
 import AddSquare4Icon from '@core/shared/ui/icons/AddSquare4'
 import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'
 
@@ -18,7 +19,6 @@ import {
   UserTeamInviteCreateInput,
   UserTeamRole
 } from '../../../../__generated__/globalTypes'
-import { useTeam } from '../TeamProvider'
 
 export const USER_TEAM_INVITE_CREATE = gql`
   mutation UserTeamInviteCreate(

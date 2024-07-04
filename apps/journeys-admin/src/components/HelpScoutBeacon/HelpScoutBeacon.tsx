@@ -5,6 +5,7 @@ import { useRouter } from 'next/router'
 import Script from 'next/script'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 
+import { FormObject } from '@core/journeys/ui/setBeaconPageViewed'
 import HelpCircleContained from '@core/shared/ui/icons/HelpCircleContained'
 import XCircleContained from '@core/shared/ui/icons/XCircleContained'
 
@@ -14,10 +15,6 @@ interface EventObject {
   title: string
 }
 
-interface FormObject {
-  name?: string | null
-  email?: string | null
-}
 declare global {
   interface Window {
     Beacon?: ((fn: 'init', id: string) => void) &

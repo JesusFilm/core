@@ -4,8 +4,8 @@ import { FormikContextType, FormikProvider } from 'formik'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
+import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 
-import { GET_LANGUAGES } from '../../../../../../../libs/useLanguagesQuery'
 import { publishedJourney } from '../../../../../../JourneyList/journeyListData'
 import { TemplateSettingsFormValues } from '../useTemplateSettingsForm'
 

@@ -4,9 +4,9 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { TreeBlock } from '@core/journeys/ui/block'
+import type { TreeBlock } from '@core/journeys/ui/block'
 
-import { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
+import type { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
 
 import { FORM_BLOCK_CREATE } from './NewFormButton'
 
@@ -135,5 +135,24 @@ describe('NewFormButton', () => {
       { __ref: 'TypographyBlock:typographyBlockId' },
       { __ref: 'FormBlock:formBlockId' }
     ])
+  })
+
+  it('should disable when loading', async () => {
+    const { getByRole } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            variant: 'admin'
+          }}
+        >
+          <EditorProvider initialState={{ selectedStep }}>
+            <NewFormButton />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('button'))
+    expect(getByRole('button')).toBeDisabled()
   })
 })

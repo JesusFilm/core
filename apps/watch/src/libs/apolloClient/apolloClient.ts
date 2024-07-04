@@ -41,7 +41,7 @@ export function createApolloClient({
   const retryLink = new RetryLink({
     delay: {
       initial: 500,
-      max: Infinity,
+      max: Number.POSITIVE_INFINITY,
       jitter: true
     },
     attempts: {
