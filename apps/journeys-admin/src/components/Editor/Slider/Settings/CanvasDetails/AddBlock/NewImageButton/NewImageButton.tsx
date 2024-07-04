@@ -26,7 +26,8 @@ export const IMAGE_BLOCK_CREATE = gql`
 
 export function NewImageButton(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [imageBlockCreate] = useMutation<ImageBlockCreate>(IMAGE_BLOCK_CREATE)
+  const [imageBlockCreate, { loading }] =
+    useMutation<ImageBlockCreate>(IMAGE_BLOCK_CREATE)
   const { journey } = useJourney()
   const {
     state: { selectedStep },
@@ -83,6 +84,7 @@ export function NewImageButton(): ReactElement {
       value={t('Image')}
       onClick={handleClick}
       testId="NewImageButton"
+      disabled={loading}
     />
   )
 }
