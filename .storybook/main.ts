@@ -33,7 +33,7 @@ const stories = [
   ...storiesForProject['watch'],
   ...storiesForProject['shared-ui'],
   ...storiesForProject['api-journeys'],
-  ...storiesForProject['api-users'],
+  ...storiesForProject['api-users']
 ]
 
 const config: StorybookConfig = {
