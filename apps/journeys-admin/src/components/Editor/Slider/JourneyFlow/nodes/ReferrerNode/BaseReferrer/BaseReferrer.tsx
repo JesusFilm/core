@@ -114,13 +114,52 @@ export function BaseReferrer({ property, visitors }) {
       <Typography
         variant="body2"
         sx={{
-          ...textStyles,
-          fontWeight: 600,
-          placeSelf: 'end'
+          flex: 1,
+          display: 'grid',
+          gridTemplateColumns: 'auto 1fr',
+          alignItems: 'inherit',
+          gap: 2
         }}
       >
         {visitors}
       </Typography> */}
+
+      {/* <Tooltip
+          title={property}
+          placement="top"
+          slotProps={{
+            popper: {
+              modifiers: [
+                {
+                  name: 'offset',
+                  options: {
+                    offset: [0, -8]
+                  }
+                }
+              ]
+            },
+            tooltip: {
+              sx: {
+                py: 0
+              }
+            }
+          }}
+        >
+          <Typography noWrap sx={textStyles}>
+            {property}
+          </Typography>
+        </Tooltip>
+        <Typography
+          variant="body2"
+          sx={{
+            ...textStyles,
+            fontWeight: 600,
+            placeSelf: 'end'
+          }}
+        >
+          {visitors}
+        </Typography>
+      </Box> */}
     </Box>
   )
 }
