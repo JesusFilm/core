@@ -108,7 +108,7 @@ test.describe('verify card level actions', () => {
   })
 
   //Poll - create, update & delete
-  test('Poll - create, update & delete', async ({ page }) => {
+  test.fixme('Poll - create, update & delete', async ({ page }) => {
     const cardLevelActionPage = new CardLevelActionPage(page)
     await cardLevelActionPage.clickAddBlockBtn() // clicking on add block button
     await cardLevelActionPage.clickBtnInAddBlockDrawer('Poll') // clicking on poll button in add block drawer

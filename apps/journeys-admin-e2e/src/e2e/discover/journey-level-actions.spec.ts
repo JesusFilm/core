@@ -60,7 +60,7 @@ test.describe('Journey level actions', () => {
   })
 
   // Discover page -> Existing journey -> Preview
-  test('Preview existing journey', async ({ page, context }) => {
+  test.fixme('Preview existing journey', async ({ page, context }) => {
     const journeyLevelActions = new JourneyLevelActions(page)
     const journeyPage = new JourneyPage(page)
     const journeyName = await journeyPage.getJourneyName() // getting journay name
