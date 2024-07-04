@@ -43,7 +43,7 @@ function DrawerTitle({ title, onClose }: DrawerTitleProps): ReactElement {
             minHeight: { xs: 64, sm: 48 },
             maxHeight: { xs: 64, sm: 48 },
             pl: { sm: 4 },
-            pr: { sm: 5 },
+            pr: { xs: 4.5, sm: 5 },
             backgroundColor: (theme) =>
               alpha(theme.palette.background.default, 0.5)
           }}
