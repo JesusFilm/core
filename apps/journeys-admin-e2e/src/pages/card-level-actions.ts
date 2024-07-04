@@ -406,7 +406,7 @@ export class CardLevelActionPage {
       timeout: 10000
     })
     await expect(this.page.locator('#notistack-snackbar')).toBeHidden({
-      timeout: sixtySecondsTimeout0
+      timeout: sixtySecondsTimeout
     })
   }
   async verifyPollOptionAddedToCard() {
