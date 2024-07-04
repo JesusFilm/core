@@ -99,7 +99,8 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
             '12876', // Ukrainian
             '53441', // Arabic, Egyptian Modern Standard
             '1942', // Türkçe, Turkish
-            '5541' // Serbian
+            '5541', // Serbian
+            '6788' // Farsi, Western
           ]
         }
       }
