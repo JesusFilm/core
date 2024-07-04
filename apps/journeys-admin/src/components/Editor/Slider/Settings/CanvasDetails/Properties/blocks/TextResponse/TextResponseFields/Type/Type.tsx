@@ -5,12 +5,14 @@ import { TreeBlock } from '@core/journeys/ui/block'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
+import { TextResponseLabelUpdate } from '../../../../../../../../../../../__generated__/TextResponseLabelUpdate'
 import { TextResponseTypeUpdate } from '../../../../../../../../../../../__generated__/TextResponseTypeUpdate'
 import {
   TextResponseBlockUpdateInput,
   TextResponseType
 } from '../../../../../../../../../../../__generated__/globalTypes'
 import { ToggleButtonGroup } from '../../../../controls/ToggleButtonGroup'
+import { TEXT_RESPONSE_LABEL_UPDATE } from '../Label/Label'
 
 export const TEXT_RESPONSE_TYPE_UPDATE = gql`
   mutation TextResponseTypeUpdate(
@@ -38,6 +40,9 @@ export function Type(): ReactElement {
   const [textResponseTypeUpdate] = useMutation<TextResponseTypeUpdate>(
     TEXT_RESPONSE_TYPE_UPDATE
   )
+  const [textResponseLabelUpdate] = useMutation<TextResponseLabelUpdate>(
+    TEXT_RESPONSE_LABEL_UPDATE
+  )
 
   async function handleChange(type: TextResponseType): Promise<void> {
     if (journey == null || selectedBlock == null) return
@@ -45,7 +50,7 @@ export function Type(): ReactElement {
     let input: TextResponseBlockUpdateInput = {
       type
     }
-    if (type !== TextResponseType.email) {
+    if (type !== TextResponseType.email && type !== TextResponseType.name) {
       input = {
         ...input,
         integrationId: null,
@@ -53,22 +58,52 @@ export function Type(): ReactElement {
       }
     }
 
-    await textResponseTypeUpdate({
-      variables: {
-        id: selectedBlock.id,
-        journeyId: journey.id,
-        input
-      },
-      optimisticResponse: {
-        textResponseBlockUpdate: {
+    let label
+    switch (type) {
+      case TextResponseType.email:
+        label = t('Email')
+        break
+      case TextResponseType.name:
+        label = t('Name')
+        break
+      default:
+        label = t('Your answer here')
+    }
+
+    await Promise.all([
+      await textResponseTypeUpdate({
+        variables: {
           id: selectedBlock.id,
-          __typename: 'TextResponseBlock',
-          type,
-          integrationId: null,
-          routeId: null
+          journeyId: journey.id,
+          input
+        },
+        optimisticResponse: {
+          textResponseBlockUpdate: {
+            id: selectedBlock.id,
+            __typename: 'TextResponseBlock',
+            type,
+            integrationId: null,
+            routeId: null
+          }
         }
-      }
-    })
+      }),
+      await textResponseLabelUpdate({
+        variables: {
+          id: selectedBlock.id,
+          journeyId: journey.id,
+          input: {
+            label: label
+          }
+        },
+        optimisticResponse: {
+          textResponseBlockUpdate: {
+            id: selectedBlock?.id,
+            __typename: 'TextResponseBlock',
+            label: label
+          }
+        }
+      })
+    ])
   }
 
   const options = [
@@ -77,12 +112,12 @@ export function Type(): ReactElement {
       label: t('Freeform')
     },
     {
-      value: TextResponseType.email,
-      label: t('Email')
-    },
-    {
       value: TextResponseType.name,
       label: t('Name')
+    },
+    {
+      value: TextResponseType.email,
+      label: t('Email')
     }
   ]
 
