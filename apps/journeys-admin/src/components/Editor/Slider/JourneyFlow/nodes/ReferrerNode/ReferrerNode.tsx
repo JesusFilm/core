@@ -25,22 +25,21 @@ export function ReferrerNode({ data }: ReferrerNodeProps) {
       sourceHandle={showAnalytics ? 'disabled' : 'hide'}
       isSourceConnected
     >
-      <>
+      <Box
+        sx={{
+          width: 180,
+          backgroundColor: 'background.paper',
+          borderRadius: 5,
+          boxShadow: 3,
+          overflow: 'hidden'
+        }}
+      >
         {'referrers' in data ? (
           <OtherReferrer {...data} />
         ) : (
-          <Box
-            sx={{
-              width: 180,
-              backgroundColor: 'background.paper',
-              borderRadius: 5,
-              boxShadow: 3
-            }}
-          >
-            <BaseReferrer {...data} />
-          </Box>
+          <BaseReferrer {...data} />
         )}
-      </>
+      </Box>
     </BaseNode>
   )
 }

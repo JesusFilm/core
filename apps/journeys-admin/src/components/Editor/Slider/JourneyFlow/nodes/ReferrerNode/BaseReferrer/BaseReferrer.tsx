@@ -1,14 +1,19 @@
 import ChevronDown from '@core/shared/ui/icons/ChevronDown'
 import { FacebookIcon } from '@core/shared/ui/icons/FacebookIcon'
 import LinkAngled from '@core/shared/ui/icons/LinkAngled'
-import { Tooltip } from '@mui/material'
 import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
+import { SxProps } from '@mui/system'
+import { ReferrerValue } from '../ReferrerValue'
 
 const iconStyles = { fontSize: '18px' }
-const textStyles = { fontSize: '12px', lineHeight: '20px' }
 
-export function BaseReferrer({ property, visitors }) {
+interface BaseReferrerProps {
+  property: string
+  visitors: number | null
+  style?: SxProps
+}
+
+export function BaseReferrer({ property, visitors, style }: BaseReferrerProps) {
   let Icon
 
   switch (property) {
@@ -32,11 +37,12 @@ export function BaseReferrer({ property, visitors }) {
         //         display: 'grid',
         //         gridTemplateColumns: 'min-content auto 1fr',
         alignItems: 'center',
-        padding: '8px 12px',
         gap: 2,
+        padding: '8px 12px',
         ':hover': {
           cursor: 'default'
-        }
+        },
+        ...style
       }}
       data-testid="BaseReferrer"
     >
@@ -50,41 +56,11 @@ export function BaseReferrer({ property, visitors }) {
           gap: 2
         }}
       >
-        <Tooltip
-          title={property}
-          placement="top"
-          slotProps={{
-            popper: {
-              modifiers: [
-                {
-                  name: 'offset',
-                  options: {
-                    offset: [0, -8]
-                  }
-                }
-              ]
-            },
-            tooltip: {
-              sx: {
-                py: 0
-              }
-            }
-          }}
-        >
-          <Typography noWrap sx={textStyles}>
-            {property}
-          </Typography>
-        </Tooltip>
-        <Typography
-          variant="body2"
-          sx={{
-            ...textStyles,
-            fontWeight: 600,
-            placeSelf: 'end'
-          }}
-        >
-          {visitors}
-        </Typography>
+        <ReferrerValue
+          tooltipTitle={property}
+          property={property}
+          visitors={visitors}
+        />
       </Box>
       {/* <Tooltip
         title={property}
