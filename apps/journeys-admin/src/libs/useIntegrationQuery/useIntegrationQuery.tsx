@@ -30,6 +30,7 @@ export function useIntegrationQuery(
   variables?: GetIntegrationVariables
 ): QueryResult<GetIntegration, GetIntegrationVariables> {
   return useQuery<GetIntegration, GetIntegrationVariables>(GET_INTEGRATION, {
-    variables
+    variables,
+    fetchPolicy: 'cache-and-network'
   })
 }
