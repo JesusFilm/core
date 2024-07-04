@@ -39,6 +39,14 @@ export function StrategyItem({
         label={t('Strategy')}
         icon={<BulbIcon />}
         onClick={handleGoalsClick}
+        ButtonProps={{
+          sx: {
+            borderWidth: '2px',
+            '&:hover': {
+              borderWidth: '2px'
+            }
+          }
+        }}
       />
     </Box>
   )
