@@ -55,12 +55,9 @@ jobs:
         uses: andstor/file-existence-action@v3
         with:
           files: 'dist/storybook/shared-storybook'
-      - name: Chromatic label check
-        id: chromatic_label
-        run: ./tools/scripts/chromatic-label-check.sh
         #👇 Adds Chromatic as a step in the workflow
       - name: Run VR tests
-        if: ${{ steps.check_files.outputs.files_exists == 'true' && steps.chromatic_label.outputs.has_chromatic_label == 'true'}}
+        if: ${{ steps.check_files.outputs.files_exists == 'true' && contains(github.event.pull_request.labels.*.name, 'chromatic') }}
         uses: chromaui/action@v1
         # Options required for Chromatic's GitHub Action
         # https://www.chromatic.com/docs/github-actions#available-options
