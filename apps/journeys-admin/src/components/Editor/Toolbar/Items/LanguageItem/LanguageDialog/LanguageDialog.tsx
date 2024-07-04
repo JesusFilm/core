@@ -5,11 +5,11 @@ import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
 import { Dialog } from '@core/shared/ui/Dialog'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
 import { JourneyLanguageUpdate } from '../../../../../../../__generated__/JourneyLanguageUpdate'
-import { useLanguagesQuery } from '../../../../../../libs/useLanguagesQuery'
 
 export const JOURNEY_LANGUAGE_UPDATE = gql`
   mutation JourneyLanguageUpdate($id: ID!, $input: JourneyUpdateInput!) {

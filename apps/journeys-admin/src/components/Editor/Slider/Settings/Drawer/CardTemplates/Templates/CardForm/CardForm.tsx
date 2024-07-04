@@ -1,14 +1,13 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import ButtonBase from '@mui/material/ButtonBase'
-import Image from 'next/image'
 import { useTranslation } from 'next-i18next'
+import Image from 'next/image'
 import { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import { CARD_FIELDS } from '@core/journeys/ui/Card/cardFields'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { ICON_FIELDS } from '@core/journeys/ui/Icon/iconFields'
 import { IMAGE_FIELDS } from '@core/journeys/ui/Image/imageFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { TEXT_RESPONSE_FIELDS } from '@core/journeys/ui/TextResponse/textResponseFields'
@@ -19,7 +18,6 @@ import {
   CardFormCreateVariables
 } from '../../../../../../../../../__generated__/CardFormCreate'
 import {
-  IconName,
   TypographyColor,
   TypographyVariant
 } from '../../../../../../../../../__generated__/globalTypes'
@@ -30,16 +28,12 @@ export const CARD_FORM_CREATE = gql`
   ${IMAGE_FIELDS}
   ${TYPOGRAPHY_FIELDS}
   ${TEXT_RESPONSE_FIELDS}
-  ${ICON_FIELDS}
   ${CARD_FIELDS}
   mutation CardFormCreate(
     $imageInput: ImageBlockCreateInput!
     $subtitleInput: TypographyBlockCreateInput!
     $titleInput: TypographyBlockCreateInput!
     $textResponseInput: TextResponseBlockCreateInput!
-    $submitIconInput: IconBlockCreateInput!
-    $textResponseId: ID!
-    $textResponseUpdateInput: TextResponseBlockUpdateInput!
     $bodyInput: TypographyBlockCreateInput!
     $journeyId: ID!
     $cardId: ID!
@@ -55,16 +49,6 @@ export const CARD_FORM_CREATE = gql`
       ...TypographyFields
     }
     textResponse: textResponseBlockCreate(input: $textResponseInput) {
-      ...TextResponseFields
-    }
-    submitIcon: iconBlockCreate(input: $submitIconInput) {
-      ...IconFields
-    }
-    textResponseBlockUpdate(
-      id: $textResponseId
-      journeyId: $journeyId
-      input: $textResponseUpdateInput
-    ) {
       ...TextResponseFields
     }
     body: typographyBlockCreate(input: $bodyInput) {
@@ -91,7 +75,6 @@ export function CardForm(): ReactElement {
     const cardId = selectedStep?.children[0].id
     if (journey == null || cardId == null) return
     const textResponseId = uuidv4()
-    const submitIconId = uuidv4()
     await cardFormCreate({
       variables: {
         imageInput: {
@@ -120,18 +103,7 @@ export function CardForm(): ReactElement {
           id: textResponseId,
           journeyId: journey.id,
           parentBlockId: cardId,
-          label: t('Your answer here'),
-          submitLabel: t('Submit')
-        },
-        submitIconInput: {
-          id: submitIconId,
-          journeyId: journey.id,
-          parentBlockId: textResponseId,
-          name: IconName.ArrowForwardRounded
-        },
-        textResponseId,
-        textResponseUpdateInput: {
-          submitIconId
+          label: t('Your answer here')
         },
         bodyInput: {
           journeyId: journey.id,
@@ -172,11 +144,7 @@ export function CardForm(): ReactElement {
                     fragment: NEW_BLOCK_FRAGMENT
                   }),
                   cache.writeFragment({
-                    data: data.textResponseBlockUpdate,
-                    fragment: NEW_BLOCK_FRAGMENT
-                  }),
-                  cache.writeFragment({
-                    data: data.submitIcon,
+                    data: data.textResponse,
                     fragment: NEW_BLOCK_FRAGMENT
                   }),
                   cache.writeFragment({

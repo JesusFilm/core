@@ -58,6 +58,34 @@ describe('MailChimpService', () => {
       )
     })
 
+    it('should not throw error when looks fake or invalid', async () => {
+      process.env.MAILCHIMP_AUDIENCE_ID = '1234'
+
+      const setListMemberMock = mailchimp.lists
+        .setListMember as unknown as jest.Mock
+
+      setListMemberMock.mockRejectedValueOnce({
+        response: {
+          body: {
+            detail:
+              'my-nama-yeff@example.com looks fake or invalid, please enter a real email address.'
+          }
+        }
+      })
+
+      await expect(mailChimpService.syncUser(user)).resolves.toBeUndefined()
+
+      expect(mailchimp.lists.setListMember).toHaveBeenCalledWith(
+        '1234',
+        'my-nama-yeff@example.com',
+        {
+          email_address: 'my-nama-yeff@example.com',
+          merge_fields: { FNAME: 'My-Nama', LNAME: 'Yeff' },
+          status_if_new: 'subscribed'
+        }
+      )
+    })
+
     it('should throw error if the audience id is undefined', async () => {
       await expect(mailChimpService.syncUser(user)).rejects.toThrow(
         'Mailchimp Audience ID is undefined'

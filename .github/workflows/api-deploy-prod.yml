@@ -4,6 +4,19 @@ on:
     branches:
       - main
 jobs:
+  api-analytics:
+    uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@main
+    with:
+      name: api-analytics
+      env: prod
+      branch: ${{ github.ref_name }}
+      endpoint_url: http://api-analytics.service.internal:4008/graphql
+    secrets:
+      APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
+      JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
+      AWS_NETWORK_CONFIG: ${{ secrets.AWS_NETWORK_CONFIG }}
   api-journeys:
     uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@main
     with:

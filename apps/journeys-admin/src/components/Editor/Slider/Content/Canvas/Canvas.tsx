@@ -11,17 +11,17 @@ import {
   ActiveSlide,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
-import { getStepTheme } from '@core/journeys/ui/getStepTheme'
+import { FramePortal } from '@core/journeys/ui/FramePortal'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { StepFooter } from '@core/journeys/ui/StepFooter'
+import { VideoWrapper } from '@core/journeys/ui/VideoWrapper'
+import { getStepTheme } from '@core/journeys/ui/getStepTheme'
+import { getJourneyRTL } from '@core/journeys/ui/rtl'
+import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeName } from '@core/shared/ui/themes'
 
-import { setBeaconPageViewed } from '../../../../../libs/setBeaconPageViewed'
-import { FramePortal } from '../../../../FramePortal'
-import { Fab } from '../../../Fab'
-
+import { CanvasFooter } from './CanvasFooter'
 import { CardWrapper } from './CardWrapper'
 import { FormWrapper } from './FormWrapper'
 import { InlineEditWrapper } from './InlineEditWrapper'
@@ -33,7 +33,6 @@ import {
   calculateScaledHeight,
   calculateScaledMargin
 } from './utils/calculateDimensions'
-import { VideoWrapper } from './VideoWrapper'
 
 export function Canvas(): ReactElement {
   const frameRef = useRef<HTMLIFrameElement>(null)
@@ -45,7 +44,8 @@ export function Canvas(): ReactElement {
       selectedStep,
       selectedBlock,
       activeSlide,
-      activeCanvasDetailsDrawer
+      activeCanvasDetailsDrawer,
+      showAnalytics
     },
     dispatch
   } = useEditor()
@@ -65,6 +65,7 @@ export function Canvas(): ReactElement {
   }, [])
 
   function handleFooterClick(): void {
+    if (showAnalytics === true) return
     dispatch({
       type: 'SetActiveCanvasDetailsDrawerAction',
       activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer
@@ -91,6 +92,7 @@ export function Canvas(): ReactElement {
   }
 
   function handleSelectCard(): void {
+    if (showAnalytics === true) return
     const iframeDocument =
       frameRef.current?.contentDocument ??
       frameRef.current?.contentWindow?.document
@@ -292,15 +294,7 @@ export function Canvas(): ReactElement {
                 </ThemeProvider>
               </FramePortal>
             </Box>
-            <Box
-              sx={{
-                mt: 4,
-                alignSelf: 'end',
-                transform: `scale(${scale})`
-              }}
-            >
-              <Fab variant="canvas" />
-            </Box>
+            <CanvasFooter scale={scale} />
           </Box>
         </Stack>
       )}

@@ -333,6 +333,20 @@ type CloudflareVideo
   readyToStream: Boolean!
 }
 
+type Country
+  @join__type(graph: LANGUAGES, key: "id")
+{
+  id: ID!
+  name(languageId: ID, primary: Boolean): [Translation!]!
+  population: Int
+  continent(languageId: ID, primary: Boolean): [Translation!]!
+  languages: [Language!]!
+  latitude: Float
+  longitude: Float
+  flagPngSrc: String
+  flagWebpSrc: String
+}
+
 input CreateVerificationRequestInput
   @join__type(graph: USERS)
 {
@@ -441,6 +455,12 @@ input EmailActionInput
 {
   gtmEventName: String
   email: String!
+}
+
+type Error
+  @join__type(graph: ANALYTICS)
+{
+  message: String!
 }
 
 interface Event
@@ -738,11 +758,60 @@ input ImageBlockUpdateInput
   height: Int
 }
 
+interface Integration
+  @join__type(graph: JOURNEYS)
+{
+  id: ID!
+  team: Team!
+  type: IntegrationType!
+}
+
+type IntegrationGrowthSpaces implements Integration
+  @join__implements(graph: JOURNEYS, interface: "Integration")
+  @join__type(graph: JOURNEYS)
+{
+  id: ID!
+  team: Team!
+  type: IntegrationType!
+  accessId: String!
+  accessSecretPart: String!
+  routes: [IntegrationGrowthSpacesRoute!]!
+}
+
+input IntegrationGrowthSpacesCreateInput
+  @join__type(graph: JOURNEYS)
+{
+  accessId: String!
+  accessSecret: String!
+  teamId: String!
+}
+
+type IntegrationGrowthSpacesRoute
+  @join__type(graph: JOURNEYS)
+{
+  id: String!
+  name: String!
+}
+
+input IntegrationGrowthSpacesUpdateInput
+  @join__type(graph: JOURNEYS)
+{
+  accessId: String!
+  accessSecret: String!
+}
+
+enum IntegrationType
+  @join__type(graph: JOURNEYS)
+{
+  growthSpaces @join__enumValue(graph: JOURNEYS)
+}
+
 scalar join__DirectiveArguments
 
 scalar join__FieldSet
 
 enum join__Graph {
+  ANALYTICS @join__graph(name: "analytics", url: "http://127.0.0.1:4008/graphql")
   JOURNEYS @join__graph(name: "journeys", url: "http://127.0.0.1:4001/graphql")
   LANGUAGES @join__graph(name: "languages", url: "http://127.0.0.1:4003/graphql")
   MEDIA @join__graph(name: "media", url: "http://127.0.0.1:4005/graphql")
@@ -781,6 +850,9 @@ type Journey
   strategySlug: String
   tags: [Tag!]!
   journeyCollections: [JourneyCollection!]!
+
+  """used in a plausible share link to embed report"""
+  plausibleToken: String
   userJourneys: [UserJourney!]
 }
 
@@ -832,6 +904,24 @@ input JourneyCreateInput
   at the end of the slug guaranteeing uniqueness
   """
   slug: String
+}
+
+type JourneyNotification
+  @join__type(graph: JOURNEYS)
+{
+  id: ID!
+  userId: ID!
+  journeyId: ID!
+  userTeamId: ID
+  userJourneyId: ID
+  visitorInteractionEmail: Boolean!
+}
+
+input JourneyNotificationUpdateInput
+  @join__type(graph: JOURNEYS)
+{
+  journeyId: ID!
+  visitorInteractionEmail: Boolean!
 }
 
 type JourneyProfile
@@ -1193,13 +1283,37 @@ enum MessagePlatform
   line @join__enumValue(graph: JOURNEYS)
   tikTok @join__enumValue(graph: JOURNEYS)
   custom @join__enumValue(graph: JOURNEYS)
+  globe2 @join__enumValue(graph: JOURNEYS)
+  globe3 @join__enumValue(graph: JOURNEYS)
+  messageText1 @join__enumValue(graph: JOURNEYS)
+  messageText2 @join__enumValue(graph: JOURNEYS)
+  send1 @join__enumValue(graph: JOURNEYS)
+  send2 @join__enumValue(graph: JOURNEYS)
+  messageChat2 @join__enumValue(graph: JOURNEYS)
+  messageCircle @join__enumValue(graph: JOURNEYS)
+  messageNotifyCircle @join__enumValue(graph: JOURNEYS)
+  messageNotifySquare @join__enumValue(graph: JOURNEYS)
+  messageSquare @join__enumValue(graph: JOURNEYS)
+  mail1 @join__enumValue(graph: JOURNEYS)
+  linkExternal @join__enumValue(graph: JOURNEYS)
+  home3 @join__enumValue(graph: JOURNEYS)
+  home4 @join__enumValue(graph: JOURNEYS)
+  helpCircleContained @join__enumValue(graph: JOURNEYS)
+  helpSquareContained @join__enumValue(graph: JOURNEYS)
+  shieldCheck @join__enumValue(graph: JOURNEYS)
+  menu1 @join__enumValue(graph: JOURNEYS)
+  checkBroken @join__enumValue(graph: JOURNEYS)
+  checkContained @join__enumValue(graph: JOURNEYS)
+  settings @join__enumValue(graph: JOURNEYS)
 }
 
 type Mutation
+  @join__type(graph: ANALYTICS)
   @join__type(graph: JOURNEYS)
   @join__type(graph: MEDIA)
   @join__type(graph: USERS)
 {
+  siteCreate(input: SiteCreateInput!): MutationSiteCreateResult! @join__field(graph: ANALYTICS)
   blockDeleteAction(id: ID!, journeyId: ID!): Block! @join__field(graph: JOURNEYS)
   blockUpdateNavigateToBlockAction(id: ID!, journeyId: ID!, input: NavigateToBlockActionInput!): NavigateToBlockAction! @join__field(graph: JOURNEYS)
   blockUpdateLinkAction(id: ID!, journeyId: ID!, input: LinkActionInput!): LinkAction! @join__field(graph: JOURNEYS)
@@ -1365,6 +1479,9 @@ type Mutation
   hostCreate(teamId: ID!, input: HostCreateInput!): Host! @join__field(graph: JOURNEYS)
   hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host! @join__field(graph: JOURNEYS)
   hostDelete(id: ID!, teamId: ID!): Host! @join__field(graph: JOURNEYS)
+  integrationGrowthSpacesCreate(input: IntegrationGrowthSpacesCreateInput!): IntegrationGrowthSpaces! @join__field(graph: JOURNEYS)
+  integrationGrowthSpacesUpdate(id: ID!, input: IntegrationGrowthSpacesUpdateInput!): IntegrationGrowthSpaces! @join__field(graph: JOURNEYS)
+  integrationDelete(id: ID!): Integration! @join__field(graph: JOURNEYS)
   journeyCreate(input: JourneyCreateInput!, teamId: ID!): Journey! @join__field(graph: JOURNEYS)
   journeyDuplicate(id: ID!, teamId: ID!): Journey! @join__field(graph: JOURNEYS)
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey! @join__field(graph: JOURNEYS)
@@ -1392,6 +1509,7 @@ type Mutation
   journeyCollectionCreate(input: JourneyCollectionCreateInput!): JourneyCollection! @join__field(graph: JOURNEYS)
   journeyCollectionUpdate(id: ID!, input: JourneyCollectionUpdateInput!): JourneyCollection! @join__field(graph: JOURNEYS)
   journeyCollectionDelete(id: ID!): JourneyCollection! @join__field(graph: JOURNEYS)
+  journeyNotificationUpdate(input: JourneyNotificationUpdateInput!): JourneyNotification! @join__field(graph: JOURNEYS)
   journeyProfileCreate: JourneyProfile! @join__field(graph: JOURNEYS)
   journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile! @join__field(graph: JOURNEYS)
   journeyProfileOnboardingFormComplete: JourneyProfile! @join__field(graph: JOURNEYS)
@@ -1441,6 +1559,18 @@ type Mutation
   validateEmail(email: String!, token: String!): User @join__field(graph: USERS)
 }
 
+union MutationSiteCreateResult
+  @join__type(graph: ANALYTICS)
+  @join__unionMember(graph: ANALYTICS, member: "Error")
+  @join__unionMember(graph: ANALYTICS, member: "MutationSiteCreateSuccess")
+ = Error | MutationSiteCreateSuccess
+
+type MutationSiteCreateSuccess
+  @join__type(graph: ANALYTICS)
+{
+  data: Site!
+}
+
 type NavigateToBlockAction implements Action
   @join__implements(graph: JOURNEYS, interface: "Action")
   @join__type(graph: JOURNEYS)
@@ -1478,6 +1608,213 @@ type PageInfo
   endCursor: String
 }
 
+input PlausibleStatsAggregateFilter
+  @join__type(graph: JOURNEYS)
+{
+  """
+  See [time periods](https://plausible.io/docs/stats-api#time-periods).
+  If not specified, it will default to 30d.
+  """
+  period: String
+
+  """
+  date in the standard ISO-8601 format (YYYY-MM-DD).
+  When using a custom range, the date parameter expects two ISO-8601 formatted
+  dates joined with a comma e.g `2021-01-01,2021-01-31`. Stats will be returned
+  for the whole date range inclusive of the start and end dates.
+  """
+  date: String
+
+  """
+  See [filtering](https://plausible.io/docs/stats-api#filtering)
+  section for more details.
+  """
+  filters: String
+
+  """
+  Off by default. You can specify `previous_period` to calculate the percent
+  difference with the previous period for each metric. The previous period
+  will be of the exact same length as specified in the period parameter.
+  """
+  interval: String
+}
+
+type PlausibleStatsAggregateResponse
+  @join__type(graph: JOURNEYS)
+{
+  """The number of unique visitors."""
+  visitors: PlausibleStatsAggregateValue
+
+  """The number of visits/sessions."""
+  visits: PlausibleStatsAggregateValue
+
+  """The number of pageview events."""
+  pageviews: PlausibleStatsAggregateValue
+
+  """
+  The number of pageviews divided by the number of visits.
+  Returns a floating point number. Currently only supported in Aggregate and
+  Timeseries endpoints.
+  """
+  viewsPerVisit: PlausibleStatsAggregateValue
+
+  """Bounce rate percentage."""
+  bounceRate: PlausibleStatsAggregateValue
+
+  """Visit duration in seconds."""
+  visitDuration: PlausibleStatsAggregateValue
+
+  """
+  The number of events (pageviews + custom events). When filtering by a goal,
+   this metric corresponds to "Total Conversions" in the dashboard.
+  """
+  events: PlausibleStatsAggregateValue
+
+  """
+  The percentage of visitors who completed the goal. Requires an `event:goal`
+  filter or `event:goal` property in the breakdown endpoint
+  """
+  conversionRate: PlausibleStatsAggregateValue
+
+  """
+  The average time users spend on viewing a single page. Requires an
+  `event:page` filter or `event:page` property in the breakdown endpoint.
+  """
+  timeOnPage: PlausibleStatsAggregateValue
+}
+
+type PlausibleStatsAggregateValue
+  @join__type(graph: JOURNEYS)
+{
+  value: Float!
+  change: Int
+}
+
+input PlausibleStatsBreakdownFilter
+  @join__type(graph: JOURNEYS)
+{
+  """
+  Which [property](https://plausible.io/docs/stats-api#properties)
+  to break down the stats by.
+  """
+  property: String!
+
+  """
+  See [time periods](https://plausible.io/docs/stats-api#time-periods).
+  If not specified, it will default to 30d.
+  """
+  period: String
+
+  """
+  date in the standard ISO-8601 format (YYYY-MM-DD).
+  When using a custom range, the date parameter expects two ISO-8601 formatted
+  dates joined with a comma e.g `2021-01-01,2021-01-31`. Stats will be returned
+  for the whole date range inclusive of the start and end dates.
+  """
+  date: String
+
+  """
+  Limit the number of results. Maximum value is 1000. Defaults to 100.
+  If you want to get more than 1000 results, you can make multiple requests
+  and paginate the results by specifying the page parameter (e.g. make the
+  same request with page=1, then page=2, etc)
+  """
+  limit: Int
+
+  """
+  Number of the page, used to paginate results.
+  Importantly, the page numbers start from 1 not 0.
+  """
+  page: Int
+
+  """
+  See [filtering](https://plausible.io/docs/stats-api#filtering)
+  section for more details.
+  """
+  filters: String
+}
+
+type PlausibleStatsResponse
+  @join__type(graph: JOURNEYS)
+{
+  """
+  On breakdown queries, this is the property that was broken down by.
+  On aggregate queries, this is the date the stats are for.
+  """
+  property: String!
+
+  """The number of unique visitors."""
+  visitors: Int
+
+  """The number of visits/sessions."""
+  visits: Int
+
+  """The number of pageview events."""
+  pageviews: Int
+
+  """
+  The number of pageviews divided by the number of visits.
+  Returns a floating point number. Currently only supported in Aggregate and
+  Timeseries endpoints.
+  """
+  viewsPerVisit: Float
+
+  """Bounce rate percentage."""
+  bounceRate: Int
+
+  """Visit duration in seconds."""
+  visitDuration: Int
+
+  """
+  The number of events (pageviews + custom events). When filtering by a goal,
+   this metric corresponds to "Total Conversions" in the dashboard.
+  """
+  events: Int
+
+  """
+  The percentage of visitors who completed the goal. Requires an `event:goal`
+  filter or `event:goal` property in the breakdown endpoint
+  """
+  conversionRate: Int
+
+  """
+  The average time users spend on viewing a single page. Requires an
+  `event:page` filter or `event:page` property in the breakdown endpoint.
+  """
+  timeOnPage: Float
+}
+
+input PlausibleStatsTimeseriesFilter
+  @join__type(graph: JOURNEYS)
+{
+  """
+  See [time periods](https://plausible.io/docs/stats-api#time-periods).
+  If not specified, it will default to 30d.
+  """
+  period: String
+
+  """
+  date in the standard ISO-8601 format (YYYY-MM-DD).
+  When using a custom range, the date parameter expects two ISO-8601 formatted
+  dates joined with a comma e.g `2021-01-01,2021-01-31`. Stats will be returned
+  for the whole date range inclusive of the start and end dates.
+  """
+  date: String
+
+  """
+  See [filtering](https://plausible.io/docs/stats-api#filtering)
+  section for more details.
+  """
+  filters: String
+
+  """
+  Choose your reporting interval. Valid options are date (always) and month
+  (when specified period is longer than one calendar month). Defaults to month
+  for 6mo and 12mo, otherwise falls back to date.
+  """
+  interval: String
+}
+
 type PowerBiEmbed
   @join__type(graph: JOURNEYS)
 {
@@ -1498,6 +1835,7 @@ type PowerBiEmbed
 }
 
 type Query
+  @join__type(graph: ANALYTICS)
   @join__type(graph: JOURNEYS)
   @join__type(graph: LANGUAGES)
   @join__type(graph: MEDIA)
@@ -1510,6 +1848,7 @@ type Query
   customDomain(id: ID!): CustomDomain! @join__field(graph: JOURNEYS)
   customDomains(teamId: ID!): [CustomDomain!]! @join__field(graph: JOURNEYS)
   hosts(teamId: ID!): [Host!]! @join__field(graph: JOURNEYS)
+  integrations(teamId: ID!): [Integration!]! @join__field(graph: JOURNEYS)
 
   """
   returns all journeys that match the provided filters
@@ -1551,6 +1890,35 @@ type Query
   """Get a JourneyVisitor count by JourneyVisitorFilter"""
   journeyVisitorCount(filter: JourneyVisitorFilter!): Int! @join__field(graph: JOURNEYS)
   journeysEmailPreference(email: String!): JourneysEmailPreference @join__field(graph: JOURNEYS)
+  journeysPlausibleStatsRealtimeVisitors(id: ID!, idType: IdType): Int! @join__field(graph: JOURNEYS)
+  journeysPlausibleStatsAggregate(where: PlausibleStatsAggregateFilter!, id: ID!, idType: IdType): PlausibleStatsAggregateResponse! @join__field(graph: JOURNEYS)
+
+  """
+  This endpoint allows you to break down your stats by some property.
+  If you are familiar with SQL family databases, this endpoint corresponds to
+  running `GROUP BY` on a certain property in your stats, then ordering by the
+  count.
+  Check out the [properties](https://plausible.io/docs/stats-api#properties)
+  section for a reference of all the properties you can use in this query.
+  This endpoint can be used to fetch data for `Top sources`, `Top pages`,
+  `Top countries` and similar reports.
+  Currently, it is only possible to break down on one property at a time.
+  Using a list of properties with one query is not supported. So if you want
+  a breakdown by both `event:page` and `visit:source` for example, you would
+  have to make multiple queries (break down on one property and filter on
+  another) and then manually/programmatically group the results together in one
+  report. This also applies for breaking down by time periods. To get a daily
+  breakdown for every page, you would have to break down on `event:page` and
+  make multiple queries for each date.
+  """
+  journeysPlausibleStatsBreakdown(where: PlausibleStatsBreakdownFilter!, id: ID!, idType: IdType): [PlausibleStatsResponse!]! @join__field(graph: JOURNEYS)
+
+  """
+  This endpoint provides timeseries data over a certain time period.
+  If you are familiar with the Plausible dashboard, this endpoint
+  corresponds to the main visitor graph.
+  """
+  journeysPlausibleStatsTimeseries(where: PlausibleStatsTimeseriesFilter!, id: ID!, idType: IdType): [PlausibleStatsResponse!]! @join__field(graph: JOURNEYS)
   teams: [Team!]! @join__field(graph: JOURNEYS)
   team(id: ID!): Team! @join__field(graph: JOURNEYS)
   userInvites(journeyId: ID!): [UserInvite!] @join__field(graph: JOURNEYS)
@@ -1573,6 +1941,8 @@ type Query
 
   """Get a single visitor"""
   visitor(id: ID!): Visitor! @join__field(graph: JOURNEYS)
+  countries: [Country!]! @join__field(graph: LANGUAGES)
+  country(id: ID!): Country! @join__field(graph: LANGUAGES)
   languages(offset: Int, limit: Int, where: LanguagesFilter): [Language!]! @join__field(graph: LANGUAGES)
   language(id: ID!, idType: LanguageIdType): Language @join__field(graph: LANGUAGES)
   getMyCloudflareImages: [CloudflareImage] @join__field(graph: MEDIA)
@@ -1772,6 +2142,44 @@ input SignUpSubmissionEventCreateInput
 
   """email from the signUpBlock form"""
   email: String!
+}
+
+type Site
+  @join__type(graph: ANALYTICS)
+{
+  id: String!
+  domain: String!
+  memberships: [SiteMembership!]!
+  sharedLinks: [SiteSharedLink!]!
+  goals: [SiteGoal!]!
+}
+
+input SiteCreateInput
+  @join__type(graph: ANALYTICS)
+{
+  domain: String!
+  goals: [String!]
+}
+
+type SiteGoal
+  @join__type(graph: ANALYTICS)
+{
+  id: String!
+  eventName: String
+}
+
+type SiteMembership
+  @join__type(graph: ANALYTICS)
+{
+  id: String!
+  role: String!
+}
+
+type SiteSharedLink
+  @join__type(graph: ANALYTICS)
+{
+  id: String!
+  slug: String!
 }
 
 type StepBlock implements Block
@@ -1982,6 +2390,7 @@ type Team
   updatedAt: DateTime!
   userTeams: [UserTeam!]!
   customDomains: [CustomDomain!]!
+  integrations: [Integration!]!
 }
 
 input TeamCreateInput
@@ -2009,9 +2418,9 @@ type TextResponseBlock implements Block
   label: String!
   hint: String
   minRows: Int
-  action: Action
-  submitIconId: ID
-  submitLabel: String
+  type: TextResponseType
+  routeId: String
+  integrationId: String
 }
 
 input TextResponseBlockCreateInput
@@ -2021,7 +2430,6 @@ input TextResponseBlockCreateInput
   journeyId: ID!
   parentBlockId: ID!
   label: String!
-  submitLabel: String!
 }
 
 input TextResponseBlockUpdateInput
@@ -2031,8 +2439,9 @@ input TextResponseBlockUpdateInput
   label: String
   hint: String
   minRows: Int
-  submitIconId: ID
-  submitLabel: String
+  routeId: String
+  type: TextResponseType
+  integrationId: String
 }
 
 type TextResponseSubmissionEvent implements Event
@@ -2074,6 +2483,14 @@ input TextResponseSubmissionEventCreateInput
 
   """response from the TextResponseBlock form"""
   value: String!
+}
+
+enum TextResponseType
+  @join__type(graph: JOURNEYS)
+{
+  freeForm @join__enumValue(graph: JOURNEYS)
+  name @join__enumValue(graph: JOURNEYS)
+  email @join__enumValue(graph: JOURNEYS)
 }
 
 enum ThemeMode
@@ -2342,6 +2759,7 @@ type UserJourney
   @join__type(graph: JOURNEYS, key: "id")
 {
   journey: Journey
+  journeyNotification: JourneyNotification
   id: ID!
   userId: ID!
   journeyId: ID!
@@ -2371,6 +2789,7 @@ type UserRole
 type UserTeam
   @join__type(graph: JOURNEYS, key: "id")
 {
+  journeyNotification(journeyId: ID!): JourneyNotification
   id: ID!
   user: User!
   role: UserTeamRole!

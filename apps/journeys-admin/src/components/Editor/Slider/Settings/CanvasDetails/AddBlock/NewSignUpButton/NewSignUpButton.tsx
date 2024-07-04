@@ -3,11 +3,11 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { ICON_FIELDS } from '@core/journeys/ui/Icon/iconFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { SIGN_UP_FIELDS } from '@core/journeys/ui/SignUp/signUpFields'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import Mail2Icon from '@core/shared/ui/icons/Mail2'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../__generated__/BlockFields'
@@ -40,7 +40,7 @@ export const SIGN_UP_BLOCK_CREATE = gql`
 
 export function NewSignUpButton(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [signUpBlockCreate] =
+  const [signUpBlockCreate, { loading }] =
     useMutation<SignUpBlockCreate>(SIGN_UP_BLOCK_CREATE)
   const { journey } = useJourney()
   const {
@@ -123,6 +123,7 @@ export function NewSignUpButton(): ReactElement {
       value={t('Subscribe')}
       onClick={handleClick}
       testId="NewSignUpButton"
+      disabled={loading}
     />
   )
 }

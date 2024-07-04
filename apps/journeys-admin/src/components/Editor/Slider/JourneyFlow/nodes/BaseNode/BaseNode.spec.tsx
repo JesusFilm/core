@@ -23,35 +23,63 @@ describe('BaseNode', () => {
     expect(screen.getByTestId('BaseNode')).toBeInTheDocument()
   })
 
-  it('should render target handles', () => {
+  it('should render target handle', () => {
     render(
       <ReactFlowProvider>
         <MockedProvider>
-          <BaseNode isTargetConnectable />
+          <BaseNode targetHandle="show" />
         </MockedProvider>
       </ReactFlowProvider>
     )
 
-    expect(screen.getByTestId('BaseNodeLeftHandle')).toBeInTheDocument()
+    expect(screen.getByTestId('BaseNodeLeftHandle-show')).toBeInTheDocument()
   })
 
-  it('should render source handles', async () => {
+  it('should render disabled target handle', () => {
     render(
       <ReactFlowProvider>
         <MockedProvider>
-          <BaseNode isSourceConnectable />
+          <BaseNode targetHandle="disabled" />
         </MockedProvider>
       </ReactFlowProvider>
     )
 
-    expect(screen.getByTestId('BaseNodeRightHandle')).toBeInTheDocument()
+    expect(
+      screen.getByTestId('BaseNodeLeftHandle-disabled')
+    ).toBeInTheDocument()
+  })
+
+  it('should render source handle', async () => {
+    render(
+      <ReactFlowProvider>
+        <MockedProvider>
+          <BaseNode sourceHandle="show" />
+        </MockedProvider>
+      </ReactFlowProvider>
+    )
+
+    expect(screen.getByTestId('BaseNodeRightHandle-show')).toBeInTheDocument()
+  })
+
+  it('should render disabled source handle', () => {
+    render(
+      <ReactFlowProvider>
+        <MockedProvider>
+          <BaseNode sourceHandle="disabled" />
+        </MockedProvider>
+      </ReactFlowProvider>
+    )
+
+    expect(
+      screen.getByTestId('BaseNodeRightHandle-disabled')
+    ).toBeInTheDocument()
   })
 
   it('should render arrow icon', () => {
     render(
       <ReactFlowProvider>
         <MockedProvider>
-          <BaseNode isSourceConnectable />
+          <BaseNode sourceHandle="show" />
         </MockedProvider>
       </ReactFlowProvider>
     )

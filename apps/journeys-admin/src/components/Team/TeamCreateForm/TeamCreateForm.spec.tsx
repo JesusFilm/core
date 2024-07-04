@@ -7,14 +7,15 @@ import { Form } from 'formik'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
 
-import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
-import { TeamCreate } from '../../../../__generated__/TeamCreate'
-import { TEAM_CREATE } from '../../../libs/useTeamCreateMutation/useTeamCreateMutation'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider,
   useTeam
-} from '../TeamProvider'
+} from '@core/journeys/ui/TeamProvider'
+import { GetLastActiveTeamIdAndTeams } from '@core/journeys/ui/TeamProvider/__generated__/GetLastActiveTeamIdAndTeams'
+import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
+import { TeamCreate } from '../../../../__generated__/TeamCreate'
+import { TEAM_CREATE } from '../../../libs/useTeamCreateMutation/useTeamCreateMutation'
 
 import { TeamCreateForm } from '.'
 
@@ -74,6 +75,23 @@ describe('TeamCreateForm', () => {
       }
     }
   }
+  const updateLastActiveTeamIdMock = {
+    request: {
+      query: UPDATE_LAST_ACTIVE_TEAM_ID,
+      variables: {
+        input: {
+          lastActiveTeamId: 'teamId'
+        }
+      }
+    },
+    result: {
+      data: {
+        journeyProfileUpdate: {
+          id: 'teamId'
+        }
+      }
+    }
+  }
   function TestComponent(): ReactElement {
     const { activeTeam } = useTeam()
 
@@ -90,7 +108,10 @@ describe('TeamCreateForm', () => {
     })
     const handleSubmit = jest.fn()
     const { getByRole, getByTestId, getByText } = render(
-      <MockedProvider mocks={[teamCreateMock, getTeamsMock]} cache={cache}>
+      <MockedProvider
+        mocks={[teamCreateMock, getTeamsMock, updateLastActiveTeamIdMock]}
+        cache={cache}
+      >
         <SnackbarProvider>
           <TeamProvider>
             <TeamCreateForm onSubmit={handleSubmit}>

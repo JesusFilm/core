@@ -1,4 +1,5 @@
 import { subject } from '@casl/ability'
+import { InjectQueue } from '@nestjs/bullmq'
 import { UseGuards } from '@nestjs/common'
 import {
   Args,
@@ -8,6 +9,7 @@ import {
   ResolveField,
   Resolver
 } from '@nestjs/graphql'
+import { Queue } from 'bullmq'
 import { GraphQLError } from 'graphql'
 import filter from 'lodash/filter'
 import isEmpty from 'lodash/isEmpty'
@@ -15,6 +17,13 @@ import omit from 'lodash/omit'
 import slugify from 'slugify'
 import { v4 as uuidv4 } from 'uuid'
 
+import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
+import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
+import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
+import {
+  PowerBiEmbed,
+  getPowerBiEmbed
+} from '@core/nest/powerBi/getPowerBiEmbed'
 import {
   Block,
   Action as BlockAction,
@@ -27,13 +36,6 @@ import {
   UserJourney,
   UserJourneyRole
 } from '.prisma/api-journeys-client'
-import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
-import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
-import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
-import {
-  PowerBiEmbed,
-  getPowerBiEmbed
-} from '@core/nest/powerBi/getPowerBiEmbed'
 
 import {
   IdType,
@@ -50,12 +52,15 @@ import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'
 import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../../lib/prismaErrors'
 import { BlockService } from '../block/block.service'
+import { PlausibleJob } from '../plausible/plausible.consumer'
 
 type BlockWithAction = Block & { action: BlockAction | null }
 
 @Resolver('Journey')
 export class JourneyResolver {
   constructor(
+    @InjectQueue('api-journeys-plausible')
+    private readonly plausibleQueue: Queue<PlausibleJob>,
     private readonly blockService: BlockService,
     private readonly prismaService: PrismaService
   ) {}
@@ -372,6 +377,14 @@ export class JourneyResolver {
           return journey
         })
         retry = false
+        await this.plausibleQueue.add('create-journey-site', {
+          __typename: 'plausibleCreateJourneySite',
+          journeyId: journey.id
+        })
+        await this.plausibleQueue.add('create-team-site', {
+          __typename: 'plausibleCreateTeamSite',
+          teamId: journey.teamId
+        })
         return journey
       } catch (err) {
         if (err.code === ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED) {
@@ -410,7 +423,7 @@ export class JourneyResolver {
         const duplicate = modifier[1]?.trim() ?? ''
         const numbers = duplicate.match(/^\d+$/)
         // If no duplicate number found, it's a unique journey. Return 0
-        return numbers != null ? parseInt(numbers[0]) : 0
+        return numbers != null ? Number.parseInt(numbers[0]) : 0
       }
     })
   }
@@ -501,8 +514,8 @@ export class JourneyResolver {
       duplicateNumber === 0
         ? ''
         : duplicateNumber === 1
-        ? ' copy'
-        : ` copy ${duplicateNumber}`
+          ? ' copy'
+          : ` copy ${duplicateNumber}`
     }`.trimEnd()
 
     let slug = slugify(duplicateTitle, {
@@ -622,6 +635,14 @@ export class JourneyResolver {
           })
         }
         retry = false
+        await this.plausibleQueue.add('create-journey-site', {
+          __typename: 'plausibleCreateJourneySite',
+          journeyId: duplicateJourneyId
+        })
+        await this.plausibleQueue.add('create-team-site', {
+          __typename: 'plausibleCreateTeamSite',
+          teamId: teamId
+        })
         return duplicateJourney
       } catch (err) {
         if (err.code === ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED) {
@@ -974,6 +995,17 @@ export class JourneyResolver {
     return filter(userJourneys, (userJourney) =>
       ability.can(Action.Read, subject('UserJourney', userJourney))
     )
+  }
+
+  @ResolveField('plausibleToken')
+  @UseGuards(AppCaslGuard)
+  async plausibleToken(
+    @CaslAbility() ability: AppAbility,
+    @Parent() journey: Journey
+  ): Promise<string | null> {
+    if (ability.cannot(Action.Manage, subject('Journey', journey))) return null
+
+    return journey.plausibleToken
   }
 
   @ResolveField('language')

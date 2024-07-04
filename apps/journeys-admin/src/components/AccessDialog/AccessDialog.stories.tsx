@@ -2,8 +2,9 @@ import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 import { ReactNode, useState } from 'react'
 
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
+
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
-import { journeysAdminConfig } from '../../libs/storybook'
 import { GET_CURRENT_USER } from '../../libs/useCurrentUserLazyQuery'
 import { GET_USER_INVITES } from '../../libs/useUserInvitesLazyQuery/useUserInvitesLazyQuery'
 
@@ -81,11 +82,25 @@ const DefaultAccessDialog = (): ReactNode => {
                 },
                 userJourneys: [
                   {
+                    __typename: 'UserTeam',
+                    id: 'userTeamId',
+                    role: 'manager',
+                    user: {
+                      __typename: 'User',
+                      email: 'kujojotaro@example.com',
+                      firstName: 'Jotaro',
+                      id: 'userId',
+                      imageUrl:
+                        'https://lh3.googleusercontent.com/a/AGNmyxbPtShdH3_xxjpnfHLlo0w-KxDBa9Ah1Qn_ZwpUrA=s96-c',
+                      lastName: 'Kujo'
+                    }
+                  },
+                  {
                     __typename: 'UserJourney',
                     id: 'userJourneyId1',
-                    role: 'owner',
+                    role: 'editor',
                     user: {
-                      id: 'userId1',
+                      id: 'userId10',
                       firstName: 'Admin',
                       lastName: 'One',
                       imageUrl: 'https://bit.ly/3Gth4Yf',
@@ -97,7 +112,7 @@ const DefaultAccessDialog = (): ReactNode => {
                     id: 'userJourneyId2',
                     role: 'editor',
                     user: {
-                      id: 'userId2',
+                      id: 'userId20',
                       firstName: 'Horace',
                       lastName: 'Two',
                       imageUrl: 'https://bit.ly/3rgHd6a',
@@ -109,7 +124,7 @@ const DefaultAccessDialog = (): ReactNode => {
                     id: 'userJourneyId3',
                     role: 'inviteRequested',
                     user: {
-                      id: 'userId3',
+                      id: 'userId30',
                       firstName: 'Coral',
                       lastName: 'Three',
                       imageUrl: 'https://bit.ly/3nlwUwJ',
@@ -150,8 +165,8 @@ const DefaultAccessDialog = (): ReactNode => {
           result: {
             data: {
               me: {
-                id: 'userId1',
-                email: 'admin@email.com'
+                id: 'userId',
+                email: 'kujojotaro@example.com'
               }
             }
           }

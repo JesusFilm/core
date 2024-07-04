@@ -7,11 +7,11 @@ import IconButton from '@mui/material/IconButton'
 import MuiLink from '@mui/material/Link'
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
-import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import { useTheme } from '@mui/material/styles'
+import { useTranslation } from 'next-i18next'
 import Image from 'next/image'
 import NextLink from 'next/link'
-import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import logo from '../assets/logo.svg'
@@ -58,7 +58,7 @@ export function HeaderMenuPanel({
           justifyContent="space-between"
           p={8}
         >
-          <NextLink href="/" passHref legacyBehavior>
+          <NextLink href="/watch">
             <Image
               src={logo}
               width="160"

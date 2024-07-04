@@ -2,11 +2,11 @@ import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import type { TreeBlock } from '@core/journeys/ui/block'
 
-import { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
+import type { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
 
 import { IMAGE_BLOCK_CREATE } from './NewImageButton'
 
@@ -155,5 +155,24 @@ describe('NewImageButton', () => {
       { __ref: 'VideoBlock:videoBlockId' },
       { __ref: 'ImageBlock:imageBlockId' }
     ])
+  })
+
+  it('should disable when loading', async () => {
+    const { getByRole } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            variant: 'admin'
+          }}
+        >
+          <EditorProvider initialState={{ selectedStep }}>
+            <NewImageButton />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('button'))
+    expect(getByRole('button')).toBeDisabled()
   })
 })

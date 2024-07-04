@@ -1,11 +1,12 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 
-import { ApolloLoadingProvider } from '../../../../../../../../test/ApolloLoadingProvider'
-import { journeysAdminConfig } from '../../../../../../../libs/storybook'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
-import { videos } from './data'
+import { ApolloLoadingProvider } from '../../../../../../../../test/ApolloLoadingProvider'
+
 import { GET_VIDEOS } from './VideoFromLocal'
+import { videos } from './data'
 
 import { VideoFromLocal } from '.'
 

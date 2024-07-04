@@ -1,9 +1,10 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { ActiveFab, EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../__generated__/BlockFields'
 import { ButtonFields } from '../../../../../../../../__generated__/ButtonFields'
@@ -15,7 +16,6 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../../__generated__/globalTypes'
-import { simpleComponentConfig } from '../../../../../../../libs/storybook'
 import { Canvas } from '../../Canvas'
 
 const ButtonEditStory: Meta<typeof Canvas> = {

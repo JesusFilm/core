@@ -1,10 +1,13 @@
-import { gql, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
 import { ReactElement, useEffect } from 'react'
+
+import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
+import { ThemeMode } from '@core/shared/ui/themes'
 
 import { GetLanguages } from '../../../__generated__/GetLanguages'
 import { VideoChildFields } from '../../../__generated__/VideoChildFields'
@@ -18,18 +21,6 @@ import { checkFilterApplied } from './utils/checkFilterApplied'
 import { getQueryParameters } from './utils/getQueryParameters'
 import type { VideoPageFilter } from './utils/getQueryParameters'
 import { useVideoSearch } from './utils/useVideoSearch'
-
-export const GET_LANGUAGES = gql`
-  query GetLanguages($languageId: ID) {
-    languages(limit: 5000) {
-      id
-      name(languageId: $languageId, primary: true) {
-        value
-        primary
-      }
-    }
-  }
-`
 
 interface VideoProps {
   videos: VideoChildFields[]
@@ -63,12 +54,13 @@ export function VideosPage({ videos }: VideoProps): ReactElement {
     setQueryParam('subtitles', filter.subtitleLanguageIds?.[0])
     setQueryParam('title', filter.title)
 
-    void router.push(`/videos?${params.toString()}`, undefined, {
+    void router.push(`/watch/videos?${params.toString()}`, undefined, {
       shallow: true
     })
     void handleSearch(filter, 0)
   }
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     const { title, availableVariantLanguageIds, subtitleLanguageIds } = filter
     if (checkFilterApplied(filter)) {
@@ -81,11 +73,15 @@ export function VideosPage({ videos }: VideoProps): ReactElement {
         0
       )
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
-    <PageWrapper hero={<VideosHero />} testId="VideosPage">
+    <PageWrapper
+      hero={<VideosHero />}
+      testId="VideosPage"
+      headerThemeMode={ThemeMode.dark}
+      hideHeaderSpacer
+    >
       <Container maxWidth="xxl">
         <VideosSubHero />
       </Container>

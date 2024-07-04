@@ -4,9 +4,9 @@ import { ReactFlowProvider } from 'reactflow'
 import { v4 as uuidv4 } from 'uuid'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
 import { stepAndCardBlockCreateMock } from '../../../../../libs/useStepAndCardBlockCreateMutation/useStepAndCardBlockCreateMutation.mock'
-import { defaultJourney } from '../../../data'
 
 import { NewStepButton } from '.'
 

@@ -1,21 +1,21 @@
 import { ApolloProvider, NormalizedCacheObject } from '@apollo/client'
 import type { EmotionCache } from '@emotion/cache'
 import { CacheProvider } from '@emotion/react'
+import { SSRConfig, appWithTranslation, useTranslation } from 'next-i18next'
+import { DefaultSeo } from 'next-seo'
 import { AppProps as NextJsAppProps } from 'next/app'
 import Head from 'next/head'
 import Script from 'next/script'
-import { SSRConfig, appWithTranslation, useTranslation } from 'next-i18next'
-import { DefaultSeo } from 'next-seo'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement, useEffect } from 'react'
 import TagManager from 'react-gtm-module'
 
-import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
+import { TeamProvider } from '@core/journeys/ui/TeamProvider'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 
 import i18nConfig from '../next-i18next.config'
 import { HelpScoutBeacon } from '../src/components/HelpScoutBeacon'
-import { TeamProvider } from '../src/components/Team/TeamProvider'
 import { ThemeProvider } from '../src/components/ThemeProvider'
 import { useApollo } from '../src/libs/apolloClient'
 import { initAuth } from '../src/libs/firebaseClient/initAuth'
@@ -113,9 +113,7 @@ function JourneysAdminApp({
                 site: 'datadoghq.com',
                 service: 'journeys-admin',
                 env: '${process.env.NEXT_PUBLIC_VERCEL_ENV ?? ''}',
-                version: '${
-                  process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA ?? ''
-                }',
+                version: '${process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA ?? ''}',
                 sampleRate: 50,
                 sessionReplaySampleRate: 10,
                 trackInteractions: true,

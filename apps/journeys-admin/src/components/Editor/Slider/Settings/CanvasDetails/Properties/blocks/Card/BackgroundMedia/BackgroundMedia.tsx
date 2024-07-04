@@ -1,21 +1,21 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import { styled } from '@mui/material/styles'
 import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
+import { styled } from '@mui/material/styles'
+import { useTranslation } from 'next-i18next'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
-import { useTranslation } from 'next-i18next'
 import { MouseEvent, ReactElement, useState } from 'react'
 
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
 import Image3Icon from '@core/shared/ui/icons/Image3'
 import VideoOnIcon from '@core/shared/ui/icons/VideoOn'
+import { palette } from '@core/shared/ui/themes/journeysAdmin/tokens/colors'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../../__generated__/BlockFields'
-import { setBeaconPageViewed } from '../../../../../../../../../libs/setBeaconPageViewed'
-import { palette } from '../../../../../../../../ThemeProvider/admin/tokens/colors'
 
 import { BackgroundMediaVideo } from './Video/BackgroundMediaVideo'
 

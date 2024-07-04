@@ -1,0 +1,1 @@
+export { JourneyQuickSettingsChat } from './JourneyQuickSettingsChat'

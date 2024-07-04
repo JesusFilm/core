@@ -4,25 +4,25 @@ import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent, waitFor } from '@storybook/testing-library'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import {
   BlockFields_CardBlock as CardBlock,
   BlockFields_ImageBlock as ImageBlock,
   BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../__generated__/BlockFields'
-import { GetVideos } from '../../../../../../../__generated__/GetVideos'
 import {
   GetVideoVariantLanguages,
   GetVideoVariantLanguages_video
 } from '../../../../../../../__generated__/GetVideoVariantLanguages'
+import { GetVideos } from '../../../../../../../__generated__/GetVideos'
 import {
   ThemeMode,
   VideoBlockSource
 } from '../../../../../../../__generated__/globalTypes'
-import { journeysAdminConfig } from '../../../../../../libs/storybook'
 import { Drawer } from '../Drawer'
-import { videos } from '../VideoLibrary/VideoFromLocal/data'
 import { GET_VIDEOS } from '../VideoLibrary/VideoFromLocal/VideoFromLocal'
+import { videos } from '../VideoLibrary/VideoFromLocal/data'
 
 import { GET_VIDEO_VARIANT_LANGUAGES } from './Source/SourceFromLocal/SourceFromLocal'
 import { VideoBlockEditor } from './VideoBlockEditor'

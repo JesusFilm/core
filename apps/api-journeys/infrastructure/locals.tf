@@ -4,6 +4,8 @@ locals {
     "FIREBASE_API_KEY",
     "GIT_BRANCH",
     "PG_DATABASE_URL_JOURNEYS",
+    "PLAUSIBLE_URL",
+    "PLAUSIBLE_API_KEY",
     "PLAYWRIGHT_USER_ID",
     "POWER_BI_CLIENT_ID",
     "POWER_BI_CLIENT_SECRET",
@@ -13,7 +15,9 @@ locals {
     "POWER_BI_JOURNEYS_SINGLE_SUMMARY_REPORT_ID",
     "POWER_BI_TENANT_ID",
     "POWER_BI_WORKSPACE_ID",
+    "INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET",
     "GOOGLE_APPLICATION_JSON",
+    "GROWTH_SPACES_URL",
     "CLOUDFLARE_ACCOUNT_ID",
     "CLOUDFLARE_STREAM_TOKEN",
     "JOURNEYS_ADMIN_URL",
@@ -37,11 +41,7 @@ locals {
     cpu            = 1024
     memory         = 2048
     desired_count  = 1
-    alb_dns_name   = var.ecs_config.alb_dns_name
     zone_id        = var.ecs_config.zone_id
-    alb_listener = merge(var.ecs_config.alb_listener, {
-      port = local.port
-    })
     alb_target_group = merge(var.ecs_config.alb_target_group, {
       port = local.port
     })
