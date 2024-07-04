@@ -5,12 +5,11 @@ export const config = {
     /*
      * Match all paths except for:
      * 1. /api routes
-     * 2. /plausible routes
-     * 3. /_next (Next.js internals)
-     * 4. /_static (inside /public)
-     * 5. all root files inside /public (e.g. /favicon.ico)
+     * 2. /_next (Next.js internals)
+     * 3. /_static (inside /public)
+     * 4. all root files inside /public (e.g. /favicon.ico)
      */
-    '/((?!api/|plausible/|_next/|_static/|_vercel|[\\w-]+\\.\\w+).*)',
+    '/((?!api/|_next/|_static/|_vercel|[\\w-]+\\.\\w+).*)',
     '/'
   ]
 }
@@ -19,6 +18,8 @@ export default async function middleware(
   req: NextRequest
 ): Promise<NextResponse | undefined> {
   const url = req.nextUrl
+
+  if (url.pathname.startsWith('/plausible')) return
 
   // Get hostname of request
   // (e.g. your.nextstep.is, localhost:4100, example.com)
