@@ -20,17 +20,18 @@ function SingleVisitorReportsPage(): ReactElement {
   const user = useUser()
 
   const id = router.query.visitorId as string
+  const journeyId = router.query?.journeyId
 
   return (
     <>
       <NextSeo title={t('Visitor Info')} />
       <PageWrapper
         title={t("Visitor's Activity")}
-        backHref="/reports/visitors"
+        backHref={`/journeys/${journeyId}/reports/visitors`}
         user={user}
         sidePanelChildren={<DetailsForm id={id} />}
         sidePanelTitle={t('Visitor Details')}
-        backHrefHistory
+        backHrefHistory={journeyId != null ? undefined : true}
       >
         <VisitorInfo id={id} />
       </PageWrapper>
