@@ -212,7 +212,9 @@ export class CardLevelActionPage {
       this.page.locator(
         'div[data-testid="ImageSource"] + div div[data-testid="ImageBlockThumbnail"] img'
       )
-    ).not.toHaveAttribute('src', this.uploadedImgSrc, { timeout: sixtySecondsTimeout })
+    ).not.toHaveAttribute('src', this.uploadedImgSrc, {
+      timeout: sixtySecondsTimeout
+    })
   }
   async verifyImgUploadedSuccessMsg() {
     await expect(
