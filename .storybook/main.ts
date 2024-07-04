@@ -22,7 +22,7 @@ const storiesForProject = {
   ],
   'api-users': [
     '../apps/api-users/src/app/emails/stories/*.stories.@(js|jsx|ts|tsx)'
-  ],
+  ]
   // Add new UI projects here and in allStories
 }
 
