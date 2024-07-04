@@ -20,7 +20,7 @@ export function ClickableCard({
   return (
     <>
       <NoSsr>
-        {(!isIPhone() || disableFullscreen !== true) && (
+        {!isIPhone() && disableFullscreen !== true && (
           <Box
             data-testid="clickable-card-embed"
             onClick={onClick}
