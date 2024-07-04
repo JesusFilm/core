@@ -20,7 +20,7 @@ interface DrawerTitleProps {
 function DrawerTitle({ title, onClose }: DrawerTitleProps): ReactElement {
   return (
     <>
-      <AppBar data-testid="DrawerTitle" position="static" color="default">
+      <AppBar position="static" color="default">
         <Box
           sx={{
             display: { xs: 'flex', sm: 'none' },
@@ -39,13 +39,11 @@ function DrawerTitle({ title, onClose }: DrawerTitleProps): ReactElement {
           />
         </Box>
         <Toolbar
-          data-testid="Toolbar"
           sx={{
             minHeight: { xs: 64, sm: 48 },
             maxHeight: { xs: 64, sm: 48 },
             pl: { sm: 4 },
             pr: { sm: 5 },
-
             backgroundColor: (theme) =>
               alpha(theme.palette.background.default, 0.5)
           }}
