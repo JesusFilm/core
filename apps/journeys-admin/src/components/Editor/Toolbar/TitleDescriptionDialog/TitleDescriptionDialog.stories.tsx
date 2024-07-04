@@ -16,7 +16,7 @@ import {
 const TitleDialogStory: Meta<typeof TitleDescriptionDialog> = {
   ...journeysAdminConfig,
   component: TitleDescriptionDialog,
-  title: 'Journeys-Admin/Editor/Toolbar/Items/TitleItem/TitleDialog',
+  title: 'Journeys-Admin/Editor/Toolbar/Items/TitleItem/TitleDescriptionDialog',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
@@ -94,7 +94,7 @@ export const Error = {
     ]
   },
   play: async () => {
-    await userEvent.type(screen.getByRole('textbox'), ' error')
+    await userEvent.type(screen.getByTestId('titletextbox'), ' error')
     const button = screen.getByRole('button', { name: 'Save' })
     await userEvent.click(button)
   }

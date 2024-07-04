@@ -6,11 +6,13 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { defaultJourney } from '../../data'
 
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import userEvent from '@testing-library/user-event'
 import { JOURNEY_TITLE_DESCRIPTION_UPDATE, TitleDescriptionDialog } from '.'
 
 const onClose = jest.fn()
 
-describe('JourneyView/Menu/TitleDialog', () => {
+describe('JourneyView/Menu/TitleDescriptionDialog', () => {
   it('should not set journey title on close', async () => {
     const { getByTestId, getByRole } = render(
       <MockedProvider mocks={[]}>
@@ -27,11 +29,8 @@ describe('JourneyView/Menu/TitleDialog', () => {
       </MockedProvider>
     )
 
-    fireEvent.change(getByTestId('titletextbox'), {
-      target: { value: 'New Journey' }
-    })
+    userEvent.type(getByTestId('titletextbox'), 'New Journey')
     fireEvent.click(getByRole('button', { name: 'Cancel' }))
-
     await waitFor(() => expect(onClose).toHaveBeenCalled())
   })
 
@@ -50,7 +49,7 @@ describe('JourneyView/Menu/TitleDialog', () => {
       }
     }))
 
-    const { getByRole } = render(
+    const { getByRole, getByTestId } = render(
       <MockedProvider
         mocks={[
           {
@@ -78,7 +77,9 @@ describe('JourneyView/Menu/TitleDialog', () => {
       </MockedProvider>
     )
 
-    fireEvent.change(getByRole('textbox'), { target: { value: 'New Journey' } })
+    fireEvent.change(getByTestId('titletextbox'), {
+      target: { value: 'New Journey' }
+    })
     fireEvent.click(getByRole('button', { name: 'Save' }))
 
     await waitFor(() => {
@@ -87,7 +88,7 @@ describe('JourneyView/Menu/TitleDialog', () => {
   })
 
   it('shows notistack error alert when title fails to update', async () => {
-    const { getByRole, getByText } = render(
+    const { getByRole, getByText, getByTestId } = render(
       <MockedProvider
         mocks={[
           {
@@ -116,7 +117,9 @@ describe('JourneyView/Menu/TitleDialog', () => {
       </MockedProvider>
     )
 
-    fireEvent.change(getByRole('textbox'), { target: { value: 'New Journey' } })
+    fireEvent.change(getByTestId('titletextbox'), {
+      target: { value: 'New Journey' }
+    })
     fireEvent.click(getByRole('button', { name: 'Save' }))
     await waitFor(() =>
       expect(
@@ -135,7 +138,7 @@ describe('JourneyView/Menu/TitleDialog', () => {
       }
     }))
 
-    const { getByRole, getByText } = render(
+    const { getByRole, getByText, getByTestId } = render(
       <MockedProvider
         mocks={[
           {
@@ -159,13 +162,15 @@ describe('JourneyView/Menu/TitleDialog', () => {
               variant: 'admin'
             }}
           >
-            <TitleDescriptionDialog open onClose={onClose} />
+            <EditorProvider>
+              <TitleDescriptionDialog open onClose={onClose} />
+            </EditorProvider>
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
 
-    fireEvent.change(getByRole('textbox'), { target: { value: '' } })
+    userEvent.type(getByTestId('titletextbox'), '')
     fireEvent.click(getByRole('button', { name: 'Save' }))
     await waitFor(() => expect(getByText('Required')).toBeInTheDocument())
     await waitFor(() => expect(result).not.toHaveBeenCalled())

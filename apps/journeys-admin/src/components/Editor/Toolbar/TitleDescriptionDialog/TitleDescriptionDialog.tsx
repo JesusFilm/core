@@ -116,7 +116,7 @@ export function TitleDescriptionDialog({
                 onSubmit: handleSubmit,
                 closeLabel: t('Cancel')
               }}
-              testId="TitleDialog"
+              testId="TitleDescDialog"
             >
               <Form>
                 <TextField
@@ -130,6 +130,7 @@ export function TitleDescriptionDialog({
                   onKeyDown={(e) => e.stopPropagation()}
                   onChange={handleChange}
                   helperText={errors.title as string}
+                  data-testid="titletextbox"
                 />
                 <Typography
                   variant="subtitle1"
@@ -147,6 +148,7 @@ export function TitleDescriptionDialog({
                   variant="filled"
                   rows={2}
                   onChange={handleChange}
+                  data-testid="desctextbox"
                 />
               </Form>
             </Dialog>
