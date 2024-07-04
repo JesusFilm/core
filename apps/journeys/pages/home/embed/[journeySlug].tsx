@@ -88,7 +88,7 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
         <ThemeProvider {...theme} rtl={rtl} locale={locale}>
           <EmbeddedPreview
             blocks={blocks}
-            disableFullscreen={query.expand === 'false'}
+            disableFullscreen={query?.expand === 'false'}
           />
         </ThemeProvider>
       </JourneyProvider>
