@@ -65,7 +65,7 @@ export function Toolbar(): ReactElement {
         }}
       />
       <NextLink href="/" passHref legacyBehavior>
-        <Tooltip title="See all journeys" placement="right" arrow>
+        <Tooltip title="See all journeys" placement="bottom" arrow>
           <IconButton data-testid="ToolbarBackButton">
             <FormatListBulletedIcon />
           </IconButton>
@@ -74,7 +74,12 @@ export function Toolbar(): ReactElement {
       {journey != null && (
         <>
           <Tooltip title={t('Social Image')} arrow>
-            <Button onClick={handleSelect} data-testid="ToolbarSocialImage">
+            <Button
+              onClick={handleSelect}
+              data-testid="ToolbarSocialImage"
+              style={{ backgroundColor: 'transparent' }}
+              disableRipple
+            >
               <Box
                 bgcolor={(theme) => theme.palette.background.default}
                 borderRadius="4px"
