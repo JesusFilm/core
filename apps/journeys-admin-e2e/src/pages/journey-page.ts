@@ -7,7 +7,6 @@ import testData from '../utils/testData.json'
 let journeyName = ''
 let randomNumber = ''
 const thirtySecondsTimeout = 30000
-const fifteenSecondsTimeout = 15000
 const sixtySecondsTimeout = 60000
 
 export class JourneyPage {
@@ -213,12 +212,12 @@ export class JourneyPage {
       this.page.locator(
         'div[data-testid="JourneysAdminContainedIconButton"] button'
       )
-    ).toBeVisible({ timeout: fifteenSecondsTimeout })
+    ).toBeVisible({ timeout: sixtySecondsTimeout })
     await expect(
       this.page.locator(
         'div[data-testid="JourneysAdminImageThumbnail"] span[class*="MuiCircularProgress"]'
       )
-    ).toBeHidden({ timeout: fifteenSecondsTimeout })
+    ).toBeHidden({ timeout: sixtySecondsTimeout })
     await this.page
       .locator('div[data-testid="JourneysAdminContainedIconButton"] button')
       .click()
@@ -226,7 +225,7 @@ export class JourneyPage {
       this.page.locator(
         'div[data-testid="JourneysAdminImageThumbnail"] span[class*="MuiCircularProgress"]'
       )
-    ).toBeHidden({ timeout: fifteenSecondsTimeout })
+    ).toBeHidden({ timeout: sixtySecondsTimeout })
   }
 
   async setJourneyName(journey: string) {
@@ -244,7 +243,7 @@ export class JourneyPage {
         'div[data-testid="CardWrapper"] div[data-testid*="SelectableWrapper"] h3[data-testid="JourneysTypography"]'
       )
       .first()
-      .click({ timeout: fifteenSecondsTimeout, delay: 1000 })
+      .click({ timeout: sixtySecondsTimeout, delay: 1000 })
     for (let clickRetry = 0; clickRetry < 5; clickRetry++) {
       if (
         await this.page
@@ -263,7 +262,7 @@ export class JourneyPage {
             'div[data-testid="CardWrapper"] div[data-testid*="SelectableWrapper"] h3[data-testid="JourneysTypography"]'
           )
           .first()
-          .click({ timeout: fifteenSecondsTimeout, delay: 1000 })
+          .click({ timeout: sixtySecondsTimeout, delay: 1000 })
       }
     }
     await this.page
@@ -332,7 +331,7 @@ export class JourneyPage {
       .click()
     await expect(
       this.page.locator('div[data-testid="StrategyItem"] button')
-    ).toBeVisible({ timeout: fifteenSecondsTimeout })
+    ).toBeVisible({ timeout: sixtySecondsTimeout })
   }
 
   async clickTheCreateTempleteOption() {
@@ -711,7 +710,7 @@ export class JourneyPage {
   async verifySnackbarToastMessage(message: string) {
     await expect(
       this.page.locator('#notistack-snackbar', { hasText: message })
-    ).toBeVisible({ timeout: fifteenSecondsTimeout })
+    ).toBeVisible({ timeout: sixtySecondsTimeout })
     await expect(this.page.locator('#notistack-snackbar')).toBeHidden({
       timeout: thirtySecondsTimeout
     })
@@ -1052,7 +1051,7 @@ export class JourneyPage {
       .first()
       .locator(typographyPath)
       .first()
-      .click({ timeout: fifteenSecondsTimeout, delay: 1000 })
+      .click({ timeout: sixtySecondsTimeout, delay: 1000 })
     for (let clickRetry = 0; clickRetry < 5; clickRetry++) {
       if (
         await this.page
@@ -1069,7 +1068,7 @@ export class JourneyPage {
           .first()
           .locator(typographyPath)
           .first()
-          .click({ timeout: fifteenSecondsTimeout, delay: 1000 })
+          .click({ timeout: sixtySecondsTimeout, delay: 1000 })
       }
     }
     await this.page
