@@ -28,8 +28,7 @@ export function BaseReferrer({ property, visitors }) {
   return (
     <Box
       sx={{
-        display: 'grid',
-        gridTemplateColumns: 'min-content auto 1fr',
+        display: 'flex',
         alignItems: 'center',
         padding: '8px 12px',
         gap: 2,
@@ -40,41 +39,51 @@ export function BaseReferrer({ property, visitors }) {
       data-testid="BaseReferrer"
     >
       {Icon}
-      <Tooltip
-        title={property}
-        placement="top"
-        slotProps={{
-          popper: {
-            modifiers: [
-              {
-                name: 'offset',
-                options: {
-                  offset: [0, -8]
-                }
-              }
-            ]
-          },
-          tooltip: {
-            sx: {
-              py: 0
-            }
-          }
-        }}
-      >
-        <Typography noWrap sx={textStyles}>
-          {property}
-        </Typography>
-      </Tooltip>
-      <Typography
-        variant="body2"
+      <Box
         sx={{
-          ...textStyles,
-          fontWeight: 600,
-          placeSelf: 'end'
+          flex: 1,
+          display: 'grid',
+          gridTemplateColumns: 'auto 1fr',
+          alignItems: 'inherit',
+          gap: 2
         }}
       >
-        {visitors}
-      </Typography>
+        <Tooltip
+          title={property}
+          placement="top"
+          slotProps={{
+            popper: {
+              modifiers: [
+                {
+                  name: 'offset',
+                  options: {
+                    offset: [0, -8]
+                  }
+                }
+              ]
+            },
+            tooltip: {
+              sx: {
+                py: 0
+              }
+            }
+          }}
+        >
+          <Typography noWrap sx={textStyles}>
+            {property}
+          </Typography>
+        </Tooltip>
+        <Typography
+          variant="body2"
+          sx={{
+            ...textStyles,
+            fontWeight: 600,
+            placeSelf: 'end'
+          }}
+        >
+          {visitors}
+        </Typography>
+      </Box>
     </Box>
   )
 }
