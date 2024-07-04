@@ -17,6 +17,8 @@ import { EDIT_TOOLBAR_HEIGHT } from '../constants'
 
 import { ActiveContent } from '@core/journeys/ui/EditorProvider'
 import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 import Button from '@mui/material/Button'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'react-i18next'
