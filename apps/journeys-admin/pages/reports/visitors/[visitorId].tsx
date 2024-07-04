@@ -20,7 +20,7 @@ function SingleVisitorReportsPage(): ReactElement {
   const user = useUser()
 
   const id = router.query.visitorId as string
-  const journeyId = router.query?.journeyId
+  const journeyId = router.query.journeyId
 
   return (
     <>
