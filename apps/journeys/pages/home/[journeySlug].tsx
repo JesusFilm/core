@@ -41,6 +41,7 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
       trackFileDownloads
       trackOutboundLinks
       manualPageviews
+      selfHosted
       customDomain="/plausible"
       domain={`api-journeys-journey-${journey.id}${
         journey.team?.id != null ? `,api-journeys-team-${journey.team.id}` : ''
