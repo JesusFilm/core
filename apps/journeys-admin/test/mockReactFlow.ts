@@ -45,12 +45,12 @@ export const mockReactFlow = (): void => {
   Object.defineProperties(global.HTMLElement.prototype, {
     offsetHeight: {
       get() {
-        return parseFloat(this.style.height as string)
+        return Number.parseFloat(this.style.height as string)
       }
     },
     offsetWidth: {
       get() {
-        return parseFloat(this.style.width as string)
+        return Number.parseFloat(this.style.width as string)
       }
     }
   })

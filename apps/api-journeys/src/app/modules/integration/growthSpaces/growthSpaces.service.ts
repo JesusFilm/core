@@ -7,7 +7,7 @@ import { Cache } from 'cache-manager'
 import { GraphQLError } from 'graphql/error'
 import { PrismaService } from '../../../lib/prisma.service'
 
-import axios, { AxiosInstance } from 'axios'
+import axios, { AxiosError, AxiosInstance } from 'axios'
 import {
   GetLanguagesQuery,
   GetLanguagesQueryVariables
@@ -74,12 +74,17 @@ export class IntegrationGrowthSpacesService {
     try {
       await client.get('/authentication')
     } catch (e) {
-      throw new GraphQLError(
-        'invalid credentials for Growth Spaces integration',
-        {
-          extensions: { code: 'UNAUTHORIZED' }
-        }
-      )
+      if (e instanceof AxiosError && e.response?.status === 401)
+        throw new GraphQLError(
+          'invalid credentials for Growth Spaces integration',
+          {
+            extensions: { code: 'UNAUTHORIZED' }
+          }
+        )
+
+      throw new GraphQLError(e.message, {
+        extensions: { code: 'INTERNAL_SERVER_ERROR' }
+      })
     }
   }
 
@@ -152,12 +157,17 @@ export class IntegrationGrowthSpacesService {
       const res = await client.get('/routes')
       return res.data
     } catch (e) {
-      throw new GraphQLError(
-        'invalid credentials for Growth Spaces integration',
-        {
-          extensions: { code: 'UNAUTHORIZED' }
-        }
-      )
+      if (e instanceof AxiosError && e.response?.status === 401)
+        throw new GraphQLError(
+          'invalid credentials for Growth Spaces integration',
+          {
+            extensions: { code: 'UNAUTHORIZED' }
+          }
+        )
+
+      throw new GraphQLError(e.message, {
+        extensions: { code: 'INTERNAL_SERVER_ERROR' }
+      })
     }
   }
 

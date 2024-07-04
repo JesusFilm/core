@@ -3,8 +3,9 @@ import { fireEvent, render, waitFor, within } from '@testing-library/react'
 import { FormikContextType, FormikProvider } from 'formik'
 import noop from 'lodash/noop'
 
+import { GET_TAGS } from '@core/journeys/ui/useTagsQuery'
+
 import { Service } from '../../../../../../../../__generated__/globalTypes'
-import { GET_TAGS } from '../../../../../../../libs/useTagsQuery/useTagsQuery'
 import { TemplateSettingsFormValues } from '../useTemplateSettingsForm'
 
 import { CategoriesTabPanel } from './CategoriesTabPanel'
