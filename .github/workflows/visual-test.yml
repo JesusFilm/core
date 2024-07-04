@@ -9,6 +9,7 @@ on:
       - main
 jobs:
   visual-test:
+    if: contains(github.event.pull_request.labels.*.name, 'chromatic')
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -57,7 +58,7 @@ jobs:
           files: 'dist/storybook/shared-storybook'
         #👇 Adds Chromatic as a step in the workflow
       - name: Run VR tests
-        if: ${{ steps.check_files.outputs.files_exists == 'true' && contains(github.event.pull_request.labels.*.name, 'chromatic') }}
+        if: ${{ steps.check_files.outputs.files_exists == 'true' }}
         uses: chromaui/action@v1
         # Options required for Chromatic's GitHub Action
         # https://www.chromatic.com/docs/github-actions#available-options
