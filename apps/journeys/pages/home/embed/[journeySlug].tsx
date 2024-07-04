@@ -1,6 +1,7 @@
 import { GetStaticPaths, GetStaticProps } from 'next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { NextSeo } from 'next-seo'
+import { useRouter } from 'next/router'
 import { ReactElement, useMemo } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -32,6 +33,7 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
   const blocks = useMemo(() => {
     return transformer(journey.blocks ?? [])
   }, [journey])
+  const { query } = useRouter()
 
   const theme =
     blocks.length > 0
@@ -84,7 +86,10 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
       `}</style>
       <JourneyProvider value={{ journey, variant: 'embed' }}>
         <ThemeProvider {...theme} rtl={rtl} locale={locale}>
-          <EmbeddedPreview blocks={transformer(journey.blocks ?? [])} />
+          <EmbeddedPreview
+            blocks={blocks}
+            disableFullscreen={query?.expand === 'false'}
+          />
         </ThemeProvider>
       </JourneyProvider>
     </>
