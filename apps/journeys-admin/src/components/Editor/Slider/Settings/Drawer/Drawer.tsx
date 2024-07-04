@@ -49,7 +49,6 @@ function DrawerTitle({ title, onClose }: DrawerTitleProps): ReactElement {
           }}
         >
           <Typography
-            data-testid="CardProp"
             variant="subtitle1"
             noWrap
             component="div"
