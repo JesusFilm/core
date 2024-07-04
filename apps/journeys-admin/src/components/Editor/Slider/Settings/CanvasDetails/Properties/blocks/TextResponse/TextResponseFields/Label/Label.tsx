@@ -29,8 +29,7 @@ export const TEXT_RESPONSE_LABEL_UPDATE = gql`
 export function Label(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [textResponseLabelUpdate] = useMutation<TextResponseLabelUpdate>(
-    TEXT_RESPONSE_LABEL_UPDATE,
-    { notifyOnNetworkStatusChange: true }
+    TEXT_RESPONSE_LABEL_UPDATE
   )
   const { journey } = useJourney()
   const { state } = useEditor()
