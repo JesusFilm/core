@@ -210,7 +210,7 @@ describe('EmbeddedPreview', () => {
   })
 
   it('should disable fullscreen', async () => {
-    const { getByTestId } = render(
+    const { queryByTestId } = render(
       <MockedProvider mocks={mocks}>
         <SnackbarProvider>
           <JourneyProvider value={{ journey, variant: 'embed' }}>
@@ -219,15 +219,6 @@ describe('EmbeddedPreview', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    await waitFor(() =>
-      expect(getByTestId('clickable-card-embed')).toBeInTheDocument()
-    )
-    fireEvent.click(getByTestId('clickable-card-embed'))
-    expect(document?.documentElement.requestFullscreen).toHaveBeenCalled()
-    await waitFor(() =>
-      expect(getByTestId('CloseIconButton')).toBeInTheDocument()
-    )
-    fireEvent.click(getByTestId('CloseIconButton'))
-    expect(document?.exitFullscreen).toHaveBeenCalled()
+    expect(queryByTestId('clickable-card-embed')).not.toBeInTheDocument()
   })
 })
