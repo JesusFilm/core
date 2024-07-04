@@ -12,6 +12,7 @@ import { transformer } from '@core/journeys/ui/transformer'
 import { GET_JOURNEY } from '@core/journeys/ui/useJourneyQuery'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
+import PlausibleProvider from 'next-plausible'
 import {
   GetJourney,
   GetJourneyVariables,
@@ -40,7 +41,17 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
       ? getStepTheme(blocks[0] as TreeBlock<StepFields>, journey)
       : { themeName: journey.themeName, themeMode: journey.themeMode }
   return (
-    <>
+    <PlausibleProvider
+      enabled
+      trackLocalhost
+      trackFileDownloads
+      trackOutboundLinks
+      manualPageviews
+      customDomain="/plausible"
+      domain={`api-journeys-journey-${journey.id}${
+        journey.team?.id != null ? `,api-journeys-team-${journey.team.id}` : ''
+      }`}
+    >
       <NextSeo
         title={journey.title}
         nofollow
@@ -92,7 +103,7 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
           />
         </ThemeProvider>
       </JourneyProvider>
-    </>
+    </PlausibleProvider>
   )
 }
 

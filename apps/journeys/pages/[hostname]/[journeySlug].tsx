@@ -44,6 +44,8 @@ function HostJourneyPage({
     <PlausibleProvider
       enabled
       trackLocalhost
+      trackFileDownloads
+      trackOutboundLinks
       manualPageviews
       customDomain="/plausible"
       domain={`api-journeys-journey-${journey.id}${
