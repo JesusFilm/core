@@ -81,7 +81,7 @@ export function JourneyList({
   return (
     <>
       <Box
-        sx={{ mx: { xs: -6, sm: 0 } }}
+        sx={{ mx: { xs: -6, sm: 0 }, backgroundColor: 'divider' }}
         data-testid="JourneysAdminJourneyList"
       >
         <Container disableGutters>

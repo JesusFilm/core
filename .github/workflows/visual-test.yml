@@ -1,7 +1,11 @@
 name: Visual Test
 on: 
-   merge_group:
-    branches: [main]
+  pull_request:
+    types: 
+      - labeled
+  push: 
+    branches:
+      - main
 jobs:
   visual-test:
     runs-on: ubuntu-latest
@@ -52,7 +56,7 @@ jobs:
           files: 'dist/storybook/shared-storybook'
         #👇 Adds Chromatic as a step in the workflow
       - name: Run VR tests
-        if:  ${{ contains(github.event.issue.labels.*.name, 'chromatic') }} && ${{ steps.check_files.outputs.files_exists == 'true' }}
+        if:  ${{ contains(github.event.pull_request.labels.*.name, 'chromatic') }} && ${{ steps.check_files.outputs.files_exists == 'true' }}
         uses: chromaui/action@v1
         # Options required for Chromatic's GitHub Action
         # https://www.chromatic.com/docs/github-actions#available-options
