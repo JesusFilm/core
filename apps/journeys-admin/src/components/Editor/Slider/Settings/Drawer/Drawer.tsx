@@ -4,7 +4,7 @@ import MuiDrawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
-import { Theme } from '@mui/material/styles'
+import { Theme, alpha } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement, ReactNode } from 'react'
 
@@ -20,7 +20,7 @@ interface DrawerTitleProps {
 function DrawerTitle({ title, onClose }: DrawerTitleProps): ReactElement {
   return (
     <>
-      <AppBar position="static" color="default">
+      <AppBar data-testid="DrawerTitle" position="static" color="default">
         <Box
           sx={{
             display: { xs: 'flex', sm: 'none' },
@@ -34,14 +34,24 @@ function DrawerTitle({ title, onClose }: DrawerTitleProps): ReactElement {
               width: 56,
               height: 6,
               bgcolor: '#AAACBB',
-              borderRadius: '3px'
+              borderRadius: '12px'
             }}
           />
         </Box>
         <Toolbar
-          sx={{ minHeight: { xs: 64, sm: 48 }, maxHeight: { xs: 64, sm: 48 } }}
+          data-testid="Toolbar"
+          sx={{
+            minHeight: { xs: 64, sm: 48 },
+            maxHeight: { xs: 64, sm: 48 },
+            pl: { sm: 4 },
+            pr: { sm: 5 },
+
+            backgroundColor: (theme) =>
+              alpha(theme.palette.background.default, 0.5)
+          }}
         >
           <Typography
+            data-testid="CardProp"
             variant="subtitle1"
             noWrap
             component="div"
@@ -91,7 +101,9 @@ export function Drawer({
       hideBackdrop
       sx={{
         '& .MuiDrawer-paper': {
-          borderRadius: 4,
+          border: '1px solid',
+          borderColor: 'divider',
+          borderRadius: 3,
           borderBottomLeftRadius: 0,
           borderBottomRightRadius: 0,
           width: smUp ? DRAWER_WIDTH : 'auto',
