@@ -26,7 +26,9 @@ function DrawerTitle({ title, onClose }: DrawerTitleProps): ReactElement {
             display: { xs: 'flex', sm: 'none' },
             alignItems: 'center',
             justifyContent: 'center',
-            pt: 2
+            pt: 2,
+            backgroundColor: (theme) =>
+              alpha(theme.palette.background.default, 0.5)
           }}
         >
           <Box
