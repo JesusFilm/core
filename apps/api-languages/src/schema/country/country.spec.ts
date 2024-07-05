@@ -1,12 +1,12 @@
 import { graphql } from 'gql.tada'
 import omit from 'lodash/omit'
 
-import { Country } from '.prisma/api-languages-client'
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { cache } from '../../yoga'
 import { language } from '../language/language.mock'
 import { country, countryContinent, countryName } from './country.mock'
+import { Country } from '.prisma/api-languages-client'
 
 const COUNTRY_QUERY = graphql(`
   query Country($languageId: ID, $primary: Boolean) {

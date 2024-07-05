@@ -1,7 +1,7 @@
 import SchemaBuilder from '@pothos/core'
+import DirectivesPlugin from '@pothos/plugin-directives'
 import FederationPlugin from '@pothos/plugin-federation'
 import PrismaPlugin from '@pothos/plugin-prisma'
-import DirectivesPlugin from '@pothos/plugin-directives'
 
 import type PrismaTypes from '../__generated__/pothos-types'
 import { prisma } from '../lib/prisma'

@@ -62,10 +62,18 @@ jobs:
         with:
           targets: codegen
           all: true
-      - name: lint, type-check, extract-translations, subgraph-check
+          
+      - name: Setup Biome
+        uses: biomejs/setup-biome@v2
+        with:
+          version: latest
+      - name: Run Biome
+        run: biome ci .
+
+      - name: type-check, extract-translations, subgraph-check
         uses: mansagroup/nrwl-nx-action@v3
         with:
-          targets: lint,type-check,extract-translations,subgraph-check
+          targets: type-check,extract-translations,subgraph-check
         env:
           APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
       - name: lint commit messages

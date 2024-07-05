@@ -1,8 +1,8 @@
-import { createYoga, useReadinessCheck } from 'graphql-yoga'
 import {
   createInMemoryCache,
   useResponseCache
 } from '@graphql-yoga/plugin-response-cache'
+import { createYoga, useReadinessCheck } from 'graphql-yoga'
 
 import { prisma } from './lib/prisma'
 import { schema } from './schema'
