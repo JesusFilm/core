@@ -25,9 +25,8 @@ export const TYPOGRAPHY_BLOCK_CREATE = gql`
 
 export function NewTypographyButton(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [typographyBlockCreate] = useMutation<TypographyBlockCreate>(
-    TYPOGRAPHY_BLOCK_CREATE
-  )
+  const [typographyBlockCreate, { loading }] =
+    useMutation<TypographyBlockCreate>(TYPOGRAPHY_BLOCK_CREATE)
   const { journey } = useJourney()
   const {
     state: { selectedStep },
@@ -91,6 +90,7 @@ export function NewTypographyButton(): ReactElement {
       value={t('Text')}
       onClick={handleClick}
       testId="NewTypographyButton"
+      disabled={loading}
     />
   )
 }

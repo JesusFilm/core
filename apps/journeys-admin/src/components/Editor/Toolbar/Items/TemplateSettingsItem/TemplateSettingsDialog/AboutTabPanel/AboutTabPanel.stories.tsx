@@ -4,9 +4,9 @@ import { ComponentProps } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
+import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
-import { simpleComponentConfig } from '../../../../../../../libs/storybook'
-import { defaultJourney } from '../../../../../data'
 import { TemplateSettingsFormValues } from '../useTemplateSettingsForm'
 
 import { AboutTabPanel } from './AboutTabPanel'

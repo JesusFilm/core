@@ -1,14 +1,14 @@
 import {
   ActiveFab,
   EditorProvider,
-  EditorState
+  type EditorState
 } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { Meta, StoryObj } from '@storybook/react'
-import { ComponentPropsWithoutRef } from 'react'
-import { JourneyFields as Journey } from '../../../../../../../__generated__/JourneyFields'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
+import type { Meta, StoryObj } from '@storybook/react'
+import type { ComponentPropsWithoutRef } from 'react'
+import type { JourneyFields as Journey } from '../../../../../../../__generated__/JourneyFields'
 import { MessagePlatform } from '../../../../../../../__generated__/globalTypes'
-import { simpleComponentConfig } from '../../../../../../libs/storybook'
 import { CanvasFooter } from './CanvasFooter'
 
 const CanvasFooterStory: Meta<typeof CanvasFooter> = {

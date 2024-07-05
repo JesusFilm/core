@@ -3,9 +3,9 @@ import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { ComponentProps, ReactElement, useState } from 'react'
 
+import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
 import Globe1Icon from '@core/shared/ui/icons/Globe1'
 
-import { setBeaconPageViewed } from '../../../../../libs/setBeaconPageViewed'
 import { Item } from '../Item/Item'
 
 const LanguageDialog = dynamic(

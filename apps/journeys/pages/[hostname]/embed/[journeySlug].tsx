@@ -1,6 +1,7 @@
 import { GetStaticPaths, GetStaticProps } from 'next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { NextSeo } from 'next-seo'
+import { useRouter } from 'next/router'
 import { ReactElement, useMemo } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -8,6 +9,7 @@ import { TreeBlock } from '@core/journeys/ui/block'
 import { getStepTheme } from '@core/journeys/ui/getStepTheme'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { transformer } from '@core/journeys/ui/transformer'
+import { GET_JOURNEY } from '@core/journeys/ui/useJourneyQuery'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 import {
@@ -16,10 +18,10 @@ import {
   GetJourney_journey as Journey
 } from '../../../__generated__/GetJourney'
 import { StepFields } from '../../../__generated__/StepFields'
+import { IdType } from '../../../__generated__/globalTypes'
 import i18nConfig from '../../../next-i18next.config'
 import { EmbeddedPreview } from '../../../src/components/EmbeddedPreview'
 import { createApolloClient } from '../../../src/libs/apolloClient'
-import { GET_JOURNEY } from '../../home/[journeySlug]'
 
 interface HostJourneyEmbedPageProps {
   host: string
@@ -37,6 +39,7 @@ function HostJourneyEmbedPage({
   const blocks = useMemo(() => {
     return transformer(journey.blocks ?? [])
   }, [journey])
+  const { query } = useRouter()
 
   const theme =
     blocks.length > 0
@@ -75,7 +78,10 @@ function HostJourneyEmbedPage({
       `}</style>
       <JourneyProvider value={{ journey, variant: 'embed' }}>
         <ThemeProvider {...theme} rtl={rtl} locale={locale}>
-          <EmbeddedPreview blocks={blocks} />
+          <EmbeddedPreview
+            blocks={blocks}
+            disableFullscreen={query?.expand === 'false'}
+          />
         </ThemeProvider>
       </JourneyProvider>
     </>
@@ -91,6 +97,7 @@ export const getStaticProps: GetStaticProps<HostJourneyEmbedPageProps> = async (
       query: GET_JOURNEY,
       variables: {
         id: context.params?.journeySlug?.toString() ?? '',
+        idType: IdType.slug,
         options: {
           hostname: context.params?.hostname?.toString() ?? ''
         }
