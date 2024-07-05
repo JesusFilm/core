@@ -660,7 +660,7 @@ enum IconName {
   SubscriptionsRounded
   ContactSupportRounded
   Launch
-  Menu
+  MailOutline
 }
 
 enum IconColor {

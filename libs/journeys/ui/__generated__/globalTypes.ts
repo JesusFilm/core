@@ -56,7 +56,7 @@ export enum IconName {
   Launch = "Launch",
   LiveTvRounded = "LiveTvRounded",
   LockOpenRounded = "LockOpenRounded",
-  Menu = "Menu",
+  Mail = "Mail",
   MenuBookRounded = "MenuBookRounded",
   PlayArrowRounded = "PlayArrowRounded",
   RadioButtonUncheckedRounded = "RadioButtonUncheckedRounded",

@@ -10,7 +10,7 @@ import FormatQuoteRounded from '@mui/icons-material/FormatQuoteRounded'
 import Launch from '@mui/icons-material/Launch'
 import LiveTvRounded from '@mui/icons-material/LiveTvRounded'
 import LockOpenRounded from '@mui/icons-material/LockOpenRounded'
-import Menu from '@mui/icons-material/Menu'
+import MailOutline from '@mui/icons-material/MailOutline'
 import MenuBookRounded from '@mui/icons-material/MenuBookRounded'
 import PlayArrowRounded from '@mui/icons-material/PlayArrowRounded'
 import RadioButtonUncheckedRounded from '@mui/icons-material/RadioButtonUncheckedRounded'
@@ -63,7 +63,7 @@ export function Icon({
     SubscriptionsRounded,
     ContactSupportRounded,
     Launch,
-    Menu
+    MailOutline
   }
 
   const iconRTL =

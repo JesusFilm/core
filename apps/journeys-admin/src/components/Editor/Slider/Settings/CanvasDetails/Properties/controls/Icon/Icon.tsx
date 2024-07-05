@@ -12,7 +12,7 @@ import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownR
 import Launch from '@mui/icons-material/Launch'
 import LiveTvRounded from '@mui/icons-material/LiveTvRounded'
 import LockOpenRounded from '@mui/icons-material/LockOpenRounded'
-import Menu from '@mui/icons-material/Menu'
+import MailOutline from '@mui/icons-material/MailOutline'
 import MenuBookRounded from '@mui/icons-material/MenuBookRounded'
 import PlayArrowRounded from '@mui/icons-material/PlayArrowRounded'
 import RadioButtonUncheckedRounded from '@mui/icons-material/RadioButtonUncheckedRounded'
@@ -137,9 +137,9 @@ export const icons = [
     display: <Launch />
   },
   {
-    value: IconName.Menu,
-    label: t('Menu'),
-    display: <Menu />
+    value: IconName.MailOutline,
+    label: t('Mail'),
+    display: <MailOutline />
   }
 ]
 
