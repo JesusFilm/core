@@ -106,7 +106,7 @@ export function StatusTabPanel({
       <Paper
         variant="outlined"
         sx={{
-          borderColor: 'primary.main',
+          borderColor: 'divider',
           borderBottom: 0,
           borderTopLeftRadius: { xs: 0, sm: 12 },
           borderTopRightRadius: { xs: 0, sm: 12 }
