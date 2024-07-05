@@ -9,8 +9,10 @@ import ChevronRightRounded from '@mui/icons-material/ChevronRightRounded'
 import ContactSupportRounded from '@mui/icons-material/ContactSupportRounded'
 import FormatQuoteRounded from '@mui/icons-material/FormatQuoteRounded'
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
+import Launch from '@mui/icons-material/Launch'
 import LiveTvRounded from '@mui/icons-material/LiveTvRounded'
 import LockOpenRounded from '@mui/icons-material/LockOpenRounded'
+import Menu from '@mui/icons-material/Menu'
 import MenuBookRounded from '@mui/icons-material/MenuBookRounded'
 import PlayArrowRounded from '@mui/icons-material/PlayArrowRounded'
 import RadioButtonUncheckedRounded from '@mui/icons-material/RadioButtonUncheckedRounded'
@@ -128,6 +130,16 @@ export const icons = [
     value: IconName.TranslateRounded,
     label: t('Translate'),
     display: <TranslateRounded />
+  },
+  {
+    value: IconName.Launch,
+    label: t('Launch'),
+    display: <Launch />
+  },
+  {
+    value: IconName.Menu,
+    label: t('Menu'),
+    display: <Menu />
   }
 ]
 
