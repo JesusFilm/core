@@ -1973,7 +1973,7 @@ export type Query = {
   block: Block;
   blocks: Array<Block>;
   countries: Array<Country>;
-  country: Country;
+  country?: Maybe<Country>;
   customDomain: CustomDomain;
   customDomains: Array<CustomDomain>;
   getJourneyProfile?: Maybe<JourneyProfile>;
