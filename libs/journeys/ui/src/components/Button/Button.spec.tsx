@@ -189,6 +189,7 @@ describe('Button', () => {
     fireEvent.click(getByRole('button'))
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('buttonClick', {
+      u: 'journey.id/step.id',
       props: {
         id: 'uuid',
         blockId: 'button',
@@ -414,6 +415,7 @@ describe('Button', () => {
     fireEvent.click(getByRole('button'))
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('chatButtonClick', {
+      u: 'journey.id/step.id',
       props: {
         id: 'uuid',
         blockId: 'button',

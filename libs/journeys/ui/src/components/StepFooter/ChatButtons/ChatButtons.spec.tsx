@@ -157,6 +157,7 @@ describe('ChatButtons', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(window.open).toHaveBeenCalledWith(chatButtons[0].link, '_blank')
     expect(mockPlausible).toHaveBeenCalledWith('footerChatButtonClick', {
+      u: 'journeyId/step',
       props: {
         id: '1',
         blockId: 'step',

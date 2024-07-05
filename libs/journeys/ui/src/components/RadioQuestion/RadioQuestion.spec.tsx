@@ -306,6 +306,7 @@ describe('RadioQuestion', () => {
     fireEvent.click(buttons[0])
     await waitFor(() =>
       expect(mockPlausible).toHaveBeenCalledWith('radioQuestionSubmit', {
+        u: 'journey.id/step.id',
         props: {
           id: 'uuid',
           blockId: 'RadioQuestion1',

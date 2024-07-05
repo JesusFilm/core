@@ -185,6 +185,7 @@ describe('NavigationButton', () => {
     await waitFor(() => expect(stepNextResult).toHaveBeenCalled())
 
     expect(mockPlausible).toHaveBeenCalledWith('navigateNextStep', {
+      u: 'journey.id/step1.id',
       props: {
         id: 'uuid',
         blockId: 'step1.id',
@@ -234,6 +235,7 @@ describe('NavigationButton', () => {
     await waitFor(() => expect(stepPreviousResult).toHaveBeenCalled())
 
     expect(mockPlausible).toHaveBeenCalledWith('navigatePreviousStep', {
+      u: 'journey.id/step2.id',
       props: {
         id: 'uuid',
         blockId: 'step2.id',

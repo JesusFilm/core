@@ -409,6 +409,7 @@ describe('SignUp', () => {
 
     await waitFor(() => {
       expect(mockPlausible).toHaveBeenCalledWith('signupSubmit', {
+        u: 'journey.id/step.id',
         props: {
           id: 'uuid',
           blockId: 'signUp0.id',
