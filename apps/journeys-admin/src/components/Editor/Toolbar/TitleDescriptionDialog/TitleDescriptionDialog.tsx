@@ -111,7 +111,7 @@ export function TitleDescriptionDialog({
             <Dialog
               open={open}
               onClose={handleClose(resetForm)}
-              dialogTitle={{ title: t('Title') }}
+              dialogTitle={{ title: t('Title: ') }}
               dialogAction={{
                 onSubmit: handleSubmit,
                 closeLabel: t('Cancel')
@@ -136,7 +136,7 @@ export function TitleDescriptionDialog({
                   variant="subtitle1"
                   style={{ marginLeft: -1, paddingTop: 20, paddingBottom: 16 }}
                 >
-                  Description
+                  {t('Description:')}
                 </Typography>
                 <TextField
                   id="description"

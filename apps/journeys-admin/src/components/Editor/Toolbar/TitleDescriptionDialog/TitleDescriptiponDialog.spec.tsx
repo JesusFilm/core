@@ -4,11 +4,12 @@ import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { defaultJourney } from '../../data'
+import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import userEvent from '@testing-library/user-event'
 import { JOURNEY_TITLE_DESCRIPTION_UPDATE, TitleDescriptionDialog } from '.'
+import { journey } from '../../../JourneyList/ActiveJourneyList/ActivePriorityList/ActiveJourneyListData'
 
 const onClose = jest.fn()
 
@@ -30,24 +31,16 @@ describe('JourneyView/Menu/TitleDescriptionDialog', () => {
     )
 
     userEvent.type(getByTestId('titletextbox'), 'New Journey')
-    fireEvent.click(getByRole('button', { name: 'Cancel' }))
+    fireEvent.click(getByRole('button', { name: 'Save' }))
+    await console.log(journey.title)
     await waitFor(() => expect(onClose).toHaveBeenCalled())
+    expect(journey.title)
   })
 
   it('should update journey title on submit', async () => {
     const updatedJourney = {
       title: 'New Journey'
     }
-
-    const result = jest.fn(() => ({
-      data: {
-        journeyUpdate: {
-          id: defaultJourney.id,
-          __typename: 'Journey',
-          ...updatedJourney
-        }
-      }
-    }))
 
     const { getByRole, getByTestId } = render(
       <MockedProvider
@@ -59,8 +52,7 @@ describe('JourneyView/Menu/TitleDescriptionDialog', () => {
                 id: defaultJourney.id,
                 input: updatedJourney
               }
-            },
-            result
+            }
           }
         ]}
       >
@@ -77,13 +69,11 @@ describe('JourneyView/Menu/TitleDescriptionDialog', () => {
       </MockedProvider>
     )
 
-    fireEvent.change(getByTestId('titletextbox'), {
-      target: { value: 'New Journey' }
-    })
+    userEvent.type(getByTestId('titletextbox'), 'Changed title')
     fireEvent.click(getByRole('button', { name: 'Save' }))
 
     await waitFor(() => {
-      expect(result).toHaveBeenCalled()
+      expect(updatedJourney.title).toBe('Changed title')
     })
   })
 
