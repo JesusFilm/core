@@ -1,8 +1,13 @@
 import { createYoga, useReadinessCheck } from 'graphql-yoga'
-import { useResponseCache } from '@graphql-yoga/plugin-response-cache'
+import {
+  createInMemoryCache,
+  useResponseCache
+} from '@graphql-yoga/plugin-response-cache'
 
 import { prisma } from './lib/prisma'
 import { schema } from './schema'
+
+export const cache = createInMemoryCache()
 
 export const yoga = createYoga({
   schema,
@@ -14,7 +19,8 @@ export const yoga = createYoga({
       }
     }),
     useResponseCache({
-      session: () => null
+      session: () => null,
+      cache
     })
   ]
 })

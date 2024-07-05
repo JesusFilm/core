@@ -1,5 +1,5 @@
 /* eslint-disable */
-import type { Prisma, Language, LanguageName, Country, CountryName, CountryContinent } from ".prisma/api-languages-client";
+import type { Prisma, Language, LanguageName, Country, CountryName, CountryContinent, AudioPreview } from ".prisma/api-languages-client";
 export default interface PrismaTypes {
     Language: {
         Name: "Language";
@@ -11,8 +11,8 @@ export default interface PrismaTypes {
         Where: Prisma.LanguageWhereInput;
         Create: {};
         Update: {};
-        RelationName: "name" | "nameLanguage" | "countries" | "countryName" | "countryContinent";
-        ListRelations: "name" | "nameLanguage" | "countries" | "countryName" | "countryContinent";
+        RelationName: "name" | "nameLanguage" | "countries" | "countryName" | "countryContinent" | "audioPreview";
+        ListRelations: "name" | "nameLanguage" | "countries" | "countryName" | "countryContinent" | "audioPreview";
         Relations: {
             name: {
                 Shape: LanguageName[];
@@ -37,6 +37,11 @@ export default interface PrismaTypes {
             countryContinent: {
                 Shape: CountryContinent[];
                 Name: "CountryContinent";
+                Nullable: false;
+            };
+            audioPreview: {
+                Shape: AudioPreview[];
+                Name: "AudioPreview";
                 Nullable: false;
             };
         };
@@ -139,6 +144,26 @@ export default interface PrismaTypes {
                 Name: "Country";
                 Nullable: false;
             };
+            language: {
+                Shape: Language;
+                Name: "Language";
+                Nullable: false;
+            };
+        };
+    };
+    AudioPreview: {
+        Name: "AudioPreview";
+        Shape: AudioPreview;
+        Include: Prisma.AudioPreviewInclude;
+        Select: Prisma.AudioPreviewSelect;
+        OrderBy: Prisma.AudioPreviewOrderByWithRelationInput;
+        WhereUnique: Prisma.AudioPreviewWhereUniqueInput;
+        Where: Prisma.AudioPreviewWhereInput;
+        Create: {};
+        Update: {};
+        RelationName: "language";
+        ListRelations: never;
+        Relations: {
             language: {
                 Shape: Language;
                 Name: "Language";

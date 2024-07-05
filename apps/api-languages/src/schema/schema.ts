@@ -1,5 +1,6 @@
 // Developers must add an import for every resolver
 // and object type in the schema
+import './translation'
 import './language'
 import './country'
 

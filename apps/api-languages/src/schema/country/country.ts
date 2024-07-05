@@ -79,7 +79,7 @@ builder.queryFields((t) => ({
       root: unknown,
       { id }
     ) =>
-      prisma.country.findUnique({
+      await prisma.country.findUnique({
         ...query,
         where: { id }
       })

@@ -11,11 +11,16 @@
     }
   ],
   "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "strict": true,
     "plugins": [
       {
         "name": "@0no-co/graphqlsp",
-        "schema": "../../apps/api-languages/schema.graphql",
-        "tadaOutputLocation": "./__generated__/graphql-env.d.ts"
+        "schema": "./schema.graphql",
+        "tadaOutputLocation": "./src/__generated__/graphql-env.d.ts"
       }
     ]
   }

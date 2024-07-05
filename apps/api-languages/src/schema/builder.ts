@@ -5,6 +5,7 @@ import SimpleObjectsPlugin from '@pothos/plugin-simple-objects'
 
 import type PrismaTypes from '../__generated__/pothos-types'
 import { prisma } from '../lib/prisma'
+import { Prisma } from '.prisma/api-languages-client'
 
 export const builder = new SchemaBuilder<{
   PrismaTypes: PrismaTypes
@@ -15,6 +16,7 @@ export const builder = new SchemaBuilder<{
   plugins: [PrismaPlugin, FederationPlugin, SimpleObjectsPlugin],
   prisma: {
     client: prisma,
+    dmmf: Prisma.dmmf,
     onUnusedQuery: process.env.NODE_ENV === 'production' ? null : 'warn'
   }
 })

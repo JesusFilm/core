@@ -20,16 +20,6 @@ const LanguagesFilter = builder.inputType('LanguagesFilter', {
   })
 })
 
-// const LanguageName = builder.prismaObject('LanguageName', {
-//   name: 'Translation',
-//   shareable: true,
-//   fields: (t) => ({
-//     primary: t.exposeBoolean('primary'),
-//     value: t.exposeString('value'),
-//     language: t.relation('language', { type: Language })
-//   })
-// })
-
 export const Language = builder.prismaObject('Language', {
   fields: (t) => ({
     id: t.exposeID('id'),

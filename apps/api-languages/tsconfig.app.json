@@ -6,6 +6,10 @@
     "types": ["node"],
     "target": "es2021"
   },
-  "exclude": ["**/*.spec.ts", "jest.config.ts"],
+  "exclude": [
+    "**/*.spec.ts",
+    "jest.config.ts",
+    "src/__generated__/graphql-env.d.ts"
+  ],
   "include": ["**/*.ts"]
 }
