@@ -46,7 +46,7 @@ export const Loading = {
   parameters: {
     apolloClient: {
       mocks: [
-        { ...getJourneysMock, delay: 100000000000000 },
+        { ...getJourneysWithoutLanguageIdsMock, delay: 100000000000000 },
         { ...getLanguagesMock, delay: 100000000000000 },
         { ...getTagsMock, delay: 100000000000000 }
       ]

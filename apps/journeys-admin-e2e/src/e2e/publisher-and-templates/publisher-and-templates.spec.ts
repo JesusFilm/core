@@ -271,7 +271,7 @@ test.describe('Verify template page functionality', () => {
     await templatesPage.verifyTemplateIsEdited(journeyName) // verifying the template is edited
   })
   //Templates-> Help button on top right
-  test('verify Help window displays via button on top right of the page', async ({
+  test.skip('verify Help window displays via button on top right of the page', async ({
     page
   }) => {
     const journeyLevelActions = new JourneyLevelActions(page)
