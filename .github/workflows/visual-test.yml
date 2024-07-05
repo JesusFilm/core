@@ -3,16 +3,9 @@ on:
   push: 
     branches: [main, feature/*]
   pull_request:
-    branches: [main, feature/*]
     types: [labeled]
-  merge_group:
-    branches: [main]
-concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
-  cancel-in-progress: true
 jobs:
   visual-test:
-    if: contains(github.event.pull_request.labels.*.name, 'chromatic')
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -61,7 +54,7 @@ jobs:
           files: 'dist/storybook/shared-storybook'
         #👇 Adds Chromatic as a step in the workflow
       - name: Run VR tests
-        if: ${{ steps.check_files.outputs.files_exists == 'true' }}
+        if: ${{ contains(github.event.pull_request.labels.*.name, 'chromatic') && steps.check_files.outputs.files_exists == 'true' }}
         uses: chromaui/action@v1
         # Options required for Chromatic's GitHub Action
         # https://www.chromatic.com/docs/github-actions#available-options
