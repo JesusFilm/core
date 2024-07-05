@@ -160,7 +160,10 @@ function getLinkClicks(journeyEvents: PlausibleEvent[]): {
   journeyEvents.forEach((plausibleEvent) => {
     const { event, target, events } = plausibleEvent
     if (target != null && target.includes('link')) {
-      if (messagePlatforms.find(({ url }) => target.includes(url))) {
+      const isChatLink = messagePlatforms.find(({ url }) =>
+        target.includes(url)
+      )
+      if (isChatLink || event === 'footerChatButtonClick') {
         chatsStarted += events
       } else {
         linksVisited += events
