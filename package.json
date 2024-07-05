@@ -280,8 +280,5 @@
   },
   "msw": {
     "workerDirectory": "./.storybook/static"
-  },
-  "optionalDependencies": {
-    "@nx/nx-linux-x64-gnu": "19.2.3"
   }
 }
