@@ -1,25 +1,32 @@
-type Country {
-  continent(languageId: ID, primary: Boolean): [Translation!]!
-  flagPngSrc: String
-  flagWebpSrc: String
+extend schema
+  @link(url: "https://specs.apollo.dev/federation/v2.7", import: ["@key", "@shareable"])
+
+type Country
+  @key(fields: "id")
+{
   id: ID!
-  languages: [Language!]!
+  population: Int
   latitude: Float
   longitude: Float
+  flagPngSrc: String
+  flagWebpSrc: String
+  languages: [Language!]!
   name(languageId: ID, primary: Boolean): [Translation!]!
-  population: Int
+  continent(languageId: ID, primary: Boolean): [Translation!]!
 }
 
-type Language {
-  bcp47: String
+type Language
+  @key(fields: "id")
+{
   id: ID!
+  bcp47: String
   iso3: String
   name(languageId: ID, primary: Boolean): [Translation!]!
 }
 
 enum LanguageIdType {
-  bcp47
   databaseId
+  bcp47
 }
 
 input LanguagesFilter {
@@ -27,14 +34,16 @@ input LanguagesFilter {
 }
 
 type Query {
-  countries: [Country!]!
-  country(id: ID!): Country
   language(id: ID!, idType: LanguageIdType = databaseId): Language
-  languages(limit: Int, offset: Int, where: LanguagesFilter): [Language!]!
+  languages(offset: Int, limit: Int, where: LanguagesFilter): [Language!]!
+  country(id: ID!): Country
+  countries: [Country!]!
 }
 
-type Translation {
-  language: Language!
-  primary: Boolean
+type Translation
+  @shareable
+{
   value: String!
+  primary: Boolean!
+  language: Language!
 }

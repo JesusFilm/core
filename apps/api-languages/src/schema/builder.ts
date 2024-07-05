@@ -1,7 +1,7 @@
 import SchemaBuilder from '@pothos/core'
 import FederationPlugin from '@pothos/plugin-federation'
 import PrismaPlugin from '@pothos/plugin-prisma'
-import SimpleObjectsPlugin from '@pothos/plugin-simple-objects'
+import DirectivesPlugin from '@pothos/plugin-directives'
 
 import type PrismaTypes from '../__generated__/pothos-types'
 import { prisma } from '../lib/prisma'
@@ -13,7 +13,7 @@ export const builder = new SchemaBuilder<{
     ID: { Input: string; Output: number | string }
   }
 }>({
-  plugins: [PrismaPlugin, FederationPlugin, SimpleObjectsPlugin],
+  plugins: [PrismaPlugin, DirectivesPlugin, FederationPlugin],
   prisma: {
     client: prisma,
     dmmf: Prisma.dmmf,

@@ -20,7 +20,7 @@ builder.objectType(Translation, {
   shareable: true,
   fields: (t) => ({
     value: t.exposeString('value', { nullable: false }),
-    primary: t.exposeBoolean('primary', { nullable: true }),
+    primary: t.exposeBoolean('primary', { nullable: false }),
     language: t.field({
       type: Language,
       resolve: (parent) => parent.language

@@ -336,14 +336,14 @@ type Country
   @join__type(graph: LANGUAGES, key: "id")
 {
   id: ID!
-  name(languageId: ID, primary: Boolean): [Translation!]!
   population: Int
-  continent(languageId: ID, primary: Boolean): [Translation!]!
-  languages: [Language!]!
   latitude: Float
   longitude: Float
   flagPngSrc: String
   flagWebpSrc: String
+  languages: [Language!]!
+  name(languageId: ID, primary: Boolean): [Translation!]!
+  continent(languageId: ID, primary: Boolean): [Translation!]!
 }
 
 input CreateVerificationRequestInput
@@ -1172,7 +1172,7 @@ enum LanguageIdType
 input LanguagesFilter
   @join__type(graph: LANGUAGES)
 {
-  ids: [String!]
+  ids: [ID!]
 }
 
 type LanguageWithSlug
@@ -1867,6 +1867,9 @@ type Query
   """Get a single visitor"""
   visitor(id: ID!): Visitor! @join__field(graph: JOURNEYS)
   language(id: ID!, idType: LanguageIdType = databaseId): Language @join__field(graph: LANGUAGES)
+  languages(offset: Int, limit: Int, where: LanguagesFilter): [Language!]! @join__field(graph: LANGUAGES)
+  country(id: ID!): Country @join__field(graph: LANGUAGES)
+  countries: [Country!]! @join__field(graph: LANGUAGES)
   getMyCloudflareImages: [CloudflareImage] @join__field(graph: MEDIA)
   getMyCloudflareVideos: [CloudflareVideo] @join__field(graph: MEDIA)
   getMyCloudflareVideo(id: ID!): CloudflareVideo @join__field(graph: MEDIA)
