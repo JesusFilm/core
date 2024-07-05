@@ -45,7 +45,7 @@ describe('JourneyView/Menu/TitleDescriptionDialog', () => {
   it('should update journey title and description on submit', async () => {
     const updatedJourney = {
       title: 'Changed Title',
-      description: 'Description'
+      description: 'Changed Desc'
     }
 
     const result = jest.fn(() => ({
@@ -89,6 +89,10 @@ describe('JourneyView/Menu/TitleDescriptionDialog', () => {
     // fireEvent.change(getAllByRole('textbox')[0], {
     fireEvent.change(getAllByRole('textbox')[0], {
       target: { value: 'Changed Title' }
+    })
+
+    fireEvent.change(getAllByRole('textbox')[1], {
+      target: { value: 'Changed Desc' }
     })
 
     fireEvent.click(getByRole('button', { name: 'Save' }))
@@ -140,7 +144,7 @@ describe('JourneyView/Menu/TitleDescriptionDialog', () => {
     )
   })
 
-  it('is a required field', async () => {
+  it('should require the title field', async () => {
     const result = jest.fn(() => ({
       data: {
         journeyUpdate: {
