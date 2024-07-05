@@ -31,10 +31,9 @@ describe('JourneyView/Menu/TitleDescriptionDialog', () => {
     )
 
     userEvent.type(getByTestId('titletextbox'), 'New Journey')
-    fireEvent.click(getByRole('button', { name: 'Save' }))
-    await console.log(journey.title)
+    fireEvent.click(getByRole('button', { name: 'Cancel' }))
     await waitFor(() => expect(onClose).toHaveBeenCalled())
-    expect(journey.title)
+    expect(journey.title).not.toBe('New Journey')
   })
 
   it('should update journey title on submit', async () => {
@@ -72,9 +71,7 @@ describe('JourneyView/Menu/TitleDescriptionDialog', () => {
     userEvent.type(getByTestId('titletextbox'), 'Changed title')
     fireEvent.click(getByRole('button', { name: 'Save' }))
 
-    await waitFor(() => {
-      expect(updatedJourney.title).toBe('Changed title')
-    })
+    expect(updatedJourney.title).toBe('Changed title')
   })
 
   it('shows notistack error alert when title fails to update', async () => {
