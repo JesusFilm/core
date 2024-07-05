@@ -77,7 +77,9 @@ describe('JourneyView/Menu/TitleDialog', () => {
       </MockedProvider>
     )
 
-    fireEvent.change(getByRole('textbox'), { target: { value: 'New Journey' } })
+    fireEvent.change(getByRole('textbox'), {
+      target: { value: 'New Journey' }
+    })
     fireEvent.click(getByRole('button', { name: 'Save' }))
 
     await waitFor(() => {
