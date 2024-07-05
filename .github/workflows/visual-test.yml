@@ -1,4 +1,4 @@
-name: Storybook
+name: Visual Test
 on: 
   pull_request:
     types: 
