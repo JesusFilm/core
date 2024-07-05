@@ -1,12 +1,12 @@
 name: Visual Test
 on: 
-  pull_request:
-    types: 
-      - labeled
-      - unlabeled
   push: 
-    branches:
-      - main
+    branches: [main, feature/*]
+  pull_request:
+    branches: [main, feature/*]
+    types: [labeled, unlabeled]
+  merge_group:
+    branches: [main]
 jobs:
   visual-test:
     if: contains(github.event.pull_request.labels.*.name, 'chromatic')
