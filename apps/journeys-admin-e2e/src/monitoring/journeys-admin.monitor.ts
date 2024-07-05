@@ -18,23 +18,31 @@ test('NS Admin Monitoring: Check user can login and logout successfuly', async (
 
   await page.goto('https://admin.nextstep.is/')
 
-  // Wait for all network requests to finish and page to load fully
+  // Wait for all network calls to finish
   await page.waitForLoadState('networkidle')
 
+  // Enter user email
   await page.getByPlaceholder('Enter your email address here').fill(email)
-  await expect(
-    page.getByPlaceholder('Enter your email address here').textContent()
-  ).toContain(email)
+  await expect(page.locator('input[type="email"]')).toHaveValue(email)
+  await page.getByRole('button', { name: 'Continue with email' }).click()
 
-  await page.locator('button[type="submit"]').click()
+  // Wait for the password input to appear
+  await page.waitForSelector('input[type="password"]')
+  // Wait for all network calls to finish
+  await page.waitForLoadState('networkidle')
 
+  // Enter user password
+  await page.getByPlaceholder('Enter Password').click()
   await page.getByPlaceholder('Enter Password').fill(password)
   await page.getByRole('button', { name: 'Sign In' }).click()
 
+  // Expect that email in the profile menu matches the email used to login
   await page.getByTestId('NavigationListItemProfile').click()
-  await expect(page.getByText(email)).toBeVisible()
+  await expect(page.getByRole('menu')).toContainText(email)
   await page.getByText('Logout').click()
+
+  // Expect that 'Continue with email' button is visible
   await expect(
-    page.getByRole('button', { name: 'Continue with email' })
-  ).toBeVisible()
+    page.getByTestId('EmailSignInForm').getByRole('button')
+  ).toContainText('Continue with email')
 })
