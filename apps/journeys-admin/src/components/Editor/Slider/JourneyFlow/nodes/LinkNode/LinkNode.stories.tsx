@@ -6,12 +6,12 @@ import { Background, ReactFlow } from 'reactflow'
 
 import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import {
   BlockFields_ButtonBlock_action as Action,
   BlockFields_StepBlock as StepBlock
 } from '../../../../../../../__generated__/BlockFields'
-import { simpleComponentConfig } from '../../../../../../libs/storybook'
 
 import { LinkNode } from '.'
 

@@ -1,6 +1,7 @@
 import { GetStaticPaths, GetStaticProps } from 'next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { NextSeo } from 'next-seo'
+import { useRouter } from 'next/router'
 import { ReactElement, useMemo } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -8,6 +9,7 @@ import { TreeBlock } from '@core/journeys/ui/block'
 import { getStepTheme } from '@core/journeys/ui/getStepTheme'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { transformer } from '@core/journeys/ui/transformer'
+import { GET_JOURNEY } from '@core/journeys/ui/useJourneyQuery'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 import {
@@ -16,10 +18,10 @@ import {
   GetJourney_journey as Journey
 } from '../../../__generated__/GetJourney'
 import { StepFields } from '../../../__generated__/StepFields'
+import { IdType } from '../../../__generated__/globalTypes'
 import i18nConfig from '../../../next-i18next.config'
 import { EmbeddedPreview } from '../../../src/components/EmbeddedPreview'
 import { createApolloClient } from '../../../src/libs/apolloClient'
-import { GET_JOURNEY } from '../[journeySlug]'
 
 interface JourneyPageProps {
   journey: Journey
@@ -31,6 +33,7 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
   const blocks = useMemo(() => {
     return transformer(journey.blocks ?? [])
   }, [journey])
+  const { query } = useRouter()
 
   const theme =
     blocks.length > 0
@@ -83,7 +86,10 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
       `}</style>
       <JourneyProvider value={{ journey, variant: 'embed' }}>
         <ThemeProvider {...theme} rtl={rtl} locale={locale}>
-          <EmbeddedPreview blocks={transformer(journey.blocks ?? [])} />
+          <EmbeddedPreview
+            blocks={blocks}
+            disableFullscreen={query?.expand === 'false'}
+          />
         </ThemeProvider>
       </JourneyProvider>
     </>
@@ -99,6 +105,7 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async (
       query: GET_JOURNEY,
       variables: {
         id: context.params?.journeySlug?.toString() ?? '',
+        idType: IdType.slug,
         options: {
           embedded: true
         }

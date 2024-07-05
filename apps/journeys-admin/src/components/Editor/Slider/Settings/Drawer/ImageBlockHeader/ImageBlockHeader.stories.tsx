@@ -3,9 +3,9 @@ import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../__generated__/BlockFields'
-import { simpleComponentConfig } from '../../../../../../libs/storybook'
 
 import { ImageBlockHeader } from './ImageBlockHeader'
 

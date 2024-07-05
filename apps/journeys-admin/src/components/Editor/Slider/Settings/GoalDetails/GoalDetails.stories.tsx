@@ -5,10 +5,8 @@ import { ComponentProps } from 'react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-
-import { journeysAdminConfig } from '../../../../../libs/storybook'
-
-import { journey } from './data'
+import { journey } from '@core/journeys/ui/TemplateView/TemplateFooter/data'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { GoalDetails } from '.'
 
