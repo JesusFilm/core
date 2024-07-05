@@ -2,6 +2,7 @@ import { expect, test } from '@playwright/test'
 
 /*  
 NS Admin: Monitoring
+https://www.checklyhq.com/docs/cli/
 */
 test('NS Admin Monitoring: Check user can login and logout successfuly', async ({
   page
