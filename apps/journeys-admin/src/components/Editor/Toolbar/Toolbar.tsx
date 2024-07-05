@@ -18,6 +18,7 @@ import { EDIT_TOOLBAR_HEIGHT } from '../constants'
 import { ActiveContent } from '@core/journeys/ui/EditorProvider'
 import Button from '@mui/material/Button'
 import { useTranslation } from 'react-i18next'
+import { AccessAvatars } from '../../AccessAvatars'
 import { Items } from './Items'
 import { Menu } from './Menu'
 
@@ -124,6 +125,7 @@ export function Toolbar(): ReactElement {
               {journey.description}
             </Typography>
           </Stack>
+          <AccessAvatars />
           <Items />
         </>
       )}
