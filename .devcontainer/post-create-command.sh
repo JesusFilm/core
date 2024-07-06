@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # Change permissions of files in workspace to match primary user
-sudo chown node -R /workspaces
-sudo chgrp node -R /workspaces
+sudo chown node:node -R /workspaces
+sudo chown node:node -R /home/node
 
 cd /workspaces/core
 
 # install bun CLI tool
-curl -fsSL https://bun.sh/install | bash -s "bun-v1.1.16"
+curl -fsSL https://bun.sh/install | bash -s "bun-v1.1.18"
 git config diff.lockb.textconv bun
 git config diff.lockb.binary true
 

@@ -45,6 +45,3 @@ WORKDIR /home/node
 RUN curl https://raw.githubusercontent.com/nektos/act/master/install.sh | bash
 RUN mv bin/act /usr/bin/
 RUN rm -rf bin
-
-RUN mkdir /home/node/.doppler \
-    && chown -R node /home/node/.doppler

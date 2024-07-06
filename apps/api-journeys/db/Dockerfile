@@ -8,7 +8,7 @@ RUN apk upgrade --update-cache --available && \
 ENV BUN_INSTALL="/bun"
 ENV PATH=$BUN_INSTALL/bin:$PATH
 
-RUN curl -fsSL https://bun.sh/install | bash -s "bun-v1.1.16"
+RUN curl -fsSL https://bun.sh/install | bash -s "bun-v1.1.18"
 
 WORKDIR /app
 COPY ./tsconfig.base.json /app/tsconfig.base.json
