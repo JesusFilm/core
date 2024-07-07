@@ -678,6 +678,8 @@ enum IconName
   SendRounded @join__enumValue(graph: JOURNEYS)
   SubscriptionsRounded @join__enumValue(graph: JOURNEYS)
   ContactSupportRounded @join__enumValue(graph: JOURNEYS)
+  Launch @join__enumValue(graph: JOURNEYS)
+  MailOutline @join__enumValue(graph: JOURNEYS)
 }
 
 enum IconSize
