@@ -125,7 +125,16 @@ export function Toolbar(): ReactElement {
               {journey.description}
             </Typography>
           </Stack>
-          <AccessAvatars />
+          <Tooltip
+            data-testid="ToolbarTooltip"
+            title={t('Manage Editors')}
+            arrow
+          >
+            <AccessAvatars
+              journeyId={journey.id}
+              userJourneys={journey.userJourneys ?? undefined}
+            />
+          </Tooltip>
           <Items />
         </>
       )}
