@@ -26,6 +26,7 @@ import {
   ButtonColor,
   TypographyColor
 } from 'libs/journeys/ui/__generated__/globalTypes'
+import { n } from 'msw/lib/core/GraphQLHandler-COiPfZ8k'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'react-i18next'
 import { Background } from 'reactflow'
@@ -159,7 +160,8 @@ export function Toolbar(): ReactElement {
                       {
                         name: 'offset',
                         options: {
-                          offset: [0, -10.5]
+                          offset:
+                            journey.description === '' ? [0, 2] : [0, -10.5]
                         }
                       }
                     ]
@@ -175,10 +177,11 @@ export function Toolbar(): ReactElement {
                       overflow: 'hidden',
                       whiteSpace: 'nowrap',
                       textOverflow: 'ellipsis',
+                      borderRadius: '8px',
                       flexShrink: 1,
                       color: ButtonColor.inherit,
                       ':hover': {
-                        backgroundColor: 'background.default'
+                        backgroundColor: '#f5f5f5'
                       }
                     }}
                   >
