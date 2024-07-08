@@ -72,7 +72,9 @@ export enum IconName {
     BeenhereRounded = "BeenhereRounded",
     SendRounded = "SendRounded",
     SubscriptionsRounded = "SubscriptionsRounded",
-    ContactSupportRounded = "ContactSupportRounded"
+    ContactSupportRounded = "ContactSupportRounded",
+    Launch = "Launch",
+    MailOutline = "MailOutline"
 }
 
 export enum IconColor {
@@ -154,7 +156,29 @@ export enum MessagePlatform {
     skype = "skype",
     line = "line",
     tikTok = "tikTok",
-    custom = "custom"
+    custom = "custom",
+    globe2 = "globe2",
+    globe3 = "globe3",
+    messageText1 = "messageText1",
+    messageText2 = "messageText2",
+    send1 = "send1",
+    send2 = "send2",
+    messageChat2 = "messageChat2",
+    messageCircle = "messageCircle",
+    messageNotifyCircle = "messageNotifyCircle",
+    messageNotifySquare = "messageNotifySquare",
+    messageSquare = "messageSquare",
+    mail1 = "mail1",
+    linkExternal = "linkExternal",
+    home3 = "home3",
+    home4 = "home4",
+    helpCircleContained = "helpCircleContained",
+    helpSquareContained = "helpSquareContained",
+    shieldCheck = "shieldCheck",
+    menu1 = "menu1",
+    checkBroken = "checkBroken",
+    checkContained = "checkContained",
+    settings = "settings"
 }
 
 export enum IntegrationType {

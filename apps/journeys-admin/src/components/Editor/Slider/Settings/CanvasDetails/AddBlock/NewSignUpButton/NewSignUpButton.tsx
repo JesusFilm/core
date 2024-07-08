@@ -40,7 +40,7 @@ export const SIGN_UP_BLOCK_CREATE = gql`
 
 export function NewSignUpButton(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [signUpBlockCreate] =
+  const [signUpBlockCreate, { loading }] =
     useMutation<SignUpBlockCreate>(SIGN_UP_BLOCK_CREATE)
   const { journey } = useJourney()
   const {
@@ -123,6 +123,7 @@ export function NewSignUpButton(): ReactElement {
       value={t('Subscribe')}
       onClick={handleClick}
       testId="NewSignUpButton"
+      disabled={loading}
     />
   )
 }
