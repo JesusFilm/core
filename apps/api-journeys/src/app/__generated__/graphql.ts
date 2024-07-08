@@ -314,7 +314,7 @@ export class CardBlockUpdateInput {
 }
 
 export class FormBlockCreateInput {
-    id?: Nullable<string>;
+    id: string;
     journeyId: string;
     parentBlockId: string;
 }
