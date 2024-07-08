@@ -117,7 +117,7 @@ export function transformJourneyAnalytics(
 }
 
 function getStepId(property: string, journeyId: string): string {
-  return replace(property, `${journeyId}/`, '')
+  return replace(property, `/${journeyId}/`, '')
 }
 
 function getJourneyEvents(
