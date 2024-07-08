@@ -271,7 +271,6 @@ interface EditorProviderProps {
       }) => ReactNode)
     | ReactNode
   initialState?: Partial<EditorState>
-  showAnalytics?: boolean
 }
 
 export function EditorProvider({
