@@ -6,7 +6,11 @@ interface HotkeysWrapperProps {
 }
 
 function HotkeysManager({ children }: HotkeysWrapperProps): ReactNode {
-  useHotkeys('ctrl+z, mod+z', () => console.log('pressed'), {
+  useHotkeys('ctrl+z, mod+z', () => console.log('undo'), {
+    preventDefault: true
+  })
+
+  useHotkeys('ctrl+shift+z, mod+shift+z', () => console.log('redo'), {
     preventDefault: true
   })
   return <>{children}</>
