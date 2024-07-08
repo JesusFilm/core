@@ -452,6 +452,10 @@ describe('BlockService', () => {
         }
       ])
       expect(prismaService.block.findMany).toHaveBeenCalledTimes(1)
+      expect(prismaService.block.findUnique).toHaveBeenCalledWith({
+        where: { id: 'typography', deletedAt: null },
+        include: { action: true }
+      })
     })
 
     it('should return block with specific id', async () => {
