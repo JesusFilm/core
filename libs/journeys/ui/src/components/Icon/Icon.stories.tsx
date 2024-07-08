@@ -100,7 +100,9 @@ export const Variant = {
       IconName.RadioButtonUncheckedRounded,
       IconName.SendRounded,
       IconName.SubscriptionsRounded,
-      IconName.TranslateRounded
+      IconName.TranslateRounded,
+      IconName.Launch,
+      IconName.MailOutline
     ],
     language: {
       __typename: 'Language',
