@@ -136,7 +136,7 @@ export function TitleDescriptionDialog({
                   variant="subtitle1"
                   style={{ marginLeft: -1, paddingTop: 20, paddingBottom: 16 }}
                 >
-                  {t('Description:')}
+                  {t('Description: ')}
                 </Typography>
                 <TextField
                   id="description"
