@@ -161,7 +161,7 @@ export function Toolbar(): ReactElement {
                         name: 'offset',
                         options: {
                           offset:
-                            journey.description === '' ? [0, 2] : [0, -10.5]
+                            journey.description === '' ? [0, 2] : [0, -10.3]
                         }
                       }
                     ]
