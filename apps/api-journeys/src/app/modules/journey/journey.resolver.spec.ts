@@ -1825,7 +1825,8 @@ describe('JourneyResolver', () => {
           parentOrder: 'asc'
         },
         where: {
-          journeyId: 'journeyId'
+          journeyId: 'journeyId',
+          deletedAt: null
         }
       })
     })
@@ -1848,7 +1849,8 @@ describe('JourneyResolver', () => {
         },
         where: {
           journeyId: 'journeyId',
-          id: { notIn: ['primaryImageBlockId'] }
+          id: { notIn: ['primaryImageBlockId'] },
+          deletedAt: null
         }
       })
     })
@@ -1871,7 +1873,8 @@ describe('JourneyResolver', () => {
         },
         where: {
           journeyId: 'journeyId',
-          id: { notIn: ['creatorImageBlockId'] }
+          id: { notIn: ['creatorImageBlockId'] },
+          deletedAt: null
         }
       })
     })
@@ -1895,7 +1898,8 @@ describe('JourneyResolver', () => {
         },
         where: {
           journeyId: 'journeyId',
-          id: { notIn: ['primaryImageBlockId', 'creatorImageBlockId'] }
+          id: { notIn: ['primaryImageBlockId', 'creatorImageBlockId'] },
+          deletedAt: null
         }
       })
     })
