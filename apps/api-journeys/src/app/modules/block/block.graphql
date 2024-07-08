@@ -9,9 +9,15 @@ extend type Journey {
   blocks: [Block!]
 }
 
+input BlockDeleteInput {
+  from: DateTime!
+  to: DateTime!
+}
+
 input BlocksFilter {
   journeyIds: [ID!]
   typenames: [String!]
+  deletedAt: BlockDeleteInput
 }
 
 extend type Query {

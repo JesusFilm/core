@@ -340,9 +340,15 @@ type Journey
   userJourneys: [UserJourney!]
 }
 
+input BlockDeleteInput {
+  from: DateTime!
+  to: DateTime!
+}
+
 input BlocksFilter {
   journeyIds: [ID!]
   typenames: [String!]
+  deletedAt: BlockDeleteInput
 }
 
 type Query {
