@@ -32,16 +32,21 @@ export class CardBlockResolver {
     const parentOrder = (
       await this.blockService.getSiblings(input.journeyId, input.parentBlockId)
     ).length
+
+    const upsertData = {
+      ...omit(input, 'parentBlockId', 'journeyId'),
+      id: input.id,
+      typename: 'CardBlock',
+      parentBlock: { connect: { id: input.parentBlockId } },
+      journey: { connect: { id: input.journeyId } },
+      parentOrder,
+      deletedAt: null
+    }
     return await this.prismaService.$transaction(async (tx) => {
-      const block = await tx.block.create({
-        data: {
-          ...omit(input, 'parentBlockId', 'journeyId'),
-          id: input.id ?? undefined,
-          typename: 'CardBlock',
-          parentBlock: { connect: { id: input.parentBlockId } },
-          journey: { connect: { id: input.journeyId } },
-          parentOrder
-        },
+      const block = await tx.block.upsert({
+        where: { id: input.id },
+        create: upsertData,
+        update: upsertData,
         include: {
           action: true,
           journey: {
@@ -68,7 +73,7 @@ export class CardBlockResolver {
     @Args('input') input: CardBlockUpdateInput
   ): Promise<Block> {
     const block = await this.prismaService.block.findUnique({
-      where: { id },
+      where: { id, deletedAt: null },
       include: {
         action: true,
         journey: {

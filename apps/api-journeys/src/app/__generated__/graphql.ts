@@ -296,7 +296,7 @@ export class ButtonBlockUpdateInput {
 }
 
 export class CardBlockCreateInput {
-    id?: Nullable<string>;
+    id: string;
     journeyId: string;
     parentBlockId: string;
     backgroundColor?: Nullable<string>;
