@@ -142,6 +142,34 @@ describe('BlockService', () => {
       expect(
         await service.getSiblings(block.journeyId, block.parentBlockId)
       ).toEqual([blockResponse, blockResponse])
+      expect(prismaService.block.findMany).toHaveBeenCalledWith({
+        where: {
+          journeyId: '1',
+          parentBlockId: '3',
+          parentOrder: { not: null },
+          deletedAt: null
+        },
+        orderBy: { parentOrder: 'asc' },
+        include: { action: true }
+      })
+    })
+
+    it('should return all siblings of a block without the parentId', async () => {
+      prismaService.block.findMany.mockResolvedValue([block, block])
+      expect(await service.getSiblings(block.journeyId)).toEqual([
+        blockResponse,
+        blockResponse
+      ])
+      expect(prismaService.block.findMany).toHaveBeenCalledWith({
+        where: {
+          journeyId: '1',
+          parentOrder: { not: null },
+          deletedAt: null,
+          typename: 'StepBlock'
+        },
+        orderBy: { parentOrder: 'asc' },
+        include: { action: true }
+      })
     })
   })
 
@@ -175,6 +203,27 @@ describe('BlockService', () => {
       expect(await service.update(block.id, { title: 'test' })).toEqual(
         blockResponse
       )
+      expect(prismaService.block.update).toHaveBeenCalledWith({
+        data: {
+          title: 'test'
+        },
+        include: {
+          action: true
+        },
+        where: {
+          id: '1'
+        }
+      })
+    })
+
+    it('should not update deletedAt prop', async () => {
+      prismaService.block.update.mockResolvedValueOnce(block)
+      expect(
+        await service.update(block.id, {
+          title: 'test',
+          deletedAt: new Date()
+        })
+      ).toEqual(blockResponse)
       expect(prismaService.block.update).toHaveBeenCalledWith({
         data: {
           title: 'test'
@@ -549,7 +598,6 @@ describe('BlockService', () => {
       prismaService.block.findMany
         .mockResolvedValueOnce([block, block])
         .mockResolvedValueOnce([])
-      prismaService.block.delete.mockResolvedValue(block)
     })
 
     it('should remove blocks and return siblings', async () => {
@@ -571,6 +619,10 @@ describe('BlockService', () => {
         block.parentBlockId,
         prismaService
       )
+      expect(prismaService.block.update).toHaveBeenCalledWith({
+        data: { deletedAt: expect.any(String) },
+        where: { id: '1' }
+      })
     })
   })
 
@@ -613,6 +665,16 @@ describe('BlockService', () => {
       expect(await service.validateBlock('1', journey.id, 'journeyId')).toBe(
         true
       )
+    })
+
+    it('should get block that is not deleted', async () => {
+      expect(await service.validateBlock('1', journey.id, 'journeyId')).toBe(
+        true
+      )
+      expect(prismaService.block.findUnique).toHaveBeenCalledWith({
+        where: { id: '1', deletedAt: null },
+        include: { action: true }
+      })
     })
 
     it('should return false with incorrect journey id', async () => {

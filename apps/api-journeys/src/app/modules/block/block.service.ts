@@ -66,7 +66,8 @@ export class BlockService {
           where: {
             journeyId,
             typename: 'StepBlock',
-            parentOrder: { not: null }
+            parentOrder: { not: null },
+            deletedAt: null
           },
           orderBy: { parentOrder: 'asc' },
           include: { action: true }
@@ -235,7 +236,7 @@ export class BlockService {
     duplicateStepIds?: Map<string, string>
   ): Promise<BlockWithAction[]> {
     const block = await this.prismaService.block.findUnique({
-      where: { id },
+      where: { id, deletedAt: null },
       include: { action: true }
     })
     if (block == null) {
@@ -245,7 +246,7 @@ export class BlockService {
     const duplicateBlockId = duplicateId ?? uuidv4()
 
     const children = await this.prismaService.block.findMany({
-      where: { parentBlockId: block.id, journeyId },
+      where: { parentBlockId: block.id, journeyId, deletedAt: null },
       include: { action: true },
       orderBy: { parentOrder: 'asc' }
     })
@@ -307,7 +308,7 @@ export class BlockService {
   ): Promise<BlockWithAction[]> {
     await tx.block.update({
       where: { id: block.id },
-      data: { updatedAt: new Date().toISOString() }
+      data: { deletedAt: new Date().toISOString() }
     })
 
     const result = await this.reorderSiblings(
@@ -326,7 +327,7 @@ export class BlockService {
     const block =
       id != null
         ? await this.prismaService.block.findUnique({
-            where: { id },
+            where: { id, deletedAt: null },
             include: { action: true }
           })
         : null
@@ -378,7 +379,9 @@ export class BlockService {
       where: { id },
       data: omit(input, [
         ...OMITTED_BLOCK_FIELDS,
-        'action'
+        'action',
+        // deletedAt should only be updated using removeBlockAndChildren
+        'deletedAt'
       ]) as Prisma.BlockUpdateInput,
       include: { action: true }
     })) as unknown as T

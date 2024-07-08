@@ -96,12 +96,13 @@ describe('ButtonBlock', () => {
     })
 
     it('creates a ButtonBlock', async () => {
-      prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
+      prismaService.block.upsert.mockResolvedValueOnce(blockWithUserTeam)
       expect(
         await resolver.buttonBlockCreate(ability, blockCreateInput)
       ).toEqual(blockWithUserTeam)
-      expect(prismaService.block.create).toHaveBeenCalledWith({
-        data: {
+      expect(prismaService.block.upsert).toHaveBeenCalledWith({
+        where: { id: 'blockId' },
+        update: {
           color: 'primary',
           id: 'blockId',
           journey: { connect: { id: 'journeyId' } },
@@ -110,7 +111,20 @@ describe('ButtonBlock', () => {
           parentOrder: 2,
           size: 'medium',
           typename: 'ButtonBlock',
-          variant: 'contained'
+          variant: 'contained',
+          deletedAt: null
+        },
+        create: {
+          color: 'primary',
+          id: 'blockId',
+          journey: { connect: { id: 'journeyId' } },
+          label: 'label',
+          parentBlock: { connect: { id: 'parentBlockId' } },
+          parentOrder: 2,
+          size: 'medium',
+          typename: 'ButtonBlock',
+          variant: 'contained',
+          deletedAt: null
         },
         include: {
           action: true,
@@ -129,7 +143,7 @@ describe('ButtonBlock', () => {
     })
 
     it('throws error if not authorized', async () => {
-      prismaService.block.create.mockResolvedValueOnce(block)
+      prismaService.block.upsert.mockResolvedValueOnce(block)
       await expect(
         resolver.buttonBlockCreate(ability, blockCreateInput)
       ).rejects.toThrow('user is not allowed to create block')
@@ -149,6 +163,18 @@ describe('ButtonBlock', () => {
     it('updates a ButtonBlock', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
       await resolver.buttonBlockUpdate(ability, 'blockId', blockUpdateInput)
+      expect(prismaService.block.findUnique).toHaveBeenCalledWith({
+        where: { id: 'blockId', deletedAt: null },
+        include: {
+          action: true,
+          journey: {
+            include: {
+              team: { include: { userTeams: true } },
+              userJourneys: true
+            }
+          }
+        }
+      })
       expect(service.update).toHaveBeenCalledWith('blockId', blockUpdateInput)
     })
 
