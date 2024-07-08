@@ -73,7 +73,20 @@ export function Toolbar(): ReactElement {
       </NextLink>
       {journey != null && (
         <>
-          <Tooltip title={t('Social Image')} arrow>
+          <Tooltip
+            title={t('Social Image')}
+            arrow
+            PopperProps={{
+              modifiers: [
+                {
+                  name: 'offset',
+                  options: {
+                    offset: [0, -11]
+                  }
+                }
+              ]
+            }}
+          >
             <Button
               onClick={handleSelect}
               data-testid="ToolbarSocialImage"
