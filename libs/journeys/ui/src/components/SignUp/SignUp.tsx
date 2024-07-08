@@ -114,7 +114,7 @@ export const SignUp = ({
         })
         if (journey != null) {
           plausible('signupSubmit', {
-            u: `${journey.id}/${input.stepId}`,
+            u: `${window.location.hostname}/${journey.id}/${input.stepId}`,
             props: {
               ...input,
               key: keyify({

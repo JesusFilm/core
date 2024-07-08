@@ -57,6 +57,12 @@ const mockUsePlausible = usePlausible as jest.MockedFunction<
 
 describe('VideoEvents', () => {
   let props: VideoEventsProps
+  const mockHostname = 'https://example.com'
+  Object.defineProperty(window, 'location', {
+    value: {
+      hostname: mockHostname
+    }
+  })
 
   beforeEach(() => {
     const video = document.createElement('video')
@@ -155,7 +161,7 @@ describe('VideoEvents', () => {
 
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('videoStart', {
-      u: 'journey.id/step.id',
+      u: `${mockHostname}/journey.id/step.id`,
       props: {
         id: 'uuid',
         blockId: props.blockId,
@@ -266,7 +272,7 @@ describe('VideoEvents', () => {
     })
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('videoPlay', {
-      u: 'journey.id/step.id',
+      u: `${mockHostname}/journey.id/step.id`,
       props: {
         id: 'uuid',
         blockId: props.blockId,
@@ -376,7 +382,7 @@ describe('VideoEvents', () => {
     })
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('videoPause', {
-      u: 'journey.id/step.id',
+      u: `${mockHostname}/journey.id/step.id`,
       props: {
         id: 'uuid',
         blockId: props.blockId,
@@ -486,7 +492,7 @@ describe('VideoEvents', () => {
     })
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('videoExpand', {
-      u: 'journey.id/step.id',
+      u: `${mockHostname}/journey.id/step.id`,
       props: {
         id: 'uuid',
         blockId: props.blockId,
@@ -616,7 +622,7 @@ describe('VideoEvents', () => {
     })
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('videoCollapse', {
-      u: 'journey.id/step.id',
+      u: `${mockHostname}/journey.id/step.id`,
       props: {
         id: 'uuid',
         blockId: props.blockId,
@@ -841,7 +847,7 @@ describe('VideoEvents', () => {
     })
     await waitFor(() => expect(resultStart).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('videoStart', {
-      u: 'journey.id/step.id',
+      u: `${mockHostname}/journey.id/step.id`,
       props: {
         id: 'uuid',
         blockId: props.blockId,
@@ -868,7 +874,7 @@ describe('VideoEvents', () => {
     })
     await waitFor(() => expect(resultOne).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('videoProgress25', {
-      u: 'journey.id/step.id',
+      u: `${mockHostname}/journey.id/step.id`,
       props: {
         id: 'uuid',
         blockId: props.blockId,
@@ -896,7 +902,7 @@ describe('VideoEvents', () => {
     })
     await waitFor(() => expect(resultTwo).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('videoProgress50', {
-      u: 'journey.id/step.id',
+      u: `${mockHostname}/journey.id/step.id`,
       props: {
         id: 'uuid',
         blockId: props.blockId,
@@ -924,7 +930,7 @@ describe('VideoEvents', () => {
     })
     await waitFor(() => expect(resultThree).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('videoProgress75', {
-      u: 'journey.id/step.id',
+      u: `${mockHostname}/journey.id/step.id`,
       props: {
         id: 'uuid',
         blockId: props.blockId,

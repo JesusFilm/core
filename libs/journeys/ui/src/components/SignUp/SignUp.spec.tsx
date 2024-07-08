@@ -95,6 +95,13 @@ const SignUpMock = ({ mocks = [] }: SignUpMockProps): ReactElement => (
 )
 
 describe('SignUp', () => {
+  const mockHostname = 'https://example.com'
+  Object.defineProperty(window, 'location', {
+    value: {
+      hostname: mockHostname
+    }
+  })
+
   it('should validate when fields are empty', async () => {
     const { getByRole, getAllByText } = render(
       <SnackbarProvider>
@@ -409,7 +416,7 @@ describe('SignUp', () => {
 
     await waitFor(() => {
       expect(mockPlausible).toHaveBeenCalledWith('signupSubmit', {
-        u: 'journey.id/step.id',
+        u: `${mockHostname}/journey.id/step.id`,
         props: {
           id: 'uuid',
           blockId: 'signUp0.id',

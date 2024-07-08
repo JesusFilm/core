@@ -129,6 +129,13 @@ const journey = {
 } as unknown as Journey
 
 describe('Button', () => {
+  const mockHostname = 'https://example.com'
+  Object.defineProperty(window, 'location', {
+    value: {
+      hostname: mockHostname
+    }
+  })
+
   it('should create a buttonClickEvent onClick', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
     const mockPlausible = jest.fn()
@@ -189,7 +196,7 @@ describe('Button', () => {
     fireEvent.click(getByRole('button'))
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('buttonClick', {
-      u: 'journey.id/step.id',
+      u: `${mockHostname}/journey.id/step.id`,
       props: {
         id: 'uuid',
         blockId: 'button',
@@ -415,7 +422,7 @@ describe('Button', () => {
     fireEvent.click(getByRole('button'))
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('chatButtonClick', {
-      u: 'journey.id/step.id',
+      u: `${mockHostname}/journey.id/step.id`,
       props: {
         id: 'uuid',
         blockId: 'button',

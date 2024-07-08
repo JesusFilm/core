@@ -99,7 +99,7 @@ export function RadioQuestion({
       ) as TreeBlock<RadioOptionFields> | undefined
       if (journey != null && radioOptionBlock != null) {
         plausible('radioQuestionSubmit', {
-          u: `${journey.id}/${input.stepId}`,
+          u: `${window.location.hostname}/${journey.id}/${input.stepId}`,
           props: {
             ...input,
             key: keyify({

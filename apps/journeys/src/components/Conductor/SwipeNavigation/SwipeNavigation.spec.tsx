@@ -56,6 +56,13 @@ describe('SwipeNavigation', () => {
   const swipeLeft = -100
   const swipeRight = 100
 
+  const mockHostname = 'https://example.com'
+  Object.defineProperty(window, 'location', {
+    value: {
+      hostname: mockHostname
+    }
+  })
+
   const step1: TreeBlock<StepBlock> = {
     id: 'step1.id',
     __typename: 'StepBlock',
@@ -444,7 +451,7 @@ describe('SwipeNavigation', () => {
       expect(mockStepNextEventCreate.result).toHaveBeenCalled()
     )
     expect(mockPlausible).toHaveBeenCalledWith('navigateNextStep', {
-      u: 'journey.id/step1.id',
+      u: `${mockHostname}/journey.id/step1.id`,
       props: {
         id: 'uuid',
         blockId: 'step1.id',
@@ -495,7 +502,7 @@ describe('SwipeNavigation', () => {
       expect(mockStepPreviousEventCreate.result).toHaveBeenCalled()
     )
     expect(mockPlausible).toHaveBeenCalledWith('navigatePreviousStep', {
-      u: 'journey.id/step2.id',
+      u: `${mockHostname}/journey.id/step2.id`,
       props: {
         id: 'uuid',
         blockId: 'step2.id',

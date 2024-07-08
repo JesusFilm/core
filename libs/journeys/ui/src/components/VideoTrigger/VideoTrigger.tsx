@@ -62,7 +62,7 @@ export function VideoTrigger({
           if (variant === 'embed' && !isIPhone()) {
             handleAction(router, triggerAction)
             plausible('videoTrigger', {
-              u: `${journey?.id ?? ''}/${activeBlock.id}`,
+              u: `${window.location.hostname}/${journey?.id ?? ''}/${activeBlock.id}`,
               props: input
             })
             return

@@ -69,6 +69,13 @@ describe('CardBlock', () => {
   const leftSide = { clientX: 0 }
   const rightSide = { clientX: 1000 }
 
+  const mockHostname = 'https://example.com'
+  Object.defineProperty(window, 'location', {
+    value: {
+      hostname: mockHostname
+    }
+  })
+
   beforeEach(() => {
     mockUuidv4.mockReturnValue('uuid')
     const blurImageMock = blurImage as jest.Mock
@@ -445,7 +452,7 @@ describe('CardBlock', () => {
       expect(mockStepNextEventCreate.result).toHaveBeenCalled()
     )
     expect(mockPlausible).toHaveBeenCalledWith('navigateNextStep', {
-      u: 'journey.id/step1.id',
+      u: `${mockHostname}/journey.id/step1.id`,
       props: {
         id: 'uuid',
         blockId: 'step1.id',
@@ -503,7 +510,7 @@ describe('CardBlock', () => {
       expect(mockStepPreviousEventCreate.result).toHaveBeenCalled()
     )
     expect(mockPlausible).toHaveBeenCalledWith('navigatePreviousStep', {
-      u: 'journey.id/step2.id',
+      u: `${mockHostname}/journey.id/step2.id`,
       props: {
         id: 'uuid',
         blockId: 'step2.id',
