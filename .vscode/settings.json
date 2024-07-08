@@ -98,5 +98,6 @@
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "[typescriptreact]": {
     "editor.defaultFormatter": "biomejs.biome"
-  }
+  },
+  "editor.formatOnSave": true
 }
