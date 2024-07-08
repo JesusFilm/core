@@ -19,9 +19,18 @@ import { ActiveContent } from '@core/journeys/ui/EditorProvider'
 import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
+import { Divider } from '@mui/material'
 import Button from '@mui/material/Button'
+import { typography } from '@mui/system'
+import {
+  ButtonColor,
+  TypographyColor
+} from 'libs/journeys/ui/__generated__/globalTypes'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'react-i18next'
+import { Background } from 'reactflow'
+import { transpile } from 'typescript'
+import { BackgroundColor } from '../Slider/Settings/CanvasDetails/Properties/blocks/Card/BackgroundColor'
 import { Items } from './Items'
 import { Menu } from './Menu'
 import { TitleDescriptionDialog } from './TitleDescriptionDialog'
@@ -128,20 +137,34 @@ export function Toolbar(): ReactElement {
           </Tooltip>
 
           <Stack flexGrow={1} flexShrink={1} sx={{ minWidth: 0 }}>
-            <ThemeProvider
-              themeName={ThemeName.base}
-              themeMode={ThemeMode.light}
+            <Box
+              flexShrink={1}
+              sx={{
+                display: 'inline-flex',
+                overflow: 'hidden',
+                whiteSpace: 'nowrap',
+                textOverflow: 'ellipsis'
+              }}
             >
-              <Box
-                flexShrink={1}
-                sx={{
-                  display: 'inline-flex',
-                  overflow: 'hidden',
-                  whiteSpace: 'nowrap',
-                  textOverflow: 'ellipsis'
-                }}
+              <ThemeProvider
+                themeName={ThemeName.journeysAdmin}
+                themeMode={ThemeMode.dark}
               >
-                <Tooltip title="Click to edit" placement="bottom" arrow>
+                <Tooltip
+                  title="Click to edit"
+                  placement="bottom"
+                  arrow
+                  PopperProps={{
+                    modifiers: [
+                      {
+                        name: 'offset',
+                        options: {
+                          offset: [0, -10.5]
+                        }
+                      }
+                    ]
+                  }}
+                >
                   <Button
                     variant="text"
                     onClick={handleSelectTitle}
@@ -152,7 +175,11 @@ export function Toolbar(): ReactElement {
                       overflow: 'hidden',
                       whiteSpace: 'nowrap',
                       textOverflow: 'ellipsis',
-                      flexShrink: 1
+                      flexShrink: 1,
+                      color: ButtonColor.inherit,
+                      ':hover': {
+                        backgroundColor: 'background.default'
+                      }
                     }}
                   >
                     <Typography
@@ -180,8 +207,8 @@ export function Toolbar(): ReactElement {
                     </Typography>
                   </Button>
                 </Tooltip>
-              </Box>
-            </ThemeProvider>
+              </ThemeProvider>
+            </Box>
             <Typography>
               {journey?.id != null && titleDialogOpen != null && (
                 <TitleDescriptionDialog
