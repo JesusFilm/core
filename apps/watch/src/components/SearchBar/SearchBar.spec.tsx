@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react'
+import { getByTestId, render } from '@testing-library/react'
 import { SearchBar } from './SearchBar'
 
 describe('SearchBar', () => {
@@ -13,5 +13,11 @@ describe('SearchBar', () => {
       /Search by topic, occasion, or audience .../i
     )
     expect(inputElement).toBeInTheDocument()
+  })
+
+  it('should have globe icon', async () => {
+    const { getByTestId } = render(<SearchBar />)
+    const searchIcon = getByTestId('Globe1Icon')
+    expect(searchIcon).toBeInTheDocument()
   })
 })
