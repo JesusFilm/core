@@ -137,7 +137,7 @@ export function NavigationButton({
     })
     if (journey != null)
       plausible('navigateNextStep', {
-        u: `${window.location.hostname}/${journey.id}/${input.blockId}`,
+        u: `${window.location.origin}/${journey.id}/${input.blockId}`,
         props: {
           ...input,
           key: keyify({
@@ -202,7 +202,7 @@ export function NavigationButton({
     })
     if (journey != null)
       plausible('navigatePreviousStep', {
-        u: `${window.location.hostname}/${journey.id}/${input.blockId}`,
+        u: `${window.location.origin}/${journey.id}/${input.blockId}`,
         props: {
           ...input,
           key: keyify({

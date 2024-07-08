@@ -79,10 +79,10 @@ const journey = {
 describe('NavigationButton', () => {
   mockUuidv4.mockReturnValue('uuid')
 
-  const mockHostname = 'https://example.com'
+  const mockOrigin = 'https://example.com'
   Object.defineProperty(window, 'location', {
     value: {
-      hostname: mockHostname
+      origin: mockOrigin
     }
   })
 
@@ -192,7 +192,7 @@ describe('NavigationButton', () => {
     await waitFor(() => expect(stepNextResult).toHaveBeenCalled())
 
     expect(mockPlausible).toHaveBeenCalledWith('navigateNextStep', {
-      u: `${mockHostname}/journey.id/step1.id`,
+      u: `${mockOrigin}/journey.id/step1.id`,
       props: {
         id: 'uuid',
         blockId: 'step1.id',
@@ -242,7 +242,7 @@ describe('NavigationButton', () => {
     await waitFor(() => expect(stepPreviousResult).toHaveBeenCalled())
 
     expect(mockPlausible).toHaveBeenCalledWith('navigatePreviousStep', {
-      u: `${mockHostname}/journey.id/step2.id`,
+      u: `${mockOrigin}/journey.id/step2.id`,
       props: {
         id: 'uuid',
         blockId: 'step2.id',

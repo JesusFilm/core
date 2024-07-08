@@ -56,10 +56,10 @@ describe('SwipeNavigation', () => {
   const swipeLeft = -100
   const swipeRight = 100
 
-  const mockHostname = 'https://example.com'
+  const mockOrigin = 'https://example.com'
   Object.defineProperty(window, 'location', {
     value: {
-      hostname: mockHostname
+      origin: mockOrigin
     }
   })
 
@@ -451,7 +451,7 @@ describe('SwipeNavigation', () => {
       expect(mockStepNextEventCreate.result).toHaveBeenCalled()
     )
     expect(mockPlausible).toHaveBeenCalledWith('navigateNextStep', {
-      u: `${mockHostname}/journey.id/step1.id`,
+      u: `${mockOrigin}/journey.id/step1.id`,
       props: {
         id: 'uuid',
         blockId: 'step1.id',
@@ -502,7 +502,7 @@ describe('SwipeNavigation', () => {
       expect(mockStepPreviousEventCreate.result).toHaveBeenCalled()
     )
     expect(mockPlausible).toHaveBeenCalledWith('navigatePreviousStep', {
-      u: `${mockHostname}/journey.id/step2.id`,
+      u: `${mockOrigin}/journey.id/step2.id`,
       props: {
         id: 'uuid',
         blockId: 'step2.id',

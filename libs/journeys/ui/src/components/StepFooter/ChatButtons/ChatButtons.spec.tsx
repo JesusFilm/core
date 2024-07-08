@@ -29,10 +29,10 @@ const mockUsePlausible = usePlausible as jest.MockedFunction<
 >
 
 describe('ChatButtons', () => {
-  const mockHostname = 'https://example.com'
+  const mockOrigin = 'https://example.com'
   Object.defineProperty(window, 'location', {
     value: {
-      hostname: mockHostname
+      origin: mockOrigin
     }
   })
 
@@ -164,7 +164,7 @@ describe('ChatButtons', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(window.open).toHaveBeenCalledWith(chatButtons[0].link, '_blank')
     expect(mockPlausible).toHaveBeenCalledWith('footerChatButtonClick', {
-      u: `${mockHostname}/journeyId/step`,
+      u: `${mockOrigin}/journeyId/step`,
       props: {
         id: '1',
         blockId: 'step',

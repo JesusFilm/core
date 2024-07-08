@@ -69,10 +69,10 @@ describe('CardBlock', () => {
   const leftSide = { clientX: 0 }
   const rightSide = { clientX: 1000 }
 
-  const mockHostname = 'https://example.com'
+  const mockOrigin = 'https://example.com'
   Object.defineProperty(window, 'location', {
     value: {
-      hostname: mockHostname
+      origin: mockOrigin
     }
   })
 
@@ -452,7 +452,7 @@ describe('CardBlock', () => {
       expect(mockStepNextEventCreate.result).toHaveBeenCalled()
     )
     expect(mockPlausible).toHaveBeenCalledWith('navigateNextStep', {
-      u: `${mockHostname}/journey.id/step1.id`,
+      u: `${mockOrigin}/journey.id/step1.id`,
       props: {
         id: 'uuid',
         blockId: 'step1.id',
@@ -510,7 +510,7 @@ describe('CardBlock', () => {
       expect(mockStepPreviousEventCreate.result).toHaveBeenCalled()
     )
     expect(mockPlausible).toHaveBeenCalledWith('navigatePreviousStep', {
-      u: `${mockHostname}/journey.id/step2.id`,
+      u: `${mockOrigin}/journey.id/step2.id`,
       props: {
         id: 'uuid',
         blockId: 'step2.id',

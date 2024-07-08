@@ -145,10 +145,10 @@ const block: TreeBlock<StepFields> = {
 }
 
 describe('Step', () => {
-  const mockHostname = 'https://example.com'
+  const mockOrigin = 'https://example.com'
   Object.defineProperty(window, 'location', {
     value: {
-      hostname: mockHostname
+      origin: mockOrigin
     }
   })
 
@@ -191,7 +191,7 @@ describe('Step', () => {
       expect(mockStepViewEventCreate.result).toHaveBeenCalled()
     )
     expect(mockPlausible).toHaveBeenCalledWith('pageview', {
-      u: `${mockHostname}/journeyId/Step1`,
+      u: `${mockOrigin}/journeyId/Step1`,
       props: {
         id: 'uuid',
         blockId: 'Step1',

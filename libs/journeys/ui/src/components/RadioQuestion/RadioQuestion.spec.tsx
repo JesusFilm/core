@@ -85,10 +85,10 @@ const journey = {
 } as unknown as Journey
 
 describe('RadioQuestion', () => {
-  const mockHostname = 'https://example.com'
+  const mockOrigin = 'https://example.com'
   Object.defineProperty(window, 'location', {
     value: {
-      hostname: mockHostname
+      origin: mockOrigin
     }
   })
 
@@ -313,7 +313,7 @@ describe('RadioQuestion', () => {
     fireEvent.click(buttons[0])
     await waitFor(() =>
       expect(mockPlausible).toHaveBeenCalledWith('radioQuestionSubmit', {
-        u: `${mockHostname}/journey.id/step.id`,
+        u: `${mockOrigin}/journey.id/step.id`,
         props: {
           id: 'uuid',
           blockId: 'RadioQuestion1',

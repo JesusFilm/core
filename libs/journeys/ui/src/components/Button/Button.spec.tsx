@@ -129,10 +129,10 @@ const journey = {
 } as unknown as Journey
 
 describe('Button', () => {
-  const mockHostname = 'https://example.com'
+  const mockOrigin = 'https://example.com'
   Object.defineProperty(window, 'location', {
     value: {
-      hostname: mockHostname
+      origin: mockOrigin
     }
   })
 
@@ -196,7 +196,7 @@ describe('Button', () => {
     fireEvent.click(getByRole('button'))
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('buttonClick', {
-      u: `${mockHostname}/journey.id/step.id`,
+      u: `${mockOrigin}/journey.id/step.id`,
       props: {
         id: 'uuid',
         blockId: 'button',
@@ -422,7 +422,7 @@ describe('Button', () => {
     fireEvent.click(getByRole('button'))
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('chatButtonClick', {
-      u: `${mockHostname}/journey.id/step.id`,
+      u: `${mockOrigin}/journey.id/step.id`,
       props: {
         id: 'uuid',
         blockId: 'button',

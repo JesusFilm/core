@@ -80,7 +80,7 @@ export function ChatButtons(): ReactElement {
       })
       if (journey != null)
         plausible('footerChatButtonClick', {
-          u: `${window.location.hostname}/${journey.id}/${input.stepId}`,
+          u: `${window.location.origin}/${journey.id}/${input.stepId}`,
           props: {
             ...input,
             key: keyify({
