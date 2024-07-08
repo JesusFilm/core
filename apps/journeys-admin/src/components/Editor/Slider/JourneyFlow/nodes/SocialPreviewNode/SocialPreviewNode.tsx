@@ -1,4 +1,3 @@
-import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardMedia from '@mui/material/CardMedia'
@@ -19,8 +18,8 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import MessageCircle from '@core/shared/ui/icons/MessageCircle'
 import Share from '@core/shared/ui/icons/Share'
 import ThumbsUp from '@core/shared/ui/icons/ThumbsUp'
-import UserProfile2Icon from '@core/shared/ui/icons/UserProfile2'
 
+import UserProfileCircle from '@core/shared/ui/icons/UserProfileCircle'
 import { useUpdateEdge } from '../../libs/useUpdateEdge'
 import { BaseNode } from '../BaseNode'
 
@@ -65,6 +64,8 @@ export function SocialPreviewNode(): ReactElement {
     void updateEdge({ source: 'SocialPreview', target: params.target })
   }
 
+  const bgcolor = showAnalytics ? 'rgba(0,0,0,0.1)' : 'background.default'
+
   return (
     <BaseNode
       id="SocialPreview"
@@ -92,7 +93,14 @@ export function SocialPreviewNode(): ReactElement {
                     ? theme.palette.divider
                     : 'transparent'
               }`,
-            outlineOffset: '5px'
+            outlineOffset: '5px',
+            ...(showAnalytics && {
+              backgroundColor: 'transparent',
+              outline: '2px solid rgba(0, 0, 0, 0.1)',
+              outlineOffset: 0,
+              opacity: 0.7,
+              boxShadow: 'none'
+            })
           }}
           onClick={() => handleClick()}
         >
@@ -101,32 +109,18 @@ export function SocialPreviewNode(): ReactElement {
             height="30px"
             justifyContent="space-between"
             alignItems="center"
+            spacing={1}
           >
-            <Avatar
-              sx={{
-                height: 15,
-                width: 15,
-                bgcolor: 'background.default',
-                color: 'background.paper',
-                mr: 1.5
-              }}
-            >
-              <UserProfile2Icon sx={{ height: '15px' }} />
-            </Avatar>
+            <UserProfileCircle sx={{ fontSize: 14, color: bgcolor }} />
             <Box flexGrow={1}>
               <Box
                 width={45}
                 height={9}
-                bgcolor="background.default"
+                bgcolor={bgcolor}
                 borderRadius="4.5px"
               />
             </Box>
-            <Box
-              width={9}
-              height={9}
-              bgcolor="background.default"
-              borderRadius="4.5px"
-            />
+            <Box width={9} height={9} bgcolor={bgcolor} borderRadius="4.5px" />
           </Stack>
           <CardMedia
             sx={{
@@ -177,7 +171,7 @@ export function SocialPreviewNode(): ReactElement {
                   data-testid="SocialPreviewTitleEmpty"
                   width={118.5}
                   height={9}
-                  bgcolor="background.default"
+                  bgcolor={bgcolor}
                   borderRadius={1}
                 />
               ) : (
@@ -197,7 +191,7 @@ export function SocialPreviewNode(): ReactElement {
                   data-testid="SocialPreviewDescriptionEmpty"
                   width={118.5}
                   height={9}
-                  bgcolor="background.default"
+                  bgcolor={bgcolor}
                   borderRadius={1}
                 />
               ) : (
@@ -217,9 +211,9 @@ export function SocialPreviewNode(): ReactElement {
               justifyContent="space-around"
               color="background.default"
             >
-              <ThumbsUp sx={{ fontSize: 9 }} />
-              <MessageCircle sx={{ fontSize: 9 }} />
-              <Share sx={{ fontSize: 9 }} />
+              <ThumbsUp sx={{ fontSize: 9, color: bgcolor, bgColor: 'red' }} />
+              <MessageCircle sx={{ fontSize: 9, color: bgcolor }} />
+              <Share sx={{ fontSize: 9, color: bgcolor }} />
             </Stack>
           </Stack>
         </Card>
