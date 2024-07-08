@@ -95,7 +95,7 @@ export class BlockResolver {
     @Args('id') id: string
   ): Promise<Block[]> {
     const block = await this.prismaService.block.findUnique({
-      where: { id },
+      where: { id, deletedAt: null },
       include: {
         action: true,
         journey: {
@@ -154,10 +154,17 @@ export class BlockResolver {
     @CaslAccessible('Block') accessibleBlocks: Prisma.BlockWhereInput,
     @Args('where') where?: BlocksFilter
   ): Promise<Block[]> {
-    const filter: Prisma.BlockWhereInput = {}
+    const filter: Prisma.BlockWhereInput = {
+      deletedAt: null
+    }
 
     if (where?.typenames != null) filter.typename = { in: where.typenames }
     if (where?.journeyIds != null) filter.journeyId = { in: where.journeyIds }
+    if (where?.deletedAt != null)
+      filter.deletedAt = {
+        gte: String(where.deletedAt.from),
+        lte: String(where.deletedAt.to)
+      }
 
     const blocks = await this.prismaService.block.findMany({
       where: {

@@ -908,7 +908,8 @@ export class JourneyResolver {
   @FromPostgresql()
   async blocks(@Parent() journey: Journey): Promise<Block[]> {
     const filter: Prisma.BlockWhereInput = {
-      journeyId: journey.id
+      journeyId: journey.id,
+      deletedAt: null
     }
     const idNotIn: string[] = []
     if (journey.primaryImageBlockId != null) {

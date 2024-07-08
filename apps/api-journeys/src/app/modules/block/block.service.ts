@@ -56,7 +56,8 @@ export class BlockService {
           where: {
             journeyId,
             parentBlockId,
-            parentOrder: { not: null }
+            parentOrder: { not: null },
+            deletedAt: null
           },
           orderBy: { parentOrder: 'asc' },
           include: { action: true }
@@ -304,8 +305,9 @@ export class BlockService {
     block: Block,
     tx: PrismaTransation = this.prismaService
   ): Promise<BlockWithAction[]> {
-    await tx.block.delete({
-      where: { id: block.id }
+    await tx.block.update({
+      where: { id: block.id },
+      data: { updatedAt: new Date().toISOString() }
     })
 
     const result = await this.reorderSiblings(

@@ -276,7 +276,7 @@ export class BlocksFilter {
 }
 
 export class ButtonBlockCreateInput {
-    id?: Nullable<string>;
+    id: string;
     journeyId: string;
     parentBlockId: string;
     label: string;
