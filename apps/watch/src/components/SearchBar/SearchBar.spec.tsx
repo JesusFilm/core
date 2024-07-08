@@ -17,7 +17,7 @@ describe('SearchBar', () => {
 
   it('should have globe icon', async () => {
     const { getByTestId } = render(<SearchBar />)
-    const searchIcon = getByTestId('Globe1Icon')
+    const searchIcon = getByTestId('Search1Icon')
     expect(searchIcon).toBeInTheDocument()
   })
 })

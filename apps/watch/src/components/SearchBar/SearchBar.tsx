@@ -1,4 +1,4 @@
-import Globe1Icon from '@core/shared/ui/icons/Globe1'
+import Search1Icon from '@core/shared/ui/icons/Search1'
 import { InputAdornment, TextField } from '@mui/material'
 import { ReactElement } from 'react'
 
@@ -9,7 +9,7 @@ export function SearchBar(): ReactElement {
       InputProps={{
         startAdornment: (
           <InputAdornment position="start">
-            <Globe1Icon />
+            <Search1Icon />
           </InputAdornment>
         )
       }}
