@@ -38,19 +38,11 @@ interface Block
   parentOrder: Int
 }
 
-input BlockDeleteInput
-  @join__type(graph: JOURNEYS)
-{
-  from: DateTime!
-  to: DateTime!
-}
-
 input BlocksFilter
   @join__type(graph: JOURNEYS)
 {
   journeyIds: [ID!]
   typenames: [String!]
-  deletedAt: BlockDeleteInput
 }
 
 type Browser

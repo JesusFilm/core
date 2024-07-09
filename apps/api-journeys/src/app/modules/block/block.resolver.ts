@@ -11,7 +11,6 @@ import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'
 
-import { id } from 'date-fns/locale'
 import { BlockService } from './block.service'
 
 @Resolver('Block')
@@ -161,11 +160,6 @@ export class BlockResolver {
 
     if (where?.typenames != null) filter.typename = { in: where.typenames }
     if (where?.journeyIds != null) filter.journeyId = { in: where.journeyIds }
-    if (where?.deletedAt != null)
-      filter.deletedAt = {
-        gte: String(where.deletedAt.from),
-        lte: String(where.deletedAt.to)
-      }
 
     const blocks = await this.prismaService.block.findMany({
       where: {
@@ -186,14 +180,35 @@ export class BlockResolver {
 
   @Mutation()
   @UseGuards(AppCaslGuard)
-  async blockRestore(@Args('id') id: string): Promise<Block> {
+  async blockRestore(
+    @Args('id') id: string,
+    @CaslAbility() ability: AppAbility
+  ): Promise<Block> {
     const block = await this.prismaService.block.update({
       where: { id },
       data: {
         deletedAt: null
       },
-      include: { action: true }
+      include: {
+        action: true,
+        journey: {
+          include: {
+            team: { include: { userTeams: true } },
+            userJourneys: true
+          }
+        }
+      }
     })
+
+    if (block == null) {
+      throw new GraphQLError('block not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    }
+    if (!ability.can(Action.Update, subject('Journey', block.journey)))
+      throw new GraphQLError('user is not allowed to update block', {
+        extensions: { code: 'FORBIDDEN' }
+      })
 
     if (block.parentOrder != null)
       await this.blockService.reorderBlock(block, block.parentOrder)

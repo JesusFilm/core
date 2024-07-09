@@ -9,15 +9,9 @@ extend type Journey {
   blocks: [Block!]
 }
 
-input BlockDeleteInput {
-  from: DateTime!
-  to: DateTime!
-}
-
 input BlocksFilter {
   journeyIds: [ID!]
   typenames: [String!]
-  deletedAt: BlockDeleteInput
 }
 
 extend type Query {
@@ -72,4 +66,9 @@ extend type Mutation {
     """
     journeyId: ID
   ): [Block!]!
+
+  """
+  blockRestore is used for redo/undo
+  """
+  blockRestore(id: ID!): Block!
 }
