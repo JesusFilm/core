@@ -7,7 +7,9 @@ Testing visual components is done via 2 methods:
 
 Visual regression testing alone is sufficient for our project. Using [Chromatic](https://www.chromatic.com/docs/) with [stories](../storybook/#what-is-a-story) we are able to flag code changes which produce undesired visual effects before releasing to production.
 
-Currently, we have an 80k snapshot limit per month for visual regression testing. To manage this limit effectively and avoid exceeding it, we've introduced a GitHub label called chromatic. Assign this label to Pull Requests that require visual testing. Please use this label carefully to prioritize critical visual changes, as exceeding our monthly limit could affect our ability to continue testing effectively.
+Currently, we have an 80k snapshot limit per month for visual regression testing. To manage this limit effectively and avoid exceeding it, we’ve introduced a GitHub label called `chromatic`. Assign this label to Pull Requests only when they require visual testing.
+
+Visual testing is a required GitHub Action check. This means you won’t be able to merge to production until you apply this label to your PR if it includes any visual changes.
 
 ![ChromaticLabel](./chromatic-label.png)
 
