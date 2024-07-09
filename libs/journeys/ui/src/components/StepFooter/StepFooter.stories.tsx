@@ -78,7 +78,7 @@ const rtlLanguage = {
   iso3: 'ara',
   name: [
     {
-      __typename: 'Translation',
+      __typename: 'LanguageName',
       value: 'Arabic',
       primary: true
     }

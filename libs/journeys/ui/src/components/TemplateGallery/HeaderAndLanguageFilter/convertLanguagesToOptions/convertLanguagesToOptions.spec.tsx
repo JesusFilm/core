@@ -9,7 +9,7 @@ describe('convertLanguagesToOptions', () => {
         {
           value: 'English',
           primary: true,
-          __typename: 'Translation'
+          __typename: 'LanguageName'
         }
       ]
     },
@@ -20,12 +20,12 @@ describe('convertLanguagesToOptions', () => {
         {
           value: 'Français',
           primary: true,
-          __typename: 'Translation'
+          __typename: 'LanguageName'
         },
         {
           value: 'French',
           primary: false,
-          __typename: 'Translation'
+          __typename: 'LanguageName'
         }
       ]
     },
@@ -36,12 +36,12 @@ describe('convertLanguagesToOptions', () => {
         {
           value: 'Deutsch',
           primary: true,
-          __typename: 'Translation'
+          __typename: 'LanguageName'
         },
         {
           value: 'German, Standard',
           primary: false,
-          __typename: 'Translation'
+          __typename: 'LanguageName'
         }
       ]
     }

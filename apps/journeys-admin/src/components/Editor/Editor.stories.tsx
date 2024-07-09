@@ -161,7 +161,7 @@ export const RTL = {
         bcp47: 'ar',
         name: [
           {
-            __typename: 'Translation',
+            __typename: 'LanguageName',
             value: 'Arabic',
             primary: true
           }
