@@ -209,8 +209,8 @@ export class BlockResolver {
         extensions: { code: 'FORBIDDEN' }
       })
 
-    const block = await this.prismaService.$transaction(async (tx) => {
-      const res = await tx.block.update({
+    return await this.prismaService.$transaction(async (tx) => {
+      const updatedBlock = await tx.block.update({
         where: { id },
         data: {
           deletedAt: null
@@ -219,12 +219,14 @@ export class BlockResolver {
           action: true
         }
       })
-      if (res.parentOrder != null)
-        await this.blockService.reorderBlock(res, res.parentOrder, tx)
+      if (updatedBlock.parentOrder != null)
+        await this.blockService.reorderBlock(
+          updatedBlock,
+          updatedBlock.parentOrder,
+          tx
+        )
 
-      return res
+      return updatedBlock
     })
-
-    return block
   }
 }
