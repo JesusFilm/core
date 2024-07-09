@@ -184,7 +184,7 @@ export class BlockResolver {
     @Args('id') id: string,
     @CaslAbility() ability: AppAbility
   ): Promise<Block> {
-    const blockWithJourney = await this.prismaService.block.findUnique({
+    const block = await this.prismaService.block.findUnique({
       where: { id },
       include: {
         action: true,
@@ -197,14 +197,12 @@ export class BlockResolver {
       }
     })
 
-    if (blockWithJourney == null) {
+    if (block == null) {
       throw new GraphQLError('block not found', {
         extensions: { code: 'NOT_FOUND' }
       })
     }
-    if (
-      !ability.can(Action.Update, subject('Journey', blockWithJourney.journey))
-    )
+    if (!ability.can(Action.Update, subject('Journey', block.journey)))
       throw new GraphQLError('user is not allowed to update block', {
         extensions: { code: 'FORBIDDEN' }
       })
