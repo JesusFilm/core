@@ -1,19 +1,56 @@
 import { Injectable } from '@nestjs/common'
 import algoliasearch from 'algoliasearch'
 
+import { ApolloClient, InMemoryCache, gql } from '@apollo/client'
+import { GetTagsQuery } from '../../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
+
+export const GET_TAGS = gql`
+  query GetTags {
+    tags {
+      id
+      name {
+        value
+        primary
+      }
+    }
+  }
+`
 
 @Injectable()
 export class AlgoliaService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prismaService: PrismaService) {}
+
+  async getTags(): Promise<GetTagsQuery> {
+    const apollo = new ApolloClient({
+      uri: process.env.GATEWAY_URL,
+      cache: new InMemoryCache()
+    })
+    const { data } = await apollo.query<GetTagsQuery>({
+      query: GET_TAGS
+    })
+    return data
+  }
+
+  processTags(tagsData: GetTagsQuery) {
+    const map: Record<string, string> = {}
+    tagsData.tags.forEach((tag) => {
+      map[tag.id] = tag.name.find((name) => name.primary)?.value ?? ''
+    })
+    return map
+  }
 
   async syncJourneysToAlgolia(): Promise<void> {
     const apiKey = process.env.ALGOLIA_API_KEY ?? ''
     const appId = process.env.ALGOLIA_APPLICATION_ID ?? ''
     const nodeEnv = process.env.NODE_ENV ?? ''
 
-    if (apiKey === '' || appId === '' || nodeEnv !== '')
+    if (apiKey === '' || appId === '' || nodeEnv === '')
       throw new Error('algolia environment variables not set')
+
+    const tagsData = await this.getTags()
+    const tagsMap = this.processTags(tagsData)
+    console.log('getting tags from gateway...')
 
     const client = algoliasearch(appId, apiKey)
     console.log('syncing journeys to algolia...')
@@ -21,11 +58,12 @@ export class AlgoliaService {
     let offset = 0
 
     while (true) {
-      const journeys = await this.prisma.journey.findMany({
+      const journeys = await this.prismaService.journey.findMany({
         take: 50,
         skip: offset,
         include: {
-          primaryImageBlock: true
+          primaryImageBlock: true,
+          journeyTags: true
         },
         where: {
           template: true
@@ -45,14 +83,13 @@ export class AlgoliaService {
             alt: journey.primaryImageBlock?.alt
           },
           languageId: journey.languageId,
-          featuredAt: journey.featuredAt
+          featuredAt: journey.featuredAt,
+          tags: journey.journeyTags.map((tag) => tagsMap[tag.tagId])
         }
       })
 
-      console.log('transformedJourneys')
-
-      // const index = client.initIndex(`api-journeys-journeys-${nodeEnv}`)
-      // await index.saveObjects(transformedJourneys).wait()
+      const index = client.initIndex(`api-journeys-journeys-${nodeEnv}`)
+      await index.saveObjects(transformedJourneys).wait()
 
       offset += 50
     }
