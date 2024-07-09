@@ -88,14 +88,7 @@ builder.queryFields((t) => ({
     args: {
       id: t.arg.id({ required: true })
     },
-    resolve: async (
-      query: {
-        include?: Prisma.CountryInclude
-        select?: Prisma.CountrySelect
-      },
-      root: unknown,
-      { id }
-    ) =>
+    resolve: async (query, _parent, { id }) =>
       await prisma.country.findUnique({
         ...query,
         where: { id }
