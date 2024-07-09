@@ -659,6 +659,8 @@ enum IconName {
   SendRounded
   SubscriptionsRounded
   ContactSupportRounded
+  Launch
+  MailOutline
 }
 
 enum IconColor {
