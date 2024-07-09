@@ -440,4 +440,20 @@ describe('DeleteBlock', () => {
       screen.getByText(`selectedBlock: ${selectedStep.id}`)
     ).toBeInTheDocument()
   })
+
+  it('should show dialog when openDeleteDialog is true', async () => {
+    render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <DeleteBlock variant="journeyFlow" openDeleteDialog />
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    await waitFor(() =>
+      expect(
+        screen.getByRole('dialog', { name: 'Delete Card?' })
+      ).toBeInTheDocument()
+    )
+  })
 })

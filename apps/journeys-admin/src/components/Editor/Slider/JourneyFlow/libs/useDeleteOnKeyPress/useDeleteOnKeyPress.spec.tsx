@@ -79,7 +79,7 @@ describe('useDeleteOnKeyPress', () => {
     await waitFor(async () => expect(deleteEdge).toHaveBeenCalled())
   })
 
-  it('should delete a node', async () => {
+  it('should return true for open delete dialog when deleting a node', async () => {
     mockUseKeyPress.mockReturnValueOnce(false)
     const stepBlock = {
       __typename: 'StepBlock',
@@ -91,11 +91,12 @@ describe('useDeleteOnKeyPress', () => {
     } as unknown as EditorState
 
     mockUseKeyPress.mockReturnValueOnce(true)
-    renderHook(() => useDeleteOnKeyPress(), {
+    const { result } = renderHook(() => useDeleteOnKeyPress(), {
       wrapper: ({ children }) => (
         <EditorProvider initialState={initialState}>{children}</EditorProvider>
       )
     })
-    await waitFor(async () => expect(deleteBlock).toHaveBeenCalled())
+
+    expect(result.current.openDeleteDialog).toBe(true)
   })
 })

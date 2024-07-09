@@ -27,6 +27,7 @@ import { useStepBlockPositionUpdateMutation } from '../../../../libs/useStepBloc
 import { GET_STEP_BLOCKS_WITH_POSITION } from './JourneyFlow'
 import { transformSteps } from './libs/transformSteps'
 
+import { SnackbarProvider } from 'notistack'
 import { JourneyFlow } from '.'
 
 jest.mock('../../../../libs/useStepBlockPositionUpdateMutation', () => {
@@ -81,19 +82,21 @@ describe('JourneyFlow', () => {
       .mockReturnValue(mockGetStepBlocksWithPosition.result)
 
     render(
-      <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
-        <FlagsProvider flags={{ editorAnalytics: true }}>
-          <JourneyProvider value={{ journey: defaultJourney }}>
-            <EditorProvider
-              initialState={{ steps, activeSlide: ActiveSlide.JourneyFlow }}
-            >
-              <Box sx={{ width: '100vw', height: '100vh' }}>
-                <JourneyFlow />
-              </Box>
-            </EditorProvider>
-          </JourneyProvider>
-        </FlagsProvider>
-      </MockedProvider>
+      <SnackbarProvider>
+        <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
+          <FlagsProvider flags={{ editorAnalytics: true }}>
+            <JourneyProvider value={{ journey: defaultJourney }}>
+              <EditorProvider
+                initialState={{ steps, activeSlide: ActiveSlide.JourneyFlow }}
+              >
+                <Box sx={{ width: '100vw', height: '100vh' }}>
+                  <JourneyFlow />
+                </Box>
+              </EditorProvider>
+            </JourneyProvider>
+          </FlagsProvider>
+        </MockedProvider>
+      </SnackbarProvider>
     )
 
     await waitFor(() => expect(result).toHaveBeenCalled())
@@ -121,20 +124,22 @@ describe('JourneyFlow', () => {
     ])
 
     render(
-      <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
-        <JourneyProvider value={{ journey: defaultJourney }}>
-          <EditorProvider
-            initialState={{
-              steps,
-              activeSlide: ActiveSlide.JourneyFlow
-            }}
-          >
-            <Box sx={{ width: '100vw', height: '100vh' }}>
-              <JourneyFlow />
-            </Box>
-          </EditorProvider>
-        </JourneyProvider>
-      </MockedProvider>
+      <SnackbarProvider>
+        <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
+          <JourneyProvider value={{ journey: defaultJourney }}>
+            <EditorProvider
+              initialState={{
+                steps,
+                activeSlide: ActiveSlide.JourneyFlow
+              }}
+            >
+              <Box sx={{ width: '100vw', height: '100vh' }}>
+                <JourneyFlow />
+              </Box>
+            </EditorProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
     )
 
     await waitFor(() => expect(result).toHaveBeenCalled())
@@ -153,17 +158,19 @@ describe('JourneyFlow', () => {
     ])
 
     render(
-      <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
-        <JourneyProvider value={{ journey: defaultJourney }}>
-          <EditorProvider
-            initialState={{ steps, activeSlide: ActiveSlide.JourneyFlow }}
-          >
-            <Box sx={{ width: '100vw', height: '100vh' }}>
-              <JourneyFlow />
-            </Box>
-          </EditorProvider>
-        </JourneyProvider>
-      </MockedProvider>
+      <SnackbarProvider>
+        <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
+          <JourneyProvider value={{ journey: defaultJourney }}>
+            <EditorProvider
+              initialState={{ steps, activeSlide: ActiveSlide.JourneyFlow }}
+            >
+              <Box sx={{ width: '100vw', height: '100vh' }}>
+                <JourneyFlow />
+              </Box>
+            </EditorProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
     )
 
     await waitFor(() => expect(result).toHaveBeenCalled())
@@ -177,21 +184,23 @@ describe('JourneyFlow', () => {
       .mockReturnValue(mockGetStepBlocksWithPosition.result)
 
     render(
-      <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
-        <JourneyProvider value={{ journey: defaultJourney }}>
-          <EditorProvider
-            initialState={{
-              steps,
-              activeSlide: ActiveSlide.JourneyFlow,
-              showAnalytics: true
-            }}
-          >
-            <Box sx={{ width: '100vw', height: '100vh' }}>
-              <JourneyFlow />
-            </Box>
-          </EditorProvider>
-        </JourneyProvider>
-      </MockedProvider>
+      <SnackbarProvider>
+        <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
+          <JourneyProvider value={{ journey: defaultJourney }}>
+            <EditorProvider
+              initialState={{
+                steps,
+                activeSlide: ActiveSlide.JourneyFlow,
+                showAnalytics: true
+              }}
+            >
+              <Box sx={{ width: '100vw', height: '100vh' }}>
+                <JourneyFlow />
+              </Box>
+            </EditorProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
     )
 
     await waitFor(() => expect(result).toHaveBeenCalled())
@@ -203,21 +212,23 @@ describe('JourneyFlow', () => {
 
   it('should change background color when in analytics mode', () => {
     render(
-      <MockedProvider mocks={[]}>
-        <JourneyProvider value={{ journey: defaultJourney }}>
-          <EditorProvider
-            initialState={{
-              steps,
-              activeSlide: ActiveSlide.JourneyFlow,
-              showAnalytics: true
-            }}
-          >
-            <Box sx={{ width: '100vw', height: '100vh' }}>
-              <JourneyFlow />
-            </Box>
-          </EditorProvider>
-        </JourneyProvider>
-      </MockedProvider>
+      <SnackbarProvider>
+        <MockedProvider mocks={[]}>
+          <JourneyProvider value={{ journey: defaultJourney }}>
+            <EditorProvider
+              initialState={{
+                steps,
+                activeSlide: ActiveSlide.JourneyFlow,
+                showAnalytics: true
+              }}
+            >
+              <Box sx={{ width: '100vw', height: '100vh' }}>
+                <JourneyFlow />
+              </Box>
+            </EditorProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
     )
 
     expect(screen.getByTestId('rf__background')).toHaveStyle({
