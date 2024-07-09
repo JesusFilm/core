@@ -43,9 +43,9 @@ export class AlgoliaService {
   async syncJourneysToAlgolia(): Promise<void> {
     const apiKey = process.env.ALGOLIA_API_KEY ?? ''
     const appId = process.env.ALGOLIA_APPLICATION_ID ?? ''
-    const nodeEnv = process.env.DOPPLER_ENVIRONMENT ?? ''
+    const dopplerEnv = process.env.DOPPLER_ENVIRONMENT ?? ''
 
-    if (apiKey === '' || appId === '' || nodeEnv === '')
+    if (apiKey === '' || appId === '' || dopplerEnv === '')
       throw new Error('algolia environment variables not set')
 
     console.log('getting tags from gateway...')
@@ -88,7 +88,7 @@ export class AlgoliaService {
         }
       })
 
-      const index = client.initIndex(`api-journeys-journeys-${nodeEnv}`)
+      const index = client.initIndex(`api-journeys-journeys-${dopplerEnv}`)
 
       try {
         await index.saveObjects(transformedJourneys).wait()

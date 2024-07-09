@@ -92,7 +92,7 @@ describe('AlgoliaService', () => {
     it('show throw if no API key', async () => {
       process.env.ALGOLIA_API_KEY = undefined
       process.env.Algolia_APPLICATION_ID = undefined
-      process.env.NODE_ENV = undefined
+      process.env.DOPPLER_ENVIRONMENT = undefined
       await expect(service.syncJourneysToAlgolia()).rejects.toThrow(
         'algolia environment variables not set'
       )

@@ -11,9 +11,9 @@ export class AlgoliaQueue implements OnModuleInit {
   async onModuleInit() {
     const apiKey = process.env.ALGOLIA_API_KEY ?? ''
     const appId = process.env.ALGOLIA_APPLICATION_ID ?? ''
-    const nodeEnv = process.env.DOPPLER_ENVIRONMENT ?? ''
+    const nodeEnv = process.env.NODE_ENV ?? ''
 
-    if (apiKey === '' || appId === '') return
+    if (apiKey === '' || appId === '' || nodeEnv !== 'production') return
 
     const name = 'api-journeys-algolia'
     const repeatableJobs = await this.algoliaQueue.getRepeatableJobs()
@@ -24,8 +24,15 @@ export class AlgoliaQueue implements OnModuleInit {
       }
     }
 
-    const options =
-      nodeEnv === 'prd' ? { repeat: { pattern: '0 0 0 * * *' } } : {}
-    await this.algoliaQueue.add(name, {}, options)
+    // Schedule a new instance
+    await this.algoliaQueue.add(
+      name,
+      {},
+      {
+        repeat: {
+          pattern: '0 0 0 * * *' // Run every day at midnight
+        }
+      }
+    )
   }
 }
