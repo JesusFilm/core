@@ -186,7 +186,7 @@ describe('EditorContext', () => {
           selectedBlock: block
         })
       })
-      it('should set not set SelectedBlock when showAnalytics is true', () => {
+      it('should not set SelectedBlockAction when showAnalytics is true', () => {
         const block: TreeBlock = {
           id: 'step0.id',
           __typename: 'StepBlock',
