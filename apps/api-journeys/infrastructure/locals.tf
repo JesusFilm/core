@@ -1,6 +1,8 @@
 locals {
   port = 4001
   environment_variables = [
+    "ALGOLIA_APPLICATION_ID",
+    "ALGOLIA_API_KEY",
     "FIREBASE_API_KEY",
     "GIT_BRANCH",
     "PG_DATABASE_URL_JOURNEYS",

@@ -45,7 +45,7 @@ describe('AlgoliaQueue', () => {
       process.env.ALGOLIA_API_KEY = 'key'
       process.env.ALGOLIA_APPLICATION_ID = 'id'
       process.env.ALGOLIA_INDEX = 'index'
-      process.env.NODE_ENV = 'production'
+      process.env.DOPPLER_ENVIRONMENT = 'prd'
       providerQueue.getRepeatableJobs = jest
         .fn()
         .mockResolvedValueOnce([{ name: 'api-journeys-algolia', key: 'key' }])
@@ -58,7 +58,7 @@ describe('AlgoliaQueue', () => {
       process.env.ALGOLIA_API_KEY = 'key'
       process.env.ALGOLIA_APPLICATION_ID = 'id'
       process.env.ALGOLIA_INDEX = 'index'
-      process.env.NODE_ENV = 'production'
+      process.env.DOPPLER_ENVIRONMENT = 'prd'
       providerQueue.getRepeatableJobs = jest.fn().mockResolvedValueOnce([])
       providerQueue.add = jest.fn()
       await queue.onModuleInit()

@@ -101,7 +101,7 @@ describe('AlgoliaService', () => {
     it('should sync journeys to Algolia', async () => {
       process.env.ALGOLIA_API_KEY = 'key'
       process.env.ALGOLIA_APPLICATION_ID = 'id'
-      process.env.NODE_ENV = 'development'
+      process.env.DOPPLER_ENVIRONMENT = 'dev'
 
       prismaService.journey.findMany
         .mockResolvedValueOnce([
@@ -163,9 +163,7 @@ describe('AlgoliaService', () => {
         }
       })
       expect(mockAlgoliaSearch).toHaveBeenCalledWith('id', 'key')
-      expect(initIndexSpy).toHaveBeenCalledWith(
-        'api-journeys-journeys-development'
-      )
+      expect(initIndexSpy).toHaveBeenCalledWith('api-journeys-journeys-dev')
       expect(saveObjectsSpy).toHaveBeenCalledWith([
         {
           objectID: 'journeyId',

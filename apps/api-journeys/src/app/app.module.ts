@@ -12,6 +12,7 @@ import { LoggerModule } from 'nestjs-pino'
 
 import { CacheModule } from '@nestjs/cache-manager'
 import { ActionModule } from './modules/action/action.module'
+import { AlgoliaModule } from './modules/algolia/algolia.module'
 import { BlockModule } from './modules/block/block.module'
 import { CustomDomainModule } from './modules/customDomain/customDomain.module'
 import { EmailModule } from './modules/email/email.module'
@@ -38,6 +39,7 @@ import { VisitorModule } from './modules/visitor/visitor.module'
 @Module({
   imports: [
     ActionModule,
+    AlgoliaModule,
     BlockModule,
     CustomDomainModule,
     EmailModule,
