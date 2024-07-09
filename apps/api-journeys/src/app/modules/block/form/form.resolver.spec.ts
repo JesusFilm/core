@@ -105,28 +105,18 @@ describe('FormBlock', () => {
     })
 
     it('creates a FormBlock', async () => {
-      prismaService.block.upsert.mockResolvedValueOnce(blockWithUserTeam)
+      prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
 
       expect(await resolver.formBlockCreate(ability, blockCreateInput)).toEqual(
         blockWithUserTeam
       )
-      expect(prismaService.block.upsert).toHaveBeenCalledWith({
-        where: { id: 'blockId' },
-        update: {
+      expect(prismaService.block.create).toHaveBeenCalledWith({
+        data: {
           id: 'blockId',
           typename: 'FormBlock',
           journey: { connect: { id: 'journeyId' } },
           parentBlock: { connect: { id: 'parentBlockId' } },
-          parentOrder: 2,
-          deletedAt: null
-        },
-        create: {
-          id: 'blockId',
-          typename: 'FormBlock',
-          journey: { connect: { id: 'journeyId' } },
-          parentBlock: { connect: { id: 'parentBlockId' } },
-          parentOrder: 2,
-          deletedAt: null
+          parentOrder: 2
         },
         include: {
           action: true,
@@ -145,7 +135,7 @@ describe('FormBlock', () => {
     })
 
     it('throws error if not authorized', async () => {
-      prismaService.block.upsert.mockResolvedValueOnce(block)
+      prismaService.block.create.mockResolvedValueOnce(block)
       await expect(
         resolver.formBlockCreate(ability, blockCreateInput)
       ).rejects.toThrow('user is not allowed to create block')
@@ -170,17 +160,6 @@ describe('FormBlock', () => {
       prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
       await resolver.formBlockUpdate(ability, 'blockId', blockUpdateInput)
       expect(service.update).toHaveBeenCalledWith('blockId', blockUpdateInput)
-      expect(prismaService.block.findUnique).toHaveBeenCalledWith({
-        where: { id: 'blockId', deletedAt: null },
-        include: {
-          journey: {
-            include: {
-              team: { include: { userTeams: true } },
-              userJourneys: true
-            }
-          }
-        }
-      })
     })
 
     it('throws error if block not found', async () => {

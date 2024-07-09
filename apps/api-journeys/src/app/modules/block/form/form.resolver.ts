@@ -39,21 +39,16 @@ export class FormBlockResolver {
       await this.blockService.getSiblings(input.journeyId, input.parentBlockId)
     ).length
 
-    const upsertData = {
-      ...omit(input, 'parentBlockId', 'journeyId'),
-      id: input.id,
-      typename: 'FormBlock',
-      journey: { connect: { id: input.journeyId } },
-      parentBlock: { connect: { id: input.parentBlockId } },
-      parentOrder,
-      deletedAt: null
-    }
-
     return await this.prismaService.$transaction(async (tx) => {
-      const block = await tx.block.upsert({
-        where: { id: input.id },
-        update: upsertData,
-        create: upsertData,
+      const block = await tx.block.create({
+        data: {
+          ...omit(input, 'parentBlockId', 'journeyId'),
+          id: input.id ?? undefined,
+          typename: 'FormBlock',
+          journey: { connect: { id: input.journeyId } },
+          parentBlock: { connect: { id: input.parentBlockId } },
+          parentOrder
+        },
         include: {
           action: true,
           journey: {
@@ -81,7 +76,7 @@ export class FormBlockResolver {
     @Args('input') input: FormBlockUpdateInput
   ): Promise<Block> {
     const block = await this.prismaService.block.findUnique({
-      where: { id, deletedAt: null },
+      where: { id },
       include: {
         journey: {
           include: {

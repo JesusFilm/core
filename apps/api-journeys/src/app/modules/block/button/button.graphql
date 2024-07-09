@@ -31,7 +31,7 @@ type ButtonBlock implements Block {
 }
 
 input ButtonBlockCreateInput {
-  id: ID!
+  id: ID
   journeyId: ID!
   parentBlockId: ID!
   label: String!

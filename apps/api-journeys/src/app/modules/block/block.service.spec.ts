@@ -713,4 +713,53 @@ describe('BlockService', () => {
       ).toBeUndefined()
     })
   })
+
+  describe('removeDescendantsOfDeletedBlocks', () => {
+    const videoBlock2 = {
+      typename: 'VideoBlock',
+      id: 'video2',
+      journeyId: journey.id,
+      parentBlockId: 'deletedCard',
+      posterBlockId: 'image',
+      videoId: 'videoId',
+      videoVariantLanguageId: 'videoVariantLanguageId'
+    } as unknown as Block
+
+    const typographyBlock2 = {
+      typename: 'TypographyBlock',
+      id: 'typography2',
+      journeyId: journey.id,
+      parentBlockId: 'deletedCard'
+    } as unknown as Block
+
+    const buttonBlock2 = {
+      typename: 'ButtonBlock',
+      id: 'button2',
+      journeyId: journey.id,
+      parentBlockId: 'deletedCard',
+      startIconId: null,
+      endIconId: 'icon',
+      action: { parentBlockId: 'ButtonBlock', blockId: 'step' }
+    } as unknown as BlockWithAction
+
+    it('should filter out all blocks where the parent block has been deleted', async () => {
+      const blocks = [
+        stepBlock,
+        videoBlock,
+        imageBlock,
+        cardBlock,
+        typographyBlock,
+        buttonBlock,
+        iconBlock,
+        videoBlock2,
+        typographyBlock2,
+        buttonBlock2
+      ]
+
+      const res = await service.removeDescendantsOfDeletedBlocks(
+        blocks as BlockWithAction[]
+      )
+      expect(res).toHaveLength(7)
+    })
+  })
 })

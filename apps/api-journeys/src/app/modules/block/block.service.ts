@@ -301,6 +301,17 @@ export class BlockService {
     return [duplicateBlock as BlockWithAction, ...duplicateChildren]
   }
 
+  async removeDescendantsOfDeletedBlocks(
+    blocks: BlockWithAction[]
+  ): Promise<BlockWithAction[]> {
+    const ids: string[] = blocks.map(({ id }) => id)
+
+    return blocks.filter(
+      (block) =>
+        block.parentBlockId == null || ids.includes(block.parentBlockId)
+    )
+  }
+
   @FromPostgresql()
   async removeBlockAndChildren(
     block: Block,

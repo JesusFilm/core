@@ -32,7 +32,7 @@ type CardBlock implements Block {
 }
 
 input CardBlockCreateInput {
-  id: ID!
+  id: ID
   journeyId: ID!
   parentBlockId: ID!
   backgroundColor: String

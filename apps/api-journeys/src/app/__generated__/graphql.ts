@@ -276,7 +276,7 @@ export class BlocksFilter {
 }
 
 export class ButtonBlockCreateInput {
-    id: string;
+    id?: Nullable<string>;
     journeyId: string;
     parentBlockId: string;
     label: string;
@@ -296,7 +296,7 @@ export class ButtonBlockUpdateInput {
 }
 
 export class CardBlockCreateInput {
-    id: string;
+    id?: Nullable<string>;
     journeyId: string;
     parentBlockId: string;
     backgroundColor?: Nullable<string>;
@@ -314,7 +314,7 @@ export class CardBlockUpdateInput {
 }
 
 export class FormBlockCreateInput {
-    id: string;
+    id?: Nullable<string>;
     journeyId: string;
     parentBlockId: string;
 }

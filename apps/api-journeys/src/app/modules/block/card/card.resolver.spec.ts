@@ -34,8 +34,7 @@ describe('CardBlockResolver', () => {
     backgroundColor: '#FFF',
     fullscreen: true,
     themeMode: ThemeMode.light,
-    themeName: ThemeName.base,
-    deletedAt: null
+    themeName: ThemeName.base
   } as unknown as Block
   const blockWithUserTeam = {
     ...block,
@@ -93,13 +92,12 @@ describe('CardBlockResolver', () => {
     })
 
     it('creates a CardBlock', async () => {
-      prismaService.block.upsert.mockResolvedValueOnce(blockWithUserTeam)
+      prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
       expect(await resolver.cardBlockCreate(ability, blockCreateInput)).toEqual(
         blockWithUserTeam
       )
-      expect(prismaService.block.upsert).toHaveBeenCalledWith({
-        where: { id: 'blockId' },
-        create: {
+      expect(prismaService.block.create).toHaveBeenCalledWith({
+        data: {
           backgroundColor: '#FFF',
           themeMode: ThemeMode.light,
           themeName: ThemeName.base,
@@ -108,20 +106,7 @@ describe('CardBlockResolver', () => {
           parentBlock: { connect: { id: 'parentBlockId' } },
           parentOrder: 2,
           typename: 'CardBlock',
-          fullscreen: true,
-          deletedAt: null
-        },
-        update: {
-          backgroundColor: '#FFF',
-          themeMode: ThemeMode.light,
-          themeName: ThemeName.base,
-          id: 'blockId',
-          journey: { connect: { id: 'journeyId' } },
-          parentBlock: { connect: { id: 'parentBlockId' } },
-          parentOrder: 2,
-          typename: 'CardBlock',
-          fullscreen: true,
-          deletedAt: null
+          fullscreen: true
         },
         include: {
           action: true,
@@ -140,7 +125,7 @@ describe('CardBlockResolver', () => {
     })
 
     it('throws error if not authorized', async () => {
-      prismaService.block.upsert.mockResolvedValueOnce(block)
+      prismaService.block.create.mockResolvedValueOnce(block)
       await expect(
         resolver.cardBlockCreate(ability, blockCreateInput)
       ).rejects.toThrow('user is not allowed to create block')
@@ -152,18 +137,6 @@ describe('CardBlockResolver', () => {
       prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
       await resolver.cardBlockUpdate(ability, 'blockId', blockUpdateInput)
       expect(service.update).toHaveBeenCalledWith('blockId', blockUpdateInput)
-      expect(prismaService.block.findUnique).toHaveBeenCalledWith({
-        where: { id: 'blockId', deletedAt: null },
-        include: {
-          action: true,
-          journey: {
-            include: {
-              team: { include: { userTeams: true } },
-              userJourneys: true
-            }
-          }
-        }
-      })
     })
 
     it('throws error if not found', async () => {

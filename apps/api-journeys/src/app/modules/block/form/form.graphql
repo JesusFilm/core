@@ -35,7 +35,7 @@ type FormBlock implements Block {
 }
 
 input FormBlockCreateInput {
-  id: ID!
+  id: ID
   journeyId: ID!
   parentBlockId: ID!
 }
