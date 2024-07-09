@@ -201,6 +201,7 @@ export function JourneyFlow(): ReactElement {
   }, [])
   const onConnectEnd = useCallback<OnConnectEnd>(
     async (event) => {
+      console.log({ event })
       if (
         reactFlowInstance == null ||
         connectingParams.current == null ||
@@ -208,13 +209,16 @@ export function JourneyFlow(): ReactElement {
         connectingParams.current.handleId == null ||
         connectingParams.current.handleType === 'target' ||
         edgeUpdateSuccessful.current === false
-      )
+      ) {
+        console.log('failed event validation')
         return
+      }
 
       const targetIsPane = (event.target as Element)?.classList.contains(
         'react-flow__pane'
       )
       if (targetIsPane) {
+        console.log('create step')
         const { x, y } = reactFlowInstance.screenToFlowPosition({
           x: (event as unknown as MouseEvent).clientX,
           y: (event as unknown as MouseEvent).clientY
