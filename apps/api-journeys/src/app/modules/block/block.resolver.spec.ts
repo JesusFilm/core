@@ -264,7 +264,8 @@ describe('BlockResolver', () => {
 
   describe('blockRestore', () => {
     it('should restore block', async () => {
-      prismaService.block.update.mockResolvedValue(blockWithUserTeam)
+      prismaService.block.findUnique.mockResolvedValue(blockWithUserTeam)
+      prismaService.block.update.mockResolvedValue(block)
       await resolver.blockRestore('1', ability)
       expect(prismaService.block.update).toHaveBeenCalledWith({
         where: { id: '1' },
@@ -272,18 +273,12 @@ describe('BlockResolver', () => {
           deletedAt: null
         },
         include: {
-          action: true,
-          journey: {
-            include: {
-              team: { include: { userTeams: true } },
-              userJourneys: true
-            }
-          }
+          action: true
         }
       })
       expect(service.reorderBlock).toHaveBeenCalledWith(
-        blockWithUserTeam,
-        blockWithUserTeam.parentOrder
+        block,
+        block.parentOrder
       )
     })
 
@@ -294,6 +289,7 @@ describe('BlockResolver', () => {
     })
 
     it('should throw error if user does not have the correct permissions', async () => {
+      prismaService.block.findUnique.mockResolvedValue(block)
       prismaService.block.update.mockResolvedValue(block)
       await expect(resolver.blockRestore('1', ability)).rejects.toThrow(
         'user is not allowed to update block'
