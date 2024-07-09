@@ -77,6 +77,8 @@ export function TemplateGalleryCard({
         }).replace(' ', ', ')
       : ''
 
+  console.log(theme.breakpoints.values.xl)
+
   return (
     <Card
       aria-label="templateGalleryCard"
