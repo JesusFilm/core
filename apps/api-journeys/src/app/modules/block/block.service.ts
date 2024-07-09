@@ -10,7 +10,7 @@ import { PrismaService } from '../../lib/prisma.service'
 
 export const OMITTED_BLOCK_FIELDS = ['__typename', 'journeyId', 'isCover']
 
-type BlockWithAction = Block & { action: Action | null }
+export type BlockWithAction = Block & { action: Action | null }
 
 type PrismaTransation = Omit<
   PrismaService,
@@ -48,7 +48,8 @@ export class BlockService {
   async getSiblingsInternal(
     journeyId: string,
     parentBlockId?: string | null,
-    tx: PrismaTransation = this.prismaService
+    tx: PrismaTransation = this.prismaService,
+    where?: Prisma.BlockWhereInput
   ): Promise<BlockWithAction[]> {
     // Only StepBlocks should not have parentBlockId
     return parentBlockId != null
@@ -57,7 +58,8 @@ export class BlockService {
             journeyId,
             parentBlockId,
             parentOrder: { not: null },
-            deletedAt: null
+            deletedAt: null,
+            ...where
           },
           orderBy: { parentOrder: 'asc' },
           include: { action: true }
@@ -67,7 +69,8 @@ export class BlockService {
             journeyId,
             typename: 'StepBlock',
             parentOrder: { not: null },
-            deletedAt: null
+            deletedAt: null,
+            ...where
           },
           orderBy: { parentOrder: 'asc' },
           include: { action: true }
@@ -78,16 +81,12 @@ export class BlockService {
     siblings: BlockWithAction[],
     tx: PrismaTransation = this.prismaService
   ): Promise<BlockWithAction[]> {
-    const updatedSiblings = siblings.map((block, index) => ({
-      ...block,
-      parentOrder: index
-    }))
     return await Promise.all(
-      updatedSiblings.map(
-        async (block) =>
+      siblings.map(
+        async (block, parentOrder) =>
           await tx.block.update({
             where: { id: block.id },
-            data: { parentOrder: block.parentOrder },
+            data: { parentOrder },
             include: { action: true }
           })
       )
@@ -99,17 +98,16 @@ export class BlockService {
     block: BlockWithAction,
     parentOrder: number
   ): Promise<BlockWithAction[]> {
-    if (block.parentOrder != null) {
-      const siblings = await this.getSiblingsInternal(
-        block.journeyId,
-        block.parentBlockId
-      )
-      siblings.splice(block.parentOrder, 1)
-      siblings.splice(parentOrder, 0, block)
+    if (block.parentOrder == null) return []
 
-      return await this.reorderSiblings(siblings)
-    }
-    return []
+    const siblings = await this.getSiblingsInternal(
+      block.journeyId,
+      block.parentBlockId,
+      this.prismaService,
+      { id: { not: block.id } }
+    )
+    siblings.splice(parentOrder, 0, block)
+    return await this.reorderSiblings(siblings)
   }
 
   @FromPostgresql()

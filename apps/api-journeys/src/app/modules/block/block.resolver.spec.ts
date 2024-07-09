@@ -180,7 +180,7 @@ describe('BlockResolver', () => {
         blockWithUserTeam
       )
       expect(prismaService.block.findUnique).toHaveBeenCalledWith({
-        where: { id: 'blockId' },
+        where: { id: 'blockId', deletedAt: null },
         include: {
           action: true,
           journey: {
@@ -216,7 +216,7 @@ describe('BlockResolver', () => {
       expect(await resolver.blocks(accessibleBlocks)).toEqual([block])
       expect(prismaService.block.findMany).toHaveBeenCalledWith({
         where: {
-          AND: [accessibleBlocks, {}]
+          AND: [accessibleBlocks, { deletedAt: null }]
         },
         include: {
           action: true,
@@ -244,7 +244,8 @@ describe('BlockResolver', () => {
             accessibleBlocks,
             {
               journeyId: { in: ['journeyId'] },
-              typename: { in: ['StepBlock'] }
+              typename: { in: ['StepBlock'] },
+              deletedAt: null
             }
           ]
         },

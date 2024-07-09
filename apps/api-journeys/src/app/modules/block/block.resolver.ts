@@ -11,6 +11,7 @@ import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'
 
+import { id } from 'date-fns/locale'
 import { BlockService } from './block.service'
 
 @Resolver('Block')
@@ -33,7 +34,7 @@ export class BlockResolver {
     @Args('parentOrder') parentOrder: number
   ): Promise<Block[]> {
     const block = await this.prismaService.block.findUnique({
-      where: { id },
+      where: { id, deletedAt: null },
       include: {
         action: true,
         journey: {
@@ -65,7 +66,7 @@ export class BlockResolver {
     @Args('y') y?: number
   ): Promise<Block[]> {
     const block = await this.prismaService.block.findUnique({
-      where: { id },
+      where: { id, deletedAt: null },
       include: {
         action: true,
         journey: {
@@ -124,7 +125,7 @@ export class BlockResolver {
     @Args('id') id: string
   ): Promise<Block> {
     const block = await this.prismaService.block.findUnique({
-      where: { id },
+      where: { id, deletedAt: null },
       include: {
         action: true,
         journey: {
@@ -181,5 +182,22 @@ export class BlockResolver {
       }
     })
     return blocks
+  }
+
+  @Mutation()
+  @UseGuards(AppCaslGuard)
+  async blockRestore(@Args('id') id: string): Promise<Block> {
+    const block = await this.prismaService.block.update({
+      where: { id },
+      data: {
+        deletedAt: null
+      },
+      include: { action: true }
+    })
+
+    if (block.parentOrder != null)
+      await this.blockService.reorderBlock(block, block.parentOrder)
+
+    return block
   }
 }

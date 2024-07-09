@@ -285,7 +285,7 @@ describe('BlockService', () => {
     it('should update block order', async () => {
       service.getSiblingsInternal = jest
         .fn()
-        .mockReturnValue([block, { ...block, id: '2', parentOrder: 1 }])
+        .mockReturnValue([{ ...block, id: '2', parentOrder: 1 }])
 
       expect(await service.reorderBlock(blockWithAction, 1)).toEqual([
         { id: '2', parentOrder: 0 },

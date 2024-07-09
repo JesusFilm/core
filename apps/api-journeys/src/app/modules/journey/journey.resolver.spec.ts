@@ -32,7 +32,7 @@ import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
 import { PrismaService } from '../../lib/prisma.service'
 import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../../lib/prismaErrors'
 import { BlockResolver } from '../block/block.resolver'
-import { BlockService } from '../block/block.service'
+import { BlockService, BlockWithAction } from '../block/block.service'
 import { UserRoleResolver } from '../userRole/userRole.resolver'
 import { UserRoleService } from '../userRole/userRole.service'
 
@@ -102,7 +102,8 @@ describe('JourneyResolver', () => {
   const block = {
     id: 'blockId',
     typename: 'ImageBlock',
-    journeyId: 'journeyId'
+    journeyId: 'journeyId',
+    parentBlockId: null
   } as unknown as Block
   const accessibleJourneys: Prisma.JourneyWhereInput = { OR: [{}] }
 
@@ -1814,6 +1815,9 @@ describe('JourneyResolver', () => {
   describe('blocks', () => {
     it('returns blocks', async () => {
       prismaService.block.findMany.mockResolvedValueOnce([block])
+      blockService.removeDescendantsOfDeletedBlocks.mockResolvedValueOnce([
+        block as BlockWithAction
+      ])
       expect(await resolver.blocks(journey)).toEqual([
         { ...block, __typename: 'ImageBlock', typename: undefined }
       ])
@@ -1837,6 +1841,9 @@ describe('JourneyResolver', () => {
         primaryImageBlockId: 'primaryImageBlockId'
       }
       prismaService.block.findMany.mockResolvedValueOnce([block])
+      blockService.removeDescendantsOfDeletedBlocks.mockResolvedValueOnce([
+        block as BlockWithAction
+      ])
       expect(await resolver.blocks(journeyWithPrimaryImageBlock)).toEqual([
         { ...block, __typename: 'ImageBlock', typename: undefined }
       ])
@@ -1861,6 +1868,9 @@ describe('JourneyResolver', () => {
         creatorImageBlockId: 'creatorImageBlockId'
       }
       prismaService.block.findMany.mockResolvedValueOnce([block])
+      blockService.removeDescendantsOfDeletedBlocks.mockResolvedValueOnce([
+        block as BlockWithAction
+      ])
       expect(await resolver.blocks(journeyWithPrimaryImageBlock)).toEqual([
         { ...block, __typename: 'ImageBlock', typename: undefined }
       ])
@@ -1886,6 +1896,9 @@ describe('JourneyResolver', () => {
         creatorImageBlockId: 'creatorImageBlockId'
       }
       prismaService.block.findMany.mockResolvedValueOnce([block])
+      blockService.removeDescendantsOfDeletedBlocks.mockResolvedValueOnce([
+        block as BlockWithAction
+      ])
       expect(await resolver.blocks(journeyWithPrimaryImageBlock)).toEqual([
         { ...block, __typename: 'ImageBlock', typename: undefined }
       ])
