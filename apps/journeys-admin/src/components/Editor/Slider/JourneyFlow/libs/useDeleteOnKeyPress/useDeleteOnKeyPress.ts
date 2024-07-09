@@ -4,7 +4,6 @@ import { Edge, OnSelectionChangeFunc, useKeyPress } from 'reactflow'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields } from '../../../../../../../__generated__/BlockFields'
-import { useBlockDeleteMutation } from '../../../../../../libs/useBlockDeleteMutation'
 import { useDeleteEdge } from '../useDeleteEdge'
 
 const isEdge = (element: Edge | BlockFields): element is Edge =>
@@ -12,13 +11,15 @@ const isEdge = (element: Edge | BlockFields): element is Edge =>
 
 export function useDeleteOnKeyPress(): {
   onSelectionChange: OnSelectionChangeFunc
+  openDeleteDialog: boolean
+  setOpenDeleteDialog: (open: boolean) => void
 } {
   const {
     state: { selectedBlock, activeSlide, showAnalytics }
   } = useEditor()
   const deleteEdge = useDeleteEdge()
-  const [blockDelete] = useBlockDeleteMutation()
   const [selected, setSelected] = useState<Edge | BlockFields | undefined>()
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
 
   // Set selected node or edge using selectedBlock and reactflow OnSelectionChange
   const onSelectionChange: OnSelectionChangeFunc = ({ edges }) => {
@@ -53,12 +54,12 @@ export function useDeleteOnKeyPress(): {
           sourceHandle: selected.sourceHandle
         })
       } else {
-        void blockDelete(selected)
+        setOpenDeleteDialog(true)
       }
 
       setSelected(undefined)
     }
   }, [deleteEvent])
 
-  return { onSelectionChange }
+  return { onSelectionChange, openDeleteDialog, setOpenDeleteDialog }
 }

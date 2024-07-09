@@ -17,17 +17,21 @@ import { MenuItem } from '../../../../../../MenuItem'
 import getSelected from './utils/getSelected'
 
 interface DeleteBlockProps {
-  variant: 'button' | 'list-item'
+  variant: 'button' | 'list-item' | 'journeyFlow'
   closeMenu?: () => void
   disabled?: boolean
   block?: TreeBlock
+  openDeleteDialog?: boolean
+  setOpenDeleteDialog?: (open: boolean) => void
 }
 
 export function DeleteBlock({
   variant = 'button',
   closeMenu,
   disabled = false,
-  block
+  block,
+  openDeleteDialog,
+  setOpenDeleteDialog
 }: DeleteBlockProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [blockDelete, result] = useBlockDeleteMutation()
@@ -45,6 +49,7 @@ export function DeleteBlock({
   const handleOpenDialog = (): void => setOpenDialog(true)
   const handleCloseDialog = (): void => {
     setOpenDialog(false)
+    setOpenDeleteDialog?.(false)
     closeMenu?.()
   }
 
@@ -96,7 +101,7 @@ export function DeleteBlock({
   return (
     <>
       <Dialog
-        open={openDialog}
+        open={openDeleteDialog ?? openDialog}
         onClose={handleCloseDialog}
         dialogTitle={{ title: t('Delete Card?') }}
         dialogAction={{
@@ -124,7 +129,7 @@ export function DeleteBlock({
         >
           <Trash2Icon />
         </IconButton>
-      ) : (
+      ) : variant === 'list-item' ? (
         <MenuItem
           label={t('Delete {{ label }}', {
             label: blockType === 'Card' ? t('Card') : t('Block')
@@ -135,7 +140,7 @@ export function DeleteBlock({
             blockType === 'Card' ? handleOpenDialog : handleDeleteBlock
           }
         />
-      )}
+      ) : null}
     </>
   )
 }
