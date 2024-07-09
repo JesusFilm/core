@@ -3,7 +3,6 @@ import { Prisma } from '.prisma/api-languages-client'
 import { prisma } from '../../lib/prisma'
 
 import { builder } from '../builder'
-import { Translation } from '../translation'
 
 enum LanguageIdType {
   databaseId = 'databaseId',
@@ -20,18 +19,26 @@ const LanguagesFilter = builder.inputType('LanguagesFilter', {
   })
 })
 
+const LanguageName = builder.prismaObject('LanguageName', {
+  fields: (t) => ({
+    value: t.exposeString('value'),
+    primary: t.exposeBoolean('primary'),
+    language: t.relation('language')
+  })
+})
+
 export const Language = builder.prismaObject('Language', {
   fields: (t) => ({
     id: t.exposeID('id'),
     bcp47: t.exposeString('bcp47', { nullable: true }),
     iso3: t.exposeString('iso3', { nullable: true }),
-    name: t.field({
-      type: [Translation],
+    name: t.prismaField({
+      type: [LanguageName],
       args: {
         languageId: t.arg.id({ required: false }),
         primary: t.arg.boolean({ required: false })
       },
-      resolve: async (language, { languageId, primary }) => {
+      resolve: async (query, language, { languageId, primary }) => {
         const where: Prisma.LanguageNameWhereInput = {
           parentLanguageId: language.id,
           OR: languageId == null && primary == null ? undefined : []
@@ -39,12 +46,14 @@ export const Language = builder.prismaObject('Language', {
         if (languageId != null) where.OR?.push({ languageId })
         if (primary != null) where.OR?.push({ primary })
         return await prisma.languageName.findMany({
+          ...query,
           where,
           orderBy: { primary: 'desc' },
           include: { language: true }
         })
       }
-    })
+    }),
+    countries: t.relation('countries')
   })
 })
 
@@ -65,14 +74,7 @@ builder.queryFields((t) => ({
         defaultValue: LanguageIdType.databaseId
       })
     },
-    resolve: async (
-      query: {
-        include?: Prisma.LanguageInclude
-        select?: Prisma.LanguageSelect
-      },
-      root,
-      { id, idType }
-    ) =>
+    resolve: async (query, _parent, { id, idType }) =>
       idType === LanguageIdType.bcp47
         ? prisma.language.findFirst({
             ...query,
@@ -91,14 +93,7 @@ builder.queryFields((t) => ({
       limit: t.arg.int({ required: false }),
       where: t.arg({ type: LanguagesFilter, required: false })
     },
-    resolve: async (
-      query: {
-        include?: Prisma.LanguageInclude
-        select?: Prisma.LanguageSelect
-      },
-      root,
-      { offset, limit, where }
-    ) => {
+    resolve: async (query, _parent, { offset, limit, where }) => {
       const filter: Prisma.LanguageWhereInput = {}
       if (where?.ids != null) filter.id = { in: where?.ids }
       return await prisma.language.findMany({

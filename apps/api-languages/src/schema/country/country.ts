@@ -4,7 +4,22 @@ import { prisma } from '../../lib/prisma'
 
 import { builder } from '../builder'
 import { Language } from '../language/language'
-import { Translation } from '../translation'
+
+const CountryName = builder.prismaObject('CountryName', {
+  fields: (t) => ({
+    value: t.exposeString('value'),
+    primary: t.exposeBoolean('primary'),
+    language: t.relation('language')
+  })
+})
+
+const CountryContinent = builder.prismaObject('CountryContinent', {
+  fields: (t) => ({
+    value: t.exposeString('value'),
+    primary: t.exposeBoolean('primary'),
+    language: t.relation('language')
+  })
+})
 
 const Country = builder.prismaObject('Country', {
   fields: (t) => ({
@@ -15,13 +30,13 @@ const Country = builder.prismaObject('Country', {
     flagPngSrc: t.exposeString('flagPngSrc', { nullable: true }),
     flagWebpSrc: t.exposeString('flagWebpSrc', { nullable: true }),
     languages: t.relation('languages', { type: Language }),
-    name: t.field({
-      type: [Translation],
+    name: t.prismaField({
+      type: [CountryName],
       args: {
         languageId: t.arg.id({ required: false }),
         primary: t.arg.boolean({ required: false })
       },
-      resolve: async (country, { languageId, primary }) => {
+      resolve: async (query, country, { languageId, primary }) => {
         const where: Prisma.CountryNameWhereInput = {
           countryId: country.id,
           OR: languageId == null && primary == null ? undefined : []
@@ -29,19 +44,20 @@ const Country = builder.prismaObject('Country', {
         if (languageId != null) where.OR?.push({ languageId })
         if (primary != null) where.OR?.push({ primary })
         return await prisma.countryName.findMany({
+          ...query,
           where,
           orderBy: { primary: 'desc' },
           include: { language: true }
         })
       }
     }),
-    continent: t.field({
-      type: [Translation],
+    continent: t.prismaField({
+      type: [CountryContinent],
       args: {
         languageId: t.arg.id({ required: false }),
         primary: t.arg.boolean({ required: false })
       },
-      resolve: async (country, { languageId, primary }) => {
+      resolve: async (query, country, { languageId, primary }) => {
         const where: Prisma.CountryContinentWhereInput = {
           countryId: country.id,
           OR: languageId == null && primary == null ? undefined : []
@@ -49,6 +65,7 @@ const Country = builder.prismaObject('Country', {
         if (languageId != null) where.OR?.push({ languageId })
         if (primary != null) where.OR?.push({ primary })
         return await prisma.countryContinent.findMany({
+          ...query,
           where,
           orderBy: { primary: 'desc' },
           include: { language: true }
@@ -87,9 +104,6 @@ builder.queryFields((t) => ({
   countries: t.prismaField({
     type: ['Country'],
     nullable: false,
-    resolve: async (query: {
-      include?: Prisma.CountryInclude
-      select?: Prisma.CountrySelect
-    }) => await prisma.country.findMany(query)
+    resolve: async (query) => await prisma.country.findMany(query)
   })
 }))
