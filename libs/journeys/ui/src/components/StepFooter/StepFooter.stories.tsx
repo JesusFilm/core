@@ -47,7 +47,7 @@ const journey: Journey = {
     iso3: 'eng',
     name: [
       {
-        __typename: 'Translation',
+        __typename: 'LanguageName',
         value: 'English',
         primary: true
       }

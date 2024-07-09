@@ -73,10 +73,6 @@ async function testDataGenerator(): Promise<void> {
     './apps/watch/src/components/Videos/__generated__/testData.ts',
     template.replace(/\[\] = \[[\s\S]*\n\]/, `[] = ${stringifiedData}`)
   )
-  console.log('running prettier...')
-  await promisify(exec)(
-    'npx @biomejs/biome format --write ./apps/watch/src/components/Videos/__generated__/testData.ts'
-  )
   console.log('done')
 }
 
