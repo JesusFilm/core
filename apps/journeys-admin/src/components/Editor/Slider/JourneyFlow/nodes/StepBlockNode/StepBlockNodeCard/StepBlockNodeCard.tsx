@@ -71,12 +71,12 @@ export function StepBlockNodeCard({
     ? {
         opacity: 0.8,
         bgcolor: 'transparent',
-        boxShadow: 'none',
-        pointerEvents: 'none'
+        boxShadow: 'none'
       }
     : {
         opacity: 1,
-        bgcolor: 'background.paper'
+        bgcolor: 'background.paper',
+        '&:hover': { boxShadow: selected ? 6 : 3 }
       }
 
   return (
@@ -89,7 +89,6 @@ export function StepBlockNodeCard({
         width: STEP_NODE_CARD_WIDTH,
         m: 1.5,
         boxShadow: 3,
-        '&:hover': { boxShadow: selected ? 6 : 3 },
         ...conditionalStyles
       }}
     >
