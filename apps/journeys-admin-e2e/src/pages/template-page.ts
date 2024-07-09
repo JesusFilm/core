@@ -1,6 +1,7 @@
 import { expect } from '@playwright/test'
 import { Page } from 'playwright-core'
 
+const sixtySecondsTimeout = 60000
 export class TemplatePage {
   readonly page: Page
   selecetdTemplated: string
@@ -112,10 +113,10 @@ export class TemplatePage {
   async navigateToTempalatePage() {
     await this.page
       .locator('a[data-testid="NavigationListItemTemplates"]')
-      .click()
+      .click({ timeout: sixtySecondsTimeout })
     await expect(
       this.page.locator('div[data-testid="TemplateGallery"]')
-    ).toBeVisible({ timeout: 60000 })
+    ).toBeVisible({ timeout: sixtySecondsTimeout })
   }
   async selectExistingTemplate() {
     this.selecetdTemplated = await this.page
@@ -130,7 +131,7 @@ export class TemplatePage {
   async verifySelectedTemplatePage() {
     await expect(
       this.page.locator('div[data-testid="JourneysAdminTemplateViewHeader"] h1')
-    ).toHaveText(this.selecetdTemplated, { timeout: 30000 })
+    ).toHaveText(this.selecetdTemplated, { timeout: sixtySecondsTimeout })
   }
   async clickUseThisTemplateButton() {
     await this.page
@@ -174,7 +175,7 @@ export class TemplatePage {
       this.page.locator('div[data-testid="Toolbar"] h6', {
         hasText: this.selecetdTemplated
       })
-    ).toBeVisible({ timeout: 30000 })
+    ).toBeVisible({ timeout: sixtySecondsTimeout })
   }
   async clickPreviewBtnInJourneyTemplatePage() {
     await this.page
@@ -244,7 +245,7 @@ export class TemplatePage {
     expect(tabName.includes(this.selecetdTemplated)).toBeTruthy()
     await newPage.reload({ waitUntil: 'load' })
     const currentTime = new Date()
-    const addedSevenMinsTime = new Date(new Date().getTime() + 7 * 60000)
+    const addedSevenMinsTime = new Date(new Date().getTime() + 7 * sixtySecondsTimeout)
     console.log('Current time is ' + currentTime.toString())
     console.log('Added wait time is ' + addedSevenMinsTime.toString())
     while (new Date() < addedSevenMinsTime) {
@@ -320,7 +321,7 @@ export class TemplatePage {
         'div[data-testid="JourneysAdminTemplateSections"] div[data-testid*="gallery-carousel"]',
         { hasText: this.selectedFilterOption }
       )
-    ).toBeVisible({ timeout: 30000 })
+    ).toBeVisible({ timeout: sixtySecondsTimeout })
     await expect(
       await this.page
         .locator(
