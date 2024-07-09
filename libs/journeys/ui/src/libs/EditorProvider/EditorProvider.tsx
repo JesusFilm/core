@@ -143,7 +143,6 @@ interface SetAnalyticsAction {
   type: 'SetAnalyticsAction'
   analytics?: JourneyAnalytics
 }
-
 type EditorAction =
   | SetActiveCanvasDetailsDrawerAction
   | SetActiveContentAction
