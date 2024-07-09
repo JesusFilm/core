@@ -1,5 +1,6 @@
 import { ReactElement } from 'react'
 
+import { CommandProvider } from '@core/journeys/ui/CommandProvider'
 import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -46,9 +47,11 @@ export function Editor({
           ...initialState
         }}
       >
-        <Toolbar />
-        <Slider />
-        <Fab variant="mobile" />
+        <CommandProvider>
+          <Toolbar />
+          <Slider />
+          <Fab variant="mobile" />
+        </CommandProvider>
       </EditorProvider>
     </JourneyProvider>
   )

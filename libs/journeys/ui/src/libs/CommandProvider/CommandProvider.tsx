@@ -1,13 +1,10 @@
-import isFunction from 'lodash/isFunction'
 import {
   Dispatch,
   ReactElement,
   ReactNode,
   createContext,
   useContext,
-  useEffect,
-  useReducer,
-  useRef
+  useReducer
 } from 'react'
 
 export interface Command<T = Record<string, unknown>> {
@@ -98,12 +95,7 @@ export const CommandContext = createContext<{
 })
 
 interface CommandProviderProps {
-  children:
-    | ((context: {
-        state: CommandState
-        dispatch: Dispatch<CommandAction>
-      }) => ReactNode)
-    | ReactNode
+  children: ReactNode
   initialState?: Partial<CommandState>
 }
 
@@ -119,7 +111,7 @@ export function CommandProvider({
 
   return (
     <CommandContext.Provider value={{ state, dispatch }}>
-      {isFunction(children) ? children({ state, dispatch }) : children}
+      {children}
     </CommandContext.Provider>
   )
 }
