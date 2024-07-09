@@ -186,7 +186,7 @@ describe('EditorContext', () => {
           selectedBlock: block
         })
       })
-      it('should handle SetSelectedBlockAction when showAnalytics is true', () => {
+      it('should set not set SelectedBlock when showAnalytics is true', () => {
         const block: TreeBlock = {
           id: 'step0.id',
           __typename: 'StepBlock',
@@ -212,40 +212,6 @@ describe('EditorContext', () => {
             selectedBlock: block
           })
         ).toEqual(state)
-      })
-
-      it('should handle SetSelectedBlockAction when showAnalytics is false', () => {
-        const block: TreeBlock = {
-          id: 'step0.id',
-          __typename: 'StepBlock',
-          parentBlockId: null,
-          parentOrder: 0,
-          locked: false,
-          nextBlockId: null,
-          children: []
-        }
-
-        const state: EditorState = {
-          steps: [block],
-          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
-          activeFab: ActiveFab.Add,
-          activeSlide: ActiveSlide.JourneyFlow,
-          activeContent: ActiveContent.Canvas,
-          showAnalytics: false
-        }
-
-        expect(
-          reducer(state, {
-            type: 'SetSelectedBlockAction',
-            selectedBlock: block
-          })
-        ).toEqual({
-          ...state,
-          selectedBlock: block,
-          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
-          activeContent: ActiveContent.Canvas,
-          activeSlide: ActiveSlide.Content
-        })
       })
     })
 

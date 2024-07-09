@@ -188,7 +188,7 @@ export const reducer = (
     case 'SetSelectedAttributeIdAction':
       return { ...state, selectedAttributeId: action.selectedAttributeId }
     case 'SetSelectedBlockAction':
-      if (state.showAnalytics === true) return { ...state }
+      if (state.showAnalytics === true) return state
 
       return {
         ...state,
