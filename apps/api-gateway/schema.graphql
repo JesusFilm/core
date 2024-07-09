@@ -88,7 +88,7 @@ type ButtonBlock implements Block
 input ButtonBlockCreateInput
   @join__type(graph: JOURNEYS)
 {
-  id: ID!
+  id: ID
   journeyId: ID!
   parentBlockId: ID!
   label: String!
@@ -241,7 +241,7 @@ type CardBlock implements Block
 input CardBlockCreateInput
   @join__type(graph: JOURNEYS)
 {
-  id: ID!
+  id: ID
   journeyId: ID!
   parentBlockId: ID!
   backgroundColor: String
@@ -501,7 +501,7 @@ type FormBlock implements Block
 input FormBlockCreateInput
   @join__type(graph: JOURNEYS)
 {
-  id: ID!
+  id: ID
   journeyId: ID!
   parentBlockId: ID!
 }
