@@ -108,7 +108,7 @@ describe('transformVisitorEvents', () => {
           name: [
             {
               value: 'Hobbitish',
-              __typename: 'Translation'
+              __typename: 'LanguageName'
             }
           ]
         }
@@ -152,7 +152,7 @@ describe('transformVisitorEvents', () => {
           name: [
             {
               value: 'Hobbitish',
-              __typename: 'Translation'
+              __typename: 'LanguageName'
             }
           ]
         }
