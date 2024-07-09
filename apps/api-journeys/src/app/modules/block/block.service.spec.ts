@@ -40,6 +40,9 @@ describe('BlockService', () => {
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
+    prismaService.$transaction.mockImplementation(
+      async (callback) => await callback(prismaService)
+    )
   })
 
   afterAll(() => {
@@ -291,10 +294,10 @@ describe('BlockService', () => {
         { id: '2', parentOrder: 0 },
         { id: block.id, parentOrder: 1 }
       ])
-      expect(service.reorderSiblings).toHaveBeenCalledWith([
-        { ...block, id: '2', parentOrder: 1 },
-        blockWithAction
-      ])
+      expect(service.reorderSiblings).toHaveBeenCalledWith(
+        [{ ...block, id: '2', parentOrder: 1 }, blockWithAction],
+        prismaService
+      )
     })
 
     it('does not update if block does not have parent order', async () => {

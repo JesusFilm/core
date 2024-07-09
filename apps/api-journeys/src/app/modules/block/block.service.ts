@@ -96,18 +96,20 @@ export class BlockService {
   @FromPostgresql()
   async reorderBlock(
     block: BlockWithAction,
-    parentOrder: number
+    parentOrder: number,
+    tx: PrismaTransation = this.prismaService
   ): Promise<BlockWithAction[]> {
     if (block.parentOrder == null) return []
 
     const siblings = await this.getSiblingsInternal(
       block.journeyId,
       block.parentBlockId,
-      this.prismaService,
+      tx,
       { id: { not: block.id } }
     )
+
     siblings.splice(parentOrder, 0, block)
-    return await this.reorderSiblings(siblings)
+    return await this.reorderSiblings(siblings, tx)
   }
 
   @FromPostgresql()

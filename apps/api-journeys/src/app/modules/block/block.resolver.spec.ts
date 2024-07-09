@@ -76,6 +76,9 @@ describe('BlockResolver', () => {
       PrismaService
     ) as DeepMockProxy<PrismaService>
     ability = await new AppCaslFactory().createAbility({ id: 'userId' })
+    prismaService.$transaction.mockImplementation(
+      async (callback) => await callback(prismaService)
+    )
   })
 
   describe('__resolveType', () => {
@@ -278,7 +281,8 @@ describe('BlockResolver', () => {
       })
       expect(service.reorderBlock).toHaveBeenCalledWith(
         block,
-        block.parentOrder
+        block.parentOrder,
+        prismaService
       )
     })
 
