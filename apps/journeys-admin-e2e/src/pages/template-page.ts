@@ -245,7 +245,9 @@ export class TemplatePage {
     expect(tabName.includes(this.selecetdTemplated)).toBeTruthy()
     await newPage.reload({ waitUntil: 'load' })
     const currentTime = new Date()
-    const addedSevenMinsTime = new Date(new Date().getTime() + 7 * sixtySecondsTimeout)
+    const addedSevenMinsTime = new Date(
+      new Date().getTime() + 7 * sixtySecondsTimeout
+    )
     console.log('Current time is ' + currentTime.toString())
     console.log('Added wait time is ' + addedSevenMinsTime.toString())
     while (new Date() < addedSevenMinsTime) {
