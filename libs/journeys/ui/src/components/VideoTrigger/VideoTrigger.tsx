@@ -45,39 +45,39 @@ export function VideoTrigger({
           player.pause()
 
           const input = {
-            blockId,
-            key: keyify({
-              stepId: blockId,
-              event: 'videoTrigger',
-              blockId: blockId,
-              target: triggerAction
-            }),
-            simpleKey: keyify({
-              stepId: blockId,
-              event: 'videoTrigger',
-              blockId: blockId
-            })
+            u: `${window.location.origin}/${journey?.id ?? ''}/${activeBlock.id}`,
+            props: {
+              blockId,
+              key: keyify({
+                stepId: blockId,
+                event: 'videoTrigger',
+                blockId: blockId,
+                target: triggerAction
+              }),
+              simpleKey: keyify({
+                stepId: blockId,
+                event: 'videoTrigger',
+                blockId: blockId
+              })
+            }
           }
 
           if (variant === 'embed' && !isIPhone()) {
             handleAction(router, triggerAction)
-            plausible('videoTrigger', {
-              u: `${window.location.origin}/${journey?.id ?? ''}/${activeBlock.id}`,
-              props: input
-            })
+            plausible('videoTrigger', input)
             return
           }
           if (player.isFullscreen() ?? false) {
             void player.exitFullscreen().then(() => {
               handleAction(router, triggerAction)
-              plausible('videoTrigger', { props: input })
+              plausible('videoTrigger', input)
             })
           } else {
             if (fscreen.fullscreenElement != null) {
               void fscreen.exitFullscreen()
             }
             handleAction(router, triggerAction)
-            plausible('videoTrigger', { props: input })
+            plausible('videoTrigger', input)
           }
         }
       }
