@@ -10,7 +10,7 @@ import { ButtonAction, VideoBlockSource, MessagePlatform } from "./globalTypes";
 // ====================================================
 
 export interface GetVisitorEvents_visitor_events_RadioQuestionSubmissionEvent {
-  __typename: "RadioQuestionSubmissionEvent" | "StepViewEvent" | "StepNextEvent" | "StepPreviousEvent" | "TextResponseSubmissionEvent";
+  __typename: "RadioQuestionSubmissionEvent" | "StepNextEvent" | "StepPreviousEvent" | "StepViewEvent" | "TextResponseSubmissionEvent";
   id: string;
   journeyId: string;
   label: string | null;
@@ -50,7 +50,7 @@ export interface GetVisitorEvents_visitor_events_ButtonClickEvent {
 }
 
 export interface GetVisitorEvents_visitor_events_JourneyViewEvent_language_name {
-  __typename: "Translation";
+  __typename: "LanguageName";
   value: string;
 }
 

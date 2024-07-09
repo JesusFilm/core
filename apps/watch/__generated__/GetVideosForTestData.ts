@@ -42,7 +42,7 @@ export interface GetVideosForTestData_videos_variant_downloads {
 }
 
 export interface GetVideosForTestData_videos_variant_language_name {
-  __typename: "Translation";
+  __typename: "LanguageName";
   value: string;
   primary: boolean;
 }
