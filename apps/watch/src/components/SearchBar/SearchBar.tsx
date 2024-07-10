@@ -3,28 +3,27 @@ import { Box, InputAdornment, TextField, styled } from '@mui/material'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
+/* Styles below used to fake a gradient border because the 
+css attributes border-radius and border-image-source are not compatible */
+const StyledTextField = styled(TextField)(({ theme }) => ({
+  '& .MuiOutlinedInput-root': {
+    background: theme.palette.background.default,
+    borderRadius: '8px',
+    '&.Mui-focused fieldset, fieldset': {
+      borderRadius: 4
+    },
+    fieldset: {
+      border: 'none'
+    },
+    input: {
+      // Overriding the default set in components.tsx
+      transform: 'none'
+    }
+  }
+}))
+
 export function SearchBar(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-
-  /* Styles below used to fake a gradient border because the 
-  css attributes border-radius and border-image-source are not compatible */
-
-  const ColoredTextField = styled(TextField)(({ theme }) => ({
-    '& .MuiOutlinedInput-root': {
-      background: theme.palette.background.default,
-      borderRadius: '8px',
-      '&.Mui-focused fieldset, fieldset': {
-        borderRadius: 4
-      },
-      fieldset: {
-        border: 'none'
-      },
-      input: {
-        // Overriding the default set in components.tsx
-        transform: 'none'
-      }
-    }
-  }))
 
   return (
     <Box
@@ -36,7 +35,7 @@ export function SearchBar(): ReactElement {
       }}
       data-testid="SearchBar"
     >
-      <ColoredTextField
+      <StyledTextField
         placeholder={t('Search by topic, occasion, or audience ...')}
         fullWidth
         InputProps={{
