@@ -11,7 +11,7 @@ export function SearchBar(): ReactElement {
       background: theme.palette.background.default,
       borderRadius: '8px',
       '&.Mui-focused fieldset, fieldset': {
-        borderRadius: '12px'
+        borderRadius: 4
       },
       fieldset: {
         border: 'none'
@@ -29,7 +29,7 @@ export function SearchBar(): ReactElement {
         borderRadius: '12px',
         background:
           'linear-gradient(90deg, #0C79B3 0%, #0FDABC 51%, #E72DBB 100%)',
-        p: '4px'
+        p: 1
       }}
       data-testid="SearchBar"
     >
