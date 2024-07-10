@@ -10,7 +10,7 @@ import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import DashIcon from '@core/shared/ui/icons/Dash'
 
-import { type Command, useCommand } from '@core/journeys/ui/CommandProvider'
+import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { BlockFields_TypographyBlock as TypographyBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import { TypographyBlockUpdateVariant } from '../../../../../../../../../../__generated__/TypographyBlockUpdateVariant'
 import {

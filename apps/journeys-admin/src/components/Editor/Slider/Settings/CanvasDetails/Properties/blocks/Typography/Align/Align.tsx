@@ -9,7 +9,7 @@ import AlignCenterIcon from '@core/shared/ui/icons/AlignCenter'
 import AlignLeftIcon from '@core/shared/ui/icons/AlignLeft'
 import AlignRightIcon from '@core/shared/ui/icons/AlignRight'
 
-import { Command, useCommand } from '@core/journeys/ui/CommandProvider'
+import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { BlockFields_TypographyBlock as TypographyBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import { TypographyBlockUpdateAlign } from '../../../../../../../../../../__generated__/TypographyBlockUpdateAlign'
 import { TypographyAlign } from '../../../../../../../../../../__generated__/globalTypes'

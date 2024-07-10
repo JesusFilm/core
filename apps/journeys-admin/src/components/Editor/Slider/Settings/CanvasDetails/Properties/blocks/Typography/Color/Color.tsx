@@ -6,7 +6,7 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 
-import { Command, useCommand } from '@core/journeys/ui/CommandProvider'
+import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { BlockFields_TypographyBlock as TypographyBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import { TypographyBlockUpdateColor } from '../../../../../../../../../../__generated__/TypographyBlockUpdateColor'
 import { TypographyColor } from '../../../../../../../../../../__generated__/globalTypes'
