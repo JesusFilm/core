@@ -23,7 +23,7 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
 }))
 
 export function SearchBar(): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
+  const { t } = useTranslation('apps-watch')
 
   return (
     <Box
