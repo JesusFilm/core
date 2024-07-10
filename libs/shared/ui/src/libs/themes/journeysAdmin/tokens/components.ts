@@ -14,6 +14,12 @@ export const adminComponents: Required<Pick<ThemeOptions, 'components'>> = {
         },
         contained: {
           boxShadow: 'none'
+        },
+        outlined: {
+          borderWidth: '2px',
+          '&:hover': {
+            borderWidth: '2px'
+          }
         }
       }
     },

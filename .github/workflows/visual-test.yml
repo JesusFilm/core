@@ -12,7 +12,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   visual-test:
-    if: contains(github.event.pull_request.labels.*.name, 'chromatic')
+    if: contains(github.event.pull_request.labels.*.name, 'chromatic') || github.event_name == 'merge_group'
     runs-on: ubuntu-latest
     strategy:
       matrix:
