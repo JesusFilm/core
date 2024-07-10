@@ -1,5 +1,6 @@
 export {
   useCommand,
-  CommandProvider
+  CommandProvider,
+  type Command
 } from './CommandProvider'
 export type { CommandState } from './CommandProvider'

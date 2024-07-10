@@ -14,7 +14,6 @@ describe('CommandContext', () => {
           commands: []
         }
         const command: Command = {
-          data: {},
           execute: () => {},
           undo: () => {}
         }
@@ -33,7 +32,6 @@ describe('CommandContext', () => {
 
       it('should update state when command index at end', () => {
         const command0: Command = {
-          data: {},
           execute: () => {},
           undo: () => {}
         }
@@ -42,7 +40,6 @@ describe('CommandContext', () => {
           commands: [command0]
         }
         const command: Command = {
-          data: {},
           execute: () => {},
           undo: () => {}
         }
@@ -61,12 +58,10 @@ describe('CommandContext', () => {
 
       it('should update state when command index in middle', () => {
         const command0: Command = {
-          data: {},
           execute: () => {},
           undo: () => {}
         }
         const command1: Command = {
-          data: {},
           execute: () => {},
           undo: () => {}
         }
@@ -77,7 +72,6 @@ describe('CommandContext', () => {
           redo: command1
         }
         const command: Command = {
-          data: {},
           execute: () => {},
           undo: () => {}
         }
@@ -94,17 +88,41 @@ describe('CommandContext', () => {
           redo: undefined
         })
       })
+
+      it('should remove first element when commands exceed 20', () => {
+        const commands: Command[] = Array.from({ length: 20 }).map(() => ({
+          execute: () => {},
+          undo: () => {}
+        }))
+        const state: CommandState = {
+          commandIndex: 20,
+          commands
+        }
+        const command: Command = {
+          execute: () => {},
+          undo: () => {}
+        }
+        expect(
+          reducer(state, {
+            type: 'AddCommandAction',
+            command
+          })
+        ).toEqual({
+          commandIndex: 20,
+          commands: [...commands.slice(1), command],
+          undo: command,
+          redo: undefined
+        })
+      })
     })
 
     describe('UndoCallbackAction', () => {
       it('should update state when command index is at end', () => {
         const command0: Command = {
-          data: {},
           execute: () => {},
           undo: () => {}
         }
         const command1: Command = {
-          data: {},
           execute: () => {},
           undo: () => {}
         }
@@ -130,12 +148,10 @@ describe('CommandContext', () => {
 
     it('should update state when command index in middle', () => {
       const command0: Command = {
-        data: {},
         execute: () => {},
         undo: () => {}
       }
       const command1: Command = {
-        data: {},
         execute: () => {},
         undo: () => {}
       }
@@ -160,12 +176,10 @@ describe('CommandContext', () => {
 
     it('should do nothing when command index is at beginning', () => {
       const command0: Command = {
-        data: {},
         execute: () => {},
         undo: () => {}
       }
       const command1: Command = {
-        data: {},
         execute: () => {},
         undo: () => {}
       }
@@ -186,12 +200,10 @@ describe('CommandContext', () => {
     describe('RedoCallbackAction', () => {
       it('should do nothing when command index is at end', () => {
         const command0: Command = {
-          data: {},
           execute: () => {},
           undo: () => {}
         }
         const command1: Command = {
-          data: {},
           execute: () => {},
           undo: () => {}
         }
@@ -212,12 +224,10 @@ describe('CommandContext', () => {
 
     it('should update state when command index in middle', () => {
       const command0: Command = {
-        data: {},
         execute: () => {},
         undo: () => {}
       }
       const command1: Command = {
-        data: {},
         execute: () => {},
         undo: () => {}
       }
@@ -242,12 +252,10 @@ describe('CommandContext', () => {
 
     it('should update state when command index is at beginning', () => {
       const command0: Command = {
-        data: {},
         execute: () => {},
         undo: () => {}
       }
       const command1: Command = {
-        data: {},
         execute: () => {},
         undo: () => {}
       }

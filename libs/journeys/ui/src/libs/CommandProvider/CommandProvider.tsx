@@ -7,10 +7,16 @@ import {
   useReducer
 } from 'react'
 
-export interface Command<T = Record<string, unknown>> {
-  data: T
-  execute: () => void
-  undo: () => void
+export interface Command<
+  ExecuteParameters = unknown,
+  UndoParameters = ExecuteParameters
+> {
+  parameters?: {
+    execute?: ExecuteParameters
+    undo?: UndoParameters
+  }
+  execute: (parameters?: ExecuteParameters) => void
+  undo?: (parameters?: UndoParameters) => void
 }
 export interface CommandState {
   /**
@@ -42,6 +48,8 @@ interface RedoCallbackAction {
 }
 type CommandAction = AddCommandAction | UndoCallbackAction | RedoCallbackAction
 
+const MAX_UNDO_COMMANDS = 20
+
 export const reducer = (
   state: CommandState,
   action: CommandAction
@@ -52,9 +60,18 @@ export const reducer = (
         ...state.commands.slice(0, state.commandIndex),
         action.command
       ]
+      if (commands.length > MAX_UNDO_COMMANDS) {
+        return {
+          ...state,
+          commands: commands.slice(1),
+          commandIndex: MAX_UNDO_COMMANDS,
+          undo: action.command,
+          redo: undefined
+        }
+      }
       return {
         ...state,
-        commands,
+        commands: commands,
         commandIndex: commands.length,
         undo: action.command,
         redo: undefined
@@ -104,7 +121,7 @@ export function CommandProvider({
   initialState
 }: CommandProviderProps): ReactElement {
   const [state, dispatch] = useReducer(reducer, {
-    commandIndex: -1,
+    commandIndex: 0,
     commands: [],
     ...initialState
   })
