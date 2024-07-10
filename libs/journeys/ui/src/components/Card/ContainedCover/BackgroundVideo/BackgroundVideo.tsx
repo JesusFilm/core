@@ -131,7 +131,7 @@ export function BackgroundVideo({
         className="vjs-fill video-js"
         playsInline
         sx={{
-          '&.vjs-fill': { backgroundColor: cardColor },
+          // '&.vjs-fill': { backgroundColor: cardColor },
           '&.video-js.vjs-fill:not(.vjs-audio-only-mode)': {
             height: isYouTube ? 'inherit' : '100%',
             transform: isYouTube
