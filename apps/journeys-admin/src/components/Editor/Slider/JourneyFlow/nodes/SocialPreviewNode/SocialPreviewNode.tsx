@@ -6,8 +6,8 @@ import Typography from '@mui/material/Typography'
 import { alpha } from '@mui/material/styles'
 import isEmpty from 'lodash/isEmpty'
 import Image from 'next/image'
-import { ReactElement } from 'react'
-import { OnConnect } from 'reactflow'
+import type { ReactElement } from 'react'
+import type { OnConnect } from 'reactflow'
 
 import {
   ActiveContent,
@@ -64,8 +64,6 @@ export function SocialPreviewNode(): ReactElement {
     void updateEdge({ source: 'SocialPreview', target: params.target })
   }
 
-  const bgcolor = showAnalytics ? 'rgba(0,0,0,0.1)' : 'background.default'
-
   return (
     <BaseNode
       id="SocialPreview"
@@ -111,16 +109,39 @@ export function SocialPreviewNode(): ReactElement {
             alignItems="center"
             spacing={1}
           >
-            <UserProfileCircle sx={{ fontSize: 14, color: bgcolor }} />
+            <UserProfileCircle
+              sx={{
+                fontSize: 14,
+                color: (theme) =>
+                  showAnalytics
+                    ? alpha(theme.palette.secondary.dark, 0.1)
+                    : 'background.default'
+              }}
+            />
             <Box flexGrow={1}>
               <Box
                 width={45}
                 height={9}
-                bgcolor={bgcolor}
                 borderRadius="4.5px"
+                sx={{
+                  backgroundColor: (theme) =>
+                    showAnalytics
+                      ? alpha(theme.palette.secondary.dark, 0.1)
+                      : 'background.default'
+                }}
               />
             </Box>
-            <Box width={9} height={9} bgcolor={bgcolor} borderRadius="4.5px" />
+            <Box
+              width={9}
+              height={9}
+              borderRadius="4.5px"
+              sx={{
+                backgroundColor: (theme) =>
+                  showAnalytics
+                    ? alpha(theme.palette.secondary.dark, 0.1)
+                    : 'background.default'
+              }}
+            />
           </Stack>
           <CardMedia
             sx={{
@@ -171,8 +192,13 @@ export function SocialPreviewNode(): ReactElement {
                   data-testid="SocialPreviewTitleEmpty"
                   width={118.5}
                   height={9}
-                  bgcolor={bgcolor}
                   borderRadius={1}
+                  sx={{
+                    backgroundColor: (theme) =>
+                      showAnalytics
+                        ? alpha(theme.palette.secondary.dark, 0.1)
+                        : 'background.default'
+                  }}
                 />
               ) : (
                 <Typography
@@ -191,7 +217,12 @@ export function SocialPreviewNode(): ReactElement {
                   data-testid="SocialPreviewDescriptionEmpty"
                   width={118.5}
                   height={9}
-                  bgcolor={bgcolor}
+                  sx={{
+                    backgroundColor: (theme) =>
+                      showAnalytics
+                        ? alpha(theme.palette.secondary.dark, 0.1)
+                        : 'background.default'
+                  }}
                   borderRadius={1}
                 />
               ) : (
@@ -211,9 +242,33 @@ export function SocialPreviewNode(): ReactElement {
               justifyContent="space-around"
               color="background.default"
             >
-              <ThumbsUp sx={{ fontSize: 9, color: bgcolor, bgColor: 'red' }} />
-              <MessageCircle sx={{ fontSize: 9, color: bgcolor }} />
-              <Share sx={{ fontSize: 9, color: bgcolor }} />
+              <ThumbsUp
+                sx={{
+                  fontSize: 9,
+                  color: (theme) =>
+                    showAnalytics
+                      ? alpha(theme.palette.secondary.dark, 0.1)
+                      : 'background.default'
+                }}
+              />
+              <MessageCircle
+                sx={{
+                  fontSize: 9,
+                  color: (theme) =>
+                    showAnalytics
+                      ? alpha(theme.palette.secondary.dark, 0.1)
+                      : 'background.default'
+                }}
+              />
+              <Share
+                sx={{
+                  fontSize: 9,
+                  color: (theme) =>
+                    showAnalytics
+                      ? alpha(theme.palette.secondary.dark, 0.1)
+                      : 'background.default'
+                }}
+              />
             </Stack>
           </Stack>
         </Card>
