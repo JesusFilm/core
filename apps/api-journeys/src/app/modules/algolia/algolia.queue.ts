@@ -30,7 +30,7 @@ export class AlgoliaQueue implements OnModuleInit {
       {},
       {
         repeat: {
-          pattern: '0 0 0 * * *' // Run every day at midnight
+          pattern: '0 0 1 * * *' // Run every day at 1 in the morning
         }
       }
     )
