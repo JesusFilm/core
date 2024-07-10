@@ -14,7 +14,9 @@ export function JourneyAnalyticsCardStat({
 
   return (
     <Box sx={{ px: 4 }} data-testid="JourneyAnalyticsCardStat">
-      <Typography variant="overline">{label}</Typography>
+      <Typography variant="overline" sx={{ color: 'secondary.light' }}>
+        {label}
+      </Typography>
       <Typography variant="h1">{formatter.format(count)}</Typography>
     </Box>
   )
