@@ -8,7 +8,7 @@ css attributes border-radius and border-image-source are not compatible */
 const StyledTextField = styled(TextField)(({ theme }) => ({
   '& .MuiOutlinedInput-root': {
     background: theme.palette.background.default,
-    borderRadius: '8px',
+    borderRadius: 8,
     '&.Mui-focused fieldset, fieldset': {
       borderRadius: 4
     },
@@ -28,7 +28,7 @@ export function SearchBar(): ReactElement {
   return (
     <Box
       sx={{
-        borderRadius: '12px',
+        borderRadius: 3,
         background:
           'linear-gradient(90deg, #0C79B3 0%, #0FDABC 51%, #E72DBB 100%)',
         p: 1
