@@ -60,6 +60,8 @@ import { StepBlockNode } from './nodes/StepBlockNode'
 import { STEP_NODE_CARD_HEIGHT } from './nodes/StepBlockNode/libs/sizes'
 
 import 'reactflow/dist/style.css'
+import { DeleteDialog } from '../Content/Canvas/QuickControls/DeleteBlock/DeleteDialog'
+import useBlockDelete from '../Content/Canvas/QuickControls/DeleteBlock/utils/useBlockDelete'
 import { ReferrerEdge } from './edges/ReferrerEdge'
 import { ReferrerNode } from './nodes/ReferrerNode'
 
@@ -85,8 +87,11 @@ export function JourneyFlow(): ReactElement {
   const { editorAnalytics } = useFlags()
   const theme = useTheme()
   const {
-    state: { steps, activeSlide, showAnalytics, analytics }
+    state: { steps, activeSlide, showAnalytics, analytics, selectedBlock }
   } = useEditor()
+  const { loading, onDeleteBlock } = useBlockDelete({
+    block: selectedBlock
+  })
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance | null>(null)
   const connectingParams = useRef<OnConnectStartParams | null>(null)
@@ -319,6 +324,15 @@ export function JourneyFlow(): ReactElement {
     setReferrerEdges((eds) => eds.map(hideReferrers(!showAnalytics)))
   }, [showAnalytics])
 
+  const handleCloseDialog = (): void => {
+    setOpenDeleteDialog(false)
+  }
+
+  async function handleDeleteBlock() {
+    await onDeleteBlock()
+    handleCloseDialog()
+  }
+
   return (
     <Box
       sx={{
@@ -356,6 +370,12 @@ export function JourneyFlow(): ReactElement {
       >
         {activeSlide === ActiveSlide.JourneyFlow && (
           <>
+            <DeleteDialog
+              openDialog={openDeleteDialog}
+              handleCloseDialog={handleCloseDialog}
+              handleDeleteBlock={handleDeleteBlock}
+              loading={loading}
+            />
             <Panel position="top-right">
               {showAnalytics !== true && <NewStepButton />}
             </Panel>
