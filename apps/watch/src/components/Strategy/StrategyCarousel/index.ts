@@ -1,0 +1,1 @@
+export { StrategyCarousel } from './StrategyCarousel'

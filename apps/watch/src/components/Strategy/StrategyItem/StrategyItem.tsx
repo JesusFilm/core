@@ -1,16 +1,30 @@
-import { Box, Card, Stack, Typography } from '@mui/material'
+import { Box, Card, Stack } from '@mui/material'
+// import Card from '@mui/material/Card'
+import Typography from '@mui/material/Typography'
 import { useTheme } from '@mui/material/styles'
 import { useTranslation } from 'next-i18next'
 import Image from 'next/image'
 import NextLink from 'next/link'
 import { ReactElement } from 'react'
 
-export function StrategyItem(): ReactElement {
+interface StrategyItem {
+  title: string
+  description: string
+  id: string
+}
+interface StrategyItemProps {
+  item?: StrategyItem
+  priority?: boolean
+}
+
+export function StrategyItem({
+  item,
+  priority
+}: StrategyItemProps): ReactElement {
   const { t } = useTranslation('apps-watch')
   const theme = useTheme()
-  console.log(theme.breakpoints.values.xl)
   return (
-    // photo
+    // photo/image
     // title
     // description
 
@@ -22,7 +36,7 @@ export function StrategyItem(): ReactElement {
         border: 'none',
         backgroundColor: 'transparent',
         cursor: 'pointer',
-        width: { xs: 130, md: 180, xl: 240 },
+        width: { xs: 210, md: 260, xl: 320 },
         borderRadius: 2,
         boxShadow: 'none',
         p: 2,
@@ -45,47 +59,86 @@ export function StrategyItem(): ReactElement {
         }
       }}
     >
+      {/* TODO: add nextlink to wrap component
+      probably links to wordpress site */}
       {/* <NextLink href={}> */}
-      {/* <Box
-        sx={{
-          height: 'inherit',
-          color: 'inherit',
-          textDecoration: 'none'
-        }}
-      > */}
+
       <Stack
-        // justifyContent="center"
-        // alignItems="center"
+        justifyContent="center"
+        alignItems="center"
+        data-testid="ImageStack"
         sx={{
           position: 'relative',
-          aspectRatio: 1,
+          maxHeight: 160,
+          aspectRatio: 2,
           overflow: 'hidden',
           borderRadius: 2,
           alignItems: 'center',
           backgroundColor: 'background.default'
         }}
       >
+        {/* TODO: replace image src&alt with content from wordpress */}
         <Image
           data-testid="StrategyImage"
           className="MuiImageBackground-root"
           src="https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920"
           alt="random image from unsplash"
+          // width={320}
+          // height={160}
           fill
-          //   width="460"
-          //   height="460"
           sizes={`(max-width: ${
             theme.breakpoints.values.md - 0.5
           }px) 130px, (max-width: ${
             theme.breakpoints.values.xl - 0.5
           }px) 180px, 280px`}
           style={{
+            maxHeight: '160px',
             objectFit: 'cover'
           }}
         />
       </Stack>
-      {/* </Box> */}
-      <Typography variant="h5">{t('Strategy title')}</Typography>
-      <Typography>{t('Description')}</Typography>
+      <Stack sx={{ px: 0, py: 3 }}>
+        <Typography variant="subtitle2">{t(item?.title ?? '')}</Typography>
+        <Box
+          data-testid="BOXBOX"
+          sx={{
+            display: { xs: 'none', md: '-webkit-box' },
+            height: '66px',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            WebkitBoxOrient: 'vertical',
+            WebkitLineClamp: 3
+          }}
+        >
+          <Typography
+            variant="body1"
+            sx={{
+              my: 1
+            }}
+          >
+            {t(item?.description ?? '')}
+          </Typography>
+        </Box>
+        <Box
+          sx={{
+            display: { xs: '-webkit-box', md: 'none' },
+            height: '63px',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            WebkitBoxOrient: 'vertical',
+            WebkitLineClamp: 3
+          }}
+        >
+          <Typography
+            variant="body2"
+            sx={{
+              my: 1
+            }}
+          >
+            {t(item?.description ?? '')}
+          </Typography>
+        </Box>
+      </Stack>
       {/* </NextLink> */}
     </Card>
   )

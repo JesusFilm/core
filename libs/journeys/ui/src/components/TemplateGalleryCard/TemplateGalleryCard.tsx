@@ -196,6 +196,7 @@ export function TemplateGalleryCard({
                   })}
                 </Typography>
                 <Box
+                  data-testid="BOXBOX"
                   sx={{
                     display: { xs: 'none', md: '-webkit-box' },
                     height: '66px',
