@@ -68,6 +68,12 @@ const additionalEdgeStyles = {
   '.react-flow__edgeupdater.react-flow__edgeupdater-target': { r: 15 }
 }
 
+const analyticEdgeStyles = {
+  '.react-flow__edge, .react-flow__edge-interaction': {
+    'pointer-events': 'none'
+  }
+}
+
 export const GET_STEP_BLOCKS_WITH_POSITION = gql`
   query GetStepBlocksWithPosition($journeyIds: [ID!]) {
     blocks(where: { journeyIds: $journeyIds, typenames: ["StepBlock"] }) {
@@ -323,7 +329,8 @@ export function JourneyFlow(): ReactElement {
       sx={{
         width: '100%',
         height: '100%',
-        ...additionalEdgeStyles
+        ...additionalEdgeStyles,
+        ...(showAnalytics && analyticEdgeStyles)
       }}
       data-testid="JourneyFlow"
     >
