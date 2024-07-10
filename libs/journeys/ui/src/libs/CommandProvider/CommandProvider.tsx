@@ -100,15 +100,21 @@ export const reducer = (
   }
 }
 
-export const CommandContext = createContext<{
+interface CommandContextType {
   state: CommandState
   dispatch: Dispatch<CommandAction>
-}>({
+  undo: () => void
+  redo: () => void
+}
+
+export const CommandContext = createContext<CommandContextType>({
   state: {
     commandIndex: 0,
     commands: []
   },
-  dispatch: () => null
+  dispatch: () => null,
+  undo: () => null,
+  redo: () => null
 })
 
 interface CommandProviderProps {
@@ -126,17 +132,30 @@ export function CommandProvider({
     ...initialState
   })
 
+  async function undo() {
+    if (state.undo == null) return
+    if (state.undo.undo != null) {
+      await state.undo.undo(state.undo.parameters?.undo)
+    } else {
+      await state.undo.execute(state.undo.parameters?.undo)
+    }
+    dispatch({ type: 'UndoCallbackAction' })
+  }
+
+  async function redo() {
+    if (state.redo == null) return
+    await state.redo.execute?.(state.redo.parameters?.execute)
+    dispatch({ type: 'RedoCallbackAction' })
+  }
+
   return (
-    <CommandContext.Provider value={{ state, dispatch }}>
+    <CommandContext.Provider value={{ state, dispatch, undo, redo }}>
       {children}
     </CommandContext.Provider>
   )
 }
 
-export function useCommand(): {
-  state: CommandState
-  dispatch: Dispatch<CommandAction>
-} {
+export function useCommand(): CommandContextType {
   const context = useContext(CommandContext)
   if (context === undefined) {
     throw new Error('useCommand must be used within a CommandProvider')
