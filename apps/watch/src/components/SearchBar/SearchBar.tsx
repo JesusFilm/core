@@ -31,6 +31,7 @@ export function SearchBar(): ReactElement {
           'linear-gradient(90deg, #0C79B3 0%, #0FDABC 51%, #E72DBB 100%)',
         p: '4px'
       }}
+      data-testid="SearchBar"
     >
       <ColoredTextField
         placeholder="Search by topic, occasion, or audience ..."
