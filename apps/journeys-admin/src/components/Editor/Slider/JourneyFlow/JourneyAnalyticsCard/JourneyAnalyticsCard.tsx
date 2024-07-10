@@ -11,17 +11,25 @@ export function JourneyAnalyticsCard(): ReactElement {
     state: { analytics }
   } = useEditor()
   return (
-    <Stack direction="row" sx={{ mt: 8 }}>
+    <Stack
+      direction="row"
+      sx={{ mt: 6 }}
+      divider={
+        <Divider
+          orientation="vertical"
+          flexItem
+          sx={{ borderColor: 'secondary.dark', opacity: 0.1 }}
+        />
+      }
+    >
       <JourneyAnalyticsCardStat
         label={t('Visitors')}
         count={analytics?.totalVisitors}
       />
-      <Divider orientation="vertical" flexItem />
       <JourneyAnalyticsCardStat
         label={t('Chats Started')}
         count={analytics?.chatsStarted}
       />
-      <Divider orientation="vertical" flexItem />
       <JourneyAnalyticsCardStat
         label={t('Sites Visited')}
         count={analytics?.linksVisited}
