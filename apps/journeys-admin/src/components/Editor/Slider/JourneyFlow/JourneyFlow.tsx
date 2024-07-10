@@ -60,7 +60,6 @@ import { StepBlockNode } from './nodes/StepBlockNode'
 import { STEP_NODE_CARD_HEIGHT } from './nodes/StepBlockNode/libs/sizes'
 
 import 'reactflow/dist/style.css'
-import { DeleteBlock } from '../Content/Canvas/QuickControls/DeleteBlock'
 import { ReferrerEdge } from './edges/ReferrerEdge'
 import { ReferrerNode } from './nodes/ReferrerNode'
 
@@ -357,11 +356,6 @@ export function JourneyFlow(): ReactElement {
       >
         {activeSlide === ActiveSlide.JourneyFlow && (
           <>
-            <DeleteBlock
-              variant="journeyFlow"
-              openDeleteDialog={openDeleteDialog}
-              setOpenDeleteDialog={setOpenDeleteDialog}
-            />
             <Panel position="top-right">
               {showAnalytics !== true && <NewStepButton />}
             </Panel>
