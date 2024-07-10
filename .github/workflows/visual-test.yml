@@ -12,7 +12,9 @@ concurrency:
   cancel-in-progress: true
 jobs:
   visual-test:
-    if: contains(github.event.pull_request.labels.*.name, 'chromatic')
+    if: >
+      contains(github.event.pull_request.labels.*.name, 'chromatic') ||
+      (github.event_name == 'push' && contains(github.ref, 'refs/heads/main'))
     runs-on: ubuntu-latest
     strategy:
       matrix:
