@@ -14,6 +14,7 @@ describe('CommandContext', () => {
           commands: []
         }
         const command: Command = {
+          parameters: { execute: { arg1: 'execute' }, undo: { arg1: 'undo' } },
           execute: () => {},
           undo: () => {}
         }
@@ -32,6 +33,7 @@ describe('CommandContext', () => {
 
       it('should update state when command index at end', () => {
         const command0: Command = {
+          parameters: { execute: { arg1: 'execute' }, undo: { arg1: 'undo' } },
           execute: () => {},
           undo: () => {}
         }
@@ -40,6 +42,7 @@ describe('CommandContext', () => {
           commands: [command0]
         }
         const command: Command = {
+          parameters: { execute: { arg1: 'execute' }, undo: { arg1: 'undo' } },
           execute: () => {},
           undo: () => {}
         }
@@ -58,10 +61,12 @@ describe('CommandContext', () => {
 
       it('should update state when command index in middle', () => {
         const command0: Command = {
+          parameters: { execute: { arg1: 'execute' }, undo: { arg1: 'undo' } },
           execute: () => {},
           undo: () => {}
         }
         const command1: Command = {
+          parameters: { execute: { arg1: 'execute' }, undo: { arg1: 'undo' } },
           execute: () => {},
           undo: () => {}
         }
@@ -72,6 +77,7 @@ describe('CommandContext', () => {
           redo: command1
         }
         const command: Command = {
+          parameters: { execute: { arg1: 'execute' }, undo: { arg1: 'undo' } },
           execute: () => {},
           undo: () => {}
         }
@@ -91,6 +97,7 @@ describe('CommandContext', () => {
 
       it('should remove first element when commands exceed 20', () => {
         const commands: Command[] = Array.from({ length: 20 }).map(() => ({
+          parameters: { execute: { arg1: 'execute' }, undo: { arg1: 'undo' } },
           execute: () => {},
           undo: () => {}
         }))
@@ -99,6 +106,7 @@ describe('CommandContext', () => {
           commands
         }
         const command: Command = {
+          parameters: { execute: { arg1: 'execute' }, undo: { arg1: 'undo' } },
           execute: () => {},
           undo: () => {}
         }
@@ -119,10 +127,12 @@ describe('CommandContext', () => {
     describe('UndoCallbackAction', () => {
       it('should update state when command index is at end', () => {
         const command0: Command = {
+          parameters: { execute: { arg1: 'execute' }, undo: { arg1: 'undo' } },
           execute: () => {},
           undo: () => {}
         }
         const command1: Command = {
+          parameters: { execute: { arg1: 'execute' }, undo: { arg1: 'undo' } },
           execute: () => {},
           undo: () => {}
         }
@@ -148,10 +158,12 @@ describe('CommandContext', () => {
 
     it('should update state when command index in middle', () => {
       const command0: Command = {
+        parameters: { execute: { arg1: 'execute' }, undo: { arg1: 'undo' } },
         execute: () => {},
         undo: () => {}
       }
       const command1: Command = {
+        parameters: { execute: { arg1: 'execute' }, undo: { arg1: 'undo' } },
         execute: () => {},
         undo: () => {}
       }
@@ -176,10 +188,12 @@ describe('CommandContext', () => {
 
     it('should do nothing when command index is at beginning', () => {
       const command0: Command = {
+        parameters: { execute: { arg1: 'execute' }, undo: { arg1: 'undo' } },
         execute: () => {},
         undo: () => {}
       }
       const command1: Command = {
+        parameters: { execute: { arg1: 'execute' }, undo: { arg1: 'undo' } },
         execute: () => {},
         undo: () => {}
       }
@@ -200,10 +214,12 @@ describe('CommandContext', () => {
     describe('RedoCallbackAction', () => {
       it('should do nothing when command index is at end', () => {
         const command0: Command = {
+          parameters: { execute: { arg1: 'execute' }, undo: { arg1: 'undo' } },
           execute: () => {},
           undo: () => {}
         }
         const command1: Command = {
+          parameters: { execute: { arg1: 'execute' }, undo: { arg1: 'undo' } },
           execute: () => {},
           undo: () => {}
         }
@@ -224,10 +240,12 @@ describe('CommandContext', () => {
 
     it('should update state when command index in middle', () => {
       const command0: Command = {
+        parameters: { execute: { arg1: 'execute' }, undo: { arg1: 'undo' } },
         execute: () => {},
         undo: () => {}
       }
       const command1: Command = {
+        parameters: { execute: { arg1: 'execute' }, undo: { arg1: 'undo' } },
         execute: () => {},
         undo: () => {}
       }
@@ -252,10 +270,12 @@ describe('CommandContext', () => {
 
     it('should update state when command index is at beginning', () => {
       const command0: Command = {
+        parameters: { execute: { arg1: 'execute' }, undo: { arg1: 'undo' } },
         execute: () => {},
         undo: () => {}
       }
       const command1: Command = {
+        parameters: { execute: { arg1: 'execute' }, undo: { arg1: 'undo' } },
         execute: () => {},
         undo: () => {}
       }
@@ -302,11 +322,12 @@ describe('CommandContext', () => {
     describe('undo', () => {
       it('should process undo', async () => {
         const command0: Command = {
+          parameters: { execute: { arg1: 'execute' }, undo: { arg1: 'undo' } },
           execute: () => {},
           undo: () => {}
         }
         const command1: Command = {
-          parameters: { undo: { arg1: 'undo' } },
+          parameters: { execute: { arg1: 'execute' }, undo: { arg1: 'undo' } },
           execute: () => {},
           undo: jest.fn()
         }
@@ -340,11 +361,12 @@ describe('CommandContext', () => {
 
       it('should process execute when no undo', async () => {
         const command0: Command = {
+          parameters: { execute: { arg1: 'execute' }, undo: { arg1: 'undo' } },
           execute: () => {},
           undo: () => {}
         }
         const command1: Command = {
-          parameters: { undo: { arg1: 'undo' } },
+          parameters: { execute: { arg1: 'execute' }, undo: { arg1: 'undo' } },
           execute: jest.fn()
         }
         const state: CommandState = {
@@ -377,6 +399,7 @@ describe('CommandContext', () => {
 
       it('should not process undo when undo command is not set', async () => {
         const command0: Command = {
+          parameters: { execute: { arg1: 'execute' }, undo: { arg1: 'undo' } },
           execute: () => {},
           undo: () => {}
         }
@@ -405,12 +428,14 @@ describe('CommandContext', () => {
     describe('redo', () => {
       it('should process redo', async () => {
         const command0: Command = {
+          parameters: { execute: { arg1: 'execute' }, undo: { arg1: 'undo' } },
           execute: () => {},
           undo: () => {}
         }
         const command1: Command = {
-          parameters: { execute: { arg1: 'redo' } },
+          parameters: { execute: { arg1: 'execute' }, undo: { arg1: 'undo' } },
           execute: jest.fn(),
+          redo: jest.fn(),
           undo: () => {}
         }
         const state: CommandState = {
@@ -431,7 +456,46 @@ describe('CommandContext', () => {
 
         rerender()
 
-        expect(command1.execute).toHaveBeenCalledWith({ arg1: 'redo' })
+        expect(command1.execute).not.toHaveBeenCalled()
+        expect(command1.redo).toHaveBeenCalledWith({ arg1: 'execute' })
+
+        expect(result.current.state).toEqual({
+          commandIndex: 2,
+          commands: [command0, command1],
+          undo: command1,
+          redo: undefined
+        })
+      })
+
+      it('should process execute when no redo', async () => {
+        const command0: Command = {
+          parameters: { execute: { arg1: 'execute' }, undo: { arg1: 'undo' } },
+          execute: () => {},
+          undo: () => {}
+        }
+        const command1: Command = {
+          parameters: { execute: { arg1: 'execute' }, undo: { arg1: 'undo' } },
+          execute: jest.fn()
+        }
+        const state: CommandState = {
+          commandIndex: 1,
+          commands: [command0, command1],
+          undo: command0,
+          redo: command1
+        }
+
+        const wrapper = ({ children }: { children: ReactNode }): ReactNode => (
+          <CommandProvider initialState={state}>{children}</CommandProvider>
+        )
+        const { result, rerender } = renderHook(() => useCommand(), {
+          wrapper
+        })
+
+        await result.current.redo()
+
+        rerender()
+
+        expect(command1.execute).toHaveBeenCalledWith({ arg1: 'execute' })
 
         expect(result.current.state).toEqual({
           commandIndex: 2,
@@ -443,6 +507,7 @@ describe('CommandContext', () => {
 
       it('should not process redo when redo command is not set', async () => {
         const command0: Command = {
+          parameters: { execute: { arg1: 'execute' }, undo: { arg1: 'undo' } },
           execute: () => {},
           undo: () => {}
         }
@@ -465,6 +530,39 @@ describe('CommandContext', () => {
         rerender()
 
         expect(result.current.state).toEqual(state)
+      })
+    })
+
+    describe('add', () => {
+      it('should add command', async () => {
+        const command: Command = {
+          parameters: { execute: { arg1: 'execute' }, undo: { arg1: 'undo' } },
+          execute: jest.fn()
+        }
+        const state: CommandState = {
+          commandIndex: 0,
+          commands: []
+        }
+
+        const wrapper = ({ children }: { children: ReactNode }): ReactNode => (
+          <CommandProvider initialState={state}>{children}</CommandProvider>
+        )
+        const { result, rerender } = renderHook(() => useCommand(), {
+          wrapper
+        })
+
+        await result.current.add(command)
+
+        rerender()
+
+        expect(command.execute).toHaveBeenCalledWith({ arg1: 'execute' })
+
+        expect(result.current.state).toEqual({
+          commandIndex: 1,
+          commands: [command],
+          undo: command,
+          redo: undefined
+        })
       })
     })
   })
