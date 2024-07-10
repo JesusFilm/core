@@ -26,6 +26,9 @@ import { BaseNode } from '../BaseNode'
 
 export function SocialPreviewNode(): ReactElement {
   const { journey } = useJourney()
+  const {
+    state: { showAnalytics }
+  } = useEditor()
   const updateEdge = useUpdateEdge()
 
   const {
@@ -67,8 +70,10 @@ export function SocialPreviewNode(): ReactElement {
       id="SocialPreview"
       selected={activeContent === ActiveContent.Social}
       sourceHandle="show"
+      targetHandle="show"
       onSourceConnect={handleSourceConnect}
       isSourceConnected
+      positionTargetHandle={false}
     >
       {({ selected }) => (
         <Card

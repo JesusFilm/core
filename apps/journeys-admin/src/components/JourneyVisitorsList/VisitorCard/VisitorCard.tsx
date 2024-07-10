@@ -7,6 +7,7 @@ import { ReactElement } from 'react'
 
 import { GetJourneyVisitors_visitors_edges_node as VisitorNode } from '../../../../__generated__/GetJourneyVisitors'
 
+import { useRouter } from 'next/router'
 import { VisitorCardDetails } from './VisitorCardDetails'
 import { VisitorCardHeader } from './VisitorCardHeader'
 
@@ -19,10 +20,16 @@ export function VisitorCard({
   visitorNode,
   loading
 }: VisitorCardProps): ReactElement {
+  const router = useRouter()
+
   const withLink = (block: ReactElement): ReactElement => {
     return (
       <NextLink
-        href={`/reports/visitors/${visitorNode?.visitorId ?? ''}`}
+        href={`/reports/visitors/${visitorNode?.visitorId ?? ''}/${
+          router.query?.journeyId != null
+            ? `?journeyId=${router.query.journeyId}`
+            : ''
+        }`}
         passHref
         legacyBehavior
         prefetch={false}

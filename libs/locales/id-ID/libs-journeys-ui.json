@@ -17,6 +17,10 @@
   "Terms & Conditions": "Syarat & Ketentuan",
   "All personal identifiable data registered on this website will be processed by journey creator: \"{{ teamTitle }}\".": "Semua data pribadi yang dapat diidentifikasi yang terdaftar di situs web ini akan diproses oleh pembuat perjalanan: \"{{ teamTitle }}\".",
   "NextSteps © {{year}}": "NextSteps © {{year}}",
+  "Start a Conversation": "Memulai Percakapan",
+  "Link to Bible": "Tautan ke Alkitab",
+  "Send an Email": "Kirim Email",
+  "Visit a Website": "Kunjungi Situs Web",
   "Untitled": "Tanpa judul",
   "Step {{number}}": "Langkah {{number}}"
 }
