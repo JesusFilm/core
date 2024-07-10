@@ -3,12 +3,13 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
-import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
-import { TeamUpdate } from '../../../../__generated__/TeamUpdate'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
-} from '../TeamProvider'
+} from '@core/journeys/ui/TeamProvider'
+import { GetLastActiveTeamIdAndTeams } from '@core/journeys/ui/TeamProvider/__generated__/GetLastActiveTeamIdAndTeams'
+
+import { TeamUpdate } from '../../../../__generated__/TeamUpdate'
 
 import { TEAM_UPDATE } from './TeamUpdateDialog'
 

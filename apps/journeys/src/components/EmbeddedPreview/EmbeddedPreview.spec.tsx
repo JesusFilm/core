@@ -208,4 +208,17 @@ describe('EmbeddedPreview', () => {
     fireEvent.click(getByTestId('CloseIconButton'))
     expect(document?.exitFullscreen).toHaveBeenCalled()
   })
+
+  it('should disable fullscreen', async () => {
+    const { queryByTestId } = render(
+      <MockedProvider mocks={mocks}>
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey, variant: 'embed' }}>
+            <EmbeddedPreview blocks={basic} disableFullscreen />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    expect(queryByTestId('clickable-card-embed')).not.toBeInTheDocument()
+  })
 })

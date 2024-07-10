@@ -1,6 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import type { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import { BUTTON_FIELDS } from '@core/journeys/ui/Button/buttonFields'
@@ -10,8 +10,8 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import Cursor6Icon from '@core/shared/ui/icons/Cursor6'
 
-import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../__generated__/BlockFields'
-import { ButtonBlockCreate } from '../../../../../../../../__generated__/ButtonBlockCreate'
+import type { BlockFields_CardBlock as CardBlock } from '../../../../../../../../__generated__/BlockFields'
+import type { ButtonBlockCreate } from '../../../../../../../../__generated__/ButtonBlockCreate'
 import {
   ButtonColor,
   ButtonSize,
@@ -47,7 +47,7 @@ export const BUTTON_BLOCK_CREATE = gql`
 
 export function NewButtonButton(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [buttonBlockCreate] =
+  const [buttonBlockCreate, { loading }] =
     useMutation<ButtonBlockCreate>(BUTTON_BLOCK_CREATE)
   const { journey } = useJourney()
   const {
@@ -154,6 +154,7 @@ export function NewButtonButton(): ReactElement {
       value={t('Button')}
       onClick={handleClick}
       testId="NewButton"
+      disabled={loading}
     />
   )
 }

@@ -1,11 +1,12 @@
 import { gql, useMutation } from '@apollo/client'
 import { v4 as uuidv4 } from 'uuid'
 
+import { useTeam } from '@core/journeys/ui/TeamProvider'
+
 import {
   CreateJourney,
   CreateJourney_journeyCreate as Journey
 } from '../../../__generated__/CreateJourney'
-import { useTeam } from '../../components/Team/TeamProvider'
 
 export const CREATE_JOURNEY = gql`
   mutation CreateJourney(

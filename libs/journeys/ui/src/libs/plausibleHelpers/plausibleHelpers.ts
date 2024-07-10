@@ -15,16 +15,28 @@ import {
   VideoProgressEventCreateInput,
   VideoStartEventCreateInput
 } from '../../../__generated__/globalTypes'
+import {
+  BlockFields_ButtonBlock_action,
+  BlockFields_FormBlock_action,
+  BlockFields_RadioOptionBlock_action,
+  BlockFields_SignUpBlock_action,
+  BlockFields_VideoBlock_action
+} from '../block/__generated__/BlockFields'
 
 interface Props {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // biome-ignore lint/suspicious/noExplicitAny: any is needed for plausible events
   [K: string]: any
   blockId: string
   /**
-   * compound of event name, blockId, targetBlockId.
-   * Required to run plausible /api/v1/stats/breakdown api call with
+   * compound of stepId, event name, blockId, targetBlockId.
+   * Needed to run plausible /api/v1/stats/breakdown api call with
    * property=event:props:key param */
   key: string
+  /**
+   * compound of stepId, event name, blockId.
+   * Needed to run plausible /api/v1/stats/breakdown api call with
+   * property=event:props:simpleKey param */
+  simpleKey: string
 }
 
 interface Events {
@@ -54,4 +66,67 @@ export interface JourneyPlausibleEvents extends Events {
   videoProgress75: VideoProgressEventCreateInput & Props
   videoComplete: VideoCompleteEventCreateInput & Props
   videoTrigger: Props
+}
+
+interface KeyifyProps {
+  stepId: string
+  event: keyof JourneyPlausibleEvents
+  blockId: string
+  target?: string | Action | null
+}
+
+export function generateActionTargetKey(action: Action): string {
+  switch (action.__typename) {
+    case 'NavigateToBlockAction':
+      return action.blockId
+    case 'LinkAction':
+      return `link:${action.url}`
+    case 'EmailAction':
+      return `email:${action.email}`
+  }
+}
+
+export function keyify({
+  stepId,
+  event,
+  blockId,
+  target
+}: KeyifyProps): string {
+  let targetId = ''
+
+  if (typeof target === 'string' || target == null) {
+    targetId = target ?? ''
+  } else {
+    targetId = generateActionTargetKey(target)
+  }
+
+  return JSON.stringify({
+    stepId,
+    event,
+    blockId,
+    target: targetId
+  })
+}
+
+export function reverseKeyify(key: string): {
+  stepId: string
+  event: keyof JourneyPlausibleEvents
+  blockId: string
+  target?: string
+} {
+  return JSON.parse(key)
+}
+
+type Action =
+  | BlockFields_ButtonBlock_action
+  | BlockFields_RadioOptionBlock_action
+  | BlockFields_SignUpBlock_action
+  | BlockFields_FormBlock_action
+  | BlockFields_VideoBlock_action
+
+export function getTargetEventKey(action?: Action | null) {
+  if (action == null) return ''
+
+  const target = generateActionTargetKey(action)
+  return `${action.parentBlockId}->${target}`
 }

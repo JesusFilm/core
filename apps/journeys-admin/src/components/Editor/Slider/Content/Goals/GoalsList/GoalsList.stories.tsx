@@ -2,8 +2,7 @@ import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
 import { GoalType } from '@core/journeys/ui/Button/utils/getLinkActionGoal/getLinkActionGoal'
-
-import { journeysAdminConfig } from '../../../../../../libs/storybook'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { GoalsList } from './GoalsList'
 

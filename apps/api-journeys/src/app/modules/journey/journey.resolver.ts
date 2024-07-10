@@ -635,6 +635,14 @@ export class JourneyResolver {
           })
         }
         retry = false
+        await this.plausibleQueue.add('create-journey-site', {
+          __typename: 'plausibleCreateJourneySite',
+          journeyId: duplicateJourneyId
+        })
+        await this.plausibleQueue.add('create-team-site', {
+          __typename: 'plausibleCreateTeamSite',
+          teamId: teamId
+        })
         return duplicateJourney
       } catch (err) {
         if (err.code === ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED) {
@@ -987,6 +995,17 @@ export class JourneyResolver {
     return filter(userJourneys, (userJourney) =>
       ability.can(Action.Read, subject('UserJourney', userJourney))
     )
+  }
+
+  @ResolveField('plausibleToken')
+  @UseGuards(AppCaslGuard)
+  async plausibleToken(
+    @CaslAbility() ability: AppAbility,
+    @Parent() journey: Journey
+  ): Promise<string | null> {
+    if (ability.cannot(Action.Manage, subject('Journey', journey))) return null
+
+    return journey.plausibleToken
   }
 
   @ResolveField('language')

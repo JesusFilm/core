@@ -72,7 +72,9 @@ export enum IconName {
     BeenhereRounded = "BeenhereRounded",
     SendRounded = "SendRounded",
     SubscriptionsRounded = "SubscriptionsRounded",
-    ContactSupportRounded = "ContactSupportRounded"
+    ContactSupportRounded = "ContactSupportRounded",
+    Launch = "Launch",
+    MailOutline = "MailOutline"
 }
 
 export enum IconColor {
@@ -90,6 +92,12 @@ export enum IconSize {
     lg = "lg",
     xl = "xl",
     inherit = "inherit"
+}
+
+export enum TextResponseType {
+    freeForm = "freeForm",
+    name = "name",
+    email = "email"
 }
 
 export enum TypographyVariant {
@@ -148,7 +156,33 @@ export enum MessagePlatform {
     skype = "skype",
     line = "line",
     tikTok = "tikTok",
-    custom = "custom"
+    custom = "custom",
+    globe2 = "globe2",
+    globe3 = "globe3",
+    messageText1 = "messageText1",
+    messageText2 = "messageText2",
+    send1 = "send1",
+    send2 = "send2",
+    messageChat2 = "messageChat2",
+    messageCircle = "messageCircle",
+    messageNotifyCircle = "messageNotifyCircle",
+    messageNotifySquare = "messageNotifySquare",
+    messageSquare = "messageSquare",
+    mail1 = "mail1",
+    linkExternal = "linkExternal",
+    home3 = "home3",
+    home4 = "home4",
+    helpCircleContained = "helpCircleContained",
+    helpSquareContained = "helpSquareContained",
+    shieldCheck = "shieldCheck",
+    menu1 = "menu1",
+    checkBroken = "checkBroken",
+    checkContained = "checkContained",
+    settings = "settings"
+}
+
+export enum IntegrationType {
+    growthSpaces = "growthSpaces"
 }
 
 export enum IdType {
@@ -380,6 +414,9 @@ export class TextResponseBlockUpdateInput {
     label?: Nullable<string>;
     hint?: Nullable<string>;
     minRows?: Nullable<number>;
+    routeId?: Nullable<string>;
+    type?: Nullable<TextResponseType>;
+    integrationId?: Nullable<string>;
 }
 
 export class TypographyBlockCreateInput {
@@ -605,6 +642,17 @@ export class HostCreateInput {
     src2?: Nullable<string>;
 }
 
+export class IntegrationGrowthSpacesCreateInput {
+    accessId: string;
+    accessSecret: string;
+    teamId: string;
+}
+
+export class IntegrationGrowthSpacesUpdateInput {
+    accessId: string;
+    accessSecret: string;
+}
+
 export class JourneysFilter {
     featured?: Nullable<boolean>;
     template?: Nullable<boolean>;
@@ -690,6 +738,29 @@ export class JourneysEmailPreferenceUpdateInput {
     value: boolean;
 }
 
+export class PlausibleStatsAggregateFilter {
+    period?: Nullable<string>;
+    date?: Nullable<string>;
+    filters?: Nullable<string>;
+    interval?: Nullable<string>;
+}
+
+export class PlausibleStatsBreakdownFilter {
+    property: string;
+    period?: Nullable<string>;
+    date?: Nullable<string>;
+    limit?: Nullable<number>;
+    page?: Nullable<number>;
+    filters?: Nullable<string>;
+}
+
+export class PlausibleStatsTimeseriesFilter {
+    period?: Nullable<string>;
+    date?: Nullable<string>;
+    filters?: Nullable<string>;
+    interval?: Nullable<string>;
+}
+
 export class TeamCreateInput {
     title: string;
     publicTitle?: Nullable<string>;
@@ -745,6 +816,12 @@ export interface Event {
     createdAt: DateTime;
     label?: Nullable<string>;
     value?: Nullable<string>;
+}
+
+export interface Integration {
+    id: string;
+    team: Team;
+    type: IntegrationType;
 }
 
 export class NavigateToBlockAction implements Action {
@@ -886,6 +963,12 @@ export abstract class IMutation {
 
     abstract hostDelete(id: string, teamId: string): Host | Promise<Host>;
 
+    abstract integrationGrowthSpacesCreate(input: IntegrationGrowthSpacesCreateInput): IntegrationGrowthSpaces | Promise<IntegrationGrowthSpaces>;
+
+    abstract integrationGrowthSpacesUpdate(id: string, input: IntegrationGrowthSpacesUpdateInput): IntegrationGrowthSpaces | Promise<IntegrationGrowthSpaces>;
+
+    abstract integrationDelete(id: string): Integration | Promise<Integration>;
+
     abstract journeyCreate(input: JourneyCreateInput, teamId: string): Journey | Promise<Journey>;
 
     abstract journeyDuplicate(id: string, teamId: string): Journey | Promise<Journey>;
@@ -988,6 +1071,7 @@ export class Journey {
     strategySlug?: Nullable<string>;
     tags: Tag[];
     journeyCollections: JourneyCollection[];
+    plausibleToken?: Nullable<string>;
     userJourneys?: Nullable<UserJourney[]>;
 }
 
@@ -1003,6 +1087,8 @@ export abstract class IQuery {
     abstract customDomains(teamId: string): CustomDomain[] | Promise<CustomDomain[]>;
 
     abstract hosts(teamId: string): Host[] | Promise<Host[]>;
+
+    abstract integrations(teamId: string): Integration[] | Promise<Integration[]>;
 
     abstract adminJourneys(status?: Nullable<JourneyStatus[]>, template?: Nullable<boolean>, teamId?: Nullable<string>, useLastActiveTeamId?: Nullable<boolean>): Journey[] | Promise<Journey[]>;
 
@@ -1025,6 +1111,14 @@ export abstract class IQuery {
     abstract journeyVisitorCount(filter: JourneyVisitorFilter): number | Promise<number>;
 
     abstract journeysEmailPreference(email: string): Nullable<JourneysEmailPreference> | Promise<Nullable<JourneysEmailPreference>>;
+
+    abstract journeysPlausibleStatsRealtimeVisitors(id: string, idType?: Nullable<IdType>): number | Promise<number>;
+
+    abstract journeysPlausibleStatsAggregate(where: PlausibleStatsAggregateFilter, id: string, idType?: Nullable<IdType>): PlausibleStatsAggregateResponse | Promise<PlausibleStatsAggregateResponse>;
+
+    abstract journeysPlausibleStatsBreakdown(where: PlausibleStatsBreakdownFilter, id: string, idType?: Nullable<IdType>): PlausibleStatsResponse[] | Promise<PlausibleStatsResponse[]>;
+
+    abstract journeysPlausibleStatsTimeseries(where: PlausibleStatsTimeseriesFilter, id: string, idType?: Nullable<IdType>): PlausibleStatsResponse[] | Promise<PlausibleStatsResponse[]>;
 
     abstract teams(): Team[] | Promise<Team[]>;
 
@@ -1197,6 +1291,9 @@ export class TextResponseBlock implements Block {
     label: string;
     hint?: Nullable<string>;
     minRows?: Nullable<number>;
+    type?: Nullable<TextResponseType>;
+    routeId?: Nullable<string>;
+    integrationId?: Nullable<string>;
 }
 
 export class TypographyBlock implements Block {
@@ -1459,6 +1556,22 @@ export class Host {
     src2?: Nullable<string>;
 }
 
+export class IntegrationGrowthSpaces implements Integration {
+    __typename?: 'IntegrationGrowthSpaces';
+    id: string;
+    team: Team;
+    type: IntegrationType;
+    accessId: string;
+    accessSecretPart: string;
+    routes: IntegrationGrowthSpacesRoute[];
+}
+
+export class IntegrationGrowthSpacesRoute {
+    __typename?: 'IntegrationGrowthSpacesRoute';
+    id: string;
+    name: string;
+}
+
 export class PowerBiEmbed {
     __typename?: 'PowerBiEmbed';
     reportId: string;
@@ -1558,6 +1671,39 @@ export class JourneysEmailPreference {
     accountNotifications: boolean;
 }
 
+export class PlausibleStatsAggregateValue {
+    __typename?: 'PlausibleStatsAggregateValue';
+    value: number;
+    change?: Nullable<number>;
+}
+
+export class PlausibleStatsAggregateResponse {
+    __typename?: 'PlausibleStatsAggregateResponse';
+    visitors?: Nullable<PlausibleStatsAggregateValue>;
+    visits?: Nullable<PlausibleStatsAggregateValue>;
+    pageviews?: Nullable<PlausibleStatsAggregateValue>;
+    viewsPerVisit?: Nullable<PlausibleStatsAggregateValue>;
+    bounceRate?: Nullable<PlausibleStatsAggregateValue>;
+    visitDuration?: Nullable<PlausibleStatsAggregateValue>;
+    events?: Nullable<PlausibleStatsAggregateValue>;
+    conversionRate?: Nullable<PlausibleStatsAggregateValue>;
+    timeOnPage?: Nullable<PlausibleStatsAggregateValue>;
+}
+
+export class PlausibleStatsResponse {
+    __typename?: 'PlausibleStatsResponse';
+    property: string;
+    visitors?: Nullable<number>;
+    visits?: Nullable<number>;
+    pageviews?: Nullable<number>;
+    viewsPerVisit?: Nullable<number>;
+    bounceRate?: Nullable<number>;
+    visitDuration?: Nullable<number>;
+    events?: Nullable<number>;
+    conversionRate?: Nullable<number>;
+    timeOnPage?: Nullable<number>;
+}
+
 export class Team {
     __typename?: 'Team';
     id: string;
@@ -1567,6 +1713,7 @@ export class Team {
     updatedAt: DateTime;
     userTeams: UserTeam[];
     customDomains: CustomDomain[];
+    integrations: Integration[];
 }
 
 export class UserInvite {
