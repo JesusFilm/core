@@ -17,6 +17,7 @@ import { TeamCreate } from '../../../../__generated__/TeamCreate'
 import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActiveTeamId'
 import { TEAM_CREATE } from '../../../libs/useTeamCreateMutation/useTeamCreateMutation'
 
+import { User } from 'next-firebase-auth'
 import { TeamOnboarding } from '.'
 
 jest.mock('next/router', () => ({
@@ -123,7 +124,7 @@ describe('TeamOnboarding', () => {
   let push: jest.Mock
 
   beforeEach(() => {
-    jest.resetAllMocks()
+    jest.clearAllMocks()
     push = jest.fn()
 
     mockUseRouter.mockReturnValue({
@@ -133,6 +134,22 @@ describe('TeamOnboarding', () => {
   })
 
   it('creates new team and sets it as active', async () => {
+    const user: User = {
+      id: null,
+      email: null,
+      emailVerified: false,
+      phoneNumber: null,
+      displayName: 'User Name',
+      photoURL: null,
+      claims: {},
+      tenantId: null,
+      getIdToken: async (forceRefresh?: boolean) => null,
+      clientInitialized: false,
+      firebaseUser: null,
+      signOut: async () => {},
+      serialize: (a?: { includeToken?: boolean }) => JSON.stringify({})
+    }
+
     const cache = new InMemoryCache()
     cache.restore({
       ROOT_QUERY: {
@@ -172,12 +189,14 @@ describe('TeamOnboarding', () => {
       >
         <SnackbarProvider>
           <TeamProvider>
-            <TeamOnboarding />
+            <TeamOnboarding user={user} />
             <TestComponent />
           </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
+    expect(getAllByRole('textbox')[0]).toHaveValue('User Name & Team')
+    expect(getAllByRole('textbox')[1]).toHaveValue('U Team')
     fireEvent.change(getAllByRole('textbox')[0], {
       target: { value: 'Team Title' }
     })
