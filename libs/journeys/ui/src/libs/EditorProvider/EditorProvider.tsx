@@ -10,6 +10,7 @@ import {
   useRef
 } from 'react'
 
+import { CommandProvider } from '../CommandProvider'
 import type { TreeBlock } from '../block'
 import { BlockFields_StepBlock as StepBlock } from '../block/__generated__/BlockFields'
 import { searchBlocks } from '../searchBlocks'
@@ -312,9 +313,11 @@ export function EditorProvider({
 
   return (
     <EditorContext.Provider value={{ state, dispatch }}>
-      <HotkeysWrapper>
-      {isFunction(children) ? children({ state, dispatch }) : children}
-      </HotkeysWrapper>
+      <CommandProvider>
+        <HotkeysWrapper>
+          {isFunction(children) ? children({ state, dispatch }) : children}
+        </HotkeysWrapper>
+      </CommandProvider>
     </EditorContext.Provider>
   )
 }
