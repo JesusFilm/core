@@ -6,9 +6,9 @@ import Typography from '@mui/material/Typography'
 import Zoom from '@mui/material/Zoom'
 import { darken, styled, useTheme } from '@mui/material/styles'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect, useRef, useState } from 'react'
-import { Swiper, SwiperRef, SwiperSlide } from 'swiper/react'
-import { SwiperOptions } from 'swiper/types'
+import { type ReactElement, useEffect, useRef, useState } from 'react'
+import { Swiper, type SwiperRef, SwiperSlide } from 'swiper/react'
+import type { SwiperOptions } from 'swiper/types'
 
 import {
   ActiveContent,
@@ -18,8 +18,8 @@ import {
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import ChevronUpIcon from '@core/shared/ui/icons/ChevronUp'
 
-import { UpdateJourneyFlowBackButtonClicked } from '../../../../__generated__/UpdateJourneyFlowBackButtonClicked'
-import { getJourneyFlowBackButtonClicked } from '../../../../__generated__/getJourneyFlowBackButtonClicked'
+import type { UpdateJourneyFlowBackButtonClicked } from '../../../../__generated__/UpdateJourneyFlowBackButtonClicked'
+import type { getJourneyFlowBackButtonClicked } from '../../../../__generated__/getJourneyFlowBackButtonClicked'
 import { DRAWER_WIDTH, EDIT_TOOLBAR_HEIGHT } from '../constants'
 
 import { Content } from './Content'
@@ -90,7 +90,9 @@ export function Slider(): ReactElement {
       centeredSlidesBounds: true
     },
     [breakpoints.values.sm]: {
-      direction: 'horizontal'
+      direction: 'horizontal',
+      centeredSlides: false,
+      centeredSlidesBounds: false
     }
   }
 
