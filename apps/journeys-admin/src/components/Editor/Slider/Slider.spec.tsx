@@ -73,11 +73,13 @@ describe('Slider', () => {
 
   it('renders slides', () => {
     render(
-      <MockedProvider>
-        <EditorProvider initialState={state}>
-          <Slider />
-        </EditorProvider>
-      </MockedProvider>
+      <SnackbarProvider>
+        <MockedProvider>
+          <EditorProvider initialState={state}>
+            <Slider />
+          </EditorProvider>
+        </MockedProvider>
+      </SnackbarProvider>
     )
 
     expect(screen.getByTestId('Slider')).toBeInTheDocument()
@@ -110,12 +112,14 @@ describe('Slider', () => {
     }
 
     render(
-      <MockedProvider>
-        <EditorProvider initialState={contentState}>
-          <TestEditorState />
-          <Slider />
-        </EditorProvider>
-      </MockedProvider>
+      <SnackbarProvider>
+        <MockedProvider>
+          <EditorProvider initialState={contentState}>
+            <TestEditorState />
+            <Slider />
+          </EditorProvider>
+        </MockedProvider>
+      </SnackbarProvider>
     )
 
     expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
@@ -131,12 +135,14 @@ describe('Slider', () => {
     }
 
     render(
-      <MockedProvider>
-        <EditorProvider initialState={contentState}>
-          <TestEditorState />
-          <Slider />
-        </EditorProvider>
-      </MockedProvider>
+      <SnackbarProvider>
+        <MockedProvider>
+          <EditorProvider initialState={contentState}>
+            <TestEditorState />
+            <Slider />
+          </EditorProvider>
+        </MockedProvider>
+      </SnackbarProvider>
     )
 
     expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
@@ -155,12 +161,14 @@ describe('Slider', () => {
     }
 
     render(
-      <MockedProvider>
-        <EditorProvider initialState={contentState}>
-          <TestEditorState />
-          <Slider />
-        </EditorProvider>
-      </MockedProvider>
+      <SnackbarProvider>
+        <MockedProvider>
+          <EditorProvider initialState={contentState}>
+            <TestEditorState />
+            <Slider />
+          </EditorProvider>
+        </MockedProvider>
+      </SnackbarProvider>
     )
 
     expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
