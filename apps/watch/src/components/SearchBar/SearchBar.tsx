@@ -1,5 +1,8 @@
 import Search1Icon from '@core/shared/ui/icons/Search1'
-import { Box, InputAdornment, TextField, styled } from '@mui/material'
+import Box from '@mui/material/Box'
+import InputAdornment from '@mui/material/InputAdornment'
+import TextField from '@mui/material/TextField'
+import { styled } from '@mui/material/styles'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
