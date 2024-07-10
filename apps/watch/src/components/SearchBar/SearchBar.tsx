@@ -1,8 +1,11 @@
 import Search1Icon from '@core/shared/ui/icons/Search1'
 import { Box, InputAdornment, TextField, styled } from '@mui/material'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 export function SearchBar(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+
   /* Styles below used to fake a gradient border because the 
   css attributes border-radius and border-image-source are not compatible */
 
@@ -34,7 +37,7 @@ export function SearchBar(): ReactElement {
       data-testid="SearchBar"
     >
       <ColoredTextField
-        placeholder="Search by topic, occasion, or audience ..."
+        placeholder={t('Search by topic, occasion, or audience ...')}
         fullWidth
         InputProps={{
           startAdornment: (
