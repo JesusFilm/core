@@ -6,6 +6,7 @@ import { ReactElement } from 'react'
 import { ObjectSchema, object, string } from 'yup'
 
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
+import { User } from 'next-firebase-auth'
 
 import { TeamCreate } from '../../../../__generated__/TeamCreate'
 import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActiveTeamId'
@@ -19,11 +20,15 @@ interface TeamCreateFormProps {
     data?: TeamCreate | null
   ) => void
   children?: FormikConfig<TeamCreateInput>['children']
+  onboarding?: boolean
+  user?: User
 }
 
 export function TeamCreateForm({
   onSubmit,
-  children
+  children,
+  onboarding = false,
+  user
 }: TeamCreateFormProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const teamCreateSchema: ObjectSchema<TeamCreateInput> = object({
@@ -89,7 +94,18 @@ export function TeamCreateForm({
       }
     }
   }
-  const initialValues: TeamCreateInput = { title: '' }
+
+  const initialValues: TeamCreateInput =
+    onboarding && user != null
+      ? {
+          title: t('{{ displayName }} & Team', {
+            displayName: user.displayName
+          }),
+          publicTitle: t('{{ displayName }} Team', {
+            displayName: user.displayName?.charAt(0)
+          })
+        }
+      : { title: '' }
 
   return (
     <Formik
