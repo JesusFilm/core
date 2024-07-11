@@ -23,7 +23,7 @@ export function BaseReferrer({ property, visitors, style }: BaseReferrerProps) {
     case 'Direct / None':
       Icon = <LinkAngled sx={iconStyles} />
       break
-    case 'Other sources':
+    case 'other sources':
       Icon = <ChevronDown sx={iconStyles} />
       break
     default:
@@ -34,8 +34,6 @@ export function BaseReferrer({ property, visitors, style }: BaseReferrerProps) {
     <Box
       sx={{
         display: 'flex',
-        //         display: 'grid',
-        //         gridTemplateColumns: 'min-content auto 1fr',
         alignItems: 'center',
         gap: 2,
         padding: '8px 12px',
@@ -62,80 +60,6 @@ export function BaseReferrer({ property, visitors, style }: BaseReferrerProps) {
           visitors={visitors}
         />
       </Box>
-      {/* <Tooltip
-        title={property}
-        placement="top"
-        slotProps={{
-          popper: {
-            modifiers: [
-              {
-                name: 'offset',
-                options: {
-                  offset: [0, -8]
-                }
-              }
-            ]
-          },
-          tooltip: {
-            sx: {
-              py: 0
-            }
-          }
-        }}
-      >
-        <Typography noWrap sx={textStyles}>
-          {property}
-        </Typography>
-      </Tooltip>
-      <Typography
-        variant="body2"
-        sx={{
-          flex: 1,
-          display: 'grid',
-          gridTemplateColumns: 'auto 1fr',
-          alignItems: 'inherit',
-          gap: 2
-        }}
-      >
-        {visitors}
-      </Typography> */}
-
-      {/* <Tooltip
-          title={property}
-          placement="top"
-          slotProps={{
-            popper: {
-              modifiers: [
-                {
-                  name: 'offset',
-                  options: {
-                    offset: [0, -8]
-                  }
-                }
-              ]
-            },
-            tooltip: {
-              sx: {
-                py: 0
-              }
-            }
-          }}
-        >
-          <Typography noWrap sx={textStyles}>
-            {property}
-          </Typography>
-        </Tooltip>
-        <Typography
-          variant="body2"
-          sx={{
-            ...textStyles,
-            fontWeight: 600,
-            placeSelf: 'end'
-          }}
-        >
-          {visitors}
-        </Typography>
-      </Box> */}
     </Box>
   )
 }

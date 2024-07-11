@@ -57,8 +57,8 @@ export function OtherReferrer({ referrers }: { referrers: JourneyReferrer[] }) {
             }}
           >
             <ReferrerValue
-              tooltipTitle={t('Other sources')}
-              property={t('Other sources')}
+              tooltipTitle={t('other sources')}
+              property={t('other sources')}
               visitors={visitorCount}
             />
           </AccordionSummary>
