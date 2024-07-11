@@ -11,6 +11,7 @@ import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'
 
+import { resolveHttpAuthRuntimeConfig } from '@aws-sdk/client-ses/dist-types/auth/httpAuthExtensionConfiguration'
 import { BlockService } from './block.service'
 
 @Resolver('Block')
@@ -183,7 +184,7 @@ export class BlockResolver {
   async blockRestore(
     @Args('id') id: string,
     @CaslAbility() ability: AppAbility
-  ): Promise<Block> {
+  ): Promise<Block[]> {
     const block = await this.prismaService.block.findUnique({
       where: { id },
       include: {
@@ -207,24 +208,34 @@ export class BlockResolver {
         extensions: { code: 'FORBIDDEN' }
       })
 
-    return await this.prismaService.$transaction(async (tx) => {
-      const updatedBlock = await tx.block.update({
-        where: { id },
-        data: {
-          deletedAt: null
-        },
-        include: {
-          action: true
-        }
-      })
-      if (updatedBlock.parentOrder != null)
-        await this.blockService.reorderBlock(
+    return await this.prismaService.$transaction(
+      async (tx) => {
+        const updatedBlock = await tx.block.update({
+          where: { id },
+          data: {
+            deletedAt: null
+          },
+          include: {
+            action: true
+          }
+        })
+        if (updatedBlock.parentOrder != null)
+          await this.blockService.reorderBlock(
+            updatedBlock,
+            updatedBlock.parentOrder,
+            tx
+          )
+        const children: Block[] = await this.blockService.getDescendants(
           updatedBlock,
-          updatedBlock.parentOrder,
+          [],
           tx
         )
-
-      return updatedBlock
-    })
+        return [updatedBlock, ...children]
+      },
+      {
+        maxWait: 50000, // default: 2000
+        timeout: 100000 // default: 5000
+      }
+    )
   }
 }
