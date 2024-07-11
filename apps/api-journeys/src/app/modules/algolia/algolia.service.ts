@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import algoliasearch from 'algoliasearch'
 
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client'
-import { GetTagsQuery } from '../../../__generated__/graphql'
+import { GetLanguageQuery, GetTagsQuery } from '../../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 
 export const GET_TAGS = gql`
@@ -10,6 +10,18 @@ export const GET_TAGS = gql`
     tags {
       id
       name {
+        value
+        primary
+      }
+    }
+  }
+`
+
+export const GET_LANGUAGE = gql`
+  query GetLanguage($languageId: ID) {
+    languages(limit: 5000) {
+      id
+      name(languageId: $languageId, primary: true) {
         value
         primary
       }
@@ -40,6 +52,25 @@ export class AlgoliaService {
     return map
   }
 
+  async getLanguages() {
+    const apollo = new ApolloClient({
+      uri: process.env.GATEWAY_URL,
+      cache: new InMemoryCache()
+    })
+    const { data } = await apollo.query<GetLanguageQuery>({
+      query: GET_LANGUAGE
+    })
+    return data
+  }
+
+  processLanguages(languagesData: GetLanguageQuery) {
+    const map: Record<string, string> = {}
+    languagesData.languages.forEach((language) => {
+      map[language.id] = language.name.find((name) => name.primary)?.value ?? ''
+    })
+    return map
+  }
+
   async syncJourneysToAlgolia(): Promise<void> {
     const apiKey = process.env.ALGOLIA_API_KEY ?? ''
     const appId = process.env.ALGOLIA_APPLICATION_ID ?? ''
@@ -51,6 +82,10 @@ export class AlgoliaService {
     console.log('getting tags from gateway...')
     const tagsData = await this.getTags()
     const tagsMap = this.processTags(tagsData)
+
+    console.log('getting languages from gateway...')
+    const languagesData = await this.getLanguages()
+    const languagesMap = this.processLanguages(languagesData)
 
     console.log('syncing journeys to algolia...')
     const client = algoliasearch(appId, apiKey)
@@ -82,7 +117,7 @@ export class AlgoliaService {
             src: journey.primaryImageBlock?.src,
             alt: journey.primaryImageBlock?.alt
           },
-          languageId: journey.languageId,
+          language: languagesMap[journey.languageId],
           featuredAt: journey.featuredAt,
           tags: journey.journeyTags.map((tag) => tagsMap[tag.tagId])
         }

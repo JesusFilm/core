@@ -60,6 +60,18 @@ const tags = [
   }
 ]
 
+const languages = [
+  {
+    id: '529',
+    name: [
+      {
+        value: 'English',
+        primary: true
+      }
+    ]
+  }
+]
+
 describe('AlgoliaService', () => {
   let service: AlgoliaService
   let prismaService: DeepMockProxy<PrismaService>
@@ -148,6 +160,14 @@ describe('AlgoliaService', () => {
               }
             } as unknown as ApolloQueryResult<unknown>)
         )
+        .mockImplementationOnce(
+          async () =>
+            await Promise.resolve({
+              data: {
+                languages
+              }
+            } as unknown as ApolloQueryResult<unknown>)
+        )
 
       await service.syncJourneysToAlgolia()
       expect(mockApollo).toHaveBeenCalled()
@@ -174,7 +194,7 @@ describe('AlgoliaService', () => {
             alt: 'journey image',
             src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public'
           },
-          languageId: '529',
+          language: 'English',
           tags: ['Addiction', 'Acceptance', 'Adults'],
           title: 'title'
         }
