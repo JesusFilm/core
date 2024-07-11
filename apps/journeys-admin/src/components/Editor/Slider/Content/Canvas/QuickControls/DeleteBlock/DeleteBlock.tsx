@@ -2,8 +2,6 @@ import IconButton from '@mui/material/IconButton'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { TreeBlock } from '@core/journeys/ui/block'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 
 import { MenuItem } from '../../../../../../MenuItem'
