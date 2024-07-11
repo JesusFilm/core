@@ -89,9 +89,7 @@ export function JourneyFlow(): ReactElement {
   const {
     state: { steps, activeSlide, showAnalytics, analytics, selectedBlock }
   } = useEditor()
-  const { loading, onDeleteBlock } = useBlockDelete({
-    block: selectedBlock
-  })
+  const { loading, onDeleteBlock } = useBlockDelete()
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance | null>(null)
   const connectingParams = useRef<OnConnectStartParams | null>(null)

@@ -7,13 +7,10 @@ import { blockDeleteUpdate } from '../../../../../../../../libs/blockDeleteUpdat
 import { useBlockDeleteMutation } from '../../../../../../../../libs/useBlockDeleteMutation'
 import getSelected from './getSelected'
 
-interface useBlockDeleteProps {
-  block?: TreeBlock
-}
-
-export default function useBlockDelete({ block }: useBlockDeleteProps): {
+export default function useBlockDelete(): {
   loading: boolean
   onDeleteBlock: () => Promise<void>
+  selectedBlock?: TreeBlock
 } {
   const { t } = useTranslation('apps-journeys-admin')
   const [blockDelete, { loading }] = useBlockDeleteMutation()
@@ -27,20 +24,14 @@ export default function useBlockDelete({ block }: useBlockDeleteProps): {
   const handleDeleteBlock = async (): Promise<void> => {
     if (selectedBlock == null || journey == null || steps == null) return
 
-    const currentBlock = block ?? selectedBlock
-
-    const deletedBlockParentOrder = currentBlock.parentOrder
-    const deletedBlockType = currentBlock.__typename
+    const deletedBlockParentOrder = selectedBlock.parentOrder
+    const deletedBlockType = selectedBlock.__typename
     const stepsBeforeDelete = steps
     const stepBeforeDelete = selectedStep
 
     await blockDelete(selectedBlock, {
       update(cache, { data }) {
-        if (
-          data?.blockDelete != null &&
-          deletedBlockParentOrder != null &&
-          (block == null || block?.id === selectedBlock?.id)
-        ) {
+        if (data?.blockDelete != null && deletedBlockParentOrder != null) {
           const selected = getSelected({
             parentOrder: deletedBlockParentOrder,
             siblings: data.blockDelete,
@@ -50,7 +41,7 @@ export default function useBlockDelete({ block }: useBlockDeleteProps): {
           })
           selected != null && dispatch(selected)
         }
-        blockDeleteUpdate(currentBlock, data?.blockDelete, cache, journey.id)
+        blockDeleteUpdate(selectedBlock, data?.blockDelete, cache, journey.id)
       }
     }).then(() => {
       dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
@@ -67,5 +58,5 @@ export default function useBlockDelete({ block }: useBlockDeleteProps): {
         })
   }
 
-  return { loading, onDeleteBlock: handleDeleteBlock }
+  return { loading, onDeleteBlock: handleDeleteBlock, selectedBlock }
 }

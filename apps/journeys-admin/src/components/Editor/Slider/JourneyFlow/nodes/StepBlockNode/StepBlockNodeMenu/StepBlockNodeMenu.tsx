@@ -83,7 +83,7 @@ export function StepBlockNodeMenu({
           yPos={yPos}
           handleClick={handleClose}
         />
-        <DeleteBlock variant="list-item" block={step} closeMenu={handleClose} />
+        <DeleteBlock variant="list-item" closeMenu={handleClose} />
       </Menu>
     </>
   )

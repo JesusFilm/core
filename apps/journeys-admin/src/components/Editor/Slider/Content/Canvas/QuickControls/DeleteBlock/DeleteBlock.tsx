@@ -15,26 +15,19 @@ interface DeleteBlockProps {
   variant: 'button' | 'list-item'
   closeMenu?: () => void
   disabled?: boolean
-  block?: TreeBlock
 }
 
 export function DeleteBlock({
   variant = 'button',
   closeMenu,
-  disabled = false,
-  block
+  disabled = false
 }: DeleteBlockProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
-  const {
-    state: { selectedBlock }
-  } = useEditor()
-  const currentBlock = block ?? selectedBlock
-  const blockType = currentBlock?.__typename === 'StepBlock' ? 'Card' : 'Block'
-  const { loading, onDeleteBlock } = useBlockDelete({
-    block: block ?? selectedBlock
-  })
   const [openDialog, setOpenDialog] = useState(false)
+  const { loading, onDeleteBlock, selectedBlock } = useBlockDelete()
+  const blockType = selectedBlock?.__typename === 'StepBlock' ? 'Card' : 'Block'
+
   const handleOpenDialog = (): void => setOpenDialog(true)
   const handleCloseDialog = (): void => {
     setOpenDialog(false)
@@ -46,7 +39,7 @@ export function DeleteBlock({
     handleCloseDialog()
   }
 
-  const disableAction = currentBlock == null || disabled || loading
+  const disableAction = selectedBlock == null || disabled || loading
 
   return (
     <>
