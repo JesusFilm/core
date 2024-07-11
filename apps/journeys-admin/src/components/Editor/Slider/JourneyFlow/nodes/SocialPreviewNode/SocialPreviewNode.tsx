@@ -94,7 +94,8 @@ export function SocialPreviewNode(): ReactElement {
             outlineOffset: '5px',
             ...(showAnalytics && {
               backgroundColor: 'transparent',
-              outline: '2px solid rgba(0, 0, 0, 0.1)',
+              outline: (theme) =>
+                `2px solid ${alpha(theme.palette.secondary.dark, 0.1)}`,
               outlineOffset: 0,
               opacity: 0.7,
               boxShadow: 'none'
@@ -122,7 +123,7 @@ export function SocialPreviewNode(): ReactElement {
               <Box
                 width={45}
                 height={9}
-                borderRadius="4.5px"
+                borderRadius={2}
                 sx={{
                   backgroundColor: (theme) =>
                     showAnalytics
@@ -134,7 +135,7 @@ export function SocialPreviewNode(): ReactElement {
             <Box
               width={9}
               height={9}
-              borderRadius="4.5px"
+              borderRadius={2}
               sx={{
                 backgroundColor: (theme) =>
                   showAnalytics
@@ -170,7 +171,7 @@ export function SocialPreviewNode(): ReactElement {
                 width={118.5}
                 height={90}
                 style={{
-                  borderRadius: 1,
+                  borderRadius: 1.5,
                   maxWidth: '100%',
                   objectFit: 'cover'
                 }}
@@ -192,7 +193,7 @@ export function SocialPreviewNode(): ReactElement {
                   data-testid="SocialPreviewTitleEmpty"
                   width={118.5}
                   height={9}
-                  borderRadius={1}
+                  borderRadius={2}
                   sx={{
                     backgroundColor: (theme) =>
                       showAnalytics
@@ -223,7 +224,7 @@ export function SocialPreviewNode(): ReactElement {
                         ? alpha(theme.palette.secondary.dark, 0.1)
                         : 'background.default'
                   }}
-                  borderRadius={1}
+                  borderRadius={2}
                 />
               ) : (
                 <Typography
