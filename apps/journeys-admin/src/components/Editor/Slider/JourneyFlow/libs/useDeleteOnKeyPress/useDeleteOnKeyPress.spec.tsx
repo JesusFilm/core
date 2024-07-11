@@ -98,5 +98,7 @@ describe('useDeleteOnKeyPress', () => {
     })
 
     expect(result.current.openDeleteDialog).toBe(true)
+
+    await waitFor(async () => expect(deleteBlock).not.toHaveBeenCalled())
   })
 })
