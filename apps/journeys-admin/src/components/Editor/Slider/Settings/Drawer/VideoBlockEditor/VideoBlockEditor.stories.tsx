@@ -256,4 +256,14 @@ export const PosterModal = {
   }
 }
 
+export const Muted = {
+  ...Template,
+  args: {
+    selectedBlock: {
+      ...videoYouTube,
+      muted: true
+    }
+  }
+}
+
 export default BackgroundMediaStory
