@@ -19,6 +19,7 @@ const StatsOverlay = styled(Stack)(({ theme }) => ({
   transform: 'translateY(-100%)',
   backgroundColor: theme.palette.background.paper,
   borderRadius: 4,
+  cursor: 'default',
   '&:before': {
     content: "''",
     position: 'absolute',

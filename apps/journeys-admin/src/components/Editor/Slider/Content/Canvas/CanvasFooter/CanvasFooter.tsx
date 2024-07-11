@@ -19,7 +19,7 @@ export function CanvasFooter({ scale }: CanvasFooterProps): ReactElement {
       data-testid="CanvasFooter"
       sx={{
         mt: 4,
-        alignSelf: showAnalytics ? 'center' : 'end',
+        alignSelf: showAnalytics ? 'unset' : 'end',
         transform: `scale(${scale})`
       }}
     >
