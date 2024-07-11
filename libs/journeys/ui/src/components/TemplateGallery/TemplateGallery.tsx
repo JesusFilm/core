@@ -5,7 +5,7 @@ import castArray from 'lodash/castArray'
 import difference from 'lodash/difference'
 import { useTranslation } from 'next-i18next'
 import { useRouter } from 'next/router'
-import { ReactElement, useEffect } from 'react'
+import { ReactElement } from 'react'
 
 import { TemplateSections } from '../TemplateSections'
 
