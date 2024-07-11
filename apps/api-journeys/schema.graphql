@@ -115,7 +115,7 @@ type Mutation {
   ): [Block!]!
 
   """blockRestore is used for redo/undo"""
-  blockRestore(id: ID!): Block!
+  blockRestore(id: ID!): [Block!]!
   buttonBlockCreate(input: ButtonBlockCreateInput!): ButtonBlock!
   buttonBlockUpdate(
     id: ID!

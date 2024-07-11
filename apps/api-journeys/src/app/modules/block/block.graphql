@@ -70,5 +70,5 @@ extend type Mutation {
   """
   blockRestore is used for redo/undo
   """
-  blockRestore(id: ID!): Block!
+  blockRestore(id: ID!): [Block!]!
 }
