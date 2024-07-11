@@ -662,6 +662,8 @@
   "{{ teamName }} created.": "{{ teamName }} созданный.",
   "Team created.": "Команда создана.",
   "Failed to create the team. Reload the page or try again.": "Не удалось создать команду. ",
+  "{{ displayName }} & Team": "{{ displayName }} & Team",
+  "{{ displayName }} Team": "{{ displayName }} Команда",
   "Manage Members": "Управление участниками",
   "Invite team member": "Пригласить члена команды",
   "Invited": "Приглашенный",
