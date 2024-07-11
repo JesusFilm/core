@@ -41,7 +41,7 @@ export function AnalyticsDataPoint({
         direction="row"
         spacing={1}
         sx={{
-          px: 3,
+          px: 2,
           py: 2,
           alignItems: 'center',
           justifyContent: 'center',
@@ -50,8 +50,13 @@ export function AnalyticsDataPoint({
         className="stats-overlay__data-point"
         data-testid="AnalyticsDataPoint"
       >
-        {Icon != null && <Icon sx={{ fontSize: '16px' }} />}
-        <Typography variant="caption" sx={{ fontWeight: 800 }}>
+        {Icon != null && (
+          <Icon sx={{ color: 'secondary.light', fontSize: 16 }} />
+        )}
+        <Typography
+          variant="body1"
+          sx={{ fontSize: 12, fontWeight: 600, lineHeight: '14px' }}
+        >
           {value}
         </Typography>
       </Stack>

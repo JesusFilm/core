@@ -54,7 +54,10 @@ describe('BlockResolver', () => {
     useFactory: () => ({
       duplicateBlock: jest.fn((block, _parentOrder) => [block, block]),
       removeBlockAndChildren: jest.fn(() => []),
-      reorderBlock: jest.fn((block, parentOrder) => [{ ...block, parentOrder }])
+      reorderBlock: jest.fn((block, parentOrder) => [
+        { ...block, parentOrder }
+      ]),
+      getDescendants: jest.fn(() => [])
     })
   }
 
@@ -282,6 +285,11 @@ describe('BlockResolver', () => {
       expect(service.reorderBlock).toHaveBeenCalledWith(
         block,
         block.parentOrder,
+        prismaService
+      )
+      expect(service.getDescendants).toHaveBeenCalledWith(
+        block,
+        [],
         prismaService
       )
     })

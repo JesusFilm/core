@@ -264,15 +264,9 @@ export class EmailActionInput {
     email: string;
 }
 
-export class BlockDeleteInput {
-    from: DateTime;
-    to: DateTime;
-}
-
 export class BlocksFilter {
     journeyIds?: Nullable<string[]>;
     typenames?: Nullable<string[]>;
-    deletedAt?: Nullable<BlockDeleteInput>;
 }
 
 export class ButtonBlockCreateInput {
@@ -868,6 +862,8 @@ export abstract class IMutation {
     abstract blockDuplicate(id: string, parentOrder?: Nullable<number>, journeyId?: Nullable<string>, x?: Nullable<number>, y?: Nullable<number>): Block[] | Promise<Block[]>;
 
     abstract blockOrderUpdate(id: string, parentOrder: number, journeyId?: Nullable<string>): Block[] | Promise<Block[]>;
+
+    abstract blockRestore(id: string): Block[] | Promise<Block[]>;
 
     abstract buttonBlockCreate(input: ButtonBlockCreateInput): ButtonBlock | Promise<ButtonBlock>;
 

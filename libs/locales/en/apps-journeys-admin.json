@@ -666,6 +666,8 @@
   "{{ teamName }} created.": "{{ teamName }} created.",
   "Team created.": "Team created.",
   "Failed to create the team. Reload the page or try again.": "Failed to create the team. Reload the page or try again.",
+  "{{ displayName }} & Team": "{{ displayName }} & Team",
+  "{{ displayName }} Team": "{{ displayName }} Team",
   "Manage Members": "Manage Members",
   "Invite team member": "Invite team member",
   "Invited": "Invited",

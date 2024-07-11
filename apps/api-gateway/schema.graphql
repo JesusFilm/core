@@ -1367,7 +1367,7 @@ type Mutation
   ): [Block!]! @join__field(graph: JOURNEYS)
 
   """blockRestore is used for redo/undo"""
-  blockRestore(id: ID!): Block! @join__field(graph: JOURNEYS)
+  blockRestore(id: ID!): [Block!]! @join__field(graph: JOURNEYS)
   buttonBlockCreate(input: ButtonBlockCreateInput!): ButtonBlock! @join__field(graph: JOURNEYS)
   buttonBlockUpdate(
     id: ID!

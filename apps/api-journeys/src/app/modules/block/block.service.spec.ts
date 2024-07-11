@@ -765,4 +765,15 @@ describe('BlockService', () => {
       expect(res).toHaveLength(7)
     })
   })
+
+  describe('getDescendants', () => {
+    it('should get descendants of a block', async () => {
+      prismaService.block.findMany.mockResolvedValueOnce([buttonBlock])
+      prismaService.block.findMany.mockResolvedValueOnce([iconBlock])
+      prismaService.block.findMany.mockResolvedValueOnce([])
+      expect(
+        await service.getDescendants(cardBlock, [], prismaService)
+      ).toEqual([buttonBlock, iconBlock])
+    })
+  })
 })

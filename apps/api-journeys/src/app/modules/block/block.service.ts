@@ -304,12 +304,19 @@ export class BlockService {
   async removeDescendantsOfDeletedBlocks(
     blocks: BlockWithAction[]
   ): Promise<BlockWithAction[]> {
-    const ids: string[] = blocks.map(({ id }) => id)
+    let filteredBlocks = blocks
+    let length = filteredBlocks.length
+    do {
+      length = filteredBlocks.length
+      const ids: string[] = filteredBlocks.map(({ id }) => id)
 
-    return blocks.filter(
-      (block) =>
-        block.parentBlockId == null || ids.includes(block.parentBlockId)
-    )
+      filteredBlocks = filteredBlocks.filter(
+        (block) =>
+          block.parentBlockId == null || ids.includes(block.parentBlockId)
+      )
+    } while (length !== filteredBlocks.length)
+
+    return filteredBlocks
   }
 
   @FromPostgresql()
@@ -366,6 +373,23 @@ export class BlockService {
           })) as unknown as T
       )
     )
+  }
+
+  async getDescendants(
+    block: Block,
+    accum: Block[] = [],
+    tx: Prisma.TransactionClient = this.prismaService
+  ): Promise<Block[]> {
+    const children = await tx.block.findMany({
+      where: { parentBlockId: block.id }
+    })
+    if (children.length > 0) {
+      children.forEach(async (block) => {
+        accum.push(block)
+        await this.getDescendants(block, accum)
+      })
+    }
+    return accum
   }
 
   @ToPostgresql()
