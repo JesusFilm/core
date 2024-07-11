@@ -14,6 +14,14 @@ import { blockDeleteUpdate } from '../../../../../../../libs/blockDeleteUpdate'
 import { useBlockDeleteMutation } from '../../../../../../../libs/useBlockDeleteMutation'
 import { MenuItem } from '../../../../../../MenuItem'
 
+import { gql, useMutation } from '@apollo/client'
+import { useCommand } from '@core/journeys/ui/CommandProvider'
+import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
+import { BLOCK_FIELDS } from '@core/journeys/ui/block/blockFields'
+import {
+  BlockRestore,
+  BlockRestoreVariables
+} from '../../../../../../../../__generated__/BlockRestore'
 import getSelected from './utils/getSelected'
 
 interface DeleteBlockProps {
@@ -23,6 +31,20 @@ interface DeleteBlockProps {
   block?: TreeBlock
 }
 
+export const BLOCK_RESTORE = gql`
+${BLOCK_FIELDS}
+mutation BlockRestore($blockRestoreId: ID!) {
+  blockRestore(id: $blockRestoreId) {
+    id
+    ...BlockFields
+    ... on StepBlock {
+      id
+      x
+      y
+    }
+  }
+}`
+
 export function DeleteBlock({
   variant = 'button',
   closeMenu,
@@ -31,6 +53,10 @@ export function DeleteBlock({
 }: DeleteBlockProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [blockDelete, result] = useBlockDeleteMutation()
+  const [blockRestore] = useMutation<BlockRestore, BlockRestoreVariables>(
+    BLOCK_RESTORE
+  )
+  const { add } = useCommand()
 
   const { enqueueSnackbar } = useSnackbar()
   const { journey } = useJourney()
@@ -58,26 +84,106 @@ export function DeleteBlock({
     const stepsBeforeDelete = steps
     const stepBeforeDelete = selectedStep
 
-    await blockDelete(currentBlock, {
-      update(cache, { data }) {
-        if (
-          data?.blockDelete != null &&
-          deletedBlockParentOrder != null &&
-          (block == null || block?.id === selectedBlock?.id)
-        ) {
-          const selected = getSelected({
-            parentOrder: deletedBlockParentOrder,
-            siblings: data.blockDelete,
-            type: deletedBlockType,
-            steps: stepsBeforeDelete,
-            selectedStep: stepBeforeDelete
-          })
-          selected != null && dispatch(selected)
+    await add({
+      parameters: {
+        execute: { currentBlock },
+        undo: {
+          blockRestoreId: currentBlock.id,
+          currentBlock
         }
-        blockDeleteUpdate(currentBlock, data?.blockDelete, cache, journey.id)
+      },
+      async execute({ currentBlock }) {
+        await blockDelete(currentBlock, {
+          update(cache, { data }) {
+            if (
+              data?.blockDelete != null &&
+              deletedBlockParentOrder != null &&
+              (block == null || block?.id === selectedBlock?.id)
+            ) {
+              const selected = getSelected({
+                parentOrder: deletedBlockParentOrder,
+                siblings: data.blockDelete,
+                type: deletedBlockType,
+                steps: stepsBeforeDelete,
+                selectedStep: stepBeforeDelete
+              })
+              selected != null && dispatch(selected)
+            }
+            blockDeleteUpdate(
+              currentBlock,
+              data?.blockDelete,
+              cache,
+              journey.id
+            )
+          }
+        }).then(() => {
+          dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
+        })
+      },
+      async undo({ blockRestoreId, currentBlock }) {
+        await blockRestore({
+          variables: { blockRestoreId },
+          notifyOnNetworkStatusChange: true,
+          update(cache, { data }) {
+            cache.modify({
+              id: cache.identify({
+                __typename: 'Journey',
+                id: journey.id
+              }),
+              fields: {
+                blocks(existingBlockRefs = []) {
+                  if (data != null) {
+                    const restoredBlock = cache.writeFragment({
+                      data: data.blockRestore,
+                      fragment: gql`
+                        fragment RestoredBlock on Block {
+                          id
+                        }
+                      `
+                    })
+                    return [...existingBlockRefs, restoredBlock]
+                  }
+                }
+              }
+            })
+            if (data?.blockRestore.__typename === 'StepBlock')
+              cache.modify({
+                fields: {
+                  blocks(existingBlocks = []) {
+                    if (data != null) {
+                      const restoredBlock = cache.writeFragment({
+                        data: data.blockRestore,
+                        fragment: gql`
+                        fragment RestoredBlock on Block {
+                          id
+                        }
+                      `
+                      })
+                      return [...existingBlocks, restoredBlock]
+                    }
+                  }
+                }
+              })
+          },
+          onCompleted: () => {
+            if (currentBlock.__typename === 'StepBlock') {
+              dispatch({
+                type: 'SetActiveSlideAction',
+                activeSlide: ActiveSlide.JourneyFlow
+              })
+              dispatch({
+                type: 'SetSelectedStepAction',
+                selectedStep: currentBlock
+              })
+            } else {
+              dispatch({
+                type: 'SetSelectedBlockAction',
+                selectedBlock: currentBlock
+              })
+            }
+          }
+        })
       }
-    }).then(() => {
-      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
     })
 
     handleCloseDialog()
