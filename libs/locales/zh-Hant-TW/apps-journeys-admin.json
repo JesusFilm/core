@@ -662,6 +662,8 @@
   "{{ teamName }} created.": "{{ teamName }} 創建的。",
   "Team created.": "Team created.",
   "Failed to create the team. Reload the page or try again.": "創建團隊失敗。",
+  "{{ displayName }} & Team": "{{ displayName }} & Team",
+  "{{ displayName }} Team": "{{ displayName }} Team",
   "Manage Members": "管理會員",
   "Invite team member": "邀請團隊成員",
   "Invited": "受邀",
