@@ -1,18 +1,16 @@
 import { ReactNode } from 'react'
 import { HotkeysProvider, useHotkeys } from 'react-hotkeys-hook'
+import { useCommand } from '../../CommandProvider'
 
 interface HotkeysWrapperProps {
   children: ReactNode
 }
 
 function HotkeysManager({ children }: HotkeysWrapperProps): ReactNode {
-  useHotkeys('ctrl+z, mod+z', () => console.log('undo'), {
-    preventDefault: true
-  })
+  const { undo, redo } = useCommand()
+  useHotkeys('mod+z', undo, { preventDefault: true })
+  useHotkeys('mod+shift+z', redo, { preventDefault: true })
 
-  useHotkeys('ctrl+shift+z, mod+shift+z', () => console.log('redo'), {
-    preventDefault: true
-  })
   return <>{children}</>
 }
 

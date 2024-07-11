@@ -2,6 +2,7 @@ import Stack from '@mui/material/Stack'
 import { ReactElement } from 'react'
 
 import { AnalyticsItem } from './AnalyticsItem'
+import { CommandItem } from './CommandItem'
 import { PreviewItem } from './PreviewItem'
 import { ShareItem } from './ShareItem'
 import { StrategyItem } from './StrategyItem'
@@ -14,6 +15,8 @@ export function Items(): ReactElement {
       gap={5}
       data-testid="ItemsStack"
     >
+      <CommandItem variant="icon-button" direction="undo" />
+      <CommandItem variant="icon-button" direction="redo" />
       <AnalyticsItem variant="icon-button" />
       <StrategyItem variant="button" />
       <ShareItem variant="button" />
