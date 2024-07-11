@@ -4,27 +4,27 @@ import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent, waitFor } from '@storybook/testing-library'
 import { ComponentProps } from 'react'
 
-import { journeysAdminConfig } from '@core/shared/ui/storybook'
+import { sharedUiConfig } from '../../libs/sharedUiConfig'
 
-import { TemplateGalleryCarousel } from './TemplateGalleryCarousel'
+import { SwiperCarousel } from './SwiperCarousel'
 
-const TemplateGalleryCarouselStory: Meta<typeof TemplateGalleryCarousel> = {
-  ...journeysAdminConfig,
-  component: TemplateGalleryCarousel,
-  title: 'Journeys-Admin/TemplateGalleryCarousel',
+const SwiperCarouselStory: Meta<typeof SwiperCarousel> = {
+  ...sharedUiConfig,
+  component: SwiperCarousel,
+  title: 'Shared-Ui/SwiperCarousel',
   parameters: {
-    ...journeysAdminConfig.parameters,
+    ...sharedUiConfig.parameters,
     layout: 'fullscreen'
   }
 }
 
-const Template: StoryObj<ComponentProps<typeof TemplateGalleryCarousel>> = {
+const Template: StoryObj<ComponentProps<typeof SwiperCarousel>> = {
   render: ({ ...args }) => {
     return (
       <Stack
         sx={{ backgroundColor: 'background.paper', p: 10, overflow: 'hidden' }}
       >
-        <TemplateGalleryCarousel
+        <SwiperCarousel
           {...args}
           items={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((number) => {
             return { id: `${number}`, title: `item ${number}` }
@@ -108,4 +108,4 @@ export const Breakpoints = {
   }
 }
 
-export default TemplateGalleryCarouselStory
+export default SwiperCarouselStory

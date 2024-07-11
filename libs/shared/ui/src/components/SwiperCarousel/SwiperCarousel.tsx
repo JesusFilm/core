@@ -29,7 +29,7 @@ const StyledSwiperContainer = styled(Swiper)(() => ({
 
 const StyledSwiperSlide = styled(SwiperSlide)(() => ({}))
 
-interface TemplateGalleryCarouselProps<T> {
+interface SwiperCarouselProps<T> {
   items: Array<T & { id: string }>
   renderItem: (itemProps: { item?: T; priority?: boolean }) => ReactNode
   heading?: string
@@ -40,7 +40,7 @@ interface TemplateGalleryCarouselProps<T> {
   priority?: boolean
 }
 
-export function TemplateGalleryCarousel<T>({
+export function SwiperCarousel<T>({
   items,
   renderItem,
   heading,
@@ -49,7 +49,7 @@ export function TemplateGalleryCarousel<T>({
   cardSpacing,
   slidesOffsetBefore,
   priority
-}: TemplateGalleryCarouselProps<T>): ReactElement {
+}: SwiperCarouselProps<T>): ReactElement {
   const [swiper, setSwiper] = useState<SwiperClass>()
   const [hovered, setHovered] = useState(false)
 

@@ -8,9 +8,9 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, useMemo } from 'react'
 import { SwiperOptions } from 'swiper/types'
 
+import { SwiperCarousel } from '@core/shared/ui/SwiperCarousel'
 import { useJourneysQuery } from '../../libs/useJourneysQuery'
 import { GetJourneys_journeys as Journey } from '../../libs/useJourneysQuery/__generated__/GetJourneys'
-import { TemplateGalleryCarousel } from '../TemplateGallery/TemplateGalleryCarousel'
 import { TemplateGalleryCard } from '../TemplateGalleryCard'
 
 interface Contents {
@@ -102,7 +102,7 @@ export function TemplateSections({
     <Stack spacing={8} data-testid="JourneysAdminTemplateSections">
       {tagIds?.length !== 1 &&
         (loading || (collection != null && collection.length > 0)) && (
-          <TemplateGalleryCarousel
+          <SwiperCarousel
             priority
             heading={tagIds == null ? t('Featured & New') : t('Most Relevant')}
             items={collection}
@@ -142,7 +142,7 @@ export function TemplateSections({
         ({ category, journeys }, key) =>
           ((tagIds == null && journeys.length >= 5) ||
             tagIds?.includes(key) === true) && (
-            <TemplateGalleryCarousel
+            <SwiperCarousel
               heading={category}
               items={journeys}
               renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}

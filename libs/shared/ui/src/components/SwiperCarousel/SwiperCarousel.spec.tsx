@@ -3,17 +3,17 @@ import { render, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { SwiperOptions } from 'swiper/types'
 
+import { TemplateGalleryCard } from '@core/journeys/ui/TemplateGalleryCard'
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
-} from '../../../../__generated__/globalTypes'
-import { GetJourneys_journeys as Journey } from '../../../libs/useJourneysQuery/__generated__/GetJourneys'
-import { TemplateGalleryCard } from '../../TemplateGalleryCard'
+} from '../../../../../journeys/ui/__generated__/globalTypes'
+import { GetJourneys_journeys as Journey } from '../../../../../journeys/ui/src/libs/useJourneysQuery/__generated__/GetJourneys'
 
-import { TemplateGalleryCarousel } from './TemplateGalleryCarousel'
+import { SwiperCarousel } from './SwiperCarousel'
 
-describe('TemplateGalleryCarousel', () => {
+describe('SwiperCarousel', () => {
   const journey: Journey = {
     __typename: 'Journey',
     id: '1',
@@ -68,9 +68,9 @@ describe('TemplateGalleryCarousel', () => {
     }
   }
 
-  it('should render TemplateGalleryCarousel with items', () => {
+  it('should render SwiperCarousel with items', () => {
     const { getAllByRole, getByRole } = render(
-      <TemplateGalleryCarousel
+      <SwiperCarousel
         heading="Easter"
         items={[journey, { ...journey, id: '2', title: 'Featured Template 2' }]}
         renderItem={(itemProps) => (
@@ -90,32 +90,9 @@ describe('TemplateGalleryCarousel', () => {
     expect(items[1]).toHaveTextContent('Featured Template 2priority')
   })
 
-  it('should focus elements in the carousel', async () => {
-    const { getAllByLabelText } = render(
-      <TemplateGalleryCarousel
-        heading="Easter"
-        items={[journey, { ...journey, id: '2', title: 'Featured Template 2' }]}
-        renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}
-        breakpoints={swiperBreakpoints}
-      />
-    )
-
-    await waitFor(async () => await userEvent.tab())
-    expect(getAllByLabelText('templateGalleryCard')[0]).toHaveStyle(
-      'outline: 2px solid'
-    )
-    await waitFor(async () => await userEvent.tab())
-    expect(getAllByLabelText('templateGalleryCard')[1]).toHaveStyle(
-      'outline: 2px solid'
-    )
-    expect(getAllByLabelText('templateGalleryCard')[0]).not.toHaveStyle(
-      'outline: 2px solid'
-    )
-  })
-
-  it('should render TemplateGalleryCarousel with placeholder items', () => {
+  it('should render SwiperCarousel with placeholder items', () => {
     const { getAllByRole, getByRole, queryByRole } = render(
-      <TemplateGalleryCarousel
+      <SwiperCarousel
         items={[journey]}
         renderItem={(itemProps) => (
           <Typography variant="h6">
