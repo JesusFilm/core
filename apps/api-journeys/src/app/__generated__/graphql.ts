@@ -264,9 +264,15 @@ export class EmailActionInput {
     email: string;
 }
 
+export class BlockDeleteInput {
+    from: DateTime;
+    to: DateTime;
+}
+
 export class BlocksFilter {
     journeyIds?: Nullable<string[]>;
     typenames?: Nullable<string[]>;
+    deletedAt?: Nullable<BlockDeleteInput>;
 }
 
 export class ButtonBlockCreateInput {

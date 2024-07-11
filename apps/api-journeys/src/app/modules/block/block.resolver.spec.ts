@@ -76,6 +76,9 @@ describe('BlockResolver', () => {
       PrismaService
     ) as DeepMockProxy<PrismaService>
     ability = await new AppCaslFactory().createAbility({ id: 'userId' })
+    prismaService.$transaction.mockImplementation(
+      async (callback) => await callback(prismaService)
+    )
   })
 
   describe('__resolveType', () => {
@@ -180,7 +183,7 @@ describe('BlockResolver', () => {
         blockWithUserTeam
       )
       expect(prismaService.block.findUnique).toHaveBeenCalledWith({
-        where: { id: 'blockId' },
+        where: { id: 'blockId', deletedAt: null },
         include: {
           action: true,
           journey: {
@@ -216,7 +219,7 @@ describe('BlockResolver', () => {
       expect(await resolver.blocks(accessibleBlocks)).toEqual([block])
       expect(prismaService.block.findMany).toHaveBeenCalledWith({
         where: {
-          AND: [accessibleBlocks, {}]
+          AND: [accessibleBlocks, { deletedAt: null }]
         },
         include: {
           action: true,
@@ -244,7 +247,8 @@ describe('BlockResolver', () => {
             accessibleBlocks,
             {
               journeyId: { in: ['journeyId'] },
-              typename: { in: ['StepBlock'] }
+              typename: { in: ['StepBlock'] },
+              deletedAt: null
             }
           ]
         },
@@ -258,6 +262,42 @@ describe('BlockResolver', () => {
           }
         }
       })
+    })
+  })
+
+  describe('blockRestore', () => {
+    it('should restore block', async () => {
+      prismaService.block.findUnique.mockResolvedValue(blockWithUserTeam)
+      prismaService.block.update.mockResolvedValue(block)
+      await resolver.blockRestore('1', ability)
+      expect(prismaService.block.update).toHaveBeenCalledWith({
+        where: { id: '1' },
+        data: {
+          deletedAt: null
+        },
+        include: {
+          action: true
+        }
+      })
+      expect(service.reorderBlock).toHaveBeenCalledWith(
+        block,
+        block.parentOrder,
+        prismaService
+      )
+    })
+
+    it('should throw error if block not found', async () => {
+      await expect(resolver.blockRestore('1', ability)).rejects.toThrow(
+        'block not found'
+      )
+    })
+
+    it('should throw error if user does not have the correct permissions', async () => {
+      prismaService.block.findUnique.mockResolvedValue(block)
+      prismaService.block.update.mockResolvedValue(block)
+      await expect(resolver.blockRestore('1', ability)).rejects.toThrow(
+        'user is not allowed to update block'
+      )
     })
   })
 })

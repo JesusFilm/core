@@ -66,4 +66,9 @@ extend type Mutation {
     """
     journeyId: ID
   ): [Block!]!
+
+  """
+  blockRestore is used for redo/undo
+  """
+  blockRestore(id: ID!): Block!
 }
