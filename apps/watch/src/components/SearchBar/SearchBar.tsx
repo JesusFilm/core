@@ -4,7 +4,8 @@ import InputAdornment from '@mui/material/InputAdornment'
 import TextField from '@mui/material/TextField'
 import { styled } from '@mui/material/styles'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
+import { useInstantSearch, useSearchBox } from 'react-instantsearch'
 
 /* Styles below used to fake a gradient border because the 
 css attributes border-radius and border-image-source are not compatible */
@@ -25,8 +26,22 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
   }
 }))
 
-export function SearchBar(): ReactElement {
+export function SearchBar(props): ReactElement {
   const { t } = useTranslation('apps-watch')
+
+  const { query, refine, clear } = useSearchBox(props)
+  const { status } = useInstantSearch()
+  const [inputValue, setInputValue] = useState(query)
+
+  const isSearchStalled = status === 'stalled'
+
+  function setQuery(newQuery: string) {
+    setInputValue(newQuery)
+
+    refine(newQuery)
+  }
+
+  // TODO(jk): When you provide a function to Hooks, make sure to pass a stable reference to avoid rendering endlessly
 
   return (
     <Box
@@ -39,8 +54,14 @@ export function SearchBar(): ReactElement {
       data-testid="SearchBar"
     >
       <StyledTextField
+        {...props}
         placeholder={t('Search by topic, occasion, or audience ...')}
         fullWidth
+        type="search"
+        value={inputValue}
+        onChange={(event) => {
+          setQuery(event.currentTarget.value)
+        }}
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">

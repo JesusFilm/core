@@ -21,6 +21,8 @@ import 'swiper/css'
 import 'swiper/css/a11y'
 import 'swiper/css/navigation'
 import '../public/watch/assets/fonts/fonts.css'
+import algoliasearch from 'algoliasearch'
+import { InstantSearch } from 'react-instantsearch'
 
 const clientSideEmotionCache = createEmotionCache({ prepend: false })
 
@@ -29,6 +31,11 @@ type WatchAppProps = NextJsAppProps<{
 }> & {
   emotionCache?: EmotionCache
 }
+
+const searchClient = algoliasearch(
+  process.env.NEXT_PUBLIC_ALGOLIA_APP_ID ?? '',
+  process.env.NEXT_PUBLIC_ALGOLIA_API_KEY ?? ''
+)
 
 function WatchApp({
   Component,
@@ -107,7 +114,9 @@ function WatchApp({
             themeName={ThemeName.website}
             themeMode={ThemeMode.light}
           >
-            <Component {...pageProps} />
+            <InstantSearch searchClient={searchClient}>
+              <Component {...pageProps} />
+            </InstantSearch>
           </ThemeProvider>
         </CacheProvider>
       </ApolloProvider>

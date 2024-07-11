@@ -13,6 +13,24 @@ import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 import { TemplateGallery } from '@core/journeys/ui/TemplateGallery'
 import { Stack } from '@mui/system'
 import { PageWrapper } from '../../src/components/PageWrapper'
+import { SearchBar } from '../../src/components/SearchBar/SearchBar'
+
+import { Highlight, Hits, Index, RefinementList } from 'react-instantsearch'
+
+function Hit({ hit }) {
+  return (
+    <article>
+      <p>{hit.objectId}</p>
+      <img src={hit.image.src} alt={hit.image.alt} width={50} />
+      <h1>
+        <Highlight attribute="title" hit={hit} />
+      </h1>
+      <p>{hit.date}</p>
+      <p>{hit.languageId}</p>
+      <p>{hit.tags.toString()}</p>
+    </article>
+  )
+}
 
 function JourneysPage(): ReactElement {
   return (
@@ -23,13 +41,29 @@ function JourneysPage(): ReactElement {
       >
         <Container maxWidth="xxl">
           <Stack gap={10}>
-            <ThemeProvider
-              themeName={ThemeName.journeysAdmin}
-              themeMode={ThemeMode.light}
-              nested
-            >
-              <TemplateGallery hideOverflow />
-            </ThemeProvider>
+            <Index indexName="api-journeys-journeys-dev">
+              <SearchBar />
+              <div style={{ display: 'flex' }}>
+                <div style={{ marginRight: '20px' }}>
+                  <h2>Filter by Tags</h2>
+                  <RefinementList attribute="tags" />
+
+                  <h2>Filter by LanguageId</h2>
+                  <RefinementList attribute="languageId" />
+                </div>
+                <div>
+                  <Hits hitComponent={Hit} />
+                </div>
+              </div>
+
+              <ThemeProvider
+                themeName={ThemeName.journeysAdmin}
+                themeMode={ThemeMode.light}
+                nested
+              >
+                <TemplateGallery hideOverflow />
+              </ThemeProvider>
+            </Index>
           </Stack>
         </Container>
       </Box>
