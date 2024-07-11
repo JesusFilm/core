@@ -68,7 +68,11 @@ export function Hint(): ReactElement {
   return (
     <Box sx={{ p: 4, pt: 0 }} data-testid="Hint">
       {initialValues != null ? (
-        <Formik initialValues={initialValues} onSubmit={noop}>
+        <Formik
+          initialValues={initialValues}
+          onSubmit={noop}
+          enableReinitialize
+        >
           {({ values, errors, handleChange, handleBlur }) => (
             <Form>
               <TextField
