@@ -65,7 +65,7 @@
         "parallel": false
       }
     },
-    "serve": {
+    "_serve": {
       "executor": "@nx/next:server",
       "options": {
         "buildTarget": "videos-admin:_build",
@@ -84,6 +84,23 @@
         }
       },
       "defaultConfiguration": "development"
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "cp -r libs/locales apps/videos-admin/src",
+          "nx _serve videos-admin"
+        ],
+        "parallel": false
+      },
+      "configurations": {
+        "production": {
+          "commands": [
+            "nx _serve videos-admin --prod"
+          ]
+        }
+      }
     },
     "serve-all": {
       "executor": "nx:run-commands",

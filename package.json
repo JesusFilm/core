@@ -57,6 +57,7 @@
     "@mui/icons-material": "^5.14.8",
     "@mui/lab": "5.0.0-alpha.150",
     "@mui/material": "^5.14.8",
+    "@mui/material-nextjs": "^5.15.11",
     "@mui/system": "^5.14.8",
     "@mui/x-data-grid": "^6.12.1",
     "@nestjs-modules/mailer": "^1.10.3",
