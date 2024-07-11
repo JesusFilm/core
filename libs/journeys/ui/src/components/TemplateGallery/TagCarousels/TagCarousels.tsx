@@ -3,7 +3,7 @@ import { useTheme } from '@mui/material/styles'
 import { ReactElement, useMemo } from 'react'
 import { SwiperOptions } from 'swiper/types'
 
-import { SwiperCarousel } from '@core/shared/ui/SwiperCarousel'
+import { ContentCarousel } from '@core/shared/ui/ContentCarousel'
 import { useTagsQuery } from '../../../libs/useTagsQuery'
 
 import { CollectionButton } from './CollectionButton'
@@ -59,7 +59,7 @@ export function TagCarousels({
       gap={7}
       sx={{ mb: { xs: 10, md: 16 }, height: { xs: 219, md: 234 } }}
     >
-      <SwiperCarousel
+      <ContentCarousel
         items={feltNeedsTags}
         renderItem={(itemProps) => (
           <FeltNeedsButton {...itemProps} onClick={handleChange} />

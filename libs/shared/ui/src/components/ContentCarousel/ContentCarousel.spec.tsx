@@ -1,9 +1,7 @@
 import Typography from '@mui/material/Typography'
-import { render, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { render } from '@testing-library/react'
 import { SwiperOptions } from 'swiper/types'
 
-import { TemplateGalleryCard } from '@core/journeys/ui/TemplateGalleryCard'
 import {
   JourneyStatus,
   ThemeMode,
@@ -11,9 +9,9 @@ import {
 } from '../../../../../journeys/ui/__generated__/globalTypes'
 import { GetJourneys_journeys as Journey } from '../../../../../journeys/ui/src/libs/useJourneysQuery/__generated__/GetJourneys'
 
-import { SwiperCarousel } from './SwiperCarousel'
+import { ContentCarousel } from './ContentCarousel'
 
-describe('SwiperCarousel', () => {
+describe('ContentCarousel', () => {
   const journey: Journey = {
     __typename: 'Journey',
     id: '1',
@@ -68,9 +66,9 @@ describe('SwiperCarousel', () => {
     }
   }
 
-  it('should render SwiperCarousel with items', () => {
+  it('should render ContentCarousel with items', () => {
     const { getAllByRole, getByRole } = render(
-      <SwiperCarousel
+      <ContentCarousel
         heading="Easter"
         items={[journey, { ...journey, id: '2', title: 'Featured Template 2' }]}
         renderItem={(itemProps) => (
@@ -90,9 +88,9 @@ describe('SwiperCarousel', () => {
     expect(items[1]).toHaveTextContent('Featured Template 2priority')
   })
 
-  it('should render SwiperCarousel with placeholder items', () => {
+  it('should render ContentCarousel with placeholder items', () => {
     const { getAllByRole, getByRole, queryByRole } = render(
-      <SwiperCarousel
+      <ContentCarousel
         items={[journey]}
         renderItem={(itemProps) => (
           <Typography variant="h6">

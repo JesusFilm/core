@@ -6,25 +6,25 @@ import { ComponentProps } from 'react'
 
 import { sharedUiConfig } from '../../libs/sharedUiConfig'
 
-import { SwiperCarousel } from './SwiperCarousel'
+import { ContentCarousel } from './ContentCarousel'
 
-const SwiperCarouselStory: Meta<typeof SwiperCarousel> = {
+const ContentCarouselStory: Meta<typeof ContentCarousel> = {
   ...sharedUiConfig,
-  component: SwiperCarousel,
-  title: 'Shared-Ui/SwiperCarousel',
+  component: ContentCarousel,
+  title: 'Shared-Ui/ContentCarousel',
   parameters: {
     ...sharedUiConfig.parameters,
     layout: 'fullscreen'
   }
 }
 
-const Template: StoryObj<ComponentProps<typeof SwiperCarousel>> = {
+const Template: StoryObj<ComponentProps<typeof ContentCarousel>> = {
   render: ({ ...args }) => {
     return (
       <Stack
         sx={{ backgroundColor: 'background.paper', p: 10, overflow: 'hidden' }}
       >
-        <SwiperCarousel
+        <ContentCarousel
           {...args}
           items={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((number) => {
             return { id: `${number}`, title: `item ${number}` }
@@ -108,4 +108,4 @@ export const Breakpoints = {
   }
 }
 
-export default SwiperCarouselStory
+export default ContentCarouselStory

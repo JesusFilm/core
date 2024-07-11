@@ -1,1 +1,0 @@
-export { SwiperCarousel } from './SwiperCarousel'

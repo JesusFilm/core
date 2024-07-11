@@ -9,7 +9,7 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 import { SwiperOptions } from 'swiper/types'
 
-import { SwiperCarousel } from '@core/shared/ui/SwiperCarousel'
+import { ContentCarousel } from '@core/shared/ui/ContentCarousel'
 import { Role } from '../../../__generated__/globalTypes'
 import { useJourney } from '../../libs/JourneyProvider'
 import { useJourneysQuery } from '../../libs/useJourneysQuery'
@@ -147,7 +147,7 @@ export function TemplateView({
             />
           )}
           {relatedJourneys != null && relatedJourneys.length >= 1 && (
-            <SwiperCarousel
+            <ContentCarousel
               heading={t('Related Templates')}
               items={relatedJourneys}
               renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}
