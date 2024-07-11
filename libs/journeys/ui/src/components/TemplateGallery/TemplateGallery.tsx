@@ -22,12 +22,8 @@ export function TemplateGallery({
 }: TemplateGalleryProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const router = useRouter()
-  const selectedLanguageIds = castArray(router.query.languageIds ?? [])
+  const selectedLanguageIds = castArray(router.query.languageIds ?? ['529'])
   const selectedTagIds = castArray(router.query.tagIds ?? [])
-
-  useEffect(() => {
-    handleLanguageIdsChange(['529'])
-  }, [])
 
   function handleTagIdsChange(
     newSelectedTagIds: string[],
