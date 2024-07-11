@@ -1,12 +1,54 @@
+import Search1Icon from '@core/shared/ui/icons/Search1'
+import Box from '@mui/material/Box'
+import InputAdornment from '@mui/material/InputAdornment'
+import TextField from '@mui/material/TextField'
+import { styled } from '@mui/material/styles'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
+/* Styles below used to fake a gradient border because the 
+css attributes border-radius and border-image-source are not compatible */
+const StyledTextField = styled(TextField)(({ theme }) => ({
+  '& .MuiOutlinedInput-root': {
+    background: theme.palette.background.default,
+    borderRadius: 8,
+    '&.Mui-focused fieldset, fieldset': {
+      borderRadius: 4
+    },
+    fieldset: {
+      border: 'none'
+    },
+    input: {
+      // Overriding the default set in components.tsx
+      transform: 'none'
+    }
+  }
+}))
+
 export function SearchBar(): ReactElement {
+  const { t } = useTranslation('apps-watch')
+
   return (
-    <form>
-      <input
-        type="text"
-        placeholder="Search by topic, occasion, or audience ..."
+    <Box
+      sx={{
+        borderRadius: 3,
+        background:
+          'linear-gradient(90deg, #0C79B3 0%, #0FDABC 51%, #E72DBB 100%)',
+        p: 1
+      }}
+      data-testid="SearchBar"
+    >
+      <StyledTextField
+        placeholder={t('Search by topic, occasion, or audience ...')}
+        fullWidth
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <Search1Icon />
+            </InputAdornment>
+          )
+        }}
       />
-    </form>
+    </Box>
   )
 }

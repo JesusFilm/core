@@ -152,14 +152,17 @@ export function ActionButton({
             data-testid="AnalyticsEventCount"
             sx={{
               transition: 'opacity 200ms ease-in-out',
-              borderRadius: 50,
+              borderRadius: 4,
               backgroundColor: 'background.paper',
               px: 1,
               py: 1,
               opacity: 0
             }}
           >
-            <Typography variant="body1" sx={{ fontSize: 12, lineHeight: 1 }}>
+            <Typography
+              variant="body1"
+              sx={{ fontSize: 12, fontWeight: 600, lineHeight: '14px' }}
+            >
               {total}
             </Typography>
           </Box>
