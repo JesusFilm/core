@@ -1,6 +1,6 @@
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
-import { Meta, StoryObj } from '@storybook/react'
-import { ComponentPropsWithoutRef } from 'react'
+import type { Meta, StoryObj } from '@storybook/react'
+import type { ComponentPropsWithoutRef } from 'react'
 import { BaseReferrer } from '.'
 
 const Demo: Meta<typeof BaseReferrer> = {
@@ -27,7 +27,7 @@ export const Default = {
 export const Others = {
   ...Template,
   args: {
-    property: 'Other sources',
+    property: 'other sources',
     visitors: 10
   }
 }
