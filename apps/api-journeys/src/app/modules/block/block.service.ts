@@ -6,6 +6,7 @@ import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
 import { ToPostgresql } from '@core/nest/decorators/ToPostgresql'
 import { Action, Block, Prisma } from '.prisma/api-journeys-client'
 
+import { GraphQLError } from 'graphql'
 import { PrismaService } from '../../lib/prisma.service'
 
 export const OMITTED_BLOCK_FIELDS = ['__typename', 'journeyId', 'isCover']
@@ -374,21 +375,34 @@ export class BlockService {
       )
     )
   }
-
   async getDescendants(
     block: Block,
     accum: Block[] = [],
     tx: Prisma.TransactionClient = this.prismaService
   ): Promise<Block[]> {
-    const children = await tx.block.findMany({
-      where: { parentBlockId: block.id }
+    const journey = await tx.journey.findUnique({
+      where: { id: block.journeyId },
+      include: { blocks: true }
     })
-    if (children.length > 0) {
-      children.forEach(async (block) => {
-        accum.push(block)
-        await this.getDescendants(block, accum)
+
+    if (journey == null) {
+      throw new GraphQLError('journey not found', {
+        extensions: { code: 'NOT_FOUND' }
       })
     }
+    const recurse = (block: Block, accum: Block[]): Block[] => {
+      const children = journey.blocks.filter(
+        (journeyBlock) => journeyBlock.parentBlockId === block.id
+      )
+      if (children.length > 0) {
+        children.forEach((childBlock) => {
+          accum.push(childBlock)
+          recurse(childBlock, accum)
+        })
+      }
+      return accum
+    }
+    recurse(block, accum)
     return accum
   }
 
