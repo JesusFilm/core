@@ -662,6 +662,8 @@
   "{{ teamName }} created.": "{{ teamName }} créé.",
   "Team created.": "Équipe créée.",
   "Failed to create the team. Reload the page or try again.": "La création de l'équipe a échoué. Recharge la page ou réessaie.",
+  "{{ displayName }} & Team": "{{ displayName }} & L'équipe",
+  "{{ displayName }} Team": "{{ displayName }} L'équipe",
   "Manage Members": "Gérer les membres",
   "Invite team member": "Invite un membre de l'équipe",
   "Invited": "Sur invitation",
