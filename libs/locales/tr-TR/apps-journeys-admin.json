@@ -662,6 +662,8 @@
   "{{ teamName }} created.": "{{ teamName }} yaratıldı.",
   "Team created.": "Ekip oluşturuldu.",
   "Failed to create the team. Reload the page or try again.": "Ekip oluşturulamadı. Sayfayı yeniden yükleyin veya tekrar deneyin.",
+  "{{ displayName }} & Team": "{{ displayName }} & Ekip",
+  "{{ displayName }} Team": "{{ displayName }} Takım",
   "Manage Members": "Üyeleri Yönet",
   "Invite team member": "Ekip üyesini davet edin",
   "Invited": "Davetli",
