@@ -48,7 +48,7 @@ jobs:
           files: 'dist/storybook/shared-storybook'
         #👇 Adds Chromatic as a step in the workflow
       - name: Check Chromatic Label
-        if: ${{ steps.check_files.outputs.files_exists == 'true' }} && !contains(github.event.pull_request.labels.*.name, 'chromatic') && github.event_name != 'merge_group'
+        if: ${{ steps.check_files.outputs.files_exists == 'true' }} && !contains(github.event.pull_request.labels.*.name, 'chromatic')
         run: |
           echo "ADD CHROMATIC LABEL TO PR"
           exit 1
