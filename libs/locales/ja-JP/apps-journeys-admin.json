@@ -662,6 +662,8 @@
   "{{ teamName }} created.": "{{ teamName }} を作成した。",
   "Team created.": "チームは作られた。",
   "Failed to create the team. Reload the page or try again.": "チームの作成に失敗しました。ページを再読み込みするか、もう一度やり直してください。",
+  "{{ displayName }} & Team": "{{ displayName }} チーム",
+  "{{ displayName }} Team": "{{ displayName }} チーム",
   "Manage Members": "メンバー管理",
   "Invite team member": "チームメンバーを招待する",
   "Invited": "招待",
