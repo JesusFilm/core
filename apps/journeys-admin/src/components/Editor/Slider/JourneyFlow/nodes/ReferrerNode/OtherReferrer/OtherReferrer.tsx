@@ -2,9 +2,11 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { BaseReferrer } from '../BaseReferrer'
 
-import { GetJourneyAnalytics_journeyReferrer as JourneyReferrer } from '@core/journeys/ui/useJourneyAnalyticsQuery/__generated__/GetJourneyAnalytics'
+import type { GetJourneyAnalytics_journeyReferrer as JourneyReferrer } from '@core/journeys/ui/useJourneyAnalyticsQuery/__generated__/GetJourneyAnalytics'
 import ChevronDown from '@core/shared/ui/icons/ChevronDown'
-import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material'
+import Accordion from '@mui/material/Accordion'
+import AccordionDetails from '@mui/material/AccordionDetails'
+import AccordionSummary from '@mui/material/AccordionSummary'
 import { useTranslation } from 'next-i18next'
 import { ReferrerValue } from '../ReferrerValue'
 
@@ -26,6 +28,7 @@ export function OtherReferrer({ referrers }: { referrers: JourneyReferrer[] }) {
           borderRadius: 4,
           boxShadow: 3
         }}
+        data-testid="OtherReferrer"
       >
         <Accordion
           disableGutters
