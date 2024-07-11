@@ -1,4 +1,4 @@
-import { TemplateGalleryCarousel } from '@core/journeys/ui/TemplateGallery/TemplateGalleryCarousel'
+import { ContentCarousel } from '@core/shared/ui/ContentCarousel'
 import { useTheme } from '@mui/material/styles'
 import { ReactElement } from 'react'
 import { SwiperOptions } from 'swiper/types'
@@ -61,7 +61,15 @@ const items = [
   }
 ]
 
+// Potential Props:
+// Team title
+// Team description
+// items array
+
 export function StrategyCarousel(): ReactElement {
+  const teamTitle = 'Training Strategies'
+  const teamDescription =
+    'Creating and launch context-driven, reproduceible training methods'
   const { breakpoints } = useTheme()
 
   const swiperBreakpoints: SwiperOptions['breakpoints'] = {
@@ -92,7 +100,7 @@ export function StrategyCarousel(): ReactElement {
   }
   return (
     <>
-      <TemplateGalleryCarousel
+      <ContentCarousel
         items={items}
         renderItem={(itemProps) => <StrategyItem {...itemProps} />}
         breakpoints={swiperBreakpoints}
