@@ -15,7 +15,6 @@ import type { TreeBlock } from '../block'
 import { BlockFields_StepBlock as StepBlock } from '../block/__generated__/BlockFields'
 import { searchBlocks } from '../searchBlocks'
 import { type JourneyAnalytics } from '../useJourneyAnalyticsQuery'
-import { HotkeysWrapper } from './HotkeysWrapper'
 
 export enum ActiveContent {
   Canvas = 'canvas',
@@ -314,9 +313,7 @@ export function EditorProvider({
   return (
     <EditorContext.Provider value={{ state, dispatch }}>
       <CommandProvider>
-        <HotkeysWrapper>
-          {isFunction(children) ? children({ state, dispatch }) : children}
-        </HotkeysWrapper>
+        {isFunction(children) ? children({ state, dispatch }) : children}
       </CommandProvider>
     </EditorContext.Provider>
   )

@@ -1,13 +1,16 @@
 import Stack from '@mui/material/Stack'
 import { ReactElement } from 'react'
 
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { AnalyticsItem } from './AnalyticsItem'
-import { CommandItem } from './CommandItem'
+import { CommandRedoItem } from './CommandRedoItem'
+import { CommandUndoItem } from './CommandUndoItem'
 import { PreviewItem } from './PreviewItem'
 import { ShareItem } from './ShareItem'
 import { StrategyItem } from './StrategyItem'
 
 export function Items(): ReactElement {
+  const { commands } = useFlags()
   return (
     <Stack
       sx={{ display: { xs: 'none', sm: 'flex' } }}
@@ -15,8 +18,12 @@ export function Items(): ReactElement {
       gap={5}
       data-testid="ItemsStack"
     >
-      <CommandItem variant="icon-button" direction="undo" />
-      <CommandItem variant="icon-button" direction="redo" />
+      {commands && (
+        <>
+          <CommandUndoItem variant="icon-button" />
+          <CommandRedoItem variant="icon-button" />
+        </>
+      )}
       <AnalyticsItem variant="icon-button" />
       <StrategyItem variant="button" />
       <ShareItem variant="button" />
