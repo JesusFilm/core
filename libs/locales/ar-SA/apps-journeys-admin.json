@@ -662,6 +662,8 @@
   "{{ teamName }} created.": "{{ teamName }} تم إنشاؤها.",
   "Team created.": "الفريق الذي تم إنشاؤه.",
   "Failed to create the team. Reload the page or try again.": "فشل إنشاء الفريق. أعد تحميل الصفحة أو حاول مرة أخرى.",
+  "{{ displayName }} & Team": "{{ displayName }} & Team",
+  "{{ displayName }} Team": "{{ displayName }} Team",
   "Manage Members": "إدارة الأعضاء",
   "Invite team member": "دعوة عضو الفريق",
   "Invited": "مدعوون",
