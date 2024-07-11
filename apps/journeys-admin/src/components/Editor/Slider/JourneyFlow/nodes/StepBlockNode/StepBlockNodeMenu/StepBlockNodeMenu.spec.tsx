@@ -6,6 +6,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../__generated__/BlockFields'
 
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { StepBlockNodeMenu } from './StepBlockNodeMenu'
 
 describe('StepBlockNodeMenu', () => {
@@ -23,7 +24,9 @@ describe('StepBlockNodeMenu', () => {
     const { getByTestId, getByRole, queryByTestId } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <StepBlockNodeMenu step={step} />
+          <EditorProvider initialState={{ selectedBlock: step }}>
+            <StepBlockNodeMenu step={step} />
+          </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
