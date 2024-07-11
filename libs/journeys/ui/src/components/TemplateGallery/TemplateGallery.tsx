@@ -5,7 +5,7 @@ import castArray from 'lodash/castArray'
 import difference from 'lodash/difference'
 import { useTranslation } from 'next-i18next'
 import { useRouter } from 'next/router'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 
 import { TemplateSections } from '../TemplateSections'
 
@@ -24,6 +24,10 @@ export function TemplateGallery({
   const router = useRouter()
   const selectedLanguageIds = castArray(router.query.languageIds ?? [])
   const selectedTagIds = castArray(router.query.tagIds ?? [])
+
+  useEffect(() => {
+    handleLanguageIdsChange(['529'])
+  }, [])
 
   function handleTagIdsChange(
     newSelectedTagIds: string[],
