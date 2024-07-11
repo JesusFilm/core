@@ -662,6 +662,8 @@
   "{{ teamName }} created.": "{{ teamName }} dibuat.",
   "Team created.": "Tim dibuat.",
   "Failed to create the team. Reload the page or try again.": "Gagal membuat tim. Muat ulang halaman atau coba lagi.",
+  "{{ displayName }} & Team": "{{ displayName }} & Tim",
+  "{{ displayName }} Team": "{{ displayName }} Tim",
   "Manage Members": "Kelola Anggota",
   "Invite team member": "Undang anggota tim",
   "Invited": "Diundang",
