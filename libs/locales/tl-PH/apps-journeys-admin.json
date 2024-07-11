@@ -662,6 +662,8 @@
   "{{ teamName }} created.": "{{ teamName }} nilikha.",
   "Team created.": "Team created.",
   "Failed to create the team. Reload the page or try again.": "Nabigong gawin ang koponan. ",
+  "{{ displayName }} & Team": "{{ displayName }} & Team",
+  "{{ displayName }} Team": "{{ displayName }} Team",
   "Manage Members": "Pamahalaan ang mga Miyembro",
   "Invite team member": "Mag-imbita ng miyembro ng pangkat",
   "Invited": "Inimbitahan",
