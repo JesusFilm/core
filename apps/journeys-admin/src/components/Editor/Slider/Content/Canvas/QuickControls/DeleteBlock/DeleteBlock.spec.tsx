@@ -19,7 +19,6 @@ import {
   TypographyColor,
   TypographyVariant
 } from '../../../../../../../../__generated__/globalTypes'
-import { TestEditorState } from '../../../../../../../libs/TestEditorState'
 import { BLOCK_DELETE } from '../../../../../../../libs/useBlockDeleteMutation'
 import { deleteBlockMock } from '../../../../../../../libs/useBlockDeleteMutation/useBlockDeleteMutation.mock'
 
