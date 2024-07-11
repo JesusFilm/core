@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 
 import {
   JourneyStatus,
@@ -9,6 +9,7 @@ import { GetJourneys_journeys as Journey } from '../../libs/useJourneysQuery/__g
 
 import { TemplateGalleryCard } from '.'
 import '../../../test/i18n'
+import userEvent from '@testing-library/user-event'
 import { NextRouter, useRouter } from 'next/router'
 
 jest.mock('next/router', () => ({
@@ -157,6 +158,18 @@ describe('TemplateGalleryCard from different route', () => {
     expect(getByTestId('templateGalleryCard')).toHaveAttribute(
       'href',
       '/journeys/template-id'
+    )
+  })
+
+  it('should focus templategallerycard', async () => {
+    mockUseRouter.mockReturnValue({
+      pathname: '/journeys'
+    } as unknown as NextRouter)
+    render(<TemplateGalleryCard item={journey} />)
+
+    await waitFor(async () => await userEvent.tab())
+    expect(screen.getByLabelText('templateGalleryCard')).toHaveStyle(
+      'outline: 2px solid'
     )
   })
 })
