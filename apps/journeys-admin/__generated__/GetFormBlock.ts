@@ -7,8 +7,8 @@
 // GraphQL query operation: GetFormBlock
 // ====================================================
 
-export interface GetFormBlock_block_ButtonBlock {
-  __typename: "ButtonBlock" | "CardBlock" | "GridContainerBlock" | "GridItemBlock" | "IconBlock" | "ImageBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "StepBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "VideoTriggerBlock";
+export interface GetFormBlock_block_ImageBlock {
+  __typename: "ImageBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "StepBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
 }
 
@@ -46,7 +46,7 @@ export interface GetFormBlock_block_FormBlock {
   apiTokenExists: boolean;
 }
 
-export type GetFormBlock_block = GetFormBlock_block_ButtonBlock | GetFormBlock_block_FormBlock;
+export type GetFormBlock_block = GetFormBlock_block_ImageBlock | GetFormBlock_block_FormBlock;
 
 export interface GetFormBlock {
   block: GetFormBlock_block;
