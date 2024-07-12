@@ -443,6 +443,8 @@
   "Title": "タイトル",
   "Recommended length: 5 words": "推奨される長さ：5ワード",
   "Analytics": "アナリティクス",
+  "Redo": "やり直し",
+  "Undo": "元に戻す",
   "Copy Link": "コピーリンク",
   "Create Template": "テンプレート作成",
   "Field update failed. Reload the page or try again.": "フィールドの更新に失敗しました。ページを再読み込みするか、もう一度やり直してください。",
