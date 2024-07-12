@@ -3,38 +3,32 @@ import { useTranslation } from 'next-i18next'
 import { ComponentProps, ReactElement } from 'react'
 
 import ArrowLeftIcon from '@core/shared/ui/icons/ArrowLeft'
-import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { Item } from '../Item/Item'
 
-interface CommandItemProps {
-  direction: 'undo' | 'redo'
+interface CommandUndoItemProps {
   variant: ComponentProps<typeof Item>['variant']
 }
 
-export function CommandItem({
-  variant,
-  direction
-}: CommandItemProps): ReactElement {
-  const { undo, redo, state } = useCommand()
+export function CommandUndoItem({
+  variant
+}: CommandUndoItemProps): ReactElement {
+  const { undo, state } = useCommand()
   const { t } = useTranslation('apps-journeys-admin')
 
   async function handleClick(): Promise<void> {
-    direction === 'undo' ? await undo() : await redo()
+    await undo()
   }
 
   return (
     <Box data-testid="CommandItem">
       <Item
         variant={variant}
-        label={direction === 'undo' ? t('Undo') : t('Redo')}
-        icon={direction === 'undo' ? <ArrowLeftIcon /> : <ArrowRightIcon />}
+        label={t('Undo')}
+        icon={<ArrowLeftIcon />}
         onClick={handleClick}
-        ButtonProps={{
-          disabled:
-            direction === 'undo' ? state.undo == null : state.redo == null
-        }}
+        ButtonProps={{ disabled: state.undo == null }}
       />
     </Box>
   )
