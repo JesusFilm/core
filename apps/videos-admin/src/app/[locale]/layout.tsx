@@ -4,6 +4,7 @@ import { getMessages } from 'next-intl/server'
 
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
+import { ApolloWrapper } from '../../components/apolloWrapper/apolloWrapper'
 
 export default async function LocaleLayout({
   children,
@@ -18,14 +19,16 @@ export default async function LocaleLayout({
     <html lang={locale}>
       <body>
         <NextIntlClientProvider messages={messages}>
-          <AppRouterCacheProvider>
-            <ThemeProvider
-              themeName={ThemeName.website}
-              themeMode={ThemeMode.light}
-            >
-              {children}
-            </ThemeProvider>
-          </AppRouterCacheProvider>
+          <ApolloWrapper>
+            <AppRouterCacheProvider>
+              <ThemeProvider
+                themeName={ThemeName.website}
+                themeMode={ThemeMode.light}
+              >
+                {children}
+              </ThemeProvider>
+            </AppRouterCacheProvider>
+          </ApolloWrapper>
         </NextIntlClientProvider>
       </body>
     </html>

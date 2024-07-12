@@ -1,12 +1,8 @@
 import { notFound } from 'next/navigation'
 import { getRequestConfig } from 'next-intl/server'
 
-const isBrowser = typeof window !== 'undefined'
 let localePath
-if (isBrowser) {
-  // browser
-  localePath = './public/locales'
-} else if (process.env.VERCEL == null || process.env.CI != null) {
+if (process.env.VERCEL == null || process.env.CI != null) {
   // not vercel or vercel build time
   localePath = './locales'
 } else {
