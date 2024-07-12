@@ -443,6 +443,8 @@
   "Title": "标题",
   "Recommended length: 5 words": "建议长度：5 个字",
   "Analytics": "分析",
+  "Redo": "重做",
+  "Undo": "撤消",
   "Copy Link": "复制链接",
   "Create Template": "创建模板",
   "Field update failed. Reload the page or try again.": "字段更新失败。",
