@@ -10,7 +10,7 @@ import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, Button
 // ====================================================
 
 export interface GetPublisherTemplate_publisherTemplate_language_name {
-  __typename: "Translation";
+  __typename: "LanguageName";
   value: string;
   primary: boolean;
 }
@@ -280,7 +280,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_variantLanguages_name {
-  __typename: "Translation";
+  __typename: "LanguageName";
   value: string;
   primary: boolean;
 }

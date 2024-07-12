@@ -182,16 +182,17 @@ export function CommandProvider({
 
   async function undo() {
     if (state.undo == null) return
+    dispatch({ type: 'UndoCallbackAction' })
     if (state.undo.undo != null) {
       await state.undo.undo(state.undo.parameters?.undo)
     } else {
       await state.undo.execute(state.undo.parameters?.undo)
     }
-    dispatch({ type: 'UndoCallbackAction' })
   }
 
   async function redo() {
     if (state.redo == null) return
+    dispatch({ type: 'RedoCallbackAction' })
     if (state.redo.redo != null) {
       await state.redo.redo(
         state.redo.parameters?.redo ?? state.redo.parameters.execute
@@ -201,7 +202,6 @@ export function CommandProvider({
         state.redo.parameters?.redo ?? state.redo.parameters.execute
       )
     }
-    dispatch({ type: 'RedoCallbackAction' })
   }
 
   async function add<E = unknown, R = E, U = E>(command: Command<E, R, U>) {

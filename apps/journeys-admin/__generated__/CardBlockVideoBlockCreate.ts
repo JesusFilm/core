@@ -21,7 +21,7 @@ export interface CardBlockVideoBlockCreate_videoBlockCreate_video_variant {
 }
 
 export interface CardBlockVideoBlockCreate_videoBlockCreate_video_variantLanguages_name {
-  __typename: "Translation";
+  __typename: "LanguageName";
   value: string;
   primary: boolean;
 }
