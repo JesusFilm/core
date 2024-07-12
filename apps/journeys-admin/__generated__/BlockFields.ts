@@ -266,7 +266,7 @@ export interface BlockFields_VideoBlock_video_variant {
 }
 
 export interface BlockFields_VideoBlock_video_variantLanguages_name {
-  __typename: "Translation";
+  __typename: "LanguageName";
   value: string;
   primary: boolean;
 }
