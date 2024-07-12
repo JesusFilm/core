@@ -154,7 +154,7 @@ const videoLanguages: GetVideoVariantLanguages_video = {
       id: '529',
       name: [
         {
-          __typename: 'Translation',
+          __typename: 'LanguageName',
           value: 'English',
           primary: true
         }
@@ -253,6 +253,16 @@ export const PosterModal = {
     })
     const settingsTab = await screen.getAllByTestId('posterCreateButton')[0]
     await userEvent.click(settingsTab)
+  }
+}
+
+export const Muted = {
+  ...Template,
+  args: {
+    selectedBlock: {
+      ...videoYouTube,
+      muted: true
+    }
   }
 }
 

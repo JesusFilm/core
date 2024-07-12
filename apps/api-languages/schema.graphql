@@ -1,5 +1,5 @@
 extend schema
-  @link(url: "https://specs.apollo.dev/federation/v2.7", import: ["@key", "@shareable"])
+  @link(url: "https://specs.apollo.dev/federation/v2.7", import: ["@key"])
 
 type AudioPreview {
   language: Language!
@@ -17,8 +17,20 @@ type Country
   flagPngSrc: String
   flagWebpSrc: String
   languages: [Language!]!
-  name(languageId: ID, primary: Boolean): [Translation!]!
-  continent(languageId: ID, primary: Boolean): [Translation!]!
+  name(languageId: ID, primary: Boolean): [CountryName!]!
+  continent(languageId: ID, primary: Boolean): [CountryContinent!]!
+}
+
+type CountryContinent {
+  value: String!
+  primary: Boolean!
+  language: Language!
+}
+
+type CountryName {
+  value: String!
+  primary: Boolean!
+  language: Language!
 }
 
 type Language
@@ -27,13 +39,20 @@ type Language
   id: ID!
   bcp47: String
   iso3: String
-  name(languageId: ID, primary: Boolean): [Translation!]!
+  name(languageId: ID, primary: Boolean): [LanguageName!]!
+  countries: [Country!]!
   audioPreview: AudioPreview!
 }
 
 enum LanguageIdType {
   databaseId
   bcp47
+}
+
+type LanguageName {
+  value: String!
+  primary: Boolean!
+  language: Language!
 }
 
 input LanguagesFilter {
@@ -45,12 +64,4 @@ type Query {
   languages(offset: Int, limit: Int, where: LanguagesFilter): [Language!]!
   country(id: ID!): Country
   countries: [Country!]!
-}
-
-type Translation
-  @shareable
-{
-  value: String!
-  primary: Boolean!
-  language: Language!
 }

@@ -13,13 +13,18 @@ import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplica
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
 import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
 
+import { User } from 'next-firebase-auth'
 import { TeamCreate } from '../../../../__generated__/TeamCreate'
 import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActiveTeamId'
 import { TeamCreateForm } from '../TeamCreateForm'
 
 export const ONBOARDING_TEMPLATE_ID = '9d9ca229-9fb5-4d06-a18c-2d1a4ceba457'
 
-export function TeamOnboarding(): ReactElement {
+interface TeamOnboardingProps {
+  user?: User
+}
+
+export function TeamOnboarding({ user }: TeamOnboardingProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [journeyDuplicate] = useJourneyDuplicateMutation()
   const router = useRouter()
@@ -57,7 +62,11 @@ export function TeamOnboarding(): ReactElement {
   }
 
   return (
-    <TeamCreateForm onSubmit={async (_, __, data) => await handleSubmit(data)}>
+    <TeamCreateForm
+      onSubmit={async (_, __, data) => await handleSubmit(data)}
+      onboarding
+      user={user}
+    >
       {({
         values,
         errors,

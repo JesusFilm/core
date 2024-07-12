@@ -1,6 +1,6 @@
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { render, screen } from '@testing-library/react'
-import { NodeProps, ReactFlowProvider } from 'reactflow'
+import { type NodeProps, ReactFlowProvider } from 'reactflow'
 import { ReferrerNode } from '.'
 import { mockReactFlow } from '../../../../../../../test/mockReactFlow'
 
@@ -33,7 +33,7 @@ describe('ReferrerNode', () => {
   it('should render other sources', () => {
     const nodeProps = {
       data: {
-        property: 'Other sources',
+        property: 'other sources',
         referrers: [
           {
             property: 'Facebook',
@@ -56,7 +56,7 @@ describe('ReferrerNode', () => {
     )
 
     expect(screen.getByTestId('ChevronDownIcon')).toBeInTheDocument()
-    expect(screen.getByText('Other sources')).toBeInTheDocument()
+    expect(screen.getByText('other sources')).toBeInTheDocument()
     expect(screen.getByText(10)).toBeInTheDocument()
   })
 })

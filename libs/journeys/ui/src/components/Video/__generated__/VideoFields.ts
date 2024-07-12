@@ -21,7 +21,7 @@ export interface VideoFields_video_variant {
 }
 
 export interface VideoFields_video_variantLanguages_name {
-  __typename: "Translation";
+  __typename: "LanguageName";
   value: string;
   primary: boolean;
 }
