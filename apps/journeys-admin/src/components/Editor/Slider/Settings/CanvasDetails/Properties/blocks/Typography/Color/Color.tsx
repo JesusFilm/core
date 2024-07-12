@@ -6,7 +6,6 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 
-import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { BlockFields_TypographyBlock as TypographyBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import { TypographyBlockUpdateColor } from '../../../../../../../../../../__generated__/TypographyBlockUpdateColor'
 import { TypographyColor } from '../../../../../../../../../../__generated__/globalTypes'
@@ -31,7 +30,7 @@ export function Color(): ReactElement {
   const [typographyBlockUpdate] = useMutation<TypographyBlockUpdateColor>(
     TYPOGRAPHY_BLOCK_UPDATE_COLOR
   )
-  const { add } = useCommand()
+
   const { journey } = useJourney()
   const { state } = useEditor()
   const selectedBlock = state.selectedBlock as
@@ -40,30 +39,18 @@ export function Color(): ReactElement {
 
   async function handleChange(color: TypographyColor): Promise<void> {
     if (selectedBlock != null && color != null && journey != null) {
-      await add({
-        parameters: {
-          execute: { id: selectedBlock.id, journeyId: journey.id, color },
-          undo: {
-            id: selectedBlock.id,
-            journeyId: journey.id,
-            color: selectedBlock.color
-          }
+      await typographyBlockUpdate({
+        variables: {
+          id: selectedBlock.id,
+          journeyId: journey.id,
+          input: { color }
         },
-        async execute({ id, journeyId, color }) {
-          await typographyBlockUpdate({
-            variables: {
-              id,
-              journeyId,
-              input: { color }
-            },
-            optimisticResponse: {
-              typographyBlockUpdate: {
-                id,
-                color,
-                __typename: 'TypographyBlock'
-              }
-            }
-          })
+        optimisticResponse: {
+          typographyBlockUpdate: {
+            id: selectedBlock.id,
+            color,
+            __typename: 'TypographyBlock'
+          }
         }
       })
     }
