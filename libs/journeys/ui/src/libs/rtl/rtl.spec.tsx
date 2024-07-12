@@ -17,7 +17,7 @@ const language: Language = {
   iso3: 'arb',
   name: [
     {
-      __typename: 'Translation',
+      __typename: 'LanguageName',
       value: 'Arabic, Modern Standard',
       primary: false
     }
