@@ -1,5 +1,6 @@
 import { ReactElement } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
+
 import { useCommand } from '../../../../../../libs/journeys/ui/src/libs/CommandProvider'
 
 interface HotkeysProps {
