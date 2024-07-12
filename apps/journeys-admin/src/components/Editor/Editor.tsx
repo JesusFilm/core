@@ -4,10 +4,12 @@ import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { transformer } from '@core/journeys/ui/transformer'
-import { useFlags } from '@core/shared/ui/FlagsProvider'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
+
+import { useFlags } from '@core/shared/ui/FlagsProvider'
+import { HotkeysProvider } from 'react-hotkeys-hook'
 import { Fab } from './Fab'
 import { Hotkeys } from './Hotkeys'
 import { Slider } from './Slider'
@@ -48,10 +50,12 @@ export function Editor({
           ...initialState
         }}
       >
-        {commands && <Hotkeys />}
-        <Toolbar />
-        <Slider />
-        <Fab variant="mobile" />
+        <HotkeysProvider>
+          {commands && <Hotkeys />}
+          <Toolbar />
+          <Slider />
+          <Fab variant="mobile" />
+        </HotkeysProvider>
       </EditorProvider>
     </JourneyProvider>
   )

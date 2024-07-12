@@ -1,28 +1,33 @@
 import createCache from '@emotion/cache'
 import { CacheProvider } from '@emotion/react'
-import Box from '@mui/material/Box'
 import { styled } from '@mui/material/styles'
-import isFunction from 'lodash/isFunction'
 import {
   ComponentProps,
   ReactElement,
   ReactNode,
+  forwardRef,
+  memo,
   useEffect,
-  useMemo
+  useImperativeHandle,
+  useMemo,
+  useReducer,
+  useRef
 } from 'react'
-import Frame, { FrameContextConsumer } from 'react-frame-component'
+import { createPortal } from 'react-dom'
 import { prefixer } from 'stylis'
 import rtlPlugin from 'stylis-plugin-rtl'
 
 interface ContentProps {
   children: ReactNode
-  dir: string | undefined
   document: Document
 }
 
-function Cache({ children, dir, document }: ContentProps): ReactElement {
+function Content({ children, document }: ContentProps): ReactElement {
   const cache = useMemo(() => {
-    document.head.innerHTML = `<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Open+Sans&family=El+Messiri:wght@400;600;700&display=swap" rel="stylesheet" />`
+    document.head.innerHTML =
+      window.document.head.innerHTML +
+      '<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Open+Sans&family=El+Messiri:wght@400;600;700&display=swap" rel="stylesheet" />, '
+
     return createCache({
       key: 'iframe',
       container: document.head,
@@ -32,47 +37,62 @@ function Cache({ children, dir, document }: ContentProps): ReactElement {
   }, [document])
 
   useEffect(() => {
-    document.dir = dir ?? 'ltr'
     document.body.style.backgroundColor = 'transparent'
-  }, [document, dir])
+  }, [document])
 
-  return (
-    <CacheProvider value={cache}>
-      <Box sx={{ position: 'fixed', top: 0, right: 0, bottom: 0, left: 0 }}>
-        {children}
-      </Box>
-    </CacheProvider>
-  )
+  return <CacheProvider value={cache}>{children}</CacheProvider>
 }
 
-const StyledFrame = styled(Frame)(() => ({
+const StyledFrame = styled('iframe')(() => ({
   border: 0
 }))
 
-interface FrameProps
-  extends Omit<ComponentProps<typeof StyledFrame>, 'children'> {
-  children:
-    | ((props: { window: Window; document: Document }) => ReactNode)
-    | ReactNode
+interface FrameProps extends ComponentProps<typeof StyledFrame> {
+  children: ReactNode
 }
 
-export function FramePortal({
-  children,
-  dir,
-  ...rest
-}: FrameProps): ReactElement {
-  return (
-    <StyledFrame {...rest}>
-      <FrameContextConsumer>
-        {({ window, document }) =>
-          window != null &&
-          document != null && (
-            <Cache dir={dir} document={document}>
-              {isFunction(children) ? children({ window, document }) : children}
-            </Cache>
-          )
-        }
-      </FrameContextConsumer>
-    </StyledFrame>
-  )
-}
+export const FramePortal = memo(
+  forwardRef<HTMLIFrameElement, FrameProps>(function FramePortal(
+    { children, dir, ...rest },
+    ref
+  ): ReactElement {
+    const frameRef = useRef<HTMLIFrameElement>(null)
+    useImperativeHandle(ref, () => frameRef.current as HTMLIFrameElement, [])
+    // If we portal content into the iframe before the load event then that
+    // content is dropped in firefox.
+    const [iframeLoaded, dispatch] = useReducer(() => true, false)
+    const document = frameRef.current?.contentDocument
+    if (document != null) {
+      document.dir = dir ?? ''
+    }
+
+    useEffect(() => {
+      // When we hydrate the iframe then the load event is already dispatched
+      // once the iframe markup is parsed (maybe later but the important part is
+      // that it happens before React can attach event listeners).
+      // We need to check the readyState of the document once the iframe is
+      // mounted and "replay" the missed load event.
+      // See https://github.com/facebook/react/pull/13862 for ongoing effort in
+      // React (though not with iframes in mind).
+      if (
+        frameRef?.current?.contentDocument != null &&
+        frameRef.current.contentDocument.readyState === 'complete' &&
+        !iframeLoaded
+      ) {
+        dispatch()
+      }
+    }, [iframeLoaded])
+
+    return (
+      <>
+        <StyledFrame onLoad={dispatch} ref={frameRef} {...rest} />
+        {iframeLoaded &&
+          document != null &&
+          createPortal(
+            <Content document={document}>{children}</Content>,
+            document.body
+          )}
+      </>
+    )
+  })
+)
