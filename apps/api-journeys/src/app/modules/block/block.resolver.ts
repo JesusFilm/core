@@ -208,34 +208,35 @@ export class BlockResolver {
         extensions: { code: 'FORBIDDEN' }
       })
 
-    return await this.prismaService.$transaction(
-      async (tx) => {
-        const updatedBlock = await tx.block.update({
-          where: { id },
-          data: {
-            deletedAt: null
-          },
-          include: {
-            action: true
-          }
-        })
-        if (updatedBlock.parentOrder != null)
-          await this.blockService.reorderBlock(
-            updatedBlock,
-            updatedBlock.parentOrder,
-            tx
-          )
-        const children: Block[] = await this.blockService.getDescendants(
+    return await this.prismaService.$transaction(async (tx) => {
+      const updatedBlock = await tx.block.update({
+        where: { id },
+        data: {
+          deletedAt: null
+        },
+        include: {
+          action: true
+        }
+      })
+      if (updatedBlock.parentOrder != null)
+        await this.blockService.reorderBlock(
           updatedBlock,
-          [],
+          updatedBlock.parentOrder,
           tx
         )
-        return [updatedBlock, ...children]
-      },
-      {
-        maxWait: 50000, // default: 2000
-        timeout: 100000 // default: 5000
-      }
-    )
+      const blocks = await tx.block.findMany({
+        where: {
+          journeyId: updatedBlock.journeyId,
+          deletedAt: null,
+          NOT: { id: updatedBlock.id }
+        }
+      })
+
+      const children: Block[] = await this.blockService.getDescendants(
+        updatedBlock.id,
+        blocks
+      )
+      return [updatedBlock, ...children]
+    })
   }
 }

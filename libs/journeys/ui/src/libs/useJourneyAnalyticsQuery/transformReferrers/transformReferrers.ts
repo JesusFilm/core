@@ -1,8 +1,8 @@
-import { GetJourneyAnalytics_journeyReferrer as JourneyReferrer } from '@core/journeys/ui/useJourneyAnalyticsQuery/__generated__/GetJourneyAnalytics'
-import { Edge, Node } from 'reactflow'
+import type { GetJourneyAnalytics_journeyReferrer as JourneyReferrer } from '@core/journeys/ui/useJourneyAnalyticsQuery/__generated__/GetJourneyAnalytics'
+import type { Edge, Node } from 'reactflow'
 
 interface OtherSource {
-  property: 'Other sources'
+  property: 'other sources'
   referrers: JourneyReferrer[]
 }
 
@@ -43,7 +43,7 @@ export function transformReferrers(referrers?: JourneyReferrer[]) {
   if (sortedReferrers.length >= 3) {
     if (sortedReferrers.length > 3) {
       sortedReferrers.splice(2, Number.POSITIVE_INFINITY, {
-        property: 'Other sources',
+        property: 'other sources',
         referrers: sortedReferrers.slice(2) as JourneyReferrer[]
       })
     }
