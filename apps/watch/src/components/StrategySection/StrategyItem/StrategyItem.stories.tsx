@@ -6,7 +6,7 @@ import { StrategyItem } from './StrategyItem'
 const StrategyItemStory: Meta<typeof StrategyItem> = {
   ...watchConfig,
   component: StrategyItem,
-  title: 'Watch/Strategy/StrategyItem'
+  title: 'Watch/StrategySection/StrategyItem'
 }
 
 const longDescription =

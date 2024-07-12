@@ -6,7 +6,7 @@ import { StrategyCarousel } from './StrategyCarousel'
 const StrategyCarouselStory: Meta<typeof StrategyCarousel> = {
   ...watchConfig,
   component: StrategyCarousel,
-  title: 'Watch/Strategy/StrategyCarousel'
+  title: 'Watch/StrategySection/StrategyCarousel'
 }
 
 // type Story = StoryObj<ComponentProps<typeof StrategyCarousel> & {}

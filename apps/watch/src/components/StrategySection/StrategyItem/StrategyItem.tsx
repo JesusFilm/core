@@ -11,6 +11,7 @@ interface StrategyItem {
   title: string
   description: string
   id: string
+  // TODO: add image and wordpress url ?
 }
 interface StrategyItemProps {
   item?: StrategyItem
@@ -27,6 +28,7 @@ export function StrategyItem({
     // photo/image
     // title
     // description
+    // url to point to wordpress?
 
     <Card
       data-testid="StrategyCard"

@@ -13,7 +13,7 @@ import { StrategyItem } from '../StrategyItem'
 const longDescription =
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum'
 
-const items = [
+const testItems = [
   {
     title: 'Title',
     description: longDescription,
@@ -66,6 +66,10 @@ const items = [
 // Team description
 // items array
 
+interface StrategyCarouselProps<T> {
+  items: Array<T & { id: string }>
+}
+
 export function StrategyCarousel(): ReactElement {
   const teamTitle = 'Training Strategies'
   const teamDescription =
@@ -101,7 +105,7 @@ export function StrategyCarousel(): ReactElement {
   return (
     <>
       <ContentCarousel
-        items={items}
+        items={testItems}
         renderItem={(itemProps) => <StrategyItem {...itemProps} />}
         breakpoints={swiperBreakpoints}
       />
