@@ -6,15 +6,10 @@ import { useTranslation } from 'next-i18next'
 import Image from 'next/image'
 import NextLink from 'next/link'
 import { ReactElement } from 'react'
+import { StrategyCarouselItemProps } from '../StrategySection'
 
-interface StrategyItem {
-  title: string
-  description: string
-  id: string
-  // TODO: add image and wordpress url ?
-}
 interface StrategyItemProps {
-  item?: StrategyItem
+  item?: StrategyCarouselItemProps
   priority?: boolean
 }
 
@@ -29,6 +24,12 @@ export function StrategyItem({
     // title
     // description
     // url to point to wordpress?
+
+    // object-id
+    // posttitle
+    // content (description)
+    // image.thumbnail.url (image url)
+    // permalink (link to use on nextLink to wrap)
 
     <Card
       data-testid="StrategyCard"
@@ -84,7 +85,7 @@ export function StrategyItem({
           data-testid="StrategyImage"
           className="MuiImageBackground-root"
           src="https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920"
-          alt="random image from unsplash"
+          alt="random image from unsplash" // use title
           // width={320}
           // height={160}
           fill

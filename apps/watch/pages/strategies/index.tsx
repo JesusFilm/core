@@ -15,10 +15,7 @@ function StrategiesPage(): ReactElement {
   return (
     <PageWrapper>
       <Box sx={{ height: 50 }} />
-      <StrategySection
-        title="Training Strategies"
-        description="Training Strategies Description"
-      />
+      <StrategySection items={[]} />
     </PageWrapper>
   )
 }

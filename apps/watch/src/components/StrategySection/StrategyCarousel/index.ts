@@ -1,1 +1,0 @@
-export { StrategyCarousel } from './StrategyCarousel'
