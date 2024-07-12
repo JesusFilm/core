@@ -55,7 +55,7 @@ const chapter1: VideoContentFields = {
     language: {
       __typename: 'Language',
       id: '529',
-      name: [{ __typename: 'Translation', value: 'English', primary: true }]
+      name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
     },
     slug: 'the-beginning/english',
     subtitleCount: 1

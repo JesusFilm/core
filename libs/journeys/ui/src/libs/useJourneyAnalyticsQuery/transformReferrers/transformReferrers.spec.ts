@@ -31,24 +31,24 @@ describe('transformReferrers', () => {
           id: 'Facebook',
           type: 'Referrer',
           data: referrers[0],
-          position: { x: -600, y: -18 },
+          position: { x: -600, y: -46 },
           draggable: false
         },
         {
           id: 'Google',
           type: 'Referrer',
           data: referrers[2],
-          position: { x: -600, y: 24 },
+          position: { x: -600, y: 19 },
           draggable: false
         },
         {
-          id: 'Other sources',
+          id: 'other sources',
           type: 'Referrer',
           data: {
-            property: 'Other sources',
+            property: 'other sources',
             referrers: [referrers[1], referrers[3]]
           },
-          position: { x: -600, y: 66 },
+          position: { x: -600, y: 84 },
           draggable: false
         }
       ],
@@ -68,8 +68,8 @@ describe('transformReferrers', () => {
           updatable: false
         },
         {
-          id: 'Other sources->SocialPreview',
-          source: 'Other sources',
+          id: 'other sources->SocialPreview',
+          source: 'other sources',
           target: 'SocialPreview',
           type: 'Referrer',
           updatable: false
@@ -103,21 +103,21 @@ describe('transformReferrers', () => {
           id: 'Facebook',
           type: 'Referrer',
           data: referrers[0],
-          position: { x: -600, y: -18 },
+          position: { x: -600, y: -46 },
           draggable: false
         },
         {
           id: 'Google',
           type: 'Referrer',
           data: referrers[2],
-          position: { x: -600, y: 24 },
+          position: { x: -600, y: 19 },
           draggable: false
         },
         {
           id: 'Direct / None',
           type: 'Referrer',
           data: referrers[1],
-          position: { x: -600, y: 66 },
+          position: { x: -600, y: 84 },
           draggable: false
         }
       ],
@@ -167,14 +167,14 @@ describe('transformReferrers', () => {
           id: 'Facebook',
           type: 'Referrer',
           data: referrers[0],
-          position: { x: -600, y: -4 },
+          position: { x: -600, y: -9 },
           draggable: false
         },
         {
           id: 'Direct / None',
           type: 'Referrer',
           data: referrers[1],
-          position: { x: -600, y: 52 },
+          position: { x: -600, y: 47 },
           draggable: false
         }
       ],
@@ -212,7 +212,7 @@ describe('transformReferrers', () => {
           id: 'Direct / None',
           type: 'Referrer',
           data: referrers[0],
-          position: { x: -600, y: 24 },
+          position: { x: -600, y: 19 },
           draggable: false
         }
       ],

@@ -32,12 +32,12 @@ describe('TemplateListItem', () => {
         id: '529',
         name: [
           {
-            __typename: 'Translation',
+            __typename: 'LanguageName',
             value: 'English',
             primary: true
           },
           {
-            __typename: 'Translation',
+            __typename: 'LanguageName',
             value: 'English',
             primary: false
           }
