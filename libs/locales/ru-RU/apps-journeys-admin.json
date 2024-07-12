@@ -443,6 +443,8 @@
   "Title": "Заголовок",
   "Recommended length: 5 words": "Рекомендуемая длина: 5 слов",
   "Analytics": "Аналитика",
+  "Redo": "Redo",
+  "Undo": "Отменить",
   "Copy Link": "Копировать ссылку",
   "Create Template": "Создай шаблон",
   "Field update failed. Reload the page or try again.": "Обновление поля не удалось. ",
