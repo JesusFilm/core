@@ -399,6 +399,7 @@
   "Start video automatically when card appears": "Start video automatically when card appears",
   "Muted": "Muted",
   "Video always muted on the first card": "Video always muted on the first card",
+  "Some mobile browsers may override this choice and default the video to play muted when autoplay is enabled": "Some mobile browsers may override this choice and default the video to play muted when autoplay is enabled",
   "Select Video": "Select Video",
   "Custom Video": "Custom Video",
   "{{ language }} ({{ nativeLanguage }})": "{{ language }} ({{ nativeLanguage }})",
