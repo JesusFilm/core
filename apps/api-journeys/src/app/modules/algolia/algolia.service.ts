@@ -4,11 +4,13 @@ import algoliasearch from 'algoliasearch'
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client'
 import { GetLanguageQuery, GetTagsQuery } from '../../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
+import { Prisma } from '.prisma/api-journeys-client'
 
 export const GET_TAGS = gql`
   query GetTags {
     tags {
       id
+      parentId
       name {
         value
         primary
@@ -29,6 +31,12 @@ export const GET_LANGUAGE = gql`
   }
 `
 
+type JourneyTags = Prisma.JourneyGetPayload<{
+  include: {
+    journeyTags: true
+  }
+}>
+
 @Injectable()
 export class AlgoliaService {
   constructor(private readonly prismaService: PrismaService) {}
@@ -44,12 +52,30 @@ export class AlgoliaService {
     return data
   }
 
-  processTags(tagsData: GetTagsQuery) {
-    const map: Record<string, string> = {}
+  processTags(tagsData: GetTagsQuery, journeyTags: JourneyTags['journeyTags']) {
+    const tagsMap: Record<string, string> = {}
+    const parentToChildrenMap: Record<string, string[]> = {}
+
     tagsData.tags.forEach((tag) => {
-      map[tag.id] = tag.name.find((name) => name.primary)?.value ?? ''
+      tagsMap[tag.id] = tag.name.find((name) => name.primary)?.value ?? ''
     })
-    return map
+
+    const filteredTags = tagsData.tags.filter((tag) =>
+      journeyTags.find((journeyTag) => journeyTag.tagId === tag.id)
+    )
+
+    filteredTags.forEach((tag) => {
+      const childName = tagsMap[tag.id]
+      const parentName = tag.parentId != null ? tagsMap[tag.parentId] : ''
+      if (childName !== '' && parentName !== '') {
+        if (!parentToChildrenMap[parentName]) {
+          parentToChildrenMap[parentName] = []
+        }
+        parentToChildrenMap[parentName].push(childName)
+      }
+    })
+
+    return parentToChildrenMap
   }
 
   async getLanguages() {
@@ -81,7 +107,6 @@ export class AlgoliaService {
 
     console.log('getting tags from gateway...')
     const tagsData = await this.getTags()
-    const tagsMap = this.processTags(tagsData)
 
     console.log('getting languages from gateway...')
     const languagesData = await this.getLanguages()
@@ -108,6 +133,7 @@ export class AlgoliaService {
       if (journeys.length === 0) break
 
       const transformedJourneys = journeys.map((journey) => {
+        const tags = this.processTags(tagsData, journey.journeyTags)
         return {
           objectID: journey.id,
           title: journey.title,
@@ -117,9 +143,9 @@ export class AlgoliaService {
             src: journey.primaryImageBlock?.src,
             alt: journey.primaryImageBlock?.alt
           },
-          language: languagesMap[journey.languageId],
           featuredAt: journey.featuredAt,
-          tags: journey.journeyTags.map((tag) => tagsMap[tag.tagId])
+          language: languagesMap[journey.languageId],
+          tags
         }
       })
 

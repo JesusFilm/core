@@ -33,27 +33,40 @@ const mockAlgoliaSearch = algoliasearch as jest.MockedFunction<
 const tags = [
   {
     id: 'tagId1',
+    parentId: 'parentId1',
     name: [
       {
-        value: 'Addiction',
+        value: 'Tag 1',
         primary: true
       }
     ]
   },
   {
     id: 'tagId2',
+    parentId: 'parentId1',
     name: [
       {
-        value: 'Acceptance',
+        value: 'Tag 2',
         primary: true
       }
     ]
   },
   {
     id: 'tagId3',
+    parentId: 'parentId1',
     name: [
       {
-        value: 'Adults',
+        value: 'Tag 3',
+        primary: true
+      }
+    ]
+  },
+  {
+    id: 'parentId1',
+    parentId: null,
+    name: [
+      {
+        value: 'Parent Tag',
         primary: true
       }
     ]
@@ -195,7 +208,9 @@ describe('AlgoliaService', () => {
             src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public'
           },
           language: 'English',
-          tags: ['Addiction', 'Acceptance', 'Adults'],
+          tags: {
+            'Parent Tag': ['Tag 1', 'Tag 2', 'Tag 3']
+          },
           title: 'title'
         }
       ])

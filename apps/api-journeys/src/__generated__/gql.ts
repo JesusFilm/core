@@ -13,7 +13,7 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Therefore it is highly recommended to use the babel or swc plugin for production.
  */
 const documents = {
-    "\n  query GetTags {\n    tags {\n      id\n      name {\n        value\n        primary\n      }\n    }\n  }\n": types.GetTagsDocument,
+    "\n  query GetTags {\n    tags {\n      id\n      parentId\n      name {\n        value\n        primary\n      }\n    }\n  }\n": types.GetTagsDocument,
     "\n  query GetLanguage($languageId: ID) {\n    languages(limit: 5000) {\n      id\n      name(languageId: $languageId, primary: true) {\n        value\n        primary\n      }\n    }\n  }\n": types.GetLanguageDocument,
     "\n  query GetUser($userId: ID!) {\n    user(id: $userId) {\n      id\n      email\n      firstName\n      imageUrl\n    }\n  }\n": types.GetUserDocument,
     "\n  query GetUserByEmail($email: String!) {\n    userByEmail(email: $email) {\n      id\n      email\n      firstName\n      imageUrl\n    }\n  }\n": types.GetUserByEmailDocument,
@@ -39,7 +39,7 @@ export function gql(source: string): unknown;
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "\n  query GetTags {\n    tags {\n      id\n      name {\n        value\n        primary\n      }\n    }\n  }\n"): (typeof documents)["\n  query GetTags {\n    tags {\n      id\n      name {\n        value\n        primary\n      }\n    }\n  }\n"];
+export function gql(source: "\n  query GetTags {\n    tags {\n      id\n      parentId\n      name {\n        value\n        primary\n      }\n    }\n  }\n"): (typeof documents)["\n  query GetTags {\n    tags {\n      id\n      parentId\n      name {\n        value\n        primary\n      }\n    }\n  }\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
