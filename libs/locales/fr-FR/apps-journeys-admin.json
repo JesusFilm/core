@@ -443,6 +443,8 @@
   "Title": "Titre",
   "Recommended length: 5 words": "Longueur recommandée : 5 mots",
   "Analytics": "Analyse",
+  "Redo": "Refaire",
+  "Undo": "Annuler",
   "Copy Link": "Copier le lien",
   "Create Template": "Créer un modèle",
   "Field update failed. Reload the page or try again.": "La mise à jour du champ a échoué. Recharge la page ou réessaie.",
