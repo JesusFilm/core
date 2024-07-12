@@ -22,7 +22,7 @@ export function CommandUndoItem({
   }
 
   return (
-    <Box data-testid="CommandItem">
+    <Box data-testid="CommandUndoItem">
       <Item
         variant={variant}
         label={t('Undo')}
