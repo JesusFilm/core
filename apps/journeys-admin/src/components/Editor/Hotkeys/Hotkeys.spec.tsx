@@ -1,11 +1,12 @@
+import { renderHook, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { ReactNode } from 'react'
+
 import {
   Command,
   CommandProvider,
   useCommand
 } from '@core/journeys/ui/CommandProvider'
-import { renderHook } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { ReactNode } from 'react'
 
 import { Hotkeys } from './Hotkeys'
 
@@ -13,9 +14,10 @@ describe('Hotkeys', () => {
   it('should undo command when mod+z is pressed', async () => {
     const command0: Command = {
       parameters: { execute: { arg1: 'execute' }, undo: { arg1: 'undo' } },
-      execute: jest.fn(),
+      execute: () => {},
       undo: jest.fn()
     }
+
     const wrapper = ({ children }: { children: ReactNode }): ReactNode => (
       <CommandProvider>
         <Hotkeys />
@@ -26,7 +28,9 @@ describe('Hotkeys', () => {
     const { result } = renderHook(() => useCommand(), {
       wrapper
     })
+
     result.current.add(command0)
+    await waitFor(() => expect(result.current.state.commands.length).toBe(1))
     await userEvent.keyboard('{Meta>}Z{/Meta}')
     expect(command0.undo).toHaveBeenCalledWith({ arg1: 'undo' })
   })
@@ -38,6 +42,7 @@ describe('Hotkeys', () => {
       undo: () => {},
       redo: jest.fn()
     }
+
     const wrapper = ({ children }: { children: ReactNode }): ReactNode => (
       <CommandProvider>
         <Hotkeys />
@@ -50,7 +55,8 @@ describe('Hotkeys', () => {
     })
 
     result.current.add(command0)
-    await userEvent.keyboard('{Meta>}Z{/Meta}')
+    await waitFor(() => expect(result.current.state.commands.length).toBe(1))
+    await waitFor(() => result.current.undo())
     await userEvent.keyboard('{Meta>}{Shift>}Z{/Shift}{/Meta}')
     expect(command0.redo).toHaveBeenCalledWith({ arg1: 'execute' })
   })
