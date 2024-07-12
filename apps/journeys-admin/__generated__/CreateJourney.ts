@@ -10,7 +10,7 @@ import { ThemeName, ThemeMode, JourneyStatus } from "./globalTypes";
 // ====================================================
 
 export interface CreateJourney_journeyCreate_language_name {
-  __typename: "Translation";
+  __typename: "LanguageName";
   value: string;
   primary: boolean;
 }

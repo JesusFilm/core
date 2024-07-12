@@ -29,6 +29,14 @@ interface Action
   gtmEventName: String
 }
 
+type AudioPreview
+  @join__type(graph: LANGUAGES)
+{
+  language: Language!
+  value: String!
+  size: Int!
+}
+
 interface Block
   @join__type(graph: JOURNEYS)
 {
@@ -342,8 +350,24 @@ type Country
   flagPngSrc: String
   flagWebpSrc: String
   languages: [Language!]!
-  name(languageId: ID, primary: Boolean): [Translation!]!
-  continent(languageId: ID, primary: Boolean): [Translation!]!
+  name(languageId: ID, primary: Boolean): [CountryName!]!
+  continent(languageId: ID, primary: Boolean): [CountryContinent!]!
+}
+
+type CountryContinent
+  @join__type(graph: LANGUAGES)
+{
+  value: String!
+  primary: Boolean!
+  language: Language!
+}
+
+type CountryName
+  @join__type(graph: LANGUAGES)
+{
+  value: String!
+  primary: Boolean!
+  language: Language!
 }
 
 input CreateVerificationRequestInput
@@ -1209,7 +1233,9 @@ type Language
   id: ID!
   bcp47: String @join__field(graph: LANGUAGES)
   iso3: String @join__field(graph: LANGUAGES)
-  name(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: LANGUAGES)
+  name(languageId: ID, primary: Boolean): [LanguageName!]! @join__field(graph: LANGUAGES)
+  countries: [Country!]! @join__field(graph: LANGUAGES)
+  audioPreview: AudioPreview! @join__field(graph: LANGUAGES)
 }
 
 enum LanguageIdType
@@ -1217,6 +1243,14 @@ enum LanguageIdType
 {
   databaseId @join__enumValue(graph: LANGUAGES)
   bcp47 @join__enumValue(graph: LANGUAGES)
+}
+
+type LanguageName
+  @join__type(graph: LANGUAGES)
+{
+  value: String!
+  primary: Boolean!
+  language: Language!
 }
 
 input LanguagesFilter
@@ -1364,6 +1398,9 @@ type Mutation
     """drop this parameter after merging teams"""
     journeyId: ID
   ): [Block!]! @join__field(graph: JOURNEYS)
+
+  """blockRestore is used for redo/undo"""
+  blockRestore(id: ID!): [Block!]! @join__field(graph: JOURNEYS)
   buttonBlockCreate(input: ButtonBlockCreateInput!): ButtonBlock! @join__field(graph: JOURNEYS)
   buttonBlockUpdate(
     id: ID!
@@ -2509,7 +2546,6 @@ enum ThemeName
 
 type Translation
   @join__type(graph: JOURNEYS)
-  @join__type(graph: LANGUAGES)
   @join__type(graph: MEDIA)
   @join__type(graph: TAGS)
   @join__type(graph: USERS)
