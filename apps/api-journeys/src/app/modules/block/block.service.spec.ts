@@ -768,12 +768,23 @@ describe('BlockService', () => {
 
   describe('getDescendants', () => {
     it('should get descendants of a block', async () => {
-      prismaService.block.findMany.mockResolvedValueOnce([buttonBlock])
-      prismaService.block.findMany.mockResolvedValueOnce([iconBlock])
-      prismaService.block.findMany.mockResolvedValueOnce([])
-      expect(
-        await service.getDescendants(cardBlock, [], prismaService)
-      ).toEqual([buttonBlock, iconBlock])
+      const blocks = [
+        stepBlock,
+        videoBlock,
+        imageBlock,
+        cardBlock,
+        typographyBlock,
+        buttonBlock,
+        iconBlock
+      ]
+      expect(await service.getDescendants(stepBlock.id, blocks)).toEqual([
+        cardBlock,
+        videoBlock,
+        imageBlock,
+        typographyBlock,
+        buttonBlock,
+        iconBlock
+      ])
     })
   })
 })

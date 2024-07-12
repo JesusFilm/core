@@ -224,10 +224,17 @@ export class BlockResolver {
           updatedBlock.parentOrder,
           tx
         )
+      const blocks = await tx.block.findMany({
+        where: {
+          journeyId: updatedBlock.journeyId,
+          deletedAt: null,
+          NOT: { id: updatedBlock.id }
+        }
+      })
+
       const children: Block[] = await this.blockService.getDescendants(
-        updatedBlock,
-        [],
-        tx
+        updatedBlock.id,
+        blocks
       )
       return [updatedBlock, ...children]
     })

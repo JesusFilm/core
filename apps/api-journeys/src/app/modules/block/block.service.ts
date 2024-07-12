@@ -376,34 +376,18 @@ export class BlockService {
     )
   }
   async getDescendants(
-    block: Block,
-    accum: Block[] = [],
-    tx: Prisma.TransactionClient = this.prismaService
+    parentBlockId: string,
+    blocks: Block[],
+    result: Block[] = []
   ): Promise<Block[]> {
-    const journey = await tx.journey.findUnique({
-      where: { id: block.journeyId },
-      include: { blocks: true }
+    blocks.forEach((childBlock) => {
+      if (childBlock.parentBlockId === parentBlockId) {
+        result.push(childBlock)
+        this.getDescendants(childBlock.id, blocks, result)
+      }
     })
 
-    if (journey == null) {
-      throw new GraphQLError('journey not found', {
-        extensions: { code: 'NOT_FOUND' }
-      })
-    }
-    const recurse = (block: Block, accum: Block[]): Block[] => {
-      const children = journey.blocks.filter(
-        (journeyBlock) => journeyBlock.parentBlockId === block.id
-      )
-      if (children.length > 0) {
-        children.forEach((childBlock) => {
-          accum.push(childBlock)
-          recurse(childBlock, accum)
-        })
-      }
-      return accum
-    }
-    recurse(block, accum)
-    return accum
+    return result
   }
 
   @ToPostgresql()

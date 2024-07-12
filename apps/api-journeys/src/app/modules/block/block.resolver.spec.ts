@@ -272,6 +272,7 @@ describe('BlockResolver', () => {
     it('should restore block', async () => {
       prismaService.block.findUnique.mockResolvedValue(blockWithUserTeam)
       prismaService.block.update.mockResolvedValue(block)
+      prismaService.block.findMany.mockResolvedValue([block, block])
       await resolver.blockRestore('1', ability)
       expect(prismaService.block.update).toHaveBeenCalledWith({
         where: { id: '1' },
@@ -287,11 +288,17 @@ describe('BlockResolver', () => {
         block.parentOrder,
         prismaService
       )
-      expect(service.getDescendants).toHaveBeenCalledWith(
+      expect(prismaService.block.findMany).toHaveBeenCalledWith({
+        where: {
+          journeyId: block.journeyId,
+          deletedAt: null,
+          NOT: { id: block.id }
+        }
+      })
+      expect(service.getDescendants).toHaveBeenCalledWith(block.id, [
         block,
-        [],
-        prismaService
-      )
+        block
+      ])
     })
 
     it('should throw error if block not found', async () => {
