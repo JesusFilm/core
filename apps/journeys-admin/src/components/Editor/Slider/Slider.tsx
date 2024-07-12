@@ -89,7 +89,7 @@ export function Slider(): ReactElement {
       centeredSlides: true,
       centeredSlidesBounds: true
     },
-    [breakpoints.values.sm]: {
+    [breakpoints.values.md]: {
       direction: 'horizontal',
       centeredSlides: false,
       centeredSlidesBounds: false
@@ -171,7 +171,7 @@ export function Slider(): ReactElement {
           cursor: 'pointer',
           display: {
             xs: 'flex',
-            sm: 'none'
+            md: 'none'
           },
           alignItems: 'center',
           justifyContent: 'center',
@@ -206,7 +206,7 @@ export function Slider(): ReactElement {
           cursor: 'pointer',
           display: {
             xs: 'none',
-            sm: 'flex'
+            md: 'flex'
           },
           alignItems: 'center',
           transition: (theme) =>
@@ -245,20 +245,20 @@ export function Slider(): ReactElement {
       <StyledSwiperSlide
         className="swiper-no-swiping"
         sx={{
-          p: { xs: 0, sm: 4 },
-          width: { xs: '100%', sm: 'calc(100% - 408px)' },
+          p: { xs: 0, md: 4 },
+          width: { xs: '100%', md: 'calc(100% - 408px)' },
           height: {
             xs: `calc(100svh - ${EDIT_TOOLBAR_HEIGHT}px - 50px)`,
-            sm: '100%'
+            md: '100%'
           }
         }}
       >
         <Box
           sx={{
             borderRadius: 4,
-            borderTopLeftRadius: { xs: 0, sm: 16 },
-            borderTopRightRadius: { xs: 0, sm: 16 },
-            border: (theme) => ({ sm: `1px solid ${theme.palette.divider}` }),
+            borderTopLeftRadius: { xs: 0, md: 16 },
+            borderTopRightRadius: { xs: 0, md: 16 },
+            border: (theme) => ({ md: `1px solid ${theme.palette.divider}` }),
             borderBottom: (theme) => ({
               xs: `1px solid ${theme.palette.divider}`
             }),
@@ -273,15 +273,15 @@ export function Slider(): ReactElement {
       </StyledSwiperSlide>
       <StyledSwiperSlide
         sx={{
-          p: { xs: 0, sm: 4 },
-          width: { xs: '100%', sm: 'calc(100% - 120px - 360px)' },
+          p: { xs: 0, md: 4 },
+          width: { xs: '100%', md: 'calc(100% - 120px - 360px)' },
           height: {
             xs: `calc(100svh - ${EDIT_TOOLBAR_HEIGHT}px - 100px)`,
-            sm: '100%'
+            md: '100%'
           },
           display: 'flex',
-          flexDirection: { xs: 'column', sm: 'row' },
-          justifyContent: { sm: 'space-between' },
+          flexDirection: { xs: 'column', md: 'row' },
+          justifyContent: { md: 'space-between' },
           position: 'relative'
         }}
       >
@@ -290,7 +290,7 @@ export function Slider(): ReactElement {
           sx={{
             display: {
               xs: 'flex',
-              sm: 'none'
+              md: 'none'
             },
             alignItems: 'center',
             justifyContent: 'center',
@@ -312,14 +312,14 @@ export function Slider(): ReactElement {
       </StyledSwiperSlide>
       <StyledSwiperSlide
         sx={{
-          p: { xs: 0, sm: 4 },
+          p: { xs: 0, md: 4 },
           width: (theme) => ({
             xs: '100%',
-            sm: DRAWER_WIDTH + Number.parseInt(theme.spacing(8)) // 328 DRAWER_WIDTH + 16px * 2 (padding L & R)
+            md: DRAWER_WIDTH + Number.parseInt(theme.spacing(8)) // 328 DRAWER_WIDTH + 16px * 2 (padding L & R)
           }),
           height: {
             xs: `calc(100svh - ${EDIT_TOOLBAR_HEIGHT}px - 50px)`,
-            sm: '100%'
+            md: '100%'
           }
         }}
       >
