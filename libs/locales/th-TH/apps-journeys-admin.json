@@ -443,6 +443,8 @@
   "Title": "หัวข้อ",
   "Recommended length: 5 words": "ความยาวแนะนำ: 5 คำ",
   "Analytics": "การวิเคราะห์",
+  "Redo": "ทำอีกครั้ง",
+  "Undo": "เลิกทำ",
   "Copy Link": "คัดลอกลิงก์",
   "Create Template": "สร้างเทมเพลต",
   "Field update failed. Reload the page or try again.": "การอัพเดตฟิลด์ล้มเหลว โปรดรีโหลดหรือลองอีกครั้ง",
