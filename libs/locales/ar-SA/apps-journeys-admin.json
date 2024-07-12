@@ -443,6 +443,8 @@
   "Title": "العنوان",
   "Recommended length: 5 words": "الطول الموصى به: 5 كلمات",
   "Analytics": "التحليلات",
+  "Redo": "Redo",
+  "Undo": "Undo",
   "Copy Link": "نسخ الرابط",
   "Create Template": "إنشاء قالب",
   "Field update failed. Reload the page or try again.": "فشل تحديث الحقل. أعد تحميل الصفحة أو حاول مرة أخرى.",
