@@ -1,7 +1,9 @@
 import { z } from 'zod'
-import get from 'lodash/get'
+
+import { Prisma } from '.prisma/api-languages-client'
 import { prisma } from '../../lib/prisma'
-import { getCurrentTimeStamp, getRowsFromTable } from '../bigquery'
+import { parseMany, processTable } from '../bigquery'
+import { parse } from '../bigquery'
 
 const audioPreviewSchema = z.object({
   languageId: z.number().transform(String),
@@ -12,53 +14,44 @@ const audioPreviewSchema = z.object({
   updatedAt: z.date()
 })
 
-type AudioPreview = z.infer<typeof audioPreviewSchema>
+const bigQueryTableName =
+  'jfp-data-warehouse.jfp_mmdb_prod.core_audioPreview_arclight_data'
 
-export async function importAudioPreview(
-  existingLanguageIds: string[]
-): Promise<void> {
-  const bigQueryTableName = ''
-  const importTime = await prisma.importTimes.findUnique({
-    where: { modelName: bigQueryTableName }
-  })
-  const updateTime = await getCurrentTimeStamp()
-  for await (const row of getRowsFromTable(
-    bigQueryTableName,
-    importTime?.lastImport,
-    true
-  )) {
-    try {
-      const parser = audioPreviewSchema.safeParse(row)
-      if (!parser.success) {
-        throw new Error(
-          `row does not match schema: ${
-            get(row, 'id') ?? 'unknownId'
-          }\n${JSON.stringify(row, null, 2)}`
-        )
-      }
-      if (!existingLanguageIds.includes(parser.data.languageId))
-        throw new Error(`Language with id ${parser.data.languageId} not found`)
-      await prisma.audioPreview.upsert({
-        where: {
-          languageId: parser.data.languageId
-        },
-        update: parser.data,
-        create: parser.data
-      })
-    } catch (error) {
-      errors.push({
-        bigQueryTableName,
-        id: get(row, 'id') ?? get(row, 'videoId'),
-        message: error.message
-      })
-    }
-  }
-  await prisma.importTimes.upsert({
-    where: { modelName: bigQueryTableName },
-    create: {
-      modelName: bigQueryTableName,
-      lastImport: updateTime
+let existingLanguageIds: string[]
+
+export async function importAudioPreview(languageIds: string[]): Promise<void> {
+  existingLanguageIds = languageIds
+
+  await processTable(bigQueryTableName, importOne, importMany, true)
+}
+
+async function importOne(row: unknown): Promise<void> {
+  const data = parse<Prisma.AudioPreviewUncheckedCreateInput>(
+    audioPreviewSchema,
+    row
+  )
+  if (!existingLanguageIds.includes(data.languageId))
+    throw new Error(`Language with id ${data.languageId} not found`)
+
+  await prisma.audioPreview.upsert({
+    where: {
+      languageId: data.languageId
     },
-    update: { lastImport: updateTime }
+    update: data,
+    create: data
   })
+}
+
+async function importMany(rows: unknown[]): Promise<void> {
+  const { data, inValidRowIds } =
+    parseMany<Prisma.AudioPreviewUncheckedCreateInput>(audioPreviewSchema, rows)
+  await prisma.audioPreview.createMany({
+    data: data.filter(({ languageId }) =>
+      existingLanguageIds.includes(languageId)
+    ),
+    skipDuplicates: true
+  })
+  if (data.length !== rows.length) {
+    throw new Error(`some rows do not match schema: ${inValidRowIds.join(',')}`)
+  }
 }
