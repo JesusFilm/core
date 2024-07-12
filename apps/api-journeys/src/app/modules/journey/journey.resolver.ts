@@ -908,7 +908,8 @@ export class JourneyResolver {
   @FromPostgresql()
   async blocks(@Parent() journey: Journey): Promise<Block[]> {
     const filter: Prisma.BlockWhereInput = {
-      journeyId: journey.id
+      journeyId: journey.id,
+      deletedAt: null
     }
     const idNotIn: string[] = []
     if (journey.primaryImageBlockId != null) {
@@ -920,11 +921,13 @@ export class JourneyResolver {
     if (idNotIn.length > 0) {
       filter.id = { notIn: idNotIn }
     }
-    return await this.prismaService.block.findMany({
+    const res = await this.prismaService.block.findMany({
       where: filter,
       orderBy: { parentOrder: 'asc' },
       include: { action: true }
     })
+
+    return await this.blockService.removeDescendantsOfDeletedBlocks(res)
   }
 
   @ResolveField()
