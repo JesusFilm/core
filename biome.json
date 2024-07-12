@@ -4,7 +4,7 @@
     "ignore": [
       "__generated__",
       "schema.graphql",
-      ".storybook", 
+      ".storybook",
       "package-lock.json"
     ]
   },
