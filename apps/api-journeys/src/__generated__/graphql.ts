@@ -1039,6 +1039,8 @@ export type Mutation = {
   /** blockDuplicate returns the updated block, it's children and sibling blocks on successful duplicate */
   blockDuplicate: Array<Block>;
   blockOrderUpdate: Array<Block>;
+  /** blockRestore is used for redo/undo */
+  blockRestore: Array<Block>;
   blockUpdateEmailAction: EmailAction;
   blockUpdateLinkAction: LinkAction;
   blockUpdateNavigateToBlockAction: NavigateToBlockAction;
@@ -1183,6 +1185,11 @@ export type MutationBlockOrderUpdateArgs = {
   id: Scalars['ID']['input'];
   journeyId?: InputMaybe<Scalars['ID']['input']>;
   parentOrder: Scalars['Int']['input'];
+};
+
+
+export type MutationBlockRestoreArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
