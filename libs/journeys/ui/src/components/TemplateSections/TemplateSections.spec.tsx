@@ -32,7 +32,7 @@ describe('TemplateSections', () => {
       id: '529',
       name: [
         {
-          __typename: 'Translation',
+          __typename: 'LanguageName',
           value: 'English',
           primary: true
         }
@@ -219,12 +219,12 @@ describe('TemplateSections', () => {
               id: '5441',
               name: [
                 {
-                  __typename: 'Translation',
+                  __typename: 'LanguageName',
                   value: 'Achi, Rabinal',
                   primary: true
                 },
                 {
-                  __typename: 'Translation',
+                  __typename: 'LanguageName',
                   value: 'Achi, Rabinal',
                   primary: false
                 }

@@ -184,11 +184,10 @@ enum ButtonVariant
 }
 
 enum CacheControlScope
-  @join__type(graph: LANGUAGES)
   @join__type(graph: VIDEOS)
 {
-  PUBLIC @join__enumValue(graph: LANGUAGES) @join__enumValue(graph: VIDEOS)
-  PRIVATE @join__enumValue(graph: LANGUAGES) @join__enumValue(graph: VIDEOS)
+  PUBLIC @join__enumValue(graph: VIDEOS)
+  PRIVATE @join__enumValue(graph: VIDEOS)
 }
 
 type CardBlock implements Block
@@ -337,14 +336,30 @@ type Country
   @join__type(graph: LANGUAGES, key: "id")
 {
   id: ID!
-  name(languageId: ID, primary: Boolean): [Translation!]!
   population: Int
-  continent(languageId: ID, primary: Boolean): [Translation!]!
-  languages: [Language!]!
   latitude: Float
   longitude: Float
   flagPngSrc: String
   flagWebpSrc: String
+  languages: [Language!]!
+  name(languageId: ID, primary: Boolean): [CountryName!]!
+  continent(languageId: ID, primary: Boolean): [CountryContinent!]!
+}
+
+type CountryContinent
+  @join__type(graph: LANGUAGES)
+{
+  value: String!
+  primary: Boolean!
+  language: Language!
+}
+
+type CountryName
+  @join__type(graph: LANGUAGES)
+{
+  value: String!
+  primary: Boolean!
+  language: Language!
 }
 
 input CreateVerificationRequestInput
@@ -1210,7 +1225,8 @@ type Language
   id: ID!
   bcp47: String @join__field(graph: LANGUAGES)
   iso3: String @join__field(graph: LANGUAGES)
-  name(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: LANGUAGES)
+  name(languageId: ID, primary: Boolean): [LanguageName!]! @join__field(graph: LANGUAGES)
+  countries: [Country!]! @join__field(graph: LANGUAGES)
 }
 
 enum LanguageIdType
@@ -1218,6 +1234,14 @@ enum LanguageIdType
 {
   databaseId @join__enumValue(graph: LANGUAGES)
   bcp47 @join__enumValue(graph: LANGUAGES)
+}
+
+type LanguageName
+  @join__type(graph: LANGUAGES)
+{
+  value: String!
+  primary: Boolean!
+  language: Language!
 }
 
 input LanguagesFilter
@@ -1946,10 +1970,10 @@ type Query
 
   """Get a single visitor"""
   visitor(id: ID!): Visitor! @join__field(graph: JOURNEYS)
-  countries: [Country!]! @join__field(graph: LANGUAGES)
-  country(id: ID!): Country! @join__field(graph: LANGUAGES)
+  language(id: ID!, idType: LanguageIdType = databaseId): Language @join__field(graph: LANGUAGES)
   languages(offset: Int, limit: Int, where: LanguagesFilter): [Language!]! @join__field(graph: LANGUAGES)
-  language(id: ID!, idType: LanguageIdType): Language @join__field(graph: LANGUAGES)
+  country(id: ID!): Country @join__field(graph: LANGUAGES)
+  countries: [Country!]! @join__field(graph: LANGUAGES)
   getMyCloudflareImages: [CloudflareImage] @join__field(graph: MEDIA)
   getMyCloudflareVideos: [CloudflareVideo] @join__field(graph: MEDIA)
   getMyCloudflareVideo(id: ID!): CloudflareVideo @join__field(graph: MEDIA)
@@ -2513,7 +2537,6 @@ enum ThemeName
 
 type Translation
   @join__type(graph: JOURNEYS)
-  @join__type(graph: LANGUAGES)
   @join__type(graph: MEDIA)
   @join__type(graph: TAGS)
   @join__type(graph: USERS)
