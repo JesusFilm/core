@@ -443,6 +443,8 @@
   "Title": "Başlık",
   "Recommended length: 5 words": "Önerilen uzunluk: 5 kelime",
   "Analytics": "Analitik",
+  "Redo": "Yeniden Yap",
+  "Undo": "Geri al",
   "Copy Link": "Bağlantıyı Kopyala",
   "Create Template": "Şablon Oluştur",
   "Field update failed. Reload the page or try again.": "Alan güncellemesi başarısız oldu. Sayfayı yeniden yükleyin veya tekrar deneyin.",
