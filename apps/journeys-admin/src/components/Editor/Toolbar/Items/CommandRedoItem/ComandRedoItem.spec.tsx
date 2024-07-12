@@ -30,7 +30,7 @@ describe('Hotkeys', () => {
     })
 
     result.current.add(command0)
-    await waitFor(() => expect(result.current.state.commands.length).toBe(1))
+    await waitFor(() => expect(result.current.state.undo).not.toBeUndefined())
     await waitFor(() => result.current.undo())
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
     expect(command0.redo).toHaveBeenCalledWith({ arg1: 'execute' })
@@ -55,10 +55,9 @@ describe('Hotkeys', () => {
     })
 
     result.current.add(command0)
-    await waitFor(() => expect(result.current.state.commands.length).toBe(1))
+    await waitFor(() => expect(result.current.state.undo).not.toBeUndefined())
 
     expect(screen.getByRole('button', { name: 'Redo' })).toBeDisabled()
-    expect(result.current.state.undo).not.toBeNull()
     expect(result.current.state.redo).toBeUndefined()
   })
 })

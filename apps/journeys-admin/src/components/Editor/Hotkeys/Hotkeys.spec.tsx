@@ -30,7 +30,7 @@ describe('Hotkeys', () => {
     })
 
     result.current.add(command0)
-    await waitFor(() => expect(result.current.state.commands.length).toBe(1))
+    await waitFor(() => expect(result.current.state.undo).not.toBeUndefined())
     await userEvent.keyboard('{Meta>}Z{/Meta}')
     expect(command0.undo).toHaveBeenCalledWith({ arg1: 'undo' })
   })
@@ -54,9 +54,9 @@ describe('Hotkeys', () => {
       wrapper
     })
 
-    result.current.add(command0)
-    await waitFor(() => expect(result.current.state.commands.length).toBe(1))
-    await waitFor(() => result.current.undo())
+    await result.current.add(command0)
+    await waitFor(() => expect(result.current.state.undo).not.toBeUndefined())
+    result.current.undo()
     await userEvent.keyboard('{Meta>}{Shift>}Z{/Shift}{/Meta}')
     expect(command0.redo).toHaveBeenCalledWith({ arg1: 'execute' })
   })

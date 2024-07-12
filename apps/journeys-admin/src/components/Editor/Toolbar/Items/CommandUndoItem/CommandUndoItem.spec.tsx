@@ -28,7 +28,7 @@ describe('Hotkeys', () => {
     })
 
     result.current.add(command0)
-    await waitFor(() => expect(result.current.state.commands.length).toBe(1))
+    await waitFor(() => expect(result.current.state.undo).not.toBeUndefined())
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
     expect(command0.undo).toHaveBeenCalledWith({ arg1: 'undo' })
   })
