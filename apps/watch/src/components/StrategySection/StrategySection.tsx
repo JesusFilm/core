@@ -17,6 +17,8 @@ export function StrategySection({
   // description
   // strategycarousel
 
+  // use hook at this level
+
   const { t } = useTranslation('apps-watch')
   const ButtonStack = () => {
     return (
