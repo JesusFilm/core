@@ -101,8 +101,8 @@ model CountryContinent {
 model AudioPreview {
   languageId String   @id
   value      String
+  duration   Int
   size       Int
-  createdAt  DateTime
   updatedAt  DateTime
   language   Language @relation(fields: [languageId], references: [id])
 

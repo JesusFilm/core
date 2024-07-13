@@ -2,7 +2,7 @@ import { createServer } from 'node:http'
 
 import { yoga } from './yoga'
 
-import './importers'
+import './bigquery'
 
 const port = 4003
 createServer(yoga).listen(port, () => {

@@ -4,6 +4,7 @@ extend schema
 type AudioPreview {
   language: Language!
   value: String!
+  duration: Int!
   size: Int!
 }
 

@@ -1,17 +1,16 @@
 import { z } from 'zod'
 
 import { Prisma } from '.prisma/api-languages-client'
-import { prisma } from '../../lib/prisma'
-import { parseMany, processTable } from '../bigquery'
-import { parse } from '../bigquery'
+import { prisma } from '../../../lib/prisma'
+import { parseMany, processTable } from '../../importer'
+import { parse } from '../../importer'
 
 const audioPreviewSchema = z.object({
   languageId: z.number().transform(String),
   duration: z.number(),
   size: z.number(),
   value: z.string(),
-  createdAt: z.date(),
-  updatedAt: z.date()
+  updatedAt: z.object({ value: z.string() }).transform((value) => value.value)
 })
 
 const bigQueryTableName =

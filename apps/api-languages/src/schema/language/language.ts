@@ -23,6 +23,7 @@ export const AudioPreview = builder.prismaObject('AudioPreview', {
   fields: (t) => ({
     language: t.relation('language'),
     value: t.exposeString('value'),
+    duration: t.exposeInt('duration'),
     size: t.exposeInt('size')
   })
 })
