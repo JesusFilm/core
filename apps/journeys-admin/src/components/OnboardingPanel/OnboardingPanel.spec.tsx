@@ -3,6 +3,8 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { v4 as uuidv4 } from 'uuid'
 
+import { TeamProvider } from '@core/journeys/ui/TeamProvider'
+
 import {
   CreateJourney,
   CreateJourneyVariables
@@ -13,7 +15,6 @@ import {
   ThemeName
 } from '../../../__generated__/globalTypes'
 import { CREATE_JOURNEY } from '../../libs/useJourneyCreateMutation'
-import { TeamProvider } from '../Team/TeamProvider'
 
 import { getOnboardingJourneysMock, getTeamsMock } from './data'
 
@@ -63,7 +64,7 @@ const createJourneyMock: MockedResponse<CreateJourney, CreateJourneyVariables> =
               {
                 value: 'English',
                 primary: true,
-                __typename: 'Translation'
+                __typename: 'LanguageName'
               }
             ],
             __typename: 'Language'

@@ -1,7 +1,8 @@
 import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 
-import { journeysAdminConfig } from '../../../../libs/storybook'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
+
 import { journey } from '../utils/data'
 
 import { EventsCard } from '.'
@@ -55,7 +56,7 @@ export const Empty = {
             id: 'languageId',
             name: [
               {
-                __typename: 'Translation',
+                __typename: 'LanguageName',
                 value: 'English'
               }
             ]

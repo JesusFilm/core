@@ -113,6 +113,9 @@ type Mutation {
     """drop this parameter after merging teams"""
     journeyId: ID
   ): [Block!]!
+
+  """blockRestore is used for redo/undo"""
+  blockRestore(id: ID!): [Block!]!
   buttonBlockCreate(input: ButtonBlockCreateInput!): ButtonBlock!
   buttonBlockUpdate(
     id: ID!
@@ -229,6 +232,9 @@ type Mutation {
   hostCreate(teamId: ID!, input: HostCreateInput!): Host!
   hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host!
   hostDelete(id: ID!, teamId: ID!): Host!
+  integrationGrowthSpacesCreate(input: IntegrationGrowthSpacesCreateInput!): IntegrationGrowthSpaces!
+  integrationGrowthSpacesUpdate(id: ID!, input: IntegrationGrowthSpacesUpdateInput!): IntegrationGrowthSpaces!
+  integrationDelete(id: ID!): Integration!
   journeyCreate(input: JourneyCreateInput!, teamId: ID!): Journey!
   journeyDuplicate(id: ID!, teamId: ID!): Journey!
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
@@ -353,6 +359,7 @@ extend type Query {
   customDomain(id: ID!): CustomDomain!
   customDomains(teamId: ID!): [CustomDomain!]!
   hosts(teamId: ID!): [Host!]!
+  integrations(teamId: ID!): [Integration!]!
 
   """
   returns all journeys that match the provided filters
@@ -655,6 +662,8 @@ enum IconName {
   SendRounded
   SubscriptionsRounded
   ContactSupportRounded
+  Launch
+  MailOutline
 }
 
 enum IconColor {
@@ -887,6 +896,15 @@ type TextResponseBlock implements Block {
   label: String!
   hint: String
   minRows: Int
+  type: TextResponseType
+  routeId: String
+  integrationId: String
+}
+
+enum TextResponseType {
+  freeForm
+  name
+  email
 }
 
 input TextResponseBlockCreateInput {
@@ -901,6 +919,9 @@ input TextResponseBlockUpdateInput {
   label: String
   hint: String
   minRows: Int
+  routeId: String
+  type: TextResponseType
+  integrationId: String
 }
 
 enum TypographyVariant {
@@ -1336,6 +1357,28 @@ enum MessagePlatform {
   line
   tikTok
   custom
+  globe2
+  globe3
+  messageText1
+  messageText2
+  send1
+  send2
+  messageChat2
+  messageCircle
+  messageNotifyCircle
+  messageNotifySquare
+  messageSquare
+  mail1
+  linkExternal
+  home3
+  home4
+  helpCircleContained
+  helpSquareContained
+  shieldCheck
+  menu1
+  checkBroken
+  checkContained
+  settings
 }
 
 input ChatOpenEventCreateInput {
@@ -1957,6 +2000,41 @@ input HostCreateInput {
   src2: String
 }
 
+type IntegrationGrowthSpaces implements Integration {
+  id: ID!
+  team: Team!
+  type: IntegrationType!
+  accessId: String!
+  accessSecretPart: String!
+  routes: [IntegrationGrowthSpacesRoute!]!
+}
+
+input IntegrationGrowthSpacesCreateInput {
+  accessId: String!
+  accessSecret: String!
+  teamId: String!
+}
+
+input IntegrationGrowthSpacesUpdateInput {
+  accessId: String!
+  accessSecret: String!
+}
+
+type IntegrationGrowthSpacesRoute {
+  id: String!
+  name: String!
+}
+
+enum IntegrationType {
+  growthSpaces
+}
+
+interface Integration {
+  id: ID!
+  team: Team!
+  type: IntegrationType!
+}
+
 extend type Tag
   @key(fields: "id")
 {
@@ -2476,6 +2554,7 @@ type Team
   updatedAt: DateTime!
   userTeams: [UserTeam!]!
   customDomains: [CustomDomain!]!
+  integrations: [Integration!]!
 }
 
 input TeamCreateInput {

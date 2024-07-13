@@ -86,6 +86,19 @@ export class TextResponseBlockResolver {
       throw new GraphQLError('user is not allowed to update block', {
         extensions: { code: 'FORBIDDEN' }
       })
+
+    if (
+      input.routeId != null &&
+      block.integrationId == null &&
+      input.integrationId == null
+    )
+      throw new GraphQLError(
+        'route is being set but it is not associated to an integration',
+        {
+          extensions: { code: 'BAD_USER_INPUT' }
+        }
+      )
+
     return await this.blockService.update(id, input)
   }
 }

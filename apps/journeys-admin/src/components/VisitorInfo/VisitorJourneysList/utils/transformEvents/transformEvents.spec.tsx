@@ -34,7 +34,7 @@ const journeyViewEvent: JourneyViewEvent = {
     id: 'languageId',
     name: [
       {
-        __typename: 'Translation',
+        __typename: 'LanguageName',
         value: 'English'
       }
     ]

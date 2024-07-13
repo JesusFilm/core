@@ -22,7 +22,7 @@ const journeyView: JourneyViewEvent = {
     id: 'languageId',
     name: [
       {
-        __typename: 'Translation',
+        __typename: 'LanguageName',
         value: 'Hobbitish'
       }
     ]
@@ -263,7 +263,7 @@ const journey2ViewEvent: JourneyViewEvent = {
     name: [
       {
         value: 'Hobbitish',
-        __typename: 'Translation'
+        __typename: 'LanguageName'
       }
     ]
   }

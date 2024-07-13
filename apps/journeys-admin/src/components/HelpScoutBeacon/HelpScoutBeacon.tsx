@@ -5,35 +5,9 @@ import { useRouter } from 'next/router'
 import Script from 'next/script'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 
+import { FormObject } from '@core/journeys/ui/setBeaconPageViewed'
 import HelpCircleContained from '@core/shared/ui/icons/HelpCircleContained'
 import XCircleContained from '@core/shared/ui/icons/XCircleContained'
-
-interface EventObject {
-  type: string
-  url: string
-  title: string
-}
-
-interface FormObject {
-  name: string
-  email: string
-}
-declare global {
-  interface Window {
-    Beacon?: ((fn: 'init', id: string) => void) &
-      ((
-        fn: 'config',
-        config: { mode: 'askFirst'; enableFabAnimation: boolean }
-      ) => void) &
-      ((fn: 'open') => void) &
-      ((fn: 'close') => void) &
-      ((fn: 'event', eventObject: EventObject) => void) &
-      ((fn: 'toggle') => void) &
-      ((fn: 'search', value: string) => void) &
-      ((fn: 'on', eventType: string, callback: () => void) => void) &
-      ((fn: 'prefill', formObject: FormObject) => void)
-  }
-}
 
 interface HelpScoutBeaconProps {
   userInfo: FormObject

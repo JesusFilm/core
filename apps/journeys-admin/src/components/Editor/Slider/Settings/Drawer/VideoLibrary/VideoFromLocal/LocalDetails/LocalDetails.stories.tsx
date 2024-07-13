@@ -1,9 +1,10 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
+
 import { GetVideo_video_variantLanguages as Language } from '../../../../../../../../../__generated__/GetVideo'
 import { ApolloLoadingProvider } from '../../../../../../../../../test/ApolloLoadingProvider'
-import { journeysAdminConfig } from '../../../../../../../../libs/storybook'
 
 import { GET_VIDEO } from './LocalDetails'
 
@@ -25,7 +26,7 @@ const languages: Language[] = [
       {
         value: 'English',
         primary: true,
-        __typename: 'Translation'
+        __typename: 'LanguageName'
       }
     ]
   },
@@ -36,12 +37,12 @@ const languages: Language[] = [
       {
         value: 'Français',
         primary: true,
-        __typename: 'Translation'
+        __typename: 'LanguageName'
       },
       {
         value: 'French',
         primary: false,
-        __typename: 'Translation'
+        __typename: 'LanguageName'
       }
     ]
   },
@@ -52,12 +53,12 @@ const languages: Language[] = [
       {
         value: 'Deutsch',
         primary: true,
-        __typename: 'Translation'
+        __typename: 'LanguageName'
       },
       {
         value: 'German, Standard',
         primary: false,
-        __typename: 'Translation'
+        __typename: 'LanguageName'
       }
     ]
   }

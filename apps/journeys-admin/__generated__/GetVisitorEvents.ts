@@ -50,7 +50,7 @@ export interface GetVisitorEvents_visitor_events_ButtonClickEvent {
 }
 
 export interface GetVisitorEvents_visitor_events_JourneyViewEvent_language_name {
-  __typename: "Translation";
+  __typename: "LanguageName";
   value: string;
 }
 

@@ -26,6 +26,13 @@ export type Action = {
   parentBlockId: Scalars['ID']['output'];
 };
 
+export type AudioPreview = {
+  __typename?: 'AudioPreview';
+  language: Language;
+  size: Scalars['Int']['output'];
+  value: Scalars['String']['output'];
+};
+
 export type Block = {
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
@@ -260,14 +267,14 @@ export type CloudflareVideo = {
 
 export type Country = {
   __typename?: 'Country';
-  continent: Array<Translation>;
+  continent: Array<CountryContinent>;
   flagPngSrc?: Maybe<Scalars['String']['output']>;
   flagWebpSrc?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   languages: Array<Language>;
   latitude?: Maybe<Scalars['Float']['output']>;
   longitude?: Maybe<Scalars['Float']['output']>;
-  name: Array<Translation>;
+  name: Array<CountryName>;
   population?: Maybe<Scalars['Int']['output']>;
 };
 
@@ -281,6 +288,20 @@ export type CountryContinentArgs = {
 export type CountryNameArgs = {
   languageId?: InputMaybe<Scalars['ID']['input']>;
   primary?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type CountryContinent = {
+  __typename?: 'CountryContinent';
+  language: Language;
+  primary: Scalars['Boolean']['output'];
+  value: Scalars['String']['output'];
+};
+
+export type CountryName = {
+  __typename?: 'CountryName';
+  language: Language;
+  primary: Scalars['Boolean']['output'];
+  value: Scalars['String']['output'];
 };
 
 export type CreateVerificationRequestInput = {
@@ -541,8 +562,10 @@ export enum IconName {
   ChevronRightRounded = 'ChevronRightRounded',
   ContactSupportRounded = 'ContactSupportRounded',
   FormatQuoteRounded = 'FormatQuoteRounded',
+  Launch = 'Launch',
   LiveTvRounded = 'LiveTvRounded',
   LockOpenRounded = 'LockOpenRounded',
+  MailOutline = 'MailOutline',
   MenuBookRounded = 'MenuBookRounded',
   PlayArrowRounded = 'PlayArrowRounded',
   RadioButtonUncheckedRounded = 'RadioButtonUncheckedRounded',
@@ -605,6 +628,43 @@ export type ImageBlockUpdateInput = {
   src?: InputMaybe<Scalars['String']['input']>;
   width?: InputMaybe<Scalars['Int']['input']>;
 };
+
+export type Integration = {
+  id: Scalars['ID']['output'];
+  team: Team;
+  type: IntegrationType;
+};
+
+export type IntegrationGrowthSpaces = Integration & {
+  __typename?: 'IntegrationGrowthSpaces';
+  accessId: Scalars['String']['output'];
+  accessSecretPart: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  routes: Array<IntegrationGrowthSpacesRoute>;
+  team: Team;
+  type: IntegrationType;
+};
+
+export type IntegrationGrowthSpacesCreateInput = {
+  accessId: Scalars['String']['input'];
+  accessSecret: Scalars['String']['input'];
+  teamId: Scalars['String']['input'];
+};
+
+export type IntegrationGrowthSpacesRoute = {
+  __typename?: 'IntegrationGrowthSpacesRoute';
+  id: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+};
+
+export type IntegrationGrowthSpacesUpdateInput = {
+  accessId: Scalars['String']['input'];
+  accessSecret: Scalars['String']['input'];
+};
+
+export enum IntegrationType {
+  GrowthSpaces = 'growthSpaces'
+}
 
 export type Journey = {
   __typename?: 'Journey';
@@ -911,10 +971,12 @@ export enum JourneysReportType {
 
 export type Language = {
   __typename?: 'Language';
+  audioPreview: AudioPreview;
   bcp47?: Maybe<Scalars['String']['output']>;
+  countries: Array<Country>;
   id: Scalars['ID']['output'];
   iso3?: Maybe<Scalars['String']['output']>;
-  name: Array<Translation>;
+  name: Array<LanguageName>;
 };
 
 
@@ -927,6 +989,13 @@ export enum LanguageIdType {
   Bcp47 = 'bcp47',
   DatabaseId = 'databaseId'
 }
+
+export type LanguageName = {
+  __typename?: 'LanguageName';
+  language: Language;
+  primary: Scalars['Boolean']['output'];
+  value: Scalars['String']['output'];
+};
 
 export type LanguageWithSlug = {
   __typename?: 'LanguageWithSlug';
@@ -957,10 +1026,32 @@ export type MeInput = {
 };
 
 export enum MessagePlatform {
+  CheckBroken = 'checkBroken',
+  CheckContained = 'checkContained',
   Custom = 'custom',
   Facebook = 'facebook',
+  Globe2 = 'globe2',
+  Globe3 = 'globe3',
+  HelpCircleContained = 'helpCircleContained',
+  HelpSquareContained = 'helpSquareContained',
+  Home3 = 'home3',
+  Home4 = 'home4',
   Instagram = 'instagram',
   Line = 'line',
+  LinkExternal = 'linkExternal',
+  Mail1 = 'mail1',
+  Menu1 = 'menu1',
+  MessageChat2 = 'messageChat2',
+  MessageCircle = 'messageCircle',
+  MessageNotifyCircle = 'messageNotifyCircle',
+  MessageNotifySquare = 'messageNotifySquare',
+  MessageSquare = 'messageSquare',
+  MessageText1 = 'messageText1',
+  MessageText2 = 'messageText2',
+  Send1 = 'send1',
+  Send2 = 'send2',
+  Settings = 'settings',
+  ShieldCheck = 'shieldCheck',
   Skype = 'skype',
   Snapchat = 'snapchat',
   Telegram = 'telegram',
@@ -978,6 +1069,8 @@ export type Mutation = {
   /** blockDuplicate returns the updated block, it's children and sibling blocks on successful duplicate */
   blockDuplicate: Array<Block>;
   blockOrderUpdate: Array<Block>;
+  /** blockRestore is used for redo/undo */
+  blockRestore: Array<Block>;
   blockUpdateEmailAction: EmailAction;
   blockUpdateLinkAction: LinkAction;
   blockUpdateNavigateToBlockAction: NavigateToBlockAction;
@@ -1012,6 +1105,9 @@ export type Mutation = {
   iconBlockUpdate: IconBlock;
   imageBlockCreate: ImageBlock;
   imageBlockUpdate: ImageBlock;
+  integrationDelete: Integration;
+  integrationGrowthSpacesCreate: IntegrationGrowthSpaces;
+  integrationGrowthSpacesUpdate: IntegrationGrowthSpaces;
   journeyCollectionCreate: JourneyCollection;
   journeyCollectionDelete: JourneyCollection;
   journeyCollectionUpdate: JourneyCollection;
@@ -1119,6 +1215,11 @@ export type MutationBlockOrderUpdateArgs = {
   id: Scalars['ID']['input'];
   journeyId?: InputMaybe<Scalars['ID']['input']>;
   parentOrder: Scalars['Int']['input'];
+};
+
+
+export type MutationBlockRestoreArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -1309,6 +1410,22 @@ export type MutationImageBlockUpdateArgs = {
   id: Scalars['ID']['input'];
   input: ImageBlockUpdateInput;
   journeyId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type MutationIntegrationDeleteArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationIntegrationGrowthSpacesCreateArgs = {
+  input: IntegrationGrowthSpacesCreateInput;
+};
+
+
+export type MutationIntegrationGrowthSpacesUpdateArgs = {
+  id: Scalars['ID']['input'];
+  input: IntegrationGrowthSpacesUpdateInput;
 };
 
 
@@ -1893,7 +2010,7 @@ export type Query = {
   block: Block;
   blocks: Array<Block>;
   countries: Array<Country>;
-  country: Country;
+  country?: Maybe<Country>;
   customDomain: CustomDomain;
   customDomains: Array<CustomDomain>;
   getJourneyProfile?: Maybe<JourneyProfile>;
@@ -1902,6 +2019,7 @@ export type Query = {
   getMyCloudflareVideos?: Maybe<Array<Maybe<CloudflareVideo>>>;
   getUserRole?: Maybe<UserRole>;
   hosts: Array<Host>;
+  integrations: Array<Integration>;
   journey: Journey;
   journeyCollection: JourneyCollection;
   journeyCollections: Array<Maybe<JourneyCollection>>;
@@ -2011,6 +2129,11 @@ export type QueryGetMyCloudflareVideoArgs = {
 
 
 export type QueryHostsArgs = {
+  teamId: Scalars['ID']['input'];
+};
+
+
+export type QueryIntegrationsArgs = {
   teamId: Scalars['ID']['input'];
 };
 
@@ -2497,6 +2620,7 @@ export type Team = {
   createdAt: Scalars['DateTime']['output'];
   customDomains: Array<CustomDomain>;
   id: Scalars['ID']['output'];
+  integrations: Array<Integration>;
   publicTitle?: Maybe<Scalars['String']['output']>;
   title: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
@@ -2517,11 +2641,14 @@ export type TextResponseBlock = Block & {
   __typename?: 'TextResponseBlock';
   hint?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
+  integrationId?: Maybe<Scalars['String']['output']>;
   journeyId: Scalars['ID']['output'];
   label: Scalars['String']['output'];
   minRows?: Maybe<Scalars['Int']['output']>;
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
+  routeId?: Maybe<Scalars['String']['output']>;
+  type?: Maybe<TextResponseType>;
 };
 
 export type TextResponseBlockCreateInput = {
@@ -2533,9 +2660,12 @@ export type TextResponseBlockCreateInput = {
 
 export type TextResponseBlockUpdateInput = {
   hint?: InputMaybe<Scalars['String']['input']>;
+  integrationId?: InputMaybe<Scalars['String']['input']>;
   label?: InputMaybe<Scalars['String']['input']>;
   minRows?: InputMaybe<Scalars['Int']['input']>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
+  routeId?: InputMaybe<Scalars['String']['input']>;
+  type?: InputMaybe<TextResponseType>;
 };
 
 export type TextResponseSubmissionEvent = Event & {
@@ -2564,6 +2694,12 @@ export type TextResponseSubmissionEventCreateInput = {
   /** response from the TextResponseBlock form */
   value: Scalars['String']['input'];
 };
+
+export enum TextResponseType {
+  Email = 'email',
+  FreeForm = 'freeForm',
+  Name = 'name'
+}
 
 export enum ThemeMode {
   Dark = 'dark',
