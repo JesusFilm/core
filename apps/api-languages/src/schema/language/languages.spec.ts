@@ -4,7 +4,7 @@ import omit from 'lodash/omit'
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { cache } from '../../yoga'
-import { language } from './language.mock'
+import { language, audioPreview } from './language.mock'
 import { languageName } from './language.mock'
 
 const LANGUAGES_QUERY = graphql(`

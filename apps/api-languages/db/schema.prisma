@@ -30,7 +30,6 @@ model Language {
   updatedAt        DateTime           @updatedAt
   bcp47            String?
   iso3             String?
-  hasVideo         Boolean            @default(true)
   name             LanguageName[]     @relation(name: "name")
   nameLanguage     LanguageName[]     @relation(name: "nameLanguage")
   countries        Country[]

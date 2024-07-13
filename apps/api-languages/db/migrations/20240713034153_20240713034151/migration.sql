@@ -14,9 +14,6 @@ DROP COLUMN "id",
 ADD COLUMN     "duration" INTEGER NOT NULL,
 ADD CONSTRAINT "AudioPreview_pkey" PRIMARY KEY ("languageId");
 
--- AlterTable
-ALTER TABLE "Language" ADD COLUMN     "hasVideo" BOOLEAN NOT NULL DEFAULT true;
-
 -- CreateTable
 CREATE TABLE "ImportTimes" (
     "modelName" TEXT NOT NULL,
