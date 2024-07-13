@@ -96,7 +96,7 @@ const video: TreeBlock<VideoBlock> = {
         id: '529',
         name: [
           {
-            __typename: 'Translation',
+            __typename: 'LanguageName',
             value: 'English',
             primary: true
           }
@@ -174,6 +174,23 @@ describe('getCardMetadata', () => {
       bgImage:
         'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
       priorityBlock: video,
+      hasMultipleActions: false
+    })
+  })
+
+  it('should have image title and subtitle in metadata when image is only child on card', () => {
+    const imageCard = {
+      ...card,
+      coverBlockId: null,
+      children: [image]
+    }
+    const cardMetadata = getCardMetadata(imageCard)
+    expect(cardMetadata).toEqual({
+      title: 'Image',
+      subtitle: `${image.width} x ${image.height} pixels`,
+      bgImage: undefined,
+      priorityImage: image.src,
+      priorityBlock: image,
       hasMultipleActions: false
     })
   })
