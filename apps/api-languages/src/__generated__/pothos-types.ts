@@ -12,7 +12,7 @@ export default interface PrismaTypes {
         Create: {};
         Update: {};
         RelationName: "name" | "nameLanguage" | "countries" | "countryName" | "countryContinent" | "audioPreview";
-        ListRelations: "name" | "nameLanguage" | "countries" | "countryName" | "countryContinent" | "audioPreview";
+        ListRelations: "name" | "nameLanguage" | "countries" | "countryName" | "countryContinent";
         Relations: {
             name: {
                 Shape: LanguageName[];
@@ -40,9 +40,9 @@ export default interface PrismaTypes {
                 Nullable: false;
             };
             audioPreview: {
-                Shape: AudioPreview[];
+                Shape: AudioPreview | null;
                 Name: "AudioPreview";
-                Nullable: false;
+                Nullable: true;
             };
         };
     };
