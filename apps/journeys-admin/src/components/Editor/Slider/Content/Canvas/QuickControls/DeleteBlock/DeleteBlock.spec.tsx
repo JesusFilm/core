@@ -23,7 +23,9 @@ import { TestEditorState } from '../../../../../../../libs/TestEditorState'
 import { BLOCK_DELETE } from '../../../../../../../libs/useBlockDeleteMutation'
 import { deleteBlockMock } from '../../../../../../../libs/useBlockDeleteMutation/useBlockDeleteMutation.mock'
 
-import { DeleteBlock } from './DeleteBlock'
+import { BlockRestore } from '../../../../../../../../__generated__/BlockRestore'
+import { CommandItem } from '../../../../../Toolbar/Items/CommandItem'
+import { BLOCK_RESTORE, DeleteBlock } from './DeleteBlock'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -93,6 +95,26 @@ describe('DeleteBlock', () => {
             id: selectedStep.id,
             parentOrder: selectedStep.parentOrder,
             nextBlockId: null
+          }
+        ]
+      }
+    }
+  }
+
+  const restoreCardMock: MockedResponse<BlockRestore> = {
+    request: {
+      query: BLOCK_RESTORE,
+      variables: {
+        blockRestoreId: selectedStep.id
+      }
+    },
+    result: {
+      data: {
+        blockRestore: [
+          {
+            ...selectedStep,
+            x: 1,
+            y: 1
           }
         ]
       }
@@ -231,7 +253,7 @@ describe('DeleteBlock', () => {
               variant: 'admin'
             }}
           >
-            <EditorProvider initialState={{ selectedBlock }}>
+            <EditorProvider initialState={{ selectedBlock, selectedStep }}>
               <DeleteBlock variant="button" />
             </EditorProvider>
           </JourneyProvider>
@@ -291,7 +313,7 @@ describe('DeleteBlock', () => {
               variant: 'admin'
             }}
           >
-            <EditorProvider initialState={{ selectedBlock }}>
+            <EditorProvider initialState={{ selectedBlock, selectedStep }}>
               <DeleteBlock variant="list-item" />
             </EditorProvider>
           </JourneyProvider>
@@ -414,7 +436,13 @@ describe('DeleteBlock', () => {
               variant: 'admin'
             }}
           >
-            <EditorProvider initialState={{ selectedBlock: selectedStep }}>
+            <EditorProvider
+              initialState={{
+                selectedBlock: { ...selectedStep, id: 'passedInStepId' },
+                selectedStep,
+                steps: [selectedStep, selectedStep]
+              }}
+            >
               <DeleteBlock variant="list-item" block={passedInStep} />
               <TestEditorState />
             </EditorProvider>
@@ -439,5 +467,77 @@ describe('DeleteBlock', () => {
     expect(
       screen.getByText(`selectedBlock: ${selectedStep.id}`)
     ).toBeInTheDocument()
+  })
+
+  it('should restore card on undo click', async () => {
+    const selectedBlock = selectedStep
+    const restoreCardMockResult = jest.fn(() => ({
+      ...restoreCardMock.result
+    }))
+    const cache = new InMemoryCache()
+    cache.restore({
+      'Journey:journey-id': {
+        blocks: [
+          { __ref: `StepBlock:stepId` },
+          { __ref: `CardBlock:card1.id` },
+          { __ref: `TypographyBlock:typography0.id` }
+        ],
+        id: 'journey-id',
+        __typename: 'Journey'
+      },
+      'StepBlock:stepId': {
+        ...selectedStep
+      },
+      'CardBlock:card1.id': {
+        ...selectedStep.children[0]
+      },
+      'TypographyBlock:typography0.id': {
+        ...selectedBlock
+      }
+    })
+    const deleteCardResultMock = jest.fn(() => ({ ...deleteCardMock.result }))
+    render(
+      <SnackbarProvider>
+        <MockedProvider
+          cache={cache}
+          mocks={[
+            { ...deleteCardMock, result: deleteCardResultMock },
+            { ...restoreCardMock, result: restoreCardMockResult }
+          ]}
+        >
+          <JourneyProvider
+            value={{
+              journey: { id: 'journey-id' } as unknown as Journey,
+              variant: 'admin'
+            }}
+          >
+            <EditorProvider initialState={{ selectedBlock, selectedStep }}>
+              <DeleteBlock variant="list-item" />
+              <CommandItem direction="undo" variant="button" />
+            </EditorProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    // delete the card
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Delete Card' }))
+    await waitFor(() =>
+      expect(
+        screen.getByRole('dialog', { name: 'Delete Card?' })
+      ).toBeInTheDocument()
+    )
+    await userEvent.click(screen.getByRole('button', { name: 'Delete' }))
+    await waitFor(() => expect(deleteCardResultMock).toHaveBeenCalled())
+    expect(cache.extract()['Journey:journey-id']?.blocks).toEqual([])
+    await waitFor(() =>
+      expect(screen.queryByRole('menu')).not.toBeInTheDocument()
+    )
+    await waitFor(() =>
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    )
+
+    // undo the delete
+    userEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(restoreCardMockResult).toHaveBeenCalled())
   })
 })

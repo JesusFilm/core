@@ -440,7 +440,7 @@ export interface BlockRestore {
   /**
    * blockRestore is used for redo/undo
    */
-  blockRestore: BlockRestore_blockRestore;
+  blockRestore: BlockRestore_blockRestore[];
 }
 
 export interface BlockRestoreVariables {

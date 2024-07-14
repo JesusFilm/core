@@ -18,6 +18,7 @@ import { gql, useMutation } from '@apollo/client'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
 import { BLOCK_FIELDS } from '@core/journeys/ui/block/blockFields'
+import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../__generated__/BlockFields'
 import {
   BlockRestore,
   BlockRestoreVariables
@@ -76,8 +77,39 @@ export function DeleteBlock({
 
   const disableAction = currentBlock == null || disabled || result.loading
 
+  function setEditorState(
+    currentBlock: TreeBlock,
+    selectedStep: TreeBlock<StepBlock>
+  ): void {
+    if (currentBlock.__typename === 'StepBlock') {
+      dispatch({
+        type: 'SetActiveSlideAction',
+        activeSlide: ActiveSlide.JourneyFlow
+      })
+      dispatch({
+        type: 'SetSelectedStepAction',
+        selectedStep: currentBlock
+      })
+    } else {
+      dispatch({
+        type: 'SetSelectedStepAction',
+        selectedStep: selectedStep
+      })
+      dispatch({
+        type: 'SetSelectedBlockAction',
+        selectedBlock: currentBlock
+      })
+    }
+  }
+
   const handleDeleteBlock = async (): Promise<void> => {
-    if (currentBlock == null || journey == null || steps == null) return
+    if (
+      currentBlock == null ||
+      journey == null ||
+      steps == null ||
+      selectedStep == null
+    )
+      return
 
     const deletedBlockParentOrder = currentBlock.parentOrder
     const deletedBlockType = currentBlock.__typename
@@ -86,13 +118,12 @@ export function DeleteBlock({
 
     await add({
       parameters: {
-        execute: { currentBlock },
-        undo: {
-          blockRestoreId: currentBlock.id,
-          currentBlock
-        }
+        execute: {},
+        undo: {}
       },
-      async execute({ currentBlock }) {
+      async execute() {
+        setEditorState(currentBlock, stepBeforeDelete)
+
         await blockDelete(currentBlock, {
           update(cache, { data }) {
             if (
@@ -120,67 +151,54 @@ export function DeleteBlock({
           dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
         })
       },
-      async undo({ blockRestoreId, currentBlock }) {
+      async undo() {
+        const cache1 = (cache, data, id?) => {
+          const defaultCacheOptions = {
+            fields: {
+              blocks(existingBlockRefs = [], { readField }) {
+                data.blockRestore.forEach((block) => {
+                  const newBlockRef = cache.writeFragment({
+                    data: block,
+                    fragment: gql`
+                        fragment RestoredBlock on Block {
+                          id
+                        }
+                      `
+                  })
+                  if (
+                    existingBlockRefs.some(
+                      (ref) => readField('id', ref) === block?.id
+                    )
+                  ) {
+                    return existingBlockRefs
+                  }
+                  return [...existingBlockRefs, newBlockRef]
+                })
+              }
+            }
+          }
+          const cacheOptions =
+            id != null ? { ...defaultCacheOptions, id } : defaultCacheOptions
+          cache.modify(cacheOptions)
+        }
         await blockRestore({
-          variables: { blockRestoreId },
+          variables: { blockRestoreId: currentBlock?.id },
           notifyOnNetworkStatusChange: true,
           update(cache, { data }) {
-            cache.modify({
-              id: cache.identify({
-                __typename: 'Journey',
-                id: journey.id
-              }),
-              fields: {
-                blocks(existingBlockRefs = []) {
-                  if (data != null) {
-                    const restoredBlock = cache.writeFragment({
-                      data: data.blockRestore,
-                      fragment: gql`
-                        fragment RestoredBlock on Block {
-                          id
-                        }
-                      `
-                    })
-                    return [...existingBlockRefs, restoredBlock]
-                  }
-                }
-              }
-            })
-            if (data?.blockRestore.__typename === 'StepBlock')
-              cache.modify({
-                fields: {
-                  blocks(existingBlocks = []) {
-                    if (data != null) {
-                      const restoredBlock = cache.writeFragment({
-                        data: data.blockRestore,
-                        fragment: gql`
-                        fragment RestoredBlock on Block {
-                          id
-                        }
-                      `
-                      })
-                      return [...existingBlocks, restoredBlock]
-                    }
-                  }
-                }
-              })
+            if (data != null) {
+              cache1(
+                cache,
+                data,
+                cache.identify({
+                  __typename: 'Journey',
+                  id: journey.id
+                })
+              )
+              if (currentBlock.__typename === 'StepBlock') cache1(cache, data)
+            }
           },
           onCompleted: () => {
-            if (currentBlock.__typename === 'StepBlock') {
-              dispatch({
-                type: 'SetActiveSlideAction',
-                activeSlide: ActiveSlide.JourneyFlow
-              })
-              dispatch({
-                type: 'SetSelectedStepAction',
-                selectedStep: currentBlock
-              })
-            } else {
-              dispatch({
-                type: 'SetSelectedBlockAction',
-                selectedBlock: currentBlock
-              })
-            }
+            setEditorState(currentBlock, stepBeforeDelete)
           }
         })
       }
