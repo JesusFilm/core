@@ -8,6 +8,7 @@ import { PrismaService } from '../../lib/prisma.service'
 
 import { ApolloClient, ApolloQueryResult } from '@apollo/client'
 import { clone } from 'lodash'
+import { GetLanguageQuery } from '../../../__generated__/graphql'
 import { AlgoliaService } from './algolia.service'
 
 const saveObjectsSpy = jest
@@ -73,6 +74,24 @@ const tags = [
   }
 ]
 
+const journeyTags = [
+  {
+    id: 'id1',
+    tagId: 'tagId1',
+    journeyId: 'journeyId'
+  },
+  {
+    id: 'id2',
+    tagId: 'tagId2',
+    journeyId: 'journeyId'
+  },
+  {
+    id: 'id3',
+    tagId: 'tagId3',
+    journeyId: 'journeyId'
+  }
+]
+
 const languages = [
   {
     id: '529',
@@ -110,6 +129,9 @@ describe('AlgoliaService', () => {
 
   afterEach(() => {
     process.env = originalEnv
+    process.env.ALGOLIA_API_KEY = 'key'
+    process.env.ALGOLIA_APPLICATION_ID = 'id'
+    process.env.DOPPLER_ENVIRONMENT = 'dev'
     jest.clearAllMocks()
   })
 
@@ -121,6 +143,58 @@ describe('AlgoliaService', () => {
       await expect(service.syncJourneysToAlgolia()).rejects.toThrow(
         'algolia environment variables not set'
       )
+    })
+
+    it('should get tags', () => {
+      const mockApollo = jest
+        .spyOn(ApolloClient.prototype, 'query')
+        .mockImplementationOnce(
+          async () =>
+            await Promise.resolve({
+              data: {
+                tags
+              }
+            } as unknown as ApolloQueryResult<unknown>)
+        )
+
+      service.getTags()
+      expect(mockApollo).toHaveBeenCalled()
+    })
+
+    it('should convert tags to map', () => {
+      const tagsData = {
+        tags
+      }
+      const result = service.processTags(tagsData, journeyTags)
+      expect(result).toEqual({
+        'Parent Tag': ['Tag 1', 'Tag 2', 'Tag 3']
+      })
+    })
+
+    it('should get langauges', () => {
+      const mockApollo = jest
+        .spyOn(ApolloClient.prototype, 'query')
+        .mockImplementationOnce(
+          async () =>
+            await Promise.resolve({
+              data: {
+                languages
+              }
+            } as unknown as ApolloQueryResult<unknown>)
+        )
+
+      service.getLanguages()
+      expect(mockApollo).toHaveBeenCalled()
+    })
+
+    it('should convert languages to map', () => {
+      const languagesData: GetLanguageQuery = {
+        languages
+      }
+      const result = service.processLanguages({ languages })
+      expect(result).toEqual({
+        '529': 'English'
+      })
     })
 
     it('should sync journeys to Algolia', async () => {
@@ -142,28 +216,12 @@ describe('AlgoliaService', () => {
               alt: 'journey image',
               src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public'
             },
-            journeyTags: [
-              {
-                id: 'id1',
-                tagId: 'tagId1',
-                journeyId: 'journeyId'
-              },
-              {
-                id: 'id2',
-                tagId: 'tagId2',
-                journeyId: 'journeyId'
-              },
-              {
-                id: 'id3',
-                tagId: 'tagId3',
-                journeyId: 'journeyId'
-              }
-            ]
+            journeyTags
           } as unknown as Journey
         ])
         .mockResolvedValueOnce([])
 
-      const mockApollo = jest
+      jest
         .spyOn(ApolloClient.prototype, 'query')
         .mockImplementationOnce(
           async () =>
@@ -183,7 +241,6 @@ describe('AlgoliaService', () => {
         )
 
       await service.syncJourneysToAlgolia()
-      expect(mockApollo).toHaveBeenCalled()
       expect(prismaService.journey.findMany).toHaveBeenCalledWith({
         take: 50,
         skip: 0,
