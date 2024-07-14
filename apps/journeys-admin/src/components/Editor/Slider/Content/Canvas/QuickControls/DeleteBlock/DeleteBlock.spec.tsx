@@ -115,7 +115,21 @@ describe('DeleteBlock', () => {
             ...selectedStep,
             x: 1,
             y: 1
-          }
+          },
+          {
+            id: 'card1.id',
+            __typename: 'CardBlock',
+            parentBlockId: 'stepId',
+            parentOrder: 0,
+            coverBlockId: null,
+            backgroundColor: null,
+            themeMode: null,
+            themeName: null,
+            fullscreen: false
+          },
+          selectedBlock,
+          block1,
+          block2
         ]
       }
     }
@@ -537,7 +551,7 @@ describe('DeleteBlock', () => {
     )
 
     // undo the delete
-    userEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Undo' }))
     await waitFor(() => expect(restoreCardMockResult).toHaveBeenCalled())
   })
 })
