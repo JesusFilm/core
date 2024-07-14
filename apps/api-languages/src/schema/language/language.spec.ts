@@ -7,6 +7,9 @@ import { cache } from '../../yoga'
 import { language } from './language.mock'
 import { languageName } from './language.mock'
 
+import { audioPreview } from './language.mock'
+import { Language } from '.prisma/api-languages-client'
+
 const LANGUAGE_QUERY = graphql(`
   query Language($languageId: ID, $primary: Boolean) {
     language(id: "529") {
@@ -16,6 +19,13 @@ const LANGUAGE_QUERY = graphql(`
       name(languageId: $languageId, primary: $primary) {
         value
         primary
+      }
+      audioPreview {
+        value
+        size
+        language {
+          id
+        }
       }
     }
   }
@@ -29,7 +39,13 @@ describe('language', () => {
   })
 
   it('should query language with defaults', async () => {
-    prismaMock.language.findUnique.mockResolvedValue(language)
+    prismaMock.language.findUnique.mockResolvedValue({
+      ...language,
+      audioPreview: {
+        ...audioPreview,
+        language
+      }
+    } as unknown as Language)
     prismaMock.languageName.findMany.mockResolvedValue(languageName)
     const data = await client({
       document: LANGUAGE_QUERY
@@ -37,6 +53,13 @@ describe('language', () => {
     expect(prismaMock.language.findUnique).toHaveBeenCalledWith({
       where: {
         id: '529'
+      },
+      include: {
+        audioPreview: {
+          include: {
+            language: true
+          }
+        }
       }
     })
     expect(prismaMock.languageName.findMany).toHaveBeenCalledWith({
@@ -50,12 +73,22 @@ describe('language', () => {
       ...omit(language, ['createdAt', 'updatedAt']),
       name: languageName.map((languageName) =>
         omit(languageName, ['id', 'languageId', 'parentLanguageId'])
-      )
+      ),
+      audioPreview: {
+        ...omit(audioPreview, 'languageId'),
+        language: { id: audioPreview.languageId }
+      }
     })
   })
 
   it('should query language', async () => {
-    prismaMock.language.findUnique.mockResolvedValue(language)
+    prismaMock.language.findUnique.mockResolvedValue({
+      ...language,
+      audioPreview: {
+        ...audioPreview,
+        language: { id: audioPreview.languageId }
+      }
+    } as unknown as Language)
     prismaMock.languageName.findMany.mockResolvedValue(languageName)
     const data = await client({
       document: LANGUAGE_QUERY,
@@ -67,6 +100,13 @@ describe('language', () => {
     expect(prismaMock.language.findUnique).toHaveBeenCalledWith({
       where: {
         id: '529'
+      },
+      include: {
+        audioPreview: {
+          include: {
+            language: true
+          }
+        }
       }
     })
     expect(prismaMock.languageName.findMany).toHaveBeenCalledWith({
@@ -81,7 +121,11 @@ describe('language', () => {
       ...omit(language, ['createdAt', 'updatedAt']),
       name: languageName.map((languageName) =>
         omit(languageName, ['id', 'languageId', 'parentLanguageId'])
-      )
+      ),
+      audioPreview: {
+        ...omit(audioPreview, 'languageId'),
+        language: { id: audioPreview.languageId }
+      }
     })
   })
 

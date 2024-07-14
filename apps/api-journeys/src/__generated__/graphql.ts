@@ -26,6 +26,13 @@ export type Action = {
   parentBlockId: Scalars['ID']['output'];
 };
 
+export type AudioPreview = {
+  __typename?: 'AudioPreview';
+  language: Language;
+  size: Scalars['Int']['output'];
+  value: Scalars['String']['output'];
+};
+
 export type Block = {
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
@@ -964,6 +971,7 @@ export enum JourneysReportType {
 
 export type Language = {
   __typename?: 'Language';
+  audioPreview: AudioPreview;
   bcp47?: Maybe<Scalars['String']['output']>;
   countries: Array<Country>;
   id: Scalars['ID']['output'];

@@ -29,6 +29,14 @@ interface Action
   gtmEventName: String
 }
 
+type AudioPreview
+  @join__type(graph: LANGUAGES)
+{
+  language: Language!
+  value: String!
+  size: Int!
+}
+
 interface Block
   @join__type(graph: JOURNEYS)
 {
@@ -1227,6 +1235,7 @@ type Language
   iso3: String @join__field(graph: LANGUAGES)
   name(languageId: ID, primary: Boolean): [LanguageName!]! @join__field(graph: LANGUAGES)
   countries: [Country!]! @join__field(graph: LANGUAGES)
+  audioPreview: AudioPreview! @join__field(graph: LANGUAGES)
 }
 
 enum LanguageIdType
