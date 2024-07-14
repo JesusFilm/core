@@ -24,7 +24,7 @@ import { BLOCK_DELETE } from '../../../../../../../libs/useBlockDeleteMutation'
 import { deleteBlockMock } from '../../../../../../../libs/useBlockDeleteMutation/useBlockDeleteMutation.mock'
 
 import { BlockRestore } from '../../../../../../../../__generated__/BlockRestore'
-import { CommandItem } from '../../../../../Toolbar/Items/CommandItem'
+import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 import { BLOCK_RESTORE, DeleteBlock } from './DeleteBlock'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -527,7 +527,7 @@ describe('DeleteBlock', () => {
           >
             <EditorProvider initialState={{ selectedBlock, selectedStep }}>
               <DeleteBlock variant="list-item" />
-              <CommandItem direction="undo" variant="button" />
+              <CommandUndoItem variant="button" />
             </EditorProvider>
           </JourneyProvider>
         </MockedProvider>
