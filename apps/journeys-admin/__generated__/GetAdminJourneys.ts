@@ -10,7 +10,7 @@ import { JourneyStatus, ThemeName, ThemeMode, UserJourneyRole } from "./globalTy
 // ====================================================
 
 export interface GetAdminJourneys_journeys_language_name {
-  __typename: "Translation";
+  __typename: "LanguageName";
   value: string;
   primary: boolean;
 }

@@ -64,7 +64,7 @@ const createJourneyMock: MockedResponse<CreateJourney, CreateJourneyVariables> =
               {
                 value: 'English',
                 primary: true,
-                __typename: 'Translation'
+                __typename: 'LanguageName'
               }
             ],
             __typename: 'Language'

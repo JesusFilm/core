@@ -8,7 +8,7 @@
 // ====================================================
 
 export interface GetLanguagesSlug_video_variantLanguagesWithSlug_language_name {
-  __typename: "Translation";
+  __typename: "LanguageName";
   value: string;
   primary: boolean;
 }

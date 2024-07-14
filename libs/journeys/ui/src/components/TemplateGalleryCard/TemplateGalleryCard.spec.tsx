@@ -30,7 +30,7 @@ const journey: Journey = {
     id: '529',
     name: [
       {
-        __typename: 'Translation',
+        __typename: 'LanguageName',
         value: 'English',
         primary: true
       }
@@ -94,12 +94,12 @@ describe('TemplateGalleryCard', () => {
             id: '529',
             name: [
               {
-                __typename: 'Translation',
+                __typename: 'LanguageName',
                 value: 'Kalagan, Tagakalu',
                 primary: true
               },
               {
-                __typename: 'Translation',
+                __typename: 'LanguageName',
                 value: 'Kalagan, Tagakalu Kalu',
                 primary: false
               }
