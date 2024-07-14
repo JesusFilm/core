@@ -14,7 +14,7 @@ import { blockDeleteUpdate } from '../../../../../../../libs/blockDeleteUpdate'
 import { useBlockDeleteMutation } from '../../../../../../../libs/useBlockDeleteMutation'
 import { MenuItem } from '../../../../../../MenuItem'
 
-import { gql, useMutation } from '@apollo/client'
+import { ApolloCache, Reference, gql, useMutation } from '@apollo/client'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
 import { BLOCK_FIELDS } from '@core/journeys/ui/block/blockFields'
@@ -147,15 +147,18 @@ export function DeleteBlock({
               journey.id
             )
           }
-        }).then(() => {
-          dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
         })
+        dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
       },
       async undo() {
-        const cache1 = (cache, data, id?) => {
+        const blockRestoreCacheUpdate = (
+          cache: ApolloCache<any>,
+          data: BlockRestore,
+          id?
+        ) => {
           const defaultCacheOptions = {
             fields: {
-              blocks(existingBlockRefs = [], { readField }) {
+              blocks(existingBlockRefs: Reference[] = [], { readField }) {
                 data.blockRestore.forEach((block) => {
                   const newBlockRef = cache.writeFragment({
                     data: block,
@@ -186,7 +189,7 @@ export function DeleteBlock({
           notifyOnNetworkStatusChange: true,
           update(cache, { data }) {
             if (data != null) {
-              cache1(
+              blockRestoreCacheUpdate(
                 cache,
                 data,
                 cache.identify({
@@ -194,13 +197,12 @@ export function DeleteBlock({
                   id: journey.id
                 })
               )
-              if (currentBlock.__typename === 'StepBlock') cache1(cache, data)
+              if (currentBlock.__typename === 'StepBlock')
+                blockRestoreCacheUpdate(cache, data)
             }
-          },
-          onCompleted: () => {
-            setEditorState(currentBlock, stepBeforeDelete)
           }
         })
+        setEditorState(currentBlock, stepBeforeDelete)
       }
     })
 
