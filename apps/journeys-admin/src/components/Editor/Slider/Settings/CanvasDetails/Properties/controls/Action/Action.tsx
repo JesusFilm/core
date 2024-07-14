@@ -4,7 +4,6 @@ import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
-import { init, t } from 'i18next'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
 
@@ -24,6 +23,7 @@ import {
 import { EmailAction } from './EmailAction'
 import { LinkAction } from './LinkAction'
 import { NavigateToBlockAction } from './NavigateToBlockAction'
+import { ActionValue, actions } from './utils/actions'
 
 export const ACTION_DELETE = gql`
   mutation ActionDelete($id: ID!, $journeyId: ID!) {
@@ -32,27 +32,6 @@ export const ACTION_DELETE = gql`
     }
   }
 `
-
-void init({ defaultNS: 'apps-journeys-admin', fallbackLng: 'en' })
-
-export const actions = [
-  {
-    value: 'none',
-    label: t('None')
-  },
-  {
-    value: 'NavigateToBlockAction',
-    label: t('Selected Card')
-  },
-  {
-    value: 'LinkAction',
-    label: t('URL/Website')
-  },
-  {
-    value: 'EmailAction',
-    label: t('Email')
-  }
-]
 
 export function Action(): ReactElement {
   const { state } = useEditor()
@@ -69,19 +48,15 @@ export function Action(): ReactElement {
 
   const [actionDelete] = useMutation<ActionDelete>(ACTION_DELETE)
 
-  const selectedAction = actions.find(
-    (act) => act.value === selectedBlock?.action?.__typename
+  const labels = actions(t)
+
+  const [action, setAction] = useState<ActionValue>(
+    selectedBlock?.action?.__typename ?? 'None'
   )
 
-  const [action, setAction] = useState(selectedAction?.value ?? 'none')
-
   useEffect(() => {
-    if (selectedAction != null) {
-      setAction(selectedAction.value)
-    } else {
-      setAction('none')
-    }
-  }, [selectedBlock, selectedAction])
+    setAction(selectedBlock?.action?.__typename ?? 'None')
+  }, [selectedBlock?.action?.__typename])
 
   async function removeAction(): Promise<void> {
     if (selectedBlock != null && journey != null) {
@@ -109,10 +84,8 @@ export function Action(): ReactElement {
   }
 
   async function handleChange(event: SelectChangeEvent): Promise<void> {
-    if (event.target.value === 'none') {
-      await removeAction()
-    }
-    setAction(event.target.value)
+    if (event.target.value === 'None') await removeAction()
+    setAction(event.target.value as ActionValue)
   }
 
   return (
@@ -128,7 +101,7 @@ export function Action(): ReactElement {
             value={action}
             IconComponent={ChevronDownIcon}
           >
-            {actions.map((action) => {
+            {labels.map((action) => {
               return (
                 <MenuItem
                   key={`button-action-${action.value}`}
