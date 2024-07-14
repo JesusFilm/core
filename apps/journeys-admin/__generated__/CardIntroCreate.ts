@@ -148,7 +148,7 @@ export interface CardIntroCreate_video_video_variant {
 }
 
 export interface CardIntroCreate_video_video_variantLanguages_name {
-  __typename: "Translation";
+  __typename: "LanguageName";
   value: string;
   primary: boolean;
 }
