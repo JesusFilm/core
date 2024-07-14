@@ -42,10 +42,10 @@ describe('transformReferrers', () => {
           draggable: false
         },
         {
-          id: 'Other sources',
+          id: 'other sources',
           type: 'Referrer',
           data: {
-            property: 'Other sources',
+            property: 'other sources',
             referrers: [referrers[1], referrers[3]]
           },
           position: { x: -600, y: 84 },
@@ -68,8 +68,8 @@ describe('transformReferrers', () => {
           updatable: false
         },
         {
-          id: 'Other sources->SocialPreview',
-          source: 'Other sources',
+          id: 'other sources->SocialPreview',
+          source: 'other sources',
           target: 'SocialPreview',
           type: 'Referrer',
           updatable: false

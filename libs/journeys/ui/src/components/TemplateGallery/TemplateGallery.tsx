@@ -22,7 +22,7 @@ export function TemplateGallery({
 }: TemplateGalleryProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const router = useRouter()
-  const selectedLanguageIds = castArray(router.query.languageIds ?? [])
+  const selectedLanguageIds = castArray(router.query.languageIds ?? ['529']) // Defaults to English language
   const selectedTagIds = castArray(router.query.tagIds ?? [])
 
   function handleTagIdsChange(

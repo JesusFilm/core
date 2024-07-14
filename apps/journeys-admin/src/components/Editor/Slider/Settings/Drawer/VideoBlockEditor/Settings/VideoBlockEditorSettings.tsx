@@ -15,6 +15,7 @@ import { ReactElement } from 'react'
 import TimeField from 'react-simple-timefield'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
 import Play2Icon from '@core/shared/ui/icons/Play2'
 import StopCircleContainedIcon from '@core/shared/ui/icons/StopCircleContained'
 import {
@@ -320,6 +321,16 @@ export function VideoBlockEditorSettings({
               }}
             />
           </Stack>
+          {values.autoplay === true && values.muted === false && (
+            <Stack direction="row" alignItems="center" color="text.secondary">
+              <InformationCircleContainedIcon sx={{ mr: 4 }} />
+              <Typography variant="caption">
+                {t(
+                  'Some mobile browsers may override this choice and default the video to play muted when autoplay is enabled'
+                )}
+              </Typography>
+            </Stack>
+          )}
           <Divider />
           <VideoBlockEditorSettingsPoster
             selectedBlock={posterBlock}

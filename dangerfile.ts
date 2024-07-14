@@ -1,4 +1,5 @@
-import { danger, warn, markdown, fail } from 'danger'
+import { readFile } from 'node:fs/promises'
+import { join } from 'node:path'
 import lint from '@commitlint/lint'
 import load from '@commitlint/load'
 import {
@@ -7,10 +8,9 @@ import {
   ParserOptions,
   ParserPreset
 } from '@commitlint/types'
-import config from './commitlint.config'
-import { readFile } from 'node:fs/promises'
-import { join } from 'node:path'
+import { danger, fail, markdown, warn } from 'danger'
 import { diffLines } from 'diff'
+import config from './commitlint.config'
 
 export default async () => {
   // merge queues not supported by danger-js
