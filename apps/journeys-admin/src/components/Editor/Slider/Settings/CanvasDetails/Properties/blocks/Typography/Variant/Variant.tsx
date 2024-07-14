@@ -10,7 +10,6 @@ import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import DashIcon from '@core/shared/ui/icons/Dash'
 
-import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { BlockFields_TypographyBlock as TypographyBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import { TypographyBlockUpdateVariant } from '../../../../../../../../../../__generated__/TypographyBlockUpdateVariant'
 import {
@@ -34,11 +33,9 @@ export const TYPOGRAPHY_BLOCK_UPDATE_VARIANT = gql`
 `
 
 export function Variant(): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
   const [typographyBlockUpdate] = useMutation<TypographyBlockUpdateVariant>(
     TYPOGRAPHY_BLOCK_UPDATE_VARIANT
   )
-  const { add } = useCommand()
   const { journey } = useJourney()
   const { rtl, locale } = getJourneyRTL(journey)
   const { state } = useEditor()
@@ -58,36 +55,7 @@ export function Variant(): ReactElement {
     </ThemeProvider>
   )
 
-  async function handleChange(variant: TypographyVariant): Promise<void> {
-    if (selectedBlock != null && variant != null && journey != null) {
-      await add({
-        parameters: {
-          execute: { id: selectedBlock.id, journeyId: journey.id, variant },
-          undo: {
-            id: selectedBlock.id,
-            journeyId: journey.id,
-            variant: selectedBlock.variant
-          }
-        },
-        async execute({ id, journeyId, variant }) {
-          await typographyBlockUpdate({
-            variables: {
-              id,
-              journeyId,
-              input: { variant }
-            },
-            optimisticResponse: {
-              typographyBlockUpdate: {
-                id,
-                variant,
-                __typename: 'TypographyBlock'
-              }
-            }
-          })
-        }
-      })
-    }
-  }
+  const { t } = useTranslation('apps-journeys-admin')
 
   const options = [
     {
@@ -183,6 +151,25 @@ export function Variant(): ReactElement {
       icon: <DashIcon />
     }
   ]
+
+  async function handleChange(variant: TypographyVariant): Promise<void> {
+    if (selectedBlock != null && variant != null && journey != null) {
+      await typographyBlockUpdate({
+        variables: {
+          id: selectedBlock.id,
+          journeyId: journey.id,
+          input: { variant }
+        },
+        optimisticResponse: {
+          typographyBlockUpdate: {
+            id: selectedBlock.id,
+            variant,
+            __typename: 'TypographyBlock'
+          }
+        }
+      })
+    }
+  }
 
   return (
     <ToggleButtonGroup
