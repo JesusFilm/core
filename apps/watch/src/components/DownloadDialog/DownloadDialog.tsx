@@ -54,7 +54,7 @@ export function DownloadDialog({
   const language = variant?.language ?? {
     __typename: 'Language',
     id: '529',
-    name: [{ __typename: 'Translation', value: 'English' }]
+    name: [{ __typename: 'LanguageName', value: 'English' }]
   }
   const time = secondsToTimeFormat(variant?.duration ?? 0)
 

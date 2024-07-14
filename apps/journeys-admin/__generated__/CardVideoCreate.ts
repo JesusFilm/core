@@ -21,7 +21,7 @@ export interface CardVideoCreate_video_video_variant {
 }
 
 export interface CardVideoCreate_video_video_variantLanguages_name {
-  __typename: "Translation";
+  __typename: "LanguageName";
   value: string;
   primary: boolean;
 }

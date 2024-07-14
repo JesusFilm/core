@@ -26,6 +26,13 @@ export type Action = {
   parentBlockId: Scalars['ID']['output'];
 };
 
+export type AudioPreview = {
+  __typename?: 'AudioPreview';
+  language: Language;
+  size: Scalars['Int']['output'];
+  value: Scalars['String']['output'];
+};
+
 export type Block = {
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
@@ -260,14 +267,14 @@ export type CloudflareVideo = {
 
 export type Country = {
   __typename?: 'Country';
-  continent: Array<Translation>;
+  continent: Array<CountryContinent>;
   flagPngSrc?: Maybe<Scalars['String']['output']>;
   flagWebpSrc?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   languages: Array<Language>;
   latitude?: Maybe<Scalars['Float']['output']>;
   longitude?: Maybe<Scalars['Float']['output']>;
-  name: Array<Translation>;
+  name: Array<CountryName>;
   population?: Maybe<Scalars['Int']['output']>;
 };
 
@@ -281,6 +288,20 @@ export type CountryContinentArgs = {
 export type CountryNameArgs = {
   languageId?: InputMaybe<Scalars['ID']['input']>;
   primary?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type CountryContinent = {
+  __typename?: 'CountryContinent';
+  language: Language;
+  primary: Scalars['Boolean']['output'];
+  value: Scalars['String']['output'];
+};
+
+export type CountryName = {
+  __typename?: 'CountryName';
+  language: Language;
+  primary: Scalars['Boolean']['output'];
+  value: Scalars['String']['output'];
 };
 
 export type CreateVerificationRequestInput = {
@@ -950,10 +971,12 @@ export enum JourneysReportType {
 
 export type Language = {
   __typename?: 'Language';
+  audioPreview: AudioPreview;
   bcp47?: Maybe<Scalars['String']['output']>;
+  countries: Array<Country>;
   id: Scalars['ID']['output'];
   iso3?: Maybe<Scalars['String']['output']>;
-  name: Array<Translation>;
+  name: Array<LanguageName>;
 };
 
 
@@ -966,6 +989,13 @@ export enum LanguageIdType {
   Bcp47 = 'bcp47',
   DatabaseId = 'databaseId'
 }
+
+export type LanguageName = {
+  __typename?: 'LanguageName';
+  language: Language;
+  primary: Scalars['Boolean']['output'];
+  value: Scalars['String']['output'];
+};
 
 export type LanguageWithSlug = {
   __typename?: 'LanguageWithSlug';
@@ -1980,7 +2010,7 @@ export type Query = {
   block: Block;
   blocks: Array<Block>;
   countries: Array<Country>;
-  country: Country;
+  country?: Maybe<Country>;
   customDomain: CustomDomain;
   customDomains: Array<CustomDomain>;
   getJourneyProfile?: Maybe<JourneyProfile>;

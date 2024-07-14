@@ -1,7 +1,12 @@
 {
   "$schema": "https://biomejs.dev/schemas/1.8.1/schema.json",
   "files": {
-    "ignore": ["__generated__", "schema.graphql"]
+    "ignore": [
+      "__generated__",
+      "schema.graphql",
+      ".storybook",
+      "package-lock.json"
+    ]
   },
   "formatter": {
     "enabled": true,
