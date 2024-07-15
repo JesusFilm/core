@@ -1,4 +1,5 @@
 import { ContentCarousel } from '@core/shared/ui/ContentCarousel'
+import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -63,7 +64,7 @@ export function StrategySection({ items }: StrategySectionProps): ReactElement {
   const { t } = useTranslation('apps-watch')
   const ButtonStack = () => {
     return (
-      <Stack direction="row" spacing={2}>
+      <Stack data-testid="ButtonStack" direction="row" spacing={2}>
         <Button>{t('Learn More')}</Button>
         <Button>{t('Request Catalog')}</Button>
         <Button>{t('Get in touch')}</Button>
@@ -74,7 +75,7 @@ export function StrategySection({ items }: StrategySectionProps): ReactElement {
     )
   }
   return (
-    <>
+    <Box data-testid="StrategySection">
       <Stack
         flexDirection="row"
         alignItems="center"
@@ -89,6 +90,6 @@ export function StrategySection({ items }: StrategySectionProps): ReactElement {
         renderItem={(itemProps) => <StrategyItem {...itemProps} />}
         breakpoints={swiperBreakpoints}
       />
-    </>
+    </Box>
   )
 }
