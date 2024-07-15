@@ -26,6 +26,7 @@ interface Action
   @join__type(graph: JOURNEYS)
 {
   parentBlockId: ID!
+  parentBlock: Block!
   gtmEventName: String
 }
 
@@ -469,6 +470,7 @@ type EmailAction implements Action
   @join__type(graph: JOURNEYS)
 {
   parentBlockId: ID!
+  parentBlock: Block!
   gtmEventName: String
   email: String!
 }
@@ -1235,7 +1237,7 @@ type Language
   iso3: String @join__field(graph: LANGUAGES)
   name(languageId: ID, primary: Boolean): [LanguageName!]! @join__field(graph: LANGUAGES)
   countries: [Country!]! @join__field(graph: LANGUAGES)
-  audioPreview: AudioPreview! @join__field(graph: LANGUAGES)
+  audioPreview: [AudioPreview!]! @join__field(graph: LANGUAGES)
 }
 
 enum LanguageIdType
@@ -1285,6 +1287,7 @@ type LinkAction implements Action
   @join__type(graph: JOURNEYS)
 {
   parentBlockId: ID!
+  parentBlock: Block!
   gtmEventName: String
   url: String!
   target: String
@@ -1614,6 +1617,7 @@ type NavigateToBlockAction implements Action
   @join__type(graph: JOURNEYS)
 {
   parentBlockId: ID!
+  parentBlock: Block!
   gtmEventName: String
   blockId: String!
 }
