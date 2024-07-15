@@ -77,8 +77,6 @@ export function TemplateGalleryCard({
         }).replace(' ', ', ')
       : ''
 
-  console.log(theme.breakpoints.values.xl)
-
   return (
     <Card
       aria-label="templateGalleryCard"
@@ -196,7 +194,6 @@ export function TemplateGalleryCard({
                   })}
                 </Typography>
                 <Box
-                  data-testid="BOXBOX"
                   sx={{
                     display: { xs: 'none', md: '-webkit-box' },
                     height: '66px',
