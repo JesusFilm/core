@@ -194,7 +194,7 @@ describe('transformJourneyAnalytics', () => {
             id: 'Direct / None',
             position: {
               x: -600,
-              y: -18
+              y: -46
             },
             type: 'Referrer'
           },
@@ -208,7 +208,7 @@ describe('transformJourneyAnalytics', () => {
             id: 'tiktok',
             position: {
               x: -600,
-              y: 24
+              y: 19
             },
             type: 'Referrer'
           },
@@ -222,7 +222,7 @@ describe('transformJourneyAnalytics', () => {
             id: 'facebook',
             position: {
               x: -600,
-              y: 66
+              y: 84
             },
             type: 'Referrer'
           }

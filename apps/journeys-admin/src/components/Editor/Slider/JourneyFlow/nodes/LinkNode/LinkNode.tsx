@@ -54,7 +54,10 @@ export function LinkNode({ id }: NodeProps): ReactElement {
           borderRadius: 2,
           border: (theme) =>
             `2px solid ${alpha(theme.palette.secondary.dark, 0.1)}`,
-          transition: (theme) => theme.transitions.create('opacity')
+          transition: (theme) => theme.transitions.create('opacity'),
+          ':hover': {
+            cursor: 'grab'
+          }
         }}
       >
         <Fade in={showAnalytics}>
