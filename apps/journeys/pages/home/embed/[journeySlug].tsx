@@ -4,15 +4,12 @@ import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
 import { ReactElement, useMemo } from 'react'
 
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { getStepTheme } from '@core/journeys/ui/getStepTheme'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { transformer } from '@core/journeys/ui/transformer'
 import { GET_JOURNEY } from '@core/journeys/ui/useJourneyQuery'
-import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
-import PlausibleProvider from 'next-plausible'
 import {
   GetJourney,
   GetJourneyVariables,
@@ -22,6 +19,7 @@ import { StepFields } from '../../../__generated__/StepFields'
 import { IdType } from '../../../__generated__/globalTypes'
 import i18nConfig from '../../../next-i18next.config'
 import { EmbeddedPreview } from '../../../src/components/EmbeddedPreview'
+import { JourneyPageWrapper } from '../../../src/components/JourneyPageWrapper'
 import { createApolloClient } from '../../../src/libs/apolloClient'
 
 interface JourneyPageProps {
@@ -40,18 +38,9 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
     blocks.length > 0
       ? getStepTheme(blocks[0] as TreeBlock<StepFields>, journey)
       : { themeName: journey.themeName, themeMode: journey.themeMode }
+
   return (
-    <PlausibleProvider
-      enabled
-      trackLocalhost
-      trackFileDownloads
-      trackOutboundLinks
-      manualPageviews
-      customDomain="/plausible"
-      domain={`api-journeys-journey-${journey.id}${
-        journey.team?.id != null ? `,api-journeys-team-${journey.team.id}` : ''
-      }`}
-    >
+    <>
       <NextSeo
         title={journey.title}
         nofollow
@@ -95,15 +84,19 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
           background: transparent !important;
         }
       `}</style>
-      <JourneyProvider value={{ journey, variant: 'embed' }}>
-        <ThemeProvider {...theme} rtl={rtl} locale={locale}>
-          <EmbeddedPreview
-            blocks={blocks}
-            disableFullscreen={query?.expand === 'false'}
-          />
-        </ThemeProvider>
-      </JourneyProvider>
-    </PlausibleProvider>
+      <JourneyPageWrapper
+        journey={journey}
+        variant="embed"
+        theme={theme}
+        rtl={rtl}
+        locale={locale}
+      >
+        <EmbeddedPreview
+          blocks={blocks}
+          disableFullscreen={query?.expand === 'false'}
+        />
+      </JourneyPageWrapper>
+    </>
   )
 }
 
