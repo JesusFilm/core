@@ -74,7 +74,8 @@ export class EmailActionResolver {
       update: {
         ...ACTION_UPDATE_RESET,
         ...input
-      }
+      },
+      include: { parentBlock: { include: { action: true } } }
     })
   }
 }
