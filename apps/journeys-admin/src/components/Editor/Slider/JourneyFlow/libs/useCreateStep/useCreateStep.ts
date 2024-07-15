@@ -11,9 +11,9 @@ import {
   ThemeName
 } from '../../../../../../../__generated__/globalTypes'
 import { useBlockOrderUpdateMutation } from '../../../../../../libs/useBlockOrderUpdateMutation'
-import { useNavigateToBlockActionUpdateMutation } from '../../../../../../libs/useNavigateToBlockActionUpdateMutation'
 import { useStepAndCardBlockCreateMutation } from '../../../../../../libs/useStepAndCardBlockCreateMutation'
 import { useStepBlockNextBlockUpdateMutation } from '../../../../../../libs/useStepBlockNextBlockUpdateMutation'
+import { useWrappedNavigateToBlockActionUpdateMutation } from '../../../../../../libs/useWrappedNavigateToBlockActionUpdateMutation'
 import { RawEdgeSource, convertToEdgeSource } from '../convertToEdgeSource'
 
 type RawEdgeSourceAndCoordinates = RawEdgeSource & {
@@ -50,7 +50,8 @@ export function useCreateStep(): (
     }
   })
   const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
-  const [navigateToBlockActionUpdate] = useNavigateToBlockActionUpdateMutation()
+  const [navigateToBlockActionUpdate] =
+    useWrappedNavigateToBlockActionUpdateMutation()
   const [blockOrderUpdate] = useBlockOrderUpdateMutation()
 
   return async function createStep({

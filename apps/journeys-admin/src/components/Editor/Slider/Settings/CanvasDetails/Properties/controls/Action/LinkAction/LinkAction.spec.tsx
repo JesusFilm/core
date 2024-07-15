@@ -8,7 +8,8 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { GetJourney_journey as Journey } from '../../../../../../../../../../__generated__/GetJourney'
 import { steps } from '../data'
 
-import { LINK_ACTION_UPDATE, LinkAction } from './LinkAction'
+import { LinkAction } from '.'
+import { LINK_ACTION_UPDATE } from '../../../../../../../../../libs/useLinkActionUpdateMutation'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -55,20 +56,8 @@ describe('LinkAction', () => {
   })
 
   it('updates action url', async () => {
-    const cache = new InMemoryCache()
-    cache.restore({
-      'Journey:journeyId': {
-        blocks: [{ __ref: 'ButtonBlock:button1.id' }],
-        id: 'journeyId',
-        __typename: 'Journey'
-      },
-      'ButtonBlock:button1.id': {
-        ...selectedBlock
-      }
-    })
-
     const { getByRole } = render(
-      <MockedProvider mocks={mocks} cache={cache}>
+      <MockedProvider mocks={mocks}>
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
@@ -86,12 +75,6 @@ describe('LinkAction', () => {
     })
     fireEvent.blur(getByRole('textbox'))
     await waitFor(() => expect(result).toHaveBeenCalled())
-
-    expect(cache.extract()['ButtonBlock:button1.id']?.action).toEqual({
-      parentBlockId: 'button1.id',
-      gtmEventName: 'gtmEventName',
-      url: 'https://github.com'
-    })
   })
 
   it('is a required field', async () => {
@@ -110,20 +93,8 @@ describe('LinkAction', () => {
   })
 
   it('accepts links without protocol as a URL', async () => {
-    const cache = new InMemoryCache()
-    cache.restore({
-      'Journey:journeyId': {
-        blocks: [{ __ref: 'ButtonBlock:button1.id' }],
-        id: 'journeyId',
-        __typename: 'Journey'
-      },
-      'ButtonBlock:button1.id': {
-        ...selectedBlock
-      }
-    })
-
     const { queryByText, getByRole } = render(
-      <MockedProvider mocks={mocks} cache={cache}>
+      <MockedProvider mocks={mocks}>
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
@@ -144,28 +115,9 @@ describe('LinkAction', () => {
       expect(queryByText('Invalid URL')).not.toBeInTheDocument()
     )
     await waitFor(() => expect(result).toHaveBeenCalled())
-    await waitFor(() =>
-      expect(cache.extract()['ButtonBlock:button1.id']?.action).toEqual({
-        parentBlockId: 'button1.id',
-        gtmEventName: 'gtmEventName',
-        url: 'https://github.com'
-      })
-    )
   })
 
   it('accepts deep links as a URL', async () => {
-    const cache = new InMemoryCache()
-    cache.restore({
-      'Journey:journeyId': {
-        blocks: [{ __ref: 'ButtonBlock:button1.id' }],
-        id: 'journeyId',
-        __typename: 'Journey'
-      },
-      'ButtonBlock:button1.id': {
-        ...selectedBlock
-      }
-    })
-
     const result = jest.fn(() => ({
       data: {
         blockUpdateLinkAction: {
@@ -193,7 +145,6 @@ describe('LinkAction', () => {
             result
           }
         ]}
-        cache={cache}
       >
         <JourneyProvider
           value={{
@@ -215,13 +166,6 @@ describe('LinkAction', () => {
       expect(queryByText('Invalid URL')).not.toBeInTheDocument()
     )
     await waitFor(() => expect(result).toHaveBeenCalled())
-    await waitFor(() =>
-      expect(cache.extract()['ButtonBlock:button1.id']?.action).toEqual({
-        parentBlockId: 'button1.id',
-        gtmEventName: 'gtmEventName',
-        url: 'viber://'
-      })
-    )
   })
 
   it('rejects mailto links as a URL', async () => {
@@ -240,20 +184,8 @@ describe('LinkAction', () => {
   })
 
   it('should submit when enter is pressed', async () => {
-    const cache = new InMemoryCache()
-    cache.restore({
-      'Journey:journeyId': {
-        blocks: [{ __ref: 'ButtonBlock:button1.id' }],
-        id: 'journeyId',
-        __typename: 'Journey'
-      },
-      'ButtonBlock:button1.id': {
-        ...selectedBlock
-      }
-    })
-
     const { getByRole, queryByText } = render(
-      <MockedProvider mocks={mocks} cache={cache}>
+      <MockedProvider mocks={mocks}>
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
@@ -276,12 +208,5 @@ describe('LinkAction', () => {
       expect(queryByText('Invalid URL')).not.toBeInTheDocument()
     )
     await waitFor(() => expect(result).toHaveBeenCalled())
-    await waitFor(() =>
-      expect(cache.extract()['ButtonBlock:button1.id']?.action).toEqual({
-        parentBlockId: 'button1.id',
-        gtmEventName: 'gtmEventName',
-        url: 'https://github.com'
-      })
-    )
   })
 })

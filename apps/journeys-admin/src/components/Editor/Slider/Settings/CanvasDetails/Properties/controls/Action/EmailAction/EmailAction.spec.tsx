@@ -6,9 +6,8 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { GetJourney_journey as Journey } from '../../../../../../../../../../__generated__/GetJourney'
+import { EMAIL_ACTION_UPDATE } from '../../../../../../../../../libs/useEmailActionUpdateMutation'
 import { steps } from '../data'
-
-import { EMAIL_ACTION_UPDATE } from './EmailAction'
 
 import { EmailAction } from '.'
 
@@ -41,18 +40,6 @@ describe('EmailAction', () => {
   })
 
   it('updates action email', async () => {
-    const cache = new InMemoryCache()
-    cache.restore({
-      'Journey:journeyId': {
-        blocks: [{ __ref: 'ButtonBlock:button2.id' }],
-        id: 'journeyId',
-        __typename: 'Journey'
-      },
-      'ButtonBlock:button2.id': {
-        ...selectedBlock
-      }
-    })
-
     const mocks = [
       {
         request: {
@@ -70,7 +57,7 @@ describe('EmailAction', () => {
     ]
 
     const { getByRole } = render(
-      <MockedProvider mocks={mocks} cache={cache}>
+      <MockedProvider mocks={mocks}>
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
@@ -88,12 +75,6 @@ describe('EmailAction', () => {
     })
     fireEvent.submit(getByRole('textbox'))
     await waitFor(() => expect(result).toHaveBeenCalled())
-
-    expect(cache.extract()['ButtonBlock:button2.id']?.action).toEqual({
-      parentBlockId: 'button2.id',
-      gtmEventName: 'gtmEventName',
-      email: 'edmondwashere@gmail.com'
-    })
   })
 
   it('is a required field', async () => {

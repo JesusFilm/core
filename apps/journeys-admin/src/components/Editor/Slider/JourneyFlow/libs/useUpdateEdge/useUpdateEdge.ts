@@ -7,8 +7,8 @@ import { searchBlocks } from '@core/journeys/ui/searchBlocks'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'
 import { useBlockOrderUpdateMutation } from '../../../../../../libs/useBlockOrderUpdateMutation'
-import { useNavigateToBlockActionUpdateMutation } from '../../../../../../libs/useNavigateToBlockActionUpdateMutation'
 import { useStepBlockNextBlockUpdateMutation } from '../../../../../../libs/useStepBlockNextBlockUpdateMutation'
+import { useWrappedNavigateToBlockActionUpdateMutation } from '../../../../../../libs/useWrappedNavigateToBlockActionUpdateMutation'
 import { RawEdgeSource, convertToEdgeSource } from '../convertToEdgeSource'
 import { useDeleteEdge } from '../useDeleteEdge'
 
@@ -26,7 +26,8 @@ export function useUpdateEdge(): (
   } = useEditor()
 
   const [blockOrderUpdate] = useBlockOrderUpdateMutation()
-  const [navigateToBlockActionUpdate] = useNavigateToBlockActionUpdateMutation()
+  const [navigateToBlockActionUpdate] =
+    useWrappedNavigateToBlockActionUpdateMutation()
   const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
   const deleteEdge = useDeleteEdge()
 

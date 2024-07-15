@@ -20,15 +20,22 @@ import {
   BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../../../__generated__/BlockFields'
 
+import { useCommand } from '@core/journeys/ui/CommandProvider'
+import { BLOCK_UPDATE_ACTION_FIELDS } from '@core/journeys/ui/action/actionFields'
+import { useEmailActionUpdateMutation } from '../../../../../../../../libs/useEmailActionUpdateMutation'
+import { useLinkActionUpdateMutation } from '../../../../../../../../libs/useLinkActionUpdateMutation'
+import { useNavigateToBlockActionUpdateMutation } from '../../../../../../../../libs/useNavigateToBlockActionUpdateMutation'
 import { EmailAction } from './EmailAction'
 import { LinkAction } from './LinkAction'
 import { NavigateToBlockAction } from './NavigateToBlockAction'
 import { ActionValue, actions } from './utils/actions'
 
 export const ACTION_DELETE = gql`
+  ${BLOCK_UPDATE_ACTION_FIELDS}
   mutation ActionDelete($id: ID!, $journeyId: ID!) {
     blockDeleteAction(id: $id, journeyId: $journeyId) {
       id
+      ...BlockUpdateActionFields
     }
   }
 `
@@ -37,6 +44,7 @@ export function Action(): ReactElement {
   const { state } = useEditor()
   const { journey } = useJourney()
   const { t } = useTranslation('apps-journeys-admin')
+  const { add } = useCommand()
 
   // Add addtional types here to use this component for that block
   const selectedBlock = state.selectedBlock as
@@ -45,11 +53,11 @@ export function Action(): ReactElement {
     | TreeBlock<SignUpBlock>
     | TreeBlock<VideoBlock>
     | undefined
-
   const [actionDelete] = useMutation<ActionDelete>(ACTION_DELETE)
-
+  const [linkActionUpdate] = useLinkActionUpdateMutation()
+  const [emailActionUpdate] = useEmailActionUpdateMutation()
+  const [navigateToBlockActionUpdate] = useNavigateToBlockActionUpdateMutation()
   const labels = actions(t)
-
   const [action, setAction] = useState<ActionValue>(
     selectedBlock?.action?.__typename ?? 'None'
   )
@@ -59,24 +67,62 @@ export function Action(): ReactElement {
   }, [selectedBlock?.action?.__typename])
 
   async function removeAction(): Promise<void> {
-    if (selectedBlock != null && journey != null) {
-      const { id, __typename: typeName } = selectedBlock
-      await actionDelete({
-        variables: {
-          id,
-          journeyId: journey.id
+    if (journey != null && selectedBlock?.action != null) {
+      const { id, action } = selectedBlock
+      add({
+        parameters: {
+          execute: {
+            id,
+            journeyId: journey.id
+          },
+          undo: {
+            id,
+            journeyId: journey.id,
+            action
+          }
         },
-        update(cache, { data }) {
-          if (data?.blockDeleteAction != null) {
-            cache.modify({
-              id: cache.identify({
-                __typename: typeName,
-                id
-              }),
-              fields: {
-                action: () => null
-              }
-            })
+        async execute({ id, journeyId }) {
+          await actionDelete({
+            variables: {
+              id,
+              journeyId
+            }
+          })
+        },
+        async undo({ id, journeyId, action }) {
+          switch (action.__typename) {
+            case 'LinkAction':
+              await linkActionUpdate({
+                variables: {
+                  id,
+                  journeyId,
+                  input: {
+                    url: action.url
+                  }
+                }
+              })
+              break
+            case 'EmailAction':
+              await emailActionUpdate({
+                variables: {
+                  id,
+                  journeyId,
+                  input: {
+                    email: action.email
+                  }
+                }
+              })
+              break
+            case 'NavigateToBlockAction':
+              await navigateToBlockActionUpdate({
+                variables: {
+                  id,
+                  journeyId,
+                  input: {
+                    blockId: action.blockId
+                  }
+                }
+              })
           }
         }
       })

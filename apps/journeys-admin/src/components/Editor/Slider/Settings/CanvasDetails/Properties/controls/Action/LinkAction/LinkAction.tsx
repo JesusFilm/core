@@ -1,4 +1,3 @@
-import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import InputAdornment from '@mui/material/InputAdornment'
 import Typography from '@mui/material/Typography'
@@ -12,32 +11,17 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import LinkIcon from '@core/shared/ui/icons/Link'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
-import { LinkActionUpdate } from '../../../../../../../../../../__generated__/LinkActionUpdate'
+import { useLinkActionUpdateMutation } from '../../../../../../../../../libs/useLinkActionUpdateMutation'
 import { TextFieldForm } from '../../../../../../../../TextFieldForm'
-
-export const LINK_ACTION_UPDATE = gql`
-  mutation LinkActionUpdate(
-    $id: ID!
-    $journeyId: ID!
-    $input: LinkActionInput!
-  ) {
-    blockUpdateLinkAction(id: $id, journeyId: $journeyId, input: $input) {
-      parentBlockId
-      gtmEventName
-      url
-    }
-  }
-`
 
 export function LinkAction(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { state } = useEditor()
   const { journey } = useJourney()
+  const [linkActionUpdate] = useLinkActionUpdateMutation()
   const selectedBlock = state.selectedBlock as
     | TreeBlock<ButtonBlock>
     | undefined
-
-  const [linkActionUpdate] = useMutation<LinkActionUpdate>(LINK_ACTION_UPDATE)
 
   const linkAction =
     selectedBlock?.action?.__typename === 'LinkAction'
@@ -50,7 +34,7 @@ export function LinkAction(): ReactElement {
     let urlInspect = value ?? ''
     if (!protocol.test(urlInspect)) {
       if (/^mailto:/.test(urlInspect)) return false
-      urlInspect = 'https://' + urlInspect
+      urlInspect = `https://${urlInspect}`
     }
     try {
       return new URL(urlInspect).toString() !== ''
@@ -69,26 +53,12 @@ export function LinkAction(): ReactElement {
     // checks if url has a protocol
     const url = /^\w+:\/\//.test(src) ? src : `https://${src}`
     if (selectedBlock != null && journey != null) {
-      const { id, __typename: typeName } = selectedBlock
       await linkActionUpdate({
         variables: {
-          id,
+          id: selectedBlock.id,
           journeyId: journey.id,
           input: {
             url
-          }
-        },
-        update(cache, { data }) {
-          if (data?.blockUpdateLinkAction != null) {
-            cache.modify({
-              id: cache.identify({
-                __typename: typeName,
-                id
-              }),
-              fields: {
-                action: () => data.blockUpdateLinkAction
-              }
-            })
           }
         }
       })
@@ -97,7 +67,11 @@ export function LinkAction(): ReactElement {
 
   return (
     <>
-      <Typography variant="caption" color="secondary.main" gutterBottom>
+      <Typography
+        variant="caption"
+        color="secondary.main"
+        sx={{ mt: 1, mb: 3 }}
+      >
         {t('Open new tab pointing to the provided URL.')}
       </Typography>
       <Box data-testid="LinkAction">
