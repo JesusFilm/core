@@ -168,7 +168,6 @@ export function DeleteBlock({
         }
         await blockRestore({
           variables: { blockRestoreId: currentBlock?.id },
-          notifyOnNetworkStatusChange: true,
           update(cache, { data }) {
             if (data != null) {
               blockRestoreCacheUpdate(

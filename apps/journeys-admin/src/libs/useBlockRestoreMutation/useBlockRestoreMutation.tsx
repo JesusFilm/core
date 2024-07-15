@@ -27,10 +27,8 @@ mutation BlockRestore($blockRestoreId: ID!) {
 export function useBlockRestoreMutation(
   options?: MutationHookOptions<BlockRestore, BlockRestoreVariables>
 ): MutationTuple<BlockRestore, BlockRestoreVariables> {
-  const mutation = useMutation<BlockRestore, BlockRestoreVariables>(
+  return useMutation<BlockRestore, BlockRestoreVariables>(
     BLOCK_RESTORE,
     options
   )
-
-  return mutation
 }
