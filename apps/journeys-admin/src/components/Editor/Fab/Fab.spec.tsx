@@ -5,15 +5,15 @@ import {
   ActiveContent,
   ActiveFab,
   EditorProvider,
-  EditorState
+  type EditorState
 } from '@core/journeys/ui/EditorProvider'
 import {
   ActiveCanvasDetailsDrawer,
   ActiveSlide
 } from '@core/journeys/ui/EditorProvider/EditorProvider'
-import { TreeBlock } from '@core/journeys/ui/block'
+import type { TreeBlock } from '@core/journeys/ui/block'
 
-import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourney'
+import type { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourney'
 import { TestEditorState } from '../../../libs/TestEditorState'
 
 import { Fab } from '.'
@@ -31,7 +31,7 @@ describe('Fab', () => {
     activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
   }
 
-  describe('smUp', () => {
+  describe('lgUp', () => {
     beforeEach(() =>
       (useMediaQuery as jest.Mock).mockImplementation(() => true)
     )
@@ -215,7 +215,7 @@ describe('Fab', () => {
     })
   })
 
-  describe('smDown', () => {
+  describe('lgDown', () => {
     beforeEach(() =>
       (useMediaQuery as jest.Mock).mockImplementation(() => false)
     )
