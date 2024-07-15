@@ -1,1 +1,0 @@
-export { StrategyItem } from './StrategyItem'

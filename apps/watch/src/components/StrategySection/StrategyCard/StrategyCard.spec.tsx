@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
-import { StrategyItem } from './StrategyItem'
+import { StrategyCard } from './StrategyCard'
 
-describe('StrategyItem', () => {
+describe('StrategyCard', () => {
   const item = {
     title: 'Strategy Title',
     description: 'description',
@@ -9,20 +9,20 @@ describe('StrategyItem', () => {
     imageUrl: '',
     link: ''
   }
-  it('should render strategy item', () => {
-    render(<StrategyItem item={item} />)
+  it('should render strategy card', () => {
+    render(<StrategyCard item={item} />)
 
-    const strategyItem = screen.getByTestId('StrategyItem')
-    expect(strategyItem).toBeInTheDocument()
+    const strategyCard = screen.getByTestId('StrategyCard')
+    expect(strategyCard).toBeInTheDocument()
 
-    expect(strategyItem).toHaveTextContent(item.title)
-    expect(strategyItem).toHaveTextContent(item.description)
+    expect(strategyCard).toHaveTextContent(item.title)
+    expect(strategyCard).toHaveTextContent(item.description)
   })
 
   it('should have correct link', () => {
-    render(<StrategyItem item={item} />)
+    render(<StrategyCard item={item} />)
 
-    const link = screen.getByTestId('StrategyItemLink')
+    const link = screen.getByTestId('StrategyCardLink')
     expect(link).toHaveAttribute('href', item.link)
   })
 
@@ -30,7 +30,7 @@ describe('StrategyItem', () => {
   //
   //   it('should have correct image properties', () => {
   //     render(
-  //       <StrategyItem
+  //       <StrategyCard
   //         item={{ ...item, title: 'New Title', imageUrl: 'newImageUrl' }}
   //       />
   //     )

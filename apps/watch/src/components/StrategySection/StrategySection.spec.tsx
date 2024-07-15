@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react'
-import { StrategyCarouselItemProps, StrategySection } from './StrategySection'
+import { StrategyItemProps } from './StrategyCard/StrategyCard'
+import { StrategySection } from './StrategySection'
 
 describe('StrategySection', () => {
   const StrategyItems = [
@@ -24,23 +25,18 @@ describe('StrategySection', () => {
       imageUrl: '',
       link: ''
     }
-  ] as Array<StrategyCarouselItemProps>
+  ] as Array<StrategyItemProps>
   it('should render strategysection', () => {
-    render(<StrategySection items={[]} />)
+    render(<StrategySection />)
     expect(screen.getByTestId('StrategySection')).toBeInTheDocument()
   })
 
-  it('should render button stack', () => {
-    render(<StrategySection items={[]} />)
-    expect(screen.getByTestId('ButtonStack')).toBeInTheDocument()
-  })
-
   it('should render 3 strategy items', () => {
-    render(<StrategySection items={StrategyItems} />)
+    render(<StrategySection />)
 
-    const items = screen.getAllByTestId('StrategyItem')
-    expect(items).toHaveLength(3)
+    const items = screen.getAllByTestId('StrategyCard')
+    expect(items).toHaveLength(9)
 
-    expect(items[0]).toHaveTextContent('Title 0')
+    expect(items[0]).toHaveTextContent('Title 1')
   })
 })

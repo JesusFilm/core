@@ -6,29 +6,30 @@ import { useTranslation } from 'next-i18next'
 import Image from 'next/image'
 import NextLink from 'next/link'
 import { ReactElement } from 'react'
-import { StrategyCarouselItemProps } from '../StrategySection'
 
-interface StrategyItemProps {
-  item?: StrategyCarouselItemProps
+export interface StrategyItemProps {
+  id: string
+  title: string
+  description: string
+  imageUrl: string
+  link: string
+}
+
+interface StrategyCardProps {
+  item?: StrategyItemProps
   priority?: boolean
 }
 
-export function StrategyItem({
+export function StrategyCard({
   item,
   priority
-}: StrategyItemProps): ReactElement {
+}: StrategyCardProps): ReactElement {
   const { t } = useTranslation('apps-watch')
   const theme = useTheme()
   return (
-    // object-id
-    // posttitle
-    // content (description)
-    // image.thumbnail.url (image url)
-    // permalink (link to use on nextLink to wrap)
-
     <Card
-      data-testid="StrategyItem"
-      aria-label="StrategyItem"
+      data-testid="StrategyCard"
+      aria-label="StrategyCard"
       tabIndex={0}
       sx={{
         border: 'none',
@@ -61,7 +62,7 @@ export function StrategyItem({
         <Box
           component="a"
           tabIndex={-1}
-          data-testid="StrategyItemLink"
+          data-testid="StrategyCardLink"
           sx={{
             height: 'inherit',
             color: 'inherit',
@@ -82,14 +83,10 @@ export function StrategyItem({
               backgroundColor: 'background.default'
             }}
           >
-            {/* TODO: replace image src&alt with content from wordpress */}
             <Image
               className="MuiImageBackground-root"
-              src="https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920"
-              alt="random image from unsplash"
-              // TODO:
-              // src={item?.imageUrl}
-              // alt={item?.title}
+              src={item?.imageUrl ?? ''}
+              alt={item?.title ?? ''}
               fill
               sizes={`(max-width: ${
                 theme.breakpoints.values.md - 0.5
@@ -103,9 +100,8 @@ export function StrategyItem({
             />
           </Stack>
           <Stack sx={{ px: 0, py: 3 }}>
-            <Typography variant="subtitle2">{t(item?.title ?? '')}</Typography>
+            <Typography variant="subtitle2">{item?.title ?? ''}</Typography>
             <Box
-              data-testid="BOXBOX"
               sx={{
                 display: { xs: 'none', md: '-webkit-box' },
                 height: '66px',
@@ -121,7 +117,7 @@ export function StrategyItem({
                   my: 1
                 }}
               >
-                {t(item?.description ?? '')}
+                {item?.description ?? ''}
               </Typography>
             </Box>
             <Box
@@ -140,7 +136,7 @@ export function StrategyItem({
                   my: 1
                 }}
               >
-                {t(item?.description ?? '')}
+                {item?.description ?? ''}
               </Typography>
             </Box>
           </Stack>

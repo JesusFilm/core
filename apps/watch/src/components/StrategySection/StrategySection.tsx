@@ -1,39 +1,87 @@
 import { ContentCarousel } from '@core/shared/ui/ContentCarousel'
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
-import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTheme } from '@mui/material/styles'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { SwiperOptions } from 'swiper/types'
-import { StrategyItem } from './StrategyItem'
+import { StrategyCard } from './StrategyCard'
 
-export interface StrategyCarouselItemProps {
-  id: string
-  title: string
-  description: string
-  imageUrl: string
-  link: string
-}
+const longDescription =
+  'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum'
 
-interface StrategySectionProps {
-  items: Array<StrategyCarouselItemProps>
-}
+const imageSrc =
+  'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920'
 
-//might need to update the props that get passed in
-// dependent on algolia
-export function StrategySection({ items }: StrategySectionProps): ReactElement {
-  // const { items } = useHits(props)
-  // post type label
-  // description
-  // strategycarousel
+const items = [
+  {
+    title: 'Title 1',
+    description: longDescription,
+    id: 'test-id',
+    imageUrl: imageSrc,
+    link: ''
+  },
+  {
+    title: 'Title',
+    description: longDescription,
+    id: 'test-id',
+    imageUrl: imageSrc,
+    link: ''
+  },
+  {
+    title: 'Title',
+    description: longDescription,
+    id: 'test-id',
+    imageUrl: imageSrc,
+    link: ''
+  },
+  {
+    title: 'Title',
+    description: longDescription,
+    id: 'test-id',
+    imageUrl: imageSrc,
+    link: ''
+  },
+  {
+    title: 'Title',
+    description: 'description',
+    id: 'test-id',
+    imageUrl: imageSrc,
+    link: ''
+  },
+  {
+    title: 'Title',
+    description: 'description',
+    id: 'test-id',
+    imageUrl: imageSrc,
+    link: ''
+  },
+  {
+    title: 'Title',
+    description: 'description',
+    id: 'test-id',
+    imageUrl: imageSrc,
+    link: ''
+  },
+  {
+    title: 'Title',
+    description: 'description',
+    id: 'test-id',
+    imageUrl: imageSrc,
+    link: ''
+  },
+  {
+    title: 'Title',
+    description: 'description',
+    id: 'test-id',
+    imageUrl: imageSrc,
+    link: ''
+  }
+]
 
-  // use hook at this level
-  // pass hits down into stratetgycarousel
-
+export function StrategySection(): ReactElement {
+  const { t } = useTranslation('apps-watch')
   const { breakpoints } = useTheme()
-
   const swiperBreakpoints: SwiperOptions['breakpoints'] = {
     [breakpoints.values.xs]: {
       slidesPerGroup: 2,
@@ -61,33 +109,12 @@ export function StrategySection({ items }: StrategySectionProps): ReactElement {
     }
   }
 
-  const { t } = useTranslation('apps-watch')
-  const ButtonStack = () => {
-    return (
-      <Stack data-testid="ButtonStack" direction="row" spacing={2}>
-        <Button>{t('Learn More')}</Button>
-        <Button>{t('Request Catalog')}</Button>
-        <Button>{t('Get in touch')}</Button>
-        <Button variant="contained" sx={{ borderRadius: '32px' }}>
-          {t('Register for Training')}
-        </Button>
-      </Stack>
-    )
-  }
   return (
     <Box data-testid="StrategySection">
-      <Stack
-        flexDirection="row"
-        alignItems="center"
-        justifyContent="space-between"
-      >
-        <Typography variant="h4">{t('Fake Title')}</Typography>
-        <ButtonStack />
-      </Stack>
-      {/* <Typography variant="subtitle1">{t(description)}</Typography> */}
+      <Typography variant="h4">{t('Fake Title')}</Typography>
       <ContentCarousel
         items={items}
-        renderItem={(itemProps) => <StrategyItem {...itemProps} />}
+        renderItem={(itemProps) => <StrategyCard {...itemProps} />}
         breakpoints={swiperBreakpoints}
       />
     </Box>
