@@ -35,7 +35,7 @@ model Language {
   countries        Country[]
   countryName      CountryName[]
   countryContinent CountryContinent[]
-  audioPreview     AudioPreview[]
+  audioPreview     AudioPreview?
 
   @@index(bcp47(type: Hash))
 }
@@ -98,8 +98,7 @@ model CountryContinent {
 }
 
 model AudioPreview {
-  id         String   @id @default(uuid())
-  languageId String
+  languageId String   @id
   value      String
   size       Int
   createdAt  DateTime

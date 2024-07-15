@@ -8,7 +8,10 @@ import { transformer } from '@core/journeys/ui/transformer'
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 
+import { useFlags } from '@core/shared/ui/FlagsProvider'
+import { HotkeysProvider } from 'react-hotkeys-hook'
 import { Fab } from './Fab'
+import { Hotkeys } from './Hotkeys'
 import { Slider } from './Slider'
 import { Toolbar } from './Toolbar'
 
@@ -36,6 +39,7 @@ export function Editor({
     selectedStepId != null && steps != null
       ? steps.find(({ id }) => id === selectedStepId)
       : undefined
+  const { commands } = useFlags()
 
   return (
     <JourneyProvider value={{ journey, variant: 'admin' }}>
@@ -46,9 +50,12 @@ export function Editor({
           ...initialState
         }}
       >
-        <Toolbar />
-        <Slider />
-        <Fab variant="mobile" />
+        <HotkeysProvider>
+          {commands && <Hotkeys />}
+          <Toolbar />
+          <Slider />
+          <Fab variant="mobile" />
+        </HotkeysProvider>
       </EditorProvider>
     </JourneyProvider>
   )
