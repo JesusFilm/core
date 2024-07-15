@@ -68,7 +68,7 @@ export function BackgroundColor(): ReactElement {
   )
 
   const {
-    state: { selectedBlock, selectedStep },
+    state: { selectedBlock, selectedStep, activeContent },
     dispatch
   } = useEditor()
   const { add } = useCommand()
@@ -115,10 +115,11 @@ export function BackgroundColor(): ReactElement {
           type: 'SetSelectedStepAction',
           selectedStep: selectedStep
         })
-        dispatch({
-          type: 'SetActiveContentAction',
-          activeContent: ActiveContent.Canvas
-        })
+        if (activeContent !== ActiveContent.Canvas)
+          dispatch({
+            type: 'SetActiveContentAction',
+            activeContent: ActiveContent.Canvas
+          })
       }
       const cardBlockColorCacheUpdate = (
         // biome-ignore lint/suspicious/noExplicitAny:
@@ -161,6 +162,7 @@ export function BackgroundColor(): ReactElement {
           setSelectedColor(color)
         },
         undo: async ({ undoColor }) => {
+          setEditorState()
           await cardBlockUpdate({
             variables: {
               id: cardBlock.id,
@@ -173,7 +175,6 @@ export function BackgroundColor(): ReactElement {
               cardBlockColorCacheUpdate(cache, data)
             }
           })
-          setEditorState()
           setSelectedColor(undoColor)
         }
       })
