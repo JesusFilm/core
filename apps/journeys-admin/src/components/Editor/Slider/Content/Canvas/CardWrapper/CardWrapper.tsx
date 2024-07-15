@@ -14,7 +14,7 @@ import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 export function CardWrapper({ block, children }: WrapperProps): ReactElement {
   // overriding base theme to match default mui breakpoint
-  const mdDn = useMediaQuery('@media (max-width: 899px)')
+  const lgUp = useMediaQuery('@media (min-width: 900px)')
   const { t } = useTranslation('apps-journeys-admin')
   const {
     state: { selectedStep },
@@ -68,7 +68,7 @@ export function CardWrapper({ block, children }: WrapperProps): ReactElement {
             {...{ ...block, children: blocks }}
             wrappers={children.props.wrappers}
           />
-          {blocks.length === 0 && mdDn && (
+          {blocks.length === 0 && !lgUp && (
             <Stack
               sx={{
                 position: 'absolute',
