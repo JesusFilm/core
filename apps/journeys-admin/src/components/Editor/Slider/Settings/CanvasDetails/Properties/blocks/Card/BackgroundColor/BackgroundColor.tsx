@@ -106,7 +106,7 @@ export function BackgroundColor(): ReactElement {
   const changeCardColor = async (color: string): Promise<void> => {
     if (journey == null) return
     if (cardBlock != null) {
-      const setEditorState = (): void => {
+      const setEditorState = (selectedStep, activeContent): void => {
         dispatch({
           type: 'SetActiveSlideAction',
           activeSlide: ActiveSlide.Content
@@ -140,13 +140,30 @@ export function BackgroundColor(): ReactElement {
       }
       add({
         parameters: {
-          execute: {},
-          undo: {
+          execute: {
+            selectedStep,
+            activeContent,
+            cardBlock,
+            journey,
             undoColor: prevColor?.current
+          },
+          undo: {
+            undoColor: prevColor?.current,
+            selectedStep,
+            activeContent,
+            cardBlock,
+            journey
           }
         },
-        execute: async () => {
-          setEditorState()
+        execute: async ({
+          selectedStep,
+          activeContent,
+          cardBlock,
+          journey,
+          undoColor
+        }) => {
+          setEditorState(selectedStep, activeContent)
+          setSelectedColor(color)
           await cardBlockUpdate({
             variables: {
               id: cardBlock.id,
@@ -155,14 +172,23 @@ export function BackgroundColor(): ReactElement {
                 backgroundColor: color === 'null' ? null : color
               }
             },
+
             update(cache, { data }) {
               cardBlockColorCacheUpdate(cache, data)
+            },
+            onError: () => {
+              setSelectedColor(undoColor)
             }
           })
-          setSelectedColor(color)
         },
-        undo: async ({ undoColor }) => {
-          setEditorState()
+        undo: async ({
+          undoColor,
+          selectedStep,
+          activeContent,
+          cardBlock,
+          journey
+        }) => {
+          setEditorState(selectedStep, activeContent)
           await cardBlockUpdate({
             variables: {
               id: cardBlock.id,
@@ -184,6 +210,7 @@ export function BackgroundColor(): ReactElement {
 
   const handleColorChange = async (color: string): Promise<void> => {
     void debouncedColorChange(color.toUpperCase())
+    setSelectedColor(color)
   }
 
   const debouncedColorChange = useRef(
