@@ -10,7 +10,7 @@ import { LanguagesFilter } from "./globalTypes";
 // ====================================================
 
 export interface GetLanguages_languages_name {
-  __typename: "Translation";
+  __typename: "LanguageName";
   value: string;
   primary: boolean;
 }
