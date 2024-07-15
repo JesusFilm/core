@@ -8,10 +8,10 @@ import {
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
-import { ReactElement } from 'react'
+import type { ReactElement } from 'react'
 
-import { GetAdminJourney } from '../../../__generated__/GetAdminJourney'
-import { UserJourneyOpen } from '../../../__generated__/UserJourneyOpen'
+import type { GetAdminJourney } from '../../../__generated__/GetAdminJourney'
+import type { UserJourneyOpen } from '../../../__generated__/UserJourneyOpen'
 import { JourneysReportType } from '../../../__generated__/globalTypes'
 import { MemoizedDynamicReport } from '../../../src/components/DynamicPowerBiReport'
 import { PageWrapper } from '../../../src/components/PageWrapper'
@@ -33,13 +33,10 @@ function JourneyReportsPage(): ReactElement {
         title={t('Journey Analytics')}
         user={user}
         backHref={`/journeys/${journeyId}`}
+        mainHeaderChildren={<ReportsNavigation journeyId={journeyId} />}
+        mainBodyPadding={false}
       >
         <Box sx={{ height: 'calc(100vh - 48px)' }}>
-          <ReportsNavigation
-            reportType={JourneysReportType.singleFull}
-            journeyId={journeyId}
-            selected="journeys"
-          />
           <MemoizedDynamicReport
             reportType={JourneysReportType.singleFull}
             journeyId={journeyId}
