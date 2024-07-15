@@ -29,13 +29,6 @@ const mockUsePlausible = usePlausible as jest.MockedFunction<
 >
 
 describe('ChatButtons', () => {
-  const mockOrigin = 'https://example.com'
-  Object.defineProperty(window, 'location', {
-    value: {
-      origin: mockOrigin
-    }
-  })
-
   const chatButtons: ChatButton[] = [
     {
       __typename: 'ChatButton',
@@ -126,8 +119,22 @@ describe('ChatButtons', () => {
     }
   ]
 
+  const originalLocation = window.location
+  const mockOrigin = 'https://example.com'
+  beforeAll(() => {
+    Object.defineProperty(window, 'location', {
+      value: {
+        origin: mockOrigin
+      }
+    })
+  })
+
   beforeEach(() => {
     jest.clearAllMocks()
+  })
+
+  afterAll(() => {
+    Object.defineProperty(window, 'location', originalLocation)
   })
 
   it('renders chat buttons', () => {

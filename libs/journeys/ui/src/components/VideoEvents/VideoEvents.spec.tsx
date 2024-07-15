@@ -57,11 +57,14 @@ const mockUsePlausible = usePlausible as jest.MockedFunction<
 
 describe('VideoEvents', () => {
   let props: VideoEventsProps
+  const originalLocation = window.location
   const mockOrigin = 'https://example.com'
-  Object.defineProperty(window, 'location', {
-    value: {
-      origin: mockOrigin
-    }
+  beforeAll(() => {
+    Object.defineProperty(window, 'location', {
+      value: {
+        origin: mockOrigin
+      }
+    })
   })
 
   beforeEach(() => {
@@ -94,6 +97,10 @@ describe('VideoEvents', () => {
 
   afterEach(() => {
     cleanup()
+  })
+
+  afterAll(() => {
+    Object.defineProperty(window, 'location', originalLocation)
   })
 
   const activeBlock: TreeBlock<StepBlock> = {

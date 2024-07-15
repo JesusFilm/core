@@ -85,11 +85,18 @@ const journey = {
 } as unknown as Journey
 
 describe('RadioQuestion', () => {
+  const originalLocation = window.location
   const mockOrigin = 'https://example.com'
-  Object.defineProperty(window, 'location', {
-    value: {
-      origin: mockOrigin
-    }
+  beforeAll(() => {
+    Object.defineProperty(window, 'location', {
+      value: {
+        origin: mockOrigin
+      }
+    })
+  })
+
+  afterAll(() => {
+    Object.defineProperty(window, 'location', originalLocation)
   })
 
   it('should display the correct options', () => {
