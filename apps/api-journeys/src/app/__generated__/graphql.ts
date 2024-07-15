@@ -800,6 +800,7 @@ export class VisitorUpdateInput {
 
 export interface Action {
     parentBlockId: string;
+    parentBlock: Block;
     gtmEventName?: Nullable<string>;
 }
 
@@ -827,6 +828,7 @@ export interface Integration {
 export class NavigateToBlockAction implements Action {
     __typename?: 'NavigateToBlockAction';
     parentBlockId: string;
+    parentBlock: Block;
     gtmEventName?: Nullable<string>;
     blockId: string;
 }
@@ -834,6 +836,7 @@ export class NavigateToBlockAction implements Action {
 export class LinkAction implements Action {
     __typename?: 'LinkAction';
     parentBlockId: string;
+    parentBlock: Block;
     gtmEventName?: Nullable<string>;
     url: string;
     target?: Nullable<string>;
@@ -842,6 +845,7 @@ export class LinkAction implements Action {
 export class EmailAction implements Action {
     __typename?: 'EmailAction';
     parentBlockId: string;
+    parentBlock: Block;
     gtmEventName?: Nullable<string>;
     email: string;
 }
