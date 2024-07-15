@@ -44,7 +44,10 @@ export function VideoTrigger({
           setTriggered(true)
           player.pause()
 
-          const input = {
+          const input: {
+            props: JourneyPlausibleEvents['VideoTrigger']
+            u: string
+          } = {
             u: `${window.location.origin}/${journey?.id ?? ''}/${activeBlock.id}`,
             props: {
               blockId,
