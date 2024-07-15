@@ -14,15 +14,12 @@ import { blockDeleteUpdate } from '../../../../../../../libs/blockDeleteUpdate'
 import { useBlockDeleteMutation } from '../../../../../../../libs/useBlockDeleteMutation'
 import { MenuItem } from '../../../../../../MenuItem'
 
-import { ApolloCache, Reference, gql, useMutation } from '@apollo/client'
+import { ApolloCache, Reference, gql } from '@apollo/client'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
-import { BLOCK_FIELDS } from '@core/journeys/ui/block/blockFields'
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../__generated__/BlockFields'
-import {
-  BlockRestore,
-  BlockRestoreVariables
-} from '../../../../../../../../__generated__/BlockRestore'
+import { BlockRestore } from '../../../../../../../../__generated__/BlockRestore'
+import { useBlockRestoreMutation } from '../../../../../../../libs/useBlockRestoreMutation'
 import getSelected from './utils/getSelected'
 
 interface DeleteBlockProps {
@@ -32,20 +29,6 @@ interface DeleteBlockProps {
   block?: TreeBlock
 }
 
-export const BLOCK_RESTORE = gql`
-${BLOCK_FIELDS}
-mutation BlockRestore($blockRestoreId: ID!) {
-  blockRestore(id: $blockRestoreId) {
-    id
-    ...BlockFields
-    ... on StepBlock {
-      id
-      x
-      y
-    }
-  }
-}`
-
 export function DeleteBlock({
   variant = 'button',
   closeMenu,
@@ -54,9 +37,8 @@ export function DeleteBlock({
 }: DeleteBlockProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [blockDelete, result] = useBlockDeleteMutation()
-  const [blockRestore] = useMutation<BlockRestore, BlockRestoreVariables>(
-    BLOCK_RESTORE
-  )
+  const [blockRestore] = useBlockRestoreMutation()
+
   const { add } = useCommand()
 
   const { enqueueSnackbar } = useSnackbar()

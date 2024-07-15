@@ -24,8 +24,9 @@ import { BLOCK_DELETE } from '../../../../../../../libs/useBlockDeleteMutation'
 import { deleteBlockMock } from '../../../../../../../libs/useBlockDeleteMutation/useBlockDeleteMutation.mock'
 
 import { BlockRestore } from '../../../../../../../../__generated__/BlockRestore'
+import { BLOCK_RESTORE } from '../../../../../../../libs/useBlockRestoreMutation'
 import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
-import { BLOCK_RESTORE, DeleteBlock } from './DeleteBlock'
+import { DeleteBlock } from './DeleteBlock'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
