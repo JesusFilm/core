@@ -4,6 +4,7 @@
 import { PrismaClient } from '.prisma/api-tags-client'
 
 import { Service } from '../src/app/__generated__/graphql'
+import { syncCoreTagsToWordpress } from './seeds/syncCoreTagsToWordpress'
 
 const prisma = new PrismaClient()
 
@@ -39,74 +40,75 @@ async function upsertTag(
 }
 
 async function main(): Promise<void> {
-  await upsertTag('Felt Needs', [
-    'Acceptance',
-    'Anxiety',
-    'Depression',
-    'Forgiveness',
-    'Hope',
-    'Loneliness',
-    'Love',
-    'Security',
-    'Significance',
-    'Honor/Shame',
-    'Fear/Power',
-    'Guilt/Righteousness'
-  ])
-  await upsertTag('Topics', [
-    'Addiction',
-    'Anger',
-    'Apologetics',
-    'Finances',
-    'Gospel presentations',
-    'Health',
-    'Holy Spirit',
-    "Jesus' Life",
-    'Relationships',
-    'Prayer',
-    'Work & Success'
-  ])
-  await upsertTag('Holidays', [
-    'Christmas/New Years',
-    'Easter',
-    'Ramadan',
-    'Halloween',
-    'Festivals',
-    'Sports Events',
-    'World Youth Day',
-    "Valentine's Day",
-    "Mother's & Women's Day",
-    "Father's Day"
-  ])
-  await upsertTag('Audience', [
-    'Catholic/Orthodox',
-    'Muslim',
-    'Hindu/Buddist',
-    'Athiest/Agnostic',
-    'Seeker',
-    'New Believer',
-    'Mature Believer',
-    'Men',
-    'Women',
-    'Children',
-    'Youth',
-    'Adults'
-  ])
-  await upsertTag('Genre', [
-    'Animation',
-    'Explainer',
-    'Inspirational',
-    'Series',
-    'Testimonies',
-    'Classic',
-    'Modern'
-  ])
-  await upsertTag(
-    'Collections',
-    ['Jesus Film', 'NUA'],
-    undefined,
-    Service.apiJourneys
-  )
+  // await upsertTag('Felt Needs', [
+  //   'Acceptance',
+  //   'Anxiety',
+  //   'Depression',
+  //   'Forgiveness',
+  //   'Hope',
+  //   'Loneliness',
+  //   'Love',
+  //   'Security',
+  //   'Significance',
+  //   'Honor/Shame',
+  //   'Fear/Power',
+  //   'Guilt/Righteousness'
+  // ])
+  // await upsertTag('Topics', [
+  //   'Addiction',
+  //   'Anger',
+  //   'Apologetics',
+  //   'Finances',
+  //   'Gospel presentations',
+  //   'Health',
+  //   'Holy Spirit',
+  //   "Jesus' Life",
+  //   'Relationships',
+  //   'Prayer',
+  //   'Work & Success'
+  // ])
+  // await upsertTag('Holidays', [
+  //   'Christmas/New Years',
+  //   'Easter',
+  //   'Ramadan',
+  //   'Halloween',
+  //   'Festivals',
+  //   'Sports Events',
+  //   'World Youth Day',
+  //   "Valentine's Day",
+  //   "Mother's & Women's Day",
+  //   "Father's Day"
+  // ])
+  // await upsertTag('Audience', [
+  //   'Catholic/Orthodox',
+  //   'Muslim',
+  //   'Hindu/Buddist',
+  //   'Athiest/Agnostic',
+  //   'Seeker',
+  //   'New Believer',
+  //   'Mature Believer',
+  //   'Men',
+  //   'Women',
+  //   'Children',
+  //   'Youth',
+  //   'Adults'
+  // ])
+  // await upsertTag('Genre', [
+  //   'Animation',
+  //   'Explainer',
+  //   'Inspirational',
+  //   'Series',
+  //   'Testimonies',
+  //   'Classic',
+  //   'Modern'
+  // ])
+  // await upsertTag(
+  //   'Collections',
+  //   ['Jesus Film', 'NUA'],
+  //   undefined,
+  //   Service.apiJourneys
+  // )
+  await syncCoreTagsToWordpress()
 }
 main().catch((e) => {
   console.error(e)
