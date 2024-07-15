@@ -52,17 +52,24 @@ export const CARD_QUOTE_CREATE = gql`
   }
 `
 
-export function CardQuote(): ReactElement {
+export function CardQuote({ setCardTemplatesLoading }): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const {
     state: { selectedStep }
   } = useEditor()
 
-  const [cardQuoteCreate] = useMutation<
+  const [cardQuoteCreate, { loading }] = useMutation<
     CardQuoteCreate,
     CardQuoteCreateVariables
-  >(CARD_QUOTE_CREATE)
+  >(CARD_QUOTE_CREATE, {
+    onCompleted: () => setCardTemplatesLoading(false),
+    onError: () => setCardTemplatesLoading(false)
+  })
+
+  if (loading) {
+    setCardTemplatesLoading(loading)
+  }
 
   const handleClick = async (): Promise<void> => {
     const cardId = selectedStep?.children[0].id

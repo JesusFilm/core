@@ -78,16 +78,24 @@ export const CARD_POLL_CREATE = gql`
   }
 `
 
-export function CardPoll(): ReactElement {
+export function CardPoll({ setCardTemplatesLoading }): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const {
     state: { selectedStep }
   } = useEditor()
 
-  const [cardPollCreate] = useMutation<CardPollCreate, CardPollCreateVariables>(
-    CARD_POLL_CREATE
-  )
+  const [cardPollCreate, { loading }] = useMutation<
+    CardPollCreate,
+    CardPollCreateVariables
+  >(CARD_POLL_CREATE, {
+    onCompleted: () => setCardTemplatesLoading(false),
+    onError: () => setCardTemplatesLoading(false)
+  })
+
+  if (loading) {
+    setCardTemplatesLoading(loading)
+  }
 
   const handleClick = async (): Promise<void> => {
     const cardId = selectedStep?.children[0].id

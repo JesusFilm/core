@@ -60,16 +60,24 @@ export const CARD_FORM_CREATE = gql`
   }
 `
 
-export function CardForm(): ReactElement {
+export function CardForm({ setCardTemplatesLoading }): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const {
     state: { selectedStep }
   } = useEditor()
 
-  const [cardFormCreate] = useMutation<CardFormCreate, CardFormCreateVariables>(
-    CARD_FORM_CREATE
-  )
+  const [cardFormCreate, { loading }] = useMutation<
+    CardFormCreate,
+    CardFormCreateVariables
+  >(CARD_FORM_CREATE, {
+    onCompleted: () => setCardTemplatesLoading(false),
+    onError: () => setCardTemplatesLoading(false)
+  })
+
+  if (loading) {
+    setCardTemplatesLoading(loading)
+  }
 
   const handleClick = async (): Promise<void> => {
     const cardId = selectedStep?.children[0].id

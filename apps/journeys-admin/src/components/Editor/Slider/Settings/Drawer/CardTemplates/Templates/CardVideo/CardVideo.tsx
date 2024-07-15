@@ -25,16 +25,23 @@ export const CARD_VIDEO_CREATE = gql`
   }
 `
 
-export function CardVideo(): ReactElement {
+export function CardVideo({ setCardTemplatesLoading }): ReactElement {
   const { journey } = useJourney()
   const {
     state: { selectedStep }
   } = useEditor()
 
-  const [cardVideoCreate] = useMutation<
+  const [cardVideoCreate, { loading }] = useMutation<
     CardVideoCreate,
     CardVideoCreateVariables
-  >(CARD_VIDEO_CREATE)
+  >(CARD_VIDEO_CREATE, {
+    onCompleted: () => setCardTemplatesLoading(false),
+    onError: () => setCardTemplatesLoading(false)
+  })
+
+  if (loading) {
+    setCardTemplatesLoading(loading)
+  }
 
   const handleClick = async (): Promise<void> => {
     const cardId = selectedStep?.children[0].id
