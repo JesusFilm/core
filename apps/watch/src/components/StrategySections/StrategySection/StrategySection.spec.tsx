@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
-import { StrategyItemProps } from './StrategyCard/StrategyCard'
-import { StrategySection } from './StrategySection'
+import { StrategySection } from '.'
+import { StrategyItemProps } from '../StrategyCard/StrategyCard'
 
 describe('StrategySection', () => {
   const StrategyItems = [
