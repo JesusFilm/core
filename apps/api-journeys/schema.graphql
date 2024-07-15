@@ -25,17 +25,20 @@ enum ThemeName {
 
 interface Action {
   parentBlockId: ID!
+  parentBlock: Block!
   gtmEventName: String
 }
 
 type NavigateToBlockAction implements Action {
   parentBlockId: ID!
+  parentBlock: Block!
   gtmEventName: String
   blockId: String!
 }
 
 type LinkAction implements Action {
   parentBlockId: ID!
+  parentBlock: Block!
   gtmEventName: String
   url: String!
   target: String
@@ -43,6 +46,7 @@ type LinkAction implements Action {
 
 type EmailAction implements Action {
   parentBlockId: ID!
+  parentBlock: Block!
   gtmEventName: String
   email: String!
 }
