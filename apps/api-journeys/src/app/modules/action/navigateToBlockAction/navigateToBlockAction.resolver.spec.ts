@@ -117,7 +117,8 @@ describe('NavigateToBlockActionResolver', () => {
         update: {
           ...ACTION_UPDATE_RESET,
           ...actionData
-        }
+        },
+        include: { parentBlock: { include: { action: true } } }
       })
     })
 

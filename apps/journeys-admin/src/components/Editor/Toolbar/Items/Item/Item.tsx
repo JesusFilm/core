@@ -33,6 +33,7 @@ export function Item({
             target={href != null ? '_blank' : undefined}
             href={href}
             onClick={onClick}
+            {...ButtonProps}
           >
             {icon}
           </IconButton>

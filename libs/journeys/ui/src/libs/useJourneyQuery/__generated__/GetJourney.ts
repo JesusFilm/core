@@ -10,7 +10,7 @@ import { IdType, JourneysQueryOptions, JourneyStatus, ThemeName, ThemeMode, Butt
 // ====================================================
 
 export interface GetJourney_journey_language_name {
-  __typename: "Translation";
+  __typename: "LanguageName";
   value: string;
   primary: boolean;
 }
@@ -283,7 +283,7 @@ export interface GetJourney_journey_blocks_VideoBlock_video_variant {
 }
 
 export interface GetJourney_journey_blocks_VideoBlock_video_variantLanguages_name {
-  __typename: "Translation";
+  __typename: "LanguageName";
   value: string;
   primary: boolean;
 }

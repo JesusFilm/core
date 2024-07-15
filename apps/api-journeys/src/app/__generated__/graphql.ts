@@ -72,7 +72,9 @@ export enum IconName {
     BeenhereRounded = "BeenhereRounded",
     SendRounded = "SendRounded",
     SubscriptionsRounded = "SubscriptionsRounded",
-    ContactSupportRounded = "ContactSupportRounded"
+    ContactSupportRounded = "ContactSupportRounded",
+    Launch = "Launch",
+    MailOutline = "MailOutline"
 }
 
 export enum IconColor {
@@ -798,6 +800,7 @@ export class VisitorUpdateInput {
 
 export interface Action {
     parentBlockId: string;
+    parentBlock: Block;
     gtmEventName?: Nullable<string>;
 }
 
@@ -825,6 +828,7 @@ export interface Integration {
 export class NavigateToBlockAction implements Action {
     __typename?: 'NavigateToBlockAction';
     parentBlockId: string;
+    parentBlock: Block;
     gtmEventName?: Nullable<string>;
     blockId: string;
 }
@@ -832,6 +836,7 @@ export class NavigateToBlockAction implements Action {
 export class LinkAction implements Action {
     __typename?: 'LinkAction';
     parentBlockId: string;
+    parentBlock: Block;
     gtmEventName?: Nullable<string>;
     url: string;
     target?: Nullable<string>;
@@ -840,6 +845,7 @@ export class LinkAction implements Action {
 export class EmailAction implements Action {
     __typename?: 'EmailAction';
     parentBlockId: string;
+    parentBlock: Block;
     gtmEventName?: Nullable<string>;
     email: string;
 }
@@ -860,6 +866,8 @@ export abstract class IMutation {
     abstract blockDuplicate(id: string, parentOrder?: Nullable<number>, journeyId?: Nullable<string>, x?: Nullable<number>, y?: Nullable<number>): Block[] | Promise<Block[]>;
 
     abstract blockOrderUpdate(id: string, parentOrder: number, journeyId?: Nullable<string>): Block[] | Promise<Block[]>;
+
+    abstract blockRestore(id: string): Block[] | Promise<Block[]>;
 
     abstract buttonBlockCreate(input: ButtonBlockCreateInput): ButtonBlock | Promise<ButtonBlock>;
 

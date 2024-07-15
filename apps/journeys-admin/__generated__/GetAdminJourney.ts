@@ -10,7 +10,7 @@ import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, Button
 // ====================================================
 
 export interface GetAdminJourney_journey_language_name {
-  __typename: "Translation";
+  __typename: "LanguageName";
   value: string;
   primary: boolean;
 }
@@ -283,7 +283,7 @@ export interface GetAdminJourney_journey_blocks_VideoBlock_video_variant {
 }
 
 export interface GetAdminJourney_journey_blocks_VideoBlock_video_variantLanguages_name {
-  __typename: "Translation";
+  __typename: "LanguageName";
   value: string;
   primary: boolean;
 }
