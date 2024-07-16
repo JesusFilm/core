@@ -36,7 +36,7 @@ export function Fab({ variant }: FabProps): ReactElement {
     dispatch
   } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
-  const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('lg'))
+  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
 
   if (activeContent == null) {
     dispatch({
@@ -62,7 +62,7 @@ export function Fab({ variant }: FabProps): ReactElement {
         type: 'SetSelectedBlockAction',
         selectedBlock: selectedStep
       })
-      if (!lgUp) {
+      if (!mdUp) {
         dispatch({
           type: 'SetActiveSlideAction',
           activeSlide: ActiveSlide.Content
@@ -73,7 +73,7 @@ export function Fab({ variant }: FabProps): ReactElement {
         type: 'SetActiveCanvasDetailsDrawerAction',
         activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.AddBlock
       })
-      if (!lgUp) {
+      if (!mdUp) {
         dispatch({
           type: 'SetActiveSlideAction',
           activeSlide: ActiveSlide.Drawer
@@ -126,7 +126,7 @@ export function Fab({ variant }: FabProps): ReactElement {
 
   // props default to save fab
   let props: MuiFabProps = {
-    variant: lgUp ? 'extended' : 'circular',
+    variant: mdUp ? 'extended' : 'circular',
     size: 'large',
     color: 'primary',
     disabled,
@@ -141,8 +141,8 @@ export function Fab({ variant }: FabProps): ReactElement {
   // children default to save fab
   let children: ReactNode = (
     <>
-      <CheckContainedIcon sx={{ mr: lgUp ? 3 : 0 }} />
-      {lgUp ? t('Done') : ''}
+      <CheckContainedIcon sx={{ mr: mdUp ? 3 : 0 }} />
+      {mdUp ? t('Done') : ''}
     </>
   )
 
@@ -157,8 +157,8 @@ export function Fab({ variant }: FabProps): ReactElement {
     }
     children = (
       <>
-        <Edit2Icon sx={{ mr: lgUp ? 3 : 0 }} />
-        {lgUp ? t('Edit') : ''}
+        <Edit2Icon sx={{ mr: mdUp ? 3 : 0 }} />
+        {mdUp ? t('Edit') : ''}
       </>
     )
   } else if (isAdd) {
@@ -168,8 +168,8 @@ export function Fab({ variant }: FabProps): ReactElement {
     }
     children = (
       <>
-        <Plus2Icon sx={{ mr: lgUp ? 3 : 0 }} />
-        {lgUp && variant === 'canvas' && t('Add Block')}
+        <Plus2Icon sx={{ mr: mdUp ? 3 : 0 }} />
+        {mdUp && variant === 'canvas' && t('Add Block')}
       </>
     )
   }
@@ -178,13 +178,13 @@ export function Fab({ variant }: FabProps): ReactElement {
   switch (variant) {
     case 'mobile': {
       fabIn =
-        !lgUp &&
+        !mdUp &&
         activeContent === ActiveContent.Canvas &&
         activeSlide === ActiveSlide.Content
       break
     }
     case 'canvas': {
-      fabIn = lgUp && activeContent === ActiveContent.Canvas
+      fabIn = mdUp && activeContent === ActiveContent.Canvas
       break
     }
     case 'social': {

@@ -16,9 +16,9 @@ export function CardTemplates(): ReactElement {
         p: 5,
         display: 'grid',
         gridTemplateColumns: {
-          xs: 'repeat(2, 128px)',
+          xs: 'repeat(auto-fill, 128px)',
           sm: 'repeat(3, minmax(128px, 160px))',
-          md: 'repeat(2, 1fr)'
+          md: 'repeat(2, 128px)'
         },
         justifyContent: 'center',
         gap: 5,
