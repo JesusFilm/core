@@ -24,7 +24,7 @@ export async function importAudioPreview(languageIds: string[]): Promise<void> {
   await processTable(bigQueryTableName, importOne, importMany, true)
 }
 
-async function importOne(row: unknown): Promise<void> {
+export async function importOne(row: unknown): Promise<void> {
   const data = parse<Prisma.AudioPreviewUncheckedCreateInput>(
     audioPreviewSchema,
     row
@@ -41,7 +41,7 @@ async function importOne(row: unknown): Promise<void> {
   })
 }
 
-async function importMany(rows: unknown[]): Promise<void> {
+export async function importMany(rows: unknown[]): Promise<void> {
   const { data, inValidRowIds } =
     parseMany<Prisma.AudioPreviewUncheckedCreateInput>(audioPreviewSchema, rows)
   await prisma.audioPreview.createMany({

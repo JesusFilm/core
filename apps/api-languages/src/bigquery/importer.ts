@@ -15,7 +15,7 @@ interface QueryResults {
   pageToken?: string
 }
 
-const client = new BigQuery({
+export const client = new BigQuery({
   credentials:
     process.env.BIG_QUERY_APPLICATION_JSON != null
       ? JSON.parse(process.env.BIG_QUERY_APPLICATION_JSON)
@@ -33,6 +33,7 @@ export async function createQueryJob(
         ? 'WHERE updatedAt > @updatedAt'
         : ''
     }`
+
     const params = {
       updatedAt: lastImport
     }
@@ -58,7 +59,6 @@ export async function* getRowsFromTable(
 ): AsyncGenerator<RowMetadata | RowMetadata[], void, unknown> {
   const job = await createQueryJob(table, lastImport, hasUpdatedAt)
   let results: QueryResults = { data: [] }
-
   do {
     if (results.data.length === 0)
       results = await getQueryResults(job, results.pageToken)
@@ -80,6 +80,7 @@ async function getQueryResults(
       maxResults: 5000,
       pageToken
     })
+    console.log(res)
     return {
       data: res[0],
       pageToken: res[1]?.pageToken
@@ -93,7 +94,6 @@ async function getQueryResults(
 
 export async function getCurrentTimeStamp(): Promise<string> {
   const [result] = await client.query('SELECT CURRENT_TIMESTAMP()')
-  console.log('result', result)
   return result[0].f0_.value
 }
 

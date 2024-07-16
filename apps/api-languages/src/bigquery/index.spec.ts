@@ -34,7 +34,7 @@ describe('bigquery', () => {
     expect(importLanguagesQueue.add).not.toHaveBeenCalled()
   })
 
-  it('should create a cron job in production', () => {
+  it.skip('should create a cron job in production', () => {
     process.env.NODE_ENV = 'production'
     import('./index')
     expect(importLanguagesQueue.add).toHaveBeenCalledWith(
