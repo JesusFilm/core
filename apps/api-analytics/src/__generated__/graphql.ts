@@ -1201,7 +1201,7 @@ export type MutationBlockDeleteArgs = {
 
 export type MutationBlockDeleteActionArgs = {
   id: Scalars['ID']['input'];
-  journeyId: Scalars['ID']['input'];
+  journeyId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
@@ -1229,21 +1229,21 @@ export type MutationBlockRestoreArgs = {
 export type MutationBlockUpdateEmailActionArgs = {
   id: Scalars['ID']['input'];
   input: EmailActionInput;
-  journeyId: Scalars['ID']['input'];
+  journeyId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
 export type MutationBlockUpdateLinkActionArgs = {
   id: Scalars['ID']['input'];
   input: LinkActionInput;
-  journeyId: Scalars['ID']['input'];
+  journeyId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
 export type MutationBlockUpdateNavigateToBlockActionArgs = {
   id: Scalars['ID']['input'];
   input: NavigateToBlockActionInput;
-  journeyId: Scalars['ID']['input'];
+  journeyId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
