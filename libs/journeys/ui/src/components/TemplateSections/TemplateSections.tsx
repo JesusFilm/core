@@ -9,12 +9,13 @@ import { ReactElement } from 'react'
 import { SwiperOptions } from 'swiper/types'
 
 import { ContentCarousel } from '@core/shared/ui/ContentCarousel'
-import { useHits, useInstantSearch } from 'react-instantsearch'
+import { BaseHit, Hit } from 'instantsearch.js'
+import { UseHitsProps, useHits, useInstantSearch } from 'react-instantsearch'
 import { GetJourneys_journeys as Journey } from '../../libs/useJourneysQuery/__generated__/GetJourneys'
 import { TemplateGalleryCard } from '../TemplateGalleryCard'
 
 interface Contents {
-  [key: string]: { category: string; journeys: Journey[] }
+  [key: string]: { category: string; journeys: AlgoliaJourney[] }
 }
 
 interface TemplateSectionsProps {
@@ -22,41 +23,46 @@ interface TemplateSectionsProps {
   languageIds?: string[]
 }
 
+interface Tags {
+  Topics: string[]
+  Audience: string[]
+  Holidays: string[]
+  Collections: string[]
+  'Felt Needs': string[]
+}
+
 // TODO(jk): should type the algolia data
-interface AlgoliaJourney {
-  objectID: string
+export interface AlgoliaJourney extends Hit<BaseHit> {
+  id: string
   title: string
+  createdAt: Date
   description: string
-  tags: {
-    Topics: string[]
-    Audience: string[]
-    Holidays: string[]
-    Collections: string[]
-    'Felt Needs': string[]
-  }
-  image: {
+  language: string
+  primaryImageBlock: {
     src: string
     alt: string
   }
-  language: string
-  date: Date
-  featuredAt?: string
+  featuredAt: string | null
+  tags: Tags
 }
 
-const transformItems = (items: any[]) => {
+// TODO(jk): move to utils class
+const transformItems: UseHitsProps<AlgoliaJourney>['transformItems'] = (
+  items
+) => {
   return items.map((item) => ({
     ...item,
     id: item.objectID,
     createdAt: item.date,
     primaryImageBlock: item.image
-  }))
+  })) as unknown as AlgoliaJourney[]
 }
 
-function getAllTags(journey: any) {
+function getAllTags(journey: AlgoliaJourney) {
   return Object.values(journey.tags)
     .filter((tags): tags is string[] => Array.isArray(tags))
     .reduce<string[]>((acc, tags) => acc.concat(tags), [])
-    .filter((tag) => tag !== undefined)
+    .filter((tag) => tag !== undefined) as unknown as string[]
 }
 
 export function TemplateSections({
@@ -66,14 +72,14 @@ export function TemplateSections({
   const { t } = useTranslation('libs-journeys-ui')
   const { breakpoints } = useTheme()
 
-  const { hits, results, sendEvent } = useHits({
-    transformItems: transformItems
+  const { hits, results, sendEvent } = useHits<Hit<AlgoliaJourney>>({
+    transformItems
   })
   const { status } = useInstantSearch()
   const loading = status === 'stalled'
 
   const algoliaContents: Contents = {}
-  let algoliaCollection: Journey[] = []
+  let algoliaCollection: AlgoliaJourney[] = []
   if (hits.length > 0) {
     const featuredAndNew = [
       ...hits.filter(({ featuredAt }) => featuredAt != null),
@@ -81,11 +87,10 @@ export function TemplateSections({
         hits.filter(({ featuredAt }) => featuredAt == null),
         10
       )
-    ]
+    ] as unknown as AlgoliaJourney[]
 
-    const mostRelevant = hits.filter(({ tags }) =>
-      tagIds?.every((tagId) => tags.find((tag) => tag.id === tagId))
-    )
+    // Let algolia handle most relivant and just grab first n results
+    const mostRelevant = hits.slice(0, 10)
 
     // TODO: if category tags are checked: show most relevant
     // collection = tagIds == null ? featuredAndNew : mostRelevant
@@ -131,9 +136,6 @@ export function TemplateSections({
       spaceBetween: 44
     }
   }
-
-  console.log('algoliaContents', algoliaContents)
-  console.log('algoliaCollection', algoliaCollection)
 
   return (
     <Stack spacing={8} data-testid="JourneysAdminTemplateSections">

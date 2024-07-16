@@ -14,6 +14,7 @@ import { ReactElement } from 'react'
 import { useRouter } from 'next/router'
 import { abbreviateLanguageName } from '../../libs/abbreviateLanguageName'
 import { GetJourneys_journeys as Journey } from '../../libs/useJourneysQuery/__generated__/GetJourneys'
+import { AlgoliaJourney } from '../TemplateSections/TemplateSections'
 
 interface HoverLayerProps {
   className?: string
@@ -41,7 +42,7 @@ export function HoverLayer({ className }: HoverLayerProps): ReactElement {
 }
 
 interface TemplateGalleryCardProps {
-  item?: Journey
+  item?: Journey | AlgoliaJourney
   priority?: boolean
 }
 
