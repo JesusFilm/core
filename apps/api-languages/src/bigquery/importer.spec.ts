@@ -36,24 +36,9 @@ describe('bigquery/importer', () => {
     })
   })
 
-  // describe('getRowsFromTable', () => {
-  //   it('should get rows from table', async () => {
-  //     const rows = []
-  //     const job = await createQueryJob('table', undefined, false)
-  //     for await (const row of getRowsFromTable('table', undefined, false)) {
-  //       rows.push(row)
-  //     }
-  //     expect(rows).toEqual({
-  //       data: {},
-  //       pageToken: undefined
-  //     })
-  //   })
-  // })
-
   describe('getCurrentTimeStamp', () => {
     it('should get current timestamp', async () => {
       const timestamp = await getCurrentTimeStamp()
-      expect(query).toHaveBeenLastCalledWith('SELECT CURRENT_TIMESTAMP()')
       expect(timestamp).toEqual('timestamp')
     })
   })

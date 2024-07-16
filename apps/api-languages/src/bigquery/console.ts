@@ -21,6 +21,8 @@ export async function main(): Promise<void> {
       }
     }
   )
+  // avoid test failing on process.exit
+  if (process.env.NODE_ENV === 'test') return
   process.exit(0)
 }
 
