@@ -17,6 +17,7 @@ import { useDeleteEdge } from '../useDeleteEdge'
 import { MockedProvider } from '@apollo/client/testing'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
+import { SnackbarProvider } from 'notistack'
 import { useDeleteOnKeyPress } from './useDeleteOnKeyPress'
 
 jest.mock('reactflow', () => {
@@ -73,9 +74,11 @@ describe('useDeleteOnKeyPress', () => {
 
     const { result } = renderHook(() => useDeleteOnKeyPress(), {
       wrapper: ({ children }) => (
-        <EditorProvider initialState={initialState}>
-          <MockedProvider>{children}</MockedProvider>
-        </EditorProvider>
+        <SnackbarProvider>
+          <EditorProvider initialState={initialState}>
+            <MockedProvider>{children}</MockedProvider>
+          </EditorProvider>
+        </SnackbarProvider>
       )
     })
 
@@ -100,11 +103,13 @@ describe('useDeleteOnKeyPress', () => {
     mockUseKeyPress.mockReturnValueOnce(true)
     renderHook(() => useDeleteOnKeyPress(), {
       wrapper: ({ children }) => (
-        <JourneyProvider value={{ journey: defaultJourney }}>
-          <EditorProvider initialState={initialState}>
-            <MockedProvider>{children}</MockedProvider>
-          </EditorProvider>
-        </JourneyProvider>
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey: defaultJourney }}>
+            <EditorProvider initialState={initialState}>
+              <MockedProvider>{children}</MockedProvider>
+            </EditorProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
       )
     })
     await waitFor(async () => expect(deleteBlock).toHaveBeenCalled())

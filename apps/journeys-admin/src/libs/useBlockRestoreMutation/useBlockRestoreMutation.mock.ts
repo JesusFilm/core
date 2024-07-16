@@ -8,7 +8,7 @@ import {
 import { BLOCK_RESTORE } from './useBlockRestoreMutation'
 
 export const stepBlock = {
-  typename: 'StepBlock',
+  __typename: 'StepBlock',
   id: 'step',
   journeyId: 'journeyId',
   parentBlockId: null,

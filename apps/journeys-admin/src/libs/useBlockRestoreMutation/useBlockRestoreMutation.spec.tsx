@@ -2,6 +2,13 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { act, renderHook, waitFor } from '@testing-library/react'
 
 import {
+  ActiveSlide,
+  EditorProvider,
+  EditorState
+} from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
+import {
   BlockRestore,
   BlockRestoreVariables
 } from '../../../__generated__/BlockRestore'
@@ -9,6 +16,7 @@ import {
   BLOCK_RESTORE,
   useBlockRestoreMutation
 } from './useBlockRestoreMutation'
+import { stepBlock } from './useBlockRestoreMutation.mock'
 
 describe('useBlockRestoreMutation', () => {
   const useBlockRestoreMutationMock: MockedResponse<
@@ -18,33 +26,30 @@ describe('useBlockRestoreMutation', () => {
     request: {
       query: BLOCK_RESTORE,
       variables: {
-        blockRestoreId: 'blockId'
+        blockRestoreId: stepBlock.id
       }
     },
     result: jest.fn(() => ({
       data: {
-        blockRestore: [
-          {
-            id: 'card1.id',
-            __typename: 'CardBlock',
-            parentBlockId: 'stepId',
-            parentOrder: 0,
-            coverBlockId: null,
-            backgroundColor: null,
-            themeMode: null,
-            themeName: null,
-            fullscreen: false
-          }
-        ]
+        blockRestore: [stepBlock]
       }
     }))
   }
+
+  const initialState = {
+    selectedBlock: null,
+    activeSlide: ActiveSlide.JourneyFlow
+  } as unknown as EditorState
 
   it('should restore block', async () => {
     const { result } = renderHook(() => useBlockRestoreMutation(), {
       wrapper: ({ children }) => (
         <MockedProvider mocks={[useBlockRestoreMutationMock]}>
-          {children}
+          <JourneyProvider value={{ journey: defaultJourney }}>
+            <EditorProvider initialState={initialState}>
+              {children}
+            </EditorProvider>
+          </JourneyProvider>
         </MockedProvider>
       )
     })
@@ -53,7 +58,7 @@ describe('useBlockRestoreMutation', () => {
       await waitFor(async () => {
         await result.current[0]({
           variables: {
-            blockRestoreId: 'blockId'
+            blockRestoreId: stepBlock.id
           }
         })
         expect(useBlockRestoreMutationMock.result).toHaveBeenCalled()
