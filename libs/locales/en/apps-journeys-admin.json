@@ -759,8 +759,5 @@
   "Last Active": "Last Active",
   "User Data": "User Data",
   "Polls": "Polls",
-  "{{ name }}'s Team": "{{ name }}'s Team",
-  "Delete operation failed, please reload and try again": "Delete operation failed, please reload and try again",
-  "Block Deleted": "Block Deleted",
-  "Card Deleted": "Card Deleted"
+  "{{ name }}'s Team": "{{ name }}'s Team"
 }
