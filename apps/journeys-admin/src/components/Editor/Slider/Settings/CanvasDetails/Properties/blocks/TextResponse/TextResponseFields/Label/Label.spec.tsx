@@ -26,6 +26,9 @@ const block: TreeBlock<TextResponseBlock> = {
   label: 'Your answer',
   hint: null,
   minRows: null,
+  integrationId: null,
+  type: null,
+  routeId: null,
   children: []
 }
 
