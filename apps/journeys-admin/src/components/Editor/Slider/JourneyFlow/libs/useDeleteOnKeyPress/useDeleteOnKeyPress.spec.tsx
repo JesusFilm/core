@@ -74,11 +74,9 @@ describe('useDeleteOnKeyPress', () => {
 
     const { result } = renderHook(() => useDeleteOnKeyPress(), {
       wrapper: ({ children }) => (
-        <SnackbarProvider>
-          <EditorProvider initialState={initialState}>
-            <MockedProvider>{children}</MockedProvider>
-          </EditorProvider>
-        </SnackbarProvider>
+        <EditorProvider initialState={initialState}>
+          <MockedProvider>{children}</MockedProvider>
+        </EditorProvider>
       )
     })
 
@@ -103,13 +101,11 @@ describe('useDeleteOnKeyPress', () => {
     mockUseKeyPress.mockReturnValueOnce(true)
     renderHook(() => useDeleteOnKeyPress(), {
       wrapper: ({ children }) => (
-        <SnackbarProvider>
-          <JourneyProvider value={{ journey: defaultJourney }}>
-            <EditorProvider initialState={initialState}>
-              <MockedProvider>{children}</MockedProvider>
-            </EditorProvider>
-          </JourneyProvider>
-        </SnackbarProvider>
+        <JourneyProvider value={{ journey: defaultJourney }}>
+          <EditorProvider initialState={initialState}>
+            <MockedProvider>{children}</MockedProvider>
+          </EditorProvider>
+        </JourneyProvider>
       )
     })
     await waitFor(async () => expect(deleteBlock).toHaveBeenCalled())

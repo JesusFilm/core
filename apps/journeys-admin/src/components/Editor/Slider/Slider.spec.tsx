@@ -74,11 +74,9 @@ describe('Slider', () => {
   it('renders slides', () => {
     render(
       <MockedProvider>
-        <SnackbarProvider>
-          <EditorProvider initialState={state}>
-            <Slider />
-          </EditorProvider>
-        </SnackbarProvider>
+        <EditorProvider initialState={state}>
+          <Slider />
+        </EditorProvider>
       </MockedProvider>
     )
 
@@ -113,12 +111,10 @@ describe('Slider', () => {
 
     render(
       <MockedProvider>
-        <SnackbarProvider>
-          <EditorProvider initialState={contentState}>
-            <TestEditorState />
-            <Slider />
-          </EditorProvider>
-        </SnackbarProvider>
+        <EditorProvider initialState={contentState}>
+          <TestEditorState />
+          <Slider />
+        </EditorProvider>
       </MockedProvider>
     )
 
@@ -136,12 +132,10 @@ describe('Slider', () => {
 
     render(
       <MockedProvider>
-        <SnackbarProvider>
-          <EditorProvider initialState={contentState}>
-            <TestEditorState />
-            <Slider />
-          </EditorProvider>
-        </SnackbarProvider>
+        <EditorProvider initialState={contentState}>
+          <TestEditorState />
+          <Slider />
+        </EditorProvider>
       </MockedProvider>
     )
 
@@ -162,12 +156,10 @@ describe('Slider', () => {
 
     render(
       <MockedProvider>
-        <SnackbarProvider>
-          <EditorProvider initialState={contentState}>
-            <TestEditorState />
-            <Slider />
-          </EditorProvider>
-        </SnackbarProvider>
+        <EditorProvider initialState={contentState}>
+          <TestEditorState />
+          <Slider />
+        </EditorProvider>
       </MockedProvider>
     )
 
@@ -274,11 +266,9 @@ describe('Slider', () => {
 
     render(
       <MockedProvider mocks={[mockGetJourneyFlowBackButtonClicked]}>
-        <SnackbarProvider>
-          <EditorProvider initialState={contentState}>
-            <Slider />
-          </EditorProvider>
-        </SnackbarProvider>
+        <EditorProvider initialState={contentState}>
+          <Slider />
+        </EditorProvider>
       </MockedProvider>
     )
 
