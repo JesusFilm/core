@@ -80,7 +80,6 @@ async function getQueryResults(
       maxResults: 5000,
       pageToken
     })
-    console.log(res)
     return {
       data: res[0],
       pageToken: res[1]?.pageToken
