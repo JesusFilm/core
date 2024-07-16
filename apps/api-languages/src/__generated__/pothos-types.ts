@@ -1,5 +1,5 @@
 /* eslint-disable */
-import type { Prisma, Language, LanguageName, Country, CountryName, CountryContinent, AudioPreview } from ".prisma/api-languages-client";
+import type { Prisma, Language, LanguageName, Country, CountryName, CountryContinent, AudioPreview, ImportTimes } from ".prisma/api-languages-client";
 export default interface PrismaTypes {
     Language: {
         Name: "Language";
@@ -12,7 +12,7 @@ export default interface PrismaTypes {
         Create: {};
         Update: {};
         RelationName: "name" | "nameLanguage" | "countries" | "countryName" | "countryContinent" | "audioPreview";
-        ListRelations: "name" | "nameLanguage" | "countries" | "countryName" | "countryContinent" | "audioPreview";
+        ListRelations: "name" | "nameLanguage" | "countries" | "countryName" | "countryContinent";
         Relations: {
             name: {
                 Shape: LanguageName[];
@@ -40,9 +40,9 @@ export default interface PrismaTypes {
                 Nullable: false;
             };
             audioPreview: {
-                Shape: AudioPreview[];
+                Shape: AudioPreview | null;
                 Name: "AudioPreview";
-                Nullable: false;
+                Nullable: true;
             };
         };
     };
@@ -170,5 +170,19 @@ export default interface PrismaTypes {
                 Nullable: false;
             };
         };
+    };
+    ImportTimes: {
+        Name: "ImportTimes";
+        Shape: ImportTimes;
+        Include: never;
+        Select: Prisma.ImportTimesSelect;
+        OrderBy: Prisma.ImportTimesOrderByWithRelationInput;
+        WhereUnique: Prisma.ImportTimesWhereUniqueInput;
+        Where: Prisma.ImportTimesWhereInput;
+        Create: {};
+        Update: {};
+        RelationName: never;
+        ListRelations: never;
+        Relations: {};
     };
 }

@@ -1,3 +1,10 @@
+export const audioPreview = {
+  value: 'abc.mp3',
+  size: 1024,
+  duration: 10,
+  languageId: '20615'
+}
+
 export const language = {
   id: '20615',
   bcp47: 'zh',
