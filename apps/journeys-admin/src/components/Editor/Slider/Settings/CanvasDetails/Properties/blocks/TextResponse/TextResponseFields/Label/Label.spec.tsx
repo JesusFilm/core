@@ -8,12 +8,12 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../../../../../../../../../__generated__/GetJourney'
+import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRedoItem'
+import { CommandUndoItem } from '../../../../../../../../Toolbar/Items/CommandUndoItem'
 
 import { TEXT_RESPONSE_LABEL_UPDATE } from './Label'
 
 import { Label } from '.'
-import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRedoItem'
-import { CommandUndoItem } from '../../../../../../../../Toolbar/Items/CommandUndoItem'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
