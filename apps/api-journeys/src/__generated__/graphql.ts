@@ -23,11 +23,13 @@ export type Scalars = {
 
 export type Action = {
   gtmEventName?: Maybe<Scalars['String']['output']>;
+  parentBlock: Block;
   parentBlockId: Scalars['ID']['output'];
 };
 
 export type AudioPreview = {
   __typename?: 'AudioPreview';
+  duration: Scalars['Int']['output'];
   language: Language;
   size: Scalars['Int']['output'];
   value: Scalars['String']['output'];
@@ -383,6 +385,7 @@ export type EmailAction = Action & {
   __typename?: 'EmailAction';
   email: Scalars['String']['output'];
   gtmEventName?: Maybe<Scalars['String']['output']>;
+  parentBlock: Block;
   parentBlockId: Scalars['ID']['output'];
 };
 
@@ -971,7 +974,7 @@ export enum JourneysReportType {
 
 export type Language = {
   __typename?: 'Language';
-  audioPreview: AudioPreview;
+  audioPreview?: Maybe<AudioPreview>;
   bcp47?: Maybe<Scalars['String']['output']>;
   countries: Array<Country>;
   id: Scalars['ID']['output'];
@@ -1010,6 +1013,7 @@ export type LanguagesFilter = {
 export type LinkAction = Action & {
   __typename?: 'LinkAction';
   gtmEventName?: Maybe<Scalars['String']['output']>;
+  parentBlock: Block;
   parentBlockId: Scalars['ID']['output'];
   target?: Maybe<Scalars['String']['output']>;
   url: Scalars['String']['output'];
@@ -1787,6 +1791,7 @@ export type NavigateToBlockAction = Action & {
   __typename?: 'NavigateToBlockAction';
   blockId: Scalars['String']['output'];
   gtmEventName?: Maybe<Scalars['String']['output']>;
+  parentBlock: Block;
   parentBlockId: Scalars['ID']['output'];
 };
 
