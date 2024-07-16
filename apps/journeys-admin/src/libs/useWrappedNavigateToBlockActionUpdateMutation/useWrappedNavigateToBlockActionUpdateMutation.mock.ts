@@ -4,7 +4,7 @@ import {
   NavigateToBlockActionUpdate,
   NavigateToBlockActionUpdateVariables
 } from '../../../__generated__/NavigateToBlockActionUpdate'
-import { NAVIGATE_TO_BLOCK_ACTION_UPDATE } from '../useNavigateToBlockActionUpdateMutation'
+import { NAVIGATE_TO_BLOCK_ACTION_UPDATE } from '../useBlockActionNavigateToBlockUpdateMutation'
 
 export const wrappedNavigateToBlockActionUpdateMock: MockedResponse<
   NavigateToBlockActionUpdate,

@@ -6,7 +6,7 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { GetJourney_journey as Journey } from '../../../../../../../../../../__generated__/GetJourney'
-import { EMAIL_ACTION_UPDATE } from '../../../../../../../../../libs/useEmailActionUpdateMutation'
+import { EMAIL_ACTION_UPDATE } from '../../../../../../../../../libs/useBlockActionEmailUpdateMutation'
 import { steps } from '../data'
 
 import { EmailAction } from '.'
@@ -46,7 +46,6 @@ describe('EmailAction', () => {
           query: EMAIL_ACTION_UPDATE,
           variables: {
             id: selectedBlock.id,
-            journeyId: 'journeyId',
             input: {
               email: 'edmondwashere@gmail.com'
             }
@@ -58,16 +57,9 @@ describe('EmailAction', () => {
 
     const { getByRole } = render(
       <MockedProvider mocks={mocks}>
-        <JourneyProvider
-          value={{
-            journey: { id: 'journeyId' } as unknown as Journey,
-            variant: 'admin'
-          }}
-        >
-          <EditorProvider initialState={{ selectedBlock }}>
-            <EmailAction />
-          </EditorProvider>
-        </JourneyProvider>
+        <EditorProvider initialState={{ selectedBlock }}>
+          <EmailAction />
+        </EditorProvider>
       </MockedProvider>
     )
     fireEvent.change(getByRole('textbox'), {

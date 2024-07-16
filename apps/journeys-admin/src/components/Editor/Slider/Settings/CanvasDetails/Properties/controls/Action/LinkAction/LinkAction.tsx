@@ -11,14 +11,14 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import LinkIcon from '@core/shared/ui/icons/Link'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
-import { useLinkActionUpdateMutation } from '../../../../../../../../../libs/useLinkActionUpdateMutation'
+import { useBlockActionLinkUpdateMutation } from '../../../../../../../../../libs/useBlockActionLinkUpdateMutation'
 import { TextFieldForm } from '../../../../../../../../TextFieldForm'
+import { useActionCommand } from '../utils/useActionCommand'
 
 export function LinkAction(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { state } = useEditor()
-  const { journey } = useJourney()
-  const [linkActionUpdate] = useLinkActionUpdateMutation()
+  const { addAction } = useActionCommand()
   const selectedBlock = state.selectedBlock as
     | TreeBlock<ButtonBlock>
     | undefined
@@ -52,15 +52,18 @@ export function LinkAction(): ReactElement {
   async function handleSubmit(src: string): Promise<void> {
     // checks if url has a protocol
     const url = /^\w+:\/\//.test(src) ? src : `https://${src}`
-    if (selectedBlock != null && journey != null) {
-      await linkActionUpdate({
-        variables: {
-          id: selectedBlock.id,
-          journeyId: journey.id,
-          input: {
-            url
-          }
-        }
+    if (selectedBlock != null) {
+      const { id, action, __typename } = selectedBlock
+      await addAction({
+        blockId: id,
+        blockTypename: __typename,
+        action: {
+          __typename: 'LinkAction',
+          parentBlockId: id,
+          gtmEventName: '',
+          url
+        },
+        undoAction: action
       })
     }
   }

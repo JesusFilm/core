@@ -3,13 +3,12 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { GetJourney_journey as Journey } from '../../../../../../../../../../__generated__/GetJourney'
 import { steps } from '../data'
 
 import { LinkAction } from '.'
-import { LINK_ACTION_UPDATE } from '../../../../../../../../../libs/useLinkActionUpdateMutation'
+import { LINK_ACTION_UPDATE } from '../../../../../../../../../libs/useBlockActionLinkUpdateMutation'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -34,7 +33,6 @@ describe('LinkAction', () => {
         query: LINK_ACTION_UPDATE,
         variables: {
           id: selectedBlock.id,
-          journeyId: 'journeyId',
           input: {
             url: 'https://github.com'
           }
@@ -58,16 +56,9 @@ describe('LinkAction', () => {
   it('updates action url', async () => {
     const { getByRole } = render(
       <MockedProvider mocks={mocks}>
-        <JourneyProvider
-          value={{
-            journey: { id: 'journeyId' } as unknown as Journey,
-            variant: 'admin'
-          }}
-        >
-          <EditorProvider initialState={{ selectedBlock }}>
-            <LinkAction />
-          </EditorProvider>
-        </JourneyProvider>
+        <EditorProvider initialState={{ selectedBlock }}>
+          <LinkAction />
+        </EditorProvider>
       </MockedProvider>
     )
     fireEvent.change(getByRole('textbox'), {
@@ -95,16 +86,9 @@ describe('LinkAction', () => {
   it('accepts links without protocol as a URL', async () => {
     const { queryByText, getByRole } = render(
       <MockedProvider mocks={mocks}>
-        <JourneyProvider
-          value={{
-            journey: { id: 'journeyId' } as unknown as Journey,
-            variant: 'admin'
-          }}
-        >
-          <EditorProvider initialState={{ selectedBlock }}>
-            <LinkAction />
-          </EditorProvider>
-        </JourneyProvider>
+        <EditorProvider initialState={{ selectedBlock }}>
+          <LinkAction />
+        </EditorProvider>
       </MockedProvider>
     )
     fireEvent.change(getByRole('textbox'), {
@@ -136,7 +120,6 @@ describe('LinkAction', () => {
               query: LINK_ACTION_UPDATE,
               variables: {
                 id: selectedBlock.id,
-                journeyId: 'journeyId',
                 input: {
                   url: 'viber://'
                 }
@@ -146,16 +129,9 @@ describe('LinkAction', () => {
           }
         ]}
       >
-        <JourneyProvider
-          value={{
-            journey: { id: 'journeyId' } as unknown as Journey,
-            variant: 'admin'
-          }}
-        >
-          <EditorProvider initialState={{ selectedBlock }}>
-            <LinkAction />
-          </EditorProvider>
-        </JourneyProvider>
+        <EditorProvider initialState={{ selectedBlock }}>
+          <LinkAction />
+        </EditorProvider>
       </MockedProvider>
     )
     fireEvent.change(getByRole('textbox'), {
@@ -186,16 +162,9 @@ describe('LinkAction', () => {
   it('should submit when enter is pressed', async () => {
     const { getByRole, queryByText } = render(
       <MockedProvider mocks={mocks}>
-        <JourneyProvider
-          value={{
-            journey: { id: 'journeyId' } as unknown as Journey,
-            variant: 'admin'
-          }}
-        >
-          <EditorProvider initialState={{ selectedBlock }}>
-            <LinkAction />
-          </EditorProvider>
-        </JourneyProvider>
+        <EditorProvider initialState={{ selectedBlock }}>
+          <LinkAction />
+        </EditorProvider>
       </MockedProvider>
     )
     fireEvent.change(getByRole('textbox'), {

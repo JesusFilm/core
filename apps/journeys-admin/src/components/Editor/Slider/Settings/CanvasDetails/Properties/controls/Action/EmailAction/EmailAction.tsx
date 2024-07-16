@@ -6,23 +6,21 @@ import { ReactElement } from 'react'
 import { object, string } from 'yup'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import Mail2Icon from '@core/shared/ui/icons/Mail2'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
-import { useEmailActionUpdateMutation } from '../../../../../../../../../libs/useEmailActionUpdateMutation/useEmailActionUpdateMutation'
 import { TextFieldForm } from '../../../../../../../../TextFieldForm'
+import { useActionCommand } from '../utils/useActionCommand'
 
 export function EmailAction(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { state } = useEditor()
-  const { journey } = useJourney()
   const selectedBlock = state.selectedBlock as
     | TreeBlock<ButtonBlock>
     | undefined
 
-  const [emailActionUpdate] = useEmailActionUpdateMutation()
+  const { addAction } = useActionCommand()
 
   const emailAction =
     selectedBlock?.action?.__typename === 'EmailAction'
@@ -36,16 +34,18 @@ export function EmailAction(): ReactElement {
   })
 
   async function handleSubmit(email: string): Promise<void> {
-    if (selectedBlock != null && journey != null) {
-      const { id } = selectedBlock
-      await emailActionUpdate({
-        variables: {
-          id,
-          journeyId: journey.id,
-          input: {
-            email
-          }
-        }
+    if (selectedBlock != null) {
+      const { id, action, __typename } = selectedBlock
+      await addAction({
+        blockId: id,
+        blockTypename: __typename,
+        action: {
+          __typename: 'EmailAction',
+          parentBlockId: id,
+          gtmEventName: '',
+          email
+        },
+        undoAction: action
       })
     }
   }

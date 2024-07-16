@@ -15,12 +15,10 @@ export const NAVIGATE_TO_BLOCK_ACTION_UPDATE = gql`
   ${BLOCK_UPDATE_ACTION_FIELDS}
   mutation NavigateToBlockActionUpdate(
     $id: ID!
-    $journeyId: ID!
     $input: NavigateToBlockActionInput!
   ) {
     blockUpdateNavigateToBlockAction(
       id: $id
-      journeyId: $journeyId
       input: $input
     ) {
       parentBlockId
@@ -32,7 +30,7 @@ export const NAVIGATE_TO_BLOCK_ACTION_UPDATE = gql`
   }
 `
 
-export function useNavigateToBlockActionUpdateMutation(
+export function useBlockActionNavigateToBlockUpdateMutation(
   options?: MutationHookOptions<
     NavigateToBlockActionUpdate,
     NavigateToBlockActionUpdateVariables

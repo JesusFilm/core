@@ -15,7 +15,7 @@ import {
   NavigateToBlockActionUpdate,
   NavigateToBlockActionUpdateVariables
 } from '../../../__generated__/NavigateToBlockActionUpdate'
-import { useNavigateToBlockActionUpdateMutation } from '../useNavigateToBlockActionUpdateMutation'
+import { useBlockActionNavigateToBlockUpdateMutation } from '../useBlockActionNavigateToBlockUpdateMutation'
 
 export function useWrappedNavigateToBlockActionUpdateMutation(
   options?: MutationHookOptions<
@@ -35,7 +35,7 @@ export function useWrappedNavigateToBlockActionUpdateMutation(
 ] {
   const { journey } = useJourney()
   const [navigateToBlockActionUpdate, result] =
-    useNavigateToBlockActionUpdateMutation(options)
+    useBlockActionNavigateToBlockUpdateMutation(options)
 
   async function wrappedNavigateToBlockActionUpdate(
     block: TreeBlock,

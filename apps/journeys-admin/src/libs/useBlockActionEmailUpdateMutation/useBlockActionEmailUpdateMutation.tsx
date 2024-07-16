@@ -16,10 +16,9 @@ export const EMAIL_ACTION_UPDATE = gql`
   ${BLOCK_UPDATE_ACTION_FIELDS}
   mutation EmailActionUpdate(
     $id: ID!
-    $journeyId: ID!
     $input: EmailActionInput!
   ) {
-    blockUpdateEmailAction(id: $id, journeyId: $journeyId, input: $input) {
+    blockUpdateEmailAction(id: $id, input: $input) {
       parentBlockId
       parentBlock {
         id
@@ -29,7 +28,7 @@ export const EMAIL_ACTION_UPDATE = gql`
   }
 `
 
-export function useEmailActionUpdateMutation(
+export function useBlockActionEmailUpdateMutation(
   options?: MutationFunctionOptions<
     EmailActionUpdate,
     EmailActionUpdateVariables

@@ -16,10 +16,9 @@ export const LINK_ACTION_UPDATE = gql`
   ${BLOCK_UPDATE_ACTION_FIELDS}
   mutation LinkActionUpdate(
     $id: ID!
-    $journeyId: ID!
     $input: LinkActionInput!
   ) {
-    blockUpdateLinkAction(id: $id, journeyId: $journeyId, input: $input) {
+    blockUpdateLinkAction(id: $id, input: $input) {
       parentBlockId
       parentBlock {
         id
@@ -29,7 +28,7 @@ export const LINK_ACTION_UPDATE = gql`
   }
 `
 
-export function useLinkActionUpdateMutation(
+export function useBlockActionLinkUpdateMutation(
   options?: MutationFunctionOptions<LinkActionUpdate, LinkActionUpdateVariables>
 ): MutationTuple<LinkActionUpdate, LinkActionUpdateVariables> {
   return useMutation<LinkActionUpdate, LinkActionUpdateVariables>(
