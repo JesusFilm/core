@@ -1,5 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ReactElement } from 'react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -12,6 +12,7 @@ import { GetJourney_journey as Journey } from '../../../../../../../../../../../
 import { TEXT_RESPONSE_LABEL_UPDATE } from './Label'
 
 import { Label } from '.'
+import { CommandUndoItem } from '../../../../../../../../Toolbar/Items/CommandUndoItem'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -49,6 +50,7 @@ const LabelMock = ({
   <MockedProvider mocks={mocks} addTypename={false}>
     <JourneyProvider value={pageData}>
       <EditorProvider initialState={initialState}>
+        <CommandUndoItem variant="button" />
         <Label />
       </EditorProvider>
     </JourneyProvider>
@@ -151,5 +153,67 @@ describe('Edit Label field', () => {
     await waitFor(() => {
       expect(result).toHaveBeenCalled()
     })
+  })
+
+  it('should undo the label change', async () => {
+    const result1 = jest.fn(() => ({
+      data: {
+        textResponseBlockUpdate: {
+          id: block.id,
+          journeyId: pageData.journey.id,
+          label: 'Your answer here more'
+        }
+      }
+    }))
+
+    const result2 = jest.fn(() => ({
+      data: {
+        textResponseBlockUpdate: {
+          id: block.id,
+          journeyId: pageData.journey.id,
+          label: 'Your answer'
+        }
+      }
+    }))
+
+    const mockUpdateSuccess1 = {
+      request: {
+        query: TEXT_RESPONSE_LABEL_UPDATE,
+        variables: {
+          id: block.id,
+          journeyId: pageData.journey.id,
+          input: {
+            label: 'Your answer here more'
+          }
+        }
+      },
+      result: result1
+    }
+
+    const mockUpdateSuccess2 = {
+      request: {
+        query: TEXT_RESPONSE_LABEL_UPDATE,
+        variables: {
+          id: block.id,
+          journeyId: pageData.journey.id,
+          input: {
+            label: 'Your answer'
+          }
+        }
+      },
+      result: result2
+    }
+
+    render(<LabelMock mocks={[mockUpdateSuccess1, mockUpdateSuccess2]} />)
+
+    const field = screen.getByRole('textbox', { name: 'Label' })
+    fireEvent.change(field, { target: { value: 'Your answer here more' } })
+    fireEvent.blur(field)
+
+    await waitFor(() => expect(result1).toHaveBeenCalled())
+    await waitFor(() => expect(field).toHaveValue('Your answer here more'))
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(result2).toHaveBeenCalled())
   })
 })
