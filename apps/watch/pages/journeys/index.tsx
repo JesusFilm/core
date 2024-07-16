@@ -10,32 +10,14 @@ import { getFlags } from '../../src/libs/getFlags'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
-import { TemplateGallery } from '@core/journeys/ui/TemplateGallery'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { SearchBar } from '../../src/components/SearchBar/SearchBar'
 
+import { ParentTagIcon } from '@core/journeys/ui/ParentTagIcon/ParentTagIcon'
+import { TemplateSections } from '@core/journeys/ui/TemplateSections/TemplateSections'
 import Stack from '@mui/material/Stack'
-import { Configure, Highlight, Hits, Index } from 'react-instantsearch'
-
-// TODO(jk): see useVideoSearch interfaces
-type AlgoliaJourney = {
-  objectID: string
-  title: string
-  description: string
-  tags: {
-    Topics: string[]
-    Audience: string[]
-    Holidays: string[]
-    Collections: string[]
-  }
-  image: {
-    src: string
-    alt: string
-  }
-  language: string
-  date: Date
-  featuredAt?: string
-}
+import Typography from '@mui/material/Typography'
+import { Index, RefinementList } from 'react-instantsearch'
 
 function JourneysPage(): ReactElement {
   return (
@@ -45,15 +27,100 @@ function JourneysPage(): ReactElement {
         data-testid="JourneysPage"
       >
         <Container maxWidth="xxl">
-          <Stack gap={10}>
+          <Stack
+            gap={10}
+            sx={{
+              overflow: 'hidden'
+            }}
+          >
+            {/* TODO(jk): Move these into TemplateGallery */}
             <Index indexName="api-journeys-journeys-dev">
-              {/* <SearchBar /> */}
+              <h3>Next Step for every interaction</h3>
+              <SearchBar />
               <ThemeProvider
                 themeName={ThemeName.journeysAdmin}
                 themeMode={ThemeMode.light}
                 nested
               >
-                <TemplateGallery hideOverflow />
+                {/* TODO(jk): only added for testing */}
+                <Stack direction="row">
+                  <Box
+                    sx={{
+                      border: 1,
+                      p: 1,
+                      bgcolor: 'background.default'
+                    }}
+                  >
+                    <Stack
+                      direction="row"
+                      alignItems="center"
+                      component="li"
+                      sx={{ px: 4, py: 2 }}
+                    >
+                      <ParentTagIcon name="Topics" sx={{ width: 38 }} />
+                      <Typography variant="subtitle1">Topics</Typography>
+                    </Stack>
+                    <RefinementList attribute="tags.Topics" />
+                  </Box>
+
+                  <Box
+                    sx={{
+                      border: 1,
+                      p: 1,
+                      bgcolor: 'background.default'
+                    }}
+                  >
+                    <Stack
+                      direction="row"
+                      alignItems="center"
+                      component="li"
+                      sx={{ px: 4, py: 2 }}
+                    >
+                      <ParentTagIcon name="Holidays" sx={{ width: 38 }} />
+                      <Typography variant="subtitle1">Holidays</Typography>
+                    </Stack>
+                    <RefinementList attribute="tags.Holidays" />
+                  </Box>
+
+                  <Box
+                    sx={{
+                      border: 1,
+                      p: 1,
+                      bgcolor: 'background.default'
+                    }}
+                  >
+                    <Stack
+                      direction="row"
+                      alignItems="center"
+                      component="li"
+                      sx={{ px: 4, py: 2 }}
+                    >
+                      <ParentTagIcon name="Audience" sx={{ width: 38 }} />
+                      <Typography variant="subtitle1">Audience</Typography>
+                    </Stack>
+                    <RefinementList attribute="tags.Audience" />
+                  </Box>
+
+                  <Box
+                    sx={{
+                      border: 1,
+                      p: 1,
+                      bgcolor: 'background.default'
+                    }}
+                  >
+                    <Stack
+                      direction="row"
+                      alignItems="center"
+                      component="li"
+                      sx={{ px: 4, py: 2 }}
+                    >
+                      <ParentTagIcon name="Collections" sx={{ width: 38 }} />
+                      <Typography variant="subtitle1">Collections</Typography>
+                    </Stack>
+                    <RefinementList attribute="tags.Collections" />
+                  </Box>
+                </Stack>
+                <TemplateSections tagIds={undefined} languageIds={undefined} />
               </ThemeProvider>
             </Index>
           </Stack>

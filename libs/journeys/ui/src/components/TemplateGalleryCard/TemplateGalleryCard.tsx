@@ -55,14 +55,13 @@ export function TemplateGalleryCard({
     : '/templates'
   const journeyIdPath = `${journeyBasePath}/${journey?.id ?? ''}`
 
-  const localLanguage = journey?.language?.name.find(
-    ({ primary }) => !primary
-  )?.value
-  const nativeLanguage =
-    journey?.language?.name.find(({ primary }) => primary)?.value ?? ''
+  // TODO(jk): if we need to handle multiple langs this might come into play again
+  // const localLanguage = journey?.language?.name.find(({ primary }) => !primary)?.value
+  // const nativeLanguage =journey?.language?.name.find(({ primary }) => primary)?.value ?? ''
 
   const displayLanguage = abbreviateLanguageName(
-    localLanguage ?? nativeLanguage
+    // localLanguage ?? nativeLanguage
+    String(journey?.language)
   )
 
   const theme = useTheme()
