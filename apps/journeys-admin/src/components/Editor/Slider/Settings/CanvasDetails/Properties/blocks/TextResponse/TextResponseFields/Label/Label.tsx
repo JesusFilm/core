@@ -6,6 +6,7 @@ import noop from 'lodash/noop'
 import { useTranslation } from 'next-i18next'
 import { FocusEvent, ReactElement } from 'react'
 
+import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -32,31 +33,82 @@ export function Label(): ReactElement {
     TEXT_RESPONSE_LABEL_UPDATE
   )
   const { journey } = useJourney()
-  const { state } = useEditor()
+  const { state, dispatch } = useEditor()
+  const { add } = useCommand()
 
   const selectedBlock = state.selectedBlock as
     | TreeBlock<TextResponseBlock>
     | undefined
 
   async function handleSubmit(e: FocusEvent): Promise<void> {
-    if (journey == null || selectedBlock == null) return
     const target = e.target as HTMLInputElement
-    await textResponseLabelUpdate({
-      variables: {
-        id: selectedBlock?.id,
-        journeyId: journey.id,
-        input: {
-          label: target.value
+    const label = target.value
+    if (selectedBlock != null && journey != null) {
+      await add({
+        parameters: {
+          execute: { id: selectedBlock.id, journeyId: journey.id, label },
+          undo: {
+            id: selectedBlock.id,
+            journeyId: journey.id,
+            label: selectedBlock.label
+          }
+        },
+        async execute({ id, journeyId, label }) {
+          dispatch({
+            type: 'SetSelectedStepAction',
+            selectedStep: state.selectedStep
+          })
+
+          dispatch({
+            type: 'SetSelectedBlockAction',
+            selectedBlock: selectedBlock
+          })
+
+          await textResponseLabelUpdate({
+            variables: {
+              id,
+              journeyId,
+              input: {
+                label
+              }
+            },
+            optimisticResponse: {
+              textResponseBlockUpdate: {
+                id,
+                label,
+                __typename: 'TextResponseBlock'
+              }
+            }
+          })
+        },
+        async undo({ id, journeyId, label }) {
+          await textResponseLabelUpdate({
+            variables: {
+              id,
+              journeyId,
+              input: {
+                label
+              }
+            },
+            optimisticResponse: {
+              textResponseBlockUpdate: {
+                id,
+                label,
+                __typename: 'TextResponseBlock'
+              }
+            }
+          })
+          dispatch({
+            type: 'SetSelectedStepAction',
+            selectedStep: state.selectedStep
+          })
+          dispatch({
+            type: 'SetSelectedBlockAction',
+            selectedBlock: selectedBlock
+          })
         }
-      },
-      optimisticResponse: {
-        textResponseBlockUpdate: {
-          id: selectedBlock?.id,
-          __typename: 'TextResponseBlock',
-          label: target.value
-        }
-      }
-    })
+      })
+    }
   }
 
   const initialValues =
