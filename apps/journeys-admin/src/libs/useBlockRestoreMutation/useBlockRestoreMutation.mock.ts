@@ -7,7 +7,8 @@ import {
 } from '../../../__generated__/BlockFields'
 import {
   BlockRestore,
-  BlockRestoreVariables
+  BlockRestoreVariables,
+  BlockRestore_blockRestore_StepBlock as StepBlockBlockRestore
 } from '../../../__generated__/BlockRestore'
 import {
   TypographyAlign,
@@ -24,6 +25,15 @@ export const stepBlock = {
   nextBlockId: 'someId',
   children: []
 } as unknown as TreeBlock<StepBlock>
+
+export const stepBlockRes = {
+  __typename: 'StepBlock',
+  id: 'step',
+  journeyId: 'journeyId',
+  parentBlockId: null,
+  nextBlockId: 'someId',
+  children: []
+} as unknown as StepBlockBlockRestore
 
 export const cardBlock = {
   id: 'card1.id',

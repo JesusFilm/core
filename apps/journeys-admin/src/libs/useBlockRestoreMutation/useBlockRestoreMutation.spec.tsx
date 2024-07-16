@@ -16,7 +16,7 @@ import {
   BLOCK_RESTORE,
   useBlockRestoreMutation
 } from './useBlockRestoreMutation'
-import { stepBlock } from './useBlockRestoreMutation.mock'
+import { stepBlock, stepBlockRes } from './useBlockRestoreMutation.mock'
 
 describe('useBlockRestoreMutation', () => {
   const useBlockRestoreMutationMock: MockedResponse<
@@ -31,7 +31,7 @@ describe('useBlockRestoreMutation', () => {
     },
     result: jest.fn(() => ({
       data: {
-        blockRestore: [stepBlock]
+        blockRestore: [stepBlockRes]
       }
     }))
   }
