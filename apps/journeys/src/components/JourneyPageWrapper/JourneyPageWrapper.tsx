@@ -4,12 +4,8 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import PlausibleProvider from 'next-plausible'
 
-import { TreeBlock } from '@core/journeys/ui/block'
-import { getStepTheme } from '@core/journeys/ui/getStepTheme'
-import { transformer } from '@core/journeys/ui/transformer'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
-import { StepFields } from '../../../__generated__/StepFields'
 
 interface JourneyPageWrapperProps {
   journey: Journey
@@ -47,7 +43,7 @@ export function JourneyPageWrapper({
         teamId != null ? `,api-journeys-team-${teamId}` : ''
       }`}
     >
-      <JourneyProvider value={{ journey, variant }}>
+      <JourneyProvider value={{ journey, variant: variant ?? 'default' }}>
         <ThemeProvider {...journeyTheme} rtl={rtl} locale={locale}>
           {children}
         </ThemeProvider>

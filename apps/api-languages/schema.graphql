@@ -41,7 +41,7 @@ type Language
   iso3: String
   name(languageId: ID, primary: Boolean): [LanguageName!]!
   countries: [Country!]!
-  audioPreview: [AudioPreview!]!
+  audioPreview: AudioPreview!
 }
 
 enum LanguageIdType {
