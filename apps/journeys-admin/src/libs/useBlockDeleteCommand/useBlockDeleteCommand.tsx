@@ -27,7 +27,12 @@ export function useBlockDeleteCommand() {
   const [blockRestore] = useBlockRestoreMutation()
 
   async function addBlockDelete(currentBlock: TreeBlock): Promise<void> {
-    if (journey == null || steps == null || selectedStep == null) {
+    if (
+      journey == null ||
+      steps == null ||
+      selectedStep == null ||
+      currentBlock?.id == null
+    ) {
       return
     }
 
@@ -90,7 +95,7 @@ export function useBlockDeleteCommand() {
         },
         async undo({ currentBlock, stepBeforeDelete }) {
           await blockRestore({
-            variables: { blockRestoreId: currentBlock?.id }
+            variables: { blockRestoreId: currentBlock.id }
           })
           setBlockRestoreEditorState(currentBlock, stepBeforeDelete, dispatch)
         }
