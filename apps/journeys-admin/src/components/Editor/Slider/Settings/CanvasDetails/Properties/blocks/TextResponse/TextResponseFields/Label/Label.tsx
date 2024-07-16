@@ -92,6 +92,7 @@ export function Label(): ReactElement {
           })
         },
         async undo({ id, journeyId, label }) {
+          updateEditorState(state.selectedStep, selectedBlock)
           await textResponseLabelUpdate({
             variables: {
               id,
@@ -108,7 +109,6 @@ export function Label(): ReactElement {
               }
             }
           })
-          updateEditorState(state.selectedStep, selectedBlock)
         }
       })
     }
