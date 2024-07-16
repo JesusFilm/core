@@ -4,11 +4,12 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
+import { useJourneyQuery } from '@core/journeys/ui/useJourneyQuery'
 import { NextImage } from '@core/shared/ui/NextImage'
 import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
 
+import { IdType } from 'libs/journeys/ui/__generated__/globalTypes'
 import { JourneyFields as Journey } from '../../../../../__generated__/JourneyFields'
-import { useJourneyQuery } from '../../../../libs/useJourneyQuery'
 
 interface OnboardingTemplateCardProps {
   templateId?: string
@@ -17,7 +18,10 @@ interface OnboardingTemplateCardProps {
 export function OnboardingTemplateCard({
   templateId
 }: OnboardingTemplateCardProps): ReactElement {
-  const { data } = useJourneyQuery({ id: templateId ?? '' })
+  const { data } = useJourneyQuery({
+    id: templateId ?? '',
+    idType: IdType.databaseId
+  })
 
   return (
     <>

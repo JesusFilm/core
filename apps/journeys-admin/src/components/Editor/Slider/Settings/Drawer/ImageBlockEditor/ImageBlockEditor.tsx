@@ -8,13 +8,13 @@ import { useRouter } from 'next/router'
 import { ReactElement, SyntheticEvent, useState } from 'react'
 import { object, string } from 'yup'
 
+import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import Grid1Icon from '@core/shared/ui/icons/Grid1'
 import Image3Icon from '@core/shared/ui/icons/Image3'
 import StarsIcon from '@core/shared/ui/icons/Stars'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../__generated__/BlockFields'
-import { setBeaconPageViewed } from '../../../../../../libs/setBeaconPageViewed'
 import { ImageBlockHeader } from '../ImageBlockHeader'
 
 import { UnsplashAuthor } from './UnsplashGallery'
@@ -93,6 +93,7 @@ export function ImageBlockEditor({
 
   const handleSrcChange = async (
     src: string,
+    prompt?: string,
     blurhash?: string,
     width = 0,
     height = 0
@@ -107,7 +108,10 @@ export function ImageBlockEditor({
         selectedBlock?.blurhash !== blurhash
           ? undefined
           : selectedBlock?.blurhash,
-      alt: src.replace(/(.*\/)*/, '').replace(/\?.*/, '') // per Vlad 26/1/22, we are hardcoding the image alt for now
+      alt:
+        prompt != null
+          ? `Prompt: ${prompt}`
+          : src.replace(/(.*\/)*/, '').replace(/\?.*/, '') // per Vlad 26/1/22, we are hardcoding the image alt for now
     }
     if ((blurhash?.length ?? 0) > 0) {
       block.blurhash = blurhash
@@ -125,7 +129,7 @@ export function ImageBlockEditor({
     width?: number,
     height?: number
   ): Promise<void> => {
-    await handleSrcChange(src, blurHash, width, height)
+    await handleSrcChange(src, undefined, blurHash, width, height)
     setUnsplashAuthor(unsplashAuthor)
   }
 
@@ -236,6 +240,7 @@ export function ImageBlockEditor({
               onChange={handleSrcChange}
               setUploading={setUploading}
               loading={uploading != null ? uploading : loading}
+              selectedBlock={selectedBlock}
             />
           )}
         </TabPanel>

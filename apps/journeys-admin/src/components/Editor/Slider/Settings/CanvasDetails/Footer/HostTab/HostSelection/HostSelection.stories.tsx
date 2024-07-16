@@ -6,6 +6,7 @@ import { ComponentProps } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { GetAllTeamHosts_hosts as Host } from '../../../../../../../../../__generated__/GetAllTeamHosts'
 import {
@@ -13,7 +14,6 @@ import {
   GetUserTeamsAndInvites_userTeams as UserTeam
 } from '../../../../../../../../../__generated__/GetUserTeamsAndInvites'
 import { UserTeamRole } from '../../../../../../../../../__generated__/globalTypes'
-import { simpleComponentConfig } from '../../../../../../../../libs/storybook'
 import { ThemeProvider } from '../../../../../../../ThemeProvider'
 import { DRAWER_WIDTH } from '../../../../../../constants'
 
@@ -67,7 +67,7 @@ const journey = {
       {
         value: 'English',
         primary: true,
-        __typename: 'Translation'
+        __typename: 'LanguageName'
       }
     ]
   }

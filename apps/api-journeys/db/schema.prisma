@@ -30,6 +30,28 @@ enum MessagePlatform {
   line
   tikTok
   custom
+  globe2
+  globe3
+  messageText1
+  messageText2
+  send1
+  send2
+  messageChat2
+  messageCircle
+  messageNotifyCircle
+  messageNotifySquare
+  messageSquare
+  mail1
+  linkExternal
+  home3
+  home4
+  helpCircleContained
+  helpSquareContained
+  shieldCheck
+  menu1
+  checkBroken
+  checkContained
+  settings
 }
 
 enum VisitorStatus {
@@ -64,6 +86,16 @@ enum VideoBlockSource {
   cloudflare
   internal
   youTube
+}
+
+enum IntegrationType {
+  growthSpaces
+}
+
+enum TextResponseType {
+  freeForm
+  name
+  email
 }
 
 model ChatButton {
@@ -204,8 +236,23 @@ model Team {
   UserTeamInvites    UserTeamInvite[]
   journeyCollections JourneyCollection[]
   customDomains      CustomDomain[]
+  integrations       Integration[]
 
   @@index(title)
+}
+
+model Integration {
+  id                     String          @id @default(uuid())
+  teamId                 String
+  type                   IntegrationType
+  accessId               String?
+  accessSecretPart       String?
+  accessSecretCipherText String?
+  accessSecretIv         String?
+  accessSecretTag        String?
+  team                   Team            @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@index([teamId])
 }
 
 model UserTeam {
@@ -439,7 +486,11 @@ model Block {
   formSlug                String?
   x                       Int?
   y                       Int?
+  routeId                 String?
+  integrationId           String?
+  type                    TextResponseType?
   updatedAt               DateTime             @default(now()) @updatedAt
+  deletedAt               DateTime?
   journey                 Journey              @relation(fields: [journeyId], references: [id], onDelete: Cascade)
   posterBlock             Block?               @relation("PosterBlock", fields: [posterBlockId], references: [id])
   posterBlockParent       Block?               @relation("PosterBlock")

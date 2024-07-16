@@ -5,6 +5,12 @@
     "module": "commonjs",
     "types": ["jest", "node"]
   },
+  "files": [
+    "index.d.ts",
+    "next-env.d.ts",
+    "../../../node_modules/@nx/react/typings/cssmodule.d.ts",
+    "../../../node_modules/@nx/react/typings/image.d.ts"
+  ],
   "include": [
     "**/*.spec.ts",
     "**/*.spec.tsx",

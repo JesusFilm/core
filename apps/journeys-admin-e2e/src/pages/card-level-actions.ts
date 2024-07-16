@@ -3,6 +3,8 @@ import dayjs from 'dayjs'
 import { Page } from 'playwright-core'
 import testData from '../utils/testData.json'
 
+const sixtySecondsTimeout = 60000
+
 export class CardLevelActionPage {
   readonly page: Page
   randomNumber: string
@@ -37,15 +39,15 @@ export class CardLevelActionPage {
         'div[data-testid="CardOverlayImageContainer"] img[data-testid="background-image"]'
       )
       .first()
-      .click({ timeout: 30000, force: true })
+      .click({ timeout: sixtySecondsTimeout, force: true })
   }
   async clickAddBlockBtn() {
     await expect(
       this.page.locator('button[data-testid="Fab"]', { hasText: 'Add Block' })
-    ).toHaveCount(1, { timeout: 60000 })
+    ).toHaveCount(1, { timeout: sixtySecondsTimeout })
     await this.page
       .locator('button[data-testid="Fab"]', { hasText: 'Add Block' })
-      .click({ timeout: 60000 })
+      .click({ timeout: sixtySecondsTimeout })
   }
 
   async clickBtnInAddBlockDrawer(buttonName: string) {
@@ -142,11 +144,11 @@ export class CardLevelActionPage {
       this.page
         .frameLocator(this.journeyCardFrame)
         .locator('div[role="tooltip"] button[id="delete-block-actions"]')
-    ).toHaveCount(1, { timeout: 10000 })
+    ).toHaveCount(1, { timeout: sixtySecondsTimeout })
     await this.page
       .frameLocator(this.journeyCardFrame)
       .locator('div[role="tooltip"] button[id="delete-block-actions"]')
-      .click({ timeout: 30000, delay: 2000 })
+      .click({ timeout: sixtySecondsTimeout, delay: 2000 })
   }
   async verifyAddedTextDeletedFromJourneyCard() {
     await expect(
@@ -156,12 +158,12 @@ export class CardLevelActionPage {
           'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"]',
           { hasText: this.renameJourmeyName }
         )
-    ).toBeHidden({ timeout: 10000 })
+    ).toBeHidden({ timeout: sixtySecondsTimeout })
   }
   async waitUntilJourneyCardLoaded() {
     await expect(
       this.page.locator('div[data-testid="StrategyItem"] button')
-    ).toBeVisible({ timeout: 30000 })
+    ).toBeVisible({ timeout: sixtySecondsTimeout })
   }
   async clickSelectImageBtn() {
     await this.page
@@ -186,7 +188,7 @@ export class CardLevelActionPage {
       this.page.locator(
         'div[data-testid="ImageBlockHeader"] div[data-testid="ImageBlockThumbnail"] span[role="progressbar"]'
       )
-    ).toBeHidden({ timeout: 60000 })
+    ).toBeHidden({ timeout: sixtySecondsTimeout })
   }
   async getImageSrc() {
     if (
@@ -210,7 +212,9 @@ export class CardLevelActionPage {
       this.page.locator(
         'div[data-testid="ImageSource"] + div div[data-testid="ImageBlockThumbnail"] img'
       )
-    ).not.toHaveAttribute('src', this.uploadedImgSrc, { timeout: 60000 })
+    ).not.toHaveAttribute('src', this.uploadedImgSrc, {
+      timeout: sixtySecondsTimeout
+    })
   }
   async verifyImgUploadedSuccessMsg() {
     await expect(
@@ -228,7 +232,7 @@ export class CardLevelActionPage {
       this.page.locator(
         'div[data-testid="ImageBlockHeader"] div[data-testid="ImageBlockThumbnail"] span[role="progressbar"]'
       )
-    ).toBeHidden({ timeout: 30000 })
+    ).toBeHidden({ timeout: sixtySecondsTimeout })
   }
   async clickImgDeleteBtn() {
     await this.page
@@ -242,7 +246,7 @@ export class CardLevelActionPage {
       this.page.locator(
         'div[data-testid="ImageSource"] + div div[data-testid="ImageBlockThumbnail"] img'
       )
-    ).toBeHidden({ timeout: 30000 })
+    ).toBeHidden({ timeout: sixtySecondsTimeout })
   }
   async clickSelectVideoBtn() {
     await this.page
@@ -262,12 +266,12 @@ export class CardLevelActionPage {
       this.page.locator(
         'div[data-testid="VideoFromCloudflare"] span[role="progressbar"]'
       )
-    ).toBeVisible({ timeout: 60000 })
+    ).toBeVisible({ timeout: sixtySecondsTimeout })
     await expect(
       this.page.locator(
         'div[data-testid="VideoFromCloudflare"] span[role="progressbar"]'
       )
-    ).toBeHidden({ timeout: 60000 })
+    ).toBeHidden({ timeout: sixtySecondsTimeout })
   }
   async verifyUploadVideoInJourney(uplodedType: string) {
     const videoName =
@@ -295,7 +299,7 @@ export class CardLevelActionPage {
           { hasText: 'Video Details' }
         )
         .last()
-    ).toBeVisible({ timeout: 30000 })
+    ).toBeVisible({ timeout: sixtySecondsTimeout })
     await this.page
       .locator(
         'div[data-testid="SettingsDrawer"] + div[data-testid="SettingsDrawer"] div[class*="css-hhubed"] +button[aria-label="close-image-library"]'
@@ -330,7 +334,7 @@ export class CardLevelActionPage {
       this.page.locator(
         'div[data-testid="VideoBlockEditor"] svg[data-testid="Edit2Icon"]'
       )
-    ).toBeHidden({ timeout: 30000 })
+    ).toBeHidden({ timeout: sixtySecondsTimeout })
   }
   async clickleftSideArrawIcon() {
     await this.page
@@ -401,10 +405,10 @@ export class CardLevelActionPage {
   }
   async verifyToastMessage() {
     await expect(this.page.locator('#notistack-snackbar')).toBeVisible({
-      timeout: 10000
+      timeout: sixtySecondsTimeout
     })
     await expect(this.page.locator('#notistack-snackbar')).toBeHidden({
-      timeout: 300000
+      timeout: sixtySecondsTimeout
     })
   }
   async verifyPollOptionAddedToCard() {
@@ -771,7 +775,7 @@ export class CardLevelActionPage {
       .locator('input#hostLocation')
       .click({ delay: 3000, force: true })
     await expect(this.page.locator('input#hostLocation')).toBeEnabled({
-      timeout: 30000
+      timeout: sixtySecondsTimeout
     })
     await this.page.locator('input#hostLocation').click({ delay: 3000 })
     await this.page
@@ -885,7 +889,7 @@ export class CardLevelActionPage {
         .first()
         .locator(typographyPath)
         .first()
-        .click({ timeout: 15000, delay: 1000 })
+        .click({ timeout: sixtySecondsTimeout, delay: 1000 })
       for (let clickRetry = 0; clickRetry < 5; clickRetry++) {
         if (
           await this.page
@@ -902,7 +906,7 @@ export class CardLevelActionPage {
             .first()
             .locator(typographyPath)
             .first()
-            .click({ timeout: 15000, delay: 1000 })
+            .click({ timeout: sixtySecondsTimeout, delay: 1000 })
         }
       }
       await this.page

@@ -1,0 +1,1 @@
+export { GrowthSpacesIntegrationDetails } from './GrowthSpacesIntegrationDetails'

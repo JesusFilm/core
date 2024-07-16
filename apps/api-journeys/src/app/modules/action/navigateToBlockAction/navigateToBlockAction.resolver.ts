@@ -79,7 +79,8 @@ export class NavigateToBlockActionResolver {
       update: {
         ...ACTION_UPDATE_RESET,
         ...inputWithBlockConnection
-      }
+      },
+      include: { parentBlock: { include: { action: true } } }
     })
   }
 }

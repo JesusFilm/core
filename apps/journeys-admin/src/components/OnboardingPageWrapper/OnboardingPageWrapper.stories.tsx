@@ -1,13 +1,14 @@
 import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 
+import { GET_JOURNEY } from '@core/journeys/ui/useJourneyQuery'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
+
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
-import { simpleComponentConfig } from '../../libs/storybook'
-import { GET_JOURNEY } from '../../libs/useJourneyQuery/useJourneyQuery'
 
 import { OnboardingPageWrapper } from '.'
 
@@ -42,7 +43,7 @@ const getJourneyMock = {
           id: '529',
           name: [
             {
-              __typename: 'Translation',
+              __typename: 'LanguageName',
               value: 'English',
               primary: true
             }
