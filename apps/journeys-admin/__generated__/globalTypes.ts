@@ -78,6 +78,10 @@ export enum IdType {
   slug = "slug",
 }
 
+export enum IntegrationType {
+  growthSpaces = "growthSpaces",
+}
+
 export enum JourneyStatus {
   archived = "archived",
   deleted = "deleted",
@@ -396,6 +400,17 @@ export interface ImageBlockUpdateInput {
   blurhash?: string | null;
   width?: number | null;
   height?: number | null;
+}
+
+export interface IntegrationGrowthSpacesCreateInput {
+  accessId: string;
+  accessSecret: string;
+  teamId: string;
+}
+
+export interface IntegrationGrowthSpacesUpdateInput {
+  accessId: string;
+  accessSecret: string;
 }
 
 export interface JourneyCollectionCreateInput {
