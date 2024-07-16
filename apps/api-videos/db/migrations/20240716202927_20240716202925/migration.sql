@@ -31,3 +31,17 @@ ALTER COLUMN "srtSrc" DROP NOT NULL;
 -- AlterTable
 ALTER TABLE "VideoVariant" DROP COLUMN "editionId",
 ADD COLUMN     "edition" TEXT NOT NULL DEFAULT 'base';
+
+-- DropEnum
+DROP TYPE "BibleCitationType";
+
+-- CreateTable
+CREATE TABLE "ImportTimes" (
+    "modelName" TEXT NOT NULL,
+    "lastImport" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "ImportTimes_pkey" PRIMARY KEY ("modelName")
+);
+
+-- CreateIndex
+CREATE INDEX "VideoVariantDownload_videoVariantId_idx" ON "VideoVariantDownload"("videoVariantId");
