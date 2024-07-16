@@ -179,6 +179,10 @@ export const reducer = (
         activeFab: action.activeFab
       }
     case 'SetActiveSlideAction':
+      if (state.showAnalytics === true) {
+        return { ...state, activeSlide: 0 }
+      }
+
       return {
         ...state,
         activeContent: state.activeContent,
