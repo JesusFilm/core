@@ -65,7 +65,6 @@ export function Canvas(): ReactElement {
   }, [])
 
   function handleFooterClick(): void {
-    if (showAnalytics === true) return
     dispatch({
       type: 'SetActiveCanvasDetailsDrawerAction',
       activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer
