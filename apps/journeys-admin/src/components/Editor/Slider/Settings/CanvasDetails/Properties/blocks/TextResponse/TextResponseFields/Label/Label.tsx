@@ -8,22 +8,23 @@ import { FocusEvent, ReactElement } from 'react'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 
 import {
   BlockFields_StepBlock,
   BlockFields_TextResponseBlock as TextResponseBlock
 } from '../../../../../../../../../../../__generated__/BlockFields'
-import { TextResponseLabelUpdate } from '../../../../../../../../../../../__generated__/TextResponseLabelUpdate'
+import {
+  TextResponseLabelUpdate,
+  TextResponseLabelUpdateVariables
+} from '../../../../../../../../../../../__generated__/TextResponseLabelUpdate'
 
 export const TEXT_RESPONSE_LABEL_UPDATE = gql`
   mutation TextResponseLabelUpdate(
     $id: ID!
-    $journeyId: ID!
     $input: TextResponseBlockUpdateInput!
   ) {
-    textResponseBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+    textResponseBlockUpdate(id: $id, input: $input) {
       id
       label
     }
@@ -32,10 +33,10 @@ export const TEXT_RESPONSE_LABEL_UPDATE = gql`
 
 export function Label(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [textResponseLabelUpdate] = useMutation<TextResponseLabelUpdate>(
-    TEXT_RESPONSE_LABEL_UPDATE
-  )
-  const { journey } = useJourney()
+  const [textResponseLabelUpdate] = useMutation<
+    TextResponseLabelUpdate,
+    TextResponseLabelUpdateVariables
+  >(TEXT_RESPONSE_LABEL_UPDATE)
   const { state, dispatch } = useEditor()
   const { add } = useCommand()
 
@@ -61,23 +62,21 @@ export function Label(): ReactElement {
   async function handleSubmit(e: FocusEvent): Promise<void> {
     const target = e.target as HTMLInputElement
     const label = target.value
-    if (selectedBlock != null && journey != null) {
+    if (selectedBlock != null) {
       await add({
         parameters: {
-          execute: { id: selectedBlock.id, journeyId: journey.id, label },
+          execute: { id: selectedBlock.id, label },
           undo: {
             id: selectedBlock.id,
-            journeyId: journey.id,
             label: selectedBlock.label
           }
         },
-        async execute({ id, journeyId, label }) {
+        async execute({ id, label }) {
           updateEditorState(state.selectedStep, selectedBlock)
 
           await textResponseLabelUpdate({
             variables: {
               id,
-              journeyId,
               input: {
                 label
               }
@@ -91,12 +90,11 @@ export function Label(): ReactElement {
             }
           })
         },
-        async undo({ id, journeyId, label }) {
+        async undo({ id, label }) {
           updateEditorState(state.selectedStep, selectedBlock)
           await textResponseLabelUpdate({
             variables: {
               id,
-              journeyId,
               input: {
                 label
               }
