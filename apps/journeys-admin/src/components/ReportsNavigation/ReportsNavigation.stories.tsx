@@ -1,11 +1,11 @@
 import { Meta, StoryObj } from '@storybook/react'
 
-import { simpleComponentConfig } from '@core/shared/ui/storybook'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { ReportsNavigation } from '.'
 
 const ReportsNavigationStory: Meta<typeof ReportsNavigation> = {
-  ...simpleComponentConfig,
+  ...journeysAdminConfig,
   component: ReportsNavigation,
   title: 'Journeys-Admin/ReportsNavigation'
 }
@@ -17,7 +17,7 @@ const Template: StoryObj<typeof ReportsNavigation> = {
 export const Default = {
   ...Template,
   args: {
-    selected: 'journeys'
+    journeyId: 'journeyId'
   }
 }
 
