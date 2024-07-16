@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ButtonVariant, ButtonColor, ButtonSize, ThemeMode, ThemeName, IconName, IconSize, IconColor, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
+import { ButtonVariant, ButtonColor, ButtonSize, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: BlockRestore
@@ -251,6 +251,9 @@ export interface BlockRestore_blockRestore_TextResponseBlock {
   label: string;
   hint: string | null;
   minRows: number | null;
+  type: TextResponseType | null;
+  routeId: string | null;
+  integrationId: string | null;
 }
 
 export interface BlockRestore_blockRestore_TypographyBlock {
