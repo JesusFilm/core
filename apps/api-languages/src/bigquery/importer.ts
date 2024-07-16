@@ -1,6 +1,6 @@
 import { BigQuery, Job, RowMetadata } from '@google-cloud/bigquery'
-import { ZodSchema } from 'zod'
 import get from 'lodash/get'
+import { ZodSchema } from 'zod'
 
 import { prisma } from '../lib/prisma'
 

@@ -1,7 +1,8 @@
 import { Job, Worker } from 'bullmq'
-import { jobFn, jobName } from './worker'
-import { bullConnection, queueName } from './queue'
+
 import { importAudioPreview } from './importers/audioPreviews/audioPreviews'
+import { bullConnection, queueName } from './queue'
+import { jobFn, jobName } from './worker'
 
 jest.mock('bullmq')
 jest.mock('./importers/languages/languages', () => ({

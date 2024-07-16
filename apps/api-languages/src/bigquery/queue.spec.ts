@@ -1,5 +1,6 @@
-import { bullConnection, queueName } from './queue'
 import { Queue } from 'bullmq'
+
+import { bullConnection, queueName } from './queue'
 
 jest.mock('bullmq')
 
