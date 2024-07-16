@@ -15,6 +15,7 @@ import type { UserJourneyOpen } from '../../../__generated__/UserJourneyOpen'
 import { JourneysReportType } from '../../../__generated__/globalTypes'
 import { MemoizedDynamicReport } from '../../../src/components/DynamicPowerBiReport'
 import { PageWrapper } from '../../../src/components/PageWrapper'
+import { PlausibleEmbedDashboard } from '../../../src/components/PlausibleEmbedDashboard'
 import { ReportsNavigation } from '../../../src/components/ReportsNavigation'
 import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'
 import { GET_ADMIN_JOURNEY, USER_JOURNEY_OPEN } from '../[journeyId]'
@@ -36,12 +37,13 @@ function JourneyReportsPage(): ReactElement {
         mainHeaderChildren={<ReportsNavigation journeyId={journeyId} />}
         mainBodyPadding={false}
       >
-        <Box sx={{ height: 'calc(100vh - 48px)' }}>
+        <PlausibleEmbedDashboard />
+        {/* <Box sx={{ height: 'calc(100vh - 48px)' }}>
           <MemoizedDynamicReport
             reportType={JourneysReportType.singleFull}
             journeyId={journeyId}
           />
-        </Box>
+        </Box> */}
       </PageWrapper>
     </>
   )
