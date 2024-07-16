@@ -24,8 +24,7 @@ describe('setBlockRestoreEditorState', () => {
         id: 'step',
         journeyId: 'journeyId',
         nextBlockId: 'someId',
-        parentBlockId: null,
-        typename: 'StepBlock'
+        parentBlockId: null
       },
       type: 'SetSelectedStepAction'
     })
@@ -65,8 +64,7 @@ describe('setBlockRestoreEditorState', () => {
         id: 'step',
         journeyId: 'journeyId',
         nextBlockId: 'someId',
-        parentBlockId: null,
-        typename: 'StepBlock'
+        parentBlockId: null
       },
       type: 'SetSelectedStepAction'
     })

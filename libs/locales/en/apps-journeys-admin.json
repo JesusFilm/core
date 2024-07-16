@@ -101,8 +101,6 @@
   "Type your text here...": "Type your text here...",
   "Add New Option": "Add New Option",
   "Add your text here...": "Add your text here...",
-  "Block Deleted": "Block Deleted",
-  "Card Deleted": "Card Deleted",
   "Delete Card?": "Delete Card?",
   "Delete": "Delete",
   "Cancel": "Cancel",
@@ -761,5 +759,8 @@
   "Last Active": "Last Active",
   "User Data": "User Data",
   "Polls": "Polls",
-  "{{ name }}'s Team": "{{ name }}'s Team"
+  "{{ name }}'s Team": "{{ name }}'s Team",
+  "Delete operation failed, please reload and try again": "Delete operation failed, please reload and try again",
+  "Block Deleted": "Block Deleted",
+  "Card Deleted": "Card Deleted"
 }
