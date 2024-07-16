@@ -116,10 +116,7 @@ describe('useBlockDeleteCommand', () => {
             <JourneyProvider
               value={{ journey: { ...defaultJourney, id: 'journey-id' } }}
             >
-              <SnackbarProvider>
-                {/* <CommandUndoItem variant="button" /> */}
-                {children}
-              </SnackbarProvider>
+              <SnackbarProvider>{children}</SnackbarProvider>
             </JourneyProvider>
           </EditorProvider>
         </MockedProvider>
