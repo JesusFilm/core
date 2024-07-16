@@ -10,10 +10,10 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../__generated__/globalTypes'
+import { useBlockActionNavigateToBlockUpdateMutation } from '../../../../../../libs/useBlockActionNavigateToBlockUpdateMutation'
 import { useBlockOrderUpdateMutation } from '../../../../../../libs/useBlockOrderUpdateMutation'
 import { useStepAndCardBlockCreateMutation } from '../../../../../../libs/useStepAndCardBlockCreateMutation'
 import { useStepBlockNextBlockUpdateMutation } from '../../../../../../libs/useStepBlockNextBlockUpdateMutation'
-import { useWrappedNavigateToBlockActionUpdateMutation } from '../../../../../../libs/useWrappedNavigateToBlockActionUpdateMutation'
 import { RawEdgeSource, convertToEdgeSource } from '../convertToEdgeSource'
 
 type RawEdgeSourceAndCoordinates = RawEdgeSource & {
@@ -51,7 +51,7 @@ export function useCreateStep(): (
   })
   const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
   const [navigateToBlockActionUpdate] =
-    useWrappedNavigateToBlockActionUpdateMutation()
+    useBlockActionNavigateToBlockUpdateMutation()
   const [blockOrderUpdate] = useBlockOrderUpdateMutation()
 
   return async function createStep({

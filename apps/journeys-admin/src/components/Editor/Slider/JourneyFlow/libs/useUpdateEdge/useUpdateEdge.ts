@@ -6,9 +6,9 @@ import { TreeBlock } from '@core/journeys/ui/block'
 import { searchBlocks } from '@core/journeys/ui/searchBlocks'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'
+import { useBlockActionNavigateToBlockUpdateMutation } from '../../../../../../libs/useBlockActionNavigateToBlockUpdateMutation'
 import { useBlockOrderUpdateMutation } from '../../../../../../libs/useBlockOrderUpdateMutation'
 import { useStepBlockNextBlockUpdateMutation } from '../../../../../../libs/useStepBlockNextBlockUpdateMutation'
-import { useWrappedNavigateToBlockActionUpdateMutation } from '../../../../../../libs/useWrappedNavigateToBlockActionUpdateMutation'
 import { RawEdgeSource, convertToEdgeSource } from '../convertToEdgeSource'
 import { useDeleteEdge } from '../useDeleteEdge'
 
@@ -27,7 +27,7 @@ export function useUpdateEdge(): (
 
   const [blockOrderUpdate] = useBlockOrderUpdateMutation()
   const [navigateToBlockActionUpdate] =
-    useWrappedNavigateToBlockActionUpdateMutation()
+    useBlockActionNavigateToBlockUpdateMutation()
   const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
   const deleteEdge = useDeleteEdge()
 

@@ -4,9 +4,10 @@ import {
   NavigateToBlockActionUpdate,
   NavigateToBlockActionUpdateVariables
 } from '../../../__generated__/NavigateToBlockActionUpdate'
-import { NAVIGATE_TO_BLOCK_ACTION_UPDATE } from '../useBlockActionNavigateToBlockUpdateMutation'
 
-export const wrappedNavigateToBlockActionUpdateMock: MockedResponse<
+import { NAVIGATE_TO_BLOCK_ACTION_UPDATE } from './useBlockActionNavigateToBlockUpdateMutation'
+
+export const navigateToBlockActionUpdateMock: MockedResponse<
   NavigateToBlockActionUpdate,
   NavigateToBlockActionUpdateVariables
 > = {
@@ -14,7 +15,6 @@ export const wrappedNavigateToBlockActionUpdateMock: MockedResponse<
     query: NAVIGATE_TO_BLOCK_ACTION_UPDATE,
     variables: {
       id: 'block1.id',
-      journeyId: 'journey-id',
       input: {
         blockId: 'step2.id'
       }

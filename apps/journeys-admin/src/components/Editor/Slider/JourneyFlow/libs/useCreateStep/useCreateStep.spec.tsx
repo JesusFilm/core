@@ -16,10 +16,10 @@ import {
   StepBlockNextBlockUpdate,
   StepBlockNextBlockUpdateVariables
 } from '../../../../../../../__generated__/StepBlockNextBlockUpdate'
+import { navigateToBlockActionUpdateMock } from '../../../../../../libs/useBlockActionNavigateToBlockUpdateMutation/useBlockActionNavigateToBlockUpdateMutation.mock'
 import { blockOrderUpdateMock } from '../../../../../../libs/useBlockOrderUpdateMutation/useBlockOrderUpdateMutation.mock'
 import { stepAndCardBlockCreateMock } from '../../../../../../libs/useStepAndCardBlockCreateMutation/useStepAndCardBlockCreateMutation.mock'
 import { STEP_BLOCK_NEXT_BLOCK_UPDATE } from '../../../../../../libs/useStepBlockNextBlockUpdateMutation/useStepBlockNextBlockUpdateMutation'
-import { wrappedNavigateToBlockActionUpdateMock } from '../../../../../../libs/useWrappedNavigateToBlockActionUpdateMutation/useWrappedNavigateToBlockActionUpdateMutation.mock'
 
 import { useCreateStep } from '.'
 
@@ -52,14 +52,13 @@ blockOrderUpdateMock.result = jest.fn(() => ({
   }
 }))
 
-wrappedNavigateToBlockActionUpdateMock.request.variables = {
+navigateToBlockActionUpdateMock.request.variables = {
   id: 'block1.id',
-  journeyId: 'journey-id',
   input: {
     blockId: 'newStep.id'
   }
 }
-wrappedNavigateToBlockActionUpdateMock.result = jest.fn(() => ({
+navigateToBlockActionUpdateMock.result = jest.fn(() => ({
   data: {
     blockUpdateNavigateToBlockAction: {
       __typename: 'NavigateToBlockAction',
@@ -253,10 +252,7 @@ describe('useCreateStep', () => {
     const { result: hook } = renderHook(() => useCreateStep(), {
       wrapper: ({ children }) => (
         <MockedProvider
-          mocks={[
-            stepAndCardBlockCreateMock,
-            wrappedNavigateToBlockActionUpdateMock
-          ]}
+          mocks={[stepAndCardBlockCreateMock, navigateToBlockActionUpdateMock]}
         >
           <JourneyProvider value={{ journey: defaultJourney }}>
             <EditorProvider initialState={{ steps: [step1] }}>
@@ -277,6 +273,6 @@ describe('useCreateStep', () => {
         })
     )
 
-    expect(wrappedNavigateToBlockActionUpdateMock.result).toHaveBeenCalled()
+    expect(navigateToBlockActionUpdateMock.result).toHaveBeenCalled()
   })
 })

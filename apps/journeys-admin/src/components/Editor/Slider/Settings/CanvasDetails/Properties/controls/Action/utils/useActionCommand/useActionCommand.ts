@@ -71,14 +71,13 @@ export function useActionCommand(): {
                 }
               })
             case 'NavigateToBlockAction':
-              return await navigateToBlockActionUpdate({
-                variables: {
+              return await navigateToBlockActionUpdate(
+                {
                   id: blockId,
-                  input: {
-                    blockId: action.blockId
-                  }
-                }
-              })
+                  __typename: blockTypename
+                },
+                action.blockId
+              )
             default:
               return await actionDelete({
                 id: blockId,
