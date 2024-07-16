@@ -28,6 +28,7 @@ import { CardBlockBackgroundColorUpdate } from '../../../../../../../../../../__
 import { CardFields } from '../../../../../../../../../../__generated__/CardFields'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
+import cloneDeep from 'lodash/cloneDeep'
 import { PaletteColorPicker } from './PaletteColorPicker'
 import { Swatch } from './Swatch'
 
@@ -141,25 +142,25 @@ export function BackgroundColor(): ReactElement {
       add({
         parameters: {
           execute: {
-            selectedStep,
+            selectedStep: cloneDeep(selectedStep),
             activeContent,
-            cardBlock,
-            journey,
+            cardBlock: cloneDeep(cardBlock),
+            journeyId: journey.id,
             undoColor: prevColor?.current
           },
           undo: {
             undoColor: prevColor?.current,
-            selectedStep,
+            selectedStep: cloneDeep(selectedStep),
             activeContent,
-            cardBlock,
-            journey
+            cardBlock: cloneDeep(cardBlock),
+            journeyId: journey.id
           }
         },
         execute: async ({
           selectedStep,
           activeContent,
           cardBlock,
-          journey,
+          journeyId,
           undoColor
         }) => {
           setEditorState(selectedStep, activeContent)
@@ -167,7 +168,7 @@ export function BackgroundColor(): ReactElement {
           await cardBlockUpdate({
             variables: {
               id: cardBlock.id,
-              journeyId: journey.id,
+              journeyId: journeyId,
               input: {
                 backgroundColor: color === 'null' ? null : color
               }
@@ -186,13 +187,13 @@ export function BackgroundColor(): ReactElement {
           selectedStep,
           activeContent,
           cardBlock,
-          journey
+          journeyId
         }) => {
           setEditorState(selectedStep, activeContent)
           await cardBlockUpdate({
             variables: {
               id: cardBlock.id,
-              journeyId: journey.id,
+              journeyId: journeyId,
               input: {
                 backgroundColor: undoColor
               }
