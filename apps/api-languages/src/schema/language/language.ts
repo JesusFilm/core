@@ -63,7 +63,7 @@ export const Language = builder.prismaObject('Language', {
       }
     }),
     countries: t.relation('countries'),
-    audioPreview: t.relation('audioPreview')
+    audioPreview: t.relation('audioPreview', { nullable: true })
   })
 })
 

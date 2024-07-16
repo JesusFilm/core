@@ -29,9 +29,3 @@ export const languageName = [
     languageId: '529'
   }
 ]
-
-export const audioPreview = {
-  value: 'abc.mp3',
-  size: 1024,
-  languageId: '20615'
-}
