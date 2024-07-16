@@ -14,12 +14,13 @@ import { blockDeleteUpdate } from '../../../../../../../libs/blockDeleteUpdate'
 import { useBlockDeleteMutation } from '../../../../../../../libs/useBlockDeleteMutation'
 import { MenuItem } from '../../../../../../MenuItem'
 
-import { ApolloCache, Reference, gql } from '@apollo/client'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
-import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
-import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../__generated__/BlockFields'
-import { BlockRestore } from '../../../../../../../../__generated__/BlockRestore'
-import { useBlockRestoreMutation } from '../../../../../../../libs/useBlockRestoreMutation'
+
+import {
+  blockRestoreCacheUpdate,
+  setBlockRestoreEditorState,
+  useBlockRestoreMutation
+} from '../../../../../../../libs/useBlockRestoreMutation'
 import getSelected from './utils/getSelected'
 
 interface DeleteBlockProps {
@@ -59,31 +60,6 @@ export function DeleteBlock({
 
   const disableAction = currentBlock == null || disabled || result.loading
 
-  function setEditorState(
-    currentBlock: TreeBlock,
-    selectedStep: TreeBlock<StepBlock>
-  ): void {
-    if (currentBlock.__typename === 'StepBlock') {
-      dispatch({
-        type: 'SetActiveSlideAction',
-        activeSlide: ActiveSlide.JourneyFlow
-      })
-      dispatch({
-        type: 'SetSelectedStepAction',
-        selectedStep: currentBlock
-      })
-    } else {
-      dispatch({
-        type: 'SetSelectedStepAction',
-        selectedStep: selectedStep
-      })
-      dispatch({
-        type: 'SetSelectedBlockAction',
-        selectedBlock: currentBlock
-      })
-    }
-  }
-
   const handleDeleteBlock = async (): Promise<void> => {
     if (
       currentBlock == null ||
@@ -104,7 +80,7 @@ export function DeleteBlock({
         undo: {}
       },
       async execute() {
-        setEditorState(currentBlock, stepBeforeDelete)
+        setBlockRestoreEditorState(currentBlock, stepBeforeDelete, dispatch)
 
         await blockDelete(currentBlock, {
           update(cache, { data }) {
@@ -133,39 +109,6 @@ export function DeleteBlock({
         dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
       },
       async undo() {
-        const blockRestoreCacheUpdate = (
-          cache: ApolloCache<any>,
-          data: BlockRestore,
-          id?
-        ) => {
-          const defaultCacheOptions = {
-            fields: {
-              blocks(existingBlockRefs: Reference[] = [], { readField }) {
-                data.blockRestore.forEach((block) => {
-                  const newBlockRef = cache.writeFragment({
-                    data: block,
-                    fragment: gql`
-                        fragment RestoredBlock on Block {
-                          id
-                        }
-                      `
-                  })
-                  if (
-                    existingBlockRefs.some(
-                      (ref) => readField('id', ref) === block?.id
-                    )
-                  ) {
-                    return existingBlockRefs
-                  }
-                  return [...existingBlockRefs, newBlockRef]
-                })
-              }
-            }
-          }
-          const cacheOptions =
-            id != null ? { ...defaultCacheOptions, id } : defaultCacheOptions
-          cache.modify(cacheOptions)
-        }
         await blockRestore({
           variables: { blockRestoreId: currentBlock?.id },
           update(cache, { data }) {
@@ -183,7 +126,7 @@ export function DeleteBlock({
             }
           }
         })
-        setEditorState(currentBlock, stepBeforeDelete)
+        setBlockRestoreEditorState(currentBlock, stepBeforeDelete, dispatch)
       }
     })
 

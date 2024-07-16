@@ -144,7 +144,7 @@ interface SetAnalyticsAction {
   type: 'SetAnalyticsAction'
   analytics?: JourneyAnalytics
 }
-type EditorAction =
+export type EditorAction =
   | SetActiveCanvasDetailsDrawerAction
   | SetActiveContentAction
   | SetActiveFabAction
