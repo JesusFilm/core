@@ -35,6 +35,7 @@ type AudioPreview
 {
   language: Language!
   value: String!
+  duration: Int!
   size: Int!
 }
 
@@ -1237,7 +1238,7 @@ type Language
   iso3: String @join__field(graph: LANGUAGES)
   name(languageId: ID, primary: Boolean): [LanguageName!]! @join__field(graph: LANGUAGES)
   countries: [Country!]! @join__field(graph: LANGUAGES)
-  audioPreview: [AudioPreview!]! @join__field(graph: LANGUAGES)
+  audioPreview: AudioPreview @join__field(graph: LANGUAGES)
 }
 
 enum LanguageIdType
