@@ -9,9 +9,10 @@ import { ReactElement } from 'react'
 import { SwiperOptions } from 'swiper/types'
 
 import { ContentCarousel } from '@core/shared/ui/ContentCarousel'
-import { BaseHit, Hit } from 'instantsearch.js'
-import { UseHitsProps, useHits, useInstantSearch } from 'react-instantsearch'
-import { GetJourneys_journeys as Journey } from '../../libs/useJourneysQuery/__generated__/GetJourneys'
+import {
+  AlgoliaJourney,
+  useJourneyHits
+} from '../../libs/algolia/useJourneyHits/useJourneyHits'
 import { TemplateGalleryCard } from '../TemplateGalleryCard'
 
 interface Contents {
@@ -21,41 +22,6 @@ interface Contents {
 interface TemplateSectionsProps {
   tagIds?: string[]
   languageIds?: string[]
-}
-
-interface Tags {
-  Topics: string[]
-  Audience: string[]
-  Holidays: string[]
-  Collections: string[]
-  'Felt Needs': string[]
-}
-
-// TODO(jk): should type the algolia data
-export interface AlgoliaJourney extends Hit<BaseHit> {
-  id: string
-  title: string
-  createdAt: Date
-  description: string
-  language: string
-  primaryImageBlock: {
-    src: string
-    alt: string
-  }
-  featuredAt: string | null
-  tags: Tags
-}
-
-// TODO(jk): move to utils class
-const transformItems: UseHitsProps<AlgoliaJourney>['transformItems'] = (
-  items
-) => {
-  return items.map((item) => ({
-    ...item,
-    id: item.objectID,
-    createdAt: item.date,
-    primaryImageBlock: item.image
-  })) as unknown as AlgoliaJourney[]
 }
 
 function getAllTags(journey: AlgoliaJourney) {
@@ -71,12 +37,7 @@ export function TemplateSections({
 }: TemplateSectionsProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const { breakpoints } = useTheme()
-
-  const { hits, results, sendEvent } = useHits<Hit<AlgoliaJourney>>({
-    transformItems
-  })
-  const { status } = useInstantSearch()
-  const loading = status === 'stalled'
+  const { hits, loading } = useJourneyHits()
 
   const algoliaContents: Contents = {}
   let algoliaCollection: AlgoliaJourney[] = []
