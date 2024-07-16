@@ -4,6 +4,7 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { ReactElement } from 'react'
 
 import Box from '@mui/material/Box'
+import Container from '@mui/material/Container'
 import { Index } from 'react-instantsearch'
 import i18nConfig from '../../next-i18next.config'
 import { PageWrapper } from '../../src/components/PageWrapper'
@@ -15,11 +16,16 @@ function StrategiesPage(): ReactElement {
 
   return (
     <PageWrapper>
-      <Index indexName="wp_dev_posts_mission-trip">
-        <StrategySections />
-      </Index>
-      {/* index
-      strategysections */}
+      <Box
+        sx={{ backgroundColor: 'background.default' }}
+        data-testid="StrategiesPage"
+      >
+        <Container maxWidth="xxl">
+          <Index indexName="wp_dev_posts_mission-trip">
+            <StrategySections />
+          </Index>
+        </Container>
+      </Box>
     </PageWrapper>
   )
 }

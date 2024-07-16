@@ -1,8 +1,9 @@
-import { Box, Card, Stack } from '@mui/material'
-// import Card from '@mui/material/Card'
+import InsertPhotoRoundedIcon from '@mui/icons-material/InsertPhotoRounded'
+import Box from '@mui/material/Box'
+import Card from '@mui/material/Card'
+import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTheme } from '@mui/material/styles'
-import { useTranslation } from 'next-i18next'
 import Image from 'next/image'
 import NextLink from 'next/link'
 import { ReactElement } from 'react'
@@ -24,7 +25,6 @@ export function StrategyCard({
   item,
   priority
 }: StrategyCardProps): ReactElement {
-  const { t } = useTranslation('apps-watch')
   const theme = useTheme()
   return (
     <Card
@@ -58,7 +58,7 @@ export function StrategyCard({
         }
       }}
     >
-      <NextLink href={item?.imageUrl ?? ''} passHref legacyBehavior>
+      <NextLink href={item?.link ?? ''} passHref legacyBehavior>
         <Box
           component="a"
           tabIndex={-1}
@@ -83,21 +83,25 @@ export function StrategyCard({
               backgroundColor: 'background.default'
             }}
           >
-            <Image
-              className="MuiImageBackground-root"
-              src={item?.imageUrl ?? ''}
-              alt={item?.title ?? ''}
-              fill
-              sizes={`(max-width: ${
-                theme.breakpoints.values.md - 0.5
-              }px) 130px, (max-width: ${
-                theme.breakpoints.values.xl - 0.5
-              }px) 180px, 280px`}
-              style={{
-                maxHeight: '160px',
-                objectFit: 'cover'
-              }}
-            />
+            {item?.imageUrl != null ? (
+              <Image
+                className="MuiImageBackground-root"
+                src={item?.imageUrl}
+                alt={item?.title ?? ''}
+                fill
+                sizes={`(max-width: ${
+                  theme.breakpoints.values.md - 0.5
+                }px) 130px, (max-width: ${
+                  theme.breakpoints.values.xl - 0.5
+                }px) 180px, 280px`}
+                style={{
+                  maxHeight: '160px',
+                  objectFit: 'cover'
+                }}
+              />
+            ) : (
+              <InsertPhotoRoundedIcon className="MuiImageBackground-root" />
+            )}
           </Stack>
           <Stack sx={{ px: 0, py: 3 }}>
             <Typography variant="subtitle2">{item?.title ?? ''}</Typography>

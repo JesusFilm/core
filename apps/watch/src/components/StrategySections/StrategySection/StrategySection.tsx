@@ -1,87 +1,45 @@
 import { ContentCarousel } from '@core/shared/ui/ContentCarousel'
 import Box from '@mui/material/Box'
+import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
 import { useTheme } from '@mui/material/styles'
-import { useTranslation } from 'next-i18next'
+import { Hit } from 'instantsearch.js'
 import { ReactElement } from 'react'
+import { useHits } from 'react-instantsearch'
 import { SwiperOptions } from 'swiper/types'
 import { StrategyCard } from '../StrategyCard'
 
-const longDescription =
-  'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum'
+type hitItem = {
+  id: string
+  title: string
+  description: string
+  imageUrl: string
+  link: string
+}
 
-const imageSrc =
-  'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920'
+function createItemsFromHits(hits: Hit[]): hitItem[] {
+  return hits.map((hit) => ({
+    id: hit.ObjectID,
+    title: hit.post_title,
+    description: hit.content,
+    imageUrl: hit.images.thumbnail?.url,
+    link: hit.permalink
+  }))
+}
 
-const items = [
-  {
-    title: 'Title 1',
-    description: longDescription,
-    id: 'test-id',
-    imageUrl: imageSrc,
-    link: ''
-  },
-  {
-    title: 'Title',
-    description: longDescription,
-    id: 'test-id',
-    imageUrl: imageSrc,
-    link: ''
-  },
-  {
-    title: 'Title',
-    description: longDescription,
-    id: 'test-id',
-    imageUrl: imageSrc,
-    link: ''
-  },
-  {
-    title: 'Title',
-    description: longDescription,
-    id: 'test-id',
-    imageUrl: imageSrc,
-    link: ''
-  },
-  {
-    title: 'Title',
-    description: 'description',
-    id: 'test-id',
-    imageUrl: imageSrc,
-    link: ''
-  },
-  {
-    title: 'Title',
-    description: 'description',
-    id: 'test-id',
-    imageUrl: imageSrc,
-    link: ''
-  },
-  {
-    title: 'Title',
-    description: 'description',
-    id: 'test-id',
-    imageUrl: imageSrc,
-    link: ''
-  },
-  {
-    title: 'Title',
-    description: 'description',
-    id: 'test-id',
-    imageUrl: imageSrc,
-    link: ''
-  },
-  {
-    title: 'Title',
-    description: 'description',
-    id: 'test-id',
-    imageUrl: imageSrc,
-    link: ''
-  }
-]
+function getTitleText(hits: Hit[]): string {
+  return hits[0]?.post_type_label ?? ''
+}
 
 export function StrategySection(): ReactElement {
-  const { t } = useTranslation('apps-watch')
   const { breakpoints } = useTheme()
+
+  const { hits } = useHits()
+
+  const newItems = createItemsFromHits(hits)
+
+  const titleText = getTitleText(hits)
+
   const swiperBreakpoints: SwiperOptions['breakpoints'] = {
     [breakpoints.values.xs]: {
       slidesPerGroup: 2,
@@ -111,12 +69,15 @@ export function StrategySection(): ReactElement {
 
   return (
     <Box data-testid="StrategySection">
-      <Typography variant="h4">{t('Fake Title')}</Typography>
-      <ContentCarousel
-        items={items}
-        renderItem={(itemProps) => <StrategyCard {...itemProps} />}
-        breakpoints={swiperBreakpoints}
-      />
+      <Typography variant="h4">{titleText}</Typography>
+      <Container maxWidth={false} sx={{ overflow: 'hidden' }}>
+        <ContentCarousel
+          items={newItems}
+          renderItem={(itemProps) => <StrategyCard {...itemProps} />}
+          breakpoints={swiperBreakpoints}
+          slidesOffsetBefore={-32} // aligns left padding of carousel with rest of page content
+        />
+      </Container>
     </Box>
   )
 }

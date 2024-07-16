@@ -1,4 +1,7 @@
+import { Typography } from '@mui/material'
 import { Meta, StoryObj } from '@storybook/react'
+import algoliasearch from 'algoliasearch'
+import { InstantSearch } from 'react-instantsearch'
 import { StrategySection } from '.'
 import { watchConfig } from '../../../libs/storybook'
 
@@ -80,8 +83,21 @@ const testItems = [
   }
 ]
 
+const searchClient = algoliasearch(
+  process.env.NEXT_PUBLIC_ALGOLIA_APP_ID ?? '',
+  process.env.NEXT_PUBLIC_ALGOLIA_API_KEY ?? ''
+)
+
 const Template: StoryObj = {
-  render: () => <StrategySection />
+  render: () => (
+    <>
+      <Typography>Title</Typography>
+      <InstantSearch searchClient={searchClient}>
+        <StrategySection />
+      </InstantSearch>
+    </>
+    // <StrategySection />
+  )
 }
 
 export const Default = {
