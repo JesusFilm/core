@@ -1352,10 +1352,33 @@ type Mutation
   @join__type(graph: USERS)
 {
   siteCreate(input: SiteCreateInput!): MutationSiteCreateResult! @join__field(graph: ANALYTICS)
-  blockDeleteAction(id: ID!, journeyId: ID!): Block! @join__field(graph: JOURNEYS)
-  blockUpdateNavigateToBlockAction(id: ID!, journeyId: ID!, input: NavigateToBlockActionInput!): NavigateToBlockAction! @join__field(graph: JOURNEYS)
-  blockUpdateLinkAction(id: ID!, journeyId: ID!, input: LinkActionInput!): LinkAction! @join__field(graph: JOURNEYS)
-  blockUpdateEmailAction(id: ID!, journeyId: ID!, input: EmailActionInput!): EmailAction! @join__field(graph: JOURNEYS)
+  blockDeleteAction(
+    id: ID!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): Block! @join__field(graph: JOURNEYS)
+  blockUpdateNavigateToBlockAction(
+    id: ID!
+    input: NavigateToBlockActionInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): NavigateToBlockAction! @join__field(graph: JOURNEYS)
+  blockUpdateLinkAction(
+    id: ID!
+    input: LinkActionInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): LinkAction! @join__field(graph: JOURNEYS)
+  blockUpdateEmailAction(
+    id: ID!
+    input: EmailActionInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): EmailAction! @join__field(graph: JOURNEYS)
 
   """blockDelete returns the updated sibling blocks on successful delete"""
   blockDelete(
