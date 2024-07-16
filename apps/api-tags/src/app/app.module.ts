@@ -11,14 +11,17 @@ import { LoggerModule } from 'nestjs-pino'
 
 import TranslationModule from '@core/nest/common/TranslationModule'
 
+import { BullModule } from '@nestjs/bullmq'
 import { NestHealthModule } from './modules/health/health.module'
 import { TagModule } from './modules/tag/tag.module'
+import { WordPressModule } from './modules/wordpress/wordpress.module'
 
 @Module({
   imports: [
     NestHealthModule,
     TagModule,
     TranslationModule,
+    WordPressModule,
     GraphQLModule.forRoot<ApolloFederationDriverConfig>({
       driver: ApolloFederationDriver,
       typePaths:
@@ -54,6 +57,12 @@ import { TagModule } from './modules/tag/tag.module'
               }
             : undefined,
         level: process.env.NODE_ENV !== 'production' ? 'trace' : 'info'
+      }
+    }),
+    BullModule.forRoot({
+      connection: {
+        host: process.env.REDIS_URL ?? 'redis',
+        port: 6379
       }
     }),
     DatadogTraceModule.forRoot()
