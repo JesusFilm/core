@@ -1,10 +1,19 @@
 import { MockedResponse } from '@apollo/client/testing'
+import { TreeBlock } from '@core/journeys/ui/block'
+import {
+  BlockFields_CardBlock as CardBlock,
+  BlockFields_StepBlock as StepBlock,
+  BlockFields_TypographyBlock as TypographyBlock
+} from '../../../__generated__/BlockFields'
 import {
   BlockRestore,
-  BlockRestoreVariables,
-  BlockRestore_blockRestore_CardBlock as CardBlock,
-  BlockRestore_blockRestore_StepBlock as StepBlock
+  BlockRestoreVariables
 } from '../../../__generated__/BlockRestore'
+import {
+  TypographyAlign,
+  TypographyColor,
+  TypographyVariant
+} from '../../../__generated__/globalTypes'
 import { BLOCK_RESTORE } from './useBlockRestoreMutation'
 
 export const stepBlock = {
@@ -12,8 +21,9 @@ export const stepBlock = {
   id: 'step',
   journeyId: 'journeyId',
   parentBlockId: null,
-  nextBlockId: 'someId'
-} as unknown as StepBlock
+  nextBlockId: 'someId',
+  children: []
+} as unknown as TreeBlock<StepBlock>
 
 export const cardBlock = {
   id: 'card1.id',
@@ -24,8 +34,9 @@ export const cardBlock = {
   backgroundColor: null,
   themeMode: null,
   themeName: null,
-  fullscreen: false
-} as CardBlock
+  fullscreen: false,
+  children: []
+} as unknown as TreeBlock<CardBlock>
 
 export const useBlockRestoreMutationMock: MockedResponse<
   BlockRestore,
@@ -42,4 +53,83 @@ export const useBlockRestoreMutationMock: MockedResponse<
       blockRestore: [cardBlock]
     }
   }))
+}
+
+const selectedBlock: TreeBlock<TypographyBlock> = {
+  id: 'typography0.id',
+  __typename: 'TypographyBlock',
+  parentBlockId: 'card1.id',
+  parentOrder: 0,
+  content: 'Title',
+  variant: TypographyVariant.h1,
+  color: TypographyColor.primary,
+  align: TypographyAlign.center,
+  children: []
+}
+const block1: TreeBlock<TypographyBlock> = {
+  ...selectedBlock,
+  id: 'typography1.id',
+  parentOrder: 1
+}
+const block2: TreeBlock<TypographyBlock> = {
+  ...selectedBlock,
+  id: 'typography2.id',
+  parentOrder: 2
+}
+
+const selectedStep: TreeBlock<StepBlock> = {
+  __typename: 'StepBlock',
+  id: 'stepId',
+  parentBlockId: 'journey-id',
+  parentOrder: 0,
+  locked: true,
+  nextBlockId: null,
+  children: [
+    {
+      id: 'card1.id',
+      __typename: 'CardBlock',
+      parentBlockId: 'stepId',
+      parentOrder: 0,
+      coverBlockId: null,
+      backgroundColor: null,
+      themeMode: null,
+      themeName: null,
+      fullscreen: false,
+      children: [selectedBlock, block1, block2]
+    }
+  ]
+}
+
+export const restoreStepMock: MockedResponse<BlockRestore> = {
+  request: {
+    query: BLOCK_RESTORE,
+    variables: {
+      blockRestoreId: selectedStep.id
+    }
+  },
+  result: {
+    data: {
+      blockRestore: [
+        {
+          ...selectedStep,
+          x: 1,
+          y: 1
+        },
+        {
+          id: 'card1.id',
+          __typename: 'CardBlock',
+          parentBlockId: 'stepId',
+          parentOrder: 0,
+          coverBlockId: null,
+          backgroundColor: null,
+          themeMode: null,
+          themeName: null,
+          fullscreen: false
+        },
+        selectedBlock,
+        block1,
+        block2
+      ]
+    }
+  }
 }

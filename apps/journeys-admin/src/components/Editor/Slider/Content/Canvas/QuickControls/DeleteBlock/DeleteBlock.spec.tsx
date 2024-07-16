@@ -9,22 +9,21 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { BlockDelete } from '../../../../../../../../__generated__/BlockDelete'
-import {
-  BlockFields_StepBlock as StepBlock,
-  BlockFields_TypographyBlock as TypographyBlock
-} from '../../../../../../../../__generated__/BlockFields'
+import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
-import {
-  TypographyAlign,
-  TypographyColor,
-  TypographyVariant
-} from '../../../../../../../../__generated__/globalTypes'
+
 import { TestEditorState } from '../../../../../../../libs/TestEditorState'
 import { BLOCK_DELETE } from '../../../../../../../libs/useBlockDeleteMutation'
-import { deleteBlockMock } from '../../../../../../../libs/useBlockDeleteMutation/useBlockDeleteMutation.mock'
+import {
+  block1,
+  block2,
+  deleteBlockMock,
+  deleteStepMock,
+  selectedBlock,
+  selectedStep
+} from '../../../../../../../libs/useBlockDeleteMutation/useBlockDeleteMutation.mock'
 
-import { BlockRestore } from '../../../../../../../../__generated__/BlockRestore'
-import { BLOCK_RESTORE } from '../../../../../../../libs/useBlockRestoreMutation'
+import { restoreStepMock } from '../../../../../../../libs/useBlockRestoreMutation/useBlockRestoreMutation.mock'
 import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 import { DeleteBlock } from './DeleteBlock'
 
@@ -34,108 +33,6 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 }))
 
 describe('DeleteBlock', () => {
-  const selectedBlock: TreeBlock<TypographyBlock> = {
-    id: 'typography0.id',
-    __typename: 'TypographyBlock',
-    parentBlockId: 'card1.id',
-    parentOrder: 0,
-    content: 'Title',
-    variant: TypographyVariant.h1,
-    color: TypographyColor.primary,
-    align: TypographyAlign.center,
-    children: []
-  }
-  const block1: TreeBlock<TypographyBlock> = {
-    ...selectedBlock,
-    id: 'typography1.id',
-    parentOrder: 1
-  }
-  const block2: TreeBlock<TypographyBlock> = {
-    ...selectedBlock,
-    id: 'typography2.id',
-    parentOrder: 2
-  }
-
-  const selectedStep: TreeBlock<StepBlock> = {
-    __typename: 'StepBlock',
-    id: 'stepId',
-    parentBlockId: 'journey-id',
-    parentOrder: 0,
-    locked: true,
-    nextBlockId: null,
-    children: [
-      {
-        id: 'card1.id',
-        __typename: 'CardBlock',
-        parentBlockId: 'stepId',
-        parentOrder: 0,
-        coverBlockId: null,
-        backgroundColor: null,
-        themeMode: null,
-        themeName: null,
-        fullscreen: false,
-        children: [selectedBlock, block1, block2]
-      }
-    ]
-  }
-
-  const deleteCardMock: MockedResponse<BlockDelete> = {
-    request: {
-      query: BLOCK_DELETE,
-      variables: {
-        id: selectedStep.id,
-        parentBlockId: selectedStep.parentBlockId,
-        journeyId: 'journey-id'
-      }
-    },
-    result: {
-      data: {
-        blockDelete: [
-          {
-            __typename: 'StepBlock',
-            id: selectedStep.id,
-            parentOrder: selectedStep.parentOrder,
-            nextBlockId: null
-          }
-        ]
-      }
-    }
-  }
-
-  const restoreCardMock: MockedResponse<BlockRestore> = {
-    request: {
-      query: BLOCK_RESTORE,
-      variables: {
-        blockRestoreId: selectedStep.id
-      }
-    },
-    result: {
-      data: {
-        blockRestore: [
-          {
-            ...selectedStep,
-            x: 1,
-            y: 1
-          },
-          {
-            id: 'card1.id',
-            __typename: 'CardBlock',
-            parentBlockId: 'stepId',
-            parentOrder: 0,
-            coverBlockId: null,
-            backgroundColor: null,
-            themeMode: null,
-            themeName: null,
-            fullscreen: false
-          },
-          selectedBlock,
-          block1,
-          block2
-        ]
-      }
-    }
-  }
-
   it('should delete a block on button click', async () => {
     const cache = new InMemoryCache()
     cache.restore({
@@ -255,12 +152,12 @@ describe('DeleteBlock', () => {
         ...selectedBlock
       }
     })
-    const deleteCardResultMock = jest.fn(() => ({ ...deleteCardMock.result }))
+    const deleteCardResultMock = jest.fn(() => ({ ...deleteStepMock.result }))
     render(
       <SnackbarProvider>
         <MockedProvider
           cache={cache}
-          mocks={[{ ...deleteCardMock, result: deleteCardResultMock }]}
+          mocks={[{ ...deleteStepMock, result: deleteCardResultMock }]}
         >
           <JourneyProvider
             value={{
@@ -315,12 +212,12 @@ describe('DeleteBlock', () => {
         ...selectedBlock
       }
     })
-    const deleteCardResultMock = jest.fn(() => ({ ...deleteCardMock.result }))
+    const deleteCardResultMock = jest.fn(() => ({ ...deleteStepMock.result }))
     render(
       <SnackbarProvider>
         <MockedProvider
           cache={cache}
-          mocks={[{ ...deleteCardMock, result: deleteCardResultMock }]}
+          mocks={[{ ...deleteStepMock, result: deleteCardResultMock }]}
         >
           <JourneyProvider
             value={{
@@ -435,13 +332,13 @@ describe('DeleteBlock', () => {
       }
     })
 
-    const deleteCardResultMock = jest.fn(() => ({ ...deleteCardMock.result }))
+    const deleteCardResultMock = jest.fn(() => ({ ...deleteStepMock.result }))
     render(
       <SnackbarProvider>
         <MockedProvider
           cache={cache}
           mocks={[
-            { ...deleteCardMock, result: deleteCardResultMock },
+            { ...deleteStepMock, result: deleteCardResultMock },
             passedInStepDeleteMock
           ]}
         >
@@ -487,7 +384,7 @@ describe('DeleteBlock', () => {
   it('should restore card on undo click', async () => {
     const selectedBlock = selectedStep
     const restoreCardMockResult = jest.fn(() => ({
-      ...restoreCardMock.result
+      ...restoreStepMock.result
     }))
     const cache = new InMemoryCache()
     cache.restore({
@@ -510,14 +407,14 @@ describe('DeleteBlock', () => {
         ...selectedBlock
       }
     })
-    const deleteCardResultMock = jest.fn(() => ({ ...deleteCardMock.result }))
+    const deleteCardResultMock = jest.fn(() => ({ ...deleteStepMock.result }))
     render(
       <SnackbarProvider>
         <MockedProvider
           cache={cache}
           mocks={[
-            { ...deleteCardMock, result: deleteCardResultMock },
-            { ...restoreCardMock, result: restoreCardMockResult }
+            { ...deleteStepMock, result: deleteCardResultMock },
+            { ...restoreStepMock, result: restoreCardMockResult }
           ]}
         >
           <JourneyProvider

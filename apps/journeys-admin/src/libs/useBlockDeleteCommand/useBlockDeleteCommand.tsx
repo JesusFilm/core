@@ -29,12 +29,7 @@ export function useBlockDeleteCommand() {
   const [blockRestore] = useBlockRestoreMutation()
 
   async function addBlockDelete(currentBlock: TreeBlock): Promise<void> {
-    if (
-      journey == null ||
-      steps == null ||
-      selectedStep == null ||
-      currentBlock == null
-    ) {
+    if (journey == null || steps == null || selectedStep == null) {
       enqueueSnackbar(
         t('Delete operation failed, please reload and try again'),
         {
@@ -53,10 +48,27 @@ export function useBlockDeleteCommand() {
       setLoading(true)
       await add({
         parameters: {
-          execute: { currentBlock: cloneDeep(currentBlock) },
-          undo: {}
+          execute: {
+            currentBlock: cloneDeep(currentBlock),
+            stepBeforeDelete: cloneDeep(stepBeforeDelete),
+            deletedBlockParentOrder,
+            deletedBlockType,
+            stepsBeforeDelete: cloneDeep(stepsBeforeDelete),
+            journeyId: journey.id
+          },
+          undo: {
+            currentBlock: cloneDeep(currentBlock),
+            stepBeforeDelete: cloneDeep(stepBeforeDelete)
+          }
         },
-        async execute() {
+        async execute({
+          currentBlock,
+          stepBeforeDelete,
+          deletedBlockParentOrder,
+          deletedBlockType,
+          stepsBeforeDelete,
+          journeyId
+        }) {
           setBlockRestoreEditorState(currentBlock, stepBeforeDelete, dispatch)
 
           await blockDelete(currentBlock, {
@@ -79,13 +91,13 @@ export function useBlockDeleteCommand() {
                 currentBlock,
                 data?.blockDelete,
                 cache,
-                journey.id
+                journeyId
               )
             }
           })
           dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
         },
-        async undo() {
+        async undo({ currentBlock, stepBeforeDelete }) {
           await blockRestore({
             variables: { blockRestoreId: currentBlock?.id }
           })
