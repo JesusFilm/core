@@ -40,8 +40,8 @@ const connectionNodeIdSelector = (state): string | null =>
 
 interface BaseNodeProps {
   id?: string
-  targetHandle?: 'show' | 'hide' | 'disabled'
-  sourceHandle?: 'show' | 'hide' | 'disabled'
+  targetHandle?: 'none' | 'show' | 'hide' | 'disabled'
+  sourceHandle?: 'none' | 'show' | 'hide' | 'disabled'
   onSourceConnect?: (
     params: { target: string } | Parameters<OnConnect>[0]
   ) => void
@@ -57,8 +57,8 @@ interface BaseNodeProps {
 
 export function BaseNode({
   id,
-  targetHandle = 'hide',
-  sourceHandle = 'hide',
+  targetHandle = 'none',
+  sourceHandle = 'none',
   onSourceConnect,
   selected = false,
   isSourceConnected = false,
@@ -116,7 +116,9 @@ export function BaseNode({
       }}
     >
       {isFunction(children) ? children({ selected }) : children}
-      {(targetHandle === 'show' || targetHandle === 'disabled') && (
+      {(targetHandle === 'show' ||
+        targetHandle === 'disabled' ||
+        targetHandle === 'hide') && (
         <PulseWrapper
           show={
             id !== 'SocialPreview' &&
@@ -133,6 +135,7 @@ export function BaseNode({
               id !== connectionNodeId && targetHandle !== 'disabled'
             }
             sx={{
+              opacity: targetHandle === 'hide' ? 0 : 1,
               width: HANDLE_DIAMETER + HANDLE_BORDER_WIDTH,
               height: HANDLE_DIAMETER + HANDLE_BORDER_WIDTH,
               ...(positionTargetHandle && {

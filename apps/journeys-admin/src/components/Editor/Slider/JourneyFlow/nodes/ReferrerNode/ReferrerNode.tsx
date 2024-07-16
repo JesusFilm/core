@@ -20,11 +20,7 @@ export function ReferrerNode({ data }: ReferrerNodeProps) {
   } = useEditor()
 
   return (
-    <BaseNode
-      id="referrer"
-      sourceHandle={showAnalytics ? 'disabled' : 'hide'}
-      isSourceConnected
-    >
+    <BaseNode id="referrer" sourceHandle="disabled" isSourceConnected>
       <Box
         sx={{
           width: 180,
