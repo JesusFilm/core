@@ -29,6 +29,7 @@ export type Action = {
 
 export type AudioPreview = {
   __typename?: 'AudioPreview';
+  duration: Scalars['Int']['output'];
   language: Language;
   size: Scalars['Int']['output'];
   value: Scalars['String']['output'];
@@ -973,7 +974,7 @@ export enum JourneysReportType {
 
 export type Language = {
   __typename?: 'Language';
-  audioPreview: Array<AudioPreview>;
+  audioPreview?: Maybe<AudioPreview>;
   bcp47?: Maybe<Scalars['String']['output']>;
   countries: Array<Country>;
   id: Scalars['ID']['output'];
