@@ -8,7 +8,7 @@
     "build": "nx build",
     "test": "nx test",
     "demo": "nx demo",
-    "lint": "npx @biomejs/biome check .",
+    "lint": "npx @biomejs/biome check . --diagnostic-level=error",
     "lint:fix": "npx @biomejs/biome check . --write",
     "e2e": "nx e2e",
     "affected:apps": "nx affected:apps",
