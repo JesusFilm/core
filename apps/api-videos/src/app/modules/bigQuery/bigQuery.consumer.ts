@@ -7,7 +7,10 @@ import { ImporterService } from '../importer/importer.service'
 import { ImporterVideoSubtitlesService } from '../importer/importerVideoSubtitle/importerVideoSubtitle.service'
 import { ImporterVideoVariantsService } from '../importer/importerVideoVariants/importerVideoVariants.service'
 import { ImporterVideosService } from '../importer/importerVideos/importerVideos.service'
+
+import { ImporterBibleBooksService } from '../importer/importerBibleBooks/importerBibleBooks.service'
 import { BigQueryService } from './bigQuery.service'
+import { ImporterBibleCitationsService } from '../importer/importerBibleCitations/importerBibleCitations.service'
 
 interface BigQueryRowError {
   bigQueryTableName: string
@@ -27,7 +30,9 @@ export class BigQueryConsumer extends WorkerHost {
     private readonly bigQueryService: BigQueryService,
     private readonly importerVideosService: ImporterVideosService,
     private readonly importerVideoVariantsService: ImporterVideoVariantsService,
-    private readonly importerVideoSubtitleService: ImporterVideoSubtitlesService
+    private readonly importerVideoSubtitleService: ImporterVideoSubtitlesService,
+    private readonly importerBibleBooksService: ImporterBibleBooksService,
+    private readonly importerBibleCitationsService: ImporterBibleCitationsService
   ) {
     super()
     this.tables = [
@@ -35,6 +40,17 @@ export class BigQueryConsumer extends WorkerHost {
         table:
           'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariantSubtitles_arclight_data',
         service: this.importerVideoSubtitleService,
+        hasUpdatedAt: true
+      },
+      {
+        table: 'jfp-data-warehouse.jfp_mmdb_prod.core_bibleBooks_arclight_data',
+        service: this.importerBibleBooksService,
+        hasUpdatedAt: false
+      },
+      {
+        table:
+          'jfp-data-warehouse.jfp_mmdb_prod.core_videoBibleCitation_arclight_data',
+        service: this.importerBibleCitationsService,
         hasUpdatedAt: true
       }
     ]
