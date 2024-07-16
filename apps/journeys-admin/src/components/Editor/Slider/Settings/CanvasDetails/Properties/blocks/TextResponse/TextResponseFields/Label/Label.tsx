@@ -11,7 +11,10 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 
-import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
+import {
+  BlockFields_StepBlock,
+  BlockFields_TextResponseBlock as TextResponseBlock
+} from '../../../../../../../../../../../__generated__/BlockFields'
 import { TextResponseLabelUpdate } from '../../../../../../../../../../../__generated__/TextResponseLabelUpdate'
 
 export const TEXT_RESPONSE_LABEL_UPDATE = gql`
@@ -40,6 +43,21 @@ export function Label(): ReactElement {
     | TreeBlock<TextResponseBlock>
     | undefined
 
+  function updateEditorState(
+    step: TreeBlock<BlockFields_StepBlock> | undefined,
+    block: TreeBlock
+  ): void {
+    dispatch({
+      type: 'SetSelectedStepAction',
+      selectedStep: step
+    })
+
+    dispatch({
+      type: 'SetSelectedBlockAction',
+      selectedBlock: block
+    })
+  }
+
   async function handleSubmit(e: FocusEvent): Promise<void> {
     const target = e.target as HTMLInputElement
     const label = target.value
@@ -54,15 +72,7 @@ export function Label(): ReactElement {
           }
         },
         async execute({ id, journeyId, label }) {
-          dispatch({
-            type: 'SetSelectedStepAction',
-            selectedStep: state.selectedStep
-          })
-
-          dispatch({
-            type: 'SetSelectedBlockAction',
-            selectedBlock: selectedBlock
-          })
+          updateEditorState(state.selectedStep, selectedBlock)
 
           await textResponseLabelUpdate({
             variables: {
@@ -98,14 +108,7 @@ export function Label(): ReactElement {
               }
             }
           })
-          dispatch({
-            type: 'SetSelectedStepAction',
-            selectedStep: state.selectedStep
-          })
-          dispatch({
-            type: 'SetSelectedBlockAction',
-            selectedBlock: selectedBlock
-          })
+          updateEditorState(state.selectedStep, selectedBlock)
         }
       })
     }
