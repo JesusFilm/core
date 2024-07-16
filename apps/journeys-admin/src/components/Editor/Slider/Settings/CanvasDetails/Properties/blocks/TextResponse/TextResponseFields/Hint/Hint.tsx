@@ -6,11 +6,11 @@ import noop from 'lodash/noop'
 import { useTranslation } from 'next-i18next'
 import { FocusEvent, ReactElement } from 'react'
 
+import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 
-import { useCommand } from '@core/journeys/ui/CommandProvider'
 import {
   BlockFields_StepBlock,
   BlockFields_TextResponseBlock as TextResponseBlock
