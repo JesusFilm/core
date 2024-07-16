@@ -2,11 +2,15 @@ import { gql, useMutation } from '@apollo/client'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
+import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 
-import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
+import {
+  BlockFields_StepBlock,
+  BlockFields_TextResponseBlock as TextResponseBlock
+} from '../../../../../../../../../../../__generated__/BlockFields'
 import { TextResponseMinRowsUpdate } from '../../../../../../../../../../../__generated__/TextResponseMinRowsUpdate'
 import { ToggleButtonGroup } from '../../../../controls/ToggleButtonGroup'
 
@@ -30,29 +34,80 @@ export function MinRows(): ReactElement {
 
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
-  const { state } = useEditor()
+  const { state, dispatch } = useEditor()
+  const { add } = useCommand()
   const selectedBlock = state.selectedBlock as
     | TreeBlock<TextResponseBlock>
     | undefined
 
-  async function handleChange(minRows: number): Promise<void> {
-    if (journey == null || selectedBlock == null) return
-    await textResponseMinRowsUpdate({
-      variables: {
-        id: selectedBlock.id,
-        journeyId: journey.id,
-        input: {
-          minRows
-        }
-      },
-      optimisticResponse: {
-        textResponseBlockUpdate: {
-          id: selectedBlock.id,
-          __typename: 'TextResponseBlock',
-          minRows
-        }
-      }
+  function updateEditorState(
+    step: TreeBlock<BlockFields_StepBlock> | undefined,
+    block: TreeBlock
+  ): void {
+    dispatch({
+      type: 'SetSelectedStepAction',
+      selectedStep: step
     })
+
+    dispatch({
+      type: 'SetSelectedBlockAction',
+      selectedBlock: block
+    })
+  }
+
+  async function handleChange(minRows: number): Promise<void> {
+    if (selectedBlock != null && journey != null) {
+      await add({
+        parameters: {
+          execute: { id: selectedBlock.id, journeyId: journey.id, minRows },
+          undo: {
+            id: selectedBlock.id,
+            journeyId: journey.id,
+            minRows: selectedBlock.minRows
+          }
+        },
+        async execute({ id, journeyId, minRows }) {
+          updateEditorState(state.selectedStep, selectedBlock)
+
+          await textResponseMinRowsUpdate({
+            variables: {
+              id,
+              journeyId,
+              input: {
+                minRows
+              }
+            },
+            optimisticResponse: {
+              textResponseBlockUpdate: {
+                id,
+                minRows,
+                __typename: 'TextResponseBlock'
+              }
+            }
+          })
+        },
+        async undo({ id, journeyId, minRows }) {
+          await textResponseMinRowsUpdate({
+            variables: {
+              id,
+              journeyId,
+              input: {
+                minRows
+              }
+            },
+            optimisticResponse: {
+              textResponseBlockUpdate: {
+                id,
+                minRows,
+                __typename: 'TextResponseBlock'
+              }
+            }
+          })
+
+          updateEditorState(state.selectedStep, selectedBlock)
+        }
+      })
+    }
   }
 
   const options = [
