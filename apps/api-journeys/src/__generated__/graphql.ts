@@ -23,7 +23,15 @@ export type Scalars = {
 
 export type Action = {
   gtmEventName?: Maybe<Scalars['String']['output']>;
+  parentBlock: Block;
   parentBlockId: Scalars['ID']['output'];
+};
+
+export type AudioPreview = {
+  __typename?: 'AudioPreview';
+  language: Language;
+  size: Scalars['Int']['output'];
+  value: Scalars['String']['output'];
 };
 
 export type Block = {
@@ -260,14 +268,14 @@ export type CloudflareVideo = {
 
 export type Country = {
   __typename?: 'Country';
-  continent: Array<Translation>;
+  continent: Array<CountryContinent>;
   flagPngSrc?: Maybe<Scalars['String']['output']>;
   flagWebpSrc?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   languages: Array<Language>;
   latitude?: Maybe<Scalars['Float']['output']>;
   longitude?: Maybe<Scalars['Float']['output']>;
-  name: Array<Translation>;
+  name: Array<CountryName>;
   population?: Maybe<Scalars['Int']['output']>;
 };
 
@@ -281,6 +289,20 @@ export type CountryContinentArgs = {
 export type CountryNameArgs = {
   languageId?: InputMaybe<Scalars['ID']['input']>;
   primary?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type CountryContinent = {
+  __typename?: 'CountryContinent';
+  language: Language;
+  primary: Scalars['Boolean']['output'];
+  value: Scalars['String']['output'];
+};
+
+export type CountryName = {
+  __typename?: 'CountryName';
+  language: Language;
+  primary: Scalars['Boolean']['output'];
+  value: Scalars['String']['output'];
 };
 
 export type CreateVerificationRequestInput = {
@@ -362,6 +384,7 @@ export type EmailAction = Action & {
   __typename?: 'EmailAction';
   email: Scalars['String']['output'];
   gtmEventName?: Maybe<Scalars['String']['output']>;
+  parentBlock: Block;
   parentBlockId: Scalars['ID']['output'];
 };
 
@@ -950,10 +973,12 @@ export enum JourneysReportType {
 
 export type Language = {
   __typename?: 'Language';
+  audioPreview: Array<AudioPreview>;
   bcp47?: Maybe<Scalars['String']['output']>;
+  countries: Array<Country>;
   id: Scalars['ID']['output'];
   iso3?: Maybe<Scalars['String']['output']>;
-  name: Array<Translation>;
+  name: Array<LanguageName>;
 };
 
 
@@ -966,6 +991,13 @@ export enum LanguageIdType {
   Bcp47 = 'bcp47',
   DatabaseId = 'databaseId'
 }
+
+export type LanguageName = {
+  __typename?: 'LanguageName';
+  language: Language;
+  primary: Scalars['Boolean']['output'];
+  value: Scalars['String']['output'];
+};
 
 export type LanguageWithSlug = {
   __typename?: 'LanguageWithSlug';
@@ -980,6 +1012,7 @@ export type LanguagesFilter = {
 export type LinkAction = Action & {
   __typename?: 'LinkAction';
   gtmEventName?: Maybe<Scalars['String']['output']>;
+  parentBlock: Block;
   parentBlockId: Scalars['ID']['output'];
   target?: Maybe<Scalars['String']['output']>;
   url: Scalars['String']['output'];
@@ -1039,6 +1072,8 @@ export type Mutation = {
   /** blockDuplicate returns the updated block, it's children and sibling blocks on successful duplicate */
   blockDuplicate: Array<Block>;
   blockOrderUpdate: Array<Block>;
+  /** blockRestore is used for redo/undo */
+  blockRestore: Array<Block>;
   blockUpdateEmailAction: EmailAction;
   blockUpdateLinkAction: LinkAction;
   blockUpdateNavigateToBlockAction: NavigateToBlockAction;
@@ -1166,7 +1201,7 @@ export type MutationBlockDeleteArgs = {
 
 export type MutationBlockDeleteActionArgs = {
   id: Scalars['ID']['input'];
-  journeyId: Scalars['ID']['input'];
+  journeyId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
@@ -1186,24 +1221,29 @@ export type MutationBlockOrderUpdateArgs = {
 };
 
 
+export type MutationBlockRestoreArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type MutationBlockUpdateEmailActionArgs = {
   id: Scalars['ID']['input'];
   input: EmailActionInput;
-  journeyId: Scalars['ID']['input'];
+  journeyId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
 export type MutationBlockUpdateLinkActionArgs = {
   id: Scalars['ID']['input'];
   input: LinkActionInput;
-  journeyId: Scalars['ID']['input'];
+  journeyId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
 export type MutationBlockUpdateNavigateToBlockActionArgs = {
   id: Scalars['ID']['input'];
   input: NavigateToBlockActionInput;
-  journeyId: Scalars['ID']['input'];
+  journeyId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
@@ -1750,6 +1790,7 @@ export type NavigateToBlockAction = Action & {
   __typename?: 'NavigateToBlockAction';
   blockId: Scalars['String']['output'];
   gtmEventName?: Maybe<Scalars['String']['output']>;
+  parentBlock: Block;
   parentBlockId: Scalars['ID']['output'];
 };
 
@@ -1973,7 +2014,7 @@ export type Query = {
   block: Block;
   blocks: Array<Block>;
   countries: Array<Country>;
-  country: Country;
+  country?: Maybe<Country>;
   customDomain: CustomDomain;
   customDomains: Array<CustomDomain>;
   getJourneyProfile?: Maybe<JourneyProfile>;

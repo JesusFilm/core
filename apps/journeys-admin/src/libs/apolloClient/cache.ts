@@ -56,6 +56,9 @@ export const cache = (): InMemoryCache =>
       Translation: {
         keyFields: ['value']
       },
+      LanguageName: {
+        keyFields: ['value']
+      },
       LinkAction: { keyFields: ['parentBlockId'] },
       EmailAction: { keyFields: ['parentBlockId'] },
       NavigateToBlockAction: { keyFields: ['parentBlockId'] }

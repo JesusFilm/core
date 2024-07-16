@@ -42,7 +42,7 @@ export interface GetVideoContainerAndVideoContent_container_variant_downloads {
 }
 
 export interface GetVideoContainerAndVideoContent_container_variant_language_name {
-  __typename: "Translation";
+  __typename: "LanguageName";
   value: string;
   primary: boolean;
 }
@@ -122,7 +122,7 @@ export interface GetVideoContainerAndVideoContent_content_variant_downloads {
 }
 
 export interface GetVideoContainerAndVideoContent_content_variant_language_name {
-  __typename: "Translation";
+  __typename: "LanguageName";
   value: string;
   primary: boolean;
 }

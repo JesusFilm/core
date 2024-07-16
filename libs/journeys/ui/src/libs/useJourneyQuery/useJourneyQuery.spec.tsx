@@ -24,7 +24,7 @@ describe('useJourneyQuery', () => {
       iso3: 'en',
       name: [
         {
-          __typename: 'Translation',
+          __typename: 'LanguageName',
           value: 'English',
           primary: true
         }
