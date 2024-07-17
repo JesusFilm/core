@@ -1,1 +1,0 @@
-export { setPropertiesEditorState } from './setPropertiesEditorState'
