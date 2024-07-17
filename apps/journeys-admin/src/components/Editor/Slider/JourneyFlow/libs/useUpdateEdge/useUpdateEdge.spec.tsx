@@ -37,7 +37,7 @@ stepBlockNextBlockUpdateMock.result = {
 
 const block = {
   __typename: 'ButtonBlock',
-  id: 'block1.id',
+  id: 'button2.id',
   children: []
 } as unknown as TreeBlock<ButtonBlock>
 
@@ -70,16 +70,11 @@ describe('useUpdateEdge', () => {
         </MockedProvider>
       )
     })
-
-    await act(
-      async () =>
-        await result.current({
-          target: 'blockId',
-          source: 'SocialPreview',
-          sourceHandle: null
-        })
-    )
-
+    await result.current({
+      target: 'blockId',
+      source: 'SocialPreview',
+      sourceHandle: null
+    })
     expect(blockOrderResult).toHaveBeenCalled()
   })
 
@@ -104,16 +99,11 @@ describe('useUpdateEdge', () => {
         </MockedProvider>
       )
     })
-
-    await act(
-      async () =>
-        await result.current({
-          target: 'step2.id',
-          source: 'step0.id',
-          sourceHandle: null
-        })
-    )
-
+    await result.current({
+      target: 'step2.id',
+      source: 'step0.id',
+      sourceHandle: null
+    })
     expect(stepBlockResult).toHaveBeenCalled()
   })
 
@@ -140,17 +130,12 @@ describe('useUpdateEdge', () => {
         </MockedProvider>
       )
     })
-
-    await act(
-      async () =>
-        await result.current({
-          target: 'step2.id',
-          source: 'step1.id',
-          sourceHandle: 'block1.id'
-        })
-    )
-
-    expect(blockActionResult).toHaveBeenCalled()
+    await result.current({
+      target: 'step2.id',
+      source: 'step1.id',
+      sourceHandle: 'button2.id'
+    })
+    await waitFor(() => expect(blockActionResult).toHaveBeenCalled())
   })
 
   it('should update edge for source node change', async () => {
@@ -197,21 +182,17 @@ describe('useUpdateEdge', () => {
         </MockedProvider>
       )
     })
-
-    await act(
-      async () =>
-        await result.current({
-          source: 'step1.id',
-          sourceHandle: 'block1.id',
-          target: 'step2.id',
-          oldEdge: {
-            id: 'oldEdge.id',
-            source: 'step1.id',
-            sourceHandle: null,
-            target: 'step2.id'
-          }
-        })
-    )
+    await result.current({
+      source: 'step1.id',
+      sourceHandle: 'block1.id',
+      target: 'step2.id',
+      oldEdge: {
+        id: 'oldEdge.id',
+        source: 'step1.id',
+        sourceHandle: null,
+        target: 'step2.id'
+      }
+    })
     await waitFor(() => expect(stepBlockResult).toHaveBeenCalled())
   })
 })

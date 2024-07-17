@@ -23,7 +23,7 @@ interface ActionExecuteParamters {
   blockId: string
   blockTypename: BlockFields['__typename']
   action: Action
-  undoAction: Action
+  undoAction: Action | undefined
 }
 
 export function useActionCommand(): {
