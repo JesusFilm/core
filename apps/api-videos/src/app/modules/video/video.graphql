@@ -46,6 +46,25 @@ type Video @key(fields: "id primaryLanguageId") @cacheControl(maxAge: 86400) {
   """
   childrenCount: Int!
   variantLanguagesWithSlug: [LanguageWithSlug!]!
+  bibleCitations: [BibleCitation!]!
+}
+
+type BibleBook {
+  name(languageId: ID, primary: Boolean): [Translation!]!
+  osisId: String!
+  alternateName: String
+  paratextAbbreviation: String!
+  isNewTestament: Boolean!
+  order: Int!
+}
+
+type BibleCitation {
+  osisId: String!
+  bibleBook: BibleBook!
+  chapterStart: Int!
+  chapterEnd: Int
+  verseStart: Int!
+  verseEnd: Int
 }
 
 input VideosFilter {
