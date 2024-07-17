@@ -47,11 +47,13 @@ jobs:
         with:
           files: 'dist/storybook/shared-storybook'
         #👇 Adds Chromatic as a step in the workflow
-      - name: Check Chromatic Label
-        if: ${{ steps.check_files.outputs.files_exists == 'true' }} && !contains(github.event.pull_request.labels.*.name, 'chromatic')
+      - name: Check Chromatic Label and Finish
         run: |
-          echo "ADD CHROMATIC LABEL TO PR"
-          exit 1
+          if [[ "${{ steps.check_files.outputs.files_exists }}" != "true" || ! "${{ contains(github.event.pull_request.labels.*.name, 'chromatic') }}" ]]; then
+            echo "Skipping Chromatic tests. Either no frontend changes or 'chromatic' label is missing."
+            exit 0
+          fi
+          echo "Proceeding with Chromatic tests."
       - name: Run VR tests
         uses: chromaui/action@v1
         # Options required for Chromatic's GitHub Action
