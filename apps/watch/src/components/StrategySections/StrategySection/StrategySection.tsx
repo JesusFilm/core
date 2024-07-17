@@ -35,7 +35,6 @@ export function StrategySection(): ReactElement {
   const { breakpoints } = useTheme()
 
   const { hits } = useHits()
-  // console.log(hits.splice(0, 2))
 
   const newItems = createItemsFromHits(hits)
 

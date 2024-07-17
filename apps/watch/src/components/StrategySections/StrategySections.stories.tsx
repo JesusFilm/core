@@ -1,6 +1,7 @@
 import { Meta, StoryObj } from '@storybook/react'
 import { StrategySections } from './StrategySections'
 
+import { InstantSearchTestWrapper } from '@core/journeys/ui/mocks/InstantSearchWrapper'
 import { watchConfig } from '../../libs/storybook'
 
 const StrategySectionsStory: Meta<typeof StrategySections> = {
@@ -10,7 +11,11 @@ const StrategySectionsStory: Meta<typeof StrategySections> = {
 }
 
 const Template: StoryObj = {
-  render: () => <StrategySections />
+  render: () => (
+    <InstantSearchTestWrapper>
+      <StrategySections />
+    </InstantSearchTestWrapper>
+  )
 }
 
 export const Default = {

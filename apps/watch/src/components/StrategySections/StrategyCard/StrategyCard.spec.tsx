@@ -26,17 +26,15 @@ describe('StrategyCard', () => {
     expect(link).toHaveAttribute('href', item.link)
   })
 
-  // TODO: uncomment this test when algolia imageUrl is introduced
-  //
-  //   it('should have correct image properties', () => {
-  //     render(
-  //       <StrategyCard
-  //         item={{ ...item, title: 'New Title', imageUrl: 'newImageUrl' }}
-  //       />
-  //     )
+  it('should have correct image properties', () => {
+    render(
+      <StrategyCard
+        item={{ ...item, title: 'New Title', imageUrl: 'newImageUrl' }}
+      />
+    )
 
-  //     const image = screen.getByRole('img')
-  //     expect(image).toHaveAttribute('src', item.imageUrl)
-  //     expect(image).toHaveAttribute('alt', item.title)
-  //   })
+    const image = screen.getByRole('img')
+    expect(image).toHaveAttribute('src', 'newImageUrl')
+    expect(image).toHaveAttribute('alt', 'New Title')
+  })
 })

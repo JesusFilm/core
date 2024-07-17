@@ -5,7 +5,10 @@ import { StrategySection } from './StrategySection/StrategySection'
 import { Index } from 'react-instantsearch'
 
 export function StrategySections(): ReactElement {
-  const indexes = ['wp_dev_posts_mission-trip', 'wp_dev_posts_development']
+  const indexes = [
+    'wp_dev_posts_mission-trip'
+    //  'wp_dev_posts_development' // commented out as we have removed this index from algolia
+  ]
 
   return (
     <>
