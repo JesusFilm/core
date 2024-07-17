@@ -44,21 +44,6 @@ export function Label(): ReactElement {
     | TreeBlock<TextResponseBlock>
     | undefined
 
-  function updateEditorState(
-    step: TreeBlock<BlockFields_StepBlock> | undefined,
-    block: TreeBlock
-  ): void {
-    dispatch({
-      type: 'SetSelectedStepAction',
-      selectedStep: step
-    })
-
-    dispatch({
-      type: 'SetSelectedBlockAction',
-      selectedBlock: block
-    })
-  }
-
   async function handleSubmit(e: FocusEvent): Promise<void> {
     const target = e.target as HTMLInputElement
     const label = target.value
@@ -69,7 +54,16 @@ export function Label(): ReactElement {
           undo: { label: selectedBlock.label }
         },
         async execute({ label }) {
-          updateEditorState(state.selectedStep, selectedBlock)
+          dispatch({
+            type: 'SetSelectedStepAction',
+            selectedStep: state.selectedStep
+          })
+
+          dispatch({
+            type: 'SetSelectedBlockAction',
+            selectedBlock
+          })
+
           await textResponseLabelUpdate({
             variables: {
               id: selectedBlock.id,
