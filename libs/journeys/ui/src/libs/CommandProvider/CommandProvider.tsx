@@ -6,7 +6,6 @@ import {
   useContext,
   useReducer
 } from 'react'
-import { useEditor } from '../EditorProvider'
 
 export interface Command<
   ExecuteParameters = unknown,
@@ -181,8 +180,6 @@ export function CommandProvider({
     ...initialState
   })
 
-  const { dispatch: editorDispatch } = useEditor()
-
   async function undo() {
     if (state.undo == null) return
     dispatch({ type: 'UndoCallbackAction' })
@@ -211,8 +208,6 @@ export function CommandProvider({
     await command.execute(command.parameters.execute)
     dispatch({ type: 'AddCommandAction', command: command as Command })
   }
-
-  // async function setEditorState(): Promise<void> {}
 
   return (
     <CommandContext.Provider value={{ state, dispatch, undo, redo, add }}>
