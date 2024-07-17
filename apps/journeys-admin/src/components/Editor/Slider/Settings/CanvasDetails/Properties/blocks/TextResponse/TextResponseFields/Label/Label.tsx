@@ -10,10 +10,7 @@ import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 
-import {
-  BlockFields_StepBlock,
-  BlockFields_TextResponseBlock as TextResponseBlock
-} from '../../../../../../../../../../../__generated__/BlockFields'
+import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
 import {
   TextResponseLabelUpdate,
   TextResponseLabelUpdateVariables
