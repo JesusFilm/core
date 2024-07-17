@@ -1,5 +1,10 @@
 import { useCommand } from '@core/journeys/ui/CommandProvider'
-import { ActiveFab, useEditor } from '@core/journeys/ui/EditorProvider'
+import {
+  ActiveContent,
+  ActiveFab,
+  ActiveSlide,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useState } from 'react'

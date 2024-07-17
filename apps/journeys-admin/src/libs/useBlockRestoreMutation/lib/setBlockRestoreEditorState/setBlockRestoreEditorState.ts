@@ -14,29 +14,18 @@ export function setBlockRestoreEditorState(
 ): void {
   if (currentBlock.__typename === 'StepBlock') {
     dispatch({
-      type: 'SetActiveSlideAction',
-      activeSlide: ActiveSlide.JourneyFlow
-    })
-    dispatch({
-      type: 'SetSelectedStepAction',
-      selectedStep: currentBlock
-    })
-    dispatch({
-      type: 'SetActiveContentAction',
+      type: 'SetCommandStateAction',
+      activeSlide: ActiveSlide.JourneyFlow,
+      selectedStep: currentBlock,
       activeContent: ActiveContent.Canvas
     })
   } else {
     dispatch({
-      type: 'SetSelectedStepAction',
+      type: 'SetCommandStateAction',
+      activeContent: ActiveContent.Canvas,
+      activeSlide: ActiveSlide.Content,
+      selectedBlock: currentBlock,
       selectedStep: selectedStep
-    })
-    dispatch({
-      type: 'SetSelectedBlockAction',
-      selectedBlock: currentBlock
-    })
-    dispatch({
-      type: 'SetActiveContentAction',
-      activeContent: ActiveContent.Canvas
     })
   }
 }

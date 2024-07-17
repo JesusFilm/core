@@ -18,35 +18,30 @@ describe('setBlockRestoreEditorState', () => {
       stepBlockMock as unknown as TreeBlock<StepBlock>,
       dispatch
     )
-    expect(dispatch).toHaveBeenNthCalledWith(1, {
-      selectedStep: {
-        __typename: 'StepBlock',
-        id: 'step',
-        journeyId: 'journeyId',
-        nextBlockId: 'someId',
-        parentBlockId: null,
-        children: []
-      },
-      type: 'SetSelectedStepAction'
-    })
-    expect(dispatch).toHaveBeenNthCalledWith(2, {
+    expect(dispatch).toHaveBeenCalledWith({
+      activeContent: 'canvas',
+      activeSlide: 1,
       selectedBlock: {
         __typename: 'CardBlock',
         backgroundColor: null,
+        children: [],
         coverBlockId: null,
         fullscreen: false,
         id: 'card1.id',
         parentBlockId: 'stepId',
         parentOrder: 0,
         themeMode: null,
-        themeName: null,
-        children: []
+        themeName: null
       },
-      type: 'SetSelectedBlockAction'
-    })
-    expect(dispatch).toHaveBeenNthCalledWith(3, {
-      activeContent: 'canvas',
-      type: 'SetActiveContentAction'
+      selectedStep: {
+        __typename: 'StepBlock',
+        children: [],
+        id: 'step',
+        journeyId: 'journeyId',
+        nextBlockId: 'someId',
+        parentBlockId: null
+      },
+      type: 'SetCommandStateAction'
     })
   })
 
@@ -56,24 +51,18 @@ describe('setBlockRestoreEditorState', () => {
       stepBlockMock as unknown as TreeBlock<StepBlock>,
       dispatch
     )
-    expect(dispatch).toHaveBeenNthCalledWith(1, {
+    expect(dispatch).toHaveBeenCalledWith({
+      activeContent: 'canvas',
       activeSlide: 0,
-      type: 'SetActiveSlideAction'
-    })
-    expect(dispatch).toHaveBeenNthCalledWith(2, {
       selectedStep: {
         __typename: 'StepBlock',
+        children: [],
         id: 'step',
         journeyId: 'journeyId',
         nextBlockId: 'someId',
-        parentBlockId: null,
-        children: []
+        parentBlockId: null
       },
-      type: 'SetSelectedStepAction'
-    })
-    expect(dispatch).toHaveBeenNthCalledWith(3, {
-      activeContent: 'canvas',
-      type: 'SetActiveContentAction'
+      type: 'SetCommandStateAction'
     })
   })
 })
