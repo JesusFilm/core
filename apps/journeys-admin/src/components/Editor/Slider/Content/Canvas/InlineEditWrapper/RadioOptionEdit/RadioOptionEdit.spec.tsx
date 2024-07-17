@@ -2,10 +2,8 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 
-import { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
 import { RadioOptionFields } from '../../../../../../../../__generated__/RadioOptionFields'
 
 import { RADIO_OPTION_BLOCK_UPDATE_CONTENT, RadioOptionEdit } from '.'
@@ -59,7 +57,6 @@ describe('RadioOptionEdit', () => {
               query: RADIO_OPTION_BLOCK_UPDATE_CONTENT,
               variables: {
                 id: 'option.id',
-                journeyId: 'journeyId',
                 input: {
                   label: 'updated label'
                 }
@@ -69,16 +66,9 @@ describe('RadioOptionEdit', () => {
           }
         ]}
       >
-        <JourneyProvider
-          value={{
-            journey: { id: 'journeyId' } as unknown as Journey,
-            variant: 'admin'
-          }}
-        >
-          <EditorProvider>
-            <RadioOptionEdit {...props} />
-          </EditorProvider>
-        </JourneyProvider>
+        <EditorProvider>
+          <RadioOptionEdit {...props} />
+        </EditorProvider>
       </MockedProvider>
     )
 
@@ -110,7 +100,6 @@ describe('RadioOptionEdit', () => {
               query: RADIO_OPTION_BLOCK_UPDATE_CONTENT,
               variables: {
                 id: 'option.id',
-                journeyId: 'journeyId',
                 input: {
                   label: 'test label'
                 }
@@ -120,16 +109,9 @@ describe('RadioOptionEdit', () => {
           }
         ]}
       >
-        <JourneyProvider
-          value={{
-            journey: { id: 'journeyId' } as unknown as Journey,
-            variant: 'admin'
-          }}
-        >
-          <EditorProvider>
-            <RadioOptionEdit {...props} />
-          </EditorProvider>
-        </JourneyProvider>
+        <EditorProvider>
+          <RadioOptionEdit {...props} />
+        </EditorProvider>
       </MockedProvider>
     )
 
@@ -161,7 +143,6 @@ describe('RadioOptionEdit', () => {
               query: RADIO_OPTION_BLOCK_UPDATE_CONTENT,
               variables: {
                 id: 'option.id',
-                journeyId: 'journeyId',
                 input: {
                   label: 'updated label'
                 }
@@ -171,19 +152,12 @@ describe('RadioOptionEdit', () => {
           }
         ]}
       >
-        <JourneyProvider
-          value={{
-            journey: { id: 'journeyId' } as unknown as Journey,
-            variant: 'admin'
-          }}
-        >
-          <EditorProvider>
-            <h1 className="EditorCanvas" />
-            <iframe>
-              <RadioOptionEdit {...props} />
-            </iframe>
-          </EditorProvider>
-        </JourneyProvider>
+        <EditorProvider>
+          <h1 className="EditorCanvas" />
+          <iframe>
+            <RadioOptionEdit {...props} />
+          </iframe>
+        </EditorProvider>
       </MockedProvider>
     )
 
