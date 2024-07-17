@@ -3,6 +3,7 @@ import omit from 'lodash/omit'
 import { z } from 'zod'
 import { PrismaService } from '../../../lib/prisma.service'
 import { ImporterService } from '../importer.service'
+import { ImporterVideosService } from '../importerVideos/importerVideos.service'
 
 const bibleCitationSchema = z
   .object({
@@ -30,11 +31,18 @@ type BibleCitation = z.infer<typeof bibleCitationSchema>
 export class ImporterBibleCitationsService extends ImporterService<BibleCitation> {
   schema = bibleCitationSchema
 
-  constructor(private readonly prismaService: PrismaService) {
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly importerVideosService: ImporterVideosService
+  ) {
     super()
   }
 
   protected async save(bibleCitation: BibleCitation): Promise<void> {
+    if (!this.importerVideosService.ids.includes(bibleCitation.videoId)) {
+      throw new Error(`Video with id ${bibleCitation.videoId} not found`)
+    }
+
     await this.prismaService.bibleCitation.upsert({
       where: { id: bibleCitation.id },
       update: bibleCitation,
@@ -44,7 +52,9 @@ export class ImporterBibleCitationsService extends ImporterService<BibleCitation
 
   protected async saveMany(bibleCitations: BibleCitation[]): Promise<void> {
     await this.prismaService.bibleCitation.createMany({
-      data: bibleCitations,
+      data: bibleCitations.filter(({ videoId }) =>
+        this.importerVideosService.ids.includes(videoId)
+      ),
       skipDuplicates: true
     })
   }

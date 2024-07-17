@@ -31,7 +31,7 @@ export class ImporterService<T> {
     await this.saveMany(validRows as T[])
     if (validRows.length !== rows.length) {
       throw new Error(
-        'some rows do not match schema: ' + inValidRowIds.join(',')
+        `some rows do not match schema: ${inValidRowIds.join(',')}`
       )
     }
   }
@@ -41,11 +41,11 @@ export class ImporterService<T> {
    * Should only receive validated and casted object by the schema.
    * @param data is of type T and is the data to be saved to the database
    */
-  protected async save(data: T): Promise<void> {
+  protected async save(_data: T): Promise<void> {
     throw new Error('save not implemented')
   }
 
-  protected async saveMany(data: T[]): Promise<void> {
+  protected async saveMany(_data: T[]): Promise<void> {
     throw new Error('saveMany not implemented')
   }
 }
