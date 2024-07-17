@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { PrismaService } from '../../../lib/prisma.service'
-import { ImporterBibleBookNamesService } from './importerBibleBookNames.service'
 import { ImporterBibleBooksService } from '../importerBibleBooks/importerBibleBooks.service'
+import { ImporterBibleBookNamesService } from './importerBibleBookNames.service'
 
 describe('ImporterBibleBooksService', () => {
   let service: ImporterBibleBookNamesService,

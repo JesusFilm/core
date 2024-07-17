@@ -4,13 +4,14 @@ import get from 'lodash/get'
 
 import { PrismaService } from '../../lib/prisma.service'
 import { ImporterService } from '../importer/importer.service'
+import { ImporterBibleBookNamesService } from '../importer/importerBibleBookNames/importerBibleBookNames.service'
 import { ImporterBibleBooksService } from '../importer/importerBibleBooks/importerBibleBooks.service'
 import { ImporterBibleCitationsService } from '../importer/importerBibleCitations/importerBibleCitations.service'
 import { ImporterVideoSubtitlesService } from '../importer/importerVideoSubtitle/importerVideoSubtitle.service'
 import { ImporterVideoVariantsService } from '../importer/importerVideoVariants/importerVideoVariants.service'
 import { ImporterVideosService } from '../importer/importerVideos/importerVideos.service'
+
 import { BigQueryService } from './bigQuery.service'
-import { ImporterBibleBookNamesService } from '../importer/importerBibleBookNames/importerBibleBookNames.service'
 
 interface BigQueryRowError {
   bigQueryTableName: string
