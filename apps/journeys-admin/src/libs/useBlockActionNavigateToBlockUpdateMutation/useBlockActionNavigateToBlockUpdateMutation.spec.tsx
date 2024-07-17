@@ -8,11 +8,11 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../__generated__/BlockFields'
 import { JourneyFields as Journey } from '../../../__generated__/JourneyFields'
 
-import { navigateToBlockActionUpdateMock } from './useBlockActionNavigateToBlockUpdateMutation.mock'
+import { blockActionNavigateToBlockUpdateMock } from './useBlockActionNavigateToBlockUpdateMutation.mock'
 
 import { useBlockActionNavigateToBlockUpdateMutation } from '.'
 
-describe('useNavigateToBlockActionUpdateMutation', () => {
+describe('useBlockActionNavigateToBlockUpdateMutation', () => {
   const journey = {
     id: 'journey-id'
   } as unknown as Journey
@@ -34,7 +34,7 @@ describe('useNavigateToBlockActionUpdateMutation', () => {
   it('should update block action', async () => {
     const mockResult = jest
       .fn()
-      .mockReturnValue(navigateToBlockActionUpdateMock.result)
+      .mockReturnValue(blockActionNavigateToBlockUpdateMock.result)
 
     const { result } = renderHook(
       () => useBlockActionNavigateToBlockUpdateMutation(),
@@ -43,7 +43,7 @@ describe('useNavigateToBlockActionUpdateMutation', () => {
           <JourneyProvider value={{ journey }}>
             <MockedProvider
               mocks={[
-                { ...navigateToBlockActionUpdateMock, result: mockResult }
+                { ...blockActionNavigateToBlockUpdateMock, result: mockResult }
               ]}
             >
               {children}
@@ -74,7 +74,7 @@ describe('useNavigateToBlockActionUpdateMutation', () => {
         wrapper: ({ children }) => (
           <JourneyProvider value={{ journey }}>
             <MockedProvider
-              mocks={[navigateToBlockActionUpdateMock]}
+              mocks={[blockActionNavigateToBlockUpdateMock]}
               cache={cache}
             >
               {children}

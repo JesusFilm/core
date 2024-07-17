@@ -12,7 +12,7 @@ import {
   BlockFields_StepBlock as StepBlock
 } from '../../../../../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
-import { navigateToBlockActionUpdateMock } from '../../../../../../libs/useBlockActionNavigateToBlockUpdateMutation/useBlockActionNavigateToBlockUpdateMutation.mock'
+import { blockActionNavigateToBlockUpdateMock } from '../../../../../../libs/useBlockActionNavigateToBlockUpdateMutation/useBlockActionNavigateToBlockUpdateMutation.mock'
 import { blockOrderUpdateMock } from '../../../../../../libs/useBlockOrderUpdateMutation/useBlockOrderUpdateMutation.mock'
 import { stepBlockNextBlockUpdateMock } from '../../../../../../libs/useStepBlockNextBlockUpdateMutation/useStepBlockNextBlockUpdateMutation.mock'
 
@@ -120,14 +120,14 @@ describe('useUpdateEdge', () => {
   it('should update navigateToBlockAction for action edge', async () => {
     const blockActionResult = jest
       .fn()
-      .mockReturnValue(navigateToBlockActionUpdateMock.result)
+      .mockReturnValue(blockActionNavigateToBlockUpdateMock.result)
 
     const { result } = renderHook(() => useUpdateEdge(), {
       wrapper: ({ children }) => (
         <MockedProvider
           mocks={[
             {
-              ...navigateToBlockActionUpdateMock,
+              ...blockActionNavigateToBlockUpdateMock,
               result: blockActionResult
             }
           ]}
@@ -154,7 +154,7 @@ describe('useUpdateEdge', () => {
   })
 
   it('should update edge for source node change', async () => {
-    navigateToBlockActionUpdateMock.request.variables = {
+    blockActionNavigateToBlockUpdateMock.request.variables = {
       id: 'block1.id',
       input: { blockId: 'step2.id' }
     }
@@ -167,7 +167,7 @@ describe('useUpdateEdge', () => {
 
     const blockActionResult = jest
       .fn()
-      .mockReturnValue(navigateToBlockActionUpdateMock.result)
+      .mockReturnValue(blockActionNavigateToBlockUpdateMock.result)
 
     const stepBlockResult = jest
       .fn()
@@ -178,7 +178,7 @@ describe('useUpdateEdge', () => {
         <MockedProvider
           mocks={[
             {
-              ...navigateToBlockActionUpdateMock,
+              ...blockActionNavigateToBlockUpdateMock,
               result: blockActionResult
             },
             {

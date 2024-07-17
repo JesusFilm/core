@@ -1,4 +1,4 @@
 export {
   useBlockActionEmailUpdateMutation,
-  EMAIL_ACTION_UPDATE
+  BLOCK_ACTION_EMAIL_UPDATE
 } from './useBlockActionEmailUpdateMutation'

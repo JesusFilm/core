@@ -6,7 +6,7 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { GetJourney_journey as Journey } from '../../../../../../../../../../__generated__/GetJourney'
-import { EMAIL_ACTION_UPDATE } from '../../../../../../../../../libs/useBlockActionEmailUpdateMutation'
+import { BLOCK_ACTION_EMAIL_UPDATE } from '../../../../../../../../../libs/useBlockActionEmailUpdateMutation'
 import { steps } from '../data'
 
 import { EmailAction } from '.'
@@ -43,7 +43,7 @@ describe('EmailAction', () => {
     const mocks = [
       {
         request: {
-          query: EMAIL_ACTION_UPDATE,
+          query: BLOCK_ACTION_EMAIL_UPDATE,
           variables: {
             id: selectedBlock.id,
             input: {

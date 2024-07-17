@@ -8,7 +8,7 @@ import { GetJourney_journey as Journey } from '../../../../../../../../../../__g
 import { steps } from '../data'
 
 import { LinkAction } from '.'
-import { LINK_ACTION_UPDATE } from '../../../../../../../../../libs/useBlockActionLinkUpdateMutation'
+import { BLOCK_ACTION_LINK_UPDATE } from '../../../../../../../../../libs/useBlockActionLinkUpdateMutation'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -30,7 +30,7 @@ describe('LinkAction', () => {
   const mocks = [
     {
       request: {
-        query: LINK_ACTION_UPDATE,
+        query: BLOCK_ACTION_LINK_UPDATE,
         variables: {
           id: selectedBlock.id,
           input: {
@@ -117,7 +117,7 @@ describe('LinkAction', () => {
         mocks={[
           {
             request: {
-              query: LINK_ACTION_UPDATE,
+              query: BLOCK_ACTION_LINK_UPDATE,
               variables: {
                 id: selectedBlock.id,
                 input: {

@@ -1,18 +1,18 @@
 import { MockedResponse } from '@apollo/client/testing'
 
 import {
-  NavigateToBlockActionUpdate,
-  NavigateToBlockActionUpdateVariables
-} from '../../../__generated__/NavigateToBlockActionUpdate'
+  BlockActionNavigateToBlockUpdate,
+  BlockActionNavigateToBlockUpdateVariables
+} from '../../../__generated__/BlockActionNavigateToBlockUpdate'
 
-import { NAVIGATE_TO_BLOCK_ACTION_UPDATE } from './useBlockActionNavigateToBlockUpdateMutation'
+import { BLOCK_ACTION_NAVIGATE_TO_BLOCK_UPDATE } from './useBlockActionNavigateToBlockUpdateMutation'
 
-export const navigateToBlockActionUpdateMock: MockedResponse<
-  NavigateToBlockActionUpdate,
-  NavigateToBlockActionUpdateVariables
+export const blockActionNavigateToBlockUpdateMock: MockedResponse<
+  BlockActionNavigateToBlockUpdate,
+  BlockActionNavigateToBlockUpdateVariables
 > = {
   request: {
-    query: NAVIGATE_TO_BLOCK_ACTION_UPDATE,
+    query: BLOCK_ACTION_NAVIGATE_TO_BLOCK_UPDATE,
     variables: {
       id: 'block1.id',
       input: {

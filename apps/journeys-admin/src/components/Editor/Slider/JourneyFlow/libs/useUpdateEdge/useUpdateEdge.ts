@@ -26,7 +26,7 @@ export function useUpdateEdge(): (
   } = useEditor()
 
   const [blockOrderUpdate] = useBlockOrderUpdateMutation()
-  const [navigateToBlockActionUpdate] =
+  const [blockActionNavigateToBlockUpdate] =
     useBlockActionNavigateToBlockUpdateMutation()
   const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
   const deleteEdge = useDeleteEdge()
@@ -100,7 +100,7 @@ export function useUpdateEdge(): (
           edgeSource.blockId
         )
         if (block != null) {
-          const data = await navigateToBlockActionUpdate(block, target)
+          const data = await blockActionNavigateToBlockUpdate(block, target)
           if (data != null) {
             selectedStep = steps?.find((step) => step.id === target)
           }

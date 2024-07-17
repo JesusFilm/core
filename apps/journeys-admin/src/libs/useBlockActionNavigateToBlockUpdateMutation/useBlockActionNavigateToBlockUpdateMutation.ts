@@ -9,14 +9,14 @@ import {
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
-import { BlockFields } from '../../../__generated__/BlockFields'
 import {
-  NavigateToBlockActionUpdate,
-  NavigateToBlockActionUpdateVariables
-} from '../../../__generated__/NavigateToBlockActionUpdate'
+  BlockActionNavigateToBlockUpdate,
+  BlockActionNavigateToBlockUpdateVariables
+} from '../../../__generated__/BlockActionNavigateToBlockUpdate'
+import { BlockFields } from '../../../__generated__/BlockFields'
 
-export const NAVIGATE_TO_BLOCK_ACTION_UPDATE = gql`
-  mutation NavigateToBlockActionUpdate(
+export const BLOCK_ACTION_NAVIGATE_TO_BLOCK_UPDATE = gql`
+  mutation BlockActionNavigateToBlockUpdate(
     $id: ID!
     $input: NavigateToBlockActionInput!
   ) {
@@ -33,37 +33,37 @@ export const NAVIGATE_TO_BLOCK_ACTION_UPDATE = gql`
 
 export function useBlockActionNavigateToBlockUpdateMutation(
   options?: MutationHookOptions<
-    NavigateToBlockActionUpdate,
-    NavigateToBlockActionUpdateVariables
+    BlockActionNavigateToBlockUpdate,
+    BlockActionNavigateToBlockUpdateVariables
   >
 ): [
   (
     block: Pick<BlockFields, 'id' | '__typename'>,
     targetBlockId: string,
     options?: MutationFunctionOptions<
-      NavigateToBlockActionUpdate,
-      NavigateToBlockActionUpdateVariables
+      BlockActionNavigateToBlockUpdate,
+      BlockActionNavigateToBlockUpdateVariables
     >
-  ) => Promise<FetchResult<NavigateToBlockActionUpdate> | undefined>,
-  MutationResult<NavigateToBlockActionUpdate>
+  ) => Promise<FetchResult<BlockActionNavigateToBlockUpdate> | undefined>,
+  MutationResult<BlockActionNavigateToBlockUpdate>
 ] {
   const { journey } = useJourney()
-  const [navigateToBlockActionUpdate, result] = useMutation<
-    NavigateToBlockActionUpdate,
-    NavigateToBlockActionUpdateVariables
-  >(NAVIGATE_TO_BLOCK_ACTION_UPDATE, options)
+  const [BlockActionNavigateToBlockUpdate, result] = useMutation<
+    BlockActionNavigateToBlockUpdate,
+    BlockActionNavigateToBlockUpdateVariables
+  >(BLOCK_ACTION_NAVIGATE_TO_BLOCK_UPDATE, options)
 
-  async function wrappedNavigateToBlockActionUpdate(
+  async function wrappedBlockActionNavigateToBlockUpdate(
     block: Pick<BlockFields, 'id' | '__typename'>,
     targetBlockId: string,
     options?: MutationFunctionOptions<
-      NavigateToBlockActionUpdate,
-      NavigateToBlockActionUpdateVariables
+      BlockActionNavigateToBlockUpdate,
+      BlockActionNavigateToBlockUpdateVariables
     >
-  ): Promise<FetchResult<NavigateToBlockActionUpdate> | undefined> {
+  ): Promise<FetchResult<BlockActionNavigateToBlockUpdate> | undefined> {
     if (journey == null) return
 
-    return await navigateToBlockActionUpdate({
+    return await BlockActionNavigateToBlockUpdate({
       ...options,
       variables: {
         id: block.id,
@@ -93,5 +93,5 @@ export function useBlockActionNavigateToBlockUpdateMutation(
     })
   }
 
-  return [wrappedNavigateToBlockActionUpdate, result]
+  return [wrappedBlockActionNavigateToBlockUpdate, result]
 }

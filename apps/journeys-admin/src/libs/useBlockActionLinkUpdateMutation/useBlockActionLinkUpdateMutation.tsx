@@ -8,13 +8,13 @@ import {
 import { BLOCK_UPDATE_ACTION_FIELDS } from '@core/journeys/ui/action/actionFields'
 
 import {
-  LinkActionUpdate,
-  LinkActionUpdateVariables
-} from '../../../__generated__/LinkActionUpdate'
+  BlockActionLinkUpdate,
+  BlockActionLinkUpdateVariables
+} from '../../../__generated__/BlockActionLinkUpdate'
 
-export const LINK_ACTION_UPDATE = gql`
+export const BLOCK_ACTION_LINK_UPDATE = gql`
   ${BLOCK_UPDATE_ACTION_FIELDS}
-  mutation LinkActionUpdate(
+  mutation BlockActionLinkUpdate(
     $id: ID!
     $input: LinkActionInput!
   ) {
@@ -29,10 +29,13 @@ export const LINK_ACTION_UPDATE = gql`
 `
 
 export function useBlockActionLinkUpdateMutation(
-  options?: MutationFunctionOptions<LinkActionUpdate, LinkActionUpdateVariables>
-): MutationTuple<LinkActionUpdate, LinkActionUpdateVariables> {
-  return useMutation<LinkActionUpdate, LinkActionUpdateVariables>(
-    LINK_ACTION_UPDATE,
+  options?: MutationFunctionOptions<
+    BlockActionLinkUpdate,
+    BlockActionLinkUpdateVariables
+  >
+): MutationTuple<BlockActionLinkUpdate, BlockActionLinkUpdateVariables> {
+  return useMutation<BlockActionLinkUpdate, BlockActionLinkUpdateVariables>(
+    BLOCK_ACTION_LINK_UPDATE,
     options
   )
 }

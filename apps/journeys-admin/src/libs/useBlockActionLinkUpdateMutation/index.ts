@@ -1,4 +1,4 @@
 export {
   useBlockActionLinkUpdateMutation,
-  LINK_ACTION_UPDATE
+  BLOCK_ACTION_LINK_UPDATE
 } from './useBlockActionLinkUpdateMutation'

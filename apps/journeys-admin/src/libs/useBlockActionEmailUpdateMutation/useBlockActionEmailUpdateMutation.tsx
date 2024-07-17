@@ -8,13 +8,13 @@ import {
 import { BLOCK_UPDATE_ACTION_FIELDS } from '@core/journeys/ui/action/actionFields'
 
 import {
-  EmailActionUpdate,
-  EmailActionUpdateVariables
-} from '../../../__generated__/EmailActionUpdate'
+  BlockActionEmailUpdate,
+  BlockActionEmailUpdateVariables
+} from '../../../__generated__/BlockActionEmailUpdate'
 
-export const EMAIL_ACTION_UPDATE = gql`
+export const BLOCK_ACTION_EMAIL_UPDATE = gql`
   ${BLOCK_UPDATE_ACTION_FIELDS}
-  mutation EmailActionUpdate(
+  mutation BlockActionEmailUpdate(
     $id: ID!
     $input: EmailActionInput!
   ) {
@@ -30,12 +30,12 @@ export const EMAIL_ACTION_UPDATE = gql`
 
 export function useBlockActionEmailUpdateMutation(
   options?: MutationFunctionOptions<
-    EmailActionUpdate,
-    EmailActionUpdateVariables
+    BlockActionEmailUpdate,
+    BlockActionEmailUpdateVariables
   >
-): MutationTuple<EmailActionUpdate, EmailActionUpdateVariables> {
-  return useMutation<EmailActionUpdate, EmailActionUpdateVariables>(
-    EMAIL_ACTION_UPDATE,
+): MutationTuple<BlockActionEmailUpdate, BlockActionEmailUpdateVariables> {
+  return useMutation<BlockActionEmailUpdate, BlockActionEmailUpdateVariables>(
+    BLOCK_ACTION_EMAIL_UPDATE,
     options
   )
 }

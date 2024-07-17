@@ -30,9 +30,9 @@ export function useActionCommand(): {
 } {
   const { add } = useCommand()
   const [actionDelete] = useBlockActionDeleteMutation()
-  const [linkActionUpdate] = useBlockActionLinkUpdateMutation()
-  const [emailActionUpdate] = useBlockActionEmailUpdateMutation()
-  const [navigateToBlockActionUpdate] =
+  const [blockActionLinkUpdate] = useBlockActionLinkUpdateMutation()
+  const [blockActionEmailUpdate] = useBlockActionEmailUpdateMutation()
+  const [blockActionNavigateToBlockUpdate] =
     useBlockActionNavigateToBlockUpdateMutation()
 
   return {
@@ -53,7 +53,7 @@ export function useActionCommand(): {
         async execute({ blockId, blockTypename, action }) {
           switch (action?.__typename) {
             case 'LinkAction':
-              return await linkActionUpdate({
+              return await blockActionLinkUpdate({
                 variables: {
                   id: blockId,
                   input: {
@@ -62,7 +62,7 @@ export function useActionCommand(): {
                 }
               })
             case 'EmailAction':
-              return await emailActionUpdate({
+              return await blockActionEmailUpdate({
                 variables: {
                   id: blockId,
                   input: {
@@ -71,7 +71,7 @@ export function useActionCommand(): {
                 }
               })
             case 'NavigateToBlockAction':
-              return await navigateToBlockActionUpdate(
+              return await blockActionNavigateToBlockUpdate(
                 {
                   id: blockId,
                   __typename: blockTypename
