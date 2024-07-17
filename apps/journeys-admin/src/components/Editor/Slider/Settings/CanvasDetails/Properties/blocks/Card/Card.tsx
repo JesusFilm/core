@@ -13,6 +13,7 @@ import PaletteIcon from '@core/shared/ui/icons/Palette'
 import VideoOnIcon from '@core/shared/ui/icons/VideoOn'
 import { ThemeMode, ThemeName, getTheme } from '@core/shared/ui/themes'
 
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { Accordion } from '../../Accordion'
 
@@ -60,6 +61,9 @@ export function Card({
   const { journey } = useJourney()
   const { rtl, locale } = getJourneyRTL(journey)
   const { t } = useTranslation('apps-journeys-admin')
+  const {
+    state: { selectedStep }
+  } = useEditor()
 
   const coverBlock = children.find((block) => block.id === coverBlockId)
 
@@ -93,7 +97,7 @@ export function Card({
         name={t('Color')}
         value={selectedCardColor.toUpperCase()}
       >
-        <BackgroundColor key={`${id}-${backgroundColor}`} />
+        <BackgroundColor key={`${selectedStep?.id}-${backgroundColor}`} />
       </Accordion>
 
       {coverBlock?.__typename === 'ImageBlock' && coverBlock.src != null && (

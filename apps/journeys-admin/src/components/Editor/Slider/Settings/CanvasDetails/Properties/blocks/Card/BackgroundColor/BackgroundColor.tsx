@@ -142,17 +142,17 @@ export function BackgroundColor(): ReactElement {
       add({
         parameters: {
           execute: {
-            selectedStep: cloneDeep(selectedStep),
+            selectedStep: selectedStep,
             activeContent,
-            cardBlock: cloneDeep(cardBlock),
+            cardBlock: cardBlock,
             journeyId: journey.id,
-            undoColor: prevColor?.current
+            undoColor: selectedColor
           },
           undo: {
-            undoColor: prevColor?.current,
-            selectedStep: cloneDeep(selectedStep),
+            undoColor: selectedColor,
+            selectedStep: selectedStep,
             activeContent,
-            cardBlock: cloneDeep(cardBlock),
+            cardBlock: cardBlock,
             journeyId: journey.id
           }
         },
