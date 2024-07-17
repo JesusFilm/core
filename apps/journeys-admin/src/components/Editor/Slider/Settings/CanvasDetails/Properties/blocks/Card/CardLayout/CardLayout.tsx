@@ -16,6 +16,7 @@ import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../.
 import { CardBlockLayoutUpdate } from '../../../../../../../../../../__generated__/CardBlockLayoutUpdate'
 import { HorizontalSelect } from '../../../../../../../../HorizontalSelect'
 
+import { useCommand } from '@core/journeys/ui/CommandProvider'
 import cardLayoutContained from './assets/card-layout-contained.svg'
 import cardLayoutExpanded from './assets/card-layout-expanded.svg'
 
@@ -34,8 +35,10 @@ export const CARD_BLOCK_LAYOUT_UPDATE = gql`
 
 export function CardLayout(): ReactElement {
   const {
-    state: { selectedBlock }
+    state: { selectedBlock, selectedStep },
+    dispatch
   } = useEditor()
+  const { add } = useCommand()
 
   const cardBlock = (
     selectedBlock?.__typename === 'CardBlock'
@@ -51,20 +54,44 @@ export function CardLayout(): ReactElement {
   const { journey } = useJourney()
   const handleLayoutChange = async (selected: boolean): Promise<void> => {
     if (journey != null && cardBlock != null) {
-      await cardBlockUpdate({
-        variables: {
-          id: cardBlock.id,
-          journeyId: journey.id,
-          input: {
-            fullscreen: selected
+      await add({
+        parameters: {
+          execute: {
+            cardBlockId: cardBlock.id,
+            journeyId: journey.id,
+            selected
+          },
+          undo: {
+            cardBlockId: cardBlock.id,
+            journeyId: journey.id,
+            selected: !selected
           }
         },
-        optimisticResponse: {
-          cardBlockUpdate: {
-            id: cardBlock.id,
-            __typename: 'CardBlock',
-            fullscreen: selected
-          }
+        execute: async ({ cardBlockId, journeyId, selected }) => {
+          dispatch({
+            type: 'SetSelectedStepAction',
+            selectedStep: selectedStep
+          })
+          dispatch({
+            type: 'SetSelectedBlockAction',
+            selectedBlock: cardBlock
+          })
+          await cardBlockUpdate({
+            variables: {
+              id: cardBlockId,
+              journeyId,
+              input: {
+                fullscreen: selected
+              }
+            },
+            optimisticResponse: {
+              cardBlockUpdate: {
+                id: cardBlockId,
+                __typename: 'CardBlock',
+                fullscreen: selected
+              }
+            }
+          })
         }
       })
     }
