@@ -2,6 +2,8 @@ import { gql, useMutation } from '@apollo/client'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
+import { useCommand } from '@core/journeys/ui/CommandProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { RadioOption } from '@core/journeys/ui/RadioOption'
 import type { TreeBlock } from '@core/journeys/ui/block'
 
@@ -36,6 +38,8 @@ export function RadioOptionEdit({
     RadioOptionBlockUpdateContent,
     RadioOptionBlockUpdateContentVariables
   >(RADIO_OPTION_BLOCK_UPDATE_CONTENT)
+  const { state, dispatch } = useEditor()
+  const { add } = useCommand()
   const [value, setValue] = useState(
     label === 'Option 1' || label === 'Option 2' ? '' : label
   )
@@ -44,17 +48,35 @@ export function RadioOptionEdit({
     const currentLabel = value.trim().replace(/\n/g, '')
     if (label === currentLabel) return
 
-    await radioOptionBlockUpdate({
-      variables: {
-        id,
-        input: { label: currentLabel }
+    await add({
+      parameters: {
+        execute: { label: currentLabel },
+        undo: { label }
       },
-      optimisticResponse: {
-        radioOptionBlockUpdate: {
-          id,
-          __typename: 'RadioOptionBlock',
-          label: currentLabel
-        }
+      async execute({ label }) {
+        dispatch({
+          type: 'SetSelectedStepAction',
+          selectedStep: state.selectedStep
+        })
+
+        dispatch({
+          type: 'SetSelectedBlockAction',
+          selectedBlock: state.selectedBlock
+        })
+
+        await radioOptionBlockUpdate({
+          variables: {
+            id,
+            input: { label }
+          },
+          optimisticResponse: {
+            radioOptionBlockUpdate: {
+              id,
+              __typename: 'RadioOptionBlock',
+              label
+            }
+          }
+        })
       }
     })
   }
