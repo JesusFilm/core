@@ -4,13 +4,9 @@ import { ReactElement } from 'react'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 
-import {
-  BlockFields_StepBlock,
-  BlockFields_TextResponseBlock as TextResponseBlock
-} from '../../../../../../../../../../../__generated__/BlockFields'
+import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
 import {
   TextResponseMinRowsUpdate,
   TextResponseMinRowsUpdateVariables
@@ -36,81 +32,49 @@ export function MinRows(): ReactElement {
   >(TEXT_RESPONSE_MIN_ROWS_UPDATE)
 
   const { t } = useTranslation('apps-journeys-admin')
-  const { journey } = useJourney()
   const { state, dispatch } = useEditor()
   const { add } = useCommand()
   const selectedBlock = state.selectedBlock as
     | TreeBlock<TextResponseBlock>
     | undefined
 
-  function updateEditorState(
-    step: TreeBlock<BlockFields_StepBlock> | undefined,
-    block: TreeBlock
-  ): void {
-    dispatch({
-      type: 'SetSelectedStepAction',
-      selectedStep: step
-    })
-
-    dispatch({
-      type: 'SetSelectedBlockAction',
-      selectedBlock: block
-    })
-  }
-
   async function handleChange(minRows: number): Promise<void> {
-    if (selectedBlock != null && journey != null) {
-      await add({
-        parameters: {
-          execute: { id: selectedBlock.id, journeyId: journey.id, minRows },
-          undo: {
-            id: selectedBlock.id,
-            journeyId: journey.id,
-            minRows: selectedBlock.minRows
-          }
-        },
-        async execute({ id, journeyId, minRows }) {
-          updateEditorState(state.selectedStep, selectedBlock)
-
-          await textResponseMinRowsUpdate({
-            variables: {
-              id,
-              journeyId,
-              input: {
-                minRows
-              }
-            },
-            optimisticResponse: {
-              textResponseBlockUpdate: {
-                id,
-                minRows,
-                __typename: 'TextResponseBlock'
-              }
-            }
-          })
-        },
-        async undo({ id, journeyId, minRows }) {
-          await textResponseMinRowsUpdate({
-            variables: {
-              id,
-              journeyId,
-              input: {
-                minRows
-              }
-            },
-            optimisticResponse: {
-              textResponseBlockUpdate: {
-                id,
-                minRows,
-                __typename: 'TextResponseBlock'
-              }
-            }
-          })
-
-          updateEditorState(state.selectedStep, selectedBlock)
+    if (selectedBlock == null) return
+    await add({
+      parameters: {
+        execute: { minRows },
+        undo: {
+          minRows: selectedBlock.minRows
         }
-      })
-    }
+      },
+      async execute({ minRows }) {
+        dispatch({
+          type: 'SetSelectedStepAction',
+          selectedStep: state.selectedStep
+        })
+
+        dispatch({
+          type: 'SetSelectedBlockAction',
+          selectedBlock
+        })
+
+        await textResponseMinRowsUpdate({
+          variables: {
+            id: selectedBlock.id,
+            input: {
+              minRows
+            }
+          },
+          optimisticResponse: {
+            textResponseBlockUpdate: {
+              id: selectedBlock.id,
+              minRows,
+              __typename: 'TextResponseBlock'
+            }
+          }
+        })
+      }
+    })
   }
 
   const options = [
