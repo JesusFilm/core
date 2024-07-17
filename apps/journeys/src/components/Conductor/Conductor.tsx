@@ -145,7 +145,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
 
   return (
     <HotkeysProvider>
-      <HotkeyNavigation activeBlock={activeBlock} rtl={rtl} />
+      <HotkeyNavigation rtl={rtl} />
       <ThemeProvider
         themeName={ThemeName.journeyUi}
         themeMode={stepTheme.themeMode}

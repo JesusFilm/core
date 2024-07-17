@@ -33,14 +33,10 @@ import {
 } from '../../../../__generated__/globalTypes'
 
 interface HotkeyNavigationProps {
-  activeBlock: TreeBlock<StepFields>
   rtl: boolean
 }
 
-export function HotkeyNavigation({
-  activeBlock,
-  rtl
-}: HotkeyNavigationProps): ReactElement {
+export function HotkeyNavigation({ rtl }: HotkeyNavigationProps): ReactElement {
   const [stepNextEventCreate] = useMutation<
     StepNextEventCreate,
     StepNextEventCreateVariables
@@ -58,6 +54,9 @@ export function HotkeyNavigation({
     nextActiveBlock,
     previousActiveBlock
   } = useBlocks()
+  const activeBlock = blockHistory[
+    blockHistory.length - 1
+  ] as TreeBlock<StepFields>
   const { t } = useTranslation('apps-journeys')
 
   const handleNavigation = useCallback(
