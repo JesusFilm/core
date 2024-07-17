@@ -35,7 +35,7 @@ export class BigQueryConsumer extends WorkerHost {
         table:
           'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariantSubtitles_arclight_data',
         service: this.importerVideoSubtitleService,
-        hasUpdatedAt: true
+        hasUpdatedAt: false
       }
     ]
   }
