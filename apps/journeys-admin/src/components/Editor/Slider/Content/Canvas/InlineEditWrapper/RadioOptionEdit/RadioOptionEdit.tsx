@@ -3,7 +3,11 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import {
+  ActiveContent,
+  ActiveSlide,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
 import { RadioOption } from '@core/journeys/ui/RadioOption'
 import type { TreeBlock } from '@core/journeys/ui/block'
 
@@ -55,13 +59,11 @@ export function RadioOptionEdit({
       },
       async execute({ label }) {
         dispatch({
-          type: 'SetSelectedStepAction',
-          selectedStep: state.selectedStep
-        })
-
-        dispatch({
-          type: 'SetSelectedBlockAction',
-          selectedBlock: state.selectedBlock
+          type: 'SetCommandStateAction',
+          selectedBlock: state.selectedBlock,
+          selectedStep: state.selectedStep,
+          activeSlide: ActiveSlide.Content,
+          activeContent: ActiveContent.Canvas
         })
 
         await radioOptionBlockUpdate({
