@@ -1,5 +1,4 @@
 import Container from '@mui/material/Container'
-import Grid from '@mui/material/Grid'
 import Paper from '@mui/material/Paper'
 import castArray from 'lodash/castArray'
 import difference from 'lodash/difference'
@@ -9,9 +8,16 @@ import { ReactElement } from 'react'
 
 import { TemplateSections } from '../TemplateSections'
 
-import { HeaderAndLanguageFilter } from './HeaderAndLanguageFilter'
+import { Index, RefinementList } from 'react-instantsearch'
+import { SearchBar } from '../SearchBar'
 import { TagCarousels } from './TagCarousels'
-import { TagsFilter } from './TagsFilter'
+
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
+import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import { ParentTagIcon } from '../ParentTagIcon'
 
 interface TemplateGalleryProps {
   hideOverflow?: boolean
@@ -63,77 +69,118 @@ export function TemplateGallery({
     >
       <Container
         maxWidth={false}
+        disableGutters
         sx={{
           overflow: hideOverflow ? 'hidden' : 'none',
           px: { xs: 0 },
           py: { xs: 6, sm: 9 }
         }}
       >
-        <HeaderAndLanguageFilter
-          selectedLanguageIds={selectedLanguageIds}
-          onChange={handleLanguageIdsChange}
-        />
-        <Grid
-          container
-          spacing={2}
-          sx={{
-            mb: { xs: 1, md: 3 }
-          }}
-          id="TemplateGalleryTagsFilter"
-        >
-          <Grid item xs={12} md={7}>
-            <TagsFilter
-              label={t('Topics, holidays, felt needs, collections')}
-              tagNames={['Topics', 'Holidays', 'Felt Needs', 'Collections']}
-              onChange={handleTagIdsChange}
-              selectedTagIds={selectedTagIds}
-              popperElementId="TemplateGalleryTagsFilter"
-            />
-          </Grid>
-          <Grid item xs={12} md={5}>
-            <Grid container spacing={2}>
-              <Grid item xs={6}>
-                <TagsFilter
-                  label={t('Audience')}
-                  tagNames={['Audience']}
-                  onChange={handleTagIdsChange}
-                  selectedTagIds={selectedTagIds}
-                  popperElementId="TemplateGalleryAudienceTagsFilter"
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <TagsFilter
-                  label={t('Genre')}
-                  tagNames={['Genre']}
-                  onChange={handleTagIdsChange}
-                  selectedTagIds={selectedTagIds}
-                  popperElementId="TemplateGalleryGenreTagsFilter"
-                />
-              </Grid>
-              <Grid
-                item
-                xs={12}
-                md={6}
-                id="TemplateGalleryAudienceTagsFilter"
-                sx={{ p: '0 !important' }}
+        <Index indexName="api-journeys-journeys-dev">
+          <Stack spacing={10}>
+            <SearchBar />
+
+            {/* TODO(jk): Remove/repurpose unused components: HeaderAndLanguageFilter, TagsFilter eta  */}
+
+            {/* TODO: Remove temporary theme fix for styling journeys admin components */}
+            <ThemeProvider
+              themeName={ThemeName.journeysAdmin}
+              themeMode={ThemeMode.light}
+              nested
+            >
+              <TagCarousels onChange={handleTagIdChange} />
+
+              {/* TODO(jk): only added for testing */}
+              <Stack direction="row">
+                <Box
+                  sx={{
+                    border: 1,
+                    p: 1,
+                    bgcolor: 'background.default'
+                  }}
+                >
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    component="li"
+                    sx={{ px: 4, py: 2 }}
+                  >
+                    <ParentTagIcon name="Topics" sx={{ width: 38 }} />
+                    <Typography variant="subtitle1">Topics</Typography>
+                  </Stack>
+                  <RefinementList attribute="tags.Topics" />
+                </Box>
+
+                <Box
+                  sx={{
+                    border: 1,
+                    p: 1,
+                    bgcolor: 'background.default'
+                  }}
+                >
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    component="li"
+                    sx={{ px: 4, py: 2 }}
+                  >
+                    <ParentTagIcon name="Holidays" sx={{ width: 38 }} />
+                    <Typography variant="subtitle1">Holidays</Typography>
+                  </Stack>
+                  <RefinementList attribute="tags.Holidays" />
+                </Box>
+
+                <Box
+                  sx={{
+                    border: 1,
+                    p: 1,
+                    bgcolor: 'background.default'
+                  }}
+                >
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    component="li"
+                    sx={{ px: 4, py: 2 }}
+                  >
+                    <ParentTagIcon name="Audience" sx={{ width: 38 }} />
+                    <Typography variant="subtitle1">Audience</Typography>
+                  </Stack>
+                  <RefinementList attribute="tags.Audience" />
+                </Box>
+
+                <Box
+                  sx={{
+                    border: 1,
+                    p: 1,
+                    bgcolor: 'background.default'
+                  }}
+                >
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    component="li"
+                    sx={{ px: 4, py: 2 }}
+                  >
+                    <ParentTagIcon name="Collections" sx={{ width: 38 }} />
+                    <Typography variant="subtitle1">Collections</Typography>
+                  </Stack>
+                  <RefinementList attribute="tags.Collections" />
+                </Box>
+              </Stack>
+
+              {/* TODO(jk): remove these props - algolia to handle */}
+              <TemplateSections
+                tagIds={selectedTagIds.length > 0 ? selectedTagIds : undefined}
+                languageIds={
+                  selectedLanguageIds.length > 0
+                    ? selectedLanguageIds
+                    : undefined
+                }
               />
-              <Grid
-                item
-                xs={12}
-                md={6}
-                id="TemplateGalleryGenreTagsFilter"
-                sx={{ p: '0 !important' }}
-              />
-            </Grid>
-          </Grid>
-        </Grid>
-        <TagCarousels onChange={handleTagIdChange} />
-        <TemplateSections
-          tagIds={selectedTagIds.length > 0 ? selectedTagIds : undefined}
-          languageIds={
-            selectedLanguageIds.length > 0 ? selectedLanguageIds : undefined
-          }
-        />
+            </ThemeProvider>
+          </Stack>
+        </Index>
       </Container>
     </Paper>
   )
