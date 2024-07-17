@@ -1,14 +1,62 @@
+import { render } from '@testing-library/react'
 import {
   InstantSearchApi,
   useHits,
-  useInstantSearch
+  useInstantSearch,
+  useRefinementList,
+  useSearchBox
 } from 'react-instantsearch'
-import { algoliaJourneys } from './data'
+import { InstantSearchTestWrapper } from '../../../../test/mocks/InstantSearchWrapper'
+import {
+  createMultiSearchResponse,
+  createSFFVResponse,
+  createSingleSearchResponse
+} from '../../../../test/mocks/createAPIResponse'
+import { createSearchClient } from '../../../../test/mocks/createSearchClient'
+import { TemplateSections } from '../../../components/TemplateSections'
+import { FACET_HITS, algoliaJourneys } from './data'
 import { transformItems, useJourneyHits } from './useJourneyHits'
 
 import { HitsRenderState } from 'instantsearch.js/es/connectors/hits/connectHits'
+import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
+import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
 
 jest.mock('react-instantsearch')
+
+function createMockedSearchClient(parameters: Record<string, any> = {}) {
+  return createSearchClient({
+    search: jest.fn((requests) => {
+      return Promise.resolve(
+        createMultiSearchResponse(
+          ...requests.map(() =>
+            createSingleSearchResponse({
+              facets: {
+                language: {
+                  English: 6
+                },
+                tags: {
+                  Audience: 2,
+                  Collections: 2,
+                  'Felt Needs': 2,
+                  Holidays: 2,
+                  Topics: 2
+                }
+              }
+            })
+          )
+        )
+      )
+    }),
+    searchForFacetValues: jest.fn(() =>
+      Promise.resolve([
+        createSFFVResponse({
+          facetHits: FACET_HITS
+        })
+      ])
+    ),
+    ...parameters
+  })
+}
 
 describe('useJourneyHits', () => {
   it('should have added missing attributes', () => {
