@@ -42,43 +42,42 @@ export function Label(): ReactElement {
     | undefined
 
   async function handleSubmit(e: FocusEvent): Promise<void> {
+    if (selectedBlock == null) return
     const target = e.target as HTMLInputElement
     const label = target.value
-    if (selectedBlock != null) {
-      await add({
-        parameters: {
-          execute: { label },
-          undo: { label: selectedBlock.label }
-        },
-        async execute({ label }) {
-          dispatch({
-            type: 'SetSelectedStepAction',
-            selectedStep: state.selectedStep
-          })
+    await add({
+      parameters: {
+        execute: { label },
+        undo: { label: selectedBlock.label }
+      },
+      async execute({ label }) {
+        dispatch({
+          type: 'SetSelectedStepAction',
+          selectedStep: state.selectedStep
+        })
 
-          dispatch({
-            type: 'SetSelectedBlockAction',
-            selectedBlock
-          })
+        dispatch({
+          type: 'SetSelectedBlockAction',
+          selectedBlock
+        })
 
-          await textResponseLabelUpdate({
-            variables: {
-              id: selectedBlock.id,
-              input: {
-                label
-              }
-            },
-            optimisticResponse: {
-              textResponseBlockUpdate: {
-                id: selectedBlock.id,
-                label,
-                __typename: 'TextResponseBlock'
-              }
+        await textResponseLabelUpdate({
+          variables: {
+            id: selectedBlock.id,
+            input: {
+              label
             }
-          })
-        }
-      })
-    }
+          },
+          optimisticResponse: {
+            textResponseBlockUpdate: {
+              id: selectedBlock.id,
+              label,
+              __typename: 'TextResponseBlock'
+            }
+          }
+        })
+      }
+    })
   }
 
   const initialValues =
