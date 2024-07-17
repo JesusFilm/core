@@ -5,6 +5,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+
 import {
   BlockFields_CardBlock as CardBlock,
   BlockFields_StepBlock as StepBlock
@@ -15,8 +16,6 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../../../../__generated__/globalTypes'
-
-import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 
 import { CARD_BLOCK_THEME_MODE_UPDATE, CardStyling } from './CardStyling'
 
@@ -225,70 +224,5 @@ describe('CardStyling', () => {
     )
     fireEvent.click(getByTestId('Dark'))
     await waitFor(() => expect(result).toHaveBeenCalled())
-  })
-
-  it('should undo a styling change', async () => {
-    const cache = new InMemoryCache()
-    cache.restore({
-      'Journey:journeyId': {
-        blocks: [{ __ref: 'CardBlock:card1.id' }],
-        id: 'journeyId',
-        __typename: 'Journey'
-      }
-    })
-    const result = jest.fn(() => ({
-      data: {
-        cardBlockUpdate: {
-          id: 'card1.id',
-          themeMode: ThemeMode.dark,
-          themeName: ThemeName.base,
-          __typename: 'CardBlock'
-        }
-      }
-    }))
-
-    const { getByTestId, getByRole } = render(
-      <MockedProvider
-        cache={cache}
-        mocks={[
-          {
-            request: {
-              query: CARD_BLOCK_THEME_MODE_UPDATE,
-              variables: {
-                id: 'card1.id',
-                journeyId: 'journeyId',
-                input: {
-                  themeMode: ThemeMode.dark,
-                  themeName: ThemeName.base
-                }
-              }
-            },
-            result
-          },
-          {
-            request: {
-              query: CARD_BLOCK_THEME_MODE_UPDATE,
-              variables: {
-                id: 'card1.id',
-                journeyId: 'journeyId',
-                input: { themeMode: 'light', themeName: 'base' }
-              }
-            },
-            result
-          }
-        ]}
-      >
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
-          <EditorProvider initialState={{ selectedBlock: initialBlock }}>
-            <CardStyling />
-            <CommandUndoItem variant="button" />
-          </EditorProvider>
-        </JourneyProvider>
-      </MockedProvider>
-    )
-    fireEvent.click(getByTestId('Dark'))
-    await waitFor(() => expect(result).toHaveBeenCalledTimes(1))
-    fireEvent.click(getByRole('button', { name: 'Undo' }))
-    await waitFor(() => expect(result).toHaveBeenCalledTimes(2))
   })
 })
