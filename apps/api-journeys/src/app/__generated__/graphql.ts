@@ -853,13 +853,13 @@ export class EmailAction implements Action {
 export abstract class IMutation {
     __typename?: 'IMutation';
 
-    abstract blockDeleteAction(id: string, journeyId: string): Block | Promise<Block>;
+    abstract blockDeleteAction(id: string, journeyId?: Nullable<string>): Block | Promise<Block>;
 
-    abstract blockUpdateNavigateToBlockAction(id: string, journeyId: string, input: NavigateToBlockActionInput): NavigateToBlockAction | Promise<NavigateToBlockAction>;
+    abstract blockUpdateNavigateToBlockAction(id: string, input: NavigateToBlockActionInput, journeyId?: Nullable<string>): NavigateToBlockAction | Promise<NavigateToBlockAction>;
 
-    abstract blockUpdateLinkAction(id: string, journeyId: string, input: LinkActionInput): LinkAction | Promise<LinkAction>;
+    abstract blockUpdateLinkAction(id: string, input: LinkActionInput, journeyId?: Nullable<string>): LinkAction | Promise<LinkAction>;
 
-    abstract blockUpdateEmailAction(id: string, journeyId: string, input: EmailActionInput): EmailAction | Promise<EmailAction>;
+    abstract blockUpdateEmailAction(id: string, input: EmailActionInput, journeyId?: Nullable<string>): EmailAction | Promise<EmailAction>;
 
     abstract blockDelete(id: string, journeyId?: Nullable<string>, parentBlockId?: Nullable<string>): Block[] | Promise<Block[]>;
 
