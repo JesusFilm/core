@@ -60,12 +60,18 @@ export class BigQueryConsumer extends WorkerHost {
     await this.importerVideoVariantsService.getExistingIds()
 
     for (const index in this.tables) {
-      const {
-        table: bigQueryTableName,
-        service,
-        hasUpdatedAt
-      } = this.tables[index]
-      await this.processTable(bigQueryTableName, service, hasUpdatedAt)
+      try {
+        const {
+          table: bigQueryTableName,
+          service,
+          hasUpdatedAt
+        } = this.tables[index]
+        await this.processTable(bigQueryTableName, service, hasUpdatedAt)
+      } catch (error) {
+        if (error instanceof Error) {
+          console.log(error.message)
+        }
+      }
     }
 
     // cleanup for future runs
