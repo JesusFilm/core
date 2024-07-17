@@ -333,3 +333,116 @@ export const algoliaJourneys = [
     __position: 6
   }
 ] as unknown as Hit<AlgoliaJourney>[]
+
+export const algoliaResults = {
+  _rawResults: [
+    {
+      query: '',
+      page: 0,
+      hitsPerPage: 20,
+      hits: [],
+      nbHits: 0,
+      nbPages: 0,
+      params: '',
+      exhaustiveNbHits: true,
+      exhaustiveFacetsCount: true,
+      processingTimeMS: 0,
+      index: 'api-journeys-journeys-dev'
+    }
+  ],
+  query: '',
+  page: 0,
+  hitsPerPage: 20,
+  hits: [],
+  nbHits: 0,
+  nbPages: 0,
+  params: '',
+  exhaustiveNbHits: true,
+  exhaustiveFacetsCount: true,
+  processingTimeMS: 0,
+  index: 'api-journeys-journeys-dev',
+  persistHierarchicalRootCount: false,
+  __isArtificial: true,
+  disjunctiveFacets: [],
+  hierarchicalFacets: [],
+  facets: [],
+  _state: {
+    facets: [],
+    disjunctiveFacets: [
+      'tags.Topics',
+      'tags.Holidays',
+      'tags.Audience',
+      'tags.Collections'
+    ],
+    hierarchicalFacets: [],
+    facetsRefinements: {},
+    facetsExcludes: {},
+    disjunctiveFacetsRefinements: {
+      'tags.Topics': [],
+      'tags.Holidays': [],
+      'tags.Audience': [],
+      'tags.Collections': []
+    },
+    numericRefinements: {},
+    tagRefinements: [],
+    hierarchicalFacetsRefinements: {},
+    index: 'api-journeys-journeys-dev',
+    query: '',
+    maxValuesPerFacet: 10,
+    highlightPreTag: '__ais-highlight__',
+    highlightPostTag: '__/ais-highlight__'
+  }
+}
+
+export const FACET_HITS = [
+  {
+    value: 'Apple',
+    highlighted: '__ais-highlight__App__/ais-highlight__le',
+    count: 442
+  },
+  {
+    value: 'Alpine',
+    highlighted: '__ais-highlight__Alp__/ais-highlight__ine',
+    count: 30
+  },
+  {
+    value: 'APC',
+    highlighted: '__ais-highlight__AP__/ais-highlight__C',
+    count: 24
+  },
+  {
+    value: 'Amped Wireless',
+    highlighted: '__ais-highlight__Amp__/ais-highlight__ed Wireless',
+    count: 4
+  },
+  {
+    value: "Applebee's",
+    highlighted: "__ais-highlight__App__/ais-highlight__lebee's",
+    count: 2
+  },
+  {
+    value: 'Amplicom',
+    highlighted: '__ais-highlight__Amp__/ais-highlight__licom',
+    count: 1
+  },
+  {
+    value: 'Apollo Enclosures',
+    highlighted: '__ais-highlight__Ap__/ais-highlight__ollo Enclosures',
+    count: 1
+  },
+  {
+    value: 'Apple®',
+    highlighted: '__ais-highlight__App__/ais-highlight__le®',
+    count: 1
+  },
+  {
+    value: 'Applica',
+    highlighted: '__ais-highlight__App__/ais-highlight__lica',
+    count: 1
+  },
+  {
+    value: 'Apricorn',
+    highlighted: '__ais-highlight__Ap__/ais-highlight__ricorn',
+    count: 1
+  }
+]

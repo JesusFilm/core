@@ -34,19 +34,11 @@ export const transformItems: UseHitsProps<AlgoliaJourney>['transformItems'] = (
   })) as unknown as AlgoliaJourney[]
 }
 
-export function transformItemsOther(items: any[]): AlgoliaJourney[] {
-  return items.map((item) => ({
-    ...item,
-    id: item.objectID,
-    createdAt: item.date,
-    primaryImageBlock: item.image
-  })) as unknown as AlgoliaJourney[]
-}
-
 export function useJourneyHits() {
-  const { hits } = useHits<Hit<AlgoliaJourney>>({
+  const { hits, results } = useHits<Hit<AlgoliaJourney>>({
     transformItems
   })
+
   const { status } = useInstantSearch()
   const loading = status === 'stalled'
 
