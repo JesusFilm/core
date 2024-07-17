@@ -11,7 +11,10 @@ import {
   BlockFields_StepBlock,
   BlockFields_TextResponseBlock as TextResponseBlock
 } from '../../../../../../../../../../../__generated__/BlockFields'
-import { TextResponseMinRowsUpdate } from '../../../../../../../../../../../__generated__/TextResponseMinRowsUpdate'
+import {
+  TextResponseMinRowsUpdate,
+  TextResponseMinRowsUpdateVariables
+} from '../../../../../../../../../../../__generated__/TextResponseMinRowsUpdate'
 import { ToggleButtonGroup } from '../../../../controls/ToggleButtonGroup'
 
 export const TEXT_RESPONSE_MIN_ROWS_UPDATE = gql`
@@ -27,9 +30,10 @@ export const TEXT_RESPONSE_MIN_ROWS_UPDATE = gql`
 `
 
 export function MinRows(): ReactElement {
-  const [textResponseMinRowsUpdate] = useMutation<TextResponseMinRowsUpdate>(
-    TEXT_RESPONSE_MIN_ROWS_UPDATE
-  )
+  const [textResponseMinRowsUpdate] = useMutation<
+    TextResponseMinRowsUpdate,
+    TextResponseMinRowsUpdateVariables
+  >(TEXT_RESPONSE_MIN_ROWS_UPDATE)
 
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
