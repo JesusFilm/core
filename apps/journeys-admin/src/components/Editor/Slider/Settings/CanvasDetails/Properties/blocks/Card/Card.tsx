@@ -59,9 +59,6 @@ export function Card({
   children
 }: TreeBlock<CardBlock>): ReactElement {
   const { journey } = useJourney()
-  const {
-    state: { selectedStep }
-  } = useEditor()
   const { rtl, locale } = getJourneyRTL(journey)
   const { t } = useTranslation('apps-journeys-admin')
   const {

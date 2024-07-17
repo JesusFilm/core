@@ -28,7 +28,7 @@ import { CardBlockBackgroundColorUpdate } from '../../../../../../../../../../__
 import { CardFields } from '../../../../../../../../../../__generated__/CardFields'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
-import cloneDeep from 'lodash/cloneDeep'
+import { BlockFields_StepBlock as StepBlock } from '@core/journeys/ui/block/__generated__/BlockFields'
 import { PaletteColorPicker } from './PaletteColorPicker'
 import { Swatch } from './Swatch'
 
@@ -107,20 +107,15 @@ export function BackgroundColor(): ReactElement {
   const changeCardColor = async (color: string): Promise<void> => {
     if (journey == null) return
     if (cardBlock != null) {
-      const setEditorState = (selectedStep, activeContent): void => {
+      const setEditorState = (
+        selectedStep: TreeBlock<StepBlock> | undefined
+      ): void => {
         dispatch({
-          type: 'SetActiveSlideAction',
-          activeSlide: ActiveSlide.Content
+          type: 'SetCommandStateAction',
+          activeSlide: ActiveSlide.Content,
+          selectedStep: selectedStep,
+          activeContent: ActiveContent.Canvas
         })
-        dispatch({
-          type: 'SetSelectedStepAction',
-          selectedStep: selectedStep
-        })
-        if (activeContent !== ActiveContent.Canvas)
-          dispatch({
-            type: 'SetActiveContentAction',
-            activeContent: ActiveContent.Canvas
-          })
       }
       const cardBlockColorCacheUpdate = (
         // biome-ignore lint/suspicious/noExplicitAny:
@@ -143,7 +138,6 @@ export function BackgroundColor(): ReactElement {
         parameters: {
           execute: {
             selectedStep: selectedStep,
-            activeContent,
             cardBlock: cardBlock,
             journeyId: journey.id,
             undoColor: selectedColor
@@ -151,19 +145,12 @@ export function BackgroundColor(): ReactElement {
           undo: {
             undoColor: selectedColor,
             selectedStep: selectedStep,
-            activeContent,
             cardBlock: cardBlock,
             journeyId: journey.id
           }
         },
-        execute: async ({
-          selectedStep,
-          activeContent,
-          cardBlock,
-          journeyId,
-          undoColor
-        }) => {
-          setEditorState(selectedStep, activeContent)
+        execute: async ({ selectedStep, cardBlock, journeyId, undoColor }) => {
+          setEditorState(selectedStep)
           setSelectedColor(color)
           await cardBlockUpdate({
             variables: {
@@ -182,14 +169,8 @@ export function BackgroundColor(): ReactElement {
             }
           })
         },
-        undo: async ({
-          undoColor,
-          selectedStep,
-          activeContent,
-          cardBlock,
-          journeyId
-        }) => {
-          setEditorState(selectedStep, activeContent)
+        undo: async ({ undoColor, selectedStep, cardBlock, journeyId }) => {
+          setEditorState(selectedStep)
           await cardBlockUpdate({
             variables: {
               id: cardBlock.id,
