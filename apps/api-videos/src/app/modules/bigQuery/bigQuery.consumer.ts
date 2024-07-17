@@ -51,15 +51,15 @@ export class BigQueryConsumer extends WorkerHost {
       },
       {
         table:
-          'jfp-data-warehouse.jfp_mmdb_prod.core_videoBibleCitation_arclight_data',
-        service: this.importerBibleCitationsService,
-        hasUpdatedAt: true
-      },
-      {
-        table:
           'jfp-data-warehouse.jfp_mmdb_prod.core_bibleBookDescriptors_arclight_data',
         service: this.importerBibleBookNamesService,
         hasUpdatedAt: false
+      },
+      {
+        table:
+          'jfp-data-warehouse.jfp_mmdb_prod.core_videoBibleCitation_arclight_data',
+        service: this.importerBibleCitationsService,
+        hasUpdatedAt: true
       }
     ]
   }
