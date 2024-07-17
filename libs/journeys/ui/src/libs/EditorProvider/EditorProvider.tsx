@@ -148,6 +148,7 @@ interface SetAnalyticsAction {
 interface SetCommandStateAction {
   type: 'SetCommandStateAction'
   selectedBlock?: TreeBlock
+  selectedStep?: TreeBlock<StepBlock>
   activeContent?: ActiveContent
   activeSlide?: ActiveSlide
 }
@@ -263,6 +264,10 @@ export const reducer = (
           action.activeContent != null
             ? action.activeContent
             : state.activeContent,
+        selectedStep:
+          action.selectedStep != null
+            ? action.selectedStep
+            : state.selectedStep,
         activeSlide:
           action.activeSlide != null ? action.activeSlide : state.activeSlide
       }
