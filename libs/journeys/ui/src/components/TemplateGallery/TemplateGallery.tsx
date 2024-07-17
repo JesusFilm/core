@@ -31,35 +31,6 @@ export function TemplateGallery({
   const selectedLanguageIds = castArray(router.query.languageIds ?? ['529']) // Defaults to English language
   const selectedTagIds = castArray(router.query.tagIds ?? [])
 
-  function handleTagIdsChange(
-    newSelectedTagIds: string[],
-    availableTagIds: string[]
-  ): void {
-    const tagIds = [
-      ...difference(selectedTagIds, availableTagIds),
-      ...newSelectedTagIds
-    ]
-    void router.push({ query: { ...router.query, tagIds } }, undefined, {
-      shallow: true
-    })
-  }
-
-  function handleTagIdChange(selectedTagId: string): void {
-    void router.push(
-      { query: { ...router.query, tagIds: selectedTagId } },
-      undefined,
-      { shallow: true }
-    )
-  }
-
-  function handleLanguageIdsChange(values: string[]): void {
-    void router.push(
-      { query: { ...router.query, languageIds: values } },
-      undefined,
-      { shallow: true }
-    )
-  }
-
   return (
     <Paper
       elevation={0}
@@ -88,7 +59,7 @@ export function TemplateGallery({
               themeMode={ThemeMode.light}
               nested
             >
-              <TagCarousels onChange={handleTagIdChange} />
+              <TagCarousels />
 
               {/* TODO(jk): only added for testing */}
               <Stack direction="row">
@@ -166,6 +137,25 @@ export function TemplateGallery({
                     <Typography variant="subtitle1">Collections</Typography>
                   </Stack>
                   <RefinementList attribute="tags.Collections" />
+                </Box>
+
+                <Box
+                  sx={{
+                    border: 1,
+                    p: 1,
+                    bgcolor: 'background.default'
+                  }}
+                >
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    component="li"
+                    sx={{ px: 4, py: 2 }}
+                  >
+                    <ParentTagIcon name="Felt Needs" sx={{ width: 38 }} />
+                    <Typography variant="subtitle1">Collections</Typography>
+                  </Stack>
+                  <RefinementList attribute="tags.Felt Needs" />
                 </Box>
               </Stack>
 

@@ -8,6 +8,7 @@ import { ReactElement } from 'react'
 
 import { GetTags_tags as Tag } from '../../../../libs/useTagsQuery/__generated__/GetTags'
 
+import { useRefinementList } from 'react-instantsearch'
 import acceptanceImage from './assets/acceptance.jpg'
 import depressionImage from './assets/depression.jpg'
 import fearAnxietyImage from './assets/fearAnxiety.jpg'
@@ -86,14 +87,18 @@ function tagImage(tagLabel?: string):
 
 interface FeltNeedsButtonProps {
   item?: ChildTag
-  onClick: (value: string) => void
 }
 
 export function FeltNeedsButton({
-  item: tag,
-  onClick
+  item: tag
 }: FeltNeedsButtonProps): ReactElement {
   const theme = useTheme()
+  const { refine } = useRefinementList({ attribute: 'tags.Felt Needs' })
+
+  function handleClick(tag: ChildTag) {
+    if (tag?.name != null) refine(tag.name[0].value)
+  }
+
   const tagLabel = tag?.name[0]?.value
   const tagImageData = tagImage(tagLabel)
   const image = tagImageData?.tagImg
@@ -123,7 +128,7 @@ export function FeltNeedsButton({
           transition: theme.transitions.create('transform')
         }
       }}
-      onClick={() => tag?.id != null && onClick(tag.id)}
+      onClick={() => handleClick(tag)}
     >
       <Box
         data-testid="gradientLayer"
