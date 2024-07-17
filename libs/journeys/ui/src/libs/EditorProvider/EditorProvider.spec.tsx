@@ -456,7 +456,7 @@ describe('EditorContext', () => {
     })
 
     describe('SetCommandStateAction', () => {
-      it('should set editor state', () => {
+      it('should set editor state with given overrides', () => {
         const step: TreeBlock = {
           id: 'step0.id',
           __typename: 'StepBlock',
@@ -523,7 +523,7 @@ describe('EditorContext', () => {
         })
       })
 
-      it('should retain previously set steps and blocks', () => {
+      it('should retain previous state for overrides not provided', () => {
         const block: TreeBlock = {
           id: 'card0.id',
           __typename: 'CardBlock',
@@ -549,10 +549,7 @@ describe('EditorContext', () => {
           nextBlockId: null,
           children: [block]
         }
-        const updatedStep: TreeBlock = {
-          ...step,
-          children: [updatedBlock]
-        }
+
         const state: EditorState = {
           steps: [step],
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
@@ -564,14 +561,10 @@ describe('EditorContext', () => {
         }
         expect(
           reducer(state, {
-            type: 'SetStepsAction',
-            steps: [updatedStep]
+            type: 'SetCommandStateAction'
           })
         ).toEqual({
-          ...state,
-          steps: [updatedStep],
-          selectedBlock: updatedBlock,
-          selectedStep: updatedStep
+          ...state
         })
       })
     })
