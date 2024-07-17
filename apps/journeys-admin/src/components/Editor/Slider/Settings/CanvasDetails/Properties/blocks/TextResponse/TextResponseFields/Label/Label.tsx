@@ -65,43 +65,21 @@ export function Label(): ReactElement {
     if (selectedBlock != null) {
       await add({
         parameters: {
-          execute: { id: selectedBlock.id, label },
-          undo: {
-            id: selectedBlock.id,
-            label: selectedBlock.label
-          }
+          execute: { label },
+          undo: { label: selectedBlock.label }
         },
-        async execute({ id, label }) {
+        async execute({ label }) {
           updateEditorState(state.selectedStep, selectedBlock)
-
           await textResponseLabelUpdate({
             variables: {
-              id,
+              id: selectedBlock.id,
               input: {
                 label
               }
             },
             optimisticResponse: {
               textResponseBlockUpdate: {
-                id,
-                label,
-                __typename: 'TextResponseBlock'
-              }
-            }
-          })
-        },
-        async undo({ id, label }) {
-          updateEditorState(state.selectedStep, selectedBlock)
-          await textResponseLabelUpdate({
-            variables: {
-              id,
-              input: {
-                label
-              }
-            },
-            optimisticResponse: {
-              textResponseBlockUpdate: {
-                id,
+                id: selectedBlock.id,
                 label,
                 __typename: 'TextResponseBlock'
               }
