@@ -1,10 +1,32 @@
 import { render } from '@testing-library/react'
+import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
+import {
+  InstantSearchApi,
+  useInstantSearch,
+  useSearchBox
+} from 'react-instantsearch'
+import '../../../test/i18n'
 import { SearchBar } from './SearchBar'
 
+jest.mock('react-instantsearch')
+
 describe('SearchBar', () => {
+  beforeEach(() => {
+    const useSearchBoxMocked = jest.mocked(useSearchBox)
+    useSearchBoxMocked.mockReturnValue({
+      query: 'Hello World!',
+      refine: jest.fn()
+    } as unknown as SearchBoxRenderState)
+
+    const useInstantSearchMocked = jest.mocked(useInstantSearch)
+    useInstantSearchMocked.mockReturnValue({
+      status: 'idle'
+    } as unknown as InstantSearchApi)
+  })
+
   it('should render input field', async () => {
-    const { getByRole } = render(<SearchBar />)
-    expect(getByRole('textbox')).toBeInTheDocument()
+    const { getByDisplayValue } = render(<SearchBar />)
+    expect(getByDisplayValue('Hello World!')).toBeInTheDocument()
   })
 
   it('should have placeholder text', async () => {
