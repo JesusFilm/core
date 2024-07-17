@@ -19,7 +19,7 @@ export type Action =
   | BlockFields_VideoBlock_action
   | null
 
-interface ActionExecuteParamters {
+interface ActionExecuteParameters {
   blockId: string
   blockTypename: BlockFields['__typename']
   action: Action
@@ -27,7 +27,7 @@ interface ActionExecuteParamters {
 }
 
 export function useActionCommand(): {
-  addAction: (params: ActionExecuteParamters) => Promise<void>
+  addAction: (params: ActionExecuteParameters) => Promise<void>
 } {
   const { add } = useCommand()
   const [actionDelete] = useBlockActionDeleteMutation()

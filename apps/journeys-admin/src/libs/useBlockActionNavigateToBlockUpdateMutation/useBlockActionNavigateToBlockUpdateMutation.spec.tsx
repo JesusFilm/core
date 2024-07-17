@@ -3,20 +3,13 @@ import { MockedProvider } from '@apollo/client/testing'
 import { renderHook, waitFor } from '@testing-library/react'
 import { act } from 'react'
 
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../__generated__/BlockFields'
-import { JourneyFields as Journey } from '../../../__generated__/JourneyFields'
 
 import { blockActionNavigateToBlockUpdateMock } from './useBlockActionNavigateToBlockUpdateMutation.mock'
 
 import { useBlockActionNavigateToBlockUpdateMutation } from '.'
 
 describe('useBlockActionNavigateToBlockUpdateMutation', () => {
-  const journey = {
-    id: 'journey-id'
-  } as unknown as Journey
-
   const block1: ButtonBlock = {
     __typename: 'ButtonBlock',
     id: 'button2.id',
@@ -40,15 +33,13 @@ describe('useBlockActionNavigateToBlockUpdateMutation', () => {
       () => useBlockActionNavigateToBlockUpdateMutation(),
       {
         wrapper: ({ children }) => (
-          <JourneyProvider value={{ journey }}>
-            <MockedProvider
-              mocks={[
-                { ...blockActionNavigateToBlockUpdateMock, result: mockResult }
-              ]}
-            >
-              {children}
-            </MockedProvider>
-          </JourneyProvider>
+          <MockedProvider
+            mocks={[
+              { ...blockActionNavigateToBlockUpdateMock, result: mockResult }
+            ]}
+          >
+            {children}
+          </MockedProvider>
         )
       }
     )
@@ -72,14 +63,12 @@ describe('useBlockActionNavigateToBlockUpdateMutation', () => {
       () => useBlockActionNavigateToBlockUpdateMutation(),
       {
         wrapper: ({ children }) => (
-          <JourneyProvider value={{ journey }}>
-            <MockedProvider
-              mocks={[blockActionNavigateToBlockUpdateMock]}
-              cache={cache}
-            >
-              {children}
-            </MockedProvider>
-          </JourneyProvider>
+          <MockedProvider
+            mocks={[blockActionNavigateToBlockUpdateMock]}
+            cache={cache}
+          >
+            {children}
+          </MockedProvider>
         )
       }
     )

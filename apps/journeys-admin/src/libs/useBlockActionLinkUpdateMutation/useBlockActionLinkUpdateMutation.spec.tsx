@@ -3,20 +3,13 @@ import { MockedProvider } from '@apollo/client/testing'
 import { renderHook, waitFor } from '@testing-library/react'
 import { act } from 'react'
 
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../__generated__/BlockFields'
-import { JourneyFields as Journey } from '../../../__generated__/JourneyFields'
 
 import { blockActionLinkUpdateMock } from './useBlockActionLinkUpdateMutation.mock'
 
 import { useBlockActionLinkUpdateMutation } from '.'
 
 describe('useBlockActionLinkUpdateMutation', () => {
-  const journey = {
-    id: 'journey-id'
-  } as unknown as Journey
-
   const block1: ButtonBlock = {
     __typename: 'ButtonBlock',
     id: 'button2.id',
@@ -38,13 +31,11 @@ describe('useBlockActionLinkUpdateMutation', () => {
 
     const { result } = renderHook(() => useBlockActionLinkUpdateMutation(), {
       wrapper: ({ children }) => (
-        <JourneyProvider value={{ journey }}>
-          <MockedProvider
-            mocks={[{ ...blockActionLinkUpdateMock, result: mockResult }]}
-          >
-            {children}
-          </MockedProvider>
-        </JourneyProvider>
+        <MockedProvider
+          mocks={[{ ...blockActionLinkUpdateMock, result: mockResult }]}
+        >
+          {children}
+        </MockedProvider>
       )
     })
 
@@ -65,11 +56,9 @@ describe('useBlockActionLinkUpdateMutation', () => {
 
     const { result } = renderHook(() => useBlockActionLinkUpdateMutation(), {
       wrapper: ({ children }) => (
-        <JourneyProvider value={{ journey }}>
-          <MockedProvider mocks={[blockActionLinkUpdateMock]} cache={cache}>
-            {children}
-          </MockedProvider>
-        </JourneyProvider>
+        <MockedProvider mocks={[blockActionLinkUpdateMock]} cache={cache}>
+          {children}
+        </MockedProvider>
       )
     })
 
