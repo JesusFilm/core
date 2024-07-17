@@ -10,6 +10,7 @@ import { ImporterVideoSubtitlesService } from '../importer/importerVideoSubtitle
 import { ImporterVideoVariantsService } from '../importer/importerVideoVariants/importerVideoVariants.service'
 import { ImporterVideosService } from '../importer/importerVideos/importerVideos.service'
 import { BigQueryService } from './bigQuery.service'
+import { ImporterBibleBookNamesService } from '../importer/importerBibleBookNames/importerBibleBookNames.service'
 
 interface BigQueryRowError {
   bigQueryTableName: string
@@ -31,6 +32,7 @@ export class BigQueryConsumer extends WorkerHost {
     private readonly importerVideoVariantsService: ImporterVideoVariantsService,
     private readonly importerVideoSubtitleService: ImporterVideoSubtitlesService,
     private readonly importerBibleBooksService: ImporterBibleBooksService,
+    private readonly importerBibleBookNamesService: ImporterBibleBookNamesService,
     private readonly importerBibleCitationsService: ImporterBibleCitationsService
   ) {
     super()
@@ -51,6 +53,12 @@ export class BigQueryConsumer extends WorkerHost {
           'jfp-data-warehouse.jfp_mmdb_prod.core_videoBibleCitation_arclight_data',
         service: this.importerBibleCitationsService,
         hasUpdatedAt: true
+      },
+      {
+        table:
+          'jfp-data-warehouse.jfp_mmdb_prod.core_bibleBookDescriptors_arclight_data',
+        service: this.importerBibleBookNamesService,
+        hasUpdatedAt: false
       }
     ]
   }
@@ -58,6 +66,7 @@ export class BigQueryConsumer extends WorkerHost {
   async process(_job: Job): Promise<void> {
     await this.importerVideosService.getUsedSlugs()
     await this.importerVideoVariantsService.getExistingIds()
+    await this.importerBibleBooksService.getExistingIds()
 
     for (const index in this.tables) {
       try {
@@ -78,6 +87,7 @@ export class BigQueryConsumer extends WorkerHost {
     this.importerVideosService.usedSlugs = undefined
     this.importerVideosService.ids = []
     this.importerVideoVariantsService.ids = []
+    this.importerBibleBooksService.ids = []
   }
 
   async processTable(

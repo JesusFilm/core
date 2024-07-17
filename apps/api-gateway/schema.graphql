@@ -39,6 +39,28 @@ type AudioPreview
   size: Int!
 }
 
+type BibleBook
+  @join__type(graph: VIDEOS)
+{
+  name(languageId: ID, primary: Boolean): [Translation!]!
+  osisId: String!
+  alternateName: String
+  paratextAbbreviation: String!
+  isNewTestament: Boolean!
+  order: Int!
+}
+
+type BibleCitation
+  @join__type(graph: VIDEOS)
+{
+  osisId: String!
+  bibleBook: BibleBook!
+  chapterStart: Int!
+  chapterEnd: Int
+  verseStart: Int!
+  verseEnd: Int
+}
+
 interface Block
   @join__type(graph: JOURNEYS)
 {
@@ -2919,6 +2941,7 @@ type Video
   """the number value of the amount of children on a video"""
   childrenCount: Int! @join__field(graph: VIDEOS)
   variantLanguagesWithSlug: [LanguageWithSlug!]! @join__field(graph: VIDEOS)
+  bibleCitations: [BibleCitation!]! @join__field(graph: VIDEOS)
   variant(languageId: ID): VideoVariant @join__field(graph: VIDEOS)
 }
 

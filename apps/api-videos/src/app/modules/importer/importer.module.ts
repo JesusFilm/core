@@ -7,11 +7,13 @@ import { ImporterVideoVariantsService } from './importerVideoVariants/importerVi
 import { ImporterVideosService } from './importerVideos/importerVideos.service'
 import { ImporterBibleBooksService } from './importerBibleBooks/importerBibleBooks.service'
 import { ImporterBibleCitationsService } from './importerBibleCitations/importerBibleCitations.service'
+import { ImporterBibleBookNamesService } from './importerBibleBookNames/importerBibleBookNames.service'
 
 @Module({
   providers: [
     PrismaService,
     ImporterBibleBooksService,
+    ImporterBibleBookNamesService,
     ImporterBibleCitationsService,
     ImporterVideosService,
     ImporterVideoVariantsService,
@@ -19,6 +21,7 @@ import { ImporterBibleCitationsService } from './importerBibleCitations/importer
   ],
   exports: [
     ImporterBibleBooksService,
+    ImporterBibleBookNamesService,
     ImporterBibleCitationsService,
     ImporterVideosService,
     ImporterVideoVariantsService,

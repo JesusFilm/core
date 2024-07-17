@@ -19,9 +19,20 @@ type BibleBook = z.infer<typeof bibleBookSchema>
 @Injectable()
 export class ImporterBibleBooksService extends ImporterService<BibleBook> {
   schema = bibleBookSchema
+  ids: string[] = []
 
   constructor(private readonly prismaService: PrismaService) {
     super()
+  }
+
+  getExistingIds(): Promise<void> {
+    return this.prismaService.bibleBook
+      .findMany({
+        select: { id: true }
+      })
+      .then((result) => {
+        this.ids = result.map(({ id }) => id)
+      })
   }
 
   trimBibleBook(bibleBook: BibleBook) {
@@ -81,12 +92,14 @@ export class ImporterBibleBooksService extends ImporterService<BibleBook> {
     }))
 
     await this.prismaService.bibleBook.createMany({
-      data: trimmedBibleBooks,
+      data: trimmedBibleBooks.filter(({ id }) => !this.ids.includes(id)),
       skipDuplicates: true
     })
 
     await this.prismaService.bibleBookName.createMany({
-      data: bibleBookNames,
+      data: bibleBookNames.filter(
+        ({ bibleBookId }) => !this.ids.includes(bibleBookId)
+      ),
       skipDuplicates: true
     })
   }
