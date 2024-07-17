@@ -1,42 +1,36 @@
 import { render, screen } from '@testing-library/react'
+import { HitsRenderState } from 'instantsearch.js/es/connectors/hits/connectHits'
+import { useHits } from 'react-instantsearch'
 import { StrategySection } from '.'
 import { StrategyItemProps } from '../StrategyCard/StrategyCard'
+import { newStrategyItems } from './data'
+
+jest.mock('react-instantsearch')
 
 describe('StrategySection', () => {
-  const StrategyItems = [
-    {
-      title: 'Title 0',
-      description: 'description 0',
-      id: 'test-id',
-      imageUrl: '',
-      link: ''
-    },
-    {
-      title: 'Title 1',
-      description: 'description 1',
-      id: 'test-id',
-      imageUrl: '',
-      link: ''
-    },
-    {
-      title: 'Title 2',
-      description: 'description 2',
-      id: 'test-id',
-      imageUrl: '',
-      link: ''
-    }
-  ] as Array<StrategyItemProps>
+  beforeEach(() => {
+    const useHitsMocked = jest.mocked(useHits)
+    useHitsMocked.mockReturnValue({
+      hits: newStrategyItems
+    } as unknown as HitsRenderState)
+  })
+
   it('should render strategysection', () => {
     render(<StrategySection />)
     expect(screen.getByTestId('StrategySection')).toBeInTheDocument()
   })
 
-  it('should render 3 strategy items', () => {
+  it('should render 2 strategy items', () => {
     render(<StrategySection />)
-
+    expect(newStrategyItems).toHaveLength(2)
     const items = screen.getAllByTestId('StrategyCard')
-    expect(items).toHaveLength(9)
+    expect(items).toHaveLength(2)
+  })
 
-    expect(items[0]).toHaveTextContent('Title 1')
+  it('should render correct title', () => {
+    render(<StrategySection />)
+    expect(screen.getByTestId('StrategySectionTitle')).toHaveTextContent(
+      `${newStrategyItems[0].post_type_label}` // 'Mission Trips'
+    )
   })
 })

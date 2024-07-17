@@ -35,6 +35,7 @@ export function StrategySection(): ReactElement {
   const { breakpoints } = useTheme()
 
   const { hits } = useHits()
+  // console.log(hits.splice(0, 2))
 
   const newItems = createItemsFromHits(hits)
 
@@ -69,7 +70,9 @@ export function StrategySection(): ReactElement {
 
   return (
     <Box data-testid="StrategySection">
-      <Typography variant="h4">{titleText}</Typography>
+      <Typography data-testid="StrategySectionTitle" variant="h4">
+        {titleText}
+      </Typography>
       <Container maxWidth={false} sx={{ overflow: 'hidden' }}>
         <ContentCarousel
           items={newItems}
