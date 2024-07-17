@@ -144,6 +144,13 @@ interface SetAnalyticsAction {
   type: 'SetAnalyticsAction'
   analytics?: JourneyAnalytics
 }
+
+interface SetCommandStateAction {
+  type: 'SetCommandStateAction'
+  selectedBlock?: TreeBlock
+  activeContent?: ActiveContent
+  activeSlide?: ActiveSlide
+}
 export type EditorAction =
   | SetActiveCanvasDetailsDrawerAction
   | SetActiveContentAction
@@ -158,6 +165,7 @@ export type EditorAction =
   | SetStepsAction
   | SetShowAnalyticsAction
   | SetAnalyticsAction
+  | SetCommandStateAction
 
 export const reducer = (
   state: EditorState,
@@ -242,6 +250,21 @@ export const reducer = (
       return {
         ...state,
         analytics: action.analytics
+      }
+    }
+    case 'SetCommandStateAction': {
+      return {
+        ...state,
+        selectedBlock:
+          action.selectedBlock != null
+            ? action.selectedBlock
+            : state.selectedBlock,
+        activeContent:
+          action.activeContent != null
+            ? action.activeContent
+            : state.activeContent,
+        activeSlide:
+          action.activeSlide != null ? action.activeSlide : state.activeSlide
       }
     }
   }
