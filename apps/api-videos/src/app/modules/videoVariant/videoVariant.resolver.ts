@@ -18,8 +18,8 @@ export class VideoVariantResolver {
   @ResolveField('subtitleCount')
   async subtitleCount(@Parent() videoVariant): Promise<number> {
     return (
-      (await this.prismaService.videoVariantSubtitle.count({
-        where: { videoVariantId: videoVariant.id }
+      (await this.prismaService.videoSubtitle.count({
+        where: { videoId: videoVariant.videoId, edition: videoVariant.edition }
       })) ?? 0
     )
   }
@@ -37,8 +37,9 @@ export class VideoVariantResolver {
     @Args('languageId') languageId?: string,
     @Args('primary') primary?: boolean
   ): Promise<unknown[]> {
-    const where: Prisma.VideoVariantSubtitleWhereInput = {
-      videoVariantId: videoVariant.id
+    const where: Prisma.VideoSubtitleWhereInput = {
+      videoId: videoVariant.videoId,
+      edition: videoVariant.edition
     }
     if (languageId != null || primary != null) {
       where.OR = [
@@ -50,7 +51,7 @@ export class VideoVariantResolver {
         }
       ]
     }
-    return await this.prismaService.videoVariantSubtitle.findMany({
+    return await this.prismaService.videoSubtitle.findMany({
       where
     })
   }
