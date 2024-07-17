@@ -3,11 +3,9 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ReactElement } from 'react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
-import { GetJourney_journey as Journey } from '../../../../../../../../../../../__generated__/GetJourney'
 import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../../Toolbar/Items/CommandUndoItem'
 
@@ -34,11 +32,6 @@ const block: TreeBlock<TextResponseBlock> = {
   children: []
 }
 
-const pageData: { journey: Journey; variant: 'default' | 'admin' | 'embed' } = {
-  journey: { id: 'journey.id' } as unknown as Journey,
-  variant: 'admin'
-}
-
 interface HintMockProps {
   mocks?: Array<MockedResponse<Record<string, unknown>>>
   initialState?: { selectedBlock: TreeBlock<TextResponseBlock> | undefined }
@@ -49,13 +42,11 @@ const HintMock = ({
   initialState = { selectedBlock: block }
 }: HintMockProps): ReactElement => (
   <MockedProvider mocks={mocks} addTypename={false}>
-    <JourneyProvider value={pageData}>
-      <EditorProvider initialState={initialState}>
-        <CommandUndoItem variant="button" />
-        <CommandRedoItem variant="button" />
-        <Hint />
-      </EditorProvider>
-    </JourneyProvider>
+    <EditorProvider initialState={initialState}>
+      <CommandUndoItem variant="button" />
+      <CommandRedoItem variant="button" />
+      <Hint />
+    </EditorProvider>
   </MockedProvider>
 )
 
@@ -88,7 +79,6 @@ describe('Edit Hint field', () => {
       data: {
         textResponseBlockUpdate: {
           id: block.id,
-          journeyId: pageData.journey.id,
           hint: 'Updated hint'
         }
       }
@@ -99,7 +89,6 @@ describe('Edit Hint field', () => {
         query: TEXT_RESPONSE_HINT_UPDATE,
         variables: {
           id: block.id,
-          journeyId: pageData.journey.id,
           input: {
             hint: 'Updated hint'
           }
@@ -125,7 +114,6 @@ describe('Edit Hint field', () => {
       data: {
         textResponseBlockUpdate: {
           id: block.id,
-          journeyId: pageData.journey.id,
           hint: 'Updated hint'
         }
       }
@@ -135,7 +123,6 @@ describe('Edit Hint field', () => {
       data: {
         textResponseBlockUpdate: {
           id: block.id,
-          journeyId: pageData.journey.id,
           hint: 'A hint message'
         }
       }
@@ -146,7 +133,6 @@ describe('Edit Hint field', () => {
         query: TEXT_RESPONSE_HINT_UPDATE,
         variables: {
           id: block.id,
-          journeyId: pageData.journey.id,
           input: {
             hint: 'Updated hint'
           }
@@ -160,7 +146,6 @@ describe('Edit Hint field', () => {
         query: TEXT_RESPONSE_HINT_UPDATE,
         variables: {
           id: block.id,
-          journeyId: pageData.journey.id,
           input: {
             hint: 'A hint message'
           }
@@ -187,7 +172,6 @@ describe('Edit Hint field', () => {
       data: {
         textResponseBlockUpdate: {
           id: block.id,
-          journeyId: pageData.journey.id,
           hint: 'Updated hint'
         }
       }
@@ -197,7 +181,6 @@ describe('Edit Hint field', () => {
       data: {
         textResponseBlockUpdate: {
           id: block.id,
-          journeyId: pageData.journey.id,
           hint: 'A hint message'
         }
       }
@@ -208,7 +191,6 @@ describe('Edit Hint field', () => {
         query: TEXT_RESPONSE_HINT_UPDATE,
         variables: {
           id: block.id,
-          journeyId: pageData.journey.id,
           input: {
             hint: 'Updated hint'
           }
@@ -223,7 +205,6 @@ describe('Edit Hint field', () => {
         query: TEXT_RESPONSE_HINT_UPDATE,
         variables: {
           id: block.id,
-          journeyId: pageData.journey.id,
           input: {
             hint: 'A hint message'
           }
