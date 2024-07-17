@@ -94,6 +94,7 @@ export function PlausibleEmbedDashboard(): ReactElement {
       {!loading && data?.journey.plausibleToken != null && (
         <>
           <StyledIFrame
+            data-testid="PlausibleEmbedDashboard"
             plausible-embed
             src={`/share/api-journeys-journey-${journeyId}?auth=${data?.journey.plausibleToken}&embed=true&theme=light&background=transparent`}
             loading="lazy"
