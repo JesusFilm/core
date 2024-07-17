@@ -7,6 +7,12 @@
   "[typescript]": {
     "editor.defaultFormatter": "biomejs.biome"
   },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
   "[graphql]": {
     "editor.defaultFormatter": "biomejs.biome"
   },
@@ -95,8 +101,5 @@
   "javascript.preferences.importModuleSpecifier": "project-relative",
   "remote.localPortHost": "allInterfaces",
   "typescript.tsdk": "node_modules/typescript/lib",
-  "typescript.enablePromptUseWorkspaceTsdk": true,
-  "[typescriptreact]": {
-    "editor.defaultFormatter": "biomejs.biome"
-  }
+  "typescript.enablePromptUseWorkspaceTsdk": true
 }

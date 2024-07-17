@@ -18,6 +18,12 @@ datasource db {
   url      = env("PG_DATABASE_URL_LANGUAGES")
 }
 
+generator pothos {
+  provider     = "prisma-pothos-types"
+  clientOutput = ".prisma/api-languages-client"
+  output       = "../src/__generated__/pothos-types.ts"
+}
+
 model Language {
   id               String             @id
   createdAt        DateTime           @default(now())
@@ -29,7 +35,7 @@ model Language {
   countries        Country[]
   countryName      CountryName[]
   countryContinent CountryContinent[]
-  audioPreview     AudioPreview[]
+  audioPreview     AudioPreview?
 
   @@index(bcp47(type: Hash))
 }
@@ -92,13 +98,17 @@ model CountryContinent {
 }
 
 model AudioPreview {
-  id         String   @id @default(uuid())
-  languageId String
+  languageId String   @id
   value      String
+  duration   Int
   size       Int
-  createdAt  DateTime
   updatedAt  DateTime
   language   Language @relation(fields: [languageId], references: [id])
 
   @@index(languageId(type: Hash))
+}
+
+model ImportTimes {
+  modelName  String   @id
+  lastImport DateTime
 }
