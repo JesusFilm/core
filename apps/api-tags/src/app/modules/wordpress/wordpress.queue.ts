@@ -1,11 +1,13 @@
 import { InjectQueue } from '@nestjs/bullmq'
 import { Injectable, OnModuleInit } from '@nestjs/common'
 import { Queue } from 'bullmq'
+import { PrismaService } from '../../lib/prisma.service'
 
 @Injectable()
 export class WordPressQueue implements OnModuleInit {
   constructor(
-    @InjectQueue('api-tags-wordpress') private readonly wordpressQueue: Queue
+    @InjectQueue('api-tags-wordpress') private readonly wordpressQueue: Queue,
+    private readonly prismaService: PrismaService
   ) {}
 
   async onModuleInit(): Promise<void> {
@@ -28,9 +30,7 @@ export class WordPressQueue implements OnModuleInit {
       }
     }
 
-    console.log('wordpress queue initialized')
     if (newTag != null) {
-      console.log('new tag created, adding to queue')
       await this.wordpressQueue.add(name, {})
     }
   }
