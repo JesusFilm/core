@@ -2,11 +2,9 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
-import { GetJourney_journey as Journey } from '../../../../../../../../../../../__generated__/GetJourney'
 import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../../Toolbar/Items/CommandUndoItem'
 
@@ -37,16 +35,9 @@ describe('MinRows', () => {
   it('should select Three Rows by default', () => {
     const { getByRole } = render(
       <MockedProvider>
-        <JourneyProvider
-          value={{
-            journey: { id: 'journey.id' } as unknown as Journey,
-            variant: 'admin'
-          }}
-        >
-          <EditorProvider initialState={{ selectedBlock }}>
-            <MinRows />
-          </EditorProvider>
-        </JourneyProvider>
+        <EditorProvider initialState={{ selectedBlock }}>
+          <MinRows />
+        </EditorProvider>
       </MockedProvider>
     )
     expect(getByRole('button', { name: 'Three Rows' })).toHaveAttribute(
@@ -60,7 +51,6 @@ describe('MinRows', () => {
       data: {
         textResponseBlockUpdate: {
           id: selectedBlock.id,
-          journeyId: 'journeyId',
           minRows: 4
         }
       }
@@ -74,7 +64,6 @@ describe('MinRows', () => {
               query: TEXT_RESPONSE_MIN_ROWS_UPDATE,
               variables: {
                 id: selectedBlock.id,
-                journeyId: 'journey.id',
                 input: { minRows: 4 }
               }
             },
@@ -82,16 +71,9 @@ describe('MinRows', () => {
           }
         ]}
       >
-        <JourneyProvider
-          value={{
-            journey: { id: 'journey.id' } as unknown as Journey,
-            variant: 'admin'
-          }}
-        >
-          <EditorProvider initialState={{ selectedBlock }}>
-            <MinRows />
-          </EditorProvider>
-        </JourneyProvider>
+        <EditorProvider initialState={{ selectedBlock }}>
+          <MinRows />
+        </EditorProvider>
       </MockedProvider>
     )
 
@@ -104,8 +86,7 @@ describe('MinRows', () => {
       data: {
         textResponseBlockUpdate: {
           id: selectedBlock.id,
-          journeyId: 'journey.id',
-          minRows: 4
+          journeyId: 'journey.id'
         }
       }
     }))
@@ -114,7 +95,6 @@ describe('MinRows', () => {
       data: {
         textResponseBlockUpdate: {
           id: selectedBlock.id,
-          journeyId: 'journey.id',
           minRows: 3
         }
       }
@@ -128,7 +108,6 @@ describe('MinRows', () => {
               query: TEXT_RESPONSE_MIN_ROWS_UPDATE,
               variables: {
                 id: selectedBlock.id,
-                journeyId: 'journey.id',
                 input: {
                   minRows: 4
                 }
@@ -141,7 +120,6 @@ describe('MinRows', () => {
               query: TEXT_RESPONSE_MIN_ROWS_UPDATE,
               variables: {
                 id: selectedBlock.id,
-                journeyId: 'journey.id',
                 input: {
                   minRows: 3
                 }
@@ -152,17 +130,10 @@ describe('MinRows', () => {
         ]}
         addTypename={false}
       >
-        <JourneyProvider
-          value={{
-            journey: { id: 'journey.id' } as unknown as Journey,
-            variant: 'admin'
-          }}
-        >
-          <EditorProvider initialState={{ selectedBlock }}>
-            <CommandUndoItem variant="button" />
-            <MinRows />
-          </EditorProvider>
-        </JourneyProvider>
+        <EditorProvider initialState={{ selectedBlock }}>
+          <CommandUndoItem variant="button" />
+          <MinRows />
+        </EditorProvider>
       </MockedProvider>
     )
 
@@ -177,7 +148,6 @@ describe('MinRows', () => {
       data: {
         textResponseBlockUpdate: {
           id: selectedBlock.id,
-          journeyId: 'journey.id',
           minRows: 4
         }
       }
@@ -187,7 +157,6 @@ describe('MinRows', () => {
       data: {
         textResponseBlockUpdate: {
           id: selectedBlock.id,
-          journeyId: 'journey.id',
           minRows: 3
         }
       }
@@ -201,7 +170,6 @@ describe('MinRows', () => {
               query: TEXT_RESPONSE_MIN_ROWS_UPDATE,
               variables: {
                 id: selectedBlock.id,
-                journeyId: 'journey.id',
                 input: {
                   minRows: 4
                 }
@@ -215,7 +183,6 @@ describe('MinRows', () => {
               query: TEXT_RESPONSE_MIN_ROWS_UPDATE,
               variables: {
                 id: selectedBlock.id,
-                journeyId: 'journey.id',
                 input: {
                   minRows: 3
                 }
@@ -226,18 +193,11 @@ describe('MinRows', () => {
         ]}
         addTypename={false}
       >
-        <JourneyProvider
-          value={{
-            journey: { id: 'journey.id' } as unknown as Journey,
-            variant: 'admin'
-          }}
-        >
-          <EditorProvider initialState={{ selectedBlock }}>
-            <CommandUndoItem variant="button" />
-            <CommandRedoItem variant="button" />
-            <MinRows />
-          </EditorProvider>
-        </JourneyProvider>
+        <EditorProvider initialState={{ selectedBlock }}>
+          <CommandUndoItem variant="button" />
+          <CommandRedoItem variant="button" />
+          <MinRows />
+        </EditorProvider>
       </MockedProvider>
     )
 
