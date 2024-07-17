@@ -2,7 +2,6 @@ import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { ActiveFab, useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
-import cloneDeep from 'lodash/cloneDeep'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import getSelected from '../../components/Editor/Slider/Content/Canvas/QuickControls/DeleteBlock/utils/getSelected'
@@ -45,16 +44,16 @@ export function useBlockDeleteCommand() {
       await add({
         parameters: {
           execute: {
-            currentBlock: cloneDeep(currentBlock),
-            stepBeforeDelete: cloneDeep(stepBeforeDelete),
+            currentBlock: currentBlock,
+            stepBeforeDelete: stepBeforeDelete,
             deletedBlockParentOrder,
             deletedBlockType,
-            stepsBeforeDelete: cloneDeep(stepsBeforeDelete),
+            stepsBeforeDelete: stepsBeforeDelete,
             journeyId: journey.id
           },
           undo: {
-            currentBlock: cloneDeep(currentBlock),
-            stepBeforeDelete: cloneDeep(stepBeforeDelete)
+            currentBlock: currentBlock,
+            stepBeforeDelete: stepBeforeDelete
           }
         },
         async execute({
@@ -66,7 +65,6 @@ export function useBlockDeleteCommand() {
           journeyId
         }) {
           setBlockRestoreEditorState(currentBlock, stepBeforeDelete, dispatch)
-
           await blockDelete(currentBlock, {
             update(cache, { data }) {
               if (
