@@ -19,7 +19,7 @@ describe('useBlockActionNavigateToBlockUpdateMutation', () => {
 
   const block1: ButtonBlock = {
     __typename: 'ButtonBlock',
-    id: 'block1.id',
+    id: 'button2.id',
     parentBlockId: 'card1.id',
     parentOrder: 0,
     label: 'button',
@@ -63,7 +63,7 @@ describe('useBlockActionNavigateToBlockUpdateMutation', () => {
   it('should update cache', async () => {
     const cache = new InMemoryCache()
     cache.restore({
-      'ButtonBlock:block1.id': {
+      'ButtonBlock:button2.id': {
         ...block1
       }
     })
@@ -88,13 +88,13 @@ describe('useBlockActionNavigateToBlockUpdateMutation', () => {
       await result.current[0](block1, 'step2.id')
 
       await waitFor(() =>
-        expect(cache.extract()['ButtonBlock:block1.id']).toEqual({
+        expect(cache.extract()['ButtonBlock:button2.id']).toEqual({
           ...block1,
           action: {
             __typename: 'NavigateToBlockAction',
             gtmEventName: null,
-            parentBlockId: 'step1.id',
-            blockId: 'block1.id'
+            parentBlockId: 'button2.id',
+            blockId: 'step2.id'
           }
         })
       )

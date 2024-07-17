@@ -14,7 +14,7 @@ export const blockActionLinkUpdateMock: MockedResponse<
   request: {
     query: BLOCK_ACTION_LINK_UPDATE,
     variables: {
-      id: 'button1.id',
+      id: 'button2.id',
       input: {
         url: 'https://github.com'
       }
@@ -24,7 +24,7 @@ export const blockActionLinkUpdateMock: MockedResponse<
     data: {
       blockUpdateLinkAction: {
         __typename: 'LinkAction',
-        parentBlockId: 'button1.id',
+        parentBlockId: 'button2.id',
         gtmEventName: null,
         url: 'https://github.com'
       }

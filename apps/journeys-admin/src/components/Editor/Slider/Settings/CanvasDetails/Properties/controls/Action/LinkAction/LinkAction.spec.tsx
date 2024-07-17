@@ -1,12 +1,19 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { TreeBlock } from '@core/journeys/ui/block'
 
 import { LinkAction } from '.'
+import {
+  ButtonColor,
+  ButtonSize,
+  ButtonVariant
+} from '../../../../../../../../../../__generated__/globalTypes'
 import { BLOCK_ACTION_LINK_UPDATE } from '../../../../../../../../../libs/useBlockActionLinkUpdateMutation'
 import { blockActionLinkUpdateMock } from '../../../../../../../../../libs/useBlockActionLinkUpdateMutation/useBlockActionLinkUpdateMutation.mock'
-import { steps } from '../data'
+import { blockActionNavigateToBlockUpdateMock } from '../../../../../../../../../libs/useBlockActionNavigateToBlockUpdateMutation/useBlockActionNavigateToBlockUpdateMutation.mock'
+import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -14,65 +21,90 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 }))
 
 describe('LinkAction', () => {
-  const selectedBlock = steps[1].children[0].children[3]
+  const selectedBlock: TreeBlock = {
+    __typename: 'ButtonBlock',
+    id: 'button2.id',
+    parentBlockId: 'card1.id',
+    parentOrder: 4,
+    label: 'Contact Us',
+    buttonVariant: ButtonVariant.contained,
+    buttonColor: ButtonColor.primary,
+    size: ButtonSize.large,
+    startIconId: null,
+    endIconId: null,
+    action: {
+      parentBlockId: 'button2.id',
+      __typename: 'LinkAction',
+      gtmEventName: 'gtmEventName',
+      url: 'https://www.google.com'
+    },
+    children: []
+  }
 
   it('displays the action url', async () => {
-    const { getByDisplayValue } = render(
+    render(
       <MockedProvider>
         <EditorProvider initialState={{ selectedBlock }}>
           <LinkAction />
         </EditorProvider>
       </MockedProvider>
     )
-    expect(getByDisplayValue('https://www.google.com')).toBeInTheDocument()
+    expect(
+      screen.getByDisplayValue('https://www.google.com')
+    ).toBeInTheDocument()
   })
 
   it('updates action url', async () => {
     const result = jest.fn().mockReturnValue(blockActionLinkUpdateMock.result)
-    const { getByRole } = render(
+    render(
       <MockedProvider mocks={[{ ...blockActionLinkUpdateMock, result }]}>
         <EditorProvider initialState={{ selectedBlock }}>
           <LinkAction />
         </EditorProvider>
       </MockedProvider>
     )
-    fireEvent.change(getByRole('textbox'), {
+    fireEvent.change(screen.getByRole('textbox'), {
       target: { value: 'https://github.com' }
     })
-    fireEvent.blur(getByRole('textbox'))
+    fireEvent.blur(screen.getByRole('textbox'))
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
   it('is a required field', async () => {
-    const { getByText, getByRole } = render(
+    render(
       <MockedProvider>
         <EditorProvider>
           <LinkAction />
         </EditorProvider>
       </MockedProvider>
     )
-    fireEvent.change(getByRole('textbox', { name: 'Paste URL here...' }), {
-      target: { value: '' }
-    })
-    fireEvent.blur(getByRole('textbox', { name: 'Paste URL here...' }))
-    await waitFor(() => expect(getByText('Required')).toBeInTheDocument())
+    fireEvent.change(
+      screen.getByRole('textbox', { name: 'Paste URL here...' }),
+      {
+        target: { value: '' }
+      }
+    )
+    fireEvent.blur(screen.getByRole('textbox', { name: 'Paste URL here...' }))
+    await waitFor(() =>
+      expect(screen.getByText('Required')).toBeInTheDocument()
+    )
   })
 
   it('accepts links without protocol as a URL', async () => {
     const result = jest.fn().mockReturnValue(blockActionLinkUpdateMock.result)
-    const { queryByText, getByRole } = render(
+    render(
       <MockedProvider mocks={[{ ...blockActionLinkUpdateMock, result }]}>
         <EditorProvider initialState={{ selectedBlock }}>
           <LinkAction />
         </EditorProvider>
       </MockedProvider>
     )
-    fireEvent.change(getByRole('textbox'), {
+    fireEvent.change(screen.getByRole('textbox'), {
       target: { value: 'github.com' }
     })
-    fireEvent.blur(getByRole('textbox'))
+    fireEvent.blur(screen.getByRole('textbox'))
     await waitFor(() =>
-      expect(queryByText('Invalid URL')).not.toBeInTheDocument()
+      expect(screen.queryByText('Invalid URL')).not.toBeInTheDocument()
     )
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
@@ -88,7 +120,7 @@ describe('LinkAction', () => {
       }
     }))
 
-    const { queryByText, getByRole } = render(
+    render(
       <MockedProvider
         mocks={[
           {
@@ -110,49 +142,90 @@ describe('LinkAction', () => {
         </EditorProvider>
       </MockedProvider>
     )
-    fireEvent.change(getByRole('textbox'), {
+    fireEvent.change(screen.getByRole('textbox'), {
       target: { value: 'viber://' }
     })
-    fireEvent.blur(getByRole('textbox'))
+    fireEvent.blur(screen.getByRole('textbox'))
     await waitFor(() =>
-      expect(queryByText('Invalid URL')).not.toBeInTheDocument()
+      expect(screen.queryByText('Invalid URL')).not.toBeInTheDocument()
     )
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
   it('rejects mailto links as a URL', async () => {
-    const { getByText, getByRole } = render(
+    render(
       <MockedProvider mocks={[blockActionLinkUpdateMock]}>
         <EditorProvider>
           <LinkAction />
         </EditorProvider>
       </MockedProvider>
     )
-    fireEvent.change(getByRole('textbox'), {
+    fireEvent.change(screen.getByRole('textbox'), {
       target: { value: 'mailto:test@test.com' }
     })
-    fireEvent.blur(getByRole('textbox'))
-    await waitFor(() => expect(getByText('Invalid URL')).toBeInTheDocument())
+    fireEvent.blur(screen.getByRole('textbox'))
+    await waitFor(() =>
+      expect(screen.getByText('Invalid URL')).toBeInTheDocument()
+    )
   })
 
   it('should submit when enter is pressed', async () => {
     const result = jest.fn().mockReturnValue(blockActionLinkUpdateMock.result)
-    const { getByRole, queryByText } = render(
+    render(
       <MockedProvider mocks={[{ ...blockActionLinkUpdateMock, result }]}>
         <EditorProvider initialState={{ selectedBlock }}>
           <LinkAction />
         </EditorProvider>
       </MockedProvider>
     )
-    fireEvent.change(getByRole('textbox'), {
+    fireEvent.change(screen.getByRole('textbox'), {
       target: { value: 'https://github.com' }
     })
-    fireEvent.submit(getByRole('textbox'), {
+    fireEvent.submit(screen.getByRole('textbox'), {
       target: { value: 'https://github.com' }
     })
     await waitFor(() =>
-      expect(queryByText('Invalid URL')).not.toBeInTheDocument()
+      expect(screen.queryByText('Invalid URL')).not.toBeInTheDocument()
     )
+    await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
+  it('should handle undo', async () => {
+    const result = jest
+      .fn()
+      .mockReturnValue(blockActionNavigateToBlockUpdateMock.result)
+    render(
+      <MockedProvider
+        mocks={[
+          blockActionLinkUpdateMock,
+          { ...blockActionNavigateToBlockUpdateMock, result }
+        ]}
+      >
+        <EditorProvider
+          initialState={{
+            selectedBlock: {
+              ...selectedBlock,
+              action: {
+                parentBlockId: 'button2.id',
+                __typename: 'NavigateToBlockAction',
+                gtmEventName: 'gtmEventName',
+                blockId: 'step2.id'
+              }
+            }
+          }}
+        >
+          <LinkAction />
+          <CommandUndoItem variant="button" />
+        </EditorProvider>
+      </MockedProvider>
+    )
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'https://github.com' }
+    })
+    fireEvent.blur(screen.getByRole('textbox'))
+    const undo = screen.getByRole('button', { name: 'Undo' })
+    await waitFor(() => expect(undo).not.toBeDisabled())
+    fireEvent.click(undo)
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 })

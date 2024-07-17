@@ -14,7 +14,7 @@ export const blockActionNavigateToBlockUpdateMock: MockedResponse<
   request: {
     query: BLOCK_ACTION_NAVIGATE_TO_BLOCK_UPDATE,
     variables: {
-      id: 'block1.id',
+      id: 'button2.id',
       input: {
         blockId: 'step2.id'
       }
@@ -24,9 +24,9 @@ export const blockActionNavigateToBlockUpdateMock: MockedResponse<
     data: {
       blockUpdateNavigateToBlockAction: {
         __typename: 'NavigateToBlockAction',
-        parentBlockId: 'step1.id',
+        parentBlockId: 'button2.id',
         gtmEventName: null,
-        blockId: 'block1.id'
+        blockId: 'step2.id'
       }
     }
   }

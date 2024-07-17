@@ -19,7 +19,7 @@ describe('useBlockActionLinkUpdateMutation', () => {
 
   const block1: ButtonBlock = {
     __typename: 'ButtonBlock',
-    id: 'button1.id',
+    id: 'button2.id',
     parentBlockId: 'card1.id',
     parentOrder: 0,
     label: 'button',
@@ -58,7 +58,7 @@ describe('useBlockActionLinkUpdateMutation', () => {
   it('should update cache', async () => {
     const cache = new InMemoryCache()
     cache.restore({
-      'ButtonBlock:button1.id': {
+      'ButtonBlock:button2.id': {
         ...block1
       }
     })
@@ -77,12 +77,12 @@ describe('useBlockActionLinkUpdateMutation', () => {
       await result.current[0](block1, 'https://github.com')
 
       await waitFor(() =>
-        expect(cache.extract()['ButtonBlock:button1.id']).toEqual({
+        expect(cache.extract()['ButtonBlock:button2.id']).toEqual({
           ...block1,
           action: {
             __typename: 'LinkAction',
             gtmEventName: null,
-            parentBlockId: 'button1.id',
+            parentBlockId: 'button2.id',
             url: 'https://github.com'
           }
         })

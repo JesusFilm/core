@@ -31,9 +31,9 @@ export function useActionCommand(): {
 } {
   const { add } = useCommand()
   const [actionDelete] = useBlockActionDeleteMutation()
-  const [blockActionLinkUpdate] = useBlockActionLinkUpdateMutation()
-  const [blockActionEmailUpdate] = useBlockActionEmailUpdateMutation()
-  const [blockActionNavigateToBlockUpdate] =
+  const [actionLinkUpdate] = useBlockActionLinkUpdateMutation()
+  const [actionEmailUpdate] = useBlockActionEmailUpdateMutation()
+  const [actionNavigateToBlockUpdate] =
     useBlockActionNavigateToBlockUpdateMutation()
 
   return {
@@ -58,14 +58,11 @@ export function useActionCommand(): {
           }
           switch (action?.__typename) {
             case 'LinkAction':
-              return await blockActionLinkUpdate(block, action.url)
+              return await actionLinkUpdate(block, action.url)
             case 'EmailAction':
-              return await blockActionEmailUpdate(block, action.email)
+              return await actionEmailUpdate(block, action.email)
             case 'NavigateToBlockAction':
-              return await blockActionNavigateToBlockUpdate(
-                block,
-                action.blockId
-              )
+              return await actionNavigateToBlockUpdate(block, action.blockId)
             default:
               return await actionDelete(block)
           }
