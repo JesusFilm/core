@@ -3,23 +3,37 @@ import { fireEvent, render, waitFor, within } from '@testing-library/react'
 
 import { getTagsMock } from '../data'
 
+import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
+import { useRefinementList } from 'react-instantsearch'
 import { TagCarousels } from '.'
+import { GET_TAGS } from '../../../libs/useTagsQuery'
+
+jest.mock('react-instantsearch')
+
+function mockRefinementList() {
+  jest.clearAllMocks()
+  const onClick = jest.fn()
+  const useRefinementListMocked = jest.mocked(useRefinementList)
+  useRefinementListMocked.mockReturnValue({
+    refine: onClick
+  } as unknown as RefinementListRenderState)
+  return onClick
+}
 
 describe('TagCarousels', () => {
+  beforeEach(() => {
+    mockRefinementList()
+  })
+
   it('should render TagCarousels', async () => {
-    const { getByTestId, getAllByTestId, getByRole } = render(
+    const { getByTestId, getByRole } = render(
       <MockedProvider mocks={[getTagsMock]}>
-        <TagCarousels onChange={jest.fn()} />
+        <TagCarousels />
       </MockedProvider>
     )
 
     const feltNeedsCarousel = getByTestId('-template-gallery-carousel')
     expect(feltNeedsCarousel).toBeInTheDocument()
-    expect(
-      within(feltNeedsCarousel).getAllByTestId('felt-needs-button-loading')
-    ).toHaveLength(8)
-
-    expect(getAllByTestId('collections-button-loading')).toHaveLength(2)
 
     await waitFor(async () => {
       expect(
@@ -37,11 +51,39 @@ describe('TagCarousels', () => {
     })
   })
 
+  it('should render skeleton when no results', async () => {
+    const { getByTestId, getAllByTestId } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_TAGS
+            },
+            result: {
+              data: {
+                tags: []
+              }
+            }
+          }
+        ]}
+      >
+        <TagCarousels />
+      </MockedProvider>
+    )
+
+    const feltNeedsCarousel = getByTestId('-template-gallery-carousel')
+    expect(
+      within(feltNeedsCarousel).getAllByTestId('felt-needs-button-loading')
+    ).toHaveLength(8)
+
+    expect(getAllByTestId('collections-button-loading')).toHaveLength(2)
+  })
+
   it('should filter by felt needs tag', async () => {
-    const onChange = jest.fn()
+    const onChange = mockRefinementList()
     const { getByRole } = render(
       <MockedProvider mocks={[getTagsMock]}>
-        <TagCarousels onChange={onChange} />
+        <TagCarousels />
       </MockedProvider>
     )
 
@@ -59,14 +101,13 @@ describe('TagCarousels', () => {
       })
     )
 
-    expect(onChange).toHaveBeenCalledWith('acceptanceTagId')
+    expect(onChange).toHaveBeenCalledWith('Acceptance')
   })
 
   it('should filter out felt needs tags that have no backgrounds', async () => {
-    const onChange = jest.fn()
     const { getByRole, queryAllByText } = render(
       <MockedProvider mocks={[getTagsMock]}>
-        <TagCarousels onChange={onChange} />
+        <TagCarousels />
       </MockedProvider>
     )
 
@@ -86,10 +127,10 @@ describe('TagCarousels', () => {
   })
 
   it('should filter by collections tag', async () => {
-    const onChange = jest.fn()
+    const onChange = mockRefinementList()
     const { getByRole } = render(
       <MockedProvider mocks={[getTagsMock]}>
-        <TagCarousels onChange={onChange} />
+        <TagCarousels />
       </MockedProvider>
     )
 
@@ -107,6 +148,6 @@ describe('TagCarousels', () => {
       })
     )
 
-    expect(onChange).toHaveBeenCalledWith('nuaTagId')
+    expect(onChange).toHaveBeenCalledWith('NUA')
   })
 })
