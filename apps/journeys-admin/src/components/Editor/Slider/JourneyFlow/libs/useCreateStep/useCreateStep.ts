@@ -50,7 +50,7 @@ export function useCreateStep(): (
     }
   })
   const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
-  const [blockActionNavigateToBlockUpdate] =
+  const [actionNavigateToBlockUpdate] =
     useBlockActionNavigateToBlockUpdateMutation()
   const [blockOrderUpdate] = useBlockOrderUpdateMutation()
 
@@ -138,8 +138,7 @@ export function useCreateStep(): (
           step != null ? [step] : [],
           edgeSource.blockId
         )
-        if (block != null)
-          await blockActionNavigateToBlockUpdate(block, newStepId)
+        if (block != null) await actionNavigateToBlockUpdate(block, newStepId)
         break
       }
     }
