@@ -3,6 +3,7 @@ import Box from '@mui/material/Box'
 import InputAdornment from '@mui/material/InputAdornment'
 import TextField from '@mui/material/TextField'
 import { styled } from '@mui/material/styles'
+import { SearchBoxConnectorParams } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 import { useInstantSearch, useSearchBox } from 'react-instantsearch'
@@ -26,7 +27,7 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
   }
 }))
 
-export function SearchBar(props): ReactElement {
+export function SearchBar(props: SearchBoxConnectorParams): ReactElement {
   const { t } = useTranslation('apps-watch')
 
   const { query, refine, clear } = useSearchBox(props)
@@ -37,7 +38,6 @@ export function SearchBar(props): ReactElement {
 
   function setQuery(newQuery: string) {
     setInputValue(newQuery)
-
     refine(newQuery)
   }
 

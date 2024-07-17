@@ -10,8 +10,8 @@ import { getFlags } from '../../src/libs/getFlags'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
+import { SearchBar } from '../../../../libs/journeys/ui/src/components/SearchBar/SearchBar'
 import { PageWrapper } from '../../src/components/PageWrapper'
-import { SearchBar } from '../../src/components/SearchBar/SearchBar'
 
 import { ParentTagIcon } from '@core/journeys/ui/ParentTagIcon/ParentTagIcon'
 import { TemplateSections } from '@core/journeys/ui/TemplateSections/TemplateSections'

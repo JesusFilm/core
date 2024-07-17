@@ -1,7 +1,7 @@
 import { Meta, StoryObj } from '@storybook/react'
 
+import { watchConfig } from '@core/shared/ui/storybook'
 import { userEvent, within } from '@storybook/testing-library'
-import { watchConfig } from '../../libs/storybook'
 import { SearchBar } from './SearchBar'
 
 const SearchBarStory: Meta<typeof SearchBar> = {
@@ -16,7 +16,7 @@ const Template: StoryObj = {
 
 export const Default = {
   ...Template,
-  play: async ({ canvasElement }) => {
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     const canvas = within(canvasElement)
     const searchInput = await canvas.getByTestId('SearchBar')
     await userEvent.click(searchInput)
