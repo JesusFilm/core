@@ -8,22 +8,20 @@ import { FocusEvent, ReactElement } from 'react'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 
+import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
 import {
-  BlockFields_StepBlock,
-  BlockFields_TextResponseBlock as TextResponseBlock
-} from '../../../../../../../../../../../__generated__/BlockFields'
-import { TextResponseHintUpdate } from '../../../../../../../../../../../__generated__/TextResponseHintUpdate'
+  TextResponseHintUpdate,
+  TextResponseHintUpdateVariables
+} from '../../../../../../../../../../../__generated__/TextResponseHintUpdate'
 
 export const TEXT_RESPONSE_HINT_UPDATE = gql`
   mutation TextResponseHintUpdate(
     $id: ID!
-    $journeyId: ID!
     $input: TextResponseBlockUpdateInput!
   ) {
-    textResponseBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+    textResponseBlockUpdate(id: $id, input: $input) {
       id
       hint
     }
@@ -32,86 +30,54 @@ export const TEXT_RESPONSE_HINT_UPDATE = gql`
 
 export function Hint(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [textResponseHintUpdate] = useMutation<TextResponseHintUpdate>(
-    TEXT_RESPONSE_HINT_UPDATE
-  )
-  const { journey } = useJourney()
+  const [textResponseHintUpdate] = useMutation<
+    TextResponseHintUpdate,
+    TextResponseHintUpdateVariables
+  >(TEXT_RESPONSE_HINT_UPDATE)
   const { state, dispatch } = useEditor()
   const { add } = useCommand()
   const selectedBlock = state.selectedBlock as
     | TreeBlock<TextResponseBlock>
     | undefined
 
-  function updateEditorState(
-    step: TreeBlock<BlockFields_StepBlock> | undefined,
-    block: TreeBlock
-  ): void {
-    dispatch({
-      type: 'SetSelectedStepAction',
-      selectedStep: step
-    })
-
-    dispatch({
-      type: 'SetSelectedBlockAction',
-      selectedBlock: block
-    })
-  }
-
   async function handleSubmit(e: FocusEvent): Promise<void> {
-    if (selectedBlock != null && journey != null) {
-      const target = e.target as HTMLInputElement
-      const hint = target.value
+    if (selectedBlock == null) return
+    const target = e.target as HTMLInputElement
+    const hint = target.value
 
-      await add({
-        parameters: {
-          execute: { id: selectedBlock.id, journeyId: journey.id, hint },
-          undo: {
+    await add({
+      parameters: {
+        execute: { hint },
+        undo: { hint: selectedBlock.hint }
+      },
+      async execute({ hint }) {
+        dispatch({
+          type: 'SetSelectedStepAction',
+          selectedStep: state.selectedStep
+        })
+
+        dispatch({
+          type: 'SetSelectedBlockAction',
+          selectedBlock
+        })
+
+        await textResponseHintUpdate({
+          variables: {
             id: selectedBlock.id,
-            journeyId: journey.id,
-            hint: selectedBlock.hint
+            input: {
+              hint
+            }
+          },
+          optimisticResponse: {
+            textResponseBlockUpdate: {
+              id: selectedBlock.id,
+              hint,
+              __typename: 'TextResponseBlock'
+            }
           }
-        },
-        async execute({ id, journeyId, hint }) {
-          updateEditorState(state.selectedStep, selectedBlock)
-
-          await textResponseHintUpdate({
-            variables: {
-              id,
-              journeyId,
-              input: {
-                hint
-              }
-            },
-            optimisticResponse: {
-              textResponseBlockUpdate: {
-                id,
-                hint,
-                __typename: 'TextResponseBlock'
-              }
-            }
-          })
-        },
-        async undo({ id, journeyId, hint }) {
-          await textResponseHintUpdate({
-            variables: {
-              id,
-              journeyId,
-              input: {
-                hint
-              }
-            },
-            optimisticResponse: {
-              textResponseBlockUpdate: {
-                id,
-                hint,
-                __typename: 'TextResponseBlock'
-              }
-            }
-          })
-          updateEditorState(state.selectedStep, selectedBlock)
-        }
-      })
-    }
+        })
+      }
+    })
   }
 
   const initialValues =
