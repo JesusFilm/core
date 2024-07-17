@@ -10,6 +10,7 @@ import { BLOCK_ACTION_EMAIL_UPDATE } from '../../../../../../../../../libs/useBl
 import { steps } from '../data'
 
 import { EmailAction } from '.'
+import { blockActionEmailUpdateMock } from '../../../../../../../../../libs/useBlockActionEmailUpdateMutation/useBlockActionEmailUpdateMutation.mock'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -40,23 +41,9 @@ describe('EmailAction', () => {
   })
 
   it('updates action email', async () => {
-    const mocks = [
-      {
-        request: {
-          query: BLOCK_ACTION_EMAIL_UPDATE,
-          variables: {
-            id: selectedBlock.id,
-            input: {
-              email: 'edmondwashere@gmail.com'
-            }
-          }
-        },
-        result
-      }
-    ]
-
+    const result = jest.fn().mockReturnValue(blockActionEmailUpdateMock.result)
     const { getByRole } = render(
-      <MockedProvider mocks={mocks}>
+      <MockedProvider mocks={[{ ...blockActionEmailUpdateMock, result }]}>
         <EditorProvider initialState={{ selectedBlock }}>
           <EmailAction />
         </EditorProvider>

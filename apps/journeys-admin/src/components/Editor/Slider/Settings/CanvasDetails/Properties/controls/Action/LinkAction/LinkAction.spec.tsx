@@ -1,14 +1,12 @@
-import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
-import { GetJourney_journey as Journey } from '../../../../../../../../../../__generated__/GetJourney'
-import { steps } from '../data'
-
 import { LinkAction } from '.'
 import { BLOCK_ACTION_LINK_UPDATE } from '../../../../../../../../../libs/useBlockActionLinkUpdateMutation'
+import { blockActionLinkUpdateMock } from '../../../../../../../../../libs/useBlockActionLinkUpdateMutation/useBlockActionLinkUpdateMutation.mock'
+import { steps } from '../data'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -17,30 +15,6 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 describe('LinkAction', () => {
   const selectedBlock = steps[1].children[0].children[3]
-  const result = jest.fn(() => ({
-    data: {
-      blockUpdateLinkAction: {
-        parentBlockId: selectedBlock.id,
-        gtmEventName: 'gtmEventName',
-        url: 'https://github.com'
-      }
-    }
-  }))
-
-  const mocks = [
-    {
-      request: {
-        query: BLOCK_ACTION_LINK_UPDATE,
-        variables: {
-          id: selectedBlock.id,
-          input: {
-            url: 'https://github.com'
-          }
-        }
-      },
-      result
-    }
-  ]
 
   it('displays the action url', async () => {
     const { getByDisplayValue } = render(
@@ -54,8 +28,9 @@ describe('LinkAction', () => {
   })
 
   it('updates action url', async () => {
+    const result = jest.fn().mockReturnValue(blockActionLinkUpdateMock.result)
     const { getByRole } = render(
-      <MockedProvider mocks={mocks}>
+      <MockedProvider mocks={[{ ...blockActionLinkUpdateMock, result }]}>
         <EditorProvider initialState={{ selectedBlock }}>
           <LinkAction />
         </EditorProvider>
@@ -84,8 +59,9 @@ describe('LinkAction', () => {
   })
 
   it('accepts links without protocol as a URL', async () => {
+    const result = jest.fn().mockReturnValue(blockActionLinkUpdateMock.result)
     const { queryByText, getByRole } = render(
-      <MockedProvider mocks={mocks}>
+      <MockedProvider mocks={[{ ...blockActionLinkUpdateMock, result }]}>
         <EditorProvider initialState={{ selectedBlock }}>
           <LinkAction />
         </EditorProvider>
@@ -146,7 +122,7 @@ describe('LinkAction', () => {
 
   it('rejects mailto links as a URL', async () => {
     const { getByText, getByRole } = render(
-      <MockedProvider mocks={mocks}>
+      <MockedProvider mocks={[blockActionLinkUpdateMock]}>
         <EditorProvider>
           <LinkAction />
         </EditorProvider>
@@ -160,8 +136,9 @@ describe('LinkAction', () => {
   })
 
   it('should submit when enter is pressed', async () => {
+    const result = jest.fn().mockReturnValue(blockActionLinkUpdateMock.result)
     const { getByRole, queryByText } = render(
-      <MockedProvider mocks={mocks}>
+      <MockedProvider mocks={[{ ...blockActionLinkUpdateMock, result }]}>
         <EditorProvider initialState={{ selectedBlock }}>
           <LinkAction />
         </EditorProvider>

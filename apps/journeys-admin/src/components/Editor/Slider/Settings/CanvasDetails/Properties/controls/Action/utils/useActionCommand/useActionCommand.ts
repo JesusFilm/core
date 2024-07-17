@@ -1,4 +1,5 @@
 import { useCommand } from '@core/journeys/ui/CommandProvider'
+
 import {
   BlockFields,
   BlockFields_ButtonBlock_action,
@@ -51,38 +52,22 @@ export function useActionCommand(): {
           }
         },
         async execute({ blockId, blockTypename, action }) {
+          const block = {
+            id: blockId,
+            __typename: blockTypename
+          }
           switch (action?.__typename) {
             case 'LinkAction':
-              return await blockActionLinkUpdate({
-                variables: {
-                  id: blockId,
-                  input: {
-                    url: action.url
-                  }
-                }
-              })
+              return await blockActionLinkUpdate(block, action.url)
             case 'EmailAction':
-              return await blockActionEmailUpdate({
-                variables: {
-                  id: blockId,
-                  input: {
-                    email: action.email
-                  }
-                }
-              })
+              return await blockActionEmailUpdate(block, action.email)
             case 'NavigateToBlockAction':
               return await blockActionNavigateToBlockUpdate(
-                {
-                  id: blockId,
-                  __typename: blockTypename
-                },
+                block,
                 action.blockId
               )
             default:
-              return await actionDelete({
-                id: blockId,
-                __typename: blockTypename
-              })
+              return await actionDelete(block)
           }
         }
       })

@@ -7,8 +7,6 @@ import {
   useMutation
 } from '@apollo/client'
 
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-
 import {
   BlockActionNavigateToBlockUpdate,
   BlockActionNavigateToBlockUpdateVariables
@@ -47,8 +45,7 @@ export function useBlockActionNavigateToBlockUpdateMutation(
   ) => Promise<FetchResult<BlockActionNavigateToBlockUpdate> | undefined>,
   MutationResult<BlockActionNavigateToBlockUpdate>
 ] {
-  const { journey } = useJourney()
-  const [BlockActionNavigateToBlockUpdate, result] = useMutation<
+  const [blockActionNavigateToBlockUpdate, result] = useMutation<
     BlockActionNavigateToBlockUpdate,
     BlockActionNavigateToBlockUpdateVariables
   >(BLOCK_ACTION_NAVIGATE_TO_BLOCK_UPDATE, options)
@@ -61,9 +58,7 @@ export function useBlockActionNavigateToBlockUpdateMutation(
       BlockActionNavigateToBlockUpdateVariables
     >
   ): Promise<FetchResult<BlockActionNavigateToBlockUpdate> | undefined> {
-    if (journey == null) return
-
-    return await BlockActionNavigateToBlockUpdate({
+    return await blockActionNavigateToBlockUpdate({
       ...options,
       variables: {
         id: block.id,
