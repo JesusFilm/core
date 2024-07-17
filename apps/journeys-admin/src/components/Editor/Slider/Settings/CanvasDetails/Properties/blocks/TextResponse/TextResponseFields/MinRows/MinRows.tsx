@@ -3,7 +3,11 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import {
+  ActiveContent,
+  ActiveSlide,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
@@ -49,13 +53,11 @@ export function MinRows(): ReactElement {
       },
       async execute({ minRows }) {
         dispatch({
-          type: 'SetSelectedStepAction',
-          selectedStep: state.selectedStep
-        })
-
-        dispatch({
-          type: 'SetSelectedBlockAction',
-          selectedBlock
+          type: 'SetCommandStateAction',
+          selectedBlock,
+          selectedStep: state.selectedStep,
+          activeSlide: ActiveSlide.Content,
+          activeContent: ActiveContent.Canvas
         })
 
         await textResponseMinRowsUpdate({
