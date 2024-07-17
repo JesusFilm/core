@@ -20,6 +20,7 @@ import {
 } from '../../../../../../../../../../__generated__/globalTypes'
 import { HorizontalSelect } from '../../../../../../../../HorizontalSelect'
 
+import { useCommand } from '@core/journeys/ui/CommandProvider'
 import cardStyleDark from './assets/card-style-dark.svg'
 import cardStyleLight from './assets/card-style-light.svg'
 
@@ -41,6 +42,7 @@ export function CardStyling(): ReactElement {
   const {
     state: { selectedBlock }
   } = useEditor()
+  const { add } = useCommand()
 
   const cardBlock = (
     selectedBlock?.__typename === 'CardBlock'
@@ -58,22 +60,59 @@ export function CardStyling(): ReactElement {
 
   const handleChange = async (themeMode: ThemeMode): Promise<void> => {
     if (journey != null && cardBlock != null) {
-      await cardBlockUpdate({
-        variables: {
-          id: cardBlock.id,
-          journeyId: journey.id,
-          input: {
-            themeMode,
-            themeName: ThemeName.base
+      await add({
+        parameters: {
+          execute: {
+            journeyId: journey.id,
+            cardBlockId: cardBlock.id,
+            themeMode
+          },
+          undo: {
+            journeyId: journey.id,
+            cardBlockId: cardBlock.id,
+            themeMode:
+              themeMode === ThemeMode.dark ? ThemeMode.light : ThemeMode.dark
           }
         },
-        optimisticResponse: {
-          cardBlockUpdate: {
-            id: cardBlock.id,
-            __typename: 'CardBlock',
-            themeMode,
-            themeName: ThemeName.base
-          }
+        async execute({ journeyId, cardBlockId: id, themeMode }) {
+          await cardBlockUpdate({
+            variables: {
+              id,
+              journeyId,
+              input: {
+                themeMode,
+                themeName: ThemeName.base
+              }
+            },
+            optimisticResponse: {
+              cardBlockUpdate: {
+                id: cardBlock.id,
+                __typename: 'CardBlock',
+                themeMode,
+                themeName: ThemeName.base
+              }
+            }
+          })
+        },
+        async undo({ journeyId, cardBlockId: id, themeMode }) {
+          await cardBlockUpdate({
+            variables: {
+              id,
+              journeyId,
+              input: {
+                themeMode,
+                themeName: ThemeName.base
+              }
+            },
+            optimisticResponse: {
+              cardBlockUpdate: {
+                id: cardBlock.id,
+                __typename: 'CardBlock',
+                themeMode,
+                themeName: ThemeName.base
+              }
+            }
+          })
         }
       })
     }
