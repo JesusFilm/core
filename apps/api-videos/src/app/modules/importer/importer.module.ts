@@ -5,15 +5,21 @@ import { PrismaService } from '../../lib/prisma.service'
 import { ImporterVideoSubtitlesService } from './importerVideoSubtitle/importerVideoSubtitle.service'
 import { ImporterVideoVariantsService } from './importerVideoVariants/importerVideoVariants.service'
 import { ImporterVideosService } from './importerVideos/importerVideos.service'
+import { ImporterBibleBooksService } from './importerBibleBooks/importerBibleBooks.service'
+import { ImporterBibleCitationsService } from './importerBibleCitations/importerBibleCitations.service'
 
 @Module({
   providers: [
     PrismaService,
+    ImporterBibleBooksService,
+    ImporterBibleCitationsService,
     ImporterVideosService,
     ImporterVideoVariantsService,
     ImporterVideoSubtitlesService
   ],
   exports: [
+    ImporterBibleBooksService,
+    ImporterBibleCitationsService,
     ImporterVideosService,
     ImporterVideoVariantsService,
     ImporterVideoSubtitlesService
