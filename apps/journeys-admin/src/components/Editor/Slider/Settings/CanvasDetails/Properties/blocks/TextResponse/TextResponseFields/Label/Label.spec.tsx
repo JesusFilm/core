@@ -3,11 +3,9 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ReactElement } from 'react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
-import { GetJourney_journey as Journey } from '../../../../../../../../../../../__generated__/GetJourney'
 import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../../Toolbar/Items/CommandUndoItem'
 
@@ -33,12 +31,6 @@ const block: TreeBlock<TextResponseBlock> = {
   routeId: null,
   children: []
 }
-
-const pageData: { journey: Journey; variant: 'default' | 'admin' | 'embed' } = {
-  journey: { id: 'journey.id' } as unknown as Journey,
-  variant: 'admin'
-}
-
 interface LabelMockProps {
   mocks?: Array<MockedResponse<Record<string, unknown>>>
   initialState?: { selectedBlock: TreeBlock<TextResponseBlock> | undefined }
@@ -49,13 +41,11 @@ const LabelMock = ({
   initialState = { selectedBlock: block }
 }: LabelMockProps): ReactElement => (
   <MockedProvider mocks={mocks} addTypename={false}>
-    <JourneyProvider value={pageData}>
-      <EditorProvider initialState={initialState}>
-        <CommandUndoItem variant="button" />
-        <CommandRedoItem variant="button" />
-        <Label />
-      </EditorProvider>
-    </JourneyProvider>
+    <EditorProvider initialState={initialState}>
+      <CommandUndoItem variant="button" />
+      <CommandRedoItem variant="button" />
+      <Label />
+    </EditorProvider>
   </MockedProvider>
 )
 
@@ -88,7 +78,6 @@ describe('Edit Label field', () => {
       data: {
         textResponseBlockUpdate: {
           id: block.id,
-          journeyId: pageData.journey.id,
           label: 'Updated label'
         }
       }
@@ -99,7 +88,6 @@ describe('Edit Label field', () => {
         query: TEXT_RESPONSE_LABEL_UPDATE,
         variables: {
           id: block.id,
-          journeyId: pageData.journey.id,
           input: {
             label: 'Updated label'
           }
@@ -125,7 +113,6 @@ describe('Edit Label field', () => {
       data: {
         textResponseBlockUpdate: {
           id: block.id,
-          journeyId: pageData.journey.id,
           label: 'Your answer here'
         }
       }
@@ -136,7 +123,6 @@ describe('Edit Label field', () => {
         query: TEXT_RESPONSE_LABEL_UPDATE,
         variables: {
           id: block.id,
-          journeyId: pageData.journey.id,
           input: {
             label: 'Your answer here'
           }
@@ -162,7 +148,6 @@ describe('Edit Label field', () => {
       data: {
         textResponseBlockUpdate: {
           id: block.id,
-          journeyId: pageData.journey.id,
           label: 'Your answer here more'
         }
       }
@@ -172,7 +157,6 @@ describe('Edit Label field', () => {
       data: {
         textResponseBlockUpdate: {
           id: block.id,
-          journeyId: pageData.journey.id,
           label: 'Your answer'
         }
       }
@@ -183,7 +167,6 @@ describe('Edit Label field', () => {
         query: TEXT_RESPONSE_LABEL_UPDATE,
         variables: {
           id: block.id,
-          journeyId: pageData.journey.id,
           input: {
             label: 'Your answer here more'
           }
@@ -197,7 +180,6 @@ describe('Edit Label field', () => {
         query: TEXT_RESPONSE_LABEL_UPDATE,
         variables: {
           id: block.id,
-          journeyId: pageData.journey.id,
           input: {
             label: 'Your answer'
           }
@@ -224,7 +206,6 @@ describe('Edit Label field', () => {
       data: {
         textResponseBlockUpdate: {
           id: block.id,
-          journeyId: pageData.journey.id,
           label: 'Your answer here more'
         }
       }
@@ -234,7 +215,6 @@ describe('Edit Label field', () => {
       data: {
         textResponseBlockUpdate: {
           id: block.id,
-          journeyId: pageData.journey.id,
           label: 'Your answer'
         }
       }
@@ -245,7 +225,6 @@ describe('Edit Label field', () => {
         query: TEXT_RESPONSE_LABEL_UPDATE,
         variables: {
           id: block.id,
-          journeyId: pageData.journey.id,
           input: {
             label: 'Your answer here more'
           }
@@ -260,7 +239,6 @@ describe('Edit Label field', () => {
         query: TEXT_RESPONSE_LABEL_UPDATE,
         variables: {
           id: block.id,
-          journeyId: pageData.journey.id,
           input: {
             label: 'Your answer'
           }
