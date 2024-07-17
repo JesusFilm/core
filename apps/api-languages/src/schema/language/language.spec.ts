@@ -22,6 +22,7 @@ const LANGUAGE_QUERY = graphql(`
       }
       audioPreview {
         value
+        duration
         size
         language {
           id
