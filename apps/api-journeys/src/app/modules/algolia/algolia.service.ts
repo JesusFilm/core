@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common'
 import algoliasearch from 'algoliasearch'
 
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client'
+import { string } from 'prop-types'
 import { GetLanguageQuery, GetTagsQuery } from '../../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 import { Prisma } from '.prisma/api-journeys-client'
@@ -23,9 +24,15 @@ export const GET_LANGUAGE = gql`
   query GetLanguage($languageId: ID) {
     languages(limit: 5000) {
       id
-      name(languageId: $languageId, primary: true) {
+      name {
         value
         primary
+      }
+      countries {
+        continent(languageId: $languageId, primary: true) {
+          value
+          primary
+        }
       }
     }
   }
@@ -36,6 +43,12 @@ type JourneyTags = Prisma.JourneyGetPayload<{
     journeyTags: true
   }
 }>
+
+interface TransformedLanguage {
+  localName: string
+  nativeName: string
+  continents: string[]
+}
 
 @Injectable()
 export class AlgoliaService {
@@ -89,11 +102,36 @@ export class AlgoliaService {
     return data
   }
 
-  processLanguages(languagesData: GetLanguageQuery) {
-    const map: Record<string, string> = {}
-    languagesData.languages.forEach((language) => {
-      map[language.id] = language.name.find((name) => name.primary)?.value ?? ''
+  processLanguages(
+    languagesData: GetLanguageQuery
+  ): Record<string, TransformedLanguage> {
+    const map: Record<string, TransformedLanguage> = {}
+
+    languagesData.languages.forEach(({ id, name, countries }) => {
+      let localName = ''
+      let nativeName = ''
+      const continentsSet = new Set<string>()
+
+      name.forEach(({ primary, value }) => {
+        if (primary) nativeName = value
+        else if (!localName) localName = value
+        if (localName && nativeName) return
+      })
+
+      countries.forEach((country) => {
+        country.continent.forEach(({ primary, value }) => {
+          if (primary && value) {
+            continentsSet.add(value)
+            return
+          }
+        })
+      })
+
+      const continents = Array.from(continentsSet).filter(Boolean)
+
+      map[id] = { localName, nativeName, continents }
     })
+
     return map
   }
 

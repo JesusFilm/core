@@ -100,6 +100,16 @@ const languages = [
         value: 'English',
         primary: true
       }
+    ],
+    countries: [
+      {
+        continent: [
+          {
+            value: 'Europe',
+            primary: true
+          }
+        ]
+      }
     ]
   }
 ]
@@ -193,7 +203,11 @@ describe('AlgoliaService', () => {
       }
       const result = service.processLanguages({ languages })
       expect(result).toEqual({
-        '529': 'English'
+        '529': {
+          localName: '',
+          nativeName: 'English',
+          continents: ['Europe']
+        }
       })
     })
 
@@ -264,7 +278,11 @@ describe('AlgoliaService', () => {
             alt: 'journey image',
             src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public'
           },
-          language: 'English',
+          language: {
+            localName: '',
+            nativeName: 'English',
+            continents: ['Europe']
+          },
           tags: {
             'Parent Tag': ['Tag 1', 'Tag 2', 'Tag 3']
           },
