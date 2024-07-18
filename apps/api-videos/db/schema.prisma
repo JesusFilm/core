@@ -8,6 +8,12 @@ generator client {
   binaryTargets   = ["native", "linux-musl-openssl-3.0.x"]
 }
 
+generator pothos {
+  provider     = "prisma-pothos-types"
+  clientOutput = ".prisma/api-videos-client"
+  output       = "../src/__generated__/pothos-types.ts"
+}
+
 generator erd {
   provider    = "prisma-erd-generator"
   ignoreEnums = true
