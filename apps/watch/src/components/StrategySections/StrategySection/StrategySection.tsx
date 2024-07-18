@@ -9,7 +9,7 @@ import { useHits } from 'react-instantsearch'
 import { SwiperOptions } from 'swiper/types'
 import { StrategyCard } from '../StrategyCard'
 
-interface strategyCardItem {
+interface StrategyCardItem {
   id: string
   title: string
   description: string
@@ -17,7 +17,7 @@ interface strategyCardItem {
   link: string
 }
 
-function transformAlgoliaStrategies(hits: Hit[]): strategyCardItem[] {
+function transformAlgoliaStrategies(hits: Hit[]): StrategyCardItem[] {
   return hits.map((hit) => ({
     id: hit.ObjectID,
     title: hit.post_title,

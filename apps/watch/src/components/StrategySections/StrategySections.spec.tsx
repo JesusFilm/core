@@ -2,6 +2,7 @@ import { InstantSearchMockWrapper } from '@core/journeys/ui/mocks/InstantSearchM
 import { render, screen } from '@testing-library/react'
 import { StrategySections } from './StrategySections'
 
+// TODO: revisit this test once wrapper is fixed
 describe('StrategySections', () => {
   it('should render strategysections', () => {
     render(
