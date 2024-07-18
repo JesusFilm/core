@@ -261,7 +261,7 @@ async function handlePrismaOrderedTranslationTables<T>(
 
     const order = key.startsWith('_') ? fieldDelta[0].order : Number(key) + 1
 
-    if (isArray(fieldDelta) && !isNaN(parseInt(key))) {
+    if (isArray(fieldDelta) && !isNaN(Number.parseInt(key))) {
       // handle create
       await tx[prismaField].createMany({
         data: fieldDelta
