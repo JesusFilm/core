@@ -458,7 +458,7 @@ export class JourneyResolver {
     const duplicateJourneyId = uuidv4()
 
     const originalBlocks = await this.prismaService.block.findMany({
-      where: { journeyId: journey.id, typename: 'StepBlock' },
+      where: { journeyId: journey.id, typename: 'StepBlock', deletedAt: null },
       orderBy: { parentOrder: 'asc' },
       include: { action: true }
     })
