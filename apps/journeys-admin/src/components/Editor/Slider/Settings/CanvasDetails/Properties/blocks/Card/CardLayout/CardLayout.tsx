@@ -96,30 +96,6 @@ export function CardLayout(): ReactElement {
               }
             }
           })
-        },
-        undo: async ({ cardBlockId, journeyId, selected, selectedStep }) => {
-          await cardBlockUpdate({
-            variables: {
-              id: cardBlockId,
-              journeyId,
-              input: {
-                fullscreen: selected
-              }
-            },
-            optimisticResponse: {
-              cardBlockUpdate: {
-                id: cardBlockId,
-                __typename: 'CardBlock',
-                fullscreen: selected
-              }
-            }
-          })
-          dispatch({
-            type: 'SetEditorFocusAction',
-            selectedStep: selectedStep,
-            activeSlide: ActiveSlide.Content,
-            activeContent: ActiveContent.Canvas
-          })
         }
       })
     }
