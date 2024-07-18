@@ -13,7 +13,13 @@ export class AlgoliaQueue implements OnModuleInit {
     const appId = process.env.ALGOLIA_APPLICATION_ID ?? ''
     const appIndex = process.env.ALGOLIA_INDEX ?? ''
     const nodeEnv = process.env.NODE_ENV ?? ''
-    if (apiKey === '' || appId === '' || appIndex === '') return
+    if (
+      apiKey === '' ||
+      appId === '' ||
+      appIndex === '' ||
+      nodeEnv !== 'production'
+    )
+      return
 
     const name = 'api-videos-algolia'
     const repeatableJobs = await this.algoliaQueue.getRepeatableJobs()
@@ -27,12 +33,12 @@ export class AlgoliaQueue implements OnModuleInit {
     // Schedule a new instance
     await this.algoliaQueue.add(
       name,
-      {}
-      // {
-      //   repeat: {
-      //     pattern: '0 0 0 * * *' // Run every day at midnight
-      //   }
-      // }
+      {},
+      {
+        repeat: {
+          pattern: '0 0 0 * * *' // Run every day at midnight
+        }
+      }
     )
   }
 }
