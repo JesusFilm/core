@@ -20,7 +20,9 @@ import { JourneyViewEventCreate } from '../../../__generated__/JourneyViewEventC
 import { StepFields } from '../../../__generated__/StepFields'
 import { VisitorUpdateInput } from '../../../__generated__/globalTypes'
 
+import { HotkeysProvider } from 'react-hotkeys-hook'
 import { DynamicCardList } from './DynamicCardList'
+import { HotkeyNavigation } from './HotkeyNavigation'
 import { NavigationButton } from './NavigationButton'
 import { SwipeNavigation } from './SwipeNavigation'
 
@@ -142,72 +144,75 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const stepTheme = getStepTheme(activeBlock, journey)
 
   return (
-    <ThemeProvider
-      themeName={ThemeName.journeyUi}
-      themeMode={stepTheme.themeMode}
-      locale={locale}
-      rtl={rtl}
-      nested
-    >
-      <Stack
-        data-testid="Conductor"
-        sx={{
-          justifyContent: 'center',
-          height: '100svh',
-          background: theme.palette.grey[900],
-          overflow: 'hidden'
-        }}
+    <HotkeysProvider>
+      <HotkeyNavigation rtl={rtl} />
+      <ThemeProvider
+        themeName={ThemeName.journeyUi}
+        themeMode={stepTheme.themeMode}
+        locale={locale}
+        rtl={rtl}
+        nested
       >
-        <Box sx={{ height: { xs: '100%', lg: 'unset' } }}>
-          <Stack
-            sx={{
-              maxHeight: {
-                xs: '100svh',
-                // 80px to allow for the gap between card and top/bottom of the viewport
-                lg: 'calc(100svh - 80px)'
-              },
-              height: {
-                xs: 'inherit',
-                // 102px to allow for the gap between card and top/bottom of the viewport
-                lg: 'calc(54.25vw + 102px)'
-              },
-              px: { lg: 6 }
-            }}
-          >
-            <StepHeader
+        <Stack
+          data-testid="Conductor"
+          sx={{
+            justifyContent: 'center',
+            height: '100svh',
+            background: theme.palette.grey[900],
+            overflow: 'hidden'
+          }}
+        >
+          <Box sx={{ height: { xs: '100%', lg: 'unset' } }}>
+            <Stack
               sx={{
-                ...mobileNotchStyling,
-                display: {
-                  xs: showHeaderFooter ? 'flex' : 'none',
-                  lg: 'flex'
-                }
+                maxHeight: {
+                  xs: '100svh',
+                  // 80px to allow for the gap between card and top/bottom of the viewport
+                  lg: 'calc(100svh - 80px)'
+                },
+                height: {
+                  xs: 'inherit',
+                  // 102px to allow for the gap between card and top/bottom of the viewport
+                  lg: 'calc(54.25vw + 102px)'
+                },
+                px: { lg: 6 }
               }}
-            />
-            <ThemeProvider {...stepTheme} locale={locale} rtl={rtl} nested>
-              <SwipeNavigation activeBlock={activeBlock} rtl={rtl}>
-                <DynamicCardList blocks={blocks} />
-              </SwipeNavigation>
-            </ThemeProvider>
-            <NavigationButton
-              variant={rtl ? 'next' : 'previous'}
-              alignment="left"
-            />
-            <NavigationButton
-              variant={rtl ? 'previous' : 'next'}
-              alignment="right"
-            />
-            <StepFooter
-              sx={{
-                ...mobileNotchStyling,
-                display: {
-                  xs: showHeaderFooter ? 'flex' : 'none',
-                  lg: 'flex'
-                }
-              }}
-            />
-          </Stack>
-        </Box>
-      </Stack>
-    </ThemeProvider>
+            >
+              <StepHeader
+                sx={{
+                  ...mobileNotchStyling,
+                  display: {
+                    xs: showHeaderFooter ? 'flex' : 'none',
+                    lg: 'flex'
+                  }
+                }}
+              />
+              <ThemeProvider {...stepTheme} locale={locale} rtl={rtl} nested>
+                <SwipeNavigation activeBlock={activeBlock} rtl={rtl}>
+                  <DynamicCardList blocks={blocks} />
+                </SwipeNavigation>
+              </ThemeProvider>
+              <NavigationButton
+                variant={rtl ? 'next' : 'previous'}
+                alignment="left"
+              />
+              <NavigationButton
+                variant={rtl ? 'previous' : 'next'}
+                alignment="right"
+              />
+              <StepFooter
+                sx={{
+                  ...mobileNotchStyling,
+                  display: {
+                    xs: showHeaderFooter ? 'flex' : 'none',
+                    lg: 'flex'
+                  }
+                }}
+              />
+            </Stack>
+          </Box>
+        </Stack>
+      </ThemeProvider>
+    </HotkeysProvider>
   )
 }
