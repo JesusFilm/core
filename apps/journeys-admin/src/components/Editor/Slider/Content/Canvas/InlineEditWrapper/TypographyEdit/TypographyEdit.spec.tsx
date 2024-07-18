@@ -64,7 +64,6 @@ describe('TypographyEdit', () => {
               query: TYPOGRAPHY_BLOCK_UPDATE_CONTENT,
               variables: {
                 id: 'typography.id',
-                journeyId: 'journeyId',
                 input: {
                   content: 'updated content'
                 }
@@ -74,19 +73,12 @@ describe('TypographyEdit', () => {
           }
         ]}
       >
-        <JourneyProvider
-          value={{
-            journey: { id: 'journeyId' } as unknown as Journey,
-            variant: 'admin'
-          }}
-        >
-          <EditorProvider>
-            <h1 className="EditorCanvas">Other content</h1>
-            <iframe>
-              <TypographyEdit {...props} />
-            </iframe>
-          </EditorProvider>
-        </JourneyProvider>
+        <EditorProvider>
+          <h1 className="EditorCanvas">Other content</h1>
+          <iframe>
+            <TypographyEdit {...props} />
+          </iframe>
+        </EditorProvider>
       </MockedProvider>
     )
 
@@ -103,7 +95,6 @@ describe('TypographyEdit', () => {
         typographyBlockUpdate: [
           {
             __typename: 'TypographyBlock',
-            id: 'typography.id',
             content: 'updated content'
           }
         ]
@@ -118,7 +109,6 @@ describe('TypographyEdit', () => {
               query: TYPOGRAPHY_BLOCK_UPDATE_CONTENT,
               variables: {
                 id: 'typography.id',
-                journeyId: 'journeyId',
                 input: {
                   content: 'updated content'
                 }
@@ -128,16 +118,9 @@ describe('TypographyEdit', () => {
           }
         ]}
       >
-        <JourneyProvider
-          value={{
-            journey: { id: 'journeyId' } as unknown as Journey,
-            variant: 'admin'
-          }}
-        >
-          <EditorProvider>
-            <TypographyEdit {...props} />
-          </EditorProvider>
-        </JourneyProvider>
+        <EditorProvider>
+          <TypographyEdit {...props} />
+        </EditorProvider>
       </MockedProvider>
     )
 
@@ -170,7 +153,6 @@ describe('TypographyEdit', () => {
               query: TYPOGRAPHY_BLOCK_UPDATE_CONTENT,
               variables: {
                 id: 'typography.id',
-                journeyId: 'journeyId',
                 input: {
                   content: 'test content'
                 }
