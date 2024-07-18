@@ -41,7 +41,7 @@ describe('setBlockRestoreEditorState', () => {
         nextBlockId: 'someId',
         parentBlockId: null
       },
-      type: 'SetCommandStateAction'
+      type: 'SetEditorFocusAction'
     })
   })
 
@@ -62,7 +62,7 @@ describe('setBlockRestoreEditorState', () => {
         nextBlockId: 'someId',
         parentBlockId: null
       },
-      type: 'SetCommandStateAction'
+      type: 'SetEditorFocusAction'
     })
   })
 })

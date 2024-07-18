@@ -14,14 +14,14 @@ export function setBlockRestoreEditorState(
 ): void {
   if (currentBlock.__typename === 'StepBlock') {
     dispatch({
-      type: 'SetCommandStateAction',
+      type: 'SetEditorFocusAction',
       activeSlide: ActiveSlide.JourneyFlow,
       selectedStep: currentBlock,
       activeContent: ActiveContent.Canvas
     })
   } else {
     dispatch({
-      type: 'SetCommandStateAction',
+      type: 'SetEditorFocusAction',
       activeContent: ActiveContent.Canvas,
       activeSlide: ActiveSlide.Content,
       selectedBlock: currentBlock,
