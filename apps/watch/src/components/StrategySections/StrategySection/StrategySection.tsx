@@ -34,7 +34,7 @@ export function StrategySection(): ReactElement {
 
   const items = transformAlgoliaStrategies(hits)
 
-  const titleText = (hits[0]?.post_type_label as string) ?? ''
+  const label = (hits[0]?.post_type_label as string) ?? ''
 
   const swiperBreakpoints: SwiperOptions['breakpoints'] = {
     [breakpoints.values.xs]: {
@@ -65,7 +65,7 @@ export function StrategySection(): ReactElement {
 
   return (
     <Box data-testid="StrategySection">
-      <Typography variant="h4">{titleText}</Typography>
+      <Typography variant="h4">{label}</Typography>
       <Container maxWidth={false} sx={{ overflow: 'hidden' }}>
         <ContentCarousel
           items={items}

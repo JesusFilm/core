@@ -11,15 +11,15 @@ export function StrategySections(): ReactElement {
   return (
     <Box sx={{ backgroundColor: 'background.default' }}>
       <Container maxWidth="xxl">
-        <Index indexName="wp_dev_posts_mission-trip">
-          <Box data-testid="StrategySections">
+        <Box data-testid="StrategySections">
+          <Index indexName="wp_dev_posts_mission-trip">
             {indexes.map((indexName, index) => (
               <Index key={index} indexName={indexName}>
                 <StrategySection />
               </Index>
             ))}
-          </Box>
-        </Index>
+          </Index>
+        </Box>
       </Container>
     </Box>
   )
