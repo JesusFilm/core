@@ -3,11 +3,11 @@ import { fireEvent, render, waitFor, within } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
+import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
+import { GET_TAGS } from '@core/journeys/ui/useTagsQuery'
 
 import { JOURNEY_SETTINGS_UPDATE } from '../../../../../../libs/useJourneyUpdateMutation/useJourneyUpdateMutation'
-import { GET_LANGUAGES } from '../../../../../../libs/useLanguagesQuery'
-import { GET_TAGS } from '../../../../../../libs/useTagsQuery/useTagsQuery'
-import { defaultJourney } from '../../../../data'
 
 import {
   JOURNEY_FEATURE_UPDATE,
@@ -187,7 +187,7 @@ describe('TemplateSettingsDialog', () => {
                 {
                   value: 'English',
                   primary: true,
-                  __typename: 'Translation'
+                  __typename: 'LanguageName'
                 }
               ]
             },
@@ -198,12 +198,12 @@ describe('TemplateSettingsDialog', () => {
                 {
                   value: 'Français',
                   primary: true,
-                  __typename: 'Translation'
+                  __typename: 'LanguageName'
                 },
                 {
                   value: 'French',
                   primary: false,
-                  __typename: 'Translation'
+                  __typename: 'LanguageName'
                 }
               ]
             },
@@ -214,12 +214,12 @@ describe('TemplateSettingsDialog', () => {
                 {
                   value: 'Deutsch',
                   primary: true,
-                  __typename: 'Translation'
+                  __typename: 'LanguageName'
                 },
                 {
                   value: 'German, Standard',
                   primary: false,
-                  __typename: 'Translation'
+                  __typename: 'LanguageName'
                 }
               ]
             }

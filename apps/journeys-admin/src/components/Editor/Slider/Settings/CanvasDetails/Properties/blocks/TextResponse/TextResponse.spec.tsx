@@ -1,8 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
 
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../__generated__/BlockFields'
 import {
@@ -24,6 +24,9 @@ describe('TextResponse', () => {
     label: 'default label',
     hint: null,
     minRows: null,
+    integrationId: null,
+    type: null,
+    routeId: null,
     children: []
   }
 
@@ -35,6 +38,9 @@ describe('TextResponse', () => {
     label: 'complete label',
     hint: 'hint text',
     minRows: 2,
+    integrationId: null,
+    type: null,
+    routeId: null,
     children: [
       {
         id: 'icon.id',
@@ -59,7 +65,7 @@ describe('TextResponse', () => {
     )
 
     expect(
-      getByRole('button', { name: 'Feedback default label' })
+      getByRole('button', { name: 'Text Input default label' })
     ).toBeInTheDocument()
   })
 

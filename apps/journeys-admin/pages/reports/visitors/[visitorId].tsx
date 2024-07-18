@@ -1,4 +1,3 @@
-import { useRouter } from 'next/router'
 import {
   AuthAction,
   useUser,
@@ -7,6 +6,7 @@ import {
 } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
+import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 
 import { PageWrapper } from '../../../src/components/PageWrapper'
@@ -20,17 +20,18 @@ function SingleVisitorReportsPage(): ReactElement {
   const user = useUser()
 
   const id = router.query.visitorId as string
+  const journeyId = router.query.journeyId
 
   return (
     <>
       <NextSeo title={t('Visitor Info')} />
       <PageWrapper
         title={t("Visitor's Activity")}
-        backHref="/reports/visitors"
+        backHref={`/journeys/${journeyId}/reports/visitors`}
         user={user}
         sidePanelChildren={<DetailsForm id={id} />}
         sidePanelTitle={t('Visitor Details')}
-        backHrefHistory
+        backHrefHistory={journeyId != null ? undefined : true}
       >
         <VisitorInfo id={id} />
       </PageWrapper>

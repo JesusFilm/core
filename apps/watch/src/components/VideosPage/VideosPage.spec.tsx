@@ -1,10 +1,12 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
+
+import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 
 import { videos } from '../Videos/__generated__/testData'
 
-import { GET_LANGUAGES, VideosPage } from './VideosPage'
+import { VideosPage } from './VideosPage'
 
 jest.mock('algoliasearch', () => ({
   __esModule: true,
@@ -232,6 +234,15 @@ describe('VideosPage', () => {
       expect(getByRole('heading', { name: 'The Savior' })).toBeInTheDocument()
       expect(getByRole('button', { name: 'No More Videos' })).toBeDisabled()
     })
+  })
+
+  it('should not render header spacer', () => {
+    render(
+      <MockedProvider>
+        <VideosPage videos={videos} />
+      </MockedProvider>
+    )
+    expect(screen.queryByTestId('HeaderSpacer')).not.toBeInTheDocument()
   })
 
   // TODO: add test for load more button

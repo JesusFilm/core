@@ -3,8 +3,8 @@ import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 
-import { Action } from '.prisma/api-journeys-client'
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
+import { Action } from '.prisma/api-journeys-client'
 
 import { LinkActionInput } from '../../../__generated__/graphql'
 import { AppAbility, Action as CaslAction } from '../../../lib/casl/caslFactory'
@@ -65,7 +65,8 @@ export class LinkActionResolver {
       update: {
         ...ACTION_UPDATE_RESET,
         ...input
-      }
+      },
+      include: { parentBlock: { include: { action: true } } }
     })
   }
 }

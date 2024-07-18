@@ -6,20 +6,26 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import { TreeBlock } from '@core/journeys/ui/block'
 import { ActiveFab, useEditor } from '@core/journeys/ui/EditorProvider'
+import { TreeBlock } from '@core/journeys/ui/block'
 
 import {
   BlockFields_CardBlock as CardBlock,
   BlockFields_StepBlock as StepBlock
 } from '../../../../../../../../__generated__/BlockFields'
+import { StepBlockNodeIcon } from '../StepBlockNodeIcon'
 import { getCardMetadata } from '../libs/getCardMetadata'
 import { STEP_NODE_CARD_HEIGHT, STEP_NODE_CARD_WIDTH } from '../libs/sizes'
-import { StepBlockNodeIcon } from '../StepBlockNodeIcon'
 
 interface StepBlockNodeCardProps {
   step: TreeBlock<StepBlock>
   selected: boolean
+}
+
+const analyticStyles = {
+  opacity: 0.8,
+  boxShadow: 'none',
+  bgcolor: 'transparent'
 }
 
 export function StepBlockNodeCard({
@@ -27,7 +33,7 @@ export function StepBlockNodeCard({
   selected
 }: StepBlockNodeCardProps): ReactElement {
   const {
-    state: { selectedStep },
+    state: { selectedStep, showAnalytics },
     dispatch
   } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
@@ -39,11 +45,12 @@ export function StepBlockNodeCard({
     description,
     priorityBlock,
     bgImage,
-    hasMultipleActions
+    hasMultipleActions,
+    priorityImage
   } = getCardMetadata(card)
 
   function handleClick(): void {
-    if (selectedStep?.id === step?.id) {
+    if (selectedStep?.id === step?.id && showAnalytics !== true) {
       dispatch({
         type: 'SetSelectedBlockAction',
         selectedBlock: selectedStep
@@ -58,18 +65,31 @@ export function StepBlockNodeCard({
     }
   }
 
+  const nodeBgImage = priorityImage ?? bgImage
+
+  const conditionalStyles = showAnalytics
+    ? {
+        opacity: 0.8,
+        bgcolor: 'transparent',
+        boxShadow: 'none'
+      }
+    : {
+        opacity: 1,
+        bgcolor: 'background.paper',
+        '&:hover': { boxShadow: selected ? 6 : 3 }
+      }
+
   return (
     <Card
       data-testid="StepBlockNodeCard"
       elevation={selected ? 6 : 1}
-      title={t('Click to edit or drag')}
+      title={showAnalytics ? '' : t('Click to edit or drag')}
       onClick={handleClick}
       sx={{
         width: STEP_NODE_CARD_WIDTH,
         m: 1.5,
-        '&:hover': {
-          boxShadow: selected ? 6 : 3
-        }
+        boxShadow: 3,
+        ...conditionalStyles
       }}
     >
       <CardContent
@@ -99,7 +119,8 @@ export function StepBlockNodeCard({
             alignItems: 'center',
             justifyContent: 'center',
             bgcolor: card?.backgroundColor ?? 'background.default',
-            backgroundImage: bgImage != null ? `url(${bgImage})` : undefined
+            backgroundImage:
+              nodeBgImage != null ? `url(${nodeBgImage})` : undefined
           }}
         >
           {priorityBlock != null && (

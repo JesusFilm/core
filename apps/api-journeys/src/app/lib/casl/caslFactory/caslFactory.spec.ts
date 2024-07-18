@@ -3,7 +3,9 @@ import { Test, TestingModule } from '@nestjs/testing'
 
 import {
   Host,
+  Integration,
   Journey,
+  JourneyNotification,
   JourneyVisitor,
   UserInvite,
   UserTeam,
@@ -37,6 +39,50 @@ describe('AppCaslFactory', () => {
               userTeams: [{ userId: user.id, role: UserTeamRole.manager }]
             }
           } as unknown as Host)
+        )
+      ).toBe(true)
+    })
+  })
+
+  describe('Integration', () => {
+    it('allow manage when user is team manager', () => {
+      expect(
+        ability.can(
+          Action.Manage,
+          subject('Integration', {
+            id: 'integrationId',
+            team: {
+              userTeams: [{ userId: user.id, role: UserTeamRole.manager }]
+            }
+          } as unknown as Integration)
+        )
+      ).toBe(true)
+    })
+  })
+
+  describe('JourneyNotification', () => {
+    it('allow manage when user is the same journey notification user in userTeam', () => {
+      expect(
+        ability.can(
+          Action.Manage,
+          subject('JourneyNotification', {
+            id: 'journeyNotificationId',
+            userId: user.id,
+            userTeam: { userId: user.id }
+          } as unknown as JourneyNotification)
+        )
+      ).toBe(true)
+    })
+
+    it('allow manage when user is the same journey notification user in userJourney', () => {
+      expect(
+        ability.can(
+          Action.Manage,
+          subject('JourneyNotification', {
+            id: 'journeyNotificationId',
+            userId: user.id,
+            userJourney: { userId: user.id }
+          } as unknown as JourneyNotification)
         )
       ).toBe(true)
     })

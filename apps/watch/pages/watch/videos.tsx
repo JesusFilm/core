@@ -3,14 +3,16 @@ import { GetStaticProps } from 'next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { ReactElement } from 'react'
 
+import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
+
 import {
   GetHomeVideos,
   GetHomeVideos_videos as Video
 } from '../../__generated__/GetHomeVideos'
 import i18nConfig from '../../next-i18next.config'
 import { Videos } from '../../src/components/VideosPage'
-import { GET_LANGUAGES } from '../../src/components/VideosPage/VideosPage'
 import { createApolloClient } from '../../src/libs/apolloClient'
+import { getFlags } from '../../src/libs/getFlags'
 import { VIDEO_CHILD_FIELDS } from '../../src/libs/videoChildFields'
 
 import { GET_HOME_VIDEOS } from './index'
@@ -42,6 +44,7 @@ const videoIds = [
   '2_GOJ-0-0',
   'MAG1',
   '1_cl-0-0',
+  'IsItWorthIt',
   'Wonder',
   'Nua',
   '8_NBC',
@@ -99,6 +102,7 @@ export const getStaticProps: GetStaticProps<VideosPageProps> = async ({
   return {
     revalidate: 3600,
     props: {
+      flags: await getFlags(),
       initialApolloState: apolloClient.cache.extract(),
       videos,
       ...(await serverSideTranslations(

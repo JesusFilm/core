@@ -4,9 +4,8 @@ import { screen, userEvent } from '@storybook/testing-library'
 import { ReactElement, useState } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-
-import { journeysAdminConfig } from '../../../../../../libs/storybook'
-import { defaultJourney } from '../../../../data'
+import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { JOURNEY_TITLE_UPDATE, TitleDialog } from './TitleDialog'
 

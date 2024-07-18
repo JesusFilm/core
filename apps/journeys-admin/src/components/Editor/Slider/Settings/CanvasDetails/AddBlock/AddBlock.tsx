@@ -2,11 +2,11 @@ import Grid from '@mui/material/Grid'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import { TreeBlock } from '@core/journeys/ui/block'
 import {
   ActiveCanvasDetailsDrawer,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
+import { TreeBlock } from '@core/journeys/ui/block'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../__generated__/BlockFields'

@@ -6,9 +6,9 @@ import noop from 'lodash/noop'
 import { useTranslation } from 'next-i18next'
 import { FocusEvent, ReactElement } from 'react'
 
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
 import { TextResponseLabelUpdate } from '../../../../../../../../../../../__generated__/TextResponseLabelUpdate'
@@ -65,7 +65,11 @@ export function Label(): ReactElement {
   return (
     <Box sx={{ p: 4, pt: 0 }} data-testid="Label">
       {selectedBlock != null ? (
-        <Formik initialValues={initialValues} onSubmit={noop}>
+        <Formik
+          initialValues={initialValues}
+          onSubmit={noop}
+          enableReinitialize
+        >
           {({ values, errors, handleChange, handleBlur, setValues }) => (
             <Form>
               <TextField

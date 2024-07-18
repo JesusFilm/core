@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { Action, Block, Journey } from '.prisma/api-journeys-client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+import { Action, Block, Journey } from '.prisma/api-journeys-client'
 
 import { UserTeamRole } from '../../__generated__/graphql'
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
@@ -98,6 +98,25 @@ describe('ActionResolver', () => {
       expect(resolver.__resolveType(navigateToBlockAction)).toBe(
         'NavigateToBlockAction'
       )
+    })
+  })
+
+  describe('parentBlock', () => {
+    it('returns parentBlock', async () => {
+      const action = {
+        ...emailAction,
+        parentBlock: block
+      }
+      expect(await resolver.parentBlock(action)).toBe(block)
+    })
+
+    it('returns block', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(block)
+      const action = {
+        ...emailAction,
+        parentBlockId: block.id
+      }
+      expect(await resolver.parentBlock(action)).toBe(block)
     })
   })
 

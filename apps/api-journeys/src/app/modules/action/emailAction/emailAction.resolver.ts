@@ -4,8 +4,8 @@ import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 import { object, string } from 'yup'
 
-import { Action } from '.prisma/api-journeys-client'
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
+import { Action } from '.prisma/api-journeys-client'
 
 import { EmailActionInput } from '../../../__generated__/graphql'
 import { AppAbility, Action as CaslAction } from '../../../lib/casl/caslFactory'
@@ -74,7 +74,8 @@ export class EmailActionResolver {
       update: {
         ...ACTION_UPDATE_RESET,
         ...input
-      }
+      },
+      include: { parentBlock: { include: { action: true } } }
     })
   }
 }

@@ -3,13 +3,14 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { act, renderHook } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
 
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 import { TreeBlock } from '@core/journeys/ui/block'
 import {
   BlockFields_ButtonBlock as ButtonBlock,
   BlockFields_StepBlock as StepBlock
 } from '@core/journeys/ui/block/__generated__/BlockFields'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import {
   StepBlockNextBlockUpdate,
@@ -19,7 +20,6 @@ import { blockOrderUpdateMock } from '../../../../../../libs/useBlockOrderUpdate
 import { navigateToBlockActionUpdateMock } from '../../../../../../libs/useNavigateToBlockActionUpdateMutation/useNavigateToBlockActionUpdate.mock'
 import { stepAndCardBlockCreateMock } from '../../../../../../libs/useStepAndCardBlockCreateMutation/useStepAndCardBlockCreateMutation.mock'
 import { STEP_BLOCK_NEXT_BLOCK_UPDATE } from '../../../../../../libs/useStepBlockNextBlockUpdateMutation/useStepBlockNextBlockUpdateMutation'
-import { defaultJourney } from '../../../../data'
 
 import { useCreateStep } from '.'
 

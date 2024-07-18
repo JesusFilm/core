@@ -4,8 +4,8 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import type { TreeBlock } from '@core/journeys/ui/block'
 
 import {
   BlockFields_CardBlock as CardBlock,
@@ -49,7 +49,7 @@ const journey: Journey = {
     iso3: 'eng',
     name: [
       {
-        __typename: 'Translation',
+        __typename: 'LanguageName',
         value: 'English',
         primary: true
       }

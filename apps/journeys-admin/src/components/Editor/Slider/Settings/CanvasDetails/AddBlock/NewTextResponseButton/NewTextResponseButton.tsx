@@ -1,16 +1,16 @@
 import { gql, useMutation } from '@apollo/client'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import type { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { TEXT_RESPONSE_FIELDS } from '@core/journeys/ui/TextResponse/textResponseFields'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import TextInput1Icon from '@core/shared/ui/icons/TextInput1'
 
-import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../__generated__/BlockFields'
-import { TextResponseBlockCreate } from '../../../../../../../../__generated__/TextResponseBlockCreate'
+import type { BlockFields_CardBlock as CardBlock } from '../../../../../../../../__generated__/BlockFields'
+import type { TextResponseBlockCreate } from '../../../../../../../../__generated__/TextResponseBlockCreate'
 import { Button } from '../Button'
 
 export const TEXT_RESPONSE_BLOCK_CREATE = gql`
@@ -27,9 +27,8 @@ export const TEXT_RESPONSE_BLOCK_CREATE = gql`
 
 export function NewTextResponseButton(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [textResponseBlockCreate] = useMutation<TextResponseBlockCreate>(
-    TEXT_RESPONSE_BLOCK_CREATE
-  )
+  const [textResponseBlockCreate, { loading }] =
+    useMutation<TextResponseBlockCreate>(TEXT_RESPONSE_BLOCK_CREATE)
   const { journey } = useJourney()
   const {
     state: { selectedStep },
@@ -85,9 +84,10 @@ export function NewTextResponseButton(): ReactElement {
   return (
     <Button
       icon={<TextInput1Icon />}
-      value={t('Feedback')}
+      value={t('Text Input')}
       onClick={handleClick}
       testId="NewTextResponseButton"
+      disabled={loading}
     />
   )
 }

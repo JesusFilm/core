@@ -1,12 +1,12 @@
 import { subject } from '@casl/ability'
 import { UseGuards } from '@nestjs/common'
-import { Args, Mutation, ResolveField, Resolver } from '@nestjs/graphql'
+import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 import get from 'lodash/get'
 
-import { Action, Block } from '.prisma/api-journeys-client'
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
+import { Action, Block } from '.prisma/api-journeys-client'
 
 import { AppAbility, Action as CaslAction } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
@@ -23,6 +23,17 @@ export class ActionResolver {
     if (get(obj, 'blockId') != null) return 'NavigateToBlockAction'
     if (get(obj, 'email') != null) return 'EmailAction'
     return 'LinkAction'
+  }
+
+  @ResolveField('parentBlock')
+  async parentBlock(
+    @Parent() action: Action & { parentBlock?: Block }
+  ): Promise<Block | null> {
+    if (action.parentBlock != null) return action.parentBlock
+
+    return await this.prismaService.block.findUnique({
+      where: { id: action.parentBlockId }
+    })
   }
 
   @Mutation()

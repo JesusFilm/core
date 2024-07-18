@@ -2,8 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import omit from 'lodash/omit'
 
-import { Action, Block, Journey } from '.prisma/api-journeys-client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+import { Action, Block, Journey } from '.prisma/api-journeys-client'
 
 import {
   NavigateToBlockActionInput,
@@ -117,7 +117,8 @@ describe('NavigateToBlockActionResolver', () => {
         update: {
           ...ACTION_UPDATE_RESET,
           ...actionData
-        }
+        },
+        include: { parentBlock: { include: { action: true } } }
       })
     })
 

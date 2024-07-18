@@ -1,5 +1,0 @@
-type Translation {
-  value: String!
-  language: Language!
-  primary: Boolean!
-}

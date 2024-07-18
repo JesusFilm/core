@@ -2,9 +2,9 @@ import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
 import Divider from '@mui/material/Divider'
+import { useTranslation } from 'next-i18next'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
-import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import type {
   DraggableProvided,
@@ -12,16 +12,20 @@ import type {
   DroppableProvided
 } from 'react-beautiful-dnd'
 
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
+import { CardWrapper } from '@core/journeys/ui/CardWrapper'
 import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
+import { FramePortal } from '@core/journeys/ui/FramePortal'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { VideoWrapper } from '@core/journeys/ui/VideoWrapper'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
+import { useUserRoleQuery } from '@core/journeys/ui/useUserRoleQuery'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import DragIcon from '@core/shared/ui/icons/Drag'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 import TargetIcon from '@core/shared/ui/icons/Target'
 import ThumbsUpIcon from '@core/shared/ui/icons/ThumbsUp'
-import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
 import { GetJourney_journey_blocks_CardBlock as CardBlock } from '../../../../__generated__/GetJourney'
@@ -30,13 +34,8 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../__generated__/globalTypes'
-import { useUserRoleQuery } from '../../../libs/useUserRoleQuery'
-import { VideoWrapper } from '../../Editor/Slider/Content/Canvas/VideoWrapper'
-import { FramePortal } from '../../FramePortal'
 import { HorizontalSelect } from '../../HorizontalSelect'
 import { NavigationCard } from '../NavigationCard'
-
-import { CardWrapper } from './CardWrapper'
 
 const Draggable = dynamic(
   async () =>
@@ -112,8 +111,8 @@ export function CardList({
     activeContent === ActiveContent.Goals
       ? 'goals'
       : activeContent === ActiveContent.Social
-      ? 'social'
-      : selected?.id
+        ? 'social'
+        : selected?.id
 
   return (
     <HorizontalSelect

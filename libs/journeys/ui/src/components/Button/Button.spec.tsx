@@ -1,8 +1,10 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import { usePlausible } from 'next-plausible'
 import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
+import { keyify } from '@core/journeys/ui/plausibleHelpers'
 import {
   ButtonColor,
   ButtonSize,
@@ -12,17 +14,18 @@ import {
   IconSize,
   MessagePlatform
 } from '../../../__generated__/globalTypes'
+import { JourneyProvider } from '../../libs/JourneyProvider'
+import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
 import { handleAction } from '../../libs/action'
 import { TreeBlock, blockHistoryVar, treeBlocksVar } from '../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
-import { JourneyProvider } from '../../libs/JourneyProvider'
 
+import { BUTTON_CLICK_EVENT_CREATE, CHAT_OPEN_EVENT_CREATE } from './Button'
 import {
   ButtonFields,
   ButtonFields_action,
   ButtonFields_action_LinkAction as LinkAction
 } from './__generated__/ButtonFields'
-import { BUTTON_CLICK_EVENT_CREATE, CHAT_OPEN_EVENT_CREATE } from './Button'
 import { GoalType } from './utils/getLinkActionGoal'
 
 import { Button } from '.'
@@ -61,6 +64,15 @@ jest.mock('next/router', () => ({
     }
   }
 }))
+
+jest.mock('next-plausible', () => ({
+  __esModule: true,
+  usePlausible: jest.fn()
+}))
+
+const mockUsePlausible = usePlausible as jest.MockedFunction<
+  typeof usePlausible
+>
 
 const block: TreeBlock<ButtonFields> = {
   __typename: 'ButtonBlock',
@@ -112,10 +124,29 @@ const activeBlock: TreeBlock<StepBlock> = {
   ]
 }
 
+const journey = {
+  id: 'journey.id'
+} as unknown as Journey
+
 describe('Button', () => {
+  const originalLocation = window.location
+  const mockOrigin = 'https://example.com'
+  beforeAll(() => {
+    Object.defineProperty(window, 'location', {
+      value: {
+        origin: mockOrigin
+      }
+    })
+  })
+
+  afterAll(() => {
+    Object.defineProperty(window, 'location', originalLocation)
+  })
+
   it('should create a buttonClickEvent onClick', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
-
+    const mockPlausible = jest.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
     blockHistoryVar([activeBlock])
     treeBlocksVar([activeBlock])
 
@@ -164,13 +195,36 @@ describe('Button', () => {
           }
         ]}
       >
-        <JourneyProvider>
+        <JourneyProvider value={{ journey }}>
           <Button {...buttonWithAction} />
         </JourneyProvider>
       </MockedProvider>
     )
     fireEvent.click(getByRole('button'))
     await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(mockPlausible).toHaveBeenCalledWith('buttonClick', {
+      u: `${mockOrigin}/journey.id/step.id`,
+      props: {
+        id: 'uuid',
+        blockId: 'button',
+        action: 'LinkAction',
+        actionValue: 'https://test.com/some-site',
+        label: 'stepName',
+        stepId: 'step.id',
+        value: 'This is a button',
+        key: keyify({
+          stepId: 'step.id',
+          event: 'buttonClick',
+          blockId: 'button',
+          target: action
+        }),
+        simpleKey: keyify({
+          stepId: 'step.id',
+          event: 'buttonClick',
+          blockId: 'button'
+        })
+      }
+    })
   })
 
   it('should add button_click event to dataLayer', async () => {
@@ -322,7 +376,8 @@ describe('Button', () => {
 
   it('should create a chatOpenEvent onClick', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
-
+    const mockPlausible = jest.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
     const action: ButtonFields_action = {
       __typename: 'LinkAction',
       parentBlockId: 'button',
@@ -366,13 +421,33 @@ describe('Button', () => {
           }
         ]}
       >
-        <JourneyProvider>
+        <JourneyProvider value={{ journey }}>
           <Button {...buttonBlock} />
         </JourneyProvider>
       </MockedProvider>
     )
     fireEvent.click(getByRole('button'))
     await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(mockPlausible).toHaveBeenCalledWith('chatButtonClick', {
+      u: `${mockOrigin}/journey.id/step.id`,
+      props: {
+        id: 'uuid',
+        blockId: 'button',
+        stepId: 'step.id',
+        value: 'facebook',
+        key: keyify({
+          stepId: 'step.id',
+          event: 'chatButtonClick',
+          blockId: 'button',
+          target: action
+        }),
+        simpleKey: keyify({
+          stepId: 'step.id',
+          event: 'chatButtonClick',
+          blockId: 'button'
+        })
+      }
+    })
   })
 
   it('should render the button successfully', () => {

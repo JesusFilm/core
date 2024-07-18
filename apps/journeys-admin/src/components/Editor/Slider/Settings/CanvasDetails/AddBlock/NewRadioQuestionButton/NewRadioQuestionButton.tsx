@@ -1,17 +1,17 @@
 import { gql, useMutation } from '@apollo/client'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import type { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { RADIO_OPTION_FIELDS } from '@core/journeys/ui/RadioOption/radioOptionFields'
 import { RADIO_QUESTION_FIELDS } from '@core/journeys/ui/RadioQuestion/radioQuestionFields'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import CheckContainedIcon from '@core/shared/ui/icons/CheckContained'
 
-import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../__generated__/BlockFields'
-import { RadioQuestionBlockCreate } from '../../../../../../../../__generated__/RadioQuestionBlockCreate'
+import type { BlockFields_CardBlock as CardBlock } from '../../../../../../../../__generated__/BlockFields'
+import type { RadioQuestionBlockCreate } from '../../../../../../../../__generated__/RadioQuestionBlockCreate'
 import { Button } from '../Button'
 
 export const RADIO_QUESTION_BLOCK_CREATE = gql`
@@ -45,9 +45,8 @@ export const RADIO_QUESTION_BLOCK_CREATE = gql`
 
 export function NewRadioQuestionButton(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [radioQuestionBlockCreate] = useMutation<RadioQuestionBlockCreate>(
-    RADIO_QUESTION_BLOCK_CREATE
-  )
+  const [radioQuestionBlockCreate, { loading }] =
+    useMutation<RadioQuestionBlockCreate>(RADIO_QUESTION_BLOCK_CREATE)
   const { journey } = useJourney()
   const {
     state: { selectedStep },
@@ -136,6 +135,7 @@ export function NewRadioQuestionButton(): ReactElement {
       value={t('Poll')}
       onClick={handleClick}
       testId="NewRadioQuestionButton"
+      disabled={loading}
     />
   )
 }

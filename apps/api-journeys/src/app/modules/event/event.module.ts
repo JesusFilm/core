@@ -1,9 +1,12 @@
+import { BullModule } from '@nestjs/bullmq'
 import { Module } from '@nestjs/common'
 
 import { PrismaService } from '../../lib/prisma.service'
 import { BlockService } from '../block/block.service'
 import { VisitorService } from '../visitor/visitor.service'
 
+import { CacheModule } from '@nestjs/cache-manager'
+import { IntegrationGrowthSpacesService } from '../integration/growthSpaces/growthSpaces.service'
 import {
   ButtonClickEventResolver,
   ChatOpenEventResolver
@@ -30,14 +33,17 @@ import {
 } from './video/video.resolver'
 
 @Module({
-  imports: [],
+  imports: [
+    CacheModule.register(),
+    BullModule.registerQueue({ name: 'api-journeys-events-email' })
+  ],
   providers: [
     BlockService,
-    VisitorService,
-    EventService,
-    EventResolver,
     ButtonClickEventResolver,
     ChatOpenEventResolver,
+    EventService,
+    EventResolver,
+    IntegrationGrowthSpacesService,
     JourneyViewEventResolver,
     PrismaService,
     RadioQuestionSubmissionEventResolver,
@@ -52,7 +58,8 @@ import {
     VideoCompleteEventResolver,
     VideoCollapseEventResolver,
     VideoExpandEventResolver,
-    VideoProgressEventResolver
+    VideoProgressEventResolver,
+    VisitorService
   ],
   exports: [EventService]
 })

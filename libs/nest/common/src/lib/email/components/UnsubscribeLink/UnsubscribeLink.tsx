@@ -3,10 +3,12 @@ import { ReactElement } from 'react'
 
 interface UnsubscribeLinkProps {
   recipientEmail: string
+  url?: string
 }
 
 export function UnsubscribeLink({
-  recipientEmail
+  recipientEmail,
+  url
 }: UnsubscribeLinkProps): ReactElement {
   return (
     <Section>
@@ -19,14 +21,21 @@ export function UnsubscribeLink({
             }}
           >
             <Link
-              href={`${process.env.JOURNEYS_ADMIN_URL}/email-preferences/${recipientEmail}`}
+              href={
+                url ??
+                `${process.env.JOURNEYS_ADMIN_URL}/email-preferences/${recipientEmail}`
+              }
               className="text-[#26262E] no-underline p-[2px]"
             >
               Change Notifications Setting
             </Link>
             •
             <Link
-              href={`${process.env.JOURNEYS_ADMIN_URL}/email-preferences/${recipientEmail}?unsubscribeAll`}
+              href={
+                url != null
+                  ? url
+                  : `${process.env.JOURNEYS_ADMIN_URL}/email-preferences/${recipientEmail}?unsubscribeAll`
+              }
               className="text-[#26262E] no-underline p-[2px]"
             >
               Unsubscribe

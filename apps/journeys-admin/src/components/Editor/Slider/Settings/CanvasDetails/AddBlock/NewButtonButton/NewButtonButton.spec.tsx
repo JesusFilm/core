@@ -3,11 +3,11 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
 
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import type { TreeBlock } from '@core/journeys/ui/block'
 
-import { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
+import type { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
 import {
   ButtonColor,
   ButtonSize,
@@ -30,6 +30,7 @@ jest.mock('uuid', () => ({
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
+//TODO(jk): need to refactor!
 describe('NewButtonButton', () => {
   const selectedStep: TreeBlock = {
     __typename: 'StepBlock',
@@ -271,5 +272,24 @@ describe('NewButtonButton', () => {
       { __ref: 'IconBlock:startIconId' },
       { __ref: 'IconBlock:endIconId' }
     ])
+  })
+
+  it('should disable when loading', async () => {
+    const { getByRole } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            variant: 'admin'
+          }}
+        >
+          <EditorProvider initialState={{ selectedStep }}>
+            <NewButtonButton />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('button'))
+    expect(getByRole('button')).toBeDisabled()
   })
 })

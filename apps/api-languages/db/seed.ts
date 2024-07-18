@@ -6,12 +6,12 @@ import omit from 'lodash/omit'
 import fetch from 'node-fetch'
 import slugify from 'slugify'
 
+import { Translation } from '@core/nest/common/TranslationModule'
 import {
   LanguageName,
   Prisma,
   PrismaClient
 } from '.prisma/api-languages-client'
-import { Translation } from '@core/nest/common/TranslationModule'
 
 const prismaService = new PrismaClient()
 
@@ -181,7 +181,7 @@ export function getIteration(slug: string, collection: string[]): string {
   const exists = collection.find((t) => t === slug)
   if (exists != null && slug !== '') {
     const regex = slug.match(/^(.*?)-(\d+)$/)
-    const iteration = parseInt(regex?.[2] ?? '1') + 1
+    const iteration = Number.parseInt(regex?.[2] ?? '1') + 1
     const title = regex?.[1] ?? slug
     const value = `${title}-${iteration}`
     return getIteration(value, collection)

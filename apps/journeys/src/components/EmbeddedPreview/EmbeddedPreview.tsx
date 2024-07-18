@@ -13,10 +13,12 @@ import { ClickableCard } from './ClickableCard'
 
 interface EmbeddedPreviewProps {
   blocks: TreeBlock[]
+  disableFullscreen?: boolean
 }
 
 export function EmbeddedPreview({
-  blocks
+  blocks,
+  disableFullscreen
 }: EmbeddedPreviewProps): ReactElement {
   const viewportHeight = use100vh()
   const [isFullWindow, setIsFullWindow] = useState(false)
@@ -34,7 +36,6 @@ export function EmbeddedPreview({
     const elem = document.documentElement
 
     /* View in fullscreen */
-    // eslint-disable-next-line @typescript-eslint/unbound-method
     if (isFunction(elem.requestFullscreen)) {
       await elem.requestFullscreen()
       setIsFullWindow(true)
@@ -51,7 +52,6 @@ export function EmbeddedPreview({
 
   async function exitFullscreen(): Promise<void> {
     /* View in fullscreen */
-    // eslint-disable-next-line @typescript-eslint/unbound-method
     if (isFunction(document.exitFullscreen)) {
       await document.exitFullscreen()
       setIsFullWindow(false)
@@ -86,7 +86,11 @@ export function EmbeddedPreview({
           minHeight: '-webkit-fill-available'
         }}
       >
-        <ClickableCard onClick={requestFullscreen} fullscreen={isFullWindow}>
+        <ClickableCard
+          onClick={requestFullscreen}
+          fullscreen={isFullWindow}
+          disableFullscreen={disableFullscreen}
+        >
           {isFullWindow && (
             <IconButton
               data-testid="CloseIconButton"

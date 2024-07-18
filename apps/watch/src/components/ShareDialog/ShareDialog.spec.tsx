@@ -31,7 +31,7 @@ const video: VideoContentFields = {
       id: '529',
       name: [
         {
-          __typename: 'Translation',
+          __typename: 'LanguageName',
           value: 'en',
           primary: true
         }
@@ -89,7 +89,7 @@ describe('ShareDialog', () => {
     )
     const link = `${
       process.env.NEXT_PUBLIC_WATCH_URL as string
-    }/watch/the-story-of-jesus-for-children`
+    }/the-story-of-jesus-for-children`
     expect(getByRole('textbox')).toHaveValue(link)
     expect(getByRole('button', { name: 'Copy Link' })).toBeInTheDocument()
     expect(queryAllByRole('tab')).toHaveLength(0)
@@ -112,7 +112,7 @@ describe('ShareDialog', () => {
     it('should share video to facebook', () => {
       const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${
         process.env.NEXT_PUBLIC_WATCH_URL as string
-      }/watch/the-story-of-jesus-for-children`
+      }/the-story-of-jesus-for-children`
 
       const { getByRole } = render(
         <SnackbarProvider>
@@ -135,7 +135,7 @@ describe('ShareDialog', () => {
     it('should share video to twitter', () => {
       const facebookUrl = `https://twitter.com/intent/tweet?url=${
         process.env.NEXT_PUBLIC_WATCH_URL as string
-      }/watch/the-story-of-jesus-for-children`
+      }/the-story-of-jesus-for-children`
 
       const { getByRole } = render(
         <SnackbarProvider>
@@ -171,7 +171,7 @@ describe('ShareDialog', () => {
     })
 
     it('should share video to facebook', () => {
-      const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=https://watch-jesusfilm.vercel.app/watch/the-story-of-jesus-for-children`
+      const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=https://watch-jesusfilm.vercel.app/the-story-of-jesus-for-children`
 
       const { getByRole } = render(
         <SnackbarProvider>
@@ -192,7 +192,7 @@ describe('ShareDialog', () => {
     })
 
     it('should share video to twitter', () => {
-      const facebookUrl = `https://twitter.com/intent/tweet?url=https://watch-jesusfilm.vercel.app/watch/the-story-of-jesus-for-children`
+      const facebookUrl = `https://twitter.com/intent/tweet?url=https://watch-jesusfilm.vercel.app/the-story-of-jesus-for-children`
 
       const { getByRole } = render(
         <SnackbarProvider>
@@ -237,7 +237,7 @@ describe('ShareDialog', () => {
       }
 
       const link =
-        'https://watch-jesusfilm.vercel.app/watch/the-story-of-jesus-for-children'
+        'https://watch-jesusfilm.vercel.app/the-story-of-jesus-for-children'
       const { getByRole, getByText } = render(
         <SnackbarProvider>
           <VideoProvider value={{ content: video }}>

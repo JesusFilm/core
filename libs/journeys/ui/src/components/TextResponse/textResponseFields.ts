@@ -8,5 +8,8 @@ export const TEXT_RESPONSE_FIELDS = gql`
     label
     hint
     minRows
+    type
+    routeId
+    integrationId
   }
 `

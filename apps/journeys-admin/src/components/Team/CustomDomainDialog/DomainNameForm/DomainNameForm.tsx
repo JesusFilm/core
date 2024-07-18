@@ -7,6 +7,8 @@ import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 import { ObjectSchema, object, string } from 'yup'
 
+import { useTeam } from '@core/journeys/ui/TeamProvider'
+
 import {
   CreateCustomDomain,
   CreateCustomDomainVariables
@@ -17,7 +19,6 @@ import {
 } from '../../../../../__generated__/DeleteCustomDomain'
 import { GetCustomDomains_customDomains as CustomDomain } from '../../../../../__generated__/GetCustomDomains'
 import { CustomDomainCreateInput } from '../../../../../__generated__/globalTypes'
-import { useTeam } from '../../TeamProvider'
 
 interface DomainNameFormProps {
   customDomain?: CustomDomain

@@ -1,15 +1,15 @@
 import { gql, useMutation } from '@apollo/client'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import type { ReactElement } from 'react'
 
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { VIDEO_FIELDS } from '@core/journeys/ui/Video/videoFields'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import VideoOnIcon from '@core/shared/ui/icons/VideoOn'
 
-import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../__generated__/BlockFields'
-import { VideoBlockCreate } from '../../../../../../../../__generated__/VideoBlockCreate'
+import type { BlockFields_CardBlock as CardBlock } from '../../../../../../../../__generated__/BlockFields'
+import type { VideoBlockCreate } from '../../../../../../../../__generated__/VideoBlockCreate'
 import { Button } from '../Button'
 
 interface NewVideoButtonProps {
@@ -29,7 +29,8 @@ export function NewVideoButton({
   disabled = false
 }: NewVideoButtonProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [videoBlockCreate] = useMutation<VideoBlockCreate>(VIDEO_BLOCK_CREATE)
+  const [videoBlockCreate, { loading }] =
+    useMutation<VideoBlockCreate>(VIDEO_BLOCK_CREATE)
   const { journey } = useJourney()
   const {
     state: { selectedStep },
@@ -88,7 +89,7 @@ export function NewVideoButton({
       value={t('Video')}
       onClick={handleClick}
       testId="NewVideoButton"
-      disabled={disabled}
+      disabled={disabled || loading}
     />
   )
 }

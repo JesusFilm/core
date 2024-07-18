@@ -1,14 +1,20 @@
 {
   "files.eol": "\n",
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.defaultFormatter": "biomejs.biome",
   "[javascript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "biomejs.biome"
   },
   "[typescript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "biomejs.biome"
   },
   "[graphql]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "biomejs.biome"
   },
   "[terraform]": {
     "editor.defaultFormatter": "hashicorp.terraform",
@@ -70,12 +76,21 @@
       "name": "videos",
       "database": "videos",
       "username": "postgres"
+    },
+    {
+      "previewLimit": 50,
+      "server": "db",
+      "port": 5432,
+      "driver": "PostgreSQL",
+      "name": "plausible_db",
+      "database": "plausible_db",
+      "username": "postgres"
     }
   ],
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "always"
+    "quickfix.biome": "explicit",
+    "source.organizeImports.biome": "explicit"
   },
-  "eslint.validate": ["javascript", "typescript"],
   "yaml.schemas": {
     "./apps/api-gateway/routerSchema.json": [
       "apps/api-gateway/router.yaml",
@@ -84,7 +99,6 @@
   },
   "typescript.preferences.importModuleSpecifier": "project-relative",
   "javascript.preferences.importModuleSpecifier": "project-relative",
-  "prettier.prettierPath": "./node_modules/prettier",
   "remote.localPortHost": "allInterfaces",
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true
