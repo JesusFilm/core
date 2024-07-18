@@ -4,6 +4,7 @@ import { ReactElement } from 'react'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import {
+  ActiveCanvasDetailsDrawer,
   ActiveContent,
   ActiveSlide,
   useEditor
@@ -53,9 +54,11 @@ export function MinRows(): ReactElement {
       },
       async execute({ minRows }) {
         dispatch({
-          type: 'SetCommandStateAction',
+          type: 'SetEditorFocusAction',
           selectedBlock,
           selectedStep: state.selectedStep,
+          selectedAttributeId: state.selectedAttributeId,
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
           activeSlide: ActiveSlide.Content,
           activeContent: ActiveContent.Canvas
         })
