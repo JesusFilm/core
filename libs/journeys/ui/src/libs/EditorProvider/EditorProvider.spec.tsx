@@ -455,7 +455,7 @@ describe('EditorContext', () => {
       })
     })
 
-    describe('SetCommandStateAction', () => {
+    describe('SetEditorFocusAction', () => {
       it('should set editor state with given overrides', () => {
         const step: TreeBlock = {
           id: 'step0.id',
@@ -487,17 +487,21 @@ describe('EditorContext', () => {
         }
         expect(
           reducer(state, {
-            type: 'SetCommandStateAction',
-            selectedBlock: block,
-            selectedStep: step,
+            activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer,
             activeContent: ActiveContent.Canvas,
-            activeSlide: ActiveSlide.Content
+            activeSlide: ActiveSlide.Content,
+            selectedAttributeId: 'selectedAttributeId',
+            selectedBlock: block,
+            selectedGoalUrl: 'https://www.example.com',
+            selectedStep: step,
+            type: 'SetEditorFocusAction'
           })
         ).toEqual({
-          activeCanvasDetailsDrawer: 0,
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer,
           activeContent: 'canvas',
-          activeFab: 0,
-          activeSlide: 1,
+          activeFab: ActiveFab.Add,
+          activeSlide: ActiveSlide.Content,
+          selectedAttributeId: 'selectedAttributeId',
           selectedBlock: {
             __typename: 'CardBlock',
             backgroundColor: null,
@@ -510,6 +514,7 @@ describe('EditorContext', () => {
             themeMode: null,
             themeName: null
           },
+          selectedGoalUrl: 'https://www.example.com',
           selectedStep: {
             __typename: 'StepBlock',
             children: [],
@@ -559,13 +564,7 @@ describe('EditorContext', () => {
           selectedStep: step,
           activeContent: ActiveContent.Canvas
         }
-        expect(
-          reducer(state, {
-            type: 'SetCommandStateAction'
-          })
-        ).toEqual({
-          ...state
-        })
+        expect(reducer(state, { type: 'SetEditorFocusAction' })).toEqual(state)
       })
     })
 

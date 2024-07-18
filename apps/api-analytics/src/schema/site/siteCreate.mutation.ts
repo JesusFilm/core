@@ -74,8 +74,31 @@ builder.mutationType({
             error.message.includes(
               'Unique constraint failed on the fields: (`domain`)'
             )
-          )
+          ) {
+            if (context.currentUser?.id != null) {
+              const site = await prisma.sites.findUnique({
+                ...query,
+                include: {
+                  ...query.include,
+                  site_memberships: {
+                    where: {
+                      role: 'owner',
+                      user_id: context.currentUser.id
+                    }
+                  }
+                },
+                where: {
+                  domain: input.domain
+                }
+              })
+              if (
+                site?.site_memberships != null &&
+                site?.site_memberships.length > 0
+              )
+                return site
+            }
             throw new Error('domain already exists')
+          }
 
           throw error
         }
