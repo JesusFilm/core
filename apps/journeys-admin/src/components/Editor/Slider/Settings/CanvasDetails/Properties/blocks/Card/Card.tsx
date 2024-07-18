@@ -97,7 +97,7 @@ export function Card({
         name={t('Color')}
         value={selectedCardColor.toUpperCase()}
       >
-        <BackgroundColor key={selectedStep?.id} />
+        <BackgroundColor key={`${selectedStep?.id}-${backgroundColor}`} />
       </Accordion>
 
       {coverBlock?.__typename === 'ImageBlock' && coverBlock.src != null && (

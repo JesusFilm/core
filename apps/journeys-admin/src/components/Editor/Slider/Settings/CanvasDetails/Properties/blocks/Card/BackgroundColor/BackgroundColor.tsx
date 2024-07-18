@@ -1,4 +1,4 @@
-import { gql, useMutation } from '@apollo/client'
+import { ApolloCache, gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import InputAdornment from '@mui/material/InputAdornment'
@@ -12,7 +12,11 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 import { HexColorPicker } from 'react-colorful'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import {
+  ActiveContent,
+  ActiveSlide,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
@@ -23,6 +27,8 @@ import { ThemeMode, ThemeName, getTheme } from '@core/shared/ui/themes'
 import { CardBlockBackgroundColorUpdate } from '../../../../../../../../../../__generated__/CardBlockBackgroundColorUpdate'
 import { CardFields } from '../../../../../../../../../../__generated__/CardFields'
 
+import { useCommand } from '@core/journeys/ui/CommandProvider'
+import { BlockFields_StepBlock as StepBlock } from '@core/journeys/ui/block/__generated__/BlockFields'
 import { PaletteColorPicker } from './PaletteColorPicker'
 import { Swatch } from './Swatch'
 
@@ -63,8 +69,10 @@ export function BackgroundColor(): ReactElement {
   )
 
   const {
-    state: { selectedBlock }
+    state: { selectedBlock, selectedStep, activeContent },
+    dispatch
   } = useEditor()
+  const { add } = useCommand()
 
   const cardBlock = (
     selectedBlock?.__typename === 'CardBlock'
@@ -85,6 +93,9 @@ export function BackgroundColor(): ReactElement {
   })
 
   const [tabValue, setTabValue] = useState(0)
+  const prevColor = useRef(
+    cardBlock?.backgroundColor ?? cardTheme.palette.background.paper
+  )
   const [selectedColor, setSelectedColor] = useState(
     cardBlock?.backgroundColor ?? cardTheme.palette.background.paper
   )
@@ -95,41 +106,98 @@ export function BackgroundColor(): ReactElement {
 
   const changeCardColor = async (color: string): Promise<void> => {
     if (journey == null) return
-
     if (cardBlock != null) {
-      await cardBlockUpdate({
-        variables: {
-          id: cardBlock.id,
-          journeyId: journey.id,
-          input: {
-            backgroundColor: color === 'null' ? null : color
+      const setEditorState = (
+        selectedStep: TreeBlock<StepBlock> | undefined
+      ): void => {
+        dispatch({
+          type: 'SetEditorFocusAction',
+          activeSlide: ActiveSlide.Content,
+          selectedStep: selectedStep,
+          activeContent: ActiveContent.Canvas
+        })
+      }
+      const cardBlockColorCacheUpdate = (
+        // biome-ignore lint/suspicious/noExplicitAny:
+        cache: ApolloCache<any>,
+        data: CardBlockBackgroundColorUpdate | null | undefined
+      ): void => {
+        if (data?.cardBlockUpdate != null) {
+          cache.modify({
+            id: cache.identify({
+              __typename: 'CardBlock',
+              id: cardBlock.id
+            }),
+            fields: {
+              backgroundColor: () => data.cardBlockUpdate.backgroundColor
+            }
+          })
+        }
+      }
+      add({
+        parameters: {
+          execute: {
+            selectedStep: selectedStep,
+            cardBlock: cardBlock,
+            journeyId: journey.id,
+            undoColor: selectedColor
+          },
+          undo: {
+            undoColor: selectedColor,
+            selectedStep: selectedStep,
+            cardBlock: cardBlock,
+            journeyId: journey.id
           }
         },
-        update(cache, { data }) {
-          if (data?.cardBlockUpdate != null) {
-            cache.modify({
-              id: cache.identify({
-                __typename: 'CardBlock',
-                id: cardBlock.id
-              }),
-              fields: {
-                backgroundColor: () => data.cardBlockUpdate.backgroundColor
+        execute: async ({ selectedStep, cardBlock, journeyId, undoColor }) => {
+          setEditorState(selectedStep)
+          setSelectedColor(color)
+          await cardBlockUpdate({
+            variables: {
+              id: cardBlock.id,
+              journeyId: journeyId,
+              input: {
+                backgroundColor: color === 'null' ? null : color
               }
-            })
-          }
+            },
+
+            update(cache, { data }) {
+              cardBlockColorCacheUpdate(cache, data)
+            },
+            onError: () => {
+              setSelectedColor(undoColor)
+            }
+          })
+        },
+        undo: async ({ undoColor, selectedStep, cardBlock, journeyId }) => {
+          setEditorState(selectedStep)
+          await cardBlockUpdate({
+            variables: {
+              id: cardBlock.id,
+              journeyId: journeyId,
+              input: {
+                backgroundColor: undoColor
+              }
+            },
+            update(cache, { data }) {
+              cardBlockColorCacheUpdate(cache, data)
+            }
+          })
+          setSelectedColor(undoColor)
         }
       })
     }
+    prevColor.current = color
   }
 
   const handleColorChange = async (color: string): Promise<void> => {
     void debouncedColorChange(color.toUpperCase())
+    setSelectedColor(color)
   }
 
   const debouncedColorChange = useRef(
     debounce(async (color: string) => {
       void changeCardColor(color)
-      setSelectedColor(color)
     }, 100)
   ).current
 
