@@ -6,20 +6,27 @@ import noop from 'lodash/noop'
 import { useTranslation } from 'next-i18next'
 import { FocusEvent, ReactElement } from 'react'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useCommand } from '@core/journeys/ui/CommandProvider'
+import {
+  ActiveCanvasDetailsDrawer,
+  ActiveContent,
+  ActiveSlide,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
-import { TextResponseHintUpdate } from '../../../../../../../../../../../__generated__/TextResponseHintUpdate'
+import {
+  TextResponseHintUpdate,
+  TextResponseHintUpdateVariables
+} from '../../../../../../../../../../../__generated__/TextResponseHintUpdate'
 
 export const TEXT_RESPONSE_HINT_UPDATE = gql`
   mutation TextResponseHintUpdate(
     $id: ID!
-    $journeyId: ID!
     $input: TextResponseBlockUpdateInput!
   ) {
-    textResponseBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+    textResponseBlockUpdate(id: $id, input: $input) {
       id
       hint
     }
@@ -28,32 +35,49 @@ export const TEXT_RESPONSE_HINT_UPDATE = gql`
 
 export function Hint(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [textResponseHintUpdate] = useMutation<TextResponseHintUpdate>(
-    TEXT_RESPONSE_HINT_UPDATE
-  )
-  const { journey } = useJourney()
-  const { state } = useEditor()
+  const [textResponseHintUpdate] = useMutation<
+    TextResponseHintUpdate,
+    TextResponseHintUpdateVariables
+  >(TEXT_RESPONSE_HINT_UPDATE)
+  const { state, dispatch } = useEditor()
+  const { add } = useCommand()
   const selectedBlock = state.selectedBlock as
     | TreeBlock<TextResponseBlock>
     | undefined
 
   async function handleSubmit(e: FocusEvent): Promise<void> {
-    if (journey == null || selectedBlock == null) return
+    if (selectedBlock == null) return
     const target = e.target as HTMLInputElement
-    await textResponseHintUpdate({
-      variables: {
-        id: selectedBlock?.id,
-        journeyId: journey.id,
-        input: {
-          hint: target.value
-        }
+    const hint = target.value
+
+    await add({
+      parameters: {
+        execute: { hint },
+        undo: { hint: selectedBlock.hint }
       },
-      optimisticResponse: {
-        textResponseBlockUpdate: {
-          id: selectedBlock?.id,
-          __typename: 'TextResponseBlock',
-          hint: target.value
-        }
+      async execute({ hint }) {
+        dispatch({
+          type: 'SetEditorFocusAction',
+          selectedBlock,
+          selectedStep: state.selectedStep,
+          selectedAttributeId: state.selectedAttributeId
+        })
+
+        await textResponseHintUpdate({
+          variables: {
+            id: selectedBlock.id,
+            input: {
+              hint
+            }
+          },
+          optimisticResponse: {
+            textResponseBlockUpdate: {
+              id: selectedBlock.id,
+              hint,
+              __typename: 'TextResponseBlock'
+            }
+          }
+        })
       }
     })
   }

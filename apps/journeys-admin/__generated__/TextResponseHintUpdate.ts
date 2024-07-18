@@ -21,6 +21,5 @@ export interface TextResponseHintUpdate {
 
 export interface TextResponseHintUpdateVariables {
   id: string;
-  journeyId: string;
   input: TextResponseBlockUpdateInput;
 }
