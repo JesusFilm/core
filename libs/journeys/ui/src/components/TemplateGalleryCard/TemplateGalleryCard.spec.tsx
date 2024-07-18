@@ -24,7 +24,7 @@ describe('TemplateGalleryCard', () => {
   })
 
   it('should render Template Gallery Card', () => {
-    const { getByRole, getByText } = render(
+    const { getByRole } = render(
       <TemplateGalleryCard item={algoliaJourneys[0]} />
     )
     expect(getByRole('img').attributes.getNamedItem('src')?.value).toBe(
