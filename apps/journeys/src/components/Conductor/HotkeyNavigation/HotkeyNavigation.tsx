@@ -1,24 +1,23 @@
 import { useMutation } from '@apollo/client'
-import Box from '@mui/material/Box'
-import { useTranslation } from 'next-i18next'
-import { usePlausible } from 'next-plausible'
-import { ReactElement, ReactNode, useCallback } from 'react'
-import TagManager from 'react-gtm-module'
-import { SwipeEventData, useSwipeable } from 'react-swipeable'
-import { v4 as uuidv4 } from 'uuid'
-
 import {
   STEP_NEXT_EVENT_CREATE,
   STEP_PREVIOUS_EVENT_CREATE
 } from '@core/journeys/ui/Card/Card'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { TreeBlock, useBlocks } from '@core/journeys/ui/block'
-import { getStepHeading } from '@core/journeys/ui/getStepHeading'
 import {
   JourneyPlausibleEvents,
   keyify
 } from '@core/journeys/ui/plausibleHelpers'
+import { useTranslation } from 'next-i18next'
+import { usePlausible } from 'next-plausible'
+import { ReactElement, useCallback } from 'react'
+import { useHotkeys } from 'react-hotkeys-hook'
+import { v4 as uuidv4 } from 'uuid'
 
+import { getStepHeading } from '@core/journeys/ui/getStepHeading'
+
+import TagManager from 'react-gtm-module'
 import { StepFields } from '../../../../__generated__/StepFields'
 import {
   StepNextEventCreate,
@@ -33,17 +32,11 @@ import {
   StepPreviousEventCreateInput
 } from '../../../../__generated__/globalTypes'
 
-interface SwipeNavigationProps {
-  activeBlock: TreeBlock<StepFields>
+interface HotkeyNavigationProps {
   rtl: boolean
-  children: ReactNode
 }
 
-export function SwipeNavigation({
-  activeBlock,
-  rtl,
-  children
-}: SwipeNavigationProps): ReactElement {
+export function HotkeyNavigation({ rtl }: HotkeyNavigationProps): ReactElement {
   const [stepNextEventCreate] = useMutation<
     StepNextEventCreate,
     StepNextEventCreateVariables
@@ -61,6 +54,9 @@ export function SwipeNavigation({
     nextActiveBlock,
     previousActiveBlock
   } = useBlocks()
+  const activeBlock = blockHistory[
+    blockHistory.length - 1
+  ] as TreeBlock<StepFields>
   const { t } = useTranslation('apps-journeys')
 
   const handleNavigation = useCallback(
@@ -108,7 +104,6 @@ export function SwipeNavigation({
 
         if (journey != null)
           plausible('navigateNextStep', {
-            u: `${window.location.origin}/${journey.id}/${input.blockId}`,
             props: {
               ...input,
               key: keyify({
@@ -142,7 +137,6 @@ export function SwipeNavigation({
       // libs/journeys/ui/src/components/Card/Card.tsx
       // journeys/src/components/Conductor/NavigationButton/NavigationButton.tsx
       // journeys/src/components/Conductor/SwipeNavigation/SwipeNavigation.tsx
-      // journeys/src/components/Conductor/HotkeyNavigation/HotkeyNavigation.tsx
       function handlePreviousNavigationEventCreate(): void {
         const id = uuidv4()
         const stepName = getStepHeading(
@@ -175,7 +169,6 @@ export function SwipeNavigation({
         })
         if (journey != null)
           plausible('navigatePreviousStep', {
-            u: `${window.location.origin}/${journey.id}/${input.blockId}`,
             props: {
               ...input,
               key: keyify({
@@ -231,48 +224,19 @@ export function SwipeNavigation({
     ]
   )
 
-  function isSliderElement(eventData: SwipeEventData): boolean {
-    const element = eventData.event.target as HTMLElement
-
-    if (element.classList.contains('MuiSlider-root')) return true
-    if (element.classList.contains('MuiSlider-rail')) return true
-    if (element.classList.contains('MuiSlider-track')) return true
-    if (element.classList.contains('MuiSlider-thumb')) return true
-
-    return false
+  if (rtl) {
+    useHotkeys('left', () => handleNavigation('next'), { preventDefault: true })
+    useHotkeys('right', () => handleNavigation('previous'), {
+      preventDefault: true
+    })
+  } else {
+    useHotkeys('left', () => handleNavigation('previous'), {
+      preventDefault: true
+    })
+    useHotkeys('right', () => handleNavigation('next'), {
+      preventDefault: true
+    })
   }
 
-  const swipeHandlers = useSwipeable({
-    onSwipedLeft: (eventData) => {
-      if (isSliderElement(eventData)) return
-      if (rtl) {
-        handleNavigation('previous')
-      } else {
-        handleNavigation('next')
-      }
-    },
-    onSwipedRight: (eventData) => {
-      if (isSliderElement(eventData)) return
-      if (rtl) {
-        handleNavigation('next')
-      } else {
-        handleNavigation('previous')
-      }
-    },
-    preventScrollOnSwipe: true
-  })
-
-  return (
-    <Box
-      sx={{
-        height: 'inherit',
-        maxHeight: 'inherit',
-        overflow: 'hidden',
-        position: 'relative'
-      }}
-      {...swipeHandlers}
-    >
-      {children}
-    </Box>
-  )
+  return <></>
 }
