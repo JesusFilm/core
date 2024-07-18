@@ -235,7 +235,7 @@ export function Canvas(): ReactElement {
                         },
                         position: 'relative',
                         width: 'calc(100% - 8px)',
-                        height: 'calc(100% - 8px)',
+                        height: 'calc(100vh - 8px)',
                         m: '4px'
                       }}
                     >
