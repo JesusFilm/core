@@ -29,9 +29,35 @@ export const Default = {
   args: {
     item: {
       title: 'Strategy Title',
+      description: 'Short description',
+      id: 'test-id',
+      imageUrl: imageSrc,
+      link: ''
+    }
+  }
+}
+
+export const LongDescription = {
+  ...Template,
+  args: {
+    item: {
+      title: 'Strategy Title',
       description: longDescription,
       id: 'test-id',
       imageUrl: imageSrc,
+      link: ''
+    }
+  }
+}
+
+export const WithoutImage = {
+  ...Template,
+  args: {
+    item: {
+      title: 'Strategy Title',
+      description: 'Short description',
+      id: 'test-id',
+      imageUrl: null,
       link: ''
     }
   }

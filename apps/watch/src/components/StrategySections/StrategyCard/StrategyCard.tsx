@@ -72,14 +72,12 @@ export function StrategyCard({
           <Stack
             justifyContent="center"
             alignItems="center"
-            data-testid="ImageStack"
             sx={{
               position: 'relative',
               maxHeight: 160,
               aspectRatio: 2,
               overflow: 'hidden',
               borderRadius: 2,
-              alignItems: 'center',
               backgroundColor: 'background.default'
             }}
           >

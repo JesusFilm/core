@@ -1,4 +1,4 @@
-import { InstantSearchTestWrapper } from '@core/journeys/ui/mocks/InstantSearchWrapper'
+import { InstantSearchTestWrapper } from '@core/journeys/ui/mocks/InstantSearchTestWrapper'
 import { render, screen } from '@testing-library/react'
 import { StrategySections } from './StrategySections'
 
@@ -10,6 +10,6 @@ describe('StrategySections', () => {
       </InstantSearchTestWrapper>
     )
 
-    expect(screen.getByTestId('StrategySections')).toBeInTheDocument()
+    expect(screen.getByTestId('StrategySection')).toBeInTheDocument()
   })
 })
