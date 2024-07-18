@@ -7,7 +7,11 @@ import { useTranslation } from 'next-i18next'
 import Image from 'next/image'
 import { ReactElement } from 'react'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import {
+  ActiveContent,
+  ActiveSlide,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import FlexAlignBottom1Icon from '@core/shared/ui/icons/FlexAlignBottom1'
@@ -35,7 +39,7 @@ export const CARD_BLOCK_LAYOUT_UPDATE = gql`
 
 export function CardLayout(): ReactElement {
   const {
-    state: { selectedBlock, selectedStep },
+    state: { selectedBlock, selectedStep, selectedAttributeId },
     dispatch
   } = useEditor()
   const { add } = useCommand()
@@ -59,22 +63,22 @@ export function CardLayout(): ReactElement {
           execute: {
             cardBlockId: cardBlock.id,
             journeyId: journey.id,
-            selected
+            selected,
+            selectedStep
           },
           undo: {
             cardBlockId: cardBlock.id,
             journeyId: journey.id,
-            selected: !selected
+            selected: !selected,
+            selectedStep
           }
         },
-        execute: async ({ cardBlockId, journeyId, selected }) => {
+        execute: async ({ cardBlockId, journeyId, selected, selectedStep }) => {
           dispatch({
-            type: 'SetSelectedStepAction',
-            selectedStep: selectedStep
-          })
-          dispatch({
-            type: 'SetSelectedBlockAction',
-            selectedBlock: cardBlock
+            type: 'SetEditorFocusAction',
+            selectedStep: selectedStep,
+            activeSlide: ActiveSlide.Content,
+            activeContent: ActiveContent.Canvas
           })
           await cardBlockUpdate({
             variables: {
@@ -91,6 +95,30 @@ export function CardLayout(): ReactElement {
                 fullscreen: selected
               }
             }
+          })
+        },
+        undo: async ({ cardBlockId, journeyId, selected, selectedStep }) => {
+          await cardBlockUpdate({
+            variables: {
+              id: cardBlockId,
+              journeyId,
+              input: {
+                fullscreen: selected
+              }
+            },
+            optimisticResponse: {
+              cardBlockUpdate: {
+                id: cardBlockId,
+                __typename: 'CardBlock',
+                fullscreen: selected
+              }
+            }
+          })
+          dispatch({
+            type: 'SetEditorFocusAction',
+            selectedStep: selectedStep,
+            activeSlide: ActiveSlide.Content,
+            activeContent: ActiveContent.Canvas
           })
         }
       })
