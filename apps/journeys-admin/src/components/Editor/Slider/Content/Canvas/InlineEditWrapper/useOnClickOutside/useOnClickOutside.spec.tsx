@@ -26,7 +26,6 @@ describe('useClickOutside', () => {
     const { getByRole } = render(
       <div>
         <h1 className="EditorCanvas">Heading 1</h1>
-        <h3 className="CanvasStack">Heading 1</h3>
         <iframe>
           <Content />
         </iframe>
@@ -34,15 +33,27 @@ describe('useClickOutside', () => {
     )
     const heading = getByRole('heading', { level: 1 })
     const content = getByRole('heading', { level: 2 })
-    const mobileHeading = getByRole('heading', { level: 3 })
     fireEvent.focus(content)
     expect(onClickOutside).not.toHaveBeenCalled()
     fireEvent.click(heading)
     expect(onClickOutside).toHaveBeenCalled()
+  })
 
+  it('calls the callback when clicking on the editor canvas on mobile', () => {
+    const { getByRole } = render(
+      <div>
+        <h1 className="CanvasStack">Heading 1</h1>
+        <iframe>
+          <Content />
+        </iframe>
+      </div>
+    )
+    const heading = getByRole('heading', { level: 1 })
+    const content = getByRole('heading', { level: 2 })
     fireEvent.focus(content)
-    fireEvent.click(mobileHeading)
-    expect(onClickOutside).toHaveBeenCalledTimes(2)
+    expect(onClickOutside).not.toHaveBeenCalled()
+    fireEvent.click(heading)
+    expect(onClickOutside).toHaveBeenCalled()
   })
 
   it('does not call the callback when clicking somewhere not the editor canvas', () => {
