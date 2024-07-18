@@ -4,7 +4,7 @@ import { Edge, OnSelectionChangeFunc, useKeyPress } from 'reactflow'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields } from '../../../../../../../__generated__/BlockFields'
-import { useBlockDeleteCommand } from '../../../../../../libs/useBlockDeleteCommand/useBlockDeleteCommand'
+import { useBlockDeleteCommand } from '../../../../utils/useBlockDeleteCommand'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useDeleteEdge } from '../useDeleteEdge'

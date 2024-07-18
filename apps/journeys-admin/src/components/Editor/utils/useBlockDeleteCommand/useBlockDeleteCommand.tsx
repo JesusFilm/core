@@ -1,21 +1,14 @@
 import { useCommand } from '@core/journeys/ui/CommandProvider'
-import {
-  ActiveContent,
-  ActiveFab,
-  ActiveSlide,
-  useEditor
-} from '@core/journeys/ui/EditorProvider'
+import { ActiveFab, useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import getSelected from '../../components/Editor/Slider/Content/Canvas/QuickControls/DeleteBlock/utils/getSelected'
-import { blockDeleteUpdate } from '../blockDeleteUpdate'
-import { useBlockDeleteMutation } from '../useBlockDeleteMutation'
-import {
-  setBlockRestoreEditorState,
-  useBlockRestoreMutation
-} from '../useBlockRestoreMutation'
+import { blockDeleteUpdate } from '../../../../libs/blockDeleteUpdate'
+import { useBlockDeleteMutation } from '../../../../libs/useBlockDeleteMutation'
+import { useBlockRestoreMutation } from '../../../../libs/useBlockRestoreMutation'
+import getSelected from '../../Slider/Content/Canvas/QuickControls/DeleteBlock/utils/getSelected'
+import { setBlockRestoreEditorState } from './setBlockRestoreEditorState'
 
 export function useBlockDeleteCommand() {
   const [loading, setLoading] = useState(false)

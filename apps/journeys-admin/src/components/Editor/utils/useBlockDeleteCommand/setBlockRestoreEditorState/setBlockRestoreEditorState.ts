@@ -5,7 +5,7 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { Dispatch } from 'react'
-import { BlockFields_StepBlock as StepBlock } from '../../../../../__generated__/BlockFields'
+import { BlockFields_StepBlock as StepBlock } from '../../../../../../__generated__/BlockFields'
 
 export function setBlockRestoreEditorState(
   currentBlock: TreeBlock,

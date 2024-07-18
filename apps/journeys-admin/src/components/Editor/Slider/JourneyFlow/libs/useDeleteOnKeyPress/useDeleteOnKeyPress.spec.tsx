@@ -17,7 +17,6 @@ import { useDeleteEdge } from '../useDeleteEdge'
 import { MockedProvider } from '@apollo/client/testing'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
-import { SnackbarProvider } from 'notistack'
 import { useDeleteOnKeyPress } from './useDeleteOnKeyPress'
 
 jest.mock('reactflow', () => {

@@ -1,6 +1,7 @@
 import {
   MutationHookOptions,
   MutationTuple,
+  Reference,
   gql,
   useMutation
 } from '@apollo/client'
@@ -10,7 +11,6 @@ import {
   BlockRestore,
   BlockRestoreVariables
 } from '../../../__generated__/BlockRestore'
-import { blockRestoreCacheUpdate } from './lib/blockRestoreCacheUpdate'
 
 export const BLOCK_RESTORE = gql`
 ${BLOCK_FIELDS}
@@ -37,17 +37,41 @@ export function useBlockRestoreMutation(
         const selected = data.blockRestore.find(
           (block) => variables?.blockRestoreId === block.id
         )
+        const cacheOptions = {
+          fields: {
+            blocks(existingBlockRefs: Reference[] = [], { readField }) {
+              data.blockRestore.forEach((block) => {
+                const newBlockRef = cache.writeFragment({
+                  data: block,
+                  fragment: gql`
+                        fragment RestoredBlock on Block {
+                          id
+                        }
+                      `
+                })
+                if (
+                  existingBlockRefs.some(
+                    (ref) => readField('id', ref) === block?.id
+                  )
+                ) {
+                  return existingBlockRefs
+                }
+                return [...existingBlockRefs, newBlockRef]
+              })
+            }
+          }
+        }
         if (selected != null && journey != null) {
-          blockRestoreCacheUpdate(
-            cache,
-            data,
-            cache.identify({
+          cache.modify({
+            ...cacheOptions,
+            id: cache.identify({
               __typename: 'Journey',
-              id: journey.id
+              id: journey?.id
             })
-          )
-          if (selected.__typename === 'StepBlock')
-            blockRestoreCacheUpdate(cache, data)
+          })
+          if (selected.__typename === 'StepBlock') {
+            cache.modify(cacheOptions)
+          }
         }
       }
     },

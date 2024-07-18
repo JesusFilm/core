@@ -7,8 +7,8 @@ import {
   deleteCardBlockMock,
   deleteStepMock,
   selectedStep
-} from '../useBlockDeleteMutation/useBlockDeleteMutation.mock'
-import { cardBlock } from '../useBlockRestoreMutation/useBlockRestoreMutation.mock'
+} from '../../../../libs/useBlockDeleteMutation/useBlockDeleteMutation.mock'
+import { cardBlock } from '../../../../libs/useBlockRestoreMutation/useBlockRestoreMutation.mock'
 import { useBlockDeleteCommand } from './useBlockDeleteCommand'
 
 describe('useBlockDeleteCommand', () => {
