@@ -6,6 +6,8 @@ import { Typography } from '@core/journeys/ui/Typography'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { hasTouchScreen } from '@core/shared/ui/deviceUtils'
 
+import { useCommand } from '@core/journeys/ui/CommandProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import {
   TypographyBlockUpdateContent,
   TypographyBlockUpdateContentVariables
@@ -46,6 +48,8 @@ export function TypographyEdit({
 
   const [value, setValue] = useState(content)
   const [selection, setSelection] = useState({ start: 0, end: value.length })
+  const { state, dispatch } = useEditor()
+  const { add } = useCommand()
 
   async function handleSaveBlock(): Promise<void> {
     const currentContent = value.trimStart().trimEnd()
@@ -57,17 +61,32 @@ export function TypographyEdit({
 
     if (content === currentContent) return
 
-    await typographyBlockUpdate({
-      variables: {
-        id,
-        input: { content: currentContent }
+    await add({
+      parameters: {
+        execute: { content: currentContent },
+        undo: { content }
       },
-      optimisticResponse: {
-        typographyBlockUpdate: {
-          id,
-          __typename: 'TypographyBlock',
-          content: currentContent
-        }
+      async execute({ content }) {
+        dispatch({
+          type: 'SetEditorFocusAction',
+          selectedBlock: state.selectedBlock,
+          selectedStep: state.selectedStep,
+          selectedAttributeId: state.selectedAttributeId
+        })
+
+        await typographyBlockUpdate({
+          variables: {
+            id,
+            input: { content }
+          },
+          optimisticResponse: {
+            typographyBlockUpdate: {
+              id,
+              __typename: 'TypographyBlock',
+              content
+            }
+          }
+        })
       }
     })
   }
