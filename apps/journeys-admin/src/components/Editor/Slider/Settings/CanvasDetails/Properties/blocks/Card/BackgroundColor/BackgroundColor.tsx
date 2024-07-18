@@ -160,7 +160,13 @@ export function BackgroundColor(): ReactElement {
                 backgroundColor: color === 'null' ? null : color
               }
             },
-
+            optimisticResponse: {
+              cardBlockUpdate: {
+                id: cardBlock.id,
+                __typename: 'CardBlock',
+                backgroundColor: color === 'null' ? null : color
+              }
+            },
             update(cache, { data }) {
               cardBlockColorCacheUpdate(cache, data)
             },
@@ -176,6 +182,13 @@ export function BackgroundColor(): ReactElement {
               id: cardBlock.id,
               journeyId: journeyId,
               input: {
+                backgroundColor: undoColor
+              }
+            },
+            optimisticResponse: {
+              cardBlockUpdate: {
+                id: cardBlock.id,
+                __typename: 'CardBlock',
                 backgroundColor: undoColor
               }
             },
