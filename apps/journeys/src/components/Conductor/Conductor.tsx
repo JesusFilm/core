@@ -185,7 +185,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             />
             <ThemeProvider {...stepTheme} locale={locale} rtl={rtl} nested>
               <SwipeNavigation activeBlock={activeBlock} rtl={rtl}>
-                <DynamicCardList />
+                <DynamicCardList blocks={blocks} />
               </SwipeNavigation>
             </ThemeProvider>
             <NavigationButton
