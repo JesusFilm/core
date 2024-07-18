@@ -111,7 +111,7 @@ export function BackgroundColor(): ReactElement {
         selectedStep: TreeBlock<StepBlock> | undefined
       ): void => {
         dispatch({
-          type: 'SetCommandStateAction',
+          type: 'SetEditorFocusAction',
           activeSlide: ActiveSlide.Content,
           selectedStep: selectedStep,
           activeContent: ActiveContent.Canvas
