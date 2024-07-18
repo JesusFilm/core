@@ -7,7 +7,11 @@ import { useTranslation } from 'next-i18next'
 import Image from 'next/image'
 import { ReactElement } from 'react'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import {
+  ActiveContent,
+  ActiveSlide,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import PaletteIcon from '@core/shared/ui/icons/Palette'
@@ -40,7 +44,8 @@ export const CARD_BLOCK_THEME_MODE_UPDATE = gql`
 
 export function CardStyling(): ReactElement {
   const {
-    state: { selectedBlock }
+    state: { selectedBlock, selectedAttributeId, selectedStep },
+    dispatch
   } = useEditor()
   const { add } = useCommand()
 
@@ -65,16 +70,35 @@ export function CardStyling(): ReactElement {
           execute: {
             journeyId: journey.id,
             cardBlockId: cardBlock.id,
-            themeMode
+            themeMode,
+            selectedAttributeId,
+            selectedStep,
+            selectedBlock: cardBlock
           },
           undo: {
             journeyId: journey.id,
             cardBlockId: cardBlock.id,
             themeMode:
-              themeMode === ThemeMode.dark ? ThemeMode.light : ThemeMode.dark
+              themeMode === ThemeMode.dark ? ThemeMode.light : ThemeMode.dark,
+            selectedAttributeId,
+            selectedStep,
+            selectedBlock: cardBlock
           }
         },
-        async execute({ journeyId, cardBlockId: id, themeMode }) {
+        async execute({
+          journeyId,
+          cardBlockId: id,
+          themeMode,
+          selectedAttributeId
+        }) {
+          dispatch({
+            type: 'SetEditorFocusAction',
+            selectedAttributeId,
+            selectedStep,
+            selectedBlock,
+            activeContent: ActiveContent.Canvas,
+            activeSlide: ActiveSlide.Content
+          })
           await cardBlockUpdate({
             variables: {
               id,
@@ -112,6 +136,14 @@ export function CardStyling(): ReactElement {
                 themeName: ThemeName.base
               }
             }
+          })
+          dispatch({
+            type: 'SetEditorFocusAction',
+            selectedAttributeId,
+            selectedStep,
+            selectedBlock,
+            activeContent: ActiveContent.Canvas,
+            activeSlide: ActiveSlide.Content
           })
         }
       })
