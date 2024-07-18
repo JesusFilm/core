@@ -13,8 +13,7 @@ import { ReactElement } from 'react'
 
 import { useRouter } from 'next/router'
 import { abbreviateLanguageName } from '../../libs/abbreviateLanguageName'
-import { GetJourneys_journeys as Journey } from '../../libs/useJourneysQuery/__generated__/GetJourneys'
-import { AlgoliaJourney } from '../TemplateSections/TemplateSections'
+import { AlgoliaJourney } from '../../libs/algolia/useJourneyHits/useJourneyHits'
 
 interface HoverLayerProps {
   className?: string

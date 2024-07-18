@@ -1,64 +1,16 @@
 import { render, screen, waitFor } from '@testing-library/react'
 
-import {
-  JourneyStatus,
-  ThemeMode,
-  ThemeName
-} from '../../../__generated__/globalTypes'
-import { GetJourneys_journeys as Journey } from '../../libs/useJourneysQuery/__generated__/GetJourneys'
-
-import { TemplateGalleryCard } from '.'
-import '../../../test/i18n'
 import userEvent from '@testing-library/user-event'
 import { NextRouter, useRouter } from 'next/router'
+import { TemplateGalleryCard } from '.'
+import '../../../test/i18n'
+import { transformedAlgoliaJourneys as algoliaJourneys } from '../../libs/algolia/useJourneyHits/data'
 
 jest.mock('next/router', () => ({
   __esModule: true,
   useRouter: jest.fn()
 }))
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
-
-const journey: Journey = {
-  __typename: 'Journey',
-  id: 'template-id',
-  title: 'A Template Heading',
-  description: null,
-  slug: 'default',
-  template: true,
-  language: {
-    __typename: 'Language',
-    id: '529',
-    name: [
-      {
-        __typename: 'LanguageName',
-        value: 'English',
-        primary: true
-      }
-    ]
-  },
-  status: JourneyStatus.published,
-  userJourneys: [],
-  seoTitle: null,
-  seoDescription: null,
-  themeName: ThemeName.base,
-  themeMode: ThemeMode.dark,
-  tags: [],
-  trashedAt: null,
-  primaryImageBlock: {
-    id: 'image1.id',
-    __typename: 'ImageBlock',
-    parentBlockId: null,
-    parentOrder: 0,
-    src: 'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920',
-    alt: 'random image from unsplash',
-    width: 1920,
-    height: 1080,
-    blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
-  },
-  publishedAt: '2023-08-14T04:24:24.392Z',
-  createdAt: '2023-08-14T04:24:24.392Z',
-  featuredAt: '2023-08-14T04:24:24.392Z'
-}
 
 describe('TemplateGalleryCard', () => {
   beforeEach(() => {
@@ -73,61 +25,51 @@ describe('TemplateGalleryCard', () => {
 
   it('should render Template Gallery Card', () => {
     const { getByRole, getByText } = render(
-      <TemplateGalleryCard item={journey} />
+      <TemplateGalleryCard item={algoliaJourneys[0]} />
     )
     expect(getByRole('img').attributes.getNamedItem('src')?.value).toBe(
-      '/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1508363778367-af363f107cbb%3Fixlib%3Drb-1.2.1%26q%3D80%26fm%3Djpg%26crop%3Dentropy%26cs%3Dtinysrgb%26dl%3Dchester-wade-hLP7lVm4KUE-unsplash.jpg%26w%3D1920&w=3840&q=75'
+      '/_next/image?url=https%3A%2F%2Fimagedelivery.net%2FtMY86qEHFACTO8_0kAeRFA%2Fe8692352-21c7-4f66-cb57-0298e86a3300%2Fpublic&w=3840&q=75'
+    )
+    expect(
+      getByRole('heading', { name: 'onboarding template3' })
+    ).toBeInTheDocument()
+  })
+
+  it('should render month and year if not current year', () => {
+    const { getByText } = render(
+      <TemplateGalleryCard item={algoliaJourneys[0]} />
     )
     expect(getByText('Aug, 2023 ● English')).toBeInTheDocument()
-    expect(
-      getByRole('heading', { name: 'A Template Heading' })
-    ).toBeInTheDocument()
   })
 
   it('should return an abbreviated version of the language', () => {
     const { getByText } = render(
-      <TemplateGalleryCard
-        item={{
-          ...journey,
-          language: {
-            __typename: 'Language',
-            id: '529',
-            name: [
-              {
-                __typename: 'LanguageName',
-                value: 'Kalagan, Tagakalu',
-                primary: true
-              },
-              {
-                __typename: 'LanguageName',
-                value: 'Kalagan, Tagakalu Kalu',
-                primary: false
-              }
-            ]
-          }
-        }}
-      />
+      <TemplateGalleryCard item={algoliaJourneys[1]} />
     )
-    expect(getByText('Aug, 2023 ● Kalagan (TK)')).toBeInTheDocument()
+    expect(getByText('Jul ● Farsi (W)')).toBeInTheDocument()
   })
 
   it('should link to template details', () => {
-    const { getByTestId } = render(<TemplateGalleryCard item={journey} />)
+    const { getByTestId } = render(
+      <TemplateGalleryCard item={algoliaJourneys[0]} />
+    )
     expect(getByTestId('templateGalleryCard')).toHaveAttribute(
       'href',
-      '/templates/template-id'
+      '/templates/e978adb4-e4d8-42ef-89a9-79811f10b7e9'
     )
   })
 
   it('should prioritize image loading', () => {
     const { getByRole } = render(
-      <TemplateGalleryCard item={journey} priority />
+      <TemplateGalleryCard item={algoliaJourneys[0]} priority />
     )
     expect(getByRole('img')).toHaveAttribute('rel', 'preload')
   })
 
   it('should not prioritize image loading', () => {
-    const { getByRole } = render(<TemplateGalleryCard item={journey} />)
+    const { getByRole } = render(
+      <TemplateGalleryCard item={algoliaJourneys[0]} />
+    )
     expect(getByRole('img')).not.toHaveAttribute('rel')
   })
 })
@@ -142,10 +84,12 @@ describe('TemplateGalleryCard from different route', () => {
       pathname: '/blah'
     } as unknown as NextRouter)
 
-    const { getByTestId } = render(<TemplateGalleryCard item={journey} />)
+    const { getByTestId } = render(
+      <TemplateGalleryCard item={algoliaJourneys[0]} />
+    )
     expect(getByTestId('templateGalleryCard')).toHaveAttribute(
       'href',
-      '/templates/template-id'
+      '/templates/e978adb4-e4d8-42ef-89a9-79811f10b7e9'
     )
   })
 
@@ -154,10 +98,12 @@ describe('TemplateGalleryCard from different route', () => {
       pathname: '/journeys'
     } as unknown as NextRouter)
 
-    const { getByTestId } = render(<TemplateGalleryCard item={journey} />)
+    const { getByTestId } = render(
+      <TemplateGalleryCard item={algoliaJourneys[0]} />
+    )
     expect(getByTestId('templateGalleryCard')).toHaveAttribute(
       'href',
-      '/journeys/template-id'
+      '/journeys/e978adb4-e4d8-42ef-89a9-79811f10b7e9'
     )
   })
 
@@ -165,7 +111,7 @@ describe('TemplateGalleryCard from different route', () => {
     mockUseRouter.mockReturnValue({
       pathname: '/journeys'
     } as unknown as NextRouter)
-    render(<TemplateGalleryCard item={journey} />)
+    render(<TemplateGalleryCard item={algoliaJourneys[7]} />)
 
     await waitFor(async () => await userEvent.tab())
     expect(screen.getByLabelText('templateGalleryCard')).toHaveStyle(
