@@ -76,9 +76,7 @@ export function CardLayout(): ReactElement {
         execute: async ({ cardBlockId, journeyId, selected, selectedStep }) => {
           dispatch({
             type: 'SetEditorFocusAction',
-            selectedStep: selectedStep,
-            activeSlide: ActiveSlide.Content,
-            activeContent: ActiveContent.Canvas
+            selectedStep: selectedStep
           })
           await cardBlockUpdate({
             variables: {
