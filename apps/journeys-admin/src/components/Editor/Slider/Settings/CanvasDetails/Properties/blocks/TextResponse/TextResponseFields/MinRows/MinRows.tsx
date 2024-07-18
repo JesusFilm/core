@@ -57,10 +57,7 @@ export function MinRows(): ReactElement {
           type: 'SetEditorFocusAction',
           selectedBlock,
           selectedStep: state.selectedStep,
-          selectedAttributeId: state.selectedAttributeId,
-          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
-          activeSlide: ActiveSlide.Content,
-          activeContent: ActiveContent.Canvas
+          selectedAttributeId: state.selectedAttributeId
         })
 
         await textResponseMinRowsUpdate({
