@@ -9,13 +9,13 @@ export function useOnClickOutside<T extends HTMLElement = HTMLElement>(
   useEffect(() => {
     const handleClick = (event: MouseEvent): void => {
       const elementClicked = event.target as HTMLElement
+      console.log(elementClicked.classList)
       const canvasClicked =
-        (elementClicked.classList.contains('EditorCanvas') ||
-          elementClicked.classList.contains('EditorStack')) ??
-        false
+        elementClicked.classList.contains('EditorCanvas') ||
+        elementClicked.classList.contains('CanvasStack')
       // Prevent double callback triggering
       const inputSelected =
-        elementRef.current?.classList.contains('Mui-focused') ?? false
+        elementRef.current?.classList.contains('Mui-focused')
       if (elementRef.current != null && inputSelected && canvasClicked)
         void callback()
     }
