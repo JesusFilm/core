@@ -53,8 +53,7 @@ export const transformItems: UseHitsProps<AlgoliaJourney>['transformItems'] = (
   })) as unknown as AlgoliaJourney[]
 }
 
-// TODO(jk): Rename to useAlgoliaJourneys
-export function useJourneyHits(): UseJourneyHitsResults {
+export function useAlgoliaJourneys(): UseJourneyHitsResults {
   const { hits, results } = useHits<AlgoliaJourney>({
     transformItems
   })

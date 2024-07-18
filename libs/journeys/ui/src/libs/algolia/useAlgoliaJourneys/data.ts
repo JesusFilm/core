@@ -1,5 +1,6 @@
 import { Hit } from 'instantsearch.js'
-import { AlgoliaJourney } from './useJourneyHits'
+import { CurrentRefinementsConnectorParamsItem } from 'instantsearch.js/es/connectors/current-refinements/connectCurrentRefinements'
+import { AlgoliaJourney } from './useAlgoliaJourneys'
 
 export const algoliaJourneys = [
   {
@@ -2561,3 +2562,30 @@ export const algoliaResults = {
     highlightPostTag: '__/ais-highlight__'
   }
 }
+
+export const algoliaRefinements = [
+  {
+    indexName: 'api-journeys-journeys-dev',
+    indexId: 'api-journeys-journeys-dev',
+    attribute: 'tags.Felt Needs',
+    label: 'tags.Felt Needs',
+    refinements: [
+      {
+        attribute: 'tags.Felt Needs',
+        type: 'disjunctive',
+        value: 'Depression',
+        label: 'Depression',
+        count: 2,
+        exhaustive: true
+      },
+      {
+        attribute: 'tags.Felt Needs',
+        type: 'disjunctive',
+        value: 'Acceptance',
+        label: 'Acceptance',
+        count: 2,
+        exhaustive: true
+      }
+    ]
+  }
+] as unknown as CurrentRefinementsConnectorParamsItem[]

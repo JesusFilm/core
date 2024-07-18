@@ -11,8 +11,8 @@ import { SwiperOptions } from 'swiper/types'
 import { ContentCarousel } from '@core/shared/ui/ContentCarousel'
 import {
   AlgoliaJourney,
-  useJourneyHits
-} from '../../libs/algolia/useJourneyHits/useJourneyHits'
+  useAlgoliaJourneys
+} from '../../libs/algolia/useAlgoliaJourneys'
 import { TemplateGalleryCard } from '../TemplateGalleryCard'
 
 interface Contents {
@@ -29,7 +29,7 @@ function getAllTags(journey: AlgoliaJourney) {
 export function TemplateSections(): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const { breakpoints } = useTheme()
-  const { hits, loading, refinements } = useJourneyHits()
+  const { hits, loading, refinements } = useAlgoliaJourneys()
 
   const algoliaContents: Contents = {}
   let algoliaCollection: AlgoliaJourney[] = []

@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { NextRouter, useRouter } from 'next/router'
 import { TemplateGalleryCard } from '.'
 import '../../../test/i18n'
-import { transformedAlgoliaJourneys as algoliaJourneys } from '../../libs/algolia/useJourneyHits/data'
+import { transformedAlgoliaJourneys as algoliaJourneys } from '../../libs/algolia/useAlgoliaJourneys/data'
 
 jest.mock('next/router', () => ({
   __esModule: true,
