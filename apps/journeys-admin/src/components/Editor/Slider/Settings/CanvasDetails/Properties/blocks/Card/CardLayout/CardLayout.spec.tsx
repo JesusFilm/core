@@ -17,6 +17,8 @@ import {
   ThemeName
 } from '../../../../../../../../../../__generated__/globalTypes'
 
+import { TestEditorState } from '../../../../../../../../../libs/TestEditorState'
+import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 import { CARD_BLOCK_LAYOUT_UPDATE, CardLayout } from './CardLayout'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -203,5 +205,82 @@ describe('CardLayout', () => {
     )
     fireEvent.click(getByTestId('true'))
     await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
+  it('undoes changes to layout', async () => {
+    const cache = new InMemoryCache()
+    cache.restore({
+      'Journey:journeyId': {
+        blocks: [{ __ref: 'CardBlock:card1.id' }],
+        id: 'journeyId',
+        __typename: 'Journey'
+      }
+    })
+    const result = jest.fn(() => ({
+      data: {
+        cardBlockUpdate: { id: 'card1.id', fullscreen: true }
+      }
+    }))
+    const result2 = jest.fn(() => ({
+      data: {
+        cardBlockUpdate: { id: 'card1.id', fullscreen: false }
+      }
+    }))
+    const card: TreeBlock<CardBlock> = {
+      id: 'card1.id',
+      __typename: 'CardBlock',
+      parentBlockId: 'step1.id',
+      parentOrder: 0,
+      coverBlockId: null,
+      backgroundColor: null,
+      themeMode: null,
+      themeName: null,
+      fullscreen: false,
+      children: []
+    }
+    const { getByTestId, getByRole } = render(
+      <MockedProvider
+        cache={cache}
+        mocks={[
+          {
+            request: {
+              query: CARD_BLOCK_LAYOUT_UPDATE,
+              variables: {
+                id: 'card1.id',
+                journeyId: 'journeyId',
+                input: {
+                  fullscreen: true
+                }
+              }
+            },
+            result
+          },
+          {
+            request: {
+              query: CARD_BLOCK_LAYOUT_UPDATE,
+              variables: {
+                id: 'card1.id',
+                journeyId: 'journeyId',
+                input: {
+                  fullscreen: false
+                }
+              }
+            },
+            result: result2
+          }
+        ]}
+      >
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <EditorProvider initialState={{ selectedBlock: card }}>
+            <CommandUndoItem variant="button" />
+            <CardLayout />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByTestId('true'))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    fireEvent.click(getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(result2).toHaveBeenCalled())
   })
 })

@@ -7,7 +7,11 @@ import { useTranslation } from 'next-i18next'
 import Image from 'next/image'
 import { ReactElement } from 'react'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import {
+  ActiveContent,
+  ActiveSlide,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import FlexAlignBottom1Icon from '@core/shared/ui/icons/FlexAlignBottom1'
@@ -16,6 +20,7 @@ import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../.
 import { CardBlockLayoutUpdate } from '../../../../../../../../../../__generated__/CardBlockLayoutUpdate'
 import { HorizontalSelect } from '../../../../../../../../HorizontalSelect'
 
+import { useCommand } from '@core/journeys/ui/CommandProvider'
 import cardLayoutContained from './assets/card-layout-contained.svg'
 import cardLayoutExpanded from './assets/card-layout-expanded.svg'
 
@@ -34,8 +39,10 @@ export const CARD_BLOCK_LAYOUT_UPDATE = gql`
 
 export function CardLayout(): ReactElement {
   const {
-    state: { selectedBlock }
+    state: { selectedBlock, selectedStep, selectedAttributeId },
+    dispatch
   } = useEditor()
+  const { add } = useCommand()
 
   const cardBlock = (
     selectedBlock?.__typename === 'CardBlock'
@@ -51,20 +58,42 @@ export function CardLayout(): ReactElement {
   const { journey } = useJourney()
   const handleLayoutChange = async (selected: boolean): Promise<void> => {
     if (journey != null && cardBlock != null) {
-      await cardBlockUpdate({
-        variables: {
-          id: cardBlock.id,
-          journeyId: journey.id,
-          input: {
-            fullscreen: selected
+      await add({
+        parameters: {
+          execute: {
+            cardBlockId: cardBlock.id,
+            journeyId: journey.id,
+            selected,
+            selectedStep
+          },
+          undo: {
+            cardBlockId: cardBlock.id,
+            journeyId: journey.id,
+            selected: !selected,
+            selectedStep
           }
         },
-        optimisticResponse: {
-          cardBlockUpdate: {
-            id: cardBlock.id,
-            __typename: 'CardBlock',
-            fullscreen: selected
-          }
+        execute: async ({ cardBlockId, journeyId, selected, selectedStep }) => {
+          dispatch({
+            type: 'SetEditorFocusAction',
+            selectedStep: selectedStep
+          })
+          await cardBlockUpdate({
+            variables: {
+              id: cardBlockId,
+              journeyId,
+              input: {
+                fullscreen: selected
+              }
+            },
+            optimisticResponse: {
+              cardBlockUpdate: {
+                id: cardBlockId,
+                __typename: 'CardBlock',
+                fullscreen: selected
+              }
+            }
+          })
         }
       })
     }
