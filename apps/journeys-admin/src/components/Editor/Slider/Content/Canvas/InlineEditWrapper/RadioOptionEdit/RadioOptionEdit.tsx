@@ -59,11 +59,10 @@ export function RadioOptionEdit({
       },
       async execute({ label }) {
         dispatch({
-          type: 'SetCommandStateAction',
+          type: 'SetEditorFocusAction',
           selectedBlock: state.selectedBlock,
           selectedStep: state.selectedStep,
-          activeSlide: ActiveSlide.Content,
-          activeContent: ActiveContent.Canvas
+          selectedAttributeId: state.selectedAttributeId
         })
 
         await radioOptionBlockUpdate({
