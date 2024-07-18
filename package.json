@@ -32,6 +32,7 @@
   },
   "private": true,
   "dependencies": {
+    "@adobe/apollo-link-mutation-queue": "^1.1.0",
     "@algolia/client-search": "^4.14.3",
     "@apollo/client": "^3.8.3",
     "@apollo/experimental-nextjs-app-support": "^0.10.0",
@@ -171,7 +172,6 @@
     "video.js": "^8.6.1",
     "videojs-youtube": "^3.0.1",
     "yup": "^1.0.0",
-    "zen-observable-ts": "^1.2.5",
     "zod": "^3.23.8"
   },
   "devDependencies": {
