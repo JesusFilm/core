@@ -44,7 +44,6 @@ jest.mock('../../libs/algolia/useAlgoliaJourneys')
 
 const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
-// TODO: For these tests to run, you need to manually comment out the <Index> tag
 describe('TemplateGallery', () => {
   beforeEach(() => {
     const useAlgoliaJourneysMocked = jest.mocked(useAlgoliaJourneys)

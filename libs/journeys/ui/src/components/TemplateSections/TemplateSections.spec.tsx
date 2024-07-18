@@ -97,7 +97,7 @@ describe('TemplateSections', () => {
     })
   })
 
-  // TODO(jk): when we add language filters
+  // TODO: when we add language filters
 
   // describe('Multiple Languages', () => {
   //   it('should render templates if languageIds are present', async () => {
