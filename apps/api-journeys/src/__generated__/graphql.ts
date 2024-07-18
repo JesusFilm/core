@@ -29,6 +29,7 @@ export type Action = {
 
 export type AudioPreview = {
   __typename?: 'AudioPreview';
+  duration: Scalars['Int']['output'];
   language: Language;
   size: Scalars['Int']['output'];
   value: Scalars['String']['output'];
@@ -973,7 +974,7 @@ export enum JourneysReportType {
 
 export type Language = {
   __typename?: 'Language';
-  audioPreview: Array<AudioPreview>;
+  audioPreview?: Maybe<AudioPreview>;
   bcp47?: Maybe<Scalars['String']['output']>;
   countries: Array<Country>;
   id: Scalars['ID']['output'];
@@ -1201,7 +1202,7 @@ export type MutationBlockDeleteArgs = {
 
 export type MutationBlockDeleteActionArgs = {
   id: Scalars['ID']['input'];
-  journeyId: Scalars['ID']['input'];
+  journeyId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
@@ -1229,21 +1230,21 @@ export type MutationBlockRestoreArgs = {
 export type MutationBlockUpdateEmailActionArgs = {
   id: Scalars['ID']['input'];
   input: EmailActionInput;
-  journeyId: Scalars['ID']['input'];
+  journeyId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
 export type MutationBlockUpdateLinkActionArgs = {
   id: Scalars['ID']['input'];
   input: LinkActionInput;
-  journeyId: Scalars['ID']['input'];
+  journeyId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
 export type MutationBlockUpdateNavigateToBlockActionArgs = {
   id: Scalars['ID']['input'];
   input: NavigateToBlockActionInput;
-  journeyId: Scalars['ID']['input'];
+  journeyId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
