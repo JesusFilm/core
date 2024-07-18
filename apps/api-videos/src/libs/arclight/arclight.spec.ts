@@ -114,7 +114,7 @@ describe('arclight', () => {
       ).resolves.toEqual([])
       expect(request).toHaveBeenCalledWith(
         expect.stringContaining(
-          'https://api.arclight.org/v2/media-components/mediaComponentId/languages?platform=android&apiKey='
+          'https://admin.arclight.org/v2/media-components/mediaComponentId/languages?platform=android&apiKey='
         ),
         undefined
       )
@@ -196,7 +196,8 @@ describe('arclight', () => {
           url: 'highUrl',
           sizeInBytes: 1024
         }
-      }
+      },
+      editionCode: 'ot'
     }
     const mediaComponent: MediaComponent = {
       mediaComponentId: 'mediaComponentId',
@@ -252,7 +253,8 @@ describe('arclight', () => {
           url: 'highUrl'
         }
       ],
-      slug: 'title/english'
+      slug: 'title/english',
+      edition: 'ot'
     }
 
     it('transforms media component language to variant', () => {
@@ -379,7 +381,8 @@ describe('arclight', () => {
             url: 'highUrl',
             sizeInBytes: 1024
           }
-        }
+        },
+        editionCode: 'base'
       }
     ]
     const languages: Language[] = [
@@ -466,7 +469,8 @@ describe('arclight', () => {
               url: 'highUrl'
             }
           ],
-          slug: 'title/english'
+          slug: 'title/english',
+          edition: 'base'
         }
       ]
     }
@@ -728,7 +732,8 @@ describe('arclight', () => {
             url: 'highUrl',
             sizeInBytes: 1024
           }
-        }
+        },
+        editionCode: 'base'
       }
     ]
     const languages: Language[] = [
@@ -798,6 +803,7 @@ describe('arclight', () => {
         ],
         variants: [
           {
+            edition: 'base',
             downloads: [
               {
                 quality: 'low',
@@ -837,7 +843,7 @@ describe('arclight', () => {
       })
       expect(request).toHaveBeenCalledWith(
         expect.stringContaining(
-          'https://api.arclight.org/v2/media-components/mediaComponentId/languages?platform=android&apiKey='
+          'https://admin.arclight.org/v2/media-components/mediaComponentId/languages?platform=android&apiKey='
         ),
         undefined
       )
