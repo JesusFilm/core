@@ -1,11 +1,12 @@
+import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
+import { TreeBlock } from '@core/journeys/ui/block/TreeBlock'
 import Stack from '@mui/material/Stack'
+import { Theme } from '@mui/material/styles'
 import { useTranslation } from 'next-i18next'
 import dynamic from 'next/dynamic'
 import { ReactElement, useState } from 'react'
 
-import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
-import { TreeBlock } from '@core/journeys/ui/block/TreeBlock'
-
+import useMediaQuery from '@mui/system/useMediaQuery'
 import { BlockFields as StepBlock } from '../../../../../../../__generated__/BlockFields'
 import { Drawer } from '../../Drawer'
 import { CardTemplates } from '../../Drawer/CardTemplates/CardTemplates'
@@ -101,6 +102,8 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
   const selectedBlock = block ?? state.selectedBlock
   const selectedStep = step ?? state.selectedStep
 
+  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
+
   let component
   let title: string | undefined
   switch (selectedBlock?.__typename) {
@@ -168,7 +171,7 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
     if (!isCardTemplates)
       dispatch({
         type: 'SetActiveSlideAction',
-        activeSlide: ActiveSlide.JourneyFlow
+        activeSlide: smUp ? ActiveSlide.JourneyFlow : ActiveSlide.Content
       })
   }
 
