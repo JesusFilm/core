@@ -7,7 +7,11 @@ import { useTranslation } from 'next-i18next'
 import Image from 'next/image'
 import { ReactElement } from 'react'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import {
+  ActiveContent,
+  ActiveSlide,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import PaletteIcon from '@core/shared/ui/icons/Palette'
@@ -20,6 +24,7 @@ import {
 } from '../../../../../../../../../../__generated__/globalTypes'
 import { HorizontalSelect } from '../../../../../../../../HorizontalSelect'
 
+import { useCommand } from '@core/journeys/ui/CommandProvider'
 import cardStyleDark from './assets/card-style-dark.svg'
 import cardStyleLight from './assets/card-style-light.svg'
 
@@ -39,8 +44,10 @@ export const CARD_BLOCK_THEME_MODE_UPDATE = gql`
 
 export function CardStyling(): ReactElement {
   const {
-    state: { selectedBlock }
+    state: { selectedBlock, selectedAttributeId, selectedStep },
+    dispatch
   } = useEditor()
+  const { add } = useCommand()
 
   const cardBlock = (
     selectedBlock?.__typename === 'CardBlock'
@@ -58,22 +65,69 @@ export function CardStyling(): ReactElement {
 
   const handleChange = async (themeMode: ThemeMode): Promise<void> => {
     if (journey != null && cardBlock != null) {
-      await cardBlockUpdate({
-        variables: {
-          id: cardBlock.id,
-          journeyId: journey.id,
-          input: {
+      await add({
+        parameters: {
+          execute: {
+            journeyId: journey.id,
+            cardBlockId: cardBlock.id,
             themeMode,
-            themeName: ThemeName.base
+            selectedStep
+          },
+          undo: {
+            journeyId: journey.id,
+            cardBlockId: cardBlock.id,
+            themeMode:
+              themeMode === ThemeMode.dark ? ThemeMode.light : ThemeMode.dark,
+            selectedStep
           }
         },
-        optimisticResponse: {
-          cardBlockUpdate: {
-            id: cardBlock.id,
-            __typename: 'CardBlock',
-            themeMode,
-            themeName: ThemeName.base
-          }
+        async execute({ journeyId, cardBlockId: id, themeMode }) {
+          dispatch({
+            type: 'SetEditorFocusAction',
+            selectedStep
+          })
+          await cardBlockUpdate({
+            variables: {
+              id,
+              journeyId,
+              input: {
+                themeMode,
+                themeName: ThemeName.base
+              }
+            },
+            optimisticResponse: {
+              cardBlockUpdate: {
+                id: cardBlock.id,
+                __typename: 'CardBlock',
+                themeMode,
+                themeName: ThemeName.base
+              }
+            }
+          })
+        },
+        async undo({ journeyId, cardBlockId: id, themeMode }) {
+          await cardBlockUpdate({
+            variables: {
+              id,
+              journeyId,
+              input: {
+                themeMode,
+                themeName: ThemeName.base
+              }
+            },
+            optimisticResponse: {
+              cardBlockUpdate: {
+                id: cardBlock.id,
+                __typename: 'CardBlock',
+                themeMode,
+                themeName: ThemeName.base
+              }
+            }
+          })
+          dispatch({
+            type: 'SetEditorFocusAction',
+            selectedStep
+          })
         }
       })
     }
