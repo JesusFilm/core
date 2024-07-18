@@ -24,6 +24,5 @@ export interface CardBlockBackgroundColorUpdate {
 
 export interface CardBlockBackgroundColorUpdateVariables {
   id: string;
-  journeyId: string;
   input: CardBlockUpdateInput;
 }
