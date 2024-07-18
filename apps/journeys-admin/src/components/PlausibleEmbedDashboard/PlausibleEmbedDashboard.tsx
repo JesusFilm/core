@@ -53,7 +53,13 @@ function useHookWithRefCallback(): (node: HTMLIFrameElement | null) => void {
   return setRef
 }
 
-export function PlausibleEmbedDashboard(): ReactElement {
+interface PlausibleEmbedDashboardProps {
+  host?: string // for testing
+}
+
+export function PlausibleEmbedDashboard({
+  host = ''
+}: PlausibleEmbedDashboardProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const ref = useHookWithRefCallback()
@@ -96,17 +102,18 @@ export function PlausibleEmbedDashboard(): ReactElement {
           <StyledIFrame
             data-testid="PlausibleEmbedDashboard"
             plausible-embed
-            src={`/share/api-journeys-journey-${journeyId}?auth=${data?.journey.plausibleToken}&embed=true&theme=light&background=transparent`}
+            src={`${host}/share/api-journeys-journey-${journeyId}?auth=${data?.journey.plausibleToken}&embed=true&theme=light&background=transparent`}
             loading="lazy"
             ref={ref}
             sx={{
               height: {
                 xs: 'calc(100vh - 96px)',
                 md: 'calc(100vh - 48px)'
-              }
+              },
+              width: '100%'
             }}
           />
-          <script async src="/js/embed.host.js" />
+          <script async src={`${host}/js/embed.host.js`} />
         </>
       )}
     </>

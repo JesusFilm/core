@@ -1,5 +1,6 @@
 import type { MockedResponse } from '@apollo/client/testing'
-import { journeysAdminConfig } from '@core/shared/ui/storybook'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
+import Box from '@mui/material/Box'
 import type { Meta, StoryObj } from '@storybook/react'
 import type { ComponentPropsWithRef } from 'react'
 import type {
@@ -13,22 +14,23 @@ import {
 } from './PlausibleEmbedDashboard'
 
 const PlausibleEmbedDashboardStory: Meta<typeof PlausibleEmbedDashboard> = {
-  ...journeysAdminConfig,
+  ...simpleComponentConfig,
   component: PlausibleEmbedDashboard,
   title: 'Journeys-Admin/PlausibleEmbedDashboard'
 }
 
 const journey = {
   __typename: 'Journey',
-  id: 'journey.id',
-  plausibleToken: 'plausible-token'
+  title: 'Fact or Fiction - Stage',
+  id: '1',
+  plausibleToken: '3Q7Nfj1AlMJjeIA48AUhR'
 } as unknown as Journey
 
 const adminJourneyMock: MockedResponse<GetAdminJourneyWithPlausibleToken> = {
   request: {
     query: GET_ADMIN_JOURNEY_WITH_PLAUSIBLE_TOKEN,
     variables: {
-      id: 'journeyId'
+      id: '1'
     }
   },
   result: {
@@ -40,21 +42,27 @@ const adminJourneyMock: MockedResponse<GetAdminJourneyWithPlausibleToken> = {
 const Template: StoryObj<
   ComponentPropsWithRef<typeof PlausibleEmbedDashboard>
 > = {
-  render: () => {
-    return <PlausibleEmbedDashboard />
+  render: (args) => {
+    return (
+      <Box sx={{ width: '900px' }}>
+        <PlausibleEmbedDashboard {...args} />
+      </Box>
+    )
   }
 }
 
 export const Default = {
   ...Template,
-  args: {},
+  args: {
+    host: 'https://analytics.stage.central.jesusfilm.org'
+  },
   parameters: {
     chromatic: { disableSnapshot: true },
     apolloClient: { mocks: [adminJourneyMock] },
     nextjs: {
       router: {
         query: {
-          journeyId: 'journeyId'
+          journeyId: journey.id
         }
       }
     }
@@ -83,7 +91,7 @@ export const Error = {
     nextjs: {
       router: {
         query: {
-          journeyId: 'journeyId'
+          journeyId: journey.id
         }
       }
     }
