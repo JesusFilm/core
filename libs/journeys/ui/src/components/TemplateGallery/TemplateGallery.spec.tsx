@@ -1,20 +1,9 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
-import { NextRouter, useRouter } from 'next/router'
+import { render, waitFor } from '@testing-library/react'
+import { useRouter } from 'next/router'
 
-import {
-  getJourneysMock,
-  getJourneysMockWithAcceptanceTag,
-  getJourneysMockWithoutTagsEnglish,
-  getJourneysMockWithoutTagsFrench,
-  getJourneysWithoutLanguageIdsMock,
-  getLanguagesMock,
-  getTagsMock
-} from './data'
+import { getTagsMock } from './data'
 
-import { TemplateGallery } from '.'
-import '../../../test/i18n'
-import { run } from 'node:test'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
 import {
@@ -23,6 +12,8 @@ import {
   useRefinementList,
   useSearchBox
 } from 'react-instantsearch'
+import { TemplateGallery } from '.'
+import '../../../test/i18n'
 import { useAlgoliaJourneys } from '../../libs/algolia/useAlgoliaJourneys'
 import { algoliaJourneys } from '../../libs/algolia/useAlgoliaJourneys/data'
 

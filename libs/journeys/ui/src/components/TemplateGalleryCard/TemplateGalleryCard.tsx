@@ -14,6 +14,7 @@ import { ReactElement } from 'react'
 import { useRouter } from 'next/router'
 import { abbreviateLanguageName } from '../../libs/abbreviateLanguageName'
 import { AlgoliaJourney } from '../../libs/algolia/useAlgoliaJourneys'
+import { GetJourneys_journeys as Journey } from '../../libs/useJourneysQuery/__generated__/GetJourneys'
 
 interface HoverLayerProps {
   className?: string
@@ -41,8 +42,37 @@ export function HoverLayer({ className }: HoverLayerProps): ReactElement {
 }
 
 interface TemplateGalleryCardProps {
-  item?: AlgoliaJourney
+  item?: Journey | AlgoliaJourney
   priority?: boolean
+}
+
+function isAlgoliaJourney(
+  journey: Journey | AlgoliaJourney | undefined
+): journey is AlgoliaJourney {
+  return (
+    journey !== undefined &&
+    (journey as AlgoliaJourney).language.nativeName !== undefined
+  )
+}
+
+function getAlgoliaJourneyLang(journey: AlgoliaJourney): string {
+  const localLanguage = journey?.language?.localName
+  const nativeLanguage = journey?.language?.nativeName
+  return (
+    abbreviateLanguageName(
+      localLanguage !== '' ? localLanguage : nativeLanguage
+    ) ?? ''
+  )
+}
+
+function getCoreJourneyLang(journey: Journey): string {
+  const localLanguage = journey?.language?.name.find(
+    ({ primary }) => !primary
+  )?.value
+  const nativeLanguage =
+    journey?.language?.name.find(({ primary }) => primary)?.value ?? ''
+
+  return abbreviateLanguageName(localLanguage ?? nativeLanguage) ?? ''
 }
 
 export function TemplateGalleryCard({
@@ -55,11 +85,12 @@ export function TemplateGalleryCard({
     : '/templates'
   const journeyIdPath = `${journeyBasePath}/${journey?.id ?? ''}`
 
-  const localLanguage = journey?.language?.localName
-  const nativeLanguage = journey?.language?.nativeName
-  const displayLanguage = abbreviateLanguageName(
-    localLanguage !== '' ? localLanguage : nativeLanguage
-  )
+  let displayLanguage = ''
+  if (isAlgoliaJourney(journey)) {
+    displayLanguage = getAlgoliaJourneyLang(journey)
+  } else if (journey !== undefined) {
+    displayLanguage = getCoreJourneyLang(journey)
+  }
 
   const theme = useTheme()
   const { t } = useTranslation('libs-journeys-ui')
