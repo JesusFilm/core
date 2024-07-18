@@ -1,6 +1,13 @@
 extend schema
   @link(url: "https://specs.apollo.dev/federation/v2.7", import: ["@key"])
 
+type AudioPreview {
+  language: Language!
+  value: String!
+  duration: Int!
+  size: Int!
+}
+
 type Country
   @key(fields: "id")
 {
@@ -35,6 +42,7 @@ type Language
   iso3: String
   name(languageId: ID, primary: Boolean): [LanguageName!]!
   countries: [Country!]!
+  audioPreview: AudioPreview
 }
 
 enum LanguageIdType {

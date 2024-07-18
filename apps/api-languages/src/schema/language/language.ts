@@ -19,6 +19,15 @@ const LanguagesFilter = builder.inputType('LanguagesFilter', {
   })
 })
 
+export const AudioPreview = builder.prismaObject('AudioPreview', {
+  fields: (t) => ({
+    language: t.relation('language'),
+    value: t.exposeString('value'),
+    duration: t.exposeInt('duration'),
+    size: t.exposeInt('size')
+  })
+})
+
 const LanguageName = builder.prismaObject('LanguageName', {
   fields: (t) => ({
     value: t.exposeString('value'),
@@ -53,7 +62,8 @@ export const Language = builder.prismaObject('Language', {
         })
       }
     }),
-    countries: t.relation('countries')
+    countries: t.relation('countries'),
+    audioPreview: t.relation('audioPreview', { nullable: true })
   })
 })
 
