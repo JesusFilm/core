@@ -2,12 +2,14 @@ import { gql, useMutation } from '@apollo/client'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Typography } from '@core/journeys/ui/Typography'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { hasTouchScreen } from '@core/shared/ui/deviceUtils'
 
-import { TypographyBlockUpdateContent } from '../../../../../../../../__generated__/TypographyBlockUpdateContent'
+import {
+  TypographyBlockUpdateContent,
+  TypographyBlockUpdateContentVariables
+} from '../../../../../../../../__generated__/TypographyBlockUpdateContent'
 import { TypographyFields } from '../../../../../../../../__generated__/TypographyFields'
 import { InlineEditInput } from '../InlineEditInput'
 import { useOnClickOutside } from '../useOnClickOutside'
@@ -15,10 +17,9 @@ import { useOnClickOutside } from '../useOnClickOutside'
 export const TYPOGRAPHY_BLOCK_UPDATE_CONTENT = gql`
   mutation TypographyBlockUpdateContent(
     $id: ID!
-    $journeyId: ID!
     $input: TypographyBlockUpdateInput!
   ) {
-    typographyBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+    typographyBlockUpdate(id: $id, input: $input) {
       id
       content
     }
@@ -38,11 +39,11 @@ export function TypographyEdit({
   ...props
 }: TypographyEditProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [typographyBlockUpdate] = useMutation<TypographyBlockUpdateContent>(
-    TYPOGRAPHY_BLOCK_UPDATE_CONTENT
-  )
+  const [typographyBlockUpdate] = useMutation<
+    TypographyBlockUpdateContent,
+    TypographyBlockUpdateContentVariables
+  >(TYPOGRAPHY_BLOCK_UPDATE_CONTENT)
 
-  const { journey } = useJourney()
   const [value, setValue] = useState(content)
   const [selection, setSelection] = useState({ start: 0, end: value.length })
 
@@ -54,12 +55,11 @@ export function TypographyEdit({
       return
     }
 
-    if (journey == null || content === currentContent) return
+    if (content === currentContent) return
 
     await typographyBlockUpdate({
       variables: {
         id,
-        journeyId: journey.id,
         input: { content: currentContent }
       },
       optimisticResponse: {
