@@ -23,8 +23,6 @@ import 'swiper/css'
 import 'swiper/css/a11y'
 import 'swiper/css/navigation'
 import '../public/watch/assets/fonts/fonts.css'
-import algoliasearch from 'algoliasearch'
-import { InstantSearch } from 'react-instantsearch'
 
 const clientSideEmotionCache = createEmotionCache({ prepend: false })
 
