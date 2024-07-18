@@ -37,13 +37,13 @@ export function InlineEditWrapper({
   const [blockDelete] = useBlockDeleteMutation()
 
   const {
-    state: { selectedBlock, activeFab, selectedStep, steps },
+    state: { selectedBlock, selectedStep, steps },
     dispatch
   } = useEditor()
   const { journey } = useJourney()
 
   const showEditable =
-    (activeFab === ActiveFab.Save && selectedBlock?.id === block.id) ||
+    selectedBlock?.id === block.id ||
     (block.__typename === 'RadioQuestionBlock' &&
       selectedBlock?.parentBlockId === block.id)
 
