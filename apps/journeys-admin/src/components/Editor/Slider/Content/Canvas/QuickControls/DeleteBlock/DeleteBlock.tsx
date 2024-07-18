@@ -4,14 +4,12 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-
 import { TreeBlock } from '@core/journeys/ui/block'
 import { Dialog } from '@core/shared/ui/Dialog'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 
-import { MenuItem } from '../../../../../../MenuItem'
-
 import { useBlockDeleteCommand } from '../../../../../../../libs/useBlockDeleteCommand/useBlockDeleteCommand'
+import { MenuItem } from '../../../../../../MenuItem'
 
 interface DeleteBlockProps {
   variant: 'button' | 'list-item'
