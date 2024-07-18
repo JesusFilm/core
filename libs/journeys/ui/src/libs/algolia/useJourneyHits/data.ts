@@ -614,7 +614,7 @@ export const transformedAlgoliaJourneys = [
     },
     tags: {
       Topics: ['Anger'],
-      'Felt Needs': ['Depression'],
+      'Felt Needs': ['Acceptance', 'Depression'],
       Holidays: ['Easter']
     },
     objectID: 'e978adb4-e4d8-42ef-89a9-79811f10b7e9',
@@ -684,6 +684,11 @@ export const transformedAlgoliaJourneys = [
         'Felt Needs': [
           {
             value: 'Depression',
+            matchLevel: 'none',
+            matchedWords: []
+          },
+          {
+            value: 'Acceptance',
             matchLevel: 'none',
             matchedWords: []
           }
@@ -1019,7 +1024,8 @@ export const transformedAlgoliaJourneys = [
       Topics: ['Addiction', 'Anger'],
       Audience: ['Adults'],
       Holidays: ['Easter'],
-      Collections: ['Jesus Film', 'NUA']
+      Collections: ['Jesus Film', 'NUA'],
+      'Felt Needs': ['Acceptance']
     },
     objectID: '13317d05-a805-4b3c-b362-9018971d9b57',
     _highlightResult: {
@@ -1112,6 +1118,13 @@ export const transformedAlgoliaJourneys = [
           },
           {
             value: 'NUA',
+            matchLevel: 'none',
+            matchedWords: []
+          }
+        ],
+        'Felt Needs': [
+          {
+            value: 'Acceptance',
             matchLevel: 'none',
             matchedWords: []
           }

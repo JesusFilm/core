@@ -1,5 +1,11 @@
+import type { SearchResults } from 'algoliasearch-helper'
 import { BaseHit, Hit } from 'instantsearch.js'
-import { UseHitsProps, useHits, useInstantSearch } from 'react-instantsearch'
+import {
+  UseHitsProps,
+  useCurrentRefinements,
+  useHits,
+  useInstantSearch
+} from 'react-instantsearch'
 
 interface Tags {
   Topics: string[]
@@ -29,6 +35,13 @@ export interface AlgoliaJourney extends Hit<BaseHit> {
   tags: Tags
 }
 
+export interface UseJourneyHitsResults {
+  hits: AlgoliaJourney[]
+  results?: SearchResults<Hit<AlgoliaJourney>> | undefined
+  loading: boolean
+  refinements: string[]
+}
+
 export const transformItems: UseHitsProps<AlgoliaJourney>['transformItems'] = (
   items
 ) => {
@@ -40,13 +53,19 @@ export const transformItems: UseHitsProps<AlgoliaJourney>['transformItems'] = (
   })) as unknown as AlgoliaJourney[]
 }
 
-export function useJourneyHits() {
-  const { hits, results } = useHits<Hit<AlgoliaJourney>>({
+// TODO(jk): Rename to useAlgoliaJourneys
+export function useJourneyHits(): UseJourneyHitsResults {
+  const { hits, results } = useHits<AlgoliaJourney>({
     transformItems
   })
 
   const { status } = useInstantSearch()
   const loading = status === 'stalled'
 
-  return { hits, loading }
+  const { items } = useCurrentRefinements()
+  const refinements = items.flatMap((refinement) =>
+    refinement.refinements.flatMap((ref) => ref.label)
+  )
+
+  return { hits, results, loading, refinements }
 }

@@ -159,15 +159,7 @@ export function TemplateGallery({
                 </Box>
               </Stack>
 
-              {/* TODO(jk): remove these props - algolia to handle */}
-              <TemplateSections
-                tagIds={selectedTagIds.length > 0 ? selectedTagIds : undefined}
-                languageIds={
-                  selectedLanguageIds.length > 0
-                    ? selectedLanguageIds
-                    : undefined
-                }
-              />
+              <TemplateSections />
             </ThemeProvider>
           </Stack>
         </Index>

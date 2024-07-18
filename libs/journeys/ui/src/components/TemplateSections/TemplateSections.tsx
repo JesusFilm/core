@@ -19,11 +19,6 @@ interface Contents {
   [key: string]: { category: string; journeys: AlgoliaJourney[] }
 }
 
-interface TemplateSectionsProps {
-  tagIds?: string[]
-  languageIds?: string[]
-}
-
 function getAllTags(journey: AlgoliaJourney) {
   return Object.values(journey.tags)
     .filter((tags): tags is string[] => Array.isArray(tags))
@@ -31,13 +26,10 @@ function getAllTags(journey: AlgoliaJourney) {
     .filter((tag) => tag !== undefined) as unknown as string[]
 }
 
-export function TemplateSections({
-  tagIds,
-  languageIds
-}: TemplateSectionsProps): ReactElement {
+export function TemplateSections(): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const { breakpoints } = useTheme()
-  const { hits, loading } = useJourneyHits()
+  const { hits, loading, refinements } = useJourneyHits()
 
   const algoliaContents: Contents = {}
   let algoliaCollection: AlgoliaJourney[] = []
@@ -52,10 +44,7 @@ export function TemplateSections({
 
     // Let algolia handle most relivant and just grab first n results
     const mostRelevant = hits.slice(0, 10)
-
-    // TODO: if category tags are checked: show most relevant
-    // collection = tagIds == null ? featuredAndNew : mostRelevant
-    algoliaCollection = featuredAndNew
+    algoliaCollection = refinements.length > 0 ? featuredAndNew : mostRelevant
 
     // Group journeys into categories
     hits.forEach((journey) => {
@@ -122,37 +111,47 @@ export function TemplateSections({
             </Typography>
           </Paper>
         )}
-      {loading ||
-        (algoliaCollection != null && algoliaCollection.length > 0 && (
-          <ContentCarousel
-            priority
-            heading={t('Featured & New')}
-            items={algoliaCollection}
-            renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}
-            breakpoints={swiperBreakpoints}
-            loading={loading}
-            slidesOffsetBefore={-8}
-            cardSpacing={{
-              xs: 1,
-              md: 8,
-              xl: 11
-            }}
-          />
-        ))}
-      {map(algoliaContents, ({ category, journeys }, key) => (
-        <ContentCarousel
-          heading={category}
-          items={journeys}
-          renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}
-          breakpoints={swiperBreakpoints}
-          slidesOffsetBefore={-8}
-          cardSpacing={{
-            xs: 1,
-            md: 8,
-            xl: 11
-          }}
-        />
-      ))}
+      {refinements.length !== 1 &&
+        (loading ||
+          (algoliaCollection != null && algoliaCollection.length > 0 && (
+            <ContentCarousel
+              priority
+              heading={
+                refinements.length > 0
+                  ? t('Most Relevant')
+                  : t('Featured & New')
+              }
+              items={algoliaCollection}
+              renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}
+              breakpoints={swiperBreakpoints}
+              loading={loading}
+              slidesOffsetBefore={-8}
+              cardSpacing={{
+                xs: 1,
+                md: 8,
+                xl: 11
+              }}
+            />
+          )))}
+      {map(
+        algoliaContents,
+        ({ category, journeys }, key) =>
+          ((refinements.length === 0 && journeys.length >= 5) ||
+            refinements.includes(key)) && (
+            <ContentCarousel
+              heading={category}
+              items={journeys}
+              renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}
+              breakpoints={swiperBreakpoints}
+              slidesOffsetBefore={-8}
+              cardSpacing={{
+                xs: 1,
+                md: 8,
+                xl: 11
+              }}
+            />
+          )
+      )}
     </Stack>
   )
 }
