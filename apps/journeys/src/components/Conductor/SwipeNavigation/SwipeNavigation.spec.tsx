@@ -56,6 +56,21 @@ describe('SwipeNavigation', () => {
   const swipeLeft = -100
   const swipeRight = 100
 
+  const originalLocation = window.location
+  const mockOrigin = 'https://example.com'
+
+  beforeAll(() => {
+    Object.defineProperty(window, 'location', {
+      value: {
+        origin: mockOrigin
+      }
+    })
+  })
+
+  afterAll(() => {
+    Object.defineProperty(window, 'location', originalLocation)
+  })
+
   const step1: TreeBlock<StepBlock> = {
     id: 'step1.id',
     __typename: 'StepBlock',
@@ -444,6 +459,7 @@ describe('SwipeNavigation', () => {
       expect(mockStepNextEventCreate.result).toHaveBeenCalled()
     )
     expect(mockPlausible).toHaveBeenCalledWith('navigateNextStep', {
+      u: `${mockOrigin}/journey.id/step1.id`,
       props: {
         id: 'uuid',
         blockId: 'step1.id',
@@ -494,6 +510,7 @@ describe('SwipeNavigation', () => {
       expect(mockStepPreviousEventCreate.result).toHaveBeenCalled()
     )
     expect(mockPlausible).toHaveBeenCalledWith('navigatePreviousStep', {
+      u: `${mockOrigin}/journey.id/step2.id`,
       props: {
         id: 'uuid',
         blockId: 'step2.id',
