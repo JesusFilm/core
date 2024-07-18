@@ -72,7 +72,7 @@ export function Step({
           blockId: input.blockId
         })
         plausible('pageview', {
-          u: `${journey.id}/${blockId}`,
+          u: `${window.location.origin}/${journey.id}/${blockId}`,
           props: {
             ...input,
             key,
