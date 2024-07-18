@@ -21,6 +21,5 @@ export interface TextResponseMinRowsUpdate {
 
 export interface TextResponseMinRowsUpdateVariables {
   id: string;
-  journeyId: string;
   input: TextResponseBlockUpdateInput;
 }
