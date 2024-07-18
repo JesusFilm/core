@@ -10,11 +10,12 @@ export function useOnClickOutside<T extends HTMLElement = HTMLElement>(
     const handleClick = (event: MouseEvent): void => {
       const elementClicked = event.target as HTMLElement
       const canvasClicked =
-        elementClicked.classList.contains('EditorCanvas') ?? false
+        (elementClicked.classList.contains('EditorCanvas') ||
+          elementClicked.classList.contains('EditorStack')) ??
+        false
       // Prevent double callback triggering
       const inputSelected =
         elementRef.current?.classList.contains('Mui-focused') ?? false
-
       if (elementRef.current != null && inputSelected && canvasClicked)
         void callback()
     }
