@@ -9,12 +9,18 @@ interface Tags {
   'Felt Needs': string[]
 }
 
+interface Language {
+  localName: string
+  nativeName: string
+  continents: string[]
+}
+
 export interface AlgoliaJourney extends Hit<BaseHit> {
   id: string
   title: string
   createdAt: Date
   description: string
-  language: string
+  language: Language
   primaryImageBlock: {
     src: string
     alt: string

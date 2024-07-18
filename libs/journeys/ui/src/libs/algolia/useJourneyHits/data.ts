@@ -11,7 +11,18 @@ export const algoliaJourneys = [
       alt: 'onboarding primary'
     },
     featuredAt: null,
-    language: 'English',
+    language: {
+      localName: '',
+      nativeName: 'English',
+      continents: [
+        'Asia',
+        'North America',
+        'Oceania',
+        'Africa',
+        'South America',
+        'Europe'
+      ]
+    },
     tags: {
       Topics: ['Anger'],
       'Felt Needs': ['Depression'],
@@ -30,9 +41,48 @@ export const algoliaJourneys = [
         matchedWords: []
       },
       language: {
-        value: 'English',
-        matchLevel: 'none',
-        matchedWords: []
+        localName: {
+          value: '',
+          matchLevel: 'none',
+          matchedWords: []
+        },
+        nativeName: {
+          value: 'English',
+          matchLevel: 'none',
+          matchedWords: []
+        },
+        continents: [
+          {
+            value: 'Asia',
+            matchLevel: 'none',
+            matchedWords: []
+          },
+          {
+            value: 'North America',
+            matchLevel: 'none',
+            matchedWords: []
+          },
+          {
+            value: 'Oceania',
+            matchLevel: 'none',
+            matchedWords: []
+          },
+          {
+            value: 'Africa',
+            matchLevel: 'none',
+            matchedWords: []
+          },
+          {
+            value: 'South America',
+            matchLevel: 'none',
+            matchedWords: []
+          },
+          {
+            value: 'Europe',
+            matchLevel: 'none',
+            matchedWords: []
+          }
+        ]
       },
       tags: {
         Topics: [
@@ -69,7 +119,11 @@ export const algoliaJourneys = [
       alt: 'onboarding primary'
     },
     featuredAt: null,
-    language: 'English',
+    language: {
+      localName: 'Farsi, Western',
+      nativeName: 'فارسی',
+      continents: ['Asia', 'Europe', 'Oceania', 'North America']
+    },
     tags: {
       'Felt Needs': [
         'Acceptance',
@@ -93,9 +147,38 @@ export const algoliaJourneys = [
         matchedWords: []
       },
       language: {
-        value: 'English',
-        matchLevel: 'none',
-        matchedWords: []
+        localName: {
+          value: 'Farsi, Western',
+          matchLevel: 'none',
+          matchedWords: []
+        },
+        nativeName: {
+          value: 'فارسی',
+          matchLevel: 'none',
+          matchedWords: []
+        },
+        continents: [
+          {
+            value: 'Asia',
+            matchLevel: 'none',
+            matchedWords: []
+          },
+          {
+            value: 'Europe',
+            matchLevel: 'none',
+            matchedWords: []
+          },
+          {
+            value: 'Oceania',
+            matchLevel: 'none',
+            matchedWords: []
+          },
+          {
+            value: 'North America',
+            matchLevel: 'none',
+            matchedWords: []
+          }
+        ]
       },
       tags: {
         'Felt Needs': [
@@ -144,7 +227,18 @@ export const algoliaJourneys = [
       alt: 'onboarding primary'
     },
     featuredAt: null,
-    language: 'English',
+    language: {
+      localName: '',
+      nativeName: 'English',
+      continents: [
+        'Asia',
+        'North America',
+        'Oceania',
+        'Africa',
+        'South America',
+        'Europe'
+      ]
+    },
     tags: {},
     objectID: '9d9ca229-9fb5-4d06-a18c-2d1a4ceba457',
     _highlightResult: {
@@ -160,9 +254,48 @@ export const algoliaJourneys = [
         matchedWords: []
       },
       language: {
-        value: 'English',
-        matchLevel: 'none',
-        matchedWords: []
+        localName: {
+          value: '',
+          matchLevel: 'none',
+          matchedWords: []
+        },
+        nativeName: {
+          value: 'English',
+          matchLevel: 'none',
+          matchedWords: []
+        },
+        continents: [
+          {
+            value: 'Asia',
+            matchLevel: 'none',
+            matchedWords: []
+          },
+          {
+            value: 'North America',
+            matchLevel: 'none',
+            matchedWords: []
+          },
+          {
+            value: 'Oceania',
+            matchLevel: 'none',
+            matchedWords: []
+          },
+          {
+            value: 'Africa',
+            matchLevel: 'none',
+            matchedWords: []
+          },
+          {
+            value: 'South America',
+            matchLevel: 'none',
+            matchedWords: []
+          },
+          {
+            value: 'Europe',
+            matchLevel: 'none',
+            matchedWords: []
+          }
+        ]
       }
     },
     __position: 3
@@ -176,7 +309,11 @@ export const algoliaJourneys = [
       alt: 'onboarding primary'
     },
     featuredAt: null,
-    language: 'English',
+    language: {
+      localName: 'Georgian',
+      nativeName: 'ქართული',
+      continents: ['Asia', 'Europe']
+    },
     tags: {
       'Felt Needs': ['Acceptance'],
       Topics: ['Addiction'],
@@ -195,9 +332,28 @@ export const algoliaJourneys = [
         matchedWords: []
       },
       language: {
-        value: 'English',
-        matchLevel: 'none',
-        matchedWords: []
+        localName: {
+          value: 'Georgian',
+          matchLevel: 'none',
+          matchedWords: []
+        },
+        nativeName: {
+          value: 'ქართული',
+          matchLevel: 'none',
+          matchedWords: []
+        },
+        continents: [
+          {
+            value: 'Asia',
+            matchLevel: 'none',
+            matchedWords: []
+          },
+          {
+            value: 'Europe',
+            matchLevel: 'none',
+            matchedWords: []
+          }
+        ]
       },
       tags: {
         'Felt Needs': [
@@ -234,7 +390,18 @@ export const algoliaJourneys = [
       alt: 'onboarding primary'
     },
     featuredAt: null,
-    language: 'English',
+    language: {
+      localName: '',
+      nativeName: 'English',
+      continents: [
+        'Asia',
+        'North America',
+        'Oceania',
+        'Africa',
+        'South America',
+        'Europe'
+      ]
+    },
     tags: {
       Topics: ['Addiction', 'Anger'],
       Audience: ['Adults'],
@@ -254,9 +421,48 @@ export const algoliaJourneys = [
         matchedWords: []
       },
       language: {
-        value: 'English',
-        matchLevel: 'none',
-        matchedWords: []
+        localName: {
+          value: '',
+          matchLevel: 'none',
+          matchedWords: []
+        },
+        nativeName: {
+          value: 'English',
+          matchLevel: 'none',
+          matchedWords: []
+        },
+        continents: [
+          {
+            value: 'Asia',
+            matchLevel: 'none',
+            matchedWords: []
+          },
+          {
+            value: 'North America',
+            matchLevel: 'none',
+            matchedWords: []
+          },
+          {
+            value: 'Oceania',
+            matchLevel: 'none',
+            matchedWords: []
+          },
+          {
+            value: 'Africa',
+            matchLevel: 'none',
+            matchedWords: []
+          },
+          {
+            value: 'South America',
+            matchLevel: 'none',
+            matchedWords: []
+          },
+          {
+            value: 'Europe',
+            matchLevel: 'none',
+            matchedWords: []
+          }
+        ]
       },
       tags: {
         Topics: [
@@ -310,7 +516,18 @@ export const algoliaJourneys = [
       alt: 'onboarding primary'
     },
     featuredAt: null,
-    language: 'English',
+    language: {
+      localName: '',
+      nativeName: 'English',
+      continents: [
+        'Asia',
+        'North America',
+        'Oceania',
+        'Africa',
+        'South America',
+        'Europe'
+      ]
+    },
     tags: {},
     objectID: '014c7add-288b-4f84-ac85-ccefef7a07d3',
     _highlightResult: {
@@ -325,9 +542,48 @@ export const algoliaJourneys = [
         matchedWords: []
       },
       language: {
-        value: 'English',
-        matchLevel: 'none',
-        matchedWords: []
+        localName: {
+          value: '',
+          matchLevel: 'none',
+          matchedWords: []
+        },
+        nativeName: {
+          value: 'English',
+          matchLevel: 'none',
+          matchedWords: []
+        },
+        continents: [
+          {
+            value: 'Asia',
+            matchLevel: 'none',
+            matchedWords: []
+          },
+          {
+            value: 'North America',
+            matchLevel: 'none',
+            matchedWords: []
+          },
+          {
+            value: 'Oceania',
+            matchLevel: 'none',
+            matchedWords: []
+          },
+          {
+            value: 'Africa',
+            matchLevel: 'none',
+            matchedWords: []
+          },
+          {
+            value: 'South America',
+            matchLevel: 'none',
+            matchedWords: []
+          },
+          {
+            value: 'Europe',
+            matchLevel: 'none',
+            matchedWords: []
+          }
+        ]
       }
     },
     __position: 6
@@ -337,42 +593,1315 @@ export const algoliaJourneys = [
 export const algoliaResults = {
   _rawResults: [
     {
-      query: '',
+      hits: [
+        {
+          title: 'onboarding template3',
+          date: '2024-07-09T00:37:24.569Z',
+          description: 'e978adb4-e4d8-42ef-89a9-79811f10b7e9',
+          image: {
+            src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public',
+            alt: 'onboarding primary'
+          },
+          featuredAt: null,
+          language: {
+            localName: '',
+            nativeName: 'English',
+            continents: [
+              'Asia',
+              'North America',
+              'Oceania',
+              'Africa',
+              'South America',
+              'Europe'
+            ]
+          },
+          tags: {
+            Topics: ['Anger'],
+            'Felt Needs': ['Depression'],
+            Holidays: ['Easter']
+          },
+          objectID: 'e978adb4-e4d8-42ef-89a9-79811f10b7e9',
+          _highlightResult: {
+            title: {
+              value: 'onboarding template3',
+              matchLevel: 'none',
+              matchedWords: []
+            },
+            description: {
+              value: 'e978adb4-e4d8-42ef-89a9-79811f10b7e9',
+              matchLevel: 'none',
+              matchedWords: []
+            },
+            language: {
+              localName: {
+                value: '',
+                matchLevel: 'none',
+                matchedWords: []
+              },
+              nativeName: {
+                value: 'English',
+                matchLevel: 'none',
+                matchedWords: []
+              },
+              continents: [
+                {
+                  value: 'Asia',
+                  matchLevel: 'none',
+                  matchedWords: []
+                },
+                {
+                  value: 'North America',
+                  matchLevel: 'none',
+                  matchedWords: []
+                },
+                {
+                  value: 'Oceania',
+                  matchLevel: 'none',
+                  matchedWords: []
+                },
+                {
+                  value: 'Africa',
+                  matchLevel: 'none',
+                  matchedWords: []
+                },
+                {
+                  value: 'South America',
+                  matchLevel: 'none',
+                  matchedWords: []
+                },
+                {
+                  value: 'Europe',
+                  matchLevel: 'none',
+                  matchedWords: []
+                }
+              ]
+            },
+            tags: {
+              Topics: [
+                {
+                  value: 'Anger',
+                  matchLevel: 'none',
+                  matchedWords: []
+                }
+              ],
+              'Felt Needs': [
+                {
+                  value: 'Depression',
+                  matchLevel: 'none',
+                  matchedWords: []
+                }
+              ],
+              Holidays: [
+                {
+                  value: 'Easter',
+                  matchLevel: 'none',
+                  matchedWords: []
+                }
+              ]
+            }
+          }
+        },
+        {
+          title: 'onboarding template2',
+          date: '2024-07-09T00:37:24.569Z',
+          description: 'c4889bb1-49ac-41c9-8fdb-0297afb32cd9',
+          image: {
+            src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public',
+            alt: 'onboarding primary'
+          },
+          featuredAt: null,
+          language: {
+            localName: 'Farsi, Western',
+            nativeName: 'فارسی',
+            continents: ['Asia', 'Europe', 'Oceania', 'North America']
+          },
+          tags: {
+            'Felt Needs': [
+              'Acceptance',
+              'Anxiety',
+              'Depression',
+              'Fear/Power',
+              'Forgiveness',
+              'Guilt/Righteousness'
+            ]
+          },
+          objectID: 'c4889bb1-49ac-41c9-8fdb-0297afb32cd9',
+          _highlightResult: {
+            title: {
+              value: 'onboarding template2',
+              matchLevel: 'none',
+              matchedWords: []
+            },
+            description: {
+              value: 'c4889bb1-49ac-41c9-8fdb-0297afb32cd9',
+              matchLevel: 'none',
+              matchedWords: []
+            },
+            language: {
+              localName: {
+                value: 'Farsi, Western',
+                matchLevel: 'none',
+                matchedWords: []
+              },
+              nativeName: {
+                value: 'فارسی',
+                matchLevel: 'none',
+                matchedWords: []
+              },
+              continents: [
+                {
+                  value: 'Asia',
+                  matchLevel: 'none',
+                  matchedWords: []
+                },
+                {
+                  value: 'Europe',
+                  matchLevel: 'none',
+                  matchedWords: []
+                },
+                {
+                  value: 'Oceania',
+                  matchLevel: 'none',
+                  matchedWords: []
+                },
+                {
+                  value: 'North America',
+                  matchLevel: 'none',
+                  matchedWords: []
+                }
+              ]
+            },
+            tags: {
+              'Felt Needs': [
+                {
+                  value: 'Acceptance',
+                  matchLevel: 'none',
+                  matchedWords: []
+                },
+                {
+                  value: 'Anxiety',
+                  matchLevel: 'none',
+                  matchedWords: []
+                },
+                {
+                  value: 'Depression',
+                  matchLevel: 'none',
+                  matchedWords: []
+                },
+                {
+                  value: 'Fear/Power',
+                  matchLevel: 'none',
+                  matchedWords: []
+                },
+                {
+                  value: 'Forgiveness',
+                  matchLevel: 'none',
+                  matchedWords: []
+                },
+                {
+                  value: 'Guilt/Righteousness',
+                  matchLevel: 'none',
+                  matchedWords: []
+                }
+              ]
+            }
+          }
+        },
+        {
+          title: 'Dev Onboarding Journey',
+          date: '2024-07-09T00:37:24.547Z',
+          description:
+            'Only used for development and staging. Production should use actual onboarding journey.',
+          image: {
+            src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public',
+            alt: 'onboarding primary'
+          },
+          featuredAt: null,
+          language: {
+            localName: '',
+            nativeName: 'English',
+            continents: [
+              'Asia',
+              'North America',
+              'Oceania',
+              'Africa',
+              'South America',
+              'Europe'
+            ]
+          },
+          tags: {},
+          objectID: '9d9ca229-9fb5-4d06-a18c-2d1a4ceba457',
+          _highlightResult: {
+            title: {
+              value: 'Dev Onboarding Journey',
+              matchLevel: 'none',
+              matchedWords: []
+            },
+            description: {
+              value:
+                'Only used for development and staging. Production should use actual onboarding journey.',
+              matchLevel: 'none',
+              matchedWords: []
+            },
+            language: {
+              localName: {
+                value: '',
+                matchLevel: 'none',
+                matchedWords: []
+              },
+              nativeName: {
+                value: 'English',
+                matchLevel: 'none',
+                matchedWords: []
+              },
+              continents: [
+                {
+                  value: 'Asia',
+                  matchLevel: 'none',
+                  matchedWords: []
+                },
+                {
+                  value: 'North America',
+                  matchLevel: 'none',
+                  matchedWords: []
+                },
+                {
+                  value: 'Oceania',
+                  matchLevel: 'none',
+                  matchedWords: []
+                },
+                {
+                  value: 'Africa',
+                  matchLevel: 'none',
+                  matchedWords: []
+                },
+                {
+                  value: 'South America',
+                  matchLevel: 'none',
+                  matchedWords: []
+                },
+                {
+                  value: 'Europe',
+                  matchLevel: 'none',
+                  matchedWords: []
+                }
+              ]
+            }
+          }
+        },
+        {
+          title: 'onboarding template4',
+          date: '2024-07-09T00:37:24.569Z',
+          description: '178c01bd-371c-4e73-a9b8-e2bb95215fd8',
+          image: {
+            src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public',
+            alt: 'onboarding primary'
+          },
+          featuredAt: null,
+          language: {
+            localName: 'Georgian',
+            nativeName: 'ქართული',
+            continents: ['Asia', 'Europe']
+          },
+          tags: {
+            'Felt Needs': ['Acceptance'],
+            Topics: ['Addiction'],
+            Audience: ['Adults']
+          },
+          objectID: '178c01bd-371c-4e73-a9b8-e2bb95215fd8',
+          _highlightResult: {
+            title: {
+              value: 'onboarding template4',
+              matchLevel: 'none',
+              matchedWords: []
+            },
+            description: {
+              value: '178c01bd-371c-4e73-a9b8-e2bb95215fd8',
+              matchLevel: 'none',
+              matchedWords: []
+            },
+            language: {
+              localName: {
+                value: 'Georgian',
+                matchLevel: 'none',
+                matchedWords: []
+              },
+              nativeName: {
+                value: 'ქართული',
+                matchLevel: 'none',
+                matchedWords: []
+              },
+              continents: [
+                {
+                  value: 'Asia',
+                  matchLevel: 'none',
+                  matchedWords: []
+                },
+                {
+                  value: 'Europe',
+                  matchLevel: 'none',
+                  matchedWords: []
+                }
+              ]
+            },
+            tags: {
+              'Felt Needs': [
+                {
+                  value: 'Acceptance',
+                  matchLevel: 'none',
+                  matchedWords: []
+                }
+              ],
+              Topics: [
+                {
+                  value: 'Addiction',
+                  matchLevel: 'none',
+                  matchedWords: []
+                }
+              ],
+              Audience: [
+                {
+                  value: 'Adults',
+                  matchLevel: 'none',
+                  matchedWords: []
+                }
+              ]
+            }
+          }
+        },
+        {
+          title: 'onboarding template5',
+          date: '2024-07-09T00:37:24.569Z',
+          description: '13317d05-a805-4b3c-b362-9018971d9b57',
+          image: {
+            src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public',
+            alt: 'onboarding primary'
+          },
+          featuredAt: null,
+          language: {
+            localName: '',
+            nativeName: 'English',
+            continents: [
+              'Asia',
+              'North America',
+              'Oceania',
+              'Africa',
+              'South America',
+              'Europe'
+            ]
+          },
+          tags: {
+            Topics: ['Addiction', 'Anger'],
+            Audience: ['Adults'],
+            Holidays: ['Easter'],
+            Collections: ['Jesus Film', 'NUA']
+          },
+          objectID: '13317d05-a805-4b3c-b362-9018971d9b57',
+          _highlightResult: {
+            title: {
+              value: 'onboarding template5',
+              matchLevel: 'none',
+              matchedWords: []
+            },
+            description: {
+              value: '13317d05-a805-4b3c-b362-9018971d9b57',
+              matchLevel: 'none',
+              matchedWords: []
+            },
+            language: {
+              localName: {
+                value: '',
+                matchLevel: 'none',
+                matchedWords: []
+              },
+              nativeName: {
+                value: 'English',
+                matchLevel: 'none',
+                matchedWords: []
+              },
+              continents: [
+                {
+                  value: 'Asia',
+                  matchLevel: 'none',
+                  matchedWords: []
+                },
+                {
+                  value: 'North America',
+                  matchLevel: 'none',
+                  matchedWords: []
+                },
+                {
+                  value: 'Oceania',
+                  matchLevel: 'none',
+                  matchedWords: []
+                },
+                {
+                  value: 'Africa',
+                  matchLevel: 'none',
+                  matchedWords: []
+                },
+                {
+                  value: 'South America',
+                  matchLevel: 'none',
+                  matchedWords: []
+                },
+                {
+                  value: 'Europe',
+                  matchLevel: 'none',
+                  matchedWords: []
+                }
+              ]
+            },
+            tags: {
+              Topics: [
+                {
+                  value: 'Addiction',
+                  matchLevel: 'none',
+                  matchedWords: []
+                },
+                {
+                  value: 'Anger',
+                  matchLevel: 'none',
+                  matchedWords: []
+                }
+              ],
+              Audience: [
+                {
+                  value: 'Adults',
+                  matchLevel: 'none',
+                  matchedWords: []
+                }
+              ],
+              Holidays: [
+                {
+                  value: 'Easter',
+                  matchLevel: 'none',
+                  matchedWords: []
+                }
+              ],
+              Collections: [
+                {
+                  value: 'Jesus Film',
+                  matchLevel: 'none',
+                  matchedWords: []
+                },
+                {
+                  value: 'NUA',
+                  matchLevel: 'none',
+                  matchedWords: []
+                }
+              ]
+            }
+          }
+        },
+        {
+          title: 'onboarding template1',
+          date: '2024-07-09T00:37:24.569Z',
+          description: '014c7add-288b-4f84-ac85-ccefef7a07d3',
+          image: {
+            src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public',
+            alt: 'onboarding primary'
+          },
+          featuredAt: null,
+          language: {
+            localName: '',
+            nativeName: 'English',
+            continents: [
+              'Asia',
+              'North America',
+              'Oceania',
+              'Africa',
+              'South America',
+              'Europe'
+            ]
+          },
+          tags: {},
+          objectID: '014c7add-288b-4f84-ac85-ccefef7a07d3',
+          _highlightResult: {
+            title: {
+              value: 'onboarding template1',
+              matchLevel: 'none',
+              matchedWords: []
+            },
+            description: {
+              value: '014c7add-288b-4f84-ac85-ccefef7a07d3',
+              matchLevel: 'none',
+              matchedWords: []
+            },
+            language: {
+              localName: {
+                value: '',
+                matchLevel: 'none',
+                matchedWords: []
+              },
+              nativeName: {
+                value: 'English',
+                matchLevel: 'none',
+                matchedWords: []
+              },
+              continents: [
+                {
+                  value: 'Asia',
+                  matchLevel: 'none',
+                  matchedWords: []
+                },
+                {
+                  value: 'North America',
+                  matchLevel: 'none',
+                  matchedWords: []
+                },
+                {
+                  value: 'Oceania',
+                  matchLevel: 'none',
+                  matchedWords: []
+                },
+                {
+                  value: 'Africa',
+                  matchLevel: 'none',
+                  matchedWords: []
+                },
+                {
+                  value: 'South America',
+                  matchLevel: 'none',
+                  matchedWords: []
+                },
+                {
+                  value: 'Europe',
+                  matchLevel: 'none',
+                  matchedWords: []
+                }
+              ]
+            }
+          }
+        }
+      ],
+      nbHits: 6,
       page: 0,
+      nbPages: 1,
       hitsPerPage: 20,
-      hits: [],
-      nbHits: 0,
-      nbPages: 0,
-      params: '',
-      exhaustiveNbHits: true,
+      facets: {
+        'tags.Topics': {
+          Addiction: 2,
+          Anger: 2
+        },
+        'tags.Audience': {
+          Adults: 2
+        },
+        'tags.Holidays': {
+          Easter: 2
+        },
+        'tags.Felt Needs': {
+          Acceptance: 2,
+          Depression: 2,
+          Anxiety: 1,
+          'Fear/Power': 1,
+          Forgiveness: 1,
+          'Guilt/Righteousness': 1
+        },
+        'tags.Collections': {
+          'Jesus Film': 1,
+          NUA: 1
+        }
+      },
       exhaustiveFacetsCount: true,
-      processingTimeMS: 0,
-      index: 'api-journeys-journeys-dev'
+      exhaustiveNbHits: true,
+      exhaustiveTypo: true,
+      exhaustive: {
+        facetsCount: true,
+        nbHits: true,
+        typo: true
+      },
+      query: '',
+      params:
+        'facets=%5B%22tags.Audience%22%2C%22tags.Collections%22%2C%22tags.Felt%20Needs%22%2C%22tags.Holidays%22%2C%22tags.Topics%22%5D&highlightPostTag=__%2Fais-highlight__&highlightPreTag=__ais-highlight__&maxValuesPerFacet=10&query=&tagFilters=',
+      index: 'api-journeys-journeys-dev',
+      renderingContent: {},
+      processingTimeMS: 3,
+      processingTimingsMS: {
+        _request: {
+          roundTrip: 187
+        },
+        getIdx: {
+          load: {
+            settings: 1,
+            total: 2
+          },
+          total: 2
+        },
+        total: 3
+      },
+      serverTimeMS: 4
     }
   ],
-  query: '',
+  hits: [
+    {
+      title: 'onboarding template3',
+      date: '2024-07-09T00:37:24.569Z',
+      description: 'e978adb4-e4d8-42ef-89a9-79811f10b7e9',
+      image: {
+        src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public',
+        alt: 'onboarding primary'
+      },
+      featuredAt: null,
+      language: {
+        localName: '',
+        nativeName: 'English',
+        continents: [
+          'Asia',
+          'North America',
+          'Oceania',
+          'Africa',
+          'South America',
+          'Europe'
+        ]
+      },
+      tags: {
+        Topics: ['Anger'],
+        'Felt Needs': ['Depression'],
+        Holidays: ['Easter']
+      },
+      objectID: 'e978adb4-e4d8-42ef-89a9-79811f10b7e9',
+      _highlightResult: {
+        title: {
+          value: 'onboarding template3',
+          matchLevel: 'none',
+          matchedWords: []
+        },
+        description: {
+          value: 'e978adb4-e4d8-42ef-89a9-79811f10b7e9',
+          matchLevel: 'none',
+          matchedWords: []
+        },
+        language: {
+          localName: {
+            value: '',
+            matchLevel: 'none',
+            matchedWords: []
+          },
+          nativeName: {
+            value: 'English',
+            matchLevel: 'none',
+            matchedWords: []
+          },
+          continents: [
+            {
+              value: 'Asia',
+              matchLevel: 'none',
+              matchedWords: []
+            },
+            {
+              value: 'North America',
+              matchLevel: 'none',
+              matchedWords: []
+            },
+            {
+              value: 'Oceania',
+              matchLevel: 'none',
+              matchedWords: []
+            },
+            {
+              value: 'Africa',
+              matchLevel: 'none',
+              matchedWords: []
+            },
+            {
+              value: 'South America',
+              matchLevel: 'none',
+              matchedWords: []
+            },
+            {
+              value: 'Europe',
+              matchLevel: 'none',
+              matchedWords: []
+            }
+          ]
+        },
+        tags: {
+          Topics: [
+            {
+              value: 'Anger',
+              matchLevel: 'none',
+              matchedWords: []
+            }
+          ],
+          'Felt Needs': [
+            {
+              value: 'Depression',
+              matchLevel: 'none',
+              matchedWords: []
+            }
+          ],
+          Holidays: [
+            {
+              value: 'Easter',
+              matchLevel: 'none',
+              matchedWords: []
+            }
+          ]
+        }
+      }
+    },
+    {
+      title: 'onboarding template2',
+      date: '2024-07-09T00:37:24.569Z',
+      description: 'c4889bb1-49ac-41c9-8fdb-0297afb32cd9',
+      image: {
+        src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public',
+        alt: 'onboarding primary'
+      },
+      featuredAt: null,
+      language: {
+        localName: 'Farsi, Western',
+        nativeName: 'فارسی',
+        continents: ['Asia', 'Europe', 'Oceania', 'North America']
+      },
+      tags: {
+        'Felt Needs': [
+          'Acceptance',
+          'Anxiety',
+          'Depression',
+          'Fear/Power',
+          'Forgiveness',
+          'Guilt/Righteousness'
+        ]
+      },
+      objectID: 'c4889bb1-49ac-41c9-8fdb-0297afb32cd9',
+      _highlightResult: {
+        title: {
+          value: 'onboarding template2',
+          matchLevel: 'none',
+          matchedWords: []
+        },
+        description: {
+          value: 'c4889bb1-49ac-41c9-8fdb-0297afb32cd9',
+          matchLevel: 'none',
+          matchedWords: []
+        },
+        language: {
+          localName: {
+            value: 'Farsi, Western',
+            matchLevel: 'none',
+            matchedWords: []
+          },
+          nativeName: {
+            value: 'فارسی',
+            matchLevel: 'none',
+            matchedWords: []
+          },
+          continents: [
+            {
+              value: 'Asia',
+              matchLevel: 'none',
+              matchedWords: []
+            },
+            {
+              value: 'Europe',
+              matchLevel: 'none',
+              matchedWords: []
+            },
+            {
+              value: 'Oceania',
+              matchLevel: 'none',
+              matchedWords: []
+            },
+            {
+              value: 'North America',
+              matchLevel: 'none',
+              matchedWords: []
+            }
+          ]
+        },
+        tags: {
+          'Felt Needs': [
+            {
+              value: 'Acceptance',
+              matchLevel: 'none',
+              matchedWords: []
+            },
+            {
+              value: 'Anxiety',
+              matchLevel: 'none',
+              matchedWords: []
+            },
+            {
+              value: 'Depression',
+              matchLevel: 'none',
+              matchedWords: []
+            },
+            {
+              value: 'Fear/Power',
+              matchLevel: 'none',
+              matchedWords: []
+            },
+            {
+              value: 'Forgiveness',
+              matchLevel: 'none',
+              matchedWords: []
+            },
+            {
+              value: 'Guilt/Righteousness',
+              matchLevel: 'none',
+              matchedWords: []
+            }
+          ]
+        }
+      }
+    },
+    {
+      title: 'Dev Onboarding Journey',
+      date: '2024-07-09T00:37:24.547Z',
+      description:
+        'Only used for development and staging. Production should use actual onboarding journey.',
+      image: {
+        src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public',
+        alt: 'onboarding primary'
+      },
+      featuredAt: null,
+      language: {
+        localName: '',
+        nativeName: 'English',
+        continents: [
+          'Asia',
+          'North America',
+          'Oceania',
+          'Africa',
+          'South America',
+          'Europe'
+        ]
+      },
+      tags: {},
+      objectID: '9d9ca229-9fb5-4d06-a18c-2d1a4ceba457',
+      _highlightResult: {
+        title: {
+          value: 'Dev Onboarding Journey',
+          matchLevel: 'none',
+          matchedWords: []
+        },
+        description: {
+          value:
+            'Only used for development and staging. Production should use actual onboarding journey.',
+          matchLevel: 'none',
+          matchedWords: []
+        },
+        language: {
+          localName: {
+            value: '',
+            matchLevel: 'none',
+            matchedWords: []
+          },
+          nativeName: {
+            value: 'English',
+            matchLevel: 'none',
+            matchedWords: []
+          },
+          continents: [
+            {
+              value: 'Asia',
+              matchLevel: 'none',
+              matchedWords: []
+            },
+            {
+              value: 'North America',
+              matchLevel: 'none',
+              matchedWords: []
+            },
+            {
+              value: 'Oceania',
+              matchLevel: 'none',
+              matchedWords: []
+            },
+            {
+              value: 'Africa',
+              matchLevel: 'none',
+              matchedWords: []
+            },
+            {
+              value: 'South America',
+              matchLevel: 'none',
+              matchedWords: []
+            },
+            {
+              value: 'Europe',
+              matchLevel: 'none',
+              matchedWords: []
+            }
+          ]
+        }
+      }
+    },
+    {
+      title: 'onboarding template4',
+      date: '2024-07-09T00:37:24.569Z',
+      description: '178c01bd-371c-4e73-a9b8-e2bb95215fd8',
+      image: {
+        src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public',
+        alt: 'onboarding primary'
+      },
+      featuredAt: null,
+      language: {
+        localName: 'Georgian',
+        nativeName: 'ქართული',
+        continents: ['Asia', 'Europe']
+      },
+      tags: {
+        'Felt Needs': ['Acceptance'],
+        Topics: ['Addiction'],
+        Audience: ['Adults']
+      },
+      objectID: '178c01bd-371c-4e73-a9b8-e2bb95215fd8',
+      _highlightResult: {
+        title: {
+          value: 'onboarding template4',
+          matchLevel: 'none',
+          matchedWords: []
+        },
+        description: {
+          value: '178c01bd-371c-4e73-a9b8-e2bb95215fd8',
+          matchLevel: 'none',
+          matchedWords: []
+        },
+        language: {
+          localName: {
+            value: 'Georgian',
+            matchLevel: 'none',
+            matchedWords: []
+          },
+          nativeName: {
+            value: 'ქართული',
+            matchLevel: 'none',
+            matchedWords: []
+          },
+          continents: [
+            {
+              value: 'Asia',
+              matchLevel: 'none',
+              matchedWords: []
+            },
+            {
+              value: 'Europe',
+              matchLevel: 'none',
+              matchedWords: []
+            }
+          ]
+        },
+        tags: {
+          'Felt Needs': [
+            {
+              value: 'Acceptance',
+              matchLevel: 'none',
+              matchedWords: []
+            }
+          ],
+          Topics: [
+            {
+              value: 'Addiction',
+              matchLevel: 'none',
+              matchedWords: []
+            }
+          ],
+          Audience: [
+            {
+              value: 'Adults',
+              matchLevel: 'none',
+              matchedWords: []
+            }
+          ]
+        }
+      }
+    },
+    {
+      title: 'onboarding template5',
+      date: '2024-07-09T00:37:24.569Z',
+      description: '13317d05-a805-4b3c-b362-9018971d9b57',
+      image: {
+        src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public',
+        alt: 'onboarding primary'
+      },
+      featuredAt: null,
+      language: {
+        localName: '',
+        nativeName: 'English',
+        continents: [
+          'Asia',
+          'North America',
+          'Oceania',
+          'Africa',
+          'South America',
+          'Europe'
+        ]
+      },
+      tags: {
+        Topics: ['Addiction', 'Anger'],
+        Audience: ['Adults'],
+        Holidays: ['Easter'],
+        Collections: ['Jesus Film', 'NUA']
+      },
+      objectID: '13317d05-a805-4b3c-b362-9018971d9b57',
+      _highlightResult: {
+        title: {
+          value: 'onboarding template5',
+          matchLevel: 'none',
+          matchedWords: []
+        },
+        description: {
+          value: '13317d05-a805-4b3c-b362-9018971d9b57',
+          matchLevel: 'none',
+          matchedWords: []
+        },
+        language: {
+          localName: {
+            value: '',
+            matchLevel: 'none',
+            matchedWords: []
+          },
+          nativeName: {
+            value: 'English',
+            matchLevel: 'none',
+            matchedWords: []
+          },
+          continents: [
+            {
+              value: 'Asia',
+              matchLevel: 'none',
+              matchedWords: []
+            },
+            {
+              value: 'North America',
+              matchLevel: 'none',
+              matchedWords: []
+            },
+            {
+              value: 'Oceania',
+              matchLevel: 'none',
+              matchedWords: []
+            },
+            {
+              value: 'Africa',
+              matchLevel: 'none',
+              matchedWords: []
+            },
+            {
+              value: 'South America',
+              matchLevel: 'none',
+              matchedWords: []
+            },
+            {
+              value: 'Europe',
+              matchLevel: 'none',
+              matchedWords: []
+            }
+          ]
+        },
+        tags: {
+          Topics: [
+            {
+              value: 'Addiction',
+              matchLevel: 'none',
+              matchedWords: []
+            },
+            {
+              value: 'Anger',
+              matchLevel: 'none',
+              matchedWords: []
+            }
+          ],
+          Audience: [
+            {
+              value: 'Adults',
+              matchLevel: 'none',
+              matchedWords: []
+            }
+          ],
+          Holidays: [
+            {
+              value: 'Easter',
+              matchLevel: 'none',
+              matchedWords: []
+            }
+          ],
+          Collections: [
+            {
+              value: 'Jesus Film',
+              matchLevel: 'none',
+              matchedWords: []
+            },
+            {
+              value: 'NUA',
+              matchLevel: 'none',
+              matchedWords: []
+            }
+          ]
+        }
+      }
+    },
+    {
+      title: 'onboarding template1',
+      date: '2024-07-09T00:37:24.569Z',
+      description: '014c7add-288b-4f84-ac85-ccefef7a07d3',
+      image: {
+        src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public',
+        alt: 'onboarding primary'
+      },
+      featuredAt: null,
+      language: {
+        localName: '',
+        nativeName: 'English',
+        continents: [
+          'Asia',
+          'North America',
+          'Oceania',
+          'Africa',
+          'South America',
+          'Europe'
+        ]
+      },
+      tags: {},
+      objectID: '014c7add-288b-4f84-ac85-ccefef7a07d3',
+      _highlightResult: {
+        title: {
+          value: 'onboarding template1',
+          matchLevel: 'none',
+          matchedWords: []
+        },
+        description: {
+          value: '014c7add-288b-4f84-ac85-ccefef7a07d3',
+          matchLevel: 'none',
+          matchedWords: []
+        },
+        language: {
+          localName: {
+            value: '',
+            matchLevel: 'none',
+            matchedWords: []
+          },
+          nativeName: {
+            value: 'English',
+            matchLevel: 'none',
+            matchedWords: []
+          },
+          continents: [
+            {
+              value: 'Asia',
+              matchLevel: 'none',
+              matchedWords: []
+            },
+            {
+              value: 'North America',
+              matchLevel: 'none',
+              matchedWords: []
+            },
+            {
+              value: 'Oceania',
+              matchLevel: 'none',
+              matchedWords: []
+            },
+            {
+              value: 'Africa',
+              matchLevel: 'none',
+              matchedWords: []
+            },
+            {
+              value: 'South America',
+              matchLevel: 'none',
+              matchedWords: []
+            },
+            {
+              value: 'Europe',
+              matchLevel: 'none',
+              matchedWords: []
+            }
+          ]
+        }
+      }
+    }
+  ],
+  nbHits: 6,
   page: 0,
+  nbPages: 1,
   hitsPerPage: 20,
-  hits: [],
-  nbHits: 0,
-  nbPages: 0,
-  params: '',
-  exhaustiveNbHits: true,
-  exhaustiveFacetsCount: true,
-  processingTimeMS: 0,
-  index: 'api-journeys-journeys-dev',
-  persistHierarchicalRootCount: false,
-  __isArtificial: true,
-  disjunctiveFacets: [],
-  hierarchicalFacets: [],
   facets: [],
+  exhaustiveFacetsCount: true,
+  exhaustiveNbHits: true,
+  exhaustiveTypo: true,
+  exhaustive: {
+    facetsCount: true,
+    nbHits: true,
+    typo: true
+  },
+  query: '',
+  params:
+    'facets=%5B%22tags.Audience%22%2C%22tags.Collections%22%2C%22tags.Felt%20Needs%22%2C%22tags.Holidays%22%2C%22tags.Topics%22%5D&highlightPostTag=__%2Fais-highlight__&highlightPreTag=__ais-highlight__&maxValuesPerFacet=10&query=&tagFilters=',
+  index: 'api-journeys-journeys-dev',
+  renderingContent: {},
+  processingTimeMS: 3,
+  processingTimingsMS: {
+    _request: {
+      roundTrip: 187
+    },
+    getIdx: {
+      load: {
+        settings: 1,
+        total: 2
+      },
+      total: 2
+    },
+    total: 3
+  },
+  serverTimeMS: 4,
+  persistHierarchicalRootCount: false,
+  disjunctiveFacets: [
+    {
+      name: 'tags.Collections',
+      data: {
+        'Jesus Film': 1,
+        NUA: 1
+      },
+      exhaustive: true
+    },
+    {
+      name: 'tags.Topics',
+      data: {
+        Addiction: 2,
+        Anger: 2
+      },
+      exhaustive: true
+    },
+    {
+      name: 'tags.Holidays',
+      data: {
+        Easter: 2
+      },
+      exhaustive: true
+    },
+    {
+      name: 'tags.Audience',
+      data: {
+        Adults: 2
+      },
+      exhaustive: true
+    },
+    {
+      name: 'tags.Felt Needs',
+      data: {
+        Acceptance: 2,
+        Depression: 2,
+        Anxiety: 1,
+        'Fear/Power': 1,
+        Forgiveness: 1,
+        'Guilt/Righteousness': 1
+      },
+      exhaustive: true
+    }
+  ],
+  hierarchicalFacets: [],
   _state: {
     facets: [],
     disjunctiveFacets: [
+      'tags.Collections',
       'tags.Topics',
       'tags.Holidays',
       'tags.Audience',
-      'tags.Collections'
+      'tags.Felt Needs'
     ],
     hierarchicalFacets: [],
     facetsRefinements: {},
@@ -381,7 +1910,8 @@ export const algoliaResults = {
       'tags.Topics': [],
       'tags.Holidays': [],
       'tags.Audience': [],
-      'tags.Collections': []
+      'tags.Collections': [],
+      'tags.Felt Needs': []
     },
     numericRefinements: {},
     tagRefinements: [],
@@ -393,56 +1923,3 @@ export const algoliaResults = {
     highlightPostTag: '__/ais-highlight__'
   }
 }
-
-export const FACET_HITS = [
-  {
-    value: 'Apple',
-    highlighted: '__ais-highlight__App__/ais-highlight__le',
-    count: 442
-  },
-  {
-    value: 'Alpine',
-    highlighted: '__ais-highlight__Alp__/ais-highlight__ine',
-    count: 30
-  },
-  {
-    value: 'APC',
-    highlighted: '__ais-highlight__AP__/ais-highlight__C',
-    count: 24
-  },
-  {
-    value: 'Amped Wireless',
-    highlighted: '__ais-highlight__Amp__/ais-highlight__ed Wireless',
-    count: 4
-  },
-  {
-    value: "Applebee's",
-    highlighted: "__ais-highlight__App__/ais-highlight__lebee's",
-    count: 2
-  },
-  {
-    value: 'Amplicom',
-    highlighted: '__ais-highlight__Amp__/ais-highlight__licom',
-    count: 1
-  },
-  {
-    value: 'Apollo Enclosures',
-    highlighted: '__ais-highlight__Ap__/ais-highlight__ollo Enclosures',
-    count: 1
-  },
-  {
-    value: 'Apple®',
-    highlighted: '__ais-highlight__App__/ais-highlight__le®',
-    count: 1
-  },
-  {
-    value: 'Applica',
-    highlighted: '__ais-highlight__App__/ais-highlight__lica',
-    count: 1
-  },
-  {
-    value: 'Apricorn',
-    highlighted: '__ais-highlight__Ap__/ais-highlight__ricorn',
-    count: 1
-  }
-]

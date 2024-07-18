@@ -42,7 +42,7 @@ export function HoverLayer({ className }: HoverLayerProps): ReactElement {
 }
 
 interface TemplateGalleryCardProps {
-  item?: Journey | AlgoliaJourney
+  item?: AlgoliaJourney
   priority?: boolean
 }
 
@@ -56,22 +56,19 @@ export function TemplateGalleryCard({
     : '/templates'
   const journeyIdPath = `${journeyBasePath}/${journey?.id ?? ''}`
 
-  // TODO(jk): if we need to handle multiple langs this might come into play again
-  // const localLanguage = journey?.language?.name.find(({ primary }) => !primary)?.value
-  // const nativeLanguage =journey?.language?.name.find(({ primary }) => primary)?.value ?? ''
-
+  const localLanguage = journey?.language?.localName
+  const nativeLanguage = journey?.language?.nativeName
   const displayLanguage = abbreviateLanguageName(
-    // localLanguage ?? nativeLanguage
-    String(journey?.language)
+    localLanguage !== '' ? localLanguage : nativeLanguage
   )
 
   const theme = useTheme()
   const { t } = useTranslation('libs-journeys-ui')
   const date =
-    journey != null
+    journey != null && journey.createdAt
       ? intlFormat(parseISO(String(journey.createdAt)), {
           month: 'short',
-          year: isThisYear(parseISO(String(journey?.createdAt)))
+          year: isThisYear(parseISO(String(journey.createdAt)))
             ? undefined
             : 'numeric'
         }).replace(' ', ', ')
