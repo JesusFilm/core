@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 
 import { WrapperProps } from '@core/journeys/ui/BlockRenderer'
-import { ActiveFab, useEditor } from '@core/journeys/ui/EditorProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { ButtonFields } from '../../../../../../../__generated__/ButtonFields'
@@ -70,8 +70,6 @@ export function InlineEditWrapper({
         }
         blockDeleteUpdate(block, data?.blockDelete, cache, journey.id)
       }
-    }).then(() => {
-      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
     })
   }
 

@@ -4,7 +4,7 @@ import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
-import { ActiveFab, useEditor } from '@core/journeys/ui/EditorProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { Dialog } from '@core/shared/ui/Dialog'
@@ -76,8 +76,6 @@ export function DeleteBlock({
         }
         blockDeleteUpdate(currentBlock, data?.blockDelete, cache, journey.id)
       }
-    }).then(() => {
-      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
     })
 
     handleCloseDialog()

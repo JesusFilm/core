@@ -3,7 +3,6 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import {
   ActiveContent,
-  ActiveFab,
   EditorProvider,
   EditorState
 } from '@core/journeys/ui/EditorProvider'
@@ -25,7 +24,6 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 describe('Fab', () => {
   const state: EditorState = {
-    activeFab: ActiveFab.Add,
     activeSlide: ActiveSlide.Content,
     activeContent: ActiveContent.Canvas,
     activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
@@ -82,7 +80,6 @@ describe('Fab', () => {
           <Fab variant="canvas" />
         </EditorProvider>
       )
-      expect(screen.getByText('activeFab: Add')).toBeInTheDocument()
       fireEvent.click(screen.getByRole('button', { name: 'Add Block' }))
       expect(
         screen.getByText('activeCanvasDetailsDrawer: 2')
@@ -108,7 +105,6 @@ describe('Fab', () => {
           <Fab variant="canvas" />
         </EditorProvider>
       )
-      expect(screen.getByText('activeFab: Add')).toBeInTheDocument()
       fireEvent.click(screen.getByRole('button', { name: 'Add Block' }))
       expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
       expect(
@@ -131,8 +127,6 @@ describe('Fab', () => {
         </EditorProvider>
       )
       expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
-      expect(screen.getByText('activeFab: Add')).toBeInTheDocument()
-
       const fab = screen.getByTestId('Fab')
       fireEvent.click(fab)
       await waitFor(() => {

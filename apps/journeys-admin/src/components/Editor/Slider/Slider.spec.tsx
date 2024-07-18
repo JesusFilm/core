@@ -6,7 +6,6 @@ import { SnackbarProvider } from 'notistack'
 import {
   ActiveCanvasDetailsDrawer,
   ActiveContent,
-  ActiveFab,
   ActiveSlide,
   EditorProvider,
   EditorState
@@ -60,7 +59,6 @@ describe('Slider', () => {
       steps: [selectedStep],
       activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.AddBlock,
       activeContent: ActiveContent.Canvas,
-      activeFab: ActiveFab.Add,
       activeSlide: ActiveSlide.JourneyFlow
     }
     mockUseMediaQuery.mockImplementation(() => true)

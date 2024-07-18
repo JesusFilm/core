@@ -1,7 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 
-import { ActiveFab, EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
@@ -126,8 +126,7 @@ const Template: StoryObj<typeof Canvas> = {
           <EditorProvider
             initialState={{
               ...args,
-              steps,
-              activeFab: ActiveFab.Save
+              steps
             }}
           >
             <Canvas />

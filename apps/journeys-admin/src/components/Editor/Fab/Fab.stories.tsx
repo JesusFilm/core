@@ -4,7 +4,6 @@ import { ComponentProps } from 'react'
 import {
   ActiveCanvasDetailsDrawer,
   ActiveContent,
-  ActiveFab,
   ActiveSlide,
   EditorProvider,
   EditorState
@@ -46,7 +45,6 @@ export const AddDesktop = {
   args: {
     variant: 'canvas',
     state: {
-      activeFab: ActiveFab.Add,
       activeSlide: ActiveSlide.Content,
       activeContent: ActiveContent.Canvas,
       activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.AddBlock,
@@ -61,7 +59,6 @@ export const AddMobile = {
   args: {
     variant: 'mobile',
     state: {
-      activeFab: ActiveFab.Add,
       activeSlide: ActiveSlide.Content,
       activeContent: ActiveContent.Canvas,
       activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.AddBlock,
@@ -76,7 +73,6 @@ export const DisabledDesktop = {
   args: {
     variant: 'canvas',
     state: {
-      activeFab: ActiveFab.Add,
       activeSlide: ActiveSlide.Content,
       activeContent: ActiveContent.Canvas,
       activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.AddBlock,
@@ -91,7 +87,6 @@ export const DisabledMobile = {
   args: {
     variant: 'mobile',
     state: {
-      activeFab: ActiveFab.Add,
       activeSlide: ActiveSlide.Content,
       activeContent: ActiveContent.Canvas,
       activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.AddBlock,
