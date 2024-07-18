@@ -7,6 +7,7 @@ import { VideoVariant } from '.prisma/api-videos-client'
 
 import { PrismaService } from '../../lib/prisma.service'
 
+import { ApolloClient, ApolloQueryResult } from '@apollo/client'
 import { AlgoliaService } from './algolia.service'
 
 const saveObjectsSpy = jest
@@ -28,6 +29,28 @@ jest.mock('algoliasearch', () => {
 const mockAlgoliaSearch = algoliasearch as jest.MockedFunction<
   typeof algoliasearch
 >
+
+const languages = [
+  {
+    id: 'languageId',
+    name: [
+      {
+        value: 'English',
+        primary: true
+      }
+    ],
+    countries: [
+      {
+        continent: [
+          {
+            value: 'Europe',
+            primary: true
+          }
+        ]
+      }
+    ]
+  }
+]
 
 describe('AlgoliaService', () => {
   let service: AlgoliaService
@@ -68,6 +91,22 @@ describe('AlgoliaService', () => {
       )
     })
 
+    it('should get tags', () => {
+      const mockApollo = jest
+        .spyOn(ApolloClient.prototype, 'query')
+        .mockImplementationOnce(
+          async () =>
+            await Promise.resolve({
+              data: {
+                languages
+              }
+            } as unknown as ApolloQueryResult<unknown>)
+        )
+
+      service.getLanguages()
+      expect(mockApollo).toHaveBeenCalled()
+    })
+
     it('should sync videos english to Algolia', async () => {
       process.env.ALGOLIA_API_KEY = 'key'
       process.env.ALGOLIA_APPLICATION_ID = 'id'
@@ -92,6 +131,15 @@ describe('AlgoliaService', () => {
           } as unknown as VideoVariant
         ])
         .mockResolvedValueOnce([])
+
+      jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
+        async () =>
+          await Promise.resolve({
+            data: {
+              languages
+            }
+          } as unknown as ApolloQueryResult<unknown>)
+      )
 
       await service.syncVideosToAlgolia()
       expect(prismaService.videoVariant.findMany).toHaveBeenCalledWith({
@@ -122,7 +170,11 @@ describe('AlgoliaService', () => {
           image: 'image',
           imageAlt: 'imageAlt',
           label: 'label',
-          languageId: 'languageId',
+          language: {
+            localName: '',
+            nativeName: 'English',
+            continents: ['Europe']
+          },
           objectID: 'id',
           slug: 'slug',
           subtitles: ['subtitle'],
@@ -137,6 +189,15 @@ describe('AlgoliaService', () => {
       process.env.ALGOLIA_APPLICATION_ID = 'id'
       process.env.ALGOLIA_INDEX = 'video-variants-prd'
       prismaService.videoVariant.findMany.mockResolvedValueOnce([])
+      jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
+        async () =>
+          await Promise.resolve({
+            data: {
+              languages
+            }
+          } as unknown as ApolloQueryResult<unknown>)
+      )
+
       await service.syncVideosToAlgolia()
       expect(prismaService.videoVariant.findMany).toHaveBeenCalledWith({
         take: 1000,
