@@ -4,7 +4,6 @@ import Stack from '@mui/material/Stack'
 import { SxProps, useTheme } from '@mui/material/styles'
 import { ReactElement, useEffect } from 'react'
 import TagManager from 'react-gtm-module'
-import { HotkeysProvider } from 'react-hotkeys-hook'
 import { v4 as uuidv4 } from 'uuid'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -21,6 +20,7 @@ import { JourneyViewEventCreate } from '../../../__generated__/JourneyViewEventC
 import { StepFields } from '../../../__generated__/StepFields'
 import { VisitorUpdateInput } from '../../../__generated__/globalTypes'
 
+import { HotkeysProvider } from 'react-hotkeys-hook'
 import { DynamicCardList } from './DynamicCardList'
 import { HotkeyNavigation } from './HotkeyNavigation'
 import { NavigationButton } from './NavigationButton'
@@ -189,7 +189,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
               />
               <ThemeProvider {...stepTheme} locale={locale} rtl={rtl} nested>
                 <SwipeNavigation activeBlock={activeBlock} rtl={rtl}>
-                  <DynamicCardList />
+                  <DynamicCardList blocks={blocks} />
                 </SwipeNavigation>
               </ThemeProvider>
               <NavigationButton
