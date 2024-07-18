@@ -71,33 +71,20 @@ export function CardStyling(): ReactElement {
             journeyId: journey.id,
             cardBlockId: cardBlock.id,
             themeMode,
-            selectedAttributeId,
-            selectedStep,
-            selectedBlock: cardBlock
+            selectedStep
           },
           undo: {
             journeyId: journey.id,
             cardBlockId: cardBlock.id,
             themeMode:
               themeMode === ThemeMode.dark ? ThemeMode.light : ThemeMode.dark,
-            selectedAttributeId,
-            selectedStep,
-            selectedBlock: cardBlock
+            selectedStep
           }
         },
-        async execute({
-          journeyId,
-          cardBlockId: id,
-          themeMode,
-          selectedAttributeId
-        }) {
+        async execute({ journeyId, cardBlockId: id, themeMode }) {
           dispatch({
             type: 'SetEditorFocusAction',
-            selectedAttributeId,
-            selectedStep,
-            selectedBlock,
-            activeContent: ActiveContent.Canvas,
-            activeSlide: ActiveSlide.Content
+            selectedStep
           })
           await cardBlockUpdate({
             variables: {
@@ -139,11 +126,7 @@ export function CardStyling(): ReactElement {
           })
           dispatch({
             type: 'SetEditorFocusAction',
-            selectedAttributeId,
-            selectedStep,
-            selectedBlock,
-            activeContent: ActiveContent.Canvas,
-            activeSlide: ActiveSlide.Content
+            selectedStep
           })
         }
       })
