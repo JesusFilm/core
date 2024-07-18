@@ -47,7 +47,8 @@
       "correctness": {
         "useExhaustiveDependencies": "info",
         "useJsxKeyInIterable": "info",
-        "noUnusedImports": "warn"
+        "noUnusedImports": "warn",
+        "noUnusedVariables": "warn"
       },
       "performance": {
         "noAccumulatingSpread": "warn"
