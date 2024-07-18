@@ -7,7 +7,7 @@ describe('StrategyCard', () => {
     description: 'description',
     id: 'test-id',
     imageUrl: '',
-    link: ''
+    link: 'www.jesusfilm.org'
   }
   it('should render strategy card', () => {
     render(<StrategyCard item={item} />)
@@ -15,8 +15,11 @@ describe('StrategyCard', () => {
     const strategyCard = screen.getByTestId('StrategyCard')
     expect(strategyCard).toBeInTheDocument()
 
-    expect(strategyCard).toHaveTextContent(item.title)
-    expect(strategyCard).toHaveTextContent(item.description)
+    expect(
+      screen.getByRole('heading', { level: 6, name: 'Strategy Title' })
+    ).toBeInTheDocument()
+
+    expect(screen.queryAllByText(item.description)[0]).toBeInTheDocument()
   })
 
   it('should have correct link', () => {

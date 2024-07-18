@@ -1,4 +1,4 @@
-export const newStrategyItems = [
+export const strategyItems = [
   {
     post_id: 5899,
     post_type: 'mission-trip',

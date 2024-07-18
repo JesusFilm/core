@@ -9,7 +9,7 @@ import { useHits } from 'react-instantsearch'
 import { SwiperOptions } from 'swiper/types'
 import { StrategyCard } from '../StrategyCard'
 
-type hitItem = {
+interface strategyCardItem {
   id: string
   title: string
   description: string
@@ -17,7 +17,7 @@ type hitItem = {
   link: string
 }
 
-function createItemsFromHits(hits: Hit[]): hitItem[] {
+function transformAlgoliaStrategies(hits: Hit[]): strategyCardItem[] {
   return hits.map((hit) => ({
     id: hit.ObjectID,
     title: hit.post_title,
@@ -27,18 +27,14 @@ function createItemsFromHits(hits: Hit[]): hitItem[] {
   }))
 }
 
-function getTitleText(hits: Hit[]): string {
-  return hits[0]?.post_type_label ?? ''
-}
-
 export function StrategySection(): ReactElement {
   const { breakpoints } = useTheme()
 
   const { hits } = useHits()
 
-  const newItems = createItemsFromHits(hits)
+  const items = transformAlgoliaStrategies(hits)
 
-  const titleText = getTitleText(hits)
+  const titleText = (hits[0]?.post_type_label as string) ?? ''
 
   const swiperBreakpoints: SwiperOptions['breakpoints'] = {
     [breakpoints.values.xs]: {
@@ -69,15 +65,13 @@ export function StrategySection(): ReactElement {
 
   return (
     <Box data-testid="StrategySection">
-      <Typography data-testid="StrategySectionTitle" variant="h4">
-        {titleText}
-      </Typography>
+      <Typography variant="h4">{titleText}</Typography>
       <Container maxWidth={false} sx={{ overflow: 'hidden' }}>
         <ContentCarousel
-          items={newItems}
+          items={items}
           renderItem={(itemProps) => <StrategyCard {...itemProps} />}
           breakpoints={swiperBreakpoints}
-          slidesOffsetBefore={-32} // aligns left padding of carousel with rest of page content
+          slidesOffsetBefore={-32}
         />
       </Container>
     </Box>

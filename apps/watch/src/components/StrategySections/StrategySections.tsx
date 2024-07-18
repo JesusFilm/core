@@ -9,20 +9,18 @@ export function StrategySections(): ReactElement {
   const indexes = ['wp_dev_posts_mission-trip']
 
   return (
-    <>
-      <Box sx={{ backgroundColor: 'background.default' }}>
-        <Container maxWidth="xxl">
-          <Index indexName="wp_dev_posts_mission-trip">
-            <Box data-testid="StrategySections">
-              {indexes.map((indexName, index) => (
-                <Index key={index} indexName={indexName}>
-                  <StrategySection />
-                </Index>
-              ))}
-            </Box>
-          </Index>
-        </Container>
-      </Box>
-    </>
+    <Box sx={{ backgroundColor: 'background.default' }}>
+      <Container maxWidth="xxl">
+        <Index indexName="wp_dev_posts_mission-trip">
+          <Box data-testid="StrategySections">
+            {indexes.map((indexName, index) => (
+              <Index key={index} indexName={indexName}>
+                <StrategySection />
+              </Index>
+            ))}
+          </Box>
+        </Index>
+      </Container>
+    </Box>
   )
 }

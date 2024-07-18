@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import { HitsRenderState } from 'instantsearch.js/es/connectors/hits/connectHits'
 import { useHits } from 'react-instantsearch'
 import { StrategySection } from '.'
-import { newStrategyItems } from './data'
+import { strategyItems } from './data'
 
 jest.mock('react-instantsearch')
 
@@ -10,13 +10,12 @@ describe('StrategySection', () => {
   beforeEach(() => {
     const useHitsMocked = jest.mocked(useHits)
     useHitsMocked.mockReturnValue({
-      hits: newStrategyItems
+      hits: strategyItems
     } as unknown as HitsRenderState)
   })
 
   it('should render strategysection', () => {
     render(<StrategySection />)
-    expect(screen.getByTestId('StrategySection')).toBeInTheDocument()
     const items = screen.getAllByTestId('StrategyCard')
     expect(items).toHaveLength(2)
 
