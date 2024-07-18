@@ -21,7 +21,10 @@ function JourneysPage(): ReactElement {
       >
         <Container maxWidth="xxl">
           <Stack gap={10}>
-            <TemplateGallery hideOverflow />
+            <TemplateGallery
+              algoliaIndex="api-journeys-journeys-dev"
+              hideOverflow
+            />
           </Stack>
         </Container>
       </Box>

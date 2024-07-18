@@ -21,16 +21,32 @@ import { ParentTagIcon } from '../ParentTagIcon'
 
 interface TemplateGalleryProps {
   hideOverflow?: boolean
+  algoliaIndex?: string
+}
+
+function TemplateGalleryContent() {
+  return (
+    <Stack spacing={10}>
+      <SearchBar />
+
+      {/* TODO: Remove temporary theme fix for styling journeys admin components */}
+      <ThemeProvider
+        themeName={ThemeName.journeysAdmin}
+        themeMode={ThemeMode.light}
+        nested
+      >
+        <TagCarousels />
+
+        <TemplateSections />
+      </ThemeProvider>
+    </Stack>
+  )
 }
 
 export function TemplateGallery({
-  hideOverflow
+  hideOverflow,
+  algoliaIndex
 }: TemplateGalleryProps): ReactElement {
-  const { t } = useTranslation('libs-journeys-ui')
-  const router = useRouter()
-  const selectedLanguageIds = castArray(router.query.languageIds ?? ['529']) // Defaults to English language
-  const selectedTagIds = castArray(router.query.tagIds ?? [])
-
   return (
     <Paper
       elevation={0}
@@ -47,122 +63,14 @@ export function TemplateGallery({
           py: { xs: 6, sm: 9 }
         }}
       >
-        <Index indexName="api-journeys-journeys-dev">
-          <Stack spacing={10}>
-            <SearchBar />
-
-            {/* TODO(jk): Remove/repurpose unused components: HeaderAndLanguageFilter, TagsFilter eta  */}
-
-            {/* TODO: Remove temporary theme fix for styling journeys admin components */}
-            <ThemeProvider
-              themeName={ThemeName.journeysAdmin}
-              themeMode={ThemeMode.light}
-              nested
-            >
-              <TagCarousels />
-
-              {/* TODO(jk): only added for testing */}
-              <Stack direction="row">
-                <Box
-                  sx={{
-                    border: 1,
-                    p: 1,
-                    bgcolor: 'background.default'
-                  }}
-                >
-                  <Stack
-                    direction="row"
-                    alignItems="center"
-                    component="li"
-                    sx={{ px: 4, py: 2 }}
-                  >
-                    <ParentTagIcon name="Topics" sx={{ width: 38 }} />
-                    <Typography variant="subtitle1">Topics</Typography>
-                  </Stack>
-                  <RefinementList attribute="tags.Topics" />
-                </Box>
-
-                <Box
-                  sx={{
-                    border: 1,
-                    p: 1,
-                    bgcolor: 'background.default'
-                  }}
-                >
-                  <Stack
-                    direction="row"
-                    alignItems="center"
-                    component="li"
-                    sx={{ px: 4, py: 2 }}
-                  >
-                    <ParentTagIcon name="Holidays" sx={{ width: 38 }} />
-                    <Typography variant="subtitle1">Holidays</Typography>
-                  </Stack>
-                  <RefinementList attribute="tags.Holidays" />
-                </Box>
-
-                <Box
-                  sx={{
-                    border: 1,
-                    p: 1,
-                    bgcolor: 'background.default'
-                  }}
-                >
-                  <Stack
-                    direction="row"
-                    alignItems="center"
-                    component="li"
-                    sx={{ px: 4, py: 2 }}
-                  >
-                    <ParentTagIcon name="Audience" sx={{ width: 38 }} />
-                    <Typography variant="subtitle1">Audience</Typography>
-                  </Stack>
-                  <RefinementList attribute="tags.Audience" />
-                </Box>
-
-                <Box
-                  sx={{
-                    border: 1,
-                    p: 1,
-                    bgcolor: 'background.default'
-                  }}
-                >
-                  <Stack
-                    direction="row"
-                    alignItems="center"
-                    component="li"
-                    sx={{ px: 4, py: 2 }}
-                  >
-                    <ParentTagIcon name="Collections" sx={{ width: 38 }} />
-                    <Typography variant="subtitle1">Collections</Typography>
-                  </Stack>
-                  <RefinementList attribute="tags.Collections" />
-                </Box>
-
-                <Box
-                  sx={{
-                    border: 1,
-                    p: 1,
-                    bgcolor: 'background.default'
-                  }}
-                >
-                  <Stack
-                    direction="row"
-                    alignItems="center"
-                    component="li"
-                    sx={{ px: 4, py: 2 }}
-                  >
-                    <ParentTagIcon name="Felt Needs" sx={{ width: 38 }} />
-                    <Typography variant="subtitle1">Collections</Typography>
-                  </Stack>
-                  <RefinementList attribute="tags.Felt Needs" />
-                </Box>
-              </Stack>
-
-              <TemplateSections />
-            </ThemeProvider>
-          </Stack>
-        </Index>
+        {/* Needed so that tests don't fail */}
+        {algoliaIndex ? (
+          <Index indexName={algoliaIndex}>
+            <TemplateGalleryContent />
+          </Index>
+        ) : (
+          <TemplateGalleryContent />
+        )}
       </Container>
     </Paper>
   )
