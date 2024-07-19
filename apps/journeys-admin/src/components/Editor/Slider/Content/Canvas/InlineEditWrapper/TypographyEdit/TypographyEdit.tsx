@@ -48,7 +48,10 @@ export function TypographyEdit({
 
   const [value, setValue] = useState(content)
   const [selection, setSelection] = useState({ start: 0, end: value.length })
-  const { state, dispatch } = useEditor()
+  const {
+    state: { selectedBlock, selectedStep },
+    dispatch
+  } = useEditor()
   const { add } = useCommand()
 
   async function handleSaveBlock(): Promise<void> {
@@ -69,9 +72,8 @@ export function TypographyEdit({
       async execute({ content }) {
         dispatch({
           type: 'SetEditorFocusAction',
-          selectedBlock: state.selectedBlock,
-          selectedStep: state.selectedStep,
-          selectedAttributeId: state.selectedAttributeId
+          selectedBlock,
+          selectedStep
         })
 
         await typographyBlockUpdate({
