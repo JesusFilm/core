@@ -21,6 +21,5 @@ export interface IconBlockColorUpdate {
 
 export interface IconBlockColorUpdateVariables {
   id: string;
-  journeyId: string;
   input: IconBlockUpdateInput;
 }
