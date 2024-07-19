@@ -24,53 +24,41 @@ describe('TemplateGalleryCard', () => {
   })
 
   it('should render Template Gallery Card', () => {
-    const { getByRole } = render(
-      <TemplateGalleryCard item={algoliaJourneys[0]} />
-    )
-    expect(getByRole('img').attributes.getNamedItem('src')?.value).toBe(
+    render(<TemplateGalleryCard item={algoliaJourneys[0]} />)
+    expect(screen.getByRole('img').attributes.getNamedItem('src')?.value).toBe(
       '/_next/image?url=https%3A%2F%2Fimagedelivery.net%2FtMY86qEHFACTO8_0kAeRFA%2Fe8692352-21c7-4f66-cb57-0298e86a3300%2Fpublic&w=3840&q=75'
     )
     expect(
-      getByRole('heading', { name: 'onboarding template3' })
+      screen.getByRole('heading', { name: 'onboarding template3' })
     ).toBeInTheDocument()
   })
 
   it('should render month and year if not current year', () => {
-    const { getByText } = render(
-      <TemplateGalleryCard item={algoliaJourneys[0]} />
-    )
-    expect(getByText('Aug, 2023 ● English')).toBeInTheDocument()
+    render(<TemplateGalleryCard item={algoliaJourneys[0]} />)
+    expect(screen.getByText('Aug, 2023 ● English')).toBeInTheDocument()
   })
 
   it('should return an abbreviated version of the language', () => {
-    const { getByText } = render(
-      <TemplateGalleryCard item={algoliaJourneys[1]} />
-    )
-    expect(getByText('Jul ● Farsi (W)')).toBeInTheDocument()
+    render(<TemplateGalleryCard item={algoliaJourneys[1]} />)
+    expect(screen.getByText('Jul ● Farsi (W)')).toBeInTheDocument()
   })
 
   it('should link to template details', () => {
-    const { getByTestId } = render(
-      <TemplateGalleryCard item={algoliaJourneys[0]} />
-    )
-    expect(getByTestId('templateGalleryCard')).toHaveAttribute(
+    render(<TemplateGalleryCard item={algoliaJourneys[0]} />)
+    expect(screen.getByTestId('templateGalleryCard')).toHaveAttribute(
       'href',
       '/templates/e978adb4-e4d8-42ef-89a9-79811f10b7e9'
     )
   })
 
   it('should prioritize image loading', () => {
-    const { getByRole } = render(
-      <TemplateGalleryCard item={algoliaJourneys[0]} priority />
-    )
-    expect(getByRole('img')).toHaveAttribute('rel', 'preload')
+    render(<TemplateGalleryCard item={algoliaJourneys[0]} priority />)
+    expect(screen.getByRole('img')).toHaveAttribute('rel', 'preload')
   })
 
   it('should not prioritize image loading', () => {
-    const { getByRole } = render(
-      <TemplateGalleryCard item={algoliaJourneys[0]} />
-    )
-    expect(getByRole('img')).not.toHaveAttribute('rel')
+    render(<TemplateGalleryCard item={algoliaJourneys[0]} />)
+    expect(screen.getByRole('img')).not.toHaveAttribute('rel')
   })
 })
 
@@ -84,10 +72,8 @@ describe('TemplateGalleryCard from different route', () => {
       pathname: '/blah'
     } as unknown as NextRouter)
 
-    const { getByTestId } = render(
-      <TemplateGalleryCard item={algoliaJourneys[0]} />
-    )
-    expect(getByTestId('templateGalleryCard')).toHaveAttribute(
+    render(<TemplateGalleryCard item={algoliaJourneys[0]} />)
+    expect(screen.getByTestId('templateGalleryCard')).toHaveAttribute(
       'href',
       '/templates/e978adb4-e4d8-42ef-89a9-79811f10b7e9'
     )
@@ -98,10 +84,8 @@ describe('TemplateGalleryCard from different route', () => {
       pathname: '/journeys'
     } as unknown as NextRouter)
 
-    const { getByTestId } = render(
-      <TemplateGalleryCard item={algoliaJourneys[0]} />
-    )
-    expect(getByTestId('templateGalleryCard')).toHaveAttribute(
+    render(<TemplateGalleryCard item={algoliaJourneys[0]} />)
+    expect(screen.getByTestId('templateGalleryCard')).toHaveAttribute(
       'href',
       '/journeys/e978adb4-e4d8-42ef-89a9-79811f10b7e9'
     )

@@ -1,5 +1,11 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor, within } from '@testing-library/react'
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within
+} from '@testing-library/react'
 
 import { getTagsMock } from '../data'
 
@@ -26,13 +32,13 @@ describe('TagCarousels', () => {
   })
 
   it('should render TagCarousels', async () => {
-    const { getByTestId, getByRole } = render(
+    render(
       <MockedProvider mocks={[getTagsMock]}>
         <TagCarousels />
       </MockedProvider>
     )
 
-    const feltNeedsCarousel = getByTestId('-template-gallery-carousel')
+    const feltNeedsCarousel = screen.getByTestId('-template-gallery-carousel')
     expect(feltNeedsCarousel).toBeInTheDocument()
 
     await waitFor(async () => {
@@ -44,7 +50,7 @@ describe('TagCarousels', () => {
       ).toBeInTheDocument()
 
       expect(
-        getByRole('button', {
+        screen.getByRole('button', {
           name: 'NUA tag NUA NUA'
         })
       ).toBeInTheDocument()
@@ -52,7 +58,7 @@ describe('TagCarousels', () => {
   })
 
   it('should render skeleton when no results', async () => {
-    const { getByTestId, getAllByTestId } = render(
+    render(
       <MockedProvider
         mocks={[
           {
@@ -71,17 +77,17 @@ describe('TagCarousels', () => {
       </MockedProvider>
     )
 
-    const feltNeedsCarousel = getByTestId('-template-gallery-carousel')
+    const feltNeedsCarousel = screen.getByTestId('-template-gallery-carousel')
     expect(
       within(feltNeedsCarousel).getAllByTestId('felt-needs-button-loading')
     ).toHaveLength(8)
 
-    expect(getAllByTestId('collections-button-loading')).toHaveLength(2)
+    expect(screen.getAllByTestId('collections-button-loading')).toHaveLength(2)
   })
 
   it('should filter by felt needs tag', async () => {
     const onChange = mockRefinementList()
-    const { getByRole } = render(
+    render(
       <MockedProvider mocks={[getTagsMock]}>
         <TagCarousels />
       </MockedProvider>
@@ -89,14 +95,14 @@ describe('TagCarousels', () => {
 
     await waitFor(async () => {
       expect(
-        getByRole('button', {
+        screen.getByRole('button', {
           name: 'Acceptance tag Acceptance Acceptance'
         })
       ).toBeInTheDocument()
     })
 
     fireEvent.click(
-      getByRole('button', {
+      screen.getByRole('button', {
         name: 'Acceptance tag Acceptance Acceptance'
       })
     )
@@ -105,7 +111,7 @@ describe('TagCarousels', () => {
   })
 
   it('should filter out felt needs tags that have no backgrounds', async () => {
-    const { getByRole, queryAllByText } = render(
+    render(
       <MockedProvider mocks={[getTagsMock]}>
         <TagCarousels />
       </MockedProvider>
@@ -114,7 +120,7 @@ describe('TagCarousels', () => {
     // Not for test but needed in order to ensure rendering is correct
     await waitFor(async () => {
       expect(
-        getByRole('button', {
+        screen.getByRole('button', {
           name: 'Acceptance tag Acceptance Acceptance'
         })
       ).toBeInTheDocument()
@@ -122,13 +128,13 @@ describe('TagCarousels', () => {
 
     // Assert tags without backgrounds are filtered out
     await waitFor(async () => {
-      expect(queryAllByText('Fear/Power')).toHaveLength(0)
+      expect(screen.queryAllByText('Fear/Power')).toHaveLength(0)
     })
   })
 
   it('should filter by collections tag', async () => {
     const onChange = mockRefinementList()
-    const { getByRole } = render(
+    render(
       <MockedProvider mocks={[getTagsMock]}>
         <TagCarousels />
       </MockedProvider>
@@ -136,14 +142,14 @@ describe('TagCarousels', () => {
 
     await waitFor(async () => {
       expect(
-        getByRole('button', {
+        screen.getByRole('button', {
           name: 'NUA tag NUA NUA'
         })
       ).toBeInTheDocument()
     })
 
     fireEvent.click(
-      getByRole('button', {
+      screen.getByRole('button', {
         name: 'NUA tag NUA NUA'
       })
     )

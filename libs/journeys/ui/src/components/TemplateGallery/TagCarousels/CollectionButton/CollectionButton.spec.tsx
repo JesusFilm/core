@@ -1,5 +1,5 @@
 import { fireEvent } from '@storybook/testing-library'
-import { render } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { useRefinementList } from 'react-instantsearch'
@@ -34,14 +34,16 @@ describe('CollectionButton', () => {
   })
 
   it('should render a collection button with image', () => {
-    const { getByRole } = render(<CollectionButton item={tag} />)
+    render(<CollectionButton item={tag} />)
 
-    expect(getByRole('button', { name: 'NUA tag NUA NUA' })).toBeInTheDocument()
-    expect(getByRole('img')).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'NUA tag NUA NUA' })
+    ).toBeInTheDocument()
+    expect(screen.getByRole('img')).toBeInTheDocument()
   })
 
   it('should render a collection button with placeholder', () => {
-    const { getByRole, getByTestId } = render(
+    render(
       <CollectionButton
         item={{
           ...tag,
@@ -56,27 +58,25 @@ describe('CollectionButton', () => {
       />
     )
 
-    expect(getByRole('button', { name: 'New New' })).toBeInTheDocument()
-    expect(getByTestId('InsertPhotoRoundedIcon')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'New New' })).toBeInTheDocument()
+    expect(screen.getByTestId('InsertPhotoRoundedIcon')).toBeInTheDocument()
   })
 
   it('should render loading skeleton if no tag is passed', () => {
     const onClick = mockRefinementList()
 
-    const { getByTestId, getByRole } = render(
-      <CollectionButton item={undefined} />
-    )
+    render(<CollectionButton item={undefined} />)
 
-    expect(getByTestId('collections-button-loading')).toBeInTheDocument()
-    fireEvent.click(getByRole('button'))
+    expect(screen.getByTestId('collections-button-loading')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button'))
     expect(onClick).not.toHaveBeenCalled()
   })
 
   it('should call onClick on button click', () => {
     const onClick = mockRefinementList()
-    const { getByRole } = render(<CollectionButton item={tag} />)
+    render(<CollectionButton item={tag} />)
 
-    fireEvent.click(getByRole('button', { name: 'NUA tag NUA NUA' }))
+    fireEvent.click(screen.getByRole('button', { name: 'NUA tag NUA NUA' }))
 
     expect(onClick).toHaveBeenCalledWith(tag.name[0].value)
   })

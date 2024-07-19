@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
 import {
   InstantSearchApi,
@@ -25,21 +25,21 @@ describe('SearchBar', () => {
   })
 
   it('should render input field', async () => {
-    const { getByDisplayValue } = render(<SearchBar />)
-    expect(getByDisplayValue('Hello World!')).toBeInTheDocument()
+    render(<SearchBar />)
+    expect(screen.getByDisplayValue('Hello World!')).toBeInTheDocument()
   })
 
   it('should have placeholder text', async () => {
-    const { getByPlaceholderText } = render(<SearchBar />)
-    const inputElement = getByPlaceholderText(
+    render(<SearchBar />)
+    const inputElement = screen.getByPlaceholderText(
       /Search by topic, occasion, or audience .../i
     )
     expect(inputElement).toBeInTheDocument()
   })
 
   it('should have globe icon', async () => {
-    const { getByTestId } = render(<SearchBar />)
-    const searchIcon = getByTestId('Search1Icon')
+    render(<SearchBar />)
+    const searchIcon = screen.getByTestId('Search1Icon')
     expect(searchIcon).toBeInTheDocument()
   })
 })

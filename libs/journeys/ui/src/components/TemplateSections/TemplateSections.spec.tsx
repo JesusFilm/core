@@ -1,4 +1,4 @@
-import { render, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 
 import '../../../test/i18n'
 import { TemplateSections } from './TemplateSections'
@@ -21,21 +21,21 @@ describe('TemplateSections', () => {
 
   describe('Featured & New Templates', () => {
     it('should render Featured & New templates', async () => {
-      const { getByRole, getAllByRole } = render(<TemplateSections />)
+      render(<TemplateSections />)
       expect(
-        getByRole('heading', { name: 'Featured & New' })
+        screen.getByRole('heading', { name: 'Featured & New' })
       ).toBeInTheDocument()
       expect(
-        getAllByRole('heading', { name: 'onboarding template3' })[0]
+        screen.getAllByRole('heading', { name: 'onboarding template3' })[0]
       ).toBeInTheDocument()
     })
 
     it('should getByTestId image loading for primary carousel', async () => {
-      const { getByTestId } = render(<TemplateSections />)
+      render(<TemplateSections />)
       expect(
-        getByTestId(
-          'journey-e978adb4-e4d8-42ef-89a9-79811f10b7e9'
-        ).getElementsByClassName('MuiImageBackground-root')[0]
+        screen
+          .getByTestId('journey-e978adb4-e4d8-42ef-89a9-79811f10b7e9')
+          .getElementsByClassName('MuiImageBackground-root')[0]
       ).toHaveAttribute('rel', 'preload')
     })
 
@@ -47,12 +47,14 @@ describe('TemplateSections', () => {
         refinements: []
       })
       const { getByRole } = render(<TemplateSections />)
-      expect(getByRole('heading', { name: 'Acceptance' })).toBeInTheDocument()
+      expect(
+        screen.getByRole('heading', { name: 'Acceptance' })
+      ).toBeInTheDocument()
     })
 
     it('should not render tag carousels if no more than 5 journeys in a category', async () => {
-      const { queryByRole } = render(<TemplateSections />)
-      const tagCarousels = queryByRole('heading', { name: 'Acceptance' })
+      render(<TemplateSections />)
+      const tagCarousels = screen.queryByRole('heading', { name: 'Acceptance' })
       expect(tagCarousels).not.toBeInTheDocument()
     })
   })
@@ -68,12 +70,12 @@ describe('TemplateSections', () => {
     })
 
     it('should render relevant templates if multiple tags are selected', async () => {
-      const { getByRole, getAllByRole } = render(<TemplateSections />)
+      render(<TemplateSections />)
       expect(
-        getAllByRole('heading', { name: 'onboarding template3' })[0]
+        screen.getAllByRole('heading', { name: 'onboarding template3' })[0]
       ).toBeInTheDocument()
       expect(
-        getByRole('heading', { name: 'Most Relevant' })
+        screen.getByRole('heading', { name: 'Most Relevant' })
       ).toBeInTheDocument()
     })
   })
@@ -89,10 +91,14 @@ describe('TemplateSections', () => {
     })
 
     it('should render tag templates', async () => {
-      const { getByRole } = render(<TemplateSections />)
+      render(<TemplateSections />)
       await waitFor(async () => {
-        expect(getByRole('heading', { name: 'Addiction' })).toBeInTheDocument()
-        expect(getByRole('heading', { name: 'Acceptance' })).toBeInTheDocument()
+        expect(
+          screen.getByRole('heading', { name: 'Addiction' })
+        ).toBeInTheDocument()
+        expect(
+          screen.getByRole('heading', { name: 'Acceptance' })
+        ).toBeInTheDocument()
       })
     })
   })
@@ -132,22 +138,24 @@ describe('TemplateSections', () => {
     })
 
     it('should render empty state', async () => {
-      const { getByRole, getByText } = render(<TemplateSections />)
+      render(<TemplateSections />)
       expect(
-        getByRole('heading', {
+        screen.getByRole('heading', {
           name: 'No template fully matches your search criteria.'
         })
       ).toBeInTheDocument()
       expect(
-        getByText(
+        screen.getByText(
           "Try using fewer filters or look below for templates related to the categories you've selected to search"
         )
       ).toBeInTheDocument()
     })
 
     it('should not render featured and new', async () => {
-      const { queryByRole } = render(<TemplateSections />)
-      const featuredAndNew = queryByRole('heading', { name: 'Featured & New' })
+      render(<TemplateSections />)
+      const featuredAndNew = screen.queryByRole('heading', {
+        name: 'Featured & New'
+      })
       expect(featuredAndNew).not.toBeInTheDocument()
     })
   })

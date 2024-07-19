@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { useRouter } from 'next/router'
 
 import { getTagsMock } from './data'
@@ -62,39 +62,41 @@ describe('TemplateGallery', () => {
   })
 
   it('should render searchbar', async () => {
-    const { getByPlaceholderText } = render(
+    render(
       <MockedProvider mocks={[getTagsMock]}>
         <TemplateGallery />
       </MockedProvider>
     )
-    const inputElement = getByPlaceholderText(
+    const inputElement = screen.getByPlaceholderText(
       /Search by topic, occasion, or audience .../i
     )
     expect(inputElement).toBeInTheDocument()
   })
 
   it('should render tag carousel', async () => {
-    const { getByRole } = render(
+    render(
       <MockedProvider mocks={[getTagsMock]}>
         <TemplateGallery />
       </MockedProvider>
     )
     await waitFor(() =>
       expect(
-        getByRole('heading', { level: 6, name: 'Acceptance' })
+        screen.getByRole('heading', { level: 6, name: 'Acceptance' })
       ).toBeInTheDocument()
     )
-    expect(getByRole('heading', { level: 6, name: 'Hope' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { level: 6, name: 'Hope' })
+    ).toBeInTheDocument()
   })
 
   it('should render template gallery', async () => {
-    const { getAllByRole } = render(
+    render(
       <MockedProvider mocks={[getTagsMock]}>
         <TemplateGallery />
       </MockedProvider>
     )
     expect(
-      getAllByRole('heading', { name: 'Featured & New' })[0]
+      screen.getAllByRole('heading', { name: 'Featured & New' })[0]
     ).toBeInTheDocument()
   })
 
