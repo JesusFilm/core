@@ -16,8 +16,6 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../../../../__generated__/globalTypes'
-
-import { TestEditorState } from '../../../../../../../../../libs/TestEditorState'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 import { CARD_BLOCK_LAYOUT_UPDATE, CardLayout } from './CardLayout'
 

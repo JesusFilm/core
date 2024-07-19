@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { DebouncedHexColorPicker } from './DebouncedHexColorPicker'
 
 describe('DebouncedHexColorPicker', () => {
