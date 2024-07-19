@@ -6,12 +6,7 @@ import { getTagsMock } from './data'
 
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
-import {
-  InstantSearchApi,
-  useInstantSearch,
-  useRefinementList,
-  useSearchBox
-} from 'react-instantsearch'
+import { useRefinementList, useSearchBox } from 'react-instantsearch'
 import { TemplateGallery } from '.'
 import '../../../test/i18n'
 import { useAlgoliaJourneys } from '../../libs/algolia/useAlgoliaJourneys'

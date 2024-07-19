@@ -46,7 +46,9 @@
       },
       "correctness": {
         "useExhaustiveDependencies": "info",
-        "useJsxKeyInIterable": "info"
+        "useJsxKeyInIterable": "info",
+        "noUnusedImports": "warn",
+        "noUnusedVariables": "warn"
       },
       "performance": {
         "noAccumulatingSpread": "warn"
