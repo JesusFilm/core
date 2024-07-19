@@ -3,24 +3,23 @@ import { ReactElement } from 'react'
 import { StrategySection } from './StrategySection/StrategySection'
 
 import Container from '@mui/material/Container'
+import Stack from '@mui/material/Stack'
 import { Index } from 'react-instantsearch'
 
 export function StrategySections(): ReactElement {
-  const indexes = ['wp_dev_posts_mission-trip', 'wp_dev_posts_passionpurpose']
+  // TODO: update this indexes variable to use the real indexes
+  const indexes = ['wp_dev_posts_passionpurpose']
 
   return (
-    <Box sx={{ backgroundColor: 'background.default' }}>
-      <Container maxWidth="xxl">
-        <Box data-testid="StrategySections">
-          <Index indexName="wp_dev_posts_mission-trip">
-            {indexes.map((indexName, index) => (
-              <Index key={index} indexName={indexName}>
-                <StrategySection />
-              </Index>
-            ))}
+    <Stack data-testid="StrategySections" sx={{ pt: 4, gap: 16 }}>
+      <Index indexName="wp_dev_posts_mission-trip">
+        <StrategySection />
+        {indexes.map((indexName, index) => (
+          <Index key={index} indexName={indexName}>
+            <StrategySection />
           </Index>
-        </Box>
-      </Container>
-    </Box>
+        ))}
+      </Index>
+    </Stack>
   )
 }
