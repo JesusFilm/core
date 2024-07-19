@@ -12,6 +12,8 @@ import { VideoChildFields } from '../../../__generated__/VideoChildFields'
 import { PageWrapper } from '../PageWrapper'
 import { VideoGrid } from '../VideoGrid'
 
+import { SearchBar } from '@core/journeys/ui/Searchbar'
+import { Index, useHits } from 'react-instantsearch'
 import { HomeHero } from './HomeHero'
 import { SeeAllVideos } from './SeeAllVideos'
 
@@ -38,7 +40,12 @@ export function WatchHomePage({ videos }: WatchHomePageProps): ReactElement {
           data-testid="WatchHomePage"
         >
           <Container maxWidth="xxl" sx={{ paddingY: '4rem' }}>
-            <VideoGrid videos={videos} variant="contained" />
+            <Index indexName={'video-variants-stg'}>
+              <Box sx={{ pb: 10 }}>
+                <SearchBar />
+              </Box>
+              <VideoGrid videos={videos} variant="contained" />
+            </Index>
             <SeeAllVideos />
             <Box
               sx={{

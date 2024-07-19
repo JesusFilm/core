@@ -1,6 +1,6 @@
 import { VideoChildFields } from '../../../../../__generated__/VideoChildFields'
 
-export function transformAlgoliaVideos(hits): VideoChildFields[] {
+export function transformAlgoliaVideos(hits) {
   return hits.map((videoVariant) => {
     return {
       id: videoVariant.videoId,
