@@ -42,9 +42,9 @@ export function Label(): ReactElement {
     | undefined
 
   async function handleSubmit(e: FocusEvent): Promise<void> {
-    if (selectedBlock == null) return
     const target = e.target as HTMLInputElement
     const label = target.value
+    if (selectedBlock == null || selectedBlock.label === label) return
     await add({
       parameters: {
         execute: { label },
@@ -54,8 +54,7 @@ export function Label(): ReactElement {
         dispatch({
           type: 'SetEditorFocusAction',
           selectedBlock,
-          selectedStep: state.selectedStep,
-          selectedAttributeId: state.selectedAttributeId
+          selectedStep: state.selectedStep
         })
 
         await textResponseLabelUpdate({

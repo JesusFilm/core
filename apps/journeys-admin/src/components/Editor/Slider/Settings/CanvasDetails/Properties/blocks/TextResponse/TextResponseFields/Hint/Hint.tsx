@@ -44,7 +44,6 @@ export function Hint(): ReactElement {
     const target = e.target as HTMLInputElement
     const hint = target.value
     if (selectedBlock == null || selectedBlock.hint === hint) return
-
     await add({
       parameters: {
         execute: { hint },
