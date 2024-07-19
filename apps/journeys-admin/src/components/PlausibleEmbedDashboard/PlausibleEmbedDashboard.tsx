@@ -58,7 +58,7 @@ interface PlausibleEmbedDashboardProps {
 }
 
 export function PlausibleEmbedDashboard({
-  host = ''
+  host
 }: PlausibleEmbedDashboardProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
@@ -72,6 +72,7 @@ export function PlausibleEmbedDashboard({
   })
 
   const journeyId = router.query.journeyId as string
+  const url = host ?? process.env.PLAUSIBLE_URL ?? ''
 
   return (
     <>
@@ -102,7 +103,7 @@ export function PlausibleEmbedDashboard({
           <StyledIFrame
             data-testid="PlausibleEmbedDashboard"
             plausible-embed
-            src={`${host}/share/api-journeys-journey-${journeyId}?auth=${data?.journey.plausibleToken}&embed=true&theme=light&background=transparent`}
+            src={`${url}/share/api-journeys-journey-${journeyId}?auth=${data?.journey.plausibleToken}&embed=true&theme=light&background=transparent`}
             loading="lazy"
             ref={ref}
             sx={{
@@ -113,7 +114,7 @@ export function PlausibleEmbedDashboard({
               width: '100%'
             }}
           />
-          <script async src={`${host}/js/embed.host.js`} />
+          <script async src={`${url}/js/embed.host.js`} />
         </>
       )}
     </>
