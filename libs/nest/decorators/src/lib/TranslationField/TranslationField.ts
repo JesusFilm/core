@@ -12,11 +12,11 @@ export function TranslationField(
     _propertyKey: string,
     descriptor: PropertyDescriptor
   ) => {
-    descriptor.value = function (
+    descriptor.value = (
       parent: { [key: string]: Translation[] },
       languageId?: string,
       primary?: boolean
-    ) {
+    ) => {
       const translations = parent[name]
       return filterTranslations(translations, languageId, primary)
     }
