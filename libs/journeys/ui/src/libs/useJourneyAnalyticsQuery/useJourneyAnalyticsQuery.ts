@@ -10,8 +10,7 @@ import { useState } from 'react'
 import { Edge, Node } from 'reactflow'
 import {
   GetJourneyAnalytics,
-  GetJourneyAnalyticsVariables,
-  GetJourneyAnalytics_journeyReferrer as JourneyReferrer
+  GetJourneyAnalyticsVariables
 } from './__generated__/GetJourneyAnalytics'
 import { transformJourneyAnalytics } from './transformJourneyAnalytics'
 

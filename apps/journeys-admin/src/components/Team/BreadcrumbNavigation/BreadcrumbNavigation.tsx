@@ -6,7 +6,6 @@ import Typography from '@mui/material/Typography'
 import { get, isArray } from 'lodash'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
-import { string } from 'prop-types'
 import { ReactElement } from 'react'
 
 interface BreadcrumbItem {
