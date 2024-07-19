@@ -11,6 +11,7 @@ import TextInput1Icon from '@core/shared/ui/icons/TextInput1'
 
 import type { BlockFields_CardBlock as CardBlock } from '../../../../../../../../__generated__/BlockFields'
 import type { TextResponseBlockCreate } from '../../../../../../../../__generated__/TextResponseBlockCreate'
+import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand/useBlockCreateCommand'
 import { Button } from '../Button'
 
 export const TEXT_RESPONSE_BLOCK_CREATE = gql`
@@ -31,9 +32,9 @@ export function NewTextResponseButton(): ReactElement {
     useMutation<TextResponseBlockCreate>(TEXT_RESPONSE_BLOCK_CREATE)
   const { journey } = useJourney()
   const {
-    state: { selectedStep },
-    dispatch
+    state: { selectedStep }
   } = useEditor()
+  const { addBlockCommand } = useBlockCreateCommand()
 
   const handleClick = async (): Promise<void> => {
     const id = uuidv4()
@@ -42,7 +43,7 @@ export function NewTextResponseButton(): ReactElement {
     ) as TreeBlock<CardBlock> | undefined
 
     if (card != null && journey != null) {
-      const { data } = await textResponseBlockCreate({
+      await addBlockCommand(textResponseBlockCreate, {
         variables: {
           input: {
             id,
@@ -72,13 +73,6 @@ export function NewTextResponseButton(): ReactElement {
           }
         }
       })
-
-      if (data?.textResponseBlockCreate != null) {
-        dispatch({
-          type: 'SetSelectedBlockByIdAction',
-          selectedBlockId: data.textResponseBlockCreate.id
-        })
-      }
     }
   }
   return (

@@ -17,6 +17,7 @@ import {
   ButtonSize,
   ButtonVariant
 } from '../../../../../../../../__generated__/globalTypes'
+import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand/useBlockCreateCommand'
 import { Button } from '../Button'
 
 export const BUTTON_BLOCK_CREATE = gql`
@@ -54,6 +55,7 @@ export function NewButtonButton(): ReactElement {
     state: { selectedStep },
     dispatch
   } = useEditor()
+  const { addBlockCommand } = useBlockCreateCommand()
 
   const handleClick = async (): Promise<void> => {
     const id = uuidv4()
@@ -63,7 +65,7 @@ export function NewButtonButton(): ReactElement {
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
     if (card != null && journey != null) {
-      const { data } = await buttonBlockCreate({
+      const { data } = await addBlockCommand(buttonBlockCreate, {
         variables: {
           input: {
             id,
@@ -136,10 +138,6 @@ export function NewButtonButton(): ReactElement {
         }
       })
       if (data?.buttonBlockUpdate != null) {
-        dispatch({
-          type: 'SetSelectedBlockByIdAction',
-          selectedBlockId: data.buttonBlockCreate.id
-        })
         dispatch({
           type: 'SetActiveFabAction',
           activeFab: ActiveFab.Save
