@@ -1,10 +1,15 @@
+import { InstantSearchMockWrapper } from '@core/journeys/ui/mocks/InstantSearchMockWrapper'
 import { render, screen } from '@testing-library/react'
 import { StrategiesContent } from './StrategiesContent'
 
 describe('StrategiesContent', () => {
   it('should render strategiescontent', () => {
-    render(<StrategiesContent />)
+    render(
+      <InstantSearchMockWrapper>
+        <StrategiesContent />
+      </InstantSearchMockWrapper>
+    )
 
-    expect(screen.getByTestId('StrategiesContentStack')).toBeInTheDocument()
+    expect(screen.getByTestId('StrategiesContent')).toBeInTheDocument()
   })
 })

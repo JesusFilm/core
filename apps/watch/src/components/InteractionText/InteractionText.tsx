@@ -21,7 +21,7 @@ export function InteractionText({
   const { t } = useTranslation('apps-watch')
   const text = `${startingText} for every `
   return (
-    <Typography variant="h4" sx={{ fontWeight: '800' }}>
+    <Typography variant="h4">
       {text}
       <StyledInteractionText>{t('interaction')}</StyledInteractionText>
     </Typography>

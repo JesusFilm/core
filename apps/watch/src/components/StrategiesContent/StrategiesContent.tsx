@@ -7,15 +7,12 @@ import { InteractionText } from '../InteractionText'
 import { StrategySections } from '../StrategySections'
 
 export function StrategiesContent(): ReactElement {
-  // StrategySections
-  // SearchBar
-
-  // move strategysections box and container out to this component
-  // create the "resource for every interaction"
   // tidy up other tests/stories
   return (
-    <Box sx={{ backgroundColor: 'background.default' }}>
-      {/*  resource for every interaction */}
+    <Box
+      data-testid="StrategiesContent"
+      sx={{ backgroundColor: 'background.default' }}
+    >
       <Container maxWidth="xxl">
         <Stack sx={{ p: 4, gap: 4 }}>
           <InteractionText startingText="Resource" />
