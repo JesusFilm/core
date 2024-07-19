@@ -3,10 +3,8 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 
-import { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
 import { SignUpFields } from '../../../../../../../../__generated__/SignUpFields'
 
 import { SIGN_UP_BLOCK_UPDATE_CONTENT, SignUpEdit } from '.'
@@ -62,7 +60,6 @@ describe('SignUpEdit', () => {
               query: SIGN_UP_BLOCK_UPDATE_CONTENT,
               variables: {
                 id: 'signUp.id',
-                journeyId: 'journeyId',
                 input: {
                   submitLabel: 'updated label'
                 }
@@ -73,16 +70,9 @@ describe('SignUpEdit', () => {
         ]}
       >
         <SnackbarProvider>
-          <JourneyProvider
-            value={{
-              journey: { id: 'journeyId' } as unknown as Journey,
-              variant: 'admin'
-            }}
-          >
-            <EditorProvider>
-              <SignUpEdit {...props} />
-            </EditorProvider>
-          </JourneyProvider>
+          <EditorProvider>
+            <SignUpEdit {...props} />
+          </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -115,7 +105,6 @@ describe('SignUpEdit', () => {
               query: SIGN_UP_BLOCK_UPDATE_CONTENT,
               variables: {
                 id: 'signUp.id',
-                journeyId: 'journeyId',
                 input: {
                   submitLabel: 'Submit'
                 }
@@ -126,16 +115,9 @@ describe('SignUpEdit', () => {
         ]}
       >
         <SnackbarProvider>
-          <JourneyProvider
-            value={{
-              journey: { id: 'journeyId' } as unknown as Journey,
-              variant: 'admin'
-            }}
-          >
-            <EditorProvider>
-              <SignUpEdit {...props} />
-            </EditorProvider>
-          </JourneyProvider>
+          <EditorProvider>
+            <SignUpEdit {...props} />
+          </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -168,7 +150,6 @@ describe('SignUpEdit', () => {
               query: SIGN_UP_BLOCK_UPDATE_CONTENT,
               variables: {
                 id: 'signUp.id',
-                journeyId: 'journeyId',
                 input: {
                   submitLabel: 'updated label'
                 }
@@ -179,19 +160,12 @@ describe('SignUpEdit', () => {
         ]}
       >
         <SnackbarProvider>
-          <JourneyProvider
-            value={{
-              journey: { id: 'journeyId' } as unknown as Journey,
-              variant: 'admin'
-            }}
-          >
-            <EditorProvider>
-              <h1 className="EditorCanvas">Other Content</h1>
-              <iframe>
-                <SignUpEdit {...props} />
-              </iframe>
-            </EditorProvider>
-          </JourneyProvider>
+          <EditorProvider>
+            <h1 className="EditorCanvas">Other Content</h1>
+            <iframe>
+              <SignUpEdit {...props} />
+            </iframe>
+          </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
