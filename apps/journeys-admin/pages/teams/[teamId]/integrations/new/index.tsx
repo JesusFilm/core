@@ -5,7 +5,6 @@ import {
   withUserTokenSSR
 } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
-import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 import { PageWrapper } from '../../../../../src/components/PageWrapper'

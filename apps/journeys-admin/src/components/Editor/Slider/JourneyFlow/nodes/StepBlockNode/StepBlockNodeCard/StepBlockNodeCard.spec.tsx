@@ -1,10 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 
-import {
-  ActiveContent,
-  ActiveFab,
-  EditorProvider
-} from '@core/journeys/ui/EditorProvider'
+import { ActiveFab, EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
 
 import {
