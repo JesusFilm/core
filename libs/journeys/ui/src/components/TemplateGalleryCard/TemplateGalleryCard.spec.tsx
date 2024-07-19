@@ -47,7 +47,7 @@ describe('TemplateGalleryCard', () => {
     render(<TemplateGalleryCard item={algoliaJourneys[0]} />)
     expect(screen.getByTestId('templateGalleryCard')).toHaveAttribute(
       'href',
-      '/templates/e978adb4-e4d8-42ef-89a9-79811f10b7e9'
+      '/templates/template-id-3'
     )
   })
 
@@ -75,7 +75,7 @@ describe('TemplateGalleryCard from different route', () => {
     render(<TemplateGalleryCard item={algoliaJourneys[0]} />)
     expect(screen.getByTestId('templateGalleryCard')).toHaveAttribute(
       'href',
-      '/templates/e978adb4-e4d8-42ef-89a9-79811f10b7e9'
+      '/templates/template-id-3'
     )
   })
 
@@ -87,7 +87,7 @@ describe('TemplateGalleryCard from different route', () => {
     render(<TemplateGalleryCard item={algoliaJourneys[0]} />)
     expect(screen.getByTestId('templateGalleryCard')).toHaveAttribute(
       'href',
-      '/journeys/e978adb4-e4d8-42ef-89a9-79811f10b7e9'
+      '/journeys/template-id-3'
     )
   })
 

@@ -34,7 +34,7 @@ describe('TemplateSections', () => {
       render(<TemplateSections />)
       expect(
         screen
-          .getByTestId('journey-e978adb4-e4d8-42ef-89a9-79811f10b7e9')
+          .getByTestId('journey-template-id-3')
           .getElementsByClassName('MuiImageBackground-root')[0]
       ).toHaveAttribute('rel', 'preload')
     })
@@ -46,7 +46,7 @@ describe('TemplateSections', () => {
         loading: false,
         refinements: []
       })
-      const { getByRole } = render(<TemplateSections />)
+      render(<TemplateSections />)
       expect(
         screen.getByRole('heading', { name: 'Acceptance' })
       ).toBeInTheDocument()
@@ -103,29 +103,7 @@ describe('TemplateSections', () => {
     })
   })
 
-  // TODO: when we add language filters
-
-  // describe('Multiple Languages', () => {
-  //   it('should render templates if languageIds are present', async () => {
-  //     const { getByRole, getAllByRole } = render(
-  //       <MockedProvider mocks={[getJourneysWithLanguageIdsMock]}>
-  //         <TemplateSections languageIds={['529', '5441']} />
-  //       </MockedProvider>
-  //     )
-  //     await waitFor(() =>
-  //       expect(
-  //         getAllByRole('heading', { name: 'Featured Template 2' })[0]
-  //       ).toBeInTheDocument()
-  //     )
-  //     expect(
-  //       getByRole('heading', { name: 'Featured & New' })
-  //     ).toBeInTheDocument()
-  //     expect(getByRole('heading', { name: 'Acceptance' })).toBeInTheDocument()
-  //     expect(
-  //       getByRole('heading', { name: 'Template in different language' })
-  //     ).toBeInTheDocument()
-  //   })
-  // })
+  // TODO: Test for multiple languages
 
   describe('Empty', () => {
     beforeEach(() => {
