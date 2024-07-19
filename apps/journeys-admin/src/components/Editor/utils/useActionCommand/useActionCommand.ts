@@ -10,11 +10,11 @@ import {
   BlockFields_FormBlock_action,
   BlockFields_SignUpBlock_action,
   BlockFields_VideoBlock_action
-} from '../../../../../../../../../../../__generated__/BlockFields'
-import { useBlockActionDeleteMutation } from '../../../../../../../../../../libs/useBlockActionDeleteMutation'
-import { useBlockActionEmailUpdateMutation } from '../../../../../../../../../../libs/useBlockActionEmailUpdateMutation'
-import { useBlockActionLinkUpdateMutation } from '../../../../../../../../../../libs/useBlockActionLinkUpdateMutation'
-import { useBlockActionNavigateToBlockUpdateMutation } from '../../../../../../../../../../libs/useBlockActionNavigateToBlockUpdateMutation'
+} from '../../../../../__generated__/BlockFields'
+import { useBlockActionDeleteMutation } from '../../../../libs/useBlockActionDeleteMutation'
+import { useBlockActionEmailUpdateMutation } from '../../../../libs/useBlockActionEmailUpdateMutation'
+import { useBlockActionLinkUpdateMutation } from '../../../../libs/useBlockActionLinkUpdateMutation'
+import { useBlockActionNavigateToBlockUpdateMutation } from '../../../../libs/useBlockActionNavigateToBlockUpdateMutation'
 
 export type Action =
   | BlockFields_ButtonBlock_action

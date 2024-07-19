@@ -11,7 +11,7 @@ import LinkIcon from '@core/shared/ui/icons/Link'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import { TextFieldForm } from '../../../../../../../../TextFieldForm'
-import { useActionCommand } from '../utils/useActionCommand'
+import { useActionCommand } from '../../../../../../../utils/useActionCommand'
 
 export function LinkAction(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')

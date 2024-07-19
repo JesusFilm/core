@@ -8,13 +8,13 @@ import { useActionCommand } from '.'
 import {
   BlockActionDelete,
   BlockActionDeleteVariables
-} from '../../../../../../../../../../../__generated__/BlockActionDelete'
-import { TestEditorState } from '../../../../../../../../../../libs/TestEditorState'
-import { BLOCK_ACTION_DELETE } from '../../../../../../../../../../libs/useBlockActionDeleteMutation/useBlockActionDeleteMutation'
-import { blockActionEmailUpdateMock } from '../../../../../../../../../../libs/useBlockActionEmailUpdateMutation/useBlockActionEmailUpdateMutation.mock'
-import { blockActionLinkUpdateMock } from '../../../../../../../../../../libs/useBlockActionLinkUpdateMutation/useBlockActionLinkUpdateMutation.mock'
-import { blockActionNavigateToBlockUpdateMock } from '../../../../../../../../../../libs/useBlockActionNavigateToBlockUpdateMutation/useBlockActionNavigateToBlockUpdateMutation.mock'
-import { CommandUndoItem } from '../../../../../../../../Toolbar/Items/CommandUndoItem'
+} from '../../../../../__generated__/BlockActionDelete'
+import { TestEditorState } from '../../../../libs/TestEditorState'
+import { BLOCK_ACTION_DELETE } from '../../../../libs/useBlockActionDeleteMutation/useBlockActionDeleteMutation'
+import { blockActionEmailUpdateMock } from '../../../../libs/useBlockActionEmailUpdateMutation/useBlockActionEmailUpdateMutation.mock'
+import { blockActionLinkUpdateMock } from '../../../../libs/useBlockActionLinkUpdateMutation/useBlockActionLinkUpdateMutation.mock'
+import { blockActionNavigateToBlockUpdateMock } from '../../../../libs/useBlockActionNavigateToBlockUpdateMutation/useBlockActionNavigateToBlockUpdateMutation.mock'
+import { CommandUndoItem } from '../../Toolbar/Items/CommandUndoItem'
 
 const blockActionDeleteMock: MockedResponse<
   BlockActionDelete,

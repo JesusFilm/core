@@ -11,7 +11,7 @@ import Mail2Icon from '@core/shared/ui/icons/Mail2'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import { TextFieldForm } from '../../../../../../../../TextFieldForm'
-import { useActionCommand } from '../utils/useActionCommand'
+import { useActionCommand } from '../../../../../../../utils/useActionCommand'
 
 export function EmailAction(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')

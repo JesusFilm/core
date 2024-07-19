@@ -17,11 +17,11 @@ import {
   BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../../../__generated__/BlockFields'
 
+import { useActionCommand } from '../../../../../../utils/useActionCommand'
 import { EmailAction } from './EmailAction'
 import { LinkAction } from './LinkAction'
 import { NavigateToBlockAction } from './NavigateToBlockAction'
 import { ActionValue, actions } from './utils/actions'
-import { useActionCommand } from './utils/useActionCommand'
 
 export function Action(): ReactElement {
   const {
