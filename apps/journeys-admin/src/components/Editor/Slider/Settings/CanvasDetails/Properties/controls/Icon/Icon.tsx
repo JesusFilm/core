@@ -28,12 +28,15 @@ import { init, t } from 'i18next'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
+import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/BlockFields'
-import { IconBlockNameUpdate } from '../../../../../../../../../__generated__/IconBlockNameUpdate'
+import {
+  IconBlockNameUpdate,
+  IconBlockNameUpdateVariables
+} from '../../../../../../../../../__generated__/IconBlockNameUpdate'
 import { IconFields } from '../../../../../../../../../__generated__/IconFields'
 import {
   IconColor,
@@ -146,10 +149,9 @@ export const icons = [
 export const ICON_BLOCK_NAME_UPDATE = gql`
   mutation IconBlockNameUpdate(
     $id: ID!
-    $journeyId: ID!
     $input: IconBlockUpdateInput!
   ) {
-    iconBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+    iconBlockUpdate(id: $id, input: $input) {
       id
       name
     }
@@ -160,11 +162,12 @@ type IconParentBlock<T = TreeBlock<ButtonBlock>> = T
 interface IconProps extends Pick<TreeBlock<IconFields>, 'id'> {}
 
 export function Icon({ id }: IconProps): ReactElement {
-  const [iconBlockNameUpdate] = useMutation<IconBlockNameUpdate>(
-    ICON_BLOCK_NAME_UPDATE
-  )
-  const { journey } = useJourney()
-  const { state } = useEditor()
+  const [iconBlockNameUpdate] = useMutation<
+    IconBlockNameUpdate,
+    IconBlockNameUpdateVariables
+  >(ICON_BLOCK_NAME_UPDATE)
+  const { state, dispatch } = useEditor()
+  const { add } = useCommand()
   const selectedBlock = state.selectedBlock as IconParentBlock
 
   // Get updated iconBlock, passing via props doesn't update as selectedBlock doesn't change
@@ -174,22 +177,33 @@ export function Icon({ id }: IconProps): ReactElement {
   const iconName = iconBlock?.iconName ?? ''
 
   async function iconUpdate(name: IconName | null): Promise<void> {
-    if (journey == null) return
-
-    await iconBlockNameUpdate({
-      variables: {
-        id,
-        journeyId: journey.id,
-        input: {
-          name
-        }
+    await add({
+      parameters: {
+        execute: { name },
+        undo: { name }
       },
-      optimisticResponse: {
-        iconBlockUpdate: {
-          __typename: 'IconBlock',
-          id,
-          name
-        }
+      async execute({ name }) {
+        dispatch({
+          type: 'SetEditorFocusAction',
+          selectedBlock,
+          selectedStep: state.selectedStep
+        })
+
+        await iconBlockNameUpdate({
+          variables: {
+            id,
+            input: {
+              name
+            }
+          },
+          optimisticResponse: {
+            iconBlockUpdate: {
+              __typename: 'IconBlock',
+              id,
+              name
+            }
+          }
+        })
       }
     })
   }
