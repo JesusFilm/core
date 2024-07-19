@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -8,6 +8,8 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { SignUpFields } from '../../../../../../../../__generated__/SignUpFields'
 
 import { SIGN_UP_BLOCK_UPDATE_CONTENT, SignUpEdit } from '.'
+import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
+import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -27,14 +29,14 @@ describe('SignUpEdit', () => {
   }
 
   it('selects the input on click', async () => {
-    const { getByRole } = render(
+    render(
       <MockedProvider>
         <SnackbarProvider>
           <SignUpEdit {...props} />
         </SnackbarProvider>
       </MockedProvider>
     )
-    const input = getByRole('textbox', { name: '' })
+    const input = screen.getByRole('textbox', { name: '' })
     fireEvent.click(input)
     await waitFor(() => expect(input).toHaveFocus())
   })
@@ -52,7 +54,7 @@ describe('SignUpEdit', () => {
       }
     }))
 
-    const { getByRole } = render(
+    render(
       <MockedProvider
         mocks={[
           {
@@ -77,7 +79,7 @@ describe('SignUpEdit', () => {
       </MockedProvider>
     )
 
-    const input = getByRole('textbox', { name: '' })
+    const input = screen.getByRole('textbox', { name: '' })
     fireEvent.click(input)
     fireEvent.change(input, { target: { value: '    updated label    ' } })
     fireEvent.blur(input)
@@ -97,7 +99,7 @@ describe('SignUpEdit', () => {
       }
     }))
 
-    const { getByRole } = render(
+    render(
       <MockedProvider
         mocks={[
           {
@@ -122,7 +124,7 @@ describe('SignUpEdit', () => {
       </MockedProvider>
     )
 
-    const input = getByRole('textbox', { name: '' })
+    const input = screen.getByRole('textbox', { name: '' })
     fireEvent.click(input)
     fireEvent.change(input, { target: { value: 'Submit' } })
     fireEvent.blur(input)
@@ -142,7 +144,7 @@ describe('SignUpEdit', () => {
       }
     }))
 
-    const { getByRole } = render(
+    render(
       <MockedProvider
         mocks={[
           {
@@ -170,10 +172,159 @@ describe('SignUpEdit', () => {
       </MockedProvider>
     )
 
-    const input = getByRole('textbox', { name: '' })
+    const input = screen.getByRole('textbox', { name: '' })
     fireEvent.click(input)
     fireEvent.change(input, { target: { value: '    updated label    ' } })
-    fireEvent.click(getByRole('heading', { level: 1 }))
+    fireEvent.click(screen.getByRole('heading', { level: 1 }))
     await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
+  it('should undo the label change', async () => {
+    const result1 = jest.fn(() => ({
+      data: {
+        signUpBlockUpdate: [
+          {
+            __typename: 'SignUpBlock',
+            id: 'signUp.id',
+            submitLabel: 'updated label'
+          }
+        ]
+      }
+    }))
+
+    const result2 = jest.fn(() => ({
+      data: {
+        signUpBlockUpdate: [
+          {
+            __typename: 'SignUpBlock',
+            id: 'signUp.id',
+            submitLabel: 'Submit'
+          }
+        ]
+      }
+    }))
+
+    const mockUpdateSuccess1 = {
+      request: {
+        query: SIGN_UP_BLOCK_UPDATE_CONTENT,
+        variables: {
+          id: 'signUp.id',
+          input: {
+            submitLabel: 'updated label'
+          }
+        }
+      },
+      result: result1
+    }
+
+    const mockUpdateSuccess2 = {
+      request: {
+        query: SIGN_UP_BLOCK_UPDATE_CONTENT,
+        variables: {
+          id: 'signUp.id',
+          input: {
+            submitLabel: 'Submit'
+          }
+        }
+      },
+      result: result2
+    }
+
+    render(
+      <MockedProvider mocks={[mockUpdateSuccess1, mockUpdateSuccess2]}>
+        <SnackbarProvider>
+          <EditorProvider>
+            <CommandUndoItem variant="button" />
+            <SignUpEdit {...props} />
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    const input = screen.getByRole('textbox', { name: '' })
+    fireEvent.click(input)
+    fireEvent.change(input, { target: { value: 'updated label' } })
+    fireEvent.blur(input)
+    await waitFor(() => expect(result1).toHaveBeenCalled())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(result2).toHaveBeenCalled())
+  })
+
+  it('should redo the undone label change', async () => {
+    const result1 = jest.fn(() => ({
+      data: {
+        signUpBlockUpdate: [
+          {
+            __typename: 'SignUpBlock',
+            id: 'signUp.id',
+            submitLabel: 'updated label'
+          }
+        ]
+      }
+    }))
+
+    const result2 = jest.fn(() => ({
+      data: {
+        signUpBlockUpdate: [
+          {
+            __typename: 'SignUpBlock',
+            id: 'signUp.id',
+            submitLabel: 'Submit'
+          }
+        ]
+      }
+    }))
+
+    const mockUpdateSuccess1 = {
+      request: {
+        query: SIGN_UP_BLOCK_UPDATE_CONTENT,
+        variables: {
+          id: 'signUp.id',
+          input: {
+            submitLabel: 'updated label'
+          }
+        }
+      },
+      result: result1,
+      maxUsageCount: 2
+    }
+
+    const mockUpdateSuccess2 = {
+      request: {
+        query: SIGN_UP_BLOCK_UPDATE_CONTENT,
+        variables: {
+          id: 'signUp.id',
+          input: {
+            submitLabel: 'Submit'
+          }
+        }
+      },
+      result: result2
+    }
+
+    render(
+      <MockedProvider mocks={[mockUpdateSuccess1, mockUpdateSuccess2]}>
+        <SnackbarProvider>
+          <EditorProvider>
+            <CommandUndoItem variant="button" />
+            <CommandRedoItem variant="button" />
+            <SignUpEdit {...props} />
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    const input = screen.getByRole('textbox', { name: '' })
+    fireEvent.click(input)
+    fireEvent.change(input, { target: { value: 'updated label' } })
+    fireEvent.blur(input)
+    await waitFor(() => expect(result1).toHaveBeenCalled())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(result2).toHaveBeenCalled())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+    await waitFor(() => expect(result1).toHaveBeenCalled())
   })
 })
