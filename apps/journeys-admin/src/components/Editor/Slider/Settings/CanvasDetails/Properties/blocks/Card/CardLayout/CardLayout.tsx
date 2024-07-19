@@ -8,7 +8,6 @@ import Image from 'next/image'
 import { ReactElement } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import FlexAlignBottom1Icon from '@core/shared/ui/icons/FlexAlignBottom1'
 
