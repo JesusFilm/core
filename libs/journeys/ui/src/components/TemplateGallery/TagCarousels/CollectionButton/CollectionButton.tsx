@@ -48,7 +48,7 @@ export function CollectionButton({
   const theme = useTheme()
   const { refine } = useRefinementList({ attribute: 'tags.Collections' })
 
-  function handleClick(tag: ChildTag | undefined) {
+  function handleClick() {
     if (tag?.name != null) refine(tag.name[0].value)
   }
 
@@ -59,7 +59,7 @@ export function CollectionButton({
     <StyledCollectionButton
       disableRipple
       disableTouchRipple
-      onClick={() => handleClick(tag)}
+      onClick={handleClick}
       sx={{
         '&:focus-visible': {
           outline: '2px solid',
