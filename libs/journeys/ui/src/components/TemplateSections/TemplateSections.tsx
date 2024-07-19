@@ -40,13 +40,11 @@ export function TemplateSections(): ReactElement {
         hits.filter(({ featuredAt }) => featuredAt == null),
         10
       )
-    ] as unknown as AlgoliaJourney[]
+    ]
 
-    // Let algolia handle most relivant and just grab first n results
     const mostRelevant = hits.slice(0, 10)
     algoliaCollection = refinements.length > 0 ? featuredAndNew : mostRelevant
 
-    // Group journeys into categories
     hits.forEach((journey) => {
       const allTags = getAllTags(journey)
       allTags.forEach((tag) => {
