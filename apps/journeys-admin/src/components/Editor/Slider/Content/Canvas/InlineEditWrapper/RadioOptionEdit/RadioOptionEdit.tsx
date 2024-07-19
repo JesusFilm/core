@@ -3,11 +3,7 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
-import {
-  ActiveContent,
-  ActiveSlide,
-  useEditor
-} from '@core/journeys/ui/EditorProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { RadioOption } from '@core/journeys/ui/RadioOption'
 import type { TreeBlock } from '@core/journeys/ui/block'
 
@@ -42,7 +38,10 @@ export function RadioOptionEdit({
     RadioOptionBlockUpdateContent,
     RadioOptionBlockUpdateContentVariables
   >(RADIO_OPTION_BLOCK_UPDATE_CONTENT)
-  const { state, dispatch } = useEditor()
+  const {
+    state: { selectedBlock, selectedStep },
+    dispatch
+  } = useEditor()
   const { add } = useCommand()
   const [value, setValue] = useState(
     label === 'Option 1' || label === 'Option 2' ? '' : label
@@ -60,9 +59,8 @@ export function RadioOptionEdit({
       async execute({ label }) {
         dispatch({
           type: 'SetEditorFocusAction',
-          selectedBlock: state.selectedBlock,
-          selectedStep: state.selectedStep,
-          selectedAttributeId: state.selectedAttributeId
+          selectedBlock,
+          selectedStep
         })
 
         await radioOptionBlockUpdate({
