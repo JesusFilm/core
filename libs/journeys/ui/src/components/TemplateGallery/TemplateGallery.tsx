@@ -1,23 +1,16 @@
 import Container from '@mui/material/Container'
 import Paper from '@mui/material/Paper'
-import castArray from 'lodash/castArray'
-import difference from 'lodash/difference'
-import { useTranslation } from 'next-i18next'
-import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 
 import { TemplateSections } from '../TemplateSections'
 
-import { Index, RefinementList } from 'react-instantsearch'
+import { Index } from 'react-instantsearch'
 import { SearchBar } from '../SearchBar'
 import { TagCarousels } from './TagCarousels'
 
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
-import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
-import { ParentTagIcon } from '../ParentTagIcon'
 
 interface TemplateGalleryProps {
   hideOverflow?: boolean
