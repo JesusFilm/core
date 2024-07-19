@@ -61,15 +61,16 @@ export const CARD_BLOCK_BACKGROUND_COLOR_UPDATE = gql`
 `
 
 export function BackgroundColor(): ReactElement {
-  const [cardBlockUpdate] = useMutation<CardBlockBackgroundColorUpdate>(
-    CARD_BLOCK_BACKGROUND_COLOR_UPDATE
-  )
-
   const {
     state: { selectedBlock, selectedStep },
     dispatch
   } = useEditor()
+  const { journey } = useJourney()
+  const { rtl, locale } = getJourneyRTL(journey)
   const { add } = useCommand()
+  const [cardBlockUpdate] = useMutation<CardBlockBackgroundColorUpdate>(
+    CARD_BLOCK_BACKGROUND_COLOR_UPDATE
+  )
 
   const cardBlock = (
     selectedBlock?.__typename === 'CardBlock'
@@ -78,9 +79,6 @@ export function BackgroundColor(): ReactElement {
           (child) => child.__typename === 'CardBlock'
         )
   ) as TreeBlock<CardFields> | undefined
-
-  const { journey } = useJourney()
-  const { rtl, locale } = getJourneyRTL(journey)
 
   const cardTheme = getTheme({
     themeName: cardBlock?.themeName ?? journey?.themeName ?? ThemeName.base,
@@ -101,17 +99,13 @@ export function BackgroundColor(): ReactElement {
       add({
         parameters: {
           execute: {
-            color: color.toUpperCase(),
-            selectedStep: selectedStep,
-            cardBlock: cardBlock
+            color: color.toUpperCase()
           },
           undo: {
-            color: selectedColor,
-            selectedStep: selectedStep,
-            cardBlock: cardBlock
+            color: selectedColor
           }
         },
-        execute: async ({ selectedStep, cardBlock, color }) => {
+        execute: async ({ color }) => {
           dispatch({
             type: 'SetEditorFocusAction',
             activeSlide: ActiveSlide.Content,

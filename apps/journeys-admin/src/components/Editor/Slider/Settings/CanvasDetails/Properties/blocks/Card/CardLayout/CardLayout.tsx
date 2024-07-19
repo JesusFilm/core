@@ -12,7 +12,10 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import FlexAlignBottom1Icon from '@core/shared/ui/icons/FlexAlignBottom1'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../../__generated__/BlockFields'
-import { CardBlockLayoutUpdate } from '../../../../../../../../../../__generated__/CardBlockLayoutUpdate'
+import {
+  CardBlockLayoutUpdate,
+  CardBlockLayoutUpdateVariables
+} from '../../../../../../../../../../__generated__/CardBlockLayoutUpdate'
 import { HorizontalSelect } from '../../../../../../../../HorizontalSelect'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
@@ -32,11 +35,16 @@ export const CARD_BLOCK_LAYOUT_UPDATE = gql`
 `
 
 export function CardLayout(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const {
     state: { selectedBlock, selectedStep },
     dispatch
   } = useEditor()
   const { add } = useCommand()
+  const [cardBlockUpdate] = useMutation<
+    CardBlockLayoutUpdate,
+    CardBlockLayoutUpdateVariables
+  >(CARD_BLOCK_LAYOUT_UPDATE)
 
   const cardBlock = (
     selectedBlock?.__typename === 'CardBlock'
@@ -46,50 +54,40 @@ export function CardLayout(): ReactElement {
         )
   ) as TreeBlock<CardBlock> | undefined
 
-  const [cardBlockUpdate] = useMutation<CardBlockLayoutUpdate>(
-    CARD_BLOCK_LAYOUT_UPDATE
-  )
-  const handleLayoutChange = async (fullscreen: boolean): Promise<void> => {
-    if (cardBlock != null) {
-      await add({
-        parameters: {
-          execute: {
-            cardBlockId: cardBlock.id,
-            fullscreen,
-            selectedStep
-          },
-          undo: {
-            cardBlockId: cardBlock.id,
-            fullscreen: !fullscreen,
-            selectedStep
-          }
+  async function handleLayoutChange(fullscreen: boolean): Promise<void> {
+    if (cardBlock == null) return
+    await add({
+      parameters: {
+        execute: {
+          fullscreen
         },
-        execute: async ({ cardBlockId, fullscreen, selectedStep }) => {
-          dispatch({
-            type: 'SetEditorFocusAction',
-            selectedStep: selectedStep
-          })
-          await cardBlockUpdate({
-            variables: {
-              id: cardBlockId,
-              input: {
-                fullscreen
-              }
-            },
-            optimisticResponse: {
-              cardBlockUpdate: {
-                id: cardBlockId,
-                __typename: 'CardBlock',
-                fullscreen
-              }
-            }
-          })
+        undo: {
+          fullscreen: !fullscreen
         }
-      })
-    }
+      },
+      execute: async ({ fullscreen }) => {
+        dispatch({
+          type: 'SetEditorFocusAction',
+          selectedStep: selectedStep
+        })
+        await cardBlockUpdate({
+          variables: {
+            id: cardBlock.id,
+            input: {
+              fullscreen
+            }
+          },
+          optimisticResponse: {
+            cardBlockUpdate: {
+              id: cardBlock.id,
+              __typename: 'CardBlock',
+              fullscreen
+            }
+          }
+        })
+      }
+    })
   }
-
-  const { t } = useTranslation('apps-journeys-admin')
 
   return (
     <>

@@ -56,30 +56,26 @@ export function CardStyling(): ReactElement {
   )
   const { t } = useTranslation('apps-journeys-admin')
 
-  const handleChange = async (themeMode: ThemeMode): Promise<void> => {
+  async function handleChange(themeMode: ThemeMode): Promise<void> {
     if (cardBlock != null) {
       await add({
         parameters: {
           execute: {
-            cardBlockId: cardBlock.id,
-            themeMode,
-            selectedStep
+            themeMode
           },
           undo: {
-            cardBlockId: cardBlock.id,
             themeMode:
-              themeMode === ThemeMode.dark ? ThemeMode.light : ThemeMode.dark,
-            selectedStep
+              themeMode === ThemeMode.dark ? ThemeMode.light : ThemeMode.dark
           }
         },
-        async execute({ cardBlockId: id, themeMode }) {
+        async execute({ themeMode }) {
           dispatch({
             type: 'SetEditorFocusAction',
             selectedStep
           })
           await cardBlockUpdate({
             variables: {
-              id,
+              id: cardBlock.id,
               input: {
                 themeMode,
                 themeName: ThemeName.base
