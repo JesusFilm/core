@@ -40,17 +40,15 @@ export function VideoGrid({
       data-testid="VideoGrid"
     >
       {(videos?.length ?? 0) > 0 &&
-        videos?.map((video, index) => {
-          return (
-            <Grid item key={index} xs={12} md={4} xl={3}>
-              <VideoCard
-                video={video}
-                containerSlug={containerSlug}
-                variant={variant}
-              />
-            </Grid>
-          )
-        })}
+        videos?.map((video, index) => (
+          <Grid item key={index} xs={12} md={4} xl={3}>
+            <VideoCard
+              video={video}
+              containerSlug={containerSlug}
+              variant={variant}
+            />
+          </Grid>
+        ))}
       {loading === true && (
         <>
           <Grid item xs={12} md={4} xl={3}>
