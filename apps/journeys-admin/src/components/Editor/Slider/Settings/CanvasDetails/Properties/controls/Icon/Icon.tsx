@@ -180,7 +180,7 @@ export function Icon({ id }: IconProps): ReactElement {
     await add({
       parameters: {
         execute: { name },
-        undo: { name }
+        undo: { iconName }
       },
       async execute({ name }) {
         dispatch({
