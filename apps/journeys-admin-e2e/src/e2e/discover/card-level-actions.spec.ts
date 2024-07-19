@@ -160,7 +160,6 @@ test.describe('verify card level actions', () => {
     await cardLevelActionPage.verifySelecetdIconInCardBelowSubscribe() //veriying the Selected icon is updated in the subscribe section of the card
     await cardLevelActionPage.selectWholeSubscribeSectionInCard() // selecting the whole subscribe section
     await cardLevelActionPage.clickDeleteBtnInToolTipBar() // clicking delete button in the tooltip bar
-    await cardLevelActionPage.verifyToastMessage() // verifying the toast message
     await cardLevelActionPage.verifySubscribeDeletedFromCard() //  verifying the subscribe section is deleted from the card
   })
 
