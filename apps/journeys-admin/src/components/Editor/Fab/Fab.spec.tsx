@@ -31,7 +31,7 @@ describe('Fab', () => {
     activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
   }
 
-  describe('lgUp', () => {
+  describe('mdUp', () => {
     beforeEach(() =>
       (useMediaQuery as jest.Mock).mockImplementation(() => true)
     )
@@ -215,7 +215,7 @@ describe('Fab', () => {
     })
   })
 
-  describe('lgDown', () => {
+  describe('mdDown', () => {
     beforeEach(() =>
       (useMediaQuery as jest.Mock).mockImplementation(() => false)
     )
