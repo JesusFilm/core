@@ -72,7 +72,7 @@ export function PlausibleEmbedDashboard({
   })
 
   const journeyId = router.query.journeyId as string
-  const url = host ?? process.env.PLAUSIBLE_URL ?? ''
+  const url = host ?? process.env.NEXT_PUBLIC_PLAUSIBLE_URL ?? ''
 
   return (
     <>
