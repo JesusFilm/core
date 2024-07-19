@@ -64,8 +64,7 @@ export function CardStyling(): ReactElement {
             themeMode
           },
           undo: {
-            themeMode:
-              themeMode === ThemeMode.dark ? ThemeMode.light : ThemeMode.dark
+            themeMode: cardBlock.themeMode
           }
         },
         async execute({ themeMode }) {

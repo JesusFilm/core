@@ -276,7 +276,11 @@ describe('CardStyling', () => {
         ]}
       >
         <JourneyProvider value={{ journey, variant: 'admin' }}>
-          <EditorProvider initialState={{ selectedBlock: initialBlock }}>
+          <EditorProvider
+            initialState={{
+              selectedBlock: { ...initialBlock, themeMode: ThemeMode.light }
+            }}
+          >
             <CardStyling />
             <CommandUndoItem variant="button" />
           </EditorProvider>
