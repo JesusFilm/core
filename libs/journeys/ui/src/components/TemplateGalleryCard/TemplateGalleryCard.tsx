@@ -13,8 +13,8 @@ import { ReactElement } from 'react'
 
 import { useRouter } from 'next/router'
 import {
-  getAlgoliaJourneyLang,
-  getCoreJourneyLang,
+  getAlgoliaJourneyLanguage,
+  getJourneyLanguage,
   isAlgoliaJourney
 } from '../../libs/algolia/algoliaJourneyUtils'
 import { AlgoliaJourney } from '../../libs/algolia/useAlgoliaJourneys'
@@ -62,9 +62,9 @@ export function TemplateGalleryCard({
 
   let displayLanguage = ''
   if (isAlgoliaJourney(journey)) {
-    displayLanguage = getAlgoliaJourneyLang(journey)
+    displayLanguage = getAlgoliaJourneyLanguage(journey)
   } else if (journey !== undefined) {
-    displayLanguage = getCoreJourneyLang(journey)
+    displayLanguage = getJourneyLanguage(journey)
   }
 
   const theme = useTheme()

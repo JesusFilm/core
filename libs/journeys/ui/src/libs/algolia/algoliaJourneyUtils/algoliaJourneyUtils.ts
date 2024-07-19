@@ -11,7 +11,7 @@ export function isAlgoliaJourney(
   )
 }
 
-export function getAlgoliaJourneyLang(journey: AlgoliaJourney): string {
+export function getAlgoliaJourneyLanguage(journey: AlgoliaJourney): string {
   const localLanguage = journey?.language?.localName
   const nativeLanguage = journey?.language?.nativeName
   return (
@@ -21,7 +21,7 @@ export function getAlgoliaJourneyLang(journey: AlgoliaJourney): string {
   )
 }
 
-export function getCoreJourneyLang(journey: Journey): string {
+export function getJourneyLanguage(journey: Journey): string {
   const localLanguage = journey?.language?.name.find(
     ({ primary }) => !primary
   )?.value

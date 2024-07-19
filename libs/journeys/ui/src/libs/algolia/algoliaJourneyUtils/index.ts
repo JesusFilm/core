@@ -1,5 +1,5 @@
 export {
   isAlgoliaJourney,
-  getAlgoliaJourneyLang,
-  getCoreJourneyLang
+  getAlgoliaJourneyLanguage,
+  getJourneyLanguage
 } from './algoliaJourneyUtils'
