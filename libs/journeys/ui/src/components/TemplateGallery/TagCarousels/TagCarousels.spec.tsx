@@ -17,7 +17,6 @@ import { GET_TAGS } from '../../../libs/useTagsQuery'
 jest.mock('react-instantsearch')
 
 function mockRefinementList() {
-  jest.clearAllMocks()
   const onClick = jest.fn()
   const useRefinementListMocked = jest.mocked(useRefinementList)
   useRefinementListMocked.mockReturnValue({
@@ -28,6 +27,7 @@ function mockRefinementList() {
 
 describe('TagCarousels', () => {
   beforeEach(() => {
+    jest.clearAllMocks()
     mockRefinementList()
   })
 
