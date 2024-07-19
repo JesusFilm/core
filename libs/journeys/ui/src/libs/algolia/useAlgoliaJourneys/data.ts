@@ -6,7 +6,7 @@ export const algoliaJourneys = [
   {
     title: 'onboarding template3',
     date: '2024-07-09T00:37:24.569Z',
-    description: 'e978adb4-e4d8-42ef-89a9-79811f10b7e9',
+    description: 'template-id-3',
     image: {
       src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public',
       alt: 'onboarding primary'
@@ -29,7 +29,7 @@ export const algoliaJourneys = [
       'Felt Needs': ['Depression'],
       Holidays: ['Easter']
     },
-    objectID: 'e978adb4-e4d8-42ef-89a9-79811f10b7e9',
+    objectID: 'template-id-3',
     _highlightResult: {
       title: {
         value: 'onboarding template3',
@@ -37,7 +37,7 @@ export const algoliaJourneys = [
         matchedWords: []
       },
       description: {
-        value: 'e978adb4-e4d8-42ef-89a9-79811f10b7e9',
+        value: 'template-id-3',
         matchLevel: 'none',
         matchedWords: []
       },
@@ -114,7 +114,7 @@ export const algoliaJourneys = [
   {
     title: 'onboarding template2',
     date: '2024-07-09T00:37:24.569Z',
-    description: 'c4889bb1-49ac-41c9-8fdb-0297afb32cd9',
+    description: 'template-id-2',
     image: {
       src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public',
       alt: 'onboarding primary'
@@ -135,7 +135,7 @@ export const algoliaJourneys = [
         'Guilt/Righteousness'
       ]
     },
-    objectID: 'c4889bb1-49ac-41c9-8fdb-0297afb32cd9',
+    objectID: 'template-id-2',
     _highlightResult: {
       title: {
         value: 'onboarding template2',
@@ -143,7 +143,7 @@ export const algoliaJourneys = [
         matchedWords: []
       },
       description: {
-        value: 'c4889bb1-49ac-41c9-8fdb-0297afb32cd9',
+        value: 'template-id-2',
         matchLevel: 'none',
         matchedWords: []
       },
@@ -241,7 +241,7 @@ export const algoliaJourneys = [
       ]
     },
     tags: {},
-    objectID: '9d9ca229-9fb5-4d06-a18c-2d1a4ceba457',
+    objectID: 'template-id',
     _highlightResult: {
       title: {
         value: 'Dev Onboarding Journey',
@@ -304,7 +304,7 @@ export const algoliaJourneys = [
   {
     title: 'onboarding template4',
     date: '2024-07-09T00:37:24.569Z',
-    description: '178c01bd-371c-4e73-a9b8-e2bb95215fd8',
+    description: 'template-id-4',
     image: {
       src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public',
       alt: 'onboarding primary'
@@ -320,7 +320,7 @@ export const algoliaJourneys = [
       Topics: ['Addiction'],
       Audience: ['Adults']
     },
-    objectID: '178c01bd-371c-4e73-a9b8-e2bb95215fd8',
+    objectID: 'template-id-4',
     _highlightResult: {
       title: {
         value: 'onboarding template4',
@@ -328,7 +328,7 @@ export const algoliaJourneys = [
         matchedWords: []
       },
       description: {
-        value: '178c01bd-371c-4e73-a9b8-e2bb95215fd8',
+        value: 'template-id-4',
         matchLevel: 'none',
         matchedWords: []
       },
@@ -385,7 +385,7 @@ export const algoliaJourneys = [
   {
     title: 'onboarding template5',
     date: '2024-07-09T00:37:24.569Z',
-    description: '13317d05-a805-4b3c-b362-9018971d9b57',
+    description: 'template-id-5',
     image: {
       src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public',
       alt: 'onboarding primary'
@@ -409,7 +409,7 @@ export const algoliaJourneys = [
       Holidays: ['Easter'],
       Collections: ['Jesus Film', 'NUA']
     },
-    objectID: '13317d05-a805-4b3c-b362-9018971d9b57',
+    objectID: 'template-id-5',
     _highlightResult: {
       title: {
         value: 'onboarding template5',
@@ -417,7 +417,7 @@ export const algoliaJourneys = [
         matchedWords: []
       },
       description: {
-        value: '13317d05-a805-4b3c-b362-9018971d9b57',
+        value: 'template-id-5',
         matchLevel: 'none',
         matchedWords: []
       },
@@ -511,7 +511,7 @@ export const algoliaJourneys = [
   {
     title: 'onboarding template1',
     date: '2024-07-09T00:37:24.569Z',
-    description: '014c7add-288b-4f84-ac85-ccefef7a07d3',
+    description: 'template-id-1',
     image: {
       src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public',
       alt: 'onboarding primary'
@@ -530,7 +530,7 @@ export const algoliaJourneys = [
       ]
     },
     tags: {},
-    objectID: '014c7add-288b-4f84-ac85-ccefef7a07d3',
+    objectID: 'template-id-1',
     _highlightResult: {
       title: {
         value: 'onboarding template1',
@@ -538,7 +538,7 @@ export const algoliaJourneys = [
         matchedWords: []
       },
       description: {
-        value: '014c7add-288b-4f84-ac85-ccefef7a07d3',
+        value: 'template-id-1',
         matchLevel: 'none',
         matchedWords: []
       },
@@ -595,7 +595,7 @@ export const transformedAlgoliaJourneys = [
   {
     title: 'onboarding template3',
     date: '2023-08-14T04:24:24.392Z',
-    description: 'e978adb4-e4d8-42ef-89a9-79811f10b7e9',
+    description: 'template-id-3',
     image: {
       src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public',
       alt: 'onboarding primary'
@@ -618,7 +618,7 @@ export const transformedAlgoliaJourneys = [
       'Felt Needs': ['Acceptance', 'Depression'],
       Holidays: ['Easter']
     },
-    objectID: 'e978adb4-e4d8-42ef-89a9-79811f10b7e9',
+    objectID: 'template-id-3',
     _highlightResult: {
       title: {
         value: 'onboarding template3',
@@ -626,7 +626,7 @@ export const transformedAlgoliaJourneys = [
         matchedWords: []
       },
       description: {
-        value: 'e978adb4-e4d8-42ef-89a9-79811f10b7e9',
+        value: 'template-id-3',
         matchLevel: 'none',
         matchedWords: []
       },
@@ -704,7 +704,7 @@ export const transformedAlgoliaJourneys = [
       }
     },
     __position: 1,
-    id: 'e978adb4-e4d8-42ef-89a9-79811f10b7e9',
+    id: 'template-id-3',
     createdAt: '2023-08-14T04:24:24.392Z',
     primaryImageBlock: {
       src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public',
@@ -714,7 +714,7 @@ export const transformedAlgoliaJourneys = [
   {
     title: 'onboarding template2',
     date: '2024-07-09T00:37:24.569Z',
-    description: 'c4889bb1-49ac-41c9-8fdb-0297afb32cd9',
+    description: 'template-id-2',
     image: {
       src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public',
       alt: 'onboarding primary'
@@ -735,7 +735,7 @@ export const transformedAlgoliaJourneys = [
         'Guilt/Righteousness'
       ]
     },
-    objectID: 'c4889bb1-49ac-41c9-8fdb-0297afb32cd9',
+    objectID: 'template-id-2',
     _highlightResult: {
       title: {
         value: 'onboarding template2',
@@ -743,7 +743,7 @@ export const transformedAlgoliaJourneys = [
         matchedWords: []
       },
       description: {
-        value: 'c4889bb1-49ac-41c9-8fdb-0297afb32cd9',
+        value: 'template-id-2',
         matchLevel: 'none',
         matchedWords: []
       },
@@ -817,7 +817,7 @@ export const transformedAlgoliaJourneys = [
       }
     },
     __position: 2,
-    id: 'c4889bb1-49ac-41c9-8fdb-0297afb32cd9',
+    id: 'template-id-2',
     createdAt: '2024-07-09T00:37:24.569Z',
     primaryImageBlock: {
       src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public',
@@ -847,7 +847,7 @@ export const transformedAlgoliaJourneys = [
       ]
     },
     tags: {},
-    objectID: '9d9ca229-9fb5-4d06-a18c-2d1a4ceba457',
+    objectID: 'template-id',
     _highlightResult: {
       title: {
         value: 'Dev Onboarding Journey',
@@ -906,7 +906,7 @@ export const transformedAlgoliaJourneys = [
       }
     },
     __position: 3,
-    id: '9d9ca229-9fb5-4d06-a18c-2d1a4ceba457',
+    id: 'template-id',
     createdAt: '2024-07-09T00:37:24.547Z',
     primaryImageBlock: {
       src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public',
@@ -916,7 +916,7 @@ export const transformedAlgoliaJourneys = [
   {
     title: 'onboarding template4',
     date: '2024-07-09T00:37:24.569Z',
-    description: '178c01bd-371c-4e73-a9b8-e2bb95215fd8',
+    description: 'template-id-4',
     image: {
       src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public',
       alt: 'onboarding primary'
@@ -932,7 +932,7 @@ export const transformedAlgoliaJourneys = [
       Topics: ['Addiction'],
       Audience: ['Adults']
     },
-    objectID: '178c01bd-371c-4e73-a9b8-e2bb95215fd8',
+    objectID: 'template-id-4',
     _highlightResult: {
       title: {
         value: 'onboarding template4',
@@ -940,7 +940,7 @@ export const transformedAlgoliaJourneys = [
         matchedWords: []
       },
       description: {
-        value: '178c01bd-371c-4e73-a9b8-e2bb95215fd8',
+        value: 'template-id-4',
         matchLevel: 'none',
         matchedWords: []
       },
@@ -993,7 +993,7 @@ export const transformedAlgoliaJourneys = [
       }
     },
     __position: 4,
-    id: '178c01bd-371c-4e73-a9b8-e2bb95215fd8',
+    id: 'template-id-4',
     createdAt: '2024-07-09T00:37:24.569Z',
     primaryImageBlock: {
       src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public',
@@ -1003,7 +1003,7 @@ export const transformedAlgoliaJourneys = [
   {
     title: 'onboarding template5',
     date: '2024-07-09T00:37:24.569Z',
-    description: '13317d05-a805-4b3c-b362-9018971d9b57',
+    description: 'template-id-5',
     image: {
       src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public',
       alt: 'onboarding primary'
@@ -1028,7 +1028,7 @@ export const transformedAlgoliaJourneys = [
       Collections: ['Jesus Film', 'NUA'],
       'Felt Needs': ['Acceptance']
     },
-    objectID: '13317d05-a805-4b3c-b362-9018971d9b57',
+    objectID: 'template-id-5',
     _highlightResult: {
       title: {
         value: 'onboarding template5',
@@ -1036,7 +1036,7 @@ export const transformedAlgoliaJourneys = [
         matchedWords: []
       },
       description: {
-        value: '13317d05-a805-4b3c-b362-9018971d9b57',
+        value: 'template-id-5',
         matchLevel: 'none',
         matchedWords: []
       },
@@ -1133,7 +1133,7 @@ export const transformedAlgoliaJourneys = [
       }
     },
     __position: 5,
-    id: '13317d05-a805-4b3c-b362-9018971d9b57',
+    id: 'template-id-5',
     createdAt: '2024-07-09T00:37:24.569Z',
     primaryImageBlock: {
       src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public',
@@ -1143,7 +1143,7 @@ export const transformedAlgoliaJourneys = [
   {
     title: 'onboarding template1',
     date: '2024-07-09T00:37:24.569Z',
-    description: '014c7add-288b-4f84-ac85-ccefef7a07d3',
+    description: 'template-id-1',
     image: {
       src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public',
       alt: 'onboarding primary'
@@ -1162,7 +1162,7 @@ export const transformedAlgoliaJourneys = [
       ]
     },
     tags: {},
-    objectID: '014c7add-288b-4f84-ac85-ccefef7a07d3',
+    objectID: 'template-id-1',
     _highlightResult: {
       title: {
         value: 'onboarding template1',
@@ -1170,7 +1170,7 @@ export const transformedAlgoliaJourneys = [
         matchedWords: []
       },
       description: {
-        value: '014c7add-288b-4f84-ac85-ccefef7a07d3',
+        value: 'template-id-1',
         matchLevel: 'none',
         matchedWords: []
       },
@@ -1220,7 +1220,7 @@ export const transformedAlgoliaJourneys = [
       }
     },
     __position: 6,
-    id: '014c7add-288b-4f84-ac85-ccefef7a07d3',
+    id: 'template-id-1',
     createdAt: '2024-07-09T00:37:24.569Z',
     primaryImageBlock: {
       src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public',
@@ -1236,7 +1236,7 @@ export const algoliaResults = {
         {
           title: 'onboarding template3',
           date: '2024-07-09T00:37:24.569Z',
-          description: 'e978adb4-e4d8-42ef-89a9-79811f10b7e9',
+          description: 'template-id-3',
           image: {
             src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public',
             alt: 'onboarding primary'
@@ -1259,7 +1259,7 @@ export const algoliaResults = {
             'Felt Needs': ['Depression'],
             Holidays: ['Easter']
           },
-          objectID: 'e978adb4-e4d8-42ef-89a9-79811f10b7e9',
+          objectID: 'template-id-3',
           _highlightResult: {
             title: {
               value: 'onboarding template3',
@@ -1267,7 +1267,7 @@ export const algoliaResults = {
               matchedWords: []
             },
             description: {
-              value: 'e978adb4-e4d8-42ef-89a9-79811f10b7e9',
+              value: 'template-id-3',
               matchLevel: 'none',
               matchedWords: []
             },
@@ -1343,7 +1343,7 @@ export const algoliaResults = {
         {
           title: 'onboarding template2',
           date: '2024-07-09T00:37:24.569Z',
-          description: 'c4889bb1-49ac-41c9-8fdb-0297afb32cd9',
+          description: 'template-id-2',
           image: {
             src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public',
             alt: 'onboarding primary'
@@ -1364,7 +1364,7 @@ export const algoliaResults = {
               'Guilt/Righteousness'
             ]
           },
-          objectID: 'c4889bb1-49ac-41c9-8fdb-0297afb32cd9',
+          objectID: 'template-id-2',
           _highlightResult: {
             title: {
               value: 'onboarding template2',
@@ -1372,7 +1372,7 @@ export const algoliaResults = {
               matchedWords: []
             },
             description: {
-              value: 'c4889bb1-49ac-41c9-8fdb-0297afb32cd9',
+              value: 'template-id-2',
               matchLevel: 'none',
               matchedWords: []
             },
@@ -1469,7 +1469,7 @@ export const algoliaResults = {
             ]
           },
           tags: {},
-          objectID: '9d9ca229-9fb5-4d06-a18c-2d1a4ceba457',
+          objectID: 'template-id',
           _highlightResult: {
             title: {
               value: 'Dev Onboarding Journey',
@@ -1531,7 +1531,7 @@ export const algoliaResults = {
         {
           title: 'onboarding template4',
           date: '2024-07-09T00:37:24.569Z',
-          description: '178c01bd-371c-4e73-a9b8-e2bb95215fd8',
+          description: 'template-id-4',
           image: {
             src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public',
             alt: 'onboarding primary'
@@ -1547,7 +1547,7 @@ export const algoliaResults = {
             Topics: ['Addiction'],
             Audience: ['Adults']
           },
-          objectID: '178c01bd-371c-4e73-a9b8-e2bb95215fd8',
+          objectID: 'template-id-4',
           _highlightResult: {
             title: {
               value: 'onboarding template4',
@@ -1555,7 +1555,7 @@ export const algoliaResults = {
               matchedWords: []
             },
             description: {
-              value: '178c01bd-371c-4e73-a9b8-e2bb95215fd8',
+              value: 'template-id-4',
               matchLevel: 'none',
               matchedWords: []
             },
@@ -1611,7 +1611,7 @@ export const algoliaResults = {
         {
           title: 'onboarding template5',
           date: '2024-07-09T00:37:24.569Z',
-          description: '13317d05-a805-4b3c-b362-9018971d9b57',
+          description: 'template-id-5',
           image: {
             src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public',
             alt: 'onboarding primary'
@@ -1635,7 +1635,7 @@ export const algoliaResults = {
             Holidays: ['Easter'],
             Collections: ['Jesus Film', 'NUA']
           },
-          objectID: '13317d05-a805-4b3c-b362-9018971d9b57',
+          objectID: 'template-id-5',
           _highlightResult: {
             title: {
               value: 'onboarding template5',
@@ -1643,7 +1643,7 @@ export const algoliaResults = {
               matchedWords: []
             },
             description: {
-              value: '13317d05-a805-4b3c-b362-9018971d9b57',
+              value: 'template-id-5',
               matchLevel: 'none',
               matchedWords: []
             },
@@ -1736,7 +1736,7 @@ export const algoliaResults = {
         {
           title: 'onboarding template1',
           date: '2024-07-09T00:37:24.569Z',
-          description: '014c7add-288b-4f84-ac85-ccefef7a07d3',
+          description: 'template-id-1',
           image: {
             src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public',
             alt: 'onboarding primary'
@@ -1755,7 +1755,7 @@ export const algoliaResults = {
             ]
           },
           tags: {},
-          objectID: '014c7add-288b-4f84-ac85-ccefef7a07d3',
+          objectID: 'template-id-1',
           _highlightResult: {
             title: {
               value: 'onboarding template1',
@@ -1763,7 +1763,7 @@ export const algoliaResults = {
               matchedWords: []
             },
             description: {
-              value: '014c7add-288b-4f84-ac85-ccefef7a07d3',
+              value: 'template-id-1',
               matchLevel: 'none',
               matchedWords: []
             },
@@ -1876,7 +1876,7 @@ export const algoliaResults = {
     {
       title: 'onboarding template3',
       date: '2024-07-09T00:37:24.569Z',
-      description: 'e978adb4-e4d8-42ef-89a9-79811f10b7e9',
+      description: 'template-id-3',
       image: {
         src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public',
         alt: 'onboarding primary'
@@ -1899,7 +1899,7 @@ export const algoliaResults = {
         'Felt Needs': ['Depression'],
         Holidays: ['Easter']
       },
-      objectID: 'e978adb4-e4d8-42ef-89a9-79811f10b7e9',
+      objectID: 'template-id-3',
       _highlightResult: {
         title: {
           value: 'onboarding template3',
@@ -1907,7 +1907,7 @@ export const algoliaResults = {
           matchedWords: []
         },
         description: {
-          value: 'e978adb4-e4d8-42ef-89a9-79811f10b7e9',
+          value: 'template-id-3',
           matchLevel: 'none',
           matchedWords: []
         },
@@ -1983,7 +1983,7 @@ export const algoliaResults = {
     {
       title: 'onboarding template2',
       date: '2024-07-09T00:37:24.569Z',
-      description: 'c4889bb1-49ac-41c9-8fdb-0297afb32cd9',
+      description: 'template-id-2',
       image: {
         src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public',
         alt: 'onboarding primary'
@@ -2004,7 +2004,7 @@ export const algoliaResults = {
           'Guilt/Righteousness'
         ]
       },
-      objectID: 'c4889bb1-49ac-41c9-8fdb-0297afb32cd9',
+      objectID: 'template-id-2',
       _highlightResult: {
         title: {
           value: 'onboarding template2',
@@ -2012,7 +2012,7 @@ export const algoliaResults = {
           matchedWords: []
         },
         description: {
-          value: 'c4889bb1-49ac-41c9-8fdb-0297afb32cd9',
+          value: 'template-id-2',
           matchLevel: 'none',
           matchedWords: []
         },
@@ -2109,7 +2109,7 @@ export const algoliaResults = {
         ]
       },
       tags: {},
-      objectID: '9d9ca229-9fb5-4d06-a18c-2d1a4ceba457',
+      objectID: 'template-id',
       _highlightResult: {
         title: {
           value: 'Dev Onboarding Journey',
@@ -2171,7 +2171,7 @@ export const algoliaResults = {
     {
       title: 'onboarding template4',
       date: '2024-07-09T00:37:24.569Z',
-      description: '178c01bd-371c-4e73-a9b8-e2bb95215fd8',
+      description: 'template-id-4',
       image: {
         src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public',
         alt: 'onboarding primary'
@@ -2187,7 +2187,7 @@ export const algoliaResults = {
         Topics: ['Addiction'],
         Audience: ['Adults']
       },
-      objectID: '178c01bd-371c-4e73-a9b8-e2bb95215fd8',
+      objectID: 'template-id-4',
       _highlightResult: {
         title: {
           value: 'onboarding template4',
@@ -2195,7 +2195,7 @@ export const algoliaResults = {
           matchedWords: []
         },
         description: {
-          value: '178c01bd-371c-4e73-a9b8-e2bb95215fd8',
+          value: 'template-id-4',
           matchLevel: 'none',
           matchedWords: []
         },
@@ -2251,7 +2251,7 @@ export const algoliaResults = {
     {
       title: 'onboarding template5',
       date: '2024-07-09T00:37:24.569Z',
-      description: '13317d05-a805-4b3c-b362-9018971d9b57',
+      description: 'template-id-5',
       image: {
         src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public',
         alt: 'onboarding primary'
@@ -2275,7 +2275,7 @@ export const algoliaResults = {
         Holidays: ['Easter'],
         Collections: ['Jesus Film', 'NUA']
       },
-      objectID: '13317d05-a805-4b3c-b362-9018971d9b57',
+      objectID: 'template-id-5',
       _highlightResult: {
         title: {
           value: 'onboarding template5',
@@ -2283,7 +2283,7 @@ export const algoliaResults = {
           matchedWords: []
         },
         description: {
-          value: '13317d05-a805-4b3c-b362-9018971d9b57',
+          value: 'template-id-5',
           matchLevel: 'none',
           matchedWords: []
         },
@@ -2376,7 +2376,7 @@ export const algoliaResults = {
     {
       title: 'onboarding template1',
       date: '2024-07-09T00:37:24.569Z',
-      description: '014c7add-288b-4f84-ac85-ccefef7a07d3',
+      description: 'template-id-1',
       image: {
         src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public',
         alt: 'onboarding primary'
@@ -2395,7 +2395,7 @@ export const algoliaResults = {
         ]
       },
       tags: {},
-      objectID: '014c7add-288b-4f84-ac85-ccefef7a07d3',
+      objectID: 'template-id-1',
       _highlightResult: {
         title: {
           value: 'onboarding template1',
@@ -2403,7 +2403,7 @@ export const algoliaResults = {
           matchedWords: []
         },
         description: {
-          value: '014c7add-288b-4f84-ac85-ccefef7a07d3',
+          value: 'template-id-1',
           matchLevel: 'none',
           matchedWords: []
         },
