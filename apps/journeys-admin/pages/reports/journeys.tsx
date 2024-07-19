@@ -22,12 +22,14 @@ function ReportsJourneysPage(): ReactElement {
   return (
     <>
       <NextSeo title={t('Journeys Analytics')} />
-      <PageWrapper title={t('Journeys Analytics')} user={user}>
+      <PageWrapper
+        title={t('Journeys Analytics')}
+        user={user}
+        mainHeaderChildren={
+          <ReportsNavigation destination="visitor" helpScoutGap />
+        }
+      >
         <Box sx={{ height: 'calc(100vh - 48px)' }}>
-          <ReportsNavigation
-            reportType={JourneysReportType.multipleFull}
-            selected="journeys"
-          />
           <MemoizedDynamicReport reportType={JourneysReportType.multipleFull} />
         </Box>
       </PageWrapper>

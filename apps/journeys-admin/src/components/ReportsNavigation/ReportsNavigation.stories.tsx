@@ -14,9 +14,18 @@ const Template: StoryObj<typeof ReportsNavigation> = {
   render: ({ ...args }) => <ReportsNavigation {...args} />
 }
 
-export const Default = {
+export const Journey = {
   ...Template,
   args: {
+    destination: 'journey',
+    journeyId: 'journeyId'
+  }
+}
+
+export const Visitor = {
+  ...Template,
+  args: {
+    destination: 'visitor',
     journeyId: 'journeyId'
   }
 }
