@@ -1,11 +1,15 @@
 import { gql, useMutation } from '@apollo/client'
 import { ReactElement, useState } from 'react'
 
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useCommand } from '@core/journeys/ui/CommandProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { SignUp } from '@core/journeys/ui/SignUp'
 import type { TreeBlock } from '@core/journeys/ui/block'
 
-import { SignUpBlockUpdateContent } from '../../../../../../../../__generated__/SignUpBlockUpdateContent'
+import {
+  SignUpBlockUpdateContent,
+  SignUpBlockUpdateContentVariables
+} from '../../../../../../../../__generated__/SignUpBlockUpdateContent'
 import { SignUpFields } from '../../../../../../../../__generated__/SignUpFields'
 import { InlineEditInput } from '../InlineEditInput'
 import { useOnClickOutside } from '../useOnClickOutside/useOnClickOutside'
@@ -13,10 +17,9 @@ import { useOnClickOutside } from '../useOnClickOutside/useOnClickOutside'
 export const SIGN_UP_BLOCK_UPDATE_CONTENT = gql`
   mutation SignUpBlockUpdateContent(
     $id: ID!
-    $journeyId: ID!
     $input: SignUpBlockUpdateInput!
   ) {
-    signUpBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+    signUpBlockUpdate(id: $id, input: $input) {
       id
       submitLabel
     }
@@ -29,29 +32,51 @@ export function SignUpEdit({
   submitLabel,
   ...signUpProps
 }: SignUpEditProps): ReactElement {
-  const [signUpBlockUpdate] = useMutation<SignUpBlockUpdateContent>(
-    SIGN_UP_BLOCK_UPDATE_CONTENT
-  )
+  const [signUpBlockUpdate] = useMutation<
+    SignUpBlockUpdateContent,
+    SignUpBlockUpdateContentVariables
+  >(SIGN_UP_BLOCK_UPDATE_CONTENT)
 
-  const { journey } = useJourney()
+  const { add } = useCommand()
+  const {
+    state: { selectedBlock, selectedStep },
+    dispatch
+  } = useEditor()
   const [value, setValue] = useState(submitLabel ?? '')
 
   async function handleSaveBlock(): Promise<void> {
     const currentSubmitLabel = value.trim().replace(/\n/g, '')
-    if (journey == null || submitLabel === currentSubmitLabel) return
+    if (submitLabel === currentSubmitLabel) return
 
-    await signUpBlockUpdate({
-      variables: {
-        id,
-        journeyId: journey.id,
-        input: { submitLabel: currentSubmitLabel }
-      },
-      optimisticResponse: {
-        signUpBlockUpdate: {
-          id,
-          __typename: 'SignUpBlock',
+    await add({
+      parameters: {
+        execute: {
           submitLabel: currentSubmitLabel
+        },
+        undo: {
+          submitLabel
         }
+      },
+      async execute({ submitLabel }) {
+        dispatch({
+          type: 'SetEditorFocusAction',
+          selectedBlock,
+          selectedStep
+        })
+
+        await signUpBlockUpdate({
+          variables: {
+            id,
+            input: { submitLabel }
+          },
+          optimisticResponse: {
+            signUpBlockUpdate: {
+              id,
+              __typename: 'SignUpBlock',
+              submitLabel
+            }
+          }
+        })
       }
     })
   }

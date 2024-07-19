@@ -21,6 +21,5 @@ export interface SignUpBlockUpdateContent {
 
 export interface SignUpBlockUpdateContentVariables {
   id: string;
-  journeyId: string;
   input: SignUpBlockUpdateInput;
 }
