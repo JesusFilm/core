@@ -5,19 +5,12 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 
+import { Variant } from '.'
 import { BlockFields_TypographyBlock as TypographyBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../../../../../../../../__generated__/GetJourney'
 import { TypographyVariant } from '../../../../../../../../../../__generated__/globalTypes'
-
-import { TYPOGRAPHY_BLOCK_UPDATE_VARIANT } from './Variant'
-
-import { Variant } from '.'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
-
-jest.mock('@mui/material/useMediaQuery', () => ({
-  __esModule: true,
-  default: () => true
-}))
+import { TYPOGRAPHY_BLOCK_UPDATE_VARIANT } from './Variant'
 
 describe('Typography variant selector', () => {
   it('should show variant properties', () => {
@@ -81,7 +74,6 @@ describe('Typography variant selector', () => {
               query: TYPOGRAPHY_BLOCK_UPDATE_VARIANT,
               variables: {
                 id: 'id',
-                journeyId: 'journeyId',
                 input: {
                   variant: TypographyVariant.overline
                 }
@@ -129,7 +121,6 @@ describe('Typography variant selector', () => {
       data: {
         typographyBlockUpdate: {
           id: 'id',
-          journeyId: 'journeyId',
           variant: TypographyVariant.overline
         }
       }
@@ -138,7 +129,6 @@ describe('Typography variant selector', () => {
       data: {
         typographyBlockUpdate: {
           id: 'id',
-          journeyId: 'journeyId',
           variant: TypographyVariant.h1
         }
       }
@@ -151,7 +141,6 @@ describe('Typography variant selector', () => {
               query: TYPOGRAPHY_BLOCK_UPDATE_VARIANT,
               variables: {
                 id: 'id',
-                journeyId: 'journeyId',
                 input: {
                   variant: TypographyVariant.overline
                 }
@@ -164,7 +153,6 @@ describe('Typography variant selector', () => {
               query: TYPOGRAPHY_BLOCK_UPDATE_VARIANT,
               variables: {
                 id: 'id',
-                journeyId: 'journeyId',
                 input: {
                   variant: TypographyVariant.h1
                 }

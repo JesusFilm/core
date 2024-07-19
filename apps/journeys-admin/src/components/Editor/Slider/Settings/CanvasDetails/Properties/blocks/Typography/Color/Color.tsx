@@ -3,7 +3,6 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
@@ -16,10 +15,9 @@ import { ToggleButtonGroup } from '../../../controls/ToggleButtonGroup'
 export const TYPOGRAPHY_BLOCK_UPDATE_COLOR = gql`
   mutation TypographyBlockUpdateColor(
     $id: ID!
-    $journeyId: ID!
     $input: TypographyBlockUpdateInput!
   ) {
-    typographyBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+    typographyBlockUpdate(id: $id, input: $input) {
       id
       color
     }
@@ -32,33 +30,37 @@ export function Color(): ReactElement {
     TYPOGRAPHY_BLOCK_UPDATE_COLOR
   )
   const { add } = useCommand()
-  const { journey } = useJourney()
-  const { state } = useEditor()
-  const selectedBlock = state.selectedBlock as
+  const {
+    state: { selectedBlock: stateSelectedBlock, selectedStep },
+    dispatch
+  } = useEditor()
+  const selectedBlock = stateSelectedBlock as
     | TreeBlock<TypographyBlock>
     | undefined
 
   async function handleChange(color: TypographyColor): Promise<void> {
-    if (selectedBlock != null && color != null && journey != null) {
+    if (selectedBlock != null && color != null) {
       await add({
         parameters: {
-          execute: { id: selectedBlock.id, journeyId: journey.id, color },
+          execute: { color },
           undo: {
-            id: selectedBlock.id,
-            journeyId: journey.id,
             color: selectedBlock.color
           }
         },
-        async execute({ id, journeyId, color }) {
+        async execute({ color }) {
+          dispatch({
+            type: 'SetEditorFocusAction',
+            selectedStep,
+            selectedBlock
+          })
           await typographyBlockUpdate({
             variables: {
-              id,
-              journeyId,
+              id: selectedBlock.id,
               input: { color }
             },
             optimisticResponse: {
               typographyBlockUpdate: {
-                id,
+                id: selectedBlock.id,
                 color,
                 __typename: 'TypographyBlock'
               }

@@ -2,22 +2,13 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 
-import { BlockFields_TypographyBlock as TypographyBlock } from '../../../../../../../../../../__generated__/BlockFields'
-import { GetJourney_journey as Journey } from '../../../../../../../../../../__generated__/GetJourney'
-import { TypographyAlign } from '../../../../../../../../../../__generated__/globalTypes'
-
-import { TYPOGRAPHY_BLOCK_UPDATE_ALIGN } from './Align'
-
 import { Align } from '.'
+import { BlockFields_TypographyBlock as TypographyBlock } from '../../../../../../../../../../__generated__/BlockFields'
+import { TypographyAlign } from '../../../../../../../../../../__generated__/globalTypes'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
-
-jest.mock('@mui/material/useMediaQuery', () => ({
-  __esModule: true,
-  default: () => true
-}))
+import { TYPOGRAPHY_BLOCK_UPDATE_ALIGN } from './Align'
 
 describe('Typography align selector', () => {
   it('should show typography align properties', () => {
@@ -60,7 +51,6 @@ describe('Typography align selector', () => {
       data: {
         typographyBlockUpdate: {
           id: 'id',
-          journeyId: 'journeyId',
           align: TypographyAlign.right
         }
       }
@@ -73,7 +63,6 @@ describe('Typography align selector', () => {
               query: TYPOGRAPHY_BLOCK_UPDATE_ALIGN,
               variables: {
                 id: 'id',
-                journeyId: 'journeyId',
                 input: {
                   align: TypographyAlign.right
                 }
@@ -83,16 +72,9 @@ describe('Typography align selector', () => {
           }
         ]}
       >
-        <JourneyProvider
-          value={{
-            journey: { id: 'journeyId' } as unknown as Journey,
-            variant: 'admin'
-          }}
-        >
-          <EditorProvider initialState={{ selectedBlock }}>
-            <Align />
-          </EditorProvider>
-        </JourneyProvider>
+        <EditorProvider initialState={{ selectedBlock }}>
+          <Align />
+        </EditorProvider>
       </MockedProvider>
     )
 
@@ -117,7 +99,6 @@ describe('Typography align selector', () => {
       data: {
         typographyBlockUpdate: {
           id: 'id',
-          journeyId: 'journeyId',
           align: TypographyAlign.right
         }
       }
@@ -126,7 +107,6 @@ describe('Typography align selector', () => {
       data: {
         typographyBlockUpdate: {
           id: 'id',
-          journeyId: 'journeyId',
           align: TypographyAlign.center
         }
       }
@@ -139,7 +119,6 @@ describe('Typography align selector', () => {
               query: TYPOGRAPHY_BLOCK_UPDATE_ALIGN,
               variables: {
                 id: 'id',
-                journeyId: 'journeyId',
                 input: {
                   align: TypographyAlign.right
                 }
@@ -152,7 +131,6 @@ describe('Typography align selector', () => {
               query: TYPOGRAPHY_BLOCK_UPDATE_ALIGN,
               variables: {
                 id: 'id',
-                journeyId: 'journeyId',
                 input: {
                   align: TypographyAlign.center
                 }
@@ -162,17 +140,10 @@ describe('Typography align selector', () => {
           }
         ]}
       >
-        <JourneyProvider
-          value={{
-            journey: { id: 'journeyId' } as unknown as Journey,
-            variant: 'admin'
-          }}
-        >
-          <EditorProvider initialState={{ selectedBlock }}>
-            <CommandUndoItem variant="button" />
-            <Align />
-          </EditorProvider>
-        </JourneyProvider>
+        <EditorProvider initialState={{ selectedBlock }}>
+          <CommandUndoItem variant="button" />
+          <Align />
+        </EditorProvider>
       </MockedProvider>
     )
     fireEvent.click(screen.getByRole('button', { name: 'Right' }))
