@@ -6,12 +6,10 @@ import { ReactElement } from 'react'
 import { object, string } from 'yup'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import LinkIcon from '@core/shared/ui/icons/Link'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
-import { useBlockActionLinkUpdateMutation } from '../../../../../../../../../libs/useBlockActionLinkUpdateMutation'
 import { TextFieldForm } from '../../../../../../../../TextFieldForm'
 import { useActionCommand } from '../utils/useActionCommand'
 
