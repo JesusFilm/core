@@ -7,12 +7,7 @@ import { useTranslation } from 'next-i18next'
 import { FocusEvent, ReactElement } from 'react'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
-import {
-  ActiveCanvasDetailsDrawer,
-  ActiveContent,
-  ActiveSlide,
-  useEditor
-} from '@core/journeys/ui/EditorProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
@@ -46,9 +41,9 @@ export function Hint(): ReactElement {
     | undefined
 
   async function handleSubmit(e: FocusEvent): Promise<void> {
-    if (selectedBlock == null) return
     const target = e.target as HTMLInputElement
     const hint = target.value
+    if (selectedBlock == null || selectedBlock.hint === hint) return
 
     await add({
       parameters: {
