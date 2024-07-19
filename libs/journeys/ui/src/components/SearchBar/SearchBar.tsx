@@ -6,7 +6,7 @@ import { styled } from '@mui/material/styles'
 import { SearchBoxConnectorParams } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
-import { useInstantSearch, useSearchBox } from 'react-instantsearch'
+import { useSearchBox } from 'react-instantsearch'
 
 /* Styles below used to fake a gradient border because the 
 css attributes border-radius and border-image-source are not compatible */
