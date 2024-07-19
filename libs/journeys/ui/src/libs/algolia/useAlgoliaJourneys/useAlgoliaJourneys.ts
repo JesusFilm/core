@@ -15,7 +15,7 @@ interface Tags {
   'Felt Needs': string[]
 }
 
-interface Language {
+export interface Language {
   localName: string
   nativeName: string
   continents: string[]
