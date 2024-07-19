@@ -47,7 +47,7 @@ export function ReportsNavigation({
       sx={{
         mr: helpScoutGap ? { md: 8 } : undefined
       }}
-      ata-testid="JourneysAdminReportsNavigation"
+      data-testid="JourneysAdminReportsNavigation"
     >
       <NextLink href={href} passHref legacyBehavior>
         <Chip
