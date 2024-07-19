@@ -32,5 +32,12 @@ export function DebouncedHexColorPicker({
     setValue(value.toUpperCase())
   }
 
-  return <HexColorPicker color={value} onChange={handleChange} {...props} />
+  return (
+    <HexColorPicker
+      data-testId="HexColorPicker"
+      color={value}
+      onChange={handleChange}
+      {...props}
+    />
+  )
 }

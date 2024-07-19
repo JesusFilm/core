@@ -91,13 +91,7 @@ describe('BackgroundColor', () => {
   > = {
     request: {
       query: CARD_BLOCK_BACKGROUND_COLOR_UPDATE,
-      variables: {
-        id: 'card1.id',
-        journeyId: 'journeyId',
-        input: {
-          backgroundColor: '#B0BEC5'
-        }
-      }
+      variables: { id: 'card1.id', input: { backgroundColor: '#B0BEC5' } }
     },
     result: {
       data: {
@@ -164,10 +158,7 @@ describe('BackgroundColor', () => {
               query: CARD_BLOCK_BACKGROUND_COLOR_UPDATE,
               variables: {
                 id: 'card1.id',
-                journeyId: 'journeyId',
-                input: {
-                  backgroundColor: '#B0BEC5'
-                }
+                input: { backgroundColor: '#B0BEC5' }
               }
             },
             result
@@ -206,11 +197,7 @@ describe('BackgroundColor', () => {
     > = {
       request: {
         query: CARD_BLOCK_BACKGROUND_COLOR_UPDATE,
-        variables: {
-          id: 'card1.id',
-          journeyId: 'journeyId',
-          input: { backgroundColor: '#FEFEFE' }
-        }
+        variables: { id: 'card1.id', input: { backgroundColor: '#FEFEFE' } }
       },
       result: {
         data: {
