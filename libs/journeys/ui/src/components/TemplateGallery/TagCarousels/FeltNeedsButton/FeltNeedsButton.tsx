@@ -95,7 +95,7 @@ export function FeltNeedsButton({
   const theme = useTheme()
   const { refine } = useRefinementList({ attribute: 'tags.Felt Needs' })
 
-  function handleClick(tag: ChildTag) {
+  function handleClick() {
     if (tag?.name != null) refine(tag.name[0].value)
   }
 
@@ -128,7 +128,7 @@ export function FeltNeedsButton({
           transition: theme.transitions.create('transform')
         }
       }}
-      onClick={() => handleClick(tag)}
+      onClick={handleClick}
     >
       <Box
         data-testid="gradientLayer"
