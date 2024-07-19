@@ -19,17 +19,17 @@ interface Contents {
   [key: string]: { category: string; journeys: AlgoliaJourney[] }
 }
 
-function getAllTags(journey: AlgoliaJourney) {
-  return Object.values(journey.tags)
-    .filter((tags): tags is string[] => Array.isArray(tags))
-    .reduce<string[]>((acc, tags) => acc.concat(tags), [])
-    .filter((tag) => tag !== undefined) as unknown as string[]
-}
-
 export function TemplateSections(): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const { breakpoints } = useTheme()
   const { hits, loading, refinements } = useAlgoliaJourneys()
+
+  function getAllTags(journey: AlgoliaJourney) {
+    return Object.values(journey.tags)
+      .filter((tags): tags is string[] => Array.isArray(tags))
+      .reduce<string[]>((acc, tags) => acc.concat(tags), [])
+      .filter((tag) => tag !== undefined) as unknown as string[]
+  }
 
   const algoliaContents: Contents = {}
   let algoliaCollection: AlgoliaJourney[] = []
