@@ -24,12 +24,14 @@ import { ActionValue, actions } from './utils/actions'
 import { useActionCommand } from './utils/useActionCommand'
 
 export function Action(): ReactElement {
-  const { state } = useEditor()
+  const {
+    state: { selectedBlock: stateSelectedBlock, selectedStep }
+  } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
   const { addAction } = useActionCommand()
 
   // Add addtional types here to use this component for that block
-  const selectedBlock = state.selectedBlock as
+  const selectedBlock = stateSelectedBlock as
     | TreeBlock<ButtonBlock>
     | TreeBlock<FormBlock>
     | TreeBlock<SignUpBlock>
@@ -51,7 +53,11 @@ export function Action(): ReactElement {
         blockId: id,
         blockTypename: __typename,
         action: null,
-        undoAction: action
+        undoAction: action,
+        editorFocus: {
+          selectedStep,
+          selectedBlock
+        }
       })
     }
   }

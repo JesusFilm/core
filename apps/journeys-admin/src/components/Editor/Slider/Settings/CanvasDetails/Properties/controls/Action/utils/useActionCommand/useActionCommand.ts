@@ -1,4 +1,8 @@
 import { useCommand } from '@core/journeys/ui/CommandProvider'
+import {
+  SetEditorFocusAction,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
 
 import {
   BlockFields,
@@ -19,17 +23,19 @@ export type Action =
   | BlockFields_VideoBlock_action
   | null
 
-interface ActionExecuteParameters {
+interface AddActionParameters {
   blockId: string
   blockTypename: BlockFields['__typename']
   action: Action
   undoAction: Action | undefined
+  editorFocus?: Omit<SetEditorFocusAction, 'type'>
 }
 
 export function useActionCommand(): {
-  addAction: (params: ActionExecuteParameters) => Promise<void>
+  addAction: (params: AddActionParameters) => Promise<void>
 } {
   const { add } = useCommand()
+  const { dispatch } = useEditor()
   const [actionDelete] = useBlockActionDeleteMutation()
   const [actionLinkUpdate] = useBlockActionLinkUpdateMutation()
   const [actionEmailUpdate] = useBlockActionEmailUpdateMutation()
@@ -37,25 +43,32 @@ export function useActionCommand(): {
     useBlockActionNavigateToBlockUpdateMutation()
 
   return {
-    async addAction({ blockId, blockTypename, action, undoAction }) {
+    async addAction({
+      blockId,
+      blockTypename,
+      action,
+      undoAction,
+      editorFocus
+    }: AddActionParameters) {
       add({
         parameters: {
           execute: {
-            blockId,
-            blockTypename,
             action
           },
           undo: {
-            blockId,
-            blockTypename,
             action: undoAction
           }
         },
-        async execute({ blockId, blockTypename, action }) {
+        async execute({ action }) {
           const block = {
             id: blockId,
             __typename: blockTypename
           }
+          if (editorFocus != null)
+            dispatch({
+              type: 'SetEditorFocusAction',
+              ...editorFocus
+            })
           switch (action?.__typename) {
             case 'LinkAction':
               return await actionLinkUpdate(block, action.url)

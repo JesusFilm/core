@@ -17,11 +17,11 @@ import { useActionCommand } from '../utils/useActionCommand'
 
 export function LinkAction(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { state } = useEditor()
+  const {
+    state: { selectedBlock: stateSelectedBlock, selectedStep }
+  } = useEditor()
   const { addAction } = useActionCommand()
-  const selectedBlock = state.selectedBlock as
-    | TreeBlock<ButtonBlock>
-    | undefined
+  const selectedBlock = stateSelectedBlock as TreeBlock<ButtonBlock> | undefined
 
   const linkAction =
     selectedBlock?.action?.__typename === 'LinkAction'
@@ -63,7 +63,11 @@ export function LinkAction(): ReactElement {
           gtmEventName: '',
           url
         },
-        undoAction: action
+        undoAction: action,
+        editorFocus: {
+          selectedStep,
+          selectedBlock
+        }
       })
     }
   }

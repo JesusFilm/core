@@ -15,10 +15,10 @@ import { useActionCommand } from '../utils/useActionCommand'
 
 export function EmailAction(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { state } = useEditor()
-  const selectedBlock = state.selectedBlock as
-    | TreeBlock<ButtonBlock>
-    | undefined
+  const {
+    state: { selectedBlock: stateSelectedBlock, selectedStep }
+  } = useEditor()
+  const selectedBlock = stateSelectedBlock as TreeBlock<ButtonBlock> | undefined
 
   const { addAction } = useActionCommand()
 
@@ -45,7 +45,11 @@ export function EmailAction(): ReactElement {
           gtmEventName: '',
           email
         },
-        undoAction: action
+        undoAction: action,
+        editorFocus: {
+          selectedStep,
+          selectedBlock
+        }
       })
     }
   }

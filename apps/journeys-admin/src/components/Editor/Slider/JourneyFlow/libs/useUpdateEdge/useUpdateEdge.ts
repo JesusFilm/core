@@ -1,6 +1,6 @@
 import { Edge } from 'reactflow'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { searchBlocks } from '@core/journeys/ui/searchBlocks'
@@ -109,7 +109,10 @@ export function useUpdateEdge(): (
               parentBlockId: block.id,
               blockId: target
             },
-            undoAction: get(block, 'action')
+            undoAction: get(block, 'action'),
+            editorFocus: {
+              activeSlide: ActiveSlide.JourneyFlow
+            }
           })
           selectedStep = steps?.find((step) => step.id === target)
         }

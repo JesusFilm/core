@@ -3,11 +3,13 @@ import { fireEvent, renderHook, screen, waitFor } from '@testing-library/react'
 
 import { CommandProvider } from '@core/journeys/ui/CommandProvider'
 
+import { ActiveContent, EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { useActionCommand } from '.'
 import {
   BlockActionDelete,
   BlockActionDeleteVariables
 } from '../../../../../../../../../../../__generated__/BlockActionDelete'
+import { TestEditorState } from '../../../../../../../../../../libs/TestEditorState'
 import { BLOCK_ACTION_DELETE } from '../../../../../../../../../../libs/useBlockActionDeleteMutation/useBlockActionDeleteMutation'
 import { blockActionEmailUpdateMock } from '../../../../../../../../../../libs/useBlockActionEmailUpdateMutation/useBlockActionEmailUpdateMutation.mock'
 import { blockActionLinkUpdateMock } from '../../../../../../../../../../libs/useBlockActionLinkUpdateMutation/useBlockActionLinkUpdateMutation.mock'
@@ -172,6 +174,45 @@ describe('useActionCommand', () => {
       await waitFor(() => expect(undo).not.toBeDisabled())
       fireEvent.click(undo)
       await waitFor(() => expect(mockResult).toHaveBeenCalled())
+    })
+
+    it('should dispatch editor focus', async () => {
+      const mockResult = jest.fn().mockReturnValue(blockActionDeleteMock.result)
+      const { result } = renderHook(() => useActionCommand(), {
+        wrapper: ({ children }) => (
+          <EditorProvider>
+            <MockedProvider
+              mocks={[
+                blockActionLinkUpdateMock,
+                { ...blockActionDeleteMock, result: mockResult }
+              ]}
+            >
+              <CommandProvider>
+                <TestEditorState />
+                <CommandUndoItem variant="icon-button" />
+                {children}
+              </CommandProvider>
+            </MockedProvider>
+          </EditorProvider>
+        )
+      })
+      await result.current.addAction({
+        blockId: 'button2.id',
+        blockTypename: 'ButtonBlock',
+        action: {
+          __typename: 'LinkAction',
+          url: 'https://github.com',
+          parentBlockId: 'button2.id',
+          gtmEventName: ''
+        },
+        undoAction: null,
+        editorFocus: {
+          activeContent: ActiveContent.Social
+        }
+      })
+      const undo = screen.getByRole('button', { name: 'Undo' })
+      await waitFor(() => expect(undo).not.toBeDisabled())
+      expect(screen.getByText('activeContent: social')).toBeInTheDocument()
     })
   })
 })
