@@ -1,5 +1,5 @@
 import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
-import { render, screen, waitFor, within } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import { JourneyAnalyticsCard } from './JourneyAnalyticsCard'
 
 describe('JourneyAnalyticsCard', () => {

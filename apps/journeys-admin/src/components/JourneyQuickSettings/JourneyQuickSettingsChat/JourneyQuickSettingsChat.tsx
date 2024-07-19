@@ -1,5 +1,4 @@
 import Box from '@mui/material/Box'
-import { useUser } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { Chat } from '../../Editor/Slider/Settings/CanvasDetails/Footer/Chat'
