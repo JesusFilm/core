@@ -10,7 +10,7 @@ import { VideoBlockSource, VideoBlockObjectFit } from "./../../../../__generated
 // ====================================================
 
 export interface VideoFields_video_title {
-  __typename: "Translation";
+  __typename: "VideoTitle";
   value: string;
 }
 

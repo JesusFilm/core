@@ -258,7 +258,7 @@ export interface BlockFields_TypographyBlock {
 }
 
 export interface BlockFields_VideoBlock_video_title {
-  __typename: "Translation";
+  __typename: "VideoTitle";
   value: string;
 }
 

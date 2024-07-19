@@ -37,7 +37,7 @@ export const journeyVideoBlocks: Blocks[] = [
       id: '1_0-TrainV_1Install',
       title: [
         {
-          __typename: 'Translation',
+          __typename: 'VideoTitle',
           value: 'Installing the Jesus Film Media App'
         }
       ],
@@ -76,7 +76,7 @@ export const journeyVideoBlocks: Blocks[] = [
       id: '1_0-TrainV_5Ministry',
       title: [
         {
-          __typename: 'Translation',
+          __typename: 'VideoTitle',
           value: 'Use this App in Ministry'
         }
       ],
@@ -115,7 +115,7 @@ export const journeyVideoBlocks: Blocks[] = [
       id: '1_cl1302-0-0',
       title: [
         {
-          __typename: 'Translation',
+          __typename: 'VideoTitle',
           value: 'StoryClubs: Childhood of Jesus'
         }
       ],
@@ -197,7 +197,7 @@ export const journeyVideoBlocks: Blocks[] = [
       id: '1_cl1305-0-0',
       title: [
         {
-          __typename: 'Translation',
+          __typename: 'VideoTitle',
           value: 'StoryClubs: Sinful Woman Forgiven'
         }
       ],
@@ -330,7 +330,7 @@ export const videoBlocksFiltered = [
       id: '1_cl1301-0-0',
       title: [
         {
-          __typename: 'Translation',
+          __typename: 'VideoTitle',
           value: 'StoryClubs: Birth of Jesus'
         }
       ],
@@ -399,7 +399,7 @@ export const videoBlocksFiltered = [
       id: '1_jf-0-0',
       title: [
         {
-          __typename: 'Translation',
+          __typename: 'VideoTitle',
           value: 'JESUS'
         }
       ],
@@ -441,7 +441,7 @@ export const videoBlocksFiltered = [
       id: '1_cl1303-0-0',
       title: [
         {
-          __typename: 'Translation',
+          __typename: 'VideoTitle',
           value: 'StoryClubs: Miraculous Catch of Fish'
         }
       ],
@@ -483,7 +483,7 @@ export const videoBlocksFiltered = [
       id: '1_jf6125-0-0',
       title: [
         {
-          __typename: 'Translation',
+          __typename: 'VideoTitle',
           value: "The Lord's Prayer"
         }
       ],

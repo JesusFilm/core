@@ -137,7 +137,7 @@ export interface CardIntroCreate_buttonBlockUpdate {
 }
 
 export interface CardIntroCreate_video_video_title {
-  __typename: "Translation";
+  __typename: "VideoTitle";
   value: string;
 }
 

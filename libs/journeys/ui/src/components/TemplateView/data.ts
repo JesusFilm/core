@@ -286,7 +286,7 @@ export const blocks: Block[] = [
       id: '2_0-FallingPlates',
       title: [
         {
-          __typename: 'Translation',
+          __typename: 'VideoTitle',
           value: 'FallingPlates'
         }
       ],
@@ -599,7 +599,7 @@ export const blocks: Block[] = [
       id: '2_0-FallingPlates',
       title: [
         {
-          __typename: 'Translation',
+          __typename: 'VideoTitle',
           value: 'FallingPlates'
         }
       ],

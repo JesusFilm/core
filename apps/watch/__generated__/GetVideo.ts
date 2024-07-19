@@ -10,9 +10,6 @@
 export interface GetVideo_video_variant {
   __typename: "VideoVariant";
   id: string;
-  /**
-   * slug is a permanent link to the video variant.
-   */
   slug: string;
 }
 

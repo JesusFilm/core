@@ -272,7 +272,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_TypographyBlock {
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_title {
-  __typename: "Translation";
+  __typename: "VideoTitle";
   value: string;
 }
 

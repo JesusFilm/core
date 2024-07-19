@@ -10,17 +10,17 @@ import { VideoLabel } from "./globalTypes";
 // ====================================================
 
 export interface VideoChildFields_title {
-  __typename: "Translation";
+  __typename: "VideoTitle";
   value: string;
 }
 
 export interface VideoChildFields_imageAlt {
-  __typename: "Translation";
+  __typename: "VideoImageAlt";
   value: string;
 }
 
 export interface VideoChildFields_snippet {
-  __typename: "Translation";
+  __typename: "VideoSnippet";
   value: string;
 }
 
@@ -29,9 +29,6 @@ export interface VideoChildFields_variant {
   id: string;
   duration: number;
   hls: string | null;
-  /**
-   * slug is a permanent link to the video variant.
-   */
   slug: string;
 }
 
@@ -43,13 +40,7 @@ export interface VideoChildFields {
   image: string | null;
   imageAlt: VideoChildFields_imageAlt[];
   snippet: VideoChildFields_snippet[];
-  /**
-   * slug is a permanent link to the video.
-   */
   slug: string;
   variant: VideoChildFields_variant | null;
-  /**
-   * the number value of the amount of children on a video
-   */
   childrenCount: number;
 }

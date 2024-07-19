@@ -272,7 +272,7 @@ export interface GetAdminJourney_journey_blocks_TypographyBlock {
 }
 
 export interface GetAdminJourney_journey_blocks_VideoBlock_video_title {
-  __typename: "Translation";
+  __typename: "VideoTitle";
   value: string;
 }
 

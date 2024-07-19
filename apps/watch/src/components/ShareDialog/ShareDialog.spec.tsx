@@ -41,7 +41,7 @@ const video: VideoContentFields = {
     slug: `${videos[0].slug}/english`,
     subtitleCount: 1
   },
-  description: videos[0].snippet,
+  description: videos[0].description,
   studyQuestions: [],
   childrenCount: 0
 }

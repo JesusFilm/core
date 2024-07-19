@@ -9,7 +9,7 @@
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/api-videos",
-        "main": "apps/api-videos/src/main.ts",
+        "main": "apps/api-videos/src/index.ts",
         "tsConfig": "apps/api-videos/tsconfig.app.json",
         "assets": [
           "apps/api-videos/src/assets",

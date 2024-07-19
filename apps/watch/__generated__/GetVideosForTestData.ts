@@ -10,27 +10,27 @@ import { VideoLabel, VideoVariantDownloadQuality } from "./globalTypes";
 // ====================================================
 
 export interface GetVideosForTestData_videos_imageAlt {
-  __typename: "Translation";
+  __typename: "VideoImageAlt";
   value: string;
 }
 
 export interface GetVideosForTestData_videos_snippet {
-  __typename: "Translation";
+  __typename: "VideoSnippet";
   value: string;
 }
 
 export interface GetVideosForTestData_videos_description {
-  __typename: "Translation";
+  __typename: "VideoDescription";
   value: string;
 }
 
 export interface GetVideosForTestData_videos_studyQuestions {
-  __typename: "Translation";
+  __typename: "VideoStudyQuestion";
   value: string;
 }
 
 export interface GetVideosForTestData_videos_title {
-  __typename: "Translation";
+  __typename: "VideoTitle";
   value: string;
 }
 
@@ -60,9 +60,6 @@ export interface GetVideosForTestData_videos_variant {
   hls: string | null;
   downloads: GetVideosForTestData_videos_variant_downloads[];
   language: GetVideosForTestData_videos_variant_language;
-  /**
-   * slug is a permanent link to the video variant.
-   */
   slug: string;
   subtitleCount: number;
 }
@@ -79,13 +76,7 @@ export interface GetVideosForTestData_videos {
   title: GetVideosForTestData_videos_title[];
   variant: GetVideosForTestData_videos_variant | null;
   variantLanguagesCount: number;
-  /**
-   * slug is a permanent link to the video.
-   */
   slug: string;
-  /**
-   * the number value of the amount of children on a video
-   */
   childrenCount: number;
 }
 

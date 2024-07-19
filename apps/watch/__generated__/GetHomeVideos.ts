@@ -10,17 +10,17 @@ import { VideoLabel } from "./globalTypes";
 // ====================================================
 
 export interface GetHomeVideos_videos_title {
-  __typename: "Translation";
+  __typename: "VideoTitle";
   value: string;
 }
 
 export interface GetHomeVideos_videos_imageAlt {
-  __typename: "Translation";
+  __typename: "VideoImageAlt";
   value: string;
 }
 
 export interface GetHomeVideos_videos_snippet {
-  __typename: "Translation";
+  __typename: "VideoSnippet";
   value: string;
 }
 
@@ -29,9 +29,6 @@ export interface GetHomeVideos_videos_variant {
   id: string;
   duration: number;
   hls: string | null;
-  /**
-   * slug is a permanent link to the video variant.
-   */
   slug: string;
 }
 
@@ -43,14 +40,8 @@ export interface GetHomeVideos_videos {
   image: string | null;
   imageAlt: GetHomeVideos_videos_imageAlt[];
   snippet: GetHomeVideos_videos_snippet[];
-  /**
-   * slug is a permanent link to the video.
-   */
   slug: string;
   variant: GetHomeVideos_videos_variant | null;
-  /**
-   * the number value of the amount of children on a video
-   */
   childrenCount: number;
 }
 

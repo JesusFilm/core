@@ -21,7 +21,7 @@ export interface GetSubtitles_video_variant_subtitle_language {
 }
 
 export interface GetSubtitles_video_variant_subtitle {
-  __typename: "Translation";
+  __typename: "VideoVariantSubtitle";
   language: GetSubtitles_video_variant_subtitle_language;
   value: string;
 }
