@@ -33,7 +33,7 @@ export const CARD_BLOCK_LAYOUT_UPDATE = gql`
 
 export function CardLayout(): ReactElement {
   const {
-    state: { selectedBlock, selectedStep, selectedAttributeId },
+    state: { selectedBlock, selectedStep },
     dispatch
   } = useEditor()
   const { add } = useCommand()
@@ -49,22 +49,22 @@ export function CardLayout(): ReactElement {
   const [cardBlockUpdate] = useMutation<CardBlockLayoutUpdate>(
     CARD_BLOCK_LAYOUT_UPDATE
   )
-  const handleLayoutChange = async (selected: boolean): Promise<void> => {
+  const handleLayoutChange = async (fullscreen: boolean): Promise<void> => {
     if (cardBlock != null) {
       await add({
         parameters: {
           execute: {
             cardBlockId: cardBlock.id,
-            selected,
+            fullscreen,
             selectedStep
           },
           undo: {
             cardBlockId: cardBlock.id,
-            selected: !selected,
+            fullscreen: !fullscreen,
             selectedStep
           }
         },
-        execute: async ({ cardBlockId, selected, selectedStep }) => {
+        execute: async ({ cardBlockId, fullscreen, selectedStep }) => {
           dispatch({
             type: 'SetEditorFocusAction',
             selectedStep: selectedStep
@@ -73,14 +73,14 @@ export function CardLayout(): ReactElement {
             variables: {
               id: cardBlockId,
               input: {
-                fullscreen: selected
+                fullscreen
               }
             },
             optimisticResponse: {
               cardBlockUpdate: {
                 id: cardBlockId,
                 __typename: 'CardBlock',
-                fullscreen: selected
+                fullscreen
               }
             }
           })

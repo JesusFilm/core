@@ -38,7 +38,7 @@ export const CARD_BLOCK_THEME_MODE_UPDATE = gql`
 
 export function CardStyling(): ReactElement {
   const {
-    state: { selectedBlock, selectedAttributeId, selectedStep },
+    state: { selectedBlock, selectedStep },
     dispatch
   } = useEditor()
   const { add } = useCommand()
