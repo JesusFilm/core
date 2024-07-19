@@ -82,6 +82,7 @@ export function StepBlockNodeAnalytics({
         tooltipTitle={t('Unique visitors')}
         value={visitors}
       />
+      {/* Bounce Rate */}
       <AnalyticsDataPoint
         Icon={TrendDown1}
         tooltipTitle={t('Bounce rate')}
