@@ -17,11 +17,6 @@ describe('SearchBar', () => {
       query: 'Hello World!',
       refine: jest.fn()
     } as unknown as SearchBoxRenderState)
-
-    const useInstantSearchMocked = jest.mocked(useInstantSearch)
-    useInstantSearchMocked.mockReturnValue({
-      status: 'idle'
-    } as unknown as InstantSearchApi)
   })
 
   it('should render input field', async () => {

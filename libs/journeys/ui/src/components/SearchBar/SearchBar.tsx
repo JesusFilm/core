@@ -30,11 +30,8 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
 export function SearchBar(props: SearchBoxConnectorParams): ReactElement {
   const { t } = useTranslation('apps-watch')
 
-  const { query, refine, clear } = useSearchBox(props)
-  const { status } = useInstantSearch()
+  const { query, refine } = useSearchBox(props)
   const [inputValue, setInputValue] = useState(query)
-
-  const isSearchStalled = status === 'stalled'
 
   function setQuery(newQuery: string) {
     setInputValue(newQuery)

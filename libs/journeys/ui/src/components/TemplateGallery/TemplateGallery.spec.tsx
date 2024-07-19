@@ -50,11 +50,6 @@ describe('TemplateGallery', () => {
       refine: jest.fn()
     } as unknown as SearchBoxRenderState)
 
-    const useInstantSearchMocked = jest.mocked(useInstantSearch)
-    useInstantSearchMocked.mockReturnValue({
-      status: 'idle'
-    } as unknown as InstantSearchApi)
-
     const useRefinementListMocked = jest.mocked(useRefinementList)
     useRefinementListMocked.mockReturnValue({
       refine: jest.fn()
