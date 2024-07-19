@@ -1,6 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { act, renderHook } from '@testing-library/react'
+import { act, renderHook, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -135,9 +135,11 @@ describe('useCreateStep', () => {
           mocks={[{ ...stepAndCardBlockCreateMock, result }]}
           cache={cache}
         >
-          <JourneyProvider value={{ journey: defaultJourney }}>
-            {children}
-          </JourneyProvider>
+          <EditorProvider>
+            <JourneyProvider value={{ journey: defaultJourney }}>
+              {children}
+            </JourneyProvider>
+          </EditorProvider>
         </MockedProvider>
       )
     })
@@ -150,7 +152,7 @@ describe('useCreateStep', () => {
         })
     )
 
-    expect(result).toHaveBeenCalled()
+    await waitFor(() => expect(result).toHaveBeenCalled())
 
     expect(cache.extract()['Journey:journey-id']?.blocks).toEqual([
       { __ref: 'StepBlock:step.id' },
@@ -190,9 +192,11 @@ describe('useCreateStep', () => {
         <MockedProvider
           mocks={[stepAndCardBlockCreateMock, blockOrderUpdateMock]}
         >
-          <JourneyProvider value={{ journey: defaultJourney }}>
-            {children}
-          </JourneyProvider>
+          <EditorProvider>
+            <JourneyProvider value={{ journey: defaultJourney }}>
+              {children}
+            </JourneyProvider>
+          </EditorProvider>
         </MockedProvider>
       )
     })
@@ -226,9 +230,11 @@ describe('useCreateStep', () => {
             { ...stepBlockNextBlockUpdateMock, result }
           ]}
         >
-          <JourneyProvider value={{ journey: defaultJourney }}>
-            {children}
-          </JourneyProvider>
+          <EditorProvider>
+            <JourneyProvider value={{ journey: defaultJourney }}>
+              {children}
+            </JourneyProvider>
+          </EditorProvider>
         </MockedProvider>
       )
     })

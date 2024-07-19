@@ -12,8 +12,13 @@ import { useBlockRestoreMutation } from '../../../../libs/useBlockRestoreMutatio
 
 interface BlockCreateCommandReturn {
   addBlockCommand: <T, K extends OperationVariables>(
-    apolloFunction: MutationFunction<T, K>,
-    apolloFnOptions: MutationHookOptions<T, K, DefaultContext, ApolloCache<any>>
+    blockCreateMutationFn: MutationFunction<T, K>,
+    blockCreateMutationFnOptions: MutationHookOptions<
+      T,
+      K,
+      DefaultContext,
+      ApolloCache<any>
+    >
   ) => Promise<{ data: T | null | undefined }>
 }
 
@@ -27,10 +32,10 @@ export function useBlockCreateCommand(): BlockCreateCommandReturn {
   } = useEditor()
 
   async function addBlockCommand<T, K extends OperationVariables>(
-    apolloFunction: MutationFunction<T, K>,
-    apolloFnOptions: MutationHookOptions<T, K>
+    blockCreateMutationFn: MutationFunction<T, K>,
+    blockCreateMutationFnOptions: MutationHookOptions<T, K>
   ): Promise<{ data: T | null | undefined }> {
-    let newBlockRef: T | null | undefined
+    let apolloFnRes: T | null | undefined
     await add({
       parameters: {
         execute: {},
@@ -40,8 +45,10 @@ export function useBlockCreateCommand(): BlockCreateCommandReturn {
         }
       },
       execute: async () => {
-        const { data } = await apolloFunction(apolloFnOptions)
-        newBlockRef = data
+        const { data } = await blockCreateMutationFn(
+          blockCreateMutationFnOptions
+        )
+        apolloFnRes = data
         if (data == null) return
         dispatch({
           type: 'SetSelectedBlockByIdAction',
@@ -49,8 +56,10 @@ export function useBlockCreateCommand(): BlockCreateCommandReturn {
         })
       },
       undo: async ({ stepBeforeDelete, selectedBlockBeforeDelete }) => {
-        if (newBlockRef != null)
-          await blockDelete(newBlockRef[Object.keys(newBlockRef)[0]])
+        if (apolloFnRes != null) {
+          const block = apolloFnRes[Object.keys(apolloFnRes)[0]]
+          await blockDelete(block)
+        }
         dispatch({
           type: 'SetEditorFocusAction',
           selectedStep: stepBeforeDelete,
@@ -60,17 +69,19 @@ export function useBlockCreateCommand(): BlockCreateCommandReturn {
       },
       redo: async () => {
         if (
-          newBlockRef != null &&
-          newBlockRef[Object.keys(newBlockRef)[0]]?.id != null
+          apolloFnRes != null &&
+          apolloFnRes[Object.keys(apolloFnRes)[0]]?.id != null
         ) {
+          const block = apolloFnRes[Object.keys(apolloFnRes)[0]]
+
           await blockRestore({
             variables: {
-              blockRestoreId: newBlockRef[Object.keys(newBlockRef)[0]].id
+              blockRestoreId: block.id
             }
           })
           dispatch({
             type: 'SetSelectedBlockByIdAction',
-            selectedBlockId: newBlockRef[Object.keys(newBlockRef)[0]].id
+            selectedBlockId: block.id
           })
           dispatch({
             type: 'SetEditorFocusAction',
@@ -80,7 +91,7 @@ export function useBlockCreateCommand(): BlockCreateCommandReturn {
         }
       }
     })
-    return { data: newBlockRef }
+    return { data: apolloFnRes }
   }
 
   return { addBlockCommand }
