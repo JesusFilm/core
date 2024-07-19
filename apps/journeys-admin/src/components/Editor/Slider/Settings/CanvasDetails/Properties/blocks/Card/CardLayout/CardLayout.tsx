@@ -23,10 +23,9 @@ import cardLayoutExpanded from './assets/card-layout-expanded.svg'
 export const CARD_BLOCK_LAYOUT_UPDATE = gql`
   mutation CardBlockLayoutUpdate(
     $id: ID!
-    $journeyId: ID!
     $input: CardBlockUpdateInput!
   ) {
-    cardBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+    cardBlockUpdate(id: $id, input: $input) {
       id
       fullscreen
     }
@@ -51,25 +50,22 @@ export function CardLayout(): ReactElement {
   const [cardBlockUpdate] = useMutation<CardBlockLayoutUpdate>(
     CARD_BLOCK_LAYOUT_UPDATE
   )
-  const { journey } = useJourney()
   const handleLayoutChange = async (selected: boolean): Promise<void> => {
-    if (journey != null && cardBlock != null) {
+    if (cardBlock != null) {
       await add({
         parameters: {
           execute: {
             cardBlockId: cardBlock.id,
-            journeyId: journey.id,
             selected,
             selectedStep
           },
           undo: {
             cardBlockId: cardBlock.id,
-            journeyId: journey.id,
             selected: !selected,
             selectedStep
           }
         },
-        execute: async ({ cardBlockId, journeyId, selected, selectedStep }) => {
+        execute: async ({ cardBlockId, selected, selectedStep }) => {
           dispatch({
             type: 'SetEditorFocusAction',
             selectedStep: selectedStep
@@ -77,7 +73,6 @@ export function CardLayout(): ReactElement {
           await cardBlockUpdate({
             variables: {
               id: cardBlockId,
-              journeyId,
               input: {
                 fullscreen: selected
               }

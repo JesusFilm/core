@@ -205,7 +205,6 @@ describe('CardStyling', () => {
               query: CARD_BLOCK_THEME_MODE_UPDATE,
               variables: {
                 id: 'card1.id',
-                journeyId: 'journeyId',
                 input: {
                   themeMode: ThemeMode.dark,
                   themeName: ThemeName.base
@@ -256,7 +255,6 @@ describe('CardStyling', () => {
               query: CARD_BLOCK_THEME_MODE_UPDATE,
               variables: {
                 id: 'card1.id',
-                journeyId: 'journeyId',
                 input: {
                   themeMode: ThemeMode.dark,
                   themeName: ThemeName.base
@@ -270,7 +268,6 @@ describe('CardStyling', () => {
               query: CARD_BLOCK_THEME_MODE_UPDATE,
               variables: {
                 id: 'card1.id',
-                journeyId: 'journeyId',
                 input: { themeMode: 'light', themeName: 'base' }
               }
             },

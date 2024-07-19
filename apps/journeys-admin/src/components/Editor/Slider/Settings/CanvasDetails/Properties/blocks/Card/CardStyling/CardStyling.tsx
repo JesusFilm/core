@@ -8,7 +8,6 @@ import Image from 'next/image'
 import { ReactElement } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import PaletteIcon from '@core/shared/ui/icons/Palette'
 
@@ -27,10 +26,9 @@ import cardStyleLight from './assets/card-style-light.svg'
 export const CARD_BLOCK_THEME_MODE_UPDATE = gql`
   mutation CardBlockThemeModeUpdate(
     $id: ID!
-    $journeyId: ID!
     $input: CardBlockUpdateInput!
   ) {
-    cardBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+    cardBlockUpdate(id: $id, input: $input) {
       id
       themeMode
       themeName
@@ -56,28 +54,25 @@ export function CardStyling(): ReactElement {
   const [cardBlockUpdate] = useMutation<CardBlockThemeModeUpdate>(
     CARD_BLOCK_THEME_MODE_UPDATE
   )
-  const { journey } = useJourney()
   const { t } = useTranslation('apps-journeys-admin')
 
   const handleChange = async (themeMode: ThemeMode): Promise<void> => {
-    if (journey != null && cardBlock != null) {
+    if (cardBlock != null) {
       await add({
         parameters: {
           execute: {
-            journeyId: journey.id,
             cardBlockId: cardBlock.id,
             themeMode,
             selectedStep
           },
           undo: {
-            journeyId: journey.id,
             cardBlockId: cardBlock.id,
             themeMode:
               themeMode === ThemeMode.dark ? ThemeMode.light : ThemeMode.dark,
             selectedStep
           }
         },
-        async execute({ journeyId, cardBlockId: id, themeMode }) {
+        async execute({ cardBlockId: id, themeMode }) {
           dispatch({
             type: 'SetEditorFocusAction',
             selectedStep
@@ -85,7 +80,6 @@ export function CardStyling(): ReactElement {
           await cardBlockUpdate({
             variables: {
               id,
-              journeyId,
               input: {
                 themeMode,
                 themeName: ThemeName.base
@@ -99,30 +93,6 @@ export function CardStyling(): ReactElement {
                 themeName: ThemeName.base
               }
             }
-          })
-        },
-        async undo({ journeyId, cardBlockId: id, themeMode }) {
-          await cardBlockUpdate({
-            variables: {
-              id,
-              journeyId,
-              input: {
-                themeMode,
-                themeName: ThemeName.base
-              }
-            },
-            optimisticResponse: {
-              cardBlockUpdate: {
-                id: cardBlock.id,
-                __typename: 'CardBlock',
-                themeMode,
-                themeName: ThemeName.base
-              }
-            }
-          })
-          dispatch({
-            type: 'SetEditorFocusAction',
-            selectedStep
           })
         }
       })

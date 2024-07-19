@@ -184,7 +184,6 @@ describe('CardLayout', () => {
               query: CARD_BLOCK_LAYOUT_UPDATE,
               variables: {
                 id: 'card1.id',
-                journeyId: 'journeyId',
                 input: {
                   fullscreen: true
                 }
@@ -194,11 +193,9 @@ describe('CardLayout', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
-          <EditorProvider initialState={{ selectedBlock: card }}>
-            <CardLayout />
-          </EditorProvider>
-        </JourneyProvider>
+        <EditorProvider initialState={{ selectedBlock: card }}>
+          <CardLayout />
+        </EditorProvider>
       </MockedProvider>
     )
     fireEvent.click(getByTestId('true'))
@@ -243,13 +240,7 @@ describe('CardLayout', () => {
           {
             request: {
               query: CARD_BLOCK_LAYOUT_UPDATE,
-              variables: {
-                id: 'card1.id',
-                journeyId: 'journeyId',
-                input: {
-                  fullscreen: true
-                }
-              }
+              variables: { id: 'card1.id', input: { fullscreen: true } }
             },
             result
           },
@@ -258,7 +249,6 @@ describe('CardLayout', () => {
               query: CARD_BLOCK_LAYOUT_UPDATE,
               variables: {
                 id: 'card1.id',
-                journeyId: 'journeyId',
                 input: {
                   fullscreen: false
                 }
@@ -268,12 +258,10 @@ describe('CardLayout', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
-          <EditorProvider initialState={{ selectedBlock: card }}>
-            <CommandUndoItem variant="button" />
-            <CardLayout />
-          </EditorProvider>
-        </JourneyProvider>
+        <EditorProvider initialState={{ selectedBlock: card }}>
+          <CommandUndoItem variant="button" />
+          <CardLayout />
+        </EditorProvider>
       </MockedProvider>
     )
     fireEvent.click(getByTestId('true'))
