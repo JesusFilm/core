@@ -9,7 +9,6 @@ import {
   ParserPreset
 } from '@commitlint/types'
 import { danger, fail, markdown, warn } from 'danger'
-import { diffLines } from 'diff'
 import config from './commitlint.config'
 
 export default async () => {
