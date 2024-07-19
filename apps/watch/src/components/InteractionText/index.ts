@@ -1,0 +1,1 @@
+export { InteractionText } from './InteractionText'
