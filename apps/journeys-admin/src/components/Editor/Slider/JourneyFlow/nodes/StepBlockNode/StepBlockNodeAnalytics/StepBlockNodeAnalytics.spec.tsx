@@ -1,5 +1,4 @@
 import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
-import { Step } from '@core/journeys/ui/Step'
 import { render, screen } from '@testing-library/react'
 import { StepBlockNodeAnalytics } from '.'
 
