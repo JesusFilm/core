@@ -128,9 +128,8 @@ export const TextResponse = ({
                 onChange={handleChange}
                 onBlurCapture={(e) => {
                   handleBlur(e)
-                  const currentValue = (e.target as HTMLInputElement).value
-                  if (currentValue !== value) {
-                    setValue(currentValue)
+                  if (values.response !== value) {
+                    setValue(values.response)
                     onSubmitHandler(values)
                   }
                 }}
