@@ -6,7 +6,7 @@ import { Form, Formik } from 'formik'
 import noop from 'lodash/noop'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -47,6 +47,8 @@ export const TextResponse = ({
   minRows
 }: TextResponseProps): ReactElement => {
   const { t } = useTranslation('libs-journeys-ui')
+
+  const [value, setValue] = useState('')
 
   const { variant } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
@@ -109,7 +111,7 @@ export const TextResponse = ({
 
   return (
     <Box sx={{ mb: 4 }} data-testid="JourneysTextResponse">
-      <Formik initialValues={initialValues} onSubmit={noop}>
+      <Formik initialValues={initialValues} onSubmit={noop} enableReinitialize>
         {({ values, handleChange, handleBlur }) => (
           <Form data-testid={`textResponse-${blockId}`}>
             <Stack>
@@ -126,7 +128,10 @@ export const TextResponse = ({
                 onChange={handleChange}
                 onBlurCapture={(e) => {
                   handleBlur(e)
-                  void onSubmitHandler(values)
+                  if (values.response !== value) {
+                    setValue(values.response)
+                    onSubmitHandler(values)
+                  }
                 }}
                 inputProps={{
                   maxLength: 1000,
