@@ -10,5 +10,6 @@ export type {
   EditorState,
   SetSelectedStepAction,
   SetSelectedBlockByIdAction,
-  SetEditorFocusAction
+  SetEditorFocusAction,
+  EditorAction
 } from './EditorProvider'
