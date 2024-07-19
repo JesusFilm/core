@@ -5,7 +5,7 @@ import { ReactElement } from 'react'
 
 import i18nConfig from '../../next-i18next.config'
 import { PageWrapper } from '../../src/components/PageWrapper'
-import { StrategySections } from '../../src/components/StrategySections'
+import { StrategiesContent } from '../../src/components/StrategiesContent'
 import { getFlags } from '../../src/libs/getFlags'
 
 function StrategiesPage(): ReactElement {
@@ -13,7 +13,7 @@ function StrategiesPage(): ReactElement {
 
   return (
     <PageWrapper>
-      <StrategySections />
+      <StrategiesContent />
     </PageWrapper>
   )
 }

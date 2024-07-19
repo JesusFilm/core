@@ -6,7 +6,7 @@ import Container from '@mui/material/Container'
 import { Index } from 'react-instantsearch'
 
 export function StrategySections(): ReactElement {
-  const indexes = ['wp_dev_posts_mission-trip']
+  const indexes = ['wp_dev_posts_mission-trip', 'wp_dev_posts_passionpurpose']
 
   return (
     <Box sx={{ backgroundColor: 'background.default' }}>
