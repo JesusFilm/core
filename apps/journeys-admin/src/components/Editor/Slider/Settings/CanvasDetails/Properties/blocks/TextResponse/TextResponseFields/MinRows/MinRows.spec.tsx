@@ -27,6 +27,9 @@ describe('MinRows', () => {
       label: 'Your answer here',
       hint: null,
       minRows: null,
+      integrationId: null,
+      type: null,
+      routeId: null,
       children: []
     }
     const { getByRole } = render(
@@ -58,6 +61,9 @@ describe('MinRows', () => {
       label: 'Your answer here',
       hint: null,
       minRows: null,
+      integrationId: null,
+      type: null,
+      routeId: null,
       children: []
     }
 
