@@ -71,6 +71,10 @@ export function StepBlockNodeAnalytics({
   const visitorsExitAtStep = stepStats?.visitorsExitAtStep ?? 0
   const timeOnPage = stepStats?.timeOnPage ?? 0
 
+  const totalVisitors = analytics?.totalVisitors ?? 0
+  const BOUNCE_RATE_THRESHOLD = 1 //TODO: update
+  const hideBounceRate = totalVisitors < BOUNCE_RATE_THRESHOLD
+
   return (
     <StatsOverlay
       direction="row"
@@ -85,8 +89,14 @@ export function StepBlockNodeAnalytics({
       {/* Bounce Rate */}
       <AnalyticsDataPoint
         Icon={TrendDown1}
-        tooltipTitle={t('Bounce rate')}
-        value={getPercentage(visitorsExitAtStep, visitors)}
+        tooltipTitle={
+          hideBounceRate
+            ? t('Need more data to accurately show bounce rate')
+            : t('Bounce rate')
+        }
+        value={
+          hideBounceRate ? '~' : getPercentage(visitorsExitAtStep, visitors)
+        }
       />
       <AnalyticsDataPoint
         Icon={Clock1}
