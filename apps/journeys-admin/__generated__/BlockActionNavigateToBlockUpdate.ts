@@ -6,22 +6,21 @@
 import { NavigateToBlockActionInput } from "./globalTypes";
 
 // ====================================================
-// GraphQL mutation operation: NavigateToBlockActionUpdate
+// GraphQL mutation operation: BlockActionNavigateToBlockUpdate
 // ====================================================
 
-export interface NavigateToBlockActionUpdate_blockUpdateNavigateToBlockAction {
+export interface BlockActionNavigateToBlockUpdate_blockUpdateNavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface NavigateToBlockActionUpdate {
-  blockUpdateNavigateToBlockAction: NavigateToBlockActionUpdate_blockUpdateNavigateToBlockAction;
+export interface BlockActionNavigateToBlockUpdate {
+  blockUpdateNavigateToBlockAction: BlockActionNavigateToBlockUpdate_blockUpdateNavigateToBlockAction;
 }
 
-export interface NavigateToBlockActionUpdateVariables {
+export interface BlockActionNavigateToBlockUpdateVariables {
   id: string;
-  journeyId: string;
   input: NavigateToBlockActionInput;
 }
