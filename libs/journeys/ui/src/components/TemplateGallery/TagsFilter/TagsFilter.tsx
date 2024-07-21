@@ -26,6 +26,8 @@ interface TagsFilterProps {
   popperElementId?: string
 }
 
+// TODO: create a prop for categories/languages, so the tags filter knows which data to grab?
+
 export function TagsFilter({
   label,
   tagNames,
