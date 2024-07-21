@@ -18,7 +18,7 @@ import { GetLanguages } from '../../libs/useLanguagesQuery/__generated__/GetLang
 import { GET_TAGS } from '../../libs/useTagsQuery'
 import { GetTags } from '../../libs/useTagsQuery/__generated__/GetTags'
 
-const defaultTemplate: Journey = {
+export const defaultTemplate: Journey = {
   __typename: 'Journey',
   trashedAt: null,
   themeName: ThemeName.base,

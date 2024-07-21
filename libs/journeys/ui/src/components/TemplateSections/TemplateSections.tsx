@@ -5,71 +5,58 @@ import { useTheme } from '@mui/material/styles'
 import map from 'lodash/map'
 import take from 'lodash/take'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useMemo } from 'react'
+import { ReactElement } from 'react'
 import { SwiperOptions } from 'swiper/types'
 
 import { ContentCarousel } from '@core/shared/ui/ContentCarousel'
-import { useJourneysQuery } from '../../libs/useJourneysQuery'
-import { GetJourneys_journeys as Journey } from '../../libs/useJourneysQuery/__generated__/GetJourneys'
+import {
+  AlgoliaJourney,
+  useAlgoliaJourneys
+} from '../../libs/algolia/useAlgoliaJourneys'
 import { TemplateGalleryCard } from '../TemplateGalleryCard'
 
 interface Contents {
-  [key: string]: { category: string; journeys: Journey[] }
+  [key: string]: { category: string; journeys: AlgoliaJourney[] }
 }
 
-interface TemplateSectionsProps {
-  tagIds?: string[]
-  languageIds?: string[]
-}
-
-export function TemplateSections({
-  tagIds,
-  languageIds
-}: TemplateSectionsProps): ReactElement {
+export function TemplateSections(): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const { breakpoints } = useTheme()
+  const { hits, loading, refinements } = useAlgoliaJourneys()
 
-  const { data, loading } = useJourneysQuery({
-    variables: {
-      where: {
-        template: true,
-        orderByRecent: true,
-        tagIds,
-        languageIds:
-          languageIds != null && languageIds?.length > 0
-            ? languageIds
-            : undefined
-      }
-    }
-  })
-  const { collection, contents } = useMemo(() => {
-    const contents: Contents = {}
-    let collection: Journey[] = []
-    if (data != null) {
-      const featuredAndNew = [
-        ...data.journeys.filter(({ featuredAt }) => featuredAt != null),
-        ...take(
-          data.journeys.filter(({ featuredAt }) => featuredAt == null),
-          10
-        )
-      ]
-      const mostRelevant = data.journeys.filter(({ tags }) =>
-        tagIds?.every((tagId) => tags.find((tag) => tag.id === tagId))
+  function getAllTags(journey: AlgoliaJourney) {
+    return Object.values(journey.tags)
+      .filter((tags): tags is string[] => Array.isArray(tags))
+      .reduce<string[]>((acc, tags) => acc.concat(tags), [])
+      .filter((tag) => tag !== undefined) as unknown as string[]
+  }
+
+  const algoliaContents: Contents = {}
+  let algoliaCollection: AlgoliaJourney[] = []
+  if (hits.length > 0) {
+    const featuredAndNew = [
+      ...hits.filter(({ featuredAt }) => featuredAt != null),
+      ...take(
+        hits.filter(({ featuredAt }) => featuredAt == null),
+        10
       )
-      collection = tagIds == null ? featuredAndNew : mostRelevant
-      data.journeys.forEach((journey) => {
-        journey.tags.forEach((tag) => {
-          if (contents[tag.id] == null)
-            contents[tag.id] = {
-              category: tag.name.find(({ primary }) => primary)?.value ?? '',
-              journeys: []
-            }
-          contents[tag.id].journeys.push(journey)
-        })
+    ]
+
+    const mostRelevant = hits.slice(0, 10)
+    algoliaCollection = refinements.length > 0 ? featuredAndNew : mostRelevant
+
+    hits.forEach((journey) => {
+      const allTags = getAllTags(journey)
+      allTags.forEach((tag) => {
+        if (algoliaContents[tag] == null)
+          algoliaContents[tag] = {
+            category: tag,
+            journeys: []
+          }
+        algoliaContents[tag].journeys.push(journey)
       })
-    }
-    return { collection, contents }
-  }, [data, tagIds])
+    })
+  }
 
   const swiperBreakpoints: SwiperOptions['breakpoints'] = {
     [breakpoints.values.xs]: {
@@ -100,48 +87,55 @@ export function TemplateSections({
 
   return (
     <Stack spacing={8} data-testid="JourneysAdminTemplateSections">
-      {tagIds?.length !== 1 &&
-        (loading || (collection != null && collection.length > 0)) && (
-          <ContentCarousel
-            priority
-            heading={tagIds == null ? t('Featured & New') : t('Most Relevant')}
-            items={collection}
-            renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}
-            breakpoints={swiperBreakpoints}
-            loading={loading}
-            slidesOffsetBefore={-8}
-            cardSpacing={{
-              xs: 1,
-              md: 8,
-              xl: 11
+      {!loading &&
+        algoliaCollection != null &&
+        algoliaCollection.length === 0 && (
+          <Paper
+            elevation={0}
+            variant="outlined"
+            sx={{
+              borderRadius: 4,
+              width: '100%',
+              padding: 8
             }}
-          />
+          >
+            <Typography variant="h6">
+              {t('No template fully matches your search criteria.')}
+            </Typography>
+            <Typography variant="body1" sx={{ mt: 2 }}>
+              {t(
+                "Try using fewer filters or look below for templates related to the categories you've selected to search"
+              )}
+            </Typography>
+          </Paper>
         )}
-      {!loading && collection != null && collection.length === 0 && (
-        <Paper
-          elevation={0}
-          variant="outlined"
-          sx={{
-            borderRadius: 4,
-            width: '100%',
-            padding: 8
-          }}
-        >
-          <Typography variant="h6">
-            {t('No template fully matches your search criteria.')}
-          </Typography>
-          <Typography variant="body1" sx={{ mt: 2 }}>
-            {t(
-              "Try using fewer filters or look below for templates related to the categories you've selected to search"
-            )}
-          </Typography>
-        </Paper>
-      )}
+      {refinements.length !== 1 &&
+        (loading ||
+          (algoliaCollection != null && algoliaCollection.length > 0 && (
+            <ContentCarousel
+              priority
+              heading={
+                refinements.length > 0
+                  ? t('Most Relevant')
+                  : t('Featured & New')
+              }
+              items={algoliaCollection}
+              renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}
+              breakpoints={swiperBreakpoints}
+              loading={loading}
+              slidesOffsetBefore={-8}
+              cardSpacing={{
+                xs: 1,
+                md: 8,
+                xl: 11
+              }}
+            />
+          )))}
       {map(
-        contents,
+        algoliaContents,
         ({ category, journeys }, key) =>
-          ((tagIds == null && journeys.length >= 5) ||
-            tagIds?.includes(key) === true) && (
+          ((refinements.length === 0 && journeys.length >= 5) ||
+            refinements.includes(key)) && (
             <ContentCarousel
               heading={category}
               items={journeys}
