@@ -1,5 +1,5 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -7,10 +7,18 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 
 import type { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
+import { deleteBlockMock as deleteBlock } from '../../../../../../../libs/useBlockDeleteMutation/useBlockDeleteMutation.mock'
+import { useBlockRestoreMutationMock as blockRestore } from '../../../../../../../libs/useBlockRestoreMutation/useBlockRestoreMutation.mock'
 
 import { FORM_BLOCK_CREATE } from './NewFormButton'
 
 import { NewFormButton } from '.'
+import {
+  FormBlockCreate,
+  FormBlockCreateVariables
+} from '../../../../../../../../__generated__/FormBlockCreate'
+import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
+import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -46,35 +54,44 @@ describe('NewFormButton', () => {
     ]
   }
 
-  const request = {
-    query: FORM_BLOCK_CREATE,
-    variables: {
-      input: {
-        id: 'formBlockId',
-        parentBlockId: 'cardId',
-        journeyId: 'journeyId'
+  const formBlockCreateMock: MockedResponse<
+    FormBlockCreate,
+    FormBlockCreateVariables
+  > = {
+    request: {
+      query: FORM_BLOCK_CREATE,
+      variables: {
+        input: {
+          id: 'formBlockId',
+          parentBlockId: 'cardId',
+          journeyId: 'journeyId'
+        }
+      }
+    },
+    result: {
+      data: {
+        formBlockCreate: {
+          id: 'formBlockId',
+          parentBlockId: 'cardId',
+          parentOrder: 0,
+          form: null,
+          action: null,
+          __typename: 'FormBlock'
+        }
       }
     }
   }
-  const result = jest.fn(() => ({
-    data: {
-      formBlockCreate: {
-        id: 'formBlockId',
-        parentBlockId: 'cardId',
-        parentOrder: 0,
-        form: null,
-        action: null,
-        __typename: 'FormBlock'
-      }
-    }
-  }))
+
+  const result = jest.fn().mockReturnValue(formBlockCreateMock.result)
+
+  beforeEach(() => jest.clearAllMocks())
 
   it('should create new form block', async () => {
     const { getByRole } = render(
       <MockedProvider
         mocks={[
           {
-            request,
+            ...formBlockCreateMock,
             result
           }
         ]}
@@ -96,6 +113,120 @@ describe('NewFormButton', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
+  it('should undo form block on undo', async () => {
+    const deleteResult = jest.fn().mockReturnValue({ ...deleteBlock.result })
+    const deleteBlockMock = {
+      ...deleteBlock,
+      request: {
+        ...deleteBlock.request,
+        variables: {
+          id: 'formBlockId',
+          journeyId: 'journeyId',
+          parentBlockId: 'cardId'
+        }
+      },
+      result: deleteResult
+    }
+
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            ...formBlockCreateMock,
+            result
+          },
+          {
+            ...deleteBlockMock,
+            result: deleteResult
+          }
+        ]}
+      >
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            variant: 'admin'
+          }}
+        >
+          <EditorProvider initialState={{ selectedStep }}>
+            <NewFormButton />
+            <CommandUndoItem variant="button" />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('button', { name: 'Form' }))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    fireEvent.click(getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(deleteResult).toHaveBeenCalled())
+  })
+
+  it('should redo form block on redo', async () => {
+    const deleteResult = jest.fn().mockReturnValue({ ...deleteBlock.result })
+    const deleteBlockMock = {
+      ...deleteBlock,
+      request: {
+        ...deleteBlock.request,
+        variables: {
+          id: 'formBlockId',
+          journeyId: 'journeyId',
+          parentBlockId: 'cardId'
+        }
+      },
+      result: deleteResult
+    }
+    const restoreResult = jest
+      .fn()
+      .mockResolvedValue({ ...blockRestore.result })
+    const blockRestoreMock = {
+      ...blockRestore,
+      request: {
+        ...blockRestore.request,
+        variables: { blockRestoreId: 'formBlockId' }
+      },
+      result: restoreResult
+    }
+
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            ...formBlockCreateMock,
+            result
+          },
+          {
+            ...deleteBlockMock,
+            result: deleteResult
+          },
+          {
+            ...blockRestoreMock,
+            result: restoreResult
+          }
+        ]}
+      >
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            variant: 'admin'
+          }}
+        >
+          <EditorProvider initialState={{ selectedStep }}>
+            <NewFormButton />
+            <CommandUndoItem variant="button" />
+            <CommandRedoItem variant="button" />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('button', { name: 'Form' }))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    fireEvent.click(getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(deleteResult).toHaveBeenCalled())
+    fireEvent.click(getByRole('button', { name: 'Redo' }))
+    await waitFor(() => expect(restoreResult).toHaveBeenCalled())
+  })
+
   it('should update cache with the new block', async () => {
     const cache = new InMemoryCache()
     cache.restore({
@@ -111,7 +242,7 @@ describe('NewFormButton', () => {
         cache={cache}
         mocks={[
           {
-            request,
+            ...formBlockCreateMock,
             result
           }
         ]}

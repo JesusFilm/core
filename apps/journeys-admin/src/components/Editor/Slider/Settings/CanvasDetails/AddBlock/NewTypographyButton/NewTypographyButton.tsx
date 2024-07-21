@@ -10,6 +10,7 @@ import Type3Icon from '@core/shared/ui/icons/Type3'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../__generated__/BlockFields'
 import { TypographyBlockCreate } from '../../../../../../../../__generated__/TypographyBlockCreate'
+import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
 import { Button } from '../Button'
 
 export const TYPOGRAPHY_BLOCK_CREATE = gql`
@@ -32,8 +33,9 @@ export function NewTypographyButton(): ReactElement {
     state: { selectedStep },
     dispatch
   } = useEditor()
+  const { addBlockCommand } = useBlockCreateCommand()
 
-  const handleClick = async (): Promise<void> => {
+  async function handleClick(): Promise<void> {
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
@@ -41,7 +43,7 @@ export function NewTypographyButton(): ReactElement {
       block.children.find((child) => child.__typename === 'TypographyBlock')
     )
     if (card != null && checkTypography !== undefined && journey != null) {
-      const { data } = await typographyBlockCreate({
+      const { data } = await addBlockCommand(typographyBlockCreate, {
         variables: {
           input: {
             journeyId: journey.id,
@@ -72,10 +74,6 @@ export function NewTypographyButton(): ReactElement {
         }
       })
       if (data?.typographyBlockCreate != null) {
-        dispatch({
-          type: 'SetSelectedBlockByIdAction',
-          selectedBlockId: data.typographyBlockCreate.id
-        })
         dispatch({
           type: 'SetActiveFabAction',
           activeFab: ActiveFab.Save

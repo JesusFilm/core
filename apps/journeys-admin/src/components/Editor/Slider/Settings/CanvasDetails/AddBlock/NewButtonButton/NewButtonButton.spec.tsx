@@ -1,5 +1,5 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -17,6 +17,14 @@ import {
 import { BUTTON_BLOCK_CREATE } from './NewButtonButton'
 
 import { NewButtonButton } from '.'
+import {
+  ButtonBlockCreate,
+  ButtonBlockCreateVariables
+} from '../../../../../../../../__generated__/ButtonBlockCreate'
+import { deleteBlockMock as deleteBlock } from '../../../../../../../libs/useBlockDeleteMutation/useBlockDeleteMutation.mock'
+import { useBlockRestoreMutationMock as blockRestore } from '../../../../../../../libs/useBlockRestoreMutation/useBlockRestoreMutation.mock'
+import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
+import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -55,20 +63,55 @@ describe('NewButtonButton', () => {
     ]
   }
 
-  it('should check if the mutation gets called', async () => {
-    mockUuidv4.mockReturnValueOnce('buttonBlockId')
-    mockUuidv4.mockReturnValueOnce('startIconId')
-    mockUuidv4.mockReturnValueOnce('endIconId')
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
 
-    const result = jest.fn(() => ({
+  const buttonBlockCreateMock: MockedResponse<
+    ButtonBlockCreate,
+    ButtonBlockCreateVariables
+  > = {
+    request: {
+      query: BUTTON_BLOCK_CREATE,
+      variables: {
+        input: {
+          id: 'buttonBlockId',
+          journeyId: 'journeyId',
+          parentBlockId: 'cardId',
+          label: '',
+          variant: ButtonVariant.contained,
+          color: ButtonColor.primary,
+          size: ButtonSize.medium
+        },
+        iconBlockCreateInput1: {
+          id: 'startIconId',
+          journeyId: 'journeyId',
+          parentBlockId: 'buttonBlockId',
+          name: null
+        },
+        iconBlockCreateInput2: {
+          id: 'endIconId',
+          journeyId: 'journeyId',
+          parentBlockId: 'buttonBlockId',
+          name: null
+        },
+        id: 'buttonBlockId',
+        journeyId: 'journeyId',
+        updateInput: {
+          startIconId: 'startIconId',
+          endIconId: 'endIconId'
+        }
+      }
+    },
+    result: {
       data: {
         buttonBlockCreate: {
+          __typename: 'ButtonBlock',
           id: 'buttonBlockId'
         },
         startIcon: {
           __typename: 'IconBlock',
           id: 'startIconId',
-          journeyId: 'journeyId',
           parentBlockId: 'buttonBlockId',
           parentOrder: null,
           iconName: null,
@@ -78,7 +121,6 @@ describe('NewButtonButton', () => {
         endIcon: {
           __typename: 'IconBlock',
           id: 'endIconId',
-          journeyId: 'journeyId',
           parentBlockId: 'buttonBlockId',
           parentOrder: null,
           iconName: null,
@@ -86,56 +128,34 @@ describe('NewButtonButton', () => {
           iconSize: null
         },
         buttonBlockUpdate: {
+          __typename: 'ButtonBlock',
           id: 'buttonBlockId',
           parentBlockId: 'cardId',
           parentOrder: 0,
-          journeyId: 'journeyId',
           label: '',
-          variant: ButtonVariant.contained,
-          color: ButtonColor.primary,
+          buttonVariant: ButtonVariant.contained,
+          buttonColor: ButtonColor.primary,
           size: ButtonSize.medium,
           startIconId: 'startIconId',
           endIconId: 'endIconId',
           action: null
         }
       }
-    }))
+    }
+  }
+
+  const result = jest.fn(() => ({ ...buttonBlockCreateMock.result }))
+
+  it('should check if the mutation gets called', async () => {
+    mockUuidv4.mockReturnValueOnce('buttonBlockId')
+    mockUuidv4.mockReturnValueOnce('startIconId')
+    mockUuidv4.mockReturnValueOnce('endIconId')
+
     const { getByRole } = render(
       <MockedProvider
         mocks={[
           {
-            request: {
-              query: BUTTON_BLOCK_CREATE,
-              variables: {
-                input: {
-                  id: 'buttonBlockId',
-                  journeyId: 'journeyId',
-                  parentBlockId: 'cardId',
-                  label: '',
-                  variant: ButtonVariant.contained,
-                  color: ButtonColor.primary,
-                  size: ButtonSize.medium
-                },
-                iconBlockCreateInput1: {
-                  id: 'startIconId',
-                  journeyId: 'journeyId',
-                  parentBlockId: 'buttonBlockId',
-                  name: null
-                },
-                iconBlockCreateInput2: {
-                  id: 'endIconId',
-                  journeyId: 'journeyId',
-                  parentBlockId: 'buttonBlockId',
-                  name: null
-                },
-                id: 'buttonBlockId',
-                journeyId: 'journeyId',
-                updateInput: {
-                  startIconId: 'startIconId',
-                  endIconId: 'endIconId'
-                }
-              }
-            },
+            ...buttonBlockCreateMock,
             result
           }
         ]}
@@ -156,6 +176,111 @@ describe('NewButtonButton', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
+  it('should remove block if undo clicked', async () => {
+    mockUuidv4.mockReturnValueOnce('buttonBlockId')
+    mockUuidv4.mockReturnValueOnce('startIconId')
+    mockUuidv4.mockReturnValueOnce('endIconId')
+
+    const deleteResult = jest.fn().mockResolvedValue({ ...deleteBlock.result })
+    const deleteBlockMock = {
+      ...deleteBlock,
+      request: {
+        ...deleteBlock.request,
+        variables: { id: 'buttonBlockId', journeyId: 'journeyId' }
+      },
+      result: deleteResult
+    }
+
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            ...buttonBlockCreateMock,
+            result
+          },
+          deleteBlockMock
+        ]}
+      >
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            variant: 'admin'
+          }}
+        >
+          <EditorProvider initialState={{ selectedStep }}>
+            <CommandUndoItem variant="button" />
+            <NewButtonButton />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('button', { name: 'Button' }))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    fireEvent.click(getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(deleteResult).toHaveBeenCalled())
+  })
+
+  it('should restore block if redo clicked', async () => {
+    mockUuidv4.mockReturnValueOnce('buttonBlockId')
+    mockUuidv4.mockReturnValueOnce('startIconId')
+    mockUuidv4.mockReturnValueOnce('endIconId')
+
+    const deleteResult = jest.fn().mockResolvedValue({ ...deleteBlock.result })
+    const deleteBlockMock = {
+      ...deleteBlock,
+      request: {
+        ...deleteBlock.request,
+        variables: { id: 'buttonBlockId', journeyId: 'journeyId' }
+      },
+      result: deleteResult
+    }
+
+    const restoreResult = jest
+      .fn()
+      .mockResolvedValue({ ...blockRestore.result })
+
+    const blockRestoreMock = {
+      ...blockRestore,
+      request: {
+        ...blockRestore.request,
+        variables: { blockRestoreId: 'buttonBlockId' }
+      },
+      result: restoreResult
+    }
+
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            ...buttonBlockCreateMock,
+            result
+          },
+          deleteBlockMock,
+          blockRestoreMock
+        ]}
+      >
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            variant: 'admin'
+          }}
+        >
+          <EditorProvider initialState={{ selectedStep }}>
+            <CommandUndoItem variant="button" />
+            <CommandRedoItem variant="button" />
+            <NewButtonButton />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('button', { name: 'Button' }))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    fireEvent.click(getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(deleteResult).toHaveBeenCalled())
+    fireEvent.click(getByRole('button', { name: 'Redo' }))
+    await waitFor(() => expect(restoreResult).toHaveBeenCalled())
+  })
+
   it('should update the cache', async () => {
     mockUuidv4.mockReturnValueOnce('buttonBlockId')
     mockUuidv4.mockReturnValueOnce('startIconId')
@@ -169,85 +294,13 @@ describe('NewButtonButton', () => {
         __typename: 'Journey'
       }
     })
-    const result = jest.fn(() => ({
-      data: {
-        buttonBlockCreate: {
-          __typename: 'ButtonBlock',
-          id: 'buttonBlockId'
-        },
-        startIcon: {
-          __typename: 'IconBlock',
-          id: 'startIconId',
-          journeyId: 'journeyId',
-          parentBlockId: 'buttonBlockId',
-          parentOrder: null,
-          iconName: null,
-          iconColor: null,
-          iconSize: null
-        },
-        endIcon: {
-          __typename: 'IconBlock',
-          id: 'endIconId',
-          journeyId: 'journeyId',
-          parentBlockId: 'buttonBlockId',
-          parentOrder: null,
-          iconName: null,
-          iconColor: null,
-          iconSize: null
-        },
-        buttonBlockUpdate: {
-          __typename: 'ButtonBlock',
-          id: 'buttonBlockId',
-          parentBlockId: 'cardId',
-          parentOrder: 0,
-          journeyId: 'journeyId',
-          label: '',
-          buttonVariant: ButtonVariant.contained,
-          buttonColor: ButtonColor.primary,
-          size: ButtonSize.medium,
-          startIconId: 'startIconId',
-          endIconId: 'endIconId',
-          action: null
-        }
-      }
-    }))
+
     const { getByRole } = render(
       <MockedProvider
         cache={cache}
         mocks={[
           {
-            request: {
-              query: BUTTON_BLOCK_CREATE,
-              variables: {
-                input: {
-                  id: 'buttonBlockId',
-                  journeyId: 'journeyId',
-                  parentBlockId: 'cardId',
-                  label: '',
-                  variant: ButtonVariant.contained,
-                  color: ButtonColor.primary,
-                  size: ButtonSize.medium
-                },
-                iconBlockCreateInput1: {
-                  id: 'startIconId',
-                  journeyId: 'journeyId',
-                  parentBlockId: 'buttonBlockId',
-                  name: null
-                },
-                iconBlockCreateInput2: {
-                  id: 'endIconId',
-                  journeyId: 'journeyId',
-                  parentBlockId: 'buttonBlockId',
-                  name: null
-                },
-                id: 'buttonBlockId',
-                journeyId: 'journeyId',
-                updateInput: {
-                  startIconId: 'startIconId',
-                  endIconId: 'endIconId'
-                }
-              }
-            },
+            ...buttonBlockCreateMock,
             result
           }
         ]}

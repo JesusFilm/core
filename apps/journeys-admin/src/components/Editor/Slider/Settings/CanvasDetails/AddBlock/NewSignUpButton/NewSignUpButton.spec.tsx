@@ -8,10 +8,14 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 
 import type { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
+import { deleteBlockMock as deleteBlock } from '../../../../../../../libs/useBlockDeleteMutation/useBlockDeleteMutation.mock'
+import { useBlockRestoreMutationMock as blockRestore } from '../../../../../../../libs/useBlockRestoreMutation/useBlockRestoreMutation.mock'
 
 import { SIGN_UP_BLOCK_CREATE } from './NewSignUpButton'
 
 import { NewSignUpButton } from '.'
+import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
+import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -123,6 +127,203 @@ describe('NewSignUpButton', () => {
     )
     fireEvent.click(getByRole('button'))
     await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
+  it('should undo on undo click', async () => {
+    mockUuidv4.mockReturnValueOnce('signUpBlockId')
+    mockUuidv4.mockReturnValueOnce('iconId')
+
+    const result = jest.fn(() => ({
+      data: {
+        signUpBlockCreate: {
+          id: 'signUpBlockId'
+        },
+        submitIcon: {
+          id: 'iconId',
+          journeyId: 'journeyId',
+          parentBlockId: 'signUpBlockId',
+          name: null
+        },
+        signUpBlockUpdate: {
+          id: 'signUpBlockId',
+          parentBlockId: 'cardId',
+          journeyId: 'journeyId',
+          submitIconId: 'iconId',
+          submitLabel: 'Submit',
+          action: {
+            __typename: 'NavigateToBlockAction',
+            gtmEventName: 'gtmEventName',
+            blockId: 'def'
+          }
+        }
+      }
+    }))
+
+    const deleteResult = jest.fn().mockResolvedValue({ ...deleteBlock.result })
+    const deleteBlockMock = {
+      ...deleteBlock,
+      request: {
+        ...deleteBlock.request,
+        variables: { id: 'signUpBlockId', journeyId: 'journeyId' }
+      },
+      result: deleteResult
+    }
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: SIGN_UP_BLOCK_CREATE,
+              variables: {
+                input: {
+                  id: 'signUpBlockId',
+                  journeyId: 'journeyId',
+                  parentBlockId: 'cardId',
+
+                  submitLabel: 'Submit'
+                },
+                iconBlockCreateInput: {
+                  id: 'iconId',
+                  journeyId: 'journeyId',
+                  parentBlockId: 'signUpBlockId',
+                  name: null
+                },
+                id: 'signUpBlockId',
+                journeyId: 'journeyId',
+                updateInput: {
+                  submitIconId: 'iconId'
+                }
+              }
+            },
+            result
+          },
+          { ...deleteBlockMock, result: deleteResult }
+        ]}
+      >
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            variant: 'admin'
+          }}
+        >
+          <EditorProvider initialState={{ selectedStep }}>
+            <CommandUndoItem variant="button" />
+            <NewSignUpButton />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('button', { name: 'Subscribe' }))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    fireEvent.click(getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(deleteResult).toHaveBeenCalled())
+  })
+
+  it('should redo on redo click', async () => {
+    mockUuidv4.mockReturnValueOnce('signUpBlockId')
+    mockUuidv4.mockReturnValueOnce('iconId')
+
+    const result = jest.fn(() => ({
+      data: {
+        signUpBlockCreate: {
+          id: 'signUpBlockId'
+        },
+        submitIcon: {
+          id: 'iconId',
+          journeyId: 'journeyId',
+          parentBlockId: 'signUpBlockId',
+          name: null
+        },
+        signUpBlockUpdate: {
+          id: 'signUpBlockId',
+          parentBlockId: 'cardId',
+          journeyId: 'journeyId',
+          submitIconId: 'iconId',
+          submitLabel: 'Submit',
+          action: {
+            __typename: 'NavigateToBlockAction',
+            gtmEventName: 'gtmEventName',
+            blockId: 'def'
+          }
+        }
+      }
+    }))
+
+    const deleteResult = jest.fn().mockResolvedValue({ ...deleteBlock.result })
+    const deleteBlockMock = {
+      ...deleteBlock,
+      request: {
+        ...deleteBlock.request,
+        variables: { id: 'signUpBlockId', journeyId: 'journeyId' }
+      },
+      result: deleteResult
+    }
+
+    const restoreResult = jest
+      .fn()
+      .mockResolvedValue({ ...blockRestore.result })
+
+    const blockRestoreMock = {
+      ...blockRestore,
+      request: {
+        ...blockRestore.request,
+        variables: { blockRestoreId: 'signUpBlockId' }
+      },
+      result: restoreResult
+    }
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: SIGN_UP_BLOCK_CREATE,
+              variables: {
+                input: {
+                  id: 'signUpBlockId',
+                  journeyId: 'journeyId',
+                  parentBlockId: 'cardId',
+
+                  submitLabel: 'Submit'
+                },
+                iconBlockCreateInput: {
+                  id: 'iconId',
+                  journeyId: 'journeyId',
+                  parentBlockId: 'signUpBlockId',
+                  name: null
+                },
+                id: 'signUpBlockId',
+                journeyId: 'journeyId',
+                updateInput: {
+                  submitIconId: 'iconId'
+                }
+              }
+            },
+            result
+          },
+          { ...deleteBlockMock, result: deleteResult },
+          { ...blockRestoreMock, result: restoreResult }
+        ]}
+      >
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            variant: 'admin'
+          }}
+        >
+          <EditorProvider initialState={{ selectedStep }}>
+            <CommandRedoItem variant="button" />
+            <CommandUndoItem variant="button" />
+            <NewSignUpButton />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('button', { name: 'Subscribe' }))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    fireEvent.click(getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(deleteResult).toHaveBeenCalled())
+    fireEvent.click(getByRole('button', { name: 'Redo' }))
+    await waitFor(() => expect(restoreResult).toHaveBeenCalled())
   })
 
   it('should update the cache', async () => {

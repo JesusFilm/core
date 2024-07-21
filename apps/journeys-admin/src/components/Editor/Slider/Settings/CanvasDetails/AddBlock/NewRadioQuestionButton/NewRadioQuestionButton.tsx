@@ -12,6 +12,7 @@ import CheckContainedIcon from '@core/shared/ui/icons/CheckContained'
 
 import type { BlockFields_CardBlock as CardBlock } from '../../../../../../../../__generated__/BlockFields'
 import type { RadioQuestionBlockCreate } from '../../../../../../../../__generated__/RadioQuestionBlockCreate'
+import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
 import { Button } from '../Button'
 
 export const RADIO_QUESTION_BLOCK_CREATE = gql`
@@ -49,18 +50,18 @@ export function NewRadioQuestionButton(): ReactElement {
     useMutation<RadioQuestionBlockCreate>(RADIO_QUESTION_BLOCK_CREATE)
   const { journey } = useJourney()
   const {
-    state: { selectedStep },
-    dispatch
+    state: { selectedStep }
   } = useEditor()
+  const { addBlockCommand } = useBlockCreateCommand()
 
-  const handleClick = async (): Promise<void> => {
+  async function handleClick(): Promise<void> {
     const id = uuidv4()
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
 
     if (card != null && journey != null) {
-      const { data } = await radioQuestionBlockCreate({
+      await addBlockCommand(radioQuestionBlockCreate, {
         variables: {
           input: {
             journeyId: journey.id,
@@ -120,12 +121,6 @@ export function NewRadioQuestionButton(): ReactElement {
           }
         }
       })
-      if (data?.radioQuestionBlockCreate != null) {
-        dispatch({
-          type: 'SetSelectedBlockByIdAction',
-          selectedBlockId: data.radioQuestionBlockCreate.id
-        })
-      }
     }
   }
 

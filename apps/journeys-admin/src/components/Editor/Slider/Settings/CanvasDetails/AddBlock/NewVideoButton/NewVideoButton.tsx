@@ -10,6 +10,7 @@ import VideoOnIcon from '@core/shared/ui/icons/VideoOn'
 
 import type { BlockFields_CardBlock as CardBlock } from '../../../../../../../../__generated__/BlockFields'
 import type { VideoBlockCreate } from '../../../../../../../../__generated__/VideoBlockCreate'
+import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
 import { Button } from '../Button'
 
 interface NewVideoButtonProps {
@@ -33,17 +34,17 @@ export function NewVideoButton({
     useMutation<VideoBlockCreate>(VIDEO_BLOCK_CREATE)
   const { journey } = useJourney()
   const {
-    state: { selectedStep },
-    dispatch
+    state: { selectedStep }
   } = useEditor()
+  const { addBlockCommand } = useBlockCreateCommand()
 
-  const handleClick = async (): Promise<void> => {
+  async function handleClick(): Promise<void> {
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
 
     if (card != null && journey != null) {
-      const { data } = await videoBlockCreate({
+      await addBlockCommand(videoBlockCreate, {
         variables: {
           input: {
             journeyId: journey.id,
@@ -74,12 +75,6 @@ export function NewVideoButton({
           }
         }
       })
-      if (data?.videoBlockCreate != null) {
-        dispatch({
-          type: 'SetSelectedBlockByIdAction',
-          selectedBlockId: data.videoBlockCreate.id
-        })
-      }
     }
   }
 

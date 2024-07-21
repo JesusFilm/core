@@ -10,6 +10,7 @@ import Image3Icon from '@core/shared/ui/icons/Image3'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../__generated__/BlockFields'
 import { ImageBlockCreate } from '../../../../../../../../__generated__/ImageBlockCreate'
+import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
 import { Button } from '../Button'
 
 export const IMAGE_BLOCK_CREATE = gql`
@@ -30,16 +31,16 @@ export function NewImageButton(): ReactElement {
     useMutation<ImageBlockCreate>(IMAGE_BLOCK_CREATE)
   const { journey } = useJourney()
   const {
-    state: { selectedStep },
-    dispatch
+    state: { selectedStep }
   } = useEditor()
+  const { addBlockCommand } = useBlockCreateCommand()
 
-  const handleClick = async (): Promise<void> => {
+  async function handleClick(): Promise<void> {
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
     if (card != null && journey != null) {
-      const { data } = await imageBlockCreate({
+      await addBlockCommand(imageBlockCreate, {
         variables: {
           input: {
             journeyId: journey.id,
@@ -69,12 +70,6 @@ export function NewImageButton(): ReactElement {
           }
         }
       })
-      if (data?.imageBlockCreate != null) {
-        dispatch({
-          type: 'SetSelectedBlockByIdAction',
-          selectedBlockId: data.imageBlockCreate.id
-        })
-      }
     }
   }
 

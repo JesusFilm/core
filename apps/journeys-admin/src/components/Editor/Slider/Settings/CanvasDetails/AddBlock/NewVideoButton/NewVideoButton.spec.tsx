@@ -7,10 +7,14 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 
 import type { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
+import { deleteBlockMock as deleteBlock } from '../../../../../../../libs/useBlockDeleteMutation/useBlockDeleteMutation.mock'
+import { useBlockRestoreMutationMock as blockRestore } from '../../../../../../../libs/useBlockRestoreMutation/useBlockRestoreMutation.mock'
 
 import { VIDEO_BLOCK_CREATE } from './NewVideoButton'
 
 import { NewVideoButton } from '.'
+import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
+import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -40,7 +44,9 @@ describe('NewVideoButton', () => {
       }
     ]
   }
-
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
   it('should check if the mutation gets called', async () => {
     const result = jest.fn(() => ({
       data: {
@@ -95,6 +101,173 @@ describe('NewVideoButton', () => {
     )
     fireEvent.click(getByRole('button'))
     await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
+  it('should undo when undo clicked', async () => {
+    const result = jest.fn().mockReturnValue({
+      data: {
+        videoBlockCreate: {
+          __typename: 'VideoBlock',
+          id: 'videoBlockId',
+          parentBlockId: 'cardId',
+          parentOrder: 0,
+          journeyId: 'journeyId',
+          title: '',
+          muted: false,
+          autoplay: true,
+          startAt: null,
+          endAt: null,
+          posterBlockId: null,
+          video: null,
+          fullsize: true,
+          videoId: null
+        }
+      }
+    })
+
+    const deleteResult = jest.fn().mockResolvedValue({ ...deleteBlock.result })
+    const deleteBlockMock = {
+      ...deleteBlock,
+      request: {
+        ...deleteBlock.request,
+        variables: {
+          id: 'videoBlockId',
+          journeyId: 'journeyId',
+          parentBlockId: 'cardId'
+        }
+      },
+      result: deleteResult
+    }
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: VIDEO_BLOCK_CREATE,
+              variables: {
+                input: {
+                  journeyId: 'journeyId',
+                  parentBlockId: 'cardId',
+                  autoplay: true,
+                  muted: false,
+                  fullsize: true
+                }
+              }
+            },
+            result
+          },
+          { ...deleteBlockMock, result: deleteResult }
+        ]}
+      >
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            variant: 'admin'
+          }}
+        >
+          <EditorProvider initialState={{ selectedStep }}>
+            <CommandUndoItem variant="button" />
+            <NewVideoButton />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('button', { name: 'Video' }))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    fireEvent.click(getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(deleteResult).toHaveBeenCalled())
+  })
+
+  it('should redo when redo clicked', async () => {
+    const result = jest.fn().mockReturnValue({
+      data: {
+        videoBlockCreate: {
+          __typename: 'VideoBlock',
+          id: 'videoBlockId',
+          parentBlockId: 'cardId',
+          parentOrder: 0,
+          journeyId: 'journeyId',
+          title: '',
+          muted: false,
+          autoplay: true,
+          startAt: null,
+          endAt: null,
+          posterBlockId: null,
+          video: null,
+          fullsize: true,
+          videoId: null
+        }
+      }
+    })
+
+    const deleteResult = jest.fn().mockResolvedValue({ ...deleteBlock.result })
+    const deleteBlockMock = {
+      ...deleteBlock,
+      request: {
+        ...deleteBlock.request,
+        variables: {
+          id: 'videoBlockId',
+          journeyId: 'journeyId',
+          parentBlockId: 'cardId'
+        }
+      },
+      result: deleteResult
+    }
+
+    const restoreResult = jest
+      .fn()
+      .mockResolvedValue({ ...blockRestore.result })
+
+    const blockRestoreMock = {
+      ...blockRestore,
+      request: {
+        ...blockRestore.request,
+        variables: { blockRestoreId: 'videoBlockId' }
+      },
+      result: restoreResult
+    }
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: VIDEO_BLOCK_CREATE,
+              variables: {
+                input: {
+                  journeyId: 'journeyId',
+                  parentBlockId: 'cardId',
+                  autoplay: true,
+                  muted: false,
+                  fullsize: true
+                }
+              }
+            },
+            result
+          },
+          { ...deleteBlockMock, result: deleteResult },
+          { ...blockRestoreMock, result: restoreResult }
+        ]}
+      >
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            variant: 'admin'
+          }}
+        >
+          <EditorProvider initialState={{ selectedStep }}>
+            <CommandRedoItem variant="button" />
+            <CommandUndoItem variant="button" />
+            <NewVideoButton />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('button', { name: 'Video' }))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    fireEvent.click(getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(deleteResult).toHaveBeenCalled())
+    fireEvent.click(getByRole('button', { name: 'Redo' }))
+    await waitFor(() => expect(restoreResult).toHaveBeenCalled())
   })
 
   it('should update the cache', async () => {

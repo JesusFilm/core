@@ -12,6 +12,7 @@ import Mail2Icon from '@core/shared/ui/icons/Mail2'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../__generated__/BlockFields'
 import { SignUpBlockCreate } from '../../../../../../../../__generated__/SignUpBlockCreate'
+import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
 import { Button } from '../Button'
 
 export const SIGN_UP_BLOCK_CREATE = gql`
@@ -44,18 +45,18 @@ export function NewSignUpButton(): ReactElement {
     useMutation<SignUpBlockCreate>(SIGN_UP_BLOCK_CREATE)
   const { journey } = useJourney()
   const {
-    state: { selectedStep },
-    dispatch
+    state: { selectedStep }
   } = useEditor()
+  const { addBlockCommand } = useBlockCreateCommand()
 
-  const handleClick = async (): Promise<void> => {
+  async function handleClick(): Promise<void> {
     const id = uuidv4()
     const submitId = uuidv4()
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
     if (card != null && journey != null) {
-      const { data } = await signUpBlockCreate({
+      await addBlockCommand(signUpBlockCreate, {
         variables: {
           input: {
             id,
@@ -108,12 +109,6 @@ export function NewSignUpButton(): ReactElement {
           }
         }
       })
-      if (data?.signUpBlockUpdate != null) {
-        dispatch({
-          type: 'SetSelectedBlockByIdAction',
-          selectedBlockId: data.signUpBlockCreate.id
-        })
-      }
     }
   }
 

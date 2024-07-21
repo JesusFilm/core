@@ -7,10 +7,14 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 
 import type { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
+import { deleteBlockMock as deleteBlock } from '../../../../../../../libs/useBlockDeleteMutation/useBlockDeleteMutation.mock'
+import { useBlockRestoreMutationMock as blockRestore } from '../../../../../../../libs/useBlockRestoreMutation/useBlockRestoreMutation.mock'
 
 import { TYPOGRAPHY_BLOCK_CREATE } from './NewTypographyButton'
 
 import { NewTypographyButton } from '.'
+import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
+import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -88,6 +92,163 @@ describe('NewTypographyButton', () => {
     )
     fireEvent.click(getByRole('button'))
     await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
+  it('should undo if undo is clicked', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        typographyBlockCreate: {
+          id: 'typographyBlockId',
+          parentBlockId: 'cardId',
+          journeyId: 'journeyId',
+          align: null,
+          color: null,
+          content: null,
+          variant: null
+        }
+      }
+    }))
+
+    const deleteResult = jest.fn().mockResolvedValue({ ...deleteBlock.result })
+    const deleteBlockMock = {
+      ...deleteBlock,
+      request: {
+        ...deleteBlock.request,
+        variables: {
+          id: 'typographyBlockId',
+          journeyId: 'journeyId',
+          parentBlockId: 'cardId'
+        }
+      },
+      result: deleteResult
+    }
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: TYPOGRAPHY_BLOCK_CREATE,
+              variables: {
+                input: {
+                  journeyId: 'journeyId',
+                  parentBlockId: 'cardId',
+                  content: '',
+                  variant: 'h1'
+                }
+              }
+            },
+            result
+          },
+          {
+            ...deleteBlockMock,
+            result: deleteResult
+          }
+        ]}
+      >
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            variant: 'admin'
+          }}
+        >
+          <EditorProvider initialState={{ selectedStep }}>
+            <CommandUndoItem variant="button" />
+            <NewTypographyButton />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('button', { name: 'Text' }))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    fireEvent.click(getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(deleteResult).toHaveBeenCalled())
+  })
+
+  it('should redo if redo is clicked', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        typographyBlockCreate: {
+          id: 'typographyBlockId',
+          parentBlockId: 'cardId',
+          journeyId: 'journeyId',
+          align: null,
+          color: null,
+          content: null,
+          variant: null
+        }
+      }
+    }))
+
+    const deleteResult = jest.fn().mockResolvedValue({ ...deleteBlock.result })
+    const deleteBlockMock = {
+      ...deleteBlock,
+      request: {
+        ...deleteBlock.request,
+        variables: {
+          id: 'typographyBlockId',
+          journeyId: 'journeyId',
+          parentBlockId: 'cardId'
+        }
+      },
+      result: deleteResult
+    }
+
+    const restoreResult = jest
+      .fn()
+      .mockResolvedValue({ ...blockRestore.result })
+
+    const blockRestoreMock = {
+      ...blockRestore,
+      request: {
+        ...blockRestore.request,
+        variables: { blockRestoreId: 'typographyBlockId' }
+      },
+      result: restoreResult
+    }
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: TYPOGRAPHY_BLOCK_CREATE,
+              variables: {
+                input: {
+                  journeyId: 'journeyId',
+                  parentBlockId: 'cardId',
+                  content: '',
+                  variant: 'h1'
+                }
+              }
+            },
+            result
+          },
+          {
+            ...deleteBlockMock,
+            result: deleteResult
+          },
+          { ...blockRestoreMock, result: restoreResult }
+        ]}
+      >
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            variant: 'admin'
+          }}
+        >
+          <EditorProvider initialState={{ selectedStep }}>
+            <CommandRedoItem variant="button" />
+            <CommandUndoItem variant="button" />
+            <NewTypographyButton />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('button', { name: 'Text' }))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    fireEvent.click(getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(deleteResult).toHaveBeenCalled())
+    fireEvent.click(getByRole('button', { name: 'Redo' }))
+    await waitFor(() => expect(restoreResult).toHaveBeenCalled())
   })
 
   it('should update the cache', async () => {
