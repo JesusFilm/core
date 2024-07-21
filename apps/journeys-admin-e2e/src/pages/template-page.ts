@@ -195,7 +195,8 @@ export class TemplatePage {
     ])
     await newPage.waitForLoadState()
     const tabName: string = await newPage.title()
-    await expect(tabName.includes(this.selecetdTemplated)).toBeTruthy()
+    const expectedText = new RegExp(`^${this.selecetdTemplated}$`, 'i')
+    await expect(tabName).toMatch(expectedText)
     const slidesCount = await newPage
       .locator(
         'div[data-testid="pagination-bullets"] svg[data-testid*="bullet"]'
