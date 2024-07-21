@@ -123,6 +123,7 @@ export class TemplatePage {
       .locator('div[aria-label="templateGalleryCard"] h6')
       .first()
       .innerText()
+    this.selecetdTemplated = this.selecetdTemplated.toLowerCase()
     await this.page
       .locator('div[aria-label="templateGalleryCard"]')
       .first()
@@ -131,7 +132,9 @@ export class TemplatePage {
   async verifySelectedTemplatePage() {
     await expect(
       this.page.locator('div[data-testid="JourneysAdminTemplateViewHeader"] h1')
-    ).toHaveText(this.selecetdTemplated, { timeout: sixtySecondsTimeout })
+    ).toHaveText(this.selecetdTemplated.toLowerCase(), {
+      timeout: sixtySecondsTimeout
+    })
   }
   async clickUseThisTemplateButton() {
     await this.page
