@@ -21,7 +21,7 @@ describe('StrategySection', () => {
 
     // title of strategy section
     expect(
-      screen.getByRole('heading', { level: 4, name: 'Mission Trips' })
+      screen.getByRole('heading', { level: 5, name: 'Mission Trips' })
     ).toBeInTheDocument()
     // title of first strategy card
     expect(
