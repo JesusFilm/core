@@ -4,7 +4,9 @@ import { Edge, OnSelectionChangeFunc, useKeyPress } from 'reactflow'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields } from '../../../../../../../__generated__/BlockFields'
-import { useBlockDeleteMutation } from '../../../../../../libs/useBlockDeleteMutation'
+import { useBlockDeleteCommand } from '../../../../utils/useBlockDeleteCommand'
+
+import { TreeBlock } from '@core/journeys/ui/block'
 import { useDeleteEdge } from '../useDeleteEdge'
 
 const isEdge = (element: Edge | BlockFields): element is Edge =>
@@ -14,11 +16,11 @@ export function useDeleteOnKeyPress(): {
   onSelectionChange: OnSelectionChangeFunc
 } {
   const {
-    state: { selectedBlock, activeSlide, showAnalytics }
+    state: { selectedBlock, activeSlide, showAnalytics, steps }
   } = useEditor()
+
   const deleteEdge = useDeleteEdge()
-  const [blockDelete] = useBlockDeleteMutation()
-  const [selected, setSelected] = useState<Edge | BlockFields | undefined>()
+  const [selected, setSelected] = useState<Edge | TreeBlock | undefined>()
 
   // Set selected node or edge using selectedBlock and reactflow OnSelectionChange
   const onSelectionChange: OnSelectionChangeFunc = ({ edges }) => {
@@ -38,7 +40,7 @@ export function useDeleteOnKeyPress(): {
   }, [selectedBlock])
 
   const deleteEvent = useKeyPress(['Delete', 'Backspace'])
-
+  const { addBlockDelete } = useBlockDeleteCommand()
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (
@@ -53,7 +55,7 @@ export function useDeleteOnKeyPress(): {
           sourceHandle: selected.sourceHandle
         })
       } else {
-        void blockDelete(selected)
+        if (selected != null) void addBlockDelete(selected)
       }
 
       setSelected(undefined)

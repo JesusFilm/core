@@ -1,7 +1,6 @@
 import { z } from 'zod'
 
 import { prismaMock } from '../../test/prismaMock'
-import { query } from './__mocks__/@google-cloud/bigquery'
 import {
   client,
   createQueryJob,
