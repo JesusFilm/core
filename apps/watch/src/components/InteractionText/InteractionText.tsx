@@ -1,4 +1,4 @@
-import { Box, Typography } from '@mui/material'
+import { Typography } from '@mui/material'
 import { styled } from '@mui/system'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'

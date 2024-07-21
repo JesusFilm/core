@@ -1,10 +1,7 @@
-import Box from '@mui/material/Box'
-import { ReactElement } from 'react'
-import { StrategySection } from './StrategySection/StrategySection'
-
-import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
+import { ReactElement } from 'react'
 import { Index } from 'react-instantsearch'
+import { StrategySection } from './StrategySection/StrategySection'
 
 export function StrategySections(): ReactElement {
   // TODO: update this indexes variable to use the real indexes
