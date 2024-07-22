@@ -1,5 +1,4 @@
 import { gql, useMutation } from '@apollo/client'
-import Box from '@mui/material/Box'
 import ButtonBase from '@mui/material/ButtonBase'
 import { useTranslation } from 'next-i18next'
 import Image from 'next/image'
@@ -144,16 +143,15 @@ export function CardQuote(): ReactElement {
   }
 
   return (
-    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-      <ButtonBase sx={{ borderRadius: 5 }} onClick={handleClick}>
-        <Image
-          width={128}
-          height={195}
-          src={cardQuoteImage}
-          alt="Card Quote Template"
-          draggable={false}
-        />
-      </ButtonBase>
-    </Box>
+    <ButtonBase sx={{ borderRadius: 5 }} onClick={handleClick}>
+      <Image
+        width={128}
+        height={195}
+        layout="responsive"
+        src={cardQuoteImage}
+        alt="Card Quote Template"
+        draggable={false}
+      />
+    </ButtonBase>
   )
 }
