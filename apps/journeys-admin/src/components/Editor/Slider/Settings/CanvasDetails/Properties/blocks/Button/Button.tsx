@@ -18,10 +18,10 @@ import {
   ButtonVariant
 } from '../../../../../../../../../__generated__/globalTypes'
 import { Accordion } from '../../Accordion'
-import { Action, actions } from '../../controls/Action/Action'
+import { Action } from '../../controls/Action'
+import { getAction } from '../../controls/Action/utils/actions'
 import { ColorDisplayIcon } from '../../controls/ColorDisplayIcon'
 import { Icon, icons } from '../../controls/Icon'
-
 import { Color } from './Color'
 import { Size } from './Size'
 import { Variant } from './Variant'
@@ -47,7 +47,7 @@ export function Button({
     (block) => block.id === endIconId
   ) as TreeBlock<IconFields>
 
-  const selectedAction = actions.find((act) => act.value === action?.__typename)
+  const selectedAction = getAction(t, action?.__typename)
 
   useEffect(() => {
     dispatch({
@@ -62,7 +62,7 @@ export function Button({
         id={`${id}-button-action`}
         icon={<LinkIcon />}
         name={t('Action')}
-        value={selectedAction?.label ?? 'None'}
+        value={selectedAction.label}
       >
         <Action />
       </Accordion>
