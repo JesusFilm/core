@@ -1,9 +1,9 @@
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
-import { Theme } from '@mui/material/styles'
+import type { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { ReactElement } from 'react'
+import type { ReactElement } from 'react'
 import { Pagination } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
@@ -15,7 +15,7 @@ import { Message } from './Message/Message'
 import { Post } from './Post/Post'
 
 export function SocialPreview(): ReactElement {
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
+  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
   const {
     state: { activeSlide },
     dispatch
@@ -30,7 +30,7 @@ export function SocialPreview(): ReactElement {
 
   return (
     <>
-      {smUp ? (
+      {mdUp ? (
         <Stack
           height={736}
           width={activeSlide === ActiveSlide.JourneyFlow ? 387 : '100%'}

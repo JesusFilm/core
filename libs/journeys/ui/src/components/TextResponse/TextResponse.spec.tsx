@@ -170,6 +170,30 @@ describe('TextResponse', () => {
     })
   })
 
+  it('should not create a submission event if the values dont change', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        textResponseSubmissionEventCreate: {
+          id: 'uuid'
+        }
+      }
+    }))
+
+    const { getByLabelText, getByRole } = render(
+      <TextResponseMock mocks={[{ ...submissionSuccess, result }]} />
+    )
+
+    const responseField = getByLabelText('Your answer here')
+    const textField = getByRole('textbox')
+
+    fireEvent.change(responseField, { target: { value: 'Your answer here' } })
+    fireEvent.blur(textField)
+
+    await waitFor(() => {
+      expect(result).not.toHaveBeenCalled()
+    })
+  })
+
   it('should add submission event to dataLayer', async () => {
     blockHistoryVar([activeBlock])
     treeBlocksVar([activeBlock])
