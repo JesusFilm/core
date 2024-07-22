@@ -38,7 +38,6 @@ jest.mock('uuid', () => ({
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
-//TODO(jk): need to refactor!
 describe('NewButtonButton', () => {
   const selectedStep: TreeBlock = {
     __typename: 'StepBlock',
