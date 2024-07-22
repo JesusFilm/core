@@ -223,7 +223,6 @@ export const Video = builder.prismaObject('Video', {
         languageId: t.arg.id({ required: false })
       },
       resolve: async (query, parent, { languageId }, _ctx, info) => {
-        console.log('info', info)
         const variableValueId =
           (info.variableValues.id as string) ??
           (info.variableValues.contentId as string) ??
@@ -245,6 +244,7 @@ export const Video = builder.prismaObject('Video', {
         ) {
           const slug = `${parent.slug as string}/${requestedLanguage}`
           return await prisma.videoVariant.findUnique({
+            ...query,
             where: {
               slug
             }
@@ -252,7 +252,8 @@ export const Video = builder.prismaObject('Video', {
         }
 
         languageId = languageId ?? journeysLanguageIdForBlock ?? '529'
-        return await prisma.videoVariant.findUnique({
+
+        const result = await prisma.videoVariant.findUnique({
           ...query,
           where: {
             languageId_videoId: {
@@ -261,6 +262,7 @@ export const Video = builder.prismaObject('Video', {
             }
           }
         })
+        return result
       }
     }),
     variantLanguages: t.field({

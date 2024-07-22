@@ -1254,7 +1254,7 @@ type Language
   @join__type(graph: MEDIA, key: "id")
   @join__type(graph: TAGS, key: "id")
   @join__type(graph: USERS, key: "id")
-  @join__type(graph: VIDEOS, key: "id", extension: true)
+  @join__type(graph: VIDEOS, key: "id", extension: true, resolvable: false)
 {
   id: ID!
   bcp47: String @join__field(graph: LANGUAGES)
@@ -2935,7 +2935,7 @@ type Video
   description(languageId: ID, primary: Boolean): [VideoDescription!]! @join__field(graph: VIDEOS)
   studyQuestions(languageId: ID, primary: Boolean): [VideoStudyQuestion!]! @join__field(graph: VIDEOS)
   imageAlt(languageId: ID, primary: Boolean): [VideoImageAlt!]! @join__field(graph: VIDEOS)
-  variant(languageId: ID, subtitleLanguageIds: [ID!]): VideoVariant @join__field(graph: VIDEOS)
+  variant(languageId: ID): VideoVariant @join__field(graph: VIDEOS)
   variantLanguages: [Language!]! @join__field(graph: VIDEOS)
   variantLanguagesCount: Int! @join__field(graph: VIDEOS)
   variantLanguagesWithSlug: [LanguageWithSlug!]! @join__field(graph: VIDEOS)

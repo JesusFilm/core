@@ -18,7 +18,9 @@ export const VideoVariant = builder.prismaObject('VideoVariant', {
     }),
     language: t.field({
       type: Language,
-      resolve: (parent) => ({ id: parent.languageId })
+      resolve: (parent) => {
+        return { id: parent.languageId }
+      }
     }),
     subtitle: t.prismaField({
       type: [VideoVariantSubtitle],

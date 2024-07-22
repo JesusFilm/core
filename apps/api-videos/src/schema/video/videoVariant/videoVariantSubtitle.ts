@@ -4,7 +4,6 @@ import { Language } from '../language'
 export const VideoVariantSubtitle = builder.prismaObject(
   'VideoVariantSubtitle',
   {
-    include: { language: true },
     fields: (t) => ({
       value: t.exposeString('value'),
       primary: t.exposeBoolean('primary'),

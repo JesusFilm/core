@@ -31,7 +31,7 @@ enum IdType {
 }
 
 type Language
-  @key(fields: "id")
+  @key(fields: "id", resolvable: false)
   @extends
 {
   id: ID! @external
