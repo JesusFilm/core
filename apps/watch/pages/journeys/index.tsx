@@ -7,12 +7,10 @@ import Container from '@mui/material/Container'
 import i18nConfig from '../../next-i18next.config'
 import { getFlags } from '../../src/libs/getFlags'
 
-import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
-import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
+import { PageWrapper } from '../../src/components/PageWrapper'
 
 import { TemplateGallery } from '@core/journeys/ui/TemplateGallery'
-import { Stack } from '@mui/system'
-import { PageWrapper } from '../../src/components/PageWrapper'
+import Stack from '@mui/material/Stack'
 
 function JourneysPage(): ReactElement {
   return (
@@ -23,13 +21,10 @@ function JourneysPage(): ReactElement {
       >
         <Container maxWidth="xxl">
           <Stack gap={10}>
-            <ThemeProvider
-              themeName={ThemeName.journeysAdmin}
-              themeMode={ThemeMode.light}
-              nested
-            >
-              <TemplateGallery hideOverflow />
-            </ThemeProvider>
+            <TemplateGallery
+              algoliaIndex="api-journeys-journeys-dev"
+              hideOverflow
+            />
           </Stack>
         </Container>
       </Box>
