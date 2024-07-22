@@ -1,13 +1,13 @@
 import { Typography } from '@mui/material'
 import { styled } from '@mui/system'
 import { ReactElement } from 'react'
-import { useTranslation } from 'react-i18next'
+import { Trans, useTranslation } from 'react-i18next'
 
 interface InteractionTextProps {
-  startingText: string
+  heading: string
 }
 
-const StyledInteractionText = styled('span')({
+const StyledSpan = styled('span')({
   background: 'linear-gradient(90deg, #0D7DE5 0%, #E02BAD 100%)',
   WebkitBackgroundClip: 'text',
   WebkitTextFillColor: 'transparent',
@@ -16,14 +16,16 @@ const StyledInteractionText = styled('span')({
 })
 
 export function InteractionText({
-  startingText
+  heading
 }: InteractionTextProps): ReactElement {
   const { t } = useTranslation('apps-watch')
-  const text = `${startingText} for every `
+  const text = `${heading} for every `
   return (
-    <Typography variant="h4">
-      {text}
-      <StyledInteractionText>{t('interaction')}</StyledInteractionText>
-    </Typography>
+    <Trans t={t}>
+      <Typography data-testid="InteractionText" variant="h4">
+        {text}
+        <StyledSpan>interaction</StyledSpan>
+      </Typography>
+    </Trans>
   )
 }

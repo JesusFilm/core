@@ -6,16 +6,12 @@ import { ReactElement } from 'react'
 import { InteractionText } from '../InteractionText'
 import { StrategySections } from '../StrategySections'
 
-export function StrategiesContent(): ReactElement {
-  // tidy up other tests/stories
+export function StrategiesView(): ReactElement {
   return (
-    <Box
-      data-testid="StrategiesContent"
-      sx={{ backgroundColor: 'background.default' }}
-    >
+    <Box sx={{ backgroundColor: 'background.default' }}>
       <Container maxWidth="xxl">
         <Stack sx={{ p: 4, gap: 4 }}>
-          <InteractionText startingText="Resource" />
+          <InteractionText heading="Resource" />
           <SearchBar />
           <StrategySections />
         </Stack>

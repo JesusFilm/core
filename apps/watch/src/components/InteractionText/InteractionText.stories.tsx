@@ -9,32 +9,16 @@ const InteractionTextStory: Meta<typeof InteractionText> = {
   title: 'Watch/InteractionText'
 }
 
-type Story = StoryObj<
-  ComponentProps<typeof InteractionText> & { startingText: string }
->
+type Story = StoryObj<ComponentProps<typeof InteractionText>>
 
 const Template: Story = {
   render: (args) => <InteractionText {...args} />
 }
 
-export const Strategies = {
+export const Default = {
   ...Template,
   args: {
-    startingText: 'Resources'
-  }
-}
-
-export const Journeys = {
-  ...Template,
-  args: {
-    startingText: 'Next Step'
-  }
-}
-
-export const Videos = {
-  ...Template,
-  args: {
-    startingText: 'Gospel Video'
+    startingText: 'Custom Text'
   }
 }
 

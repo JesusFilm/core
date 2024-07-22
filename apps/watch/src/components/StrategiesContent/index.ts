@@ -1,1 +1,0 @@
-export { StrategiesContent } from './StrategiesContent'

@@ -1,19 +1,16 @@
 import { GetStaticProps } from 'next'
-import { useTranslation } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { ReactElement } from 'react'
 
 import i18nConfig from '../../next-i18next.config'
 import { PageWrapper } from '../../src/components/PageWrapper'
-import { StrategiesContent } from '../../src/components/StrategiesContent'
+import { StrategiesView } from '../../src/components/StrategiesView'
 import { getFlags } from '../../src/libs/getFlags'
 
 function StrategiesPage(): ReactElement {
-  const { t } = useTranslation('apps-watch')
-
   return (
     <PageWrapper>
-      <StrategiesContent />
+      <StrategiesView />
     </PageWrapper>
   )
 }

@@ -11,6 +11,6 @@ describe('StrategySections', () => {
       </InstantSearchMockWrapper>
     )
 
-    expect(screen.getByTestId('StrategySection')).toBeInTheDocument()
+    expect(screen.getAllByTestId('StrategySection')).toHaveLength(2)
   })
 })
