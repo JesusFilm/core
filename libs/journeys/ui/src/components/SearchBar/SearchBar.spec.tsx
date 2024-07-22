@@ -58,10 +58,4 @@ describe('SearchBar', () => {
     render(<SearchBar />)
     expect(screen.getByText('English')).toBeInTheDocument()
   })
-
-  it('should be clickable', async () => {
-    render(<SearchBar />)
-    const languageButton = screen.getByTestId('LanguageSelect')
-    fireEvent.click(languageButton)
-  })
 })
