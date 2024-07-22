@@ -1,9 +1,9 @@
 import { render, screen } from '@testing-library/react'
-import { InteractionText } from './InteractionText'
+import { ResourceHeading } from './ResourceHeading'
 
-describe('InteractionText', () => {
+describe('ResourceHeading', () => {
   it('should apply gradient styles to interaction text', () => {
-    render(<InteractionText heading="Resources" />)
+    render(<ResourceHeading heading="Resources" />)
     expect(screen.getByText('Resources for every')).toBeInTheDocument()
     const StyledSpan = screen.getByText('interaction')
 

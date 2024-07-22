@@ -9,7 +9,7 @@ describe('StrategiesView', () => {
         <StrategiesView />
       </InstantSearchMockWrapper>
     )
-    const titleText = screen.getByTestId('InteractionText')
+    const titleText = screen.getByTestId('ResourceHeading')
     expect(titleText).toHaveTextContent('Resource for every interaction')
     expect(screen.getByTestId('SearchBar')).toBeInTheDocument()
     expect(screen.getByTestId('StrategySections')).toBeInTheDocument()

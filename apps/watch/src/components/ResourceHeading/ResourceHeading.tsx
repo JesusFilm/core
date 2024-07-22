@@ -3,7 +3,7 @@ import { styled } from '@mui/system'
 import { ReactElement } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
 
-interface InteractionTextProps {
+interface ResourceHeadingProps {
   heading: string
 }
 
@@ -15,14 +15,14 @@ const StyledSpan = styled('span')({
   textFillColor: 'transparent'
 })
 
-export function InteractionText({
+export function ResourceHeading({
   heading
-}: InteractionTextProps): ReactElement {
+}: ResourceHeadingProps): ReactElement {
   const { t } = useTranslation('apps-watch')
   const text = `${heading} for every `
   return (
     <Trans t={t}>
-      <Typography data-testid="InteractionText" variant="h4">
+      <Typography data-testid="ResourceHeading" variant="h4">
         {text}
         <StyledSpan>interaction</StyledSpan>
       </Typography>
