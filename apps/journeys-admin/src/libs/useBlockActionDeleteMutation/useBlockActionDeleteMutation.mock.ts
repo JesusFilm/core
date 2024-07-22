@@ -14,8 +14,7 @@ export const blockActionDeleteMock: MockedResponse<
   request: {
     query: BLOCK_ACTION_DELETE,
     variables: {
-      id: 'block1.id',
-      journeyId: 'journey-id'
+      id: 'block1.id'
     }
   },
   result: {

@@ -11,6 +11,7 @@ import axios, { AxiosInstance } from 'axios'
 import { Queue } from 'bullmq'
 import { GraphQLError } from 'graphql'
 import camelCase from 'lodash/camelCase'
+import chunk from 'lodash/chunk'
 import get from 'lodash/get'
 import last from 'lodash/last'
 import reduce from 'lodash/reduce'
@@ -29,7 +30,7 @@ import { PrismaService } from '../../lib/prisma.service'
 
 import { PlausibleJob } from './plausible.consumer'
 
-const SITE_CREATE = gql(`
+export const SITE_CREATE = gql(`
   mutation SiteCreate($input: SiteCreateInput!) {
     siteCreate(input: $input) {
       ... on Error {
@@ -129,9 +130,7 @@ export class PlausibleService implements OnModuleInit {
     @InjectQueue('api-journeys-plausible')
     private readonly plausibleQueue: Queue<PlausibleJob>,
     private readonly prismaService: PrismaService
-  ) {}
-
-  async onModuleInit(): Promise<void> {
+  ) {
     this.client = new ApolloClient({
       link: new HttpLink({
         uri: process.env.GATEWAY_URL,
@@ -149,6 +148,9 @@ export class PlausibleService implements OnModuleInit {
         Authorization: `Bearer ${process.env.PLAUSIBLE_API_KEY}`
       }
     })
+  }
+
+  async onModuleInit(): Promise<void> {
     await this.plausibleQueue.add('plausibleCreateSites', {
       __typename: 'plausibleCreateSites'
     })
@@ -156,32 +158,37 @@ export class PlausibleService implements OnModuleInit {
 
   async createSites(): Promise<void> {
     console.log('creating team sites...')
-    while (true) {
-      const teams = await this.prismaService.team.findMany({
-        where: { plausibleToken: null },
-        select: { id: true },
-        take: 100
-      })
-      if (teams == null || teams.length === 0) break
+    const chunkedTeamIds = chunk(
+      (
+        await this.prismaService.team.findMany({
+          where: { plausibleToken: null },
+          select: { id: true }
+        })
+      ).map(({ id }) => id),
+      5
+    )
+
+    for await (const teamIds of chunkedTeamIds) {
       await Promise.all(
-        teams.map(
-          async ({ id: teamId }) => await this.createTeamSite({ teamId })
-        )
+        teamIds.map(async (teamId) => await this.createTeamSite({ teamId }))
       )
     }
 
     console.log('creating journey sites...')
-    while (true) {
-      const journeys = await this.prismaService.journey.findMany({
-        where: { plausibleToken: null },
-        select: { id: true },
-        take: 100
-      })
-      if (journeys == null || journeys.length === 0) break
+    const chunkedJourneyIds = chunk(
+      (
+        await this.prismaService.journey.findMany({
+          where: { plausibleToken: null },
+          select: { id: true }
+        })
+      ).map(({ id }) => id),
+      5
+    )
+
+    for await (const journeyIds of chunkedJourneyIds) {
       await Promise.all(
-        journeys.map(
-          async ({ id: journeyId }) =>
-            await this.createJourneySite({ journeyId })
+        journeyIds.map(
+          async (journeyId) => await this.createJourneySite({ journeyId })
         )
       )
     }

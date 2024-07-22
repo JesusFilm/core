@@ -12,7 +12,11 @@ import NextLink from 'next/link'
 import { ReactElement } from 'react'
 
 import { useRouter } from 'next/router'
-import { abbreviateLanguageName } from '../../libs/abbreviateLanguageName'
+import {
+  getAlgoliaJourneyLanguage,
+  getJourneyLanguage,
+  isAlgoliaJourney
+} from '../../libs/algolia/algoliaJourneyUtils'
 import { GetJourneys_journeys as Journey } from '../../libs/useJourneysQuery/__generated__/GetJourneys'
 import { AlgoliaJourney } from '../TemplateSections/TemplateSections'
 
@@ -56,22 +60,20 @@ export function TemplateGalleryCard({
     : '/templates'
   const journeyIdPath = `${journeyBasePath}/${journey?.id ?? ''}`
 
-  // TODO(jk): if we need to handle multiple langs this might come into play again
-  // const localLanguage = journey?.language?.name.find(({ primary }) => !primary)?.value
-  // const nativeLanguage =journey?.language?.name.find(({ primary }) => primary)?.value ?? ''
-
-  const displayLanguage = abbreviateLanguageName(
-    // localLanguage ?? nativeLanguage
-    String(journey?.language)
-  )
+  let displayLanguage = ''
+  if (isAlgoliaJourney(journey)) {
+    displayLanguage = getAlgoliaJourneyLanguage(journey)
+  } else if (journey !== undefined) {
+    displayLanguage = getJourneyLanguage(journey)
+  }
 
   const theme = useTheme()
   const { t } = useTranslation('libs-journeys-ui')
   const date =
-    journey != null
+    journey != null && journey.createdAt
       ? intlFormat(parseISO(String(journey.createdAt)), {
           month: 'short',
-          year: isThisYear(parseISO(String(journey?.createdAt)))
+          year: isThisYear(parseISO(String(journey.createdAt)))
             ? undefined
             : 'numeric'
         }).replace(' ', ', ')

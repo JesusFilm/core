@@ -7,19 +7,19 @@ describe('transformJourneyAnalytics', () => {
       journeySteps: [
         {
           __typename: 'PlausibleStatsResponse',
-          property: 'journeyId/step1.id',
+          property: '/journeyId/step1.id',
           visitors: 10,
           timeOnPage: 10
         },
         {
           __typename: 'PlausibleStatsResponse',
-          property: 'journeyId/step2.id',
+          property: '/journeyId/step2.id',
           visitors: 5,
           timeOnPage: 3
         },
         {
           __typename: 'PlausibleStatsResponse',
-          property: 'journeyId/step3.id',
+          property: '/journeyId/step3.id',
           visitors: 2,
           timeOnPage: 1
         }
@@ -88,17 +88,17 @@ describe('transformJourneyAnalytics', () => {
       journeyVisitorsPageExits: [
         {
           __typename: 'PlausibleStatsResponse',
-          property: 'journeyId/step1.id',
+          property: '/journeyId/step1.id',
           visitors: 5
         },
         {
           __typename: 'PlausibleStatsResponse',
-          property: 'journeyId/step2.id',
+          property: '/journeyId/step2.id',
           visitors: 3
         },
         {
           __typename: 'PlausibleStatsResponse',
-          property: 'journeyId/step3.id',
+          property: '/journeyId/step3.id',
           visitors: 2
         }
       ],

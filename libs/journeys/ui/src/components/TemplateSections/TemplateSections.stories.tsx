@@ -229,18 +229,15 @@ const getJourneysWithInvalidTagIdsMock: MockedResponse<GetJourneys> = {
 }
 
 const Template: StoryObj<ComponentProps<typeof TemplateSections>> = {
-  render: ({ ...args }) => (
+  render: () => (
     <Box sx={{ backgroundColor: 'background.paper', p: 5, overflow: 'hidden' }}>
-      <TemplateSections {...args} />
+      <TemplateSections />
     </Box>
   )
 }
 
 export const Default = {
   ...Template,
-  args: {
-    languageIds: ['529']
-  },
   parameters: {
     apolloClient: {
       mocks: [getJourneysMock]
@@ -250,10 +247,6 @@ export const Default = {
 
 export const Match = {
   ...Template,
-  args: {
-    tagIds: [addiction.id],
-    languageIds: ['529']
-  },
   parameters: {
     apolloClient: {
       mocks: [getJourneysWithTagIdsMock]
@@ -263,10 +256,6 @@ export const Match = {
 
 export const NoMatch = {
   ...Template,
-  args: {
-    tagIds: [addiction.id, 'invalidId'],
-    languageIds: ['529']
-  },
   parameters: {
     apolloClient: {
       mocks: [getJourneysWithInvalidTagIdsMock]

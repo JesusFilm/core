@@ -101,6 +101,25 @@ describe('ActionResolver', () => {
     })
   })
 
+  describe('parentBlock', () => {
+    it('returns parentBlock', async () => {
+      const action = {
+        ...emailAction,
+        parentBlock: block
+      }
+      expect(await resolver.parentBlock(action)).toBe(block)
+    })
+
+    it('returns block', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(block)
+      const action = {
+        ...emailAction,
+        parentBlockId: block.id
+      }
+      expect(await resolver.parentBlock(action)).toBe(block)
+    })
+  })
+
   describe('blockDeleteAction', () => {
     it('deletes the block action', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)

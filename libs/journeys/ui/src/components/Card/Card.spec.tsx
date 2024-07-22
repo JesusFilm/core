@@ -69,12 +69,26 @@ describe('CardBlock', () => {
   const leftSide = { clientX: 0 }
   const rightSide = { clientX: 1000 }
 
+  const originalLocation = window.location
+  const mockOrigin = 'https://example.com'
+  beforeAll(() => {
+    Object.defineProperty(window, 'location', {
+      value: {
+        origin: mockOrigin
+      }
+    })
+  })
+
   beforeEach(() => {
     mockUuidv4.mockReturnValue('uuid')
     const blurImageMock = blurImage as jest.Mock
     blurImageMock.mockReturnValue(
       'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAJCAYAAAA7KqwyAAAABmJLR0QA/wD/AP+gvaeTAAABA0lEQVQokV2RMY4cQQwDi5S69x7hwP9/ngMfPDstOpiFAwcVECAqIPXz60fUxq9F7UWtRlUgmBzuuXnfF3+ui+/r4tcVcgumQIUFiHyA/7OTB0IRXgwk/2h7kEwBxVNWHpMIEMIQDskNOSjFdwQR3Q0YymCLspCFFAJYIAVxkN/IN9JCMr8R7W1k4/WhC7uQgIhocAq30Qh6gMNkCEPr1ciFeuG18VrUR6A55AhrEAdyCHBKdERJNHuBC9ZGe6NeqJoSaAZuM3pGJcNI1ARjpKKzFlTBWrAX6o26EcJzwEKEZPAcDDiDgNh0usFFqqEb1kJVjyB+XjgL1xvXwjMoNxKMzF9Ukn10nay9yQAAAABJRU5ErkJggg=='
     )
+  })
+
+  afterAll(() => {
+    Object.defineProperty(window, 'location', originalLocation)
   })
 
   const step1: TreeBlock<StepBlock> = {
@@ -445,6 +459,7 @@ describe('CardBlock', () => {
       expect(mockStepNextEventCreate.result).toHaveBeenCalled()
     )
     expect(mockPlausible).toHaveBeenCalledWith('navigateNextStep', {
+      u: `${mockOrigin}/journey.id/step1.id`,
       props: {
         id: 'uuid',
         blockId: 'step1.id',
@@ -502,6 +517,7 @@ describe('CardBlock', () => {
       expect(mockStepPreviousEventCreate.result).toHaveBeenCalled()
     )
     expect(mockPlausible).toHaveBeenCalledWith('navigatePreviousStep', {
+      u: `${mockOrigin}/journey.id/step2.id`,
       props: {
         id: 'uuid',
         blockId: 'step2.id',

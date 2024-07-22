@@ -455,6 +455,119 @@ describe('EditorContext', () => {
       })
     })
 
+    describe('SetEditorFocusAction', () => {
+      it('should set editor state with given overrides', () => {
+        const step: TreeBlock = {
+          id: 'step0.id',
+          __typename: 'StepBlock',
+          parentBlockId: null,
+          parentOrder: 0,
+          locked: false,
+          nextBlockId: null,
+          children: []
+        }
+        const block: TreeBlock = {
+          id: 'card0.id',
+          __typename: 'CardBlock',
+          parentBlockId: null,
+          backgroundColor: null,
+          coverBlockId: null,
+          parentOrder: 0,
+          themeMode: null,
+          themeName: null,
+          fullscreen: false,
+          children: []
+        }
+        const state: EditorState = {
+          steps: [],
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+          activeFab: ActiveFab.Add,
+          activeSlide: ActiveSlide.JourneyFlow,
+          activeContent: ActiveContent.Canvas
+        }
+        expect(
+          reducer(state, {
+            activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer,
+            activeContent: ActiveContent.Canvas,
+            activeSlide: ActiveSlide.Content,
+            selectedAttributeId: 'selectedAttributeId',
+            selectedBlock: block,
+            selectedGoalUrl: 'https://www.example.com',
+            selectedStep: step,
+            type: 'SetEditorFocusAction'
+          })
+        ).toEqual({
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer,
+          activeContent: 'canvas',
+          activeFab: ActiveFab.Add,
+          activeSlide: ActiveSlide.Content,
+          selectedAttributeId: 'selectedAttributeId',
+          selectedBlock: {
+            __typename: 'CardBlock',
+            backgroundColor: null,
+            children: [],
+            coverBlockId: null,
+            fullscreen: false,
+            id: 'card0.id',
+            parentBlockId: null,
+            parentOrder: 0,
+            themeMode: null,
+            themeName: null
+          },
+          selectedGoalUrl: 'https://www.example.com',
+          selectedStep: {
+            __typename: 'StepBlock',
+            children: [],
+            id: 'step0.id',
+            locked: false,
+            nextBlockId: null,
+            parentBlockId: null,
+            parentOrder: 0
+          },
+          steps: []
+        })
+      })
+
+      it('should retain previous state for overrides not provided', () => {
+        const block: TreeBlock = {
+          id: 'card0.id',
+          __typename: 'CardBlock',
+          parentBlockId: null,
+          backgroundColor: null,
+          coverBlockId: null,
+          parentOrder: 0,
+          themeMode: null,
+          themeName: null,
+          fullscreen: false,
+          children: []
+        }
+        const updatedBlock: TreeBlock = {
+          ...block,
+          fullscreen: true
+        }
+        const step: TreeBlock = {
+          id: 'step0.id',
+          __typename: 'StepBlock',
+          parentBlockId: null,
+          parentOrder: 0,
+          locked: false,
+          nextBlockId: null,
+          children: [block]
+        }
+
+        const state: EditorState = {
+          steps: [step],
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+          activeFab: ActiveFab.Add,
+          activeSlide: ActiveSlide.JourneyFlow,
+          selectedBlock: block,
+          selectedStep: step,
+          activeContent: ActiveContent.Canvas
+        }
+        expect(reducer(state, { type: 'SetEditorFocusAction' })).toEqual(state)
+      })
+    })
+
     describe('SetShowAnalyticsAction', () => {
       it('should set showAnalytics', () => {
         const state: EditorState = {

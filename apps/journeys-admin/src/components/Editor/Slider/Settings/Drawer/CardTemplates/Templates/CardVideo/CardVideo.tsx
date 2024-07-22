@@ -1,14 +1,13 @@
 import { gql, useMutation } from '@apollo/client'
-import Box from '@mui/material/Box'
 import ButtonBase from '@mui/material/ButtonBase'
 import Image from 'next/image'
-import { ReactElement } from 'react'
+import type { ReactElement } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { VIDEO_FIELDS } from '@core/journeys/ui/Video/videoFields'
 
-import {
+import type {
   CardVideoCreate,
   CardVideoCreateVariables
 } from '../../../../../../../../../__generated__/CardVideoCreate'
@@ -80,16 +79,15 @@ export function CardVideo(): ReactElement {
   }
 
   return (
-    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-      <ButtonBase sx={{ borderRadius: 5 }} onClick={handleClick}>
-        <Image
-          width={128}
-          height={195}
-          src={cardVideoImage}
-          alt="Card Video Template"
-          draggable={false}
-        />
-      </ButtonBase>
-    </Box>
+    <ButtonBase sx={{ borderRadius: 5 }} onClick={handleClick}>
+      <Image
+        width={128}
+        height={192}
+        layout="responsive"
+        src={cardVideoImage}
+        alt="Card Video Template"
+        draggable={false}
+      />
+    </ButtonBase>
   )
 }

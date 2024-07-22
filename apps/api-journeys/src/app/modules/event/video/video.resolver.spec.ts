@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+import { mockDeep } from 'jest-mock-extended'
 
 import { VideoBlockSource } from '../../../__generated__/graphql'
 import { PrismaService } from '../../../lib/prisma.service'

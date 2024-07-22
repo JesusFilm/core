@@ -8,7 +8,7 @@ import { isIPhone } from '@core/shared/ui/deviceUtils'
 
 import { useJourney } from '../../libs/JourneyProvider'
 import { handleAction } from '../../libs/action'
-import type { TreeBlock } from '../../libs/block'
+import { type TreeBlock, useBlocks } from '../../libs/block'
 import { JourneyPlausibleEvents, keyify } from '../../libs/plausibleHelpers'
 
 import { VideoTriggerFields } from './__generated__/VideoTriggerFields'
@@ -28,8 +28,10 @@ export function VideoTrigger({
   triggerStart
 }: VideoTriggerProps): ReactElement {
   const router = useRouter()
-  const { variant } = useJourney()
+  const { journey, variant } = useJourney()
   const [triggered, setTriggered] = useState(false)
+  const { blockHistory } = useBlocks()
+  const activeBlock = blockHistory[blockHistory.length - 1]
   const plausible = usePlausible<JourneyPlausibleEvents>()
 
   useEffect(() => {
@@ -42,37 +44,43 @@ export function VideoTrigger({
           setTriggered(true)
           player.pause()
 
-          const input = {
-            blockId,
-            key: keyify({
-              stepId: blockId,
-              event: 'videoTrigger',
-              blockId: blockId,
-              target: triggerAction
-            }),
-            simpleKey: keyify({
-              stepId: blockId,
-              event: 'videoTrigger',
-              blockId: blockId
-            })
+          const input: {
+            props: JourneyPlausibleEvents['VideoTrigger']
+            u: string
+          } = {
+            u: `${window.location.origin}/${journey?.id ?? ''}/${activeBlock.id}`,
+            props: {
+              blockId,
+              key: keyify({
+                stepId: blockId,
+                event: 'videoTrigger',
+                blockId: blockId,
+                target: triggerAction
+              }),
+              simpleKey: keyify({
+                stepId: blockId,
+                event: 'videoTrigger',
+                blockId: blockId
+              })
+            }
           }
 
           if (variant === 'embed' && !isIPhone()) {
             handleAction(router, triggerAction)
-            plausible('videoTrigger', { props: input })
+            plausible('videoTrigger', input)
             return
           }
           if (player.isFullscreen() ?? false) {
             void player.exitFullscreen().then(() => {
               handleAction(router, triggerAction)
-              plausible('videoTrigger', { props: input })
+              plausible('videoTrigger', input)
             })
           } else {
             if (fscreen.fullscreenElement != null) {
               void fscreen.exitFullscreen()
             }
             handleAction(router, triggerAction)
-            plausible('videoTrigger', { props: input })
+            plausible('videoTrigger', input)
           }
         }
       }

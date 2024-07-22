@@ -26,6 +26,8 @@ import 'swiper/css/mousewheel'
 import 'swiper/css/navigation'
 import 'swiper/css/pagination'
 import '../public/swiper-pagination-override.css'
+import algoliasearch from 'algoliasearch'
+import { InstantSearch } from 'react-instantsearch'
 
 initAuth()
 const clientSideEmotionCache = createEmotionCache({})
@@ -38,6 +40,11 @@ type JourneysAdminAppProps = NextJsAppProps<{
   pageProps: SSRConfig
   emotionCache?: EmotionCache
 }
+
+const searchClient = algoliasearch(
+  process.env.NEXT_PUBLIC_ALGOLIA_APP_ID ?? '',
+  process.env.NEXT_PUBLIC_ALGOLIA_API_KEY ?? ''
+)
 
 function JourneysAdminApp({
   Component,
@@ -131,7 +138,9 @@ function JourneysAdminApp({
                   horizontal: 'right'
                 }}
               >
-                <Component {...pageProps} />
+                <InstantSearch searchClient={searchClient}>
+                  <Component {...pageProps} />
+                </InstantSearch>
               </SnackbarProvider>
             </TeamProvider>
           </ApolloProvider>

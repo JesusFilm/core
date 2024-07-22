@@ -9,6 +9,7 @@ import { ReactElement } from 'react'
 
 import { GetTags_tags as Tag } from '../../../../libs/useTagsQuery/__generated__/GetTags'
 
+import { useRefinementList } from 'react-instantsearch'
 import jesusFilmImage from './assets/jesusFilm.jpg'
 import nuaImage from './assets/nua.jpg'
 
@@ -16,7 +17,6 @@ type ChildTag = Tag & { parentId: string }
 
 interface CollectionButtonProps {
   item?: ChildTag
-  onClick: (value: string) => void
 }
 
 const StyledCollectionButton = styled(ButtonBase)(({ theme }) => ({
@@ -43,10 +43,14 @@ function tagImage(tagLabel?: string): StaticImageData | undefined {
 }
 
 export function CollectionButton({
-  item: tag,
-  onClick
+  item: tag
 }: CollectionButtonProps): ReactElement {
   const theme = useTheme()
+  const { refine } = useRefinementList({ attribute: 'tags.Collections' })
+
+  function handleClick() {
+    if (tag?.name != null) refine(tag.name[0].value)
+  }
 
   const tagLabel = tag?.name[0]?.value
   const image = tagImage(tagLabel)
@@ -55,7 +59,7 @@ export function CollectionButton({
     <StyledCollectionButton
       disableRipple
       disableTouchRipple
-      onClick={() => tag != null && onClick(tag.id)}
+      onClick={handleClick}
       sx={{
         '&:focus-visible': {
           outline: '2px solid',

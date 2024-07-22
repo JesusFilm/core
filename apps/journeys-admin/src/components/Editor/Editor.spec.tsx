@@ -1,11 +1,12 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockedProvider, type MockedResponse } from '@apollo/client/testing'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 
-import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
-import { GetStepBlocksWithPosition } from '../../../__generated__/GetStepBlocksWithPosition'
+import type { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
+import type { GetStepBlocksWithPosition } from '../../../__generated__/GetStepBlocksWithPosition'
 import {
   JourneyStatus,
   ThemeMode,
@@ -17,6 +18,11 @@ import { ThemeProvider } from '../ThemeProvider'
 import { GET_STEP_BLOCKS_WITH_POSITION } from './Slider/JourneyFlow/JourneyFlow'
 
 import { Editor } from '.'
+
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: jest.fn()
+}))
 
 describe('Editor', () => {
   const journey: Journey = {
@@ -107,6 +113,8 @@ describe('Editor', () => {
   })
 
   it('should render the Fab', async () => {
+    ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
+
     render(
       <MockedProvider>
         <SnackbarProvider>

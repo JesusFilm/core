@@ -1,18 +1,37 @@
 import get from 'lodash/get'
-import { AnyObject, ObjectSchema } from 'yup'
+import { ZodSchema } from 'zod'
 
-export class ImporterService<T extends AnyObject = AnyObject> {
-  schema: ObjectSchema<T>
+export class ImporterService<T> {
+  schema: ZodSchema
 
   async import(row: unknown): Promise<void> {
-    if (await this.schema.isValid(row)) {
-      const data = this.schema.noUnknown().cast(row)
-      await this.save(data as T)
-    } else {
+    const data = this.schema.safeParse(row)
+    if (!data.success) {
       throw new Error(
         `row does not match schema: ${
           get(row, 'id') ?? 'unknownId'
         }\n${JSON.stringify(row, null, 2)}`
+      )
+    }
+    await this.save(data.data as T)
+  }
+
+  async importMany(rows: unknown[]): Promise<void> {
+    const validRows: unknown[] = []
+    const inValidRowIds: string[] = []
+    for (const row of rows) {
+      const data = this.schema.safeParse(row)
+      if (data.success) {
+        validRows.push(data.data)
+      } else {
+        console.log(data.error)
+        inValidRowIds.push(get(row, 'id') ?? 'unknownId')
+      }
+    }
+    await this.saveMany(validRows as T[])
+    if (validRows.length !== rows.length) {
+      throw new Error(
+        'some rows do not match schema: ' + inValidRowIds.join(',')
       )
     }
   }
@@ -24,5 +43,9 @@ export class ImporterService<T extends AnyObject = AnyObject> {
    */
   protected async save(data: T): Promise<void> {
     throw new Error('save not implemented')
+  }
+
+  protected async saveMany(data: T[]): Promise<void> {
+    throw new Error('saveMany not implemented')
   }
 }

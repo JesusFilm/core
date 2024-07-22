@@ -55,6 +55,10 @@ const nextConfig = {
       {
         source: '/api/graphql',
         destination: process.env.GATEWAY_URL
+      },
+      {
+        source: '/robots.txt',
+        destination: '/api/robots'
       }
     ]
   }

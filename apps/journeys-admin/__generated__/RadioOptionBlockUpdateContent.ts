@@ -21,6 +21,5 @@ export interface RadioOptionBlockUpdateContent {
 
 export interface RadioOptionBlockUpdateContentVariables {
   id: string;
-  journeyId: string;
   input: RadioOptionBlockUpdateInput;
 }

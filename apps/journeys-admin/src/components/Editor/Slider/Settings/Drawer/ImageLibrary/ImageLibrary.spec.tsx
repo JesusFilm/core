@@ -3,7 +3,7 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
-import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../__generated__/BlockFields'
+import type { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../__generated__/BlockFields'
 
 import { ImageLibrary } from '.'
 
@@ -64,7 +64,7 @@ describe('ImageLibrary', () => {
       expect(getByText('Custom')).toBeInTheDocument()
       expect(
         getByTestId('ImageBlockEditor').parentElement?.parentElement
-      ).toHaveClass('swiper-no-swiping MuiBox-root css-2qcwma')
+      ).toHaveClass('swiper-no-swiping MuiBox-root css-19mvi4v')
     })
 
     it('should close ImageLibrary on close Icon click', () => {
@@ -110,7 +110,7 @@ describe('ImageLibrary', () => {
       expect(getByText('Custom')).toBeInTheDocument()
       expect(
         getByTestId('ImageBlockEditor').parentElement?.parentElement
-      ).toHaveClass('swiper-no-swiping MuiBox-root css-2qcwma')
+      ).toHaveClass('swiper-no-swiping MuiBox-root css-19mvi4v')
     })
   })
 })

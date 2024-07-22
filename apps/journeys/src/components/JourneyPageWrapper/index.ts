@@ -1,0 +1,1 @@
+export { JourneyPageWrapper } from './JourneyPageWrapper'

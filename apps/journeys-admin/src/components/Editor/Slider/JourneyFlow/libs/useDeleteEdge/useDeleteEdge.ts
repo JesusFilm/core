@@ -1,15 +1,17 @@
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import get from 'lodash/get'
+
+import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { searchBlocks } from '@core/journeys/ui/searchBlocks'
 
-import { useBlockActionDeleteMutation } from '../../../../../../libs/useBlockActionDeleteMutation'
 import { useStepBlockNextBlockUpdateMutation } from '../../../../../../libs/useStepBlockNextBlockUpdateMutation'
+import { useActionCommand } from '../../../../utils/useActionCommand'
 import { RawEdgeSource, convertToEdgeSource } from '../convertToEdgeSource'
 
 export function useDeleteEdge(): (
   rawEdgeSource: RawEdgeSource
 ) => Promise<void> {
-  const [blockActionDelete] = useBlockActionDeleteMutation()
+  const { addAction } = useActionCommand()
   const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
   const { journey } = useJourney()
   const {
@@ -48,7 +50,16 @@ export function useDeleteEdge(): (
           step != null ? [step] : [],
           edgeSource.blockId
         )
-        if (block != null) void blockActionDelete(block)
+        if (block != null)
+          await addAction({
+            blockId: block.id,
+            blockTypename: block.__typename,
+            action: null,
+            undoAction: get(block, 'action'),
+            editorFocus: {
+              activeSlide: ActiveSlide.JourneyFlow
+            }
+          })
         break
       }
     }

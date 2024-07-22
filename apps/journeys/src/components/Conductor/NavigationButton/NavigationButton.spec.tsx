@@ -79,6 +79,21 @@ const journey = {
 describe('NavigationButton', () => {
   mockUuidv4.mockReturnValue('uuid')
 
+  const originalLocation = window.location
+  const mockOrigin = 'https://example.com'
+
+  beforeAll(() => {
+    Object.defineProperty(window, 'location', {
+      value: {
+        origin: mockOrigin
+      }
+    })
+  })
+
+  afterAll(() => {
+    Object.defineProperty(window, 'location', originalLocation)
+  })
+
   const stepNextResult = jest.fn(() => ({
     data: {
       stepNextEventCreate: {
@@ -185,6 +200,7 @@ describe('NavigationButton', () => {
     await waitFor(() => expect(stepNextResult).toHaveBeenCalled())
 
     expect(mockPlausible).toHaveBeenCalledWith('navigateNextStep', {
+      u: `${mockOrigin}/journey.id/step1.id`,
       props: {
         id: 'uuid',
         blockId: 'step1.id',
@@ -234,6 +250,7 @@ describe('NavigationButton', () => {
     await waitFor(() => expect(stepPreviousResult).toHaveBeenCalled())
 
     expect(mockPlausible).toHaveBeenCalledWith('navigatePreviousStep', {
+      u: `${mockOrigin}/journey.id/step2.id`,
       props: {
         id: 'uuid',
         blockId: 'step2.id',

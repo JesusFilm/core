@@ -1,9 +1,9 @@
-import MuiFab, { FabProps as MuiFabProps } from '@mui/material/Fab'
+import MuiFab, { type FabProps as MuiFabProps } from '@mui/material/Fab'
 import Zoom from '@mui/material/Zoom'
-import { Theme } from '@mui/material/styles'
+import type { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { useTranslation } from 'next-i18next'
-import { MouseEvent, ReactElement, ReactNode } from 'react'
+import type { MouseEvent, ReactElement, ReactNode } from 'react'
 
 import {
   ActiveCanvasDetailsDrawer,
@@ -12,12 +12,12 @@ import {
   ActiveSlide,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
-import { TreeBlock } from '@core/journeys/ui/block'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import CheckContainedIcon from '@core/shared/ui/icons/CheckContained'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
-import { BlockFields_CardBlock as CardBlock } from '../../../../__generated__/BlockFields'
+import type { BlockFields_CardBlock as CardBlock } from '../../../../__generated__/BlockFields'
 
 interface FabProps {
   variant?: 'social' | 'mobile' | 'canvas'
@@ -36,7 +36,7 @@ export function Fab({ variant }: FabProps): ReactElement {
     dispatch
   } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
+  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
 
   if (activeContent == null) {
     dispatch({
@@ -62,7 +62,7 @@ export function Fab({ variant }: FabProps): ReactElement {
         type: 'SetSelectedBlockAction',
         selectedBlock: selectedStep
       })
-      if (!smUp) {
+      if (!mdUp) {
         dispatch({
           type: 'SetActiveSlideAction',
           activeSlide: ActiveSlide.Content
@@ -73,7 +73,7 @@ export function Fab({ variant }: FabProps): ReactElement {
         type: 'SetActiveCanvasDetailsDrawerAction',
         activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.AddBlock
       })
-      if (!smUp) {
+      if (!mdUp) {
         dispatch({
           type: 'SetActiveSlideAction',
           activeSlide: ActiveSlide.Drawer
@@ -126,14 +126,14 @@ export function Fab({ variant }: FabProps): ReactElement {
 
   // props default to save fab
   let props: MuiFabProps = {
-    variant: smUp ? 'extended' : 'circular',
+    variant: mdUp ? 'extended' : 'circular',
     size: 'large',
     color: 'primary',
     disabled,
     sx: {
-      position: { xs: 'absolute', sm: 'relative' },
-      bottom: { xs: 16, sm: 'auto' },
-      right: { xs: 16, sm: 'auto' },
+      position: { xs: 'absolute', md: 'relative' },
+      bottom: { xs: 16, md: 'auto' },
+      right: { xs: 16, md: 'auto' },
       fontWeight: 'bold'
     },
     onClick: handleSaveFab
@@ -141,8 +141,8 @@ export function Fab({ variant }: FabProps): ReactElement {
   // children default to save fab
   let children: ReactNode = (
     <>
-      <CheckContainedIcon sx={{ mr: smUp ? 3 : 0 }} />
-      {smUp ? t('Done') : ''}
+      <CheckContainedIcon sx={{ mr: mdUp ? 3 : 0 }} />
+      {mdUp ? t('Done') : ''}
     </>
   )
 
@@ -157,8 +157,8 @@ export function Fab({ variant }: FabProps): ReactElement {
     }
     children = (
       <>
-        <Edit2Icon sx={{ mr: smUp ? 3 : 0 }} />
-        {smUp ? t('Edit') : ''}
+        <Edit2Icon sx={{ mr: mdUp ? 3 : 0 }} />
+        {mdUp ? t('Edit') : ''}
       </>
     )
   } else if (isAdd) {
@@ -168,8 +168,8 @@ export function Fab({ variant }: FabProps): ReactElement {
     }
     children = (
       <>
-        <Plus2Icon sx={{ mr: smUp ? 3 : 0 }} />
-        {smUp && variant === 'canvas' && t('Add Block')}
+        <Plus2Icon sx={{ mr: mdUp ? 3 : 0 }} />
+        {mdUp && variant === 'canvas' && t('Add Block')}
       </>
     )
   }
@@ -178,13 +178,13 @@ export function Fab({ variant }: FabProps): ReactElement {
   switch (variant) {
     case 'mobile': {
       fabIn =
-        !smUp &&
+        !mdUp &&
         activeContent === ActiveContent.Canvas &&
         activeSlide === ActiveSlide.Content
       break
     }
     case 'canvas': {
-      fabIn = smUp && activeContent === ActiveContent.Canvas
+      fabIn = mdUp && activeContent === ActiveContent.Canvas
       break
     }
     case 'social': {

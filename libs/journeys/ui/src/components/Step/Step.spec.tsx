@@ -145,6 +145,20 @@ const block: TreeBlock<StepFields> = {
 }
 
 describe('Step', () => {
+  const originalLocation = window.location
+  const mockOrigin = 'https://example.com'
+  beforeAll(() => {
+    Object.defineProperty(window, 'location', {
+      value: {
+        origin: mockOrigin
+      }
+    })
+  })
+
+  afterAll(() => {
+    Object.defineProperty(window, 'location', originalLocation)
+  })
+
   const mockStepViewEventCreate: MockedResponse<StepViewEventCreate> = {
     request: {
       query: STEP_VIEW_EVENT_CREATE,
@@ -184,7 +198,7 @@ describe('Step', () => {
       expect(mockStepViewEventCreate.result).toHaveBeenCalled()
     )
     expect(mockPlausible).toHaveBeenCalledWith('pageview', {
-      u: 'journeyId/Step1',
+      u: `${mockOrigin}/journeyId/Step1`,
       props: {
         id: 'uuid',
         blockId: 'Step1',

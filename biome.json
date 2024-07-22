@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.8.1/schema.json",
+  "$schema": "https://biomejs.dev/schemas/1.8.3/schema.json",
   "files": {
     "ignore": [
       "__generated__",
@@ -46,7 +46,9 @@
       },
       "correctness": {
         "useExhaustiveDependencies": "info",
-        "useJsxKeyInIterable": "info"
+        "useJsxKeyInIterable": "info",
+        "noUnusedImports": "warn",
+        "noUnusedVariables": "warn"
       },
       "performance": {
         "noAccumulatingSpread": "warn"

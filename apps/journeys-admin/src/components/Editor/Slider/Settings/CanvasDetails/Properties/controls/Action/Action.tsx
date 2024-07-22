@@ -1,19 +1,15 @@
-import { gql, useMutation } from '@apollo/client'
 import FormControl from '@mui/material/FormControl'
 import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
-import { init, t } from 'i18next'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
-import { ActionDelete } from '../../../../../../../../../__generated__/ActionDelete'
 import {
   BlockFields_ButtonBlock as ButtonBlock,
   BlockFields_FormBlock as FormBlock,
@@ -21,98 +17,54 @@ import {
   BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../../../__generated__/BlockFields'
 
+import { useActionCommand } from '../../../../../../utils/useActionCommand'
 import { EmailAction } from './EmailAction'
 import { LinkAction } from './LinkAction'
 import { NavigateToBlockAction } from './NavigateToBlockAction'
-
-export const ACTION_DELETE = gql`
-  mutation ActionDelete($id: ID!, $journeyId: ID!) {
-    blockDeleteAction(id: $id, journeyId: $journeyId) {
-      id
-    }
-  }
-`
-
-void init({ defaultNS: 'apps-journeys-admin', fallbackLng: 'en' })
-
-export const actions = [
-  {
-    value: 'none',
-    label: t('None')
-  },
-  {
-    value: 'NavigateToBlockAction',
-    label: t('Selected Card')
-  },
-  {
-    value: 'LinkAction',
-    label: t('URL/Website')
-  },
-  {
-    value: 'EmailAction',
-    label: t('Email')
-  }
-]
+import { ActionValue, actions } from './utils/actions'
 
 export function Action(): ReactElement {
-  const { state } = useEditor()
-  const { journey } = useJourney()
+  const {
+    state: { selectedBlock: stateSelectedBlock, selectedStep }
+  } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
+  const { addAction } = useActionCommand()
 
   // Add addtional types here to use this component for that block
-  const selectedBlock = state.selectedBlock as
+  const selectedBlock = stateSelectedBlock as
     | TreeBlock<ButtonBlock>
     | TreeBlock<FormBlock>
     | TreeBlock<SignUpBlock>
     | TreeBlock<VideoBlock>
     | undefined
-
-  const [actionDelete] = useMutation<ActionDelete>(ACTION_DELETE)
-
-  const selectedAction = actions.find(
-    (act) => act.value === selectedBlock?.action?.__typename
+  const labels = actions(t)
+  const [action, setAction] = useState<ActionValue>(
+    selectedBlock?.action?.__typename ?? 'None'
   )
 
-  const [action, setAction] = useState(selectedAction?.value ?? 'none')
-
   useEffect(() => {
-    if (selectedAction != null) {
-      setAction(selectedAction.value)
-    } else {
-      setAction('none')
-    }
-  }, [selectedBlock, selectedAction])
+    setAction(selectedBlock?.action?.__typename ?? 'None')
+  }, [selectedBlock?.action?.__typename])
 
   async function removeAction(): Promise<void> {
-    if (selectedBlock != null && journey != null) {
-      const { id, __typename: typeName } = selectedBlock
-      await actionDelete({
-        variables: {
-          id,
-          journeyId: journey.id
-        },
-        update(cache, { data }) {
-          if (data?.blockDeleteAction != null) {
-            cache.modify({
-              id: cache.identify({
-                __typename: typeName,
-                id
-              }),
-              fields: {
-                action: () => null
-              }
-            })
-          }
+    if (selectedBlock != null) {
+      const { id, action, __typename } = selectedBlock
+      await addAction({
+        blockId: id,
+        blockTypename: __typename,
+        action: null,
+        undoAction: action,
+        editorFocus: {
+          selectedStep,
+          selectedBlock
         }
       })
     }
   }
 
   async function handleChange(event: SelectChangeEvent): Promise<void> {
-    if (event.target.value === 'none') {
-      await removeAction()
-    }
-    setAction(event.target.value)
+    if (event.target.value === 'None') await removeAction()
+    setAction(event.target.value as ActionValue)
   }
 
   return (
@@ -128,7 +80,7 @@ export function Action(): ReactElement {
             value={action}
             IconComponent={ChevronDownIcon}
           >
-            {actions.map((action) => {
+            {labels.map((action) => {
               return (
                 <MenuItem
                   key={`button-action-${action.value}`}

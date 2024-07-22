@@ -9,13 +9,7 @@ import { useTagsQuery } from '../../../libs/useTagsQuery'
 import { CollectionButton } from './CollectionButton'
 import { FeltNeedsButton } from './FeltNeedsButton'
 
-interface TagCarouselsProps {
-  onChange: (selectedTagId: string) => void
-}
-
-export function TagCarousels({
-  onChange: handleChange
-}: TagCarouselsProps): ReactElement {
+export function TagCarousels(): ReactElement {
   const { parentTags, childTags, loading } = useTagsQuery()
   const { breakpoints } = useTheme()
 
@@ -61,9 +55,7 @@ export function TagCarousels({
     >
       <ContentCarousel
         items={feltNeedsTags}
-        renderItem={(itemProps) => (
-          <FeltNeedsButton {...itemProps} onClick={handleChange} />
-        )}
+        renderItem={(itemProps) => <FeltNeedsButton {...itemProps} />}
         breakpoints={swiperBreakpoints}
         loading={loading}
         cardSpacing={{
@@ -74,22 +66,10 @@ export function TagCarousels({
       <Stack direction="row" gap={10} sx={{ ml: -2 }}>
         {loading
           ? [0, 1].map((item, index) => {
-              return (
-                <CollectionButton
-                  key={index}
-                  item={undefined}
-                  onClick={handleChange}
-                />
-              )
+              return <CollectionButton key={index} item={undefined} />
             })
           : collectionTags.map((tag, index) => {
-              return (
-                <CollectionButton
-                  key={index}
-                  item={tag}
-                  onClick={handleChange}
-                />
-              )
+              return <CollectionButton key={index} item={tag} />
             })}
       </Stack>
     </Stack>

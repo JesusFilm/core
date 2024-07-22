@@ -1,25 +1,45 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor, within } from '@testing-library/react'
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within
+} from '@testing-library/react'
 
 import { getTagsMock } from '../data'
 
+import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
+import { useRefinementList } from 'react-instantsearch'
 import { TagCarousels } from '.'
+import { GET_TAGS } from '../../../libs/useTagsQuery'
+
+jest.mock('react-instantsearch')
+
+function mockRefinementList() {
+  const onClick = jest.fn()
+  const useRefinementListMocked = jest.mocked(useRefinementList)
+  useRefinementListMocked.mockReturnValue({
+    refine: onClick
+  } as unknown as RefinementListRenderState)
+  return onClick
+}
 
 describe('TagCarousels', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+    mockRefinementList()
+  })
+
   it('should render TagCarousels', async () => {
-    const { getByTestId, getAllByTestId, getByRole } = render(
+    render(
       <MockedProvider mocks={[getTagsMock]}>
-        <TagCarousels onChange={jest.fn()} />
+        <TagCarousels />
       </MockedProvider>
     )
 
-    const feltNeedsCarousel = getByTestId('-template-gallery-carousel')
+    const feltNeedsCarousel = screen.getByTestId('-template-gallery-carousel')
     expect(feltNeedsCarousel).toBeInTheDocument()
-    expect(
-      within(feltNeedsCarousel).getAllByTestId('felt-needs-button-loading')
-    ).toHaveLength(8)
-
-    expect(getAllByTestId('collections-button-loading')).toHaveLength(2)
 
     await waitFor(async () => {
       expect(
@@ -30,50 +50,77 @@ describe('TagCarousels', () => {
       ).toBeInTheDocument()
 
       expect(
-        getByRole('button', {
+        screen.getByRole('button', {
           name: 'NUA tag NUA NUA'
         })
       ).toBeInTheDocument()
     })
   })
 
+  it('should render skeleton when no results', async () => {
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_TAGS
+            },
+            result: {
+              data: {
+                tags: []
+              }
+            }
+          }
+        ]}
+      >
+        <TagCarousels />
+      </MockedProvider>
+    )
+
+    const feltNeedsCarousel = screen.getByTestId('-template-gallery-carousel')
+    expect(
+      within(feltNeedsCarousel).getAllByTestId('felt-needs-button-loading')
+    ).toHaveLength(8)
+
+    expect(screen.getAllByTestId('collections-button-loading')).toHaveLength(2)
+  })
+
   it('should filter by felt needs tag', async () => {
-    const onChange = jest.fn()
-    const { getByRole } = render(
+    const onChange = mockRefinementList()
+    render(
       <MockedProvider mocks={[getTagsMock]}>
-        <TagCarousels onChange={onChange} />
+        <TagCarousels />
       </MockedProvider>
     )
 
     await waitFor(async () => {
       expect(
-        getByRole('button', {
+        screen.getByRole('button', {
           name: 'Acceptance tag Acceptance Acceptance'
         })
       ).toBeInTheDocument()
     })
 
     fireEvent.click(
-      getByRole('button', {
+      screen.getByRole('button', {
         name: 'Acceptance tag Acceptance Acceptance'
       })
     )
 
-    expect(onChange).toHaveBeenCalledWith('acceptanceTagId')
+    expect(onChange).toHaveBeenCalledWith('Acceptance')
   })
 
   it('should filter out felt needs tags that have no backgrounds', async () => {
-    const onChange = jest.fn()
-    const { getByRole, queryAllByText } = render(
+    render(
       <MockedProvider mocks={[getTagsMock]}>
-        <TagCarousels onChange={onChange} />
+        <TagCarousels />
       </MockedProvider>
     )
 
     // Not for test but needed in order to ensure rendering is correct
     await waitFor(async () => {
       expect(
-        getByRole('button', {
+        screen.getByRole('button', {
           name: 'Acceptance tag Acceptance Acceptance'
         })
       ).toBeInTheDocument()
@@ -81,32 +128,32 @@ describe('TagCarousels', () => {
 
     // Assert tags without backgrounds are filtered out
     await waitFor(async () => {
-      expect(queryAllByText('Fear/Power')).toHaveLength(0)
+      expect(screen.queryAllByText('Fear/Power')).toHaveLength(0)
     })
   })
 
   it('should filter by collections tag', async () => {
-    const onChange = jest.fn()
-    const { getByRole } = render(
+    const onChange = mockRefinementList()
+    render(
       <MockedProvider mocks={[getTagsMock]}>
-        <TagCarousels onChange={onChange} />
+        <TagCarousels />
       </MockedProvider>
     )
 
     await waitFor(async () => {
       expect(
-        getByRole('button', {
+        screen.getByRole('button', {
           name: 'NUA tag NUA NUA'
         })
       ).toBeInTheDocument()
     })
 
     fireEvent.click(
-      getByRole('button', {
+      screen.getByRole('button', {
         name: 'NUA tag NUA NUA'
       })
     )
 
-    expect(onChange).toHaveBeenCalledWith('nuaTagId')
+    expect(onChange).toHaveBeenCalledWith('NUA')
   })
 })

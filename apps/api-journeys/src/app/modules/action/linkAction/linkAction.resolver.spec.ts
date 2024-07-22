@@ -92,7 +92,8 @@ describe('LinkActionResolver', () => {
         update: {
           ...ACTION_UPDATE_RESET,
           ...input
-        }
+        },
+        include: { parentBlock: { include: { action: true } } }
       })
     })
 

@@ -3,6 +3,7 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
+import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -22,10 +23,9 @@ import { ToggleButtonGroup } from '../../../controls/ToggleButtonGroup'
 export const TYPOGRAPHY_BLOCK_UPDATE_VARIANT = gql`
   mutation TypographyBlockUpdateVariant(
     $id: ID!
-    $journeyId: ID!
     $input: TypographyBlockUpdateInput!
   ) {
-    typographyBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+    typographyBlockUpdate(id: $id, input: $input) {
       id
       variant
     }
@@ -33,13 +33,18 @@ export const TYPOGRAPHY_BLOCK_UPDATE_VARIANT = gql`
 `
 
 export function Variant(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [typographyBlockUpdate] = useMutation<TypographyBlockUpdateVariant>(
     TYPOGRAPHY_BLOCK_UPDATE_VARIANT
   )
+  const { add } = useCommand()
   const { journey } = useJourney()
   const { rtl, locale } = getJourneyRTL(journey)
-  const { state } = useEditor()
-  const selectedBlock = state.selectedBlock as
+  const {
+    state: { selectedBlock: stateSelectedBlock, selectedStep },
+    dispatch
+  } = useEditor()
+  const selectedBlock = stateSelectedBlock as
     | TreeBlock<TypographyBlock>
     | undefined
 
@@ -55,7 +60,38 @@ export function Variant(): ReactElement {
     </ThemeProvider>
   )
 
-  const { t } = useTranslation('apps-journeys-admin')
+  async function handleChange(variant: TypographyVariant): Promise<void> {
+    if (selectedBlock != null && variant != null) {
+      await add({
+        parameters: {
+          execute: { variant },
+          undo: {
+            variant: selectedBlock.variant
+          }
+        },
+        async execute({ variant }) {
+          dispatch({
+            type: 'SetEditorFocusAction',
+            selectedStep,
+            selectedBlock
+          })
+          await typographyBlockUpdate({
+            variables: {
+              id: selectedBlock.id,
+              input: { variant }
+            },
+            optimisticResponse: {
+              typographyBlockUpdate: {
+                id: selectedBlock.id,
+                variant,
+                __typename: 'TypographyBlock'
+              }
+            }
+          })
+        }
+      })
+    }
+  }
 
   const options = [
     {
@@ -151,25 +187,6 @@ export function Variant(): ReactElement {
       icon: <DashIcon />
     }
   ]
-
-  async function handleChange(variant: TypographyVariant): Promise<void> {
-    if (selectedBlock != null && variant != null && journey != null) {
-      await typographyBlockUpdate({
-        variables: {
-          id: selectedBlock.id,
-          journeyId: journey.id,
-          input: { variant }
-        },
-        optimisticResponse: {
-          typographyBlockUpdate: {
-            id: selectedBlock.id,
-            variant,
-            __typename: 'TypographyBlock'
-          }
-        }
-      })
-    }
-  }
 
   return (
     <ToggleButtonGroup
