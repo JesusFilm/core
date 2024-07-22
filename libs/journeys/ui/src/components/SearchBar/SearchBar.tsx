@@ -70,6 +70,7 @@ export function SearchBar(props: SearchBoxConnectorParams): ReactElement {
           endAdornment: (
             <InputAdornment position="end">
               <Box
+                component="button"
                 data-testid="LanguageSelect"
                 onClick={() => {
                   console.log('EndAdornment clicked')
@@ -77,7 +78,10 @@ export function SearchBar(props: SearchBoxConnectorParams): ReactElement {
                 sx={{
                   display: 'flex',
                   alignItems: 'center',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  border: 'none',
+                  backgroundColor: 'background.default',
+                  color: 'primary'
                 }}
               >
                 <Divider
