@@ -134,9 +134,11 @@ describe('useCreateStep', () => {
           mocks={[{ ...stepAndCardBlockCreateMock, result }]}
           cache={cache}
         >
-          <JourneyProvider value={{ journey: defaultJourney }}>
-            {children}
-          </JourneyProvider>
+          <EditorProvider>
+            <JourneyProvider value={{ journey: defaultJourney }}>
+              {children}
+            </JourneyProvider>
+          </EditorProvider>
         </MockedProvider>
       )
     })
@@ -190,7 +192,7 @@ describe('useCreateStep', () => {
           mocks={[stepAndCardBlockCreateMock, blockOrderUpdateMock]}
         >
           <JourneyProvider value={{ journey: defaultJourney }}>
-            {children}
+            <EditorProvider>{children}</EditorProvider>
           </JourneyProvider>
         </MockedProvider>
       )
@@ -225,9 +227,11 @@ describe('useCreateStep', () => {
             { ...stepBlockNextBlockUpdateMock, result }
           ]}
         >
-          <JourneyProvider value={{ journey: defaultJourney }}>
-            {children}
-          </JourneyProvider>
+          <EditorProvider>
+            <JourneyProvider value={{ journey: defaultJourney }}>
+              {children}
+            </JourneyProvider>
+          </EditorProvider>
         </MockedProvider>
       )
     })
