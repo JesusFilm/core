@@ -13,6 +13,7 @@ import {
   TypographyBlockUpdateContentVariables
 } from '../../../../../../../../__generated__/TypographyBlockUpdateContent'
 import { TypographyFields } from '../../../../../../../../__generated__/TypographyFields'
+import { useBlockDeleteCommand } from '../../../../../utils/useBlockDeleteCommand'
 import { InlineEditInput } from '../InlineEditInput'
 import { useOnClickOutside } from '../useOnClickOutside'
 
@@ -53,44 +54,80 @@ export function TypographyEdit({
     dispatch
   } = useEditor()
   const { add } = useCommand()
+  const { addBlockDelete } = useBlockDeleteCommand()
 
   async function handleSaveBlock(): Promise<void> {
     const currentContent = value.trimStart().trimEnd()
+    const isEmptyNewBlock = content === '' && currentContent === ''
+    const isEmptyBlock = content !== '' && currentContent === ''
+    const isFirstUpdate = content === '' && currentContent !== ''
 
-    if (currentContent === '') {
+    if (isEmptyNewBlock) {
       deleteSelf()
+    } else if (content === currentContent) {
       return
-    }
+    } else if (isFirstUpdate && selectedBlock != null) {
+      await add({
+        parameters: {
+          execute: { content: currentContent },
+          undo: {}
+        },
+        async execute({ content }) {
+          dispatch({
+            type: 'SetEditorFocusAction',
+            selectedBlock,
+            selectedStep
+          })
 
-    if (content === currentContent) return
-
-    await add({
-      parameters: {
-        execute: { content: currentContent },
-        undo: { content }
-      },
-      async execute({ content }) {
-        dispatch({
-          type: 'SetEditorFocusAction',
-          selectedBlock,
-          selectedStep
-        })
-
-        await typographyBlockUpdate({
-          variables: {
-            id,
-            input: { content }
-          },
-          optimisticResponse: {
-            typographyBlockUpdate: {
+          await typographyBlockUpdate({
+            variables: {
               id,
-              __typename: 'TypographyBlock',
-              content
+              input: { content }
+            },
+            optimisticResponse: {
+              typographyBlockUpdate: {
+                id,
+                __typename: 'TypographyBlock',
+                content
+              }
             }
-          }
-        })
-      }
-    })
+          })
+        },
+        async undo() {
+          deleteSelf()
+        }
+      })
+    } else if (isEmptyBlock && selectedBlock != null) {
+      addBlockDelete(selectedBlock)
+    } else {
+      await add({
+        parameters: {
+          execute: { content: currentContent },
+          undo: { content }
+        },
+        async execute({ content }) {
+          dispatch({
+            type: 'SetEditorFocusAction',
+            selectedBlock,
+            selectedStep
+          })
+
+          await typographyBlockUpdate({
+            variables: {
+              id,
+              input: { content }
+            },
+            optimisticResponse: {
+              typographyBlockUpdate: {
+                id,
+                __typename: 'TypographyBlock',
+                content
+              }
+            }
+          })
+        }
+      })
+    }
   }
 
   const inputRef = useOnClickOutside(async () => {
