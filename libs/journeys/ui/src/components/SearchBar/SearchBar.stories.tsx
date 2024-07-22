@@ -7,7 +7,7 @@ import { SearchBar } from './SearchBar'
 const SearchBarStory: Meta<typeof SearchBar> = {
   ...watchConfig,
   component: SearchBar,
-  title: 'Watch/SearchBar'
+  title: 'Journeys-Ui/SearchBar'
 }
 
 const Template: StoryObj = {
@@ -21,6 +21,15 @@ export const Default = {
     const searchInput = await canvas.getByTestId('SearchBar')
     await userEvent.click(searchInput)
     await userEvent.keyboard('Hello World!')
+  }
+}
+
+export const Language = {
+  ...Template,
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    const canvas = within(canvasElement)
+    const languageButton = await canvas.getByTestId('LanguageSelect')
+    await userEvent.click(languageButton)
   }
 }
 
