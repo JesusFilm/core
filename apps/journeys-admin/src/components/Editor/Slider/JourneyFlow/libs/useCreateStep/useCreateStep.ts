@@ -12,6 +12,7 @@ import {
   ThemeName
 } from '../../../../../../../__generated__/globalTypes'
 import { useBlockActionNavigateToBlockUpdateMutation } from '../../../../../../libs/useBlockActionNavigateToBlockUpdateMutation'
+import { useBlockDeleteMutation } from '../../../../../../libs/useBlockDeleteMutation'
 import { useBlockOrderUpdateMutation } from '../../../../../../libs/useBlockOrderUpdateMutation'
 import { useBlockRestoreMutation } from '../../../../../../libs/useBlockRestoreMutation'
 import { useStepAndCardBlockCreateMutation } from '../../../../../../libs/useStepAndCardBlockCreateMutation'
