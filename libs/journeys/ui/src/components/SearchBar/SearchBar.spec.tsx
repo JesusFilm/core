@@ -47,4 +47,21 @@ describe('SearchBar', () => {
     fireEvent.change(input, { target: { value: 'Hello' } })
     expect(refine).toHaveBeenCalled()
   })
+
+  it('should have language icon', async () => {
+    render(<SearchBar />)
+    const searchIcon = screen.getByTestId('Globe1Icon')
+    expect(searchIcon).toBeInTheDocument()
+  })
+
+  it('should render english language by default', async () => {
+    render(<SearchBar />)
+    expect(screen.getByText('English')).toBeInTheDocument()
+  })
+
+  it('should be clickable', async () => {
+    render(<SearchBar />)
+    const languageButton = screen.getByTestId('LanguageSelect')
+    fireEvent.click(languageButton)
+  })
 })
