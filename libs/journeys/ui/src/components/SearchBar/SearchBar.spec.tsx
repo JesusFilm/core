@@ -49,13 +49,13 @@ describe('SearchBar', () => {
   })
 
   it('should have language icon', async () => {
-    render(<SearchBar />)
+    render(<SearchBar showLanguageButton />)
     const searchIcon = screen.getByTestId('Globe1Icon')
     expect(searchIcon).toBeInTheDocument()
   })
 
   it('should render english language by default', async () => {
-    render(<SearchBar />)
+    render(<SearchBar showLanguageButton />)
     expect(screen.getByText('English')).toBeInTheDocument()
   })
 })

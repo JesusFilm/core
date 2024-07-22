@@ -7,7 +7,6 @@ import InputAdornment from '@mui/material/InputAdornment'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { styled } from '@mui/material/styles'
-import { SearchBoxConnectorParams } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 import { useSearchBox } from 'react-instantsearch'
@@ -31,11 +30,18 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
   }
 }))
 
-export function SearchBar(props: SearchBoxConnectorParams): ReactElement {
+interface SearchBarProps {
+  showLanguageButton?: boolean
+}
+
+export function SearchBar({
+  showLanguageButton = false
+}: SearchBarProps): ReactElement {
   const { t } = useTranslation('apps-watch')
 
-  const { query, refine } = useSearchBox(props)
+  const { query, refine } = useSearchBox()
   const [inputValue, setInputValue] = useState(query)
+  const [languageButtonVisable] = useState(showLanguageButton)
 
   function setQuery(newQuery: string) {
     setInputValue(newQuery)
@@ -53,7 +59,6 @@ export function SearchBar(props: SearchBoxConnectorParams): ReactElement {
       data-testid="SearchBar"
     >
       <StyledTextField
-        {...props}
         placeholder={t('Search by topic, occasion, or audience ...')}
         fullWidth
         type="search"
@@ -67,7 +72,7 @@ export function SearchBar(props: SearchBoxConnectorParams): ReactElement {
               <Search1Icon />
             </InputAdornment>
           ),
-          endAdornment: (
+          endAdornment: languageButtonVisable ? (
             <InputAdornment position="end">
               <Box
                 component="button"
@@ -105,6 +110,8 @@ export function SearchBar(props: SearchBoxConnectorParams): ReactElement {
                 <ChevronDown />
               </Box>
             </InputAdornment>
+          ) : (
+            <></>
           )
         }}
       />
