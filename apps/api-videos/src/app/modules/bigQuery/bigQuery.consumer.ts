@@ -4,6 +4,7 @@ import get from 'lodash/get'
 
 import { PrismaService } from '../../lib/prisma.service'
 import { ImporterService } from '../importer/importer.service'
+import { ImporterKeywordsService } from '../importer/importerKeywords/importerKeywords.service'
 import { ImporterVideoDescriptionService } from '../importer/importerVideoDescriptions/importerVideoDescriptions.service'
 import { ImporterVideoImageAltService } from '../importer/importerVideoImageAlt/importerVideoImageAlt.service'
 import { ImporterVideoSnippetsService } from '../importer/importerVideoSnippets/importerVideoSnippets.service'
@@ -46,7 +47,8 @@ export class BigQueryConsumer extends WorkerHost {
     private readonly importerVideoSubtitleService: ImporterVideoSubtitlesService,
     private readonly importerVideosChildrenService: ImporterVideosChildrenService,
     private readonly importerBibleBooksService: ImporterBibleBooksService,
-    private readonly importerBibleCitationsService: ImporterBibleCitationsService
+    private readonly importerBibleCitationsService: ImporterBibleCitationsService,
+    private readonly importerKeywordsService: ImporterKeywordsService
   ) {
     super()
     this.tables = [
@@ -112,7 +114,12 @@ export class BigQueryConsumer extends WorkerHost {
           'jfp-data-warehouse.jfp_mmdb_prod.core_videoBibleCitation_arclight_data',
         service: this.importerBibleCitationsService,
         hasUpdatedAt: true
-      }
+      },
+      {
+        table: 'jfp-data-warehouse.jfp_mmdb_prod.core_keywords_arclight_data',
+        service: this.importerKeywordsService,
+        hasUpdatedAt: true
+      },
     ]
   }
 
