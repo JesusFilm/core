@@ -81,7 +81,7 @@ export function SearchBar(props: SearchBoxConnectorParams): ReactElement {
                   cursor: 'pointer',
                   border: 'none',
                   backgroundColor: 'background.default',
-                  color: 'primary'
+                  color: 'text.secondary'
                 }}
               >
                 <Divider
