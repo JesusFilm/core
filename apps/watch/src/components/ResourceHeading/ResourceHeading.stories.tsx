@@ -18,7 +18,7 @@ const Template: Story = {
 export const Default = {
   ...Template,
   args: {
-    startingText: 'Custom Text'
+    heading: 'Custom Text'
   }
 }
 

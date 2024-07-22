@@ -19,11 +19,10 @@ export function ResourceHeading({
   heading
 }: ResourceHeadingProps): ReactElement {
   const { t } = useTranslation('apps-watch')
-  const text = `${heading} for every `
   return (
     <Trans t={t}>
-      <Typography data-testid="ResourceHeading" variant="h4">
-        {text}
+      <Typography variant="h4">
+        {`${heading} for every `}
         <StyledSpan>interaction</StyledSpan>
       </Typography>
     </Trans>

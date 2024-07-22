@@ -3,8 +3,8 @@ import { ResourceHeading } from './ResourceHeading'
 
 describe('ResourceHeading', () => {
   it('should apply gradient styles to interaction text', () => {
-    render(<ResourceHeading heading="Resources" />)
-    expect(screen.getByText('Resources for every')).toBeInTheDocument()
+    render(<ResourceHeading heading="Resource" />)
+    expect(screen.getByText('Resource for every')).toBeInTheDocument()
     const StyledSpan = screen.getByText('interaction')
 
     expect(StyledSpan).toHaveStyle({
