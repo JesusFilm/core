@@ -4,10 +4,9 @@ import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import { ComponentProps, ReactElement } from 'react'
 
-import { useInfiniteHits } from 'react-instantsearch'
 import { VideoChildFields } from '../../../__generated__/VideoChildFields'
+import { useAlgoliaVideos } from '../../libs/algolia/useAlgoliaVideos'
 import { VideoCard } from '../VideoCard'
-import { transformAlgoliaVideos } from '../VideosPage/utils/transformAlgoliaVideos'
 
 interface VideoGridProps {
   videos?: VideoChildFields[]
@@ -25,9 +24,7 @@ export function VideoGrid({
   containerSlug,
   variant = 'expanded'
 }: VideoGridProps): ReactElement {
-  const { hits, showMore, isLastPage } = useInfiniteHits({
-    transformItems: transformAlgoliaVideos
-  })
+  const { hits, showMore, isLastPage } = useAlgoliaVideos()
 
   const videos = hits.length > 0 ? hits : localVideos
 
