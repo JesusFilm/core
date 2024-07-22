@@ -90,7 +90,7 @@ describe('BigQueryConsumer', () => {
         {
           provide: ImporterKeywordsService,
           useValue: mockDeep<ImporterKeywordsService>()
-        }, 
+        }
       ]
     }).compile()
 

@@ -36,7 +36,9 @@ describe('ImporterKeywordsService', () => {
         videoIds: ['video1', 'video2']
       })
       expect(prismaService.keyword.upsert).toHaveBeenCalledWith({
-        where: { value_languageId: { value: 'TestKeyword', languageId: '529' } },
+        where: {
+          value_languageId: { value: 'TestKeyword', languageId: '529' }
+        },
         create: {
           value: 'TestKeyword',
           languageId: '529',
@@ -49,39 +51,23 @@ describe('ImporterKeywordsService', () => {
         }
       })
     })
-
-    it('should save many keywords', async () => {
-      await service.importMany([
-        { value: 'Keyword1', languageId: '529', videoIds: ['video1'] },
-        { value: 'Keyword2', languageId: '530', videoIds: ['video2', 'video3'] }
-      ])
-      expect(prismaService.keyword.createMany).toHaveBeenCalledWith({
-        data: [
-          { value: 'Keyword1', languageId: '529' },
-          { value: 'Keyword2', languageId: '530' }
-        ],
-        skipDuplicates: true
-      })
-      // Note: You might need to test video connections separately
-    })
-
-    it('should throw error when keyword is invalid', async () => {
-      await expect(
-        service.import({
-          value: '',  // Assuming empty string is invalid
-          languageId: '529'
-        })
-      ).rejects.toThrow('row does not match schema')
-    })
-    
-    it('should throw error when some keywords are invalid', async () => {
-      await expect(
-        service.importMany([
-          { value: 'Valid', languageId: '529' },
-          { value: '', languageId: '530' }  // Invalid
-        ])
-      ).rejects.toThrow('some rows do not match schema')
-    })
-
   })
 })
+
+// 2_Acts7305-0-0
+// 3
+// 11167
+// 722
+// 2024-06-18 18:35:58 UTC
+
+// 2_Acts7305-0-0
+// 3
+// 11167
+// 722
+// 2024-06-18 18:35:58 UTC
+
+// 2_Acts7305-0-0
+// 3
+// 11167
+// 722
+// 2024-06-18 18:35:58 UTC

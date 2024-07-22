@@ -2,7 +2,9 @@ import { Module } from '@nestjs/common'
 
 import { PrismaService } from '../../lib/prisma.service'
 
+import { ImporterKeywordsService } from '../importer/importerKeywords/importerKeywords.service'
 import { ImporterBibleBooksService } from './importerBibleBooks/importerBibleBooks.service'
+import { ImporterBibleCitationsService } from './importerBibleCitations/importerBibleCitations.service'
 import { ImporterVideoDescriptionService } from './importerVideoDescriptions/importerVideoDescriptions.service'
 import { ImporterVideoImageAltService } from './importerVideoImageAlt/importerVideoImageAlt.service'
 import { ImporterVideoSnippetsService } from './importerVideoSnippets/importerVideoSnippets.service'
@@ -13,8 +15,6 @@ import { ImporterVideoVariantDownloadsService } from './importerVideoVariantDown
 import { ImporterVideoVariantsService } from './importerVideoVariants/importerVideoVariants.service'
 import { ImporterVideosService } from './importerVideos/importerVideos.service'
 import { ImporterVideosChildrenService } from './importerVideosChildren/importerVideosChildren.service'
-import { ImporterBibleCitationsService } from './importerBibleCitations/importerBibleCitations.service'
-import { ImporterKeywordsService } from '../importer/importerKeywords/importerKeywords.service'
 
 @Module({
   providers: [

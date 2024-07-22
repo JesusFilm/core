@@ -17,8 +17,8 @@ import { ImporterVideosService } from '../importer/importerVideos/importerVideos
 import { ImporterVideosChildrenService } from '../importer/importerVideosChildren/importerVideosChildren.service'
 
 import { ImporterBibleBooksService } from '../importer/importerBibleBooks/importerBibleBooks.service'
-import { BigQueryService } from './bigQuery.service'
 import { ImporterBibleCitationsService } from '../importer/importerBibleCitations/importerBibleCitations.service'
+import { BigQueryService } from './bigQuery.service'
 
 interface BigQueryRowError {
   bigQueryTableName: string
@@ -119,7 +119,7 @@ export class BigQueryConsumer extends WorkerHost {
         table: 'jfp-data-warehouse.jfp_mmdb_prod.core_keywords_arclight_data',
         service: this.importerKeywordsService,
         hasUpdatedAt: true
-      },
+      }
     ]
   }
 
