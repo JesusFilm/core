@@ -4,13 +4,16 @@ import { ReactElement } from 'react'
 
 import { TemplateSections } from '../TemplateSections'
 
-import { Index } from 'react-instantsearch'
+import { Index, RefinementList } from 'react-instantsearch'
 import { SearchBar } from '../SearchBar'
 import { TagCarousels } from './TagCarousels'
 
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import Box from '@mui/system/Box'
+import { ParentTagIcon } from '../ParentTagIcon'
 
 interface TemplateGalleryProps {
   hideOverflow?: boolean
@@ -28,6 +31,104 @@ function TemplateGalleryContent() {
         themeMode={ThemeMode.light}
         nested
       >
+        {/* TODO(jk): only added for testing */}
+        <Stack direction="row">
+          <Box
+            sx={{
+              border: 1,
+              p: 1,
+              bgcolor: 'background.default'
+            }}
+          >
+            <Stack
+              direction="row"
+              alignItems="center"
+              component="li"
+              sx={{ px: 4, py: 2 }}
+            >
+              <ParentTagIcon name="Topics" sx={{ width: 38 }} />
+              <Typography variant="subtitle1">Topics</Typography>
+            </Stack>
+            <RefinementList attribute="tags.Topics" />
+          </Box>
+
+          <Box
+            sx={{
+              border: 1,
+              p: 1,
+              bgcolor: 'background.default'
+            }}
+          >
+            <Stack
+              direction="row"
+              alignItems="center"
+              component="li"
+              sx={{ px: 4, py: 2 }}
+            >
+              <ParentTagIcon name="Holidays" sx={{ width: 38 }} />
+              <Typography variant="subtitle1">Holidays</Typography>
+            </Stack>
+            <RefinementList attribute="tags.Holidays" />
+          </Box>
+
+          <Box
+            sx={{
+              border: 1,
+              p: 1,
+              bgcolor: 'background.default'
+            }}
+          >
+            <Stack
+              direction="row"
+              alignItems="center"
+              component="li"
+              sx={{ px: 4, py: 2 }}
+            >
+              <ParentTagIcon name="Audience" sx={{ width: 38 }} />
+              <Typography variant="subtitle1">Audience</Typography>
+            </Stack>
+            <RefinementList attribute="tags.Audience" />
+          </Box>
+
+          <Box
+            sx={{
+              border: 1,
+              p: 1,
+              bgcolor: 'background.default'
+            }}
+          >
+            <Stack
+              direction="row"
+              alignItems="center"
+              component="li"
+              sx={{ px: 4, py: 2 }}
+            >
+              <ParentTagIcon name="Collections" sx={{ width: 38 }} />
+              <Typography variant="subtitle1">Collections</Typography>
+            </Stack>
+            <RefinementList attribute="tags.Collections" />
+          </Box>
+
+          <Box
+            sx={{
+              border: 1,
+              p: 1,
+              bgcolor: 'background.default'
+            }}
+          >
+            <Stack
+              direction="row"
+              alignItems="center"
+              component="li"
+              sx={{ px: 4, py: 2 }}
+            >
+              <ParentTagIcon name="Felt Needs" sx={{ width: 38 }} />
+              <Typography variant="subtitle1">Felt Needs</Typography>
+            </Stack>
+            <RefinementList attribute="tags.Felt Needs" />
+          </Box>
+        </Stack>
+
         <TagCarousels />
 
         <TemplateSections />
