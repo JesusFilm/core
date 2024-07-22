@@ -2,8 +2,8 @@ import { gql, useMutation } from '@apollo/client'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
+import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import AlignCenterIcon from '@core/shared/ui/icons/AlignCenter'
 import AlignLeftIcon from '@core/shared/ui/icons/AlignLeft'
@@ -17,10 +17,9 @@ import { ToggleButtonGroup } from '../../../controls/ToggleButtonGroup'
 export const TYPOGRAPHY_BLOCK_UPDATE_ALIGN = gql`
   mutation TypographyBlockUpdateAlign(
     $id: ID!
-    $journeyId: ID!
     $input: TypographyBlockUpdateInput!
   ) {
-    typographyBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+    typographyBlockUpdate(id: $id, input: $input) {
       id
       align
     }
@@ -32,11 +31,47 @@ export function Align(): ReactElement {
   const [typographyBlockUpdate] = useMutation<TypographyBlockUpdateAlign>(
     TYPOGRAPHY_BLOCK_UPDATE_ALIGN
   )
-  const { journey } = useJourney()
-  const { state } = useEditor()
-  const selectedBlock = state.selectedBlock as
+  const { add } = useCommand()
+  const {
+    state: { selectedBlock: stateSelectedBlock, selectedStep },
+    dispatch
+  } = useEditor()
+  const selectedBlock = stateSelectedBlock as
     | TreeBlock<TypographyBlock>
     | undefined
+
+  async function handleChange(align: TypographyAlign): Promise<void> {
+    if (selectedBlock != null && align != null) {
+      await add({
+        parameters: {
+          execute: { align },
+          undo: {
+            align: selectedBlock.align
+          }
+        },
+        async execute({ align }) {
+          dispatch({
+            type: 'SetEditorFocusAction',
+            selectedStep,
+            selectedBlock
+          })
+          await typographyBlockUpdate({
+            variables: {
+              id: selectedBlock.id,
+              input: { align }
+            },
+            optimisticResponse: {
+              typographyBlockUpdate: {
+                id: selectedBlock.id,
+                align,
+                __typename: 'TypographyBlock'
+              }
+            }
+          })
+        }
+      })
+    }
+  }
 
   const options = [
     {
@@ -55,25 +90,6 @@ export function Align(): ReactElement {
       icon: <AlignRightIcon />
     }
   ]
-
-  async function handleChange(align: TypographyAlign): Promise<void> {
-    if (selectedBlock != null && align != null && journey != null) {
-      await typographyBlockUpdate({
-        variables: {
-          id: selectedBlock.id,
-          journeyId: journey.id,
-          input: { align }
-        },
-        optimisticResponse: {
-          typographyBlockUpdate: {
-            id: selectedBlock.id,
-            align,
-            __typename: 'TypographyBlock'
-          }
-        }
-      })
-    }
-  }
 
   return (
     <ToggleButtonGroup
