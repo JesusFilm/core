@@ -3,7 +3,6 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 
 import {
-  getJourneysMock,
   getJourneysMockWithAcceptanceTag,
   getJourneysMockWithoutTagsEnglish,
   getJourneysMockWithoutTagsFrench,

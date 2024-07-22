@@ -1,4 +1,3 @@
-import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 
@@ -8,7 +7,6 @@ import { ThemeMode } from '@core/shared/ui/themes'
 import { Header } from './Header'
 
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-import { parameters } from '.storybook/preview'
 
 const HeaderStory: Meta<typeof Header> = {
   ...watchConfig,

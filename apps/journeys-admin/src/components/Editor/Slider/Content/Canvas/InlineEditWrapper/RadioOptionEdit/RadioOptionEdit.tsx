@@ -2,11 +2,15 @@ import { gql, useMutation } from '@apollo/client'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useCommand } from '@core/journeys/ui/CommandProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { RadioOption } from '@core/journeys/ui/RadioOption'
 import type { TreeBlock } from '@core/journeys/ui/block'
 
-import { RadioOptionBlockUpdateContent } from '../../../../../../../../__generated__/RadioOptionBlockUpdateContent'
+import {
+  RadioOptionBlockUpdateContent,
+  RadioOptionBlockUpdateContentVariables
+} from '../../../../../../../../__generated__/RadioOptionBlockUpdateContent'
 import { RadioOptionFields } from '../../../../../../../../__generated__/RadioOptionFields'
 import { InlineEditInput } from '../InlineEditInput'
 import { useOnClickOutside } from '../useOnClickOutside'
@@ -14,10 +18,9 @@ import { useOnClickOutside } from '../useOnClickOutside'
 export const RADIO_OPTION_BLOCK_UPDATE_CONTENT = gql`
   mutation RadioOptionBlockUpdateContent(
     $id: ID!
-    $journeyId: ID!
     $input: RadioOptionBlockUpdateInput!
   ) {
-    radioOptionBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+    radioOptionBlockUpdate(id: $id, input: $input) {
       id
       label
     }
@@ -31,30 +34,48 @@ export function RadioOptionEdit({
   ...radioOptionProps
 }: RadioOptionEditProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [radioOptionBlockUpdate] = useMutation<RadioOptionBlockUpdateContent>(
-    RADIO_OPTION_BLOCK_UPDATE_CONTENT
-  )
-  const { journey } = useJourney()
+  const [radioOptionBlockUpdate] = useMutation<
+    RadioOptionBlockUpdateContent,
+    RadioOptionBlockUpdateContentVariables
+  >(RADIO_OPTION_BLOCK_UPDATE_CONTENT)
+  const {
+    state: { selectedBlock, selectedStep },
+    dispatch
+  } = useEditor()
+  const { add } = useCommand()
   const [value, setValue] = useState(
     label === 'Option 1' || label === 'Option 2' ? '' : label
   )
 
   async function handleSaveBlock(): Promise<void> {
     const currentLabel = value.trim().replace(/\n/g, '')
-    if (journey == null || label === currentLabel) return
+    if (label === currentLabel) return
 
-    await radioOptionBlockUpdate({
-      variables: {
-        id,
-        journeyId: journey.id,
-        input: { label: currentLabel }
+    await add({
+      parameters: {
+        execute: { label: currentLabel },
+        undo: { label }
       },
-      optimisticResponse: {
-        radioOptionBlockUpdate: {
-          id,
-          __typename: 'RadioOptionBlock',
-          label: currentLabel
-        }
+      async execute({ label }) {
+        dispatch({
+          type: 'SetEditorFocusAction',
+          selectedBlock,
+          selectedStep
+        })
+
+        await radioOptionBlockUpdate({
+          variables: {
+            id,
+            input: { label }
+          },
+          optimisticResponse: {
+            radioOptionBlockUpdate: {
+              id,
+              __typename: 'RadioOptionBlock',
+              label
+            }
+          }
+        })
       }
     })
   }

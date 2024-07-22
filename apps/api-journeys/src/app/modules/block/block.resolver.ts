@@ -10,8 +10,6 @@ import { BlocksFilter } from '../../__generated__/graphql'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'
-
-import { resolveHttpAuthRuntimeConfig } from '@aws-sdk/client-ses/dist-types/auth/httpAuthExtensionConfiguration'
 import { BlockService } from './block.service'
 
 @Resolver('Block')

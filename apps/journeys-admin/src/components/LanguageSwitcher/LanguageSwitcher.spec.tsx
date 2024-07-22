@@ -21,6 +21,7 @@ jest.mock('react-i18next', () => ({
             'es',
             'fr',
             'id',
+            'th',
             'ja',
             'ru',
             'tr',

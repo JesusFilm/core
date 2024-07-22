@@ -3,23 +3,16 @@ import { MockedProvider } from '@apollo/client/testing'
 import { renderHook, waitFor } from '@testing-library/react'
 import { act } from 'react'
 
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../__generated__/BlockFields'
-import { JourneyFields as Journey } from '../../../__generated__/JourneyFields'
 
-import { navigateToBlockActionUpdateMock } from './useNavigateToBlockActionUpdate.mock'
+import { blockActionNavigateToBlockUpdateMock } from './useBlockActionNavigateToBlockUpdateMutation.mock'
 
-import { useNavigateToBlockActionUpdateMutation } from '.'
+import { useBlockActionNavigateToBlockUpdateMutation } from '.'
 
-describe('useNavigateToBlockActionUpdateMutation', () => {
-  const journey = {
-    id: 'journey-id'
-  } as unknown as Journey
-
+describe('useBlockActionNavigateToBlockUpdateMutation', () => {
   const block1: ButtonBlock = {
     __typename: 'ButtonBlock',
-    id: 'block1.id',
+    id: 'button2.id',
     parentBlockId: 'card1.id',
     parentOrder: 0,
     label: 'button',
@@ -34,21 +27,19 @@ describe('useNavigateToBlockActionUpdateMutation', () => {
   it('should update block action', async () => {
     const mockResult = jest
       .fn()
-      .mockReturnValue(navigateToBlockActionUpdateMock.result)
+      .mockReturnValue(blockActionNavigateToBlockUpdateMock.result)
 
     const { result } = renderHook(
-      () => useNavigateToBlockActionUpdateMutation(),
+      () => useBlockActionNavigateToBlockUpdateMutation(),
       {
         wrapper: ({ children }) => (
-          <JourneyProvider value={{ journey }}>
-            <MockedProvider
-              mocks={[
-                { ...navigateToBlockActionUpdateMock, result: mockResult }
-              ]}
-            >
-              {children}
-            </MockedProvider>
-          </JourneyProvider>
+          <MockedProvider
+            mocks={[
+              { ...blockActionNavigateToBlockUpdateMock, result: mockResult }
+            ]}
+          >
+            {children}
+          </MockedProvider>
         )
       }
     )
@@ -63,23 +54,21 @@ describe('useNavigateToBlockActionUpdateMutation', () => {
   it('should update cache', async () => {
     const cache = new InMemoryCache()
     cache.restore({
-      'ButtonBlock:block1.id': {
+      'ButtonBlock:button2.id': {
         ...block1
       }
     })
 
     const { result } = renderHook(
-      () => useNavigateToBlockActionUpdateMutation(),
+      () => useBlockActionNavigateToBlockUpdateMutation(),
       {
         wrapper: ({ children }) => (
-          <JourneyProvider value={{ journey }}>
-            <MockedProvider
-              mocks={[navigateToBlockActionUpdateMock]}
-              cache={cache}
-            >
-              {children}
-            </MockedProvider>
-          </JourneyProvider>
+          <MockedProvider
+            mocks={[blockActionNavigateToBlockUpdateMock]}
+            cache={cache}
+          >
+            {children}
+          </MockedProvider>
         )
       }
     )
@@ -88,13 +77,13 @@ describe('useNavigateToBlockActionUpdateMutation', () => {
       await result.current[0](block1, 'step2.id')
 
       await waitFor(() =>
-        expect(cache.extract()['ButtonBlock:block1.id']).toEqual({
+        expect(cache.extract()['ButtonBlock:button2.id']).toEqual({
           ...block1,
           action: {
             __typename: 'NavigateToBlockAction',
             gtmEventName: null,
-            parentBlockId: 'step1.id',
-            blockId: 'block1.id'
+            parentBlockId: 'button2.id',
+            blockId: 'step2.id'
           }
         })
       )

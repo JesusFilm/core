@@ -21,6 +21,5 @@ export interface TypographyBlockUpdateAlign {
 
 export interface TypographyBlockUpdateAlignVariables {
   id: string;
-  journeyId: string;
   input: TypographyBlockUpdateInput;
 }

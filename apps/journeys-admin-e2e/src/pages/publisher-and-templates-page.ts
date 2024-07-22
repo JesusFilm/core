@@ -1,5 +1,4 @@
 import { expect } from '@playwright/test'
-import dayjs from 'dayjs'
 import { Page } from 'playwright-core'
 import testData from '../utils/testData.json'
 export class Publisher {

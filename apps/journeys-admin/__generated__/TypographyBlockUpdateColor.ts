@@ -21,6 +21,5 @@ export interface TypographyBlockUpdateColor {
 
 export interface TypographyBlockUpdateColorVariables {
   id: string;
-  journeyId: string;
   input: TypographyBlockUpdateInput;
 }

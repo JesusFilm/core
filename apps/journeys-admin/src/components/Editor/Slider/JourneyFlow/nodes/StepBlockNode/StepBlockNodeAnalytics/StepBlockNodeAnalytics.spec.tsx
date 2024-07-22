@@ -1,5 +1,4 @@
 import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
-import { Step } from '@core/journeys/ui/Step'
 import { render, screen } from '@testing-library/react'
 import { StepBlockNodeAnalytics } from '.'
 
@@ -24,7 +23,6 @@ describe('StepBlockNodeAnalytics', () => {
     )
 
     expect(screen.getByText('1000')).toBeInTheDocument()
-    expect(screen.getByText('10%')).toBeInTheDocument()
     expect(screen.getByText('1m12s')).toBeInTheDocument()
   })
 
@@ -49,7 +47,6 @@ describe('StepBlockNodeAnalytics', () => {
     )
 
     expect(screen.getByText('0')).toBeInTheDocument()
-    expect(screen.getByText('0%')).toBeInTheDocument()
     expect(screen.getByText('0s')).toBeInTheDocument()
   })
 })

@@ -1,5 +1,3 @@
-import React from 'react'
-
 export const Swiper = ({ children, 'data-testid': dataTestId }) => (
   <div data-testid={dataTestId}>{children}</div>
 )

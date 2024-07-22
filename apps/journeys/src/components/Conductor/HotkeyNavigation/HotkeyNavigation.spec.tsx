@@ -1,6 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import Box from '@mui/material/Box'
-import { act, fireEvent, render, waitFor } from '@testing-library/react'
+import { act, render, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { usePlausible } from 'next-plausible'
 import TagManager from 'react-gtm-module'
@@ -11,14 +10,8 @@ import {
   STEP_PREVIOUS_EVENT_CREATE
 } from '@core/journeys/ui/Card/Card'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import {
-  TreeBlock,
-  blockHistoryVar,
-  treeBlocksVar
-} from '@core/journeys/ui/block'
+import { blockHistoryVar, treeBlocksVar } from '@core/journeys/ui/block'
 import { keyify } from '@core/journeys/ui/plausibleHelpers'
-
-import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 import {
   StepNextEventCreate_stepNextEventCreate as StepNextCreateResult,

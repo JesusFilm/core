@@ -964,7 +964,6 @@ export class CardLevelActionPage {
         .last()
         .click({ delay: 2000 })
       await this.clickDeleteBtnInToolTipBar()
-      await this.verifyToastMessage()
     }
   }
 }

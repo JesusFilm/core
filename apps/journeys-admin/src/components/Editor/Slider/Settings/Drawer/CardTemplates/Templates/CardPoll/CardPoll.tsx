@@ -1,9 +1,8 @@
 import { gql, useMutation } from '@apollo/client'
-import Box from '@mui/material/Box'
 import ButtonBase from '@mui/material/ButtonBase'
 import { useTranslation } from 'next-i18next'
 import Image from 'next/image'
-import { ReactElement } from 'react'
+import type { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import { CARD_FIELDS } from '@core/journeys/ui/Card/cardFields'
@@ -14,7 +13,7 @@ import { RADIO_OPTION_FIELDS } from '@core/journeys/ui/RadioOption/radioOptionFi
 import { RADIO_QUESTION_FIELDS } from '@core/journeys/ui/RadioQuestion/radioQuestionFields'
 import { TYPOGRAPHY_FIELDS } from '@core/journeys/ui/Typography/typographyFields'
 
-import {
+import type {
   CardPollCreate,
   CardPollCreateVariables
 } from '../../../../../../../../../__generated__/CardPollCreate'
@@ -212,16 +211,15 @@ export function CardPoll(): ReactElement {
   }
 
   return (
-    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-      <ButtonBase sx={{ borderRadius: 5 }} onClick={handleClick}>
-        <Image
-          width={128}
-          height={195}
-          src={cardPollImage}
-          alt="Card Poll Template"
-          draggable={false}
-        />
-      </ButtonBase>
-    </Box>
+    <ButtonBase sx={{ borderRadius: 5 }} onClick={handleClick}>
+      <Image
+        width={128}
+        height={192}
+        layout="responsive"
+        src={cardPollImage}
+        alt="Card Poll Template"
+        draggable={false}
+      />
+    </ButtonBase>
   )
 }

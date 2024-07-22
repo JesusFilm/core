@@ -1,4 +1,3 @@
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import {
   AuthAction,
   useUser,

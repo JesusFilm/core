@@ -6,22 +6,21 @@
 import { EmailActionInput } from "./globalTypes";
 
 // ====================================================
-// GraphQL mutation operation: EmailActionUpdate
+// GraphQL mutation operation: BlockActionEmailUpdate
 // ====================================================
 
-export interface EmailActionUpdate_blockUpdateEmailAction {
+export interface BlockActionEmailUpdate_blockUpdateEmailAction {
   __typename: "EmailAction";
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
 
-export interface EmailActionUpdate {
-  blockUpdateEmailAction: EmailActionUpdate_blockUpdateEmailAction;
+export interface BlockActionEmailUpdate {
+  blockUpdateEmailAction: BlockActionEmailUpdate_blockUpdateEmailAction;
 }
 
-export interface EmailActionUpdateVariables {
+export interface BlockActionEmailUpdateVariables {
   id: string;
-  journeyId: string;
   input: EmailActionInput;
 }
