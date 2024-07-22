@@ -22,6 +22,5 @@ export interface UpdateVideoBlockNextStep {
 
 export interface UpdateVideoBlockNextStepVariables {
   id: string;
-  journeyId: string;
   input: NavigateToBlockActionInput;
 }

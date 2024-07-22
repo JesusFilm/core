@@ -101,6 +101,7 @@ export function Drawer({
       sx={{
         '& .MuiDrawer-paper': {
           border: '1px solid',
+          borderBottom: 0,
           borderColor: 'divider',
           borderRadius: 3,
           borderBottomLeftRadius: 0,
@@ -118,7 +119,7 @@ export function Drawer({
       <Box
         data-testid="SettingsDrawerContent"
         className="swiper-no-swiping"
-        sx={{ flexGrow: 1, overflow: 'auto', mb: { md: 4 } }}
+        sx={{ flexGrow: 1, overflow: 'auto', pb: { sm: 4 } }}
       >
         {children}
       </Box>
