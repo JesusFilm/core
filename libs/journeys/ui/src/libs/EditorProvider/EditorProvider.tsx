@@ -145,12 +145,20 @@ interface SetAnalyticsAction {
   analytics?: JourneyAnalytics
 }
 
-interface SetCommandStateAction {
-  type: 'SetCommandStateAction'
-  selectedBlock?: TreeBlock
-  selectedStep?: TreeBlock<StepBlock>
+/**
+ * SetEditorFocusAction is a special action that allows setting multiple state
+ * properties at once. This is primarily used to set the UI position of the
+ * editor.
+ */
+export interface SetEditorFocusAction {
+  type: 'SetEditorFocusAction'
+  activeCanvasDetailsDrawer?: ActiveCanvasDetailsDrawer
   activeContent?: ActiveContent
   activeSlide?: ActiveSlide
+  selectedAttributeId?: string
+  selectedBlock?: TreeBlock
+  selectedGoalUrl?: string
+  selectedStep?: TreeBlock<StepBlock>
 }
 export type EditorAction =
   | SetActiveCanvasDetailsDrawerAction
@@ -166,7 +174,7 @@ export type EditorAction =
   | SetStepsAction
   | SetShowAnalyticsAction
   | SetAnalyticsAction
-  | SetCommandStateAction
+  | SetEditorFocusAction
 
 export const reducer = (
   state: EditorState,
@@ -191,11 +199,13 @@ export const reducer = (
     case 'SetActiveSlideAction':
       return {
         ...state,
-        activeContent: state.activeContent,
         activeSlide: action.activeSlide
       }
     case 'SetSelectedAttributeIdAction':
-      return { ...state, selectedAttributeId: action.selectedAttributeId }
+      return {
+        ...state,
+        selectedAttributeId: action.selectedAttributeId
+      }
     case 'SetSelectedBlockAction':
       return {
         ...state,
@@ -205,7 +215,10 @@ export const reducer = (
         activeSlide: ActiveSlide.Content
       }
     case 'SetSelectedBlockOnlyAction':
-      return { ...state, selectedBlock: action.selectedBlock }
+      return {
+        ...state,
+        selectedBlock: action.selectedBlock
+      }
     case 'SetSelectedBlockByIdAction':
       return {
         ...state,
@@ -247,30 +260,58 @@ export const reducer = (
         ...state,
         showAnalytics: action.showAnalytics
       }
-    case 'SetAnalyticsAction': {
+    case 'SetAnalyticsAction':
       return {
         ...state,
         analytics: action.analytics
       }
-    }
-    case 'SetCommandStateAction': {
-      return {
-        ...state,
-        selectedBlock:
-          action.selectedBlock != null
-            ? action.selectedBlock
-            : state.selectedBlock,
-        activeContent:
-          action.activeContent != null
-            ? action.activeContent
-            : state.activeContent,
-        selectedStep:
-          action.selectedStep != null
-            ? action.selectedStep
-            : state.selectedStep,
-        activeSlide:
-          action.activeSlide != null ? action.activeSlide : state.activeSlide
-      }
+    case 'SetEditorFocusAction': {
+      let stateCopy = { ...state }
+      const {
+        activeCanvasDetailsDrawer,
+        activeContent,
+        activeSlide,
+        selectedAttributeId,
+        selectedGoalUrl,
+        selectedBlock,
+        selectedStep
+      } = action
+      if (selectedStep != null)
+        stateCopy = reducer(stateCopy, {
+          type: 'SetSelectedStepAction',
+          selectedStep
+        })
+      if (selectedBlock != null)
+        stateCopy = reducer(stateCopy, {
+          type: 'SetSelectedBlockAction',
+          selectedBlock
+        })
+      if (activeSlide != null)
+        stateCopy = reducer(stateCopy, {
+          type: 'SetActiveSlideAction',
+          activeSlide
+        })
+      if (activeContent != null)
+        stateCopy = reducer(stateCopy, {
+          type: 'SetActiveContentAction',
+          activeContent
+        })
+      if (activeCanvasDetailsDrawer != null)
+        stateCopy = reducer(stateCopy, {
+          type: 'SetActiveCanvasDetailsDrawerAction',
+          activeCanvasDetailsDrawer
+        })
+      if (selectedAttributeId != null)
+        stateCopy = reducer(stateCopy, {
+          type: 'SetSelectedAttributeIdAction',
+          selectedAttributeId
+        })
+      if (selectedGoalUrl != null)
+        stateCopy = reducer(stateCopy, {
+          type: 'SetSelectedGoalUrlAction',
+          selectedGoalUrl
+        })
+      return stateCopy
     }
   }
 }
