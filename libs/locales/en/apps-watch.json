@@ -16,6 +16,7 @@
   "Strategies": "Strategies",
   "Journeys": "Journeys",
   "Videos": "Videos",
+  "<0>{`${heading} for every `}<1>interaction</1></0>": "<0>{`${heading} for every `}<1>interaction</1></0>",
   "Share": "Share",
   "Copy Link": "Copy Link",
   "Copy Code": "Copy Code",
