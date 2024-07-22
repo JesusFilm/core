@@ -1,11 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { PrismaService } from '../../../lib/prisma.service'
+import { ImporterBibleBooksService } from '../importerBibleBooks/importerBibleBooks.service'
+import { ImporterVideosService } from '../importerVideos/importerVideos.service'
 import { ImporterBibleCitationsService } from './importerBibleCitations.service'
 
 describe('ImporterBibleCitationsService', () => {
   let service: ImporterBibleCitationsService,
-    prismaService: DeepMockProxy<PrismaService>
+    prismaService: DeepMockProxy<PrismaService>,
+    videosService: DeepMockProxy<ImporterVideosService>,
+    bibleBooksService: DeepMockProxy<ImporterBibleBooksService>
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -14,12 +18,26 @@ describe('ImporterBibleCitationsService', () => {
         {
           provide: PrismaService,
           useValue: mockDeep<PrismaService>()
+        },
+        {
+          provide: ImporterBibleBooksService,
+          useValue: mockDeep<ImporterBibleBooksService>()
+        },
+        {
+          provide: ImporterVideosService,
+          useValue: mockDeep<ImporterVideosService>()
         }
       ]
     }).compile()
 
     service = module.get<ImporterBibleCitationsService>(
       ImporterBibleCitationsService
+    )
+    videosService = module.get<DeepMockProxy<ImporterVideosService>>(
+      ImporterVideosService
+    )
+    bibleBooksService = module.get<DeepMockProxy<ImporterBibleBooksService>>(
+      ImporterBibleBooksService
     )
     prismaService = module.get<PrismaService>(
       PrismaService
@@ -28,6 +46,8 @@ describe('ImporterBibleCitationsService', () => {
 
   describe('import', () => {
     it('should upsert bible citation', async () => {
+      videosService.ids = ['mockVideoId']
+      bibleBooksService.ids = ['1']
       await service.import({
         videoId: 'mockVideoId',
         osisId: 'Gen',
@@ -70,6 +90,8 @@ describe('ImporterBibleCitationsService', () => {
     })
 
     it('should save many bible citations', async () => {
+      videosService.ids = ['mockVideoId']
+      bibleBooksService.ids = ['1']
       await service.importMany([
         {
           videoId: 'mockVideoId',

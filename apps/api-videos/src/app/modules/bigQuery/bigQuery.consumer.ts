@@ -4,11 +4,13 @@ import get from 'lodash/get'
 
 import { PrismaService } from '../../lib/prisma.service'
 import { ImporterService } from '../importer/importer.service'
+import { ImporterBibleBookNamesService } from '../importer/importerBibleBookNames/importerBibleBookNames.service'
 import { ImporterBibleBooksService } from '../importer/importerBibleBooks/importerBibleBooks.service'
 import { ImporterBibleCitationsService } from '../importer/importerBibleCitations/importerBibleCitations.service'
 import { ImporterVideoSubtitlesService } from '../importer/importerVideoSubtitle/importerVideoSubtitle.service'
 import { ImporterVideoVariantsService } from '../importer/importerVideoVariants/importerVideoVariants.service'
 import { ImporterVideosService } from '../importer/importerVideos/importerVideos.service'
+
 import { BigQueryService } from './bigQuery.service'
 
 interface BigQueryRowError {
@@ -31,6 +33,7 @@ export class BigQueryConsumer extends WorkerHost {
     private readonly importerVideoVariantsService: ImporterVideoVariantsService,
     private readonly importerVideoSubtitleService: ImporterVideoSubtitlesService,
     private readonly importerBibleBooksService: ImporterBibleBooksService,
+    private readonly importerBibleBookNamesService: ImporterBibleBookNamesService,
     private readonly importerBibleCitationsService: ImporterBibleCitationsService
   ) {
     super()
@@ -48,6 +51,12 @@ export class BigQueryConsumer extends WorkerHost {
       },
       {
         table:
+          'jfp-data-warehouse.jfp_mmdb_prod.core_bibleBookDescriptors_arclight_data',
+        service: this.importerBibleBookNamesService,
+        hasUpdatedAt: false
+      },
+      {
+        table:
           'jfp-data-warehouse.jfp_mmdb_prod.core_videoBibleCitation_arclight_data',
         service: this.importerBibleCitationsService,
         hasUpdatedAt: true
@@ -58,6 +67,7 @@ export class BigQueryConsumer extends WorkerHost {
   async process(_job: Job): Promise<void> {
     await this.importerVideosService.getUsedSlugs()
     await this.importerVideoVariantsService.getExistingIds()
+    await this.importerBibleBooksService.getExistingIds()
 
     for (const index in this.tables) {
       try {
@@ -78,6 +88,7 @@ export class BigQueryConsumer extends WorkerHost {
     this.importerVideosService.usedSlugs = undefined
     this.importerVideosService.ids = []
     this.importerVideoVariantsService.ids = []
+    this.importerBibleBooksService.ids = []
   }
 
   async processTable(

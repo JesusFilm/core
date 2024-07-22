@@ -9,6 +9,7 @@ import { ImporterVideoSubtitlesService } from '../importer/importerVideoSubtitle
 import { ImporterVideoVariantsService } from '../importer/importerVideoVariants/importerVideoVariants.service'
 import { ImporterVideosService } from '../importer/importerVideos/importerVideos.service'
 
+import { ImporterBibleBookNamesService } from '../importer/importerBibleBookNames/importerBibleBookNames.service'
 import { BigQueryConsumer } from './bigQuery.consumer'
 import { BigQueryService } from './bigQuery.service'
 
@@ -50,6 +51,10 @@ describe('BigQueryConsumer', () => {
         {
           provide: ImporterBibleCitationsService,
           useValue: mockDeep<ImporterBibleCitationsService>()
+        },
+        {
+          provide: ImporterBibleBookNamesService,
+          useValue: mockDeep<ImporterBibleBookNamesService>()
         }
       ]
     }).compile()

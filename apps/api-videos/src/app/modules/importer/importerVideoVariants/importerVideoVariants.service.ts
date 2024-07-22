@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common'
-import omit from 'lodash/omit'
 import { z } from 'zod'
 
 import { Prisma } from '.prisma/api-videos-client'
