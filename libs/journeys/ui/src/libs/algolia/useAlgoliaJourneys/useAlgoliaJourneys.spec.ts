@@ -2,13 +2,20 @@ import {
   InstantSearchApi,
   useCurrentRefinements,
   useHits,
-  useInstantSearch
+  useInstantSearch,
+  useRefinementList
 } from 'react-instantsearch'
-import { algoliaJourneys, algoliaRefinements, algoliaResults } from './data'
+import {
+  algoliaJourneys,
+  algoliaLanguageRefinements,
+  algoliaRefinements,
+  algoliaResults
+} from './data'
 import { transformItems, useAlgoliaJourneys } from './useAlgoliaJourneys'
 
 import { CurrentRefinementsRenderState } from 'instantsearch.js/es/connectors/current-refinements/connectCurrentRefinements'
 import { HitsRenderState } from 'instantsearch.js/es/connectors/hits/connectHits'
+import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 
 jest.mock('react-instantsearch')
 
@@ -29,6 +36,11 @@ describe('useAlgoliaJourneys', () => {
     useCurrentRefinementsMocked.mockReturnValue({
       items: []
     } as unknown as CurrentRefinementsRenderState)
+
+    const useRefinementListMocked = jest.mocked(useRefinementList)
+    useRefinementListMocked.mockReturnValue({
+      items: []
+    } as unknown as RefinementListRenderState)
   })
 
   it('should have transformed algolia hits into algolia journeys', () => {
@@ -78,5 +90,18 @@ describe('useAlgoliaJourneys', () => {
     } as unknown as CurrentRefinementsRenderState)
     const { refinements } = useAlgoliaJourneys()
     expect(refinements).toEqual(['Depression', 'Acceptance'])
+  })
+
+  it('should not return language refinements', () => {
+    const useRefinementListMocked = jest.mocked(useRefinementList)
+    useRefinementListMocked.mockReturnValue({
+      items: algoliaLanguageRefinements
+    } as unknown as RefinementListRenderState)
+    const useCurrentRefinementsMocked = jest.mocked(useCurrentRefinements)
+    useCurrentRefinementsMocked.mockReturnValue({
+      items: algoliaRefinements
+    } as unknown as CurrentRefinementsRenderState)
+    const { refinements } = useAlgoliaJourneys()
+    expect(refinements.includes('English')).toBeFalsy()
   })
 })
