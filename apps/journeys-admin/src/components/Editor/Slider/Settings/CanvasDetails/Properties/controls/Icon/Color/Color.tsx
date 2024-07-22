@@ -4,6 +4,8 @@ import { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 
+import { useCommand } from '@core/journeys/ui/CommandProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import {
   IconBlockColorUpdate,
   IconBlockColorUpdateVariables
@@ -33,22 +35,45 @@ export function Color({ id, iconColor }: ColorProps): ReactElement {
     IconBlockColorUpdate,
     IconBlockColorUpdateVariables
   >(ICON_BLOCK_COLOR_UPDATE)
+  const {
+    state: { selectedBlock, selectedStep },
+    dispatch
+  } = useEditor()
+  const { add } = useCommand()
 
   async function handleChange(color: IconColor): Promise<void> {
     if (color !== iconColor && color != null) {
-      await iconBlockColorUpdate({
-        variables: {
-          id,
-          input: {
+      await add({
+        parameters: {
+          execute: {
             color
+          },
+          undo: {
+            color: iconColor
           }
         },
-        optimisticResponse: {
-          iconBlockUpdate: {
-            __typename: 'IconBlock',
-            id,
-            color
-          }
+        async execute({ color }) {
+          dispatch({
+            type: 'SetEditorFocusAction',
+            selectedBlock,
+            selectedStep
+          })
+
+          await iconBlockColorUpdate({
+            variables: {
+              id,
+              input: {
+                color
+              }
+            },
+            optimisticResponse: {
+              iconBlockUpdate: {
+                __typename: 'IconBlock',
+                id,
+                color
+              }
+            }
+          })
         }
       })
     }
