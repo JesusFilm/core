@@ -5,7 +5,7 @@ import castArray from 'lodash/castArray'
 import difference from 'lodash/difference'
 import { useTranslation } from 'next-i18next'
 import { useRouter } from 'next/router'
-import { ReactElement, useEffect } from 'react'
+import { ReactElement } from 'react'
 
 import { TemplateSections } from '../TemplateSections'
 
@@ -23,23 +23,8 @@ export function TemplateGallery({
   const { t } = useTranslation('libs-journeys-ui')
   const router = useRouter()
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: set initial language filter to english
-  useEffect(() => {
-    if (router.isReady) {
-      void router.push(
-        {
-          query: {
-            ...router.query,
-            languageIds: ['529']
-          }
-        },
-        undefined
-      )
-    }
-  }, [])
-
   const selectedLanguageIds = router.isReady
-    ? castArray(router.query.languageIds ?? [])
+    ? castArray(router.query.languageIds ?? ['529'])
     : undefined
 
   const selectedTagIds = castArray(router.query.tagIds ?? [])
