@@ -4,7 +4,7 @@ import Container from '@mui/material/Container'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
-import { ReactElement, useEffect } from 'react'
+import { ReactElement } from 'react'
 
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 import { ThemeMode } from '@core/shared/ui/themes'
@@ -14,17 +14,19 @@ import { VideoChildFields } from '../../../__generated__/VideoChildFields'
 import { PageWrapper } from '../PageWrapper'
 import { VideoGrid } from '../VideoGrid/VideoGrid'
 
+import { Index } from 'react-instantsearch'
 import { FilterList } from './FilterList'
 import { VideosHero } from './Hero'
 import { VideosSubHero } from './SubHero'
-import { checkFilterApplied } from './utils/checkFilterApplied'
 import { getQueryParameters } from './utils/getQueryParameters'
 import type { VideoPageFilter } from './utils/getQueryParameters'
-import { useVideoSearch } from './utils/useVideoSearch'
-
 interface VideoProps {
   videos: VideoChildFields[]
 }
+
+// TODO:
+// fix same data being returned - need to set up configuration properly
+// fix urls
 
 export function VideosPage({ videos }: VideoProps): ReactElement {
   const router = useRouter()
@@ -37,9 +39,6 @@ export function VideosPage({ videos }: VideoProps): ReactElement {
     })
 
   const filter = getQueryParameters()
-
-  const { algoliaVideos, isEnd, loading, handleSearch, handleLoadMore } =
-    useVideoSearch({ filter })
 
   function handleFilterChange(filter: VideoPageFilter): void {
     const params = new URLSearchParams()
@@ -57,23 +56,7 @@ export function VideosPage({ videos }: VideoProps): ReactElement {
     void router.push(`/watch/videos?${params.toString()}`, undefined, {
       shallow: true
     })
-    void handleSearch(filter, 0)
   }
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-  useEffect(() => {
-    const { title, availableVariantLanguageIds, subtitleLanguageIds } = filter
-    if (checkFilterApplied(filter)) {
-      void handleSearch(
-        {
-          title,
-          availableVariantLanguageIds,
-          subtitleLanguageIds
-        },
-        0
-      )
-    }
-  }, [])
 
   return (
     <PageWrapper
@@ -87,32 +70,24 @@ export function VideosPage({ videos }: VideoProps): ReactElement {
       </Container>
       <Divider sx={{ height: 2, background: 'rgba(33, 33, 33, 0.08)' }} />
       <Container maxWidth="xxl" sx={{ py: 12 }}>
-        <Stack
-          direction={{ xs: 'column', xl: 'row' }}
-          spacing={{ xs: 4, xl: 8 }}
-        >
-          <Box sx={{ minWidth: '278px' }}>
-            <FilterList
-              filter={filter}
-              onChange={handleFilterChange}
-              languagesData={languagesData}
-              languagesLoading={languagesLoading}
-            />
-          </Box>
-          <Box sx={{ width: '100%' }}>
-            <VideoGrid
-              videos={
-                algoliaVideos.length === 0 && !checkFilterApplied(filter)
-                  ? localVideos
-                  : algoliaVideos
-              }
-              onLoadMore={handleLoadMore}
-              loading={loading}
-              hasNextPage={!isEnd}
-              variant="expanded"
-            />
-          </Box>
-        </Stack>
+        <Index indexName="video-variants-stg">
+          <Stack
+            direction={{ xs: 'column', xl: 'row' }}
+            spacing={{ xs: 4, xl: 8 }}
+          >
+            <Box sx={{ minWidth: '278px' }}>
+              <FilterList
+                filter={filter}
+                onChange={handleFilterChange}
+                languagesData={languagesData}
+                languagesLoading={languagesLoading}
+              />
+            </Box>
+            <Box sx={{ width: '100%' }}>
+              <VideoGrid videos={localVideos} variant="expanded" showLoadMore />
+            </Box>
+          </Stack>
+        </Index>
       </Container>
     </PageWrapper>
   )

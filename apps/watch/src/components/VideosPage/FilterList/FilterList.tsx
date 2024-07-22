@@ -14,6 +14,7 @@ import { SubmitListener } from '@core/shared/ui/SubmitListener'
 import { GetLanguages } from '../../../../__generated__/GetLanguages'
 import { VideoPageFilter } from '../utils/getQueryParameters'
 
+import { useRefinementList, useSearchBox } from 'react-instantsearch'
 import { LanguagesFilter } from './LanguagesFilter'
 
 const subtitleLanguageIds = [
@@ -86,9 +87,40 @@ export function FilterList({
   languagesLoading
 }: FilterListProps): ReactElement {
   const { t } = useTranslation()
-  const subtitleLanguages = languagesData?.languages.filter((language) =>
-    subtitleLanguageIds.includes(language.id)
-  )
+
+  const { refine } = useSearchBox()
+  const { items: languageItems, refine: refineLanguages } = useRefinementList({
+    attribute: 'languageId',
+    limit: 5000
+  })
+  const { items: subtitleItems, refine: refineSubtitles } = useRefinementList({
+    attribute: 'subtitles',
+    limit: 5000
+  })
+
+  function filteredLanguages() {
+    const languagesMap = new Map(
+      languagesData?.languages.map((language) => [language.id, language])
+    )
+    return languageItems
+      .map((item) => languagesMap.get(item.value))
+      .filter((language) => language !== undefined)
+  }
+
+  function filteredSubtitles() {
+    const selectedSubtitles = languagesData?.languages.filter((language) =>
+      subtitleLanguageIds.includes(language.id)
+    )
+    const subtitlesMap = new Map(
+      selectedSubtitles?.map((language) => [language.id, language])
+    )
+    return subtitleItems
+      .map((item) => subtitlesMap.get(item.value))
+      .filter((subtitle) => subtitle !== undefined)
+  }
+
+  const languages = filteredLanguages()
+  const subtitles = filteredSubtitles()
 
   function languageOptionFromIds(ids?: string[]): LanguageOption {
     if (ids == null || ids.length === 0) return { id: '' }
@@ -127,6 +159,11 @@ export function FilterList({
       title:
         values.title != null && values.title !== '' ? values.title : undefined
     })
+
+    if (values.title != null) refine(values.title)
+    if (values.language != null) refineLanguages(values.language.id)
+    if (values.subtitleLanguage != null)
+      refineSubtitles(values.subtitleLanguage.id)
   }
 
   return (
@@ -147,8 +184,9 @@ export function FilterList({
                 await setFieldValue('language', language)
               }
               value={values.language}
-              languages={languagesData?.languages}
+              languages={languages}
               loading={languagesLoading}
+              helperText={`${languages.length} languages`}
             />
           </Stack>
           <Stack spacing={2}>
@@ -161,9 +199,9 @@ export function FilterList({
                 await setFieldValue('subtitleLanguage', subtitleLanguage)
               }
               value={values.subtitleLanguage}
-              languages={subtitleLanguages}
+              languages={subtitles}
               loading={languagesLoading}
-              helperText="54 languages"
+              helperText={`${subtitles.length} languages`}
             />
           </Stack>
           <Stack spacing={2}>

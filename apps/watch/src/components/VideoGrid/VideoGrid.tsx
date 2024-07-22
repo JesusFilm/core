@@ -4,7 +4,7 @@ import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import { ComponentProps, ReactElement } from 'react'
 
-import { useHits } from 'react-instantsearch'
+import { useInfiniteHits } from 'react-instantsearch'
 import { VideoChildFields } from '../../../__generated__/VideoChildFields'
 import { VideoCard } from '../VideoCard'
 import { transformAlgoliaVideos } from '../VideosPage/utils/transformAlgoliaVideos'
@@ -13,20 +13,19 @@ interface VideoGridProps {
   videos?: VideoChildFields[]
   loading?: boolean
   hasNextPage?: boolean
-  onLoadMore?: () => void
+  showLoadMore?: boolean
   containerSlug?: string
   variant?: ComponentProps<typeof VideoCard>['variant']
 }
 
 export function VideoGrid({
   loading,
-  hasNextPage,
-  onLoadMore,
   videos: localVideos,
+  showLoadMore = false,
   containerSlug,
   variant = 'expanded'
 }: VideoGridProps): ReactElement {
-  const { hits } = useHits({
+  const { hits, showMore, isLastPage } = useInfiniteHits({
     transformItems: transformAlgoliaVideos
   })
 
@@ -77,21 +76,21 @@ export function VideoGrid({
           </Grid>
         </>
       )}
-      {onLoadMore != null && (
+      {showLoadMore && (
         <Grid item xs={12}>
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
             <LoadingButton
               variant="outlined"
-              onClick={onLoadMore}
+              onClick={showMore}
               loading={loading}
               startIcon={<AddRounded />}
-              disabled={hasNextPage !== true}
+              disabled={isLastPage}
               loadingPosition="start"
               size="medium"
             >
               {loading === true
                 ? 'Loading...'
-                : hasNextPage === true
+                : isLastPage !== true
                   ? 'Load More'
                   : 'No More Videos'}
             </LoadingButton>

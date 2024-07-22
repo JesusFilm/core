@@ -13,7 +13,7 @@ import { PageWrapper } from '../PageWrapper'
 import { VideoGrid } from '../VideoGrid'
 
 import { SearchBar } from '@core/journeys/ui/Searchbar'
-import { Index, useHits } from 'react-instantsearch'
+import { Index } from 'react-instantsearch'
 import { HomeHero } from './HomeHero'
 import { SeeAllVideos } from './SeeAllVideos'
 
@@ -44,7 +44,7 @@ export function WatchHomePage({ videos }: WatchHomePageProps): ReactElement {
               <Box sx={{ pb: 10 }}>
                 <SearchBar />
               </Box>
-              <VideoGrid videos={videos} variant="contained" />
+              <VideoGrid variant="contained" />
             </Index>
             <SeeAllVideos />
             <Box
