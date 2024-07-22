@@ -6,22 +6,21 @@
 import { LinkActionInput } from "./globalTypes";
 
 // ====================================================
-// GraphQL mutation operation: LinkActionUpdate
+// GraphQL mutation operation: BlockActionLinkUpdate
 // ====================================================
 
-export interface LinkActionUpdate_blockUpdateLinkAction {
+export interface BlockActionLinkUpdate_blockUpdateLinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
-export interface LinkActionUpdate {
-  blockUpdateLinkAction: LinkActionUpdate_blockUpdateLinkAction;
+export interface BlockActionLinkUpdate {
+  blockUpdateLinkAction: BlockActionLinkUpdate_blockUpdateLinkAction;
 }
 
-export interface LinkActionUpdateVariables {
+export interface BlockActionLinkUpdateVariables {
   id: string;
-  journeyId: string;
   input: LinkActionInput;
 }

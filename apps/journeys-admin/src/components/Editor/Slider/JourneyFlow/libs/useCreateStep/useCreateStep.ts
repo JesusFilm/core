@@ -11,10 +11,9 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../__generated__/globalTypes'
-import { useBlockDeleteMutation } from '../../../../../../libs/useBlockDeleteMutation'
+import { useBlockActionNavigateToBlockUpdateMutation } from '../../../../../../libs/useBlockActionNavigateToBlockUpdateMutation'
 import { useBlockOrderUpdateMutation } from '../../../../../../libs/useBlockOrderUpdateMutation'
 import { useBlockRestoreMutation } from '../../../../../../libs/useBlockRestoreMutation'
-import { useNavigateToBlockActionUpdateMutation } from '../../../../../../libs/useNavigateToBlockActionUpdateMutation'
 import { useStepAndCardBlockCreateMutation } from '../../../../../../libs/useStepAndCardBlockCreateMutation'
 import { useStepBlockNextBlockUpdateMutation } from '../../../../../../libs/useStepBlockNextBlockUpdateMutation'
 import { RawEdgeSource, convertToEdgeSource } from '../convertToEdgeSource'
@@ -57,7 +56,8 @@ export function useCreateStep(): (
     }
   })
   const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
-  const [navigateToBlockActionUpdate] = useNavigateToBlockActionUpdateMutation()
+  const [actionNavigateToBlockUpdate] =
+    useBlockActionNavigateToBlockUpdateMutation()
   const [blockOrderUpdate] = useBlockOrderUpdateMutation()
 
   return async function createStep({
@@ -172,7 +172,7 @@ export function useCreateStep(): (
           step != null ? [step] : [],
           edgeSource.blockId
         )
-        if (block != null) await navigateToBlockActionUpdate(block, newStepId)
+        if (block != null) await actionNavigateToBlockUpdate(block, newStepId)
         break
       }
     }

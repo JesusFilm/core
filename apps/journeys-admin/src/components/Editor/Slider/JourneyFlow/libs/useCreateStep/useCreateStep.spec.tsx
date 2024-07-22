@@ -16,8 +16,8 @@ import {
   StepBlockNextBlockUpdate,
   StepBlockNextBlockUpdateVariables
 } from '../../../../../../../__generated__/StepBlockNextBlockUpdate'
+import { blockActionNavigateToBlockUpdateMock } from '../../../../../../libs/useBlockActionNavigateToBlockUpdateMutation/useBlockActionNavigateToBlockUpdateMutation.mock'
 import { blockOrderUpdateMock } from '../../../../../../libs/useBlockOrderUpdateMutation/useBlockOrderUpdateMutation.mock'
-import { navigateToBlockActionUpdateMock } from '../../../../../../libs/useNavigateToBlockActionUpdateMutation/useNavigateToBlockActionUpdate.mock'
 import { stepAndCardBlockCreateMock } from '../../../../../../libs/useStepAndCardBlockCreateMutation/useStepAndCardBlockCreateMutation.mock'
 import { STEP_BLOCK_NEXT_BLOCK_UPDATE } from '../../../../../../libs/useStepBlockNextBlockUpdateMutation/useStepBlockNextBlockUpdateMutation'
 
@@ -52,14 +52,13 @@ blockOrderUpdateMock.result = jest.fn(() => ({
   }
 }))
 
-navigateToBlockActionUpdateMock.request.variables = {
+blockActionNavigateToBlockUpdateMock.request.variables = {
   id: 'block1.id',
-  journeyId: 'journey-id',
   input: {
     blockId: 'newStep.id'
   }
 }
-navigateToBlockActionUpdateMock.result = jest.fn(() => ({
+blockActionNavigateToBlockUpdateMock.result = jest.fn(() => ({
   data: {
     blockUpdateNavigateToBlockAction: {
       __typename: 'NavigateToBlockAction',
@@ -259,7 +258,10 @@ describe('useCreateStep', () => {
     const { result: hook } = renderHook(() => useCreateStep(), {
       wrapper: ({ children }) => (
         <MockedProvider
-          mocks={[stepAndCardBlockCreateMock, navigateToBlockActionUpdateMock]}
+          mocks={[
+            stepAndCardBlockCreateMock,
+            blockActionNavigateToBlockUpdateMock
+          ]}
         >
           <JourneyProvider value={{ journey: defaultJourney }}>
             <EditorProvider initialState={{ steps: [step1] }}>
@@ -280,6 +282,6 @@ describe('useCreateStep', () => {
         })
     )
 
-    expect(navigateToBlockActionUpdateMock.result).toHaveBeenCalled()
+    expect(blockActionNavigateToBlockUpdateMock.result).toHaveBeenCalled()
   })
 })
