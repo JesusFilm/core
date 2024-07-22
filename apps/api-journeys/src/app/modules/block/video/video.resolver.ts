@@ -193,7 +193,8 @@ export class VideoBlockResolver {
         where: {
           parentBlockId: input.parentBlockId,
           typename: 'VideoBlock',
-          id: { not: block.id }
+          id: { not: block.id },
+          deletedAt: null
         }
       })
       if (existingVideoOnParent != null)

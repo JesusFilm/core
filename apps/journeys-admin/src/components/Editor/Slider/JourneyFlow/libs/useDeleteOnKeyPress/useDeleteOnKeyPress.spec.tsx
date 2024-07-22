@@ -14,6 +14,9 @@ import { StepFields as StepBlock } from '../../../../../../../__generated__/Step
 import { useBlockDeleteMutation } from '../../../../../../libs/useBlockDeleteMutation'
 import { useDeleteEdge } from '../useDeleteEdge'
 
+import { MockedProvider } from '@apollo/client/testing'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 import { useDeleteOnKeyPress } from './useDeleteOnKeyPress'
 
 jest.mock('reactflow', () => {
@@ -39,6 +42,7 @@ jest.mock('../../../../../../libs/useBlockDeleteMutation', () => {
     useBlockDeleteMutation: jest.fn()
   }
 })
+
 const mockUseBlockDeleteMutation =
   useBlockDeleteMutation as jest.MockedFunction<typeof useBlockDeleteMutation>
 
@@ -69,7 +73,9 @@ describe('useDeleteOnKeyPress', () => {
 
     const { result } = renderHook(() => useDeleteOnKeyPress(), {
       wrapper: ({ children }) => (
-        <EditorProvider initialState={initialState}>{children}</EditorProvider>
+        <EditorProvider initialState={initialState}>
+          <MockedProvider>{children}</MockedProvider>
+        </EditorProvider>
       )
     })
 
@@ -87,13 +93,18 @@ describe('useDeleteOnKeyPress', () => {
     } as unknown as TreeBlock<StepBlock>
     const initialState = {
       selectedBlock: stepBlock,
-      activeSlide: ActiveSlide.JourneyFlow
+      activeSlide: ActiveSlide.JourneyFlow,
+      steps: [stepBlock]
     } as unknown as EditorState
 
     mockUseKeyPress.mockReturnValueOnce(true)
     renderHook(() => useDeleteOnKeyPress(), {
       wrapper: ({ children }) => (
-        <EditorProvider initialState={initialState}>{children}</EditorProvider>
+        <JourneyProvider value={{ journey: defaultJourney }}>
+          <EditorProvider initialState={initialState}>
+            <MockedProvider>{children}</MockedProvider>
+          </EditorProvider>
+        </JourneyProvider>
       )
     })
     await waitFor(async () => expect(deleteBlock).toHaveBeenCalled())

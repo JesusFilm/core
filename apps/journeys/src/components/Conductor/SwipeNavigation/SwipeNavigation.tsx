@@ -73,6 +73,7 @@ export function SwipeNavigation({
       // libs/journeys/ui/src/components/Card/Card.tsx
       // journeys/src/components/Conductor/NavigationButton/NavigationButton.tsx
       // journeys/src/components/Conductor/SwipeNavigation/SwipeNavigation.tsx
+      // journeys/src/components/Conductor/HotkeyNavigation/HotkeyNavigation.tsx
       function handleNextNavigationEventCreate(): void {
         const id = uuidv4()
         const stepName = getStepHeading(
@@ -107,6 +108,7 @@ export function SwipeNavigation({
 
         if (journey != null)
           plausible('navigateNextStep', {
+            u: `${window.location.origin}/${journey.id}/${input.blockId}`,
             props: {
               ...input,
               key: keyify({
@@ -140,6 +142,7 @@ export function SwipeNavigation({
       // libs/journeys/ui/src/components/Card/Card.tsx
       // journeys/src/components/Conductor/NavigationButton/NavigationButton.tsx
       // journeys/src/components/Conductor/SwipeNavigation/SwipeNavigation.tsx
+      // journeys/src/components/Conductor/HotkeyNavigation/HotkeyNavigation.tsx
       function handlePreviousNavigationEventCreate(): void {
         const id = uuidv4()
         const stepName = getStepHeading(
@@ -172,6 +175,7 @@ export function SwipeNavigation({
         })
         if (journey != null)
           plausible('navigatePreviousStep', {
+            u: `${window.location.origin}/${journey.id}/${input.blockId}`,
             props: {
               ...input,
               key: keyify({
