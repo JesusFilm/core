@@ -7,9 +7,13 @@ import { useTranslation } from 'react-i18next'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../../__generated__/BlockFields'
-import { TextResponseIntegrationUpdate } from '../../../../../../../../../../../../__generated__/TextResponseIntegrationUpdate'
+import {
+  TextResponseIntegrationUpdate,
+  TextResponseIntegrationUpdateVariables
+} from '../../../../../../../../../../../../__generated__/TextResponseIntegrationUpdate'
 import { useIntegrationQuery } from '../../../../../../../../../../../libs/useIntegrationQuery'
 
+import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { SelectChangeEvent } from '@mui/material/Select'
 import { Select } from '../Select'
@@ -19,7 +23,7 @@ export const TEXT_RESPONSE_INTEGRATION_UPDATE = gql`
     $id: ID!, 
     $input: TextResponseBlockUpdateInput!
   ) {
-    textResponseBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+    textResponseBlockUpdate(id: $id, input: $input) {
       id
       integrationId
     }
@@ -29,13 +33,17 @@ export const TEXT_RESPONSE_INTEGRATION_UPDATE = gql`
 export function Integrations(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
-  const { state } = useEditor()
+  const { state, dispatch } = useEditor()
   const selectedBlock = state.selectedBlock as
     | TreeBlock<TextResponseBlock>
     | undefined
 
-  const [textResponseIntegrationUpdate] =
-    useMutation<TextResponseIntegrationUpdate>(TEXT_RESPONSE_INTEGRATION_UPDATE)
+  const { add } = useCommand()
+
+  const [textResponseIntegrationUpdate] = useMutation<
+    TextResponseIntegrationUpdate,
+    TextResponseIntegrationUpdateVariables
+  >(TEXT_RESPONSE_INTEGRATION_UPDATE)
 
   const { data } = useIntegrationQuery({
     teamId: activeTeam?.id as string
@@ -60,19 +68,33 @@ export function Integrations(): ReactElement {
 
     if (integrationId == null) return
 
-    await textResponseIntegrationUpdate({
-      variables: {
-        id: selectedBlock.id,
-        input: {
-          integrationId
-        }
+    await add({
+      parameters: {
+        execute: { integrationId },
+        undo: { integrationId: selectedBlock.integrationId }
       },
-      optimisticResponse: {
-        textResponseBlockUpdate: {
-          id: selectedBlock.id,
-          __typename: 'TextResponseBlock',
-          integrationId
-        }
+      async execute({ integrationId }) {
+        dispatch({
+          type: 'SetEditorFocusAction',
+          selectedBlock,
+          selectedStep: state.selectedStep,
+          selectedAttributeId: state.selectedAttributeId
+        })
+        await textResponseIntegrationUpdate({
+          variables: {
+            id: selectedBlock.id,
+            input: {
+              integrationId
+            }
+          },
+          optimisticResponse: {
+            textResponseBlockUpdate: {
+              id: selectedBlock.id,
+              __typename: 'TextResponseBlock',
+              integrationId
+            }
+          }
+        })
       }
     })
   }
