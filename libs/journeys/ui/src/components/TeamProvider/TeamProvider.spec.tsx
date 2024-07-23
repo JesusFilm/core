@@ -23,7 +23,7 @@ const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
 >
 
 const TestComponent = (): ReactElement => {
-  const { query, activeTeam, setActiveTeam } = useTeam()
+  const { query, activeTeam, setActiveTeam, refetch } = useTeam()
 
   return (
     <>
@@ -35,8 +35,15 @@ const TestComponent = (): ReactElement => {
         <div key={value.id}>{value.title}</div>
       ))}
 
-      <button onClick={() => setActiveTeam(query.data?.teams[1] ?? null)}>
+      <button
+        type="button"
+        onClick={() => setActiveTeam(query.data?.teams[1] ?? null)}
+      >
         Change active to second team
+      </button>
+
+      <button type="button" onClick={() => refetch()}>
+        Refetch
       </button>
     </>
   )
@@ -128,7 +135,9 @@ describe('TeamProvider', () => {
     await waitFor(() =>
       expect(getByText('activeTeam: my first team')).toBeInTheDocument()
     )
-    fireEvent.click(getByRole('button'))
+    fireEvent.click(
+      getByRole('button', { name: 'Change active to second team' })
+    )
     expect(getByText('activeTeam: my second team')).toBeInTheDocument()
   })
 
@@ -149,5 +158,28 @@ describe('TeamProvider', () => {
         }
       })
     })
+  })
+
+  it('should refetch', async () => {
+    const result = jest.fn(() => ({ ...getTeamsMock.result }))
+    const refetchMock = {
+      ...getTeamsMock,
+      result
+    }
+
+    const { getByText, getByRole } = render(
+      <MockedProvider mocks={[getTeamsMock, refetchMock]}>
+        <TeamProvider>
+          <TestComponent />
+        </TeamProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(getByText('activeTeam: my first team')).toBeInTheDocument()
+    )
+    fireEvent.click(getByRole('button', { name: 'Refetch' }))
+
+    await waitFor(() => expect(result).toHaveBeenCalled())
   })
 })
