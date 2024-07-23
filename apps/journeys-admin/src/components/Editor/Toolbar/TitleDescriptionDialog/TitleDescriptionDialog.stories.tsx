@@ -6,10 +6,9 @@ import { ReactElement, useState } from 'react'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
-import {
-  JOURNEY_TITLE_DESCRIPTION_UPDATE,
-  TitleDescriptionDialog
-} from './TitleDescriptionDialog'
+import { TitleDescriptionDialog } from './TitleDescriptionDialog'
+
+import { JOURNEY_SETTINGS_UPDATE } from '../../../../libs/useJourneyUpdateMutation/useJourneyUpdateMutation'
 
 const TitleDialogStory: Meta<typeof TitleDescriptionDialog> = {
   ...journeysAdminConfig,
@@ -48,7 +47,7 @@ export const Default = {
     mocks: [
       {
         request: {
-          query: JOURNEY_TITLE_DESCRIPTION_UPDATE,
+          query: JOURNEY_SETTINGS_UPDATE,
           variables: {
             id: defaultJourney.id,
             input: {
@@ -76,7 +75,7 @@ export const Error = {
     mocks: [
       {
         request: {
-          query: JOURNEY_TITLE_DESCRIPTION_UPDATE,
+          query: JOURNEY_SETTINGS_UPDATE,
           variables: {
             id: defaultJourney.id,
             input: {
