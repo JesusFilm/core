@@ -7,7 +7,6 @@ import { Hit } from 'instantsearch.js'
 import { ReactElement } from 'react'
 import { useHits } from 'react-instantsearch'
 import { SwiperOptions } from 'swiper/types'
-import { NoResultsFound } from '../../../../../../libs/journeys/ui/src/components/NoResultsFound'
 import { StrategyCard } from '../StrategyCard'
 
 interface StrategyCardItem {
@@ -28,12 +27,24 @@ function transformAlgoliaStrategies(hits: Hit[]): StrategyCardItem[] {
   }))
 }
 
-export function StrategySection(): ReactElement {
+interface StrategySectionProps {
+  handleResult: (value: boolean) => void
+}
+
+export function StrategySection({
+  handleResult
+}: StrategySectionProps): ReactElement {
   const { breakpoints } = useTheme()
 
   const { hits } = useHits()
 
   const items = transformAlgoliaStrategies(hits)
+
+  if (items.length > 0) {
+    handleResult(true)
+  } else {
+    handleResult(false)
+  }
 
   const label = (hits[0]?.post_type_label as string) ?? ''
 
@@ -65,22 +76,24 @@ export function StrategySection(): ReactElement {
   }
 
   return (
-    <Box data-testid="StrategySection">
+    <>
       {items.length === 0 ? (
-        <NoResultsFound />
+        <></>
       ) : (
-        <>
-          <Typography variant="h5">{label}</Typography>
-          <Container maxWidth={false} sx={{ overflow: 'hidden' }}>
-            <ContentCarousel
-              items={items}
-              renderItem={(itemProps) => <StrategyCard {...itemProps} />}
-              breakpoints={swiperBreakpoints}
-              slidesOffsetBefore={-32}
-            />
-          </Container>
-        </>
+        <Box data-testid="StrategySection">
+          <>
+            <Typography variant="h5">{label}</Typography>
+            <Container maxWidth={false} sx={{ overflow: 'hidden' }}>
+              <ContentCarousel
+                items={items}
+                renderItem={(itemProps) => <StrategyCard {...itemProps} />}
+                breakpoints={swiperBreakpoints}
+                slidesOffsetBefore={-32}
+              />
+            </Container>
+          </>
+        </Box>
       )}
-    </Box>
+    </>
   )
 }
