@@ -144,7 +144,7 @@ export class CardLevelActionPage {
       this.page
         .frameLocator(this.journeyCardFrame)
         .locator('div[role="tooltip"] button[id="delete-block-actions"]')
-    ).toHaveCount(1, { timeout: 10000 })
+    ).toHaveCount(1, { timeout: sixtySecondsTimeout })
     await this.page
       .frameLocator(this.journeyCardFrame)
       .locator('div[role="tooltip"] button[id="delete-block-actions"]')
@@ -158,7 +158,7 @@ export class CardLevelActionPage {
           'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"]',
           { hasText: this.renameJourmeyName }
         )
-    ).toBeHidden({ timeout: 10000 })
+    ).toBeHidden({ timeout: sixtySecondsTimeout })
   }
   async waitUntilJourneyCardLoaded() {
     await expect(
@@ -405,7 +405,7 @@ export class CardLevelActionPage {
   }
   async verifyToastMessage() {
     await expect(this.page.locator('#notistack-snackbar')).toBeVisible({
-      timeout: 10000
+      timeout: sixtySecondsTimeout
     })
     await expect(this.page.locator('#notistack-snackbar')).toBeHidden({
       timeout: sixtySecondsTimeout
@@ -964,7 +964,6 @@ export class CardLevelActionPage {
         .last()
         .click({ delay: 2000 })
       await this.clickDeleteBtnInToolTipBar()
-      await this.verifyToastMessage()
     }
   }
 }

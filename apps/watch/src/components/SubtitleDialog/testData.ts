@@ -22,12 +22,12 @@ export const getSubtitleMock = {
                 id: '22658',
                 name: [
                   {
-                    __typename: 'Translation',
+                    __typename: 'LanguageName',
                     value: ' اللغة العربية',
                     primary: true
                   },
                   {
-                    __typename: 'Translation',
+                    __typename: 'LanguageName',
                     value: 'Arabic, Modern Standard',
                     primary: false
                   }

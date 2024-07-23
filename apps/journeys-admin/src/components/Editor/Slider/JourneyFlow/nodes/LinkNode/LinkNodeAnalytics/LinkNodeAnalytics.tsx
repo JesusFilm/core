@@ -34,7 +34,10 @@ export function LinkNodeAnalytics({
         right: 0,
         top: 0,
         transform: 'translate(50%, -50%)',
-        filter: 'drop-shadow(4px 4px 10px rgba(0,0,0,0.25))'
+        filter: 'drop-shadow(4px 4px 10px rgba(0,0,0,0.25))',
+        '&:hover': {
+          cursor: 'default'
+        }
       }}
     >
       <AnalyticsDataPoint
