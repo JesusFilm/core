@@ -11,6 +11,8 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../__generated__/globalTypes'
+import { useBlockActionEmailUpdateMutation } from '../../../../../../libs/useBlockActionEmailUpdateMutation'
+import { useBlockActionLinkUpdateMutation } from '../../../../../../libs/useBlockActionLinkUpdateMutation'
 import { useBlockActionNavigateToBlockUpdateMutation } from '../../../../../../libs/useBlockActionNavigateToBlockUpdateMutation'
 import { useBlockDeleteMutation } from '../../../../../../libs/useBlockDeleteMutation'
 import { useBlockOrderUpdateMutation } from '../../../../../../libs/useBlockOrderUpdateMutation'
@@ -35,6 +37,8 @@ export function useCreateStep(): (
   const { add } = useCommand()
   const [blockDelete] = useBlockDeleteMutation()
   const [blockRestore] = useBlockRestoreMutation()
+  const [actionLinkUpdate] = useBlockActionLinkUpdateMutation()
+  const [actionEmailUpdate] = useBlockActionEmailUpdateMutation()
   const [stepAndCardBlockCreate] = useStepAndCardBlockCreateMutation({
     update(cache, { data }) {
       if (data?.stepBlockCreate == null || data?.cardBlockCreate == null) return
@@ -70,10 +74,74 @@ export function useCreateStep(): (
     if (journey == null) return
     const newStepId = uuidv4()
     const newCardId = uuidv4()
+    const edgeSource = convertToEdgeSource(rawEdgeSource)
+
+    const sourceStep =
+      edgeSource.sourceType === 'step' || edgeSource.sourceType === 'action'
+        ? steps?.find((step) => step.id === edgeSource.stepId)
+        : null
+
+    const sourceBlock =
+      edgeSource.sourceType === 'action'
+        ? searchBlocks(
+            sourceStep != null ? [sourceStep] : [],
+            edgeSource.blockId
+          )
+        : null
+
+    async function setNextBlockActions(target: string): Promise<void> {
+      if (journey == null) return
+      switch (edgeSource.sourceType) {
+        case 'socialPreview':
+          await blockOrderUpdate({
+            variables: {
+              id: target,
+              journeyId: journey.id,
+              parentOrder: 0
+            },
+            optimisticResponse: {
+              blockOrderUpdate: [
+                {
+                  id: target,
+                  __typename: 'StepBlock',
+                  parentOrder: 0
+                }
+              ]
+            }
+          })
+          break
+        case 'step':
+          await stepBlockNextBlockUpdate({
+            variables: {
+              id: edgeSource.stepId,
+              journeyId: journey.id,
+              input: {
+                nextBlockId: target
+              }
+            },
+            optimisticResponse: {
+              stepBlockUpdate: {
+                id: edgeSource.stepId,
+                __typename: 'StepBlock',
+                nextBlockId: target
+              }
+            }
+          })
+          break
+        case 'action': {
+          if (sourceBlock != null)
+            await actionNavigateToBlockUpdate(sourceBlock, target)
+          break
+        }
+      }
+    }
 
     let newBlockRef: StepAndCardBlockCreate | null | undefined
     await add({
-      parameters: { execute: {}, undo: { stepBeforeDelete: selectedStep } },
+      parameters: {
+        execute: {},
+        undo: { stepBeforeDelete: selectedStep, sourceBlock }
+      },
       execute: async () => {
         const { data } = await stepAndCardBlockCreate({
           variables: {
@@ -94,8 +162,31 @@ export function useCreateStep(): (
         })
         newBlockRef = data
       },
-      undo: async ({ stepBeforeDelete }) => {
+      undo: async ({ stepBeforeDelete, sourceBlock }) => {
         if (newBlockRef != null) await blockDelete(newBlockRef?.stepBlockCreate)
+        edgeSource.sourceType === 'step' &&
+          sourceStep?.nextBlockId != null &&
+          (await setNextBlockActions(sourceStep.nextBlockId))
+        if (sourceBlock != null && 'action' in sourceBlock) {
+          switch (sourceBlock.action?.__typename) {
+            case 'EmailAction': {
+              await actionEmailUpdate(sourceBlock, sourceBlock.action.email)
+              break
+            }
+            case 'LinkAction': {
+              await actionLinkUpdate(sourceBlock, sourceBlock.action.url)
+              break
+            }
+            case 'NavigateToBlockAction': {
+              await actionNavigateToBlockUpdate(
+                sourceBlock,
+                sourceBlock.action.blockId
+              )
+              break
+            }
+          }
+        }
+
         dispatch({
           type: 'SetEditorFocusAction',
           selectedStep: stepBeforeDelete,
@@ -105,8 +196,9 @@ export function useCreateStep(): (
       redo: async () => {
         if (newBlockRef != null) {
           await blockRestore({
-            variables: { blockRestoreId: newBlockRef.stepBlockCreate.id }
+            variables: { id: newBlockRef.stepBlockCreate.id }
           })
+          await setNextBlockActions(newStepId)
           dispatch({
             type: 'SetEditorFocusAction',
             selectedStep: {
@@ -128,56 +220,7 @@ export function useCreateStep(): (
         children: [{ ...newBlockRef.cardBlockCreate, children: [] }]
       }
     })
-
-    const edgeSource = convertToEdgeSource(rawEdgeSource)
-
-    switch (edgeSource.sourceType) {
-      case 'socialPreview':
-        await blockOrderUpdate({
-          variables: {
-            id: newStepId,
-            journeyId: journey.id,
-            parentOrder: 0
-          },
-          optimisticResponse: {
-            blockOrderUpdate: [
-              {
-                id: newStepId,
-                __typename: 'StepBlock',
-                parentOrder: 0
-              }
-            ]
-          }
-        })
-        break
-      case 'step':
-        await stepBlockNextBlockUpdate({
-          variables: {
-            id: edgeSource.stepId,
-            journeyId: journey.id,
-            input: {
-              nextBlockId: newStepId
-            }
-          },
-          optimisticResponse: {
-            stepBlockUpdate: {
-              id: edgeSource.stepId,
-              __typename: 'StepBlock',
-              nextBlockId: newStepId
-            }
-          }
-        })
-        break
-      case 'action': {
-        const step = steps?.find((step) => step.id === edgeSource.stepId)
-        const block = searchBlocks(
-          step != null ? [step] : [],
-          edgeSource.blockId
-        )
-        if (block != null) await actionNavigateToBlockUpdate(block, newStepId)
-        break
-      }
-    }
+    await setNextBlockActions(newStepId)
 
     return newBlockRef
   }
