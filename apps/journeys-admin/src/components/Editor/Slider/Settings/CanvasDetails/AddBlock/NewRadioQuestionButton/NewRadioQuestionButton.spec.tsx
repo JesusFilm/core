@@ -295,7 +295,7 @@ describe('NewRadioQuestionButton', () => {
       ...blockRestore,
       request: {
         ...blockRestore.request,
-        variables: { blockRestoreId: 'uuid' }
+        variables: { id: 'uuid' }
       },
       result: restoreResult
     }

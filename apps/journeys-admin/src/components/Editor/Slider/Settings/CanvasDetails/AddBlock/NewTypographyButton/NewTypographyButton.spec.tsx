@@ -201,7 +201,7 @@ describe('NewTypographyButton', () => {
       ...blockRestore,
       request: {
         ...blockRestore.request,
-        variables: { blockRestoreId: 'typographyBlockId' }
+        variables: { id: 'typographyBlockId' }
       },
       result: restoreResult
     }

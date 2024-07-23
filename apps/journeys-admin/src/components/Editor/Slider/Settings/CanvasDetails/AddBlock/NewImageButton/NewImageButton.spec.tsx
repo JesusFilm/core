@@ -134,7 +134,7 @@ describe('NewImageButton', () => {
       ...blockRestore,
       request: {
         ...blockRestore.request,
-        variables: { blockRestoreId: 'imageBlockId' }
+        variables: { id: 'imageBlockId' }
       },
       result: restoreResult
     }

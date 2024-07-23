@@ -76,7 +76,7 @@ export function useBlockCreateCommand(): BlockCreateCommandReturn {
 
           await blockRestore({
             variables: {
-              blockRestoreId: block.id
+              id: block.id
             }
           })
           dispatch({

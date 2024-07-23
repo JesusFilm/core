@@ -267,7 +267,7 @@ describe('NewSignUpButton', () => {
       ...blockRestore,
       request: {
         ...blockRestore.request,
-        variables: { blockRestoreId: 'signUpBlockId' }
+        variables: { id: 'signUpBlockId' }
       },
       result: restoreResult
     }

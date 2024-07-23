@@ -188,7 +188,7 @@ describe('NewTextResponseButton', () => {
       ...blockRestore,
       request: {
         ...blockRestore.request,
-        variables: { blockRestoreId: 'textResponseBlock.id' }
+        variables: { id: 'textResponseBlock.id' }
       },
       result: restoreResult
     }

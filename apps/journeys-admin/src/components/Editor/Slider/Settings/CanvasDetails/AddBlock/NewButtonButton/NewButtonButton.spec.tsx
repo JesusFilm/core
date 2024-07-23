@@ -242,7 +242,7 @@ describe('NewButtonButton', () => {
       ...blockRestore,
       request: {
         ...blockRestore.request,
-        variables: { blockRestoreId: 'buttonBlockId' }
+        variables: { id: 'buttonBlockId' }
       },
       result: restoreResult
     }

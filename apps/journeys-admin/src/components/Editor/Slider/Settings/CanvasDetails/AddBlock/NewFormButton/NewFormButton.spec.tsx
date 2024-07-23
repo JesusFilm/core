@@ -182,7 +182,7 @@ describe('NewFormButton', () => {
       ...blockRestore,
       request: {
         ...blockRestore.request,
-        variables: { blockRestoreId: 'formBlockId' }
+        variables: { id: 'formBlockId' }
       },
       result: restoreResult
     }

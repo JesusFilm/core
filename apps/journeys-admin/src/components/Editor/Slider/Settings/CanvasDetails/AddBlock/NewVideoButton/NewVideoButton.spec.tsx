@@ -222,7 +222,7 @@ describe('NewVideoButton', () => {
       ...blockRestore,
       request: {
         ...blockRestore.request,
-        variables: { blockRestoreId: 'videoBlockId' }
+        variables: { id: 'videoBlockId' }
       },
       result: restoreResult
     }
