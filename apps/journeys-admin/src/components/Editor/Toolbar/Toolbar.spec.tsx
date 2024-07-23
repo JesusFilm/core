@@ -6,7 +6,7 @@ import { ReactElement } from 'react'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
-import { JourneyStatus, Role } from '../../../../__generated__/globalTypes'
+import { JourneyStatus } from '../../../../__generated__/globalTypes'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { Slider } from '@mui/material'
