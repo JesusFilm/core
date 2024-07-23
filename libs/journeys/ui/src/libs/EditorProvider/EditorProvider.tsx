@@ -179,15 +179,11 @@ export const reducer = (
         activeFab: action.activeFab
       }
     case 'SetActiveSlideAction':
-      if (state.showAnalytics === true) {
-        return { ...state, activeSlide: 0 }
-      }
-
       return {
         ...state,
-        activeContent: state.activeContent,
-        activeSlide: action.activeSlide
+        activeSlide: state.showAnalytics === true ? 0 : action.activeSlide
       }
+
     case 'SetSelectedAttributeIdAction':
       return { ...state, selectedAttributeId: action.selectedAttributeId }
     case 'SetSelectedBlockAction':
