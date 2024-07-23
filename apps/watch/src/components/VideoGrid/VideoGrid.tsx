@@ -4,12 +4,10 @@ import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import { ComponentProps, ReactElement } from 'react'
 
-import { VideoChildFields } from '../../../__generated__/VideoChildFields'
 import { useAlgoliaVideos } from '../../libs/algolia/useAlgoliaVideos'
 import { VideoCard } from '../VideoCard'
 
 interface VideoGridProps {
-  videos?: VideoChildFields[]
   loading?: boolean
   hasNextPage?: boolean
   showLoadMore?: boolean
@@ -19,14 +17,11 @@ interface VideoGridProps {
 
 export function VideoGrid({
   loading,
-  videos: localVideos,
   showLoadMore = false,
   containerSlug,
   variant = 'expanded'
 }: VideoGridProps): ReactElement {
-  const { hits, showMore, isLastPage } = useAlgoliaVideos()
-
-  const videos = hits.length > 0 ? hits : localVideos
+  const { hits: videos, showMore, isLastPage } = useAlgoliaVideos()
 
   return (
     <Grid

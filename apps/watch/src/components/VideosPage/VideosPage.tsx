@@ -10,7 +10,6 @@ import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 import { ThemeMode } from '@core/shared/ui/themes'
 
 import { GetLanguages } from '../../../__generated__/GetLanguages'
-import { VideoChildFields } from '../../../__generated__/VideoChildFields'
 import { PageWrapper } from '../PageWrapper'
 import { VideoGrid } from '../VideoGrid/VideoGrid'
 
@@ -20,18 +19,12 @@ import { VideosHero } from './Hero'
 import { VideosSubHero } from './SubHero'
 import { getQueryParameters } from './utils/getQueryParameters'
 import type { VideoPageFilter } from './utils/getQueryParameters'
-interface VideoProps {
-  videos: VideoChildFields[]
-}
 
 // TODO:
-// fix same data being returned - need to set up configuration properly
 // fix urls
 
-export function VideosPage({ videos }: VideoProps): ReactElement {
+export function VideosPage(): ReactElement {
   const router = useRouter()
-
-  const localVideos = videos.filter((video) => video != null)
 
   const { data: languagesData, loading: languagesLoading } =
     useQuery<GetLanguages>(GET_LANGUAGES, {
@@ -84,7 +77,7 @@ export function VideosPage({ videos }: VideoProps): ReactElement {
               />
             </Box>
             <Box sx={{ width: '100%' }}>
-              <VideoGrid videos={localVideos} variant="expanded" showLoadMore />
+              <VideoGrid variant="expanded" showLoadMore />
             </Box>
           </Stack>
         </Index>
