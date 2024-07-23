@@ -121,7 +121,7 @@ describe('NewStepButton', () => {
       ...useBlockRestoreMutationMock,
       request: {
         ...useBlockRestoreMutationMock.request,
-        variables: { blockRestoreId: 'newStep.id' }
+        variables: { id: 'newStep.id' }
       }
     }
 
