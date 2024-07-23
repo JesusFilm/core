@@ -46,7 +46,10 @@ type Video @key(fields: "id primaryLanguageId") @cacheControl(maxAge: 86400) {
   """
   childrenCount: Int!
   variantLanguagesWithSlug: [LanguageWithSlug!]!
+  
 }
+
+
 
 input VideosFilter {
   availableVariantLanguageIds: [ID!]

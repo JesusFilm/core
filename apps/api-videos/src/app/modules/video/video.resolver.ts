@@ -15,6 +15,7 @@ import compact from 'lodash/compact'
 import isEmpty from 'lodash/isEmpty'
 
 import {
+  BibleCitation,
   Video,
   VideoDescription,
   VideoImageAlt,
@@ -344,8 +345,15 @@ export class VideoResolver {
     }
     return variantLanguageId
   }
-}
 
+  @ResolveField('bibleCitations')
+  async bibleCitations(@Parent() video): Promise<BibleCitation[]> {
+    return await this.prismaService.bibleCitation.findMany({
+      where: { videoId: video.id },
+      orderBy: { order: 'asc' }
+    })
+  }
+}
 @Resolver('LanguageWithSlug')
 export class LanguageWithSlugResolver {
   @ResolveField('language')

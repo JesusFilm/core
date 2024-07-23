@@ -15,6 +15,8 @@ import { LoggerModule } from 'nestjs-pino'
 import TranslationModule from '@core/nest/common/TranslationModule'
 
 import { AlgoliaModule } from './modules/algolia/algolia.module'
+import { BibleBookModule } from './modules/bibleBook/bibleBook.module'
+import { BibleCitationModule } from './modules/bibleCitation/bibleCitation.module'
 import { BigQueryModule } from './modules/bigQuery/bigQuery.module'
 import { NestHealthModule } from './modules/health/health.module'
 import { VideoModule } from './modules/video/video.module'
@@ -25,6 +27,8 @@ import { VideoVariantModule } from './modules/videoVariant/videoVariant.module'
     NestHealthModule,
     TranslationModule,
     AlgoliaModule,
+    BibleBookModule,
+    BibleCitationModule,
     BigQueryModule,
     VideoModule,
     VideoVariantModule,
