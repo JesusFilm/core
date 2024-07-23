@@ -31,8 +31,7 @@ export function BackgroundVideo({
   startAt,
   endAt,
   objectFit,
-  setLoading,
-  cardColor
+  setLoading
 }: BackgroundVideoProps): ReactElement {
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<Player>()
@@ -131,7 +130,6 @@ export function BackgroundVideo({
         className="vjs-fill video-js"
         playsInline
         sx={{
-          '&.vjs-fill': { backgroundColor: cardColor },
           '&.video-js.vjs-fill:not(.vjs-audio-only-mode)': {
             height: isYouTube ? 'inherit' : '100%',
             transform: isYouTube
