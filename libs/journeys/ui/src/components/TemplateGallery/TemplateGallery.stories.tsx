@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import { expect } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
