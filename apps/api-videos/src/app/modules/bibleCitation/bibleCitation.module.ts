@@ -2,11 +2,11 @@ import { Module } from '@nestjs/common'
 
 import { PrismaService } from '../../lib/prisma.service'
 
-import { VideoVariantResolver } from './videoVariant.resolver'
+import { BibleCitationResolver } from './bibleCitation.resolver'
 
 @Module({
   imports: [],
-  providers: [VideoVariantResolver, PrismaService],
+  providers: [BibleCitationResolver, PrismaService],
   exports: []
 })
 export class BibleCitationModule {}

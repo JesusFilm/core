@@ -347,35 +347,10 @@ export class VideoResolver {
   }
 
   @ResolveField('bibleCitations')
-  async bibleCitations(
-    @Parent() video,
-    @Args('languageId') languageId?: string,
-    @Args('primary') primary?: boolean
-  ): Promise<BibleCitation[]> {
+  async bibleCitations(@Parent() video): Promise<BibleCitation[]> {
     return await this.prismaService.bibleCitation.findMany({
       where: { videoId: video.id },
-      orderBy: { order: 'asc' },
-      include: {
-        bibleBook: {
-          include: {
-            name: {
-              where: {
-                OR: compact([
-                  primary != null
-                    ? {
-                        primary
-                      }
-                    : undefined,
-                  {
-                    languageId: languageId ?? '529'
-                  }
-                ])
-              },
-              orderBy: { primary: 'asc' }
-            }
-          }
-        }
-      }
+      orderBy: { order: 'asc' }
     })
   }
 }
