@@ -8,16 +8,19 @@ import { ImporterVideosService } from '../importerVideos/importerVideos.service'
 const keywordSchema = z
   .object({
     value: z.string(),
-    languageId: z.string(),
-    videos: z.array(z.object({ id: z.string() })).optional(),
+    languageId: z.number(),
+    videoIds: z.string().optional(),
     datastream_metadata: z.object({
       uuid: z.string()
     })
   })
   .transform((data) => ({
-    ...omit(data, ['datastream_metadata']),
+    ...omit(data, ['videoIds', 'datastream_metadata']),
     id: data.datastream_metadata.uuid,
-    videos: data.videos ? { connect: data.videos } : undefined
+    languageId: data.languageId.toString(),
+    videos: data.videoIds
+    ? { connect: data.videoIds.split(',').map((id) => ({ id })) }
+    : undefined
   }))
 
 type Keyword = z.infer<typeof keywordSchema>
