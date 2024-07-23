@@ -19,8 +19,8 @@ const keywordSchema = z
     id: data.datastream_metadata.uuid,
     languageId: data.languageId.toString(),
     videos: data.videoIds
-    ? { connect: data.videoIds.split(',').map((id) => ({ id })) }
-    : undefined
+      ? { connect: data.videoIds.split(',').map((id) => ({ id })) }
+      : undefined
   }))
 
 type Keyword = z.infer<typeof keywordSchema>

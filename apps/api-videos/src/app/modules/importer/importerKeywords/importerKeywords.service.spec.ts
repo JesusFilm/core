@@ -39,7 +39,7 @@ describe('ImporterKeywordsService', () => {
       await service.import({
         value: 'TestKeyword',
         languageId: '529',
-        videoIds: ['video1','video2'],
+        videoIds: ['video1', 'video2'],
         datastream_metadata: {
           uuid: 'mockUuid'
         }
@@ -68,12 +68,12 @@ describe('ImporterKeywordsService', () => {
       prismaService.$transaction.mockImplementation((callback) =>
         callback(prismaService)
       )
-  
+
       await service.importMany([
         {
           value: 'TestKeyword1',
           languageId: '529',
-          videoIds: ['video1' ,'video2' ],
+          videoIds: ['video1', 'video2'],
           datastream_metadata: {
             uuid: 'mockUuid'
           }
@@ -87,7 +87,7 @@ describe('ImporterKeywordsService', () => {
           }
         }
       ])
-  
+
       expect(prismaService.keyword.createMany).toHaveBeenCalledWith({
         data: [
           {
@@ -106,7 +106,6 @@ describe('ImporterKeywordsService', () => {
         skipDuplicates: true
       })
     })
-  
 
     it('should throw error when row is invalid', async () => {
       await expect(
