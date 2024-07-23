@@ -107,7 +107,7 @@ export function Toolbar(): ReactElement {
             }}
           >
             <Button
-              onClick={handleSelect}
+              onClick={handleSelectSocialImage}
               data-testid="ToolbarSocialImage"
               style={{ backgroundColor: 'transparent' }}
               disableRipple
