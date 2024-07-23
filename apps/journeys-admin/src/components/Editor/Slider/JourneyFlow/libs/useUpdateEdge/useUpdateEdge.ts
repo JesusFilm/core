@@ -1,14 +1,15 @@
+import get from 'lodash/get'
 import { Edge } from 'reactflow'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { searchBlocks } from '@core/journeys/ui/searchBlocks'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'
 import { useBlockOrderUpdateMutation } from '../../../../../../libs/useBlockOrderUpdateMutation'
-import { useNavigateToBlockActionUpdateMutation } from '../../../../../../libs/useNavigateToBlockActionUpdateMutation'
 import { useStepBlockNextBlockUpdateMutation } from '../../../../../../libs/useStepBlockNextBlockUpdateMutation'
+import { useActionCommand } from '../../../../utils/useActionCommand'
 import { RawEdgeSource, convertToEdgeSource } from '../convertToEdgeSource'
 import { useDeleteEdge } from '../useDeleteEdge'
 
@@ -26,7 +27,7 @@ export function useUpdateEdge(): (
   } = useEditor()
 
   const [blockOrderUpdate] = useBlockOrderUpdateMutation()
-  const [navigateToBlockActionUpdate] = useNavigateToBlockActionUpdateMutation()
+  const { addAction } = useActionCommand()
   const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
   const deleteEdge = useDeleteEdge()
 
@@ -99,10 +100,21 @@ export function useUpdateEdge(): (
           edgeSource.blockId
         )
         if (block != null) {
-          const data = await navigateToBlockActionUpdate(block, target)
-          if (data != null) {
-            selectedStep = steps?.find((step) => step.id === target)
-          }
+          await addAction({
+            blockId: block.id,
+            blockTypename: block.__typename,
+            action: {
+              __typename: 'NavigateToBlockAction',
+              gtmEventName: null,
+              parentBlockId: block.id,
+              blockId: target
+            },
+            undoAction: get(block, 'action'),
+            editorFocus: {
+              activeSlide: ActiveSlide.JourneyFlow
+            }
+          })
+          selectedStep = steps?.find((step) => step.id === target)
         }
         break
       }

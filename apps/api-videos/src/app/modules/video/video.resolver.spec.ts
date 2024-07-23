@@ -41,7 +41,7 @@ describe('VideoResolver', () => {
       videoId: video.id,
       hls: '',
       slug: 'jesus/english',
-      editionId: '1',
+      edition: '1',
       languageId: '529',
       duration: 0
     }
@@ -523,6 +523,41 @@ describe('VideoResolver', () => {
       expect(prismaService.videoVariant.findMany).toHaveBeenCalledWith({
         where: { videoId: video.id },
         select: { languageId: true }
+      })
+    })
+  })
+
+  describe('bibleCitations', () => {
+    it('returns bible citations', async () => {
+      prismaService.bibleCitation.findMany.mockResolvedValueOnce([
+        {
+          id: 'bibleCitationId',
+          videoId: 'videoId',
+          order: 1,
+          osisId: 'Gen',
+          bibleBookId: 'bibleBookId',
+          chapterStart: 1,
+          chapterEnd: null,
+          verseStart: 1,
+          verseEnd: null
+        }
+      ])
+      expect(await resolver.bibleCitations(video)).toEqual([
+        {
+          id: 'bibleCitationId',
+          videoId: 'videoId',
+          order: 1,
+          osisId: 'Gen',
+          chapterStart: 1,
+          chapterEnd: null,
+          verseStart: 1,
+          verseEnd: null,
+          bibleBookId: 'bibleBookId'
+        }
+      ])
+      expect(prismaService.bibleCitation.findMany).toHaveBeenCalledWith({
+        where: { videoId: video.id },
+        orderBy: { order: 'asc' }
       })
     })
   })
