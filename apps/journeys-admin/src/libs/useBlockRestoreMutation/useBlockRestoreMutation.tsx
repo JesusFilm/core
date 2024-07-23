@@ -5,6 +5,8 @@ import {
   gql,
   useMutation
 } from '@apollo/client'
+import compact from 'lodash/compact'
+
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { BLOCK_FIELDS } from '@core/journeys/ui/block/blockFields'
 import {
@@ -14,8 +16,8 @@ import {
 
 export const BLOCK_RESTORE = gql`
 ${BLOCK_FIELDS}
-mutation BlockRestore($blockRestoreId: ID!) {
-  blockRestore(id: $blockRestoreId) {
+mutation BlockRestore($id: ID!) {
+  blockRestore(id: $id) {
     id
     ...BlockFields
     ... on StepBlock {
@@ -35,13 +37,20 @@ export function useBlockRestoreMutation(
     update(cache, { data }, { variables }) {
       if (data != null) {
         const selected = data.blockRestore.find(
-          (block) => variables?.blockRestoreId === block.id
+          (block) => variables?.id === block.id
         )
         const cacheOptions = {
           fields: {
-            blocks(existingBlockRefs: Reference[] = [], { readField }) {
-              data.blockRestore.forEach((block) => {
-                const newBlockRef = cache.writeFragment({
+            blocks(existingBlockRefs: Reference[], { readField }) {
+              const newBlockRef = data.blockRestore.map((block) => {
+                if (
+                  existingBlockRefs.some(
+                    (ref) => readField('id', ref) === block?.id
+                  )
+                ) {
+                  return null
+                }
+                return cache.writeFragment({
                   data: block,
                   fragment: gql`
                         fragment RestoredBlock on Block {
@@ -49,15 +58,8 @@ export function useBlockRestoreMutation(
                         }
                       `
                 })
-                if (
-                  existingBlockRefs.some(
-                    (ref) => readField('id', ref) === block?.id
-                  )
-                ) {
-                  return existingBlockRefs
-                }
-                return [...existingBlockRefs, newBlockRef]
               })
+              return [...existingBlockRefs, ...compact(newBlockRef)]
             }
           }
         }

@@ -408,7 +408,9 @@ export function JourneyFlow(): ReactElement {
               ? {
                   backgroundColor: '#DEE8EF'
                 }
-              : {}
+              : {
+                  backgroundColor: '#EFEFEF'
+                }
           }
         />
       </ReactFlow>

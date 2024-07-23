@@ -91,7 +91,7 @@ export function useBlockDeleteCommand() {
         },
         async undo({ currentBlock, stepBeforeDelete }) {
           await blockRestore({
-            variables: { blockRestoreId: currentBlock.id }
+            variables: { id: currentBlock.id }
           })
           setBlockRestoreEditorState(currentBlock, stepBeforeDelete, dispatch)
         }

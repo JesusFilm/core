@@ -447,5 +447,5 @@ export interface BlockRestore {
 }
 
 export interface BlockRestoreVariables {
-  blockRestoreId: string;
+  id: string;
 }
