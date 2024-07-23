@@ -5,8 +5,14 @@ import { TreeBlock } from '@core/journeys/ui/block'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
-import { TextResponseLabelUpdate } from '../../../../../../../../../../../__generated__/TextResponseLabelUpdate'
-import { TextResponseTypeUpdate } from '../../../../../../../../../../../__generated__/TextResponseTypeUpdate'
+import {
+  TextResponseLabelUpdate,
+  TextResponseLabelUpdateVariables
+} from '../../../../../../../../../../../__generated__/TextResponseLabelUpdate'
+import {
+  TextResponseTypeUpdate,
+  TextResponseTypeUpdateVariables
+} from '../../../../../../../../../../../__generated__/TextResponseTypeUpdate'
 import {
   TextResponseBlockUpdateInput,
   TextResponseType
@@ -17,10 +23,9 @@ import { TEXT_RESPONSE_LABEL_UPDATE } from '../Label/Label'
 export const TEXT_RESPONSE_TYPE_UPDATE = gql`
   mutation TextResponseTypeUpdate(
     $id: ID!, 
-    $journeyId: ID!, 
     $input: TextResponseBlockUpdateInput!
   ) {
-    textResponseBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+    textResponseBlockUpdate(id: $id, input: $input) {
       id
       type
       integrationId
@@ -37,15 +42,17 @@ export function Type(): ReactElement {
     | TreeBlock<TextResponseBlock>
     | undefined
 
-  const [textResponseTypeUpdate] = useMutation<TextResponseTypeUpdate>(
-    TEXT_RESPONSE_TYPE_UPDATE
-  )
-  const [textResponseLabelUpdate] = useMutation<TextResponseLabelUpdate>(
-    TEXT_RESPONSE_LABEL_UPDATE
-  )
+  const [textResponseTypeUpdate] = useMutation<
+    TextResponseTypeUpdate,
+    TextResponseTypeUpdateVariables
+  >(TEXT_RESPONSE_TYPE_UPDATE)
+  const [textResponseLabelUpdate] = useMutation<
+    TextResponseLabelUpdate,
+    TextResponseLabelUpdateVariables
+  >(TEXT_RESPONSE_LABEL_UPDATE)
 
   async function handleChange(type: TextResponseType): Promise<void> {
-    if (journey == null || selectedBlock == null) return
+    if (selectedBlock == null) return
 
     let input: TextResponseBlockUpdateInput = {
       type
@@ -74,7 +81,6 @@ export function Type(): ReactElement {
       await textResponseTypeUpdate({
         variables: {
           id: selectedBlock.id,
-          journeyId: journey.id,
           input
         },
         optimisticResponse: {
@@ -90,7 +96,6 @@ export function Type(): ReactElement {
       await textResponseLabelUpdate({
         variables: {
           id: selectedBlock.id,
-          journeyId: journey.id,
           input: {
             label: label
           }

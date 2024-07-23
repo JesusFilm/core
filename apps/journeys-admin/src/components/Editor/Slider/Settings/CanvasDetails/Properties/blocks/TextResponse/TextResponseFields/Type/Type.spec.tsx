@@ -2,10 +2,8 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
-import { GetJourney_journey as Journey } from '../../../../../../../../../../../__generated__/GetJourney'
 import { TextResponseLabelUpdate } from '../../../../../../../../../../../__generated__/TextResponseLabelUpdate'
 import { TextResponseTypeUpdate } from '../../../../../../../../../../../__generated__/TextResponseTypeUpdate'
 import { TextResponseType } from '../../../../../../../../../../../__generated__/globalTypes'
@@ -32,7 +30,6 @@ describe('Type', () => {
       query: TEXT_RESPONSE_LABEL_UPDATE,
       variables: {
         id: selectedBlock.id,
-        journeyId: 'journey.id',
         input: {
           label: 'Updated label'
         }
@@ -54,7 +51,6 @@ describe('Type', () => {
       query: TEXT_RESPONSE_TYPE_UPDATE,
       variables: {
         id: selectedBlock.id,
-        journeyId: 'journey.id',
         input: {
           type: TextResponseType.email
         }
@@ -84,7 +80,6 @@ describe('Type', () => {
         query: TEXT_RESPONSE_LABEL_UPDATE,
         variables: {
           id: selectedBlock.id,
-          journeyId: 'journey.id',
           input: {
             label: 'Email'
           }
@@ -98,7 +93,6 @@ describe('Type', () => {
         query: TEXT_RESPONSE_TYPE_UPDATE,
         variables: {
           id: selectedBlock.id,
-          journeyId: 'journey.id',
           input: {
             type: TextResponseType.email
           }
@@ -110,16 +104,9 @@ describe('Type', () => {
       <MockedProvider
         mocks={[emailLabelUpdateMock, emailTextResponseTypeUpdateMock]}
       >
-        <JourneyProvider
-          value={{
-            journey: { id: 'journey.id' } as unknown as Journey,
-            variant: 'admin'
-          }}
-        >
-          <EditorProvider initialState={{ selectedBlock }}>
-            <Type />
-          </EditorProvider>
-        </JourneyProvider>
+        <EditorProvider initialState={{ selectedBlock }}>
+          <Type />
+        </EditorProvider>
       </MockedProvider>
     )
 
@@ -137,7 +124,6 @@ describe('Type', () => {
         query: TEXT_RESPONSE_TYPE_UPDATE,
         variables: {
           id: selectedBlock.id,
-          journeyId: 'journey.id',
           input: {
             type: TextResponseType.freeForm,
             integrationId: null,
@@ -153,7 +139,6 @@ describe('Type', () => {
         query: TEXT_RESPONSE_LABEL_UPDATE,
         variables: {
           id: selectedBlock.id,
-          journeyId: 'journey.id',
           input: {
             label: 'Your answer here'
           }
@@ -163,20 +148,13 @@ describe('Type', () => {
 
     render(
       <MockedProvider mocks={[freeFormTypeUpdateMock, freeFormLabelUpdateMock]}>
-        <JourneyProvider
-          value={{
-            journey: { id: 'journey.id' } as unknown as Journey,
-            variant: 'admin'
+        <EditorProvider
+          initialState={{
+            selectedBlock: { ...selectedBlock, type: TextResponseType.email }
           }}
         >
-          <EditorProvider
-            initialState={{
-              selectedBlock: { ...selectedBlock, type: TextResponseType.email }
-            }}
-          >
-            <Type />
-          </EditorProvider>
-        </JourneyProvider>
+          <Type />
+        </EditorProvider>
       </MockedProvider>
     )
 
