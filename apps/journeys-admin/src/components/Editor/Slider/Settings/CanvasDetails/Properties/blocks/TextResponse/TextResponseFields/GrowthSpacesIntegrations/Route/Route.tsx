@@ -10,9 +10,13 @@ import { SelectChangeEvent } from '@mui/material/Select'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../../__generated__/BlockFields'
-import { TextResponseRouteUpdate } from '../../../../../../../../../../../../__generated__/TextResponseRouteUpdate'
+import {
+  TextResponseRouteUpdate,
+  TextResponseRouteUpdateVariables
+} from '../../../../../../../../../../../../__generated__/TextResponseRouteUpdate'
 import { useIntegrationQuery } from '../../../../../../../../../../../libs/useIntegrationQuery'
 
+import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { Select } from '../Select'
 
 export const TEXT_RESPONSE_ROUTE_UPDATE = gql`
@@ -30,14 +34,17 @@ export const TEXT_RESPONSE_ROUTE_UPDATE = gql`
 export function Route(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
-  const { state } = useEditor()
+  const { state, dispatch } = useEditor()
   const selectedBlock = state.selectedBlock as
     | TreeBlock<TextResponseBlock>
     | undefined
 
-  const [textResponseRouteUpdate] = useMutation<TextResponseRouteUpdate>(
-    TEXT_RESPONSE_ROUTE_UPDATE
-  )
+  const { add } = useCommand()
+
+  const [textResponseRouteUpdate] = useMutation<
+    TextResponseRouteUpdate,
+    TextResponseRouteUpdateVariables
+  >(TEXT_RESPONSE_ROUTE_UPDATE)
 
   const { data } = useIntegrationQuery({
     teamId: activeTeam?.id as string
@@ -61,19 +68,33 @@ export function Route(): ReactElement {
 
     if (route == null) return
 
-    await textResponseRouteUpdate({
-      variables: {
-        id: selectedBlock.id,
-        input: {
-          routeId: route.id
-        }
+    await add({
+      parameters: {
+        execute: { routeId: route.id },
+        undo: { routeId: selectedBlock.routeId }
       },
-      optimisticResponse: {
-        textResponseBlockUpdate: {
-          id: selectedBlock.id,
-          __typename: 'TextResponseBlock',
-          routeId: route.id
-        }
+      async execute({ routeId }) {
+        dispatch({
+          type: 'SetEditorFocusAction',
+          selectedBlock,
+          selectedStep: state.selectedStep,
+          selectedAttributeId: state.selectedAttributeId
+        })
+        await textResponseRouteUpdate({
+          variables: {
+            id: selectedBlock.id,
+            input: {
+              routeId
+            }
+          },
+          optimisticResponse: {
+            textResponseBlockUpdate: {
+              id: selectedBlock.id,
+              __typename: 'TextResponseBlock',
+              routeId
+            }
+          }
+        })
       }
     })
   }
