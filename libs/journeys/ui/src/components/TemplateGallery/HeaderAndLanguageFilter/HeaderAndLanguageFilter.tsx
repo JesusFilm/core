@@ -89,6 +89,7 @@ function LocalButton({
         >
           {loading === true ? (
             <Skeleton
+              data-testid="local-language-loading-desktop"
               sx={{ width: { xs: 145, md: 274 }, height: { xs: 30, md: 36 } }}
             />
           ) : (
@@ -117,6 +118,7 @@ function LocalButton({
         >
           {loading === true ? (
             <Skeleton
+              data-testid="local-language-loading-mobile"
               sx={{ width: { xs: 145, md: 274 }, height: { xs: 30, md: 36 } }}
             />
           ) : (
@@ -149,7 +151,7 @@ function LocalButton({
 }
 
 interface LanguageFilterProps {
-  selectedLanguageIds: string[]
+  selectedLanguageIds?: string[]
   onChange: (values: string[]) => void
 }
 
@@ -198,7 +200,7 @@ export function HeaderAndLanguageFilter({
   })
 
   const languageOptions = convertLanguagesToOptions(
-    data?.languages.filter(({ id }) => selectedLanguageIds.includes(id))
+    data?.languages.filter(({ id }) => selectedLanguageIds?.includes(id))
   )
 
   const languageNames = languageOptions.map(
@@ -215,7 +217,7 @@ export function HeaderAndLanguageFilter({
     sx: { flex: 0 }
   }
   const localButtonProps: LocalButtonProps = {
-    loading,
+    loading: loading || selectedLanguageIds == null,
     onClick: () => {
       const param = 'template-language'
       void router.push({ query: { ...router.query, param } }, undefined, {
