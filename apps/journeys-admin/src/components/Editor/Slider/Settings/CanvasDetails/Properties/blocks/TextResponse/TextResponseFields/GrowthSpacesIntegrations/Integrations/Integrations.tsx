@@ -2,7 +2,6 @@ import { ReactElement } from 'react'
 
 import { gql, useMutation } from '@apollo/client'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'react-i18next'
 
@@ -18,7 +17,6 @@ import { Select } from '../Select'
 export const TEXT_RESPONSE_INTEGRATION_UPDATE = gql`
   mutation TextResponseIntegrationUpdate(
     $id: ID!, 
-    $journeyId: ID!, 
     $input: TextResponseBlockUpdateInput!
   ) {
     textResponseBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
@@ -31,7 +29,6 @@ export const TEXT_RESPONSE_INTEGRATION_UPDATE = gql`
 export function Integrations(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
-  const { journey } = useJourney()
   const { state } = useEditor()
   const selectedBlock = state.selectedBlock as
     | TreeBlock<TextResponseBlock>
@@ -55,7 +52,7 @@ export function Integrations(): ReactElement {
   )
 
   async function handleChange(event: SelectChangeEvent) {
-    if (journey == null || selectedBlock == null) return
+    if (selectedBlock == null) return
     const accessSecretPart = event.target.value.split(' - ')[1]
     const integrationId = data?.integrations.find(
       (integration) => integration.accessSecretPart === accessSecretPart
@@ -66,7 +63,6 @@ export function Integrations(): ReactElement {
     await textResponseIntegrationUpdate({
       variables: {
         id: selectedBlock.id,
-        journeyId: journey.id,
         input: {
           integrationId
         }
