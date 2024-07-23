@@ -299,6 +299,11 @@ export function JourneyFlow(): ReactElement {
     [deleteEdge, setEdges]
   )
 
+  const validateConnection = useCallback(
+    (connection) => connection.target !== 'SocialPreview',
+    []
+  )
+
   const nodeTypes = useMemo(
     () => ({
       StepBlock: StepBlockNode,
@@ -363,6 +368,7 @@ export function JourneyFlow(): ReactElement {
         onEdgeUpdateStart={onEdgeUpdateStart}
         onEdgeUpdateEnd={onEdgeUpdateEnd}
         onSelectionChange={onSelectionChange}
+        isValidConnection={validateConnection}
         fitView
         fitViewOptions={{ nodes: [nodes[0]], minZoom: 1, maxZoom: 0.7 }}
         nodeTypes={nodeTypes}
