@@ -1,7 +1,6 @@
 import { ReactElement } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'react-i18next'
 
@@ -19,10 +18,9 @@ import { Select } from '../Select'
 export const TEXT_RESPONSE_ROUTE_UPDATE = gql`
   mutation TextResponseRouteUpdate(
     $id: ID!, 
-    $journeyId: ID!, 
     $input: TextResponseBlockUpdateInput!
   ) {
-    textResponseBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+    textResponseBlockUpdate(id: $id, input: $input) {
       id
       routeId
     }
@@ -32,7 +30,6 @@ export const TEXT_RESPONSE_ROUTE_UPDATE = gql`
 export function Route(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
-  const { journey } = useJourney()
   const { state } = useEditor()
   const selectedBlock = state.selectedBlock as
     | TreeBlock<TextResponseBlock>
@@ -57,7 +54,7 @@ export function Route(): ReactElement {
   const options = selectedIntegration?.routes.map((route) => route.name)
 
   async function handleChange(event: SelectChangeEvent) {
-    if (journey == null || selectedBlock == null) return
+    if (selectedBlock == null) return
     const route = selectedIntegration?.routes.find(
       (route) => route.name === event.target.value
     )
@@ -67,7 +64,6 @@ export function Route(): ReactElement {
     await textResponseRouteUpdate({
       variables: {
         id: selectedBlock.id,
-        journeyId: journey.id,
         input: {
           routeId: route.id
         }
