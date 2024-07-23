@@ -9,6 +9,7 @@ import { TextResponseLabelUpdate } from '../../../../../../../../../../../__gene
 import { TextResponseTypeUpdate } from '../../../../../../../../../../../__generated__/TextResponseTypeUpdate'
 import { TextResponseType } from '../../../../../../../../../../../__generated__/globalTypes'
 
+import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../../Toolbar/Items/CommandUndoItem'
 import { TEXT_RESPONSE_LABEL_UPDATE } from '../Label/Label'
 import { TEXT_RESPONSE_TYPE_UPDATE, Type } from './Type'
@@ -65,8 +66,8 @@ describe('Type', () => {
           id: selectedBlock.id,
           __typename: 'TextResponseBlock',
           type: TextResponseType.email,
-          integrationId: 'integrationId',
-          routeId: 'routeId'
+          integrationId: null,
+          routeId: null
         }
       }
     }))
@@ -226,16 +227,7 @@ describe('Type', () => {
             type: TextResponseType.freeForm
           }
         }
-      },
-      result: jest.fn(() => ({
-        data: {
-          textResponseBlockUpdate: {
-            id: selectedBlock.id,
-            __typename: 'TextResponseBlock',
-            type: TextResponseType.freeForm
-          }
-        }
-      }))
+      }
     }
 
     render(
@@ -267,5 +259,103 @@ describe('Type', () => {
     await waitFor(() => expect(undoLabelUpdateMock.result).toHaveBeenCalled())
   })
 
-  //redo test, also check with John about expected behaviour
+  it('should redo the change to type that was undone', async () => {
+    const emailLabelUpdateMock: MockedResponse<TextResponseLabelUpdate> = {
+      ...textResponseLabelUpdateMock,
+      request: {
+        query: TEXT_RESPONSE_LABEL_UPDATE,
+        variables: {
+          id: selectedBlock.id,
+          input: {
+            label: 'Email'
+          }
+        }
+      },
+      maxUsageCount: 2
+    }
+
+    const emailTextResponseTypeUpdateMock = {
+      ...textResponseTypeUpdateMock,
+      request: {
+        query: TEXT_RESPONSE_TYPE_UPDATE,
+        variables: {
+          id: selectedBlock.id,
+          input: {
+            type: TextResponseType.email
+          }
+        }
+      },
+      maxUsageCount: 2
+    }
+
+    const undoLabelUpdateMock: MockedResponse<TextResponseLabelUpdate> = {
+      ...textResponseLabelUpdateMock,
+      request: {
+        query: TEXT_RESPONSE_LABEL_UPDATE,
+        variables: {
+          id: selectedBlock.id,
+          input: {
+            label: 'Your answer here'
+          }
+        }
+      },
+      result: jest.fn(() => ({
+        data: {
+          textResponseBlockUpdate: {
+            __typename: 'TextResponseBlock',
+            id: selectedBlock.id,
+            label: 'Updated label'
+          }
+        }
+      }))
+    }
+
+    const undoTextResponseTypeUpdateMock = {
+      ...textResponseTypeUpdateMock,
+      request: {
+        query: TEXT_RESPONSE_TYPE_UPDATE,
+        variables: {
+          id: selectedBlock.id,
+          input: {
+            type: TextResponseType.freeForm
+          }
+        }
+      }
+    }
+
+    render(
+      <MockedProvider
+        mocks={[
+          emailLabelUpdateMock,
+          emailTextResponseTypeUpdateMock,
+          undoLabelUpdateMock,
+          undoTextResponseTypeUpdateMock
+        ]}
+      >
+        <EditorProvider initialState={{ selectedBlock }}>
+          <CommandUndoItem variant="button" />
+          <CommandRedoItem variant="button" />
+          <Type />
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Email' }))
+    await waitFor(() =>
+      expect(emailTextResponseTypeUpdateMock.result).toHaveBeenCalled()
+    )
+    await waitFor(() => expect(emailLabelUpdateMock.result).toHaveBeenCalled())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() =>
+      expect(undoTextResponseTypeUpdateMock.result).toHaveBeenCalled()
+    )
+    await waitFor(() => expect(undoLabelUpdateMock.result).toHaveBeenCalled())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+    await waitFor(() =>
+      expect(emailTextResponseTypeUpdateMock.result).toHaveBeenCalled()
+    )
+    await waitFor(() => expect(emailLabelUpdateMock.result).toHaveBeenCalled())
+  })
 })
