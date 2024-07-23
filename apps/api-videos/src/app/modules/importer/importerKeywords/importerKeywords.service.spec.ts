@@ -1,15 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
-
-import { Keyword } from '.prisma/api-videos-client'
-
 import { PrismaService } from '../../../lib/prisma.service'
-
+import { ImporterVideosService } from '../importerVideos/importerVideos.service'
 import { ImporterKeywordsService } from './importerKeywords.service'
 
 describe('ImporterKeywordsService', () => {
   let service: ImporterKeywordsService,
-    prismaService: DeepMockProxy<PrismaService>
+    prismaService: DeepMockProxy<PrismaService>,
+    videosService: DeepMockProxy<ImporterVideosService>
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -18,38 +16,115 @@ describe('ImporterKeywordsService', () => {
         {
           provide: PrismaService,
           useValue: mockDeep<PrismaService>()
+        },
+        {
+          provide: ImporterVideosService,
+          useValue: mockDeep<ImporterVideosService>()
         }
       ]
     }).compile()
 
     service = module.get<ImporterKeywordsService>(ImporterKeywordsService)
+    videosService = module.get<DeepMockProxy<ImporterVideosService>>(
+      ImporterVideosService
+    )
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
   })
 
+  it('should save many keywords', async () => {
+    videosService.ids = ['video1', 'video2', 'video3']
+    prismaService.$transaction.mockImplementation((callback) => callback(prismaService))
+
+    await service.importMany([
+      {
+        value: 'TestKeyword1',
+        languageId: '529',
+        videos: [{ id: 'video1' }, { id: 'video2' }],
+        datastream_metadata: {
+          uuid: 'mockUuid'
+        }
+      },
+      {
+        value: 'TestKeyword2',
+        languageId: '529',
+        videos: [{ id: 'video3' }],
+        datastream_metadata: {
+          uuid: 'mockUuid1'
+        }
+      }
+    ])
+
+    expect(prismaService.keyword.createMany).toHaveBeenCalledWith({
+      data: [
+        {
+          id: 'mockUuid',
+          value: 'TestKeyword1',
+          languageId: '529',
+          videos: { connect: [{ id: 'video1' }, { id: 'video2' }] }
+        },
+        {
+          id: 'mockUuid1',
+          value: 'TestKeyword2',
+          languageId: '529',
+          videos: { connect: [{ id: 'video3' }] }
+        }
+      ],
+      skipDuplicates: true
+    })
+  })
+
   describe('import', () => {
     it('should upsert keyword', async () => {
+      videosService.ids = ['video1', 'video2']
       await service.import({
         value: 'TestKeyword',
         languageId: '529',
-        videoIds: ['video1', 'video2']
+        videos: [{ id: 'video1' }, { id: 'video2' }],
+        datastream_metadata: {
+          uuid: 'mockUuid'
+        }
       })
       expect(prismaService.keyword.upsert).toHaveBeenCalledWith({
         where: {
           value_languageId: { value: 'TestKeyword', languageId: '529' }
         },
-        create: {
+        update: {
+          id: 'mockUuid',
           value: 'TestKeyword',
           languageId: '529',
           videos: { connect: [{ id: 'video1' }, { id: 'video2' }] }
         },
-        update: {
+        create: {
+          id: 'mockUuid',
           value: 'TestKeyword',
           languageId: '529',
           videos: { connect: [{ id: 'video1' }, { id: 'video2' }] }
         }
       })
     })
-  })
+
+    it('should throw error when row is invalid', async () => {
+      await expect(
+        service.import({
+          id: 1,
+          value: 'TestKeyword'
+        })
+      ).rejects.toThrow('row does not match schema: 1')
+    })
+
+    it('should throw error when some rows are invalid', async () => {
+      await expect(
+        service.importMany([
+          {
+            id: 1
+          },
+          {
+            value: 'TestKeyword'
+          }
+        ])
+      ).rejects.toThrow('some rows do not match schema: 1,unknownId')
+    })
+  })  
 })

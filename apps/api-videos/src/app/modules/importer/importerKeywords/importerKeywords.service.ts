@@ -1,16 +1,24 @@
 import { Injectable } from '@nestjs/common'
+import omit from 'lodash/omit'
 import { z } from 'zod'
-
-import { Prisma } from '.prisma/api-videos-client'
-
 import { PrismaService } from '../../../lib/prisma.service'
 import { ImporterService } from '../importer.service'
+import { ImporterVideosService } from '../importerVideos/importerVideos.service'
 
-const keywordSchema = z.object({
-  value: z.string(),
-  languageId: z.string(),
-  videoIds: z.array(z.string()).optional()
-})
+const keywordSchema = z
+  .object({
+    value: z.string(),
+    languageId: z.string(),
+    videos: z.array(z.object({ id: z.string() })).optional(),
+    datastream_metadata: z.object({
+      uuid: z.string()
+    })
+  })
+  .transform((data) => ({
+    ...omit(data, ['datastream_metadata']),
+    id: data.datastream_metadata.uuid,
+    videos: data.videos ? { connect: data.videos } : undefined
+  }))
 
 type Keyword = z.infer<typeof keywordSchema>
 
@@ -18,24 +26,25 @@ type Keyword = z.infer<typeof keywordSchema>
 export class ImporterKeywordsService extends ImporterService<Keyword> {
   schema = keywordSchema
 
-  constructor(private readonly prismaService: PrismaService) {
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly importerVideosService: ImporterVideosService
+  ) {
     super()
   }
 
-  private transform(
-    keyword: z.infer<typeof keywordSchema>
-  ): Prisma.KeywordCreateInput {
-    return {
-      value: keyword.value,
-      languageId: keyword.languageId,
-      videos: keyword.videoIds
-        ? { connect: keyword.videoIds.map((id) => ({ id })) }
-        : undefined
+  protected async checkVideos(keyword: Keyword): Promise<void> {
+    if (keyword.videos && keyword.videos.connect) {
+      for (const video of keyword.videos.connect) {
+        if (!this.importerVideosService.ids.includes(video.id)) {
+          throw new Error(`Video ${video.id} not found`)
+        }
+      }
     }
   }
 
-  protected async save(keyword: z.infer<typeof keywordSchema>): Promise<void> {
-    const input = this.transform(keyword)
+  protected async save(keyword: Keyword): Promise<void> {
+    this.checkVideos(keyword)
     await this.prismaService.keyword.upsert({
       where: {
         value_languageId: {
@@ -43,17 +52,16 @@ export class ImporterKeywordsService extends ImporterService<Keyword> {
           languageId: keyword.languageId
         }
       },
-      update: input,
-      create: input
+      update: keyword,
+      create: keyword
     })
   }
 
-  protected async saveMany(
-    keywords: z.infer<typeof keywordSchema>[]
-  ): Promise<void> {
-    const transformedKeywords = keywords.map(this.transform)
+  protected async saveMany(keywords: Keyword[]): Promise<void> {
     await this.prismaService.keyword.createMany({
-      data: transformedKeywords,
+      data: keywords.filter(
+        ( keyword ) => this.checkVideos(keyword)
+      ),
       skipDuplicates: true
     })
   }
