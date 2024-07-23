@@ -33,57 +33,13 @@ describe('ImporterKeywordsService', () => {
     ) as DeepMockProxy<PrismaService>
   })
 
-  it('should save many keywords', async () => {
-    videosService.ids = ['video1', 'video2', 'video3']
-    prismaService.$transaction.mockImplementation((callback) =>
-      callback(prismaService)
-    )
-
-    await service.importMany([
-      {
-        value: 'TestKeyword1',
-        languageId: '529',
-        videos: [{ id: 'video1' }, { id: 'video2' }],
-        datastream_metadata: {
-          uuid: 'mockUuid'
-        }
-      },
-      {
-        value: 'TestKeyword2',
-        languageId: '529',
-        videos: [{ id: 'video3' }],
-        datastream_metadata: {
-          uuid: 'mockUuid1'
-        }
-      }
-    ])
-
-    expect(prismaService.keyword.createMany).toHaveBeenCalledWith({
-      data: [
-        {
-          id: 'mockUuid',
-          value: 'TestKeyword1',
-          languageId: '529',
-          videos: { connect: [{ id: 'video1' }, { id: 'video2' }] }
-        },
-        {
-          id: 'mockUuid1',
-          value: 'TestKeyword2',
-          languageId: '529',
-          videos: { connect: [{ id: 'video3' }] }
-        }
-      ],
-      skipDuplicates: true
-    })
-  })
-
   describe('import', () => {
     it('should upsert keyword', async () => {
       videosService.ids = ['video1', 'video2']
       await service.import({
         value: 'TestKeyword',
         languageId: '529',
-        videos: [{ id: 'video1' }, { id: 'video2' }],
+        videoIds: ['video1','video2'],
         datastream_metadata: {
           uuid: 'mockUuid'
         }
@@ -106,6 +62,51 @@ describe('ImporterKeywordsService', () => {
         }
       })
     })
+
+    it('should save many keywords', async () => {
+      videosService.ids = ['video1', 'video2', 'video3']
+      prismaService.$transaction.mockImplementation((callback) =>
+        callback(prismaService)
+      )
+  
+      await service.importMany([
+        {
+          value: 'TestKeyword1',
+          languageId: '529',
+          videoIds: ['video1' ,'video2' ],
+          datastream_metadata: {
+            uuid: 'mockUuid'
+          }
+        },
+        {
+          value: 'TestKeyword2',
+          languageId: '529',
+          videoIds: ['video3'],
+          datastream_metadata: {
+            uuid: 'mockUuid1'
+          }
+        }
+      ])
+  
+      expect(prismaService.keyword.createMany).toHaveBeenCalledWith({
+        data: [
+          {
+            id: 'mockUuid',
+            value: 'TestKeyword1',
+            languageId: '529',
+            videos: { connect: [{ id: 'video1' }, { id: 'video2' }] }
+          },
+          {
+            id: 'mockUuid1',
+            value: 'TestKeyword2',
+            languageId: '529',
+            videos: { connect: [{ id: 'video3' }] }
+          }
+        ],
+        skipDuplicates: true
+      })
+    })
+  
 
     it('should throw error when row is invalid', async () => {
       await expect(
