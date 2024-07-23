@@ -14,6 +14,7 @@ import { VideoStudyQuestion } from './videoStudyQuestion'
 import { VideoTitle } from './videoTitle'
 import { VideoVariant } from './videoVariant'
 
+import './language'
 import './bibleCitation'
 import './bibleBook'
 

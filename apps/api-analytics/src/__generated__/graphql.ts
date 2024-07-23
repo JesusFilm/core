@@ -39,7 +39,7 @@ export type BibleBook = {
   __typename?: 'BibleBook';
   alternateName?: Maybe<Scalars['String']['output']>;
   isNewTestament: Scalars['Boolean']['output'];
-  name: Array<Translation>;
+  name: Array<BibleBookName>;
   order: Scalars['Int']['output'];
   osisId: Scalars['String']['output'];
   paratextAbbreviation: Scalars['String']['output'];
@@ -49,6 +49,13 @@ export type BibleBook = {
 export type BibleBookNameArgs = {
   languageId?: InputMaybe<Scalars['ID']['input']>;
   primary?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type BibleBookName = {
+  __typename?: 'BibleBookName';
+  language: Language;
+  primary: Scalars['Boolean']['output'];
+  value: Scalars['String']['output'];
 };
 
 export type BibleCitation = {
@@ -177,11 +184,6 @@ export enum ButtonSize {
 export enum ButtonVariant {
   Contained = 'contained',
   Text = 'text'
-}
-
-export enum CacheControlScope {
-  Private = 'PRIVATE',
-  Public = 'PUBLIC'
 }
 
 export type CardBlock = Block & {
@@ -1028,8 +1030,8 @@ export type LanguageName = {
 
 export type LanguageWithSlug = {
   __typename?: 'LanguageWithSlug';
-  language?: Maybe<Language>;
-  slug?: Maybe<Scalars['String']['output']>;
+  language: Language;
+  slug: Scalars['String']['output'];
 };
 
 export type LanguagesFilter = {
@@ -3018,22 +3020,20 @@ export type UserTeamUpdateInput = {
 
 export type Video = {
   __typename?: 'Video';
-  bibleCitations: Array<BibleCitation>;
+  bibleCitation?: Maybe<Array<BibleCitation>>;
   children: Array<Video>;
-  /** the number value of the amount of children on a video */
   childrenCount: Scalars['Int']['output'];
-  description: Array<Translation>;
+  description: Array<VideoDescription>;
   id: Scalars['ID']['output'];
   image?: Maybe<Scalars['String']['output']>;
-  imageAlt: Array<Translation>;
+  imageAlt: Array<VideoImageAlt>;
   label: VideoLabel;
   noIndex?: Maybe<Scalars['Boolean']['output']>;
   primaryLanguageId: Scalars['ID']['output'];
-  /** slug is a permanent link to the video. */
   slug: Scalars['String']['output'];
-  snippet: Array<Translation>;
-  studyQuestions: Array<Translation>;
-  title: Array<Translation>;
+  snippet: Array<VideoSnippet>;
+  studyQuestions: Array<VideoStudyQuestion>;
+  title: Array<VideoTitle>;
   variant?: Maybe<VideoVariant>;
   variantLanguages: Array<Language>;
   variantLanguagesCount: Scalars['Int']['output'];
@@ -3318,6 +3318,13 @@ export type VideoCompleteEventCreateInput = {
   value?: InputMaybe<VideoBlockSource>;
 };
 
+export type VideoDescription = {
+  __typename?: 'VideoDescription';
+  language: Language;
+  primary: Scalars['Boolean']['output'];
+  value: Scalars['String']['output'];
+};
+
 export type VideoExpandEvent = Event & {
   __typename?: 'VideoExpandEvent';
   /** time event was created */
@@ -3347,6 +3354,13 @@ export type VideoExpandEventCreateInput = {
   stepId?: InputMaybe<Scalars['ID']['input']>;
   /** source of the video */
   value?: InputMaybe<VideoBlockSource>;
+};
+
+export type VideoImageAlt = {
+  __typename?: 'VideoImageAlt';
+  language: Language;
+  primary: Scalars['Boolean']['output'];
+  value: Scalars['String']['output'];
 };
 
 export enum VideoLabel {
@@ -3457,6 +3471,13 @@ export type VideoProgressEventCreateInput = {
   value?: InputMaybe<VideoBlockSource>;
 };
 
+export type VideoSnippet = {
+  __typename?: 'VideoSnippet';
+  language: Language;
+  primary: Scalars['Boolean']['output'];
+  value: Scalars['String']['output'];
+};
+
 export type VideoStartEvent = Event & {
   __typename?: 'VideoStartEvent';
   /** time event was created */
@@ -3488,6 +3509,20 @@ export type VideoStartEventCreateInput = {
   value?: InputMaybe<VideoBlockSource>;
 };
 
+export type VideoStudyQuestion = {
+  __typename?: 'VideoStudyQuestion';
+  language: Language;
+  primary: Scalars['Boolean']['output'];
+  value: Scalars['String']['output'];
+};
+
+export type VideoTitle = {
+  __typename?: 'VideoTitle';
+  language: Language;
+  primary: Scalars['Boolean']['output'];
+  value: Scalars['String']['output'];
+};
+
 /**
  * VideoTriggerBlock is a block that indicates the video to navigate
  * to the next block at the designated time.
@@ -3511,11 +3546,10 @@ export type VideoVariant = {
   downloads: Array<VideoVariantDownload>;
   duration: Scalars['Int']['output'];
   hls?: Maybe<Scalars['String']['output']>;
-  id: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
   language: Language;
-  /** slug is a permanent link to the video variant. */
   slug: Scalars['String']['output'];
-  subtitle: Array<Translation>;
+  subtitle: Array<VideoVariantSubtitle>;
   subtitleCount: Scalars['Int']['output'];
 };
 
@@ -3536,6 +3570,13 @@ export enum VideoVariantDownloadQuality {
   High = 'high',
   Low = 'low'
 }
+
+export type VideoVariantSubtitle = {
+  __typename?: 'VideoVariantSubtitle';
+  language: Language;
+  primary: Scalars['Boolean']['output'];
+  value: Scalars['String']['output'];
+};
 
 export type VideosFilter = {
   availableVariantLanguageIds?: InputMaybe<Array<Scalars['ID']['input']>>;
