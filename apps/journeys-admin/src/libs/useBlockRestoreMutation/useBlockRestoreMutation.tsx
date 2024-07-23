@@ -7,6 +7,7 @@ import {
 } from '@apollo/client'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { BLOCK_FIELDS } from '@core/journeys/ui/block/blockFields'
+import compact from 'lodash/compact'
 import {
   BlockRestore,
   BlockRestoreVariables
@@ -39,9 +40,16 @@ export function useBlockRestoreMutation(
         )
         const cacheOptions = {
           fields: {
-            blocks(existingBlockRefs: Reference[] = [], { readField }) {
-              data.blockRestore.forEach((block) => {
-                const newBlockRef = cache.writeFragment({
+            blocks(existingBlockRefs: Reference[], { readField }) {
+              const newBlockRef = data.blockRestore.map((block) => {
+                if (
+                  existingBlockRefs.some(
+                    (ref) => readField('id', ref) === block?.id
+                  )
+                ) {
+                  return null
+                }
+                return cache.writeFragment({
                   data: block,
                   fragment: gql`
                         fragment RestoredBlock on Block {
@@ -49,15 +57,8 @@ export function useBlockRestoreMutation(
                         }
                       `
                 })
-                if (
-                  existingBlockRefs.some(
-                    (ref) => readField('id', ref) === block?.id
-                  )
-                ) {
-                  return existingBlockRefs
-                }
-                return [...existingBlockRefs, newBlockRef]
               })
+              return [...existingBlockRefs, ...compact(newBlockRef)]
             }
           }
         }
