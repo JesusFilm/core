@@ -51,15 +51,6 @@ const HintMock = ({
 )
 
 describe('Edit Hint field', () => {
-  it('should display placeholder field if no selectedBlock', () => {
-    const { getByRole } = render(
-      <HintMock initialState={{ selectedBlock: undefined }} />
-    )
-    const field = getByRole('textbox', { name: 'Hint' })
-
-    expect(field).toBeDisabled()
-  })
-
   it('should display hint value', () => {
     const { getByRole } = render(<HintMock />)
     const field = getByRole('textbox', { name: 'Hint' })

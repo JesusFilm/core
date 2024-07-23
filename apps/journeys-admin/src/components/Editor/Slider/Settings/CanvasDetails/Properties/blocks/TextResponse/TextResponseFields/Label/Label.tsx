@@ -80,7 +80,7 @@ export function Label(): ReactElement {
   }
 
   const initialValues: Values = {
-    label: selectedBlock?.label ?? 'Your answer here'
+    label: selectedBlock?.label ?? ''
   }
 
   return (
