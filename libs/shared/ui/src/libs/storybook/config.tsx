@@ -1,9 +1,16 @@
 import { Decorator } from '@storybook/react'
 import { SnackbarProvider } from 'notistack'
 
+import algoliasearch from 'algoliasearch'
+import { InstantSearch } from 'react-instantsearch'
 import { ThemeProvider } from '../../components/ThemeProvider'
 import { sharedUiConfig } from '../sharedUiConfig'
 import { ThemeMode, ThemeName } from '../themes'
+
+const searchClient = algoliasearch(
+  process.env.NEXT_PUBLIC_ALGOLIA_APP_ID ?? '',
+  process.env.NEXT_PUBLIC_ALGOLIA_API_KEY ?? ''
+)
 
 // Must set parameters at component level for shared-storybook stories to work
 export const journeysAdminConfig = {
@@ -15,7 +22,9 @@ export const journeysAdminConfig = {
           themeName={ThemeName.journeysAdmin}
           themeMode={ThemeMode.light}
         >
-          <Story />
+          <InstantSearch searchClient={searchClient}>
+            <Story />
+          </InstantSearch>
         </ThemeProvider>
       </SnackbarProvider>
     )
@@ -36,7 +45,9 @@ export const watchConfig = {
           themeName={ThemeName.website}
           themeMode={ThemeMode.light}
         >
-          <Story />
+          <InstantSearch searchClient={searchClient}>
+            <Story />
+          </InstantSearch>
         </ThemeProvider>
       </SnackbarProvider>
     )
