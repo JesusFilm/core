@@ -64,8 +64,7 @@ export class BigQueryConsumer extends WorkerHost {
         hasUpdatedAt: true
       },
       {
-        table:
-          'jfp-data-warehouse.jfp_mmdb_prod.core_keywords_arclight_data',
+        table: 'jfp-data-warehouse.jfp_mmdb_prod.core_keywords_arclight_data',
         service: this.importerKeywordsService,
         hasUpdatedAt: true
       }

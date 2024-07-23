@@ -35,7 +35,9 @@ describe('ImporterKeywordsService', () => {
 
   it('should save many keywords', async () => {
     videosService.ids = ['video1', 'video2', 'video3']
-    prismaService.$transaction.mockImplementation((callback) => callback(prismaService))
+    prismaService.$transaction.mockImplementation((callback) =>
+      callback(prismaService)
+    )
 
     await service.importMany([
       {
@@ -126,5 +128,5 @@ describe('ImporterKeywordsService', () => {
         ])
       ).rejects.toThrow('some rows do not match schema: 1,unknownId')
     })
-  })  
+  })
 })

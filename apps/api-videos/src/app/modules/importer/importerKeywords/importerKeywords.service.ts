@@ -59,9 +59,7 @@ export class ImporterKeywordsService extends ImporterService<Keyword> {
 
   protected async saveMany(keywords: Keyword[]): Promise<void> {
     await this.prismaService.keyword.createMany({
-      data: keywords.filter(
-        ( keyword ) => this.checkVideos(keyword)
-      ),
+      data: keywords.filter((keyword) => this.checkVideos(keyword)),
       skipDuplicates: true
     })
   }
