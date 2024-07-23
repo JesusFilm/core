@@ -21,6 +21,5 @@ export interface TextResponseIntegrationUpdate {
 
 export interface TextResponseIntegrationUpdateVariables {
   id: string;
-  journeyId: string;
   input: TextResponseBlockUpdateInput;
 }
