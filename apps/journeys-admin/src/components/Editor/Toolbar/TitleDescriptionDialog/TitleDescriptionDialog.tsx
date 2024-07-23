@@ -20,7 +20,6 @@ export function TitleDescriptionDialog({
   open,
   onClose
 }: TitleDialogProps): ReactElement {
-  console.log('HERE')
   const { t } = useTranslation('apps-journeys-admin')
   const [journeyUpdate] = useJourneyUpdateMutation()
   const { journey } = useJourney()
