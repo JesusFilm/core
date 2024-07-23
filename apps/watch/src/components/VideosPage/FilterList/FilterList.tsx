@@ -6,15 +6,14 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Formik } from 'formik'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import { useRouter } from 'next/router'
+import { ReactElement, useEffect, useMemo } from 'react'
+import { useRefinementList, useSearchBox } from 'react-instantsearch'
 
 import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
-
 import { GetLanguages } from '../../../../__generated__/GetLanguages'
 import { VideoPageFilter } from '../utils/getQueryParameters'
-
-import { useRefinementList, useSearchBox } from 'react-instantsearch'
 import { LanguagesFilter } from './LanguagesFilter'
 
 const subtitleLanguageIds = [
@@ -75,19 +74,17 @@ const subtitleLanguageIds = [
 
 interface FilterListProps {
   filter: VideoPageFilter
-  onChange: (filter: VideoPageFilter) => void
   languagesData?: GetLanguages
   languagesLoading: boolean
 }
 
 export function FilterList({
   filter,
-  onChange,
   languagesData,
   languagesLoading
 }: FilterListProps): ReactElement {
   const { t } = useTranslation()
-
+  const router = useRouter()
   const { refine } = useSearchBox()
   const { items: languageItems, refine: refineLanguages } = useRefinementList({
     attribute: 'languageId',
@@ -98,46 +95,39 @@ export function FilterList({
     limit: 5000
   })
 
-  function filteredLanguages() {
-    const languagesMap = new Map(
-      languagesData?.languages.map((language) => [language.id, language])
-    )
-    return languageItems
-      .map((item) => languagesMap.get(item.value))
-      .filter((language) => language !== undefined)
-  }
+  const languagesMap = useMemo(
+    () => new Map(languagesData?.languages.map((lang) => [lang.id, lang])),
+    [languagesData]
+  )
 
-  function filteredSubtitles() {
-    const selectedSubtitles = languagesData?.languages.filter((language) =>
-      subtitleLanguageIds.includes(language.id)
-    )
-    const subtitlesMap = new Map(
-      selectedSubtitles?.map((language) => [language.id, language])
-    )
-    return subtitleItems
-      .map((item) => subtitlesMap.get(item.value))
-      .filter((subtitle) => subtitle !== undefined)
-  }
+  const languages = useMemo(
+    () =>
+      languageItems
+        .map((item) => languagesMap.get(item.value))
+        .filter((lang): lang is NonNullable<typeof lang> => lang !== undefined),
+    [languageItems, languagesMap]
+  )
 
-  const languages = filteredLanguages()
-  const subtitles = filteredSubtitles()
+  const subtitles = useMemo(
+    () =>
+      subtitleItems
+        .map((item) => languagesMap.get(item.value))
+        .filter(
+          (lang): lang is NonNullable<typeof lang> =>
+            lang !== undefined && subtitleLanguageIds.includes(lang.id)
+        ),
+    [subtitleItems, languagesMap]
+  )
 
-  function languageOptionFromIds(ids?: string[]): LanguageOption {
-    if (ids == null || ids.length === 0) return { id: '' }
-
-    const language = languagesData?.languages.find(
-      (language) => language.id === ids[0]
-    )
-
-    if (language != null) {
-      return {
-        id: language.id,
-        localName: language.name.find(({ primary }) => !primary)?.value,
-        nativeName: language.name.find(({ primary }) => primary)?.value
-      }
+  const languageOptionFromIds = (ids?: string[]): LanguageOption => {
+    if (!ids?.length || !languagesMap) return { id: '' }
+    const language = languagesMap.get(ids[0])
+    if (!language) return { id: '' }
+    return {
+      id: language.id,
+      localName: language.name.find(({ primary }) => !primary)?.value,
+      nativeName: language.name.find(({ primary }) => primary)?.value
     }
-
-    return { id: '' }
   }
 
   const initialValues = {
@@ -146,25 +136,47 @@ export function FilterList({
     title: filter.title ?? ''
   }
 
-  function handleSubmit(values: typeof initialValues): void {
-    onChange({
-      availableVariantLanguageIds:
-        values.language != null && values.language.id !== ''
-          ? [values.language.id]
-          : undefined,
-      subtitleLanguageIds:
-        values.subtitleLanguage != null && values.subtitleLanguage.id !== ''
-          ? [values.subtitleLanguage.id]
-          : undefined,
-      title:
-        values.title != null && values.title !== '' ? values.title : undefined
-    })
-
-    if (values.title != null) refine(values.title)
-    if (values.language != null) refineLanguages(values.language.id)
-    if (values.subtitleLanguage != null)
-      refineSubtitles(values.subtitleLanguage.id)
+  const handleRefine = ({
+    title,
+    languageId,
+    subtitleLanguageId
+  }: {
+    title: string
+    languageId: string
+    subtitleLanguageId: string
+  }) => {
+    if (title) refine(title)
+    if (languageId) refineLanguages(languageId)
+    if (subtitleLanguageId) refineSubtitles(subtitleLanguageId)
   }
+
+  const handleSubmit = (values: typeof initialValues) => {
+    const params = new URLSearchParams(router.query as Record<string, string>)
+    const setQueryParam = (name: string, value?: string | null) =>
+      value ? params.set(name, value) : params.delete(name)
+
+    setQueryParam('languages', values.language.id)
+    setQueryParam('subtitles', values.subtitleLanguage.id)
+    setQueryParam('title', values.title)
+
+    void router.push(`/watch/videos?${params.toString()}`, undefined, {
+      shallow: true
+    })
+    handleRefine({
+      title: values.title,
+      languageId: values.language.id,
+      subtitleLanguageId: values.subtitleLanguage.id
+    })
+  }
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  useEffect(() => {
+    handleRefine({
+      title: initialValues.title,
+      languageId: initialValues.language.id,
+      subtitleLanguageId: initialValues.subtitleLanguage.id
+    })
+  }, [])
 
   return (
     <Formik
