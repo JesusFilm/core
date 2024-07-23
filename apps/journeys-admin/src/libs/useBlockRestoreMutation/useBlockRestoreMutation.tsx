@@ -5,9 +5,10 @@ import {
   gql,
   useMutation
 } from '@apollo/client'
+import compact from 'lodash/compact'
+
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { BLOCK_FIELDS } from '@core/journeys/ui/block/blockFields'
-import compact from 'lodash/compact'
 import {
   BlockRestore,
   BlockRestoreVariables
