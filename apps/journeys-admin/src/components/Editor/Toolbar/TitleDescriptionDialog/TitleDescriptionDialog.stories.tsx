@@ -5,17 +5,17 @@ import { ReactElement, useState } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
-import { journeysAdminConfig } from '@core/shared/ui/storybook'
 import { TitleDescriptionDialog } from './TitleDescriptionDialog'
 
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 import { JOURNEY_SETTINGS_UPDATE } from '../../../../libs/useJourneyUpdateMutation/useJourneyUpdateMutation'
 
 const TitleDialogStory: Meta<typeof TitleDescriptionDialog> = {
-  ...journeysAdminConfig,
+  ...simpleComponentConfig,
   component: TitleDescriptionDialog,
-  title: 'Journeys-Admin/Editor/Toolbar/Items/TitleItem/TitleDescriptionDialog',
+  title: 'Journeys-Admin/Editor/Toolbar/TitleDescriptionDialog',
   parameters: {
-    ...journeysAdminConfig.parameters,
+    ...simpleComponentConfig.parameters,
     layout: 'fullscreen'
   }
 }

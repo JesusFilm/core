@@ -21,7 +21,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 describe('Toolbar', () => {
   const defaultJourney = {
     journey: {
-      id: 'something',
+      id: 'journeyId',
       title: 'My Awesome Journey Title',
       description: 'My Awesome Journey Description',
       primaryImageBlock: null,

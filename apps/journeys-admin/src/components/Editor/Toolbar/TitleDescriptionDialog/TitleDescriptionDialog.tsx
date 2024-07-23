@@ -47,7 +47,7 @@ export function TitleDescriptionDialog({
             description: values.description,
             strategySlug: journey.strategySlug,
             language: journey.language,
-            tags: journey.tags
+            tags: []
           }
         }
       })

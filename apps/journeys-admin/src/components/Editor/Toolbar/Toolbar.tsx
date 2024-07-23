@@ -28,7 +28,7 @@ export function Toolbar(): ReactElement {
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
-  const [titleDialogOpen, setTitleDialogOpen] = useState<boolean>(false)
+  const [dialogOpen, setDialogOpen] = useState(false)
   const { dispatch } = useEditor()
 
   function setRoute(param: string): void {
@@ -40,7 +40,7 @@ export function Toolbar(): ReactElement {
     })
   }
 
-  function handleSelectSocialImage(): void {
+  function handleSocialImageClick(): void {
     dispatch({
       type: 'SetActiveSlideAction',
       activeSlide: ActiveSlide.Content
@@ -51,13 +51,13 @@ export function Toolbar(): ReactElement {
     })
   }
 
-  function handleSelectTitle(): void {
+  function handleDialogOpen(): void {
     setRoute('title')
-    setTitleDialogOpen(true)
+    setDialogOpen(true)
   }
 
-  function handleCloseTitle(): void {
-    setTitleDialogOpen(false)
+  function handleDialogClose(): void {
+    setDialogOpen(false)
   }
 
   return (
@@ -107,7 +107,7 @@ export function Toolbar(): ReactElement {
             }}
           >
             <Button
-              onClick={handleSelectSocialImage}
+              onClick={handleSocialImageClick}
               data-testid="ToolbarSocialImage"
               style={{ backgroundColor: 'transparent' }}
               disableRipple
@@ -166,7 +166,7 @@ export function Toolbar(): ReactElement {
               >
                 <Button
                   variant="text"
-                  onClick={handleSelectTitle}
+                  onClick={handleDialogOpen}
                   color="secondary"
                   sx={{
                     maxWidth: 'auto',
@@ -197,7 +197,8 @@ export function Toolbar(): ReactElement {
                       overflow: 'hidden',
                       whiteSpace: 'nowrap',
                       textOverflow: 'ellipsis',
-                      flexShrink: 1
+                      flexShrink: 1,
+                      fontWeight: 'normal'
                     }}
                   >
                     {journey.description}
@@ -205,12 +206,11 @@ export function Toolbar(): ReactElement {
                 </Button>
               </Tooltip>
             </Box>
-            {journey?.id != null && (
-              <TitleDescriptionDialog
-                open={titleDialogOpen}
-                onClose={handleCloseTitle}
-              />
-            )}
+
+            <TitleDescriptionDialog
+              open={dialogOpen}
+              onClose={handleDialogClose}
+            />
           </Stack>
           <Items />
         </>

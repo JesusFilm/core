@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
@@ -10,15 +10,51 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { TitleDescriptionDialog } from '.'
+import {
+  JourneySettingsUpdate,
+  JourneySettingsUpdateVariables
+} from '../../../../../__generated__/JourneySettingsUpdate'
 import { JOURNEY_SETTINGS_UPDATE } from '../../../../libs/useJourneyUpdateMutation/useJourneyUpdateMutation'
 import { journey } from '../../../JourneyList/ActiveJourneyList/ActivePriorityList/ActiveJourneyListData'
 
 const onClose = jest.fn()
 
+function getJourneySettingsUpdateMock(
+  title: string,
+  description: string
+): MockedResponse<JourneySettingsUpdate, JourneySettingsUpdateVariables> {
+  return {
+    request: {
+      query: JOURNEY_SETTINGS_UPDATE,
+      variables: {
+        id: defaultJourney.id,
+        input: {
+          title,
+          description
+        }
+      }
+    },
+    result: {
+      data: {
+        journeyUpdate: {
+          id: defaultJourney.id,
+          __typename: 'Journey',
+          title,
+          description,
+          strategySlug: null,
+          language: journey.language,
+          tags: []
+        }
+      }
+    }
+  }
+}
+
 describe('TitleDescriptionDialog', () => {
   it('should not set journey title on close', async () => {
+    const mock = getJourneySettingsUpdateMock('New Journey', 'Description')
     render(
-      <MockedProvider mocks={[]}>
+      <MockedProvider mocks={[{ ...mock }]}>
         <SnackbarProvider>
           <JourneyProvider
             value={{
@@ -38,36 +74,22 @@ describe('TitleDescriptionDialog', () => {
   })
 
   it('should update journey title and description on submit', async () => {
-    const updatedJourney = {
-      title: 'Changed Title',
-      description: 'Changed Description'
-    }
-
     const result = jest.fn(() => ({
       data: {
         journeyUpdate: {
           id: defaultJourney.id,
           __typename: 'Journey',
-          ...updatedJourney
+          title: 'Changed Title',
+          description: 'Changed Description'
         }
       }
     }))
-
+    const mock = getJourneySettingsUpdateMock(
+      'Changed Title',
+      'Changed Description'
+    )
     render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: JOURNEY_SETTINGS_UPDATE,
-              variables: {
-                id: defaultJourney.id,
-                input: updatedJourney
-              }
-            },
-            result
-          }
-        ]}
-      >
+      <MockedProvider mocks={[{ ...mock, result }]}>
         <SnackbarProvider>
           <JourneyProvider
             value={{
@@ -97,23 +119,12 @@ describe('TitleDescriptionDialog', () => {
   })
 
   it('shows notistack error alert when title fails to update', async () => {
+    const mock = getJourneySettingsUpdateMock(
+      'Changed Title',
+      'Changed Description'
+    )
     render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: JOURNEY_SETTINGS_UPDATE,
-              variables: {
-                id: defaultJourney.id,
-                input: {
-                  title: 'New Journey',
-                  description: 'Description'
-                }
-              }
-            }
-          }
-        ]}
-      >
+      <MockedProvider mocks={[{ ...mock }]}>
         <SnackbarProvider>
           <JourneyProvider
             value={{
@@ -147,25 +158,12 @@ describe('TitleDescriptionDialog', () => {
         }
       }
     }))
-
+    const mock = getJourneySettingsUpdateMock(
+      'Changed Title',
+      'Changed Description'
+    )
     render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: JOURNEY_SETTINGS_UPDATE,
-              variables: {
-                id: defaultJourney.id,
-                input: {
-                  title: 'Journey Heading',
-                  description: 'Description'
-                }
-              }
-            },
-            result
-          }
-        ]}
-      >
+      <MockedProvider mocks={[{ ...mock }]}>
         <SnackbarProvider>
           <JourneyProvider
             value={{
