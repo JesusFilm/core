@@ -55,6 +55,10 @@ describe('BigQueryConsumer', () => {
         {
           provide: ImporterBibleBookNamesService,
           useValue: mockDeep<ImporterBibleBookNamesService>()
+        },
+        {
+          provide: ImporterKeywordsService,
+          useValue: mockDeep<ImporterKeywordsService>()
         }
       ]
     }).compile()
