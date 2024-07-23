@@ -4,30 +4,32 @@ import { ComponentProps } from 'react'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
-import {
-  getJourneysWithoutLanguageIdsMock,
-  getLanguagesMock,
-  getTagsMock
-} from './data'
+import { getTagsMock } from './data'
 
 import { TemplateGallery } from '.'
 
 import '../../../test/i18n'
+import { screen, userEvent, waitFor } from '@storybook/testing-library'
 import { InstantSearchWrapper } from '../TemplateSections/InstantSearchProvider'
 
 const TemplateGalleryStory: Meta<typeof TemplateGallery> = {
   ...journeysAdminConfig,
   component: TemplateGallery,
-  title: 'Journeys-Admin/TemplateGallery',
+  title: 'Journeys-Ui/TemplateGallery',
   parameters: {
     layout: 'fullscreen'
   }
 }
 
-const Template: StoryObj<ComponentProps<typeof TemplateGallery>> = {
-  render: () => (
+const Template: StoryObj<
+  ComponentProps<typeof TemplateGallery> & { query: string }
+> = {
+  render: (args) => (
     <Box sx={{ height: '100%', overflow: 'hidden' }}>
-      <InstantSearchWrapper indexName="api-journeys-journeys-dev">
+      <InstantSearchWrapper
+        query={args.query}
+        indexName="api-journeys-journeys-dev"
+      >
         <TemplateGallery />
       </InstantSearchWrapper>
     </Box>
@@ -38,8 +40,15 @@ export const Default = {
   ...Template,
   parameters: {
     apolloClient: {
-      mocks: [getJourneysWithoutLanguageIdsMock, getLanguagesMock, getTagsMock]
+      mocks: [getTagsMock]
     }
+  },
+  play: async () => {
+    await waitFor(async () => {
+      await expect(screen.getByTestId('SearchBar')).toBeInTheDocument()
+    })
+    await userEvent.click(screen.getByTestId('SearchBar'))
+    await userEvent.keyboard('Hello World!')
   }
 }
 
@@ -47,38 +56,33 @@ export const Loading = {
   ...Template,
   parameters: {
     apolloClient: {
-      mocks: [
-        { ...getJourneysWithoutLanguageIdsMock, delay: 100000000000000 },
-        { ...getLanguagesMock, delay: 100000000000000 },
-        { ...getTagsMock, delay: 100000000000000 }
-      ]
+      mocks: [{ ...getTagsMock, delay: 100000000000000 }]
     }
   }
 }
 
-// //TODO
-// export const Default = {
-//   ...Template
-// }
+export const Match = {
+  ...Template,
+  args: {
+    query: 'Easter'
+  },
+  parameters: {
+    apolloClient: {
+      mocks: [getTagsMock]
+    }
+  }
+}
 
-// export const Match = {
-//   ...Template,
-//   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-//     const canvas = within(canvasElement)
-//     const searchInput = await canvas.getByTestId('SearchBar')
-//     await userEvent.click(searchInput)
-//     await userEvent.keyboard('Easter')
-//   }
-// }
-
-// export const NoMatch = {
-//   ...Template,
-//   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-//     const canvas = within(canvasElement)
-//     const searchInput = await canvas.getByTestId('SearchBar')
-//     await userEvent.click(searchInput)
-//     await userEvent.keyboard('Nothing')
-//   }
-// }
+export const NoMatch = {
+  ...Template,
+  args: {
+    query: 'Nothing'
+  },
+  parameters: {
+    apolloClient: {
+      mocks: [getTagsMock]
+    }
+  }
+}
 
 export default TemplateGalleryStory

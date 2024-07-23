@@ -4,39 +4,60 @@ import { ComponentProps } from 'react'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 import { TemplateSections } from '.'
+import { SearchBar } from '../SearchBar'
 import { InstantSearchWrapper } from './InstantSearchProvider'
 
 const TemplateSectionsStory: Meta<typeof TemplateSections> = {
   ...journeysAdminConfig,
   component: TemplateSections,
-  title: 'Journeys-Admin/TemplateSections',
+  title: 'Journeys-Ui/TemplateSections',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
   }
 }
 
-const Template: StoryObj<ComponentProps<typeof TemplateSections>> = {
-  render: () => (
+const Template: StoryObj<
+  ComponentProps<typeof TemplateSections> & { query: string }
+> = {
+  render: (args) => (
     <Box sx={{ backgroundColor: 'background.paper', p: 5, overflow: 'hidden' }}>
-      <InstantSearchWrapper indexName="api-journeys-journeys-dev">
+      <InstantSearchWrapper
+        query={args.query}
+        indexName="api-journeys-journeys-dev"
+      >
         <TemplateSections />
+        <Box
+          sx={{
+            display: 'none'
+          }}
+        >
+          <SearchBar />
+        </Box>
       </InstantSearchWrapper>
     </Box>
   )
 }
 
 export const Default = {
-  ...Template
+  ...Template,
+  args: {
+    query: ''
+  }
 }
 
-// TODO(jk)
-// export const Match = {
-//   ...Template
-// }
+export const Match = {
+  ...Template,
+  args: {
+    query: 'Easter'
+  }
+}
 
-// export const NoMatch = {
-//   ...Template
-// }
+export const NoMatch = {
+  ...Template,
+  args: {
+    query: 'Nothing'
+  }
+}
 
 export default TemplateSectionsStory
