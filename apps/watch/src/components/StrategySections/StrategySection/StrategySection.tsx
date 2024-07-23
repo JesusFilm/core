@@ -77,22 +77,20 @@ export function StrategySection({
 
   return (
     <>
-      {items.length === 0 ? (
-        <></>
-      ) : (
+      {items.length > 0 ? (
         <Box data-testid="StrategySection">
-          <>
-            <Typography variant="h5">{label}</Typography>
-            <Container maxWidth={false} sx={{ overflow: 'hidden' }}>
-              <ContentCarousel
-                items={items}
-                renderItem={(itemProps) => <StrategyCard {...itemProps} />}
-                breakpoints={swiperBreakpoints}
-                slidesOffsetBefore={-32}
-              />
-            </Container>
-          </>
+          <Typography variant="h5">{label}</Typography>
+          <Container maxWidth={false} sx={{ overflow: 'hidden' }}>
+            <ContentCarousel
+              items={items}
+              renderItem={(itemProps) => <StrategyCard {...itemProps} />}
+              breakpoints={swiperBreakpoints}
+              slidesOffsetBefore={-32}
+            />
+          </Container>
         </Box>
+      ) : (
+        <></>
       )}
     </>
   )
