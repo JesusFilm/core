@@ -2,14 +2,12 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
 } from '@core/journeys/ui/TeamProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../../__generated__/BlockFields'
-import { GetJourney_journey as Journey } from '../../../../../../../../../../../../__generated__/GetJourney'
 import { GetLastActiveTeamIdAndTeams } from '../../../../../../../../../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { TextResponseType } from '../../../../../../../../../../../../__generated__/globalTypes'
 import { getIntegrationMock } from '../../../../../../../../../../../libs/useIntegrationQuery/useIntegrationQuery.mock'
@@ -77,7 +75,6 @@ describe('Integrations', () => {
               query: TEXT_RESPONSE_INTEGRATION_UPDATE,
               variables: {
                 id: selectedBlock.id,
-                journeyId: 'journey.id',
                 input: {
                   integrationId: 'integration.id'
                 }
@@ -87,18 +84,11 @@ describe('Integrations', () => {
           }
         ]}
       >
-        <JourneyProvider
-          value={{
-            journey: { id: 'journey.id' } as unknown as Journey,
-            variant: 'admin'
-          }}
-        >
-          <EditorProvider initialState={{ selectedBlock }}>
-            <TeamProvider>
-              <Integrations />
-            </TeamProvider>
-          </EditorProvider>
-        </JourneyProvider>
+        <EditorProvider initialState={{ selectedBlock }}>
+          <TeamProvider>
+            <Integrations />
+          </TeamProvider>
+        </EditorProvider>
       </MockedProvider>
     )
 
