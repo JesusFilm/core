@@ -10,18 +10,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
 
 import { Typography } from '@mui/material'
-import { JourneyTitleDescriptionUpdate } from '../../../../../__generated__/JourneyTitleDescriptionUpdate'
-
-export const JOURNEY_TITLE_DESCRIPTION_UPDATE = gql`
-  mutation JourneyTitleDescriptionUpdate($id: ID!, $input: JourneyUpdateInput!) {
-    journeyUpdate(id: $id, input: $input) {
-      id
-      title
-      description
-    }
-  }
-`
-
+import { useJourneyUpdateMutation } from '../../../../libs/useJourneyUpdateMutation'
 interface TitleDialogProps {
   open: boolean
   onClose: () => void
@@ -31,10 +20,9 @@ export function TitleDescriptionDialog({
   open,
   onClose
 }: TitleDialogProps): ReactElement {
+  console.log('HERE')
   const { t } = useTranslation('apps-journeys-admin')
-  const [journeyUpdate] = useMutation<JourneyTitleDescriptionUpdate>(
-    JOURNEY_TITLE_DESCRIPTION_UPDATE
-  )
+  const [journeyUpdate] = useJourneyUpdateMutation()
   const { journey } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
   const titleSchema = object().shape({
@@ -57,7 +45,10 @@ export function TitleDescriptionDialog({
             id: journey.id,
             __typename: 'Journey',
             title: values.title,
-            description: values.description
+            description: values.description,
+            strategySlug: journey.strategySlug,
+            language: journey.language,
+            tags: journey.tags
           }
         }
       })
@@ -116,7 +107,7 @@ export function TitleDescriptionDialog({
                 onSubmit: handleSubmit,
                 closeLabel: t('Cancel')
               }}
-              testId="TitleDescDialog"
+              testId="TitleDescriptionDialog"
             >
               <Form>
                 <TextField
@@ -130,11 +121,10 @@ export function TitleDescriptionDialog({
                   onKeyDown={(e) => e.stopPropagation()}
                   onChange={handleChange}
                   helperText={errors.title as string}
-                  data-testid="titletextbox"
                 />
                 <Typography
                   variant="subtitle1"
-                  style={{ marginLeft: -1, paddingTop: 20, paddingBottom: 16 }}
+                  style={{ paddingTop: 20, paddingBottom: 16 }}
                 >
                   {t('Description: ')}
                 </Typography>
@@ -148,7 +138,6 @@ export function TitleDescriptionDialog({
                   variant="filled"
                   rows={2}
                   onChange={handleChange}
-                  data-testid="desctextbox"
                 />
               </Form>
             </Dialog>

@@ -17,21 +17,9 @@ import { EDIT_TOOLBAR_HEIGHT } from '../constants'
 
 import { ActiveContent } from '@core/journeys/ui/EditorProvider'
 import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
-import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
-import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
-import { Divider } from '@mui/material'
 import Button from '@mui/material/Button'
-import { typography } from '@mui/system'
-import {
-  ButtonColor,
-  TypographyColor
-} from 'libs/journeys/ui/__generated__/globalTypes'
-import { n } from 'msw/lib/core/GraphQLHandler-COiPfZ8k'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'react-i18next'
-import { Background } from 'reactflow'
-import { transpile } from 'typescript'
-import { BackgroundColor } from '../Slider/Settings/CanvasDetails/Properties/blocks/Card/BackgroundColor'
 import { Items } from './Items'
 import { Menu } from './Menu'
 import { TitleDescriptionDialog } from './TitleDescriptionDialog'
@@ -40,7 +28,7 @@ export function Toolbar(): ReactElement {
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
-  const [titleDialogOpen, setTitleDialogOpen] = useState<boolean | undefined>()
+  const [titleDialogOpen, setTitleDialogOpen] = useState<boolean>(false)
   const { dispatch } = useEditor()
 
   function setRoute(param: string): void {
@@ -66,7 +54,6 @@ export function Toolbar(): ReactElement {
   function handleSelectTitle(): void {
     setRoute('title')
     setTitleDialogOpen(true)
-    // onClose?.()   // may need to add this
   }
 
   function handleCloseTitle(): void {
@@ -147,79 +134,68 @@ export function Toolbar(): ReactElement {
                 textOverflow: 'ellipsis'
               }}
             >
-              <ThemeProvider
-                themeName={ThemeName.journeysAdmin}
-                themeMode={ThemeMode.dark}
-              >
-                <Tooltip
-                  title="Click to edit"
-                  placement="bottom"
-                  arrow
-                  PopperProps={{
-                    modifiers: [
-                      {
-                        name: 'offset',
-                        options: {
-                          offset:
-                            journey.description === '' ? [0, 2] : [0, -10.3]
-                        }
+              <Tooltip
+                title="Click to edit"
+                placement="bottom"
+                arrow
+                PopperProps={{
+                  modifiers: [
+                    {
+                      name: 'offset',
+                      options: {
+                        offset: journey.description === '' ? [0, 2] : [0, -10.3]
                       }
-                    ]
+                    }
+                  ]
+                }}
+              >
+                <Button
+                  variant="text"
+                  onClick={handleSelectTitle}
+                  color="secondary"
+                  sx={{
+                    maxWidth: 'auto',
+                    display: 'block',
+                    textAlign: 'left',
+                    overflow: 'hidden',
+                    whiteSpace: 'nowrap',
+                    textOverflow: 'ellipsis',
+                    borderRadius: '8px',
+                    flexShrink: 1
                   }}
                 >
-                  <Button
-                    variant="text"
-                    onClick={handleSelectTitle}
+                  <Typography
+                    variant="subtitle1"
                     sx={{
-                      maxWidth: 'auto',
-                      display: 'block',
-                      textAlign: 'left',
                       overflow: 'hidden',
                       whiteSpace: 'nowrap',
                       textOverflow: 'ellipsis',
-                      borderRadius: '8px',
-                      flexShrink: 1,
-                      color: ButtonColor.inherit,
-                      ':hover': {
-                        backgroundColor: '#f5f5f5'
-                      }
+                      flexShrink: 1
                     }}
                   >
-                    <Typography
-                      variant="subtitle1"
-                      sx={{
-                        overflow: 'hidden',
-                        whiteSpace: 'nowrap',
-                        textOverflow: 'ellipsis',
-                        flexShrink: 1
-                      }}
-                    >
-                      {journey.title}
-                    </Typography>
-                    <Typography
-                      variant="caption"
-                      sx={{
-                        maxWidth: 'auto',
-                        overflow: 'hidden',
-                        whiteSpace: 'nowrap',
-                        textOverflow: 'ellipsis',
-                        flexShrink: 1
-                      }}
-                    >
-                      {journey.description}
-                    </Typography>
-                  </Button>
-                </Tooltip>
-              </ThemeProvider>
+                    {journey.title}
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      maxWidth: 'auto',
+                      overflow: 'hidden',
+                      whiteSpace: 'nowrap',
+                      textOverflow: 'ellipsis',
+                      flexShrink: 1
+                    }}
+                  >
+                    {journey.description}
+                  </Typography>
+                </Button>
+              </Tooltip>
             </Box>
-            <Typography>
-              {journey?.id != null && titleDialogOpen != null && (
-                <TitleDescriptionDialog
-                  open={titleDialogOpen}
-                  onClose={handleCloseTitle}
-                />
-              )}
-            </Typography>
+            {journey?.id != null && (
+              <TitleDescriptionDialog
+                open={titleDialogOpen}
+                onClose={handleCloseTitle}
+              />
+            )}
           </Stack>
           <Items />
         </>
