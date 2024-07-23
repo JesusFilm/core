@@ -1,6 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
@@ -36,7 +35,6 @@ export const TEXT_RESPONSE_TYPE_UPDATE = gql`
 
 export function Type(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { journey } = useJourney()
   const { state } = useEditor()
   const selectedBlock = state.selectedBlock as
     | TreeBlock<TextResponseBlock>
