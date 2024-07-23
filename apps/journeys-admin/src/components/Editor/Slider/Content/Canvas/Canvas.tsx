@@ -179,7 +179,7 @@ export function Canvas(): ReactElement {
                 margin: `calc(${calculateScaledMargin(CARD_HEIGHT, scale)} + ${
                   scale < 0.65 ? '20px' : '0px'
                 }) ${calculateScaledMargin(CARD_WIDTH, scale)}`,
-                borderRadius: 6,
+                borderRadius: 8,
                 transition: (theme) =>
                   theme.transitions.create('border-color', {
                     duration: 200,
@@ -205,8 +205,8 @@ export function Canvas(): ReactElement {
                     <TransitionGroup
                       component={Box}
                       sx={{
-                        backgroundColor: 'background.default',
-                        borderRadius: 5,
+                        bgcolor: 'background.default',
+                        borderRadius: 8,
                         '& .card-enter': {
                           zIndex: 1,
                           opacity: 0

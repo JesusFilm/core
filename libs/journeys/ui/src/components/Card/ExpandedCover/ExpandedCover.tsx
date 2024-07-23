@@ -62,7 +62,6 @@ export function ExpandedCover({
           WebkitBackdropFilter: 'blur(20px)',
           backdropFilter: 'blur(20px)',
           background,
-          borderRadius: 'inherit',
           overflow: 'hidden',
           boxSizing: 'content-box'
         }}
