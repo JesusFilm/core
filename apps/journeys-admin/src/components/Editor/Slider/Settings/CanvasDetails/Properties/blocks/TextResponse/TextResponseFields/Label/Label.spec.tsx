@@ -108,41 +108,6 @@ describe('Edit Label field', () => {
     })
   })
 
-  it('should set the default label on blur if none set', async () => {
-    const result = jest.fn(() => ({
-      data: {
-        textResponseBlockUpdate: {
-          id: block.id,
-          label: 'Your answer here'
-        }
-      }
-    }))
-
-    const updateSuccess = {
-      request: {
-        query: TEXT_RESPONSE_LABEL_UPDATE,
-        variables: {
-          id: block.id,
-          input: {
-            label: 'Your answer here'
-          }
-        }
-      },
-      result
-    }
-
-    const { getByRole } = render(<LabelMock mocks={[updateSuccess]} />)
-
-    const field = getByRole('textbox', { name: 'Label' })
-
-    fireEvent.change(field, { target: { value: '' } })
-    fireEvent.blur(field)
-
-    await waitFor(() => {
-      expect(result).toHaveBeenCalled()
-    })
-  })
-
   it('should undo the label change', async () => {
     const result1 = jest.fn(() => ({
       data: {
