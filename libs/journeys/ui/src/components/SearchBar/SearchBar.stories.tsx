@@ -2,6 +2,7 @@ import { Meta, StoryObj } from '@storybook/react'
 
 import { watchConfig } from '@core/shared/ui/storybook'
 import { userEvent, within } from '@storybook/testing-library'
+import { InstantSearchWrapper } from '../TemplateSections/InstantSearchProvider'
 import { SearchBar } from './SearchBar'
 
 const SearchBarStory: Meta<typeof SearchBar> = {
@@ -11,7 +12,11 @@ const SearchBarStory: Meta<typeof SearchBar> = {
 }
 
 const Template: StoryObj = {
-  render: () => <SearchBar />
+  render: () => (
+    <InstantSearchWrapper query="" indexName="api-journeys-journeys-dev">
+      <SearchBar />
+    </InstantSearchWrapper>
+  )
 }
 
 export const Default = {

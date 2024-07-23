@@ -13,6 +13,7 @@ import {
 import { TemplateGallery } from '.'
 
 import '../../../test/i18n'
+import { InstantSearchWrapper } from '../TemplateSections/InstantSearchProvider'
 
 const TemplateGalleryStory: Meta<typeof TemplateGallery> = {
   ...journeysAdminConfig,
@@ -26,7 +27,9 @@ const TemplateGalleryStory: Meta<typeof TemplateGallery> = {
 const Template: StoryObj<ComponentProps<typeof TemplateGallery>> = {
   render: () => (
     <Box sx={{ height: '100%', overflow: 'hidden' }}>
-      <TemplateGallery />
+      <InstantSearchWrapper indexName="api-journeys-journeys-dev">
+        <TemplateGallery />
+      </InstantSearchWrapper>
     </Box>
   )
 }
@@ -52,5 +55,30 @@ export const Loading = {
     }
   }
 }
+
+// //TODO
+// export const Default = {
+//   ...Template
+// }
+
+// export const Match = {
+//   ...Template,
+//   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+//     const canvas = within(canvasElement)
+//     const searchInput = await canvas.getByTestId('SearchBar')
+//     await userEvent.click(searchInput)
+//     await userEvent.keyboard('Easter')
+//   }
+// }
+
+// export const NoMatch = {
+//   ...Template,
+//   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+//     const canvas = within(canvasElement)
+//     const searchInput = await canvas.getByTestId('SearchBar')
+//     await userEvent.click(searchInput)
+//     await userEvent.keyboard('Nothing')
+//   }
+// }
 
 export default TemplateGalleryStory
