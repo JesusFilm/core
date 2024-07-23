@@ -5,7 +5,6 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import Clock1 from '@core/shared/ui/icons/Clock1'
-import TrendDown1 from '@core/shared/ui/icons/TrendDown1'
 import UserProfile3 from '@core/shared/ui/icons/UserProfile3'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -19,6 +18,7 @@ const StatsOverlay = styled(Stack)(({ theme }) => ({
   transform: 'translateY(-100%)',
   backgroundColor: theme.palette.background.paper,
   borderRadius: 4,
+  cursor: 'default',
   '&:before': {
     content: "''",
     position: 'absolute',
@@ -41,19 +41,6 @@ function formatTime(totalSeconds: number): string {
   return minutes > 0 ? `${minutes}m${seconds}s` : `${seconds}s`
 }
 
-function getPercentage(dividend, divisor): string {
-  let quotient = dividend / divisor
-
-  if (Number.isNaN(quotient) || !Number.isFinite(quotient)) {
-    quotient = 0
-  }
-
-  return quotient.toLocaleString(undefined, {
-    style: 'percent',
-    minimumFractionDigits: 0
-  })
-}
-
 interface StepBlockNodeAnalyticsProps {
   stepId: string
 }
@@ -67,24 +54,18 @@ export function StepBlockNodeAnalytics({
   } = useEditor()
   const stepStats = analytics?.stepsStats.find((step) => step.stepId === stepId)
   const visitors = stepStats?.visitors ?? 0
-  const visitorsExitAtStep = stepStats?.visitorsExitAtStep ?? 0
   const timeOnPage = stepStats?.timeOnPage ?? 0
 
   return (
     <StatsOverlay
       direction="row"
-      divider={<Divider orientation="vertical" flexItem />}
+      divider={<Divider orientation="vertical" sx={{ height: '20px' }} />}
       data-testid="StepBlockNodeAnalytics"
     >
       <AnalyticsDataPoint
         Icon={UserProfile3}
         tooltipTitle={t('Unique visitors')}
         value={visitors}
-      />
-      <AnalyticsDataPoint
-        Icon={TrendDown1}
-        tooltipTitle={t('Bounce rate')}
-        value={getPercentage(visitorsExitAtStep, visitors)}
       />
       <AnalyticsDataPoint
         Icon={Clock1}

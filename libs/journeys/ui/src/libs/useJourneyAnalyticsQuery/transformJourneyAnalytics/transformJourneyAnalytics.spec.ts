@@ -7,19 +7,19 @@ describe('transformJourneyAnalytics', () => {
       journeySteps: [
         {
           __typename: 'PlausibleStatsResponse',
-          property: 'journeyId/step1.id',
+          property: '/journeyId/step1.id',
           visitors: 10,
           timeOnPage: 10
         },
         {
           __typename: 'PlausibleStatsResponse',
-          property: 'journeyId/step2.id',
+          property: '/journeyId/step2.id',
           visitors: 5,
           timeOnPage: 3
         },
         {
           __typename: 'PlausibleStatsResponse',
-          property: 'journeyId/step3.id',
+          property: '/journeyId/step3.id',
           visitors: 2,
           timeOnPage: 1
         }
@@ -88,17 +88,17 @@ describe('transformJourneyAnalytics', () => {
       journeyVisitorsPageExits: [
         {
           __typename: 'PlausibleStatsResponse',
-          property: 'journeyId/step1.id',
+          property: '/journeyId/step1.id',
           visitors: 5
         },
         {
           __typename: 'PlausibleStatsResponse',
-          property: 'journeyId/step2.id',
+          property: '/journeyId/step2.id',
           visitors: 3
         },
         {
           __typename: 'PlausibleStatsResponse',
-          property: 'journeyId/step3.id',
+          property: '/journeyId/step3.id',
           visitors: 2
         }
       ],
@@ -194,7 +194,7 @@ describe('transformJourneyAnalytics', () => {
             id: 'Direct / None',
             position: {
               x: -600,
-              y: -18
+              y: -46
             },
             type: 'Referrer'
           },
@@ -208,7 +208,7 @@ describe('transformJourneyAnalytics', () => {
             id: 'tiktok',
             position: {
               x: -600,
-              y: 24
+              y: 19
             },
             type: 'Referrer'
           },
@@ -222,7 +222,7 @@ describe('transformJourneyAnalytics', () => {
             id: 'facebook',
             position: {
               x: -600,
-              y: 66
+              y: 84
             },
             type: 'Referrer'
           }

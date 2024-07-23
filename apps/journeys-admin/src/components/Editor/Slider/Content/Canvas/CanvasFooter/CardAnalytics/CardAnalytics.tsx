@@ -5,6 +5,7 @@ import ThumbsDownIcon from '@core/shared/ui/icons/ThumbsDown'
 import ThumbsUpIcon from '@core/shared/ui/icons/ThumbsUp'
 import { Typography } from '@mui/material'
 import Divider from '@mui/material/Divider'
+import Fade from '@mui/material/Fade'
 import Stack from '@mui/material/Stack'
 import Tooltip from '@mui/material/Tooltip'
 import { ReactElement, ReactNode } from 'react'
@@ -14,7 +15,7 @@ import { MessagePlatform } from '../../../../../../../../__generated__/globalTyp
 export function CardAnalytics(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const {
-    state: { selectedStep, analytics }
+    state: { selectedStep, analytics, showAnalytics }
   } = useEditor()
   const { journey } = useJourney()
 
@@ -36,25 +37,24 @@ export function CardAnalytics(): ReactElement {
     ) ?? 0
 
   return (
-    <Stack
-      data-testid="CardAnalytics"
-      direction="row"
-      sx={{ justifyContent: 'space-between', width: '90%' }}
-    >
-      <Analytic
-        title={t('likes')}
-        value={thumbsUpClicks}
-        icon={<ThumbsUpIcon sx={{ fontSize: 24 }} />}
-      />
-      <Divider orientation="vertical" flexItem />
-      <Analytic
-        title={t('dislikes')}
-        value={thumbsDownClicks}
-        icon={<ThumbsDownIcon sx={{ fontSize: 24 }} />}
-      />
-      {primaryChat != null && (
-        <>
-          <Divider orientation="vertical" flexItem />
+    <Fade in={showAnalytics}>
+      <Stack
+        data-testid="CardAnalytics"
+        direction="row"
+        divider={<Divider orientation="vertical" flexItem />}
+        sx={{ width: '100%' }}
+      >
+        <Analytic
+          title={t('likes')}
+          value={thumbsUpClicks}
+          icon={<ThumbsUpIcon sx={{ fontSize: 24 }} />}
+        />
+        <Analytic
+          title={t('dislikes')}
+          value={thumbsDownClicks}
+          icon={<ThumbsDownIcon sx={{ fontSize: 24 }} />}
+        />
+        {primaryChat != null && (
           <Analytic
             title={t('widget clicks')}
             value={primaryChatClicks}
@@ -65,11 +65,8 @@ export function CardAnalytics(): ReactElement {
               />
             }
           />
-        </>
-      )}
-      {secondaryChat != null && (
-        <>
-          <Divider orientation="vertical" flexItem />
+        )}
+        {secondaryChat != null && (
           <Analytic
             title={t('widget clicks')}
             value={secondaryChatClicks}
@@ -80,9 +77,9 @@ export function CardAnalytics(): ReactElement {
               />
             }
           />
-        </>
-      )}
-    </Stack>
+        )}
+      </Stack>
+    </Fade>
   )
 }
 
@@ -95,7 +92,17 @@ interface StatsProps {
 function Analytic({ title, value, icon }: StatsProps): ReactElement {
   return (
     <Tooltip title={`${value} ${title}`} placement="bottom">
-      <Stack direction="row" gap={2} sx={{ p: 3 }}>
+      <Stack
+        direction="row"
+        gap={2}
+        sx={{
+          px: 4,
+          flex: 1,
+          height: 48,
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}
+      >
         {icon}
         <Typography variant="subtitle1">{value}</Typography>
       </Stack>
