@@ -1,3 +1,4 @@
+import {} from 'instantsearch.js'
 import { useEffect, useState } from 'react'
 import {
   useConfigure,

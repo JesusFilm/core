@@ -4,6 +4,7 @@ import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import { ComponentProps, ReactElement } from 'react'
 
+import { VideoChildFields } from '../../../__generated__/VideoChildFields'
 import { useAlgoliaVideos } from '../../libs/algolia/useAlgoliaVideos'
 import { VideoCard } from '../VideoCard'
 
@@ -34,7 +35,7 @@ export function VideoGrid({
         videos?.map((video, index) => (
           <Grid item key={index} xs={12} md={4} xl={3}>
             <VideoCard
-              video={video}
+              video={video as unknown as VideoChildFields}
               containerSlug={containerSlug}
               variant={variant}
             />
