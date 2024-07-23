@@ -32,6 +32,7 @@ const Template: StoryObj<
             display: 'none'
           }}
         >
+          {/* Needed to apply the search */}
           <SearchBar />
         </Box>
       </InstantSearchWrapper>
@@ -40,10 +41,7 @@ const Template: StoryObj<
 }
 
 export const Default = {
-  ...Template,
-  args: {
-    query: ''
-  }
+  ...Template
 }
 
 export const Match = {
