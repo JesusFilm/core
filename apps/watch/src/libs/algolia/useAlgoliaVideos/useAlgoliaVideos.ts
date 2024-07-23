@@ -6,7 +6,8 @@ import {
   useRefinementList
 } from 'react-instantsearch'
 
-function transformAlgoliaVideos(hits) {
+export function transformAlgoliaVideos(hits) {
+  console.log('hits', hits)
   return hits.map((videoVariant) => {
     return {
       id: videoVariant.videoId,

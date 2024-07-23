@@ -3,27 +3,21 @@ import LoadingButton from '@mui/lab/LoadingButton'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import { ComponentProps, ReactElement } from 'react'
-
-import { VideoChildFields } from '../../../__generated__/VideoChildFields'
 import { useAlgoliaVideos } from '../../libs/algolia/useAlgoliaVideos'
 import { VideoCard } from '../VideoCard'
 
 interface VideoGridProps {
-  loading?: boolean
-  hasNextPage?: boolean
   showLoadMore?: boolean
   containerSlug?: string
   variant?: ComponentProps<typeof VideoCard>['variant']
 }
 
 export function VideoGrid({
-  loading,
   showLoadMore = false,
   containerSlug,
   variant = 'expanded'
 }: VideoGridProps): ReactElement {
   const { hits: videos, showMore, isLastPage } = useAlgoliaVideos()
-
   return (
     <Grid
       container
@@ -35,13 +29,13 @@ export function VideoGrid({
         videos?.map((video, index) => (
           <Grid item key={index} xs={12} md={4} xl={3}>
             <VideoCard
-              video={video as unknown as VideoChildFields}
+              video={video}
               containerSlug={containerSlug}
               variant={variant}
             />
           </Grid>
         ))}
-      {loading === true && (
+      {videos.length === 0 && (
         <>
           <Grid item xs={12} md={4} xl={3}>
             <VideoCard variant={variant} />
@@ -75,13 +69,13 @@ export function VideoGrid({
             <LoadingButton
               variant="outlined"
               onClick={showMore}
-              loading={loading}
+              loading={videos.length === 0}
               startIcon={<AddRounded />}
               disabled={isLastPage}
               loadingPosition="start"
               size="medium"
             >
-              {loading === true
+              {videos.length === 0
                 ? 'Loading...'
                 : isLastPage !== true
                   ? 'Load More'

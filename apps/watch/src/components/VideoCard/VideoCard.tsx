@@ -114,7 +114,7 @@ export function VideoCard({
               {video?.image != null ? (
                 <Image
                   src={video.image}
-                  alt={video.title[0].value}
+                  alt={video.imageAlt[0].value}
                   fill
                   sizes="100vw"
                   style={{
@@ -283,7 +283,7 @@ export function VideoCard({
                 </Typography>
               )}
               <Typography color="textPrimary" variant="h6" component="h3">
-                {video != null ? (
+                {video?.title != null ? (
                   video?.title[0].value
                 ) : (
                   <Skeleton width="60%" data-testid="VideoTitleSkeleton" />

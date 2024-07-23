@@ -1,5 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
-
+import { renderHook } from '@testing-library/react'
 import { ConfigureRenderState } from 'instantsearch.js/es/connectors/configure/connectConfigure'
 import { InfiniteHitsRenderState } from 'instantsearch.js/es/connectors/infinite-hits/connectInfiniteHits'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
@@ -8,11 +7,11 @@ import {
   useInfiniteHits,
   useRefinementList
 } from 'react-instantsearch'
-import { VideoGrid } from './VideoGrid'
+import { transformAlgoliaVideos, useAlgoliaVideos } from './useAlgoliaVideos'
 
 jest.mock('react-instantsearch')
 
-describe('VideoGrid', () => {
+describe('useAlgoliaVideos', () => {
   const algoliaVideos = [
     {
       videoId: 'videoId',
@@ -60,12 +59,45 @@ describe('VideoGrid', () => {
     } as unknown as ConfigureRenderState)
   })
 
-  it('should render correct number of videos', async () => {
-    render(<VideoGrid />)
-    await waitFor(() =>
-      expect(
-        screen.getByRole('heading', { level: 6, name: 'title1' })
-      ).toBeInTheDocument()
-    )
+  it('should have transformed algolia hits into videos', () => {
+    const transformedItems = transformAlgoliaVideos(algoliaVideos)
+    expect(transformedItems).toEqual([
+      {
+        childrenCount: 49,
+        id: 'videoId',
+        image:
+          'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_GOJ-0-0.mobileCinematicHigh.jpg',
+        imageAlt: 'Life of Jesus (Gospel of John)',
+        label: 'featureFilm',
+        slug: 'video-slug/english',
+        snippet: [],
+        title: [
+          {
+            value: ['title1']
+          }
+        ],
+        variant: {
+          duration: 10994,
+          hls: null,
+          id: '2_529-GOJ-0-0',
+          slug: 'video-slug/english'
+        }
+      }
+    ])
+  })
+
+  it('should return hits', async () => {
+    const { result } = renderHook(() => useAlgoliaVideos())
+    await expect(result.current.hits).toEqual([...algoliaVideos])
+  })
+
+  it('should return showMore', () => {
+    const { result } = renderHook(() => useAlgoliaVideos())
+    expect(result.current.showMore).toBeDefined()
+  })
+
+  it('should return isLastPage', () => {
+    const { result } = renderHook(() => useAlgoliaVideos())
+    expect(result.current.isLastPage).toBe(false)
   })
 })
