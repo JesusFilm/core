@@ -32,7 +32,6 @@ describe('ImporterVideoSubtitlesService', () => {
     it('should update video subtitle', async () => {
       importerVideosService.ids = ['mockVideoId']
       await service.import({
-        primary: 1,
         languageId: 529,
         video: 'mockVideoId',
         vttSrc: 'mockVttSrc',
@@ -70,7 +69,6 @@ describe('ImporterVideoSubtitlesService', () => {
       await service.importMany([
         {
           value: 'mockValue',
-          primary: 1,
           languageId: 529,
           video: 'mockVideoId',
           vttSrc: 'mockVttSrc',
@@ -79,7 +77,6 @@ describe('ImporterVideoSubtitlesService', () => {
         },
         {
           value: 'mockValue1',
-          primary: 1,
           languageId: 529,
           video: 'mockVideoId1',
           vttSrc: 'mockVttSrc',
@@ -122,7 +119,6 @@ describe('ImporterVideoSubtitlesService', () => {
       importerVideosService.ids = []
       await expect(
         service.import({
-          primary: 1,
           languageId: 529,
           video: 'mockVideoId',
           vttSrc: 'mockVttSrc',
