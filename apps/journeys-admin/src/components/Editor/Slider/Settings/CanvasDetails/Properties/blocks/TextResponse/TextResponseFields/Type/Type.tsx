@@ -81,7 +81,6 @@ export function Type(): ReactElement {
         label = t('Your answer here')
     }
 
-    console.log(input)
     await add({
       parameters: {
         execute: { label, input },
