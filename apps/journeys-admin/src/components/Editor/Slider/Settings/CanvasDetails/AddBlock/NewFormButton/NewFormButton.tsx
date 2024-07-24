@@ -73,6 +73,10 @@ export function NewFormButton(): ReactElement {
           })
           if (data?.formBlockCreate != null) {
             dispatch({
+              type: 'SetSelectedBlockByIdAction',
+              selectedBlockId: data.formBlockCreate.id
+            })
+            dispatch({
               type: 'SetActiveFabAction',
               activeFab: ActiveFab.Save
             })

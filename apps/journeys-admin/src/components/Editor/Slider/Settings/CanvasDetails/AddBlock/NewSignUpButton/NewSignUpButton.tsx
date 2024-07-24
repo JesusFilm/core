@@ -45,7 +45,8 @@ export function NewSignUpButton(): ReactElement {
     useMutation<SignUpBlockCreate>(SIGN_UP_BLOCK_CREATE)
   const { journey } = useJourney()
   const {
-    state: { selectedStep }
+    state: { selectedStep },
+    dispatch
   } = useEditor()
   const { addBlock } = useBlockCreateCommand()
 
@@ -111,6 +112,12 @@ export function NewSignUpButton(): ReactElement {
               }
             }
           })
+          if (data?.signUpBlockCreate != null) {
+            dispatch({
+              type: 'SetSelectedBlockByIdAction',
+              selectedBlockId: data.signUpBlockCreate.id
+            })
+          }
           return data?.signUpBlockCreate
         }
       })

@@ -34,7 +34,8 @@ export function NewVideoButton({
     useMutation<VideoBlockCreate>(VIDEO_BLOCK_CREATE)
   const { journey } = useJourney()
   const {
-    state: { selectedStep }
+    state: { selectedStep },
+    dispatch
   } = useEditor()
   const { addBlock } = useBlockCreateCommand()
 
@@ -77,6 +78,12 @@ export function NewVideoButton({
               }
             }
           })
+          if (data?.videoBlockCreate != null) {
+            dispatch({
+              type: 'SetSelectedBlockByIdAction',
+              selectedBlockId: data.videoBlockCreate.id
+            })
+          }
           return data?.videoBlockCreate
         }
       })

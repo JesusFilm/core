@@ -32,7 +32,8 @@ export function NewTextResponseButton(): ReactElement {
     useMutation<TextResponseBlockCreate>(TEXT_RESPONSE_BLOCK_CREATE)
   const { journey } = useJourney()
   const {
-    state: { selectedStep }
+    state: { selectedStep },
+    dispatch
   } = useEditor()
   const { addBlock } = useBlockCreateCommand()
 
@@ -75,6 +76,12 @@ export function NewTextResponseButton(): ReactElement {
               }
             }
           })
+          if (data?.textResponseBlockCreate != null) {
+            dispatch({
+              type: 'SetSelectedBlockByIdAction',
+              selectedBlockId: data.textResponseBlockCreate.id
+            })
+          }
           return data?.textResponseBlockCreate
         }
       })

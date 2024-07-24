@@ -77,6 +77,10 @@ export function NewTypographyButton(): ReactElement {
           })
           if (data?.typographyBlockCreate != null) {
             dispatch({
+              type: 'SetSelectedBlockByIdAction',
+              selectedBlockId: data.typographyBlockCreate.id
+            })
+            dispatch({
               type: 'SetActiveFabAction',
               activeFab: ActiveFab.Save
             })

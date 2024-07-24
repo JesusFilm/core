@@ -31,7 +31,8 @@ export function NewImageButton(): ReactElement {
     useMutation<ImageBlockCreate>(IMAGE_BLOCK_CREATE)
   const { journey } = useJourney()
   const {
-    state: { selectedStep }
+    state: { selectedStep },
+    dispatch
   } = useEditor()
   const { addBlock } = useBlockCreateCommand()
 
@@ -72,6 +73,12 @@ export function NewImageButton(): ReactElement {
               }
             }
           })
+          if (data?.imageBlockCreate != null) {
+            dispatch({
+              type: 'SetSelectedBlockByIdAction',
+              selectedBlockId: data.imageBlockCreate.id
+            })
+          }
           return data?.imageBlockCreate
         }
       })

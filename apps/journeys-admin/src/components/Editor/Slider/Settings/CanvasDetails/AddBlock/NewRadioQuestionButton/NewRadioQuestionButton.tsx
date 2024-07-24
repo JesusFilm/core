@@ -50,7 +50,8 @@ export function NewRadioQuestionButton(): ReactElement {
     useMutation<RadioQuestionBlockCreate>(RADIO_QUESTION_BLOCK_CREATE)
   const { journey } = useJourney()
   const {
-    state: { selectedStep }
+    state: { selectedStep },
+    dispatch
   } = useEditor()
   const { addBlock } = useBlockCreateCommand()
 
@@ -123,6 +124,12 @@ export function NewRadioQuestionButton(): ReactElement {
               }
             }
           })
+          if (data?.radioQuestionBlockCreate != null) {
+            dispatch({
+              type: 'SetSelectedBlockByIdAction',
+              selectedBlockId: data.radioQuestionBlockCreate.id
+            })
+          }
           return data?.radioQuestionBlockCreate
         }
       })
