@@ -56,7 +56,7 @@ describe('VideoGrid', () => {
   })
 
   describe('Algolia Videos', () => {
-    it('should render correct number of videos', async () => {
+    it('should render a video within the grid', async () => {
       mockedUseAlgoliaVideos.mockReturnValue({
         hits: algoliaVideos,
         showMore: jest.fn(),
@@ -83,7 +83,7 @@ describe('VideoGrid', () => {
       expect(showMore).toHaveBeenCalled()
     })
 
-    it('should show load more button', async () => {
+    it('should show no more videos button', async () => {
       mockedUseAlgoliaVideos.mockReturnValue({
         hits: algoliaVideos,
         showMore: jest.fn(),
@@ -97,7 +97,7 @@ describe('VideoGrid', () => {
       ).toBeInTheDocument()
     })
 
-    it('should if its loading', () => {
+    it('should show loading button if loading', () => {
       mockedUseAlgoliaVideos.mockReturnValue({
         hits: [],
         showMore: jest.fn(),

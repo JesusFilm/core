@@ -5,7 +5,6 @@ import { ReactElement } from 'react'
 
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 
-import {} from '../../__generated__/GetHomeVideos'
 import i18nConfig from '../../next-i18next.config'
 import { Videos } from '../../src/components/VideosPage'
 import { createApolloClient } from '../../src/libs/apolloClient'
