@@ -11,6 +11,8 @@ import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../
 import { GetLastActiveTeamIdAndTeams } from '../../../../../../../../../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { TextResponseType } from '../../../../../../../../../../../../__generated__/globalTypes'
 import { getIntegrationMock } from '../../../../../../../../../../../libs/useIntegrationQuery/useIntegrationQuery.mock'
+import { CommandRedoItem } from '../../../../../../../../../Toolbar/Items/CommandRedoItem'
+import { CommandUndoItem } from '../../../../../../../../../Toolbar/Items/CommandUndoItem'
 
 import { Integrations, TEXT_RESPONSE_INTEGRATION_UPDATE } from './Integrations'
 
@@ -54,35 +56,44 @@ describe('Integrations', () => {
     children: []
   }
 
-  it('should change integrationId of text response', async () => {
-    const result = jest.fn(() => ({
+  const integrationUpdateMock = {
+    request: {
+      query: TEXT_RESPONSE_INTEGRATION_UPDATE,
+      variables: {
+        id: selectedBlock.id,
+        input: {
+          integrationId: 'integration.id'
+        }
+      }
+    },
+    result: jest.fn(() => ({
       data: {
         textResponseBlockUpdate: {
           id: selectedBlock.id,
           __typename: 'TextResponseBlock',
-          integrationId: 'integration.id'
+          integrationId: null
         }
       }
     }))
+  }
+
+  it('should change integrationId of text response', async () => {
+    const mockUpdateSuccess1 = {
+      ...integrationUpdateMock,
+      result: jest.fn(() => ({
+        data: {
+          textResponseBlockUpdate: {
+            id: selectedBlock.id,
+            __typename: 'TextResponseBlock',
+            integrationId: 'integration.id'
+          }
+        }
+      }))
+    }
 
     render(
       <MockedProvider
-        mocks={[
-          getTeamsMock,
-          getIntegrationMock,
-          {
-            request: {
-              query: TEXT_RESPONSE_INTEGRATION_UPDATE,
-              variables: {
-                id: selectedBlock.id,
-                input: {
-                  integrationId: 'integration.id'
-                }
-              }
-            },
-            result
-          }
-        ]}
+        mocks={[getTeamsMock, getIntegrationMock, mockUpdateSuccess1]}
       >
         <EditorProvider initialState={{ selectedBlock }}>
           <TeamProvider>
@@ -99,6 +110,109 @@ describe('Integrations', () => {
         screen.getByRole('option', { name: 'growthSpaces - access.secret' })
       )
     )
-    expect(result).toHaveBeenCalled()
+    expect(mockUpdateSuccess1.result).toHaveBeenCalled()
+  })
+
+  it('should undo change to integration', async () => {
+    const mockUpdateSuccess1 = {
+      ...integrationUpdateMock
+    }
+
+    const mockUpdateSuccess2 = {
+      ...integrationUpdateMock,
+      request: {
+        query: TEXT_RESPONSE_INTEGRATION_UPDATE,
+        variables: {
+          id: selectedBlock.id,
+          input: {
+            integrationId: null
+          }
+        }
+      }
+    }
+
+    render(
+      <MockedProvider
+        mocks={[
+          getTeamsMock,
+          getIntegrationMock,
+          mockUpdateSuccess1,
+          mockUpdateSuccess2
+        ]}
+      >
+        <EditorProvider initialState={{ selectedBlock }}>
+          <TeamProvider>
+            <CommandUndoItem variant="button" />
+            <Integrations />
+          </TeamProvider>
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByText('Growth Spaces Integrations')).toBeInTheDocument()
+    fireEvent.mouseDown(screen.getAllByRole('button')[1])
+    await waitFor(() =>
+      fireEvent.click(
+        screen.getByRole('option', { name: 'growthSpaces - access.secret' })
+      )
+    )
+    await waitFor(() => expect(mockUpdateSuccess1.result).toHaveBeenCalled())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(mockUpdateSuccess1.result).toHaveBeenCalled())
+  })
+
+  it('should redo the change to integration that was undone', async () => {
+    const mockUpdateSuccess1 = {
+      ...integrationUpdateMock,
+      maxUsageCount: 2
+    }
+
+    const mockUpdateSuccess2 = {
+      ...integrationUpdateMock,
+      request: {
+        query: TEXT_RESPONSE_INTEGRATION_UPDATE,
+        variables: {
+          id: selectedBlock.id,
+          input: {
+            integrationId: null
+          }
+        }
+      }
+    }
+
+    render(
+      <MockedProvider
+        mocks={[
+          getTeamsMock,
+          getIntegrationMock,
+          mockUpdateSuccess1,
+          mockUpdateSuccess2
+        ]}
+      >
+        <EditorProvider initialState={{ selectedBlock }}>
+          <TeamProvider>
+            <CommandUndoItem variant="button" />
+            <CommandRedoItem variant="button" />
+            <Integrations />
+          </TeamProvider>
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByText('Growth Spaces Integrations')).toBeInTheDocument()
+    fireEvent.mouseDown(screen.getAllByRole('button')[2])
+    await waitFor(() =>
+      fireEvent.click(
+        screen.getByRole('option', { name: 'growthSpaces - access.secret' })
+      )
+    )
+    await waitFor(() => expect(mockUpdateSuccess1.result).toHaveBeenCalled())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(mockUpdateSuccess2.result).toHaveBeenCalled())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+    await waitFor(() => expect(mockUpdateSuccess1.result).toHaveBeenCalled())
   })
 })
