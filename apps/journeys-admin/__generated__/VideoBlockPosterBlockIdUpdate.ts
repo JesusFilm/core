@@ -3,13 +3,11 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { VideoBlockUpdateInput } from "./globalTypes";
-
 // ====================================================
-// GraphQL mutation operation: VideoBlockPosterImageUpdate
+// GraphQL mutation operation: VideoBlockPosterBlockIdUpdate
 // ====================================================
 
-export interface VideoBlockPosterImageUpdate_videoBlockUpdate {
+export interface VideoBlockPosterBlockIdUpdate_videoBlockUpdate {
   __typename: "VideoBlock";
   id: string;
   /**
@@ -20,12 +18,11 @@ export interface VideoBlockPosterImageUpdate_videoBlockUpdate {
   posterBlockId: string | null;
 }
 
-export interface VideoBlockPosterImageUpdate {
-  videoBlockUpdate: VideoBlockPosterImageUpdate_videoBlockUpdate;
+export interface VideoBlockPosterBlockIdUpdate {
+  videoBlockUpdate: VideoBlockPosterBlockIdUpdate_videoBlockUpdate;
 }
 
-export interface VideoBlockPosterImageUpdateVariables {
+export interface VideoBlockPosterBlockIdUpdateVariables {
   id: string;
-  journeyId: string;
-  input: VideoBlockUpdateInput;
+  posterBlockId: string;
 }

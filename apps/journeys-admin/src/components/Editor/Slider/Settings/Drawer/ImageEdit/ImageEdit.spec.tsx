@@ -8,7 +8,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
 import { createCloudflareUploadByUrlMock } from '../ImageBlockEditor/CustomImage/CustomUrl/data'
-import { listUnsplashCollectionMock } from '../ImageBlockEditor/UnsplashGallery/data'
+import { listUnsplashCollectionPhotosMock } from '../ImageBlockEditor/UnsplashGallery/data'
 
 import {
   ImageEdit,
@@ -133,7 +133,7 @@ describe('ImageEdit', () => {
         cache={cache}
         mocks={[
           createCloudflareUploadByUrlMock,
-          listUnsplashCollectionMock,
+          listUnsplashCollectionPhotosMock,
           {
             request: {
               query: JOURNEY_IMAGE_BLOCK_CREATE,
@@ -229,7 +229,7 @@ describe('ImageEdit', () => {
         cache={cache}
         mocks={[
           createCloudflareUploadByUrlMock,
-          listUnsplashCollectionMock,
+          listUnsplashCollectionPhotosMock,
           {
             request: {
               query: JOURNEY_IMAGE_BLOCK_CREATE,
@@ -321,7 +321,7 @@ describe('ImageEdit', () => {
       <MockedProvider
         cache={cache}
         mocks={[
-          listUnsplashCollectionMock,
+          listUnsplashCollectionPhotosMock,
           {
             request: {
               query: JOURNEY_IMAGE_BLOCK_DELETE,
@@ -406,7 +406,7 @@ describe('ImageEdit', () => {
       <MockedProvider
         cache={cache}
         mocks={[
-          listUnsplashCollectionMock,
+          listUnsplashCollectionPhotosMock,
           {
             request: {
               query: JOURNEY_IMAGE_BLOCK_DELETE,
@@ -473,7 +473,7 @@ describe('ImageEdit', () => {
       <MockedProvider
         mocks={[
           createCloudflareUploadByUrlMock,
-          listUnsplashCollectionMock,
+          listUnsplashCollectionPhotosMock,
 
           {
             request: {

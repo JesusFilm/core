@@ -130,7 +130,11 @@ describe('ImageUpload', () => {
       ]
     })
     fireEvent.drop(inputEl)
-    await waitFor(() => expect(onChange).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(onChange).toHaveBeenCalledWith({
+        src: 'https://imagedelivery.net//uploadId/public'
+      })
+    )
     expect(getByText('Upload successful!')).toBeInTheDocument()
   })
 

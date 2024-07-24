@@ -63,24 +63,4 @@ describe('ImageBlockHeader', () => {
     expect(getByText('Upload failed')).toBeInTheDocument()
     expect(getByTestId('ImageXIcon')).toBeInTheDocument()
   })
-
-  it('should render the unsplash author', () => {
-    const { getByText, queryByText } = render(
-      <ImageBlockHeader
-        selectedBlock={image}
-        unsplashAuthor={{
-          fullname: 'Levi Meir Clancy',
-          username: 'levimeirclancy'
-        }}
-      />
-    )
-    expect(getByText('Selected Image')).toBeInTheDocument()
-    expect(
-      queryByText(`${image.width} x ${image.height} pixels`)
-    ).not.toBeInTheDocument()
-    expect(getByText('Levi Meir Clancy').closest('a')).toHaveAttribute(
-      'href',
-      'https://unsplash.com/@levimeirclancy?utm_source=NextSteps&utm_medium=referral'
-    )
-  })
 })

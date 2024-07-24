@@ -56,8 +56,8 @@ describe('CustomUrl', () => {
     })
     fireEvent.blur(textBox)
     await waitFor(() => expect(result).toHaveBeenCalled())
-    expect(onChange).toHaveBeenCalledWith(
-      'https://imagedelivery.net/cloudflare-key/uploadId/public'
-    )
+    expect(onChange).toHaveBeenCalledWith({
+      src: 'https://imagedelivery.net/cloudflare-key/uploadId/public'
+    })
   })
 })
