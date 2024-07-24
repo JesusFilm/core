@@ -139,7 +139,7 @@ describe('NewButtonButton', () => {
           endIconId: 'endIconId',
           action: null
         }
-      }
+      } as unknown as ButtonBlockCreate
     }
   }
 
@@ -185,7 +185,11 @@ describe('NewButtonButton', () => {
       ...deleteBlock,
       request: {
         ...deleteBlock.request,
-        variables: { id: 'buttonBlockId', journeyId: 'journeyId' }
+        variables: {
+          id: 'buttonBlockId',
+          journeyId: 'journeyId',
+          parentBlockId: 'cardId'
+        }
       },
       result: deleteResult
     }
@@ -229,7 +233,11 @@ describe('NewButtonButton', () => {
       ...deleteBlock,
       request: {
         ...deleteBlock.request,
-        variables: { id: 'buttonBlockId', journeyId: 'journeyId' }
+        variables: {
+          id: 'buttonBlockId',
+          journeyId: 'journeyId',
+          parentBlockId: 'cardId'
+        }
       },
       result: deleteResult
     }

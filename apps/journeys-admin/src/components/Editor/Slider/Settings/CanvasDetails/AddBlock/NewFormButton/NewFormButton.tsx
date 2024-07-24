@@ -9,7 +9,6 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import File5Icon from '@core/shared/ui/icons/File5'
 
 import type { FormBlockCreate } from '../../../../../../../../__generated__/FormBlockCreate'
-import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
 import { Button } from '../Button'
 
 export const FORM_BLOCK_CREATE = gql`
@@ -30,7 +29,6 @@ export function NewFormButton(): ReactElement {
     state: { selectedStep },
     dispatch
   } = useEditor()
-  const { addBlockCommand } = useBlockCreateCommand()
 
   async function handleClick(): Promise<void> {
     const id = uuidv4()
@@ -40,7 +38,7 @@ export function NewFormButton(): ReactElement {
     )
 
     if (card != null && journey != null) {
-      const { data } = await addBlockCommand(formBlockCreate, {
+      const { data } = await formBlockCreate({
         variables: {
           input: {
             id,
@@ -70,6 +68,10 @@ export function NewFormButton(): ReactElement {
         }
       })
       if (data?.formBlockCreate != null) {
+        dispatch({
+          type: 'SetSelectedBlockByIdAction',
+          selectedBlockId: data.formBlockCreate.id
+        })
         dispatch({
           type: 'SetActiveFabAction',
           activeFab: ActiveFab.Save

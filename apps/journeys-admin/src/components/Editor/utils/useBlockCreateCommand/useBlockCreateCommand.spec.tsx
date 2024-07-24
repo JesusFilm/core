@@ -1,28 +1,40 @@
-import { FetchResult } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { TreeBlock } from '@core/journeys/ui/block'
+import { BlockFields_CardBlock as CardBlock } from '@core/journeys/ui/block/__generated__/BlockFields'
 import { renderHook } from '@testing-library/react'
 import { useBlockCreateCommand } from './useBlockCreateCommand'
 
-describe('useBlockCreateCommand', () => {
-  it('should create a block with the passed in block create mutation function and variables', async () => {
-    const createBlockMutationFnMock = jest.fn().mockResolvedValue({
-      data: { buttonCreate: { id: 'buttonId' } }
-    } as FetchResult)
+const block: CardBlock = {
+  id: 'cardId',
+  __typename: 'CardBlock',
+  parentBlockId: 'stepId',
+  parentOrder: 0,
+  coverBlockId: null,
+  backgroundColor: null,
+  themeMode: null,
+  themeName: null,
+  fullscreen: false
+}
+const execute = jest.fn().mockResolvedValue(block)
 
+beforeEach(() => {
+  jest.clearAllMocks()
+})
+
+describe('useBlockCreateCommand', () => {
+  it('should run the execute command and return a block', async () => {
     const { result } = renderHook(() => useBlockCreateCommand(), {
       wrapper: ({ children }) => (
         <MockedProvider mocks={[]}>
-          <EditorProvider>{children}</EditorProvider>
+          <EditorProvider initialState={{ selectedBlock: block as TreeBlock }}>
+            {children}
+          </EditorProvider>
         </MockedProvider>
       )
     })
 
-    await result.current.addBlockCommand(createBlockMutationFnMock, {
-      variables: { id: 'someId' }
-    })
-    expect(createBlockMutationFnMock).toHaveBeenCalledWith({
-      variables: { id: 'someId' }
-    })
+    await result.current.addBlock({ execute })
+    expect(execute).toHaveBeenCalled()
   })
 })
