@@ -6,6 +6,8 @@ import { ReactElement, useState } from 'react'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import { TreeBlock } from '@core/journeys/ui/block/TreeBlock'
 
+import { Theme } from '@mui/material/styles'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { BlockFields as StepBlock } from '../../../../../../../__generated__/BlockFields'
 import { Drawer } from '../../Drawer'
 import { CardTemplates } from '../../Drawer/CardTemplates/CardTemplates'
@@ -101,6 +103,8 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
   const selectedBlock = block ?? state.selectedBlock
   const selectedStep = step ?? state.selectedStep
 
+  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
+
   let component
   let title: string | undefined
   switch (selectedBlock?.__typename) {
@@ -168,7 +172,7 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
     if (!isCardTemplates)
       dispatch({
         type: 'SetActiveSlideAction',
-        activeSlide: ActiveSlide.JourneyFlow
+        activeSlide: smUp ? ActiveSlide.JourneyFlow : ActiveSlide.Content
       })
   }
 
