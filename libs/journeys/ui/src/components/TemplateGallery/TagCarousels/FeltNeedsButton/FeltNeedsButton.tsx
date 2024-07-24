@@ -93,10 +93,15 @@ export function FeltNeedsButton({
   item: tag
 }: FeltNeedsButtonProps): ReactElement {
   const theme = useTheme()
-  const { refine } = useRefinementList({ attribute: 'tags.Felt Needs' })
+  const { items, refine } = useRefinementList({ attribute: 'tags.Felt Needs' })
 
   function handleClick() {
     if (tag?.name != null) refine(tag.name[0].value)
+    items.forEach((item) => {
+      if (item.isRefined) {
+        refine(item.value)
+      }
+    })
   }
 
   const tagLabel = tag?.name[0]?.value
