@@ -1,0 +1,1 @@
+export { getSortedTags } from './getSortedTags'
