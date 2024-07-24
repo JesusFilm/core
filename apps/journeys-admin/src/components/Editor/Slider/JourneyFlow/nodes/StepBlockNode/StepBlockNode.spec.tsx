@@ -1,10 +1,11 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { NodeProps, ReactFlowProvider } from 'reactflow'
 
 import { ActiveContent, EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
-
+import userEvent from '@testing-library/user-event'
+import { StepBlockNode } from '.'
 import {
   BlockFields_ButtonBlock as ButtonBlock,
   BlockFields_FormBlock as FormBlock,
@@ -15,8 +16,6 @@ import {
   BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../__generated__/BlockFields'
 import { mockReactFlow } from '../../../../../../../test/mockReactFlow'
-
-import { StepBlockNode } from '.'
 
 describe('StepBlockNode', () => {
   beforeEach(() => {
@@ -174,7 +173,7 @@ describe('StepBlockNode', () => {
     ).toBeInTheDocument()
   })
 
-  it('should show edit step fab', () => {
+  it('should show edit step fab when selected', () => {
     const step: TreeBlock<StepBlock> = {
       __typename: 'StepBlock',
       id: 'step.id',
@@ -207,7 +206,58 @@ describe('StepBlockNode', () => {
         </ReactFlowProvider>
       </MockedProvider>
     )
-    expect(screen.getByTestId('EditStepFab')).toBeInTheDocument()
+    expect(screen.getByTestId('EditStepFab')).toBeVisible()
+  })
+
+  it('should show edit step fab when hovered', async () => {
+    const step1: TreeBlock<StepBlock> = {
+      __typename: 'StepBlock',
+      id: 'step1.id',
+      parentBlockId: null,
+      parentOrder: 0,
+      locked: false,
+      nextBlockId: null,
+      children: []
+    }
+
+    const step2: TreeBlock<StepBlock> = {
+      __typename: 'StepBlock',
+      id: 'step2.id',
+      parentBlockId: null,
+      parentOrder: 1,
+      locked: false,
+      nextBlockId: null,
+      children: []
+    }
+
+    const props = {
+      id: 'step2.id',
+      xPos: 0,
+      yPos: 0,
+      dragging: false
+    } as unknown as NodeProps
+
+    render(
+      <MockedProvider>
+        <ReactFlowProvider>
+          <EditorProvider
+            initialState={{
+              steps: [step1, step2],
+              selectedStep: step1,
+              activeContent: ActiveContent.Canvas
+            }}
+          >
+            <StepBlockNode {...props} />
+          </EditorProvider>
+        </ReactFlowProvider>
+      </MockedProvider>
+    )
+
+    await userEvent.hover(screen.getByTestId('StepBlockNode-step2.id'))
+
+    await waitFor(() => {
+      expect(screen.getByTestId('EditStepFab')).toBeVisible()
+    })
   })
 
   it('should show step analytics', () => {
