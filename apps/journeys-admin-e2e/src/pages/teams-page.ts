@@ -1,5 +1,3 @@
-import { time } from 'console'
-
 import { expect } from '@playwright/test'
 import dayjs from 'dayjs'
 import { Page } from 'playwright-core'

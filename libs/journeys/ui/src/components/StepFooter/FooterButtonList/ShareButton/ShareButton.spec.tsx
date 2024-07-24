@@ -5,11 +5,7 @@ import { SnackbarProvider } from 'notistack'
 import { keyify } from '@core/journeys/ui/plausibleHelpers'
 import { JourneyProvider } from '../../../../libs/JourneyProvider'
 import { JourneyFields as Journey } from '../../../../libs/JourneyProvider/__generated__/JourneyFields'
-import {
-  TreeBlock,
-  blockHistoryVar,
-  treeBlocksVar
-} from '../../../../libs/block'
+import { TreeBlock, blockHistoryVar } from '../../../../libs/block'
 
 import { StepFields } from '../../../Step/__generated__/StepFields'
 import { ShareButton } from './ShareButton'
