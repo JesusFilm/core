@@ -7,7 +7,11 @@ import {
   useInfiniteHits,
   useRefinementList
 } from 'react-instantsearch'
-import { transformAlgoliaVideos, useAlgoliaVideos } from './useAlgoliaVideos'
+import {
+  AlgoliaVideos,
+  transformItems,
+  useAlgoliaVideos
+} from './useAlgoliaVideos'
 
 jest.mock('react-instantsearch')
 
@@ -28,7 +32,7 @@ describe('useAlgoliaVideos', () => {
       childrenCount: 49,
       objectID: '2_529-GOJ-0-0'
     }
-  ]
+  ] as unknown as AlgoliaVideos[]
 
   beforeEach(() => {
     const useInfiniteHitsMocked = jest.mocked(useInfiniteHits)
@@ -60,30 +64,33 @@ describe('useAlgoliaVideos', () => {
   })
 
   it('should have transformed algolia hits into videos', () => {
-    const transformedItems = transformAlgoliaVideos(algoliaVideos)
-    expect(transformedItems).toEqual([
-      {
-        childrenCount: 49,
-        id: 'videoId',
-        image:
-          'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_GOJ-0-0.mobileCinematicHigh.jpg',
-        imageAlt: 'Life of Jesus (Gospel of John)',
-        label: 'featureFilm',
-        slug: 'video-slug/english',
-        snippet: [],
-        title: [
-          {
-            value: ['title1']
+    if (transformItems) {
+      const transformedItems = transformItems(algoliaVideos, {})
+      expect(transformedItems).toEqual([
+        {
+          __typename: 'Video',
+          childrenCount: 49,
+          id: 'videoId',
+          image:
+            'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_GOJ-0-0.mobileCinematicHigh.jpg',
+          imageAlt: 'Life of Jesus (Gospel of John)',
+          label: 'featureFilm',
+          slug: 'video-slug/english',
+          snippet: [],
+          title: [
+            {
+              value: ['title1']
+            }
+          ],
+          variant: {
+            duration: 10994,
+            hls: null,
+            id: '2_529-GOJ-0-0',
+            slug: 'video-slug/english'
           }
-        ],
-        variant: {
-          duration: 10994,
-          hls: null,
-          id: '2_529-GOJ-0-0',
-          slug: 'video-slug/english'
         }
-      }
-    ])
+      ])
+    }
   })
 
   it('should return hits', async () => {

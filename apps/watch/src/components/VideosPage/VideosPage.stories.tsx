@@ -2,7 +2,6 @@ import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
 import { watchConfig } from '../../libs/storybook'
-import { videos } from '../Videos/__generated__/testData'
 
 import { VideosPage } from './VideosPage'
 
@@ -16,7 +15,7 @@ const Template: StoryObj<
   ComponentProps<typeof VideosPage> & { limit: number }
 > = {
   render: () => {
-    return <VideosPage videos={videos} />
+    return <VideosPage />
   }
 }
 

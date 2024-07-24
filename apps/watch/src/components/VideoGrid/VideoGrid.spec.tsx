@@ -1,22 +1,25 @@
-import { render, screen, waitFor } from '@testing-library/react'
-
-import { ConfigureRenderState } from 'instantsearch.js/es/connectors/configure/connectConfigure'
-import { InfiniteHitsRenderState } from 'instantsearch.js/es/connectors/infinite-hits/connectInfiniteHits'
-import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
-import {
-  useConfigure,
-  useInfiniteHits,
-  useRefinementList
-} from 'react-instantsearch'
+import { fireEvent, render, screen } from '@testing-library/react'
+import { useAlgoliaVideos } from '../../libs/algolia/useAlgoliaVideos'
+import type { AlgoliaVideos } from '../../libs/algolia/useAlgoliaVideos'
+import { videos } from '../Videos/__generated__/testData'
 import { VideoGrid } from './VideoGrid'
 
 jest.mock('react-instantsearch')
+jest.mock('../../libs/algolia/useAlgoliaVideos')
+
+const mockedUseAlgoliaVideos = useAlgoliaVideos as jest.MockedFunction<
+  typeof useAlgoliaVideos
+>
 
 describe('VideoGrid', () => {
   const algoliaVideos = [
     {
       videoId: 'videoId',
-      titles: ['title1'],
+      title: [
+        {
+          value: 'title1'
+        }
+      ],
       description: ['description'],
       duration: 10994,
       languageId: '529',
@@ -29,43 +32,83 @@ describe('VideoGrid', () => {
       childrenCount: 49,
       objectID: '2_529-GOJ-0-0'
     }
-  ]
+  ] as unknown as AlgoliaVideos[]
+  describe('Core Videos', () => {
+    it('should render core videos', () => {
+      mockedUseAlgoliaVideos.mockReturnValue({
+        hits: algoliaVideos,
+        showMore: jest.fn(),
+        isLastPage: false
+      })
 
-  beforeEach(() => {
-    const useInfiniteHitsMocked = jest.mocked(useInfiniteHits)
-    useInfiniteHitsMocked.mockReturnValue({
-      hits: algoliaVideos,
-      showMore: jest.fn(),
-      isLastPage: false
-    } as unknown as InfiniteHitsRenderState)
+      render(<VideoGrid videos={videos} />)
 
-    const useRefinementListMocked = jest.mocked(useRefinementList)
-    useRefinementListMocked.mockReturnValue({
-      items: [
-        {
-          count: 753,
-          isRefined: false,
-          value: '529',
-          label: '529',
-          highlighted: '529'
-        }
-      ]
-    } as unknown as RefinementListRenderState)
-
-    const useConfigureMocked = jest.fn(useConfigure)
-    useConfigureMocked.mockReturnValue({
-      facetsRefinements: {
-        languageId: ['529']
-      }
-    } as unknown as ConfigureRenderState)
+      expect(
+        screen.getByRole('heading', { level: 3, name: 'JESUS' })
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('heading', {
+          level: 3,
+          name: 'Life of Jesus (Gospel of John)'
+        })
+      ).toBeInTheDocument()
+    })
   })
 
-  it('should render correct number of videos', async () => {
-    render(<VideoGrid />)
-    await waitFor(() =>
+  describe('Algolia Videos', () => {
+    it('should render correct number of videos', async () => {
+      mockedUseAlgoliaVideos.mockReturnValue({
+        hits: algoliaVideos,
+        showMore: jest.fn(),
+        isLastPage: false
+      })
+
+      render(<VideoGrid />)
+
       expect(
-        screen.getByRole('heading', { level: 6, name: 'title1' })
+        screen.getByRole('heading', { level: 3, name: 'title1' })
       ).toBeInTheDocument()
-    )
+    })
+
+    it('should request most videos', async () => {
+      const showMore = jest.fn()
+      mockedUseAlgoliaVideos.mockReturnValue({
+        hits: algoliaVideos,
+        showMore,
+        isLastPage: false
+      })
+
+      render(<VideoGrid showLoadMore />)
+      fireEvent.click(screen.getByRole('button', { name: 'Load More' }))
+      expect(showMore).toHaveBeenCalled()
+    })
+
+    it('should show load more button', async () => {
+      mockedUseAlgoliaVideos.mockReturnValue({
+        hits: algoliaVideos,
+        showMore: jest.fn(),
+        isLastPage: true
+      })
+
+      render(<VideoGrid showLoadMore />)
+
+      expect(
+        screen.getByRole('button', { name: 'No More Videos' })
+      ).toBeInTheDocument()
+    })
+
+    it('should if its loading', () => {
+      mockedUseAlgoliaVideos.mockReturnValue({
+        hits: [],
+        showMore: jest.fn(),
+        isLastPage: true
+      })
+
+      render(<VideoGrid showLoadMore />)
+
+      expect(
+        screen.getByRole('button', { name: 'Loading...' })
+      ).toBeInTheDocument()
+    })
   })
 })

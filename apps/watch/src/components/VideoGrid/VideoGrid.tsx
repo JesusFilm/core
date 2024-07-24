@@ -3,21 +3,27 @@ import LoadingButton from '@mui/lab/LoadingButton'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import { ComponentProps, ReactElement } from 'react'
+import { VideoChildFields } from '../../../__generated__/VideoChildFields'
 import { useAlgoliaVideos } from '../../libs/algolia/useAlgoliaVideos'
 import { VideoCard } from '../VideoCard'
 
 interface VideoGridProps {
+  videos?: VideoChildFields[]
   showLoadMore?: boolean
   containerSlug?: string
   variant?: ComponentProps<typeof VideoCard>['variant']
 }
 
 export function VideoGrid({
+  videos: coreVideos,
   showLoadMore = false,
   containerSlug,
   variant = 'expanded'
 }: VideoGridProps): ReactElement {
-  const { hits: videos, showMore, isLastPage } = useAlgoliaVideos()
+  const { hits: algoliaVideos, showMore, isLastPage } = useAlgoliaVideos()
+  const videos = coreVideos != null ? coreVideos : algoliaVideos
+
+  console.log('videos')
   return (
     <Grid
       container

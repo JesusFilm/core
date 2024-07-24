@@ -19,16 +19,16 @@ const Template: StoryObj<typeof VideoGrid> = {
     return (
       <Stack spacing={2}>
         <Box>
-          <VideoGrid {...args} hasNextPage />
+          <VideoGrid {...args} />
         </Box>
         <Box>
-          <VideoGrid {...args} videos={[]} loading />
+          <VideoGrid {...args} videos={[]} />
         </Box>
         <Box>
           <VideoGrid {...args} variant="contained" />
         </Box>
         <Box>
-          <VideoGrid {...args} videos={[]} variant="contained" loading />
+          <VideoGrid {...args} videos={[]} variant="contained" />
         </Box>
       </Stack>
     )
