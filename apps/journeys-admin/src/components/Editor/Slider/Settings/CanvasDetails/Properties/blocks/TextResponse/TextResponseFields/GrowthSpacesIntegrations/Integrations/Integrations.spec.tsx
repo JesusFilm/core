@@ -71,29 +71,39 @@ describe('Integrations', () => {
         textResponseBlockUpdate: {
           id: selectedBlock.id,
           __typename: 'TextResponseBlock',
+          integrationId: 'integration.id'
+        }
+      }
+    }))
+  }
+
+  const integrationUpdateMock2 = {
+    request: {
+      query: TEXT_RESPONSE_INTEGRATION_UPDATE,
+      variables: {
+        id: selectedBlock.id,
+        input: {
+          integrationId: null
+        }
+      }
+    },
+    result: jest.fn(() => ({
+      data: {
+        textResponseBlockUpdate: {
+          id: selectedBlock.id,
+          __typename: 'TextResponseBlock',
           integrationId: null
         }
       }
     }))
   }
 
-  it('should change integrationId of text response', async () => {
-    const mockUpdateSuccess1 = {
-      ...integrationUpdateMock,
-      result: jest.fn(() => ({
-        data: {
-          textResponseBlockUpdate: {
-            id: selectedBlock.id,
-            __typename: 'TextResponseBlock',
-            integrationId: 'integration.id'
-          }
-        }
-      }))
-    }
+  beforeEach(() => jest.clearAllMocks())
 
+  it('should change integrationId of text response', async () => {
     render(
       <MockedProvider
-        mocks={[getTeamsMock, getIntegrationMock, mockUpdateSuccess1]}
+        mocks={[getTeamsMock, getIntegrationMock, integrationUpdateMock]}
       >
         <EditorProvider initialState={{ selectedBlock }}>
           <TeamProvider>
@@ -110,34 +120,17 @@ describe('Integrations', () => {
         screen.getByRole('option', { name: 'growthSpaces - access.secret' })
       )
     )
-    expect(mockUpdateSuccess1.result).toHaveBeenCalled()
+    expect(integrationUpdateMock.result).toHaveBeenCalled()
   })
 
   it('should undo change to integration', async () => {
-    const mockUpdateSuccess1 = {
-      ...integrationUpdateMock
-    }
-
-    const mockUpdateSuccess2 = {
-      ...integrationUpdateMock,
-      request: {
-        query: TEXT_RESPONSE_INTEGRATION_UPDATE,
-        variables: {
-          id: selectedBlock.id,
-          input: {
-            integrationId: null
-          }
-        }
-      }
-    }
-
     render(
       <MockedProvider
         mocks={[
           getTeamsMock,
           getIntegrationMock,
-          mockUpdateSuccess1,
-          mockUpdateSuccess2
+          integrationUpdateMock,
+          integrationUpdateMock2
         ]}
       >
         <EditorProvider initialState={{ selectedBlock }}>
@@ -156,29 +149,18 @@ describe('Integrations', () => {
         screen.getByRole('option', { name: 'growthSpaces - access.secret' })
       )
     )
-    await waitFor(() => expect(mockUpdateSuccess1.result).toHaveBeenCalled())
+    await waitFor(() => expect(integrationUpdateMock.result).toHaveBeenCalled())
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
-    await waitFor(() => expect(mockUpdateSuccess1.result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(integrationUpdateMock2.result).toHaveBeenCalled()
+    )
   })
 
   it('should redo the change to integration that was undone', async () => {
-    const mockUpdateSuccess1 = {
+    const mockFirstUpdate = {
       ...integrationUpdateMock,
       maxUsageCount: 2
-    }
-
-    const mockUpdateSuccess2 = {
-      ...integrationUpdateMock,
-      request: {
-        query: TEXT_RESPONSE_INTEGRATION_UPDATE,
-        variables: {
-          id: selectedBlock.id,
-          input: {
-            integrationId: null
-          }
-        }
-      }
     }
 
     render(
@@ -186,8 +168,8 @@ describe('Integrations', () => {
         mocks={[
           getTeamsMock,
           getIntegrationMock,
-          mockUpdateSuccess1,
-          mockUpdateSuccess2
+          mockFirstUpdate,
+          integrationUpdateMock2
         ]}
       >
         <EditorProvider initialState={{ selectedBlock }}>
@@ -207,12 +189,14 @@ describe('Integrations', () => {
         screen.getByRole('option', { name: 'growthSpaces - access.secret' })
       )
     )
-    await waitFor(() => expect(mockUpdateSuccess1.result).toHaveBeenCalled())
+    await waitFor(() => expect(mockFirstUpdate.result).toHaveBeenCalled())
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
-    await waitFor(() => expect(mockUpdateSuccess2.result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(integrationUpdateMock2.result).toHaveBeenCalled()
+    )
 
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
-    await waitFor(() => expect(mockUpdateSuccess1.result).toHaveBeenCalled())
+    await waitFor(() => expect(mockFirstUpdate.result).toHaveBeenCalled())
   })
 })
