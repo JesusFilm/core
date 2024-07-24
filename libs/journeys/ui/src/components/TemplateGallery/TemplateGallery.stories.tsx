@@ -11,7 +11,7 @@ import { TemplateGallery } from '.'
 
 import '../../../test/i18n'
 import { screen, userEvent, waitFor } from '@storybook/testing-library'
-import { InstantSearchWrapper } from '../TemplateSections/InstantSearchProvider'
+import { InstantSearchWrapper } from '../../libs/algolia/InstantSearchWrapper'
 
 const TemplateGalleryStory: Meta<typeof TemplateGallery> = {
   ...journeysAdminConfig,

@@ -4,8 +4,8 @@ import { ComponentProps } from 'react'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 import { TemplateSections } from '.'
+import { InstantSearchWrapper } from '../../libs/algolia/InstantSearchWrapper'
 import { SearchBar } from '../SearchBar'
-import { InstantSearchWrapper } from './InstantSearchProvider'
 
 const TemplateSectionsStory: Meta<typeof TemplateSections> = {
   ...journeysAdminConfig,
