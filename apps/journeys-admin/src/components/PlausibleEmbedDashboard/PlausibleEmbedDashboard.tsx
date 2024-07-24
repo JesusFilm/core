@@ -68,7 +68,7 @@ export function PlausibleEmbedDashboard({
   host
 }: PlausibleEmbedDashboardProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [show, setShow] = useState(true)
+  const [showDashboard, setShowDashboard] = useState(false)
   const router = useRouter()
   const ref = useHookWithRefCallback()
 
@@ -83,12 +83,12 @@ export function PlausibleEmbedDashboard({
 
   return (
     <>
-      <Fade in={show}>
+      <Fade in={!showDashboard}>
         <Box
           sx={{
             justifyContent: 'center',
             alignItems: 'center',
-            display: show ? 'flex' : 'none',
+            display: showDashboard ? 'none' : 'flex',
             position: 'absolute',
             top: 0,
             right: 0,
@@ -115,7 +115,7 @@ export function PlausibleEmbedDashboard({
             onLoad={() => {
               setTimeout(() => {
                 // wait for css to load
-                setShow(false)
+                setShowDashboard(true)
               }, 1000)
             }}
             ref={ref}
