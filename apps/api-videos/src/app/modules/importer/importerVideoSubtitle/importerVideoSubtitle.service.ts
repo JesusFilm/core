@@ -14,7 +14,6 @@ const videoSubtitlesSchema = z
       .transform((value) => value ?? 'base'),
     vttSrc: z.string().nullable(),
     srtSrc: z.string().nullable(),
-    primary: z.number().transform(Boolean),
     languageId: z.number().transform(String)
   })
   .transform((data) => ({
