@@ -4,7 +4,7 @@ import { watchConfig } from '@core/shared/ui/storybook'
 import { expect } from '@storybook/jest'
 import { screen, userEvent, waitFor } from '@storybook/testing-library'
 import { ComponentProps } from 'react'
-import { InstantSearchWrapper } from '../../libs/algolia/InstantSearchWrapper'
+import { InstantSearchTestWrapper } from '../../libs/algolia/InstantSearchWrapper'
 import { SearchBar } from './SearchBar'
 
 const SearchBarStory: Meta<typeof SearchBar> = {
@@ -16,12 +16,12 @@ const SearchBarStory: Meta<typeof SearchBar> = {
 const Template: StoryObj<ComponentProps<typeof SearchBar> & { query: string }> =
   {
     render: (args) => (
-      <InstantSearchWrapper
+      <InstantSearchTestWrapper
         query={args.query}
         indexName="api-journeys-journeys-dev"
       >
         <SearchBar />
-      </InstantSearchWrapper>
+      </InstantSearchTestWrapper>
     )
   }
 

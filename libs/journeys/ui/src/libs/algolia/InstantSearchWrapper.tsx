@@ -9,7 +9,7 @@ interface InstantSearchWrapperProps {
   children: ReactNode
 }
 
-export function InstantSearchWrapper({
+export function InstantSearchTestWrapper({
   query = '',
   indexName,
   children

@@ -11,7 +11,7 @@ import { TemplateGallery } from '.'
 
 import '../../../test/i18n'
 import { screen, userEvent, waitFor } from '@storybook/testing-library'
-import { InstantSearchWrapper } from '../../libs/algolia/InstantSearchWrapper'
+import { InstantSearchTestWrapper } from '../../libs/algolia/InstantSearchWrapper'
 
 const TemplateGalleryStory: Meta<typeof TemplateGallery> = {
   ...journeysAdminConfig,
@@ -27,12 +27,12 @@ const Template: StoryObj<
 > = {
   render: (args) => (
     <Box sx={{ height: '100%', overflow: 'hidden' }}>
-      <InstantSearchWrapper
+      <InstantSearchTestWrapper
         query={args.query}
         indexName="api-journeys-journeys-dev"
       >
         <TemplateGallery />
-      </InstantSearchWrapper>
+      </InstantSearchTestWrapper>
     </Box>
   )
 }

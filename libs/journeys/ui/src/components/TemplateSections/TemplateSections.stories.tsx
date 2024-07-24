@@ -4,7 +4,7 @@ import { ComponentProps } from 'react'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 import { TemplateSections } from '.'
-import { InstantSearchWrapper } from '../../libs/algolia/InstantSearchWrapper'
+import { InstantSearchTestWrapper } from '../../libs/algolia/InstantSearchWrapper'
 import { SearchBar } from '../SearchBar'
 
 const TemplateSectionsStory: Meta<typeof TemplateSections> = {
@@ -22,7 +22,7 @@ const Template: StoryObj<
 > = {
   render: (args) => (
     <Box sx={{ backgroundColor: 'background.paper', p: 5, overflow: 'hidden' }}>
-      <InstantSearchWrapper
+      <InstantSearchTestWrapper
         query={args.query}
         indexName="api-journeys-journeys-dev"
       >
@@ -35,7 +35,7 @@ const Template: StoryObj<
           {/* Needed to apply the search */}
           <SearchBar />
         </Box>
-      </InstantSearchWrapper>
+      </InstantSearchTestWrapper>
     </Box>
   )
 }
