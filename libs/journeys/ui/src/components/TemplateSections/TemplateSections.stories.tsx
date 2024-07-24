@@ -7,6 +7,8 @@ import { TemplateSections } from '.'
 import { InstantSearchTestWrapper } from '../../libs/algolia/InstantSearchWrapper'
 import { SearchBar } from '../SearchBar'
 
+import '../../../test/i18n'
+
 const TemplateSectionsStory: Meta<typeof TemplateSections> = {
   ...journeysAdminConfig,
   component: TemplateSections,
