@@ -33,7 +33,7 @@ export function NewTypographyButton(): ReactElement {
     state: { selectedStep },
     dispatch
   } = useEditor()
-  const { addBlockCommand } = useBlockCreateCommand()
+  const { addBlock } = useBlockCreateCommand()
 
   async function handleClick(): Promise<void> {
     const card = selectedStep?.children.find(
@@ -43,42 +43,47 @@ export function NewTypographyButton(): ReactElement {
       block.children.find((child) => child.__typename === 'TypographyBlock')
     )
     if (card != null && checkTypography !== undefined && journey != null) {
-      const { data } = await addBlockCommand(typographyBlockCreate, {
-        variables: {
-          input: {
-            journeyId: journey.id,
-            parentBlockId: card.id,
-            content: '',
-            variant: checkTypography.length > 0 ? 'body2' : 'h1'
-          }
-        },
-        update(cache, { data }) {
-          if (data?.typographyBlockCreate != null) {
-            cache.modify({
-              id: cache.identify({ __typename: 'Journey', id: journey.id }),
-              fields: {
-                blocks(existingBlockRefs = []) {
-                  const newBlockRef = cache.writeFragment({
-                    data: data.typographyBlockCreate,
-                    fragment: gql`
-                      fragment NewBlock on Block {
-                        id
-                      }
-                    `
-                  })
-                  return [...existingBlockRefs, newBlockRef]
-                }
+      await addBlock({
+        async execute() {
+          const { data } = await typographyBlockCreate({
+            variables: {
+              input: {
+                journeyId: journey.id,
+                parentBlockId: card.id,
+                content: '',
+                variant: checkTypography.length > 0 ? 'body2' : 'h1'
               }
+            },
+            update(cache, { data }) {
+              if (data?.typographyBlockCreate != null) {
+                cache.modify({
+                  id: cache.identify({ __typename: 'Journey', id: journey.id }),
+                  fields: {
+                    blocks(existingBlockRefs = []) {
+                      const newBlockRef = cache.writeFragment({
+                        data: data.typographyBlockCreate,
+                        fragment: gql`
+                        fragment NewBlock on Block {
+                          id
+                        }
+                      `
+                      })
+                      return [...existingBlockRefs, newBlockRef]
+                    }
+                  }
+                })
+              }
+            }
+          })
+          if (data?.typographyBlockCreate != null) {
+            dispatch({
+              type: 'SetActiveFabAction',
+              activeFab: ActiveFab.Save
             })
           }
+          return data?.typographyBlockCreate
         }
       })
-      if (data?.typographyBlockCreate != null) {
-        dispatch({
-          type: 'SetActiveFabAction',
-          activeFab: ActiveFab.Save
-        })
-      }
     }
   }
 

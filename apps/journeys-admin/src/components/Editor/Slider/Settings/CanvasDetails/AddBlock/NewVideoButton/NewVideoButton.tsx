@@ -36,7 +36,7 @@ export function NewVideoButton({
   const {
     state: { selectedStep }
   } = useEditor()
-  const { addBlockCommand } = useBlockCreateCommand()
+  const { addBlock } = useBlockCreateCommand()
 
   async function handleClick(): Promise<void> {
     const card = selectedStep?.children.find(
@@ -44,35 +44,40 @@ export function NewVideoButton({
     ) as TreeBlock<CardBlock> | undefined
 
     if (card != null && journey != null) {
-      await addBlockCommand(videoBlockCreate, {
-        variables: {
-          input: {
-            journeyId: journey.id,
-            parentBlockId: card.id,
-            autoplay: true,
-            muted: false,
-            fullsize: true
-          }
-        },
-        update(cache, { data }) {
-          if (data?.videoBlockCreate != null) {
-            cache.modify({
-              id: cache.identify({ __typename: 'Journey', id: journey.id }),
-              fields: {
-                blocks(existingBlockRefs = []) {
-                  const newBlockRef = cache.writeFragment({
-                    data: data.videoBlockCreate,
-                    fragment: gql`
-                      fragment NewBlock on Block {
-                        id
-                      }
-                    `
-                  })
-                  return [...existingBlockRefs, newBlockRef]
-                }
+      await addBlock({
+        async execute() {
+          const { data } = await videoBlockCreate({
+            variables: {
+              input: {
+                journeyId: journey.id,
+                parentBlockId: card.id,
+                autoplay: true,
+                muted: false,
+                fullsize: true
               }
-            })
-          }
+            },
+            update(cache, { data }) {
+              if (data?.videoBlockCreate != null) {
+                cache.modify({
+                  id: cache.identify({ __typename: 'Journey', id: journey.id }),
+                  fields: {
+                    blocks(existingBlockRefs = []) {
+                      const newBlockRef = cache.writeFragment({
+                        data: data.videoBlockCreate,
+                        fragment: gql`
+                        fragment NewBlock on Block {
+                          id
+                        }
+                      `
+                      })
+                      return [...existingBlockRefs, newBlockRef]
+                    }
+                  }
+                })
+              }
+            }
+          })
+          return data?.videoBlockCreate
         }
       })
     }

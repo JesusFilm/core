@@ -26,7 +26,7 @@ export const SIGN_UP_BLOCK_CREATE = gql`
     $updateInput: SignUpBlockUpdateInput!
   ) {
     signUpBlockCreate(input: $input) {
-      id
+      ...SignUpFields
     }
     submitIcon: iconBlockCreate(input: $iconBlockCreateInput) {
       id
@@ -47,7 +47,7 @@ export function NewSignUpButton(): ReactElement {
   const {
     state: { selectedStep }
   } = useEditor()
-  const { addBlockCommand } = useBlockCreateCommand()
+  const { addBlock } = useBlockCreateCommand()
 
   async function handleClick(): Promise<void> {
     const id = uuidv4()
@@ -56,57 +56,62 @@ export function NewSignUpButton(): ReactElement {
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
     if (card != null && journey != null) {
-      await addBlockCommand(signUpBlockCreate, {
-        variables: {
-          input: {
-            id,
-            journeyId: journey.id,
-            parentBlockId: card.id,
-            submitLabel: t('Submit')
-          },
-          iconBlockCreateInput: {
-            id: submitId,
-            journeyId: journey.id,
-            parentBlockId: id,
-            name: null
-          },
-          id,
-          journeyId: journey.id,
-          updateInput: {
-            submitIconId: submitId
-          }
-        },
-        update(cache, { data }) {
-          if (data?.signUpBlockUpdate != null) {
-            cache.modify({
-              id: cache.identify({ __typename: 'Journey', id: journey.id }),
-              fields: {
-                blocks(existingBlockRefs = []) {
-                  const newSubmitIconBlockRef = cache.writeFragment({
-                    data: data.submitIcon,
-                    fragment: gql`
-                      fragment NewBlock on Block {
-                        id
-                      }
-                    `
-                  })
-                  const newBlockRef = cache.writeFragment({
-                    data: data.signUpBlockUpdate,
-                    fragment: gql`
-                      fragment NewBlock on Block {
-                        id
-                      }
-                    `
-                  })
-                  return [
-                    ...existingBlockRefs,
-                    newBlockRef,
-                    newSubmitIconBlockRef
-                  ]
-                }
+      await addBlock({
+        async execute() {
+          const { data } = await signUpBlockCreate({
+            variables: {
+              input: {
+                id,
+                journeyId: journey.id,
+                parentBlockId: card.id,
+                submitLabel: t('Submit')
+              },
+              iconBlockCreateInput: {
+                id: submitId,
+                journeyId: journey.id,
+                parentBlockId: id,
+                name: null
+              },
+              id,
+              journeyId: journey.id,
+              updateInput: {
+                submitIconId: submitId
               }
-            })
-          }
+            },
+            update(cache, { data }) {
+              if (data?.signUpBlockUpdate != null) {
+                cache.modify({
+                  id: cache.identify({ __typename: 'Journey', id: journey.id }),
+                  fields: {
+                    blocks(existingBlockRefs = []) {
+                      const newSubmitIconBlockRef = cache.writeFragment({
+                        data: data.submitIcon,
+                        fragment: gql`
+                        fragment NewBlock on Block {
+                          id
+                        }
+                      `
+                      })
+                      const newBlockRef = cache.writeFragment({
+                        data: data.signUpBlockUpdate,
+                        fragment: gql`
+                        fragment NewBlock on Block {
+                          id
+                        }
+                      `
+                      })
+                      return [
+                        ...existingBlockRefs,
+                        newBlockRef,
+                        newSubmitIconBlockRef
+                      ]
+                    }
+                  }
+                })
+              }
+            }
+          })
+          return data?.signUpBlockCreate
         }
       })
     }

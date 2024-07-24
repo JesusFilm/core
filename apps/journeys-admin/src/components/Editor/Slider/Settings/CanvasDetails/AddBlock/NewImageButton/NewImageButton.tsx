@@ -33,41 +33,46 @@ export function NewImageButton(): ReactElement {
   const {
     state: { selectedStep }
   } = useEditor()
-  const { addBlockCommand } = useBlockCreateCommand()
+  const { addBlock } = useBlockCreateCommand()
 
   async function handleClick(): Promise<void> {
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
     if (card != null && journey != null) {
-      await addBlockCommand(imageBlockCreate, {
-        variables: {
-          input: {
-            journeyId: journey.id,
-            parentBlockId: card.id,
-            src: null,
-            alt: 'Default Image Icon'
-          }
-        },
-        update(cache, { data }) {
-          if (data?.imageBlockCreate != null) {
-            cache.modify({
-              id: cache.identify({ __typename: 'Journey', id: journey.id }),
-              fields: {
-                blocks(existingBlockRefs = []) {
-                  const newBlockRef = cache.writeFragment({
-                    data: data.imageBlockCreate,
-                    fragment: gql`
-                      fragment NewBlock on Block {
-                        id
-                      }
-                    `
-                  })
-                  return [...existingBlockRefs, newBlockRef]
-                }
+      await addBlock({
+        async execute() {
+          const { data } = await imageBlockCreate({
+            variables: {
+              input: {
+                journeyId: journey.id,
+                parentBlockId: card.id,
+                src: null,
+                alt: 'Default Image Icon'
               }
-            })
-          }
+            },
+            update(cache, { data }) {
+              if (data?.imageBlockCreate != null) {
+                cache.modify({
+                  id: cache.identify({ __typename: 'Journey', id: journey.id }),
+                  fields: {
+                    blocks(existingBlockRefs = []) {
+                      const newBlockRef = cache.writeFragment({
+                        data: data.imageBlockCreate,
+                        fragment: gql`
+                        fragment NewBlock on Block {
+                          id
+                        }
+                      `
+                      })
+                      return [...existingBlockRefs, newBlockRef]
+                    }
+                  }
+                })
+              }
+            }
+          })
+          return data?.imageBlockCreate
         }
       })
     }

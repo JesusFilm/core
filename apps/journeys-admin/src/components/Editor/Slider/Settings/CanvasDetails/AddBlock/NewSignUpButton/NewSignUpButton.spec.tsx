@@ -136,7 +136,8 @@ describe('NewSignUpButton', () => {
     const result = jest.fn(() => ({
       data: {
         signUpBlockCreate: {
-          id: 'signUpBlockId'
+          id: 'signUpBlockId',
+          __typename: 'SignUpBlock'
         },
         submitIcon: {
           id: 'iconId',
@@ -179,7 +180,6 @@ describe('NewSignUpButton', () => {
                   id: 'signUpBlockId',
                   journeyId: 'journeyId',
                   parentBlockId: 'cardId',
-
                   submitLabel: 'Submit'
                 },
                 iconBlockCreateInput: {
@@ -226,7 +226,8 @@ describe('NewSignUpButton', () => {
     const result = jest.fn(() => ({
       data: {
         signUpBlockCreate: {
-          id: 'signUpBlockId'
+          id: 'signUpBlockId',
+          __typename: 'SignUpBlock'
         },
         submitIcon: {
           id: 'iconId',

@@ -34,7 +34,7 @@ export function NewTextResponseButton(): ReactElement {
   const {
     state: { selectedStep }
   } = useEditor()
-  const { addBlockCommand } = useBlockCreateCommand()
+  const { addBlock } = useBlockCreateCommand()
 
   const handleClick = async (): Promise<void> => {
     const id = uuidv4()
@@ -43,34 +43,39 @@ export function NewTextResponseButton(): ReactElement {
     ) as TreeBlock<CardBlock> | undefined
 
     if (card != null && journey != null) {
-      await addBlockCommand(textResponseBlockCreate, {
-        variables: {
-          input: {
-            id,
-            journeyId: journey.id,
-            parentBlockId: card.id,
-            label: t('Your answer here')
-          }
-        },
-        update(cache, { data }) {
-          if (data?.textResponseBlockCreate != null) {
-            cache.modify({
-              id: cache.identify({ __typename: 'Journey', id: journey.id }),
-              fields: {
-                blocks(existingBlockRefs = []) {
-                  const newBlockRef = cache.writeFragment({
-                    data: data.textResponseBlockCreate,
-                    fragment: gql`
-                      fragment NewBlock on Block {
-                        id
-                      }
-                    `
-                  })
-                  return [...existingBlockRefs, newBlockRef]
-                }
+      await addBlock({
+        async execute() {
+          const { data } = await textResponseBlockCreate({
+            variables: {
+              input: {
+                id,
+                journeyId: journey.id,
+                parentBlockId: card.id,
+                label: t('Your answer here')
               }
-            })
-          }
+            },
+            update(cache, { data }) {
+              if (data?.textResponseBlockCreate != null) {
+                cache.modify({
+                  id: cache.identify({ __typename: 'Journey', id: journey.id }),
+                  fields: {
+                    blocks(existingBlockRefs = []) {
+                      const newBlockRef = cache.writeFragment({
+                        data: data.textResponseBlockCreate,
+                        fragment: gql`
+                        fragment NewBlock on Block {
+                          id
+                        }
+                      `
+                      })
+                      return [...existingBlockRefs, newBlockRef]
+                    }
+                  }
+                })
+              }
+            }
+          })
+          return data?.textResponseBlockCreate
         }
       })
     }
