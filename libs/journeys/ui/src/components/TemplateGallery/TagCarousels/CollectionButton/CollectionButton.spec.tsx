@@ -1,7 +1,10 @@
 import { fireEvent } from '@storybook/testing-library'
 import { render, screen } from '@testing-library/react'
 
-import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
+import {
+  RefinementListItem,
+  RefinementListRenderState
+} from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { useRefinementList } from 'react-instantsearch'
 import { CollectionButton } from '.'
 
@@ -16,12 +19,30 @@ const tag = {
   parentId: 'collection'
 }
 
+const collectionRefinements = [
+  {
+    count: 1,
+    isRefined: false,
+    value: 'Jesus Film',
+    label: 'Jesus Film',
+    highlighted: 'Jesus Film'
+  },
+  {
+    count: 1,
+    isRefined: false,
+    value: 'NUA',
+    label: 'NUA',
+    highlighted: 'NUA'
+  }
+] as RefinementListItem[]
+
 jest.mock('react-instantsearch')
 
 function mockRefinementList() {
   const onClick = jest.fn()
   const useRefinementListMocked = jest.mocked(useRefinementList)
   useRefinementListMocked.mockReturnValue({
+    items: collectionRefinements,
     refine: onClick
   } as unknown as RefinementListRenderState)
   return onClick
@@ -64,7 +85,6 @@ describe('CollectionButton', () => {
 
   it('should render loading skeleton if no tag is passed', () => {
     const onClick = mockRefinementList()
-
     render(<CollectionButton item={undefined} />)
 
     expect(screen.getByTestId('collections-button-loading')).toBeInTheDocument()
@@ -77,7 +97,14 @@ describe('CollectionButton', () => {
     render(<CollectionButton item={tag} />)
 
     fireEvent.click(screen.getByRole('button', { name: 'NUA tag NUA NUA' }))
-
     expect(onClick).toHaveBeenCalledWith(tag.name[0].value)
+  })
+
+  it('should unrefine others when clicked', () => {
+    const onClick = mockRefinementList()
+    render(<CollectionButton item={tag} />)
+
+    fireEvent.click(screen.getByRole('button', { name: 'NUA tag NUA NUA' }))
+    expect(onClick).toHaveBeenCalledWith(collectionRefinements[1].value)
   })
 })

@@ -46,10 +46,15 @@ export function CollectionButton({
   item: tag
 }: CollectionButtonProps): ReactElement {
   const theme = useTheme()
-  const { refine } = useRefinementList({ attribute: 'tags.Collections' })
+  const { items, refine } = useRefinementList({ attribute: 'tags.Collections' })
 
   function handleClick() {
     if (tag?.name != null) refine(tag.name[0].value)
+    items.forEach((item) => {
+      if (item.isRefined) {
+        refine(item.value)
+      }
+    })
   }
 
   const tagLabel = tag?.name[0]?.value
