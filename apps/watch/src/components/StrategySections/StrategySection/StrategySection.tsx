@@ -4,7 +4,7 @@ import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
 import { useTheme } from '@mui/material/styles'
 import { Hit } from 'instantsearch.js'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 import { useHits } from 'react-instantsearch'
 import { SwiperOptions } from 'swiper/types'
 import { StrategyCard } from '../StrategyCard'
@@ -28,11 +28,13 @@ function transformAlgoliaStrategies(hits: Hit[]): StrategyCardItem[] {
 }
 
 interface StrategySectionProps {
-  handleResult: (value: boolean) => void
+  handleItemSearch: (index: number, value: boolean) => void
+  index: number
 }
 
 export function StrategySection({
-  handleResult
+  handleItemSearch,
+  index
 }: StrategySectionProps): ReactElement {
   const { breakpoints } = useTheme()
 
@@ -40,11 +42,13 @@ export function StrategySection({
 
   const items = transformAlgoliaStrategies(hits)
 
-  if (items.length > 0) {
-    handleResult(true)
-  } else {
-    handleResult(false)
-  }
+  useEffect(() => {
+    if (items.length > 0) {
+      handleItemSearch(index, true)
+    } else {
+      handleItemSearch(index, false)
+    }
+  }, [items])
 
   const label = (hits[0]?.post_type_label as string) ?? ''
 
