@@ -22,7 +22,6 @@ export interface AlgoliaVideos extends Hit<BaseHit> {
   image: string | null
   imageAlt: VideoChildFields_imageAlt[]
   snippet: VideoChildFields_snippet[]
-
   slug: string
   variant: VideoChildFields_variant | null
   childrenCount: number

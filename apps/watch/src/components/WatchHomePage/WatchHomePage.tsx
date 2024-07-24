@@ -11,7 +11,7 @@ import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 import { PageWrapper } from '../PageWrapper'
 import { VideoGrid } from '../VideoGrid'
 
-import { SearchBar } from '@core/journeys/ui/Searchbar'
+import { SearchBar } from '@core/journeys/ui/SearchBar'
 import { Index } from 'react-instantsearch'
 import { HomeHero } from './HomeHero'
 import { SeeAllVideos } from './SeeAllVideos'
