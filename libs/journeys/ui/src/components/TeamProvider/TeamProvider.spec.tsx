@@ -1,5 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ReactElement } from 'react'
 import TagManager from 'react-gtm-module'
 
@@ -86,7 +86,7 @@ const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
 
 describe('TeamProvider', () => {
   it('show show list of teams', async () => {
-    const { getByText } = render(
+    render(
       <MockedProvider mocks={[getTeamsMock]}>
         <TeamProvider>
           <TestComponent />
@@ -94,7 +94,9 @@ describe('TeamProvider', () => {
       </MockedProvider>
     )
 
-    await waitFor(() => expect(getByText('my second team')).toBeInTheDocument())
+    await waitFor(() =>
+      expect(screen.getByText('my second team')).toBeInTheDocument()
+    )
   })
 
   it('should show last viewed team as the active team', async () => {
@@ -111,7 +113,7 @@ describe('TeamProvider', () => {
         }
       }
     }
-    const { getByText } = render(
+    render(
       <MockedProvider mocks={[getLastViewedTeamMock]}>
         <TeamProvider>
           <TestComponent />
@@ -119,12 +121,12 @@ describe('TeamProvider', () => {
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getByText('activeTeam: my second team')).toBeInTheDocument()
+      expect(screen.getByText('activeTeam: my second team')).toBeInTheDocument()
     )
   })
 
   it('should allow active team to be set', async () => {
-    const { getByText, getByRole } = render(
+    render(
       <MockedProvider mocks={[getTeamsMock]}>
         <TeamProvider>
           <TestComponent />
@@ -133,12 +135,12 @@ describe('TeamProvider', () => {
     )
 
     await waitFor(() =>
-      expect(getByText('activeTeam: my first team')).toBeInTheDocument()
+      expect(screen.getByText('activeTeam: my first team')).toBeInTheDocument()
     )
     fireEvent.click(
-      getByRole('button', { name: 'Change active to second team' })
+      screen.getByRole('button', { name: 'Change active to second team' })
     )
-    expect(getByText('activeTeam: my second team')).toBeInTheDocument()
+    expect(screen.getByText('activeTeam: my second team')).toBeInTheDocument()
   })
 
   it('should create GA event', async () => {
@@ -167,7 +169,7 @@ describe('TeamProvider', () => {
       result
     }
 
-    const { getByText, getByRole } = render(
+    render(
       <MockedProvider mocks={[getTeamsMock, refetchMock]}>
         <TeamProvider>
           <TestComponent />
@@ -176,9 +178,9 @@ describe('TeamProvider', () => {
     )
 
     await waitFor(() =>
-      expect(getByText('activeTeam: my first team')).toBeInTheDocument()
+      expect(screen.getByText('activeTeam: my first team')).toBeInTheDocument()
     )
-    fireEvent.click(getByRole('button', { name: 'Refetch' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Refetch' }))
 
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
