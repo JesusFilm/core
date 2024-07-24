@@ -4,15 +4,15 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import {
   ActiveContent,
   EditorProvider,
-  EditorState
+  type EditorState
 } from '@core/journeys/ui/EditorProvider'
 import {
   ActiveCanvasDetailsDrawer,
   ActiveSlide
 } from '@core/journeys/ui/EditorProvider/EditorProvider'
-import { TreeBlock } from '@core/journeys/ui/block'
+import type { TreeBlock } from '@core/journeys/ui/block'
 
-import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourney'
+import type { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourney'
 import { TestEditorState } from '../../../libs/TestEditorState'
 
 import { Fab } from '.'
@@ -29,7 +29,7 @@ describe('Fab', () => {
     activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
   }
 
-  describe('smUp', () => {
+  describe('mdUp', () => {
     beforeEach(() =>
       (useMediaQuery as jest.Mock).mockImplementation(() => true)
     )
@@ -114,7 +114,7 @@ describe('Fab', () => {
     })
   })
 
-  describe('smDown', () => {
+  describe('mdDown', () => {
     beforeEach(() =>
       (useMediaQuery as jest.Mock).mockImplementation(() => false)
     )

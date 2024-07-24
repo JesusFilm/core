@@ -134,7 +134,7 @@ interface SetAnalyticsAction {
  * properties at once. This is primarily used to set the UI position of the
  * editor.
  */
-interface SetEditorFocusAction {
+export interface SetEditorFocusAction {
   type: 'SetEditorFocusAction'
   activeCanvasDetailsDrawer?: ActiveCanvasDetailsDrawer
   activeContent?: ActiveContent

@@ -8,24 +8,26 @@ import Image from 'next/image'
 import { ReactElement } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import FlexAlignBottom1Icon from '@core/shared/ui/icons/FlexAlignBottom1'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../../__generated__/BlockFields'
-import { CardBlockLayoutUpdate } from '../../../../../../../../../../__generated__/CardBlockLayoutUpdate'
+import {
+  CardBlockLayoutUpdate,
+  CardBlockLayoutUpdateVariables
+} from '../../../../../../../../../../__generated__/CardBlockLayoutUpdate'
 import { HorizontalSelect } from '../../../../../../../../HorizontalSelect'
 
+import { useCommand } from '@core/journeys/ui/CommandProvider'
 import cardLayoutContained from './assets/card-layout-contained.svg'
 import cardLayoutExpanded from './assets/card-layout-expanded.svg'
 
 export const CARD_BLOCK_LAYOUT_UPDATE = gql`
   mutation CardBlockLayoutUpdate(
     $id: ID!
-    $journeyId: ID!
     $input: CardBlockUpdateInput!
   ) {
-    cardBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+    cardBlockUpdate(id: $id, input: $input) {
       id
       fullscreen
     }
@@ -33,9 +35,16 @@ export const CARD_BLOCK_LAYOUT_UPDATE = gql`
 `
 
 export function CardLayout(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const {
-    state: { selectedBlock }
+    state: { selectedBlock, selectedStep },
+    dispatch
   } = useEditor()
+  const { add } = useCommand()
+  const [cardBlockUpdate] = useMutation<
+    CardBlockLayoutUpdate,
+    CardBlockLayoutUpdateVariables
+  >(CARD_BLOCK_LAYOUT_UPDATE)
 
   const cardBlock = (
     selectedBlock?.__typename === 'CardBlock'
@@ -45,32 +54,40 @@ export function CardLayout(): ReactElement {
         )
   ) as TreeBlock<CardBlock> | undefined
 
-  const [cardBlockUpdate] = useMutation<CardBlockLayoutUpdate>(
-    CARD_BLOCK_LAYOUT_UPDATE
-  )
-  const { journey } = useJourney()
-  const handleLayoutChange = async (selected: boolean): Promise<void> => {
-    if (journey != null && cardBlock != null) {
-      await cardBlockUpdate({
-        variables: {
-          id: cardBlock.id,
-          journeyId: journey.id,
-          input: {
-            fullscreen: selected
-          }
+  async function handleLayoutChange(fullscreen: boolean): Promise<void> {
+    if (cardBlock == null) return
+    await add({
+      parameters: {
+        execute: {
+          fullscreen
         },
-        optimisticResponse: {
-          cardBlockUpdate: {
-            id: cardBlock.id,
-            __typename: 'CardBlock',
-            fullscreen: selected
-          }
+        undo: {
+          fullscreen: !fullscreen
         }
-      })
-    }
+      },
+      execute: async ({ fullscreen }) => {
+        dispatch({
+          type: 'SetEditorFocusAction',
+          selectedStep: selectedStep
+        })
+        await cardBlockUpdate({
+          variables: {
+            id: cardBlock.id,
+            input: {
+              fullscreen
+            }
+          },
+          optimisticResponse: {
+            cardBlockUpdate: {
+              id: cardBlock.id,
+              __typename: 'CardBlock',
+              fullscreen
+            }
+          }
+        })
+      }
+    })
   }
-
-  const { t } = useTranslation('apps-journeys-admin')
 
   return (
     <>
