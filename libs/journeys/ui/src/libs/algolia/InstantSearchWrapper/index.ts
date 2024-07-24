@@ -1,1 +1,0 @@
-export { InstantSearchTestWrapper } from './InstantSearchWrapper'

@@ -1,7 +1,7 @@
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
-import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchWrapper'
+import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
 
 import { watchConfig } from '../../libs/storybook'
 

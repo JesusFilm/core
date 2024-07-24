@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react'
 
-import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchWrapper'
+import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
 import { WatchHomePage } from '.'
 import { watchConfig } from '../../libs/storybook'
 import { videos } from '../Videos/__generated__/testData'

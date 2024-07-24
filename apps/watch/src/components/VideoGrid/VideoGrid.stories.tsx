@@ -6,7 +6,7 @@ import noop from 'lodash/noop'
 import { watchConfig } from '../../libs/storybook/config'
 import { videos } from '../Videos/__generated__/testData'
 
-import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchWrapper'
+import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
 import { VideoGrid } from './VideoGrid'
 
 const VideoGridStory: Meta<typeof VideoGrid> = {

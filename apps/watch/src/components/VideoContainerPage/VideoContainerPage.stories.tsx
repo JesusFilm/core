@@ -6,7 +6,7 @@ import { getVideoChildrenMock } from '../../libs/useVideoChildren/getVideoChildr
 import { VideoProvider } from '../../libs/videoContext'
 import { videos } from '../Videos/__generated__/testData'
 
-import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchWrapper'
+import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
 import { VideoContainerPage } from '.'
 
 const VideoContainerPageStory: Meta<typeof VideoContainerPage> = {
