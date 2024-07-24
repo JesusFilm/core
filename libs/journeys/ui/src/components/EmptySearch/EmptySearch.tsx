@@ -3,7 +3,7 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-export function NoResultsFound(): ReactElement {
+export function EmptySearch(): ReactElement {
   const { t } = useTranslation('apps-watch')
   return (
     <Paper
@@ -18,7 +18,6 @@ export function NoResultsFound(): ReactElement {
       <Typography
         variant="h6"
         sx={{
-          // color: '#EF3340',
           color: 'primary.main'
         }}
       >

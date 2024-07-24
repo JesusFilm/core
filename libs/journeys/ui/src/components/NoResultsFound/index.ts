@@ -1,1 +1,0 @@
-export { NoResultsFound } from './NoResultsFound'
