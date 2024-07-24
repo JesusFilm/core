@@ -41,7 +41,7 @@ const connectionNodeIdSelector = (state): string | null =>
 interface BaseNodeProps {
   id?: string
   targetHandle?: 'none' | 'show' | 'hide' | 'disabled'
-  sourceHandle?: 'none' | 'show' | 'hide' | 'disabled'
+  sourceHandle?: 'none' | 'show' | 'disabled'
   onSourceConnect?: (
     params: { target: string } | Parameters<OnConnect>[0]
   ) => void
