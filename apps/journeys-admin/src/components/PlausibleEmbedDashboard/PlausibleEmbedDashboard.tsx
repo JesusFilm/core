@@ -30,21 +30,27 @@ const StyledIFrame = styled('iframe')({
 function useHookWithRefCallback(): (node: HTMLIFrameElement | null) => void {
   const ref = useRef<HTMLIFrameElement | null>(null)
   const setRef = useCallback((node: HTMLIFrameElement | null) => {
+    function handleLoad(): void {
+      if (node == null) return
+      const cssLink = document.createElement('link')
+      cssLink.href = '/plausible.css'
+      cssLink.rel = 'stylesheet'
+      cssLink.type = 'text/css'
+      node.contentWindow?.document.head.appendChild(cssLink)
+    }
+
     if (ref.current != null) {
       // Make sure to cleanup any events/references added to the last instance
+      if (node != null) {
+        node.removeEventListener('load', handleLoad)
+      }
+      ref.current = null
     }
 
     if (node != null) {
       // Check if a node is actually passed. Otherwise node would be null.
       // You can now do what you need to, addEventListeners, measure, etc.
-      node.addEventListener('load', () => {
-        const cssLink = document.createElement('link')
-        // cssLink.href = 'http://localhost:800/plausible.css'
-        cssLink.href = '/plausible.css'
-        cssLink.rel = 'stylesheet'
-        cssLink.type = 'text/css'
-        node.contentWindow?.document.head.appendChild(cssLink)
-      })
+      node.addEventListener('load', handleLoad)
     }
 
     // Save a reference to the node
@@ -73,7 +79,6 @@ export function PlausibleEmbedDashboard({
   })
 
   const journeyId = router.query.journeyId as string
-  const url = host ?? process.env.NEXT_PUBLIC_PLAUSIBLE_URL ?? ''
 
   return (
     <>
@@ -104,8 +109,7 @@ export function PlausibleEmbedDashboard({
           <StyledIFrame
             data-testid="PlausibleEmbedDashboard"
             plausible-embed
-            src={`/share/api-journeys-journey-${journeyId}?auth=${data?.journey.plausibleToken}&embed=true&theme=light&background=transparent`}
-            // src={`${url}/share/api-journeys-journey-${journeyId}?auth=${data?.journey.plausibleToken}&embed=true&theme=light&background=transparent`}
+            src={`${host ?? ''}/share/api-journeys-journey-${journeyId}?auth=${data?.journey.plausibleToken}&embed=true&theme=light&background=transparent`}
             loading="lazy"
             ref={ref}
             sx={{
@@ -116,8 +120,7 @@ export function PlausibleEmbedDashboard({
               width: '100%'
             }}
           />
-          <script async src={`/js/embed.host.js`} />
-          {/* <script async src={`${url}/js/embed.host.js`} /> */}
+          <script async src={`${host ?? ''}/js/embed.host.js`} />
         </>
       )}
     </>
