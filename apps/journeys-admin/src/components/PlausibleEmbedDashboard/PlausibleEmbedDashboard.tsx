@@ -7,7 +7,7 @@ import { styled } from '@mui/material/styles'
 import gql from 'graphql-tag'
 import { useTranslation } from 'next-i18next'
 import { useRouter } from 'next/router'
-import { type ReactElement, useCallback, useRef } from 'react'
+import { type ReactElement, useCallback, useRef, useState } from 'react'
 import type {
   GetAdminJourneyWithPlausibleToken,
   GetAdminJourneyWithPlausibleTokenVariables
@@ -68,6 +68,7 @@ export function PlausibleEmbedDashboard({
   host
 }: PlausibleEmbedDashboardProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const [show, setShow] = useState(true)
   const router = useRouter()
   const ref = useHookWithRefCallback()
 
@@ -82,12 +83,12 @@ export function PlausibleEmbedDashboard({
 
   return (
     <>
-      <Fade in={loading === true || error != null}>
+      <Fade in={show}>
         <Box
           sx={{
             justifyContent: 'center',
             alignItems: 'center',
-            display: !loading && error == null ? 'none' : 'flex',
+            display: show ? 'flex' : 'none',
             position: 'absolute',
             top: 0,
             right: 0,
@@ -111,6 +112,12 @@ export function PlausibleEmbedDashboard({
             plausible-embed
             src={`${host ?? ''}/share/api-journeys-journey-${journeyId}?auth=${data?.journey.plausibleToken}&embed=true&theme=light&background=transparent`}
             loading="lazy"
+            onLoad={() => {
+              setTimeout(() => {
+                // wait for css to load
+                setShow(false)
+              }, 500)
+            }}
             ref={ref}
             sx={{
               height: {
