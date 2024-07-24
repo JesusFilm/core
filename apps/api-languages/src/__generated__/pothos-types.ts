@@ -1,5 +1,5 @@
 /* eslint-disable */
-import type { Prisma, Language, LanguageName, Country, CountryName, CountryContinent, AudioPreview, ImportTimes } from ".prisma/api-languages-client";
+import type { Prisma, Language, LanguageName, Country, CountryLanguage, CountryName, CountryContinent, AudioPreview, ImportTimes } from ".prisma/api-languages-client";
 export default interface PrismaTypes {
     Language: {
         Name: "Language";
@@ -11,8 +11,8 @@ export default interface PrismaTypes {
         Where: Prisma.LanguageWhereInput;
         Create: {};
         Update: {};
-        RelationName: "name" | "nameLanguage" | "countries" | "countryName" | "countryContinent" | "audioPreview";
-        ListRelations: "name" | "nameLanguage" | "countries" | "countryName" | "countryContinent";
+        RelationName: "name" | "nameLanguage" | "countries" | "countryName" | "countryContinent" | "audioPreview" | "countryLanguages";
+        ListRelations: "name" | "nameLanguage" | "countries" | "countryName" | "countryContinent" | "countryLanguages";
         Relations: {
             name: {
                 Shape: LanguageName[];
@@ -43,6 +43,11 @@ export default interface PrismaTypes {
                 Shape: AudioPreview | null;
                 Name: "AudioPreview";
                 Nullable: true;
+            };
+            countryLanguages: {
+                Shape: CountryLanguage[];
+                Name: "CountryLanguage";
+                Nullable: false;
             };
         };
     };
@@ -81,8 +86,8 @@ export default interface PrismaTypes {
         Where: Prisma.CountryWhereInput;
         Create: {};
         Update: {};
-        RelationName: "name" | "continent" | "languages";
-        ListRelations: "name" | "continent" | "languages";
+        RelationName: "name" | "continent" | "languages" | "countryLanguages";
+        ListRelations: "name" | "continent" | "languages" | "countryLanguages";
         Relations: {
             name: {
                 Shape: CountryName[];
@@ -97,6 +102,36 @@ export default interface PrismaTypes {
             languages: {
                 Shape: Language[];
                 Name: "Language";
+                Nullable: false;
+            };
+            countryLanguages: {
+                Shape: CountryLanguage[];
+                Name: "CountryLanguage";
+                Nullable: false;
+            };
+        };
+    };
+    CountryLanguage: {
+        Name: "CountryLanguage";
+        Shape: CountryLanguage;
+        Include: Prisma.CountryLanguageInclude;
+        Select: Prisma.CountryLanguageSelect;
+        OrderBy: Prisma.CountryLanguageOrderByWithRelationInput;
+        WhereUnique: Prisma.CountryLanguageWhereUniqueInput;
+        Where: Prisma.CountryLanguageWhereInput;
+        Create: {};
+        Update: {};
+        RelationName: "language" | "country";
+        ListRelations: never;
+        Relations: {
+            language: {
+                Shape: Language;
+                Name: "Language";
+                Nullable: false;
+            };
+            country: {
+                Shape: Country;
+                Name: "Country";
                 Nullable: false;
             };
         };

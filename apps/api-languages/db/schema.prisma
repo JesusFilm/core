@@ -36,6 +36,7 @@ model Language {
   countryName      CountryName[]
   countryContinent CountryContinent[]
   audioPreview     AudioPreview?
+  countryLanguages CountryLanguage[]
 
   @@index(bcp47(type: Hash))
 }
@@ -56,15 +57,30 @@ model LanguageName {
 }
 
 model Country {
-  id          String             @id
-  name        CountryName[]
-  population  Int?
-  continent   CountryContinent[]
-  latitude    Float?
-  longitude   Float?
-  flagPngSrc  String?
-  flagWebpSrc String?
-  languages   Language[]
+  id               String             @id
+  name             CountryName[]
+  population       Int?
+  continent        CountryContinent[]
+  latitude         Float?
+  longitude        Float?
+  flagPngSrc       String?
+  flagWebpSrc      String?
+  languages        Language[]
+  countryLanguages CountryLanguage[]
+}
+
+model CountryLanguage {
+  id              String   @id @default(uuid())
+  languageId      String
+  countryId       String
+  speakers        Int
+  displaySpeakers Int?
+  language        Language @relation(fields: [languageId], references: [id])
+  country         Country  @relation(fields: [countryId], references: [id])
+
+  @@unique([languageId, countryId])
+  @@index(languageId(type: Hash))
+  @@index(countryId(type: Hash))
 }
 
 model CountryName {
