@@ -14,7 +14,7 @@ export function useOnClickOutside<T extends HTMLElement = HTMLElement>(
       const canvasClicked = desktopClicked || mobileClicked
       // Prevent double callback triggering
       const inputSelected =
-        elementRef.current?.classList.contains('Mui-focused')
+        elementRef.current?.classList.contains('Mui-focused') ?? false
       if (elementRef.current != null && inputSelected && canvasClicked)
         void callback()
     }

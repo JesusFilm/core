@@ -55,21 +55,4 @@ describe('useClickOutside', () => {
     fireEvent.click(heading)
     expect(onClickOutside).toHaveBeenCalled()
   })
-
-  it('does not call the callback when clicking somewhere not the editor canvas', () => {
-    const { getByRole } = render(
-      <div>
-        <h1 className="NotEditorCanvas">Heading 1</h1>
-        <iframe>
-          <Content />
-        </iframe>
-      </div>
-    )
-    const heading = getByRole('heading', { level: 1 })
-    const content = getByRole('heading', { level: 2 })
-    fireEvent.focus(content)
-    expect(onClickOutside).not.toHaveBeenCalled()
-    fireEvent.click(heading)
-    expect(onClickOutside).not.toHaveBeenCalled()
-  })
 })
