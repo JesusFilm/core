@@ -12,7 +12,7 @@ function ensureSlugUnique(
   return `${slug}-${suffix}`
 }
 
-function convertToSlug(name: string): string {
+export function convertToSlug(name: string): string {
   return name
     .trim()
     .replace(/^[^\p{L}\p{N}-]+/gu, '')
