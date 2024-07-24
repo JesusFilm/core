@@ -2563,7 +2563,7 @@ export const algoliaResults = {
   }
 }
 
-export const algoliaRefinements = [
+export const algoliaTagsRefinements = [
   {
     indexName: 'api-journeys-journeys-dev',
     indexId: 'api-journeys-journeys-dev',
@@ -2588,4 +2588,28 @@ export const algoliaRefinements = [
       }
     ]
   }
+] as unknown as CurrentRefinementsConnectorParamsItem[]
+
+export const algoliaLanguageRefinements = [
+  {
+    indexName: 'api-journeys-journeys-dev',
+    indexId: 'api-journeys-journeys-dev',
+    attribute: 'language.nativeName',
+    label: 'language.nativeName',
+    refinements: [
+      {
+        attribute: 'language.nativeName',
+        type: 'disjunctive',
+        value: 'English',
+        label: 'English',
+        count: 1,
+        exhaustive: true
+      }
+    ]
+  }
+] as unknown as CurrentRefinementsConnectorParamsItem[]
+
+export const algoliaRefinements = [
+  ...algoliaTagsRefinements,
+  ...algoliaLanguageRefinements
 ] as unknown as CurrentRefinementsConnectorParamsItem[]

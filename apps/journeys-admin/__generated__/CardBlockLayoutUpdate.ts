@@ -26,6 +26,5 @@ export interface CardBlockLayoutUpdate {
 
 export interface CardBlockLayoutUpdateVariables {
   id: string;
-  journeyId: string;
   input: CardBlockUpdateInput;
 }
