@@ -1,5 +1,4 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
@@ -27,6 +26,7 @@ import {
   UPDATE_JOURNEY_FLOW_BACK_BUTTON_CLICKED
 } from './Slider'
 
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { Slider } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({

@@ -6,7 +6,7 @@ import { useTranslation } from 'next-i18next'
 import dynamic from 'next/dynamic'
 import { ReactElement, useState } from 'react'
 
-import useMediaQuery from '@mui/system/useMediaQuery'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { BlockFields as StepBlock } from '../../../../../../../__generated__/BlockFields'
 import { Drawer } from '../../Drawer'
 import { CardTemplates } from '../../Drawer/CardTemplates/CardTemplates'
