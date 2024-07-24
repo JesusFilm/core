@@ -1,6 +1,8 @@
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
+import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchWrapper'
+
 import { watchConfig } from '../../libs/storybook'
 
 import { VideosPage } from './VideosPage'
@@ -14,9 +16,11 @@ const VideosStory: Meta<typeof VideosPage> = {
 const Template: StoryObj<
   ComponentProps<typeof VideosPage> & { limit: number }
 > = {
-  render: () => {
-    return <VideosPage />
-  }
+  render: () => (
+    <InstantSearchTestWrapper query="" indexName="video-variants-stg">
+      <VideosPage />
+    </InstantSearchTestWrapper>
+  )
 }
 
 export const Default = {
