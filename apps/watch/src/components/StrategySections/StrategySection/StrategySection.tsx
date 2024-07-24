@@ -43,11 +43,7 @@ export function StrategySection({
   const items = transformAlgoliaStrategies(hits)
 
   useEffect(() => {
-    if (items.length > 0) {
-      handleItemSearch(index, true)
-    } else {
-      handleItemSearch(index, false)
-    }
+    handleItemSearch(index, items.length > 0)
   }, [items])
 
   const label = (hits[0]?.post_type_label as string) ?? ''
