@@ -15,8 +15,8 @@ describe('UnsplashList', () => {
     id: '1',
     alt_description: 'white dome building during daytime',
     blur_hash: 'LEA,%vRjE1ay.AV@WAj@tnoef5ju',
-    width: 6240,
-    height: 4160,
+    width: 3096,
+    height: 4242,
     urls: {
       raw: 'https://images.unsplash.com/photo-1?ixid=1',
       regular: 'https://images.unsplash.com/photo-1?ixid=1&q=80&w=1080',
@@ -65,9 +65,9 @@ describe('UnsplashList', () => {
     expect(onChange).toHaveBeenCalledWith({
       alt: 'white dome building during daytime',
       blurhash: 'LEA,%vRjE1ay.AV@WAj@tnoef5ju',
-      height: 4160,
+      height: 1480,
       src: 'https://images.unsplash.com/photo-1?ixid=1&q=80&w=1080',
-      width: 6240
+      width: 1080
     })
   })
 

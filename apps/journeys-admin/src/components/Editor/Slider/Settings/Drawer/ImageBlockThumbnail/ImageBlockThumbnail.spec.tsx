@@ -35,6 +35,26 @@ describe('ImageBlockThumbnail', () => {
       expect(img).toHaveAttribute('src', image.src)
       expect(img).toHaveAttribute('alt', image.alt)
     })
+
+    it('shows unsplash image', async () => {
+      const { getByRole } = render(
+        <ImageBlockThumbnail
+          selectedBlock={{
+            ...image,
+            src: 'https://images.unsplash.com/photo-1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=1&ixlib=rb-4.0.3&q=80&w=1080'
+          }}
+        />
+      )
+      const img = await getByRole('img')
+      expect(img).toHaveAttribute(
+        'src',
+        'https://images.unsplash.com/photo-1?cs=tinysrgb&fit=crop&fm=jpg&ixid=1&ixlib=rb-4.0.3&q=80&w=55&h=55&auto=format'
+      )
+      expect(img).toHaveAttribute(
+        'srcset',
+        'https://images.unsplash.com/photo-1?cs=tinysrgb&fit=crop&fm=jpg&ixid=1&ixlib=rb-4.0.3&q=80&w=55&h=55&auto=format&dpr=2 2x'
+      )
+    })
   })
 
   it('should show the loading circle', () => {

@@ -46,8 +46,8 @@ export function UnsplashList({
     onChange({
       src: item.urls.regular,
       blurhash: item.blur_hash,
-      width: item.width,
-      height: item.height,
+      width: 1080,
+      height: Math.ceil((item.height / item.width) * 1080),
       alt: item.alt_description
     })
   }
