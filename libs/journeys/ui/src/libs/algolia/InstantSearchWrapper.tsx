@@ -12,7 +12,8 @@ interface InstantSearchWrapperProps {
 export function InstantSearchTestWrapper({
   query = '',
   indexName,
-  children
+  children,
+  ...props
 }: InstantSearchWrapperProps): ReactElement {
   const searchClient = algoliasearch(
     process.env.NEXT_PUBLIC_ALGOLIA_APP_ID ?? '',
@@ -30,6 +31,7 @@ export function InstantSearchTestWrapper({
       searchClient={searchClient}
       indexName={indexName}
       initialUiState={initState}
+      {...props}
     >
       {children}
     </InstantSearch>
