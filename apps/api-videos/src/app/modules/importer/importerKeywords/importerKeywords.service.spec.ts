@@ -38,8 +38,8 @@ describe('ImporterKeywordsService', () => {
       videosService.ids = ['video1', 'video2']
       await service.import({
         value: 'TestKeyword',
-        languageId: '529',
-        videoIds: ['video1', 'video2'],
+        languageId: 529,
+        videoIds: 'video1,video2',
         datastream_metadata: {
           uuid: 'mockUuid'
         }
@@ -72,16 +72,16 @@ describe('ImporterKeywordsService', () => {
       await service.importMany([
         {
           value: 'TestKeyword1',
-          languageId: '529',
-          videoIds: ['video1', 'video2'],
+          languageId: 529,
+          videoIds: 'video1,video2',
           datastream_metadata: {
             uuid: 'mockUuid'
           }
         },
         {
           value: 'TestKeyword2',
-          languageId: '529',
-          videoIds: ['video3'],
+          languageId: 529,
+          videoIds: 'video3',
           datastream_metadata: {
             uuid: 'mockUuid1'
           }
