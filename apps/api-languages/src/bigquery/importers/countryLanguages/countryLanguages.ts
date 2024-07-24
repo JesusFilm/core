@@ -9,7 +9,7 @@ import { Prisma } from '.prisma/api-languages-client'
 const countryLanguageSchema = z
   .object({
     languageId: z.number().transform(String),
-    countryCode: z.number().transform(String),
+    countryCode: z.string(),
     speakers: z.number(),
     display_speakers: z.number().nullable()
   })

@@ -9,7 +9,7 @@ import { Prisma } from '.prisma/api-languages-client'
 const countryNameSchema = z
   .object({
     languageId: z.number().transform(String),
-    shortName: z.number().transform(String),
+    shortName: z.string(),
     value: z.string()
   })
   .transform((value) => ({
