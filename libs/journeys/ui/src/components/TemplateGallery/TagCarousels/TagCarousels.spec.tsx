@@ -20,6 +20,7 @@ function mockRefinementList() {
   const onClick = jest.fn()
   const useRefinementListMocked = jest.mocked(useRefinementList)
   useRefinementListMocked.mockReturnValue({
+    items: [],
     refine: onClick
   } as unknown as RefinementListRenderState)
   return onClick
