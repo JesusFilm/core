@@ -31,7 +31,7 @@ interface VideosPageProps {
 }
 
 function VideosPage(): ReactElement {
-  return <Videos />
+  return <Videos index />
 }
 
 export const getStaticProps: GetStaticProps<VideosPageProps> = async ({

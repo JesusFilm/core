@@ -22,8 +22,6 @@ export function VideoGrid({
 }: VideoGridProps): ReactElement {
   const { hits: algoliaVideos, showMore, isLastPage } = useAlgoliaVideos()
   const videos = coreVideos != null ? coreVideos : algoliaVideos
-
-  console.log('videos')
   return (
     <Grid
       container
