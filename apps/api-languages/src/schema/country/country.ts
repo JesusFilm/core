@@ -71,7 +71,8 @@ const Country = builder.prismaObject('Country', {
           include: { language: true }
         })
       }
-    })
+    }),
+    countryLanguages: t.relation('countryLanguages')
   })
 })
 

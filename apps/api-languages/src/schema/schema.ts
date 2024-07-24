@@ -3,6 +3,7 @@
 
 import './language'
 import './country'
+import './countryLanguage'
 
 import { builder } from './builder'
 
