@@ -8,7 +8,6 @@ import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../
 import { TextResponseLabelUpdate } from '../../../../../../../../../../../__generated__/TextResponseLabelUpdate'
 import { TextResponseTypeUpdate } from '../../../../../../../../../../../__generated__/TextResponseTypeUpdate'
 import { TextResponseType } from '../../../../../../../../../../../__generated__/globalTypes'
-
 import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../../Toolbar/Items/CommandUndoItem'
 import { TEXT_RESPONSE_LABEL_UPDATE } from '../Label/Label'
@@ -29,13 +28,13 @@ describe('Type', () => {
     children: []
   }
 
-  const textResponseLabelUpdateMock: MockedResponse<TextResponseLabelUpdate> = {
+  const emailLabelUpdateMock: MockedResponse<TextResponseLabelUpdate> = {
     request: {
       query: TEXT_RESPONSE_LABEL_UPDATE,
       variables: {
         id: selectedBlock.id,
         input: {
-          label: 'Updated label'
+          label: 'Email'
         }
       }
     },
@@ -44,13 +43,13 @@ describe('Type', () => {
         textResponseBlockUpdate: {
           __typename: 'TextResponseBlock',
           id: selectedBlock.id,
-          label: 'Updated label'
+          label: 'Email'
         }
       }
     }))
   }
 
-  const textResponseTypeUpdateMock: MockedResponse<TextResponseTypeUpdate> = {
+  const emailTypeUpdateMock: MockedResponse<TextResponseTypeUpdate> = {
     request: {
       query: TEXT_RESPONSE_TYPE_UPDATE,
       variables: {
@@ -73,41 +72,59 @@ describe('Type', () => {
     }))
   }
 
+  const freeFormTypeUpdateMock = {
+    request: {
+      query: TEXT_RESPONSE_TYPE_UPDATE,
+      variables: {
+        id: selectedBlock.id,
+        input: {
+          type: TextResponseType.freeForm,
+          integrationId: null,
+          routeId: null
+        }
+      }
+    },
+    result: jest.fn(() => ({
+      data: {
+        textResponseBlockUpdate: {
+          id: selectedBlock.id,
+          __typename: 'TextResponseBlock',
+          type: TextResponseType.freeForm,
+          integrationId: null,
+          routeId: null
+        }
+      }
+    }))
+  }
+
+  const freeFormLabelUpdateMock = {
+    request: {
+      query: TEXT_RESPONSE_LABEL_UPDATE,
+      variables: {
+        id: selectedBlock.id,
+        input: {
+          label: 'Your answer here'
+        }
+      }
+    },
+    result: jest.fn(() => ({
+      data: {
+        textResponseBlockUpdate: {
+          __typename: 'TextResponseBlock',
+          id: selectedBlock.id,
+          label: 'Your answer here'
+        }
+      }
+    }))
+  }
+
   beforeEach(() => {
     jest.clearAllMocks()
   })
 
   it('should change type of text response', async () => {
-    const emailLabelUpdateMock: MockedResponse<TextResponseLabelUpdate> = {
-      ...textResponseLabelUpdateMock,
-      request: {
-        query: TEXT_RESPONSE_LABEL_UPDATE,
-        variables: {
-          id: selectedBlock.id,
-          input: {
-            label: 'Email'
-          }
-        }
-      }
-    }
-
-    const emailTextResponseTypeUpdateMock = {
-      ...textResponseTypeUpdateMock,
-      request: {
-        query: TEXT_RESPONSE_TYPE_UPDATE,
-        variables: {
-          id: selectedBlock.id,
-          input: {
-            type: TextResponseType.email
-          }
-        }
-      }
-    }
-
     render(
-      <MockedProvider
-        mocks={[emailLabelUpdateMock, emailTextResponseTypeUpdateMock]}
-      >
+      <MockedProvider mocks={[emailLabelUpdateMock, emailTypeUpdateMock]}>
         <EditorProvider initialState={{ selectedBlock }}>
           <Type />
         </EditorProvider>
@@ -115,41 +132,11 @@ describe('Type', () => {
     )
 
     fireEvent.click(screen.getByRole('button', { name: 'Email' }))
-    await waitFor(() =>
-      expect(emailTextResponseTypeUpdateMock.result).toHaveBeenCalled()
-    )
+    await waitFor(() => expect(emailTypeUpdateMock.result).toHaveBeenCalled())
     await waitFor(() => expect(emailLabelUpdateMock.result).toHaveBeenCalled())
   })
 
   it('should reset integrationId and routeId to null if type is not email', async () => {
-    const freeFormTypeUpdateMock = {
-      ...textResponseTypeUpdateMock,
-      request: {
-        query: TEXT_RESPONSE_TYPE_UPDATE,
-        variables: {
-          id: selectedBlock.id,
-          input: {
-            type: TextResponseType.freeForm,
-            integrationId: null,
-            routeId: null
-          }
-        }
-      }
-    }
-
-    const freeFormLabelUpdateMock = {
-      ...textResponseLabelUpdateMock,
-      request: {
-        query: TEXT_RESPONSE_LABEL_UPDATE,
-        variables: {
-          id: selectedBlock.id,
-          input: {
-            label: 'Your answer here'
-          }
-        }
-      }
-    }
-
     render(
       <MockedProvider mocks={[freeFormTypeUpdateMock, freeFormLabelUpdateMock]}>
         <EditorProvider
@@ -169,77 +156,20 @@ describe('Type', () => {
   })
 
   it('should undo the change to type', async () => {
-    const emailLabelUpdateMock: MockedResponse<TextResponseLabelUpdate> = {
-      ...textResponseLabelUpdateMock,
-      request: {
-        query: TEXT_RESPONSE_LABEL_UPDATE,
-        variables: {
-          id: selectedBlock.id,
-          input: {
-            label: 'Email'
-          }
-        }
-      }
-    }
-
-    const emailTextResponseTypeUpdateMock = {
-      ...textResponseTypeUpdateMock,
-      request: {
-        query: TEXT_RESPONSE_TYPE_UPDATE,
-        variables: {
-          id: selectedBlock.id,
-          input: {
-            type: TextResponseType.email
-          }
-        }
-      }
-    }
-
-    const undoLabelUpdateMock: MockedResponse<TextResponseLabelUpdate> = {
-      ...textResponseLabelUpdateMock,
-      request: {
-        query: TEXT_RESPONSE_LABEL_UPDATE,
-        variables: {
-          id: selectedBlock.id,
-          input: {
-            label: 'Your answer here'
-          }
-        }
-      },
-      result: jest.fn(() => ({
-        data: {
-          textResponseBlockUpdate: {
-            __typename: 'TextResponseBlock',
-            id: selectedBlock.id,
-            label: 'Updated label'
-          }
-        }
-      }))
-    }
-
-    const undoTextResponseTypeUpdateMock = {
-      ...textResponseTypeUpdateMock,
-      request: {
-        query: TEXT_RESPONSE_TYPE_UPDATE,
-        variables: {
-          id: selectedBlock.id,
-          input: {
-            type: TextResponseType.freeForm
-          }
-        }
-      }
-    }
-
     render(
       <MockedProvider
         mocks={[
           emailLabelUpdateMock,
-          emailTextResponseTypeUpdateMock,
-          undoLabelUpdateMock,
-          undoTextResponseTypeUpdateMock
+          emailTypeUpdateMock,
+          freeFormTypeUpdateMock,
+          freeFormLabelUpdateMock
         ]}
       >
-        <EditorProvider initialState={{ selectedBlock }}>
+        <EditorProvider
+          initialState={{
+            selectedBlock: { ...selectedBlock, type: TextResponseType.freeForm }
+          }}
+        >
           <CommandUndoItem variant="button" />
           <Type />
         </EditorProvider>
@@ -247,89 +177,36 @@ describe('Type', () => {
     )
 
     fireEvent.click(screen.getByRole('button', { name: 'Email' }))
-    await waitFor(() =>
-      expect(emailTextResponseTypeUpdateMock.result).toHaveBeenCalled()
-    )
+    await waitFor(() => expect(emailTypeUpdateMock.result).toHaveBeenCalled())
     await waitFor(() => expect(emailLabelUpdateMock.result).toHaveBeenCalled())
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
     await waitFor(() =>
-      expect(undoTextResponseTypeUpdateMock.result).toHaveBeenCalled()
+      expect(freeFormTypeUpdateMock.result).toHaveBeenCalled()
     )
-    await waitFor(() => expect(undoLabelUpdateMock.result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(freeFormLabelUpdateMock.result).toHaveBeenCalled()
+    )
   })
 
   it('should redo the change to type that was undone', async () => {
-    const emailLabelUpdateMock: MockedResponse<TextResponseLabelUpdate> = {
-      ...textResponseLabelUpdateMock,
-      request: {
-        query: TEXT_RESPONSE_LABEL_UPDATE,
-        variables: {
-          id: selectedBlock.id,
-          input: {
-            label: 'Email'
-          }
-        }
-      },
+    const mockTypeFirstUpdate = {
+      ...emailTypeUpdateMock,
       maxUsageCount: 2
     }
 
-    const emailTextResponseTypeUpdateMock = {
-      ...textResponseTypeUpdateMock,
-      request: {
-        query: TEXT_RESPONSE_TYPE_UPDATE,
-        variables: {
-          id: selectedBlock.id,
-          input: {
-            type: TextResponseType.email
-          }
-        }
-      },
+    const mockLabelFirstUpdate = {
+      ...emailLabelUpdateMock,
       maxUsageCount: 2
-    }
-
-    const undoLabelUpdateMock: MockedResponse<TextResponseLabelUpdate> = {
-      ...textResponseLabelUpdateMock,
-      request: {
-        query: TEXT_RESPONSE_LABEL_UPDATE,
-        variables: {
-          id: selectedBlock.id,
-          input: {
-            label: 'Your answer here'
-          }
-        }
-      },
-      result: jest.fn(() => ({
-        data: {
-          textResponseBlockUpdate: {
-            __typename: 'TextResponseBlock',
-            id: selectedBlock.id,
-            label: 'Updated label'
-          }
-        }
-      }))
-    }
-
-    const undoTextResponseTypeUpdateMock = {
-      ...textResponseTypeUpdateMock,
-      request: {
-        query: TEXT_RESPONSE_TYPE_UPDATE,
-        variables: {
-          id: selectedBlock.id,
-          input: {
-            type: TextResponseType.freeForm
-          }
-        }
-      }
     }
 
     render(
       <MockedProvider
         mocks={[
-          emailLabelUpdateMock,
-          emailTextResponseTypeUpdateMock,
-          undoLabelUpdateMock,
-          undoTextResponseTypeUpdateMock
+          mockLabelFirstUpdate,
+          mockTypeFirstUpdate,
+          freeFormTypeUpdateMock,
+          freeFormLabelUpdateMock
         ]}
       >
         <EditorProvider initialState={{ selectedBlock }}>
@@ -341,21 +218,19 @@ describe('Type', () => {
     )
 
     fireEvent.click(screen.getByRole('button', { name: 'Email' }))
-    await waitFor(() =>
-      expect(emailTextResponseTypeUpdateMock.result).toHaveBeenCalled()
-    )
-    await waitFor(() => expect(emailLabelUpdateMock.result).toHaveBeenCalled())
+    await waitFor(() => expect(mockTypeFirstUpdate.result).toHaveBeenCalled())
+    await waitFor(() => expect(mockLabelFirstUpdate.result).toHaveBeenCalled())
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
     await waitFor(() =>
-      expect(undoTextResponseTypeUpdateMock.result).toHaveBeenCalled()
+      expect(freeFormTypeUpdateMock.result).toHaveBeenCalled()
     )
-    await waitFor(() => expect(undoLabelUpdateMock.result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(freeFormLabelUpdateMock.result).toHaveBeenCalled()
+    )
 
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
-    await waitFor(() =>
-      expect(emailTextResponseTypeUpdateMock.result).toHaveBeenCalled()
-    )
-    await waitFor(() => expect(emailLabelUpdateMock.result).toHaveBeenCalled())
+    await waitFor(() => expect(mockTypeFirstUpdate.result).toHaveBeenCalled())
+    await waitFor(() => expect(mockLabelFirstUpdate.result).toHaveBeenCalled())
   })
 })

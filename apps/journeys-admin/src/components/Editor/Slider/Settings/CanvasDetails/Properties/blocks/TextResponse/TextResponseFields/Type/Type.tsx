@@ -81,12 +81,17 @@ export function Type(): ReactElement {
         label = t('Your answer here')
     }
 
+    console.log(input)
     await add({
       parameters: {
         execute: { label, input },
         undo: {
           label: selectedBlock.label,
-          input: { type: selectedBlock.type },
+          input: {
+            type: selectedBlock.type,
+            integrationId: selectedBlock.integrationId,
+            routeId: selectedBlock.routeId
+          },
           type: selectedBlock.type
         }
       },
