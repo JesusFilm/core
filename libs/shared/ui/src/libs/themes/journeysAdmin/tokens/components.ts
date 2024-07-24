@@ -21,7 +21,15 @@ export const adminComponents: Required<Pick<ThemeOptions, 'components'>> = {
             borderWidth: '2px'
           }
         }
-      }
+      },
+      variants: [
+        {
+          props: { size: 'small' },
+          style: {
+            fontWeight: 600
+          }
+        }
+      ]
     },
     MuiTab: {
       styleOverrides: {
