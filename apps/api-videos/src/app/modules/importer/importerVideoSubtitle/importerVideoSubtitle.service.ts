@@ -18,8 +18,9 @@ const videoSubtitlesSchema = z
     languageId: z.number().transform(String)
   })
   .transform((data) => ({
-    ...omit(data, 'video'),
-    videoId: data.video
+    ...omit(data, 'video', 'primary'),
+    videoId: data.video,
+    primary: data.languageId === '529'
   }))
 
 type VideoSubtitles = z.infer<typeof videoSubtitlesSchema>
