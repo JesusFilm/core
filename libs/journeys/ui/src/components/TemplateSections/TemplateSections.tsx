@@ -11,7 +11,7 @@ import {
   AlgoliaJourney,
   useAlgoliaJourneys
 } from '../../libs/algolia/useAlgoliaJourneys'
-import { NoResultsFound } from '../NoResultsFound'
+import { EmptySearch } from '../EmptySearch'
 import { TemplateGalleryCard } from '../TemplateGalleryCard'
 
 interface Contents {
@@ -88,7 +88,7 @@ export function TemplateSections(): ReactElement {
     <Stack spacing={8} data-testid="JourneysAdminTemplateSections">
       {!loading &&
         algoliaCollection != null &&
-        algoliaCollection.length === 0 && <NoResultsFound />}
+        algoliaCollection.length === 0 && <EmptySearch />}
       {refinements.length !== 1 &&
         (loading ||
           (algoliaCollection != null && algoliaCollection.length > 0 && (
