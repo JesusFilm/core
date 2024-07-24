@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import { HitsRenderState } from 'instantsearch.js/es/connectors/hits/connectHits'
 import { useHits } from 'react-instantsearch'
 import { StrategySection } from '.'
-import { emptyStrategyItems, strategyItems } from './data'
+import { strategyItems } from './data'
 
 jest.mock('react-instantsearch')
 
@@ -32,10 +32,19 @@ describe('StrategySection', () => {
     ).toBeInTheDocument()
   })
 
+  it('should call handleitemsearch', () => {
+    const handleItemSearchMock = jest.fn()
+    render(
+      <StrategySection index={0} handleItemSearch={handleItemSearchMock} />
+    )
+
+    expect(handleItemSearchMock).toHaveBeenCalled()
+  })
+
   it('should not render strategysection if no hits', () => {
     const useHitsMocked = jest.mocked(useHits)
     useHitsMocked.mockReturnValue({
-      hits: emptyStrategyItems
+      hits: []
     } as unknown as HitsRenderState)
 
     render(<StrategySection index={0} handleItemSearch={jest.fn()} />)

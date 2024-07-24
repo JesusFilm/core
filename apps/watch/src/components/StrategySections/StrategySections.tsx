@@ -12,10 +12,7 @@ export function StrategySections({
   index
 }: StrategySectionsProps): ReactElement {
   // TODO: update this indexes variable to use the real indexes
-  const indexes = [
-    //  'wp_dev_posts_mission-trip',
-    'wp_dev_posts_passionpurpose'
-  ]
+  const indexes = ['wp_dev_posts_passionpurpose']
 
   const [hasResult, setHasResult] = useState<boolean>(true)
 

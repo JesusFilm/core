@@ -11,8 +11,7 @@ describe('EmptySearch', () => {
       </ThemeProvider>
     )
 
-    const sorryText = screen.getByText('Sorry, no results')
-    expect(sorryText).toHaveStyle({
+    expect(screen.getByText('Sorry, no results')).toHaveStyle({
       color: '#EF3340'
     })
     expect(

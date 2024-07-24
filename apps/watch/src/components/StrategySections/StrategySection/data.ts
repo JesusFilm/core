@@ -222,5 +222,3 @@ export const strategyItems = [
     __position: 2
   }
 ]
-
-export const emptyStrategyItems = []
