@@ -111,7 +111,7 @@ export function Fab({ variant }: FabProps): ReactElement {
 
   const children: ReactNode = (
     <>
-      <Plus2Icon sx={{ mr: { xs: 3, md: 0 } }} />
+      <Plus2Icon sx={{ mr: { xs: 0, md: 3 } }} />
       {mdUp ? t('Add Block') : ''}
     </>
   )
