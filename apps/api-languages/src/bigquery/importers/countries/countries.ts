@@ -21,11 +21,24 @@ const countrySchema = z
     population: value.country_population
   }))
 
+let existingCountryIds: string[]
+
 const bigQueryTableName =
   'jfp-data-warehouse.jfp_mmdb_prod.core_countries_arclight_data'
 
-export async function importCountries(): Promise<void> {
+export async function getExistingPrismaCountryIds(): Promise<string[]> {
+  const prismaCountries = await prisma.country.findMany({
+    select: {
+      id: true
+    }
+  })
+  return prismaCountries.map(({ id }) => id)
+}
+
+export async function importCountries(): Promise<string[]> {
+  existingCountryIds = await getExistingPrismaCountryIds()
   await processTable(bigQueryTableName, importOne, importMany, true)
+  return existingCountryIds
 }
 
 export async function importOne(row: unknown): Promise<void> {

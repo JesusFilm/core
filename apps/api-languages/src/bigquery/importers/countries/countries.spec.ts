@@ -48,6 +48,7 @@ jest.mock('../../importer', () => ({
 describe('bigquery/importers/countries', () => {
   describe('importCountries', () => {
     it('should import countries', async () => {
+      prismaMock.country.findMany.mockResolvedValue([])
       await importCountries()
       expect(processTable).toHaveBeenCalledWith(
         'jfp-data-warehouse.jfp_mmdb_prod.core_countries_arclight_data',
@@ -70,7 +71,7 @@ describe('bigquery/importers/countries', () => {
         flagWebpSrc: country.flagWebpSrc
       })
       expect(parse).toHaveBeenCalled()
-      expect(prismaMock.languageName.upsert).toHaveBeenCalledWith({
+      expect(prismaMock.country.upsert).toHaveBeenCalledWith({
         where: {
           id: country.id
         },
@@ -102,7 +103,7 @@ describe('bigquery/importers/countries', () => {
         }
       ])
       expect(parseMany).toHaveBeenCalled()
-      expect(prismaMock.languageName.createMany).toHaveBeenCalledWith({
+      expect(prismaMock.country.createMany).toHaveBeenCalledWith({
         data: [country, country],
         skipDuplicates: true
       })

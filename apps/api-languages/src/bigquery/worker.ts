@@ -4,6 +4,8 @@ import { importAudioPreview } from './importers/audioPreviews/audioPreviews'
 import { importLanguageNames } from './importers/languageNames/languageNames'
 import { importLanguages } from './importers/languages/languages'
 import { bullConnection, queueName } from './queue'
+import { importCountries } from './importers/countries/countries'
+import { importCountryNames } from './importers/countryNames/countryNames'
 
 export const jobName = 'import-languages'
 
@@ -13,6 +15,8 @@ export const jobFn = async (job: Job) => {
   const existingLanguageIds = await importLanguages()
   await importLanguageNames(existingLanguageIds)
   await importAudioPreview(existingLanguageIds)
+  const existingCountryIds = await importCountries()
+  await importCountryNames(existingLanguageIds, existingCountryIds)
 }
 
 new Worker(queueName, jobFn, {
