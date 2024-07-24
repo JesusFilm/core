@@ -1,8 +1,8 @@
 import { Args, Parent, ResolveField, Resolver } from '@nestjs/graphql'
-
 import { Prisma } from '.prisma/api-videos-client'
 
 import { PrismaService } from '../../lib/prisma.service'
+import { Translation } from '@core/nest/common/TranslationModule'
 
 @Resolver('VideoVariant')
 export class VideoVariantResolver {
@@ -36,10 +36,11 @@ export class VideoVariantResolver {
     @Parent() videoVariant,
     @Args('languageId') languageId?: string,
     @Args('primary') primary?: boolean
-  ): Promise<unknown[]> {
+  ): Promise<Translation[]> {
     const where: Prisma.VideoSubtitleWhereInput = {
       videoId: videoVariant.videoId,
-      edition: videoVariant.edition
+      edition: videoVariant.edition,
+      vttSrc: { not: null }
     }
     if (languageId != null || primary != null) {
       where.OR = [
@@ -51,8 +52,16 @@ export class VideoVariantResolver {
         }
       ]
     }
-    return await this.prismaService.videoSubtitle.findMany({
+
+    const result = await this.prismaService.videoSubtitle.findMany({
       where
     })
+
+    return result.map((subtitle) => ({
+      id: subtitle.id,
+      languageId: subtitle.languageId,
+      primary: subtitle.primary,
+      value: subtitle.vttSrc as string
+    }))
   }
 }

@@ -80,6 +80,7 @@ describe('VideoVariantResolver', () => {
         where: {
           videoId: 'videoId',
           edition: 'edition',
+          vttSrc: { not: null },
           OR: [{ languageId: undefined }, { primary: true }]
         }
       })
@@ -101,6 +102,7 @@ describe('VideoVariantResolver', () => {
         where: {
           videoId: 'videoId',
           edition: 'edition',
+          vttSrc: { not: null },
           OR: [{ languageId: 'languageId' }, { primary: undefined }]
         }
       })
@@ -121,7 +123,8 @@ describe('VideoVariantResolver', () => {
       expect(prismaService.videoSubtitle.findMany).toHaveBeenCalledWith({
         where: {
           videoId: 'videoId',
-          edition: 'edition'
+          edition: 'edition',
+          vttSrc: { not: null }
         }
       })
     })
