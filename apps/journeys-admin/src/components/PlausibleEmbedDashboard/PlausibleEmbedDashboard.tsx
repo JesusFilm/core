@@ -39,6 +39,7 @@ function useHookWithRefCallback(): (node: HTMLIFrameElement | null) => void {
       // You can now do what you need to, addEventListeners, measure, etc.
       node.addEventListener('load', () => {
         const cssLink = document.createElement('link')
+        // cssLink.href = 'http://localhost:800/plausible.css'
         cssLink.href = '/plausible.css'
         cssLink.rel = 'stylesheet'
         cssLink.type = 'text/css'
@@ -103,7 +104,8 @@ export function PlausibleEmbedDashboard({
           <StyledIFrame
             data-testid="PlausibleEmbedDashboard"
             plausible-embed
-            src={`${url}/share/api-journeys-journey-${journeyId}?auth=${data?.journey.plausibleToken}&embed=true&theme=light&background=transparent`}
+            src={`/share/api-journeys-journey-${journeyId}?auth=${data?.journey.plausibleToken}&embed=true&theme=light&background=transparent`}
+            // src={`${url}/share/api-journeys-journey-${journeyId}?auth=${data?.journey.plausibleToken}&embed=true&theme=light&background=transparent`}
             loading="lazy"
             ref={ref}
             sx={{
@@ -114,7 +116,8 @@ export function PlausibleEmbedDashboard({
               width: '100%'
             }}
           />
-          <script async src={`${url}/js/embed.host.js`} />
+          <script async src={`/js/embed.host.js`} />
+          {/* <script async src={`${url}/js/embed.host.js`} /> */}
         </>
       )}
     </>
