@@ -53,6 +53,7 @@ export function SearchBar(props: SearchBoxConnectorParams): ReactElement {
         placeholder={t('Search by topic, occasion, or audience ...')}
         fullWidth
         type="search"
+        autoComplete="off"
         value={inputValue}
         onChange={(event) => {
           setQuery(event.currentTarget.value)
