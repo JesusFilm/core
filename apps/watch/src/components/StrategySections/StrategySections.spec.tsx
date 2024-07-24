@@ -6,10 +6,11 @@ import { StrategySections } from './StrategySections'
 
 jest.mock('react-instantsearch')
 
+const mockedUseHits = useHits as jest.MockedFunction<typeof useHits>
+
 describe('StrategySections', () => {
   beforeEach(() => {
-    const useHitsMocked = jest.mocked(useHits)
-    useHitsMocked.mockReturnValue({
+    mockedUseHits.mockReturnValue({
       hits: strategyItems
     } as unknown as HitsRenderState)
   })

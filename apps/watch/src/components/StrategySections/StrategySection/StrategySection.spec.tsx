@@ -6,10 +6,11 @@ import { strategyItems } from './data'
 
 jest.mock('react-instantsearch')
 
+const mockedUseHits = useHits as jest.MockedFunction<typeof useHits>
+
 describe('StrategySection', () => {
   beforeEach(() => {
-    const useHitsMocked = jest.mocked(useHits)
-    useHitsMocked.mockReturnValue({
+    mockedUseHits.mockReturnValue({
       hits: strategyItems
     } as unknown as HitsRenderState)
   })
@@ -42,8 +43,7 @@ describe('StrategySection', () => {
   })
 
   it('should not render strategysection if no hits', () => {
-    const useHitsMocked = jest.mocked(useHits)
-    useHitsMocked.mockReturnValue({
+    mockedUseHits.mockReturnValue({
       hits: []
     } as unknown as HitsRenderState)
 
