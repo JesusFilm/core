@@ -51,6 +51,7 @@ export function OnboardingPanel(): ReactElement {
         <NextLink href="/templates" passHref legacyBehavior>
           <Button
             variant="outlined"
+            size="small"
             startIcon={<Grid1Icon />}
             sx={{ width: 'max-content', alignSelf: 'center' }}
           >

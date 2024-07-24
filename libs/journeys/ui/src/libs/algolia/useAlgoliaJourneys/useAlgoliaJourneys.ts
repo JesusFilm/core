@@ -4,7 +4,8 @@ import {
   UseHitsProps,
   useCurrentRefinements,
   useHits,
-  useInstantSearch
+  useInstantSearch,
+  useRefinementList
 } from 'react-instantsearch'
 
 interface Tags {
@@ -61,10 +62,17 @@ export function useAlgoliaJourneys(): UseJourneyHitsResults {
   const { status } = useInstantSearch()
   const loading = status === 'stalled'
 
+  // Filter out language refinements
+  const { items: languageRefinements } = useRefinementList({
+    attribute: 'language.localName'
+  })
+  const languages = languageRefinements.flatMap((ref) => ref.label)
+  languages.push('English')
+
   const { items } = useCurrentRefinements()
-  const refinements = items.flatMap((refinement) =>
-    refinement.refinements.flatMap((ref) => ref.label)
-  )
+  const refinements = items
+    .flatMap((refinement) => refinement.refinements.flatMap((ref) => ref.label))
+    .filter((ref) => !languages.includes(ref))
 
   return { hits, results, loading, refinements }
 }
