@@ -40,7 +40,11 @@ const connectionNodeIdSelector = (state): string | null =>
 
 interface BaseNodeProps {
   id?: string
-  targetHandle?: 'none' | 'show' | 'hide' | 'disabled'
+  targetHandle?:
+    | 'none' // Handle is not rendered - Default value
+    | 'show' // Handle is rendered and visible
+    | 'hide' // Handle is rendered but not visible. (Used for instances like the social preview node to conditionally display the handle)
+    | 'disabled' // Handle is rendered and visible, but not connectable
   sourceHandle?: 'none' | 'show' | 'disabled'
   onSourceConnect?: (
     params: { target: string } | Parameters<OnConnect>[0]
