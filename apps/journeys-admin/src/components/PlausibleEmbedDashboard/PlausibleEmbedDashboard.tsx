@@ -116,7 +116,7 @@ export function PlausibleEmbedDashboard({
               setTimeout(() => {
                 // wait for css to load
                 setShow(false)
-              }, 500)
+              }, 1000)
             }}
             ref={ref}
             sx={{
