@@ -1,8 +1,8 @@
 import { z } from 'zod'
 
-import { Prisma } from '.prisma/api-languages-client'
 import { prisma } from '../../../lib/prisma'
 import { parse, parseMany, processTable } from '../../importer'
+import { Prisma } from '.prisma/api-languages-client'
 
 const languageSchema = z.object({
   id: z.number().transform(String),
