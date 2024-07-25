@@ -35,6 +35,32 @@ export type AudioPreview = {
   value: Scalars['String']['output'];
 };
 
+export type BibleBook = {
+  __typename?: 'BibleBook';
+  alternateName?: Maybe<Scalars['String']['output']>;
+  isNewTestament: Scalars['Boolean']['output'];
+  name: Array<Translation>;
+  order: Scalars['Int']['output'];
+  osisId: Scalars['String']['output'];
+  paratextAbbreviation: Scalars['String']['output'];
+};
+
+
+export type BibleBookNameArgs = {
+  languageId?: InputMaybe<Scalars['ID']['input']>;
+  primary?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type BibleCitation = {
+  __typename?: 'BibleCitation';
+  bibleBook: BibleBook;
+  chapterEnd?: Maybe<Scalars['Int']['output']>;
+  chapterStart: Scalars['Int']['output'];
+  osisId: Scalars['String']['output'];
+  verseEnd?: Maybe<Scalars['Int']['output']>;
+  verseStart: Scalars['Int']['output'];
+};
+
 export type Block = {
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
@@ -2992,6 +3018,7 @@ export type UserTeamUpdateInput = {
 
 export type Video = {
   __typename?: 'Video';
+  bibleCitations: Array<BibleCitation>;
   children: Array<Video>;
   /** the number value of the amount of children on a video */
   childrenCount: Scalars['Int']['output'];
@@ -3006,6 +3033,7 @@ export type Video = {
   slug: Scalars['String']['output'];
   snippet: Array<Translation>;
   studyQuestions: Array<Translation>;
+  subtitles: Array<VideoSubtitle>;
   title: Array<Translation>;
   variant?: Maybe<VideoVariant>;
   variantLanguages: Array<Language>;
@@ -3033,6 +3061,13 @@ export type VideoSnippetArgs = {
 
 
 export type VideoStudyQuestionsArgs = {
+  languageId?: InputMaybe<Scalars['ID']['input']>;
+  primary?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+export type VideoSubtitlesArgs = {
+  edition?: InputMaybe<Scalars['String']['input']>;
   languageId?: InputMaybe<Scalars['ID']['input']>;
   primary?: InputMaybe<Scalars['Boolean']['input']>;
 };
@@ -3459,6 +3494,15 @@ export type VideoStartEventCreateInput = {
   stepId?: InputMaybe<Scalars['ID']['input']>;
   /** source of the video */
   value?: InputMaybe<VideoBlockSource>;
+};
+
+export type VideoSubtitle = {
+  __typename?: 'VideoSubtitle';
+  edition: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  languageId: Scalars['String']['output'];
+  srtSrc?: Maybe<Scalars['String']['output']>;
+  vttSrc?: Maybe<Scalars['String']['output']>;
 };
 
 /**

@@ -5,7 +5,6 @@ import { SnackbarProvider } from 'notistack'
 import {
   ActiveCanvasDetailsDrawer,
   ActiveContent,
-  ActiveFab,
   ActiveSlide,
   EditorProvider,
   EditorState
@@ -29,7 +28,6 @@ const block: TreeBlock<FormBlock> = {
 
 const state: EditorState = {
   selectedBlock: block,
-  activeFab: ActiveFab.Add,
   activeSlide: ActiveSlide.Drawer,
   activeContent: ActiveContent.Canvas,
   activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
