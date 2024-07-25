@@ -65,7 +65,7 @@ describe('ImporterKeywordsService', () => {
 
     it('should save many keywords', async () => {
       videosService.ids = ['video1', 'video2', 'video3']
-      
+
       await service.importMany([
         {
           value: 'TestKeyword1',
