@@ -3,6 +3,8 @@
 
 // valid import modes: missing, replace, complete, update
 
+import isEmpty from 'lodash/isEmpty'
+
 import { PrismaClient } from '.prisma/api-videos-client'
 
 import {
@@ -10,6 +12,7 @@ import {
   Language,
   fetchMediaLanguagesAndTransformToLanguages,
   getArclightMediaComponent,
+  getArclightMediaComponentLanguages,
   getArclightMediaComponentLinks,
   getArclightMediaComponents,
   transformMediaComponentToVideo
@@ -142,6 +145,42 @@ export async function main(mode: string, target?: string): Promise<void> {
       [],
       target
     ))
+  } else if (mode === 'editionIds') {
+    for (const videoId of existingVideoIds) {
+      console.log('videoId:', videoId)
+      try {
+        const arclightVideoVariants =
+          await getArclightMediaComponentLanguages(videoId)
+        const arclightEditionsToUpdate: Record<string, string[]> = {}
+        for (const arclightVideoVariant of arclightVideoVariants) {
+          const code =
+            arclightVideoVariant.editionCode == null ||
+            arclightVideoVariant.editionCode === ''
+              ? 'base'
+              : arclightVideoVariant.editionCode
+
+          if (arclightEditionsToUpdate[code] == null) {
+            arclightEditionsToUpdate[code] = [arclightVideoVariant.refId]
+          } else {
+            arclightEditionsToUpdate[code].push(arclightVideoVariant.refId)
+          }
+        }
+        for (const [edition, ids] of Object.entries(arclightEditionsToUpdate)) {
+          try {
+            await prisma.videoVariant.updateMany({
+              where: { id: { in: ids } },
+              data: { edition }
+            })
+          } catch (e) {
+            console.log(e)
+            errors[edition] = e
+          }
+        }
+      } catch (e) {
+        console.log(e)
+        errors[videoId] = e
+      }
+    }
   }
   console.log('mediaComponents imported')
   for (const [key, value] of Object.entries(errors)) {
