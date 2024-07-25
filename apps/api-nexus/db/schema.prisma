@@ -1,0 +1,142 @@
+generator client {
+    provider = "prisma-client-js"
+    output   = env("PRISMA_LOCATION_NEXUS")
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("PG_DATABASE_URL_NEXUS")
+}
+
+model Channel {
+    id               String            @id @default(uuid())
+    name             String
+    platform         String
+    title            String?
+    description      String?
+    youtubeId        String?
+    imageUrl         String?
+    connected        Boolean           @default(false)
+    createdAt        DateTime          @default(now())
+    updatedAt        DateTime?         @updatedAt
+    publishedAt      DateTime?
+    deletedAt        DateTime?
+    resourceChannels ResourceChannel[]
+    BatchTask        BatchTask[]
+}
+
+enum PrivacyStatus {
+    public
+    unlisted
+    private
+}
+
+enum ResourceStatus {
+    created
+    processing
+    done
+    error
+}
+
+model Resource {
+    id                    String                 @id @default(uuid())
+    name                  String
+    category              String?
+    language              String?
+    customThumbnail       String?
+    playlistId            String?
+    isMadeForKids         Boolean                @default(false)
+    mediaComponentId      String?
+    notifySubscribers     Boolean                @default(false)
+    videoMimeType         String?
+    thumbnailMimeType     String?
+    status                ResourceStatus         @default(created)
+    privacy               PrivacyStatus          @default(private)
+    resourceLocalizations ResourceLocalization[]
+    resourceChannels      ResourceChannel[]
+    createdAt             DateTime               @default(now())
+    updatedAt             DateTime?              @updatedAt
+    publishedAt           DateTime?
+    deletedAt             DateTime?
+    BatchTask             BatchTask[]
+}
+
+model ResourceChannel {
+    id             String   @id @default(uuid())
+    resourceId     String
+    channelId      String
+    youtubeVideoId String
+    resource       Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+    channel        Channel  @relation(fields: [channelId], references: [id], onDelete: Cascade)
+}
+
+model ResourceLocalization {
+    id                 String   @id @default(uuid())
+    resourceId         String
+    title              String?
+    description        String?
+    keywords           String?
+    captionFile        String?
+    audioTrackFile     String?
+    language           String
+    videoId            String?
+    captionMimeType    String?
+    audioTrackMimeType String?
+    resource           Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+}
+
+enum BatchStatus {
+    pending
+    running
+    completed
+    failed
+    cancelled
+    paused
+    error
+    warning
+    scheduled
+}
+
+model Batch {
+    id         String      @id @default(uuid())
+    name       String
+    status     BatchStatus @default(pending)
+    createdAt  DateTime    @default(now())
+    updatedAt  DateTime    @updatedAt
+    batchTasks BatchTask[]
+}
+
+enum BatchTaskStatus {
+    pending
+    processing
+    completed
+    failed
+}
+
+model BatchTask {
+    id         String          @id @default(uuid())
+    batchId    String
+    type       String
+    resourceId String?
+    channelId  String?
+    resource   Resource?       @relation(fields: [resourceId], references: [id])
+    channel    Channel?        @relation(fields: [channelId], references: [id])
+    progress   Float           @default(0)
+    error      String?
+    status     BatchTaskStatus @default(pending)
+    batch      Batch           @relation(fields: [batchId], references: [id])
+    createdAt  DateTime        @default(now())
+    updatedAt  DateTime?       @updatedAt
+}
+
+enum Role {
+    publisher
+}
+
+model UserRole {
+    id     String @id @default(uuid())
+    userId String @unique
+    roles  Role[]
+
+    @@index(userId)
+}

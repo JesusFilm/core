@@ -1,0 +1,52 @@
+type Channel @key(fields: "id") {
+  id: ID!
+  name: String!
+  platform: String
+  connected: Boolean
+  title: String
+  description: String
+  youtubeId: String
+  imageUrl: String
+  createdAt: DateTime!
+}
+
+enum ChannelStatus {
+  created
+  deleted
+  published
+}
+
+input ChannelCreateInput {
+  name: String!
+  platform: String!
+}
+
+input ChannelUpdateInput {
+  name: String
+  platform: String
+}
+
+input ChannelFilter {
+  ids: [ID!]
+  name: String
+  limit: Int
+  connected: Boolean
+  status: ChannelStatus
+}
+
+input ConnectYoutubeChannelInput {
+  channelId: String!
+  accessToken: String!
+}
+
+extend type Query {
+  channels(where: ChannelFilter): [Channel!]
+  channel(id: ID!): Channel!
+}
+
+extend type Mutation {
+  channelCreate(input: ChannelCreateInput!): Channel!
+  channelUpdate(id: ID!, input: ChannelUpdateInput!): Channel!
+  channelDelete(id: ID!): Channel!
+  channelConnect(input: ConnectYoutubeChannelInput!): Channel!
+}

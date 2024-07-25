@@ -1,0 +1,54 @@
+scalar Object
+
+type Batch @key(fields: "id") {
+  id: ID!
+  name: String!
+  status: BatchStatus
+  totalTasks: Int
+  completedTasks: Int
+  failedTasks: Int
+  progress: Float
+  batchTasks: [BatchTask]
+  createdAt: DateTime!
+  updatedAt: DateTime
+}
+
+enum BatchStatus {
+  pending
+  processing
+  completed
+  failed
+  error
+}
+
+type BatchTask @key(fields: "id") {
+  id: ID!
+  batchId: String!
+  type: String
+  task: Object
+  progress: Int
+  error: String
+  status: BatchTaskStatus
+  createdAt: DateTime!
+  updatedAt: DateTime
+}
+
+enum BatchTaskStatus {
+  pending
+  processing
+  completed
+  failed
+  error
+}
+
+input BatchFilter {
+  ids: [ID!]
+  name: String
+  status: BatchStatus
+  limit: Int
+}
+
+extend type Query {
+  batches(where: BatchFilter): [Batch]
+  batch(id: ID!): Batch!
+}

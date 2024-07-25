@@ -1,0 +1,119 @@
+scalar Upload
+
+type Resource @key(fields: "id") {
+  id: ID!
+  name: String!
+  category: String
+  spokenLanguage: String
+  customThumbnail: String
+  playlistId: String
+  isMadeForKids: Boolean
+  mediaComponentId: String
+  notifySubscribers: Boolean
+  status: ResourceStatus
+  privacy: PrivacyStatus
+  resourceLocalizations: [ResourceLocalization]
+  createdAt: DateTime!
+  updatedAt: DateTime
+  deletedAt: DateTime
+}
+
+type ResourceLocalization @key(fields: "id") {
+  id: ID!
+  resourceId: String
+  title: String
+  description: String
+  keywords: String
+  language: String
+}
+
+enum PrivacyStatus {
+  public
+  unlisted
+  private
+}
+
+enum ResourceStatus {
+  created
+  deleted
+  published
+  processing
+  error
+  uploaded
+  done
+}
+
+input ResourceCreateInput {
+  name: String!
+}
+
+input ResourceUpdateInput {
+  name: String
+}
+
+input ResourceFromGoogleDriveInput {
+  fileIds: [String!]!
+  authCode: String!
+}
+
+input ResourceFilter {
+  ids: [ID!]
+  name: String
+  status: ResourceStatus
+  limit: Int
+}
+
+input BatchJobBatch {
+  id: ID!
+  batchName: String!
+}
+
+input BatchJobResource {
+  resource: ID!
+  channel: ID!
+}
+
+input BatchJobInput {
+  batch: BatchJobBatch!
+  resources: [BatchJobResource]!
+}
+
+input ResourceFromArrayInput {
+  accessToken: String!
+  spreadsheetData: [SpreadsheetRowInput!]!
+}
+
+input SpreadsheetRowInput {
+  channel: String
+  filename: String
+  title: String
+  description: String
+  customThumbnail: String
+  keywords: String
+  category: String
+  privacy: String
+  spokenLanguage: String
+  videoId: String
+  captionFile: String
+  audioTrackFile: String
+  language: String
+  captionLanguage: String
+  notifySubscribers: String
+  playlistId: String
+  isMadeForKids: String
+  mediaComponentId: String
+  textLanguage: String
+}
+
+extend type Query {
+  resources(where: ResourceFilter): [Resource!]
+  resource(id: ID!): Resource!
+}
+
+extend type Mutation {
+  resourceCreate(input: ResourceCreateInput!): Resource!
+  resourceUpdate(id: ID!, input: ResourceUpdateInput!): Resource!
+  resourceDelete(id: ID!): Resource!
+  uploadToYoutube(channelId: String!, resourceId: String!): Boolean
+  resourceFromArray(input: ResourceFromArrayInput!): [Resource]
+}
