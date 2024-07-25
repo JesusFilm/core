@@ -225,6 +225,7 @@ describe('EditorContext', () => {
         ).toEqual({
           ...state,
           selectedBlock: block,
+          selectedBlockId: 'card0.id',
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
         })
       })
@@ -264,6 +265,7 @@ describe('EditorContext', () => {
           })
         ).toEqual({
           ...state,
+          selectedBlockId: 'card1.id',
           selectedBlock: undefined
         })
       })
@@ -332,6 +334,7 @@ describe('EditorContext', () => {
         ).toEqual({
           ...state,
           selectedStep: step2,
+          selectedStepId: 'step1.id',
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
         })
       })
@@ -346,10 +349,11 @@ describe('EditorContext', () => {
         expect(
           reducer(state, {
             type: 'SetSelectedStepByIdAction',
-            selectedStepId: 'step0.id'
+            selectedStepId: 'step1.id'
           })
         ).toEqual({
           ...state,
+          selectedStepId: 'step1.id',
           selectedStep: undefined
         })
       })
@@ -417,6 +421,7 @@ describe('EditorContext', () => {
         ).toEqual({
           ...state,
           selectedStep: step,
+          selectedStepId: 'step0.id',
           selectedBlock: step,
           active: undefined
         })
@@ -564,6 +569,8 @@ describe('EditorContext', () => {
             themeName: null
           },
           selectedGoalUrl: 'https://www.example.com',
+          selectedBlockId: 'card0.id',
+          selectedStepId: 'step0.id',
           selectedStep: {
             __typename: 'StepBlock',
             children: [],
@@ -695,6 +702,8 @@ describe('EditorContext', () => {
         steps: [block],
         selectedStep: block,
         selectedBlock: block,
+        selectedStepId: 'step0.id',
+        selectedBlockId: 'step0.id',
         activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
         activeSlide: ActiveSlide.Content,
         activeContent: ActiveContent.Canvas
