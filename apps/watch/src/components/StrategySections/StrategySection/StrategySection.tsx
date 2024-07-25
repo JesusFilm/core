@@ -40,7 +40,16 @@ export function StrategySection({
 
   const { hits } = useHits()
 
-  const items = transformAlgoliaStrategies(hits)
+  const item = {
+    title: 'Title',
+    description: 'Description',
+    id: 'test-id',
+    imageUrl: '',
+    link: ''
+  }
+
+  // const items = transformAlgoliaStrategies(hits)
+  const items = [item, item, item, item, item, item]
 
   useEffect(() => {
     handleItemSearch(index, items.length > 0)
