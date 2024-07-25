@@ -58,7 +58,7 @@ describe('transformJourneyAnalytics', () => {
         {
           __typename: 'PlausibleStatsResponse',
           property:
-            '{"stepId":"step1.id","event":"signUpSubmit","blockId":"signUp1.id","target":"link:https://bible.com"}',
+            '{"stepId":"step1.id","event":"signupSubmit","blockId":"signUp1.id","target":"link:https://bible.com"}',
           events: 5
         },
         {
@@ -136,7 +136,7 @@ describe('transformJourneyAnalytics', () => {
         {
           __typename: 'PlausibleStatsResponse',
           property:
-            '{"stepId":"step1.id","event":"signUpSubmit","blockId":"signUp1.id","target":""}',
+            '{"stepId":"step1.id","event":"signupSubmit","blockId":"signUp1.id","target":""}',
           events: 5
         },
         {
@@ -257,7 +257,7 @@ describe('transformJourneyAnalytics', () => {
               ['navigateNextStep', 5],
               ['buttonClick', 5],
               ['radioQuestionSubmit', 5],
-              ['signUpSubmit', 5],
+              ['signupSubmit', 5],
               ['chatButtonClick', 5]
             ]),
             total: 25

@@ -2,7 +2,7 @@ import { gql, useMutation } from '@apollo/client'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import { ActiveFab, useEditor } from '@core/journeys/ui/EditorProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { TYPOGRAPHY_FIELDS } from '@core/journeys/ui/Typography/typographyFields'
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -75,10 +75,6 @@ export function NewTypographyButton(): ReactElement {
         dispatch({
           type: 'SetSelectedBlockByIdAction',
           selectedBlockId: data.typographyBlockCreate.id
-        })
-        dispatch({
-          type: 'SetActiveFabAction',
-          activeFab: ActiveFab.Save
         })
       }
     }

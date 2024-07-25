@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 
 import { WrapperProps } from '@core/journeys/ui/BlockRenderer'
-import { ActiveFab, useEditor } from '@core/journeys/ui/EditorProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { ButtonFields } from '../../../../../../../__generated__/ButtonFields'
@@ -37,13 +37,13 @@ export function InlineEditWrapper({
   const [blockDelete] = useBlockDeleteMutation()
 
   const {
-    state: { selectedBlock, activeFab, selectedStep, steps },
+    state: { selectedBlock, selectedStep, steps },
     dispatch
   } = useEditor()
   const { journey } = useJourney()
 
   const showEditable =
-    (activeFab === ActiveFab.Save && selectedBlock?.id === block.id) ||
+    selectedBlock?.id === block.id ||
     (block.__typename === 'RadioQuestionBlock' &&
       selectedBlock?.parentBlockId === block.id)
 
@@ -70,8 +70,6 @@ export function InlineEditWrapper({
         }
         blockDeleteUpdate(block, data?.blockDelete, cache, journey.id)
       }
-    }).then(() => {
-      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
     })
   }
 

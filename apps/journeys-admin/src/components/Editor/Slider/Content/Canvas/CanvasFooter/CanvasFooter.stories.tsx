@@ -1,5 +1,4 @@
 import {
-  ActiveFab,
   EditorProvider,
   type EditorState
 } from '@core/journeys/ui/EditorProvider'
@@ -41,7 +40,6 @@ const Template: StoryObj<
     } as unknown as Journey
     const initialState = {
       selectedStep: { id: 'step.id', children: [] },
-      activeFab: ActiveFab.Add,
       showAnalytics,
       analytics: {
         stepMap: new Map([

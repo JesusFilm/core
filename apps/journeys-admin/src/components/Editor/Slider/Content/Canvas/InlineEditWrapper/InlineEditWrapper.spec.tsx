@@ -3,7 +3,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { Button } from '@core/journeys/ui/Button'
-import { ActiveFab, EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { RadioQuestion } from '@core/journeys/ui/RadioQuestion'
 import { SignUp } from '@core/journeys/ui/SignUp'
 import { Typography } from '@core/journeys/ui/Typography'
@@ -69,8 +69,7 @@ describe('InlineEditWrapper', () => {
         <SnackbarProvider>
           <EditorProvider
             initialState={{
-              steps: [step(typographyBlock)],
-              activeFab: ActiveFab.Add
+              steps: [step(typographyBlock)]
             }}
           >
             <SelectableWrapper block={typographyBlock}>
@@ -117,8 +116,7 @@ describe('InlineEditWrapper', () => {
         <SnackbarProvider>
           <EditorProvider
             initialState={{
-              steps: [step(block)],
-              activeFab: ActiveFab.Add
+              steps: [step(block)]
             }}
           >
             <SelectableWrapper block={block}>
@@ -159,8 +157,7 @@ describe('InlineEditWrapper', () => {
         <SnackbarProvider>
           <EditorProvider
             initialState={{
-              steps: [step(block)],
-              activeFab: ActiveFab.Add
+              steps: [step(block)]
             }}
           >
             <SelectableWrapper block={block}>
@@ -223,7 +220,6 @@ describe('InlineEditWrapper', () => {
             <EditorProvider
               initialState={{
                 steps: [step(block)],
-                activeFab: ActiveFab.Add,
                 selectedBlock: step(block)
               }}
             >
@@ -253,7 +249,6 @@ describe('InlineEditWrapper', () => {
             <EditorProvider
               initialState={{
                 steps: [step(block)],
-                activeFab: ActiveFab.Save,
                 selectedBlock: step(block).children[0]
               }}
             >
@@ -280,7 +275,6 @@ describe('InlineEditWrapper', () => {
             <EditorProvider
               initialState={{
                 steps: [step(block)],
-                activeFab: ActiveFab.Save,
                 selectedBlock: step(block).children[0]
               }}
             >
