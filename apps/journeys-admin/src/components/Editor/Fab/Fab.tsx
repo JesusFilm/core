@@ -17,7 +17,7 @@ import Plus2Icon from '@core/shared/ui/icons/Plus2'
 import type { BlockFields_CardBlock as CardBlock } from '../../../../__generated__/BlockFields'
 
 interface FabProps {
-  variant?: 'social' | 'mobile' | 'canvas'
+  variant?: 'mobile' | 'canvas'
 }
 
 export function Fab({ variant }: FabProps): ReactElement {
@@ -71,28 +71,12 @@ export function Fab({ variant }: FabProps): ReactElement {
     steps == null ||
     (videoBlock != null && activeSlide !== ActiveSlide.JourneyFlow)
 
-  let fabIn = false
-  switch (variant) {
-    case 'mobile': {
-      fabIn =
-        !mdUp &&
+  const fabIn =
+    variant === 'mobile'
+      ? !mdUp &&
         activeContent === ActiveContent.Canvas &&
         activeSlide === ActiveSlide.Content
-      break
-    }
-    case 'canvas': {
-      fabIn = mdUp && activeContent === ActiveContent.Canvas
-      break
-    }
-    case 'social': {
-      fabIn =
-        activeSlide === ActiveSlide.JourneyFlow &&
-        activeContent === ActiveContent.Social
-      break
-    }
-    default:
-      fabIn = false
-  }
+      : mdUp && activeContent === ActiveContent.Canvas
 
   return (
     <Zoom in={fabIn} unmountOnExit data-testid="Fab">

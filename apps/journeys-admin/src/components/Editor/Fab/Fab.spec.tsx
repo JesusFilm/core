@@ -86,6 +86,23 @@ describe('Fab', () => {
       ).toBeInTheDocument()
     })
 
+    it('should handle addblock toggle state', () => {
+      render(
+        <EditorProvider initialState={state}>
+          <TestEditorState />
+          <Fab variant="canvas" />
+        </EditorProvider>
+      )
+      fireEvent.click(screen.getByRole('button', { name: 'Add Block' }))
+      expect(
+        screen.getByText('activeCanvasDetailsDrawer: 2')
+      ).toBeInTheDocument()
+      fireEvent.click(screen.getByRole('button', { name: 'Add Block' }))
+      expect(
+        screen.getByText('activeCanvasDetailsDrawer: 0')
+      ).toBeInTheDocument()
+    })
+
     it('should handle add block', () => {
       const selectedStep = {
         id: 'step1.id',
@@ -111,6 +128,27 @@ describe('Fab', () => {
         screen.getByText('activeCanvasDetailsDrawer: 2')
       ).toBeInTheDocument()
       expect(screen.getByText('selectedBlock: step1.id')).toBeInTheDocument()
+    })
+
+    it('should default active content to canvas if null', () => {
+      const selectedStep = {
+        id: 'step1.id',
+        __typename: 'StepBlock',
+        children: []
+      } as unknown as TreeBlock<StepBlock>
+      render(
+        <EditorProvider
+          initialState={{
+            ...state,
+            activeContent: undefined,
+            selectedStep
+          }}
+        >
+          <TestEditorState />
+          <Fab variant="canvas" />
+        </EditorProvider>
+      )
+      expect(screen.getByText('activeContent: canvas')).toBeInTheDocument()
     })
   })
 
