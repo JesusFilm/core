@@ -321,7 +321,6 @@ describe('EditorContext', () => {
         const state: EditorState = {
           steps: [step, step2],
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer,
-          activeFab: ActiveFab.Edit,
           activeSlide: ActiveSlide.JourneyFlow,
           activeContent: ActiveContent.Canvas
         } as unknown as EditorState
@@ -341,7 +340,6 @@ describe('EditorContext', () => {
         const state: EditorState = {
           steps: [],
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
-          activeFab: ActiveFab.Add,
           activeSlide: ActiveSlide.JourneyFlow,
           activeContent: ActiveContent.Canvas
         } as unknown as EditorState
@@ -361,7 +359,6 @@ describe('EditorContext', () => {
           steps: [],
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
           activeContent: ActiveContent.Canvas,
-          activeFab: ActiveFab.Add,
           activeSlide: ActiveSlide.JourneyFlow
         } as unknown as EditorState
         expect(
