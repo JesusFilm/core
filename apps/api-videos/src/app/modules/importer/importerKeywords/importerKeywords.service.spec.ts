@@ -65,10 +65,7 @@ describe('ImporterKeywordsService', () => {
 
     it('should save many keywords', async () => {
       videosService.ids = ['video1', 'video2', 'video3']
-      prismaService.$transaction.mockImplementation((callback) =>
-        callback(prismaService)
-      )
-
+      
       await service.importMany([
         {
           value: 'TestKeyword1',
@@ -93,17 +90,33 @@ describe('ImporterKeywordsService', () => {
           {
             id: 'mockUuid',
             value: 'TestKeyword1',
-            languageId: '529',
-            videos: { connect: [{ id: 'video1' }, { id: 'video2' }] }
+            languageId: '529'
           },
           {
             id: 'mockUuid1',
             value: 'TestKeyword2',
-            languageId: '529',
-            videos: { connect: [{ id: 'video3' }] }
+            languageId: '529'
           }
         ],
         skipDuplicates: true
+      })
+
+      expect(prismaService.keyword.update).toHaveBeenCalledWith({
+        where: { id: 'mockUuid' },
+        data: {
+          videos: {
+            connect: [{ id: 'video1' }, { id: 'video2' }]
+          }
+        }
+      })
+
+      expect(prismaService.keyword.update).toHaveBeenCalledWith({
+        where: { id: 'mockUuid1' },
+        data: {
+          videos: {
+            connect: [{ id: 'video3' }]
+          }
+        }
       })
     })
 
