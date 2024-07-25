@@ -318,6 +318,95 @@ describe('EditorContext', () => {
       })
     })
 
+    describe('SetSelectedStepByIdAction', () => {
+      it('should set selected step by id', () => {
+        const block: TreeBlock = {
+          id: 'card0.id',
+          __typename: 'CardBlock',
+          parentBlockId: null,
+          backgroundColor: null,
+          coverBlockId: null,
+          parentOrder: 0,
+          themeMode: null,
+          themeName: null,
+          fullscreen: false,
+          children: []
+        }
+        const step: TreeBlock = {
+          id: 'step0.id',
+          __typename: 'StepBlock',
+          parentBlockId: null,
+          parentOrder: 0,
+          locked: false,
+          nextBlockId: null,
+          children: [block]
+        }
+        const step2: TreeBlock = {
+          id: 'step1.id',
+          __typename: 'StepBlock',
+          parentBlockId: null,
+          parentOrder: 0,
+          locked: false,
+          nextBlockId: null,
+          children: [block]
+        }
+        const state: EditorState = {
+          steps: [step, step2],
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer,
+          activeFab: ActiveFab.Edit,
+          activeSlide: ActiveSlide.JourneyFlow,
+          activeContent: ActiveContent.Canvas
+        }
+        expect(
+          reducer(state, {
+            type: 'SetSelectedStepByIdAction',
+            selectedStepId: 'step1.id'
+          })
+        ).toEqual({
+          ...state,
+          selectedStep: step2,
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
+        })
+      })
+
+      it('should set selected step to undefined when id not found', () => {
+        const state: EditorState = {
+          steps: [],
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+          activeFab: ActiveFab.Add,
+          activeSlide: ActiveSlide.JourneyFlow,
+          activeContent: ActiveContent.Canvas
+        }
+        expect(
+          reducer(state, {
+            type: 'SetSelectedStepByIdAction',
+            selectedStepId: 'step0.id'
+          })
+        ).toEqual({
+          ...state,
+          selectedStep: undefined
+        })
+      })
+
+      it('should set selected step to undefined when id is undefined', () => {
+        const state: EditorState = {
+          steps: [],
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+          activeContent: ActiveContent.Canvas,
+          activeFab: ActiveFab.Add,
+          activeSlide: ActiveSlide.JourneyFlow
+        }
+        expect(
+          reducer(state, {
+            type: 'SetSelectedStepByIdAction'
+          })
+        ).toEqual({
+          ...state,
+          selectedStep: undefined
+        })
+      })
+    })
+
     describe('SetSelectedGoalUrlAction', () => {
       it('should set selected goal url', () => {
         const state: EditorState = {

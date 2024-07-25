@@ -120,6 +120,10 @@ export interface SetSelectedBlockByIdAction {
   type: 'SetSelectedBlockByIdAction'
   selectedBlockId?: string
 }
+export interface SetSelectedStepByIdAction {
+  type: 'SetSelectedStepByIdAction'
+  selectedStepId?: string
+}
 interface SetActiveCanvasDetailsDrawerAction {
   type: 'SetActiveCanvasDetailsDrawerAction'
   activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer
@@ -175,6 +179,7 @@ export type EditorAction =
   | SetShowAnalyticsAction
   | SetAnalyticsAction
   | SetEditorFocusAction
+  | SetSelectedStepByIdAction
 
 export const reducer = (
   state: EditorState,
@@ -229,6 +234,19 @@ export const reducer = (
         activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
         activeContent: ActiveContent.Canvas
       }
+    case 'SetSelectedStepByIdAction': {
+      return {
+        ...state,
+        selectedStep:
+          action.selectedStepId != null
+            ? (searchBlocks(state.steps ?? [], action.selectedStepId, {
+                filter: 'searchStepsOnly'
+              }) as TreeBlock<StepBlock>)
+            : undefined,
+        activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+        activeContent: ActiveContent.Canvas
+      }
+    }
     case 'SetSelectedGoalUrlAction':
       return {
         ...state,
