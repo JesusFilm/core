@@ -244,6 +244,11 @@ export function useCreateStep(): (
         if (newBlockRef == null) return
       },
       undo: async ({ stepBeforeDelete, sourceBlock }) => {
+        dispatch({
+          type: 'SetEditorFocusAction',
+          selectedStep: stepBeforeDelete,
+          activeSlide: ActiveSlide.JourneyFlow
+        })
         if (newBlockRef != null)
           await blockDelete(newBlockRef?.stepBlockCreate, {
             optimisticResponse: {
@@ -271,14 +276,23 @@ export function useCreateStep(): (
             }
           }
         }
-        dispatch({
-          type: 'SetEditorFocusAction',
-          selectedStep: stepBeforeDelete,
-          activeSlide: ActiveSlide.JourneyFlow
-        })
       },
       redo: async () => {
         if (newBlockRef != null) {
+          dispatch({
+            type: 'SetSelectedStepAction',
+            selectedStep: {
+              ...optimisticStep,
+              __typename: 'StepBlock',
+              children: [
+                {
+                  ...optimisticCard,
+                  __typename: 'CardBlock',
+                  children: []
+                }
+              ]
+            }
+          })
           await blockRestore({
             variables: { id: newBlockRef.stepBlockCreate.id },
             optimisticResponse: {
@@ -289,14 +303,14 @@ export function useCreateStep(): (
             }
           })
           await setNextBlockActions(newStepId)
-          dispatch({
-            type: 'SetEditorFocusAction',
-            selectedStep: {
-              ...newBlockRef.stepBlockCreate,
-              children: [{ ...newBlockRef.cardBlockCreate, children: [] }]
-            },
-            activeSlide: ActiveSlide.JourneyFlow
-          })
+          // dispatch({
+          //   type: 'SetEditorFocusAction',
+          //   selectedStep: {
+          //     ...newBlockRef.stepBlockCreate,
+          //     children: [{ ...newBlockRef.cardBlockCreate, children: [] }]
+          //   },
+          //   activeSlide: ActiveSlide.JourneyFlow
+          // })
         }
       }
     })
