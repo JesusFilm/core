@@ -4,7 +4,6 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import {
   ActiveCanvasDetailsDrawer,
   ActiveContent,
-  ActiveFab,
   ActiveSlide,
   EditorProvider,
   EditorState
@@ -55,7 +54,6 @@ describe('SocialPreview', () => {
 
   it('should dispatch active slide action on click', () => {
     const state: EditorState = {
-      activeFab: ActiveFab.Add,
       activeSlide: ActiveSlide.JourneyFlow,
       activeContent: ActiveContent.Social,
       activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.AddBlock
