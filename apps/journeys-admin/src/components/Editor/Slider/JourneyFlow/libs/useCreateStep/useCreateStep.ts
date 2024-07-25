@@ -163,21 +163,11 @@ export function useCreateStep(): (
         undo: { stepBeforeDelete: selectedStep, sourceBlock }
       },
       execute: async () => {
+        dispatch({
+          type: 'SetSelectedStepByIdAction',
+          selectedStepId: newStepId
+        })
         if (edgeSource.sourceType === 'step') {
-          dispatch({
-            type: 'SetSelectedStepAction',
-            selectedStep: {
-              ...optimisticStep,
-              __typename: 'StepBlock',
-              children: [
-                {
-                  ...optimisticCard,
-                  __typename: 'CardBlock',
-                  children: []
-                }
-              ]
-            }
-          })
           void stepAndCardBlockCreate({
             variables: {
               stepBlockCreateInput: {
@@ -227,15 +217,9 @@ export function useCreateStep(): (
                 nextBlockId: newStepId
               }
             },
+
             onCompleted: (data) => {
               newBlockRef = data
-              // dispatch({
-              //   type: 'SetSelectedStepAction',
-              //   selectedStep: {
-              //     ...newBlockRef.stepBlockCreate,
-              //     children: [{ ...newBlockRef.cardBlockCreate, children: [] }]
-              //   }
-              // })
             }
           })
         }
@@ -303,14 +287,6 @@ export function useCreateStep(): (
             }
           })
           await setNextBlockActions(newStepId)
-          // dispatch({
-          //   type: 'SetEditorFocusAction',
-          //   selectedStep: {
-          //     ...newBlockRef.stepBlockCreate,
-          //     children: [{ ...newBlockRef.cardBlockCreate, children: [] }]
-          //   },
-          //   activeSlide: ActiveSlide.JourneyFlow
-          // })
         }
       }
     })
