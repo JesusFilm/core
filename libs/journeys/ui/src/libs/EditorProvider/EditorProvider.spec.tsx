@@ -568,7 +568,7 @@ describe('EditorContext', () => {
           children: []
         }
         const state: EditorState = {
-          steps: [],
+          steps: [step],
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
           activeFab: ActiveFab.Add,
           activeSlide: ActiveSlide.JourneyFlow,
@@ -583,10 +583,11 @@ describe('EditorContext', () => {
             selectedBlock: block,
             selectedGoalUrl: 'https://www.example.com',
             selectedStep: step,
+            selectedStepId: 'step0.id',
             type: 'SetEditorFocusAction'
           })
         ).toEqual({
-          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer,
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
           activeContent: 'canvas',
           activeFab: ActiveFab.Add,
           activeSlide: ActiveSlide.Content,
@@ -613,7 +614,7 @@ describe('EditorContext', () => {
             parentBlockId: null,
             parentOrder: 0
           },
-          steps: []
+          steps: [step]
         })
       })
 
@@ -629,10 +630,6 @@ describe('EditorContext', () => {
           themeName: null,
           fullscreen: false,
           children: []
-        }
-        const updatedBlock: TreeBlock = {
-          ...block,
-          fullscreen: true
         }
         const step: TreeBlock = {
           id: 'step0.id',

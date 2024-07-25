@@ -163,6 +163,7 @@ export interface SetEditorFocusAction {
   selectedBlock?: TreeBlock
   selectedGoalUrl?: string
   selectedStep?: TreeBlock<StepBlock>
+  selectedStepId?: string
 }
 export type EditorAction =
   | SetActiveCanvasDetailsDrawerAction
@@ -292,7 +293,8 @@ export const reducer = (
         selectedAttributeId,
         selectedGoalUrl,
         selectedBlock,
-        selectedStep
+        selectedStep,
+        selectedStepId
       } = action
       if (selectedStep != null)
         stateCopy = reducer(stateCopy, {
@@ -328,6 +330,11 @@ export const reducer = (
         stateCopy = reducer(stateCopy, {
           type: 'SetSelectedGoalUrlAction',
           selectedGoalUrl
+        })
+      if (selectedStepId != null)
+        stateCopy = reducer(stateCopy, {
+          type: 'SetSelectedStepByIdAction',
+          selectedStepId
         })
       return stateCopy
     }
