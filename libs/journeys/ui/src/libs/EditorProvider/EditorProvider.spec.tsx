@@ -182,6 +182,7 @@ describe('EditorContext', () => {
           })
         ).toEqual({
           ...state,
+          selectedBlockId: 'step0.id',
           selectedBlock: block,
           activeSlide: ActiveSlide.Content
         })
