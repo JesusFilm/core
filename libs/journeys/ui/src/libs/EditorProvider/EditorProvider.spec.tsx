@@ -513,15 +513,6 @@ describe('EditorContext', () => {
 
     describe('SetEditorFocusAction', () => {
       it('should set editor state with given overrides', () => {
-        const step: TreeBlock = {
-          id: 'step0.id',
-          __typename: 'StepBlock',
-          parentBlockId: null,
-          parentOrder: 0,
-          locked: false,
-          nextBlockId: null,
-          children: []
-        }
         const block: TreeBlock = {
           id: 'card0.id',
           __typename: 'CardBlock',
@@ -533,6 +524,15 @@ describe('EditorContext', () => {
           themeName: null,
           fullscreen: false,
           children: []
+        }
+        const step: TreeBlock = {
+          id: 'step0.id',
+          __typename: 'StepBlock',
+          parentBlockId: null,
+          parentOrder: 0,
+          locked: false,
+          nextBlockId: null,
+          children: [block]
         }
         const state: EditorState = {
           steps: [step],
@@ -550,6 +550,7 @@ describe('EditorContext', () => {
             selectedGoalUrl: 'https://www.example.com',
             selectedStep: step,
             selectedStepId: 'step0.id',
+            selectedBlockId: block.id,
             type: 'SetEditorFocusAction'
           })
         ).toEqual({
@@ -574,7 +575,7 @@ describe('EditorContext', () => {
           selectedStepId: 'step0.id',
           selectedStep: {
             __typename: 'StepBlock',
-            children: [],
+            children: [block],
             id: 'step0.id',
             locked: false,
             nextBlockId: null,
