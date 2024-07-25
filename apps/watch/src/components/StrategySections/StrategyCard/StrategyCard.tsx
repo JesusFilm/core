@@ -86,6 +86,7 @@ export function StrategyCard({
                 rel={priority === true ? 'preload' : undefined}
                 priority={priority}
                 className="MuiImageBackground-root"
+                placeholder="blur"
                 src={item?.imageUrl}
                 alt={item?.title ?? ''}
                 fill
