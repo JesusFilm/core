@@ -81,6 +81,7 @@ export class Video {
     children: Video[];
     childrenCount: number;
     variantLanguagesWithSlug: LanguageWithSlug[];
+    subtitles?: VideoSubtitle[];
     variant?: Nullable<VideoVariant>;
 }
 
@@ -88,6 +89,15 @@ export class LanguageWithSlug {
     __typename?: 'LanguageWithSlug';
     language?: Nullable<Language>;
     slug?: Nullable<string>;
+}
+
+export class VideoSubtitle {
+    __typename?: 'VideoSubtitle';
+    id: string;
+    languageId: string;
+    edition: string;
+    vttSrc?: Nullable<string>;
+    srtSrc?: Nullable<string>;
 }
 
 export abstract class IQuery {
