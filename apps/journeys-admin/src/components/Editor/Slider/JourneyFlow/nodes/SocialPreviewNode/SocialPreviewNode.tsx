@@ -21,7 +21,7 @@ import ThumbsUp from '@core/shared/ui/icons/ThumbsUp'
 
 import UserProfileCircle from '@core/shared/ui/icons/UserProfileCircle'
 import { useUpdateEdge } from '../../libs/useUpdateEdge'
-import { BaseNode } from '../BaseNode'
+import { BaseNode, HandleVariant } from '../BaseNode'
 
 export function SocialPreviewNode(): ReactElement {
   const { journey } = useJourney()
@@ -68,8 +68,8 @@ export function SocialPreviewNode(): ReactElement {
     <BaseNode
       id="SocialPreview"
       selected={activeContent === ActiveContent.Social}
-      sourceHandle="show"
-      targetHandle={showAnalytics ? 'show' : 'hide'}
+      sourceHandle={HandleVariant.SHOWN}
+      targetHandle={showAnalytics ? HandleVariant.SHOWN : HandleVariant.HIDDEN}
       onSourceConnect={handleSourceConnect}
       isSourceConnected
       positionTargetHandle={false}

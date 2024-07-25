@@ -20,6 +20,13 @@ import {
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
 
+export enum HandleVariant {
+  NONE = 'none', // not rendered - Default value
+  SHOWN = 'shown', // rendered, visible and connectable
+  HIDDEN = 'hidden', // rendered, not visible or connectable.
+  DISABLED = 'disabled' // rendered, visible, not connectable
+}
+
 import {
   ACTION_BUTTON_HEIGHT,
   HANDLE_BORDER_WIDTH,
@@ -40,12 +47,8 @@ const connectionNodeIdSelector = (state): string | null =>
 
 interface BaseNodeProps {
   id?: string
-  targetHandle?:
-    | 'none' // Handle is not rendered - Default value
-    | 'show' // Handle is rendered and visible
-    | 'hide' // Handle is rendered but not visible. (Used for instances like the social preview node to conditionally display the handle)
-    | 'disabled' // Handle is rendered and visible, but not connectable
-  sourceHandle?: 'none' | 'show' | 'disabled'
+  targetHandle?: HandleVariant
+  sourceHandle?: HandleVariant
   onSourceConnect?: (
     params: { target: string } | Parameters<OnConnect>[0]
   ) => void
@@ -61,8 +64,8 @@ interface BaseNodeProps {
 
 export function BaseNode({
   id,
-  targetHandle = 'none',
-  sourceHandle = 'none',
+  targetHandle = HandleVariant.NONE,
+  sourceHandle = HandleVariant.NONE,
   onSourceConnect,
   selected = false,
   isSourceConnected = false,
@@ -120,26 +123,28 @@ export function BaseNode({
       }}
     >
       {isFunction(children) ? children({ selected }) : children}
-      {(targetHandle === 'show' ||
-        targetHandle === 'disabled' ||
-        targetHandle === 'hide') && (
+      {(targetHandle === HandleVariant.SHOWN ||
+        targetHandle === HandleVariant.DISABLED ||
+        targetHandle === HandleVariant.HIDDEN) && (
         <PulseWrapper
           show={
             id !== 'SocialPreview' &&
             isConnecting &&
-            targetHandle !== 'disabled'
+            targetHandle === HandleVariant.SHOWN
           }
         >
           <StyledHandle
             type="target"
             data-testid={`BaseNodeLeftHandle-${targetHandle}`}
             position={Position.Left}
-            isConnectableStart={isConnecting && targetHandle !== 'disabled'}
+            isConnectableStart={
+              isConnecting && targetHandle === HandleVariant.SHOWN
+            }
             isConnectable={
-              id !== connectionNodeId && targetHandle !== 'disabled'
+              id !== connectionNodeId && targetHandle === HandleVariant.SHOWN
             }
             sx={{
-              opacity: targetHandle === 'hide' ? 0 : 1,
+              opacity: targetHandle === HandleVariant.HIDDEN ? 0 : 1,
               width: HANDLE_DIAMETER + HANDLE_BORDER_WIDTH,
               height: HANDLE_DIAMETER + HANDLE_BORDER_WIDTH,
               ...(positionTargetHandle && {
@@ -150,7 +155,8 @@ export function BaseNode({
               }),
               background: (theme) => theme.palette.background.default,
               border: (theme) =>
-                (isConnecting && targetHandle !== 'disabled') || targetSelected
+                (isConnecting && targetHandle === HandleVariant.SHOWN) ||
+                targetSelected
                   ? `${HANDLE_BORDER_WIDTH}px solid ${theme.palette.primary.main}`
                   : `${HANDLE_BORDER_WIDTH}px solid ${theme.palette.secondary.light}80`,
 
@@ -168,7 +174,9 @@ export function BaseNode({
           />
         </PulseWrapper>
       )}
-      {(sourceHandle === 'show' || sourceHandle === 'disabled') && (
+      {(sourceHandle === HandleVariant.SHOWN ||
+        sourceHandle === HandleVariant.DISABLED ||
+        sourceHandle === HandleVariant.HIDDEN) && (
         <StyledHandle
           id={id}
           type="source"
@@ -176,7 +184,7 @@ export function BaseNode({
           data-testid={`BaseNodeRightHandle-${sourceHandle}`}
           position={Position.Right}
           onConnect={onSourceConnect}
-          isConnectable={sourceHandle !== 'disabled'}
+          isConnectable={sourceHandle === HandleVariant.SHOWN}
           {...sourceHandleProps}
           sx={{
             border: 'none',
@@ -187,6 +195,7 @@ export function BaseNode({
                 ? theme.palette.primary.main
                 : `${theme.palette.secondary.light}A0`,
             ...sourceHandleProps?.sx,
+            opacity: sourceHandle === HandleVariant.HIDDEN ? 0 : 1,
 
             '&:after': {
               content: '""',
@@ -202,7 +211,7 @@ export function BaseNode({
             }
           }}
         >
-          {sourceHandle === 'show' && (
+          {sourceHandle === HandleVariant.SHOWN && (
             <ArrowRightIcon
               data-testid="BaseNodeConnectionArrowIcon"
               className="arrow"

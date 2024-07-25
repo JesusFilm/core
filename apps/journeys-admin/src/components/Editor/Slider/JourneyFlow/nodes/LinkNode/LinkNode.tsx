@@ -12,6 +12,7 @@ import { getGoalDetails } from '@core/journeys/ui/getGoalDetails'
 
 import { Fade } from '@mui/material'
 import { BaseNode } from '../BaseNode'
+import { HandleVariant } from '../BaseNode'
 import { LINK_NODE_HEIGHT, LINK_NODE_WIDTH } from '../StepBlockNode/libs/sizes'
 import { LinkNodeAnalytics } from './LinkNodeAnalytics'
 
@@ -41,7 +42,7 @@ export function LinkNode({ id }: NodeProps): ReactElement {
   const { label, icon } = getGoalDetails(getLinkActionGoal(actionDetail), t)
 
   return (
-    <BaseNode id={id} targetHandle="disabled">
+    <BaseNode id={id} targetHandle={HandleVariant.DISABLED}>
       <Stack
         gap={2}
         alignItems="center"

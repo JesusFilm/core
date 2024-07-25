@@ -7,7 +7,7 @@ import { NodeProps } from 'reactflow'
 import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
 import { filterActionBlocks } from '@core/journeys/ui/filterActionBlocks'
 
-import { BaseNode } from '../BaseNode'
+import { BaseNode, HandleVariant } from '../BaseNode'
 
 import { ActionButton } from './ActionButton'
 import { StepBlockNodeAnalytics } from './StepBlockNodeAnalytics'
@@ -67,7 +67,11 @@ export function StepBlockNode({
       >
         <BaseNode
           id={step.id}
-          targetHandle={showAnalytics === true ? 'disabled' : 'show'}
+          targetHandle={
+            showAnalytics === true
+              ? HandleVariant.DISABLED
+              : HandleVariant.SHOWN
+          }
           selected={isSelected}
           isSourceConnected={step.nextBlockId != null}
           dragging={dragging}
