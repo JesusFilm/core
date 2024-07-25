@@ -34,12 +34,12 @@ function IndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const user = useUser()
   const router = useRouter()
-  const { query, activeTeam } = useTeam()
+  const { query, activeTeam, refetch } = useTeam()
 
   // MA - ensure team is refetched if user is not loaded before provider
   useEffect(() => {
     if (activeTeam == null) {
-      query.refetch()
+      refetch()
     }
   }, [user.id, query, activeTeam])
 
