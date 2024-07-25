@@ -1,0 +1,1 @@
+export { PlausibleEmbedDashboard } from './PlausibleEmbedDashboard'
