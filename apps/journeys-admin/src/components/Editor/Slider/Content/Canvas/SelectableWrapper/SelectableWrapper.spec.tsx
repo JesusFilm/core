@@ -4,7 +4,7 @@ import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 
 import { Button } from '@core/journeys/ui/Button'
-import { ActiveFab, EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { Image } from '@core/journeys/ui/Image'
 import { RadioQuestion } from '@core/journeys/ui/RadioQuestion'
 import { SignUp } from '@core/journeys/ui/SignUp'
@@ -143,8 +143,7 @@ describe('SelectableWrapper', () => {
             initialState={{
               steps: [
                 step([imageBlock, typographyBlock, buttonBlock, signUpBlock])
-              ],
-              activeFab: ActiveFab.Add
+              ]
             }}
           >
             <SelectableWrapper block={imageBlock}>
@@ -213,8 +212,7 @@ describe('SelectableWrapper', () => {
         <SnackbarProvider>
           <EditorProvider
             initialState={{
-              steps: [step([radioQuestionBlock])],
-              activeFab: ActiveFab.Add
+              steps: [step([radioQuestionBlock])]
             }}
           >
             <SelectableWrapper block={radioQuestionBlock}>
@@ -244,8 +242,7 @@ describe('SelectableWrapper', () => {
           <EditorProvider
             initialState={{
               selectedBlock: radioQuestionBlock,
-              steps: [step([radioQuestionBlock])],
-              activeFab: ActiveFab.Add
+              steps: [step([radioQuestionBlock])]
             }}
           >
             <SelectableWrapper block={radioQuestionBlock}>
@@ -274,8 +271,7 @@ describe('SelectableWrapper', () => {
           <EditorProvider
             initialState={{
               selectedBlock: radioOption1,
-              steps: [step([radioQuestionBlock])],
-              activeFab: ActiveFab.Add
+              steps: [step([radioQuestionBlock])]
             }}
           >
             <SelectableWrapper block={radioQuestionBlock}>

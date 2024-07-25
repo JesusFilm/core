@@ -8,7 +8,6 @@ import { EditorContext, reducer } from './EditorProvider'
 import {
   ActiveCanvasDetailsDrawer,
   ActiveContent,
-  ActiveFab,
   ActiveSlide,
   EditorProvider,
   EditorState
@@ -37,7 +36,6 @@ describe('EditorContext', () => {
         const state: EditorState = {
           steps: [block],
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
-          activeFab: ActiveFab.Edit,
           activeSlide: ActiveSlide.JourneyFlow,
           activeContent: ActiveContent.Canvas
         }
@@ -59,7 +57,6 @@ describe('EditorContext', () => {
         const state: EditorState = {
           steps: [],
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
-          activeFab: ActiveFab.Add,
           activeSlide: ActiveSlide.JourneyFlow,
           activeContent: ActiveContent.Canvas
         }
@@ -75,33 +72,11 @@ describe('EditorContext', () => {
       })
     })
 
-    describe('SetActiveFabAction', () => {
-      it('should set active fab', () => {
-        const state: EditorState = {
-          steps: [],
-          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
-          activeFab: ActiveFab.Add,
-          activeSlide: ActiveSlide.JourneyFlow,
-          activeContent: ActiveContent.Canvas
-        }
-        expect(
-          reducer(state, {
-            type: 'SetActiveFabAction',
-            activeFab: ActiveFab.Save
-          })
-        ).toEqual({
-          ...state,
-          activeFab: ActiveFab.Save
-        })
-      })
-    })
-
     describe('SetActiveSlideAction', () => {
       it('should set active slide and active content', () => {
         const state: EditorState = {
           steps: [],
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
-          activeFab: ActiveFab.Add,
           activeSlide: ActiveSlide.Content,
           activeContent: ActiveContent.Social
         }
@@ -121,7 +96,6 @@ describe('EditorContext', () => {
         const state: EditorState = {
           steps: [],
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
-          activeFab: ActiveFab.Add,
           activeSlide: ActiveSlide.Content,
           activeContent: ActiveContent.Canvas
         }
@@ -142,7 +116,6 @@ describe('EditorContext', () => {
         const state: EditorState = {
           steps: [],
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
-          activeFab: ActiveFab.Add,
           activeSlide: ActiveSlide.JourneyFlow,
           activeContent: ActiveContent.Canvas
         }
@@ -172,7 +145,6 @@ describe('EditorContext', () => {
         const state: EditorState = {
           steps: [block],
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
-          activeFab: ActiveFab.Edit,
           activeSlide: ActiveSlide.Content,
           activeContent: ActiveContent.Canvas
         }
@@ -200,7 +172,6 @@ describe('EditorContext', () => {
         const state: EditorState = {
           steps: [block],
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
-          activeFab: ActiveFab.Add,
           activeSlide: ActiveSlide.JourneyFlow,
           activeContent: ActiveContent.Canvas
         }
@@ -243,7 +214,6 @@ describe('EditorContext', () => {
         const state: EditorState = {
           steps: [step],
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer,
-          activeFab: ActiveFab.Edit,
           activeSlide: ActiveSlide.JourneyFlow,
           activeContent: ActiveContent.Canvas
         }
@@ -284,7 +254,6 @@ describe('EditorContext', () => {
         const state: EditorState = {
           steps: [step],
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
-          activeFab: ActiveFab.Add,
           activeSlide: ActiveSlide.JourneyFlow,
           activeContent: ActiveContent.Canvas
         }
@@ -304,7 +273,6 @@ describe('EditorContext', () => {
           steps: [],
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
           activeContent: ActiveContent.Canvas,
-          activeFab: ActiveFab.Add,
           activeSlide: ActiveSlide.JourneyFlow
         }
         expect(
@@ -412,7 +380,6 @@ describe('EditorContext', () => {
         const state: EditorState = {
           steps: [],
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
-          activeFab: ActiveFab.Add,
           activeSlide: ActiveSlide.JourneyFlow,
           activeContent: ActiveContent.Canvas
         }
@@ -442,7 +409,6 @@ describe('EditorContext', () => {
         const state: EditorState = {
           steps: [step],
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
-          activeFab: ActiveFab.Add,
           activeSlide: ActiveSlide.JourneyFlow,
           activeContent: ActiveContent.Canvas
         }
@@ -474,7 +440,6 @@ describe('EditorContext', () => {
         const state: EditorState = {
           steps: [],
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
-          activeFab: ActiveFab.Add,
           activeSlide: ActiveSlide.JourneyFlow,
           activeContent: ActiveContent.Canvas
         }
@@ -524,7 +489,6 @@ describe('EditorContext', () => {
         const state: EditorState = {
           steps: [step],
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
-          activeFab: ActiveFab.Add,
           activeSlide: ActiveSlide.JourneyFlow,
           selectedBlock: block,
           selectedStep: step,
@@ -570,7 +534,6 @@ describe('EditorContext', () => {
         const state: EditorState = {
           steps: [step],
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
-          activeFab: ActiveFab.Add,
           activeSlide: ActiveSlide.JourneyFlow,
           activeContent: ActiveContent.Canvas
         }
@@ -589,7 +552,6 @@ describe('EditorContext', () => {
         ).toEqual({
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
           activeContent: 'canvas',
-          activeFab: ActiveFab.Add,
           activeSlide: ActiveSlide.Content,
           selectedAttributeId: 'selectedAttributeId',
           selectedBlock: {
@@ -644,7 +606,6 @@ describe('EditorContext', () => {
         const state: EditorState = {
           steps: [step],
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
-          activeFab: ActiveFab.Add,
           activeSlide: ActiveSlide.JourneyFlow,
           selectedBlock: block,
           selectedStep: step,
@@ -659,7 +620,6 @@ describe('EditorContext', () => {
         const state: EditorState = {
           steps: [],
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
-          activeFab: ActiveFab.Add,
           activeSlide: ActiveSlide.Content,
           activeContent: ActiveContent.Social
         }
@@ -681,7 +641,6 @@ describe('EditorContext', () => {
         const state: EditorState = {
           steps: [],
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
-          activeFab: ActiveFab.Add,
           activeSlide: ActiveSlide.JourneyFlow,
           activeContent: ActiveContent.Canvas
         }
@@ -740,7 +699,6 @@ describe('EditorContext', () => {
         selectedStep: block,
         selectedBlock: block,
         activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
-        activeFab: ActiveFab.Add,
         activeSlide: ActiveSlide.Content,
         activeContent: ActiveContent.Canvas
       })
