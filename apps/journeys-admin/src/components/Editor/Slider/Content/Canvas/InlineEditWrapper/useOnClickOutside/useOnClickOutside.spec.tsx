@@ -38,4 +38,21 @@ describe('useClickOutside', () => {
     fireEvent.click(heading)
     expect(onClickOutside).toHaveBeenCalled()
   })
+
+  it('calls the callback when clicking on the editor canvas on mobile', () => {
+    const { getByRole } = render(
+      <div>
+        <h1 className="CanvasStack">Heading 1</h1>
+        <iframe>
+          <Content />
+        </iframe>
+      </div>
+    )
+    const heading = getByRole('heading', { level: 1 })
+    const content = getByRole('heading', { level: 2 })
+    fireEvent.focus(content)
+    expect(onClickOutside).not.toHaveBeenCalled()
+    fireEvent.click(heading)
+    expect(onClickOutside).toHaveBeenCalled()
+  })
 })

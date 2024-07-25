@@ -23,9 +23,9 @@ describe('JourneyAnalyticsCard', () => {
 
     expect(within(stats[0]).getByText('Visitors')).toBeInTheDocument()
     expect(within(stats[0]).getByText('100')).toBeInTheDocument()
-    expect(within(stats[1]).getByText('Chats Started')).toBeInTheDocument()
+    expect(within(stats[1]).getByText('Chats')).toBeInTheDocument()
     expect(within(stats[1]).getByText('100')).toBeInTheDocument()
-    expect(within(stats[2]).getByText('Sites Visited')).toBeInTheDocument()
+    expect(within(stats[2]).getByText('Site Visits')).toBeInTheDocument()
     expect(within(stats[2]).getByText('100')).toBeInTheDocument()
   })
 })

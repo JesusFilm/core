@@ -27,11 +27,11 @@ export function JourneyAnalyticsCard(): ReactElement {
         count={analytics?.totalVisitors}
       />
       <JourneyAnalyticsCardStat
-        label={t('Chats Started')}
+        label={t('Chats')}
         count={analytics?.chatsStarted}
       />
       <JourneyAnalyticsCardStat
-        label={t('Sites Visited')}
+        label={t('Site Visits')}
         count={analytics?.linksVisited}
       />
     </Stack>

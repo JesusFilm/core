@@ -157,6 +157,7 @@ export function Canvas(): ReactElement {
       {selectedStep != null && theme != null && (
         <Stack
           direction="column"
+          className="CanvasStack"
           alignItems={{ xs: 'center', md: 'flex-end' }}
           gap={1.5}
           sx={{
@@ -166,7 +167,6 @@ export function Canvas(): ReactElement {
             px: { xs: 3, md: 0 },
             justifyContent: 'center'
           }}
-          data-testid="stack here"
         >
           <Box
             sx={{
