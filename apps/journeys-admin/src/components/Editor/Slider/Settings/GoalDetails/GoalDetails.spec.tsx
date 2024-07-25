@@ -5,7 +5,6 @@ import userEvent from '@testing-library/user-event'
 import {
   ActiveCanvasDetailsDrawer,
   ActiveContent,
-  ActiveFab,
   ActiveSlide,
   EditorProvider,
   EditorState
@@ -26,7 +25,6 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 describe('GoalDetails', () => {
   const state: EditorState = {
-    activeFab: ActiveFab.Add,
     activeSlide: ActiveSlide.JourneyFlow,
     activeContent: ActiveContent.Goals,
     activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties

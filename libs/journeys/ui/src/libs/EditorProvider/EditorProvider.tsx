@@ -21,11 +21,6 @@ export enum ActiveContent {
   Social = 'social',
   Goals = 'goals'
 }
-export enum ActiveFab {
-  Add = 0,
-  Edit = 1,
-  Save = 2
-}
 export enum ActiveSlide {
   JourneyFlow = 0,
   Content = 1,
@@ -48,13 +43,6 @@ export interface EditorState {
    * other).
    */
   activeContent: ActiveContent
-  /**
-   * activeFab indicates which Fab to display. If the user is currently editing
-   * a text field this should be set to “Save”. If the user based on the
-   * selected block can edit a text field the field should be set to “Edit”.
-   * Otherwise this should be set to “Add”.
-   */
-  activeFab: ActiveFab
   /**
    * activeSlide indicates which slide is primarily in view of the user.
    * Note that Settings should only be set as active when on a mobile device.
@@ -96,10 +84,6 @@ interface SetActiveContentAction {
   type: 'SetActiveContentAction'
   activeContent: ActiveContent
 }
-interface SetActiveFabAction {
-  type: 'SetActiveFabAction'
-  activeFab: ActiveFab
-}
 interface SetActiveSlideAction {
   type: 'SetActiveSlideAction'
   activeSlide: ActiveSlide
@@ -119,6 +103,10 @@ interface SetSelectedBlockOnlyAction {
 export interface SetSelectedBlockByIdAction {
   type: 'SetSelectedBlockByIdAction'
   selectedBlockId?: string
+}
+export interface SetSelectedStepByIdAction {
+  type: 'SetSelectedStepByIdAction'
+  selectedStepId?: string
 }
 interface SetActiveCanvasDetailsDrawerAction {
   type: 'SetActiveCanvasDetailsDrawerAction'
@@ -159,11 +147,11 @@ export interface SetEditorFocusAction {
   selectedBlock?: TreeBlock
   selectedGoalUrl?: string
   selectedStep?: TreeBlock<StepBlock>
+  selectedStepId?: string
 }
 export type EditorAction =
   | SetActiveCanvasDetailsDrawerAction
   | SetActiveContentAction
-  | SetActiveFabAction
   | SetActiveSlideAction
   | SetSelectedAttributeIdAction
   | SetSelectedBlockAction
@@ -175,6 +163,7 @@ export type EditorAction =
   | SetShowAnalyticsAction
   | SetAnalyticsAction
   | SetEditorFocusAction
+  | SetSelectedStepByIdAction
 
 export const reducer = (
   state: EditorState,
@@ -190,11 +179,6 @@ export const reducer = (
       return {
         ...state,
         activeContent: action.activeContent
-      }
-    case 'SetActiveFabAction':
-      return {
-        ...state,
-        activeFab: action.activeFab
       }
     case 'SetActiveSlideAction':
       return {
@@ -229,6 +213,19 @@ export const reducer = (
         activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
         activeContent: ActiveContent.Canvas
       }
+    case 'SetSelectedStepByIdAction': {
+      return {
+        ...state,
+        selectedStep:
+          action.selectedStepId != null
+            ? (searchBlocks(state.steps ?? [], action.selectedStepId, {
+                filter: 'searchStepsOnly'
+              }) as TreeBlock<StepBlock>)
+            : undefined,
+        activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+        activeContent: ActiveContent.Canvas
+      }
+    }
     case 'SetSelectedGoalUrlAction':
       return {
         ...state,
@@ -274,7 +271,8 @@ export const reducer = (
         selectedAttributeId,
         selectedGoalUrl,
         selectedBlock,
-        selectedStep
+        selectedStep,
+        selectedStepId
       } = action
       if (selectedStep != null)
         stateCopy = reducer(stateCopy, {
@@ -311,6 +309,11 @@ export const reducer = (
           type: 'SetSelectedGoalUrlAction',
           selectedGoalUrl
         })
+      if (selectedStepId != null)
+        stateCopy = reducer(stateCopy, {
+          type: 'SetSelectedStepByIdAction',
+          selectedStepId
+        })
       return stateCopy
     }
   }
@@ -323,7 +326,6 @@ export const EditorContext = createContext<{
   state: {
     steps: [],
     activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
-    activeFab: ActiveFab.Add,
     activeSlide: ActiveSlide.JourneyFlow,
     activeContent: ActiveContent.Canvas
   },
@@ -349,7 +351,6 @@ export function EditorProvider({
     selectedStep: initialState?.steps?.[0],
     selectedBlock: initialState?.steps?.[0],
     activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
-    activeFab: ActiveFab.Add,
     activeSlide: ActiveSlide.JourneyFlow,
     activeContent: ActiveContent.Canvas,
     ...initialState
