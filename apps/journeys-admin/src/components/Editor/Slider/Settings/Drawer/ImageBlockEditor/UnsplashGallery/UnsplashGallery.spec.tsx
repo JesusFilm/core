@@ -124,9 +124,9 @@ describe('UnsplashGallery', () => {
     expect(handleChange).toHaveBeenCalledWith({
       alt: 'white dome building during daytime',
       blurhash: 'LEA,%vRjE1ay.AV@WAj@tnoef5ju',
-      height: 4160,
+      height: 720,
       src: 'https://images.unsplash.com/photo-1?ixid=1&q=80&w=1080',
-      width: 6240
+      width: 1080
     })
   })
 

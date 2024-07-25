@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 
@@ -72,9 +72,13 @@ describe('ImageSource', () => {
           { shallow: true }
         )
       })
-      fireEvent.click(getByRole('tab', { name: 'Custom' }))
       await waitFor(() =>
-        fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
+        fireEvent.click(screen.getByRole('tab', { name: 'Custom' }))
+      )
+      await waitFor(() =>
+        fireEvent.click(
+          screen.getByRole('button', { name: 'Add image by URL' })
+        )
       )
       const textBox = await getByRole('textbox')
       expect(textBox).toHaveValue('')
@@ -95,8 +99,14 @@ describe('ImageSource', () => {
         </MockedProvider>
       )
       fireEvent.click(getByRole('button', { name: 'Select Image' }))
-      fireEvent.click(getByRole('tab', { name: 'Custom' }))
-      fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
+      await waitFor(() =>
+        fireEvent.click(screen.getByRole('tab', { name: 'Custom' }))
+      )
+      await waitFor(() =>
+        fireEvent.click(
+          screen.getByRole('button', { name: 'Add image by URL' })
+        )
+      )
       const textBox = await getByRole('textbox')
       expect(textBox).toHaveValue('')
     })
@@ -115,8 +125,12 @@ describe('ImageSource', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('button', { name: 'Select Image' }))
-    fireEvent.click(getByRole('tab', { name: 'Custom' }))
-    fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
+    await waitFor(() =>
+      fireEvent.click(screen.getByRole('tab', { name: 'Custom' }))
+    )
+    await waitFor(() =>
+      fireEvent.click(screen.getByRole('button', { name: 'Add image by URL' }))
+    )
     const textBox = await getByRole('textbox')
     fireEvent.change(textBox, {
       target: { value: 'https://example.com/image.jpg' }
@@ -138,8 +152,12 @@ describe('ImageSource', () => {
       </MockedProvider>
     )
     fireEvent.click(getByRole('button', { name: 'Select Image' }))
-    fireEvent.click(getByRole('tab', { name: 'Custom' }))
-    fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
+    await waitFor(() =>
+      fireEvent.click(screen.getByRole('tab', { name: 'Custom' }))
+    )
+    await waitFor(() =>
+      fireEvent.click(screen.getByRole('button', { name: 'Add image by URL' }))
+    )
     const textBox = await getByRole('textbox')
     await fireEvent.paste(textBox, {
       clipboardData: { getData: () => 'https://example.com/image.jpg' }

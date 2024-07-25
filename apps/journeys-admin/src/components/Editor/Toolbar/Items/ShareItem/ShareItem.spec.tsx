@@ -32,7 +32,20 @@ describe('ShareItem', () => {
   const push = jest.fn()
   const on = jest.fn()
 
-  beforeEach(() => jest.clearAllMocks())
+  let originalEnv
+
+  beforeEach(() => {
+    jest.clearAllMocks()
+    originalEnv = process.env
+    process.env = {
+      ...originalEnv,
+      NEXT_PUBLIC_JOURNEYS_URL: 'https://my.custom.domain'
+    }
+  })
+
+  afterEach(() => {
+    process.env = originalEnv
+  })
 
   it('should handle edit journey slug', async () => {
     mockedUseRouter.mockReturnValue({
@@ -152,7 +165,7 @@ describe('ShareItem', () => {
     fireEvent.click(getByRole('button', { name: 'Share' }))
     fireEvent.click(getByRole('button', { name: 'Copy' }))
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
-      'https://your.nextstep.is/default'
+      'https://my.custom.domain/default'
     )
   })
 

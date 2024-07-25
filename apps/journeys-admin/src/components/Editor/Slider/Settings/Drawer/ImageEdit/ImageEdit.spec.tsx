@@ -1,6 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -51,7 +51,7 @@ describe('ImageEdit', () => {
   }
 
   it('should disaply placeholder icon when no image set', () => {
-    const { getAllByTestId } = render(
+    render(
       <MockedProvider>
         <SnackbarProvider>
           <JourneyProvider
@@ -65,11 +65,11 @@ describe('ImageEdit', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    expect(getAllByTestId('Edit2Icon')).toHaveLength(1)
+    expect(screen.getAllByTestId('Edit2Icon')).toHaveLength(1)
   })
 
   it('should display the primaryImage', () => {
-    const { getByRole } = render(
+    render(
       <MockedProvider>
         <SnackbarProvider>
           <JourneyProvider
@@ -88,7 +88,7 @@ describe('ImageEdit', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    expect(getByRole('img')).toBeInTheDocument()
+    expect(screen.getByRole('img')).toBeInTheDocument()
   })
 
   it('creates the primaryImage', async () => {
@@ -128,7 +128,7 @@ describe('ImageEdit', () => {
       }
     }))
 
-    const { getByRole } = render(
+    render(
       <MockedProvider
         cache={cache}
         mocks={[
@@ -173,16 +173,22 @@ describe('ImageEdit', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByRole('button'))
-    await waitFor(() => fireEvent.click(getByRole('tab', { name: 'Custom' })))
-    fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
-    const textBox = getByRole('textbox')
+    fireEvent.click(screen.getByRole('button'))
+    await waitFor(() =>
+      fireEvent.click(screen.getByRole('tab', { name: 'Custom' }))
+    )
+    await waitFor(() =>
+      fireEvent.click(screen.getByRole('button', { name: 'Add image by URL' }))
+    )
+    const textBox = screen.getByRole('textbox')
     fireEvent.change(textBox, {
       target: { value: 'https://example.com/image.jpg' }
     })
     fireEvent.blur(textBox)
 
-    await waitFor(() => expect(getByRole('progressbar')).toBeInTheDocument())
+    await waitFor(() =>
+      expect(screen.getByRole('progressbar')).toBeInTheDocument()
+    )
     await waitFor(() => expect(imageBlockResult).toHaveBeenCalled())
     await waitFor(() => expect(journeyResult).toHaveBeenCalled())
   })
@@ -224,7 +230,7 @@ describe('ImageEdit', () => {
       }
     }))
 
-    const { getByRole } = render(
+    render(
       <MockedProvider
         cache={cache}
         mocks={[
@@ -269,16 +275,22 @@ describe('ImageEdit', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByRole('button'))
-    fireEvent.click(getByRole('tab', { name: 'Custom' }))
-    fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
-    const textBox = getByRole('textbox')
+    fireEvent.click(screen.getByRole('button'))
+    await waitFor(() =>
+      fireEvent.click(screen.getByRole('tab', { name: 'Custom' }))
+    )
+    await waitFor(() =>
+      fireEvent.click(screen.getByRole('button', { name: 'Add image by URL' }))
+    )
+    const textBox = screen.getByRole('textbox')
     fireEvent.change(textBox, {
       target: { value: 'https://example.com/image.jpg' }
     })
     fireEvent.blur(textBox)
 
-    await waitFor(() => expect(getByRole('progressbar')).toBeInTheDocument())
+    await waitFor(() =>
+      expect(screen.getByRole('progressbar')).toBeInTheDocument()
+    )
     await waitFor(() => expect(imageBlockResult).toHaveBeenCalled())
     await waitFor(() => expect(journeyResult).toHaveBeenCalled())
   })
@@ -317,7 +329,7 @@ describe('ImageEdit', () => {
       }
     }))
 
-    const { getByRole, getByTestId } = render(
+    render(
       <MockedProvider
         cache={cache}
         mocks={[
@@ -361,8 +373,8 @@ describe('ImageEdit', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByRole('button'))
-    fireEvent.click(getByTestId('imageBlockHeaderDelete'))
+    fireEvent.click(screen.getByRole('button'))
+    fireEvent.click(screen.getByTestId('imageBlockHeaderDelete'))
     await waitFor(() => expect(imageDeleteResult).toHaveBeenCalled())
     await waitFor(() => expect(journeyUpdateResult).toHaveBeenCalled())
     expect(cache.extract()['Journey:journey.id']?.blocks).toEqual([])
@@ -402,7 +414,7 @@ describe('ImageEdit', () => {
       }
     }))
 
-    const { getByRole, getByTestId } = render(
+    render(
       <MockedProvider
         cache={cache}
         mocks={[
@@ -446,14 +458,16 @@ describe('ImageEdit', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByRole('button'))
-    await waitFor(() => fireEvent.click(getByTestId('imageBlockHeaderDelete')))
+    fireEvent.click(screen.getByRole('button'))
+    await waitFor(() =>
+      fireEvent.click(screen.getByTestId('imageBlockHeaderDelete'))
+    )
     await waitFor(() => expect(imageDeleteResult).toHaveBeenCalled())
     await waitFor(() => expect(journeyUpdateResult).toHaveBeenCalled())
     expect(cache.extract()['Journey:journey.id']?.blocks).toEqual([])
   })
 
-  it('upates the image', async () => {
+  it('updates the image', async () => {
     const imageBlockResultForUpdateMock = jest.fn(() => ({
       data: {
         imageBlockCreate: {
@@ -469,12 +483,11 @@ describe('ImageEdit', () => {
       }
     }))
 
-    const { getByRole } = render(
+    render(
       <MockedProvider
         mocks={[
           createCloudflareUploadByUrlMock,
           listUnsplashCollectionPhotosMock,
-
           {
             request: {
               query: JOURNEY_IMAGE_BLOCK_UPDATE,
@@ -483,9 +496,7 @@ describe('ImageEdit', () => {
                 journeyId: 'journey.id',
                 input: {
                   src: image.src,
-                  alt: image.alt,
-                  width: image.width,
-                  height: image.height
+                  alt: 'public'
                 }
               }
             },
@@ -511,15 +522,21 @@ describe('ImageEdit', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByRole('button'))
-    fireEvent.click(getByRole('tab', { name: 'Custom' }))
-    fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
-    const textBox = getByRole('textbox')
+    fireEvent.click(screen.getByRole('button'))
+    await waitFor(() =>
+      fireEvent.click(screen.getByRole('tab', { name: 'Custom' }))
+    )
+    await waitFor(() =>
+      fireEvent.click(screen.getByRole('button', { name: 'Add image by URL' }))
+    )
+    const textBox = screen.getByRole('textbox')
     fireEvent.change(textBox, {
       target: { value: 'https://example.com/image.jpg' }
     })
     fireEvent.blur(textBox)
-    await waitFor(() => expect(getByRole('progressbar')).toBeInTheDocument())
+    await waitFor(() =>
+      expect(screen.getByRole('progressbar')).toBeInTheDocument()
+    )
     await waitFor(() =>
       expect(imageBlockResultForUpdateMock).toHaveBeenCalled()
     )

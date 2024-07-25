@@ -18,6 +18,20 @@ jest.mock('node-fetch', () => {
 const mockFetch = fetch as jest.MockedFunction<typeof fetch>
 
 describe('ImageUpload', () => {
+  let originalEnv
+
+  beforeEach(() => {
+    originalEnv = process.env
+    process.env = {
+      ...originalEnv,
+      NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY: 'cloudflare-key'
+    }
+  })
+
+  afterEach(() => {
+    process.env = originalEnv
+  })
+
   const imageBlock: ImageBlock = {
     id: 'imageBlockId',
     __typename: 'ImageBlock',
@@ -36,8 +50,8 @@ describe('ImageUpload', () => {
       uploaded: '2022-01-31T16:39:28.458Z',
       requireSignedURLs: true,
       variants: [
-        'https://imagedelivery.net/Vi7wi5KSItxGFsWRG2Us6Q/uploadId/public',
-        'https://imagedelivery.net/Vi7wi5KSItxGFsWRG2Us6Q/uploadId/thumbnail'
+        'https://imagedelivery.net/cloudflare-key/uploadId/public',
+        'https://imagedelivery.net/cloudflare-key/uploadId/thumbnail'
       ],
       draft: true
     },
@@ -132,7 +146,7 @@ describe('ImageUpload', () => {
     fireEvent.drop(inputEl)
     await waitFor(() =>
       expect(onChange).toHaveBeenCalledWith({
-        src: 'https://imagedelivery.net//uploadId/public'
+        src: 'https://imagedelivery.net/cloudflare-key/uploadId/public'
       })
     )
     expect(getByText('Upload successful!')).toBeInTheDocument()

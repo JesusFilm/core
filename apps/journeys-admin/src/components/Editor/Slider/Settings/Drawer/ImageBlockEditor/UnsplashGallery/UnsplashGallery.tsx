@@ -109,6 +109,7 @@ export function UnsplashGallery({
     ListUnsplashCollectionPhotosVariables
   >(LIST_UNSPLASH_COLLECTION_PHOTOS, {
     skip: query !== '',
+    notifyOnNetworkStatusChange: true,
     variables: { collectionId, page: 1, perPage: PER_PAGE }
   })
 
@@ -118,7 +119,11 @@ export function UnsplashGallery({
     fetchMore: fetchMoreSearch
   } = useQuery<SearchUnsplashPhotos, SearchUnsplashPhotosVariables>(
     SEARCH_UNSPLASH_PHOTOS,
-    { skip: query === '', variables: { query, page: 1, perPage: PER_PAGE } }
+    {
+      skip: query === '',
+      notifyOnNetworkStatusChange: true,
+      variables: { query, page: 1, perPage: PER_PAGE }
+    }
   )
 
   const loading = query === '' ? loadingCollection : loadingSearch

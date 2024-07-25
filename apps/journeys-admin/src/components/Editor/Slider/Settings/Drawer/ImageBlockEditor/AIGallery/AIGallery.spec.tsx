@@ -11,6 +11,20 @@ import { SegmindModel } from '../../../../../../../../__generated__/globalTypes'
 import { CREATE_AI_IMAGE } from './AIGallery'
 
 describe('AIGallery', () => {
+  let originalEnv
+
+  beforeEach(() => {
+    originalEnv = process.env
+    process.env = {
+      ...originalEnv,
+      NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY: 'cloudflare-key'
+    }
+  })
+
+  afterEach(() => {
+    process.env = originalEnv
+  })
+
   const getAIImage: MockedResponse<CreateAiImage, CreateAiImageVariables> = {
     request: {
       query: CREATE_AI_IMAGE,
@@ -29,8 +43,6 @@ describe('AIGallery', () => {
     }
   }
 
-  afterEach(() => jest.clearAllMocks())
-
   it('should submit prompt successfully', async () => {
     const onChange = jest.fn()
     render(
@@ -47,7 +59,7 @@ describe('AIGallery', () => {
     await waitFor(() => {
       expect(onChange).toHaveBeenCalledWith({
         alt: 'Prompt: an image of the New Jerusalem',
-        src: 'https://imagedelivery.net//imageId/public'
+        src: 'https://imagedelivery.net/cloudflare-key/imageId/public'
       })
     })
   })
