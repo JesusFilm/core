@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import { ActiveFab, useEditor } from '@core/journeys/ui/EditorProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
 
 import {
@@ -55,7 +55,6 @@ export function StepBlockNodeCard({
         type: 'SetSelectedBlockAction',
         selectedBlock: selectedStep
       })
-      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
       dispatch({
         type: 'SetSelectedAttributeIdAction',
         selectedAttributeId: `${selectedStep?.id ?? ''}-next-block`
