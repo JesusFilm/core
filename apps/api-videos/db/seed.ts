@@ -1,10 +1,3 @@
-// version 4
-// increment to trigger re-seed (ie: files other than seed.ts are changed)
-
-// valid import modes: missing, replace, complete, update
-
-import isEmpty from 'lodash/isEmpty'
-
 import { PrismaClient } from '.prisma/api-videos-client'
 
 import {
