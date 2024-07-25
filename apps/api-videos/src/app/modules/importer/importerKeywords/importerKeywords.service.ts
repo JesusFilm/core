@@ -36,10 +36,9 @@ export class ImporterKeywordsService extends ImporterService<Keyword> {
     super()
   }
 
-  protected async filterValidVideos(keyword: Keyword): Promise<Keyword> {
+  protected filterValidVideos(keyword: Keyword): Keyword {
     if (keyword.videos && keyword.videos.connect) {
       const validVideoIds = this.importerVideosService.ids
-
       keyword.videos.connect = keyword.videos.connect.filter((v) =>
         validVideoIds.some((id) => id === v.id)
       )
@@ -48,7 +47,7 @@ export class ImporterKeywordsService extends ImporterService<Keyword> {
   }
 
   protected async save(keyword: Keyword): Promise<void> {
-    const filteredKeyword = await this.filterValidVideos(keyword)
+    const filteredKeyword = this.filterValidVideos(keyword)
     await this.prismaService.keyword.upsert({
       where: {
         value_languageId: {
@@ -62,9 +61,30 @@ export class ImporterKeywordsService extends ImporterService<Keyword> {
   }
 
   protected async saveMany(keywords: Keyword[]): Promise<void> {
+    const filteredKeywords = keywords.map((keyword) =>
+      this.filterValidVideos(keyword)
+    )
+
     await this.prismaService.keyword.createMany({
-      data: keywords.filter((keyword) => this.filterValidVideos(keyword)),
+      data: filteredKeywords.map((keyword) => ({
+        id: keyword.id,
+        value: keyword.value,
+        languageId: keyword.languageId
+      })),
       skipDuplicates: true
     })
+
+    for (const keyword of filteredKeywords) {
+      if (keyword.videos?.connect && keyword.videos.connect.length > 0) {
+        await this.prismaService.keyword.update({
+          where: { id: keyword.id },
+          data: {
+            videos: {
+              connect: keyword.videos.connect
+            }
+          }
+        })
+      }
+    }
   }
 }
