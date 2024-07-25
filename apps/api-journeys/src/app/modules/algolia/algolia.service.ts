@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common'
 import algoliasearch from 'algoliasearch'
 
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client'
-import { string } from 'prop-types'
 import { GetLanguageQuery, GetTagsQuery } from '../../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 import { Prisma } from '.prisma/api-journeys-client'
