@@ -78,6 +78,14 @@ export interface EditorState {
    * the JourneyFlow.
    */
   selectedStep?: TreeBlock<StepBlock>
+  /**
+   * selectedStepId indicates which step is currently displayed by the Canvas
+   * and the JourneyFlow. However, this can be used to selected the step before
+   * it is added to the steps array i.e in creation mutations. This is important as running a dispatch
+   * action to set the selected step before it is added to the steps array will
+   * not work.
+   */
+  selectedStepId?: string
   steps?: Array<TreeBlock<StepBlock>>
 }
 interface SetActiveContentAction {
@@ -206,6 +214,7 @@ export const reducer = (
     case 'SetSelectedBlockByIdAction':
       return {
         ...state,
+        selectedBlockId: action.selectedBlockId,
         selectedBlock:
           action.selectedBlockId != null
             ? searchBlocks(state.steps ?? [], action.selectedBlockId)
@@ -216,6 +225,7 @@ export const reducer = (
     case 'SetSelectedStepByIdAction': {
       return {
         ...state,
+        selectedStepId: action.selectedStepId,
         selectedStep:
           action.selectedStepId != null
             ? (searchBlocks(state.steps ?? [], action.selectedStepId, {
@@ -234,6 +244,7 @@ export const reducer = (
     case 'SetSelectedStepAction':
       return {
         ...state,
+        selectedStepId: action.selectedStep?.id,
         selectedStep: action.selectedStep,
         selectedBlock: action.selectedStep,
         activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
@@ -244,8 +255,8 @@ export const reducer = (
         ...state,
         steps: action.steps,
         selectedStep:
-          state.selectedStep != null
-            ? action.steps.find(({ id }) => id === state.selectedStep?.id)
+          state.selectedStepId != null
+            ? action.steps.find(({ id }) => id === state.selectedStepId)
             : action.steps[0],
         selectedBlock:
           state.selectedBlock != null
