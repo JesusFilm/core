@@ -5,7 +5,7 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
-import { ActiveFab, useEditor } from '@core/journeys/ui/EditorProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { FramePortal } from '@core/journeys/ui/FramePortal'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -41,7 +41,6 @@ export function ActionCards({ url }: ActionCardsProps): ReactElement {
 
   function handleClick(step): void {
     dispatch({ type: 'SetSelectedStepAction', selectedStep: step })
-    dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
   }
 
   return (
