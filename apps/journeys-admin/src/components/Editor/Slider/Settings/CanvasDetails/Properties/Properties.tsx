@@ -101,7 +101,7 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
   const selectedBlock = block ?? state.selectedBlock
   const selectedStep = step ?? state.selectedStep
 
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
+  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
 
   let component
   let title: string | undefined
@@ -170,7 +170,7 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
     if (!isCardTemplates)
       dispatch({
         type: 'SetActiveSlideAction',
-        activeSlide: smUp ? ActiveSlide.JourneyFlow : ActiveSlide.Content
+        activeSlide: mdUp ? ActiveSlide.JourneyFlow : ActiveSlide.Content
       })
   }
 
