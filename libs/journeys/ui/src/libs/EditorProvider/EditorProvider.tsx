@@ -86,6 +86,13 @@ export interface EditorState {
    * not work.
    */
   selectedStepId?: string
+  /**
+   * selectedBlockId indicates which block is currently selected in the Canvas
+   * and the JourneyFlow. However, this can be used to selected the block before
+   * it is added i.e in creation mutations. This is important as running a dispatch
+   * action to set the selected block before it is will not work.
+   */
+  selectedBlockId?: string
   steps?: Array<TreeBlock<StepBlock>>
 }
 interface SetActiveContentAction {
@@ -201,6 +208,7 @@ export const reducer = (
     case 'SetSelectedBlockAction':
       return {
         ...state,
+        selectedBlockId: action.selectedBlock?.id,
         selectedBlock: action.selectedBlock,
         activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
         activeContent: ActiveContent.Canvas,
