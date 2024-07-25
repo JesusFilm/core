@@ -43,12 +43,6 @@ type JourneyTags = Prisma.JourneyGetPayload<{
   }
 }>
 
-interface TransformedLanguage {
-  localName: string
-  nativeName: string
-  continents: string[]
-}
-
 @Injectable()
 export class AlgoliaService {
   constructor(private readonly prismaService: PrismaService) {}
@@ -101,39 +95,6 @@ export class AlgoliaService {
     return data
   }
 
-  processLanguages(
-    languagesData: GetLanguageQuery
-  ): Record<string, TransformedLanguage> {
-    const map: Record<string, TransformedLanguage> = {}
-
-    languagesData.languages.forEach(({ id, name, countries }) => {
-      let localName = ''
-      let nativeName = ''
-      const continentsSet = new Set<string>()
-
-      name.forEach(({ primary, value }) => {
-        if (primary) nativeName = value
-        else if (!localName) localName = value
-        if (localName && nativeName) return
-      })
-
-      countries.forEach((country) => {
-        country.continent.forEach(({ primary, value }) => {
-          if (primary && value) {
-            continentsSet.add(value)
-            return
-          }
-        })
-      })
-
-      const continents = Array.from(continentsSet).filter(Boolean)
-
-      map[id] = { localName, nativeName, continents }
-    })
-
-    return map
-  }
-
   async syncJourneysToAlgolia(): Promise<void> {
     const apiKey = process.env.ALGOLIA_API_KEY ?? ''
     const appId = process.env.ALGOLIA_APPLICATION_ID ?? ''
@@ -147,7 +108,10 @@ export class AlgoliaService {
 
     console.log('getting languages from gateway...')
     const languagesData = await this.getLanguages()
-    const languagesMap = this.processLanguages(languagesData)
+    const languageIndex = languagesData.languages.reduce((acc, language) => {
+      acc[language.id] = language.id
+      return acc
+    }, {})
 
     console.log('syncing journeys to algolia...')
     const client = algoliasearch(appId, apiKey)
@@ -181,7 +145,7 @@ export class AlgoliaService {
             alt: journey.primaryImageBlock?.alt
           },
           featuredAt: journey.featuredAt,
-          language: languagesMap[journey.languageId],
+          languageId: languageIndex[journey.languageId],
           tags
         }
       })

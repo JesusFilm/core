@@ -8,7 +8,6 @@ import { PrismaService } from '../../lib/prisma.service'
 
 import { ApolloClient, ApolloQueryResult } from '@apollo/client'
 import { clone } from 'lodash'
-import { GetLanguageQuery } from '../../../__generated__/graphql'
 import { AlgoliaService } from './algolia.service'
 
 const saveObjectsSpy = jest
@@ -197,20 +196,6 @@ describe('AlgoliaService', () => {
       expect(mockApollo).toHaveBeenCalled()
     })
 
-    it('should convert languages to map', () => {
-      const languagesData: GetLanguageQuery = {
-        languages
-      }
-      const result = service.processLanguages({ languages })
-      expect(result).toEqual({
-        '529': {
-          localName: '',
-          nativeName: 'English',
-          continents: ['Europe']
-        }
-      })
-    })
-
     it('should sync journeys to Algolia', async () => {
       process.env.ALGOLIA_API_KEY = 'key'
       process.env.ALGOLIA_APPLICATION_ID = 'id'
@@ -278,11 +263,7 @@ describe('AlgoliaService', () => {
             alt: 'journey image',
             src: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/e8692352-21c7-4f66-cb57-0298e86a3300/public'
           },
-          language: {
-            localName: '',
-            nativeName: 'English',
-            continents: ['Europe']
-          },
+          languageId: '529',
           tags: {
             'Parent Tag': ['Tag 1', 'Tag 2', 'Tag 3']
           },
