@@ -356,7 +356,7 @@ describe('EditorContext', () => {
           activeFab: ActiveFab.Edit,
           activeSlide: ActiveSlide.JourneyFlow,
           activeContent: ActiveContent.Canvas
-        }
+        } as unknown as EditorState
         expect(
           reducer(state, {
             type: 'SetSelectedStepByIdAction',
@@ -376,7 +376,7 @@ describe('EditorContext', () => {
           activeFab: ActiveFab.Add,
           activeSlide: ActiveSlide.JourneyFlow,
           activeContent: ActiveContent.Canvas
-        }
+        } as unknown as EditorState
         expect(
           reducer(state, {
             type: 'SetSelectedStepByIdAction',
@@ -395,7 +395,7 @@ describe('EditorContext', () => {
           activeContent: ActiveContent.Canvas,
           activeFab: ActiveFab.Add,
           activeSlide: ActiveSlide.JourneyFlow
-        }
+        } as unknown as EditorState
         expect(
           reducer(state, {
             type: 'SetSelectedStepByIdAction'
