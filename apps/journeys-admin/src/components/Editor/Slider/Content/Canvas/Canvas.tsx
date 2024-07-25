@@ -7,7 +7,6 @@ import { CSSTransition, TransitionGroup } from 'react-transition-group'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import {
   ActiveCanvasDetailsDrawer,
-  ActiveFab,
   ActiveSlide,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
@@ -78,10 +77,6 @@ export function Canvas(): ReactElement {
       activeSlide: ActiveSlide.Content
     })
     dispatch({
-      type: 'SetActiveFabAction',
-      activeFab: ActiveFab.Add
-    })
-    dispatch({
       type: 'SetSelectedAttributeIdAction',
       selectedAttributeId: undefined
     })
@@ -118,7 +113,6 @@ export function Canvas(): ReactElement {
       type: 'SetSelectedBlockAction',
       selectedBlock: selectedStep
     })
-    dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
     dispatch({
       type: 'SetSelectedAttributeIdAction',
       selectedAttributeId: `${selectedStep?.id ?? ''}-next-block`
