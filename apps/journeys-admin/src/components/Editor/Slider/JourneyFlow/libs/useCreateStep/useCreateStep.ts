@@ -158,15 +158,52 @@ export function useCreateStep(): (
               themeMode: ThemeMode.dark,
               themeName: ThemeName.base
             }
+          },
+          optimisticResponse: {
+            stepBlockCreate: {
+              __typename: 'StepBlock',
+              locked: false,
+              nextBlockId: null,
+              parentBlockId: null,
+              parentOrder: 0,
+              id: newStepId,
+              x,
+              y
+            },
+            cardBlockCreate: {
+              __typename: 'CardBlock',
+              id: newCardId,
+              parentBlockId: newStepId,
+              themeMode: ThemeMode.dark,
+              themeName: ThemeName.base,
+              fullscreen: false,
+              coverBlockId: null,
+              backgroundColor: null,
+              parentOrder: 0
+            }
           }
         })
+        await setNextBlockActions(newStepId)
         newBlockRef = data
+        if (newBlockRef == null) return
+
+        dispatch({
+          type: 'SetSelectedStepAction',
+          selectedStep: {
+            ...newBlockRef.stepBlockCreate,
+            children: [{ ...newBlockRef.cardBlockCreate, children: [] }]
+          }
+        })
       },
       undo: async ({ stepBeforeDelete, sourceBlock }) => {
-        if (newBlockRef != null) await blockDelete(newBlockRef?.stepBlockCreate)
-        edgeSource.sourceType === 'step' &&
-          sourceStep?.nextBlockId != null &&
-          (await setNextBlockActions(sourceStep.nextBlockId))
+        if (newBlockRef != null)
+          await blockDelete(newBlockRef?.stepBlockCreate, {
+            optimisticResponse: {
+              blockDelete: [...(steps ?? []), newBlockRef.stepBlockCreate]
+            }
+          })
+        if (edgeSource.sourceType === 'step' && sourceStep?.nextBlockId != null)
+          await setNextBlockActions(sourceStep.nextBlockId)
         if (sourceBlock != null && 'action' in sourceBlock) {
           switch (sourceBlock.action?.__typename) {
             case 'EmailAction': {
@@ -186,7 +223,6 @@ export function useCreateStep(): (
             }
           }
         }
-
         dispatch({
           type: 'SetEditorFocusAction',
           selectedStep: stepBeforeDelete,
@@ -196,7 +232,13 @@ export function useCreateStep(): (
       redo: async () => {
         if (newBlockRef != null) {
           await blockRestore({
-            variables: { id: newBlockRef.stepBlockCreate.id }
+            variables: { id: newBlockRef.stepBlockCreate.id },
+            optimisticResponse: {
+              blockRestore: [
+                newBlockRef.stepBlockCreate,
+                newBlockRef.cardBlockCreate
+              ]
+            }
           })
           await setNextBlockActions(newStepId)
           dispatch({
@@ -210,17 +252,6 @@ export function useCreateStep(): (
         }
       }
     })
-
-    if (newBlockRef == null) return
-
-    dispatch({
-      type: 'SetSelectedStepAction',
-      selectedStep: {
-        ...newBlockRef.stepBlockCreate,
-        children: [{ ...newBlockRef.cardBlockCreate, children: [] }]
-      }
-    })
-    await setNextBlockActions(newStepId)
 
     return newBlockRef
   }
