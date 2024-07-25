@@ -6,7 +6,6 @@ import { SnackbarProvider } from 'notistack'
 import {
   ActiveCanvasDetailsDrawer,
   ActiveContent,
-  ActiveFab,
   ActiveSlide,
   EditorProvider,
   EditorState
@@ -62,7 +61,6 @@ describe('Canvas', () => {
   const initialState: EditorState = {
     steps: [step0, step1],
     selectedStep: step0,
-    activeFab: ActiveFab.Add,
     activeSlide: ActiveSlide.JourneyFlow,
     activeContent: ActiveContent.Canvas,
     activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
@@ -135,7 +133,6 @@ describe('Canvas', () => {
     )
     fireEvent.click(getByTestId('CanvasContainer'))
     expect(getByText('selectedBlock: step0.id')).toBeInTheDocument()
-    expect(getByText(`activeFab: Add`)).toBeInTheDocument()
     expect(
       getByText('selectedAttributeId: step0.id-next-block')
     ).toBeInTheDocument()
@@ -266,7 +263,6 @@ describe('Canvas', () => {
     })
     fireEvent.click(getByTestId('stepFooter'))
     expect(getByText('selectedBlock: step0.id')).toBeInTheDocument()
-    expect(getByText('activeFab: Add')).toBeInTheDocument()
     expect(getByText('selectedAttributeId: hosted-by')).toBeInTheDocument()
     expect(
       getByText(
