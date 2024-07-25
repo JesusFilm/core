@@ -49,6 +49,8 @@ on:
         required: true
       DOPPLER_GITHUB_SERVICE_TOKEN:
         required: true
+      DATADOG_API_KEY:
+        required: true
 
 jobs:
   build-and-deploy:
