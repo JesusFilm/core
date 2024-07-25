@@ -171,7 +171,7 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
     if (!isCardTemplates)
       dispatch({
         type: 'SetActiveSlideAction',
-        activeSlide: smUp ? ActiveSlide.JourneyFlow : ActiveSlide.Content
+        activeSlide: ActiveSlide.JourneyFlow
       })
   }
 

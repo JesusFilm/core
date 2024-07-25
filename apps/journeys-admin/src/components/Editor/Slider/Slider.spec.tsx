@@ -10,6 +10,7 @@ import {
   EditorState
 } from '@core/journeys/ui/EditorProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
+import useMediaQuery from '@mui/material/useMediaQuery'
 
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourney'
 import {
@@ -26,7 +27,6 @@ import {
   UPDATE_JOURNEY_FLOW_BACK_BUTTON_CLICKED
 } from './Slider'
 
-import useMediaQuery from '@mui/material/useMediaQuery'
 import { Slider } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({

@@ -1,9 +1,9 @@
-import MuiFab, { type FabProps as MuiFabProps } from '@mui/material/Fab'
+import MuiFab from '@mui/material/Fab'
 import Zoom from '@mui/material/Zoom'
 import type { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { useTranslation } from 'next-i18next'
-import type { MouseEvent, ReactElement, ReactNode } from 'react'
+import type { MouseEvent, ReactElement } from 'react'
 
 import {
   ActiveCanvasDetailsDrawer,
@@ -43,44 +43,21 @@ export function Fab({ variant }: FabProps): ReactElement {
 
   function handleAddFab(event: MouseEvent): void {
     event.stopPropagation()
-    if (activeSlide !== ActiveSlide.Content) {
-      dispatch({
-        type: 'SetActiveSlideAction',
-        activeSlide: ActiveSlide.Content
-      })
-      dispatch({
-        type: 'SetActiveCanvasDetailsDrawerAction',
-        activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.AddBlock
-      })
-    } else if (
-      activeCanvasDetailsDrawer === ActiveCanvasDetailsDrawer.AddBlock
-    ) {
-      dispatch({
-        type: 'SetActiveCanvasDetailsDrawerAction',
-        activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
-      })
-      dispatch({
-        type: 'SetSelectedBlockAction',
-        selectedBlock: selectedStep
-      })
-      if (!mdUp) {
-        dispatch({
-          type: 'SetActiveSlideAction',
-          activeSlide: ActiveSlide.Content
-        })
-      }
-    } else {
-      dispatch({
-        type: 'SetActiveCanvasDetailsDrawerAction',
-        activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.AddBlock
-      })
-      if (!mdUp) {
-        dispatch({
-          type: 'SetActiveSlideAction',
-          activeSlide: ActiveSlide.Drawer
-        })
-      }
-    }
+    dispatch({
+      type: 'SetSelectedBlockAction',
+      selectedBlock: selectedStep
+    })
+    dispatch({
+      type: 'SetActiveSlideAction',
+      activeSlide: mdUp ? ActiveSlide.Content : ActiveSlide.Drawer
+    })
+    dispatch({
+      type: 'SetActiveCanvasDetailsDrawerAction',
+      activeCanvasDetailsDrawer:
+        activeCanvasDetailsDrawer === ActiveCanvasDetailsDrawer.AddBlock
+          ? ActiveCanvasDetailsDrawer.Properties
+          : ActiveCanvasDetailsDrawer.AddBlock
+    })
   }
 
   const cardBlock = selectedStep?.children.find(
@@ -93,28 +70,6 @@ export function Fab({ variant }: FabProps): ReactElement {
   const disabled =
     steps == null ||
     (videoBlock != null && activeSlide !== ActiveSlide.JourneyFlow)
-
-  // props default to save fab
-  const props: MuiFabProps = {
-    variant: mdUp ? 'extended' : 'circular',
-    size: 'large',
-    color: 'primary',
-    disabled,
-    sx: {
-      position: { xs: 'absolute', md: 'relative' },
-      bottom: { xs: 16, md: 'auto' },
-      right: { xs: 16, md: 'auto' },
-      fontWeight: 'bold'
-    },
-    onClick: handleAddFab
-  }
-
-  const children: ReactNode = (
-    <>
-      <Plus2Icon sx={{ mr: { xs: 0, md: 3 } }} />
-      {mdUp ? t('Add Block') : ''}
-    </>
-  )
 
   let fabIn = false
   switch (variant) {
@@ -141,7 +96,22 @@ export function Fab({ variant }: FabProps): ReactElement {
 
   return (
     <Zoom in={fabIn} unmountOnExit data-testid="Fab">
-      <MuiFab {...props}>{children}</MuiFab>
+      <MuiFab
+        variant={mdUp ? 'extended' : 'circular'}
+        size="large"
+        color="primary"
+        disabled={disabled}
+        sx={{
+          position: { xs: 'absolute', md: 'relative' },
+          bottom: { xs: 16, md: 'auto' },
+          right: { xs: 16, md: 'auto' },
+          fontWeight: 'bold'
+        }}
+        onClick={handleAddFab}
+      >
+        <Plus2Icon sx={{ mr: { xs: 0, md: 3 } }} />
+        {mdUp ? t('Add Block') : ''}
+      </MuiFab>
     </Zoom>
   )
 }
