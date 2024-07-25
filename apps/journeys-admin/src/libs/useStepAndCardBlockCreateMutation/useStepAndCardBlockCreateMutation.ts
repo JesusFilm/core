@@ -20,6 +20,9 @@ export const STEP_AND_CARD_BLOCK_CREATE = gql`
   mutation StepAndCardBlockCreate(
     $stepBlockCreateInput: StepBlockCreateInput!
     $cardBlockCreateInput: CardBlockCreateInput!
+    $stepId: ID!,
+    $journeyId: ID!,
+    $stepBlockUpdateInput: StepBlockUpdateInput!
   ) {
     stepBlockCreate(input: $stepBlockCreateInput) {
       ...StepFields
@@ -28,6 +31,10 @@ export const STEP_AND_CARD_BLOCK_CREATE = gql`
     }
     cardBlockCreate(input: $cardBlockCreateInput) {
       ...CardFields
+    },
+    stepBlockUpdate(id: $stepId, journeyId: $journeyId, input: $stepBlockUpdateInput) {
+      id
+      nextBlockId
     }
   }
 `

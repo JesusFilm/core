@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { StepBlockCreateInput, CardBlockCreateInput, ThemeMode, ThemeName } from "./globalTypes";
+import { StepBlockCreateInput, CardBlockCreateInput, StepBlockUpdateInput, ThemeMode, ThemeName } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: StepAndCardBlockCreate
@@ -69,12 +69,26 @@ export interface StepAndCardBlockCreate_cardBlockCreate {
   fullscreen: boolean;
 }
 
+export interface StepAndCardBlockCreate_stepBlockUpdate {
+  __typename: "StepBlock";
+  id: string;
+  /**
+   * nextBlockId contains the preferred block to navigate to, users will have to
+   * manually set the next block they want to card to navigate to
+   */
+  nextBlockId: string | null;
+}
+
 export interface StepAndCardBlockCreate {
   stepBlockCreate: StepAndCardBlockCreate_stepBlockCreate;
   cardBlockCreate: StepAndCardBlockCreate_cardBlockCreate;
+  stepBlockUpdate: StepAndCardBlockCreate_stepBlockUpdate;
 }
 
 export interface StepAndCardBlockCreateVariables {
   stepBlockCreateInput: StepBlockCreateInput;
   cardBlockCreateInput: CardBlockCreateInput;
+  stepId: string;
+  journeyId: string;
+  stepBlockUpdateInput: StepBlockUpdateInput;
 }

@@ -89,6 +89,26 @@ export function useCreateStep(): (
           )
         : null
 
+    const optimisticStep = {
+      locked: false,
+      nextBlockId: null,
+      parentBlockId: null,
+      parentOrder: 0,
+      id: newStepId,
+      x,
+      y
+    }
+    const optimisticCard = {
+      id: newCardId,
+      parentBlockId: newStepId,
+      themeMode: ThemeMode.dark,
+      themeName: ThemeName.base,
+      fullscreen: false,
+      coverBlockId: null,
+      backgroundColor: null,
+      parentOrder: 0
+    }
+
     async function setNextBlockActions(target: string): Promise<void> {
       if (journey == null) return
       switch (edgeSource.sourceType) {
@@ -143,57 +163,85 @@ export function useCreateStep(): (
         undo: { stepBeforeDelete: selectedStep, sourceBlock }
       },
       execute: async () => {
-        const { data } = await stepAndCardBlockCreate({
-          variables: {
-            stepBlockCreateInput: {
-              id: newStepId,
-              journeyId: journey.id,
-              x,
-              y
-            },
-            cardBlockCreateInput: {
-              id: newCardId,
-              journeyId: journey.id,
-              parentBlockId: newStepId,
-              themeMode: ThemeMode.dark,
-              themeName: ThemeName.base
-            }
-          },
-          optimisticResponse: {
-            stepBlockCreate: {
+        if (edgeSource.sourceType === 'step') {
+          dispatch({
+            type: 'SetSelectedStepAction',
+            selectedStep: {
+              ...optimisticStep,
               __typename: 'StepBlock',
-              locked: false,
-              nextBlockId: null,
-              parentBlockId: null,
-              parentOrder: 0,
-              id: newStepId,
-              x,
-              y
-            },
-            cardBlockCreate: {
-              __typename: 'CardBlock',
-              id: newCardId,
-              parentBlockId: newStepId,
-              themeMode: ThemeMode.dark,
-              themeName: ThemeName.base,
-              fullscreen: false,
-              coverBlockId: null,
-              backgroundColor: null,
-              parentOrder: 0
+              children: [
+                {
+                  ...optimisticCard,
+                  __typename: 'CardBlock',
+                  children: []
+                }
+              ]
             }
-          }
-        })
-        await setNextBlockActions(newStepId)
-        newBlockRef = data
-        if (newBlockRef == null) return
+          })
+          void stepAndCardBlockCreate({
+            variables: {
+              stepBlockCreateInput: {
+                id: newStepId,
+                journeyId: journey.id,
+                x,
+                y
+              },
+              cardBlockCreateInput: {
+                id: newCardId,
+                journeyId: journey.id,
+                parentBlockId: newStepId,
+                themeMode: ThemeMode.dark,
+                themeName: ThemeName.base
+              },
+              stepId: edgeSource.stepId,
+              journeyId: journey.id,
+              stepBlockUpdateInput: {
+                nextBlockId: newStepId
+              }
+            },
+            optimisticResponse: {
+              stepBlockCreate: {
+                __typename: 'StepBlock',
+                locked: false,
+                nextBlockId: null,
+                parentBlockId: null,
+                parentOrder: 0,
+                id: newStepId,
+                x,
+                y
+              },
+              cardBlockCreate: {
+                __typename: 'CardBlock',
+                id: newCardId,
+                parentBlockId: newStepId,
+                themeMode: ThemeMode.dark,
+                themeName: ThemeName.base,
+                fullscreen: false,
+                coverBlockId: null,
+                backgroundColor: null,
+                parentOrder: 0
+              },
+              stepBlockUpdate: {
+                id: edgeSource.stepId,
+                __typename: 'StepBlock',
+                nextBlockId: newStepId
+              }
+            },
+            onCompleted: (data) => {
+              newBlockRef = data
+              // dispatch({
+              //   type: 'SetSelectedStepAction',
+              //   selectedStep: {
+              //     ...newBlockRef.stepBlockCreate,
+              //     children: [{ ...newBlockRef.cardBlockCreate, children: [] }]
+              //   }
+              // })
+            }
+          })
+        }
 
-        dispatch({
-          type: 'SetSelectedStepAction',
-          selectedStep: {
-            ...newBlockRef.stepBlockCreate,
-            children: [{ ...newBlockRef.cardBlockCreate, children: [] }]
-          }
-        })
+        // await setNextBlockActions(newStepId)
+        if (newBlockRef == null) return
       },
       undo: async ({ stepBeforeDelete, sourceBlock }) => {
         if (newBlockRef != null)
