@@ -4,7 +4,7 @@ import { ComponentProps } from 'react'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 import { TemplateSections } from '.'
-import { InstantSearchTestWrapper } from '../../libs/algolia/InstantSearchWrapper'
+import { InstantSearchTestWrapper } from '../../libs/algolia/InstantSearchTestWrapper'
 import { SearchBar } from '../SearchBar'
 
 import '../../../test/i18n'

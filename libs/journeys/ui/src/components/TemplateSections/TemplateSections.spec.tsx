@@ -119,13 +119,11 @@ describe('TemplateSections', () => {
       render(<TemplateSections />)
       expect(
         screen.getByRole('heading', {
-          name: 'No template fully matches your search criteria.'
+          name: 'Sorry, no results'
         })
       ).toBeInTheDocument()
       expect(
-        screen.getByText(
-          "Try using fewer filters or look below for templates related to the categories you've selected to search"
-        )
+        screen.getByText('Try removing or changing something from your request')
       ).toBeInTheDocument()
     })
 
