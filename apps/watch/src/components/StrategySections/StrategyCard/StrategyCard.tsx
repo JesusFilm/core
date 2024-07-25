@@ -83,8 +83,8 @@ export function StrategyCard({
           >
             {item?.imageUrl != null ? (
               <Image
-                rel={priority === true ? 'preload' : undefined}
-                priority={priority}
+                // rel={priority === true ? 'preload' : undefined}
+                // priority={priority}
                 className="MuiImageBackground-root"
                 src={item?.imageUrl}
                 alt={item?.title ?? ''}

@@ -1,3 +1,4 @@
+import { EmptySearch } from '@core/journeys/ui/EmptySearch'
 import Stack from '@mui/material/Stack'
 import { ReactElement, useState } from 'react'
 import { Index } from 'react-instantsearch'
@@ -27,7 +28,7 @@ export function StrategySections({
 
   return (
     <Stack data-testid="StrategySections" sx={{ pt: 4, gap: 16 }}>
-      {/* {!hasResult && <EmptySearch />} */}
+      {!hasResult && <EmptySearch />}
       {index ? (
         <Index indexName="wp_dev_posts_mission-trip">
           <StrategySection index={0} handleItemSearch={handleItemSearch} />
