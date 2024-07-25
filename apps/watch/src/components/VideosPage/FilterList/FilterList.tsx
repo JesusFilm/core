@@ -8,7 +8,11 @@ import { Formik } from 'formik'
 import { useTranslation } from 'next-i18next'
 import { useRouter } from 'next/router'
 import { ReactElement, useEffect, useMemo } from 'react'
-import { useRefinementList, useSearchBox } from 'react-instantsearch'
+import {
+  useClearRefinements,
+  useRefinementList,
+  useSearchBox
+} from 'react-instantsearch'
 
 import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
@@ -85,7 +89,10 @@ export function FilterList({
 }: FilterListProps): ReactElement {
   const { t } = useTranslation()
   const router = useRouter()
-  const { refine } = useSearchBox()
+  const { refine } = useClearRefinements({
+    includedAttributes: ['languageId', 'subtitles']
+  })
+  const { refine: refineSearch } = useSearchBox()
   const { items: languageItems, refine: refineLanguages } = useRefinementList({
     attribute: 'languageId',
     limit: 5000
@@ -136,7 +143,7 @@ export function FilterList({
     title: filter.title ?? ''
   }
 
-  const handleRefine = ({
+  function handleRefine({
     title,
     languageId,
     subtitleLanguageId
@@ -144,13 +151,19 @@ export function FilterList({
     title: string
     languageId: string
     subtitleLanguageId: string
-  }) => {
-    if (title) refine(title)
-    if (languageId) refineLanguages(languageId)
-    if (subtitleLanguageId) refineSubtitles(subtitleLanguageId)
+  }): void {
+    if (title) refineSearch(title)
+    if (languageId) {
+      refine()
+      refineLanguages(languageId)
+    }
+    if (subtitleLanguageId) {
+      refine()
+      refineSubtitles(subtitleLanguageId)
+    }
   }
 
-  const handleSubmit = (values: typeof initialValues) => {
+  function handleSubmit(values: typeof initialValues): void {
     const params = new URLSearchParams(router.query as Record<string, string>)
     const setQueryParam = (name: string, value?: string | null) =>
       value ? params.set(name, value) : params.delete(name)

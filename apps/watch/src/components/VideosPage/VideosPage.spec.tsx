@@ -1,9 +1,14 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 import { render, screen, waitFor } from '@testing-library/react'
+import { ClearRefinementsRenderState } from 'instantsearch.js/es/connectors/clear-refinements/connectClearRefinements'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
-import { useRefinementList, useSearchBox } from 'react-instantsearch'
+import {
+  useClearRefinements,
+  useRefinementList,
+  useSearchBox
+} from 'react-instantsearch'
 import {
   AlgoliaVideos,
   useAlgoliaVideos
@@ -22,16 +27,17 @@ jest.mock('next/router', () => ({
 jest.mock('react-instantsearch')
 jest.mock('../../libs/algolia/useAlgoliaVideos')
 
-const mockedUseAlgoliaVideos = useAlgoliaVideos as jest.MockedFunction<
+const mockUseAlgoliaVideos = useAlgoliaVideos as jest.MockedFunction<
   typeof useAlgoliaVideos
 >
-
-const mockedUseSearchBox = useSearchBox as jest.MockedFunction<
+const mockUseSearchBox = useSearchBox as jest.MockedFunction<
   typeof useSearchBox
 >
-
-const mockedUseRefinementList = useRefinementList as jest.MockedFunction<
+const mockUseRefinementList = useRefinementList as jest.MockedFunction<
   typeof useRefinementList
+>
+const mockUseClearRefinements = useClearRefinements as jest.MockedFunction<
+  typeof useClearRefinements
 >
 
 describe('VideosPage', () => {
@@ -58,20 +64,24 @@ describe('VideosPage', () => {
   ] as unknown as AlgoliaVideos[]
 
   beforeEach(() => {
-    mockedUseAlgoliaVideos.mockReturnValue({
+    mockUseAlgoliaVideos.mockReturnValue({
       hits: algoliaVideos,
       showMore: jest.fn(),
       isLastPage: false
     })
 
-    mockedUseSearchBox.mockReturnValue({
+    mockUseSearchBox.mockReturnValue({
       refine: jest.fn
     } as unknown as SearchBoxRenderState)
 
-    mockedUseRefinementList.mockReturnValue({
+    mockUseRefinementList.mockReturnValue({
       items: [],
       refine: jest.fn()
     } as unknown as RefinementListRenderState)
+
+    mockUseClearRefinements.mockReturnValue({
+      refine: jest.fn()
+    } as unknown as ClearRefinementsRenderState)
   })
 
   it('should render videos page', async () => {

@@ -1,19 +1,28 @@
 import { renderHook } from '@testing-library/react'
-import { ConfigureRenderState } from 'instantsearch.js/es/connectors/configure/connectConfigure'
 import { InfiniteHitsRenderState } from 'instantsearch.js/es/connectors/infinite-hits/connectInfiniteHits'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
-import {
-  useConfigure,
-  useInfiniteHits,
-  useRefinementList
-} from 'react-instantsearch'
+import { NextRouter, useRouter } from 'next/router'
+import { useInfiniteHits, useRefinementList } from 'react-instantsearch'
 import {
   AlgoliaVideos,
   transformItems,
   useAlgoliaVideos
 } from './useAlgoliaVideos'
 
+jest.mock('next/router', () => ({
+  __esModule: true,
+  useRouter: jest.fn()
+}))
+
 jest.mock('react-instantsearch')
+
+const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockUseInfiniteHits = useInfiniteHits as jest.MockedFunction<
+  typeof useInfiniteHits
+>
+const mockUseRefinementList = useRefinementList as jest.MockedFunction<
+  typeof useRefinementList
+>
 
 describe('useAlgoliaVideos', () => {
   const algoliaVideos = [
@@ -35,32 +44,19 @@ describe('useAlgoliaVideos', () => {
   ] as unknown as AlgoliaVideos[]
 
   beforeEach(() => {
-    const useInfiniteHitsMocked = jest.mocked(useInfiniteHits)
-    useInfiniteHitsMocked.mockReturnValue({
+    mockUseInfiniteHits.mockReturnValue({
       hits: algoliaVideos,
       showMore: jest.fn(),
       isLastPage: false
     } as unknown as InfiniteHitsRenderState)
 
-    const useRefinementListMocked = jest.mocked(useRefinementList)
-    useRefinementListMocked.mockReturnValue({
-      items: [
-        {
-          count: 753,
-          isRefined: false,
-          value: '529',
-          label: '529',
-          highlighted: '529'
-        }
-      ]
+    mockUseRefinementList.mockReturnValue({
+      refine: jest.fn()
     } as unknown as RefinementListRenderState)
 
-    const useConfigureMocked = jest.fn(useConfigure)
-    useConfigureMocked.mockReturnValue({
-      facetsRefinements: {
-        languageId: ['529']
-      }
-    } as unknown as ConfigureRenderState)
+    mockUseRouter.mockReturnValue({
+      asPath: '/watch'
+    } as unknown as NextRouter)
   })
 
   it('should have transformed algolia hits into videos', () => {
@@ -106,5 +102,53 @@ describe('useAlgoliaVideos', () => {
   it('should return isLastPage', () => {
     const { result } = renderHook(() => useAlgoliaVideos())
     expect(result.current.isLastPage).toBe(false)
+  })
+
+  it('should refine languageId to english if in videos pages and there is no selected language', () => {
+    const refine = jest.fn()
+
+    mockUseRouter.mockReturnValue({
+      asPath: '/watch/videos'
+    } as unknown as NextRouter)
+
+    mockUseRefinementList.mockReturnValue({
+      refine
+    } as unknown as RefinementListRenderState)
+
+    renderHook(() => useAlgoliaVideos())
+
+    expect(refine).toHaveBeenCalledWith('529')
+  })
+
+  it('should not refine languageId to english if not in videos page', () => {
+    const refine = jest.fn()
+
+    mockUseRouter.mockReturnValue({
+      asPath: '/watch'
+    } as unknown as NextRouter)
+
+    mockUseRefinementList.mockReturnValue({
+      refine
+    } as unknown as RefinementListRenderState)
+
+    renderHook(() => useAlgoliaVideos())
+
+    expect(refine).not.toHaveBeenCalled()
+  })
+
+  it('should not refine languageId to english if there is already a selected language', () => {
+    const refine = jest.fn()
+
+    mockUseRouter.mockReturnValue({
+      asPath: '/watch/videos?languages=1'
+    } as unknown as NextRouter)
+
+    mockUseRefinementList.mockReturnValue({
+      refine
+    } as unknown as RefinementListRenderState)
+
+    renderHook(() => useAlgoliaVideos())
+
+    expect(refine).not.toHaveBeenCalled()
   })
 })

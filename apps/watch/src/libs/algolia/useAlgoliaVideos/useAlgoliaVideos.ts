@@ -1,8 +1,8 @@
 import { BaseHit, Hit } from 'instantsearch.js'
-import { useEffect, useState } from 'react'
+import { useRouter } from 'next/router'
+import { useEffect } from 'react'
 import {
   UseInfiniteHitsProps,
-  useConfigure,
   useInfiniteHits,
   useRefinementList
 } from 'react-instantsearch'
@@ -55,31 +55,23 @@ export const transformItems: UseInfiniteHitsProps<AlgoliaVideos>['transformItems
   }
 
 export function useAlgoliaVideos() {
-  const [defaultRefinement, setDefaultRefinement] = useState<{
-    languageId: string[]
-  }>({
-    languageId: ['529']
-  })
+  const router = useRouter()
 
   const { hits, showMore, isLastPage } = useInfiniteHits<AlgoliaVideos>({
     transformItems
   })
 
-  const { items } = useRefinementList({
+  const { refine } = useRefinementList({
     attribute: 'languageId'
   })
 
   useEffect(() => {
-    if (items.some((item) => item.isRefined)) {
-      setDefaultRefinement({ languageId: [] })
-    } else {
-      setDefaultRefinement({ languageId: ['529'] })
+    const hasSelectedLanguage = router.asPath.includes('languages')
+    const isVideosPage = router.asPath.includes('videos')
+    if (!hasSelectedLanguage && isVideosPage) {
+      refine('529')
     }
-  }, [items])
-
-  useConfigure({
-    facetsRefinements: defaultRefinement
-  })
+  }, [router, refine])
 
   return {
     hits,

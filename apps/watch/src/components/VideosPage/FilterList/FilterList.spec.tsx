@@ -1,8 +1,13 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { ClearRefinementsRenderState } from 'instantsearch.js/es/connectors/clear-refinements/connectClearRefinements'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
 import { NextRouter, useRouter } from 'next/router'
-import { useRefinementList, useSearchBox } from 'react-instantsearch'
+import {
+  useClearRefinements,
+  useRefinementList,
+  useSearchBox
+} from 'react-instantsearch'
 import { languages } from '../testData'
 import { FilterList } from './FilterList'
 
@@ -16,12 +21,14 @@ jest.mock('next/router', () => ({
 }))
 
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
-
 const mockUseSearchBox = useSearchBox as jest.MockedFunction<
   typeof useSearchBox
 >
 const mockUseRefinementList = useRefinementList as jest.MockedFunction<
   typeof useRefinementList
+>
+const mockUseClearRefinements = useClearRefinements as jest.MockedFunction<
+  typeof useClearRefinements
 >
 
 describe('FilterList', () => {
@@ -34,6 +41,10 @@ describe('FilterList', () => {
     mockUseRouter.mockReturnValue({
       push
     } as unknown as NextRouter)
+
+    mockUseClearRefinements.mockReturnValue({
+      refine: jest.fn()
+    } as unknown as ClearRefinementsRenderState)
 
     jest.clearAllMocks()
   })
