@@ -24,6 +24,7 @@ import { NavigateToBlockActionResolver } from './navigateToBlockAction/navigateT
     LinkActionResolver,
     EmailActionResolver,
     NavigateToBlockActionResolver
-  ]
+  ],
+  exports: [ActionService]
 })
 export class ActionModule {}
