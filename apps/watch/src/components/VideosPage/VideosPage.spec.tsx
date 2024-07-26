@@ -1,5 +1,4 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 import { render, screen, waitFor } from '@testing-library/react'
 import { ClearRefinementsRenderState } from 'instantsearch.js/es/connectors/clear-refinements/connectClearRefinements'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
@@ -84,45 +83,47 @@ describe('VideosPage', () => {
     } as unknown as ClearRefinementsRenderState)
   })
 
-  it('should render videos page', async () => {
+  it('should render the languages filter', async () => {
     render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: GET_LANGUAGES,
-              variables: {
-                languageId: '529'
-              }
-            },
-            result: {
-              data: {
-                languages: [
-                  {
-                    id: '496',
-                    name: [
-                      {
-                        value: 'French',
-                        primary: true
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          }
-        ]}
-      >
+      <MockedProvider>
         <VideosPage />
       </MockedProvider>
     )
     await waitFor(() =>
       expect(screen.getAllByText('Languages')[0]).toBeInTheDocument()
     )
-    expect(screen.getByText('Subtitles')).toBeInTheDocument()
-    expect(screen.getByText('Title')).toBeInTheDocument()
-    expect(
-      screen.getByRole('heading', { level: 3, name: 'title1' })
-    ).toBeInTheDocument()
+  })
+
+  it('should render the subtitles filter', async () => {
+    render(
+      <MockedProvider>
+        <VideosPage />
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(screen.getByText('Subtitles')).toBeInTheDocument()
+    )
+  })
+
+  it('should render the search bar', async () => {
+    render(
+      <MockedProvider>
+        <VideosPage />
+      </MockedProvider>
+    )
+    await waitFor(() => expect(screen.getByText('Title')).toBeInTheDocument())
+  })
+
+  it('should render the video title', async () => {
+    render(
+      <MockedProvider>
+        <VideosPage />
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(
+        screen.getByRole('heading', { level: 3, name: 'title1' })
+      ).toBeInTheDocument()
+    )
   })
 })

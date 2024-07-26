@@ -33,6 +33,7 @@ const mockUseClearRefinements = useClearRefinements as jest.MockedFunction<
 
 describe('FilterList', () => {
   const push = jest.fn()
+
   beforeEach(() => {
     mockUseSearchBox.mockReturnValue({
       refine: jest.fn()
@@ -59,8 +60,10 @@ describe('FilterList', () => {
         highlighted: '529'
       }
     ]
-    it('should handle audio language filter', async () => {
+
+    it('should refine and update url on audio language filter', async () => {
       const refineLanguages = jest.fn()
+
       mockUseRefinementList.mockReturnValue({
         items: languageItems,
         refine: refineLanguages
@@ -77,6 +80,7 @@ describe('FilterList', () => {
       const langaugesComboboxEl = screen.getAllByRole('combobox', {
         name: 'Search Languages'
       })[0]
+
       fireEvent.focus(langaugesComboboxEl)
       fireEvent.keyDown(langaugesComboboxEl, { key: 'ArrowDown' })
       await waitFor(() => screen.getAllByText('English')[0])
@@ -109,8 +113,9 @@ describe('FilterList', () => {
         highlighted: '21028'
       }
     ]
-    it('should handle subtitle language filter', async () => {
+    it('should refine and update url on subtitle language filter', async () => {
       const refineSubtitles = jest.fn()
+
       mockUseRefinementList.mockReturnValue({
         items: subtitleItems,
         refine: refineSubtitles
@@ -127,6 +132,7 @@ describe('FilterList', () => {
       const subtitleComboboxEl = screen.getAllByRole('combobox', {
         name: 'Search Languages'
       })[1]
+
       fireEvent.focus(subtitleComboboxEl)
       fireEvent.keyDown(subtitleComboboxEl, { key: 'ArrowDown' })
       await waitFor(() => screen.getAllByText('English')[0])
@@ -141,8 +147,9 @@ describe('FilterList', () => {
       expect(refineSubtitles).toHaveBeenCalled()
     })
   })
+
   describe('Search Filter', () => {
-    it('should handle search filter', async () => {
+    it('should refine and update url on title search', async () => {
       const refine = jest.fn()
 
       mockUseSearchBox.mockReturnValue({

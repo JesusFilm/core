@@ -18,7 +18,7 @@ const FilterListStory: Meta<typeof FilterList> = {
 const Template: StoryObj<typeof FilterList> = {
   render: () => {
     return (
-      <InstantSearchTestWrapper query="" indexName="video-variants-stg">
+      <InstantSearchTestWrapper indexName="video-variants-stg">
         <FilterList
           filter={{}}
           languagesData={{ languages }}

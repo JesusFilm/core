@@ -17,7 +17,7 @@ const Template: StoryObj<
   ComponentProps<typeof VideosPage> & { limit: number }
 > = {
   render: () => (
-    <InstantSearchTestWrapper query="" indexName="video-variants-stg">
+    <InstantSearchTestWrapper indexName="video-variants-stg">
       <VideosPage />
     </InstantSearchTestWrapper>
   )

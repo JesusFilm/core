@@ -182,7 +182,7 @@ export function FilterList({
     })
   }
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  // biome-ignore lint/correctness/useExhaustiveDependencies: effect to only run on componentDidMount
   useEffect(() => {
     handleRefine({
       title: initialValues.title,

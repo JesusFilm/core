@@ -3,11 +3,8 @@ import { InfiniteHitsRenderState } from 'instantsearch.js/es/connectors/infinite
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { NextRouter, useRouter } from 'next/router'
 import { useInfiniteHits, useRefinementList } from 'react-instantsearch'
-import {
-  AlgoliaVideo,
-  transformItems,
-  useAlgoliaVideos
-} from './useAlgoliaVideos'
+import type { AlgoliaVideo, CoreVideo } from './useAlgoliaVideos'
+import { transformItems, useAlgoliaVideos } from './useAlgoliaVideos'
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -43,6 +40,35 @@ describe('useAlgoliaVideos', () => {
     }
   ] as unknown as AlgoliaVideo[]
 
+  const transformedVideos = [
+    {
+      __typename: 'Video',
+      childrenCount: 49,
+      id: 'videoId',
+      image:
+        'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_GOJ-0-0.mobileCinematicHigh.jpg',
+      imageAlt: [
+        {
+          value: 'Life of Jesus (Gospel of John)'
+        }
+      ],
+      label: 'featureFilm',
+      slug: 'video-slug/english',
+      snippet: [],
+      title: [
+        {
+          value: 'title1'
+        }
+      ],
+      variant: {
+        duration: 10994,
+        hls: null,
+        id: '2_529-GOJ-0-0',
+        slug: 'video-slug/english'
+      }
+    }
+  ] as unknown as CoreVideo[]
+
   beforeEach(() => {
     mockUseInfiniteHits.mockReturnValue({
       hits: algoliaVideos,
@@ -61,41 +87,14 @@ describe('useAlgoliaVideos', () => {
 
   it('should have transformed algolia hits into videos', () => {
     if (transformItems) {
-      const transformedItems = transformItems(algoliaVideos, {})
-      expect(transformedItems).toEqual([
-        {
-          __typename: 'Video',
-          childrenCount: 49,
-          id: 'videoId',
-          image:
-            'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_GOJ-0-0.mobileCinematicHigh.jpg',
-          imageAlt: [
-            {
-              value: 'Life of Jesus (Gospel of John)'
-            }
-          ],
-          label: 'featureFilm',
-          slug: 'video-slug/english',
-          snippet: [],
-          title: [
-            {
-              value: 'title1'
-            }
-          ],
-          variant: {
-            duration: 10994,
-            hls: null,
-            id: '2_529-GOJ-0-0',
-            slug: 'video-slug/english'
-          }
-        }
-      ])
+      const transformedItems = transformItems(algoliaVideos)
+      expect(transformedItems).toEqual(transformedVideos)
     }
   })
 
   it('should return hits', async () => {
     const { result } = renderHook(() => useAlgoliaVideos())
-    await expect(result.current.hits).toEqual([...algoliaVideos])
+    await expect(result.current.hits).toEqual([...transformedVideos])
   })
 
   it('should return showMore', () => {
