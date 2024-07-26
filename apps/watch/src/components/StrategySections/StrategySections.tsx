@@ -1,7 +1,7 @@
 import { EmptySearch } from '@core/journeys/ui/EmptySearch'
 import Stack from '@mui/material/Stack'
 import { ReactElement, useState } from 'react'
-import { Index } from 'react-instantsearch'
+import { Index, useInstantSearch } from 'react-instantsearch'
 import { StrategySection } from './StrategySection/StrategySection'
 
 interface StrategySectionsProps {
@@ -26,9 +26,22 @@ export function StrategySections({
     setHasResult(hasTrueValue)
   }
 
+  const { status } = useInstantSearch()
+
+  console.log(status)
+
+  // const { loading } = useSearch
+
+  // find loading state from aloglia x
+  // if loading, render one strategysection, passing in the loadign prop
+  // using the loading prop, render a skeleton in the strategy section
+  // pass loading prop from strategysection down to stratgeycard
+  // on strategycard, render skeleton
+
   return (
     <Stack data-testid="StrategySections" sx={{ pt: 4, gap: 16 }}>
       {!hasResult && <EmptySearch />}
+      {/* {loading == true && <StrategySections loading/>} */}
       {index ? (
         <Index indexName="wp_dev_posts_mission-trip">
           <StrategySection index={0} handleItemSearch={handleItemSearch} />

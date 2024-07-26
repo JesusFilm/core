@@ -1,6 +1,7 @@
 import { ContentCarousel } from '@core/shared/ui/ContentCarousel'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
+import Skeleton from '@mui/material/Skeleton'
 import Typography from '@mui/material/Typography'
 import { useTheme } from '@mui/material/styles'
 import { Hit } from 'instantsearch.js'
@@ -30,11 +31,13 @@ function transformAlgoliaStrategies(hits: Hit[]): StrategyCardItem[] {
 interface StrategySectionProps {
   handleItemSearch: (index: number, value: boolean) => void
   index: number
+  loading?: boolean
 }
 
 export function StrategySection({
   handleItemSearch,
-  index
+  index,
+  loading = true
 }: StrategySectionProps): ReactElement {
   const { breakpoints } = useTheme()
 
@@ -77,20 +80,38 @@ export function StrategySection({
 
   return (
     <>
-      {items.length > 0 ? (
+      {loading === false ? (
+        <>
+          {items.length > 0 && (
+            <Box data-testid="StrategySection">
+              <Typography variant="h5">{label}</Typography>
+              <Container maxWidth={false} sx={{ overflow: 'hidden' }}>
+                <ContentCarousel
+                  items={items}
+                  renderItem={(itemProps) => <StrategyCard {...itemProps} />}
+                  breakpoints={swiperBreakpoints}
+                  slidesOffsetBefore={-32}
+                />
+              </Container>
+            </Box>
+          )}
+        </>
+      ) : (
         <Box data-testid="StrategySection">
-          <Typography variant="h5">{label}</Typography>
+          <Skeleton
+            sx={{ width: { xs: 145, md: 274 }, height: { xs: 30, md: 36 } }}
+          />
           <Container maxWidth={false} sx={{ overflow: 'hidden' }}>
             <ContentCarousel
               items={items}
-              renderItem={(itemProps) => <StrategyCard {...itemProps} />}
+              renderItem={(itemProps) => (
+                <StrategyCard {...itemProps} loading />
+              )}
               breakpoints={swiperBreakpoints}
               slidesOffsetBefore={-32}
             />
           </Container>
         </Box>
-      ) : (
-        <></>
       )}
     </>
   )

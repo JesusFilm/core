@@ -1,6 +1,7 @@
 import InsertPhotoRoundedIcon from '@mui/icons-material/InsertPhotoRounded'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
+import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTheme } from '@mui/material/styles'
@@ -19,11 +20,13 @@ export interface StrategyItemProps {
 interface StrategyCardProps {
   item?: StrategyItemProps
   priority?: boolean
+  loading?: boolean
 }
 
 export function StrategyCard({
   item,
-  priority = true
+  priority = true,
+  loading = false
 }: StrategyCardProps): ReactElement {
   const theme = useTheme()
   return (
@@ -69,80 +72,104 @@ export function StrategyCard({
             textDecoration: 'none'
           }}
         >
-          <Stack
-            justifyContent="center"
-            alignItems="center"
-            sx={{
-              position: 'relative',
-              maxHeight: 160,
-              aspectRatio: 2,
-              overflow: 'hidden',
-              borderRadius: 2,
-              backgroundColor: 'background.default'
-            }}
-          >
-            {item?.imageUrl != null ? (
-              <Image
-                // rel={priority === true ? 'preload' : undefined}
-                // priority={priority}
-                className="MuiImageBackground-root"
-                src={item?.imageUrl}
-                alt={item?.title ?? ''}
-                fill
-                sizes={`(max-width: ${
-                  theme.breakpoints.values.md - 0.5
-                }px) 130px, (max-width: ${
-                  theme.breakpoints.values.xl - 0.5
-                }px) 180px, 280px`}
-                style={{
-                  maxHeight: '160px',
-                  objectFit: 'cover'
-                }}
-              />
-            ) : (
-              <InsertPhotoRoundedIcon className="MuiImageBackground-root" />
-            )}
-          </Stack>
+          {loading === false ? (
+            <Stack
+              justifyContent="center"
+              alignItems="center"
+              sx={{
+                position: 'relative',
+                maxHeight: 160,
+                aspectRatio: 2,
+                overflow: 'hidden',
+                borderRadius: 2,
+                backgroundColor: 'background.default'
+              }}
+            >
+              {item?.imageUrl != null ? (
+                <Image
+                  rel={priority === true ? 'preload' : undefined}
+                  priority={priority}
+                  className="MuiImageBackground-root"
+                  src={item?.imageUrl}
+                  alt={item?.title ?? ''}
+                  fill
+                  sizes={`(max-width: ${
+                    theme.breakpoints.values.md - 0.5
+                  }px) 130px, (max-width: ${
+                    theme.breakpoints.values.xl - 0.5
+                  }px) 180px, 280px`}
+                  style={{
+                    maxHeight: '160px',
+                    objectFit: 'cover'
+                  }}
+                />
+              ) : (
+                <InsertPhotoRoundedIcon className="MuiImageBackground-root" />
+              )}
+            </Stack>
+          ) : (
+            <Skeleton
+              data-testid="image skeleton"
+              variant="rectangular"
+              sx={{
+                width: { xs: 130, md: 180, xl: 240 },
+                height: { xs: 130, md: 180, xl: 240 },
+                borderColor: 'divider',
+                borderRadius: 2,
+                backgroundColor: 'background.default'
+              }}
+            />
+          )}
           <Stack sx={{ px: 0, py: 3 }}>
-            <Typography variant="subtitle2">{item?.title ?? ''}</Typography>
-            <Box
-              sx={{
-                display: { xs: 'none', md: '-webkit-box' },
-                height: '66px',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                WebkitBoxOrient: 'vertical',
-                WebkitLineClamp: 3
-              }}
-            >
-              <Typography
-                variant="body1"
-                sx={{
-                  my: 1
-                }}
-              >
-                {item?.description ?? ''}
-              </Typography>
-            </Box>
-            <Box
-              sx={{
-                display: { xs: '-webkit-box', md: 'none' },
-                height: '63px',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                WebkitBoxOrient: 'vertical',
-                WebkitLineClamp: 3
-              }}
-            >
-              <Typography
-                variant="body2"
-                sx={{
-                  my: 1
-                }}
-              >
-                {item?.description ?? ''}
-              </Typography>
-            </Box>
+            {loading === false ? (
+              <>
+                <Typography variant="subtitle2">{item?.title ?? ''}</Typography>
+                <Box
+                  sx={{
+                    display: { xs: 'none', md: '-webkit-box' },
+                    height: '66px',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    WebkitBoxOrient: 'vertical',
+                    WebkitLineClamp: 3
+                  }}
+                >
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      my: 1
+                    }}
+                  >
+                    {item?.description ?? ''}
+                  </Typography>
+                </Box>
+                <Box
+                  sx={{
+                    display: { xs: '-webkit-box', md: 'none' },
+                    height: '63px',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    WebkitBoxOrient: 'vertical',
+                    WebkitLineClamp: 3
+                  }}
+                >
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      my: 1
+                    }}
+                  >
+                    {item?.description ?? ''}
+                  </Typography>
+                </Box>
+              </>
+            ) : (
+              <Box>
+                <Skeleton variant="text" sx={{ width: '100%' }} />
+                <Skeleton variant="text" sx={{ width: '100%' }} />
+                <Skeleton variant="text" sx={{ width: '60%' }} />
+              </Box>
+            )}
           </Stack>
         </Box>
       </NextLink>
