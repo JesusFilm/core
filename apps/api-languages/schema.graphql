@@ -32,6 +32,15 @@ type Country
   languages: [Language!]!
   name(languageId: ID, primary: Boolean): [CountryName!]!
   continent: Continent!
+  countryLanguages: [CountryLanguage!]!
+}
+
+type CountryLanguage {
+  id: ID!
+  language: Language!
+  country: Country!
+  speakers: Int!
+  displaySpeakers: Int
 }
 
 type CountryName {
@@ -47,7 +56,7 @@ type Language
   bcp47: String
   iso3: String
   name(languageId: ID, primary: Boolean): [LanguageName!]!
-  countries: [Country!]!
+  countryLanguages: [CountryLanguage!]!
   audioPreview: AudioPreview
 }
 

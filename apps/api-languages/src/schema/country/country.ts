@@ -43,7 +43,8 @@ const Country = builder.prismaObject('Country', {
         })
       }
     }),
-    continent: t.relation('continent')
+    continent: t.relation('continent'),
+    countryLanguages: t.relation('countryLanguages')
   })
 })
 

@@ -21,10 +21,13 @@ const COUNTRY_QUERY = graphql(`
       flagPngSrc
       flagWebpSrc
       id
-      languages {
-        id
-        iso3
-        bcp47
+      countryLanguages {
+        speakers
+        language {
+          id
+          iso3
+          bcp47
+        }
       }
       latitude
       longitude
@@ -48,7 +51,8 @@ describe('country', () => {
     prismaMock.country.findUnique.mockResolvedValue({
       ...country,
       languages: [language],
-      continent: continent
+      continent: continent,
+      countryLanguages: [{ id: '1', language, speakers: 100 }]
     } as unknown as Country)
     prismaMock.countryName.findMany.mockResolvedValue([countryName])
     prismaMock.continentName.findMany.mockResolvedValue([continentName])
@@ -62,7 +66,12 @@ describe('country', () => {
     expect(prismaMock.country.findUnique).toHaveBeenCalledWith({
       include: {
         languages: true,
-        continent: true
+        continent: true,
+        countryLanguages: {
+          include: {
+            language: true
+          }
+        }
       },
       where: {
         id: 'AD'
@@ -87,6 +96,9 @@ describe('country', () => {
         ...continent,
         name: [{ ...omit(continentName, ['id', 'continentId', 'languageId']) }]
       },
+      countryLanguages: [
+        { language: omit(language, ['createdAt', 'updatedAt']), speakers: 100 }
+      ],
       name: [{ ...omit(countryName, ['id', 'countryId', 'languageId']) }]
     })
   })
