@@ -484,8 +484,6 @@ export type FormiumProject = {
   name: Scalars['String']['output'];
 };
 
-export type GenericAction = EmailAction | LinkAction | NavigateToBlockAction;
-
 export enum GridAlignItems {
   Baseline = 'baseline',
   Center = 'center',
@@ -1111,7 +1109,7 @@ export type Mutation = {
   blockOrderUpdate: Array<Block>;
   /** blockRestore is used for redo/undo */
   blockRestore: Array<Block>;
-  blockUpdateAction: GenericAction;
+  blockUpdateAction: Action;
   blockUpdateEmailAction: EmailAction;
   blockUpdateLinkAction: LinkAction;
   blockUpdateNavigateToBlockAction: NavigateToBlockAction;
