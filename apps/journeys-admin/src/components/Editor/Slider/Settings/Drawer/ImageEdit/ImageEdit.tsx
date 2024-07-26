@@ -134,7 +134,8 @@ export function ImageEdit({
       variables: {
         input: {
           journeyId: journey.id,
-          ...input
+          ...input,
+          alt: input.alt ?? 'journey image'
         }
       }
     })

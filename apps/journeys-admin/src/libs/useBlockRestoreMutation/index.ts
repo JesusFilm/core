@@ -1,5 +1,4 @@
 export {
   useBlockRestoreMutation,
-  blockRestoreUpdate,
-  BLOCK_RESTORE_FIELDS
+  blockRestoreUpdate
 } from './useBlockRestoreMutation'
