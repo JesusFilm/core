@@ -29,6 +29,7 @@ describe('ImageSource', () => {
   let originalEnv
 
   beforeEach(() => {
+    ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
     originalEnv = process.env
     process.env = {
       ...originalEnv,
@@ -47,11 +48,9 @@ describe('ImageSource', () => {
     process.env = originalEnv
   })
 
-  beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
-
   describe('No existing ImageBlock', () => {
     it('shows placeholders on null', async () => {
-      const { getByRole } = render(
+      render(
         <MockedProvider>
           <SnackbarProvider>
             <ImageSource
@@ -62,7 +61,7 @@ describe('ImageSource', () => {
           </SnackbarProvider>
         </MockedProvider>
       )
-      fireEvent.click(getByRole('button', { name: 'Select Image' }))
+      fireEvent.click(screen.getByRole('button', { name: 'Select Image' }))
       await waitFor(() => {
         expect(push).toHaveBeenCalledWith(
           {
@@ -80,14 +79,14 @@ describe('ImageSource', () => {
           screen.getByRole('button', { name: 'Add image by URL' })
         )
       )
-      const textBox = await getByRole('textbox')
+      const textBox = await screen.getByRole('textbox')
       expect(textBox).toHaveValue('')
     })
   })
 
   describe('Existing ImageBlock', () => {
     it('shows placeholders', async () => {
-      const { getByRole } = render(
+      render(
         <MockedProvider>
           <SnackbarProvider>
             <ImageSource
@@ -98,7 +97,7 @@ describe('ImageSource', () => {
           </SnackbarProvider>
         </MockedProvider>
       )
-      fireEvent.click(getByRole('button', { name: 'Select Image' }))
+      fireEvent.click(screen.getByRole('button', { name: 'Select Image' }))
       await waitFor(() =>
         fireEvent.click(screen.getByRole('tab', { name: 'Custom' }))
       )
@@ -107,13 +106,13 @@ describe('ImageSource', () => {
           screen.getByRole('button', { name: 'Add image by URL' })
         )
       )
-      const textBox = await getByRole('textbox')
+      const textBox = await screen.getByRole('textbox')
       expect(textBox).toHaveValue('')
     })
   })
 
   it('triggers onChange', async () => {
-    const { getByRole } = render(
+    render(
       <MockedProvider mocks={[createCloudflareUploadByUrlMock]}>
         <SnackbarProvider>
           <ImageSource
@@ -124,14 +123,14 @@ describe('ImageSource', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByRole('button', { name: 'Select Image' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Select Image' }))
     await waitFor(() =>
       fireEvent.click(screen.getByRole('tab', { name: 'Custom' }))
     )
     await waitFor(() =>
       fireEvent.click(screen.getByRole('button', { name: 'Add image by URL' }))
     )
-    const textBox = await getByRole('textbox')
+    const textBox = await screen.getByRole('textbox')
     fireEvent.change(textBox, {
       target: { value: 'https://example.com/image.jpg' }
     })
@@ -140,7 +139,7 @@ describe('ImageSource', () => {
   })
 
   it('triggers onChange onPaste', async () => {
-    const { getByRole } = render(
+    render(
       <MockedProvider mocks={[createCloudflareUploadByUrlMock]}>
         <SnackbarProvider>
           <ImageSource
@@ -151,14 +150,14 @@ describe('ImageSource', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByRole('button', { name: 'Select Image' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Select Image' }))
     await waitFor(() =>
       fireEvent.click(screen.getByRole('tab', { name: 'Custom' }))
     )
     await waitFor(() =>
       fireEvent.click(screen.getByRole('button', { name: 'Add image by URL' }))
     )
-    const textBox = await getByRole('textbox')
+    const textBox = await screen.getByRole('textbox')
     await fireEvent.paste(textBox, {
       clipboardData: { getData: () => 'https://example.com/image.jpg' }
     })

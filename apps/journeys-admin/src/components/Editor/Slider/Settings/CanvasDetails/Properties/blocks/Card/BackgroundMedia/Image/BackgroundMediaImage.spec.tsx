@@ -172,7 +172,7 @@ describe('BackgroundMediaImage', () => {
         imageBlockCreate: image
       }
     }))
-    const { getByRole } = render(
+    render(
       <MockedProvider
         cache={cache}
         mocks={[
@@ -201,14 +201,14 @@ describe('BackgroundMediaImage', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByRole('button', { name: 'Select Image' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Select Image' }))
     await waitFor(() =>
       fireEvent.click(screen.getByRole('tab', { name: 'Custom' }))
     )
     await waitFor(() =>
       fireEvent.click(screen.getByRole('button', { name: 'Add image by URL' }))
     )
-    const textBox = await getByRole('textbox')
+    const textBox = await screen.getByRole('textbox')
     fireEvent.change(textBox, {
       target: { value: 'https://example.com/image.jpg' }
     })
@@ -262,7 +262,7 @@ describe('BackgroundMediaImage', () => {
         }
       }
     }))
-    const { getByRole } = render(
+    render(
       <MockedProvider
         cache={cache}
         mocks={[
@@ -302,14 +302,14 @@ describe('BackgroundMediaImage', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByRole('button', { name: 'Select Image' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Select Image' }))
     await waitFor(() =>
       fireEvent.click(screen.getByRole('tab', { name: 'Custom' }))
     )
     await waitFor(() =>
       fireEvent.click(screen.getByRole('button', { name: 'Add image by URL' }))
     )
-    const textBox = await getByRole('textbox')
+    const textBox = await screen.getByRole('textbox')
     fireEvent.change(textBox, {
       target: { value: 'https://example.com/image.jpg' }
     })
@@ -363,7 +363,7 @@ describe('BackgroundMediaImage', () => {
           }
         }
       }))
-      const { getByRole } = render(
+      render(
         <MockedProvider
           cache={cache}
           mocks={[
@@ -393,7 +393,7 @@ describe('BackgroundMediaImage', () => {
         </MockedProvider>
       )
       fireEvent.click(
-        getByRole('button', {
+        screen.getByRole('button', {
           name: 'https://example.com/image2.jpg Selected Image 1920 x 1080 pixels'
         })
       )
@@ -405,7 +405,7 @@ describe('BackgroundMediaImage', () => {
           screen.getByRole('button', { name: 'Add image by URL' })
         )
       )
-      const textBox = await getByRole('textbox')
+      const textBox = await screen.getByRole('textbox')
       fireEvent.change(textBox, {
         target: { value: 'https://example.com/image.jpg' }
       })
@@ -418,7 +418,7 @@ describe('BackgroundMediaImage', () => {
     })
 
     it('shows loading icon', async () => {
-      const { getByRole } = render(
+      render(
         <MockedProvider mocks={[createCloudflareUploadByUrlMock]}>
           <JourneyProvider value={{ journey, variant: 'admin' }}>
             <SnackbarProvider>
@@ -428,7 +428,7 @@ describe('BackgroundMediaImage', () => {
         </MockedProvider>
       )
       fireEvent.click(
-        getByRole('button', {
+        screen.getByRole('button', {
           name: 'https://example.com/image2.jpg Selected Image 1920 x 1080 pixels'
         })
       )
@@ -440,12 +440,14 @@ describe('BackgroundMediaImage', () => {
           screen.getByRole('button', { name: 'Add image by URL' })
         )
       )
-      const textbox = getByRole('textbox')
+      const textbox = screen.getByRole('textbox')
       fireEvent.change(textbox, {
         target: { value: 'https://example.com/image.jpg' }
       })
       fireEvent.blur(textbox)
-      await waitFor(() => expect(getByRole('progressbar')).toBeInTheDocument())
+      await waitFor(() =>
+        expect(screen.getByRole('progressbar')).toBeInTheDocument()
+      )
     })
 
     it('deletes an image block', async () => {
@@ -466,7 +468,7 @@ describe('BackgroundMediaImage', () => {
           blockDelete: []
         }
       }))
-      const { getByRole, getByTestId } = render(
+      render(
         <MockedProvider
           cache={cache}
           mocks={[
@@ -491,12 +493,14 @@ describe('BackgroundMediaImage', () => {
         </MockedProvider>
       )
       fireEvent.click(
-        getByRole('button', {
+        screen.getByRole('button', {
           name: 'https://example.com/image2.jpg Selected Image 1920 x 1080 pixels'
         })
       )
-      const button = await getByTestId('imageBlockHeaderDelete')
-      fireEvent.click(button)
+      await waitFor(() =>
+        expect(screen.getByTestId('imageBlockHeaderDelete')).toBeInTheDocument()
+      )
+      fireEvent.click(screen.getByTestId('imageBlockHeaderDelete'))
       await waitFor(() => expect(blockDeleteResult).toHaveBeenCalled())
       expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
         { __ref: `CardBlock:${card.id}` }

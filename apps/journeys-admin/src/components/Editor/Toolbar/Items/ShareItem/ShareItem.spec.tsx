@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 
@@ -56,7 +56,7 @@ describe('ShareItem', () => {
       }
     } as unknown as NextRouter)
 
-    const { getByRole } = render(
+    render(
       <SnackbarProvider>
         <MockedProvider>
           <JourneyProvider
@@ -70,9 +70,9 @@ describe('ShareItem', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    fireEvent.click(getByRole('button', { name: 'Share' }))
-    expect(getByRole('dialog')).toBeInTheDocument()
-    fireEvent.click(getByRole('button', { name: 'Edit URL' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Share' }))
+    expect(screen.getByRole('dialog')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Edit URL' }))
 
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
@@ -84,15 +84,19 @@ describe('ShareItem', () => {
       )
     })
 
-    expect(getByRole('dialog', { name: 'Edit URL' })).toBeInTheDocument()
-    expect(getByRole('button', { name: 'Save' })).toBeInTheDocument()
-    expect(getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
-    fireEvent.click(getByRole('button', { name: 'Cancel' }))
+    expect(screen.getByRole('dialog', { name: 'Edit URL' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
 
     await waitFor(() => {
-      expect(getByRole('button', { name: 'Edit URL' })).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: 'Edit URL' })
+      ).toBeInTheDocument()
     })
-    expect(getByRole('button', { name: 'Embed Journey' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Embed Journey' })
+    ).toBeInTheDocument()
   })
 
   it('should handle embed journey', async () => {
@@ -103,7 +107,7 @@ describe('ShareItem', () => {
         on
       }
     } as unknown as NextRouter)
-    const { getByRole } = render(
+    render(
       <SnackbarProvider>
         <MockedProvider>
           <JourneyProvider
@@ -117,9 +121,9 @@ describe('ShareItem', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    fireEvent.click(getByRole('button', { name: 'Share' }))
-    expect(getByRole('dialog')).toBeInTheDocument()
-    fireEvent.click(getByRole('button', { name: 'Embed Journey' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Share' }))
+    expect(screen.getByRole('dialog')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Embed Journey' }))
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
         {
@@ -130,14 +134,22 @@ describe('ShareItem', () => {
       )
     })
 
-    expect(getByRole('dialog', { name: 'Embed journey' })).toBeInTheDocument()
-    expect(getByRole('button', { name: 'Copy Code' })).toBeInTheDocument()
-    expect(getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
-    fireEvent.click(getByRole('button', { name: 'Cancel' }))
+    expect(
+      screen.getByRole('dialog', { name: 'Embed journey' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Copy Code' })
+    ).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
     await waitFor(() => {
-      expect(getByRole('button', { name: 'Edit URL' })).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: 'Edit URL' })
+      ).toBeInTheDocument()
     })
-    expect(getByRole('button', { name: 'Embed Journey' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Embed Journey' })
+    ).toBeInTheDocument()
   })
 
   it('should copy journey link', async () => {
@@ -148,7 +160,7 @@ describe('ShareItem', () => {
         on
       }
     } as unknown as NextRouter)
-    const { getByRole } = render(
+    render(
       <SnackbarProvider>
         <MockedProvider>
           <JourneyProvider
@@ -162,8 +174,8 @@ describe('ShareItem', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    fireEvent.click(getByRole('button', { name: 'Share' }))
-    fireEvent.click(getByRole('button', { name: 'Copy' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Share' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Copy' }))
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
       'https://my.custom.domain/default'
     )
@@ -178,7 +190,7 @@ describe('ShareItem', () => {
         on
       }
     } as unknown as NextRouter)
-    const { getByRole } = render(
+    render(
       <SnackbarProvider>
         <MockedProvider mocks={[{ ...getCustomDomainMock, result }]}>
           <JourneyProvider
@@ -201,8 +213,8 @@ describe('ShareItem', () => {
       </SnackbarProvider>
     )
     await waitFor(() => expect(result).toHaveBeenCalled())
-    fireEvent.click(getByRole('button', { name: 'Share' }))
-    fireEvent.click(getByRole('button', { name: 'Copy' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Share' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Copy' }))
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
       'https://example.com/default'
     )
