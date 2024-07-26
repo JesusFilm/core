@@ -8,7 +8,8 @@ import LinkIcon from '@core/shared/ui/icons/Link'
 
 import { BlockFields_RadioOptionBlock as RadioOptionBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { Accordion } from '../../Accordion'
-import { Action, actions } from '../../controls/Action/Action'
+import { Action } from '../../controls/Action'
+import { getAction } from '../../controls/Action/utils/actions'
 
 export function RadioOption({
   id,
@@ -16,6 +17,7 @@ export function RadioOption({
 }: TreeBlock<RadioOptionBlock>): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { dispatch } = useEditor()
+  const selectedAction = getAction(t, action?.__typename)
 
   useEffect(() => {
     dispatch({
@@ -30,10 +32,7 @@ export function RadioOption({
         id={`${id}-radio-option-action`}
         icon={<LinkIcon />}
         name={t('Action')}
-        value={
-          actions.find((act) => act.value === action?.__typename)?.label ??
-          'None'
-        }
+        value={selectedAction.label}
         testId="RadioOption"
       >
         <Action />

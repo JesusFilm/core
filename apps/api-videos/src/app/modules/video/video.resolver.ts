@@ -15,11 +15,14 @@ import compact from 'lodash/compact'
 import isEmpty from 'lodash/isEmpty'
 
 import {
+  BibleCitation,
+  Prisma,
   Video,
   VideoDescription,
   VideoImageAlt,
   VideoSnippet,
   VideoStudyQuestion,
+  VideoSubtitle,
   VideoTitle,
   VideoVariant
 } from '.prisma/api-videos-client'
@@ -344,8 +347,45 @@ export class VideoResolver {
     }
     return variantLanguageId
   }
-}
 
+  @ResolveField('bibleCitations')
+  async bibleCitations(@Parent() video): Promise<BibleCitation[]> {
+    return await this.prismaService.bibleCitation.findMany({
+      where: { videoId: video.id },
+      orderBy: { order: 'asc' }
+    })
+  }
+
+  @ResolveField('subtitles')
+  async subtitles(
+    @Parent() video,
+    @Args('languageId') languageId?: string,
+    @Args('primary') primary?: boolean,
+    @Args('edition') edition?: string
+  ): Promise<VideoSubtitle[]> {
+    const where: Prisma.VideoSubtitleWhereInput = {
+      videoId: video.id,
+      OR:
+        languageId == null && primary == null && edition == null
+          ? undefined
+          : [
+              {
+                languageId: languageId ?? undefined
+              },
+              {
+                primary: primary ?? undefined
+              },
+              {
+                edition: edition ?? undefined
+              }
+            ]
+    }
+    return await this.prismaService.videoSubtitle.findMany({
+      where,
+      orderBy: { primary: 'desc' }
+    })
+  }
+}
 @Resolver('LanguageWithSlug')
 export class LanguageWithSlugResolver {
   @ResolveField('language')

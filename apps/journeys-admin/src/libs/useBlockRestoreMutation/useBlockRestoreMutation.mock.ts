@@ -55,7 +55,7 @@ export const useBlockRestoreMutationMock: MockedResponse<
   request: {
     query: BLOCK_RESTORE,
     variables: {
-      blockRestoreId: 'blockId'
+      id: 'blockId'
     }
   },
   result: jest.fn(() => ({
@@ -110,11 +110,14 @@ const selectedStep: TreeBlock<StepBlock> = {
   ]
 }
 
-export const restoreStepMock: MockedResponse<BlockRestore> = {
+export const restoreStepMock: MockedResponse<
+  BlockRestore,
+  BlockRestoreVariables
+> = {
   request: {
     query: BLOCK_RESTORE,
     variables: {
-      blockRestoreId: selectedStep.id
+      id: selectedStep.id
     }
   },
   result: {
