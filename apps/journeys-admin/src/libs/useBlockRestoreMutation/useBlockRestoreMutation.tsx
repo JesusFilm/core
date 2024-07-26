@@ -19,8 +19,8 @@ import {
 
 export const BLOCK_RESTORE = gql`
 ${BLOCK_FIELDS}
-mutation BlockRestore($blockRestoreId: ID!) {
-  blockRestore(id: $blockRestoreId) {
+mutation BlockRestore($id: ID!) {
+  blockRestore(id: $id) {
     id
     ...BlockFields
     ... on StepBlock {
@@ -87,9 +87,7 @@ export function useBlockRestoreMutation(
   return useMutation<BlockRestore, BlockRestoreVariables>(BLOCK_RESTORE, {
     update(cache, { data }, { variables }) {
       blockRestoreUpdate(
-        variables?.blockRestoreId
-          ? { id: variables.blockRestoreId }
-          : undefined,
+        variables?.id ? { id: variables.id } : undefined,
         data?.blockRestore,
         cache,
         journey?.id

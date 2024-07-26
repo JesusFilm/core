@@ -2,7 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { ReactFlowProvider } from 'reactflow'
 
-import { ActiveFab, EditorState } from '@core/journeys/ui/EditorProvider'
+import { EditorState } from '@core/journeys/ui/EditorProvider'
 import {
   ActiveCanvasDetailsDrawer,
   ActiveContent,
@@ -130,7 +130,6 @@ describe('SocialPreviewNode', () => {
 
   it('calls select social media node on click', async () => {
     const state: EditorState = {
-      activeFab: ActiveFab.Add,
       activeSlide: ActiveSlide.JourneyFlow,
       activeContent: ActiveContent.Canvas,
       activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
