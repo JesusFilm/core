@@ -183,7 +183,7 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
           journeyId: journey.id,
           id: 'image1.id',
           parentBlockId: 'video1.id',
-          src: '',
+          src: 'https://imagedelivery.net/cloudflare-key/uploadId/public',
           alt: 'public',
           width: 0,
           height: 0,

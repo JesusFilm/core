@@ -151,7 +151,7 @@ export function VideoBlockEditorSettingsPosterLibrary({
       id: uuidv4(),
       __typename: 'ImageBlock',
       parentBlockId,
-      src: '',
+      src: input.src ?? '',
       alt: input.alt ?? 'poster image',
       width: input.width ?? 0,
       height: input.height ?? 0,
