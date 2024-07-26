@@ -8,8 +8,14 @@ import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/
 import { useRefinementList, useSearchBox } from 'react-instantsearch'
 import { TemplateGallery } from '.'
 import '../../../test/i18n'
+import { QueryResult } from '@apollo/client'
 import { useAlgoliaJourneys } from '../../libs/algolia/useAlgoliaJourneys'
 import { algoliaJourneys } from '../../libs/algolia/useAlgoliaJourneys/data'
+import { useLanguagesQuery } from '../../libs/useLanguagesQuery'
+import {
+  GetLanguages,
+  GetLanguagesVariables
+} from '../../libs/useLanguagesQuery/__generated__/GetLanguages'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -26,6 +32,7 @@ jest.mock('next/router', () => ({
 
 jest.mock('react-instantsearch')
 jest.mock('../../libs/algolia/useAlgoliaJourneys')
+jest.mock('../../libs/useLanguagesQuery')
 
 describe('TemplateGallery', () => {
   beforeEach(() => {
@@ -46,6 +53,11 @@ describe('TemplateGallery', () => {
     useRefinementListMocked.mockReturnValue({
       refine: jest.fn()
     } as unknown as RefinementListRenderState)
+
+    const useLanguagesQueryMocked = jest.mocked(useLanguagesQuery)
+    useLanguagesQueryMocked.mockReturnValue({
+      data: []
+    } as unknown as QueryResult<GetLanguages, GetLanguagesVariables>)
   })
 
   it('should render searchbar', async () => {

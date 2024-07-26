@@ -1,8 +1,8 @@
-import { Hit } from 'instantsearch.js'
+import { BaseHit, Hit } from 'instantsearch.js'
 import { CurrentRefinementsConnectorParamsItem } from 'instantsearch.js/es/connectors/current-refinements/connectCurrentRefinements'
 import { AlgoliaJourney } from './useAlgoliaJourneys'
 
-export const algoliaJourneys = [
+export const algoliaHits = [
   {
     title: 'onboarding template3',
     date: '2024-07-09T00:37:24.569Z',
@@ -12,18 +12,7 @@ export const algoliaJourneys = [
       alt: 'onboarding primary'
     },
     featuredAt: null,
-    language: {
-      localName: '',
-      nativeName: 'English',
-      continents: [
-        'Asia',
-        'North America',
-        'Oceania',
-        'Africa',
-        'South America',
-        'Europe'
-      ]
-    },
+    languageId: '529',
     tags: {
       Topics: ['Anger'],
       'Felt Needs': ['Depression'],
@@ -40,50 +29,6 @@ export const algoliaJourneys = [
         value: 'template-id-3',
         matchLevel: 'none',
         matchedWords: []
-      },
-      language: {
-        localName: {
-          value: '',
-          matchLevel: 'none',
-          matchedWords: []
-        },
-        nativeName: {
-          value: 'English',
-          matchLevel: 'none',
-          matchedWords: []
-        },
-        continents: [
-          {
-            value: 'Asia',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          {
-            value: 'North America',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          {
-            value: 'Oceania',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          {
-            value: 'Africa',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          {
-            value: 'South America',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          {
-            value: 'Europe',
-            matchLevel: 'none',
-            matchedWords: []
-          }
-        ]
       },
       tags: {
         Topics: [
@@ -120,11 +65,7 @@ export const algoliaJourneys = [
       alt: 'onboarding primary'
     },
     featuredAt: null,
-    language: {
-      localName: 'Farsi, Western',
-      nativeName: 'فارسی',
-      continents: ['Asia', 'Europe', 'Oceania', 'North America']
-    },
+    languageId: '6788',
     tags: {
       'Felt Needs': [
         'Acceptance',
@@ -146,40 +87,6 @@ export const algoliaJourneys = [
         value: 'template-id-2',
         matchLevel: 'none',
         matchedWords: []
-      },
-      language: {
-        localName: {
-          value: 'Farsi, Western',
-          matchLevel: 'none',
-          matchedWords: []
-        },
-        nativeName: {
-          value: 'فارسی',
-          matchLevel: 'none',
-          matchedWords: []
-        },
-        continents: [
-          {
-            value: 'Asia',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          {
-            value: 'Europe',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          {
-            value: 'Oceania',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          {
-            value: 'North America',
-            matchLevel: 'none',
-            matchedWords: []
-          }
-        ]
       },
       tags: {
         'Felt Needs': [
@@ -228,18 +135,7 @@ export const algoliaJourneys = [
       alt: 'onboarding primary'
     },
     featuredAt: null,
-    language: {
-      localName: '',
-      nativeName: 'English',
-      continents: [
-        'Asia',
-        'North America',
-        'Oceania',
-        'Africa',
-        'South America',
-        'Europe'
-      ]
-    },
+    languageId: '529',
     tags: {},
     objectID: 'template-id',
     _highlightResult: {
@@ -253,50 +149,6 @@ export const algoliaJourneys = [
           'Only used for development and staging. Production should use actual onboarding journey.',
         matchLevel: 'none',
         matchedWords: []
-      },
-      language: {
-        localName: {
-          value: '',
-          matchLevel: 'none',
-          matchedWords: []
-        },
-        nativeName: {
-          value: 'English',
-          matchLevel: 'none',
-          matchedWords: []
-        },
-        continents: [
-          {
-            value: 'Asia',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          {
-            value: 'North America',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          {
-            value: 'Oceania',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          {
-            value: 'Africa',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          {
-            value: 'South America',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          {
-            value: 'Europe',
-            matchLevel: 'none',
-            matchedWords: []
-          }
-        ]
       }
     },
     __position: 3
@@ -310,11 +162,7 @@ export const algoliaJourneys = [
       alt: 'onboarding primary'
     },
     featuredAt: null,
-    language: {
-      localName: 'Georgian',
-      nativeName: 'ქართული',
-      continents: ['Asia', 'Europe']
-    },
+    languageId: '5112',
     tags: {
       'Felt Needs': ['Acceptance'],
       Topics: ['Addiction'],
@@ -331,30 +179,6 @@ export const algoliaJourneys = [
         value: 'template-id-4',
         matchLevel: 'none',
         matchedWords: []
-      },
-      language: {
-        localName: {
-          value: 'Georgian',
-          matchLevel: 'none',
-          matchedWords: []
-        },
-        nativeName: {
-          value: 'ქართული',
-          matchLevel: 'none',
-          matchedWords: []
-        },
-        continents: [
-          {
-            value: 'Asia',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          {
-            value: 'Europe',
-            matchLevel: 'none',
-            matchedWords: []
-          }
-        ]
       },
       tags: {
         'Felt Needs': [
@@ -391,18 +215,7 @@ export const algoliaJourneys = [
       alt: 'onboarding primary'
     },
     featuredAt: null,
-    language: {
-      localName: '',
-      nativeName: 'English',
-      continents: [
-        'Asia',
-        'North America',
-        'Oceania',
-        'Africa',
-        'South America',
-        'Europe'
-      ]
-    },
+    languageId: '529',
     tags: {
       Topics: ['Addiction', 'Anger'],
       Audience: ['Adults'],
@@ -420,50 +233,6 @@ export const algoliaJourneys = [
         value: 'template-id-5',
         matchLevel: 'none',
         matchedWords: []
-      },
-      language: {
-        localName: {
-          value: '',
-          matchLevel: 'none',
-          matchedWords: []
-        },
-        nativeName: {
-          value: 'English',
-          matchLevel: 'none',
-          matchedWords: []
-        },
-        continents: [
-          {
-            value: 'Asia',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          {
-            value: 'North America',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          {
-            value: 'Oceania',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          {
-            value: 'Africa',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          {
-            value: 'South America',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          {
-            value: 'Europe',
-            matchLevel: 'none',
-            matchedWords: []
-          }
-        ]
       },
       tags: {
         Topics: [
@@ -517,18 +286,7 @@ export const algoliaJourneys = [
       alt: 'onboarding primary'
     },
     featuredAt: null,
-    language: {
-      localName: '',
-      nativeName: 'English',
-      continents: [
-        'Asia',
-        'North America',
-        'Oceania',
-        'Africa',
-        'South America',
-        'Europe'
-      ]
-    },
+    languageId: '529',
     tags: {},
     objectID: 'template-id-1',
     _highlightResult: {
@@ -541,57 +299,13 @@ export const algoliaJourneys = [
         value: 'template-id-1',
         matchLevel: 'none',
         matchedWords: []
-      },
-      language: {
-        localName: {
-          value: '',
-          matchLevel: 'none',
-          matchedWords: []
-        },
-        nativeName: {
-          value: 'English',
-          matchLevel: 'none',
-          matchedWords: []
-        },
-        continents: [
-          {
-            value: 'Asia',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          {
-            value: 'North America',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          {
-            value: 'Oceania',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          {
-            value: 'Africa',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          {
-            value: 'South America',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          {
-            value: 'Europe',
-            matchLevel: 'none',
-            matchedWords: []
-          }
-        ]
       }
     },
     __position: 6
   }
-] as unknown as Hit<AlgoliaJourney>[]
+] as unknown as Hit<BaseHit>[]
 
-export const transformedAlgoliaJourneys = [
+export const algoliaJourneys = [
   {
     title: 'onboarding template3',
     date: '2023-08-14T04:24:24.392Z',
@@ -601,17 +315,10 @@ export const transformedAlgoliaJourneys = [
       alt: 'onboarding primary'
     },
     featuredAt: null,
+    languageId: '529',
     language: {
       localName: '',
-      nativeName: 'English',
-      continents: [
-        'Asia',
-        'North America',
-        'Oceania',
-        'Africa',
-        'South America',
-        'Europe'
-      ]
+      nativeName: 'English'
     },
     tags: {
       Topics: ['Anger'],
@@ -630,50 +337,6 @@ export const transformedAlgoliaJourneys = [
         matchLevel: 'none',
         matchedWords: []
       },
-      language: {
-        localName: {
-          value: '',
-          matchLevel: 'none',
-          matchedWords: []
-        },
-        nativeName: {
-          value: 'English',
-          matchLevel: 'none',
-          matchedWords: []
-        },
-        continents: [
-          {
-            value: 'Asia',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          {
-            value: 'North America',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          {
-            value: 'Oceania',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          {
-            value: 'Africa',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          {
-            value: 'South America',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          {
-            value: 'Europe',
-            matchLevel: 'none',
-            matchedWords: []
-          }
-        ]
-      },
       tags: {
         Topics: [
           {
@@ -685,11 +348,6 @@ export const transformedAlgoliaJourneys = [
         'Felt Needs': [
           {
             value: 'Depression',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          {
-            value: 'Acceptance',
             matchLevel: 'none',
             matchedWords: []
           }
@@ -720,10 +378,10 @@ export const transformedAlgoliaJourneys = [
       alt: 'onboarding primary'
     },
     featuredAt: null,
+    languageId: '6788',
     language: {
       localName: 'Farsi, Western',
-      nativeName: 'فارسی',
-      continents: ['Asia', 'Europe', 'Oceania', 'North America']
+      nativeName: 'فارسی'
     },
     tags: {
       'Felt Needs': [
@@ -746,40 +404,6 @@ export const transformedAlgoliaJourneys = [
         value: 'template-id-2',
         matchLevel: 'none',
         matchedWords: []
-      },
-      language: {
-        localName: {
-          value: 'Farsi, Western',
-          matchLevel: 'none',
-          matchedWords: []
-        },
-        nativeName: {
-          value: 'فارسی',
-          matchLevel: 'none',
-          matchedWords: []
-        },
-        continents: [
-          {
-            value: 'Asia',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          {
-            value: 'Europe',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          {
-            value: 'Oceania',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          {
-            value: 'North America',
-            matchLevel: 'none',
-            matchedWords: []
-          }
-        ]
       },
       tags: {
         'Felt Needs': [
@@ -834,17 +458,10 @@ export const transformedAlgoliaJourneys = [
       alt: 'onboarding primary'
     },
     featuredAt: null,
+    languageId: '529',
     language: {
       localName: '',
-      nativeName: 'English',
-      continents: [
-        'Asia',
-        'North America',
-        'Oceania',
-        'Africa',
-        'South America',
-        'Europe'
-      ]
+      nativeName: 'English'
     },
     tags: {},
     objectID: 'template-id',
@@ -859,50 +476,6 @@ export const transformedAlgoliaJourneys = [
           'Only used for development and staging. Production should use actual onboarding journey.',
         matchLevel: 'none',
         matchedWords: []
-      },
-      language: {
-        localName: {
-          value: '',
-          matchLevel: 'none',
-          matchedWords: []
-        },
-        nativeName: {
-          value: 'English',
-          matchLevel: 'none',
-          matchedWords: []
-        },
-        continents: [
-          {
-            value: 'Asia',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          {
-            value: 'North America',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          {
-            value: 'Oceania',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          {
-            value: 'Africa',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          {
-            value: 'South America',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          {
-            value: 'Europe',
-            matchLevel: 'none',
-            matchedWords: []
-          }
-        ]
       }
     },
     __position: 3,
@@ -922,10 +495,10 @@ export const transformedAlgoliaJourneys = [
       alt: 'onboarding primary'
     },
     featuredAt: null,
+    languageId: '5112',
     language: {
       localName: 'Georgian',
-      nativeName: 'ქართული',
-      continents: ['Asia', 'Europe']
+      nativeName: 'ქართული'
     },
     tags: {
       'Felt Needs': ['Acceptance'],
@@ -943,30 +516,6 @@ export const transformedAlgoliaJourneys = [
         value: 'template-id-4',
         matchLevel: 'none',
         matchedWords: []
-      },
-      language: {
-        localName: {
-          value: 'Georgian',
-          matchLevel: 'none',
-          matchedWords: []
-        },
-        nativeName: {
-          value: 'ქართული',
-          matchLevel: 'none',
-          matchedWords: []
-        },
-        continents: [
-          {
-            value: 'Asia',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          {
-            value: 'Europe',
-            matchLevel: 'none',
-            matchedWords: []
-          }
-        ]
       },
       tags: {
         'Felt Needs': [
@@ -1009,17 +558,10 @@ export const transformedAlgoliaJourneys = [
       alt: 'onboarding primary'
     },
     featuredAt: null,
+    languageId: '529',
     language: {
       localName: '',
-      nativeName: 'English',
-      continents: [
-        'Asia',
-        'North America',
-        'Oceania',
-        'Africa',
-        'South America',
-        'Europe'
-      ]
+      nativeName: 'English'
     },
     tags: {
       Topics: ['Addiction', 'Anger'],
@@ -1039,50 +581,6 @@ export const transformedAlgoliaJourneys = [
         value: 'template-id-5',
         matchLevel: 'none',
         matchedWords: []
-      },
-      language: {
-        localName: {
-          value: '',
-          matchLevel: 'none',
-          matchedWords: []
-        },
-        nativeName: {
-          value: 'English',
-          matchLevel: 'none',
-          matchedWords: []
-        },
-        continents: [
-          {
-            value: 'Asia',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          {
-            value: 'North America',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          {
-            value: 'Oceania',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          {
-            value: 'Africa',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          {
-            value: 'South America',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          {
-            value: 'Europe',
-            matchLevel: 'none',
-            matchedWords: []
-          }
-        ]
       },
       tags: {
         Topics: [
@@ -1149,17 +647,10 @@ export const transformedAlgoliaJourneys = [
       alt: 'onboarding primary'
     },
     featuredAt: null,
+    languageId: '529',
     language: {
       localName: '',
-      nativeName: 'English',
-      continents: [
-        'Asia',
-        'North America',
-        'Oceania',
-        'Africa',
-        'South America',
-        'Europe'
-      ]
+      nativeName: 'English'
     },
     tags: {},
     objectID: 'template-id-1',
@@ -1173,50 +664,6 @@ export const transformedAlgoliaJourneys = [
         value: 'template-id-1',
         matchLevel: 'none',
         matchedWords: []
-      },
-      language: {
-        localName: {
-          value: '',
-          matchLevel: 'none',
-          matchedWords: []
-        },
-        nativeName: {
-          value: 'English',
-          matchLevel: 'none',
-          matchedWords: []
-        },
-        continents: [
-          {
-            value: 'Asia',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          {
-            value: 'North America',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          {
-            value: 'Oceania',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          {
-            value: 'Africa',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          {
-            value: 'South America',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          {
-            value: 'Europe',
-            matchLevel: 'none',
-            matchedWords: []
-          }
-        ]
       }
     },
     __position: 6,
@@ -1242,18 +689,7 @@ export const algoliaResults = {
             alt: 'onboarding primary'
           },
           featuredAt: null,
-          language: {
-            localName: '',
-            nativeName: 'English',
-            continents: [
-              'Asia',
-              'North America',
-              'Oceania',
-              'Africa',
-              'South America',
-              'Europe'
-            ]
-          },
+          languageId: '529',
           tags: {
             Topics: ['Anger'],
             'Felt Needs': ['Depression'],
@@ -1270,50 +706,6 @@ export const algoliaResults = {
               value: 'template-id-3',
               matchLevel: 'none',
               matchedWords: []
-            },
-            language: {
-              localName: {
-                value: '',
-                matchLevel: 'none',
-                matchedWords: []
-              },
-              nativeName: {
-                value: 'English',
-                matchLevel: 'none',
-                matchedWords: []
-              },
-              continents: [
-                {
-                  value: 'Asia',
-                  matchLevel: 'none',
-                  matchedWords: []
-                },
-                {
-                  value: 'North America',
-                  matchLevel: 'none',
-                  matchedWords: []
-                },
-                {
-                  value: 'Oceania',
-                  matchLevel: 'none',
-                  matchedWords: []
-                },
-                {
-                  value: 'Africa',
-                  matchLevel: 'none',
-                  matchedWords: []
-                },
-                {
-                  value: 'South America',
-                  matchLevel: 'none',
-                  matchedWords: []
-                },
-                {
-                  value: 'Europe',
-                  matchLevel: 'none',
-                  matchedWords: []
-                }
-              ]
             },
             tags: {
               Topics: [
@@ -1349,11 +741,7 @@ export const algoliaResults = {
             alt: 'onboarding primary'
           },
           featuredAt: null,
-          language: {
-            localName: 'Farsi, Western',
-            nativeName: 'فارسی',
-            continents: ['Asia', 'Europe', 'Oceania', 'North America']
-          },
+          languageId: '6788',
           tags: {
             'Felt Needs': [
               'Acceptance',
@@ -1375,40 +763,6 @@ export const algoliaResults = {
               value: 'template-id-2',
               matchLevel: 'none',
               matchedWords: []
-            },
-            language: {
-              localName: {
-                value: 'Farsi, Western',
-                matchLevel: 'none',
-                matchedWords: []
-              },
-              nativeName: {
-                value: 'فارسی',
-                matchLevel: 'none',
-                matchedWords: []
-              },
-              continents: [
-                {
-                  value: 'Asia',
-                  matchLevel: 'none',
-                  matchedWords: []
-                },
-                {
-                  value: 'Europe',
-                  matchLevel: 'none',
-                  matchedWords: []
-                },
-                {
-                  value: 'Oceania',
-                  matchLevel: 'none',
-                  matchedWords: []
-                },
-                {
-                  value: 'North America',
-                  matchLevel: 'none',
-                  matchedWords: []
-                }
-              ]
             },
             tags: {
               'Felt Needs': [
@@ -1456,18 +810,7 @@ export const algoliaResults = {
             alt: 'onboarding primary'
           },
           featuredAt: null,
-          language: {
-            localName: '',
-            nativeName: 'English',
-            continents: [
-              'Asia',
-              'North America',
-              'Oceania',
-              'Africa',
-              'South America',
-              'Europe'
-            ]
-          },
+          languageId: '529',
           tags: {},
           objectID: 'template-id',
           _highlightResult: {
@@ -1481,50 +824,6 @@ export const algoliaResults = {
                 'Only used for development and staging. Production should use actual onboarding journey.',
               matchLevel: 'none',
               matchedWords: []
-            },
-            language: {
-              localName: {
-                value: '',
-                matchLevel: 'none',
-                matchedWords: []
-              },
-              nativeName: {
-                value: 'English',
-                matchLevel: 'none',
-                matchedWords: []
-              },
-              continents: [
-                {
-                  value: 'Asia',
-                  matchLevel: 'none',
-                  matchedWords: []
-                },
-                {
-                  value: 'North America',
-                  matchLevel: 'none',
-                  matchedWords: []
-                },
-                {
-                  value: 'Oceania',
-                  matchLevel: 'none',
-                  matchedWords: []
-                },
-                {
-                  value: 'Africa',
-                  matchLevel: 'none',
-                  matchedWords: []
-                },
-                {
-                  value: 'South America',
-                  matchLevel: 'none',
-                  matchedWords: []
-                },
-                {
-                  value: 'Europe',
-                  matchLevel: 'none',
-                  matchedWords: []
-                }
-              ]
             }
           }
         },
@@ -1537,11 +836,7 @@ export const algoliaResults = {
             alt: 'onboarding primary'
           },
           featuredAt: null,
-          language: {
-            localName: 'Georgian',
-            nativeName: 'ქართული',
-            continents: ['Asia', 'Europe']
-          },
+          languageId: '5112',
           tags: {
             'Felt Needs': ['Acceptance'],
             Topics: ['Addiction'],
@@ -1558,30 +853,6 @@ export const algoliaResults = {
               value: 'template-id-4',
               matchLevel: 'none',
               matchedWords: []
-            },
-            language: {
-              localName: {
-                value: 'Georgian',
-                matchLevel: 'none',
-                matchedWords: []
-              },
-              nativeName: {
-                value: 'ქართული',
-                matchLevel: 'none',
-                matchedWords: []
-              },
-              continents: [
-                {
-                  value: 'Asia',
-                  matchLevel: 'none',
-                  matchedWords: []
-                },
-                {
-                  value: 'Europe',
-                  matchLevel: 'none',
-                  matchedWords: []
-                }
-              ]
             },
             tags: {
               'Felt Needs': [
@@ -1617,18 +888,7 @@ export const algoliaResults = {
             alt: 'onboarding primary'
           },
           featuredAt: null,
-          language: {
-            localName: '',
-            nativeName: 'English',
-            continents: [
-              'Asia',
-              'North America',
-              'Oceania',
-              'Africa',
-              'South America',
-              'Europe'
-            ]
-          },
+          languageId: '529',
           tags: {
             Topics: ['Addiction', 'Anger'],
             Audience: ['Adults'],
@@ -1646,50 +906,6 @@ export const algoliaResults = {
               value: 'template-id-5',
               matchLevel: 'none',
               matchedWords: []
-            },
-            language: {
-              localName: {
-                value: '',
-                matchLevel: 'none',
-                matchedWords: []
-              },
-              nativeName: {
-                value: 'English',
-                matchLevel: 'none',
-                matchedWords: []
-              },
-              continents: [
-                {
-                  value: 'Asia',
-                  matchLevel: 'none',
-                  matchedWords: []
-                },
-                {
-                  value: 'North America',
-                  matchLevel: 'none',
-                  matchedWords: []
-                },
-                {
-                  value: 'Oceania',
-                  matchLevel: 'none',
-                  matchedWords: []
-                },
-                {
-                  value: 'Africa',
-                  matchLevel: 'none',
-                  matchedWords: []
-                },
-                {
-                  value: 'South America',
-                  matchLevel: 'none',
-                  matchedWords: []
-                },
-                {
-                  value: 'Europe',
-                  matchLevel: 'none',
-                  matchedWords: []
-                }
-              ]
             },
             tags: {
               Topics: [
@@ -1742,18 +958,7 @@ export const algoliaResults = {
             alt: 'onboarding primary'
           },
           featuredAt: null,
-          language: {
-            localName: '',
-            nativeName: 'English',
-            continents: [
-              'Asia',
-              'North America',
-              'Oceania',
-              'Africa',
-              'South America',
-              'Europe'
-            ]
-          },
+          languageId: '529',
           tags: {},
           objectID: 'template-id-1',
           _highlightResult: {
@@ -1766,50 +971,6 @@ export const algoliaResults = {
               value: 'template-id-1',
               matchLevel: 'none',
               matchedWords: []
-            },
-            language: {
-              localName: {
-                value: '',
-                matchLevel: 'none',
-                matchedWords: []
-              },
-              nativeName: {
-                value: 'English',
-                matchLevel: 'none',
-                matchedWords: []
-              },
-              continents: [
-                {
-                  value: 'Asia',
-                  matchLevel: 'none',
-                  matchedWords: []
-                },
-                {
-                  value: 'North America',
-                  matchLevel: 'none',
-                  matchedWords: []
-                },
-                {
-                  value: 'Oceania',
-                  matchLevel: 'none',
-                  matchedWords: []
-                },
-                {
-                  value: 'Africa',
-                  matchLevel: 'none',
-                  matchedWords: []
-                },
-                {
-                  value: 'South America',
-                  matchLevel: 'none',
-                  matchedWords: []
-                },
-                {
-                  value: 'Europe',
-                  matchLevel: 'none',
-                  matchedWords: []
-                }
-              ]
             }
           }
         }
@@ -1882,18 +1043,7 @@ export const algoliaResults = {
         alt: 'onboarding primary'
       },
       featuredAt: null,
-      language: {
-        localName: '',
-        nativeName: 'English',
-        continents: [
-          'Asia',
-          'North America',
-          'Oceania',
-          'Africa',
-          'South America',
-          'Europe'
-        ]
-      },
+      languageId: '529',
       tags: {
         Topics: ['Anger'],
         'Felt Needs': ['Depression'],
@@ -1910,50 +1060,6 @@ export const algoliaResults = {
           value: 'template-id-3',
           matchLevel: 'none',
           matchedWords: []
-        },
-        language: {
-          localName: {
-            value: '',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          nativeName: {
-            value: 'English',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          continents: [
-            {
-              value: 'Asia',
-              matchLevel: 'none',
-              matchedWords: []
-            },
-            {
-              value: 'North America',
-              matchLevel: 'none',
-              matchedWords: []
-            },
-            {
-              value: 'Oceania',
-              matchLevel: 'none',
-              matchedWords: []
-            },
-            {
-              value: 'Africa',
-              matchLevel: 'none',
-              matchedWords: []
-            },
-            {
-              value: 'South America',
-              matchLevel: 'none',
-              matchedWords: []
-            },
-            {
-              value: 'Europe',
-              matchLevel: 'none',
-              matchedWords: []
-            }
-          ]
         },
         tags: {
           Topics: [
@@ -1989,11 +1095,7 @@ export const algoliaResults = {
         alt: 'onboarding primary'
       },
       featuredAt: null,
-      language: {
-        localName: 'Farsi, Western',
-        nativeName: 'فارسی',
-        continents: ['Asia', 'Europe', 'Oceania', 'North America']
-      },
+      languageId: '6788',
       tags: {
         'Felt Needs': [
           'Acceptance',
@@ -2015,40 +1117,6 @@ export const algoliaResults = {
           value: 'template-id-2',
           matchLevel: 'none',
           matchedWords: []
-        },
-        language: {
-          localName: {
-            value: 'Farsi, Western',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          nativeName: {
-            value: 'فارسی',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          continents: [
-            {
-              value: 'Asia',
-              matchLevel: 'none',
-              matchedWords: []
-            },
-            {
-              value: 'Europe',
-              matchLevel: 'none',
-              matchedWords: []
-            },
-            {
-              value: 'Oceania',
-              matchLevel: 'none',
-              matchedWords: []
-            },
-            {
-              value: 'North America',
-              matchLevel: 'none',
-              matchedWords: []
-            }
-          ]
         },
         tags: {
           'Felt Needs': [
@@ -2096,18 +1164,7 @@ export const algoliaResults = {
         alt: 'onboarding primary'
       },
       featuredAt: null,
-      language: {
-        localName: '',
-        nativeName: 'English',
-        continents: [
-          'Asia',
-          'North America',
-          'Oceania',
-          'Africa',
-          'South America',
-          'Europe'
-        ]
-      },
+      languageId: '529',
       tags: {},
       objectID: 'template-id',
       _highlightResult: {
@@ -2121,50 +1178,6 @@ export const algoliaResults = {
             'Only used for development and staging. Production should use actual onboarding journey.',
           matchLevel: 'none',
           matchedWords: []
-        },
-        language: {
-          localName: {
-            value: '',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          nativeName: {
-            value: 'English',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          continents: [
-            {
-              value: 'Asia',
-              matchLevel: 'none',
-              matchedWords: []
-            },
-            {
-              value: 'North America',
-              matchLevel: 'none',
-              matchedWords: []
-            },
-            {
-              value: 'Oceania',
-              matchLevel: 'none',
-              matchedWords: []
-            },
-            {
-              value: 'Africa',
-              matchLevel: 'none',
-              matchedWords: []
-            },
-            {
-              value: 'South America',
-              matchLevel: 'none',
-              matchedWords: []
-            },
-            {
-              value: 'Europe',
-              matchLevel: 'none',
-              matchedWords: []
-            }
-          ]
         }
       }
     },
@@ -2177,11 +1190,7 @@ export const algoliaResults = {
         alt: 'onboarding primary'
       },
       featuredAt: null,
-      language: {
-        localName: 'Georgian',
-        nativeName: 'ქართული',
-        continents: ['Asia', 'Europe']
-      },
+      languageId: '5112',
       tags: {
         'Felt Needs': ['Acceptance'],
         Topics: ['Addiction'],
@@ -2198,30 +1207,6 @@ export const algoliaResults = {
           value: 'template-id-4',
           matchLevel: 'none',
           matchedWords: []
-        },
-        language: {
-          localName: {
-            value: 'Georgian',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          nativeName: {
-            value: 'ქართული',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          continents: [
-            {
-              value: 'Asia',
-              matchLevel: 'none',
-              matchedWords: []
-            },
-            {
-              value: 'Europe',
-              matchLevel: 'none',
-              matchedWords: []
-            }
-          ]
         },
         tags: {
           'Felt Needs': [
@@ -2257,18 +1242,7 @@ export const algoliaResults = {
         alt: 'onboarding primary'
       },
       featuredAt: null,
-      language: {
-        localName: '',
-        nativeName: 'English',
-        continents: [
-          'Asia',
-          'North America',
-          'Oceania',
-          'Africa',
-          'South America',
-          'Europe'
-        ]
-      },
+      languageId: '529',
       tags: {
         Topics: ['Addiction', 'Anger'],
         Audience: ['Adults'],
@@ -2286,50 +1260,6 @@ export const algoliaResults = {
           value: 'template-id-5',
           matchLevel: 'none',
           matchedWords: []
-        },
-        language: {
-          localName: {
-            value: '',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          nativeName: {
-            value: 'English',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          continents: [
-            {
-              value: 'Asia',
-              matchLevel: 'none',
-              matchedWords: []
-            },
-            {
-              value: 'North America',
-              matchLevel: 'none',
-              matchedWords: []
-            },
-            {
-              value: 'Oceania',
-              matchLevel: 'none',
-              matchedWords: []
-            },
-            {
-              value: 'Africa',
-              matchLevel: 'none',
-              matchedWords: []
-            },
-            {
-              value: 'South America',
-              matchLevel: 'none',
-              matchedWords: []
-            },
-            {
-              value: 'Europe',
-              matchLevel: 'none',
-              matchedWords: []
-            }
-          ]
         },
         tags: {
           Topics: [
@@ -2382,18 +1312,7 @@ export const algoliaResults = {
         alt: 'onboarding primary'
       },
       featuredAt: null,
-      language: {
-        localName: '',
-        nativeName: 'English',
-        continents: [
-          'Asia',
-          'North America',
-          'Oceania',
-          'Africa',
-          'South America',
-          'Europe'
-        ]
-      },
+      languageId: '529',
       tags: {},
       objectID: 'template-id-1',
       _highlightResult: {
@@ -2406,50 +1325,6 @@ export const algoliaResults = {
           value: 'template-id-1',
           matchLevel: 'none',
           matchedWords: []
-        },
-        language: {
-          localName: {
-            value: '',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          nativeName: {
-            value: 'English',
-            matchLevel: 'none',
-            matchedWords: []
-          },
-          continents: [
-            {
-              value: 'Asia',
-              matchLevel: 'none',
-              matchedWords: []
-            },
-            {
-              value: 'North America',
-              matchLevel: 'none',
-              matchedWords: []
-            },
-            {
-              value: 'Oceania',
-              matchLevel: 'none',
-              matchedWords: []
-            },
-            {
-              value: 'Africa',
-              matchLevel: 'none',
-              matchedWords: []
-            },
-            {
-              value: 'South America',
-              matchLevel: 'none',
-              matchedWords: []
-            },
-            {
-              value: 'Europe',
-              matchLevel: 'none',
-              matchedWords: []
-            }
-          ]
         }
       }
     }
@@ -2498,28 +1373,6 @@ export const algoliaResults = {
       exhaustive: true
     },
     {
-      name: 'tags.Topics',
-      data: {
-        Addiction: 2,
-        Anger: 2
-      },
-      exhaustive: true
-    },
-    {
-      name: 'tags.Holidays',
-      data: {
-        Easter: 2
-      },
-      exhaustive: true
-    },
-    {
-      name: 'tags.Audience',
-      data: {
-        Adults: 2
-      },
-      exhaustive: true
-    },
-    {
       name: 'tags.Felt Needs',
       data: {
         Acceptance: 2,
@@ -2537,19 +1390,15 @@ export const algoliaResults = {
     facets: [],
     disjunctiveFacets: [
       'tags.Collections',
-      'tags.Topics',
-      'tags.Holidays',
-      'tags.Audience',
+      'language.localName',
       'tags.Felt Needs'
     ],
     hierarchicalFacets: [],
     facetsRefinements: {},
     facetsExcludes: {},
     disjunctiveFacetsRefinements: {
-      'tags.Topics': [],
-      'tags.Holidays': [],
-      'tags.Audience': [],
       'tags.Collections': [],
+      'language.localName': [],
       'tags.Felt Needs': []
     },
     numericRefinements: {},

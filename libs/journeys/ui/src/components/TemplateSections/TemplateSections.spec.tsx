@@ -4,7 +4,7 @@ import '../../../test/i18n'
 import { TemplateSections } from './TemplateSections'
 
 import { useAlgoliaJourneys } from '../../libs/algolia/useAlgoliaJourneys'
-import { transformedAlgoliaJourneys as journeys } from '../../libs/algolia/useAlgoliaJourneys/data'
+import { algoliaJourneys } from '../../libs/algolia/useAlgoliaJourneys/data'
 
 jest.mock('react-instantsearch')
 jest.mock('../../libs/algolia/useAlgoliaJourneys/useAlgoliaJourneys')
@@ -13,7 +13,7 @@ describe('TemplateSections', () => {
   beforeEach(() => {
     const useAlgoliaJourneysMocked = jest.mocked(useAlgoliaJourneys)
     useAlgoliaJourneysMocked.mockReturnValue({
-      hits: journeys,
+      hits: algoliaJourneys,
       loading: false,
       refinements: []
     })
@@ -42,7 +42,7 @@ describe('TemplateSections', () => {
     it('should render tag carousels if more than 5 journeys in a category', async () => {
       const useAlgoliaJourneysMocked = jest.mocked(useAlgoliaJourneys)
       useAlgoliaJourneysMocked.mockReturnValue({
-        hits: journeys.concat(journeys),
+        hits: algoliaJourneys.concat(algoliaJourneys),
         loading: false,
         refinements: []
       })
@@ -63,7 +63,7 @@ describe('TemplateSections', () => {
     beforeEach(() => {
       const useAlgoliaJourneysMocked = jest.mocked(useAlgoliaJourneys)
       useAlgoliaJourneysMocked.mockReturnValue({
-        hits: journeys,
+        hits: algoliaJourneys,
         loading: false,
         refinements: ['Acceptance', 'Depression']
       })
@@ -84,7 +84,7 @@ describe('TemplateSections', () => {
     beforeEach(() => {
       const useAlgoliaJourneysMocked = jest.mocked(useAlgoliaJourneys)
       useAlgoliaJourneysMocked.mockReturnValue({
-        hits: journeys,
+        hits: algoliaJourneys,
         loading: false,
         refinements: ['Addiction', 'Acceptance']
       })
