@@ -62,9 +62,9 @@ export const getLanguagesMock: MockedResponse<
       languageId: '529'
     }
   },
-  result: jest.fn(() => ({
+  result: {
     data: {
       languages: languages
     }
-  }))
+  }
 }

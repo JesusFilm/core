@@ -6,6 +6,7 @@ import { GET_LANGUAGES, useLanguagesQuery } from './useLanguagesQuery'
 
 describe('useLanguagesQuery', () => {
   it('should get languages', async () => {
+    const result = jest.fn().mockReturnValue(getLanguagesMock.result)
     renderHook(
       () =>
         useLanguagesQuery({
@@ -13,12 +14,14 @@ describe('useLanguagesQuery', () => {
         }),
       {
         wrapper: ({ children }) => (
-          <MockedProvider mocks={[getLanguagesMock]}>{children}</MockedProvider>
+          <MockedProvider mocks={[{ ...getLanguagesMock, result }]}>
+            {children}
+          </MockedProvider>
         )
       }
     )
 
-    await waitFor(() => expect(getLanguagesMock.result).toHaveBeenCalled())
+    await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
   it('should return languages filtered by ids', async () => {
