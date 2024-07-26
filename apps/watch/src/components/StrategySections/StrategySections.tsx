@@ -15,25 +15,23 @@ export function StrategySections({
   // TODO: update this indexes variable to use the real indexes
   const indexes = ['wp_dev_posts_passionpurpose']
 
-  const [hasResult, setHasResult] = useState<boolean>(true)
+  const [hasResult, setHasResult] = useState(true)
 
   const resultsMap = new Map<number, boolean>()
 
   function handleItemSearch(index: number, hasResult: boolean) {
     resultsMap.set(index, hasResult)
-    const hasTrueValue = Array.from(resultsMap.values()).some(
-      (value) => value === true
-    )
+    const hasTrueValue = Array.from(resultsMap.values()).some((value) => value)
     setHasResult(hasTrueValue)
   }
 
+  // const {isSearchStalled} = useSearchBox()
+  // console.log('hello')
+
   const { status } = useInstantSearch()
+  // console.log(status)
 
-  console.log(status)
-
-  const loading = status === 'loading'
-
-  // const { loading } = useSearch
+  const loading = status === 'stalled'
 
   // find loading state from aloglia x
   // if loading, render one strategysection, passing in the loadign prop

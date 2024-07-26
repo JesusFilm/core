@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography'
 import { useTheme } from '@mui/material/styles'
 import { Hit } from 'instantsearch.js'
 import { ReactElement, useEffect } from 'react'
-import { useHits } from 'react-instantsearch'
+import { useHits, useInstantSearch } from 'react-instantsearch'
 import { SwiperOptions } from 'swiper/types'
 import { StrategyCard } from '../StrategyCard'
 
@@ -42,8 +42,11 @@ export function StrategySection({
   const { breakpoints } = useTheme()
 
   const { hits } = useHits()
+  // console.log(hits)
 
   const items = transformAlgoliaStrategies(hits)
+
+  const { results, status } = useInstantSearch()
 
   useEffect(() => {
     handleItemSearch(index, items.length > 0)
@@ -78,6 +81,29 @@ export function StrategySection({
     }
   }
 
+  // console.log(items)
+
+  const loadingItems = [
+    {
+      id: 'loadingItem1'
+    },
+    {
+      id: 'loadingItem2'
+    },
+    {
+      id: 'loadingItem3'
+    },
+    {
+      id: 'loadingItem4'
+    },
+    {
+      id: 'loadingItem5'
+    }
+  ] as unknown as StrategyCardItem[]
+
+  // console.log(results.nbHits)
+  // console.log(status)
+
   return (
     <>
       {loading !== true ? (
@@ -99,7 +125,7 @@ export function StrategySection({
       ) : (
         <Box data-testid="StrategySectionLoading">
           <Skeleton
-            sx={{ width: { xs: 145, md: 274 }, height: { xs: 30, md: 36 } }}
+            sx={{ width: { xs: 145, md: 274 }, height: { xs: 21, md: 40 } }}
           />
           <Container maxWidth={false} sx={{ overflow: 'hidden' }}>
             <ContentCarousel
@@ -107,6 +133,7 @@ export function StrategySection({
               renderItem={(itemProps) => (
                 <StrategyCard {...itemProps} loading />
               )}
+              loading
               breakpoints={swiperBreakpoints}
               slidesOffsetBefore={-32}
             />
