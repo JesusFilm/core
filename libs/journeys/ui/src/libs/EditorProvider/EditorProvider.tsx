@@ -69,6 +69,12 @@ export interface EditorState {
    */
   selectedBlock?: TreeBlock
   /**
+   * selectedBlockId indicates which block is currently selected on the Canvas
+   * and the JourneyFlow. It also indicates which attributes should be
+   * displayed in relation to the SelectedBlock.
+   */
+  selectedBlockId?: string
+  /**
    * selectedGoalUrl indicates which Goal to show on GoalDetails for editing.
    * If SelectedGoalUrl is unset then the information about goals will be shown.
    */
@@ -86,12 +92,6 @@ export interface EditorState {
    * not work.
    */
   selectedStepId?: string
-  /**
-   * selectedBlockId indicates which block is currently selected on the Canvas
-   * and the JourneyFlow. It also indicates which attributes should be
-   * displayed in relation to the SelectedBlock.
-   */
-  selectedBlockId?: string
   steps?: Array<TreeBlock<StepBlock>>
 }
 interface SetActiveContentAction {
@@ -159,10 +159,10 @@ export interface SetEditorFocusAction {
   activeSlide?: ActiveSlide
   selectedAttributeId?: string
   selectedBlock?: TreeBlock
+  selectedBlockId?: string
   selectedGoalUrl?: string
   selectedStep?: TreeBlock<StepBlock>
   selectedStepId?: string
-  selectedBlockId?: string
 }
 export type EditorAction =
   | SetActiveCanvasDetailsDrawerAction
@@ -174,11 +174,11 @@ export type EditorAction =
   | SetSelectedBlockByIdAction
   | SetSelectedGoalUrlAction
   | SetSelectedStepAction
+  | SetSelectedStepByIdAction
   | SetStepsAction
   | SetShowAnalyticsAction
   | SetAnalyticsAction
   | SetEditorFocusAction
-  | SetSelectedStepByIdAction
 
 export const reducer = (
   state: EditorState,
@@ -230,19 +230,6 @@ export const reducer = (
         activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
         activeContent: ActiveContent.Canvas
       }
-    case 'SetSelectedStepByIdAction':
-      return {
-        ...state,
-        selectedStepId: action.selectedStepId,
-        selectedStep:
-          action.selectedStepId != null
-            ? (searchBlocks(state.steps ?? [], action.selectedStepId, {
-                filter: 'searchStepsOnly'
-              }) as TreeBlock<StepBlock>)
-            : undefined,
-        activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
-        activeContent: ActiveContent.Canvas
-      }
     case 'SetSelectedGoalUrlAction':
       return {
         ...state,
@@ -254,6 +241,19 @@ export const reducer = (
         selectedStepId: action.selectedStep?.id,
         selectedStep: action.selectedStep,
         selectedBlock: action.selectedStep,
+        activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+        activeContent: ActiveContent.Canvas
+      }
+    case 'SetSelectedStepByIdAction':
+      return {
+        ...state,
+        selectedStepId: action.selectedStepId,
+        selectedStep:
+          action.selectedStepId != null
+            ? (searchBlocks(state.steps ?? [], action.selectedStepId, {
+                filter: 'searchStepsOnly'
+              }) as TreeBlock<StepBlock>)
+            : undefined,
         activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
         activeContent: ActiveContent.Canvas
       }
@@ -289,9 +289,9 @@ export const reducer = (
         selectedAttributeId,
         selectedGoalUrl,
         selectedBlock,
+        selectedBlockId,
         selectedStep,
-        selectedStepId,
-        selectedBlockId
+        selectedStepId
       } = action
       if (selectedStep != null)
         stateCopy = reducer(stateCopy, {
