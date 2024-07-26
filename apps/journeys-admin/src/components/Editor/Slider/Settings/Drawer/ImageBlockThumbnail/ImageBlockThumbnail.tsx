@@ -19,6 +19,9 @@ export function ImageBlockThumbnail({
   Icon = GridEmptyIcon,
   error
 }: ImageBlockThumbnailProps): ReactElement {
+  const isUnsplash =
+    selectedBlock?.src?.match(/^https:\/\/images\.unsplash\.com/) ?? false
+
   return (
     <Box
       sx={{
@@ -41,7 +44,22 @@ export function ImageBlockThumbnail({
       ) : selectedBlock?.src != null ? (
         <Box
           component="img"
-          src={selectedBlock.src}
+          srcSet={
+            isUnsplash
+              ? `${selectedBlock.src
+                  .replace('w=1080', 'w=55&h=55&auto=format&dpr=2')
+                  .replace('fit=max', 'fit=crop')
+                  .replace('crop=entropy&', '')} 2x`
+              : undefined
+          }
+          src={
+            isUnsplash
+              ? selectedBlock.src
+                  .replace('w=1080', 'w=55&h=55&auto=format')
+                  .replace('fit=max', 'fit=crop')
+                  .replace('crop=entropy&', '')
+              : selectedBlock.src
+          }
           alt={selectedBlock.alt}
           sx={{
             width: 55,
