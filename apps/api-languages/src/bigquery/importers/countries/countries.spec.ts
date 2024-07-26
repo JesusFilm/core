@@ -49,6 +49,7 @@ describe('bigquery/importers/countries', () => {
   describe('importCountries', () => {
     it('should import countries', async () => {
       prismaMock.country.findMany.mockResolvedValue([])
+      prismaMock.continent.findMany.mockResolvedValue([])
       await importCountries()
       expect(processTable).toHaveBeenCalledWith(
         'jfp-data-warehouse.jfp_mmdb_prod.core_countries_arclight_data',
@@ -62,6 +63,9 @@ describe('bigquery/importers/countries', () => {
   describe('importOne', () => {
     it('should import one language name', async () => {
       prismaMock.country.upsert.mockResolvedValue({} as unknown as Country)
+      prismaMock.country.findMany.mockResolvedValue([])
+      prismaMock.continent.findMany.mockResolvedValue([])
+      await importCountries()
       await importOne({
         shortName: country.id,
         country_population: country.population,
@@ -84,6 +88,9 @@ describe('bigquery/importers/countries', () => {
   describe('importMany', () => {
     it('should import many countries', async () => {
       prismaMock.country.createMany.mockImplementation()
+      prismaMock.country.findMany.mockResolvedValue([])
+      prismaMock.continent.findMany.mockResolvedValue([])
+      await importCountries()
       await importMany([
         {
           shortName: country.id,
