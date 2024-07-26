@@ -65,7 +65,6 @@ describe('country', () => {
     })
     expect(prismaMock.country.findUnique).toHaveBeenCalledWith({
       include: {
-        languages: true,
         continent: true,
         countryLanguages: {
           include: {
@@ -91,13 +90,15 @@ describe('country', () => {
     })
     expect(data).toHaveProperty('data.country', {
       ...country,
-      languages: [omit(language, ['createdAt', 'updatedAt', 'hasVideos'])],
       continent: {
         ...continent,
         name: [{ ...omit(continentName, ['id', 'continentId', 'languageId']) }]
       },
       countryLanguages: [
-        { language: omit(language, ['createdAt', 'updatedAt']), speakers: 100 }
+        {
+          language: omit(language, ['createdAt', 'updatedAt', 'hasVideos']),
+          speakers: 100
+        }
       ],
       name: [{ ...omit(countryName, ['id', 'countryId', 'languageId']) }]
     })
