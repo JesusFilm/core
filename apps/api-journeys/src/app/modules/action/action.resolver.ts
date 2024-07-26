@@ -3,10 +3,10 @@ import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 import get from 'lodash/get'
+import { z } from 'zod'
 
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
-import omit from 'lodash/omit'
 import { BlockUpdateActionInput } from '../../__generated__/graphql'
 import { AppAbility, Action as CaslAction } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
@@ -14,6 +14,22 @@ import { PrismaService } from '../../lib/prisma.service'
 import { ActionService } from './action.service'
 import { canBlockHaveAction } from './canBlockHaveAction'
 import { Action, Block } from '.prisma/api-journeys-client'
+
+const linkActionInputSchema = z.object({
+  gtmEventName: z.string().nullable(),
+  url: z.string(),
+  target: z.string().nullable()
+})
+
+const emailActionInputSchema = z.object({
+  gtmEventName: z.string().nullable(),
+  email: z.string().email()
+})
+
+const navigateToBlockActionInputSchema = z.object({
+  gtmEventName: z.string().nullable(),
+  blockId: z.string()
+})
 
 @Resolver('Action')
 export class ActionResolver {
@@ -86,18 +102,24 @@ export class ActionResolver {
     @Args('id') id: string,
     @Args('input') input: BlockUpdateActionInput
   ): Promise<Action> {
-    const numberOfInputs = Object.keys(
-      omit(input, ['gtmEventName', 'target'])
-    ).reduce((acc, val) => (val == null ? acc : acc + 1), 0)
+    const { success: isLink, data: linkInput } =
+      linkActionInputSchema.safeParse(input)
+    const { success: isEmail, data: emailInput } =
+      emailActionInputSchema.safeParse(input)
+    const { success: isNavigateToBlock, data: navigateToBlockInput } =
+      navigateToBlockActionInputSchema.safeParse(input)
 
-    if (numberOfInputs > 1) {
+    const numberOfValidInputs = [isLink, isEmail, isNavigateToBlock].reduce(
+      (acc, val) => (!val ? acc : acc + 1),
+      0
+    )
+    if (numberOfValidInputs > 1) {
       throw new GraphQLError('invalid combination of inputs provided', {
         extensions: { code: 'BAD_USER_INPUT' }
       })
     }
-
-    if (numberOfInputs === 0) {
-      throw new GraphQLError('no inputs provided', {
+    if (numberOfValidInputs === 0) {
+      throw new GraphQLError('no valid inputs provided', {
         extensions: { code: 'BAD_USER_INPUT' }
       })
     }
@@ -130,40 +152,18 @@ export class ActionResolver {
       })
     }
 
-    if (input.email != null) {
-      const emailActionInput = {
-        gtmEventName: input.gtmEventName,
-        email: input.email
-      }
-      return await this.actionService.emailActionUpdate(
-        id,
-        block,
-        emailActionInput
-      )
+    if (isEmail) {
+      return await this.actionService.emailActionUpdate(id, block, emailInput)
     }
-    if (input.blockId != null) {
-      const navigateToBlockActionInput = {
-        gtmEventName: input.gtmEventName,
-        blockId: input.blockId
-      }
+    if (isNavigateToBlock) {
       return await this.actionService.navigateToBlockActionUpdate(
         id,
         block,
-        navigateToBlockActionInput
+        navigateToBlockInput
       )
-      // })
     }
-    if (input.url != null) {
-      const linkActionInput = {
-        gtmEventName: input.gtmEventName,
-        url: input.url,
-        target: input.target
-      }
-      return await this.actionService.linkActionUpdate(
-        id,
-        block,
-        linkActionInput
-      )
+    if (isLink) {
+      return await this.actionService.linkActionUpdate(id, block, linkInput)
     }
     throw new GraphQLError('no inputs provided', {
       extensions: { code: 'BAD_USER_INPUT' }

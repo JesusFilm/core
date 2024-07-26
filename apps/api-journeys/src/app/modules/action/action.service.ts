@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { GraphQLError } from 'graphql'
 import omit from 'lodash/omit'
-import { object, string } from 'yup'
+import { z } from 'zod'
 import {
   EmailActionInput,
   LinkActionInput,
@@ -12,10 +12,9 @@ import { BlockService } from '../block/block.service'
 import { ACTION_UPDATE_RESET } from './actionUpdateReset'
 import { Action, Block } from '.prisma/api-journeys-client'
 
-const emailActionSchema = object({
-  email: string().required('Required').email()
+const emailSchema = z.object({
+  email: z.string().email()
 })
-
 @Injectable()
 export class ActionService {
   constructor(
@@ -29,7 +28,7 @@ export class ActionService {
     input: EmailActionInput
   ): Promise<Action> {
     try {
-      await emailActionSchema.validate({ email: input.email })
+      await emailSchema.parse({ email: input.email })
       // biome-ignore lint/correctness/noUnusedVariables: variable needed for catch even though it is unused
     } catch (err) {
       throw new GraphQLError('must be a valid email', {

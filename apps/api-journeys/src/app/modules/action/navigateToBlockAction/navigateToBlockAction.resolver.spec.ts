@@ -14,6 +14,7 @@ import { PrismaService } from '../../../lib/prisma.service'
 import { BlockService } from '../../block/block.service'
 import { ACTION_UPDATE_RESET } from '../actionUpdateReset'
 
+import { ActionService } from '../action.service'
 import { NavigateToBlockActionResolver } from './navigateToBlockAction.resolver'
 
 describe('NavigateToBlockActionResolver', () => {
@@ -78,6 +79,7 @@ describe('NavigateToBlockActionResolver', () => {
       imports: [CaslAuthModule.register(AppCaslFactory)],
       providers: [
         NavigateToBlockActionResolver,
+        ActionService,
         {
           provide: PrismaService,
           useValue: mockDeep<PrismaService>()
