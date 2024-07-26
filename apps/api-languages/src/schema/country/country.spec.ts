@@ -5,7 +5,7 @@ import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { cache } from '../../yoga'
 import { language } from '../language/language.mock'
-import { country, continent, continentName, countryName } from './country.mock'
+import { continent, continentName, country, countryName } from './country.mock'
 import { Country } from '.prisma/api-languages-client'
 
 const COUNTRY_QUERY = graphql(`
