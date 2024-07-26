@@ -62,6 +62,7 @@ export interface ArclightMediaComponentLanguage {
       sizeInBytes: number
     }
   }
+  editionCode?: string
 }
 
 export async function fetchPlus(
@@ -137,7 +138,7 @@ export async function getArclightMediaComponentLanguages(
     } | null
   } = await (
     await fetchPlus(
-      `https://api.arclight.org/v2/media-components/${mediaComponentId}/languages?platform=android&apiKey=${
+      `https://admin.arclight.org/v2/media-components/${mediaComponentId}/languages?platform=android&apiKey=${
         process.env.ARCLIGHT_API_KEY ?? ''
       }`
     )
@@ -179,7 +180,12 @@ export function transformArclightMediaComponentLanguageToVideoVariant(
       subtitle: [],
       slug,
       hls: null,
-      videoId: mediaComponent.mediaComponentId
+      videoId: mediaComponent.mediaComponentId,
+      edition:
+        mediaComponentLanguage.editionCode == null ||
+        mediaComponentLanguage.editionCode === ''
+          ? 'base'
+          : mediaComponentLanguage.editionCode
     }
   }
   const downloads: Prisma.VideoVariantDownloadUncheckedCreateInput[] = []
@@ -210,7 +216,8 @@ export function transformArclightMediaComponentLanguageToVideoVariant(
     ),
     downloads,
     slug,
-    videoId: mediaComponent.mediaComponentId
+    videoId: mediaComponent.mediaComponentId,
+    edition: mediaComponentLanguage.editionCode ?? ''
   }
 }
 
@@ -337,7 +344,7 @@ export async function transformMediaComponentToVideo(
   languages: Language[],
   usedVideoSlugs: Record<string, string>
 ): Promise<PrismaVideoCreateInput> {
-  console.log(`fetching mediaComponent:`, mediaComponent.mediaComponentId)
+  console.log('fetching mediaComponent:', mediaComponent.mediaComponentId)
   const mediaComponentLanguages = await getArclightMediaComponentLanguages(
     mediaComponent.mediaComponentId
   )

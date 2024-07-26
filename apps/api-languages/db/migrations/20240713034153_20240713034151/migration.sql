@@ -10,7 +10,7 @@
 -- AlterTable
 ALTER TABLE "AudioPreview" DROP CONSTRAINT "AudioPreview_pkey",
 DROP COLUMN "createdAt",
-DROP COLUMN "id",
+-- DROP COLUMN "id",
 ADD COLUMN     "duration" INTEGER NOT NULL,
 ADD CONSTRAINT "AudioPreview_pkey" PRIMARY KEY ("languageId");
 

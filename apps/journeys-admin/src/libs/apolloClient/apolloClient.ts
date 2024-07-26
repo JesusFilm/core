@@ -1,3 +1,4 @@
+import MutationQueueLink from '@adobe/apollo-link-mutation-queue'
 import { ApolloClient, HttpLink, NormalizedCacheObject } from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
 import { getApp } from 'firebase/app'
@@ -29,9 +30,11 @@ export function createApolloClient(
     }
   })
 
+  const mutationQueueLink = new MutationQueueLink()
+
   return new ApolloClient({
     ssrMode,
-    link: authLink.concat(httpLink),
+    link: mutationQueueLink.concat(authLink.concat(httpLink)),
     cache: cache(),
     name: 'journeys-admin',
     version: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA,

@@ -7,19 +7,19 @@ describe('transformJourneyAnalytics', () => {
       journeySteps: [
         {
           __typename: 'PlausibleStatsResponse',
-          property: 'journeyId/step1.id',
+          property: '/journeyId/step1.id',
           visitors: 10,
           timeOnPage: 10
         },
         {
           __typename: 'PlausibleStatsResponse',
-          property: 'journeyId/step2.id',
+          property: '/journeyId/step2.id',
           visitors: 5,
           timeOnPage: 3
         },
         {
           __typename: 'PlausibleStatsResponse',
-          property: 'journeyId/step3.id',
+          property: '/journeyId/step3.id',
           visitors: 2,
           timeOnPage: 1
         }
@@ -58,7 +58,7 @@ describe('transformJourneyAnalytics', () => {
         {
           __typename: 'PlausibleStatsResponse',
           property:
-            '{"stepId":"step1.id","event":"signUpSubmit","blockId":"signUp1.id","target":"link:https://bible.com"}',
+            '{"stepId":"step1.id","event":"signupSubmit","blockId":"signUp1.id","target":"link:https://bible.com"}',
           events: 5
         },
         {
@@ -88,17 +88,17 @@ describe('transformJourneyAnalytics', () => {
       journeyVisitorsPageExits: [
         {
           __typename: 'PlausibleStatsResponse',
-          property: 'journeyId/step1.id',
+          property: '/journeyId/step1.id',
           visitors: 5
         },
         {
           __typename: 'PlausibleStatsResponse',
-          property: 'journeyId/step2.id',
+          property: '/journeyId/step2.id',
           visitors: 3
         },
         {
           __typename: 'PlausibleStatsResponse',
-          property: 'journeyId/step3.id',
+          property: '/journeyId/step3.id',
           visitors: 2
         }
       ],
@@ -136,7 +136,7 @@ describe('transformJourneyAnalytics', () => {
         {
           __typename: 'PlausibleStatsResponse',
           property:
-            '{"stepId":"step1.id","event":"signUpSubmit","blockId":"signUp1.id","target":""}',
+            '{"stepId":"step1.id","event":"signupSubmit","blockId":"signUp1.id","target":""}',
           events: 5
         },
         {
@@ -257,7 +257,7 @@ describe('transformJourneyAnalytics', () => {
               ['navigateNextStep', 5],
               ['buttonClick', 5],
               ['radioQuestionSubmit', 5],
-              ['signUpSubmit', 5],
+              ['signupSubmit', 5],
               ['chatButtonClick', 5]
             ]),
             total: 25

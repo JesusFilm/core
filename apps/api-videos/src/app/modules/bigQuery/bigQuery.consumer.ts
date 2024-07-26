@@ -4,6 +4,10 @@ import get from 'lodash/get'
 
 import { PrismaService } from '../../lib/prisma.service'
 import { ImporterService } from '../importer/importer.service'
+
+import { ImporterBibleBookNamesService } from '../importer/importerBibleBookNames/importerBibleBookNames.service'
+import { ImporterBibleBooksService } from '../importer/importerBibleBooks/importerBibleBooks.service'
+import { ImporterBibleCitationsService } from '../importer/importerBibleCitations/importerBibleCitations.service'
 import { ImporterVideoDescriptionService } from '../importer/importerVideoDescriptions/importerVideoDescriptions.service'
 import { ImporterVideoImageAltService } from '../importer/importerVideoImageAlt/importerVideoImageAlt.service'
 import { ImporterVideoSnippetsService } from '../importer/importerVideoSnippets/importerVideoSnippets.service'
@@ -14,10 +18,7 @@ import { ImporterVideoVariantDownloadsService } from '../importer/importerVideoV
 import { ImporterVideoVariantsService } from '../importer/importerVideoVariants/importerVideoVariants.service'
 import { ImporterVideosService } from '../importer/importerVideos/importerVideos.service'
 import { ImporterVideosChildrenService } from '../importer/importerVideosChildren/importerVideosChildren.service'
-
-import { ImporterBibleBooksService } from '../importer/importerBibleBooks/importerBibleBooks.service'
 import { BigQueryService } from './bigQuery.service'
-import { ImporterBibleCitationsService } from '../importer/importerBibleCitations/importerBibleCitations.service'
 
 interface BigQueryRowError {
   bigQueryTableName: string
@@ -46,6 +47,7 @@ export class BigQueryConsumer extends WorkerHost {
     private readonly importerVideoSubtitleService: ImporterVideoSubtitlesService,
     private readonly importerVideosChildrenService: ImporterVideosChildrenService,
     private readonly importerBibleBooksService: ImporterBibleBooksService,
+    private readonly importerBibleBookNamesService: ImporterBibleBookNamesService,
     private readonly importerBibleCitationsService: ImporterBibleCitationsService
   ) {
     super()
@@ -109,6 +111,12 @@ export class BigQueryConsumer extends WorkerHost {
       },
       {
         table:
+          'jfp-data-warehouse.jfp_mmdb_prod.core_bibleBookDescriptors_arclight_data',
+        service: this.importerBibleBookNamesService,
+        hasUpdatedAt: false
+      },
+      {
+        table:
           'jfp-data-warehouse.jfp_mmdb_prod.core_videoBibleCitation_arclight_data',
         service: this.importerBibleCitationsService,
         hasUpdatedAt: true
@@ -119,23 +127,31 @@ export class BigQueryConsumer extends WorkerHost {
   async process(_job: Job): Promise<void> {
     await this.importerVideosService.getUsedSlugs()
     await this.importerVideoVariantsService.getExistingIds()
+    await this.importerBibleBooksService.getExistingIds()
 
     for (const index in this.tables) {
-      const {
-        table: bigQueryTableName,
-        service,
-        hasUpdatedAt
-      } = this.tables[index]
-      await this.processTable(bigQueryTableName, service, hasUpdatedAt)
+      try {
+        const {
+          table: bigQueryTableName,
+          service,
+          hasUpdatedAt
+        } = this.tables[index]
+        await this.processTable(bigQueryTableName, service, hasUpdatedAt)
+      } catch (error) {
+        if (error instanceof Error) {
+          console.log(error.message)
+        }
+      }
     }
+
+    await this.importerVideosChildrenService.process()
+    console.log('finished processing children')
 
     // cleanup for future runs
     this.importerVideosService.usedSlugs = undefined
     this.importerVideosService.ids = []
     this.importerVideoVariantsService.ids = []
-
-    await this.importerVideosChildrenService.process()
-    console.log('finished processing children')
+    this.importerBibleBooksService.ids = []
   }
 
   async processTable(
