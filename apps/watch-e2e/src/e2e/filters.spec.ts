@@ -31,7 +31,7 @@ test('Filters', async ({ page }) => {
     .getByTestId('FilterList')
     .locator('div')
     .filter({
-      hasText: 'LanguagesSearch LanguagesSearch Languages2000+ languages'
+      hasText: 'LanguagesSearch LanguagesSearch Languages1000+ languages'
     })
     .getByLabel('Open')
     .click()
@@ -39,7 +39,7 @@ test('Filters', async ({ page }) => {
     .getByTestId('FilterList')
     .locator('div')
     .filter({
-      hasText: 'LanguagesSearch LanguagesSearch Languages2000+ languages'
+      hasText: 'LanguagesSearch LanguagesSearch Languages1000+ languages'
     })
     .getByLabel('Search Languages')
     .fill('telu')
