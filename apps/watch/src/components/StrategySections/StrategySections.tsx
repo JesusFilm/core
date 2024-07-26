@@ -1,4 +1,5 @@
 import { EmptySearch } from '@core/journeys/ui/EmptySearch'
+import { Box } from '@mui/material'
 import Stack from '@mui/material/Stack'
 import { ReactElement, useState } from 'react'
 import { Index, useInstantSearch } from 'react-instantsearch'
@@ -30,6 +31,8 @@ export function StrategySections({
 
   console.log(status)
 
+  const loading = status === 'loading'
+
   // const { loading } = useSearch
 
   // find loading state from aloglia x
@@ -40,30 +43,42 @@ export function StrategySections({
 
   return (
     <Stack data-testid="StrategySections" sx={{ pt: 4, gap: 16 }}>
-      {!hasResult && <EmptySearch />}
-      {/* {loading == true && <StrategySections loading/>} */}
-      {index ? (
-        <Index indexName="wp_dev_posts_mission-trip">
-          <StrategySection index={0} handleItemSearch={handleItemSearch} />
-          {indexes.map((indexName, index) => (
-            <Index key={index} indexName={indexName}>
-              <StrategySection
-                index={index + 1}
-                handleItemSearch={handleItemSearch}
-              />
-            </Index>
-          ))}
-        </Index>
+      {loading === true ? (
+        <Box data-testid="loading box">
+          <StrategySection
+            index={0}
+            handleItemSearch={handleItemSearch}
+            loading
+          />
+        </Box>
       ) : (
         <>
-          <StrategySection index={0} handleItemSearch={handleItemSearch} />
-          {indexes.map((indexName, index) => (
-            <StrategySection
-              key={indexName}
-              index={index}
-              handleItemSearch={handleItemSearch}
-            />
-          ))}
+          {!hasResult && <EmptySearch />}
+          {/* {loading == true && <StrategySections loading/>} */}
+          {index ? (
+            <Index indexName="wp_dev_posts_mission-trip">
+              <StrategySection index={0} handleItemSearch={handleItemSearch} />
+              {indexes.map((indexName, index) => (
+                <Index key={index} indexName={indexName}>
+                  <StrategySection
+                    index={index + 1}
+                    handleItemSearch={handleItemSearch}
+                  />
+                </Index>
+              ))}
+            </Index>
+          ) : (
+            <>
+              <StrategySection index={0} handleItemSearch={handleItemSearch} />
+              {indexes.map((indexName, index) => (
+                <StrategySection
+                  key={indexName}
+                  index={index}
+                  handleItemSearch={handleItemSearch}
+                />
+              ))}
+            </>
+          )}
         </>
       )}
     </Stack>

@@ -37,7 +37,7 @@ interface StrategySectionProps {
 export function StrategySection({
   handleItemSearch,
   index,
-  loading = true
+  loading
 }: StrategySectionProps): ReactElement {
   const { breakpoints } = useTheme()
 
@@ -80,7 +80,7 @@ export function StrategySection({
 
   return (
     <>
-      {loading === false ? (
+      {loading !== true ? (
         <>
           {items.length > 0 && (
             <Box data-testid="StrategySection">
@@ -97,7 +97,7 @@ export function StrategySection({
           )}
         </>
       ) : (
-        <Box data-testid="StrategySection">
+        <Box data-testid="StrategySectionLoading">
           <Skeleton
             sx={{ width: { xs: 145, md: 274 }, height: { xs: 30, md: 36 } }}
           />
