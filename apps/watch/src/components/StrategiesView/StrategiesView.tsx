@@ -10,7 +10,7 @@ export function StrategiesView(): ReactElement {
   return (
     <Box sx={{ backgroundColor: 'background.default' }}>
       <Container maxWidth="xxl">
-        <Stack sx={{ p: 4, gap: 4 }}>
+        <Stack sx={{ pt: 6.5, gap: 10 }}>
           <ResourceHeading heading="Resource" />
           <SearchBar />
           <StrategySections index />
