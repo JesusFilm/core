@@ -26,7 +26,7 @@ interface VideoCardProps {
   imageSx?: SxProps
 }
 
-const ImageButton = styled(ButtonBase)(({ theme }) => ({
+const ImageButton = styled(ButtonBase)(() => ({
   borderRadius: 8,
   width: '100%',
   position: 'relative'

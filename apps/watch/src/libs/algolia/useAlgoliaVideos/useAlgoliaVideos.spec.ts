@@ -4,7 +4,7 @@ import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refine
 import { NextRouter, useRouter } from 'next/router'
 import { useInfiniteHits, useRefinementList } from 'react-instantsearch'
 import {
-  AlgoliaVideos,
+  AlgoliaVideo,
   transformItems,
   useAlgoliaVideos
 } from './useAlgoliaVideos'
@@ -41,7 +41,7 @@ describe('useAlgoliaVideos', () => {
       childrenCount: 49,
       objectID: '2_529-GOJ-0-0'
     }
-  ] as unknown as AlgoliaVideos[]
+  ] as unknown as AlgoliaVideo[]
 
   beforeEach(() => {
     mockUseInfiniteHits.mockReturnValue({
@@ -69,13 +69,17 @@ describe('useAlgoliaVideos', () => {
           id: 'videoId',
           image:
             'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_GOJ-0-0.mobileCinematicHigh.jpg',
-          imageAlt: 'Life of Jesus (Gospel of John)',
+          imageAlt: [
+            {
+              value: 'Life of Jesus (Gospel of John)'
+            }
+          ],
           label: 'featureFilm',
           slug: 'video-slug/english',
           snippet: [],
           title: [
             {
-              value: ['title1']
+              value: 'title1'
             }
           ],
           variant: {
@@ -104,13 +108,11 @@ describe('useAlgoliaVideos', () => {
     expect(result.current.isLastPage).toBe(false)
   })
 
-  it('should refine languageId to english if in videos pages and there is no selected language', () => {
+  it('should refine languageId to english there is no selected language', () => {
     const refine = jest.fn()
-
     mockUseRouter.mockReturnValue({
-      asPath: '/watch/videos'
+      asPath: '/watch'
     } as unknown as NextRouter)
-
     mockUseRefinementList.mockReturnValue({
       refine
     } as unknown as RefinementListRenderState)
@@ -120,29 +122,11 @@ describe('useAlgoliaVideos', () => {
     expect(refine).toHaveBeenCalledWith('529')
   })
 
-  it('should not refine languageId to english if not in videos page', () => {
-    const refine = jest.fn()
-
-    mockUseRouter.mockReturnValue({
-      asPath: '/watch'
-    } as unknown as NextRouter)
-
-    mockUseRefinementList.mockReturnValue({
-      refine
-    } as unknown as RefinementListRenderState)
-
-    renderHook(() => useAlgoliaVideos())
-
-    expect(refine).not.toHaveBeenCalled()
-  })
-
   it('should not refine languageId to english if there is already a selected language', () => {
     const refine = jest.fn()
-
     mockUseRouter.mockReturnValue({
       asPath: '/watch/videos?languages=1'
     } as unknown as NextRouter)
-
     mockUseRefinementList.mockReturnValue({
       refine
     } as unknown as RefinementListRenderState)
