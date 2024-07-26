@@ -11,16 +11,19 @@ import { EmailActionInput } from '../../../__generated__/graphql'
 import { AppAbility, Action as CaslAction } from '../../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../../lib/casl/caslGuard'
 import { PrismaService } from '../../../lib/prisma.service'
-import { ACTION_UPDATE_RESET } from '../actionUpdateReset'
+import { ActionService } from '../action.service'
 import { canBlockHaveAction } from '../canBlockHaveAction'
 
-const emailActionSchema = object({
+export const emailActionSchema = object({
   email: string().required('Required').email()
 })
 
 @Resolver('EmailAction')
 export class EmailActionResolver {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly actionService: ActionService
+  ) {}
 
   @Mutation()
   @UseGuards(AppCaslGuard)
@@ -57,25 +60,6 @@ export class EmailActionResolver {
       })
     }
 
-    try {
-      await emailActionSchema.validate({ email: input.email })
-    } catch (err) {
-      throw new GraphQLError('must be a valid email', {
-        extensions: { code: 'BAD_USER_INPUT' }
-      })
-    }
-
-    return await this.prismaService.action.upsert({
-      where: { parentBlockId: id },
-      create: {
-        ...input,
-        parentBlock: { connect: { id: block.id } }
-      },
-      update: {
-        ...ACTION_UPDATE_RESET,
-        ...input
-      },
-      include: { parentBlock: { include: { action: true } } }
-    })
+    return await this.actionService.emailActionUpdate(id, block, input)
   }
 }
