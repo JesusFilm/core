@@ -9,7 +9,10 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { IMAGE_FIELDS } from '@core/journeys/ui/Image/imageFields'
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../../__generated__/BlockFields'
-import { ImageBlockUpdate } from '../../../../../../../../../../__generated__/ImageBlockUpdate'
+import {
+  ImageBlockUpdate,
+  ImageBlockUpdateVariables
+} from '../../../../../../../../../../__generated__/ImageBlockUpdate'
 import { ImageBlockUpdateInput } from '../../../../../../../../../../__generated__/globalTypes'
 import { ImageSource } from '../../../../../Drawer/ImageSource'
 
@@ -27,10 +30,14 @@ export const IMAGE_BLOCK_UPDATE = gql`
 `
 
 export function ImageOptions(): ReactElement {
+  const [imageBlockUpdate] = useMutation<
+    ImageBlockUpdate,
+    ImageBlockUpdateVariables
+  >(IMAGE_BLOCK_UPDATE)
   const {
-    state: { selectedBlock }
+    state: { selectedBlock, selectedStep },
+    dispatch
   } = useEditor()
-  const [imageBlockUpdate] = useMutation<ImageBlockUpdate>(IMAGE_BLOCK_UPDATE)
   const { add } = useCommand()
 
   const imageBlock = selectedBlock as TreeBlock<ImageBlock>
@@ -55,6 +62,11 @@ export function ImageOptions(): ReactElement {
         undo: imageBlock
       },
       async execute(block) {
+        dispatch({
+          type: 'SetEditorFocusAction',
+          selectedBlock,
+          selectedStep
+        })
         await imageBlockUpdate({
           variables: {
             id: imageBlock.id,
