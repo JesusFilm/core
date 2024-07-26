@@ -83,6 +83,13 @@ export function VideoOptions(): ReactElement {
           variables: {
             id: selectedBlock.id,
             input
+          },
+          optimisticResponse: {
+            videoBlockUpdate: {
+              ...selectedBlock,
+              ...input,
+              source: input.source ?? selectedBlock.source
+            }
           }
         })
       }
