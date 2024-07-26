@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { GraphQLError } from 'graphql'
 import omit from 'lodash/omit'
+import { object, string } from 'yup'
 import {
   EmailActionInput,
   LinkActionInput,
@@ -9,8 +10,11 @@ import {
 import { PrismaService } from '../../lib/prisma.service'
 import { BlockService } from '../block/block.service'
 import { ACTION_UPDATE_RESET } from './actionUpdateReset'
-import { emailActionSchema } from './emailAction/emailAction.resolver'
 import { Action, Block } from '.prisma/api-journeys-client'
+
+const emailActionSchema = object({
+  email: string().required('Required').email()
+})
 
 @Injectable()
 export class ActionService {

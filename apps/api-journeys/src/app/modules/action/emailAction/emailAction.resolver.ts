@@ -2,7 +2,6 @@ import { subject } from '@casl/ability'
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
-import { object, string } from 'yup'
 
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 import { Action } from '.prisma/api-journeys-client'
@@ -13,10 +12,6 @@ import { AppCaslGuard } from '../../../lib/casl/caslGuard'
 import { PrismaService } from '../../../lib/prisma.service'
 import { ActionService } from '../action.service'
 import { canBlockHaveAction } from '../canBlockHaveAction'
-
-export const emailActionSchema = object({
-  email: string().required('Required').email()
-})
 
 @Resolver('EmailAction')
 export class EmailActionResolver {

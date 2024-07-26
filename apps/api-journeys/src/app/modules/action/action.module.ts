@@ -21,8 +21,8 @@ import { NavigateToBlockActionResolver } from './navigateToBlockAction/navigateT
     BlockService,
     DateTimeScalar,
     PrismaService,
-    LinkActionResolver,
     EmailActionResolver,
+    LinkActionResolver,
     NavigateToBlockActionResolver
   ],
   exports: [ActionService]
