@@ -80,6 +80,7 @@ export const POSTER_IMAGE_BLOCK_RESTORE = gql`
     $videoBlockId: ID!
   ) {
     blockRestore(id: $id) {
+      id
       ...on ImageBlock {
         ...ImageFields
       }
