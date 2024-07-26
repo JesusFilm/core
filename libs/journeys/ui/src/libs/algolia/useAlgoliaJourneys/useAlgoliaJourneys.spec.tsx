@@ -17,16 +17,16 @@ import {
 } from '../../useLanguagesQuery/__generated__/GetLanguages'
 import { languages } from '../../useLanguagesQuery/useLanguageQuery.mock'
 import {
-  algoliaHits,
-  algoliaLanguageRefinements,
-  algoliaRefinements,
-  algoliaResults
-} from './data'
-import {
   enrichHits,
   transformItems,
   useAlgoliaJourneys
 } from './useAlgoliaJourneys'
+import {
+  algoliaHits,
+  algoliaLanguageRefinements,
+  algoliaRefinements,
+  algoliaResults
+} from './useAlgoliaJourneys.mock'
 
 jest.mock('react-instantsearch')
 jest.mock('../../useLanguagesQuery')

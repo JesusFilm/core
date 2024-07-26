@@ -10,7 +10,7 @@ import { TemplateGallery } from '.'
 import '../../../test/i18n'
 import { QueryResult } from '@apollo/client'
 import { useAlgoliaJourneys } from '../../libs/algolia/useAlgoliaJourneys'
-import { algoliaJourneys } from '../../libs/algolia/useAlgoliaJourneys/data'
+import { algoliaJourneys } from '../../libs/algolia/useAlgoliaJourneys/useAlgoliaJourneys.mock'
 import { useLanguagesQuery } from '../../libs/useLanguagesQuery'
 import {
   GetLanguages,

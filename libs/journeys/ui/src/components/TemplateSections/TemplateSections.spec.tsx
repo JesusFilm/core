@@ -4,7 +4,7 @@ import '../../../test/i18n'
 import { TemplateSections } from './TemplateSections'
 
 import { useAlgoliaJourneys } from '../../libs/algolia/useAlgoliaJourneys'
-import { algoliaJourneys } from '../../libs/algolia/useAlgoliaJourneys/data'
+import { algoliaJourneys } from '../../libs/algolia/useAlgoliaJourneys/useAlgoliaJourneys.mock'
 
 jest.mock('react-instantsearch')
 jest.mock('../../libs/algolia/useAlgoliaJourneys/useAlgoliaJourneys')
