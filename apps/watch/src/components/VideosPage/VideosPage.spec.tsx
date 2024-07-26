@@ -8,10 +8,8 @@ import {
   useRefinementList,
   useSearchBox
 } from 'react-instantsearch'
-import {
-  AlgoliaVideos,
-  useAlgoliaVideos
-} from '../../libs/algolia/useAlgoliaVideos'
+import { useAlgoliaVideos } from '../../libs/algolia/useAlgoliaVideos'
+import type { CoreVideo } from '../../libs/algolia/useAlgoliaVideos'
 import { VideosPage } from './VideosPage'
 
 jest.mock('react-instantsearch')
@@ -40,31 +38,38 @@ const mockUseClearRefinements = useClearRefinements as jest.MockedFunction<
 >
 
 describe('VideosPage', () => {
-  const algoliaVideos = [
+  const transformedVideos = [
     {
-      videoId: 'videoId',
+      __typename: 'Video',
+      childrenCount: 49,
+      id: 'videoId',
+      image:
+        'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_GOJ-0-0.mobileCinematicHigh.jpg',
+      imageAlt: [
+        {
+          value: 'Life of Jesus (Gospel of John)'
+        }
+      ],
+      label: 'featureFilm',
+      slug: 'video-slug/english',
+      snippet: [],
       title: [
         {
           value: 'title1'
         }
       ],
-      description: ['description'],
-      duration: 10994,
-      languageId: '529',
-      subtitles: [],
-      slug: 'video-slug/english',
-      label: 'featureFilm',
-      image:
-        'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_GOJ-0-0.mobileCinematicHigh.jpg',
-      imageAlt: 'Life of Jesus (Gospel of John)',
-      childrenCount: 49,
-      objectID: '2_529-GOJ-0-0'
+      variant: {
+        duration: 10994,
+        hls: null,
+        id: '2_529-GOJ-0-0',
+        slug: 'video-slug/english'
+      }
     }
-  ] as unknown as AlgoliaVideos[]
+  ] as unknown as CoreVideo[]
 
   beforeEach(() => {
     mockUseAlgoliaVideos.mockReturnValue({
-      hits: algoliaVideos,
+      hits: transformedVideos,
       showMore: jest.fn(),
       isLastPage: false
     })

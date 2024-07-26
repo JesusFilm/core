@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { useAlgoliaVideos } from '../../libs/algolia/useAlgoliaVideos'
-import type { AlgoliaVideos } from '../../libs/algolia/useAlgoliaVideos'
+import type { CoreVideo } from '../../libs/algolia/useAlgoliaVideos'
 import { videos } from '../Videos/__generated__/testData'
 import { VideoGrid } from './VideoGrid'
 
@@ -12,31 +12,39 @@ const mockedUseAlgoliaVideos = useAlgoliaVideos as jest.MockedFunction<
 >
 
 describe('VideoGrid', () => {
-  const algoliaVideos = [
+  const transformedVideos = [
     {
-      videoId: 'videoId',
+      __typename: 'Video',
+      childrenCount: 49,
+      id: 'videoId',
+      image:
+        'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_GOJ-0-0.mobileCinematicHigh.jpg',
+      imageAlt: [
+        {
+          value: 'Life of Jesus (Gospel of John)'
+        }
+      ],
+      label: 'featureFilm',
+      slug: 'video-slug/english',
+      snippet: [],
       title: [
         {
           value: 'title1'
         }
       ],
-      description: ['description'],
-      duration: 10994,
-      languageId: '529',
-      subtitles: [],
-      slug: 'video-slug/english',
-      label: 'featureFilm',
-      image:
-        'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_GOJ-0-0.mobileCinematicHigh.jpg',
-      imageAlt: 'Life of Jesus (Gospel of John)',
-      childrenCount: 49,
-      objectID: '2_529-GOJ-0-0'
+      variant: {
+        duration: 10994,
+        hls: null,
+        id: '2_529-GOJ-0-0',
+        slug: 'video-slug/english'
+      }
     }
-  ] as unknown as AlgoliaVideos[]
+  ] as unknown as CoreVideo[]
+
   describe('Core Videos', () => {
     it('should render core videos', () => {
       mockedUseAlgoliaVideos.mockReturnValue({
-        hits: algoliaVideos,
+        hits: transformedVideos,
         showMore: jest.fn(),
         isLastPage: false
       })
@@ -58,7 +66,7 @@ describe('VideoGrid', () => {
   describe('Algolia Videos', () => {
     it('should render a video within the grid', async () => {
       mockedUseAlgoliaVideos.mockReturnValue({
-        hits: algoliaVideos,
+        hits: transformedVideos,
         showMore: jest.fn(),
         isLastPage: false
       })
@@ -73,7 +81,7 @@ describe('VideoGrid', () => {
     it('should request most videos', async () => {
       const showMore = jest.fn()
       mockedUseAlgoliaVideos.mockReturnValue({
-        hits: algoliaVideos,
+        hits: transformedVideos,
         showMore,
         isLastPage: false
       })
@@ -85,7 +93,7 @@ describe('VideoGrid', () => {
 
     it('should show no more videos button', async () => {
       mockedUseAlgoliaVideos.mockReturnValue({
-        hits: algoliaVideos,
+        hits: transformedVideos,
         showMore: jest.fn(),
         isLastPage: true
       })

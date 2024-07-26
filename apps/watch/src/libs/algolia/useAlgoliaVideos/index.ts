@@ -1,2 +1,2 @@
 export { useAlgoliaVideos } from './useAlgoliaVideos'
-export type { AlgoliaVideos } from './useAlgoliaVideos'
+export type { CoreVideo } from './useAlgoliaVideos'
