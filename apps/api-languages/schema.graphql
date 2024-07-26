@@ -8,6 +8,18 @@ type AudioPreview {
   size: Int!
 }
 
+type Continent {
+  id: ID!
+  name(languageId: ID, primary: Boolean): [ContinentName!]!
+  countries: [Country!]!
+}
+
+type ContinentName {
+  value: String!
+  primary: Boolean!
+  language: Language!
+}
+
 type Country
   @key(fields: "id")
 {
@@ -19,13 +31,7 @@ type Country
   flagWebpSrc: String
   languages: [Language!]!
   name(languageId: ID, primary: Boolean): [CountryName!]!
-  continent(languageId: ID, primary: Boolean): [CountryContinent!]!
-}
-
-type CountryContinent {
-  value: String!
-  primary: Boolean!
-  language: Language!
+  continent: Continent!
 }
 
 type CountryName {

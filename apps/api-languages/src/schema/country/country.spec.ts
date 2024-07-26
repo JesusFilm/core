@@ -5,15 +5,18 @@ import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { cache } from '../../yoga'
 import { language } from '../language/language.mock'
-import { country, countryContinent, countryName } from './country.mock'
+import { country, continent, continentName, countryName } from './country.mock'
 import { Country } from '.prisma/api-languages-client'
 
 const COUNTRY_QUERY = graphql(`
   query Country($languageId: ID, $primary: Boolean) {
     country(id: "AD") {
-      continent(languageId: $languageId, primary: $primary) {
-        value
-        primary
+      continent {
+        id
+        name(languageId: $languageId, primary: $primary) {
+          value
+          primary
+        }
       }
       flagPngSrc
       flagWebpSrc
@@ -44,10 +47,11 @@ describe('country', () => {
   it('should query country', async () => {
     prismaMock.country.findUnique.mockResolvedValue({
       ...country,
-      languages: [language]
+      languages: [language],
+      continent: continent
     } as unknown as Country)
     prismaMock.countryName.findMany.mockResolvedValue([countryName])
-    prismaMock.countryContinent.findMany.mockResolvedValue([countryContinent])
+    prismaMock.continentName.findMany.mockResolvedValue([continentName])
     const data = await client({
       document: COUNTRY_QUERY,
       variables: {
@@ -57,7 +61,8 @@ describe('country', () => {
     })
     expect(prismaMock.country.findUnique).toHaveBeenCalledWith({
       include: {
-        languages: true
+        languages: true,
+        continent: true
       },
       where: {
         id: 'AD'
@@ -77,10 +82,11 @@ describe('country', () => {
     })
     expect(data).toHaveProperty('data.country', {
       ...country,
-      languages: [omit(language, ['createdAt', 'updatedAt'])],
-      continent: [
-        { ...omit(countryContinent, ['id', 'countryId', 'languageId']) }
-      ],
+      languages: [omit(language, ['createdAt', 'updatedAt', 'hasVideos'])],
+      continent: {
+        ...continent,
+        name: [{ ...omit(continentName, ['id', 'continentId', 'languageId']) }]
+      },
       name: [{ ...omit(countryName, ['id', 'countryId', 'languageId']) }]
     })
   })

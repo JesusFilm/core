@@ -7,7 +7,8 @@ import { Prisma } from '.prisma/api-languages-client'
 const languageSchema = z.object({
   id: z.number().transform(String),
   bcp47: z.string().nullable(),
-  iso3: z.string(),
+  iso3: z.string().nullable(),
+  hasVideos: z.number().transform(Boolean),
   updatedAt: z.object({ value: z.string() }).transform((value) => value.value)
 })
 

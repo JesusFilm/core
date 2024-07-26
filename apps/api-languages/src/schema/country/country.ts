@@ -13,14 +13,6 @@ const CountryName = builder.prismaObject('CountryName', {
   })
 })
 
-const CountryContinent = builder.prismaObject('CountryContinent', {
-  fields: (t) => ({
-    value: t.exposeString('value'),
-    primary: t.exposeBoolean('primary'),
-    language: t.relation('language')
-  })
-})
-
 const Country = builder.prismaObject('Country', {
   fields: (t) => ({
     id: t.exposeID('id'),
@@ -51,27 +43,7 @@ const Country = builder.prismaObject('Country', {
         })
       }
     }),
-    continent: t.prismaField({
-      type: [CountryContinent],
-      args: {
-        languageId: t.arg.id({ required: false }),
-        primary: t.arg.boolean({ required: false })
-      },
-      resolve: async (query, country, { languageId, primary }) => {
-        const where: Prisma.CountryContinentWhereInput = {
-          countryId: country.id,
-          OR: languageId == null && primary == null ? undefined : []
-        }
-        if (languageId != null) where.OR?.push({ languageId })
-        if (primary != null) where.OR?.push({ primary })
-        return await prisma.countryContinent.findMany({
-          ...query,
-          where,
-          orderBy: { primary: 'desc' },
-          include: { language: true }
-        })
-      }
-    })
+    continent: t.relation('continent')
   })
 })
 
