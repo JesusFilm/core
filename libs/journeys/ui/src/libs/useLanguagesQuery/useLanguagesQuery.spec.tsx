@@ -1,62 +1,11 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { act, renderHook, waitFor } from '@testing-library/react'
+import { renderHook, waitFor } from '@testing-library/react'
 
+import { getLanguagesMock, languages } from './useLanguageQuery.mock'
 import { GET_LANGUAGES, useLanguagesQuery } from './useLanguagesQuery'
 
 describe('useLanguagesQuery', () => {
-  const languages = [
-    {
-      __typename: 'Language',
-      id: '529',
-      name: [
-        {
-          value: 'English',
-          primary: true,
-          __typename: 'LanguageName'
-        }
-      ]
-    },
-    {
-      id: '496',
-      __typename: 'Language',
-      name: [
-        {
-          value: 'Français',
-          primary: true,
-          __typename: 'LanguageName'
-        },
-        {
-          value: 'French',
-          primary: false,
-          __typename: 'LanguageName'
-        }
-      ]
-    },
-    {
-      id: '1106',
-      __typename: 'Language',
-      name: [
-        {
-          value: 'Deutsch',
-          primary: true,
-          __typename: 'LanguageName'
-        },
-        {
-          value: 'German, Standard',
-          primary: false,
-          __typename: 'LanguageName'
-        }
-      ]
-    }
-  ]
-
   it('should get languages', async () => {
-    const result = jest.fn(() => ({
-      data: {
-        languages
-      }
-    }))
-
     renderHook(
       () =>
         useLanguagesQuery({
@@ -64,28 +13,12 @@ describe('useLanguagesQuery', () => {
         }),
       {
         wrapper: ({ children }) => (
-          <MockedProvider
-            mocks={[
-              {
-                request: {
-                  query: GET_LANGUAGES,
-                  variables: {
-                    languageId: '529'
-                  }
-                },
-                result
-              }
-            ]}
-          >
-            {children}
-          </MockedProvider>
+          <MockedProvider mocks={[getLanguagesMock]}>{children}</MockedProvider>
         )
       }
     )
 
-    await act(
-      async () => await waitFor(() => expect(result).toHaveBeenCalled())
-    )
+    await waitFor(() => expect(getLanguagesMock.result).toHaveBeenCalled())
   })
 
   it('should return languages filtered by ids', async () => {
@@ -127,8 +60,6 @@ describe('useLanguagesQuery', () => {
       }
     )
 
-    await act(
-      async () => await waitFor(() => expect(result).toHaveBeenCalled())
-    )
+    await waitFor(() => expect(result).toHaveBeenCalled())
   })
 })
