@@ -4,7 +4,6 @@ import { SnackbarProvider } from 'notistack'
 
 import {
   ActiveContent,
-  ActiveFab,
   EditorProvider,
   EditorState
 } from '@core/journeys/ui/EditorProvider'
@@ -27,7 +26,6 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 describe('Step', () => {
   const state: EditorState = {
     steps: [],
-    activeFab: ActiveFab.Add,
     activeSlide: ActiveSlide.JourneyFlow,
     activeContent: ActiveContent.Canvas,
     activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
@@ -112,7 +110,6 @@ describe('Step', () => {
           <EditorProvider
             initialState={{
               steps: [step1, step2],
-              activeFab: ActiveFab.Add,
               activeSlide: ActiveSlide.JourneyFlow,
               activeContent: ActiveContent.Canvas,
               activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
@@ -184,7 +181,6 @@ describe('Step', () => {
           <EditorProvider
             initialState={{
               steps: [step1, step2, step5],
-              activeFab: ActiveFab.Add,
               activeSlide: ActiveSlide.JourneyFlow,
               activeContent: ActiveContent.Canvas,
               activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
@@ -247,7 +243,6 @@ describe('Step', () => {
           <EditorProvider
             initialState={{
               steps: [step1, step2],
-              activeFab: ActiveFab.Add,
               activeSlide: ActiveSlide.JourneyFlow,
               activeContent: ActiveContent.Canvas,
               activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties

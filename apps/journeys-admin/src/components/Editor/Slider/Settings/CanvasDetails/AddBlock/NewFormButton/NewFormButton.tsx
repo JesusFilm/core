@@ -3,7 +3,7 @@ import { useTranslation } from 'next-i18next'
 import type { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
-import { ActiveFab, useEditor } from '@core/journeys/ui/EditorProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { FORM_FIELDS } from '@core/journeys/ui/Form/formFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import File5Icon from '@core/shared/ui/icons/File5'
@@ -75,10 +75,6 @@ export function NewFormButton(): ReactElement {
             dispatch({
               type: 'SetSelectedBlockByIdAction',
               selectedBlockId: data.formBlockCreate.id
-            })
-            dispatch({
-              type: 'SetActiveFabAction',
-              activeFab: ActiveFab.Save
             })
           }
           return data?.formBlockCreate
