@@ -11,6 +11,7 @@ import { TagCarousels } from './TagCarousels'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 import Stack from '@mui/material/Stack'
+import { ResourceHeading } from '../../../../../../apps/watch/src/components/ResourceHeading'
 
 interface TemplateGalleryProps {
   hideOverflow?: boolean
@@ -20,6 +21,7 @@ interface TemplateGalleryProps {
 function TemplateGalleryContent() {
   return (
     <Stack spacing={10}>
+      <ResourceHeading heading="Next step" />
       <SearchBar />
 
       {/* TODO: Remove temporary theme fix for styling journeys admin components */}
