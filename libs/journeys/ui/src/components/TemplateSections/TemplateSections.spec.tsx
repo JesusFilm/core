@@ -7,12 +7,15 @@ import { useAlgoliaJourneys } from '../../libs/algolia/useAlgoliaJourneys'
 import { algoliaJourneys } from '../../libs/algolia/useAlgoliaJourneys/useAlgoliaJourneys.mock'
 
 jest.mock('react-instantsearch')
-jest.mock('../../libs/algolia/useAlgoliaJourneys/useAlgoliaJourneys')
+jest.mock('../../libs/algolia/useAlgoliaJourneys')
+
+const mockUseAlgoliaJourneys = useAlgoliaJourneys as jest.MockedFunction<
+  typeof useAlgoliaJourneys
+>
 
 describe('TemplateSections', () => {
   beforeEach(() => {
-    const useAlgoliaJourneysMocked = jest.mocked(useAlgoliaJourneys)
-    useAlgoliaJourneysMocked.mockReturnValue({
+    mockUseAlgoliaJourneys.mockReturnValue({
       hits: algoliaJourneys,
       loading: false,
       refinements: []
@@ -40,8 +43,7 @@ describe('TemplateSections', () => {
     })
 
     it('should render tag carousels if more than 5 journeys in a category', async () => {
-      const useAlgoliaJourneysMocked = jest.mocked(useAlgoliaJourneys)
-      useAlgoliaJourneysMocked.mockReturnValue({
+      mockUseAlgoliaJourneys.mockReturnValue({
         hits: algoliaJourneys.concat(algoliaJourneys),
         loading: false,
         refinements: []
@@ -61,8 +63,7 @@ describe('TemplateSections', () => {
 
   describe('Relevant Templates', () => {
     beforeEach(() => {
-      const useAlgoliaJourneysMocked = jest.mocked(useAlgoliaJourneys)
-      useAlgoliaJourneysMocked.mockReturnValue({
+      mockUseAlgoliaJourneys.mockReturnValue({
         hits: algoliaJourneys,
         loading: false,
         refinements: ['Acceptance', 'Depression']
@@ -82,8 +83,7 @@ describe('TemplateSections', () => {
 
   describe('Tag Templates', () => {
     beforeEach(() => {
-      const useAlgoliaJourneysMocked = jest.mocked(useAlgoliaJourneys)
-      useAlgoliaJourneysMocked.mockReturnValue({
+      mockUseAlgoliaJourneys.mockReturnValue({
         hits: algoliaJourneys,
         loading: false,
         refinements: ['Addiction', 'Acceptance']
@@ -107,8 +107,7 @@ describe('TemplateSections', () => {
 
   describe('Empty', () => {
     beforeEach(() => {
-      const useAlgoliaJourneysMocked = jest.mocked(useAlgoliaJourneys)
-      useAlgoliaJourneysMocked.mockReturnValue({
+      mockUseAlgoliaJourneys.mockReturnValue({
         hits: [],
         loading: false,
         refinements: []

@@ -27,23 +27,30 @@ jest.mock('next/router', () => ({
 jest.mock('react-instantsearch')
 jest.mock('../../libs/algolia/useAlgoliaJourneys')
 
+const mockUseAlgoliaJourneys = useAlgoliaJourneys as jest.MockedFunction<
+  typeof useAlgoliaJourneys
+>
+const mockUseSearchBox = useSearchBox as jest.MockedFunction<
+  typeof useSearchBox
+>
+const mockUseRefinementList = useRefinementList as jest.MockedFunction<
+  typeof useRefinementList
+>
+
 describe('TemplateGallery', () => {
   beforeEach(() => {
-    const useAlgoliaJourneysMocked = jest.mocked(useAlgoliaJourneys)
-    useAlgoliaJourneysMocked.mockReturnValue({
+    mockUseAlgoliaJourneys.mockReturnValue({
       hits: algoliaJourneys,
       loading: false,
       refinements: []
     })
 
-    const useSearchBoxMocked = jest.mocked(useSearchBox)
-    useSearchBoxMocked.mockReturnValue({
+    mockUseSearchBox.mockReturnValue({
       query: 'Hello World!',
       refine: jest.fn()
     } as unknown as SearchBoxRenderState)
 
-    const useRefinementListMocked = jest.mocked(useRefinementList)
-    useRefinementListMocked.mockReturnValue({
+    mockUseRefinementList.mockReturnValue({
       refine: jest.fn()
     } as unknown as RefinementListRenderState)
   })

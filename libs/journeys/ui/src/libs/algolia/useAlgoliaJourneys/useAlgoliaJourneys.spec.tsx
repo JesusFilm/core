@@ -31,31 +31,40 @@ import {
 jest.mock('react-instantsearch')
 jest.mock('../../useLanguagesQuery')
 
+const mockUseHits = useHits as jest.MockedFunction<typeof useHits>
+const mockUseInstantSearch = useInstantSearch as jest.MockedFunction<
+  typeof useInstantSearch
+>
+const mockUseCurrentRefinements = useCurrentRefinements as jest.MockedFunction<
+  typeof useCurrentRefinements
+>
+const mockUseRefinementList = useRefinementList as jest.MockedFunction<
+  typeof useRefinementList
+>
+const mockUseLanguagesQuery = useLanguagesQuery as jest.MockedFunction<
+  typeof useLanguagesQuery
+>
+
 describe('useAlgoliaJourneys', () => {
   beforeEach(() => {
-    const useHitsMocked = jest.mocked(useHits)
-    useHitsMocked.mockReturnValue({
+    mockUseHits.mockReturnValue({
       hits: algoliaHits,
       results: algoliaResults
     } as unknown as HitsRenderState)
 
-    const useInstantSearchMocked = jest.mocked(useInstantSearch)
-    useInstantSearchMocked.mockReturnValue({
+    mockUseInstantSearch.mockReturnValue({
       status: 'idle'
     } as unknown as InstantSearchApi)
 
-    const useCurrentRefinementsMocked = jest.mocked(useCurrentRefinements)
-    useCurrentRefinementsMocked.mockReturnValue({
+    mockUseCurrentRefinements.mockReturnValue({
       items: []
     } as unknown as CurrentRefinementsRenderState)
 
-    const useRefinementListMocked = jest.mocked(useRefinementList)
-    useRefinementListMocked.mockReturnValue({
+    mockUseRefinementList.mockReturnValue({
       items: []
     } as unknown as RefinementListRenderState)
 
-    const useLanguagesQueryMocked = jest.mocked(useLanguagesQuery)
-    useLanguagesQueryMocked.mockReturnValue({
+    mockUseLanguagesQuery.mockReturnValue({
       data: []
     } as unknown as QueryResult<GetLanguages, GetLanguagesVariables>)
   })
@@ -90,13 +99,11 @@ describe('useAlgoliaJourneys', () => {
   })
 
   it('should enrich hits with language names', () => {
-    const useLanguagesQueryMocked = jest.mocked(useLanguagesQuery)
-    useLanguagesQueryMocked.mockReturnValue({
+    mockUseLanguagesQuery.mockReturnValue({
       data: {
         languages: languages
       }
     } as unknown as QueryResult<GetLanguages, GetLanguagesVariables>)
-
     const options = [
       { id: '529', localName: undefined, nativeName: 'English' },
       { id: '496', localName: 'French', nativeName: 'Français' },
@@ -104,6 +111,7 @@ describe('useAlgoliaJourneys', () => {
     ]
 
     const enrichedJourneys = enrichHits(algoliaHits, options)
+
     expect(enrichedJourneys.every((item) => item.language !== undefined)).toBe(
       true
     )
@@ -139,24 +147,25 @@ describe('useAlgoliaJourneys', () => {
   })
 
   it('should return flattened refinements', () => {
-    const useCurrentRefinementsMocked = jest.mocked(useCurrentRefinements)
-    useCurrentRefinementsMocked.mockReturnValue({
+    mockUseCurrentRefinements.mockReturnValue({
       items: algoliaRefinements
     } as unknown as CurrentRefinementsRenderState)
+
     const { result } = renderHook(() => useAlgoliaJourneys())
+
     expect(result.current.refinements).toEqual(['Depression', 'Acceptance'])
   })
 
   it('should not return language refinements', () => {
-    const useRefinementListMocked = jest.mocked(useRefinementList)
-    useRefinementListMocked.mockReturnValue({
+    mockUseRefinementList.mockReturnValue({
       items: algoliaLanguageRefinements
     } as unknown as RefinementListRenderState)
-    const useCurrentRefinementsMocked = jest.mocked(useCurrentRefinements)
-    useCurrentRefinementsMocked.mockReturnValue({
+    mockUseCurrentRefinements.mockReturnValue({
       items: algoliaRefinements
     } as unknown as CurrentRefinementsRenderState)
+
     const { result } = renderHook(() => useAlgoliaJourneys())
+
     expect(result.current.refinements.includes('English')).toBeFalsy()
   })
 })

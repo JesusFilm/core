@@ -6,10 +6,13 @@ import '@core/journeys/ui/i18n'
 
 jest.mock('react-instantsearch')
 
-function mockUseSearchBox() {
+const mockUseSearchBox = useSearchBox as jest.MockedFunction<
+  typeof useSearchBox
+>
+
+function mockSearchBox() {
   const refine = jest.fn()
-  const useSearchBoxMocked = jest.mocked(useSearchBox)
-  useSearchBoxMocked.mockReturnValue({
+  mockUseSearchBox.mockReturnValue({
     query: 'Hello World!',
     refine: refine
   } as unknown as SearchBoxRenderState)
@@ -18,7 +21,7 @@ function mockUseSearchBox() {
 
 describe('StrategiesView', () => {
   beforeEach(() => {
-    mockUseSearchBox()
+    mockSearchBox()
   })
 
   it('should render interaction text', () => {
