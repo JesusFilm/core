@@ -112,11 +112,12 @@ export function StrategyCard({
               data-testid="image skeleton"
               variant="rectangular"
               sx={{
-                width: { xs: 130, md: 180, xl: 240 },
-                height: { xs: 130, md: 180, xl: 240 },
+                // width: { xs: 130, md: 180, xl: 240 },
+                width: { xs: 210, md: 260, xl: 320 },
+                //height: { xs: 130, md: 180, xl: 240 },
+                height: 160,
                 borderColor: 'divider',
-                borderRadius: 2,
-                backgroundColor: 'background.default'
+                borderRadius: 2
               }}
             />
           )}
