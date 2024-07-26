@@ -1,4 +1,5 @@
 import { QueryResult } from '@apollo/client'
+import { renderHook } from '@testing-library/react'
 import { CurrentRefinementsRenderState } from 'instantsearch.js/es/connectors/current-refinements/connectCurrentRefinements'
 import { HitsRenderState } from 'instantsearch.js/es/connectors/hits/connectHits'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
@@ -113,28 +114,28 @@ describe('useAlgoliaJourneys', () => {
   })
 
   it('should return hits', () => {
-    const { hits } = useAlgoliaJourneys()
-    expect(hits).toBeDefined()
+    const { result } = renderHook(() => useAlgoliaJourneys())
+    expect(result.current.hits).toBeDefined()
   })
 
   it('should return results', () => {
-    const { results } = useAlgoliaJourneys()
-    expect(results).toBeDefined()
+    const { result } = renderHook(() => useAlgoliaJourneys())
+    expect(result.current.results).toBeDefined()
   })
 
   it('should return loading', () => {
-    const { loading } = useAlgoliaJourneys()
-    expect(loading).toBeDefined()
+    const { result } = renderHook(() => useAlgoliaJourneys())
+    expect(result.current.loading).toBeDefined()
   })
 
   it('should return refinements', () => {
-    const { refinements } = useAlgoliaJourneys()
-    expect(refinements).toBeDefined()
+    const { result } = renderHook(() => useAlgoliaJourneys())
+    expect(result.current.refinements).toBeDefined()
   })
 
   it('should return algolia journeys', () => {
-    const { hits } = useAlgoliaJourneys()
-    expect(hits).toHaveLength(6)
+    const { result } = renderHook(() => useAlgoliaJourneys())
+    expect(result.current.hits).toHaveLength(6)
   })
 
   it('should return flattened refinements', () => {
@@ -142,8 +143,8 @@ describe('useAlgoliaJourneys', () => {
     useCurrentRefinementsMocked.mockReturnValue({
       items: algoliaRefinements
     } as unknown as CurrentRefinementsRenderState)
-    const { refinements } = useAlgoliaJourneys()
-    expect(refinements).toEqual(['Depression', 'Acceptance'])
+    const { result } = renderHook(() => useAlgoliaJourneys())
+    expect(result.current.refinements).toEqual(['Depression', 'Acceptance'])
   })
 
   it('should not return language refinements', () => {
@@ -155,7 +156,7 @@ describe('useAlgoliaJourneys', () => {
     useCurrentRefinementsMocked.mockReturnValue({
       items: algoliaRefinements
     } as unknown as CurrentRefinementsRenderState)
-    const { refinements } = useAlgoliaJourneys()
-    expect(refinements.includes('English')).toBeFalsy()
+    const { result } = renderHook(() => useAlgoliaJourneys())
+    expect(result.current.refinements.includes('English')).toBeFalsy()
   })
 })
