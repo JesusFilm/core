@@ -57,7 +57,7 @@ export function NewButtonButton(): ReactElement {
   } = useEditor()
   const { addBlock } = useBlockCreateCommand()
 
-  const handleClick = async (): Promise<void> => {
+  async function handleClick(): Promise<void> {
     const id = uuidv4()
     const startId = uuidv4()
     const endId = uuidv4()
@@ -65,6 +65,10 @@ export function NewButtonButton(): ReactElement {
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
     if (card != null && journey != null) {
+      dispatch({
+        type: 'SetEditorFocusAction',
+        selectedBlockId: id
+      })
       await addBlock({
         async execute() {
           const { data } = await buttonBlockCreate({
@@ -95,6 +99,52 @@ export function NewButtonButton(): ReactElement {
               updateInput: {
                 startIconId: startId,
                 endIconId: endId
+              }
+            },
+            optimisticResponse: {
+              buttonBlockCreate: {
+                id,
+                __typename: 'ButtonBlock',
+                parentBlockId: card.id,
+                label: '',
+                buttonVariant: ButtonVariant.contained,
+                buttonColor: ButtonColor.primary,
+                size: ButtonSize.medium,
+                parentOrder: card.children.length,
+                startIconId: startId,
+                endIconId: endId,
+                action: null
+              },
+              startIcon: {
+                id: startId,
+                parentBlockId: id,
+                parentOrder: null,
+                iconName: null,
+                iconSize: null,
+                iconColor: null,
+                __typename: 'IconBlock'
+              },
+              endIcon: {
+                id: endId,
+                parentBlockId: id,
+                parentOrder: null,
+                iconName: null,
+                iconSize: null,
+                iconColor: null,
+                __typename: 'IconBlock'
+              },
+              buttonBlockUpdate: {
+                id,
+                parentBlockId: card.id,
+                parentOrder: card.children.length,
+                label: '',
+                buttonVariant: ButtonVariant.contained,
+                buttonColor: ButtonColor.primary,
+                size: ButtonSize.medium,
+                startIconId: startId,
+                endIconId: endId,
+                action: null,
+                __typename: 'ButtonBlock'
               }
             },
             update(cache, { data }) {
@@ -139,12 +189,7 @@ export function NewButtonButton(): ReactElement {
               }
             }
           })
-          if (data?.buttonBlockUpdate != null) {
-            dispatch({
-              type: 'SetSelectedBlockByIdAction',
-              selectedBlockId: data.buttonBlockCreate.id
-            })
-          }
+
           return data?.buttonBlockCreate
         }
       })

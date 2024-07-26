@@ -495,6 +495,7 @@ describe('EditorContext', () => {
           activeSlide: ActiveSlide.JourneyFlow,
           selectedBlock: block,
           selectedStep: step,
+          selectedBlockId: block.id,
           activeContent: ActiveContent.Canvas
         }
         expect(

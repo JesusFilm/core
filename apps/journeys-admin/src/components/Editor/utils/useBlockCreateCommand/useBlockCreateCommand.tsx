@@ -5,6 +5,7 @@ import {
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 import { BlockFields } from '../../../../../__generated__/BlockFields'
+import { BlockRestore_blockRestore as RestoredBlock } from '../../../../../__generated__/BlockRestore'
 import { useBlockDeleteMutation } from '../../../../libs/useBlockDeleteMutation'
 import { useBlockRestoreMutation } from '../../../../libs/useBlockRestoreMutation'
 
@@ -36,32 +37,30 @@ export function useBlockCreateCommand(): {
       },
       undo: async () => {
         if (block == null) return
-
-        await blockDelete(block)
         dispatch({
           type: 'SetEditorFocusAction',
+          selectedStepId: selectedStep?.id,
           activeContent: ActiveContent.Canvas,
           activeSlide: ActiveSlide.Content
         })
+        await blockDelete(block, { optimisticResponse: { blockDelete: [] } })
       },
       redo: async ({ selectedStep }) => {
         if (block == null) return
-
-        await blockRestore({
-          variables: {
-            id: block.id
-          }
-        })
         dispatch({
           type: 'SetEditorFocusAction',
+          selectedStepId: selectedStep?.id,
+          selectedBlockId: block.id,
           activeContent: ActiveContent.Canvas,
           activeSlide: ActiveSlide.Content
         })
-        // TODO: use selectedStep in SetSelectedStepByIdAction to set the step
-        // replace the below
-        dispatch({
-          type: 'SetSelectedBlockByIdAction',
-          selectedBlockId: block.id
+        await blockRestore({
+          variables: {
+            id: block.id
+          },
+          optimisticResponse: {
+            blockRestore: [block as unknown as RestoredBlock]
+          }
         })
       }
     })

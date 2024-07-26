@@ -21,6 +21,11 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: () => true
 }))
 
+jest.mock('uuid', () => ({
+  __esModule: true,
+  v4: jest.fn()
+}))
+
 describe('NewVideoButton', () => {
   const selectedStep: TreeBlock = {
     __typename: 'StepBlock',

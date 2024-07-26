@@ -266,8 +266,8 @@ export const reducer = (
             ? action.steps.find(({ id }) => id === state.selectedStepId)
             : action.steps[0],
         selectedBlock:
-          state.selectedBlock != null
-            ? searchBlocks(action.steps, state.selectedBlock.id)
+          state.selectedBlockId != null
+            ? searchBlocks(action.steps, state.selectedBlockId)
             : action.steps[0]
       }
     case 'SetShowAnalyticsAction':
