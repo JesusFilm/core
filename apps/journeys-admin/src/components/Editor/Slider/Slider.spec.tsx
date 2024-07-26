@@ -1,17 +1,16 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import {
   ActiveCanvasDetailsDrawer,
   ActiveContent,
-  ActiveFab,
   ActiveSlide,
   EditorProvider,
   EditorState
 } from '@core/journeys/ui/EditorProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
+import useMediaQuery from '@mui/material/useMediaQuery'
 
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourney'
 import {
@@ -60,7 +59,6 @@ describe('Slider', () => {
       steps: [selectedStep],
       activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.AddBlock,
       activeContent: ActiveContent.Canvas,
-      activeFab: ActiveFab.Add,
       activeSlide: ActiveSlide.JourneyFlow
     }
     mockUseMediaQuery.mockImplementation(() => true)
