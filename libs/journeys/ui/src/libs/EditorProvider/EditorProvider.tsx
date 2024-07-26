@@ -87,10 +87,9 @@ export interface EditorState {
    */
   selectedStepId?: string
   /**
-   * selectedBlockId indicates which block is currently selected in the Canvas
-   * and the JourneyFlow. However, this can be used to selected the block before
-   * it is added i.e in creation mutations. This is important as running a dispatch
-   * action to set the selected block before it is will not work.
+   * selectedBlockId indicates which block is currently selected on the Canvas
+   * and the JourneyFlow. It also indicates which attributes should be
+   * displayed in relation to the SelectedBlock.
    */
   selectedBlockId?: string
   steps?: Array<TreeBlock<StepBlock>>
@@ -231,7 +230,7 @@ export const reducer = (
         activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
         activeContent: ActiveContent.Canvas
       }
-    case 'SetSelectedStepByIdAction': {
+    case 'SetSelectedStepByIdAction':
       return {
         ...state,
         selectedStepId: action.selectedStepId,
@@ -244,7 +243,6 @@ export const reducer = (
         activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
         activeContent: ActiveContent.Canvas
       }
-    }
     case 'SetSelectedGoalUrlAction':
       return {
         ...state,
@@ -300,10 +298,20 @@ export const reducer = (
           type: 'SetSelectedStepAction',
           selectedStep
         })
+      if (selectedStepId != null)
+        stateCopy = reducer(stateCopy, {
+          type: 'SetSelectedStepByIdAction',
+          selectedStepId
+        })
       if (selectedBlock != null)
         stateCopy = reducer(stateCopy, {
           type: 'SetSelectedBlockAction',
           selectedBlock
+        })
+      if (selectedBlockId != null)
+        stateCopy = reducer(stateCopy, {
+          type: 'SetSelectedBlockByIdAction',
+          selectedBlockId
         })
       if (activeSlide != null)
         stateCopy = reducer(stateCopy, {
@@ -329,16 +337,6 @@ export const reducer = (
         stateCopy = reducer(stateCopy, {
           type: 'SetSelectedGoalUrlAction',
           selectedGoalUrl
-        })
-      if (selectedStepId != null)
-        stateCopy = reducer(stateCopy, {
-          type: 'SetSelectedStepByIdAction',
-          selectedStepId
-        })
-      if (selectedBlockId != null)
-        stateCopy = reducer(stateCopy, {
-          type: 'SetSelectedBlockByIdAction',
-          selectedBlockId
         })
       return stateCopy
     }
