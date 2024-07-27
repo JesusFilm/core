@@ -277,6 +277,7 @@ input CardBlockUpdateInput
   @join__type(graph: JOURNEYS)
 {
   parentBlockId: ID
+  coverBlockId: ID
   backgroundColor: String
   fullscreen: Boolean
   themeMode: ThemeMode

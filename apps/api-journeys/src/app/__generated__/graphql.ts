@@ -301,6 +301,7 @@ export class CardBlockCreateInput {
 
 export class CardBlockUpdateInput {
     parentBlockId?: Nullable<string>;
+    coverBlockId?: Nullable<string>;
     backgroundColor?: Nullable<string>;
     fullscreen?: Nullable<boolean>;
     themeMode?: Nullable<ThemeMode>;
