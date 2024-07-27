@@ -109,20 +109,18 @@ export class ActionResolver {
     const { success: isNavigateToBlock, data: navigateToBlockInput } =
       navigateToBlockActionInputSchema.safeParse(input)
 
-    const numberOfValidInputs = [isLink, isEmail, isNavigateToBlock].reduce(
-      (acc, val) => (!val ? acc : acc + 1),
-      0
-    )
-    if (numberOfValidInputs > 1) {
+    const numberOfValidInputs = [isLink, isEmail, isNavigateToBlock].filter(
+      Boolean
+    ).length
+
+    if (numberOfValidInputs > 1)
       throw new GraphQLError('invalid combination of inputs provided', {
         extensions: { code: 'BAD_USER_INPUT' }
       })
-    }
-    if (numberOfValidInputs === 0) {
+    if (numberOfValidInputs === 0)
       throw new GraphQLError('no valid inputs provided', {
         extensions: { code: 'BAD_USER_INPUT' }
       })
-    }
 
     const block = await this.prismaService.block.findUnique({
       where: { id },
@@ -152,19 +150,19 @@ export class ActionResolver {
       })
     }
 
-    if (isEmail) {
+    if (isEmail)
       return await this.actionService.emailActionUpdate(id, block, emailInput)
-    }
-    if (isNavigateToBlock) {
+
+    if (isNavigateToBlock)
       return await this.actionService.navigateToBlockActionUpdate(
         id,
         block,
         navigateToBlockInput
       )
-    }
-    if (isLink) {
+
+    if (isLink)
       return await this.actionService.linkActionUpdate(id, block, linkInput)
-    }
+
     throw new GraphQLError('no inputs provided', {
       extensions: { code: 'BAD_USER_INPUT' }
     })
