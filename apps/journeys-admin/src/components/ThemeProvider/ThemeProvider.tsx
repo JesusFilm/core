@@ -15,10 +15,7 @@ export function ThemeProvider({
   nested
 }: ThemeProviderProps): ReactElement {
   return (
-    <MuiThemeProvider
-      theme={adminLight}
-      data-testid="JourneysAdminThemeProvider"
-    >
+    <MuiThemeProvider theme={adminLight}>
       {nested !== true && <CssBaseline />}
       {children}
     </MuiThemeProvider>
