@@ -9,6 +9,8 @@ import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
 import { PrismaService } from '../../../lib/prisma.service'
 import { ACTION_UPDATE_RESET } from '../actionUpdateReset'
 
+import { BlockService } from '../../block/block.service'
+import { ActionService } from '../action.service'
 import { EmailActionResolver } from './emailAction.resolver'
 
 describe('EmailActionResolver', () => {
@@ -55,6 +57,8 @@ describe('EmailActionResolver', () => {
       imports: [CaslAuthModule.register(AppCaslFactory)],
       providers: [
         EmailActionResolver,
+        ActionService,
+        BlockService,
         {
           provide: PrismaService,
           useValue: mockDeep<PrismaService>()
