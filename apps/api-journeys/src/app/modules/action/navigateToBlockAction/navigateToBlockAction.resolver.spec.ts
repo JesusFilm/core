@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
-import omit from 'lodash/omit'
 
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 import { Action, Block, Journey } from '.prisma/api-journeys-client'
@@ -12,7 +11,6 @@ import {
 import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
 import { PrismaService } from '../../../lib/prisma.service'
 import { BlockService } from '../../block/block.service'
-import { ACTION_UPDATE_RESET } from '../actionUpdateReset'
 
 import { ActionService } from '../action.service'
 import { NavigateToBlockActionResolver } from './navigateToBlockAction.resolver'
@@ -21,6 +19,7 @@ describe('NavigateToBlockActionResolver', () => {
   let resolver: NavigateToBlockActionResolver,
     prismaService: DeepMockProxy<PrismaService>,
     blockService: DeepMockProxy<BlockService>,
+    actionService: DeepMockProxy<ActionService>,
     ability: AppAbility
 
   const journey = {
@@ -79,7 +78,10 @@ describe('NavigateToBlockActionResolver', () => {
       imports: [CaslAuthModule.register(AppCaslFactory)],
       providers: [
         NavigateToBlockActionResolver,
-        ActionService,
+        {
+          provide: ActionService,
+          useValue: mockDeep<ActionService>()
+        },
         {
           provide: PrismaService,
           useValue: mockDeep<PrismaService>()
@@ -99,6 +101,9 @@ describe('NavigateToBlockActionResolver', () => {
     blockService = module.get<BlockService>(
       BlockService
     ) as DeepMockProxy<BlockService>
+    actionService = module.get<ActionService>(
+      ActionService
+    ) as DeepMockProxy<ActionService>
     ability = await new AppCaslFactory().createAbility({ id: 'userId' })
   })
 
@@ -106,22 +111,12 @@ describe('NavigateToBlockActionResolver', () => {
     it('updates the navigate to block action', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
       await resolver.blockUpdateNavigateToBlockAction(ability, block.id, input)
-      const actionData = {
-        ...omit(input, 'blockId'),
-        block: { connect: { id: input.blockId } }
-      }
-      expect(prismaService.action.upsert).toHaveBeenCalledWith({
-        where: { parentBlockId: block.id },
-        create: {
-          ...actionData,
-          parentBlock: { connect: { id: block.id } }
-        },
-        update: {
-          ...ACTION_UPDATE_RESET,
-          ...actionData
-        },
-        include: { parentBlock: { include: { action: true } } }
-      })
+
+      expect(actionService.navigateToBlockActionUpdate).toHaveBeenCalledWith(
+        '1',
+        blockWithUserTeam,
+        input
+      )
     })
 
     it('throws an error if typename is wrong', async () => {
@@ -147,19 +142,6 @@ describe('NavigateToBlockActionResolver', () => {
       await expect(
         resolver.blockUpdateNavigateToBlockAction(ability, block.id, input)
       ).rejects.toThrow('user is not allowed to update block')
-    })
-
-    it('throws an error if user input block id matches parent step block id', async () => {
-      const wrongInput = {
-        gtmEventName: 'gtmEventName',
-        blockId: stepBlock.id
-      }
-      prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
-      prismaService.block.findUnique.mockResolvedValueOnce(block)
-      blockService.findParentStepBlock.mockResolvedValueOnce(stepBlock)
-      await expect(
-        resolver.blockUpdateNavigateToBlockAction(ability, block.id, wrongInput)
-      ).rejects.toThrow('blockId cannot be the parent step block id')
     })
   })
 })

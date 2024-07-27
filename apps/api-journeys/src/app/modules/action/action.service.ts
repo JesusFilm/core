@@ -29,8 +29,7 @@ export class ActionService {
   ): Promise<Action> {
     try {
       await emailSchema.parse({ email: input.email })
-      // biome-ignore lint/correctness/noUnusedVariables: variable needed for catch even though it is unused
-    } catch (err) {
+    } catch {
       throw new GraphQLError('must be a valid email', {
         extensions: { code: 'BAD_USER_INPUT' }
       })
