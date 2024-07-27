@@ -60,7 +60,9 @@ import { StepBlockNode } from './nodes/StepBlockNode'
 import { STEP_NODE_CARD_HEIGHT } from './nodes/StepBlockNode/libs/sizes'
 
 import 'reactflow/dist/style.css'
+import { searchBlocks } from '@core/journeys/ui/searchBlocks'
 import { ReferrerEdge } from './edges/ReferrerEdge'
+import { convertToEdgeSource } from './libs/convertToEdgeSource'
 import { ReferrerNode } from './nodes/ReferrerNode'
 
 // some styles can only be updated through css after render
@@ -242,11 +244,30 @@ export function JourneyFlow(): ReactElement {
           y: yPos
         })
 
+        const edgeSource = convertToEdgeSource({
+          source: connectingParams.current.nodeId,
+          sourceHandle: connectingParams.current.handleId
+        })
+
+        const sourceStep =
+          edgeSource.sourceType === 'step' || edgeSource.sourceType === 'action'
+            ? steps?.find((step) => step.id === edgeSource.stepId)
+            : null
+
+        const sourceBlock =
+          edgeSource.sourceType === 'action'
+            ? searchBlocks(
+                sourceStep != null ? [sourceStep] : [],
+                edgeSource.blockId
+              )
+            : null
+
         void createStep({
           x: Math.trunc(x),
           y: Math.trunc(y) - STEP_NODE_CARD_HEIGHT / 2,
-          source: connectingParams.current.nodeId,
-          sourceHandle: connectingParams.current.handleId
+          sourceStep,
+          sourceBlock,
+          ...edgeSource
         })
       }
     },

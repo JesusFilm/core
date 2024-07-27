@@ -1,11 +1,13 @@
-import { gql } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import { v4 as uuidv4 } from 'uuid'
 
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { searchBlocks } from '@core/journeys/ui/searchBlocks'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
+import { TreeBlock } from '@core/journeys/ui/block'
+import { BlockFields } from '@core/journeys/ui/block/__generated__/BlockFields'
+import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'
 import { StepAndCardBlockCreate } from '../../../../../../../__generated__/StepAndCardBlockCreate'
 import {
   ThemeMode,
@@ -19,15 +21,33 @@ import { useBlockOrderUpdateMutation } from '../../../../../../libs/useBlockOrde
 import { useBlockRestoreMutation } from '../../../../../../libs/useBlockRestoreMutation'
 import { useStepAndCardBlockCreateMutation } from '../../../../../../libs/useStepAndCardBlockCreateMutation'
 import { useStepBlockNextBlockUpdateMutation } from '../../../../../../libs/useStepBlockNextBlockUpdateMutation'
-import { RawEdgeSource, convertToEdgeSource } from '../convertToEdgeSource'
+import { EdgeSource } from '../convertToEdgeSource'
 
-type RawEdgeSourceAndCoordinates = RawEdgeSource & {
+type EdgeSourceAndCoordinates = EdgeSource & {
   x: number
   y: number
+  sourceStep: TreeBlock<StepBlock> | null | undefined
+  sourceBlock: TreeBlock<BlockFields> | null | undefined
 }
 
+export const BLOCK_DELETE_WITH_STEP_UPDATE = gql`
+  mutation BlockDelete($id: ID!, $journeyId: ID!, $parentBlockId: ID) {
+    blockDelete(id: $id, journeyId: $journeyId, parentBlockId: $parentBlockId) {
+      id
+      parentOrder
+      ... on StepBlock {
+        nextBlockId
+      }
+    }
+    stepBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+      id
+      nextBlockId
+    }
+  }
+`
+
 export function useCreateStep(): (
-  rawEdgeSource: RawEdgeSourceAndCoordinates
+  edgeSource: EdgeSourceAndCoordinates
 ) => Promise<StepAndCardBlockCreate | null | undefined> {
   const { journey } = useJourney()
   const {
@@ -59,6 +79,9 @@ export function useCreateStep(): (
       })
     }
   })
+
+  const [blockDeleteWithStepUpdate] = useMutation(BLOCK_DELETE_WITH_STEP_UPDATE)
+
   const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
   const [actionNavigateToBlockUpdate] =
     useBlockActionNavigateToBlockUpdateMutation()
@@ -67,27 +90,15 @@ export function useCreateStep(): (
   return async function createStep({
     x,
     y,
-    ...rawEdgeSource
-  }: RawEdgeSourceAndCoordinates): Promise<
+    sourceStep,
+    sourceBlock,
+    ...edgeSource
+  }: EdgeSourceAndCoordinates): Promise<
     StepAndCardBlockCreate | null | undefined
   > {
     if (journey == null) return
     const newStepId = uuidv4()
     const newCardId = uuidv4()
-    const edgeSource = convertToEdgeSource(rawEdgeSource)
-
-    const sourceStep =
-      edgeSource.sourceType === 'step' || edgeSource.sourceType === 'action'
-        ? steps?.find((step) => step.id === edgeSource.stepId)
-        : null
-
-    const sourceBlock =
-      edgeSource.sourceType === 'action'
-        ? searchBlocks(
-            sourceStep != null ? [sourceStep] : [],
-            edgeSource.blockId
-          )
-        : null
 
     const optimisticStep = {
       locked: false,
@@ -162,11 +173,12 @@ export function useCreateStep(): (
         execute: {},
         undo: { stepBeforeDelete: selectedStep, sourceBlock }
       },
-      execute: async () => {
+      async execute() {
         dispatch({
           type: 'SetSelectedStepByIdAction',
           selectedStepId: newStepId
         })
+
         if (edgeSource.sourceType === 'step') {
           void stepAndCardBlockCreate({
             variables: {
@@ -227,7 +239,7 @@ export function useCreateStep(): (
         // await setNextBlockActions(newStepId)
         if (newBlockRef == null) return
       },
-      undo: async ({ stepBeforeDelete, sourceBlock }) => {
+      async undo({ stepBeforeDelete, sourceBlock }) {
         dispatch({
           type: 'SetEditorFocusAction',
           selectedStep: stepBeforeDelete,
@@ -261,7 +273,7 @@ export function useCreateStep(): (
           }
         }
       },
-      redo: async () => {
+      async redo() {
         if (newBlockRef != null) {
           dispatch({
             type: 'SetSelectedStepAction',
