@@ -11,9 +11,9 @@ import { ImporterVideoVariantsService } from '../importerVideoVariants/importerV
 const videoVariantDownloadsSchema = z
   .object({
     quality: z
-      .custom()
+      .string()
       .transform<VideoVariantDownloadQuality>(
-        (value: string) => VideoVariantDownloadQuality[value]
+        (value) => VideoVariantDownloadQuality[value]
       ),
     size: z.number(),
     uri: z.string(),
@@ -63,10 +63,11 @@ export class ImporterVideoVariantDownloadsService extends ImporterService<VideoV
   protected async saveMany(
     videoVariantDownloads: VideoVariantDownloads[]
   ): Promise<void> {
+    const data = videoVariantDownloads.filter(({ videoVariantId }) =>
+      this.importerVideoVariantsService.ids.includes(videoVariantId)
+    )
     await this.prismaService.videoVariantDownload.createMany({
-      data: videoVariantDownloads.filter(({ videoVariantId }) =>
-        this.importerVideoVariantsService.ids.includes(videoVariantId)
-      ),
+      data,
       skipDuplicates: true
     })
   }

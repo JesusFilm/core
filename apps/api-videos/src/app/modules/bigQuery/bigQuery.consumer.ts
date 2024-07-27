@@ -144,6 +144,7 @@ export class BigQueryConsumer extends WorkerHost {
       }
     }
 
+    console.log('beginning processing children')
     await this.importerVideosChildrenService.process()
     console.log('finished processing children')
 
