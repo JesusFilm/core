@@ -3048,6 +3048,7 @@ export type Video = {
   slug: Scalars['String']['output'];
   snippet: Array<Translation>;
   studyQuestions: Array<Translation>;
+  subtitles: Array<VideoSubtitle>;
   title: Array<Translation>;
   variant?: Maybe<VideoVariant>;
   variantLanguages: Array<Language>;
@@ -3075,6 +3076,13 @@ export type VideoSnippetArgs = {
 
 
 export type VideoStudyQuestionsArgs = {
+  languageId?: InputMaybe<Scalars['ID']['input']>;
+  primary?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+export type VideoSubtitlesArgs = {
+  edition?: InputMaybe<Scalars['String']['input']>;
   languageId?: InputMaybe<Scalars['ID']['input']>;
   primary?: InputMaybe<Scalars['Boolean']['input']>;
 };
@@ -3501,6 +3509,15 @@ export type VideoStartEventCreateInput = {
   stepId?: InputMaybe<Scalars['ID']['input']>;
   /** source of the video */
   value?: InputMaybe<VideoBlockSource>;
+};
+
+export type VideoSubtitle = {
+  __typename?: 'VideoSubtitle';
+  edition: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  languageId: Scalars['String']['output'];
+  srtSrc?: Maybe<Scalars['String']['output']>;
+  vttSrc?: Maybe<Scalars['String']['output']>;
 };
 
 /**
