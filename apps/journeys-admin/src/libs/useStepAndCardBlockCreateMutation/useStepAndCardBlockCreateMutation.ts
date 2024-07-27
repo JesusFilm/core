@@ -31,10 +31,6 @@ export const STEP_AND_CARD_BLOCK_CREATE = gql`
     }
     cardBlockCreate(input: $cardBlockCreateInput) {
       ...CardFields
-    },
-    stepBlockUpdate(id: $stepId, journeyId: $journeyId, input: $stepBlockUpdateInput) {
-      id
-      nextBlockId
     }
   }
 `

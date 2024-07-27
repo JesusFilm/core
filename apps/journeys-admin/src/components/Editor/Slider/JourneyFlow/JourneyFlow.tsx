@@ -262,13 +262,12 @@ export function JourneyFlow(): ReactElement {
               )
             : null
 
-        void createStep({
-          x: Math.trunc(x),
-          y: Math.trunc(y) - STEP_NODE_CARD_HEIGHT / 2,
-          sourceStep,
-          sourceBlock,
-          ...edgeSource
-        })
+        if (edgeSource.sourceType === 'step')
+          void createStep({
+            x: Math.trunc(x),
+            y: Math.trunc(y) - STEP_NODE_CARD_HEIGHT / 2,
+            sourceStep
+          })
       }
     },
     [reactFlowInstance, connectingParams, createStep]

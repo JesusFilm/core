@@ -5,7 +5,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { GetJourney_journey_blocks as Block } from '../../../__generated__/GetJourney'
 
-interface BlockIdentifier {
+export interface BlockIdentifier {
   __typename: TreeBlock['__typename']
   id: string
   children?: BlockIdentifier[]
