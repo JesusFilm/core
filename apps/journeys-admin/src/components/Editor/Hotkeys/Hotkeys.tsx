@@ -9,8 +9,16 @@ interface HotkeysProps {
 
 export function Hotkeys({ document }: HotkeysProps): ReactElement {
   const { undo, redo } = useCommand()
-  useHotkeys('mod+z', undo, { preventDefault: true, document })
-  useHotkeys('mod+shift+z', redo, { preventDefault: true, document })
+  useHotkeys('mod+z', undo, {
+    document,
+    enableOnFormTags: true,
+    preventDefault: true
+  })
+  useHotkeys('mod+shift+z', redo, {
+    document,
+    enableOnFormTags: true,
+    preventDefault: true
+  })
 
   return <></>
 }

@@ -4,8 +4,6 @@ import { ReactElement, useState } from 'react'
 
 import { IMAGE_FIELDS } from '@core/journeys/ui/Image/imageFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-
-import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../__generated__/BlockFields'
 import {
   JourneyImageBlockAssociationUpdate,
   JourneyImageBlockAssociationUpdateVariables
@@ -24,6 +22,7 @@ import {
 } from '../../../../../../../__generated__/JourneyImageBlockUpdate'
 import { blockDeleteUpdate } from '../../../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
 
+import { ImageBlockUpdateInput } from '../../../../../../../__generated__/globalTypes'
 import { Large } from './Large'
 import { Small } from './Small'
 
@@ -128,18 +127,15 @@ export function ImageEdit({
     setOpen(false)
   }
 
-  async function createImageBlock(imageBlock: ImageBlock): Promise<void> {
+  async function createImageBlock(input: ImageBlockUpdateInput): Promise<void> {
     if (journey == null) return
 
     const { data } = await journeyImageBlockCreate({
       variables: {
         input: {
           journeyId: journey.id,
-          src: imageBlock.src,
-          alt: imageBlock.alt,
-          blurhash: imageBlock.blurhash,
-          width: imageBlock.width,
-          height: imageBlock.height
+          ...input,
+          alt: input.alt ?? 'journey image'
         }
       }
     })
@@ -160,20 +156,14 @@ export function ImageEdit({
     }
   }
 
-  async function updateImageBlock(imageBlock: ImageBlock): Promise<void> {
-    if (journey == null) return
+  async function updateImageBlock(input: ImageBlockUpdateInput): Promise<void> {
+    if (journey == null || targetImageBlock == null) return
 
     await journeyImageBlockUpdate({
       variables: {
-        id: imageBlock.id,
-        journeyId: journey?.id,
-        input: {
-          src: imageBlock.src,
-          alt: imageBlock.alt,
-          blurhash: imageBlock.blurhash,
-          width: imageBlock.width,
-          height: imageBlock.height
-        }
+        id: targetImageBlock.id,
+        journeyId: journey.id,
+        input
       }
     })
   }
@@ -212,13 +202,13 @@ export function ImageEdit({
     }
   }
 
-  async function handleChange(imageBlock: ImageBlock): Promise<void> {
-    if (imageBlock.src === '') return
+  async function handleChange(input: ImageBlockUpdateInput): Promise<void> {
+    if (input.src === '') return
 
-    if (imageBlock.id == null) {
-      await createImageBlock(imageBlock)
+    if (targetImageBlock?.id == null) {
+      await createImageBlock(input)
     } else {
-      await updateImageBlock(imageBlock)
+      await updateImageBlock(input)
     }
 
     handleClose()

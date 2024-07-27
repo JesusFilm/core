@@ -6,7 +6,7 @@ import { ComponentProps, ReactElement, useState } from 'react'
 
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
-import { listUnsplashCollectionMock } from '../ImageBlockEditor/UnsplashGallery/data'
+import { listUnsplashCollectionPhotosMock } from '../ImageBlockEditor/UnsplashGallery/data'
 
 import { ImageLibrary } from '.'
 
@@ -20,7 +20,7 @@ const ImageLibraryComponent = (args): ReactElement => {
   const [open, setOpen] = useState(true)
 
   return (
-    <MockedProvider mocks={[listUnsplashCollectionMock]}>
+    <MockedProvider mocks={[listUnsplashCollectionPhotosMock]}>
       <ImageLibrary open={open} onClose={() => setOpen(false)} {...args} />
     </MockedProvider>
   )

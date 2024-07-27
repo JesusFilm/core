@@ -22,6 +22,7 @@ import {
   CardBlockImageBlockUpdate,
   CardBlockImageBlockUpdateVariables
 } from '../../../../../../../../../../../__generated__/CardBlockImageBlockUpdate'
+import { ImageBlockUpdateInput } from '../../../../../../../../../../../__generated__/globalTypes'
 import { blockDeleteUpdate } from '../../../../../../../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
 import { ImageSource } from '../../../../../../Drawer/ImageSource'
 
@@ -127,7 +128,9 @@ export function BackgroundMediaImage({
     })
   }
 
-  const createImageBlock = async (block): Promise<void> => {
+  const createImageBlock = async (
+    input: ImageBlockUpdateInput
+  ): Promise<void> => {
     if (journey == null) return
 
     if (coverBlock != null && coverBlock.__typename === 'VideoBlock')
@@ -138,12 +141,9 @@ export function BackgroundMediaImage({
         input: {
           journeyId: journey.id,
           parentBlockId: cardBlock.id,
-          src: block.src,
-          alt: block.alt,
-          blurhash: block.blurhash,
-          width: block.width,
-          height: block.height,
-          isCover: true
+          isCover: true,
+          ...input,
+          alt: input.alt ?? 'background media image'
         }
       },
       update(cache, { data }) {
@@ -178,31 +178,27 @@ export function BackgroundMediaImage({
     })
   }
 
-  const updateImageBlock = async (block: ImageBlock): Promise<void> => {
+  const updateImageBlock = async (
+    input: ImageBlockUpdateInput
+  ): Promise<void> => {
     if (journey == null) return
     await imageBlockUpdate({
       variables: {
         id: coverBlock.id,
         journeyId: journey.id,
-        input: {
-          src: block.src,
-          alt: block.alt,
-          blurhash: block.blurhash,
-          width: block.width,
-          height: block.height
-        }
+        input
       }
     })
   }
 
-  const handleChange = async (block: ImageBlock): Promise<void> => {
+  const handleChange = async (input: ImageBlockUpdateInput): Promise<void> => {
     try {
-      if (block.src === '') return
+      if (input.src === '') return
 
       if (imageCover == null) {
-        await createImageBlock(block)
+        await createImageBlock(input)
       } else {
-        await updateImageBlock(block)
+        await updateImageBlock(input)
       }
     } catch (error) {
       if (error instanceof Error) {

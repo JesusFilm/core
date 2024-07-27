@@ -5,7 +5,7 @@ import noop from 'lodash/noop'
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { UnsplashGallery } from './UnsplashGallery'
-import { listUnsplashCollectionMock } from './data'
+import { listUnsplashCollectionPhotosMock } from './data'
 
 const UnsplashGalleryStory: Meta<typeof UnsplashGallery> = {
   ...simpleComponentConfig,
@@ -16,8 +16,8 @@ const UnsplashGalleryStory: Meta<typeof UnsplashGallery> = {
 
 const Template: StoryObj<typeof UnsplashGallery> = {
   render: () => (
-    <MockedProvider mocks={[listUnsplashCollectionMock]}>
-      <UnsplashGallery onChange={noop} />
+    <MockedProvider mocks={[listUnsplashCollectionPhotosMock]}>
+      <UnsplashGallery selectedBlock={null} onChange={noop} />
     </MockedProvider>
   )
 }

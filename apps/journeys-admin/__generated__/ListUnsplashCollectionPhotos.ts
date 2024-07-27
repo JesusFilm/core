@@ -9,7 +9,7 @@
 
 export interface ListUnsplashCollectionPhotos_listUnsplashCollectionPhotos_urls {
   __typename: "UnsplashPhotoUrls";
-  small: string;
+  raw: string;
   regular: string;
 }
 
