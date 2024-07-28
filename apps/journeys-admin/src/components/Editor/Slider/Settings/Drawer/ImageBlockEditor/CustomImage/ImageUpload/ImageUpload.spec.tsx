@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import fetch, { Response } from 'node-fetch'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../__generated__/BlockFields'
@@ -18,6 +18,20 @@ jest.mock('node-fetch', () => {
 const mockFetch = fetch as jest.MockedFunction<typeof fetch>
 
 describe('ImageUpload', () => {
+  let originalEnv
+
+  beforeEach(() => {
+    originalEnv = process.env
+    process.env = {
+      ...originalEnv,
+      NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY: 'cloudflare-key'
+    }
+  })
+
+  afterEach(() => {
+    process.env = originalEnv
+  })
+
   const imageBlock: ImageBlock = {
     id: 'imageBlockId',
     __typename: 'ImageBlock',
@@ -36,8 +50,8 @@ describe('ImageUpload', () => {
       uploaded: '2022-01-31T16:39:28.458Z',
       requireSignedURLs: true,
       variants: [
-        'https://imagedelivery.net/Vi7wi5KSItxGFsWRG2Us6Q/uploadId/public',
-        'https://imagedelivery.net/Vi7wi5KSItxGFsWRG2Us6Q/uploadId/thumbnail'
+        'https://imagedelivery.net/cloudflare-key/uploadId/public',
+        'https://imagedelivery.net/cloudflare-key/uploadId/thumbnail'
       ],
       draft: true
     },
@@ -57,7 +71,7 @@ describe('ImageUpload', () => {
       }
     }))
     const onChange = jest.fn()
-    const { getByTestId } = render(
+    render(
       <MockedProvider
         mocks={[
           {
@@ -76,7 +90,7 @@ describe('ImageUpload', () => {
       </MockedProvider>
     )
     window.URL.createObjectURL = jest.fn().mockImplementation(() => 'url')
-    const input = getByTestId('drop zone')
+    const input = screen.getByTestId('drop zone')
     const file = new File(['file'], 'testFile.png', {
       type: 'image/png'
     })
@@ -94,7 +108,7 @@ describe('ImageUpload', () => {
     } as unknown as Response)
 
     const onChange = jest.fn()
-    const { getByTestId, getByText } = render(
+    render(
       <MockedProvider
         mocks={[
           {
@@ -121,7 +135,7 @@ describe('ImageUpload', () => {
         />
       </MockedProvider>
     )
-    const inputEl = getByTestId('drop zone')
+    const inputEl = screen.getByTestId('drop zone')
     Object.defineProperty(inputEl, 'files', {
       value: [
         new File([new Blob(['file'])], 'testFile.png', {
@@ -130,22 +144,26 @@ describe('ImageUpload', () => {
       ]
     })
     fireEvent.drop(inputEl)
-    await waitFor(() => expect(onChange).toHaveBeenCalled())
-    expect(getByText('Upload successful!')).toBeInTheDocument()
+    await waitFor(() =>
+      expect(onChange).toHaveBeenCalledWith({
+        src: 'https://imagedelivery.net/cloudflare-key/uploadId/public'
+      })
+    )
+    expect(screen.getByText('Upload successful!')).toBeInTheDocument()
   })
 
   it('should render loading state', () => {
-    const { getByTestId, getByText } = render(
+    render(
       <MockedProvider>
         <ImageUpload onChange={jest.fn()} loading selectedBlock={imageBlock} />
       </MockedProvider>
     )
-    expect(getByTestId('Upload1Icon')).toBeInTheDocument()
-    expect(getByText('Uploading...')).toBeInTheDocument()
+    expect(screen.getByTestId('Upload1Icon')).toBeInTheDocument()
+    expect(screen.getByText('Uploading...')).toBeInTheDocument()
   })
 
   it('should render error state', () => {
-    const { getAllByTestId, getByText } = render(
+    render(
       <MockedProvider>
         <ImageUpload
           onChange={jest.fn()}
@@ -155,13 +173,13 @@ describe('ImageUpload', () => {
         />
       </MockedProvider>
     )
-    expect(getAllByTestId('AlertTriangleIcon')).toHaveLength(2)
-    expect(getByText('Upload Failed!')).toBeInTheDocument()
+    expect(screen.getAllByTestId('AlertTriangleIcon')).toHaveLength(2)
+    expect(screen.getByText('Upload Failed!')).toBeInTheDocument()
   })
 
   it('should call setUploading on file drop', async () => {
     const setUploading = jest.fn()
-    const { getByTestId, getByText } = render(
+    render(
       <MockedProvider
         mocks={[
           {
@@ -190,7 +208,7 @@ describe('ImageUpload', () => {
         />
       </MockedProvider>
     )
-    const inputEl = getByTestId('drop zone')
+    const inputEl = screen.getByTestId('drop zone')
     Object.defineProperty(inputEl, 'files', {
       value: [
         new File([new Blob(['file'])], 'testFile.png', {
@@ -200,6 +218,6 @@ describe('ImageUpload', () => {
     })
     fireEvent.drop(inputEl)
     await waitFor(() => expect(setUploading).toHaveBeenCalled())
-    expect(getByText('Uploading...')).toBeInTheDocument()
+    expect(screen.getByText('Uploading...')).toBeInTheDocument()
   })
 })
