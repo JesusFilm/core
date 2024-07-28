@@ -1,12 +1,13 @@
 import Search1Icon from '@core/shared/ui/icons/Search1'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import InputAdornment from '@mui/material/InputAdornment'
 import TextField from '@mui/material/TextField'
 import { styled } from '@mui/material/styles'
 import { SearchBoxConnectorParams } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
-import { useSearchBox } from 'react-instantsearch'
+import { useClearRefinements, useSearchBox } from 'react-instantsearch'
 
 /* Styles below used to fake a gradient border because the 
 css attributes border-radius and border-image-source are not compatible */
@@ -32,6 +33,7 @@ export function SearchBar(props: SearchBoxConnectorParams): ReactElement {
 
   const { query, refine } = useSearchBox(props)
   const [inputValue, setInputValue] = useState(query)
+  const { canRefine, refine: clearRefinements } = useClearRefinements()
 
   function setQuery(newQuery: string) {
     setInputValue(newQuery)
@@ -62,6 +64,18 @@ export function SearchBar(props: SearchBoxConnectorParams): ReactElement {
             <InputAdornment position="start">
               <Search1Icon />
             </InputAdornment>
+          ),
+          endAdornment: (
+            <Button
+              variant="text"
+              size="small"
+              sx={{
+                display: !canRefine ? 'none' : undefined
+              }}
+              onClick={clearRefinements}
+            >
+              Clear
+            </Button>
           )
         }}
       />
