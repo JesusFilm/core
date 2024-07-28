@@ -264,6 +264,14 @@ export class EmailActionInput {
     email: string;
 }
 
+export class BlockUpdateActionInput {
+    gtmEventName?: Nullable<string>;
+    email?: Nullable<string>;
+    url?: Nullable<string>;
+    target?: Nullable<string>;
+    blockId?: Nullable<string>;
+}
+
 export class BlocksFilter {
     journeyIds?: Nullable<string[]>;
     typenames?: Nullable<string[]>;
@@ -860,6 +868,8 @@ export abstract class IMutation {
     abstract blockUpdateLinkAction(id: string, input: LinkActionInput, journeyId?: Nullable<string>): LinkAction | Promise<LinkAction>;
 
     abstract blockUpdateEmailAction(id: string, input: EmailActionInput, journeyId?: Nullable<string>): EmailAction | Promise<EmailAction>;
+
+    abstract blockUpdateAction(id: string, input?: Nullable<BlockUpdateActionInput>): Action | Promise<Action>;
 
     abstract blockDelete(id: string, journeyId?: Nullable<string>, parentBlockId?: Nullable<string>): Block[] | Promise<Block[]>;
 
