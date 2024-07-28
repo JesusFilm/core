@@ -127,11 +127,6 @@ export function useCreateStep(): (
     }
   })
 
-  // const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
-  // const [actionNavigateToBlockUpdate] =
-  //   useBlockActionNavigateToBlockUpdateMutation()
-  // const [blockOrderUpdate] = useBlockOrderUpdateMutation()
-
   return async function createStep({
     x,
     y,
