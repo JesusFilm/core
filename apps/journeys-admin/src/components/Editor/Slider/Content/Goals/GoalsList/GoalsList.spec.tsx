@@ -1,11 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 
 import { GoalType } from '@core/journeys/ui/Button/utils/getLinkActionGoal'
-import {
-  ActiveContent,
-  ActiveFab,
-  EditorState
-} from '@core/journeys/ui/EditorProvider'
+import { ActiveContent, EditorState } from '@core/journeys/ui/EditorProvider'
 import {
   ActiveCanvasDetailsDrawer,
   ActiveSlide,
@@ -42,7 +38,6 @@ describe('GoalsList', () => {
   ]
 
   const state: EditorState = {
-    activeFab: ActiveFab.Add,
     activeSlide: ActiveSlide.JourneyFlow,
     activeContent: ActiveContent.Goals,
     activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
