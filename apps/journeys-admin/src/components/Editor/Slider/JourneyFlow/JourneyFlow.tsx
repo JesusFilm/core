@@ -276,9 +276,7 @@ export function JourneyFlow(): ReactElement {
         if (edgeSource.sourceType === 'step') void createStep(createStepArgs)
 
         if (edgeSource.sourceType === 'socialPreview')
-          void createStepFromSocialPreview({
-            ...createStepArgs
-          })
+          void createStepFromSocialPreview(createStepArgs)
 
         if (edgeSource.sourceType === 'action' && isActionBlock(sourceBlock))
           void createStepFromAction({

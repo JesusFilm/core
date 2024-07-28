@@ -20,7 +20,7 @@ type Coordinates = {
   y: number
 }
 
-export function useCreateStepButton(): (
+export function useCreateStepFromButton(): (
   coordinates: Coordinates
 ) => Promise<void> {
   const { journey } = useJourney()
@@ -33,7 +33,7 @@ export function useCreateStepButton(): (
   const [blockRestore] = useBlockRestoreMutation()
   const [stepAndCardBlockCreate] = useStepAndCardBlockCreateMutation()
 
-  return async function createStepButton({ x, y }) {
+  return async function createStepFromButton({ x, y }) {
     if (journey == null) return
 
     const step: StepBlock & { x: number; y: number } = {
