@@ -3,7 +3,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 import SvgIcon from '@mui/material/SvgIcon'
 import { ReactElement } from 'react'
 
-import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
+import Image3Icon from '@core/shared/ui/icons/Image3'
 import ImageXIcon from '@core/shared/ui/icons/ImageX'
 
 interface ImageBlockThumbnailProps {
@@ -16,7 +16,7 @@ interface ImageBlockThumbnailProps {
 export function ImageBlockThumbnail({
   selectedBlock,
   loading,
-  Icon = GridEmptyIcon,
+  Icon = Image3Icon,
   error
 }: ImageBlockThumbnailProps): ReactElement {
   const isUnsplash =

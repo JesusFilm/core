@@ -229,7 +229,8 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
         blockDelete: [
           {
             id: image.id,
-            __typename: 'ImageBlock'
+            __typename: 'ImageBlock',
+            parentOrder: null
           }
         ],
         videoBlockUpdate: {
