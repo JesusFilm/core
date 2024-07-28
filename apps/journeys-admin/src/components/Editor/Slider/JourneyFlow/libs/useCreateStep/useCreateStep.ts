@@ -107,29 +107,6 @@ export function useCreateStep(): (
     dispatch
   } = useEditor()
   const { add } = useCommand()
-  // const [stepAndCardBlockCreate] = useStepAndCardBlockCreateMutation({
-  //   update(cache, { data }) {
-  //     if (data?.stepBlockCreate == null || data?.cardBlockCreate == null) return
-  //     cache.modify({
-  //       fields: {
-  //         blocks(existingBlockRefs = []) {
-  //           const newStepBlockRef = cache.writeFragment({
-  //             data: data.stepBlockCreate,
-  //             fragment: gql`
-  //               fragment NewBlock on Block {
-  //                 id
-  //               }
-  //             `
-  //           })
-  //           return [...existingBlockRefs, newStepBlockRef]
-  //         }
-  //       }
-  //     })
-  //   }
-  //   // if (data?.stepBlockCreate != null && data?.cardBlockCreate != null) {
-
-  //   // }
-  // })
 
   const [blockDeleteWithStepUpdate] = useMutation<
     BlockDeleteWithStepUpdate,
@@ -161,8 +138,6 @@ export function useCreateStep(): (
     sourceStep
   }: SourceStepAndCoordinates): Promise<void> {
     if (journey == null) return
-    // const step.id = uuidv4()
-    // const card.id = uuidv4()
 
     const step: StepBlock & { x: number; y: number } = {
       __typename: 'StepBlock',
@@ -185,63 +160,6 @@ export function useCreateStep(): (
       backgroundColor: null,
       parentOrder: 0
     }
-
-    // async function setNextBlockActions(target: string): Promise<void> {
-    //   if (journey == null) return
-    //   switch (edgeSource.sourceType) {
-    //     case 'socialPreview':
-    //       await blockOrderUpdate({
-    //         variables: {
-    //           id: target,
-    //           journeyId: journey.id,
-    //           parentOrder: 0
-    //         },
-    //         optimisticResponse: {
-    //           blockOrderUpdate: [
-    //             {
-    //               id: target,
-    //               __typename: 'StepBlock',
-    //               parentOrder: 0
-    //             }
-    //           ]
-    //         }
-    //       })
-    //       break
-    //     case 'step':
-    //       await stepBlockNextBlockUpdate({
-    //         variables: {
-    //           id: edgeSource.stepId,
-    //           journeyId: journey.id,
-    //           input: {
-    //             nextBlockId: target
-    //           }
-    //         },
-    //         optimisticResponse: {
-    //           stepBlockUpdate: {
-    //             id: edgeSource.stepId,
-    //             __typename: 'StepBlock',
-    //             nextBlockId: target
-    //           }
-    //         }
-    //       })
-    //       break
-    //     case 'action': {
-    //       if (sourceBlock != null)
-    //         await actionNavigateToBlockUpdate(sourceBlock, target)
-    //       break
-    //     }
-    //   }
-    // }
-
-    // let newBlockRef: StepAndCardBlockCreate | null | undefined = {
-    //   stepBlockCreate: step,
-    //   cardBlockCreate: card,
-    //   stepBlockUpdate: {
-    //     __typename: 'StepBlock',
-    //     id: step.id,
-    //     nextBlockId: null
-    //   }
-    // }
 
     await add({
       parameters: {
@@ -293,11 +211,7 @@ export function useCreateStep(): (
             type: 'SetSelectedStepByIdAction',
             selectedStepId: stepBeforeDelete.id
           })
-          // dispatch({
-          //   type: 'SetEditorFocusAction',
-          //   selectedStep: stepBeforeDelete,
-          //   activeSlide: ActiveSlide.JourneyFlow
-          // })
+
           void blockDeleteWithStepUpdate({
             variables: {
               id: step.id,
@@ -320,36 +234,6 @@ export function useCreateStep(): (
             }
           })
         }
-
-        // if (newBlockRef != null) {
-        //   await blockDelete(newBlockRef.stepBlockCreate, {
-        //     optimisticResponse: {
-        //       blockDelete: [...(steps ?? []), newBlockRef.stepBlockCreate]
-        //     }
-        //   })
-        // }
-
-        // if (edgeSource.sourceType === 'step' && sourceStep?.nextBlockId != null)
-        //   await setNextBlockActions(sourceStep.nextBlockId)
-        // if (sourceBlock != null && 'action' in sourceBlock) {
-        //   switch (sourceBlock.action?.__typename) {
-        //     case 'EmailAction': {
-        //       await actionEmailUpdate(sourceBlock, sourceBlock.action.email)
-        //       break
-        //     }
-        //     case 'LinkAction': {
-        //       await actionLinkUpdate(sourceBlock, sourceBlock.action.url)
-        //       break
-        //     }
-        //     case 'NavigateToBlockAction': {
-        //       await actionNavigateToBlockUpdate(
-        //         sourceBlock,
-        //         sourceBlock.action.blockId
-        //       )
-        //       break
-        //     }
-        //   }
-        // }
       },
       async redo() {
         if (sourceStep != null) {
@@ -383,30 +267,6 @@ export function useCreateStep(): (
               )
             }
           })
-          // dispatch({
-          //   type: 'SetSelectedStepAction',
-          //   selectedStep: {
-          //     ...optimisticStep,
-          //     __typename: 'StepBlock',
-          //     children: [
-          //       {
-          //         ...optimisticCard,
-          //         __typename: 'CardBlock',
-          //         children: []
-          //       }
-          //     ]
-          //   }
-          // })
-          // await blockRestore({
-          //   variables: { id: newBlockRef.stepBlockCreate.id },
-          //   optimisticResponse: {
-          //     blockRestore: [
-          //       newBlockRef.stepBlockCreate,
-          //       newBlockRef.cardBlockCreate
-          //     ]
-          //   }
-          // })
-          // await setNextBlockActions(step.id)
         }
       }
     })
