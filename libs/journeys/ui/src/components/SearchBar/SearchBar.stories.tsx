@@ -4,7 +4,7 @@ import { watchConfig } from '@core/shared/ui/storybook'
 import { expect } from '@storybook/jest'
 import { screen, userEvent, waitFor } from '@storybook/testing-library'
 import { ComponentProps } from 'react'
-import { InstantSearchTestWrapper } from '../../libs/algolia/InstantSearchWrapper'
+import { InstantSearchTestWrapper } from '../../libs/algolia/InstantSearchTestWrapper'
 import { SearchBar } from './SearchBar'
 
 const SearchBarStory: Meta<typeof SearchBar> = {

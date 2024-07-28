@@ -7,6 +7,7 @@ import { Dialog as SharedUiDialog } from '@core/shared/ui/Dialog'
 
 import { Drawer } from '..'
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../__generated__/BlockFields'
+import { ImageBlockUpdateInput } from '../../../../../../../__generated__/globalTypes'
 import { ImageBlockEditor } from '../ImageBlockEditor'
 
 interface DialogProps {
@@ -42,7 +43,7 @@ interface ImageLibraryProps {
   variant?: 'drawer' | 'dialog'
   open: boolean
   onClose?: () => void
-  onChange: (image: ImageBlock) => Promise<void>
+  onChange: (image: ImageBlockUpdateInput) => Promise<void>
   onDelete?: () => Promise<void>
   selectedBlock: ImageBlock | null
   loading?: boolean
