@@ -20,7 +20,14 @@ interface TemplateGalleryProps {
 function TemplateGalleryContent() {
   return (
     <Stack spacing={10}>
-      <SearchBar />
+      {/* TODO: Remove temporary theme fix for styling journeys admin components */}
+      <ThemeProvider
+        themeName={ThemeName.website}
+        themeMode={ThemeMode.light}
+        nested
+      >
+        <SearchBar />
+      </ThemeProvider>
 
       {/* TODO: Remove temporary theme fix for styling journeys admin components */}
       <ThemeProvider
