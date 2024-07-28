@@ -67,6 +67,14 @@ input EmailActionInput {
   email: String!
 }
 
+input BlockUpdateActionInput {
+  gtmEventName: String
+  email: String
+  url: String
+  target: String
+  blockId: String
+}
+
 type Mutation {
   blockDeleteAction(
     id: ID!
@@ -95,6 +103,7 @@ type Mutation {
     """drop this parameter after merging teams"""
     journeyId: ID
   ): EmailAction!
+  blockUpdateAction(id: ID!, input: BlockUpdateActionInput): Action!
 
   """blockDelete returns the updated sibling blocks on successful delete"""
   blockDelete(
