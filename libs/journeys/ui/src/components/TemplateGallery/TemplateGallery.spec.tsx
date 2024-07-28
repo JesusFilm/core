@@ -55,6 +55,17 @@ describe('TemplateGallery', () => {
     } as unknown as RefinementListRenderState)
   })
 
+  it('should render resource heading', () => {
+    render(
+      <MockedProvider mocks={[getTagsMock]}>
+        <TemplateGallery />
+      </MockedProvider>
+    )
+
+    expect(screen.getByText('Next step for every')).toBeInTheDocument()
+    expect(screen.getByText('interaction')).toBeInTheDocument()
+  })
+
   it('should render searchbar', async () => {
     render(
       <MockedProvider mocks={[getTagsMock]}>
