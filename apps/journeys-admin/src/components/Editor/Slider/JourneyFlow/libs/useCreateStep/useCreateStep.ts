@@ -21,7 +21,6 @@ import {
   BlockRestoreWithStepUpdate,
   BlockRestoreWithStepUpdateVariables
 } from '../../../../../../../__generated__/BlockRestoreWithStepUpdate'
-import { StepAndCardBlockCreate } from '../../../../../../../__generated__/StepAndCardBlockCreate'
 import {
   StepAndCardBlockCreateWithStepUpdate,
   StepAndCardBlockCreateWithStepUpdateVariables
@@ -32,6 +31,7 @@ import {
 } from '../../../../../../../__generated__/globalTypes'
 import { blockDeleteUpdate } from '../../../../../../libs/blockDeleteUpdate'
 import { blockRestoreUpdate } from '../../../../../../libs/useBlockRestoreMutation'
+import { stepAndCardBlockCreateCacheUpdate } from '../../../../../../libs/useStepAndCardBlockCreateMutation'
 
 type SourceStepAndCoordinates = {
   x: number
@@ -40,8 +40,8 @@ type SourceStepAndCoordinates = {
 }
 
 export const BLOCK_DELETE_WITH_STEP_UPDATE = gql`
-  mutation BlockDeleteWithStepUpdate($id: ID!, $journeyId: ID!, $parentBlockId: ID, $input: StepBlockUpdateInput!, $stepBlockUpdateId: ID! ) {
-    blockDelete(id: $id, journeyId: $journeyId, parentBlockId: $parentBlockId) {
+  mutation BlockDeleteWithStepUpdate($id: ID!, $journeyId: ID!, $input: StepBlockUpdateInput!, $stepBlockUpdateId: ID! ) {
+    blockDelete(id: $id, journeyId: $journeyId) {
       id
       parentOrder
       ... on StepBlock {
@@ -100,7 +100,7 @@ export const STEP_AND_CARD_BLOCK_CREATE_WITH_STEP_UPDATE = gql`
 
 export function useCreateStep(): (
   sourceStepAndCoordinates: SourceStepAndCoordinates
-) => Promise<StepAndCardBlockCreate | null | undefined> {
+) => Promise<void> {
   const { journey } = useJourney()
   const {
     state: { selectedStep },
@@ -125,30 +125,6 @@ export function useCreateStep(): (
   //         }
   //       }
   //     })
-  //     cache.modify({
-  //       id: cache.identify({ __typename: 'Journey', id: journey.id }),
-  //       fields: {
-  //         blocks(existingBlockRefs = [], { readField }) {
-  //           const newStepBlockRef = cache.writeFragment({
-  //             data: data.stepBlockCreate,
-  //             fragment: gql`
-  //               fragment NewBlock on Block {
-  //                 id
-  //               }
-  //             `
-  //           })
-  //           const newCardBlockRef = cache.writeFragment({
-  //             data: data.cardBlockCreate,
-  //             fragment: gql`
-  //               fragment NewBlock on Block {
-  //                 id
-  //               }
-  //             `
-  //           })
-  //           return [...existingBlockRefs, newStepBlockRef, newCardBlockRef]
-  //         }
-  //       }
-  //     })
   //   }
   //   // if (data?.stepBlockCreate != null && data?.cardBlockCreate != null) {
 
@@ -170,47 +146,7 @@ export function useCreateStep(): (
     StepAndCardBlockCreateWithStepUpdateVariables
   >(STEP_AND_CARD_BLOCK_CREATE_WITH_STEP_UPDATE, {
     update(cache, { data }) {
-      if (journey == null) return
-      if (data?.stepBlockCreate == null || data?.cardBlockCreate == null) return
-      cache.modify({
-        fields: {
-          blocks(existingBlockRefs = []) {
-            const newStepBlockRef = cache.writeFragment({
-              data: data.stepBlockCreate,
-              fragment: gql`
-                fragment NewBlock on Block {
-                  id
-                }
-              `
-            })
-            return [...existingBlockRefs, newStepBlockRef]
-          }
-        }
-      })
-      cache.modify({
-        id: cache.identify({ __typename: 'Journey', id: journey.id }),
-        fields: {
-          blocks(existingBlockRefs = []) {
-            const newStepBlockRef = cache.writeFragment({
-              data: data.stepBlockCreate,
-              fragment: gql`
-                fragment NewBlock on Block {
-                  id
-                }
-              `
-            })
-            const newCardBlockRef = cache.writeFragment({
-              data: data.cardBlockCreate,
-              fragment: gql`
-                fragment NewBlock on Block {
-                  id
-                }
-              `
-            })
-            return [...existingBlockRefs, newStepBlockRef, newCardBlockRef]
-          }
-        }
-      })
+      stepAndCardBlockCreateCacheUpdate(cache, data, journey?.id)
     }
   })
 
@@ -223,9 +159,7 @@ export function useCreateStep(): (
     x,
     y,
     sourceStep
-  }: SourceStepAndCoordinates): Promise<
-    StepAndCardBlockCreate | null | undefined
-  > {
+  }: SourceStepAndCoordinates): Promise<void> {
     if (journey == null) return
     // const step.id = uuidv4()
     // const card.id = uuidv4()
@@ -368,9 +302,9 @@ export function useCreateStep(): (
             variables: {
               id: step.id,
               journeyId: journey.id,
-              stepBlockUpdateId: sourceStep.id as string,
+              stepBlockUpdateId: sourceStep.id,
               input: {
-                nextBlockId: sourceStep?.nextBlockId as unknown as string
+                nextBlockId: sourceStep?.nextBlockId
               }
             },
             optimisticResponse: {
@@ -432,14 +366,6 @@ export function useCreateStep(): (
                 nextBlockId: step.id
               }
             },
-            update(cache, { data }) {
-              blockRestoreUpdate(
-                { id: step.id },
-                data?.blockRestore,
-                cache,
-                journey.id
-              )
-            },
             optimisticResponse: {
               blockRestore: [step, card],
               stepBlockUpdate: {
@@ -447,6 +373,14 @@ export function useCreateStep(): (
                 __typename: 'StepBlock',
                 nextBlockId: step.id
               }
+            },
+            update(cache, { data }) {
+              blockRestoreUpdate(
+                { id: step.id },
+                data?.blockRestore,
+                cache,
+                journey.id
+              )
             }
           })
           // dispatch({

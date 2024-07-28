@@ -60,9 +60,12 @@ import { StepBlockNode } from './nodes/StepBlockNode'
 import { STEP_NODE_CARD_HEIGHT } from './nodes/StepBlockNode/libs/sizes'
 
 import 'reactflow/dist/style.css'
+import { isActionBlock } from '@core/journeys/ui/isActionBlock'
 import { searchBlocks } from '@core/journeys/ui/searchBlocks'
 import { ReferrerEdge } from './edges/ReferrerEdge'
 import { convertToEdgeSource } from './libs/convertToEdgeSource'
+import { useCreateStepFromAction } from './libs/useCreateStepFromAction'
+import { useCreateStepFromSocialPreview } from './libs/useCreateStepFromSocialPreview'
 import { ReferrerNode } from './nodes/ReferrerNode'
 
 // some styles can only be updated through css after render
@@ -105,6 +108,8 @@ export function JourneyFlow(): ReactElement {
   const [referrerEdges, setReferrerEdges] = useEdgesState([])
 
   const createStep = useCreateStep()
+  const createStepFromAction = useCreateStepFromAction()
+  const createStepFromSocialPreview = useCreateStepFromSocialPreview()
   const updateEdge = useUpdateEdge()
   const deleteEdge = useDeleteEdge()
   const { onSelectionChange } = useDeleteOnKeyPress()
@@ -262,11 +267,23 @@ export function JourneyFlow(): ReactElement {
               )
             : null
 
-        if (edgeSource.sourceType === 'step')
-          void createStep({
-            x: Math.trunc(x),
-            y: Math.trunc(y) - STEP_NODE_CARD_HEIGHT / 2,
-            sourceStep
+        const createStepArgs = {
+          x: Math.trunc(x),
+          y: Math.trunc(y) - STEP_NODE_CARD_HEIGHT / 2,
+          sourceStep
+        }
+
+        if (edgeSource.sourceType === 'step') void createStep(createStepArgs)
+
+        if (edgeSource.sourceType === 'socialPreview')
+          void createStepFromSocialPreview({
+            ...createStepArgs
+          })
+
+        if (edgeSource.sourceType === 'action' && isActionBlock(sourceBlock))
+          void createStepFromAction({
+            ...createStepArgs,
+            sourceBlock
           })
       }
     },

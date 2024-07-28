@@ -1,4 +1,5 @@
 import {
+  ApolloCache,
   MutationHookOptions,
   MutationTuple,
   gql,
@@ -20,9 +21,6 @@ export const STEP_AND_CARD_BLOCK_CREATE = gql`
   mutation StepAndCardBlockCreate(
     $stepBlockCreateInput: StepBlockCreateInput!
     $cardBlockCreateInput: CardBlockCreateInput!
-    $stepId: ID!,
-    $journeyId: ID!,
-    $stepBlockUpdateInput: StepBlockUpdateInput!
   ) {
     stepBlockCreate(input: $stepBlockCreateInput) {
       ...StepFields
@@ -34,6 +32,55 @@ export const STEP_AND_CARD_BLOCK_CREATE = gql`
     }
   }
 `
+
+export function stepAndCardBlockCreateCacheUpdate(
+  // biome-ignore lint/suspicious/noExplicitAny: update function gives this type
+  cache: ApolloCache<any>,
+  data: StepAndCardBlockCreate | null | undefined,
+  journeyId: string | null | undefined
+): void {
+  if (journeyId == null) return
+  if (data?.stepBlockCreate == null && data?.cardBlockCreate == null) return
+  cache.modify({
+    fields: {
+      blocks(existingBlockRefs = []) {
+        const newStepBlockRef = cache.writeFragment({
+          data: data.stepBlockCreate,
+          fragment: gql`
+          fragment NewBlock on Block {
+            id
+          }
+        `
+        })
+        return [...existingBlockRefs, newStepBlockRef]
+      }
+    }
+  })
+  cache.modify({
+    id: cache.identify({ __typename: 'Journey', id: journeyId }),
+    fields: {
+      blocks(existingBlockRefs) {
+        const newStepBlockRef = cache.writeFragment({
+          data: data.stepBlockCreate,
+          fragment: gql`
+            fragment NewBlock on Block {
+              id
+            }
+          `
+        })
+        const newCardBlockRef = cache.writeFragment({
+          data: data.cardBlockCreate,
+          fragment: gql`
+            fragment NewBlock on Block {
+              id
+            }
+          `
+        })
+        return [...existingBlockRefs, newStepBlockRef, newCardBlockRef]
+      }
+    }
+  })
+}
 
 export function useStepAndCardBlockCreateMutation(
   options?: MutationHookOptions<
@@ -50,33 +97,7 @@ export function useStepAndCardBlockCreateMutation(
     update(...args) {
       options?.update?.(...args)
       const [cache, { data }] = args
-      if (journey == null) return
-      if (data?.stepBlockCreate != null && data?.cardBlockCreate != null) {
-        cache.modify({
-          id: cache.identify({ __typename: 'Journey', id: journey.id }),
-          fields: {
-            blocks(existingBlockRefs = [], { readField }) {
-              const newStepBlockRef = cache.writeFragment({
-                data: data.stepBlockCreate,
-                fragment: gql`
-                  fragment NewBlock on Block {
-                    id
-                  }
-                `
-              })
-              const newCardBlockRef = cache.writeFragment({
-                data: data.cardBlockCreate,
-                fragment: gql`
-                  fragment NewBlock on Block {
-                    id
-                  }
-                `
-              })
-              return [...existingBlockRefs, newStepBlockRef, newCardBlockRef]
-            }
-          }
-        })
-      }
+      stepAndCardBlockCreateCacheUpdate(cache, data, journey?.id)
     }
   })
 

@@ -49,7 +49,6 @@ export interface BlockDeleteWithStepUpdate {
 export interface BlockDeleteWithStepUpdateVariables {
   id: string;
   journeyId: string;
-  parentBlockId?: string | null;
   input: StepBlockUpdateInput;
   stepBlockUpdateId: string;
 }

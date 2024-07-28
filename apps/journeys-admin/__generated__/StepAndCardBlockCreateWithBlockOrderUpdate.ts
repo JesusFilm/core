@@ -6,10 +6,10 @@
 import { StepBlockCreateInput, CardBlockCreateInput, ThemeMode, ThemeName } from "./globalTypes";
 
 // ====================================================
-// GraphQL mutation operation: StepAndCardBlockCreate
+// GraphQL mutation operation: StepAndCardBlockCreateWithBlockOrderUpdate
 // ====================================================
 
-export interface StepAndCardBlockCreate_stepBlockCreate {
+export interface StepAndCardBlockCreateWithBlockOrderUpdate_stepBlockCreate {
   __typename: "StepBlock";
   id: string;
   parentBlockId: string | null;
@@ -36,7 +36,7 @@ export interface StepAndCardBlockCreate_stepBlockCreate {
   y: number | null;
 }
 
-export interface StepAndCardBlockCreate_cardBlockCreate {
+export interface StepAndCardBlockCreateWithBlockOrderUpdate_cardBlockCreate {
   __typename: "CardBlock";
   id: string;
   parentBlockId: string | null;
@@ -69,12 +69,21 @@ export interface StepAndCardBlockCreate_cardBlockCreate {
   fullscreen: boolean;
 }
 
-export interface StepAndCardBlockCreate {
-  stepBlockCreate: StepAndCardBlockCreate_stepBlockCreate;
-  cardBlockCreate: StepAndCardBlockCreate_cardBlockCreate;
+export interface StepAndCardBlockCreateWithBlockOrderUpdate_blockOrderUpdate {
+  __typename: "ImageBlock" | "ButtonBlock" | "CardBlock" | "FormBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "StepBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+  id: string;
+  parentOrder: number | null;
 }
 
-export interface StepAndCardBlockCreateVariables {
+export interface StepAndCardBlockCreateWithBlockOrderUpdate {
+  stepBlockCreate: StepAndCardBlockCreateWithBlockOrderUpdate_stepBlockCreate;
+  cardBlockCreate: StepAndCardBlockCreateWithBlockOrderUpdate_cardBlockCreate;
+  blockOrderUpdate: StepAndCardBlockCreateWithBlockOrderUpdate_blockOrderUpdate[];
+}
+
+export interface StepAndCardBlockCreateWithBlockOrderUpdateVariables {
   stepBlockCreateInput: StepBlockCreateInput;
   cardBlockCreateInput: CardBlockCreateInput;
+  stepId: string;
+  parentOrder: number;
 }
