@@ -181,7 +181,11 @@ export function transformArclightMediaComponentLanguageToVideoVariant(
       slug,
       hls: null,
       videoId: mediaComponent.mediaComponentId,
-      edition: mediaComponentLanguage.editionCode ?? 'base'
+      edition:
+        mediaComponentLanguage.editionCode == null ||
+        mediaComponentLanguage.editionCode === ''
+          ? 'base'
+          : mediaComponentLanguage.editionCode
     }
   }
   const downloads: Prisma.VideoVariantDownloadUncheckedCreateInput[] = []

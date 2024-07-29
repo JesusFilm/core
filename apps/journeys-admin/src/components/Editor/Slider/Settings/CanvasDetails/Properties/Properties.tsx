@@ -1,11 +1,9 @@
+import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
+import { TreeBlock } from '@core/journeys/ui/block/TreeBlock'
 import Stack from '@mui/material/Stack'
 import { useTranslation } from 'next-i18next'
 import dynamic from 'next/dynamic'
 import { ReactElement, useState } from 'react'
-
-import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
-import { TreeBlock } from '@core/journeys/ui/block/TreeBlock'
-
 import { BlockFields as StepBlock } from '../../../../../../../__generated__/BlockFields'
 import { Drawer } from '../../Drawer'
 import { CardTemplates } from '../../Drawer/CardTemplates/CardTemplates'
