@@ -43,13 +43,9 @@ telemetry:
     spans:
       mode: spec_compliant
   exporters:
-    tracing:
-      otlp:
-        enabled: true
-    metrics:
-      otlp:
-        enabled: true
-        temporality: delta
+     logging:
+       stdout:
+         enabled: true 
 experimental_batching:
   enabled: true
   mode: batch_http_link

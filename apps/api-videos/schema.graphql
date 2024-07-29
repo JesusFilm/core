@@ -60,6 +60,7 @@ type Video
   """the number value of the amount of children on a video"""
   childrenCount: Int!
   variantLanguagesWithSlug: [LanguageWithSlug!]!
+  subtitles(languageId: ID, primary: Boolean, edition: String): [VideoSubtitle!]!
   variant(languageId: ID): VideoVariant
 }
 
@@ -88,6 +89,14 @@ enum VideoLabel {
 type LanguageWithSlug {
   language: Language
   slug: String
+}
+
+type VideoSubtitle {
+  id: String!
+  languageId: String!
+  edition: String!
+  vttSrc: String
+  srtSrc: String
 }
 
 input VideosFilter {
