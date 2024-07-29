@@ -7,7 +7,6 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { CARD_FIELDS } from '@core/journeys/ui/Card/cardFields'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { STEP_FIELDS } from '@core/journeys/ui/Step/stepFields'
-import { TreeBlock } from '@core/journeys/ui/block'
 import { BLOCK_FIELDS } from '@core/journeys/ui/block/blockFields'
 import {
   BlockDeleteWithStepUpdate,
@@ -32,12 +31,7 @@ import {
 import { blockDeleteUpdate } from '../../../../../../libs/blockDeleteUpdate'
 import { blockRestoreUpdate } from '../../../../../../libs/useBlockRestoreMutation'
 import { stepAndCardBlockCreateCacheUpdate } from '../../../../../../libs/useStepAndCardBlockCreateMutation'
-
-type SourceStepAndCoordinates = {
-  x: number
-  y: number
-  sourceStep: TreeBlock<StepBlock> | null | undefined
-}
+import { SourceBlocksAndCoordinates } from '../../JourneyFlow'
 
 export const BLOCK_DELETE_WITH_STEP_UPDATE = gql`
   mutation BlockDeleteWithStepUpdate($id: ID!, $journeyId: ID!, $input: StepBlockUpdateInput!, $stepBlockUpdateId: ID! ) {
@@ -99,7 +93,7 @@ export const STEP_AND_CARD_BLOCK_CREATE_WITH_STEP_UPDATE = gql`
 `
 
 export function useCreateStep(): (
-  sourceStepAndCoordinates: SourceStepAndCoordinates
+  sourceStepAndCoordinates: SourceBlocksAndCoordinates
 ) => Promise<void> {
   const { journey } = useJourney()
   const {
@@ -131,7 +125,7 @@ export function useCreateStep(): (
     x,
     y,
     sourceStep
-  }: SourceStepAndCoordinates): Promise<void> {
+  }: SourceBlocksAndCoordinates): Promise<void> {
     if (journey == null) return
     const step: StepBlock & { x: number; y: number } = {
       __typename: 'StepBlock',

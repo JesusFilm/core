@@ -19,7 +19,7 @@ interface TestUseCreateStepHooksProps {
   selectedStep?: TreeBlock<StepBlock>
   steps?: TreeBlock<StepBlock>[]
 }
-function UseCreateStepComponent({
+function CreateStepComponent({
   sourceStep,
   sourceBlock
 }: TestUseCreateStepHooksProps): ReactElement {
@@ -91,7 +91,7 @@ export function TestUseCreateStepHooks({
       <EditorProvider initialState={{ selectedStep, steps }}>
         <CommandUndoItem variant="button" />
         <CommandRedoItem variant="button" />
-        <UseCreateStepComponent
+        <CreateStepComponent
           sourceStep={sourceStep}
           sourceBlock={sourceBlock}
         />

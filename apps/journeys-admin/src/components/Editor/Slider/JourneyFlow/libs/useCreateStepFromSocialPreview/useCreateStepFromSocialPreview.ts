@@ -32,11 +32,7 @@ import { blockDeleteUpdate } from '../../../../../../libs/blockDeleteUpdate'
 import { useBlockDeleteMutation } from '../../../../../../libs/useBlockDeleteMutation'
 import { blockRestoreUpdate } from '../../../../../../libs/useBlockRestoreMutation'
 import { stepAndCardBlockCreateCacheUpdate } from '../../../../../../libs/useStepAndCardBlockCreateMutation'
-
-type Coordinates = {
-  x: number
-  y: number
-}
+import { SourceBlocksAndCoordinates } from '../../JourneyFlow'
 
 export const STEP_AND_CARD_BLOCK_CREATE_WITH_BLOCK_ORDER_UPDATE = gql`
   ${STEP_FIELDS}
@@ -106,7 +102,7 @@ mutation BlockRestoreWithBlockOrderUpdate($id: ID!, $stepId: ID!, $parentOrder: 
 }`
 
 export function useCreateStepFromSocialPreview(): (
-  coordinates: Coordinates
+  coordinates: SourceBlocksAndCoordinates
 ) => Promise<void> {
   const { journey } = useJourney()
   const {

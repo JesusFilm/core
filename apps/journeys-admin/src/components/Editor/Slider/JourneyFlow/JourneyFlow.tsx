@@ -60,8 +60,9 @@ import { StepBlockNode } from './nodes/StepBlockNode'
 import { STEP_NODE_CARD_HEIGHT } from './nodes/StepBlockNode/libs/sizes'
 
 import 'reactflow/dist/style.css'
-import { isActionBlock } from '@core/journeys/ui/isActionBlock'
+import { TreeBlock } from '@core/journeys/ui/block'
 import { searchBlocks } from '@core/journeys/ui/searchBlocks'
+import { BlockFields_StepBlock as StepBlock } from '../../../../../__generated__/BlockFields'
 import { ReferrerEdge } from './edges/ReferrerEdge'
 import { convertToEdgeSource } from './libs/convertToEdgeSource'
 import { useCreateStepFromAction } from './libs/useCreateStepFromAction'
@@ -90,6 +91,13 @@ export const GET_STEP_BLOCKS_WITH_POSITION = gql`
     }
   }
 `
+
+export type SourceBlocksAndCoordinates = {
+  x: number
+  y: number
+  sourceStep: TreeBlock<StepBlock> | null | undefined
+  sourceBlock: TreeBlock | null | undefined
+}
 
 export function JourneyFlow(): ReactElement {
   const { journey } = useJourney()
@@ -267,22 +275,19 @@ export function JourneyFlow(): ReactElement {
               )
             : null
 
-        const createStepArgs = {
+        const input: SourceBlocksAndCoordinates = {
           x: Math.trunc(x),
           y: Math.trunc(y) - STEP_NODE_CARD_HEIGHT / 2,
-          sourceStep
+          sourceStep,
+          sourceBlock
         }
 
-        if (edgeSource.sourceType === 'step') void createStep(createStepArgs)
+        if (edgeSource.sourceType === 'step') void createStep(input)
 
         if (edgeSource.sourceType === 'socialPreview')
-          void createStepFromSocialPreview(createStepArgs)
+          void createStepFromSocialPreview(input)
 
-        if (edgeSource.sourceType === 'action' && isActionBlock(sourceBlock))
-          void createStepFromAction({
-            ...createStepArgs,
-            sourceBlock
-          })
+        if (edgeSource.sourceType === 'action') void createStepFromAction(input)
       }
     },
     [reactFlowInstance, connectingParams, createStep]

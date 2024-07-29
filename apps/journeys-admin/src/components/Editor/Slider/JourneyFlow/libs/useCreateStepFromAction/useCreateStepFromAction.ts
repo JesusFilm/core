@@ -7,9 +7,8 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { gql, useMutation } from '@apollo/client'
 import { CARD_FIELDS } from '@core/journeys/ui/Card/cardFields'
 import { STEP_FIELDS } from '@core/journeys/ui/Step/stepFields'
-import { TreeBlock } from '@core/journeys/ui/block'
 import { BLOCK_FIELDS } from '@core/journeys/ui/block/blockFields'
-import { ActionBlock } from '@core/journeys/ui/isActionBlock'
+import { isActionBlock } from '@core/journeys/ui/isActionBlock'
 import {
   BlockDeleteWithBlockActionUpdate,
   BlockDeleteWithBlockActionUpdateVariables
@@ -33,6 +32,7 @@ import {
 import { blockDeleteUpdate } from '../../../../../../libs/blockDeleteUpdate'
 import { blockRestoreUpdate } from '../../../../../../libs/useBlockRestoreMutation'
 import { stepAndCardBlockCreateCacheUpdate } from '../../../../../../libs/useStepAndCardBlockCreateMutation'
+import { SourceBlocksAndCoordinates } from '../../JourneyFlow'
 
 export const BLOCK_DELETE_WITH_BLOCK_ACTION_UPDATE = gql`
   mutation BlockDeleteWithBlockActionUpdate($id: ID!, $journeyId: ID!, $parentBlockId: ID, $input: BlockUpdateActionInput!, $blockUpdateActionId: ID! ) {
@@ -101,13 +101,6 @@ export const STEP_AND_CARD_BLOCK_CREATE_WITH_BLOCK_ACTION_UPDATE = gql`
   }
 `
 
-type SourceBlocksAndCoordinates = {
-  x: number
-  y: number
-  sourceStep: TreeBlock<StepBlock> | null | undefined
-  sourceBlock: ActionBlock | null | undefined
-}
-
 export function useCreateStepFromAction(): (
   sourceBlocksAndCoordinates: SourceBlocksAndCoordinates
 ) => Promise<void> {
@@ -140,6 +133,7 @@ export function useCreateStepFromAction(): (
     sourceBlock
   }): Promise<void> {
     if (journey == null) return
+    if (!isActionBlock(sourceBlock)) return
 
     const step: StepBlock & { x: number; y: number } = {
       __typename: 'StepBlock',
