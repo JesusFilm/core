@@ -7,10 +7,11 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import { ButtonColor } from '../../../../../../../../../../__generated__/globalTypes'
 
-import { Color } from '.'
 import { CommandRedoItem } from '../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 import { BUTTON_BLOCK_UPDATE } from './Color'
+
+import { Color } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -134,7 +135,6 @@ describe('Button color selector', () => {
         </EditorProvider>
       </MockedProvider>
     )
-
     fireEvent.click(screen.getByRole('button', { name: 'Secondary' }))
     await waitFor(() => expect(mockFirstUpdate.result).toHaveBeenCalled())
 
