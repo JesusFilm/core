@@ -1,6 +1,7 @@
 import { gql, useMutation } from '@apollo/client'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
+import { v4 as uuid } from 'uuid'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { IMAGE_FIELDS } from '@core/journeys/ui/Image/imageFields'
@@ -8,7 +9,10 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import Image3Icon from '@core/shared/ui/icons/Image3'
 
-import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../__generated__/BlockFields'
+import {
+  BlockFields_CardBlock as CardBlock,
+  BlockFields_ImageBlock as ImageBlock
+} from '../../../../../../../../__generated__/BlockFields'
 import { ImageBlockCreate } from '../../../../../../../../__generated__/ImageBlockCreate'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
 import { Button } from '../Button'
@@ -31,8 +35,7 @@ export function NewImageButton(): ReactElement {
     useMutation<ImageBlockCreate>(IMAGE_BLOCK_CREATE)
   const { journey } = useJourney()
   const {
-    state: { selectedStep },
-    dispatch
+    state: { selectedStep }
   } = useEditor()
   const { addBlock } = useBlockCreateCommand()
 
@@ -40,20 +43,51 @@ export function NewImageButton(): ReactElement {
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
+
     if (card != null && journey != null) {
-      await addBlock({
+      const imageBlock: TreeBlock<ImageBlock> = {
+        id: uuid(),
+        parentBlockId: card.id,
+        parentOrder: card.children.length ?? 0,
+        src: null,
+        alt: 'Default Image Icon',
+        width: 0,
+        height: 0,
+        blurhash: '',
+        __typename: 'ImageBlock' as const,
+        children: []
+      }
+      void addBlock({
+        optimisticBlock: imageBlock,
         async execute() {
-          const { data } = await imageBlockCreate({
+          void imageBlockCreate({
             variables: {
               input: {
+                id: imageBlock.id,
                 journeyId: journey.id,
-                parentBlockId: card.id,
+                parentBlockId: imageBlock.parentBlockId,
                 src: null,
                 alt: 'Default Image Icon'
               }
             },
+            optimisticResponse: { imageBlockCreate: imageBlock },
             update(cache, { data }) {
               if (data?.imageBlockCreate != null) {
+                cache.modify({
+                  fields: {
+                    blocks(existingBlockRefs = []) {
+                      const newBlockRef = cache.writeFragment({
+                        data: data.imageBlockCreate,
+                        fragment: gql`
+                        fragment NewBlock on Block {
+                          id
+                        }
+                      `
+                      })
+                      return [...existingBlockRefs, newBlockRef]
+                    }
+                  }
+                })
                 cache.modify({
                   id: cache.identify({ __typename: 'Journey', id: journey.id }),
                   fields: {
@@ -73,13 +107,6 @@ export function NewImageButton(): ReactElement {
               }
             }
           })
-          if (data?.imageBlockCreate != null) {
-            dispatch({
-              type: 'SetSelectedBlockByIdAction',
-              selectedBlockId: data.imageBlockCreate.id
-            })
-          }
-          return data?.imageBlockCreate
         }
       })
     }

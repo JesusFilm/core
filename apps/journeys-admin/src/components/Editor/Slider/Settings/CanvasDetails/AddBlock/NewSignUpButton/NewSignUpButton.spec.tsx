@@ -137,7 +137,8 @@ describe('NewSignUpButton', () => {
       data: {
         signUpBlockCreate: {
           id: 'signUpBlockId',
-          __typename: 'SignUpBlock'
+          __typename: 'SignUpBlock',
+          parentBlockId: 'cardId'
         },
         submitIcon: {
           id: 'iconId',
@@ -165,7 +166,11 @@ describe('NewSignUpButton', () => {
       ...deleteBlock,
       request: {
         ...deleteBlock.request,
-        variables: { id: 'signUpBlockId', journeyId: 'journeyId' }
+        variables: {
+          id: 'signUpBlockId',
+          journeyId: 'journeyId',
+          parentBlockId: 'cardId'
+        }
       },
       result: deleteResult
     }
@@ -255,7 +260,11 @@ describe('NewSignUpButton', () => {
       ...deleteBlock,
       request: {
         ...deleteBlock.request,
-        variables: { id: 'signUpBlockId', journeyId: 'journeyId' }
+        variables: {
+          id: 'signUpBlockId',
+          journeyId: 'journeyId',
+          parentBlockId: 'cardId'
+        }
       },
       result: deleteResult
     }

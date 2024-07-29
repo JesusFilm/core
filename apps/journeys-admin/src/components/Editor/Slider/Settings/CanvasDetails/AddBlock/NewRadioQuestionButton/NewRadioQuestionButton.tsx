@@ -10,7 +10,11 @@ import { RADIO_QUESTION_FIELDS } from '@core/journeys/ui/RadioQuestion/radioQues
 import type { TreeBlock } from '@core/journeys/ui/block'
 import CheckContainedIcon from '@core/shared/ui/icons/CheckContained'
 
-import type { BlockFields_CardBlock as CardBlock } from '../../../../../../../../__generated__/BlockFields'
+import type {
+  BlockFields_CardBlock as CardBlock,
+  BlockFields_RadioOptionBlock as RadioOptionBlock,
+  BlockFields_RadioQuestionBlock as RadioQuestionBlock
+} from '../../../../../../../../__generated__/BlockFields'
 import type { RadioQuestionBlockCreate } from '../../../../../../../../__generated__/RadioQuestionBlockCreate'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
 import { Button } from '../Button'
@@ -50,37 +54,69 @@ export function NewRadioQuestionButton(): ReactElement {
     useMutation<RadioQuestionBlockCreate>(RADIO_QUESTION_BLOCK_CREATE)
   const { journey } = useJourney()
   const {
-    state: { selectedStep },
-    dispatch
+    state: { selectedStep }
   } = useEditor()
   const { addBlock } = useBlockCreateCommand()
 
   async function handleClick(): Promise<void> {
-    const id = uuidv4()
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
 
     if (card != null && journey != null) {
-      await addBlock({
+      const radioQuestionBlock: TreeBlock<RadioQuestionBlock> = {
+        id: uuidv4(),
+        parentBlockId: card.id,
+        parentOrder: card.children.length ?? 0,
+        __typename: 'RadioQuestionBlock',
+        children: []
+      }
+      const radioOptionBlock1: TreeBlock<RadioOptionBlock> = {
+        id: uuidv4(),
+        parentBlockId: radioQuestionBlock.id,
+        parentOrder: 0,
+        label: 'Option 1',
+        action: null,
+        __typename: 'RadioOptionBlock',
+        children: []
+      }
+      const radioOptionBlock2: TreeBlock<RadioOptionBlock> = {
+        id: uuidv4(),
+        parentBlockId: radioQuestionBlock.id,
+        parentOrder: 1,
+        label: 'Option 2',
+        action: null,
+        __typename: 'RadioOptionBlock',
+        children: []
+      }
+
+      void addBlock({
+        optimisticBlock: radioQuestionBlock,
         async execute() {
-          const { data } = await radioQuestionBlockCreate({
+          void radioQuestionBlockCreate({
             variables: {
               input: {
                 journeyId: journey.id,
-                id,
+                id: radioQuestionBlock.id,
                 parentBlockId: card.id
               },
               radioOptionBlockCreateInput1: {
+                id: radioOptionBlock1.id,
                 journeyId: journey.id,
-                parentBlockId: id,
+                parentBlockId: radioQuestionBlock.id,
                 label: t('Option 1')
               },
               radioOptionBlockCreateInput2: {
+                id: radioOptionBlock2.id,
                 journeyId: journey.id,
-                parentBlockId: id,
+                parentBlockId: radioQuestionBlock.id,
                 label: t('Option 2')
               }
+            },
+            optimisticResponse: {
+              radioQuestionBlockCreate: radioQuestionBlock,
+              radioOption1: radioOptionBlock1,
+              radioOption2: radioOptionBlock2
             },
             update(cache, { data }) {
               if (data?.radioQuestionBlockCreate != null) {
@@ -124,13 +160,6 @@ export function NewRadioQuestionButton(): ReactElement {
               }
             }
           })
-          if (data?.radioQuestionBlockCreate != null) {
-            dispatch({
-              type: 'SetSelectedBlockByIdAction',
-              selectedBlockId: data.radioQuestionBlockCreate.id
-            })
-          }
-          return data?.radioQuestionBlockCreate
         }
       })
     }

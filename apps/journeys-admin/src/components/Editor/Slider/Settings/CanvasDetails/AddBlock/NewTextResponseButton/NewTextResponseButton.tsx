@@ -9,7 +9,10 @@ import { TEXT_RESPONSE_FIELDS } from '@core/journeys/ui/TextResponse/textRespons
 import type { TreeBlock } from '@core/journeys/ui/block'
 import TextInput1Icon from '@core/shared/ui/icons/TextInput1'
 
-import type { BlockFields_CardBlock as CardBlock } from '../../../../../../../../__generated__/BlockFields'
+import type {
+  BlockFields_CardBlock as CardBlock,
+  BlockFields_TextResponseBlock as TextResponseBlock
+} from '../../../../../../../../__generated__/BlockFields'
 import type { TextResponseBlockCreate } from '../../../../../../../../__generated__/TextResponseBlockCreate'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand/useBlockCreateCommand'
 import { Button } from '../Button'
@@ -32,28 +35,43 @@ export function NewTextResponseButton(): ReactElement {
     useMutation<TextResponseBlockCreate>(TEXT_RESPONSE_BLOCK_CREATE)
   const { journey } = useJourney()
   const {
-    state: { selectedStep },
-    dispatch
+    state: { selectedStep }
   } = useEditor()
   const { addBlock } = useBlockCreateCommand()
 
   const handleClick = async (): Promise<void> => {
-    const id = uuidv4()
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
 
     if (card != null && journey != null) {
-      await addBlock({
+      const textResponseBlock: TreeBlock<TextResponseBlock> = {
+        id: uuidv4(),
+        parentBlockId: card.id,
+        parentOrder: card.children.length ?? 0,
+        label: 'Your answer here',
+        hint: null,
+        minRows: null,
+        type: null,
+        routeId: null,
+        integrationId: null,
+        __typename: 'TextResponseBlock',
+        children: []
+      }
+      void addBlock({
+        optimisticBlock: textResponseBlock,
         async execute() {
-          const { data } = await textResponseBlockCreate({
+          void textResponseBlockCreate({
             variables: {
               input: {
-                id,
+                id: textResponseBlock.id,
                 journeyId: journey.id,
                 parentBlockId: card.id,
                 label: t('Your answer here')
               }
+            },
+            optimisticResponse: {
+              textResponseBlockCreate: textResponseBlock
             },
             update(cache, { data }) {
               if (data?.textResponseBlockCreate != null) {
@@ -76,13 +94,6 @@ export function NewTextResponseButton(): ReactElement {
               }
             }
           })
-          if (data?.textResponseBlockCreate != null) {
-            dispatch({
-              type: 'SetSelectedBlockByIdAction',
-              selectedBlockId: data.textResponseBlockCreate.id
-            })
-          }
-          return data?.textResponseBlockCreate
         }
       })
     }

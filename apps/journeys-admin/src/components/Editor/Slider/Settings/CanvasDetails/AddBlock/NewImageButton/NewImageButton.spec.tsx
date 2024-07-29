@@ -21,6 +21,11 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: () => true
 }))
 
+jest.mock('uuid', () => ({
+  __esModule: true,
+  v4: () => 'imageBlockId'
+}))
+
 describe('NewImageButton', () => {
   const selectedStep: TreeBlock = {
     __typename: 'StepBlock',
@@ -69,6 +74,7 @@ describe('NewImageButton', () => {
               query: IMAGE_BLOCK_CREATE,
               variables: {
                 input: {
+                  id: 'imageBlockId',
                   journeyId: 'journeyId',
                   parentBlockId: 'cardId',
                   src: null,
@@ -146,6 +152,7 @@ describe('NewImageButton', () => {
               query: IMAGE_BLOCK_CREATE,
               variables: {
                 input: {
+                  id: 'imageBlockId',
                   journeyId: 'journeyId',
                   parentBlockId: 'cardId',
                   src: null,
@@ -224,6 +231,7 @@ describe('NewImageButton', () => {
               query: IMAGE_BLOCK_CREATE,
               variables: {
                 input: {
+                  id: 'imageBlockId',
                   journeyId: 'journeyId',
                   parentBlockId: 'cardId',
                   src: null,
@@ -292,6 +300,7 @@ describe('NewImageButton', () => {
               query: IMAGE_BLOCK_CREATE,
               variables: {
                 input: {
+                  id: 'imageBlockId',
                   journeyId: 'journeyId',
                   parentBlockId: 'cardId',
                   src: null,

@@ -10,6 +10,10 @@ import { SIGN_UP_FIELDS } from '@core/journeys/ui/SignUp/signUpFields'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import Mail2Icon from '@core/shared/ui/icons/Mail2'
 
+import {
+  BlockFields_IconBlock as IconBlock,
+  BlockFields_SignUpBlock as SignUpBlock
+} from '@core/journeys/ui/block/__generated__/BlockFields'
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../__generated__/BlockFields'
 import { SignUpBlockCreate } from '../../../../../../../../__generated__/SignUpBlockCreate'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
@@ -45,39 +49,64 @@ export function NewSignUpButton(): ReactElement {
     useMutation<SignUpBlockCreate>(SIGN_UP_BLOCK_CREATE)
   const { journey } = useJourney()
   const {
-    state: { selectedStep },
-    dispatch
+    state: { selectedStep }
   } = useEditor()
   const { addBlock } = useBlockCreateCommand()
 
   async function handleClick(): Promise<void> {
-    const id = uuidv4()
-    const submitId = uuidv4()
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
     if (card != null && journey != null) {
-      await addBlock({
+      const signUpBlock: TreeBlock<SignUpBlock> = {
+        id: uuidv4(),
+        parentBlockId: card.id,
+        parentOrder: card.children.length ?? 0,
+        submitLabel: 'Submit',
+        submitIconId: uuidv4(),
+        action: null,
+        __typename: 'SignUpBlock',
+        children: []
+      }
+
+      const submitIcon: TreeBlock<IconBlock> = {
+        id: signUpBlock.submitIconId as string,
+        parentBlockId: signUpBlock.id,
+        parentOrder: null,
+        iconName: null,
+        iconSize: null,
+        iconColor: null,
+        __typename: 'IconBlock',
+        children: []
+      }
+
+      void addBlock({
+        optimisticBlock: signUpBlock,
         async execute() {
-          const { data } = await signUpBlockCreate({
+          void signUpBlockCreate({
             variables: {
               input: {
-                id,
+                id: signUpBlock.id,
                 journeyId: journey.id,
                 parentBlockId: card.id,
                 submitLabel: t('Submit')
               },
               iconBlockCreateInput: {
-                id: submitId,
+                id: submitIcon.id,
                 journeyId: journey.id,
-                parentBlockId: id,
+                parentBlockId: signUpBlock.id,
                 name: null
               },
-              id,
+              id: signUpBlock.id,
               journeyId: journey.id,
               updateInput: {
-                submitIconId: submitId
+                submitIconId: submitIcon.id
               }
+            },
+            optimisticResponse: {
+              signUpBlockCreate: signUpBlock,
+              submitIcon: submitIcon,
+              signUpBlockUpdate: signUpBlock
             },
             update(cache, { data }) {
               if (data?.signUpBlockUpdate != null) {
@@ -112,13 +141,6 @@ export function NewSignUpButton(): ReactElement {
               }
             }
           })
-          if (data?.signUpBlockCreate != null) {
-            dispatch({
-              type: 'SetSelectedBlockByIdAction',
-              selectedBlockId: data.signUpBlockCreate.id
-            })
-          }
-          return data?.signUpBlockCreate
         }
       })
     }

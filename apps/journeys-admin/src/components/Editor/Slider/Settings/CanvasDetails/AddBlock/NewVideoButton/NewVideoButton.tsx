@@ -10,7 +10,10 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import VideoOnIcon from '@core/shared/ui/icons/VideoOn'
 
 import { VideoBlockSource } from 'libs/journeys/ui/__generated__/globalTypes'
-import type { BlockFields_CardBlock as CardBlock } from '../../../../../../../../__generated__/BlockFields'
+import type {
+  BlockFields_CardBlock as CardBlock,
+  BlockFields_VideoBlock as VideoBlock
+} from '../../../../../../../../__generated__/BlockFields'
 import type { VideoBlockCreate } from '../../../../../../../../__generated__/VideoBlockCreate'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
 import { Button } from '../Button'
@@ -36,8 +39,7 @@ export function NewVideoButton({
     useMutation<VideoBlockCreate>(VIDEO_BLOCK_CREATE)
   const { journey } = useJourney()
   const {
-    state: { selectedStep },
-    dispatch
+    state: { selectedStep }
   } = useEditor()
   const { addBlock } = useBlockCreateCommand()
 
@@ -47,17 +49,36 @@ export function NewVideoButton({
     ) as TreeBlock<CardBlock> | undefined
 
     if (card != null && journey != null) {
-      const id = uuidv4()
-      dispatch({
-        type: 'SetSelectedBlockByIdAction',
-        selectedBlockId: id
-      })
-      await addBlock({
+      const video: TreeBlock<VideoBlock> = {
+        id: uuidv4(),
+        parentBlockId: card.id,
+        parentOrder: 0,
+        muted: false,
+        autoplay: true,
+        startAt: null,
+        endAt: null,
+        posterBlockId: null,
+        fullsize: true,
+        videoId: null,
+        videoVariantLanguageId: null,
+        source: VideoBlockSource.internal,
+        title: null,
+        description: null,
+        image: null,
+        duration: null,
+        objectFit: null,
+        video: null,
+        action: null,
+        __typename: 'VideoBlock',
+        children: []
+      }
+      void addBlock({
+        optimisticBlock: video,
         async execute() {
-          const { data } = await videoBlockCreate({
+          void videoBlockCreate({
             variables: {
               input: {
-                id,
+                id: video.id,
                 journeyId: journey.id,
                 parentBlockId: card.id,
                 autoplay: true,
@@ -66,28 +87,7 @@ export function NewVideoButton({
               }
             },
             optimisticResponse: {
-              videoBlockCreate: {
-                id,
-                parentBlockId: card.id,
-                parentOrder: 0,
-                muted: false,
-                autoplay: true,
-                startAt: null,
-                endAt: null,
-                posterBlockId: null,
-                fullsize: true,
-                videoId: null,
-                videoVariantLanguageId: null,
-                source: VideoBlockSource.internal,
-                title: null,
-                description: null,
-                image: null,
-                duration: null,
-                objectFit: null,
-                video: null,
-                action: null,
-                __typename: 'VideoBlock'
-              }
+              videoBlockCreate: video
             },
             update(cache, { data }) {
               if (data?.videoBlockCreate != null) {
@@ -110,7 +110,6 @@ export function NewVideoButton({
               }
             }
           })
-          return data?.videoBlockCreate
         }
       })
     }

@@ -102,11 +102,13 @@ describe('NewRadioQuestionButton', () => {
                   parentBlockId: 'cardId'
                 },
                 radioOptionBlockCreateInput1: {
+                  id: 'uuid',
                   journeyId: 'journeyId',
                   parentBlockId: 'uuid',
                   label: 'Option 1'
                 },
                 radioOptionBlockCreateInput2: {
+                  id: 'uuid',
                   journeyId: 'journeyId',
                   parentBlockId: 'uuid',
                   label: 'Option 2'
@@ -199,11 +201,13 @@ describe('NewRadioQuestionButton', () => {
                   parentBlockId: 'cardId'
                 },
                 radioOptionBlockCreateInput1: {
+                  id: 'uuid',
                   journeyId: 'journeyId',
                   parentBlockId: 'uuid',
                   label: 'Option 1'
                 },
                 radioOptionBlockCreateInput2: {
+                  id: 'uuid',
                   journeyId: 'journeyId',
                   parentBlockId: 'uuid',
                   label: 'Option 2'
@@ -313,11 +317,13 @@ describe('NewRadioQuestionButton', () => {
                   parentBlockId: 'cardId'
                 },
                 radioOptionBlockCreateInput1: {
+                  id: 'uuid',
                   journeyId: 'journeyId',
                   parentBlockId: 'uuid',
                   label: 'Option 1'
                 },
                 radioOptionBlockCreateInput2: {
+                  id: 'uuid',
                   journeyId: 'journeyId',
                   parentBlockId: 'uuid',
                   label: 'Option 2'
@@ -413,11 +419,13 @@ describe('NewRadioQuestionButton', () => {
                   parentBlockId: 'cardId'
                 },
                 radioOptionBlockCreateInput1: {
+                  id: 'uuid',
                   journeyId: 'journeyId',
                   parentBlockId: 'uuid',
                   label: 'Option 1'
                 },
                 radioOptionBlockCreateInput2: {
+                  id: 'uuid',
                   journeyId: 'journeyId',
                   parentBlockId: 'uuid',
                   label: 'Option 2'

@@ -10,6 +10,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import Cursor6Icon from '@core/shared/ui/icons/Cursor6'
 
+import { BlockFields_ButtonBlock as ButtonBlock } from '@core/journeys/ui/block/__generated__/BlockFields'
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../__generated__/BlockFields'
 import { ButtonBlockCreate } from '../../../../../../../../__generated__/ButtonBlockCreate'
 import {
@@ -58,23 +59,33 @@ export function NewButtonButton(): ReactElement {
   const { addBlock } = useBlockCreateCommand()
 
   async function handleClick(): Promise<void> {
-    const id = uuidv4()
-    const startId = uuidv4()
-    const endId = uuidv4()
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
+
     if (card != null && journey != null) {
-      dispatch({
-        type: 'SetEditorFocusAction',
-        selectedBlockId: id
-      })
-      await addBlock({
+      const button: TreeBlock<ButtonBlock> = {
+        id: uuidv4(),
+        __typename: 'ButtonBlock',
+        parentBlockId: card.id,
+        label: '',
+        buttonVariant: ButtonVariant.contained,
+        buttonColor: ButtonColor.primary,
+        size: ButtonSize.medium,
+        parentOrder: card.children.length ?? 0,
+        startIconId: uuidv4(),
+        endIconId: uuidv4(),
+        action: null,
+        children: []
+      }
+
+      void addBlock({
+        optimisticBlock: button,
         async execute() {
-          const { data } = await buttonBlockCreate({
+          void buttonBlockCreate({
             variables: {
               input: {
-                id,
+                id: button.id,
                 journeyId: journey.id,
                 parentBlockId: card.id,
                 label: '',
@@ -83,41 +94,29 @@ export function NewButtonButton(): ReactElement {
                 size: ButtonSize.medium
               },
               iconBlockCreateInput1: {
-                id: startId,
+                id: button.startIconId,
                 journeyId: journey.id,
-                parentBlockId: id,
+                parentBlockId: button.id,
                 name: null
               },
               iconBlockCreateInput2: {
-                id: endId,
+                id: button.endIconId,
                 journeyId: journey.id,
-                parentBlockId: id,
+                parentBlockId: button.id,
                 name: null
               },
-              id,
+              id: button.id,
               journeyId: journey.id,
               updateInput: {
-                startIconId: startId,
-                endIconId: endId
+                startIconId: button.startIconId,
+                endIconId: button.endIconId
               }
             },
             optimisticResponse: {
-              buttonBlockCreate: {
-                id,
-                __typename: 'ButtonBlock',
-                parentBlockId: card.id,
-                label: '',
-                buttonVariant: ButtonVariant.contained,
-                buttonColor: ButtonColor.primary,
-                size: ButtonSize.medium,
-                parentOrder: card.children.length,
-                startIconId: startId,
-                endIconId: endId,
-                action: null
-              },
+              buttonBlockCreate: button,
               startIcon: {
-                id: startId,
-                parentBlockId: id,
+                id: button.startIconId as string,
+                parentBlockId: button.id,
                 parentOrder: null,
                 iconName: null,
                 iconSize: null,
@@ -125,27 +124,15 @@ export function NewButtonButton(): ReactElement {
                 __typename: 'IconBlock'
               },
               endIcon: {
-                id: endId,
-                parentBlockId: id,
+                id: button.endIconId as string,
+                parentBlockId: button.id,
                 parentOrder: null,
                 iconName: null,
                 iconSize: null,
                 iconColor: null,
                 __typename: 'IconBlock'
               },
-              buttonBlockUpdate: {
-                id,
-                parentBlockId: card.id,
-                parentOrder: card.children.length,
-                label: '',
-                buttonVariant: ButtonVariant.contained,
-                buttonColor: ButtonColor.primary,
-                size: ButtonSize.medium,
-                startIconId: startId,
-                endIconId: endId,
-                action: null,
-                __typename: 'ButtonBlock'
-              }
+              buttonBlockUpdate: button
             },
             update(cache, { data }) {
               if (data?.buttonBlockUpdate != null) {
@@ -189,8 +176,6 @@ export function NewButtonButton(): ReactElement {
               }
             }
           })
-
-          return data?.buttonBlockCreate
         }
       })
     }

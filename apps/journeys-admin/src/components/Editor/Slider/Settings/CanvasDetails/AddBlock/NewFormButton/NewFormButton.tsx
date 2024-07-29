@@ -8,6 +8,8 @@ import { FORM_FIELDS } from '@core/journeys/ui/Form/formFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import File5Icon from '@core/shared/ui/icons/File5'
 
+import { TreeBlock } from '@core/journeys/ui/block'
+import { BlockFields_FormBlock as FormBlock } from '../../../../../../../../__generated__/BlockFields'
 import type { FormBlockCreate } from '../../../../../../../../__generated__/FormBlockCreate'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
 import { Button } from '../Button'
@@ -27,28 +29,38 @@ export function NewFormButton(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const {
-    state: { selectedStep },
-    dispatch
+    state: { selectedStep }
   } = useEditor()
   const { addBlock } = useBlockCreateCommand()
 
   async function handleClick(): Promise<void> {
-    const id = uuidv4()
-
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
     )
 
     if (card != null && journey != null) {
-      await addBlock({
+      const formBlock: TreeBlock<FormBlock> = {
+        id: uuidv4(),
+        parentBlockId: card.id,
+        parentOrder: card.children.length ?? 0,
+        form: null,
+        action: null,
+        __typename: 'FormBlock' as const,
+        children: []
+      }
+      void addBlock({
+        optimisticBlock: formBlock,
         async execute() {
-          const { data } = await formBlockCreate({
+          void formBlockCreate({
             variables: {
               input: {
-                id,
+                id: formBlock.id,
                 journeyId: journey.id,
                 parentBlockId: card.id
               }
+            },
+            optimisticResponse: {
+              formBlockCreate: formBlock
             },
             update(cache, { data }) {
               if (data?.formBlockCreate != null) {
@@ -71,13 +83,6 @@ export function NewFormButton(): ReactElement {
               }
             }
           })
-          if (data?.formBlockCreate != null) {
-            dispatch({
-              type: 'SetSelectedBlockByIdAction',
-              selectedBlockId: data.formBlockCreate.id
-            })
-          }
-          return data?.formBlockCreate
         }
       })
     }

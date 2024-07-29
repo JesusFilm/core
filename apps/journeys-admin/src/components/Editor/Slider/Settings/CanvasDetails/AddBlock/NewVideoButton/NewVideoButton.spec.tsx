@@ -23,7 +23,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 jest.mock('uuid', () => ({
   __esModule: true,
-  v4: jest.fn()
+  v4: () => 'videoBlockId'
 }))
 
 describe('NewVideoButton', () => {
@@ -80,6 +80,7 @@ describe('NewVideoButton', () => {
               query: VIDEO_BLOCK_CREATE,
               variables: {
                 input: {
+                  id: 'videoBlockId',
                   journeyId: 'journeyId',
                   parentBlockId: 'cardId',
                   autoplay: true,
@@ -151,6 +152,7 @@ describe('NewVideoButton', () => {
               query: VIDEO_BLOCK_CREATE,
               variables: {
                 input: {
+                  id: 'videoBlockId',
                   journeyId: 'journeyId',
                   parentBlockId: 'cardId',
                   autoplay: true,
@@ -239,6 +241,7 @@ describe('NewVideoButton', () => {
               query: VIDEO_BLOCK_CREATE,
               variables: {
                 input: {
+                  id: 'videoBlockId',
                   journeyId: 'journeyId',
                   parentBlockId: 'cardId',
                   autoplay: true,
@@ -315,6 +318,7 @@ describe('NewVideoButton', () => {
               query: VIDEO_BLOCK_CREATE,
               variables: {
                 input: {
+                  id: 'videoBlockId',
                   journeyId: 'journeyId',
                   parentBlockId: 'cardId',
                   autoplay: true,

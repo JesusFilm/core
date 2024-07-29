@@ -21,6 +21,11 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: () => true
 }))
 
+jest.mock('uuid', () => ({
+  __esModule: true,
+  v4: () => 'typographyBlockId'
+}))
+
 describe('NewTypographyButton', () => {
   const selectedStep: TreeBlock = {
     __typename: 'StepBlock',
@@ -67,6 +72,7 @@ describe('NewTypographyButton', () => {
               query: TYPOGRAPHY_BLOCK_CREATE,
               variables: {
                 input: {
+                  id: 'typographyBlockId',
                   journeyId: 'journeyId',
                   parentBlockId: 'cardId',
                   content: '',
@@ -130,6 +136,7 @@ describe('NewTypographyButton', () => {
               query: TYPOGRAPHY_BLOCK_CREATE,
               variables: {
                 input: {
+                  id: 'typographyBlockId',
                   journeyId: 'journeyId',
                   parentBlockId: 'cardId',
                   content: '',
@@ -213,6 +220,7 @@ describe('NewTypographyButton', () => {
               query: TYPOGRAPHY_BLOCK_CREATE,
               variables: {
                 input: {
+                  id: 'typographyBlockId',
                   journeyId: 'journeyId',
                   parentBlockId: 'cardId',
                   content: '',
@@ -284,6 +292,7 @@ describe('NewTypographyButton', () => {
               query: TYPOGRAPHY_BLOCK_CREATE,
               variables: {
                 input: {
+                  id: 'typographyBlockId',
                   journeyId: 'journeyId',
                   parentBlockId: 'cardId',
                   content: '',
