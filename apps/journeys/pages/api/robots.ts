@@ -33,4 +33,3 @@ export default async function handler(
 
   return res.status(200).send('User-agent: *\nAllow: /')
 }
-//faceboobexternalhit
