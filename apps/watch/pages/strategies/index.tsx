@@ -31,6 +31,7 @@ function StrategiesPage({ serverState }: StrategiesPageProps): ReactElement {
       <InstantSearch
         searchClient={searchClient}
         future={{ preserveSharedStateOnUnmount: true }}
+        insights
         routing={{
           router: createInstantSearchRouterNext({
             serverUrl: 'http://localhost:4300/strategies',
