@@ -110,7 +110,7 @@ export function useCreateStepFromSocialPreview(): (
 ) => Promise<void> {
   const { journey } = useJourney()
   const {
-    state: { selectedStep, steps },
+    state: { steps },
     dispatch
   } = useEditor()
   const { add } = useCommand()

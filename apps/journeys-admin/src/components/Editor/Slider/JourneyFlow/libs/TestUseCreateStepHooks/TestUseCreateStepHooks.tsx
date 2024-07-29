@@ -10,11 +10,13 @@ import { CommandRedoItem } from '../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../Toolbar/Items/CommandUndoItem'
 import { useCreateStep } from '../useCreateStep'
 import { useCreateStepFromAction } from '../useCreateStepFromAction'
+import { useCreateStepFromSocialPreview } from '../useCreateStepFromSocialPreview'
 
 interface TestUseCreateStepHooksProps {
   sourceStep?: TreeBlock<StepBlock>
   sourceBlock?: ActionBlock
   selectedStep?: TreeBlock<StepBlock>
+  steps?: TreeBlock<StepBlock>[]
 }
 function UseCreateStepComponent({
   sourceStep,
@@ -22,6 +24,7 @@ function UseCreateStepComponent({
 }: TestUseCreateStepHooksProps): ReactElement {
   const createStep = useCreateStep()
   const createStepFromAction = useCreateStepFromAction()
+  const createStepFromSocialPreview = useCreateStepFromSocialPreview()
 
   async function handleCreateStepClick() {
     if (sourceStep == null) return
@@ -42,12 +45,23 @@ function UseCreateStepComponent({
     })
   }
 
+  async function handleCreateStepFromSocialPreviewClick() {
+    await createStepFromSocialPreview({
+      x: 777,
+      y: 777
+    })
+  }
+
   return (
     <>
       <div data-testId="useCreateStep" onClick={handleCreateStepClick} />
       <div
         data-testId="useCreateStepFromAction"
         onClick={handleCreateStepFromActionClick}
+      />
+      <div
+        data-testId="useCreateStepFromSocialPreview"
+        onClick={handleCreateStepFromSocialPreviewClick}
       />
     </>
   )
@@ -56,11 +70,12 @@ function UseCreateStepComponent({
 export function TestUseCreateStepHooks({
   sourceStep,
   sourceBlock,
-  selectedStep
+  selectedStep,
+  steps
 }: TestUseCreateStepHooksProps): ReactElement {
   return (
     <JourneyProvider value={{ journey: defaultJourney }}>
-      <EditorProvider initialState={{ selectedStep }}>
+      <EditorProvider initialState={{ selectedStep, steps }}>
         <CommandUndoItem variant="button" />
         <CommandRedoItem variant="button" />
         <UseCreateStepComponent

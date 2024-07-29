@@ -27,6 +27,11 @@ import {
   STEP_AND_CARD_BLOCK_CREATE_WITH_BLOCK_ACTION_UPDATE
 } from './useCreateStepFromAction'
 
+const step = {
+  __typename: 'StepBlock',
+  id: 'step.id'
+} as unknown as TreeBlock<StepBlock>
+
 export const mockStepBlock: TreeBlock<StepBlock> = {
   __typename: 'StepBlock',
   id: 'originStepBlock.id',
