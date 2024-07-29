@@ -5,6 +5,7 @@ import { ReactElement } from 'react'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 
+import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import {
   ButtonBlockUpdateSize,
@@ -32,24 +33,38 @@ export function Size(): ReactElement {
     ButtonBlockUpdateSizeVariables
   >(BUTTON_BLOCK_UPDATE)
 
-  const { state } = useEditor()
+  const { state, dispatch } = useEditor()
+  const { add } = useCommand()
   const selectedBlock = state.selectedBlock as
     | TreeBlock<ButtonBlock>
     | undefined
 
   async function handleChange(size: ButtonSize): Promise<void> {
     if (selectedBlock != null && size != null) {
-      await buttonBlockUpdate({
-        variables: {
-          id: selectedBlock.id,
-          input: { size }
+      await add({
+        parameters: {
+          execute: { size },
+          undo: { size: selectedBlock.size }
         },
-        optimisticResponse: {
-          buttonBlockUpdate: {
-            id: selectedBlock.id,
-            size,
-            __typename: 'ButtonBlock'
-          }
+        async execute({ size }) {
+          dispatch({
+            type: 'SetEditorFocusAction',
+            selectedBlock,
+            selectedStep: state.selectedStep
+          })
+          await buttonBlockUpdate({
+            variables: {
+              id: selectedBlock.id,
+              input: { size }
+            },
+            optimisticResponse: {
+              buttonBlockUpdate: {
+                id: selectedBlock.id,
+                size,
+                __typename: 'ButtonBlock'
+              }
+            }
+          })
         }
       })
     }
