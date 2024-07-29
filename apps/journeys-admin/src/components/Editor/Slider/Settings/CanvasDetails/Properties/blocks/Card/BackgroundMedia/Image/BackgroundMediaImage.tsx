@@ -63,13 +63,13 @@ export const COVER_IMAGE_BLOCK_UPDATE = gql`
 `
 
 interface BackgroundMediaImageProps {
-  cardBlock: TreeBlock<CardBlock>
+  cardBlock?: TreeBlock<CardBlock>
 }
 
 export function BackgroundMediaImage({
   cardBlock
 }: BackgroundMediaImageProps): ReactElement {
-  const coverBlock = cardBlock.children.find(
+  const coverBlock = cardBlock?.children.find(
     (child) => child.id === cardBlock?.coverBlockId
   ) as TreeBlock<ImageBlock> | TreeBlock<VideoBlock> | undefined
   const { add } = useCommand()
@@ -91,7 +91,7 @@ export function BackgroundMediaImage({
   const [restoreBlock] = useCoverBlockRestoreMutation()
 
   async function createImageBlock(input: ImageBlockUpdateInput): Promise<void> {
-    if (journey == null) return
+    if (journey == null || cardBlock == null) return
 
     const block: ImageBlock = {
       id: uuidv4(),
@@ -259,7 +259,8 @@ export function BackgroundMediaImage({
     if (
       journey == null ||
       coverBlock == null ||
-      coverBlock.__typename === 'VideoBlock'
+      coverBlock.__typename === 'VideoBlock' ||
+      cardBlock == null
     )
       return
 

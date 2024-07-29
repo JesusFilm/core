@@ -71,7 +71,7 @@ export function BackgroundMedia(): ReactElement {
       : selectedBlock?.children.find(
           (child) => child.__typename === 'CardBlock'
         )
-  ) as TreeBlock<CardBlock>
+  ) as TreeBlock<CardBlock> | undefined
   const coverBlock = cardBlock?.children.find(
     (child) => child.id === cardBlock?.coverBlockId
   ) as TreeBlock<ImageBlock> | TreeBlock<VideoBlock> | undefined
@@ -91,7 +91,7 @@ export function BackgroundMedia(): ReactElement {
     _,
     newBlockType: BackgroundMediaBlockType | null
   ): Promise<void> {
-    if (newBlockType == null || journey == null) return
+    if (newBlockType == null || journey == null || cardBlock == null) return
 
     setBlockType(newBlockType)
 
