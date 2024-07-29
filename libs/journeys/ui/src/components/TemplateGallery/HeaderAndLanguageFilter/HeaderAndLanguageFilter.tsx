@@ -239,13 +239,12 @@ export function HeaderAndLanguageFilter({
 
   function handleSubmit(values: { languages: LanguageOption[] }): void {
     const ids = values.languages.map((language) => language.id)
-    // TODO(jk): this should only clear language refinements
-    clearRefinements()
-    ids.forEach(refine)
     onChange(ids)
   }
 
   useEffect(() => {
+    // TODO(jk): this should only clear language refinements
+    clearRefinements()
     selectedLanguageIds?.forEach(refine)
   }, [selectedLanguageIds])
 
