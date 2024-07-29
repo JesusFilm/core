@@ -1,14 +1,15 @@
 import { MockedResponse } from '@apollo/client/testing'
 import { TreeBlock } from '@core/journeys/ui/block'
-import {
-  BlockFields_ButtonBlock as ButtonBlock,
-  BlockFields_CardBlock as CardBlock,
-  BlockFields_StepBlock as StepBlock
-} from '@core/journeys/ui/block/__generated__/BlockFields'
+import {} from '@core/journeys/ui/block/__generated__/BlockFields'
 import {
   BlockDeleteWithBlockActionUpdate,
   BlockDeleteWithBlockActionUpdateVariables
 } from '../../../../../../../__generated__/BlockDeleteWithBlockActionUpdate'
+import {
+  BlockFields_ButtonBlock as ButtonBlock,
+  BlockFields_CardBlock as CardBlock,
+  BlockFields_StepBlock as StepBlock
+} from '../../../../../../../__generated__/BlockFields'
 import {
   BlockRestoreWithBlockActionUpdate,
   BlockRestoreWithBlockActionUpdateVariables
@@ -26,11 +27,6 @@ import {
   BLOCK_RESTORE_WITH_BLOCK_ACTION_UPDATE,
   STEP_AND_CARD_BLOCK_CREATE_WITH_BLOCK_ACTION_UPDATE
 } from './useCreateStepFromAction'
-
-const step = {
-  __typename: 'StepBlock',
-  id: 'step.id'
-} as unknown as TreeBlock<StepBlock>
 
 export const mockStepBlock: TreeBlock<StepBlock> = {
   __typename: 'StepBlock',

@@ -10,6 +10,7 @@ import { CommandRedoItem } from '../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../Toolbar/Items/CommandUndoItem'
 import { useCreateStep } from '../useCreateStep'
 import { useCreateStepFromAction } from '../useCreateStepFromAction'
+import { useCreateStepFromButton } from '../useCreateStepFromButton'
 import { useCreateStepFromSocialPreview } from '../useCreateStepFromSocialPreview'
 
 interface TestUseCreateStepHooksProps {
@@ -25,6 +26,7 @@ function UseCreateStepComponent({
   const createStep = useCreateStep()
   const createStepFromAction = useCreateStepFromAction()
   const createStepFromSocialPreview = useCreateStepFromSocialPreview()
+  const createStepFromButton = useCreateStepFromButton()
 
   async function handleCreateStepClick() {
     if (sourceStep == null) return
@@ -52,6 +54,13 @@ function UseCreateStepComponent({
     })
   }
 
+  async function handleCreateStepFromButtonClick() {
+    await createStepFromButton({
+      x: -200,
+      y: 38
+    })
+  }
+
   return (
     <>
       <div data-testId="useCreateStep" onClick={handleCreateStepClick} />
@@ -62,6 +71,10 @@ function UseCreateStepComponent({
       <div
         data-testId="useCreateStepFromSocialPreview"
         onClick={handleCreateStepFromSocialPreviewClick}
+      />
+      <div
+        data-testId="useCreateStepFromButton"
+        onClick={handleCreateStepFromButtonClick}
       />
     </>
   )
