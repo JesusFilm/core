@@ -4,8 +4,10 @@ import isEqual from 'lodash/isEqual'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 export function SubmitListener(): null {
-  const { submitForm, values, initialValues, isValid } = useFormikContext()
+  const { submitForm, values, initialValues, isValid, status } =
+    useFormikContext()
   const [lastValues, updateState] = useState(values)
+  const [onBlurSubmit, setOnBlurSubmit] = useState(false)
 
   const debouncedSubmit = useMemo(
     () =>
@@ -14,7 +16,7 @@ export function SubmitListener(): null {
           void submitForm()
         },
         500,
-        { maxWait: 1500 }
+        { maxWait: 3000 }
       ),
     [submitForm]
   )
@@ -23,15 +25,32 @@ export function SubmitListener(): null {
     debouncedSubmit()
   }, [debouncedSubmit])
 
+  const handleBlurSubmit = useCallback(() => {
+    debouncedSubmit.flush()
+  }, [debouncedSubmit])
+
   useEffect(() => {
     const valuesEqualLastValues = isEqual(lastValues, values)
     const valuesEqualInitialValues = isEqual(values, initialValues)
 
     if (!valuesEqualLastValues) updateState(values)
-
-    if (!valuesEqualLastValues && !valuesEqualInitialValues && isValid)
-      handleSubmit()
-  }, [values, isValid, initialValues, lastValues, handleSubmit])
+    if (status?.onBlurSubmit === true) setOnBlurSubmit(true)
+    if (onBlurSubmit) {
+      handleBlurSubmit()
+    } else {
+      if (!valuesEqualLastValues && !valuesEqualInitialValues && isValid)
+        handleSubmit()
+    }
+  }, [
+    values,
+    isValid,
+    initialValues,
+    lastValues,
+    handleSubmit,
+    handleBlurSubmit,
+    status,
+    onBlurSubmit
+  ])
 
   return null
 }
