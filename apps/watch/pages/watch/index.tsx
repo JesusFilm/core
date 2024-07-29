@@ -10,7 +10,6 @@ import {
 } from '../../__generated__/GetHomeVideos'
 import { VideoChildFields } from '../../__generated__/VideoChildFields'
 import i18nConfig from '../../next-i18next.config'
-import { WatchHomePage as VideoHomePage } from '../../src/components/WatchHomePage'
 import { createApolloClient } from '../../src/libs/apolloClient'
 import { getFlags } from '../../src/libs/getFlags'
 import { VIDEO_CHILD_FIELDS } from '../../src/libs/videoChildFields'
@@ -56,7 +55,8 @@ interface HomePageProps {
 }
 
 function HomePage({ videos }: HomePageProps): ReactElement {
-  return <VideoHomePage videos={videos} />
+  return <>Watch Page</>
+  // <VideoHomePage videos={videos} />
 }
 
 export const getStaticProps: GetStaticProps<HomePageProps> = async ({

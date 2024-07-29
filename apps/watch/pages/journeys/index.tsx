@@ -1,38 +1,65 @@
+import algoliasearch from 'algoliasearch'
+
 import { GetStaticProps } from 'next'
+
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { ReactElement } from 'react'
-
-import Box from '@mui/material/Box'
-import Container from '@mui/material/Container'
+import { InstantSearchServerState } from 'react-instantsearch'
 import i18nConfig from '../../next-i18next.config'
 import { getFlags } from '../../src/libs/getFlags'
 
-import { PageWrapper } from '../../src/components/PageWrapper'
+const searchClient = algoliasearch(
+  process.env.NEXT_PUBLIC_ALGOLIA_APP_ID ?? '',
+  process.env.NEXT_PUBLIC_ALGOLIA_API_KEY ?? ''
+)
 
-import { TemplateGallery } from '@core/journeys/ui/TemplateGallery'
-import Stack from '@mui/material/Stack'
+interface JourneysPageProps {
+  serverState?: InstantSearchServerState
+}
 
-function JourneysPage(): ReactElement {
+function JourneysPage(
+  //  { serverState }: JourneysPageProps
+): ReactElement {
   return (
-    <PageWrapper>
-      <Box
-        sx={{ backgroundColor: 'background.default' }}
-        data-testid="JourneysPage"
-      >
-        <Container maxWidth="xxl">
-          <Stack gap={10}>
-            <TemplateGallery
-              algoliaIndex="api-journeys-journeys-dev"
-              hideOverflow
-            />
-          </Stack>
-        </Container>
-      </Box>
-    </PageWrapper>
+    // <InstantSearchSSRProvider {...serverState}>
+    //   <InstantSearch
+    //     searchClient={searchClient}
+    //     future={{ preserveSharedStateOnUnmount: true }}
+    //     insights
+    //     routing={{
+    //       router: createInstantSearchRouterNext({
+    //         serverUrl: 'http://localhost:4300/journeys',
+    //         singletonRouter,
+    //         routerOptions: {
+    //           cleanUrlOnDispose: false
+    //         }
+    //       })
+    //     }}
+    //   >
+    //     <PageWrapper>
+    //       <Box
+    //         sx={{ backgroundColor: 'background.default' }}
+    //         data-testid="JourneysPage"
+    //       >
+    //         <Container maxWidth="xxl">
+    //           <Stack gap={10}>
+    //             <TemplateGallery
+    //               algoliaIndex="api-journeys-journeys-dev"
+    //               hideOverflow
+    //             />
+    //           </Stack>
+    //         </Container>
+    //       </Box>
+    //     </PageWrapper>
+    //   </InstantSearch>
+    // </InstantSearchSSRProvider>
+    <>Journeys page</>
   )
 }
 
-export const getStaticProps: GetStaticProps = async ({ locale }) => {
+export const getStaticProps: GetStaticProps<JourneysPageProps> = async ({
+  locale
+}) => {
   const flags = await getFlags()
 
   if (flags.journeys !== true)
@@ -42,10 +69,14 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
       props: {}
     }
 
+  // const serverState = await getServerState(<JourneysPage />, {
+  //   renderToString
+  // })
   return {
     revalidate: 60,
     props: {
       flags,
+      // serverState,
       ...(await serverSideTranslations(
         locale ?? 'en',
         ['apps-watch'],
