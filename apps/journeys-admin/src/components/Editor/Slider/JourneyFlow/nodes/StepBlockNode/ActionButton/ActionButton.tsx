@@ -80,7 +80,7 @@ export function ActionButton({
     <BaseNode
       id={block.id}
       sourceHandle={
-        showAnalytics === true ? HandleVariant.DISABLED : HandleVariant.SHOWN
+        showAnalytics === true ? HandleVariant.Disabled : HandleVariant.Shown
       }
       onSourceConnect={updateEdge}
       selected={selected}

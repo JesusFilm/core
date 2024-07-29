@@ -69,8 +69,8 @@ export function StepBlockNode({
           id={step.id}
           targetHandle={
             showAnalytics === true
-              ? HandleVariant.DISABLED
-              : HandleVariant.SHOWN
+              ? HandleVariant.Disabled
+              : HandleVariant.Shown
           }
           selected={isSelected}
           isSourceConnected={step.nextBlockId != null}

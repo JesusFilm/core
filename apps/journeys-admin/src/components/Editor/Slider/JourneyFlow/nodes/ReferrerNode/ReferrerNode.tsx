@@ -22,7 +22,7 @@ export function ReferrerNode({ data }: ReferrerNodeProps) {
   return (
     <BaseNode
       id="referrer"
-      sourceHandle={HandleVariant.DISABLED}
+      sourceHandle={HandleVariant.Disabled}
       isSourceConnected
     >
       <Box

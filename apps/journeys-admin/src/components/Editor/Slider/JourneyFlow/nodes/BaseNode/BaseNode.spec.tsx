@@ -27,7 +27,7 @@ describe('BaseNode', () => {
     render(
       <ReactFlowProvider>
         <MockedProvider>
-          <BaseNode targetHandle={HandleVariant.SHOWN} />
+          <BaseNode targetHandle={HandleVariant.Shown} />
         </MockedProvider>
       </ReactFlowProvider>
     )
@@ -42,7 +42,7 @@ describe('BaseNode', () => {
     render(
       <ReactFlowProvider>
         <MockedProvider>
-          <BaseNode targetHandle={HandleVariant.DISABLED} />
+          <BaseNode targetHandle={HandleVariant.Disabled} />
         </MockedProvider>
       </ReactFlowProvider>
     )
@@ -57,7 +57,7 @@ describe('BaseNode', () => {
     render(
       <ReactFlowProvider>
         <MockedProvider>
-          <BaseNode targetHandle={HandleVariant.HIDDEN} />
+          <BaseNode targetHandle={HandleVariant.Hidden} />
         </MockedProvider>
       </ReactFlowProvider>
     )
@@ -72,7 +72,7 @@ describe('BaseNode', () => {
     render(
       <ReactFlowProvider>
         <MockedProvider>
-          <BaseNode sourceHandle={HandleVariant.SHOWN} />
+          <BaseNode sourceHandle={HandleVariant.Shown} />
         </MockedProvider>
       </ReactFlowProvider>
     )
@@ -87,7 +87,7 @@ describe('BaseNode', () => {
     render(
       <ReactFlowProvider>
         <MockedProvider>
-          <BaseNode sourceHandle={HandleVariant.DISABLED} />
+          <BaseNode sourceHandle={HandleVariant.Disabled} />
         </MockedProvider>
       </ReactFlowProvider>
     )
@@ -102,7 +102,7 @@ describe('BaseNode', () => {
     render(
       <ReactFlowProvider>
         <MockedProvider>
-          <BaseNode sourceHandle={HandleVariant.HIDDEN} />
+          <BaseNode sourceHandle={HandleVariant.Hidden} />
         </MockedProvider>
       </ReactFlowProvider>
     )
@@ -117,7 +117,7 @@ describe('BaseNode', () => {
     render(
       <ReactFlowProvider>
         <MockedProvider>
-          <BaseNode sourceHandle={HandleVariant.SHOWN} />
+          <BaseNode sourceHandle={HandleVariant.Shown} />
         </MockedProvider>
       </ReactFlowProvider>
     )

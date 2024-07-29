@@ -21,10 +21,10 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
 
 export enum HandleVariant {
-  NONE = 'none', // not rendered - Default value
-  SHOWN = 'shown', // rendered, visible and connectable
-  HIDDEN = 'hidden', // rendered, not visible or connectable.
-  DISABLED = 'disabled' // rendered, visible, not connectable
+  None = 'none', // not rendered - Default value
+  Shown = 'shown', // rendered, visible and connectable
+  Hidden = 'hidden', // rendered, not visible or connectable.
+  Disabled = 'disabled' // rendered, visible, not connectable
 }
 
 import {
@@ -64,8 +64,8 @@ interface BaseNodeProps {
 
 export function BaseNode({
   id,
-  targetHandle = HandleVariant.NONE,
-  sourceHandle = HandleVariant.NONE,
+  targetHandle = HandleVariant.None,
+  sourceHandle = HandleVariant.None,
   onSourceConnect,
   selected = false,
   isSourceConnected = false,
@@ -123,14 +123,14 @@ export function BaseNode({
       }}
     >
       {isFunction(children) ? children({ selected }) : children}
-      {(targetHandle === HandleVariant.SHOWN ||
-        targetHandle === HandleVariant.DISABLED ||
-        targetHandle === HandleVariant.HIDDEN) && (
+      {(targetHandle === HandleVariant.Shown ||
+        targetHandle === HandleVariant.Disabled ||
+        targetHandle === HandleVariant.Hidden) && (
         <PulseWrapper
           show={
             id !== 'SocialPreview' &&
             isConnecting &&
-            targetHandle === HandleVariant.SHOWN
+            targetHandle === HandleVariant.Shown
           }
         >
           <StyledHandle
@@ -138,13 +138,13 @@ export function BaseNode({
             data-testid={`BaseNodeLeftHandle-${targetHandle}`}
             position={Position.Left}
             isConnectableStart={
-              isConnecting && targetHandle === HandleVariant.SHOWN
+              isConnecting && targetHandle === HandleVariant.Shown
             }
             isConnectable={
-              id !== connectionNodeId && targetHandle === HandleVariant.SHOWN
+              id !== connectionNodeId && targetHandle === HandleVariant.Shown
             }
             sx={{
-              opacity: targetHandle === HandleVariant.HIDDEN ? 0 : 1,
+              opacity: targetHandle === HandleVariant.Hidden ? 0 : 1,
               width: HANDLE_DIAMETER + HANDLE_BORDER_WIDTH,
               height: HANDLE_DIAMETER + HANDLE_BORDER_WIDTH,
               ...(positionTargetHandle && {
@@ -155,7 +155,7 @@ export function BaseNode({
               }),
               background: (theme) => theme.palette.background.default,
               border: (theme) =>
-                (isConnecting && targetHandle === HandleVariant.SHOWN) ||
+                (isConnecting && targetHandle === HandleVariant.Shown) ||
                 targetSelected
                   ? `${HANDLE_BORDER_WIDTH}px solid ${theme.palette.primary.main}`
                   : `${HANDLE_BORDER_WIDTH}px solid ${theme.palette.secondary.light}80`,
@@ -174,9 +174,9 @@ export function BaseNode({
           />
         </PulseWrapper>
       )}
-      {(sourceHandle === HandleVariant.SHOWN ||
-        sourceHandle === HandleVariant.DISABLED ||
-        sourceHandle === HandleVariant.HIDDEN) && (
+      {(sourceHandle === HandleVariant.Shown ||
+        sourceHandle === HandleVariant.Disabled ||
+        sourceHandle === HandleVariant.Hidden) && (
         <StyledHandle
           id={id}
           type="source"
@@ -184,7 +184,7 @@ export function BaseNode({
           data-testid={`BaseNodeRightHandle-${sourceHandle}`}
           position={Position.Right}
           onConnect={onSourceConnect}
-          isConnectable={sourceHandle === HandleVariant.SHOWN}
+          isConnectable={sourceHandle === HandleVariant.Shown}
           {...sourceHandleProps}
           sx={{
             border: 'none',
@@ -195,7 +195,7 @@ export function BaseNode({
                 ? theme.palette.primary.main
                 : `${theme.palette.secondary.light}A0`,
             ...sourceHandleProps?.sx,
-            opacity: sourceHandle === HandleVariant.HIDDEN ? 0 : 1,
+            opacity: sourceHandle === HandleVariant.Hidden ? 0 : 1,
 
             '&:after': {
               content: '""',
@@ -211,7 +211,7 @@ export function BaseNode({
             }
           }}
         >
-          {sourceHandle === HandleVariant.SHOWN && (
+          {sourceHandle === HandleVariant.Shown && (
             <ArrowRightIcon
               data-testid="BaseNodeConnectionArrowIcon"
               className="arrow"
