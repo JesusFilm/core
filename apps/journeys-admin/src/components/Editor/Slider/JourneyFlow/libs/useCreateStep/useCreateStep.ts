@@ -1,29 +1,29 @@
 import { gql, useMutation } from '@apollo/client'
 import { v4 as uuidv4 } from 'uuid'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-
 import { CARD_FIELDS } from '@core/journeys/ui/Card/cardFields'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { STEP_FIELDS } from '@core/journeys/ui/Step/stepFields'
 import { BLOCK_FIELDS } from '@core/journeys/ui/block/blockFields'
-import {
-  BlockDeleteWithStepUpdate,
-  BlockDeleteWithStepUpdateVariables
-} from '../../../../../../../__generated__/BlockDeleteWithStepUpdate'
+
 import {
   BlockFields_CardBlock as CardBlock,
   BlockFields_StepBlock as StepBlock
 } from '../../../../../../../__generated__/BlockFields'
 import {
-  BlockRestoreWithStepUpdate,
-  BlockRestoreWithStepUpdateVariables
-} from '../../../../../../../__generated__/BlockRestoreWithStepUpdate'
+  StepBlockCreate,
+  StepBlockCreateVariables
+} from '../../../../../../../__generated__/StepBlockCreate'
 import {
-  StepAndCardBlockCreateWithStepUpdate,
-  StepAndCardBlockCreateWithStepUpdateVariables
-} from '../../../../../../../__generated__/StepAndCardBlockCreateWithStepUpdate'
+  StepBlockDelete,
+  StepBlockDeleteVariables
+} from '../../../../../../../__generated__/StepBlockDelete'
+import {
+  StepBlockRestore,
+  StepBlockRestoreVariables
+} from '../../../../../../../__generated__/StepBlockRestore'
 import {
   ThemeMode,
   ThemeName
@@ -33,8 +33,8 @@ import { blockRestoreUpdate } from '../../../../../../libs/useBlockRestoreMutati
 import { stepAndCardBlockCreateCacheUpdate } from '../../../../../../libs/useStepAndCardBlockCreateMutation'
 import { SourceBlocksAndCoordinates } from '../../JourneyFlow'
 
-export const BLOCK_DELETE_WITH_STEP_UPDATE = gql`
-  mutation BlockDeleteWithStepUpdate($id: ID!, $journeyId: ID!, $input: StepBlockUpdateInput!, $stepBlockUpdateId: ID! ) {
+export const STEP_BLOCK_DELETE = gql`
+  mutation StepBlockDelete($id: ID!, $journeyId: ID!, $input: StepBlockUpdateInput!, $stepBlockUpdateId: ID! ) {
     blockDelete(id: $id, journeyId: $journeyId) {
       id
       parentOrder
@@ -49,9 +49,9 @@ export const BLOCK_DELETE_WITH_STEP_UPDATE = gql`
   }
 `
 
-export const BLOCK_RESTORE_WITH_STEP_UPDATE = gql`
+export const STEP_BLOCK_RESTORE = gql`
 ${BLOCK_FIELDS}
-mutation BlockRestoreWithStepUpdate($id: ID!, $journeyId: ID!, $stepBlockUpdateId: ID!, $input: StepBlockUpdateInput!) {
+mutation StepBlockRestore($id: ID!, $journeyId: ID!, $stepBlockUpdateId: ID!, $input: StepBlockUpdateInput!) {
   blockRestore(id: $id) {
     id
     ...BlockFields
@@ -67,10 +67,10 @@ mutation BlockRestoreWithStepUpdate($id: ID!, $journeyId: ID!, $stepBlockUpdateI
     }
 }`
 
-export const STEP_AND_CARD_BLOCK_CREATE_WITH_STEP_UPDATE = gql`
+export const STEP_BLOCK_CREATE = gql`
   ${STEP_FIELDS}
   ${CARD_FIELDS}
-  mutation StepAndCardBlockCreateWithStepUpdate(
+  mutation StepBlockCreate(
     $stepBlockCreateInput: StepBlockCreateInput!
     $cardBlockCreateInput: CardBlockCreateInput!
     $stepId: ID!,
@@ -102,20 +102,20 @@ export function useCreateStep(): (
   } = useEditor()
   const { add } = useCommand()
 
-  const [blockDeleteWithStepUpdate] = useMutation<
-    BlockDeleteWithStepUpdate,
-    BlockDeleteWithStepUpdateVariables
-  >(BLOCK_DELETE_WITH_STEP_UPDATE)
+  const [stepBlockDelete] = useMutation<
+    StepBlockDelete,
+    StepBlockDeleteVariables
+  >(STEP_BLOCK_DELETE)
 
-  const [blockRestoreWithStepUpdate] = useMutation<
-    BlockRestoreWithStepUpdate,
-    BlockRestoreWithStepUpdateVariables
-  >(BLOCK_RESTORE_WITH_STEP_UPDATE)
+  const [stepBlockRestore] = useMutation<
+    StepBlockRestore,
+    StepBlockRestoreVariables
+  >(STEP_BLOCK_RESTORE)
 
-  const [stepAndCardBlockCreateWithStepUpdate] = useMutation<
-    StepAndCardBlockCreateWithStepUpdate,
-    StepAndCardBlockCreateWithStepUpdateVariables
-  >(STEP_AND_CARD_BLOCK_CREATE_WITH_STEP_UPDATE, {
+  const [stepBlockCreate] = useMutation<
+    StepBlockCreate,
+    StepBlockCreateVariables
+  >(STEP_BLOCK_CREATE, {
     update(cache, { data }) {
       stepAndCardBlockCreateCacheUpdate(cache, data, journey?.id)
     }
@@ -160,7 +160,7 @@ export function useCreateStep(): (
           selectedStepId: step.id
         })
         if (sourceStep != null) {
-          void stepAndCardBlockCreateWithStepUpdate({
+          void stepBlockCreate({
             variables: {
               stepBlockCreateInput: {
                 id: step.id,
@@ -200,7 +200,7 @@ export function useCreateStep(): (
             selectedStepId: stepBeforeDelete.id
           })
 
-          void blockDeleteWithStepUpdate({
+          void stepBlockDelete({
             variables: {
               id: step.id,
               journeyId: journey.id,
@@ -229,7 +229,7 @@ export function useCreateStep(): (
             type: 'SetSelectedStepByIdAction',
             selectedStepId: step.id
           })
-          void blockRestoreWithStepUpdate({
+          void stepBlockRestore({
             variables: {
               id: step.id,
               stepBlockUpdateId: sourceStep.id,

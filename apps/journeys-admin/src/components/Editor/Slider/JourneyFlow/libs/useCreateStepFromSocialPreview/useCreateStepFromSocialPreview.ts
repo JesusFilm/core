@@ -8,22 +8,23 @@ import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { STEP_FIELDS } from '@core/journeys/ui/Step/stepFields'
 import { BLOCK_FIELDS } from '@core/journeys/ui/block/blockFields'
-import {
-  BlockDeleteWithBlockOrderUpdate,
-  BlockDeleteWithBlockOrderUpdateVariables
-} from '../../../../../../../__generated__/BlockDeleteWithBlockOrderUpdate'
+
 import {
   BlockFields_CardBlock as CardBlock,
   BlockFields_StepBlock as StepBlock
 } from '../../../../../../../__generated__/BlockFields'
 import {
-  BlockRestoreWithBlockOrderUpdate,
-  BlockRestoreWithBlockOrderUpdateVariables
-} from '../../../../../../../__generated__/BlockRestoreWithBlockOrderUpdate'
+  StepBlockCreateFromSocialPreview,
+  StepBlockCreateFromSocialPreviewVariables
+} from '../../../../../../../__generated__/StepBlockCreateFromSocialPreview'
 import {
-  StepAndCardBlockCreateWithBlockOrderUpdate,
-  StepAndCardBlockCreateWithBlockOrderUpdateVariables
-} from '../../../../../../../__generated__/StepAndCardBlockCreateWithBlockOrderUpdate'
+  StepBlockDeleteFromSocialPreview,
+  StepBlockDeleteFromSocialPreviewVariables
+} from '../../../../../../../__generated__/StepBlockDeleteFromSocialPreview'
+import {
+  StepBlockRestoreFromSocialPreview,
+  StepBlockRestoreFromSocialPreviewVariables
+} from '../../../../../../../__generated__/StepBlockRestoreFromSocialPreview'
 import {
   ThemeMode,
   ThemeName
@@ -34,10 +35,10 @@ import { blockRestoreUpdate } from '../../../../../../libs/useBlockRestoreMutati
 import { stepAndCardBlockCreateCacheUpdate } from '../../../../../../libs/useStepAndCardBlockCreateMutation'
 import { SourceBlocksAndCoordinates } from '../../JourneyFlow'
 
-export const STEP_AND_CARD_BLOCK_CREATE_WITH_BLOCK_ORDER_UPDATE = gql`
+export const STEP_BLOCK_CREATE_FROM_SOCIAL_PREVIEW = gql`
   ${STEP_FIELDS}
   ${CARD_FIELDS}
-  mutation StepAndCardBlockCreateWithBlockOrderUpdate(
+  mutation StepBlockCreateFromSocialPreview(
     $stepBlockCreateInput: StepBlockCreateInput!
     $cardBlockCreateInput: CardBlockCreateInput!
     $stepId: ID!,
@@ -61,8 +62,8 @@ export const STEP_AND_CARD_BLOCK_CREATE_WITH_BLOCK_ORDER_UPDATE = gql`
   }
 `
 
-export const BLOCK_DELETE_WITH_BLOCK_ORDER_UPDATE = gql`
-  mutation BlockDeleteWithBlockOrderUpdate($id: ID!, $journeyId: ID!, $parentOrder: Int!, $stepId: ID! ) {
+export const STEP_BLOCK_DELETE_FROM_SOCIAL_PREVIEW = gql`
+  mutation StepBlockDeleteFromSocialPreview($id: ID!, $journeyId: ID!, $parentOrder: Int!, $stepId: ID! ) {
     blockDelete(id: $id, journeyId: $journeyId) {
       id
       parentOrder
@@ -80,9 +81,9 @@ export const BLOCK_DELETE_WITH_BLOCK_ORDER_UPDATE = gql`
   }
 `
 
-export const BLOCK_RESTORE_WITH_BLOCK_ORDER_UPDATE = gql`
+export const STEP_BLOCK_RESTORE_FROM_SOCIAL_PREVIEW = gql`
 ${BLOCK_FIELDS}
-mutation BlockRestoreWithBlockOrderUpdate($id: ID!, $stepId: ID!, $parentOrder: Int!) {
+mutation StepBlockRestoreFromSocialPreview($id: ID!, $stepId: ID!, $parentOrder: Int!) {
   blockRestore(id: $id) {
     id
     ...BlockFields
@@ -112,24 +113,24 @@ export function useCreateStepFromSocialPreview(): (
   const { add } = useCommand()
   const [blockDelete] = useBlockDeleteMutation()
 
-  const [stepAndCardBlockCreateWithBlockOrderUpdate] = useMutation<
-    StepAndCardBlockCreateWithBlockOrderUpdate,
-    StepAndCardBlockCreateWithBlockOrderUpdateVariables
-  >(STEP_AND_CARD_BLOCK_CREATE_WITH_BLOCK_ORDER_UPDATE, {
+  const [stepBlockCreateFromSocialPreview] = useMutation<
+    StepBlockCreateFromSocialPreview,
+    StepBlockCreateFromSocialPreviewVariables
+  >(STEP_BLOCK_CREATE_FROM_SOCIAL_PREVIEW, {
     update(cache, { data }) {
       stepAndCardBlockCreateCacheUpdate(cache, data, journey?.id)
     }
   })
 
-  const [blockDeleteWithBlockOrderUpdate] = useMutation<
-    BlockDeleteWithBlockOrderUpdate,
-    BlockDeleteWithBlockOrderUpdateVariables
-  >(BLOCK_DELETE_WITH_BLOCK_ORDER_UPDATE)
+  const [stepBlockDeleteFromSocialPreview] = useMutation<
+    StepBlockDeleteFromSocialPreview,
+    StepBlockDeleteFromSocialPreviewVariables
+  >(STEP_BLOCK_DELETE_FROM_SOCIAL_PREVIEW)
 
-  const [blockRestoreWithBlockOrderUpdate] = useMutation<
-    BlockRestoreWithBlockOrderUpdate,
-    BlockRestoreWithBlockOrderUpdateVariables
-  >(BLOCK_RESTORE_WITH_BLOCK_ORDER_UPDATE)
+  const [stepBlockRestoreFromSocialPreview] = useMutation<
+    StepBlockRestoreFromSocialPreview,
+    StepBlockRestoreFromSocialPreviewVariables
+  >(STEP_BLOCK_RESTORE_FROM_SOCIAL_PREVIEW)
 
   return async function createStepFromSocialPreview({
     x,
@@ -178,7 +179,7 @@ export function useCreateStepFromSocialPreview(): (
           type: 'SetSelectedStepByIdAction',
           selectedStepId: step.id
         })
-        void stepAndCardBlockCreateWithBlockOrderUpdate({
+        void stepBlockCreateFromSocialPreview({
           variables: {
             stepBlockCreateInput: {
               id: step.id,
@@ -210,7 +211,7 @@ export function useCreateStepFromSocialPreview(): (
             selectedStepId: stepBeforeDelete.id,
             activeSlide: ActiveSlide.JourneyFlow
           })
-          blockDeleteWithBlockOrderUpdate({
+          stepBlockDeleteFromSocialPreview({
             variables: {
               id: step.id,
               journeyId: journey.id,
@@ -235,7 +236,7 @@ export function useCreateStepFromSocialPreview(): (
           selectedStepId: step.id,
           activeSlide: ActiveSlide.JourneyFlow
         })
-        void blockRestoreWithBlockOrderUpdate({
+        void stepBlockRestoreFromSocialPreview({
           variables: {
             id: step.id,
             stepId: step.id,

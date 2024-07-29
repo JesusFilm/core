@@ -95,8 +95,8 @@ export const GET_STEP_BLOCKS_WITH_POSITION = gql`
 export type SourceBlocksAndCoordinates = {
   x: number
   y: number
-  sourceStep: TreeBlock<StepBlock> | null | undefined
-  sourceBlock: TreeBlock | null | undefined
+  sourceStep?: TreeBlock<StepBlock> | null | undefined
+  sourceBlock?: TreeBlock | null | undefined
 }
 
 export function JourneyFlow(): ReactElement {
@@ -282,12 +282,17 @@ export function JourneyFlow(): ReactElement {
           sourceBlock
         }
 
-        if (edgeSource.sourceType === 'step') void createStep(input)
-
-        if (edgeSource.sourceType === 'socialPreview')
-          void createStepFromSocialPreview(input)
-
-        if (edgeSource.sourceType === 'action') void createStepFromAction(input)
+        switch (edgeSource.sourceType) {
+          case 'step':
+            void createStep(input)
+            break
+          case 'socialPreview':
+            void createStepFromSocialPreview(input)
+            break
+          case 'action':
+            void createStepFromAction(input)
+            break
+        }
       }
     },
     [reactFlowInstance, connectingParams, createStep]

@@ -3,13 +3,13 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { StepBlockCreateInput, CardBlockCreateInput, StepBlockUpdateInput, ThemeMode, ThemeName } from "./globalTypes";
+import { StepBlockCreateInput, CardBlockCreateInput, ThemeMode, ThemeName } from "./globalTypes";
 
 // ====================================================
-// GraphQL mutation operation: StepAndCardBlockCreateWithStepUpdate
+// GraphQL mutation operation: StepBlockCreateFromSocialPreview
 // ====================================================
 
-export interface StepAndCardBlockCreateWithStepUpdate_stepBlockCreate {
+export interface StepBlockCreateFromSocialPreview_stepBlockCreate {
   __typename: "StepBlock";
   id: string;
   parentBlockId: string | null;
@@ -36,7 +36,7 @@ export interface StepAndCardBlockCreateWithStepUpdate_stepBlockCreate {
   y: number | null;
 }
 
-export interface StepAndCardBlockCreateWithStepUpdate_cardBlockCreate {
+export interface StepBlockCreateFromSocialPreview_cardBlockCreate {
   __typename: "CardBlock";
   id: string;
   parentBlockId: string | null;
@@ -69,26 +69,21 @@ export interface StepAndCardBlockCreateWithStepUpdate_cardBlockCreate {
   fullscreen: boolean;
 }
 
-export interface StepAndCardBlockCreateWithStepUpdate_stepBlockUpdate {
-  __typename: "StepBlock";
+export interface StepBlockCreateFromSocialPreview_blockOrderUpdate {
+  __typename: "ImageBlock" | "ButtonBlock" | "CardBlock" | "FormBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "StepBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
-  /**
-   * nextBlockId contains the preferred block to navigate to, users will have to
-   * manually set the next block they want to card to navigate to
-   */
-  nextBlockId: string | null;
+  parentOrder: number | null;
 }
 
-export interface StepAndCardBlockCreateWithStepUpdate {
-  stepBlockCreate: StepAndCardBlockCreateWithStepUpdate_stepBlockCreate;
-  cardBlockCreate: StepAndCardBlockCreateWithStepUpdate_cardBlockCreate;
-  stepBlockUpdate: StepAndCardBlockCreateWithStepUpdate_stepBlockUpdate;
+export interface StepBlockCreateFromSocialPreview {
+  stepBlockCreate: StepBlockCreateFromSocialPreview_stepBlockCreate;
+  cardBlockCreate: StepBlockCreateFromSocialPreview_cardBlockCreate;
+  blockOrderUpdate: StepBlockCreateFromSocialPreview_blockOrderUpdate[];
 }
 
-export interface StepAndCardBlockCreateWithStepUpdateVariables {
+export interface StepBlockCreateFromSocialPreviewVariables {
   stepBlockCreateInput: StepBlockCreateInput;
   cardBlockCreateInput: CardBlockCreateInput;
   stepId: string;
-  journeyId: string;
-  stepBlockUpdateInput: StepBlockUpdateInput;
+  parentOrder: number;
 }

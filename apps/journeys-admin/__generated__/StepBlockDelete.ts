@@ -6,16 +6,16 @@
 import { StepBlockUpdateInput } from "./globalTypes";
 
 // ====================================================
-// GraphQL mutation operation: BlockDeleteWithStepUpdate
+// GraphQL mutation operation: StepBlockDelete
 // ====================================================
 
-export interface BlockDeleteWithStepUpdate_blockDelete_ImageBlock {
+export interface StepBlockDelete_blockDelete_ImageBlock {
   __typename: "ImageBlock" | "ButtonBlock" | "CardBlock" | "FormBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
   parentOrder: number | null;
 }
 
-export interface BlockDeleteWithStepUpdate_blockDelete_StepBlock {
+export interface StepBlockDelete_blockDelete_StepBlock {
   __typename: "StepBlock";
   id: string;
   parentOrder: number | null;
@@ -26,9 +26,9 @@ export interface BlockDeleteWithStepUpdate_blockDelete_StepBlock {
   nextBlockId: string | null;
 }
 
-export type BlockDeleteWithStepUpdate_blockDelete = BlockDeleteWithStepUpdate_blockDelete_ImageBlock | BlockDeleteWithStepUpdate_blockDelete_StepBlock;
+export type StepBlockDelete_blockDelete = StepBlockDelete_blockDelete_ImageBlock | StepBlockDelete_blockDelete_StepBlock;
 
-export interface BlockDeleteWithStepUpdate_stepBlockUpdate {
+export interface StepBlockDelete_stepBlockUpdate {
   __typename: "StepBlock";
   id: string;
   /**
@@ -38,15 +38,15 @@ export interface BlockDeleteWithStepUpdate_stepBlockUpdate {
   nextBlockId: string | null;
 }
 
-export interface BlockDeleteWithStepUpdate {
+export interface StepBlockDelete {
   /**
    * blockDelete returns the updated sibling blocks on successful delete
    */
-  blockDelete: BlockDeleteWithStepUpdate_blockDelete[];
-  stepBlockUpdate: BlockDeleteWithStepUpdate_stepBlockUpdate;
+  blockDelete: StepBlockDelete_blockDelete[];
+  stepBlockUpdate: StepBlockDelete_stepBlockUpdate;
 }
 
-export interface BlockDeleteWithStepUpdateVariables {
+export interface StepBlockDeleteVariables {
   id: string;
   journeyId: string;
   input: StepBlockUpdateInput;

@@ -4,16 +4,16 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: BlockDeleteWithBlockOrderUpdate
+// GraphQL mutation operation: StepBlockDeleteFromSocialPreview
 // ====================================================
 
-export interface BlockDeleteWithBlockOrderUpdate_blockDelete_ImageBlock {
+export interface StepBlockDeleteFromSocialPreview_blockDelete_ImageBlock {
   __typename: "ImageBlock" | "ButtonBlock" | "CardBlock" | "FormBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
   parentOrder: number | null;
 }
 
-export interface BlockDeleteWithBlockOrderUpdate_blockDelete_StepBlock {
+export interface StepBlockDeleteFromSocialPreview_blockDelete_StepBlock {
   __typename: "StepBlock";
   id: string;
   parentOrder: number | null;
@@ -24,23 +24,23 @@ export interface BlockDeleteWithBlockOrderUpdate_blockDelete_StepBlock {
   nextBlockId: string | null;
 }
 
-export type BlockDeleteWithBlockOrderUpdate_blockDelete = BlockDeleteWithBlockOrderUpdate_blockDelete_ImageBlock | BlockDeleteWithBlockOrderUpdate_blockDelete_StepBlock;
+export type StepBlockDeleteFromSocialPreview_blockDelete = StepBlockDeleteFromSocialPreview_blockDelete_ImageBlock | StepBlockDeleteFromSocialPreview_blockDelete_StepBlock;
 
-export interface BlockDeleteWithBlockOrderUpdate_blockOrderUpdate {
+export interface StepBlockDeleteFromSocialPreview_blockOrderUpdate {
   __typename: "ImageBlock" | "ButtonBlock" | "CardBlock" | "FormBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "StepBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
   parentOrder: number | null;
 }
 
-export interface BlockDeleteWithBlockOrderUpdate {
+export interface StepBlockDeleteFromSocialPreview {
   /**
    * blockDelete returns the updated sibling blocks on successful delete
    */
-  blockDelete: BlockDeleteWithBlockOrderUpdate_blockDelete[];
-  blockOrderUpdate: BlockDeleteWithBlockOrderUpdate_blockOrderUpdate[];
+  blockDelete: StepBlockDeleteFromSocialPreview_blockDelete[];
+  blockOrderUpdate: StepBlockDeleteFromSocialPreview_blockOrderUpdate[];
 }
 
-export interface BlockDeleteWithBlockOrderUpdateVariables {
+export interface StepBlockDeleteFromSocialPreviewVariables {
   id: string;
   journeyId: string;
   parentOrder: number;

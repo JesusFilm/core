@@ -14,14 +14,10 @@ import {
 import { useBlockDeleteMutation } from '../../../../../../libs/useBlockDeleteMutation'
 import { useBlockRestoreMutation } from '../../../../../../libs/useBlockRestoreMutation'
 import { useStepAndCardBlockCreateMutation } from '../../../../../../libs/useStepAndCardBlockCreateMutation'
-
-type Coordinates = {
-  x: number
-  y: number
-}
+import { SourceBlocksAndCoordinates } from '../../JourneyFlow'
 
 export function useCreateStepFromButton(): (
-  coordinates: Coordinates
+  coordinates: SourceBlocksAndCoordinates
 ) => Promise<void> {
   const { journey } = useJourney()
   const {
@@ -33,7 +29,10 @@ export function useCreateStepFromButton(): (
   const [blockRestore] = useBlockRestoreMutation()
   const [stepAndCardBlockCreate] = useStepAndCardBlockCreateMutation()
 
-  return async function createStepFromButton({ x, y }) {
+  return async function createStepFromButton({
+    x,
+    y
+  }: SourceBlocksAndCoordinates) {
     if (journey == null) return
 
     const step: StepBlock & { x: number; y: number } = {

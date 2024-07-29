@@ -3,13 +3,13 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { StepBlockCreateInput, CardBlockCreateInput, ThemeMode, ThemeName } from "./globalTypes";
+import { StepBlockCreateInput, CardBlockCreateInput, BlockUpdateActionInput, ThemeMode, ThemeName } from "./globalTypes";
 
 // ====================================================
-// GraphQL mutation operation: StepAndCardBlockCreateWithBlockOrderUpdate
+// GraphQL mutation operation: StepBlockCreateFromAction
 // ====================================================
 
-export interface StepAndCardBlockCreateWithBlockOrderUpdate_stepBlockCreate {
+export interface StepBlockCreateFromAction_stepBlockCreate {
   __typename: "StepBlock";
   id: string;
   parentBlockId: string | null;
@@ -36,7 +36,7 @@ export interface StepAndCardBlockCreateWithBlockOrderUpdate_stepBlockCreate {
   y: number | null;
 }
 
-export interface StepAndCardBlockCreateWithBlockOrderUpdate_cardBlockCreate {
+export interface StepBlockCreateFromAction_cardBlockCreate {
   __typename: "CardBlock";
   id: string;
   parentBlockId: string | null;
@@ -69,21 +69,27 @@ export interface StepAndCardBlockCreateWithBlockOrderUpdate_cardBlockCreate {
   fullscreen: boolean;
 }
 
-export interface StepAndCardBlockCreateWithBlockOrderUpdate_blockOrderUpdate {
+export interface StepBlockCreateFromAction_blockUpdateAction_parentBlock {
   __typename: "ImageBlock" | "ButtonBlock" | "CardBlock" | "FormBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "StepBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
-  parentOrder: number | null;
 }
 
-export interface StepAndCardBlockCreateWithBlockOrderUpdate {
-  stepBlockCreate: StepAndCardBlockCreateWithBlockOrderUpdate_stepBlockCreate;
-  cardBlockCreate: StepAndCardBlockCreateWithBlockOrderUpdate_cardBlockCreate;
-  blockOrderUpdate: StepAndCardBlockCreateWithBlockOrderUpdate_blockOrderUpdate[];
+export interface StepBlockCreateFromAction_blockUpdateAction {
+  __typename: "NavigateToBlockAction" | "LinkAction" | "EmailAction";
+  parentBlockId: string;
+  parentBlock: StepBlockCreateFromAction_blockUpdateAction_parentBlock;
+  gtmEventName: string | null;
 }
 
-export interface StepAndCardBlockCreateWithBlockOrderUpdateVariables {
+export interface StepBlockCreateFromAction {
+  stepBlockCreate: StepBlockCreateFromAction_stepBlockCreate;
+  cardBlockCreate: StepBlockCreateFromAction_cardBlockCreate;
+  blockUpdateAction: StepBlockCreateFromAction_blockUpdateAction;
+}
+
+export interface StepBlockCreateFromActionVariables {
   stepBlockCreateInput: StepBlockCreateInput;
   cardBlockCreateInput: CardBlockCreateInput;
-  stepId: string;
-  parentOrder: number;
+  blockId: string;
+  blockUpdateActionInput: BlockUpdateActionInput;
 }

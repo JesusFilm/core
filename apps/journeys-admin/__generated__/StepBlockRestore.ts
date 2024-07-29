@@ -6,40 +6,40 @@
 import { StepBlockUpdateInput, ButtonVariant, ButtonColor, ButtonSize, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 
 // ====================================================
-// GraphQL mutation operation: BlockRestoreWithStepUpdate
+// GraphQL mutation operation: StepBlockRestore
 // ====================================================
 
-export interface BlockRestoreWithStepUpdate_blockRestore_GridContainerBlock {
+export interface StepBlockRestore_blockRestore_GridContainerBlock {
   __typename: "GridContainerBlock" | "GridItemBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
 }
 
-export interface BlockRestoreWithStepUpdate_blockRestore_ButtonBlock_action_NavigateToBlockAction {
+export interface StepBlockRestore_blockRestore_ButtonBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface BlockRestoreWithStepUpdate_blockRestore_ButtonBlock_action_LinkAction {
+export interface StepBlockRestore_blockRestore_ButtonBlock_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
-export interface BlockRestoreWithStepUpdate_blockRestore_ButtonBlock_action_EmailAction {
+export interface StepBlockRestore_blockRestore_ButtonBlock_action_EmailAction {
   __typename: "EmailAction";
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
 
-export type BlockRestoreWithStepUpdate_blockRestore_ButtonBlock_action = BlockRestoreWithStepUpdate_blockRestore_ButtonBlock_action_NavigateToBlockAction | BlockRestoreWithStepUpdate_blockRestore_ButtonBlock_action_LinkAction | BlockRestoreWithStepUpdate_blockRestore_ButtonBlock_action_EmailAction;
+export type StepBlockRestore_blockRestore_ButtonBlock_action = StepBlockRestore_blockRestore_ButtonBlock_action_NavigateToBlockAction | StepBlockRestore_blockRestore_ButtonBlock_action_LinkAction | StepBlockRestore_blockRestore_ButtonBlock_action_EmailAction;
 
-export interface BlockRestoreWithStepUpdate_blockRestore_ButtonBlock {
+export interface StepBlockRestore_blockRestore_ButtonBlock {
   __typename: "ButtonBlock";
   id: string;
   parentBlockId: string | null;
@@ -50,10 +50,10 @@ export interface BlockRestoreWithStepUpdate_blockRestore_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
-  action: BlockRestoreWithStepUpdate_blockRestore_ButtonBlock_action | null;
+  action: StepBlockRestore_blockRestore_ButtonBlock_action | null;
 }
 
-export interface BlockRestoreWithStepUpdate_blockRestore_CardBlock {
+export interface StepBlockRestore_blockRestore_CardBlock {
   __typename: "CardBlock";
   id: string;
   parentBlockId: string | null;
@@ -86,39 +86,39 @@ export interface BlockRestoreWithStepUpdate_blockRestore_CardBlock {
   fullscreen: boolean;
 }
 
-export interface BlockRestoreWithStepUpdate_blockRestore_FormBlock_action_NavigateToBlockAction {
+export interface StepBlockRestore_blockRestore_FormBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface BlockRestoreWithStepUpdate_blockRestore_FormBlock_action_LinkAction {
+export interface StepBlockRestore_blockRestore_FormBlock_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
-export interface BlockRestoreWithStepUpdate_blockRestore_FormBlock_action_EmailAction {
+export interface StepBlockRestore_blockRestore_FormBlock_action_EmailAction {
   __typename: "EmailAction";
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
 
-export type BlockRestoreWithStepUpdate_blockRestore_FormBlock_action = BlockRestoreWithStepUpdate_blockRestore_FormBlock_action_NavigateToBlockAction | BlockRestoreWithStepUpdate_blockRestore_FormBlock_action_LinkAction | BlockRestoreWithStepUpdate_blockRestore_FormBlock_action_EmailAction;
+export type StepBlockRestore_blockRestore_FormBlock_action = StepBlockRestore_blockRestore_FormBlock_action_NavigateToBlockAction | StepBlockRestore_blockRestore_FormBlock_action_LinkAction | StepBlockRestore_blockRestore_FormBlock_action_EmailAction;
 
-export interface BlockRestoreWithStepUpdate_blockRestore_FormBlock {
+export interface StepBlockRestore_blockRestore_FormBlock {
   __typename: "FormBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
   form: any | null;
-  action: BlockRestoreWithStepUpdate_blockRestore_FormBlock_action | null;
+  action: StepBlockRestore_blockRestore_FormBlock_action | null;
 }
 
-export interface BlockRestoreWithStepUpdate_blockRestore_IconBlock {
+export interface StepBlockRestore_blockRestore_IconBlock {
   __typename: "IconBlock";
   id: string;
   parentBlockId: string | null;
@@ -128,7 +128,7 @@ export interface BlockRestoreWithStepUpdate_blockRestore_IconBlock {
   iconColor: IconColor | null;
 }
 
-export interface BlockRestoreWithStepUpdate_blockRestore_ImageBlock {
+export interface StepBlockRestore_blockRestore_ImageBlock {
   __typename: "ImageBlock";
   id: string;
   parentBlockId: string | null;
@@ -144,79 +144,79 @@ export interface BlockRestoreWithStepUpdate_blockRestore_ImageBlock {
   blurhash: string;
 }
 
-export interface BlockRestoreWithStepUpdate_blockRestore_RadioOptionBlock_action_NavigateToBlockAction {
+export interface StepBlockRestore_blockRestore_RadioOptionBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface BlockRestoreWithStepUpdate_blockRestore_RadioOptionBlock_action_LinkAction {
+export interface StepBlockRestore_blockRestore_RadioOptionBlock_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
-export interface BlockRestoreWithStepUpdate_blockRestore_RadioOptionBlock_action_EmailAction {
+export interface StepBlockRestore_blockRestore_RadioOptionBlock_action_EmailAction {
   __typename: "EmailAction";
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
 
-export type BlockRestoreWithStepUpdate_blockRestore_RadioOptionBlock_action = BlockRestoreWithStepUpdate_blockRestore_RadioOptionBlock_action_NavigateToBlockAction | BlockRestoreWithStepUpdate_blockRestore_RadioOptionBlock_action_LinkAction | BlockRestoreWithStepUpdate_blockRestore_RadioOptionBlock_action_EmailAction;
+export type StepBlockRestore_blockRestore_RadioOptionBlock_action = StepBlockRestore_blockRestore_RadioOptionBlock_action_NavigateToBlockAction | StepBlockRestore_blockRestore_RadioOptionBlock_action_LinkAction | StepBlockRestore_blockRestore_RadioOptionBlock_action_EmailAction;
 
-export interface BlockRestoreWithStepUpdate_blockRestore_RadioOptionBlock {
+export interface StepBlockRestore_blockRestore_RadioOptionBlock {
   __typename: "RadioOptionBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
-  action: BlockRestoreWithStepUpdate_blockRestore_RadioOptionBlock_action | null;
+  action: StepBlockRestore_blockRestore_RadioOptionBlock_action | null;
 }
 
-export interface BlockRestoreWithStepUpdate_blockRestore_RadioQuestionBlock {
+export interface StepBlockRestore_blockRestore_RadioQuestionBlock {
   __typename: "RadioQuestionBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
 }
 
-export interface BlockRestoreWithStepUpdate_blockRestore_SignUpBlock_action_NavigateToBlockAction {
+export interface StepBlockRestore_blockRestore_SignUpBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface BlockRestoreWithStepUpdate_blockRestore_SignUpBlock_action_LinkAction {
+export interface StepBlockRestore_blockRestore_SignUpBlock_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
-export interface BlockRestoreWithStepUpdate_blockRestore_SignUpBlock_action_EmailAction {
+export interface StepBlockRestore_blockRestore_SignUpBlock_action_EmailAction {
   __typename: "EmailAction";
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
 
-export type BlockRestoreWithStepUpdate_blockRestore_SignUpBlock_action = BlockRestoreWithStepUpdate_blockRestore_SignUpBlock_action_NavigateToBlockAction | BlockRestoreWithStepUpdate_blockRestore_SignUpBlock_action_LinkAction | BlockRestoreWithStepUpdate_blockRestore_SignUpBlock_action_EmailAction;
+export type StepBlockRestore_blockRestore_SignUpBlock_action = StepBlockRestore_blockRestore_SignUpBlock_action_NavigateToBlockAction | StepBlockRestore_blockRestore_SignUpBlock_action_LinkAction | StepBlockRestore_blockRestore_SignUpBlock_action_EmailAction;
 
-export interface BlockRestoreWithStepUpdate_blockRestore_SignUpBlock {
+export interface StepBlockRestore_blockRestore_SignUpBlock {
   __typename: "SignUpBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
   submitLabel: string | null;
   submitIconId: string | null;
-  action: BlockRestoreWithStepUpdate_blockRestore_SignUpBlock_action | null;
+  action: StepBlockRestore_blockRestore_SignUpBlock_action | null;
 }
 
-export interface BlockRestoreWithStepUpdate_blockRestore_StepBlock {
+export interface StepBlockRestore_blockRestore_StepBlock {
   __typename: "StepBlock";
   id: string;
   parentBlockId: string | null;
@@ -243,7 +243,7 @@ export interface BlockRestoreWithStepUpdate_blockRestore_StepBlock {
   y: number | null;
 }
 
-export interface BlockRestoreWithStepUpdate_blockRestore_TextResponseBlock {
+export interface StepBlockRestore_blockRestore_TextResponseBlock {
   __typename: "TextResponseBlock";
   id: string;
   parentBlockId: string | null;
@@ -256,7 +256,7 @@ export interface BlockRestoreWithStepUpdate_blockRestore_TextResponseBlock {
   integrationId: string | null;
 }
 
-export interface BlockRestoreWithStepUpdate_blockRestore_TypographyBlock {
+export interface StepBlockRestore_blockRestore_TypographyBlock {
   __typename: "TypographyBlock";
   id: string;
   parentBlockId: string | null;
@@ -267,62 +267,62 @@ export interface BlockRestoreWithStepUpdate_blockRestore_TypographyBlock {
   variant: TypographyVariant | null;
 }
 
-export interface BlockRestoreWithStepUpdate_blockRestore_VideoBlock_video_title {
+export interface StepBlockRestore_blockRestore_VideoBlock_video_title {
   __typename: "Translation";
   value: string;
 }
 
-export interface BlockRestoreWithStepUpdate_blockRestore_VideoBlock_video_variant {
+export interface StepBlockRestore_blockRestore_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
   hls: string | null;
 }
 
-export interface BlockRestoreWithStepUpdate_blockRestore_VideoBlock_video_variantLanguages_name {
+export interface StepBlockRestore_blockRestore_VideoBlock_video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
   primary: boolean;
 }
 
-export interface BlockRestoreWithStepUpdate_blockRestore_VideoBlock_video_variantLanguages {
+export interface StepBlockRestore_blockRestore_VideoBlock_video_variantLanguages {
   __typename: "Language";
   id: string;
-  name: BlockRestoreWithStepUpdate_blockRestore_VideoBlock_video_variantLanguages_name[];
+  name: StepBlockRestore_blockRestore_VideoBlock_video_variantLanguages_name[];
 }
 
-export interface BlockRestoreWithStepUpdate_blockRestore_VideoBlock_video {
+export interface StepBlockRestore_blockRestore_VideoBlock_video {
   __typename: "Video";
   id: string;
-  title: BlockRestoreWithStepUpdate_blockRestore_VideoBlock_video_title[];
+  title: StepBlockRestore_blockRestore_VideoBlock_video_title[];
   image: string | null;
-  variant: BlockRestoreWithStepUpdate_blockRestore_VideoBlock_video_variant | null;
-  variantLanguages: BlockRestoreWithStepUpdate_blockRestore_VideoBlock_video_variantLanguages[];
+  variant: StepBlockRestore_blockRestore_VideoBlock_video_variant | null;
+  variantLanguages: StepBlockRestore_blockRestore_VideoBlock_video_variantLanguages[];
 }
 
-export interface BlockRestoreWithStepUpdate_blockRestore_VideoBlock_action_NavigateToBlockAction {
+export interface StepBlockRestore_blockRestore_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface BlockRestoreWithStepUpdate_blockRestore_VideoBlock_action_LinkAction {
+export interface StepBlockRestore_blockRestore_VideoBlock_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
-export interface BlockRestoreWithStepUpdate_blockRestore_VideoBlock_action_EmailAction {
+export interface StepBlockRestore_blockRestore_VideoBlock_action_EmailAction {
   __typename: "EmailAction";
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
 
-export type BlockRestoreWithStepUpdate_blockRestore_VideoBlock_action = BlockRestoreWithStepUpdate_blockRestore_VideoBlock_action_NavigateToBlockAction | BlockRestoreWithStepUpdate_blockRestore_VideoBlock_action_LinkAction | BlockRestoreWithStepUpdate_blockRestore_VideoBlock_action_EmailAction;
+export type StepBlockRestore_blockRestore_VideoBlock_action = StepBlockRestore_blockRestore_VideoBlock_action_NavigateToBlockAction | StepBlockRestore_blockRestore_VideoBlock_action_LinkAction | StepBlockRestore_blockRestore_VideoBlock_action_EmailAction;
 
-export interface BlockRestoreWithStepUpdate_blockRestore_VideoBlock {
+export interface StepBlockRestore_blockRestore_VideoBlock {
   __typename: "VideoBlock";
   id: string;
   parentBlockId: string | null;
@@ -394,37 +394,37 @@ export interface BlockRestoreWithStepUpdate_blockRestore_VideoBlock {
    * internal source videos: video is only populated when videoID and
    * videoVariantLanguageId are present
    */
-  video: BlockRestoreWithStepUpdate_blockRestore_VideoBlock_video | null;
+  video: StepBlockRestore_blockRestore_VideoBlock_video | null;
   /**
    * action that should be performed when the video ends
    */
-  action: BlockRestoreWithStepUpdate_blockRestore_VideoBlock_action | null;
+  action: StepBlockRestore_blockRestore_VideoBlock_action | null;
 }
 
-export interface BlockRestoreWithStepUpdate_blockRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
+export interface StepBlockRestore_blockRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface BlockRestoreWithStepUpdate_blockRestore_VideoTriggerBlock_triggerAction_LinkAction {
+export interface StepBlockRestore_blockRestore_VideoTriggerBlock_triggerAction_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
-export interface BlockRestoreWithStepUpdate_blockRestore_VideoTriggerBlock_triggerAction_EmailAction {
+export interface StepBlockRestore_blockRestore_VideoTriggerBlock_triggerAction_EmailAction {
   __typename: "EmailAction";
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
 
-export type BlockRestoreWithStepUpdate_blockRestore_VideoTriggerBlock_triggerAction = BlockRestoreWithStepUpdate_blockRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction | BlockRestoreWithStepUpdate_blockRestore_VideoTriggerBlock_triggerAction_LinkAction | BlockRestoreWithStepUpdate_blockRestore_VideoTriggerBlock_triggerAction_EmailAction;
+export type StepBlockRestore_blockRestore_VideoTriggerBlock_triggerAction = StepBlockRestore_blockRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction | StepBlockRestore_blockRestore_VideoTriggerBlock_triggerAction_LinkAction | StepBlockRestore_blockRestore_VideoTriggerBlock_triggerAction_EmailAction;
 
-export interface BlockRestoreWithStepUpdate_blockRestore_VideoTriggerBlock {
+export interface StepBlockRestore_blockRestore_VideoTriggerBlock {
   __typename: "VideoTriggerBlock";
   id: string;
   parentBlockId: string | null;
@@ -434,12 +434,12 @@ export interface BlockRestoreWithStepUpdate_blockRestore_VideoTriggerBlock {
    * this is the number of seconds since the start of the video
    */
   triggerStart: number;
-  triggerAction: BlockRestoreWithStepUpdate_blockRestore_VideoTriggerBlock_triggerAction;
+  triggerAction: StepBlockRestore_blockRestore_VideoTriggerBlock_triggerAction;
 }
 
-export type BlockRestoreWithStepUpdate_blockRestore = BlockRestoreWithStepUpdate_blockRestore_GridContainerBlock | BlockRestoreWithStepUpdate_blockRestore_ButtonBlock | BlockRestoreWithStepUpdate_blockRestore_CardBlock | BlockRestoreWithStepUpdate_blockRestore_FormBlock | BlockRestoreWithStepUpdate_blockRestore_IconBlock | BlockRestoreWithStepUpdate_blockRestore_ImageBlock | BlockRestoreWithStepUpdate_blockRestore_RadioOptionBlock | BlockRestoreWithStepUpdate_blockRestore_RadioQuestionBlock | BlockRestoreWithStepUpdate_blockRestore_SignUpBlock | BlockRestoreWithStepUpdate_blockRestore_StepBlock | BlockRestoreWithStepUpdate_blockRestore_TextResponseBlock | BlockRestoreWithStepUpdate_blockRestore_TypographyBlock | BlockRestoreWithStepUpdate_blockRestore_VideoBlock | BlockRestoreWithStepUpdate_blockRestore_VideoTriggerBlock;
+export type StepBlockRestore_blockRestore = StepBlockRestore_blockRestore_GridContainerBlock | StepBlockRestore_blockRestore_ButtonBlock | StepBlockRestore_blockRestore_CardBlock | StepBlockRestore_blockRestore_FormBlock | StepBlockRestore_blockRestore_IconBlock | StepBlockRestore_blockRestore_ImageBlock | StepBlockRestore_blockRestore_RadioOptionBlock | StepBlockRestore_blockRestore_RadioQuestionBlock | StepBlockRestore_blockRestore_SignUpBlock | StepBlockRestore_blockRestore_StepBlock | StepBlockRestore_blockRestore_TextResponseBlock | StepBlockRestore_blockRestore_TypographyBlock | StepBlockRestore_blockRestore_VideoBlock | StepBlockRestore_blockRestore_VideoTriggerBlock;
 
-export interface BlockRestoreWithStepUpdate_stepBlockUpdate {
+export interface StepBlockRestore_stepBlockUpdate {
   __typename: "StepBlock";
   id: string;
   /**
@@ -449,15 +449,15 @@ export interface BlockRestoreWithStepUpdate_stepBlockUpdate {
   nextBlockId: string | null;
 }
 
-export interface BlockRestoreWithStepUpdate {
+export interface StepBlockRestore {
   /**
    * blockRestore is used for redo/undo
    */
-  blockRestore: BlockRestoreWithStepUpdate_blockRestore[];
-  stepBlockUpdate: BlockRestoreWithStepUpdate_stepBlockUpdate;
+  blockRestore: StepBlockRestore_blockRestore[];
+  stepBlockUpdate: StepBlockRestore_stepBlockUpdate;
 }
 
-export interface BlockRestoreWithStepUpdateVariables {
+export interface StepBlockRestoreVariables {
   id: string;
   journeyId: string;
   stepBlockUpdateId: string;
