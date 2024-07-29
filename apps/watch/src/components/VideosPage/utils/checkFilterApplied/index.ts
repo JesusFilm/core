@@ -1,1 +1,0 @@
-export { checkFilterApplied } from './checkFilterApplied'

@@ -7,6 +7,7 @@ import { VideoProvider } from '../../libs/videoContext'
 import { videos } from '../Videos/__generated__/testData'
 
 import { VideoContainerPage } from '.'
+import { useAlgoliaVideos } from '../../libs/algolia/useAlgoliaVideos'
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -17,7 +18,23 @@ jest.mock('next/router', () => ({
   }
 }))
 
+jest.mock('react-instantsearch')
+jest.mock('../../libs/algolia/useAlgoliaVideos')
+
+const mockedUseAlgoliaVideos = useAlgoliaVideos as jest.MockedFunction<
+  typeof useAlgoliaVideos
+>
+
 describe('VideoContainerPage', () => {
+  beforeEach(() => {
+    mockedUseAlgoliaVideos.mockReturnValue({
+      hits: [],
+      showMore: jest.fn(),
+      isLastPage: false
+    })
+    jest.clearAllMocks()
+  })
+
   it('should render ContainerHero', () => {
     const { getByText } = render(
       <MockedProvider>

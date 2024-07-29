@@ -6,6 +6,7 @@ import noop from 'lodash/noop'
 import { watchConfig } from '../../libs/storybook/config'
 import { videos } from '../Videos/__generated__/testData'
 
+import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
 import { VideoGrid } from './VideoGrid'
 
 const VideoGridStory: Meta<typeof VideoGrid> = {
@@ -17,20 +18,22 @@ const VideoGridStory: Meta<typeof VideoGrid> = {
 const Template: StoryObj<typeof VideoGrid> = {
   render: (args) => {
     return (
-      <Stack spacing={2}>
-        <Box>
-          <VideoGrid {...args} hasNextPage />
-        </Box>
-        <Box>
-          <VideoGrid {...args} videos={[]} loading />
-        </Box>
-        <Box>
-          <VideoGrid {...args} variant="contained" />
-        </Box>
-        <Box>
-          <VideoGrid {...args} videos={[]} variant="contained" loading />
-        </Box>
-      </Stack>
+      <InstantSearchTestWrapper indexName="video-variants-stg">
+        <Stack spacing={2}>
+          <Box>
+            <VideoGrid {...args} />
+          </Box>
+          <Box>
+            <VideoGrid {...args} videos={[]} />
+          </Box>
+          <Box>
+            <VideoGrid {...args} variant="contained" />
+          </Box>
+          <Box>
+            <VideoGrid {...args} videos={[]} variant="contained" />
+          </Box>
+        </Stack>
+      </InstantSearchTestWrapper>
     )
   }
 }
