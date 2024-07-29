@@ -87,15 +87,15 @@ export function useAlgoliaJourneys(): UseJourneyHitsResults {
 
   // Filter out language refinements
   const { items: languageRefinements } = useRefinementList({
-    attribute: 'language.localName'
+    attribute: 'languageId'
   })
-  const languages = languageRefinements.flatMap((ref) => ref.label)
-  languages.push('English')
+  const languageIds = languageRefinements.flatMap((ref) => ref.value)
+  languageIds.push('529')
 
   const { items } = useCurrentRefinements()
   const refinements = items
     .flatMap((refinement) => refinement.refinements.flatMap((ref) => ref.label))
-    .filter((ref) => !languages.includes(ref))
+    .filter((ref) => !languageIds.includes(ref))
 
   return { hits: enrichedJourneys, results, loading, refinements }
 }
