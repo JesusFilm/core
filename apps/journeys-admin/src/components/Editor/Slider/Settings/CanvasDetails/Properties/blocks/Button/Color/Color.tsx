@@ -47,7 +47,7 @@ export function Color(): ReactElement {
           execute: { color },
           undo: { color: selectedBlock.buttonColor }
         },
-        async execute() {
+        async execute({ color }) {
           dispatch({
             type: 'SetEditorFocusAction',
             selectedBlock,

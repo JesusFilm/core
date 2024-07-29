@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -7,9 +7,10 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import { ButtonColor } from '../../../../../../../../../../__generated__/globalTypes'
 
-import { BUTTON_BLOCK_UPDATE } from './Color'
-
 import { Color } from '.'
+import { CommandRedoItem } from '../../../../../../../Toolbar/Items/CommandRedoItem'
+import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
+import { BUTTON_BLOCK_UPDATE } from './Color'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -17,22 +18,64 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 }))
 
 describe('Button color selector', () => {
-  it('should show button color properties', () => {
-    const selectedBlock: TreeBlock<ButtonBlock> = {
-      __typename: 'ButtonBlock',
-      id: 'id',
-      parentBlockId: 'parentBlockId',
-      parentOrder: 0,
-      label: 'test button',
-      buttonVariant: null,
-      buttonColor: null,
-      size: null,
-      startIconId: null,
-      endIconId: null,
-      action: null,
-      children: []
-    }
+  const selectedBlock: TreeBlock<ButtonBlock> = {
+    __typename: 'ButtonBlock',
+    id: 'id',
+    parentBlockId: 'parentBlockId',
+    parentOrder: 0,
+    label: 'test button',
+    buttonVariant: null,
+    buttonColor: ButtonColor.primary,
+    size: null,
+    startIconId: null,
+    endIconId: null,
+    action: null,
+    children: []
+  }
 
+  const colorUpdateMock = {
+    request: {
+      query: BUTTON_BLOCK_UPDATE,
+      variables: {
+        id: 'id',
+        input: {
+          color: ButtonColor.secondary
+        }
+      }
+    },
+    result: jest.fn(() => ({
+      data: {
+        buttonBlockUpdate: {
+          id: 'id',
+          color: ButtonColor.secondary
+        }
+      }
+    }))
+  }
+
+  const colorUpdateMock2 = {
+    request: {
+      query: BUTTON_BLOCK_UPDATE,
+      variables: {
+        id: 'id',
+        input: {
+          color: ButtonColor.primary
+        }
+      }
+    },
+    result: jest.fn(() => ({
+      data: {
+        buttonBlockUpdate: {
+          id: 'id',
+          color: ButtonColor.primary
+        }
+      }
+    }))
+  }
+
+  beforeEach(() => jest.clearAllMocks())
+
+  it('should show button color properties', () => {
     const { getByRole } = render(
       <MockedProvider>
         <EditorProvider initialState={{ selectedBlock }}>
@@ -46,54 +89,59 @@ describe('Button color selector', () => {
   })
 
   it('should change the color property', async () => {
-    const selectedBlock: TreeBlock<ButtonBlock> = {
-      __typename: 'ButtonBlock',
-      id: 'id',
-      parentBlockId: 'parentBlockId',
-      parentOrder: 0,
-      label: 'test button',
-      buttonVariant: null,
-      buttonColor: null,
-      size: null,
-      startIconId: null,
-      endIconId: null,
-      action: null,
-      children: []
-    }
-
-    const result = jest.fn(() => ({
-      data: {
-        buttonBlockUpdate: {
-          id: 'id',
-          color: ButtonColor.secondary
-        }
-      }
-    }))
-
-    const { getByRole } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: BUTTON_BLOCK_UPDATE,
-              variables: {
-                id: 'id',
-                input: {
-                  color: ButtonColor.secondary
-                }
-              }
-            },
-            result
-          }
-        ]}
-      >
+    render(
+      <MockedProvider mocks={[colorUpdateMock]}>
         <EditorProvider initialState={{ selectedBlock }}>
           <Color />
         </EditorProvider>
       </MockedProvider>
     )
-    expect(getByRole('button', { name: 'Primary' })).toHaveClass('Mui-selected')
-    fireEvent.click(getByRole('button', { name: 'Secondary' }))
-    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(screen.getByRole('button', { name: 'Primary' })).toHaveClass(
+      'Mui-selected'
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Secondary' }))
+    await waitFor(() => expect(colorUpdateMock.result).toHaveBeenCalled())
+  })
+
+  it('should undo the color change', async () => {
+    render(
+      <MockedProvider mocks={[colorUpdateMock, colorUpdateMock2]}>
+        <EditorProvider initialState={{ selectedBlock }}>
+          <CommandUndoItem variant="button" />
+          <Color />
+        </EditorProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Secondary' }))
+    await waitFor(() => expect(colorUpdateMock.result).toHaveBeenCalled())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(colorUpdateMock2.result).toHaveBeenCalled())
+  })
+
+  it('should redo the undone color change', async () => {
+    const mockFirstUpdate = {
+      ...colorUpdateMock,
+      maxUsageCount: 2
+    }
+
+    render(
+      <MockedProvider mocks={[mockFirstUpdate, colorUpdateMock2]}>
+        <EditorProvider initialState={{ selectedBlock }}>
+          <CommandUndoItem variant="button" />
+          <CommandRedoItem variant="button" />
+          <Color />
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Secondary' }))
+    await waitFor(() => expect(mockFirstUpdate.result).toHaveBeenCalled())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(colorUpdateMock2.result).toHaveBeenCalled())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+    await waitFor(() => expect(mockFirstUpdate.result).toHaveBeenCalled())
   })
 })
