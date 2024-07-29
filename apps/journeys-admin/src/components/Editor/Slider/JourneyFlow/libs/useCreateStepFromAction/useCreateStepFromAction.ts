@@ -172,7 +172,7 @@ export function useCreateStepFromAction(): (
           selectedStepId: step.id,
           activeSlide: ActiveSlide.JourneyFlow
         })
-        stepAndCardBlockCreateWithBlockActionUpdate({
+        void stepAndCardBlockCreateWithBlockActionUpdate({
           variables: {
             stepBlockCreateInput: {
               id: step.id,
@@ -232,7 +232,7 @@ export function useCreateStepFromAction(): (
             selectedStepId: stepBeforeDelete.id,
             activeSlide: ActiveSlide.JourneyFlow
           })
-          blockDeleteWithBlockActionUpdate({
+          void blockDeleteWithBlockActionUpdate({
             variables: {
               id: step.id,
               journeyId: journey.id,
@@ -292,7 +292,7 @@ export function useCreateStepFromAction(): (
           selectedStepId: step.id,
           activeSlide: ActiveSlide.JourneyFlow
         })
-        blockRestoreWithBlockActionUpdate({
+        void blockRestoreWithBlockActionUpdate({
           variables: {
             id: step.id,
             blockUpdateActionId: sourceBlock.id,

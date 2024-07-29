@@ -133,7 +133,6 @@ export function useCreateStep(): (
     sourceStep
   }: SourceStepAndCoordinates): Promise<void> {
     if (journey == null) return
-
     const step: StepBlock & { x: number; y: number } = {
       __typename: 'StepBlock',
       locked: false,
