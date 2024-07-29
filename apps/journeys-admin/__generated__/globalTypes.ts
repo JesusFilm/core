@@ -303,6 +303,7 @@ export interface CardBlockCreateInput {
 
 export interface CardBlockUpdateInput {
   parentBlockId?: string | null;
+  coverBlockId?: string | null;
   backgroundColor?: string | null;
   fullscreen?: boolean | null;
   themeMode?: ThemeMode | null;
