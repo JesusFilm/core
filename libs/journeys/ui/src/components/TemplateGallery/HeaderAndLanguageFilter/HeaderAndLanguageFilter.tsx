@@ -281,7 +281,7 @@ export function HeaderAndLanguageFilter({
         alignItems="center"
         direction="row"
         flexWrap={{ xs: 'wrap', md: 'initial' }}
-        sx={{ pb: { xs: 6, md: 9 }, position: 'relative' }}
+        sx={{ pb: 0, position: 'relative' }}
       >
         {count === 2 && (
           <Trans t={t} values={{ firstLanguage, secondLanguage }}>
