@@ -249,6 +249,7 @@ describe('InlineEditWrapper', () => {
             <EditorProvider
               initialState={{
                 steps: [step(block)],
+                selectedBlockId: step(block).children[0].id,
                 selectedBlock: step(block).children[0]
               }}
             >
