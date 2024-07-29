@@ -18,11 +18,19 @@ import { EDIT_TOOLBAR_HEIGHT } from '../constants'
 import { ActiveContent } from '@core/journeys/ui/EditorProvider'
 import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
 import Button from '@mui/material/Button'
+import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'react-i18next'
 import { Items } from './Items'
 import { Menu } from './Menu'
-import { TitleDescriptionDialog } from './TitleDescriptionDialog'
+
+const TitleDescriptionDialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "./TitleDescriptionDialog" */ './TitleDescriptionDialog/TitleDescriptionDialog'
+    ).then((mod) => mod.TitleDescriptionDialog),
+  { ssr: false }
+)
 
 export function Toolbar(): ReactElement {
   const router = useRouter()
