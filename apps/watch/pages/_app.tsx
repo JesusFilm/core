@@ -114,7 +114,13 @@ function WatchApp({
             themeName={ThemeName.website}
             themeMode={ThemeMode.light}
           >
-            <InstantSearch searchClient={searchClient}>
+            <InstantSearch
+              searchClient={searchClient}
+              future={{
+                preserveSharedStateOnUnmount: true
+              }}
+              insights={true}
+            >
               <Component {...pageProps} />
             </InstantSearch>
           </ThemeProvider>
