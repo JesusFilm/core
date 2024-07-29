@@ -3,27 +3,25 @@ import LoadingButton from '@mui/lab/LoadingButton'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import { ComponentProps, ReactElement } from 'react'
-
 import { VideoChildFields } from '../../../__generated__/VideoChildFields'
+import { useAlgoliaVideos } from '../../libs/algolia/useAlgoliaVideos'
 import { VideoCard } from '../VideoCard'
 
 interface VideoGridProps {
   videos?: VideoChildFields[]
-  loading?: boolean
-  hasNextPage?: boolean
-  onLoadMore?: () => void
+  showLoadMore?: boolean
   containerSlug?: string
   variant?: ComponentProps<typeof VideoCard>['variant']
 }
 
 export function VideoGrid({
-  loading,
-  hasNextPage,
-  onLoadMore,
-  videos,
+  videos: coreVideos,
+  showLoadMore = false,
   containerSlug,
   variant = 'expanded'
 }: VideoGridProps): ReactElement {
+  const { hits: algoliaVideos, showMore, isLastPage } = useAlgoliaVideos()
+  const videos = coreVideos != null ? coreVideos : algoliaVideos
   return (
     <Grid
       container
@@ -41,7 +39,7 @@ export function VideoGrid({
             />
           </Grid>
         ))}
-      {loading === true && (
+      {videos.length === 0 && (
         <>
           <Grid item xs={12} md={4} xl={3}>
             <VideoCard variant={variant} />
@@ -69,21 +67,21 @@ export function VideoGrid({
           </Grid>
         </>
       )}
-      {onLoadMore != null && (
+      {showLoadMore && (
         <Grid item xs={12}>
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
             <LoadingButton
               variant="outlined"
-              onClick={onLoadMore}
-              loading={loading}
+              onClick={showMore}
+              loading={videos.length === 0}
               startIcon={<AddRounded />}
-              disabled={hasNextPage !== true}
+              disabled={isLastPage}
               loadingPosition="start"
               size="medium"
             >
-              {loading === true
+              {videos.length === 0
                 ? 'Loading...'
-                : hasNextPage === true
+                : isLastPage !== true
                   ? 'Load More'
                   : 'No More Videos'}
             </LoadingButton>
