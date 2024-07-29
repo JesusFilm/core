@@ -9,7 +9,6 @@ import {
   CoverBlockDelete,
   CoverBlockDeleteVariables
 } from '../../../__generated__/CoverBlockDelete'
-import {} from '../../../__generated__/CoverBlockRestore'
 
 export const COVER_BLOCK_DELETE = gql`
   mutation CoverBlockDelete(
