@@ -13,6 +13,7 @@ import { ReactElement, useEffect } from 'react'
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
 
+import { Typography } from '@mui/material'
 import {
   GetAdminJourneys,
   GetAdminJourneysVariables
@@ -22,6 +23,7 @@ import {
   UpdateLastActiveTeamIdVariables
 } from '../__generated__/UpdateLastActiveTeamId'
 import { JourneyStatus } from '../__generated__/globalTypes'
+import { HelpScoutBeacon } from '../src/components/HelpScoutBeacon'
 import { JourneyList } from '../src/components/JourneyList'
 import { OnboardingPanel } from '../src/components/OnboardingPanel'
 import { PageWrapper } from '../src/components/PageWrapper'
@@ -62,7 +64,14 @@ function IndexPage(): ReactElement {
           </Stack>
         }
         sidePanelChildren={<OnboardingPanel />}
-        sidePanelTitle={t('Create a New Journey')}
+        sidePanelTitle={
+          <>
+            <Typography variant="subtitle1">
+              {t('Create a New Journey')}
+            </Typography>
+            <HelpScoutBeacon variant="iconButton" />
+          </>
+        }
       >
         <JourneyList user={user} />
       </PageWrapper>

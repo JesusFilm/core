@@ -15,7 +15,6 @@ import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 
 import i18nConfig from '../next-i18next.config'
-import { HelpScoutBeacon } from '../src/components/HelpScoutBeacon'
 import { ThemeProvider } from '../src/components/ThemeProvider'
 import { useApollo } from '../src/libs/apolloClient'
 import { initAuth } from '../src/libs/firebaseClient/initAuth'
@@ -76,9 +75,6 @@ function JourneysAdminApp({
           <DefaultSeo
             titleTemplate={t('%s | Next Steps')}
             defaultTitle={t('Admin | Next Steps')}
-          />
-          <HelpScoutBeacon
-            userInfo={{ name: user?.displayName, email: user?.email }}
           />
           <Head>
             <meta

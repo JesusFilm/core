@@ -1,36 +1,36 @@
-import IconButton from '@mui/material/IconButton'
 import { useTheme } from '@mui/material/styles'
-import useMediaQuery from '@mui/material/useMediaQuery'
+// import useMediaQuery from '@mui/material/useMediaQuery'
+import { useUser } from 'next-firebase-auth'
 import { useRouter } from 'next/router'
 import Script from 'next/script'
 import { ReactElement, useEffect, useRef, useState } from 'react'
-
-import { FormObject } from '@core/journeys/ui/setBeaconPageViewed'
-import HelpCircleContained from '@core/shared/ui/icons/HelpCircleContained'
-import XCircleContained from '@core/shared/ui/icons/XCircleContained'
+import { BeaconButton } from './BeaconButton/BeaconButton'
 
 interface HelpScoutBeaconProps {
-  userInfo: FormObject
+  variant: 'iconButton' | 'menuItem'
+  handleClick?: () => void
 }
 
 export function HelpScoutBeacon({
-  userInfo
+  variant,
+  handleClick
 }: HelpScoutBeaconProps): ReactElement {
+  const user = useUser()
   const { breakpoints, zIndex } = useTheme()
   const router = useRouter()
   const previousUrlRef = useRef(router.asPath)
-  const mdUp = useMediaQuery(breakpoints.up('md'))
+  // const mdUp = useMediaQuery(breakpoints.up('md'))
   const [hasLoaded, setHasLoaded] = useState(false)
   const [beaconOpen, setBeaconOpen] = useState(false)
 
-  const newUserPaths = [
-    '/users/sign-in',
-    '/users/terms-and-conditions',
-    '/onboarding-form',
-    '/teams/new'
-  ]
+  // const newUserPaths = [
+  //   '/users/sign-in',
+  //   '/users/terms-and-conditions',
+  //   '/onboarding-form',
+  //   '/teams/new'
+  // ]
 
-  const handleClick = (): void => {
+  const handleBeaconOpen = (): void => {
     if (window.Beacon != null) {
       window.Beacon('on', 'open', () => {
         setBeaconOpen(true)
@@ -42,14 +42,15 @@ export function HelpScoutBeacon({
     } else {
       void router.push('https://support.nextstep.is/')
     }
+    handleClick?.()
   }
 
   useEffect(() => {
     if (hasLoaded && window.Beacon != null) {
       window.Beacon('on', 'open', () => {
         window.Beacon?.('prefill', {
-          name: userInfo.name,
-          email: userInfo.email
+          name: user?.displayName ?? '',
+          email: user?.email ?? ''
         })
       })
     }
@@ -64,7 +65,7 @@ export function HelpScoutBeacon({
     return () => {
       router.events.off('routeChangeComplete', handleRouteChange)
     }
-  }, [hasLoaded, router, userInfo])
+  }, [hasLoaded, router, user])
 
   return (
     <>
@@ -81,7 +82,8 @@ export function HelpScoutBeacon({
         window.Beacon('init', '4f0abc47-b29c-454a-b618-39b34fd116b8');
         window.Beacon('config', {
           display: {
-            style: 'manual',
+            // icon shows close button on mobile more consistently
+            style: 'icon',
             position: 'right',
             zIndex: ${zIndex.modal + 2},
           },
@@ -89,27 +91,12 @@ export function HelpScoutBeacon({
         `}
       </Script>
 
-      <IconButton
-        size="large"
-        edge="start"
-        color="inherit"
-        aria-label="Help"
-        onClick={handleClick}
-        sx={{
-          position: 'fixed',
-          top: { xs: 11.5, md: 11.5 },
-          zIndex: zIndex.drawer + 2,
-          right: { xs: 20, md: 15 },
-          width: 24,
-          height: 24,
-          color:
-            mdUp || newUserPaths.includes(router.route)
-              ? 'secondary.dark'
-              : 'background.paper'
-        }}
-      >
-        {beaconOpen ? <XCircleContained /> : <HelpCircleContained />}
-      </IconButton>
+      <BeaconButton
+        variant={variant}
+        onClick={handleBeaconOpen}
+        beaconOpen={beaconOpen}
+      />
+
       <style>{`
         #beacon-container {
           z-index: ${zIndex.modal + 2} !important;
@@ -121,7 +108,6 @@ export function HelpScoutBeacon({
           bottom: 10px !important;
           transform: scale(0.9) !important;
         }
-
         .hsds-beacon .BeaconContainer.is-configDisplayRight {
           top: 47px;
           right: 0px;
@@ -129,10 +115,10 @@ export function HelpScoutBeacon({
           max-height: none;
           height: calc(100vh - 47px);
         }
-        .hsds-beacon .c-BeaconCloseButton {
+        .hsds-beacon .dDhkLh {
+          /* hides the icon */
           display: none !important;
         }
-
         ${breakpoints.down('md')} {
           .hsds-beacon .BeaconContainer.is-configDisplayRight {
             height: calc(100vh - 42px);
@@ -148,13 +134,11 @@ export function HelpScoutBeacon({
             top: 10px !important;
             padding: 0px !important;
           }
-        }
-
+        }        
         ${breakpoints.up('md')} {
           .NotificationsFramecss__NotificationsFrameUI-sc-1ah8ai4-1 {
             position: fixed !important;
             top: 30px !important;
-
             right: 25px !important;
             // width: 325px !important;
           }
