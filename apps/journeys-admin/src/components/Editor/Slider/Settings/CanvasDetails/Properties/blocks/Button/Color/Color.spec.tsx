@@ -2,11 +2,9 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
-import { GetJourney_journey as Journey } from '../../../../../../../../../../__generated__/GetJourney'
 import { ButtonColor } from '../../../../../../../../../../__generated__/globalTypes'
 
 import { BUTTON_BLOCK_UPDATE } from './Color'
@@ -80,7 +78,6 @@ describe('Button color selector', () => {
               query: BUTTON_BLOCK_UPDATE,
               variables: {
                 id: 'id',
-                journeyId: 'journeyId',
                 input: {
                   color: ButtonColor.secondary
                 }
@@ -90,16 +87,9 @@ describe('Button color selector', () => {
           }
         ]}
       >
-        <JourneyProvider
-          value={{
-            journey: { id: 'journeyId' } as unknown as Journey,
-            variant: 'admin'
-          }}
-        >
-          <EditorProvider initialState={{ selectedBlock }}>
-            <Color />
-          </EditorProvider>
-        </JourneyProvider>
+        <EditorProvider initialState={{ selectedBlock }}>
+          <Color />
+        </EditorProvider>
       </MockedProvider>
     )
     expect(getByRole('button', { name: 'Primary' })).toHaveClass('Mui-selected')

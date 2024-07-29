@@ -21,6 +21,5 @@ export interface ButtonBlockUpdateColor {
 
 export interface ButtonBlockUpdateColorVariables {
   id: string;
-  journeyId: string;
   input: ButtonBlockUpdateInput;
 }

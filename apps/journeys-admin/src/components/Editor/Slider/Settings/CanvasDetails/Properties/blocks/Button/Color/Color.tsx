@@ -3,11 +3,13 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
-import { ButtonBlockUpdateColor } from '../../../../../../../../../../__generated__/ButtonBlockUpdateColor'
+import {
+  ButtonBlockUpdateColor,
+  ButtonBlockUpdateColorVariables
+} from '../../../../../../../../../../__generated__/ButtonBlockUpdateColor'
 import { ButtonColor } from '../../../../../../../../../../__generated__/globalTypes'
 import { ColorDisplayIcon } from '../../../controls/ColorDisplayIcon'
 import { ToggleButtonGroup } from '../../../controls/ToggleButtonGroup'
@@ -15,10 +17,9 @@ import { ToggleButtonGroup } from '../../../controls/ToggleButtonGroup'
 export const BUTTON_BLOCK_UPDATE = gql`
   mutation ButtonBlockUpdateColor(
     $id: ID!
-    $journeyId: ID!
     $input: ButtonBlockUpdateInput!
   ) {
-    buttonBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+    buttonBlockUpdate(id: $id, input: $input) {
       id
       color
     }
@@ -27,21 +28,21 @@ export const BUTTON_BLOCK_UPDATE = gql`
 
 export function Color(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [buttonBlockUpdate] =
-    useMutation<ButtonBlockUpdateColor>(BUTTON_BLOCK_UPDATE)
+  const [buttonBlockUpdate] = useMutation<
+    ButtonBlockUpdateColor,
+    ButtonBlockUpdateColorVariables
+  >(BUTTON_BLOCK_UPDATE)
 
-  const { journey } = useJourney()
   const { state } = useEditor()
   const selectedBlock = state.selectedBlock as
     | TreeBlock<ButtonBlock>
     | undefined
 
   async function handleChange(color: ButtonColor): Promise<void> {
-    if (selectedBlock != null && color != null && journey != null) {
+    if (selectedBlock != null && color != null) {
       await buttonBlockUpdate({
         variables: {
           id: selectedBlock.id,
-          journeyId: journey.id,
           input: { color }
         },
         optimisticResponse: {
