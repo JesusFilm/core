@@ -63,7 +63,7 @@ describe('Toolbar', () => {
     expect(getByText('My Awesome Journey Description')).toBeInTheDocument()
   })
 
-  it('should open the title dialogue when selected', async () => {
+  it('should open the title dialog when selected', async () => {
     render(toolbar(defaultJourney))
 
     fireEvent.click(screen.getByRole('button', { name: 'Click to edit' }))
