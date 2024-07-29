@@ -72,7 +72,8 @@ const jsondiffpatch = create({
   },
   textDiff: {
     minLength: 4096
-  }
+  },
+  propertyFilter: (name) => name !== 'crowdInId'
 })
 
 function getChangedValues<T>(obj): T {
@@ -448,12 +449,16 @@ async function handlePrismaVideoVariants(
             // ignore moved items
             if (isMovedItem(download)) continue
 
-            const quality = dKey.startsWith('_')
-              ? existingVideo?.variants[toNumber(key)]?.downloads?.[
-                  toNumber(dKey)
-                ].quality
-              : video.variants[toNumber(key)]?.downloads?.[toNumber(dKey)]
-                  ?.quality
+            const quality =
+              dKey.startsWith('_') &&
+              existingVideo?.variants[toNumber(key)]?.downloads?.[
+                toNumber(dKey)
+              ] != null
+                ? existingVideo?.variants[toNumber(key)]?.downloads?.[
+                    toNumber(dKey)
+                  ].quality
+                : video.variants[toNumber(key)]?.downloads?.[toNumber(dKey)]
+                    ?.quality
 
             if (isArray(download) && download.length === 1) {
               // handle create

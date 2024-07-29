@@ -39,6 +39,28 @@ type AudioPreview
   size: Int!
 }
 
+type BibleBook
+  @join__type(graph: VIDEOS)
+{
+  name(languageId: ID, primary: Boolean): [Translation!]!
+  osisId: String!
+  alternateName: String
+  paratextAbbreviation: String!
+  isNewTestament: Boolean!
+  order: Int!
+}
+
+type BibleCitation
+  @join__type(graph: VIDEOS)
+{
+  osisId: String!
+  bibleBook: BibleBook!
+  chapterStart: Int!
+  chapterEnd: Int
+  verseStart: Int!
+  verseEnd: Int
+}
+
 interface Block
   @join__type(graph: JOURNEYS)
 {
@@ -53,6 +75,16 @@ input BlocksFilter
 {
   journeyIds: [ID!]
   typenames: [String!]
+}
+
+input BlockUpdateActionInput
+  @join__type(graph: JOURNEYS)
+{
+  gtmEventName: String
+  email: String
+  url: String
+  target: String
+  blockId: String
 }
 
 type Browser
@@ -255,6 +287,7 @@ input CardBlockUpdateInput
   @join__type(graph: JOURNEYS)
 {
   parentBlockId: ID
+  coverBlockId: ID
   backgroundColor: String
   fullscreen: Boolean
   themeMode: ThemeMode
@@ -1380,6 +1413,7 @@ type Mutation
     """drop this parameter after merging teams"""
     journeyId: ID
   ): EmailAction! @join__field(graph: JOURNEYS)
+  blockUpdateAction(id: ID!, input: BlockUpdateActionInput): Action! @join__field(graph: JOURNEYS)
 
   """blockDelete returns the updated sibling blocks on successful delete"""
   blockDelete(
@@ -2901,6 +2935,7 @@ type Video
 {
   id: ID!
   primaryLanguageId: ID!
+  bibleCitations: [BibleCitation!]! @join__field(graph: VIDEOS)
   label: VideoLabel! @join__field(graph: VIDEOS)
   title(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   snippet(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
@@ -2919,6 +2954,7 @@ type Video
   """the number value of the amount of children on a video"""
   childrenCount: Int! @join__field(graph: VIDEOS)
   variantLanguagesWithSlug: [LanguageWithSlug!]! @join__field(graph: VIDEOS)
+  subtitles(languageId: ID, primary: Boolean, edition: String): [VideoSubtitle!]! @join__field(graph: VIDEOS)
   variant(languageId: ID): VideoVariant @join__field(graph: VIDEOS)
 }
 
@@ -3504,6 +3540,16 @@ input VideoStartEventCreateInput
 
   """source of the video"""
   value: VideoBlockSource
+}
+
+type VideoSubtitle
+  @join__type(graph: VIDEOS)
+{
+  id: String!
+  languageId: String!
+  edition: String!
+  vttSrc: String
+  srtSrc: String
 }
 
 """

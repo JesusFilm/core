@@ -23,7 +23,6 @@ describe('StepBlockNodeAnalytics', () => {
     )
 
     expect(screen.getByText('1000')).toBeInTheDocument()
-    expect(screen.getByText('10%')).toBeInTheDocument()
     expect(screen.getByText('1m12s')).toBeInTheDocument()
   })
 
@@ -48,7 +47,6 @@ describe('StepBlockNodeAnalytics', () => {
     )
 
     expect(screen.getByText('0')).toBeInTheDocument()
-    expect(screen.getByText('0%')).toBeInTheDocument()
     expect(screen.getByText('0s')).toBeInTheDocument()
   })
 })

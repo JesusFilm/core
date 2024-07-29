@@ -22,6 +22,7 @@ import { ClearAllButton } from '../../../../src/components/JourneyVisitorsList/F
 import { FilterDrawer } from '../../../../src/components/JourneyVisitorsList/FilterDrawer/FilterDrawer'
 import { VisitorToolbar } from '../../../../src/components/JourneyVisitorsList/VisitorToolbar/VisitorToolbar'
 import { PageWrapper } from '../../../../src/components/PageWrapper'
+import { ReportsNavigation } from '../../../../src/components/ReportsNavigation'
 import { initAndAuthApp } from '../../../../src/libs/initAndAuthApp'
 import { GET_ADMIN_JOURNEY, USER_JOURNEY_OPEN } from '../../[journeyId]'
 
@@ -198,6 +199,7 @@ function JourneyVisitorsPage(): ReactElement {
                 {data?.journeyVisitorCount}
               </Typography>
             )} */}
+            <ReportsNavigation destination="journey" journeyId={journeyId} />
             <VisitorToolbar
               handleChange={handleChange}
               sortSetting={sortSetting}

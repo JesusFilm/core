@@ -1,13 +1,12 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
-import { ReactElement, useEffect, useRef, useState } from 'react'
+import { type ReactElement, useEffect, useRef, useState } from 'react'
 import { CSSTransition, TransitionGroup } from 'react-transition-group'
 
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import {
   ActiveCanvasDetailsDrawer,
-  ActiveFab,
   ActiveSlide,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
@@ -78,10 +77,6 @@ export function Canvas(): ReactElement {
       activeSlide: ActiveSlide.Content
     })
     dispatch({
-      type: 'SetActiveFabAction',
-      activeFab: ActiveFab.Add
-    })
-    dispatch({
       type: 'SetSelectedAttributeIdAction',
       selectedAttributeId: undefined
     })
@@ -118,7 +113,6 @@ export function Canvas(): ReactElement {
       type: 'SetSelectedBlockAction',
       selectedBlock: selectedStep
     })
-    dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
     dispatch({
       type: 'SetSelectedAttributeIdAction',
       selectedAttributeId: `${selectedStep?.id ?? ''}-next-block`
@@ -149,7 +143,7 @@ export function Canvas(): ReactElement {
         height: '100%',
         alignItems: 'center',
         justifyContent: 'center',
-        flexGrow: { xs: 1, sm: activeSlide === ActiveSlide.Content ? 1 : 0 },
+        flexGrow: { xs: 1, md: activeSlide === ActiveSlide.Content ? 1 : 0 },
         transition: (theme) =>
           theme.transitions.create('flex-grow', { duration: 300 })
       }}
@@ -157,16 +151,16 @@ export function Canvas(): ReactElement {
       {selectedStep != null && theme != null && (
         <Stack
           direction="column"
-          alignItems={{ xs: 'center', sm: 'flex-end' }}
+          className="CanvasStack"
+          alignItems={{ xs: 'center', md: 'flex-end' }}
           gap={1.5}
           sx={{
-            flexGrow: { xs: 1, sm: 0 },
-            height: { xs: '100%', sm: 'auto' },
-            pb: { xs: 5, sm: 0 },
-            px: { xs: 3, sm: 0 },
+            flexGrow: { xs: 1, md: 0 },
+            height: { xs: '100%', md: 'auto' },
+            pb: { xs: 5, md: 0 },
+            px: { xs: 3, md: 0 },
             justifyContent: 'center'
           }}
-          data-testid="stack here"
         >
           <Box
             sx={{

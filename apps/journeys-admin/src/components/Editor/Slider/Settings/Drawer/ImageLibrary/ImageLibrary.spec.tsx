@@ -1,9 +1,9 @@
 import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
-import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../__generated__/BlockFields'
+import type { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../__generated__/BlockFields'
 
 import { ImageLibrary } from '.'
 
@@ -31,7 +31,7 @@ describe('ImageLibrary', () => {
     )
 
     it('should switch tabs', () => {
-      const { getByText } = render(
+      render(
         <MockedProvider>
           <SnackbarProvider>
             <ImageLibrary
@@ -44,11 +44,11 @@ describe('ImageLibrary', () => {
           </SnackbarProvider>
         </MockedProvider>
       )
-      expect(getByText('Custom')).toBeInTheDocument()
+      expect(screen.getByText('Custom')).toBeInTheDocument()
     })
 
     it('should render the Image Library on the right', () => {
-      const { getByText, getByTestId } = render(
+      render(
         <MockedProvider>
           <SnackbarProvider>
             <ImageLibrary
@@ -61,15 +61,15 @@ describe('ImageLibrary', () => {
           </SnackbarProvider>
         </MockedProvider>
       )
-      expect(getByText('Custom')).toBeInTheDocument()
+      expect(screen.getByText('Custom')).toBeInTheDocument()
       expect(
-        getByTestId('ImageBlockEditor').parentElement?.parentElement
-      ).toHaveClass('swiper-no-swiping MuiBox-root css-2qcwma')
+        screen.getByTestId('ImageBlockEditor').parentElement?.parentElement
+      ).toHaveClass('swiper-no-swiping MuiBox-root')
     })
 
     it('should close ImageLibrary on close Icon click', () => {
       const onClose = jest.fn()
-      const { getAllByRole, getByTestId } = render(
+      render(
         <MockedProvider>
           <SnackbarProvider>
             <ImageLibrary
@@ -82,8 +82,10 @@ describe('ImageLibrary', () => {
           </SnackbarProvider>
         </MockedProvider>
       )
-      expect(getAllByRole('button')[0]).toContainElement(getByTestId('X2Icon'))
-      fireEvent.click(getAllByRole('button')[0])
+      expect(screen.getAllByRole('button')[0]).toContainElement(
+        screen.getByTestId('X2Icon')
+      )
+      fireEvent.click(screen.getAllByRole('button')[0])
       expect(onClose).toHaveBeenCalled()
     })
   })
@@ -94,7 +96,7 @@ describe('ImageLibrary', () => {
     )
 
     it('should render the Image Library from the bottom', () => {
-      const { getByText, getByTestId } = render(
+      render(
         <MockedProvider>
           <SnackbarProvider>
             <ImageLibrary
@@ -107,10 +109,10 @@ describe('ImageLibrary', () => {
           </SnackbarProvider>
         </MockedProvider>
       )
-      expect(getByText('Custom')).toBeInTheDocument()
+      expect(screen.getByText('Custom')).toBeInTheDocument()
       expect(
-        getByTestId('ImageBlockEditor').parentElement?.parentElement
-      ).toHaveClass('swiper-no-swiping MuiBox-root css-2qcwma')
+        screen.getByTestId('ImageBlockEditor').parentElement?.parentElement
+      ).toHaveClass('swiper-no-swiping MuiBox-root')
     })
   })
 })

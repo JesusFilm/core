@@ -1,9 +1,8 @@
 import { gql, useMutation } from '@apollo/client'
-import Box from '@mui/material/Box'
 import ButtonBase from '@mui/material/ButtonBase'
 import { useTranslation } from 'next-i18next'
 import Image from 'next/image'
-import { ReactElement } from 'react'
+import type { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import { BUTTON_FIELDS } from '@core/journeys/ui/Button/buttonFields'
@@ -13,7 +12,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { TYPOGRAPHY_FIELDS } from '@core/journeys/ui/Typography/typographyFields'
 import { VIDEO_FIELDS } from '@core/journeys/ui/Video/videoFields'
 
-import {
+import type {
   CardIntroCreate,
   CardIntroCreateVariables
 } from '../../../../../../../../../__generated__/CardIntroCreate'
@@ -209,16 +208,15 @@ export function CardIntro(): ReactElement {
   }
 
   return (
-    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-      <ButtonBase sx={{ borderRadius: 5 }} onClick={handleClick}>
-        <Image
-          width={128}
-          height={195}
-          src={cardIntroImage}
-          alt="Card Intro Template"
-          draggable={false}
-        />
-      </ButtonBase>
-    </Box>
+    <ButtonBase sx={{ borderRadius: 5 }} onClick={handleClick}>
+      <Image
+        width={128}
+        height={195}
+        layout="responsive"
+        src={cardIntroImage}
+        alt="Card Intro Template"
+        draggable={false}
+      />
+    </ButtonBase>
   )
 }
