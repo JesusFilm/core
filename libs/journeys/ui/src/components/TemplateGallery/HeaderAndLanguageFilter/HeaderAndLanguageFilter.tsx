@@ -18,9 +18,9 @@ import {
 import { LanguageOption } from '@core/shared/ui/MultipleLanguageAutocomplete'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
+import { useClearRefinements, useRefinementList } from 'react-instantsearch'
 import { setBeaconPageViewed } from '../../../libs/setBeaconPageViewed'
 import { useLanguagesQuery } from '../../../libs/useLanguagesQuery'
-
 import { LanguagesFilterPopper } from './LanguagesFilterPopper/LanguagesFilterPopper'
 import { convertLanguagesToOptions } from './convertLanguagesToOptions'
 
@@ -169,6 +169,13 @@ export function HeaderAndLanguageFilter({
     if (popperAnchor != null) setAnchorEl(popperAnchor)
   }, [anchorEl])
 
+  const { refine: clearRefinements } = useClearRefinements({
+    includedAttributes: ['languageId']
+  })
+  const { refine } = useRefinementList({
+    attribute: 'languageId'
+  })
+
   const { data, loading } = useLanguagesQuery({
     languageId: '529',
     // make sure these variables are the same as in pages/templates/index.ts
@@ -232,8 +239,15 @@ export function HeaderAndLanguageFilter({
 
   function handleSubmit(values: { languages: LanguageOption[] }): void {
     const ids = values.languages.map((language) => language.id)
+    // TODO(jk): this should only clear language refinements
+    clearRefinements()
+    ids.forEach(refine)
     onChange(ids)
   }
+
+  useEffect(() => {
+    selectedLanguageIds?.forEach(refine)
+  }, [selectedLanguageIds])
 
   const options = useMemo(() => {
     return (
