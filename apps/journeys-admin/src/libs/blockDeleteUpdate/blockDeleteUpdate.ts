@@ -5,14 +5,8 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { GetJourney_journey_blocks as Block } from '../../../__generated__/GetJourney'
 
-export interface BlockIdentifier {
-  __typename: TreeBlock['__typename']
-  id: string
-  children?: BlockIdentifier[]
-}
-
 const getNestedChildRefs = (
-  block: BlockIdentifier,
+  block: TreeBlock<Block> | Block,
   results: string[] = []
 ): string[] => {
   results.push(`${block.__typename}:${block.id}`)
@@ -23,9 +17,9 @@ const getNestedChildRefs = (
 }
 
 export const blockDeleteUpdate = (
-  selectedBlock: BlockIdentifier,
-  response: (BlockIdentifier & { parentOrder?: number | null })[] | undefined,
-  // biome-ignore lint/suspicious/noExplicitAny: update function gives this type
+  selectedBlock: TreeBlock<Block> | Block,
+  response,
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   cache: ApolloCache<any>,
   journeyId: string
 ): void => {
@@ -38,7 +32,7 @@ export const blockDeleteUpdate = (
         }),
         fields: {
           parentOrder() {
-            return block.parentOrder ?? null
+            return block.parentOrder
           }
         }
       })
