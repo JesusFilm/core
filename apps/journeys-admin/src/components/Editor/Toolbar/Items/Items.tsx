@@ -6,6 +6,7 @@ import { AnalyticsItem } from './AnalyticsItem'
 import { CommandRedoItem } from './CommandRedoItem'
 import { CommandUndoItem } from './CommandUndoItem'
 import { PreviewItem } from './PreviewItem'
+import { ResponsesItem } from './ResponsesItem'
 import { ShareItem } from './ShareItem'
 import { StrategyItem } from './StrategyItem'
 
@@ -24,6 +25,7 @@ export function Items(): ReactElement {
           <CommandRedoItem variant="icon-button" />
         </>
       )}
+      <ResponsesItem variant="button" />
       <AnalyticsItem variant="icon-button" />
       <StrategyItem variant="button" />
       <ShareItem variant="button" />
