@@ -94,6 +94,9 @@ export function Canvas(): ReactElement {
   }
 
   function handleSelectCard(): void {
+    if (showAnalytics) {
+      return
+    }
     const iframeDocument =
       frameRef.current?.contentDocument ??
       frameRef.current?.contentWindow?.document
