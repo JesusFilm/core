@@ -11,6 +11,7 @@ import { SignUp } from '@core/journeys/ui/SignUp'
 import { Typography } from '@core/journeys/ui/Typography'
 import type { TreeBlock } from '@core/journeys/ui/block'
 
+import { SelectableWrapper } from '.'
 import { ButtonFields } from '../../../../../../../__generated__/ButtonFields'
 import { ImageFields } from '../../../../../../../__generated__/ImageFields'
 import { RadioOptionFields } from '../../../../../../../__generated__/RadioOptionFields'
@@ -19,8 +20,6 @@ import { SignUpFields } from '../../../../../../../__generated__/SignUpFields'
 import { StepFields } from '../../../../../../../__generated__/StepFields'
 import { TypographyFields } from '../../../../../../../__generated__/TypographyFields'
 import { TypographyVariant } from '../../../../../../../__generated__/globalTypes'
-
-import { SelectableWrapper } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -241,6 +240,7 @@ describe('SelectableWrapper', () => {
         <SnackbarProvider>
           <EditorProvider
             initialState={{
+              selectedBlockId: radioQuestionBlock.id,
               selectedBlock: radioQuestionBlock,
               steps: [step([radioQuestionBlock])]
             }}
@@ -256,7 +256,9 @@ describe('SelectableWrapper', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(getByRole('button', { name: 'Option 1' }))
+    await waitFor(() =>
+      fireEvent.click(getByRole('button', { name: 'Option 1' }))
+    )
     expect(getByTestId(`SelectableWrapper-RadioOption1`)).toHaveStyle({
       outline: '2px solid #C52D3A',
       zIndex: '1'
@@ -270,6 +272,7 @@ describe('SelectableWrapper', () => {
         <SnackbarProvider>
           <EditorProvider
             initialState={{
+              selectedBlockId: radioOption1.id,
               selectedBlock: radioOption1,
               steps: [step([radioQuestionBlock])]
             }}

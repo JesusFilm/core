@@ -115,7 +115,8 @@ describe('Selected Card', () => {
           <EditorProvider
             initialState={{
               steps,
-              selectedBlock: noNextBlockId
+              selectedBlock: noNextBlockId,
+              selectedBlockId: noNextBlockId.id
             }}
           >
             <SelectedCard />
@@ -133,7 +134,8 @@ describe('Selected Card', () => {
           <EditorProvider
             initialState={{
               steps,
-              selectedBlock: lastBlock
+              selectedBlock: lastBlock,
+              selectedBlockId: lastBlock.id
             }}
           >
             <SelectedCard />
