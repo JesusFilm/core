@@ -89,6 +89,16 @@ export function SelectableWrapper({
         }
       : {}
 
+  let borderRadius = '4px'
+  switch (block.__typename) {
+    case 'RadioOptionBlock':
+      borderRadius = '8px'
+      break
+    case 'ImageBlock':
+      borderRadius = '16px'
+      break
+  }
+
   useEffect(() => {
     setOpen(selectedBlock?.id === block.id)
   }, [selectedBlock, block])
@@ -109,7 +119,7 @@ export function SelectableWrapper({
         '&:last-child': {
           '& > *': { mb: '0px' }
         },
-        borderRadius: block.__typename === 'RadioOptionBlock' ? '8px' : '4px',
+        borderRadius,
         outline: selectedBlock?.id === block.id ? '2px solid #C52D3A' : 'none',
         outlineOffset: '5px',
         zIndex: selectedBlock?.id === block.id ? 1 : 0,
