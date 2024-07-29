@@ -68,6 +68,14 @@ export type Block = {
   parentOrder?: Maybe<Scalars['Int']['output']>;
 };
 
+export type BlockUpdateActionInput = {
+  blockId?: InputMaybe<Scalars['String']['input']>;
+  email?: InputMaybe<Scalars['String']['input']>;
+  gtmEventName?: InputMaybe<Scalars['String']['input']>;
+  target?: InputMaybe<Scalars['String']['input']>;
+  url?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type BlocksFilter = {
   journeyIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   typenames?: InputMaybe<Array<Scalars['String']['input']>>;
@@ -1102,6 +1110,7 @@ export type Mutation = {
   blockOrderUpdate: Array<Block>;
   /** blockRestore is used for redo/undo */
   blockRestore: Array<Block>;
+  blockUpdateAction: Action;
   blockUpdateEmailAction: EmailAction;
   blockUpdateLinkAction: LinkAction;
   blockUpdateNavigateToBlockAction: NavigateToBlockAction;
@@ -1251,6 +1260,12 @@ export type MutationBlockOrderUpdateArgs = {
 
 export type MutationBlockRestoreArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type MutationBlockUpdateActionArgs = {
+  id: Scalars['ID']['input'];
+  input?: InputMaybe<BlockUpdateActionInput>;
 };
 
 
