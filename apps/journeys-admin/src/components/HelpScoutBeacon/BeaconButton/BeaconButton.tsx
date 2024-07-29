@@ -29,6 +29,7 @@ export function BeaconButton({
           aria-label="Help"
           onClick={onClick}
           sx={{
+            m: 0,
             width: 24,
             height: 24,
             color: 'secondary.dark'

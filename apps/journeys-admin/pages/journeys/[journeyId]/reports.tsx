@@ -9,10 +9,12 @@ import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
 import type { ReactElement } from 'react'
 
+import Stack from '@mui/material/Stack'
 import type { GetAdminJourney } from '../../../__generated__/GetAdminJourney'
 import type { UserJourneyOpen } from '../../../__generated__/UserJourneyOpen'
 import { JourneysReportType } from '../../../__generated__/globalTypes'
 import { MemoizedDynamicReport } from '../../../src/components/DynamicPowerBiReport'
+import { HelpScoutBeacon } from '../../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../../src/components/PageWrapper'
 import { PlausibleEmbedDashboard } from '../../../src/components/PlausibleEmbedDashboard'
 import { ReportsNavigation } from '../../../src/components/ReportsNavigation'
@@ -34,11 +36,16 @@ function JourneyReportsPage({ flags }): ReactElement {
         user={user}
         backHref={`/journeys/${journeyId}`}
         mainHeaderChildren={
-          <ReportsNavigation
-            destination="visitor"
-            journeyId={journeyId}
-            helpScoutGap
-          />
+          <Stack
+            direction="row"
+            justifyContent="flex-end"
+            flexGrow={1}
+            alignItems="center"
+            gap={3}
+          >
+            <ReportsNavigation destination="visitor" journeyId={journeyId} />
+            <HelpScoutBeacon variant="iconButton" />
+          </Stack>
         }
         mainBodyPadding={false}
       >

@@ -85,7 +85,6 @@ export function HelpScoutBeacon({
             // icon shows close button on mobile more consistently
             style: 'icon',
             position: 'right',
-            zIndex: ${zIndex.modal + 2},
           },
         });
         `}
