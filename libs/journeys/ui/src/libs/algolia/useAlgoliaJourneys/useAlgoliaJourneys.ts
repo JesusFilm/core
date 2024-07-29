@@ -1,3 +1,4 @@
+import { LanguageOption } from '@core/shared/ui/MultipleLanguageAutocomplete'
 import type { SearchResults } from 'algoliasearch-helper'
 import { BaseHit, Hit } from 'instantsearch.js'
 import {
@@ -7,6 +8,8 @@ import {
   useInstantSearch,
   useRefinementList
 } from 'react-instantsearch'
+import { convertLanguagesToOptions } from '../../../components/TemplateGallery/HeaderAndLanguageFilter/convertLanguagesToOptions'
+import { useLanguagesQuery } from '../../useLanguagesQuery'
 
 interface Tags {
   Topics: string[]
@@ -19,7 +22,6 @@ interface Tags {
 export interface Language {
   localName: string
   nativeName: string
-  continents: string[]
 }
 
 export interface AlgoliaJourney extends Hit<BaseHit> {
@@ -38,26 +40,47 @@ export interface AlgoliaJourney extends Hit<BaseHit> {
 
 export interface UseJourneyHitsResults {
   hits: AlgoliaJourney[]
-  results?: SearchResults<Hit<AlgoliaJourney>> | undefined
+  results?: SearchResults<Hit<BaseHit>> | undefined
   loading: boolean
   refinements: string[]
 }
 
-export const transformItems: UseHitsProps<AlgoliaJourney>['transformItems'] = (
-  items
-) => {
+export function enrichHits(
+  hits: Hit<BaseHit>[],
+  languageOptions: LanguageOption[]
+) {
+  return hits.map((item) => ({
+    ...item,
+    language: {
+      localName:
+        languageOptions.find(({ id }) => item.languageId === id)?.localName ??
+        '',
+      nativeName:
+        languageOptions.find(({ id }) => item.languageId === id)?.nativeName ??
+        ''
+    }
+  })) as unknown as AlgoliaJourney[]
+}
+
+export const transformItems: UseHitsProps['transformItems'] = (items) => {
   return items.map((item) => ({
     ...item,
     id: item.objectID,
     createdAt: item.date,
     primaryImageBlock: item.image
-  })) as unknown as AlgoliaJourney[]
+  }))
 }
 
 export function useAlgoliaJourneys(): UseJourneyHitsResults {
-  const { hits, results } = useHits<AlgoliaJourney>({
+  const { data } = useLanguagesQuery({
+    languageId: '529'
+  })
+  const languageOptions = convertLanguagesToOptions(data?.languages)
+
+  const { hits, results } = useHits({
     transformItems
   })
+  const enrichedJourneys = enrichHits(hits, languageOptions)
 
   const { status } = useInstantSearch()
   const loading = status === 'stalled'
@@ -74,5 +97,5 @@ export function useAlgoliaJourneys(): UseJourneyHitsResults {
     .flatMap((refinement) => refinement.refinements.flatMap((ref) => ref.label))
     .filter((ref) => !languages.includes(ref))
 
-  return { hits, results, loading, refinements }
+  return { hits: enrichedJourneys, results, loading, refinements }
 }

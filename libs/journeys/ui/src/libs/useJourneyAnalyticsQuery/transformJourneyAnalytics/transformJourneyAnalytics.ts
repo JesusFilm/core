@@ -18,7 +18,7 @@ const ACTION_EVENTS: Array<keyof JourneyPlausibleEvents> = [
   'navigateNextStep',
   'buttonClick',
   'textResponseSubmit',
-  'signUpSubmit',
+  'signupSubmit',
   'radioQuestionSubmit',
   'videoComplete',
   'chatButtonClick',
