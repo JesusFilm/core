@@ -1,10 +1,12 @@
 import { gql, useMutation } from '@apollo/client'
-import { ReactElement, useState } from 'react'
+import { Formik } from 'formik'
+import { ReactElement } from 'react'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { SignUp } from '@core/journeys/ui/SignUp'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { SubmitListener } from '@core/shared/ui/SubmitListener'
 
 import {
   SignUpBlockUpdateContent,
@@ -12,7 +14,6 @@ import {
 } from '../../../../../../../../__generated__/SignUpBlockUpdateContent'
 import { SignUpFields } from '../../../../../../../../__generated__/SignUpFields'
 import { InlineEditInput } from '../InlineEditInput'
-import { useOnClickOutside } from '../useOnClickOutside/useOnClickOutside'
 
 export const SIGN_UP_BLOCK_UPDATE_CONTENT = gql`
   mutation SignUpBlockUpdateContent(
@@ -42,11 +43,16 @@ export function SignUpEdit({
     state: { selectedBlock, selectedStep },
     dispatch
   } = useEditor()
-  const [value, setValue] = useState(submitLabel ?? '')
 
-  async function handleSaveBlock(): Promise<void> {
-    const currentSubmitLabel = value.trim().replace(/\n/g, '')
-    if (submitLabel === currentSubmitLabel) return
+  const initialValues: { [key: string]: string } = {
+    [`edit-${id}`]: submitLabel ?? ''
+  }
+
+  type InitialValuesType = typeof initialValues
+
+  async function handleSaveBlock(values: InitialValuesType): Promise<void> {
+    const fieldValue = values[`edit-${id}`]
+    const currentSubmitLabel = fieldValue.trim().replace(/\n/g, '')
 
     await add({
       parameters: {
@@ -80,22 +86,29 @@ export function SignUpEdit({
       }
     })
   }
-  const inputRef = useOnClickOutside(async () => await handleSaveBlock())
 
   const input = (
-    <InlineEditInput
-      name={`edit-${id}`}
-      ref={inputRef}
-      fullWidth
-      multiline
-      autoFocus
-      onBlur={handleSaveBlock}
-      value={value}
-      onChange={(e) => {
-        setValue(e.currentTarget.value)
-      }}
-      onClick={(e) => e.stopPropagation()}
-    />
+    <Formik
+      initialValues={initialValues}
+      onSubmit={handleSaveBlock}
+      enableReinitialize
+    >
+      {({ values, handleChange, setStatus }) => (
+        <>
+          <InlineEditInput
+            name={`edit-${id}`}
+            fullWidth
+            multiline
+            autoFocus
+            onBlur={() => setStatus({ onBlurSubmit: true })}
+            value={values[`edit-${id}`]}
+            onChange={handleChange}
+            onClick={(e) => e.stopPropagation()}
+          />
+          <SubmitListener />
+        </>
+      )}
+    </Formik>
   )
 
   return (

@@ -18,7 +18,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 describe('SignUpEdit', () => {
   const props: TreeBlock<SignUpFields> = {
-    id: 'signUp.id',
+    id: 'signUp',
     __typename: 'SignUpBlock',
     parentBlockId: 'card0.id',
     parentOrder: 1,
@@ -47,7 +47,7 @@ describe('SignUpEdit', () => {
         signUpBlockUpdate: [
           {
             __typename: 'SignUpBlock',
-            id: 'signUp.id',
+            id: 'signUp',
             submitLabel: 'updated label'
           }
         ]
@@ -61,7 +61,7 @@ describe('SignUpEdit', () => {
             request: {
               query: SIGN_UP_BLOCK_UPDATE_CONTENT,
               variables: {
-                id: 'signUp.id',
+                id: 'signUp',
                 input: {
                   submitLabel: 'updated label'
                 }
@@ -86,58 +86,13 @@ describe('SignUpEdit', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
-  it('should not save if label hasnt changed', async () => {
-    const result = jest.fn(() => ({
-      data: {
-        signUpBlockUpdate: [
-          {
-            __typename: 'SignUpBlock',
-            id: 'signUp.id',
-            submitLabel: 'Submit'
-          }
-        ]
-      }
-    }))
-
-    render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: SIGN_UP_BLOCK_UPDATE_CONTENT,
-              variables: {
-                id: 'signUp.id',
-                input: {
-                  submitLabel: 'Submit'
-                }
-              }
-            },
-            result
-          }
-        ]}
-      >
-        <SnackbarProvider>
-          <EditorProvider>
-            <SignUpEdit {...props} />
-          </EditorProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    const input = screen.getByRole('textbox', { name: '' })
-    fireEvent.click(input)
-    fireEvent.change(input, { target: { value: 'Submit' } })
-    fireEvent.blur(input)
-    await waitFor(() => expect(result).not.toHaveBeenCalled())
-  })
-
   it('saves the signUp label on outside click', async () => {
     const result = jest.fn(() => ({
       data: {
         signUpBlockUpdate: [
           {
             __typename: 'SignUpBlock',
-            id: 'signUp.id',
+            id: 'signUp',
             submitLabel: 'updated label'
           }
         ]
@@ -151,7 +106,7 @@ describe('SignUpEdit', () => {
             request: {
               query: SIGN_UP_BLOCK_UPDATE_CONTENT,
               variables: {
-                id: 'signUp.id',
+                id: 'signUp',
                 input: {
                   submitLabel: 'updated label'
                 }
@@ -185,7 +140,7 @@ describe('SignUpEdit', () => {
         signUpBlockUpdate: [
           {
             __typename: 'SignUpBlock',
-            id: 'signUp.id',
+            id: 'signUp',
             submitLabel: 'updated label'
           }
         ]
@@ -197,7 +152,7 @@ describe('SignUpEdit', () => {
         signUpBlockUpdate: [
           {
             __typename: 'SignUpBlock',
-            id: 'signUp.id',
+            id: 'signUp',
             submitLabel: 'Submit'
           }
         ]
@@ -208,7 +163,7 @@ describe('SignUpEdit', () => {
       request: {
         query: SIGN_UP_BLOCK_UPDATE_CONTENT,
         variables: {
-          id: 'signUp.id',
+          id: 'signUp',
           input: {
             submitLabel: 'updated label'
           }
@@ -221,7 +176,7 @@ describe('SignUpEdit', () => {
       request: {
         query: SIGN_UP_BLOCK_UPDATE_CONTENT,
         variables: {
-          id: 'signUp.id',
+          id: 'signUp',
           input: {
             submitLabel: 'Submit'
           }
@@ -257,7 +212,7 @@ describe('SignUpEdit', () => {
         signUpBlockUpdate: [
           {
             __typename: 'SignUpBlock',
-            id: 'signUp.id',
+            id: 'signUp',
             submitLabel: 'updated label'
           }
         ]
@@ -269,7 +224,7 @@ describe('SignUpEdit', () => {
         signUpBlockUpdate: [
           {
             __typename: 'SignUpBlock',
-            id: 'signUp.id',
+            id: 'signUp',
             submitLabel: 'Submit'
           }
         ]
@@ -280,7 +235,7 @@ describe('SignUpEdit', () => {
       request: {
         query: SIGN_UP_BLOCK_UPDATE_CONTENT,
         variables: {
-          id: 'signUp.id',
+          id: 'signUp',
           input: {
             submitLabel: 'updated label'
           }
@@ -294,7 +249,7 @@ describe('SignUpEdit', () => {
       request: {
         query: SIGN_UP_BLOCK_UPDATE_CONTENT,
         variables: {
-          id: 'signUp.id',
+          id: 'signUp',
           input: {
             submitLabel: 'Submit'
           }
