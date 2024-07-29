@@ -3,21 +3,22 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
-import { ButtonBlockUpdateSize } from '../../../../../../../../../../__generated__/ButtonBlockUpdateSize'
+import {
+  ButtonBlockUpdateSize,
+  ButtonBlockUpdateSizeVariables
+} from '../../../../../../../../../../__generated__/ButtonBlockUpdateSize'
 import { ButtonSize } from '../../../../../../../../../../__generated__/globalTypes'
 import { ToggleButtonGroup } from '../../../controls/ToggleButtonGroup'
 
 export const BUTTON_BLOCK_UPDATE = gql`
   mutation ButtonBlockUpdateSize(
     $id: ID!
-    $journeyId: ID!
     $input: ButtonBlockUpdateInput!
   ) {
-    buttonBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+    buttonBlockUpdate(id: $id,  input: $input) {
       id
       size
     }
@@ -26,21 +27,21 @@ export const BUTTON_BLOCK_UPDATE = gql`
 
 export function Size(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [buttonBlockUpdate] =
-    useMutation<ButtonBlockUpdateSize>(BUTTON_BLOCK_UPDATE)
+  const [buttonBlockUpdate] = useMutation<
+    ButtonBlockUpdateSize,
+    ButtonBlockUpdateSizeVariables
+  >(BUTTON_BLOCK_UPDATE)
 
-  const { journey } = useJourney()
   const { state } = useEditor()
   const selectedBlock = state.selectedBlock as
     | TreeBlock<ButtonBlock>
     | undefined
 
   async function handleChange(size: ButtonSize): Promise<void> {
-    if (selectedBlock != null && size != null && journey != null) {
+    if (selectedBlock != null && size != null) {
       await buttonBlockUpdate({
         variables: {
           id: selectedBlock.id,
-          journeyId: journey.id,
           input: { size }
         },
         optimisticResponse: {

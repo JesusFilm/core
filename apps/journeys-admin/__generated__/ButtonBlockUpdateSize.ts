@@ -21,6 +21,5 @@ export interface ButtonBlockUpdateSize {
 
 export interface ButtonBlockUpdateSizeVariables {
   id: string;
-  journeyId: string;
   input: ButtonBlockUpdateInput;
 }
