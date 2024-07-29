@@ -5,6 +5,7 @@ import { ReactElement } from 'react'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 
+import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import {
   ButtonBlockUpdateColor,
@@ -33,24 +34,38 @@ export function Color(): ReactElement {
     ButtonBlockUpdateColorVariables
   >(BUTTON_BLOCK_UPDATE)
 
-  const { state } = useEditor()
+  const { state, dispatch } = useEditor()
+  const { add } = useCommand()
   const selectedBlock = state.selectedBlock as
     | TreeBlock<ButtonBlock>
     | undefined
 
   async function handleChange(color: ButtonColor): Promise<void> {
     if (selectedBlock != null && color != null) {
-      await buttonBlockUpdate({
-        variables: {
-          id: selectedBlock.id,
-          input: { color }
+      await add({
+        parameters: {
+          execute: { color },
+          undo: { color: selectedBlock.buttonColor }
         },
-        optimisticResponse: {
-          buttonBlockUpdate: {
-            id: selectedBlock.id,
-            color,
-            __typename: 'ButtonBlock'
-          }
+        async execute() {
+          dispatch({
+            type: 'SetEditorFocusAction',
+            selectedBlock,
+            selectedStep: state.selectedStep
+          })
+          await buttonBlockUpdate({
+            variables: {
+              id: selectedBlock.id,
+              input: { color }
+            },
+            optimisticResponse: {
+              buttonBlockUpdate: {
+                id: selectedBlock.id,
+                color,
+                __typename: 'ButtonBlock'
+              }
+            }
+          })
         }
       })
     }
