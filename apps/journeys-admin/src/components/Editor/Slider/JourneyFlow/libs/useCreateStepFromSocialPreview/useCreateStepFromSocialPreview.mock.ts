@@ -4,31 +4,33 @@ import {
   BlockDelete,
   BlockDeleteVariables
 } from '../../../../../../../__generated__/BlockDelete'
-import {
-  BlockDeleteWithBlockOrderUpdate,
-  BlockDeleteWithBlockOrderUpdateVariables
-} from '../../../../../../../__generated__/BlockDeleteWithBlockOrderUpdate'
+
 import {
   BlockFields_CardBlock as CardBlock,
   BlockFields_StepBlock as StepBlock
 } from '../../../../../../../__generated__/BlockFields'
+
 import {
-  BlockRestoreWithBlockOrderUpdate,
-  BlockRestoreWithBlockOrderUpdateVariables
-} from '../../../../../../../__generated__/BlockRestoreWithBlockOrderUpdate'
+  StepBlockCreateFromSocialPreview,
+  StepBlockCreateFromSocialPreviewVariables
+} from '../../../../../../../__generated__/StepBlockCreateFromSocialPreview'
 import {
-  StepAndCardBlockCreateWithBlockOrderUpdate,
-  StepAndCardBlockCreateWithBlockOrderUpdateVariables
-} from '../../../../../../../__generated__/StepAndCardBlockCreateWithBlockOrderUpdate'
+  StepBlockDeleteFromSocialPreview,
+  StepBlockDeleteFromSocialPreviewVariables
+} from '../../../../../../../__generated__/StepBlockDeleteFromSocialPreview'
+import {
+  StepBlockRestoreFromSocialPreview,
+  StepBlockRestoreFromSocialPreviewVariables
+} from '../../../../../../../__generated__/StepBlockRestoreFromSocialPreview'
 import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../__generated__/globalTypes'
 import { BLOCK_DELETE } from '../../../../../../libs/useBlockDeleteMutation'
 import {
-  BLOCK_DELETE_WITH_BLOCK_ORDER_UPDATE,
-  BLOCK_RESTORE_WITH_BLOCK_ORDER_UPDATE,
-  STEP_AND_CARD_BLOCK_CREATE_WITH_BLOCK_ORDER_UPDATE
+  STEP_BLOCK_CREATE_FROM_SOCIAL_PREVIEW,
+  STEP_BLOCK_DELETE_FROM_SOCIAL_PREVIEW,
+  STEP_BLOCK_RESTORE_FROM_SOCIAL_PREVIEW
 } from './useCreateStepFromSocialPreview'
 
 export const mockNewStepBlock: TreeBlock<StepBlock> = {
@@ -54,12 +56,12 @@ export const mockNewCardBlock: TreeBlock<CardBlock> = {
   children: []
 }
 
-export const mockStepAndCardBlockCreateWithBlockOrderUpdate: MockedResponse<
-  StepAndCardBlockCreateWithBlockOrderUpdate,
-  StepAndCardBlockCreateWithBlockOrderUpdateVariables
+export const mockStepBlockCreateFromSocialPreview: MockedResponse<
+  StepBlockCreateFromSocialPreview,
+  StepBlockCreateFromSocialPreviewVariables
 > = {
   request: {
-    query: STEP_AND_CARD_BLOCK_CREATE_WITH_BLOCK_ORDER_UPDATE,
+    query: STEP_BLOCK_CREATE_FROM_SOCIAL_PREVIEW,
     variables: {
       stepBlockCreateInput: {
         id: 'newStep.id',
@@ -87,12 +89,12 @@ export const mockStepAndCardBlockCreateWithBlockOrderUpdate: MockedResponse<
   }
 }
 
-export const mockBlockDeleteWithBlockOrderUpdate: MockedResponse<
-  BlockDeleteWithBlockOrderUpdate,
-  BlockDeleteWithBlockOrderUpdateVariables
+export const mockStepBlockDeleteFromSocialPreview: MockedResponse<
+  StepBlockDeleteFromSocialPreview,
+  StepBlockDeleteFromSocialPreviewVariables
 > = {
   request: {
-    query: BLOCK_DELETE_WITH_BLOCK_ORDER_UPDATE,
+    query: STEP_BLOCK_DELETE_FROM_SOCIAL_PREVIEW,
     variables: {
       id: 'newStep.id',
       journeyId: 'journey-id',
@@ -132,12 +134,12 @@ export const deleteStepMock: MockedResponse<BlockDelete, BlockDeleteVariables> =
     }
   }
 
-export const mockBlockRestoreWithBlockOrderUpdate: MockedResponse<
-  BlockRestoreWithBlockOrderUpdate,
-  BlockRestoreWithBlockOrderUpdateVariables
+export const mockStepBlockRestoreFromSocialPreview: MockedResponse<
+  StepBlockRestoreFromSocialPreview,
+  StepBlockRestoreFromSocialPreviewVariables
 > = {
   request: {
-    query: BLOCK_RESTORE_WITH_BLOCK_ORDER_UPDATE,
+    query: STEP_BLOCK_RESTORE_FROM_SOCIAL_PREVIEW,
     variables: { id: 'newStep.id', stepId: 'newStep.id', parentOrder: 0 }
   },
   result: {

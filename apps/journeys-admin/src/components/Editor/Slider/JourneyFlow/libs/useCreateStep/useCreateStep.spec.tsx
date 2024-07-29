@@ -6,10 +6,10 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
 import { TestUseCreateStepHooks } from '../TestUseCreateStepHooks'
 import {
-  blockDeleteWithStepUpdate,
-  blockRestoreWithStepUpdate,
   mockStepBlock,
-  stepAndCardBlockCreateWithStepUpdateMock
+  mockStepBlockCreate,
+  mockStepBlockDelete,
+  mockStepBlockRestore
 } from './useCreateStep.mock'
 
 jest.mock('uuid', () => ({
@@ -40,13 +40,11 @@ describe('useCreateStep', () => {
     mockUuidv4.mockReturnValueOnce('newStep.id')
     mockUuidv4.mockReturnValueOnce('newCard.id')
 
-    const result = jest
-      .fn()
-      .mockReturnValue(stepAndCardBlockCreateWithStepUpdateMock.result)
+    const result = jest.fn().mockReturnValue(mockStepBlockCreate.result)
 
     render(
       <MockedProvider
-        mocks={[{ ...stepAndCardBlockCreateWithStepUpdateMock, result }]}
+        mocks={[{ ...mockStepBlockCreate, result }]}
         cache={cache}
       >
         <TestUseCreateStepHooks sourceStep={mockStepBlock} />
@@ -100,16 +98,14 @@ describe('useCreateStep', () => {
     mockUuidv4.mockReturnValueOnce('newStep.id')
     mockUuidv4.mockReturnValueOnce('newCard.id')
 
-    const result = jest
-      .fn()
-      .mockReturnValue(stepAndCardBlockCreateWithStepUpdateMock.result)
-    const result2 = jest.fn().mockReturnValue(blockDeleteWithStepUpdate.result)
+    const result = jest.fn().mockReturnValue(mockStepBlockCreate.result)
+    const result2 = jest.fn().mockReturnValue(mockStepBlockDelete.result)
 
     render(
       <MockedProvider
         mocks={[
-          { ...stepAndCardBlockCreateWithStepUpdateMock, result },
-          { ...blockDeleteWithStepUpdate, result: result2 }
+          { ...mockStepBlockCreate, result },
+          { ...mockStepBlockDelete, result: result2 }
         ]}
         cache={cache}
       >
@@ -170,18 +166,16 @@ describe('useCreateStep', () => {
     mockUuidv4.mockReturnValueOnce('newStep.id')
     mockUuidv4.mockReturnValueOnce('newCard.id')
 
-    const result = jest
-      .fn()
-      .mockReturnValue(stepAndCardBlockCreateWithStepUpdateMock.result)
-    const result2 = jest.fn().mockReturnValue(blockDeleteWithStepUpdate.result)
-    const result3 = jest.fn().mockReturnValue(blockRestoreWithStepUpdate.result)
+    const result = jest.fn().mockReturnValue(mockStepBlockCreate.result)
+    const result2 = jest.fn().mockReturnValue(mockStepBlockDelete.result)
+    const result3 = jest.fn().mockReturnValue(mockStepBlockRestore.result)
 
     render(
       <MockedProvider
         mocks={[
-          { ...stepAndCardBlockCreateWithStepUpdateMock, result },
-          { ...blockDeleteWithStepUpdate, result: result2 },
-          { ...blockRestoreWithStepUpdate, result: result3 }
+          { ...mockStepBlockCreate, result },
+          { ...mockStepBlockDelete, result: result2 },
+          { ...mockStepBlockRestore, result: result3 }
         ]}
         cache={cache}
       >

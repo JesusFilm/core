@@ -5,11 +5,11 @@ import { v4 as uuidv4 } from 'uuid'
 import { TestUseCreateStepHooks } from '../TestUseCreateStepHooks'
 import {
   deleteStepMock,
-  mockBlockDeleteWithBlockOrderUpdate,
-  mockBlockRestoreWithBlockOrderUpdate,
   mockNewCardBlock,
   mockNewStepBlock,
-  mockStepAndCardBlockCreateWithBlockOrderUpdate
+  mockStepBlockCreateFromSocialPreview,
+  mockStepBlockDeleteFromSocialPreview,
+  mockStepBlockRestoreFromSocialPreview
 } from './useCreateStepFromSocialPreview.mock'
 
 jest.mock('uuid', () => ({
@@ -26,11 +26,11 @@ describe('useCreateStepFromSocialPreview', () => {
 
     const result = jest
       .fn()
-      .mockResolvedValue(mockStepAndCardBlockCreateWithBlockOrderUpdate.result)
+      .mockResolvedValue(mockStepBlockCreateFromSocialPreview.result)
 
     render(
       <MockedProvider
-        mocks={[{ ...mockStepAndCardBlockCreateWithBlockOrderUpdate, result }]}
+        mocks={[{ ...mockStepBlockCreateFromSocialPreview, result }]}
       >
         <TestUseCreateStepHooks />
       </MockedProvider>
@@ -46,17 +46,17 @@ describe('useCreateStepFromSocialPreview', () => {
 
     const result = jest
       .fn()
-      .mockResolvedValue(mockStepAndCardBlockCreateWithBlockOrderUpdate.result)
+      .mockResolvedValue(mockStepBlockCreateFromSocialPreview.result)
 
     const result2 = jest
       .fn()
-      .mockResolvedValue(mockBlockDeleteWithBlockOrderUpdate.result)
+      .mockResolvedValue(mockStepBlockDeleteFromSocialPreview.result)
 
     render(
       <MockedProvider
         mocks={[
-          { ...mockStepAndCardBlockCreateWithBlockOrderUpdate, result },
-          { ...mockBlockDeleteWithBlockOrderUpdate, result: result2 }
+          { ...mockStepBlockCreateFromSocialPreview, result },
+          { ...mockStepBlockDeleteFromSocialPreview, result: result2 }
         ]}
       >
         <TestUseCreateStepHooks
@@ -78,14 +78,14 @@ describe('useCreateStepFromSocialPreview', () => {
 
     const result = jest
       .fn()
-      .mockResolvedValue(mockStepAndCardBlockCreateWithBlockOrderUpdate.result)
+      .mockResolvedValue(mockStepBlockCreateFromSocialPreview.result)
 
     const result2 = jest.fn().mockResolvedValue(deleteStepMock.result)
 
     render(
       <MockedProvider
         mocks={[
-          { ...mockStepAndCardBlockCreateWithBlockOrderUpdate, result },
+          { ...mockStepBlockCreateFromSocialPreview, result },
           { ...deleteStepMock, result: result2 }
         ]}
       >
@@ -105,19 +105,19 @@ describe('useCreateStepFromSocialPreview', () => {
 
     const result = jest
       .fn()
-      .mockResolvedValue(mockStepAndCardBlockCreateWithBlockOrderUpdate.result)
+      .mockResolvedValue(mockStepBlockCreateFromSocialPreview.result)
 
     const result2 = jest.fn().mockResolvedValue(deleteStepMock.result)
     const result3 = jest
       .fn()
-      .mockResolvedValue(mockBlockRestoreWithBlockOrderUpdate.result)
+      .mockResolvedValue(mockStepBlockRestoreFromSocialPreview.result)
 
     render(
       <MockedProvider
         mocks={[
-          { ...mockStepAndCardBlockCreateWithBlockOrderUpdate, result },
+          { ...mockStepBlockCreateFromSocialPreview, result },
           { ...deleteStepMock, result: result2 },
-          { ...mockBlockRestoreWithBlockOrderUpdate, result: result3 }
+          { ...mockStepBlockRestoreFromSocialPreview, result: result3 }
         ]}
       >
         <TestUseCreateStepHooks />

@@ -1,31 +1,32 @@
 import { MockedResponse } from '@apollo/client/testing'
 import { TreeBlock } from '@core/journeys/ui/block'
-import {} from '@core/journeys/ui/block/__generated__/BlockFields'
-import {
-  BlockDeleteWithBlockActionUpdate,
-  BlockDeleteWithBlockActionUpdateVariables
-} from '../../../../../../../__generated__/BlockDeleteWithBlockActionUpdate'
+
 import {
   BlockFields_ButtonBlock as ButtonBlock,
   BlockFields_CardBlock as CardBlock,
   BlockFields_StepBlock as StepBlock
 } from '../../../../../../../__generated__/BlockFields'
+
 import {
-  BlockRestoreWithBlockActionUpdate,
-  BlockRestoreWithBlockActionUpdateVariables
-} from '../../../../../../../__generated__/BlockRestoreWithBlockActionUpdate'
+  StepBlockCreateFromAction,
+  StepBlockCreateFromActionVariables
+} from '../../../../../../../__generated__/StepBlockCreateFromAction'
 import {
-  StepAndCardBlockCreateWithBlockActionUpdate,
-  StepAndCardBlockCreateWithBlockActionUpdateVariables
-} from '../../../../../../../__generated__/StepAndCardBlockCreateWithBlockActionUpdate'
+  StepBlockDeleteFromAction,
+  StepBlockDeleteFromActionVariables
+} from '../../../../../../../__generated__/StepBlockDeleteFromAction'
+import {
+  StepBlockRestoreFromAction,
+  StepBlockRestoreFromActionVariables
+} from '../../../../../../../__generated__/StepBlockRestoreFromAction'
 import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../__generated__/globalTypes'
 import {
-  BLOCK_DELETE_WITH_BLOCK_ACTION_UPDATE,
-  BLOCK_RESTORE_WITH_BLOCK_ACTION_UPDATE,
-  STEP_AND_CARD_BLOCK_CREATE_WITH_BLOCK_ACTION_UPDATE
+  STEP_BLOCK_CREATE_FROM_ACTION,
+  STEP_BLOCK_DELETE_FROM_ACTION,
+  STEP_BLOCK_RESTORE_FROM_ACTION
 } from './useCreateStepFromAction'
 
 export const mockStepBlock: TreeBlock<StepBlock> = {
@@ -73,12 +74,12 @@ export const mockNewCardBlock: TreeBlock<CardBlock> = {
   children: []
 }
 
-export const mockStepAndCardBlockCreateWithBlockActionUpdate: MockedResponse<
-  StepAndCardBlockCreateWithBlockActionUpdate,
-  StepAndCardBlockCreateWithBlockActionUpdateVariables
+export const mockStepBlockCreateFromAction: MockedResponse<
+  StepBlockCreateFromAction,
+  StepBlockCreateFromActionVariables
 > = {
   request: {
-    query: STEP_AND_CARD_BLOCK_CREATE_WITH_BLOCK_ACTION_UPDATE,
+    query: STEP_BLOCK_CREATE_FROM_ACTION,
     variables: {
       stepBlockCreateInput: {
         id: 'newStep.id',
@@ -132,12 +133,12 @@ export const mockStepAndCardBlockCreateWithBlockActionUpdate: MockedResponse<
   }
 }
 
-export const mockBlockDeleteWithBlockActionUpdate: MockedResponse<
-  BlockDeleteWithBlockActionUpdate,
-  BlockDeleteWithBlockActionUpdateVariables
+export const mockStepBlockDeleteFromAction: MockedResponse<
+  StepBlockDeleteFromAction,
+  StepBlockDeleteFromActionVariables
 > = {
   request: {
-    query: BLOCK_DELETE_WITH_BLOCK_ACTION_UPDATE,
+    query: STEP_BLOCK_DELETE_FROM_ACTION,
     variables: {
       id: 'newStep.id',
       journeyId: 'journey-id',
@@ -166,12 +167,12 @@ export const mockBlockDeleteWithBlockActionUpdate: MockedResponse<
   }
 }
 
-export const mockBlockRestoreWithBlockActionUpdate: MockedResponse<
-  BlockRestoreWithBlockActionUpdate,
-  BlockRestoreWithBlockActionUpdateVariables
+export const mockBlockRestoreFromAction: MockedResponse<
+  StepBlockRestoreFromAction,
+  StepBlockRestoreFromActionVariables
 > = {
   request: {
-    query: BLOCK_RESTORE_WITH_BLOCK_ACTION_UPDATE,
+    query: STEP_BLOCK_RESTORE_FROM_ACTION,
     variables: {
       id: 'newStep.id',
       blockUpdateActionId: 'button.id',

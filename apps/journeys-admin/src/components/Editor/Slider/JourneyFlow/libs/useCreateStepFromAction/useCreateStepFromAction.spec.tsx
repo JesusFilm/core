@@ -4,13 +4,13 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { TestUseCreateStepHooks } from '../TestUseCreateStepHooks'
 import {
-  mockBlockDeleteWithBlockActionUpdate,
-  mockBlockRestoreWithBlockActionUpdate,
+  mockBlockRestoreFromAction,
   mockNewCardBlock,
   mockNewStepBlock,
   mockOriginButtonBlock,
-  mockStepAndCardBlockCreateWithBlockActionUpdate,
-  mockStepBlock
+  mockStepBlock,
+  mockStepBlockCreateFromAction,
+  mockStepBlockDeleteFromAction
 } from './useCreateStepFromAction.mock'
 
 jest.mock('uuid', () => ({
@@ -27,12 +27,10 @@ describe('useCreateStepFromAction', () => {
 
     const result = jest
       .fn()
-      .mockResolvedValue(mockStepAndCardBlockCreateWithBlockActionUpdate.result)
+      .mockResolvedValue(mockStepBlockCreateFromAction.result)
 
     render(
-      <MockedProvider
-        mocks={[{ ...mockStepAndCardBlockCreateWithBlockActionUpdate, result }]}
-      >
+      <MockedProvider mocks={[{ ...mockStepBlockCreateFromAction, result }]}>
         <TestUseCreateStepHooks
           sourceStep={mockStepBlock}
           sourceBlock={mockOriginButtonBlock}
@@ -50,17 +48,17 @@ describe('useCreateStepFromAction', () => {
 
     const result = jest
       .fn()
-      .mockResolvedValue(mockStepAndCardBlockCreateWithBlockActionUpdate.result)
+      .mockResolvedValue(mockStepBlockCreateFromAction.result)
 
     const result2 = jest
       .fn()
-      .mockResolvedValue(mockBlockDeleteWithBlockActionUpdate.result)
+      .mockResolvedValue(mockStepBlockDeleteFromAction.result)
 
     render(
       <MockedProvider
         mocks={[
-          { ...mockStepAndCardBlockCreateWithBlockActionUpdate, result },
-          { ...mockBlockDeleteWithBlockActionUpdate, result: result2 }
+          { ...mockStepBlockCreateFromAction, result },
+          { ...mockStepBlockDeleteFromAction, result: result2 }
         ]}
       >
         <TestUseCreateStepHooks
@@ -83,22 +81,22 @@ describe('useCreateStepFromAction', () => {
 
     const result = jest
       .fn()
-      .mockResolvedValue(mockStepAndCardBlockCreateWithBlockActionUpdate.result)
+      .mockResolvedValue(mockStepBlockCreateFromAction.result)
 
     const result2 = jest
       .fn()
-      .mockResolvedValue(mockBlockDeleteWithBlockActionUpdate.result)
+      .mockResolvedValue(mockStepBlockDeleteFromAction.result)
 
     const result3 = jest
       .fn()
-      .mockResolvedValue(mockBlockRestoreWithBlockActionUpdate.result)
+      .mockResolvedValue(mockBlockRestoreFromAction.result)
 
     render(
       <MockedProvider
         mocks={[
-          { ...mockStepAndCardBlockCreateWithBlockActionUpdate, result },
-          { ...mockBlockDeleteWithBlockActionUpdate, result: result2 },
-          { ...mockBlockRestoreWithBlockActionUpdate, result: result3 }
+          { ...mockStepBlockCreateFromAction, result },
+          { ...mockStepBlockDeleteFromAction, result: result2 },
+          { ...mockBlockRestoreFromAction, result: result3 }
         ]}
       >
         <TestUseCreateStepHooks
