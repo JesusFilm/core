@@ -12,12 +12,16 @@ import { PageWrapper } from '../PageWrapper'
 import { VideoGrid } from '../VideoGrid'
 
 import { SearchBar } from '@core/journeys/ui/SearchBar'
-import { Index } from 'react-instantsearch'
+import { Index, useConfigure } from 'react-instantsearch'
 import { HomeHero } from './HomeHero'
 import { SeeAllVideos } from './SeeAllVideos'
 
 export function WatchHomePage(): ReactElement {
   const { t } = useTranslation('apps-watch')
+
+  useConfigure({
+    ruleContexts: ['home_page']
+  })
 
   return (
     <PageWrapper

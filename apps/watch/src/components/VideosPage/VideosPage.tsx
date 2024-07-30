@@ -12,7 +12,7 @@ import { GetLanguages } from '../../../__generated__/GetLanguages'
 import { PageWrapper } from '../PageWrapper'
 import { VideoGrid } from '../VideoGrid/VideoGrid'
 
-import { Index } from 'react-instantsearch'
+import { Index, useConfigure } from 'react-instantsearch'
 import { FilterList } from './FilterList'
 import { VideosHero } from './Hero'
 import { VideosSubHero } from './SubHero'
@@ -26,6 +26,10 @@ export function VideosPage({ index = false }: VideosPageProps): ReactElement {
     useQuery<GetLanguages>(GET_LANGUAGES, {
       variables: { languageId: '529' }
     })
+
+  useConfigure({
+    ruleContexts: ['all_videos_page']
+  })
 
   const videosPageSegment: ReactNode = (
     <Stack direction={{ xs: 'column', xl: 'row' }} spacing={{ xs: 4, xl: 8 }}>
