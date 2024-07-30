@@ -1,12 +1,10 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/BlockFields'
-import { GetJourney_journey as Journey } from '../../../../../../../../../__generated__/GetJourney'
 import { IconFields } from '../../../../../../../../../__generated__/IconFields'
 import { IconName } from '../../../../../../../../../__generated__/globalTypes'
 
@@ -46,15 +44,17 @@ describe('Icon', () => {
     children: [icon]
   }
 
+  beforeEach(() => jest.clearAllMocks())
+
   it('shows toggle options if there is a icon', () => {
-    const { getByText } = render(
+    render(
       <MockedProvider>
         <EditorProvider initialState={{ selectedBlock }}>
           <Icon id={icon.id} />
         </EditorProvider>
       </MockedProvider>
     )
-    expect(getByText('Color')).toBeInTheDocument()
+    expect(screen.getByText('Color')).toBeInTheDocument()
   })
 
   it('hides toggle options if there is no icon', () => {
@@ -68,14 +68,14 @@ describe('Icon', () => {
       children: [testIcon]
     }
 
-    const { queryByText } = render(
+    render(
       <MockedProvider>
         <EditorProvider initialState={{ selectedBlock: testSelectedBlock }}>
           <Icon id={testIcon.id} />
         </EditorProvider>
       </MockedProvider>
     )
-    expect(queryByText('Color')).not.toBeInTheDocument()
+    expect(screen.queryByText('Color')).not.toBeInTheDocument()
   })
 
   it('adds icon when selecting an icon', async () => {
@@ -93,7 +93,6 @@ describe('Icon', () => {
       data: {
         iconBlockUpdate: {
           id: 'iconBlock.id',
-          journeyId: 'journeyId',
           parentBlockId: 'buttonBlockId',
           name: IconName.ArrowForwardRounded,
           color: null,
@@ -102,7 +101,7 @@ describe('Icon', () => {
       }
     }))
 
-    const { getByRole } = render(
+    render(
       <MockedProvider
         mocks={[
           {
@@ -110,7 +109,6 @@ describe('Icon', () => {
               query: ICON_BLOCK_NAME_UPDATE,
               variables: {
                 id: icon.id,
-                journeyId: 'journeyId',
                 input: {
                   name: IconName.ArrowForwardRounded
                 }
@@ -120,21 +118,14 @@ describe('Icon', () => {
           }
         ]}
       >
-        <JourneyProvider
-          value={{
-            journey: { id: 'journeyId' } as unknown as Journey,
-            variant: 'admin'
-          }}
-        >
-          <EditorProvider initialState={{ selectedBlock: testSelectedBlock }}>
-            <Icon id={testIcon.id} />
-          </EditorProvider>
-        </JourneyProvider>
+        <EditorProvider initialState={{ selectedBlock: testSelectedBlock }}>
+          <Icon id={testIcon.id} />
+        </EditorProvider>
       </MockedProvider>
     )
 
-    fireEvent.mouseDown(getByRole('button', { name: 'icon-name' }))
-    fireEvent.click(getByRole('option', { name: 'Arrow Right' }))
+    fireEvent.mouseDown(screen.getByRole('button', { name: 'icon-name' }))
+    fireEvent.click(screen.getByRole('option', { name: 'Arrow Right' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
@@ -152,7 +143,7 @@ describe('Icon', () => {
       }
     }))
 
-    const { getByRole } = render(
+    render(
       <MockedProvider
         mocks={[
           {
@@ -160,7 +151,6 @@ describe('Icon', () => {
               query: ICON_BLOCK_NAME_UPDATE,
               variables: {
                 id: icon.id,
-                journeyId: 'journeyId',
                 input: {
                   name: null
                 }
@@ -170,20 +160,13 @@ describe('Icon', () => {
           }
         ]}
       >
-        <JourneyProvider
-          value={{
-            journey: { id: 'journeyId' } as unknown as Journey,
-            variant: 'admin'
-          }}
-        >
-          <EditorProvider initialState={{ selectedBlock }}>
-            <Icon id={icon.id} />
-          </EditorProvider>
-        </JourneyProvider>
+        <EditorProvider initialState={{ selectedBlock }}>
+          <Icon id={icon.id} />
+        </EditorProvider>
       </MockedProvider>
     )
-    fireEvent.mouseDown(getByRole('button', { name: 'icon-name' }))
-    fireEvent.click(getByRole('option', { name: 'Select an icon...' }))
+    fireEvent.mouseDown(screen.getByRole('button', { name: 'icon-name' }))
+    fireEvent.click(screen.getByRole('option', { name: 'Select an icon...' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
@@ -201,7 +184,7 @@ describe('Icon', () => {
       }
     }))
 
-    const { getByRole } = render(
+    render(
       <MockedProvider
         mocks={[
           {
@@ -209,7 +192,6 @@ describe('Icon', () => {
               query: ICON_BLOCK_NAME_UPDATE,
               variables: {
                 id: icon.id,
-                journeyId: 'journeyId',
                 input: {
                   name: IconName.BeenhereRounded
                 }
@@ -219,20 +201,13 @@ describe('Icon', () => {
           }
         ]}
       >
-        <JourneyProvider
-          value={{
-            journey: { id: 'journeyId' } as unknown as Journey,
-            variant: 'admin'
-          }}
-        >
-          <EditorProvider initialState={{ selectedBlock }}>
-            <Icon id={icon.id} />
-          </EditorProvider>
-        </JourneyProvider>
+        <EditorProvider initialState={{ selectedBlock }}>
+          <Icon id={icon.id} />
+        </EditorProvider>
       </MockedProvider>
     )
-    fireEvent.mouseDown(getByRole('button', { name: 'icon-name' }))
-    fireEvent.click(getByRole('option', { name: 'Been Here' }))
+    fireEvent.mouseDown(screen.getByRole('button', { name: 'icon-name' }))
+    fireEvent.click(screen.getByRole('option', { name: 'Been Here' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 })

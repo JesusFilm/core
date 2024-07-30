@@ -29,7 +29,6 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/BlockFields'
@@ -43,6 +42,7 @@ import {
   IconName
 } from '../../../../../../../../../__generated__/globalTypes'
 
+import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { Color } from './Color'
 
 void init({ defaultNS: 'apps-journeys-admin', fallbackLng: 'en' })
@@ -166,8 +166,8 @@ export function Icon({ id }: IconProps): ReactElement {
     IconBlockNameUpdate,
     IconBlockNameUpdateVariables
   >(ICON_BLOCK_NAME_UPDATE)
-  const { journey } = useJourney()
-  const { state } = useEditor()
+  const { state, dispatch } = useEditor()
+  const { add } = useCommand()
   const selectedBlock = state.selectedBlock as IconParentBlock
 
   // Get updated iconBlock, passing via props doesn't update as selectedBlock doesn't change
@@ -177,21 +177,32 @@ export function Icon({ id }: IconProps): ReactElement {
   const iconName = iconBlock?.iconName ?? ''
 
   async function iconUpdate(name: IconName | null): Promise<void> {
-    if (journey == null) return
-
-    await iconBlockNameUpdate({
-      variables: {
-        id,
-        input: {
-          name
-        }
+    await add({
+      parameters: {
+        execute: { name },
+        undo: { name: iconName === '' ? null : iconName }
       },
-      optimisticResponse: {
-        iconBlockUpdate: {
-          __typename: 'IconBlock',
-          id,
-          name
-        }
+      async execute({ name }) {
+        dispatch({
+          type: 'SetEditorFocusAction',
+          selectedBlock,
+          selectedStep: state.selectedStep
+        })
+        await iconBlockNameUpdate({
+          variables: {
+            id,
+            input: {
+              name
+            }
+          },
+          optimisticResponse: {
+            iconBlockUpdate: {
+              __typename: 'IconBlock',
+              id,
+              name
+            }
+          }
+        })
       }
     })
   }
