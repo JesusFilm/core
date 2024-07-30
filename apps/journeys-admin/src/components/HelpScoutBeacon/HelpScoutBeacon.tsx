@@ -8,11 +8,13 @@ import { BeaconButton } from './BeaconButton/BeaconButton'
 
 interface HelpScoutBeaconProps {
   variant: 'iconButton' | 'menuItem'
+  buttonColor?: 'primary' | 'secondary'
   handleClick?: () => void
 }
 
 export function HelpScoutBeacon({
   variant,
+  buttonColor = 'primary',
   handleClick
 }: HelpScoutBeaconProps): ReactElement {
   const user = useUser()
@@ -92,6 +94,7 @@ export function HelpScoutBeacon({
 
       <BeaconButton
         variant={variant}
+        buttonColor={buttonColor}
         onClick={handleBeaconOpen}
         beaconOpen={beaconOpen}
       />

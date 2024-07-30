@@ -9,6 +9,7 @@ import { ReactElement } from 'react'
 import Menu1Icon from '@core/shared/ui/icons/Menu1'
 
 import taskbarIcon from '../../../../public/taskbar-icon.svg'
+import { HelpScoutBeacon } from '../../HelpScoutBeacon'
 import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
 
 export interface MainBodyContainerProps {
@@ -56,6 +57,7 @@ export function AppHeader({ onClick }: MainBodyContainerProps): ReactElement {
                 alt="Next Steps"
               />
             </Stack>
+            <HelpScoutBeacon variant="iconButton" buttonColor="secondary" />
           </Stack>
         </Toolbar>
       </AppBar>

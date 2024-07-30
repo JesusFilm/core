@@ -1,5 +1,6 @@
 import { gql, useQuery } from '@apollo/client'
 import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import {
   AuthAction,
   useUser,
@@ -10,13 +11,13 @@ import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
-
 import { GetAdminJourney } from '../../../../__generated__/GetAdminJourney'
 import {
   GetJourneyVisitors,
   GetJourneyVisitors_visitors_edges as VisitorEdge
 } from '../../../../__generated__/GetJourneyVisitors'
 import { UserJourneyOpen } from '../../../../__generated__/UserJourneyOpen'
+import { HelpScoutBeacon } from '../../../../src/components/HelpScoutBeacon'
 import { JourneyVisitorsList } from '../../../../src/components/JourneyVisitorsList'
 import { ClearAllButton } from '../../../../src/components/JourneyVisitorsList/FilterDrawer/ClearAllButton'
 import { FilterDrawer } from '../../../../src/components/JourneyVisitorsList/FilterDrawer/FilterDrawer'
@@ -214,8 +215,11 @@ function JourneyVisitorsPage(): ReactElement {
         }
         sidePanelTitle={
           <>
-            {t('Filters')}
-            <ClearAllButton handleClearAll={handleClearAll} />
+            <Typography variant="subtitle1">{t('Filters')}</Typography>
+            <Stack direction="row" gap={3} alignItems="center">
+              <ClearAllButton handleClearAll={handleClearAll} />
+              <HelpScoutBeacon variant="iconButton" />
+            </Stack>
           </>
         }
         sidePanelChildren={

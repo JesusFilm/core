@@ -9,12 +9,14 @@ import { ReactElement } from 'react'
 
 interface BeaconButtonProps {
   variant: 'iconButton' | 'menuItem'
+  buttonColor: 'primary' | 'secondary'
   onClick: () => void
   beaconOpen: boolean
 }
 
 export function BeaconButton({
   variant,
+  buttonColor,
   onClick,
   beaconOpen
 }: BeaconButtonProps): ReactElement {
@@ -32,7 +34,8 @@ export function BeaconButton({
             m: 0,
             width: 24,
             height: 24,
-            color: 'secondary.dark'
+            color:
+              buttonColor === 'primary' ? 'secondary.dark' : 'background.paper'
             // color:
             //   mdUp || newUserPaths.includes(router.route)
             //     ? 'secondary.dark'
