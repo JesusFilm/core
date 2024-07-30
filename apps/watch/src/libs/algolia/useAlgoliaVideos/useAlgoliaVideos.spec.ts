@@ -2,7 +2,12 @@ import { renderHook } from '@testing-library/react'
 import { InfiniteHitsRenderState } from 'instantsearch.js/es/connectors/infinite-hits/connectInfiniteHits'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { NextRouter, useRouter } from 'next/router'
-import { useInfiniteHits, useRefinementList } from 'react-instantsearch'
+import {
+  InstantSearchApi,
+  useInfiniteHits,
+  useInstantSearch,
+  useRefinementList
+} from 'react-instantsearch'
 import type { AlgoliaVideo, CoreVideo } from './useAlgoliaVideos'
 import { transformItems, useAlgoliaVideos } from './useAlgoliaVideos'
 
@@ -14,6 +19,9 @@ jest.mock('next/router', () => ({
 jest.mock('react-instantsearch')
 
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockUseInstantSearch = useInstantSearch as jest.MockedFunction<
+  typeof useInstantSearch
+>
 const mockUseInfiniteHits = useInfiniteHits as jest.MockedFunction<
   typeof useInfiniteHits
 >
@@ -75,6 +83,10 @@ describe('useAlgoliaVideos', () => {
       showMore: jest.fn(),
       isLastPage: false
     } as unknown as InfiniteHitsRenderState)
+
+    mockUseInstantSearch.mockReturnValue({
+      status: 'idle'
+    } as unknown as InstantSearchApi)
 
     mockUseRefinementList.mockReturnValue({
       items: [],

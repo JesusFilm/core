@@ -1,6 +1,10 @@
 import { BaseHit, Hit } from 'instantsearch.js'
 import { useEffect, useRef } from 'react'
-import { useInfiniteHits, useRefinementList } from 'react-instantsearch'
+import {
+  useInfiniteHits,
+  useInstantSearch,
+  useRefinementList
+} from 'react-instantsearch'
 import {
   VideoChildFields_imageAlt,
   VideoChildFields_snippet,
@@ -68,6 +72,8 @@ export function transformItems(items: AlgoliaVideo[]): CoreVideo[] {
 export function useAlgoliaVideos() {
   const { hits, showMore, isLastPage } = useInfiniteHits<AlgoliaVideo>()
 
+  const { status } = useInstantSearch()
+
   const transformedHits = transformItems(hits)
 
   const { items, refine } = useRefinementList({
@@ -85,6 +91,7 @@ export function useAlgoliaVideos() {
   }, [items, refine])
 
   return {
+    stalled: status === 'stalled',
     hits: transformedHits,
     showMore,
     isLastPage
