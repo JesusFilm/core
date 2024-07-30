@@ -123,10 +123,7 @@ export function VideoBlockEditorSettings({
           <Typography
             variant="subtitle2"
             sx={{
-              color:
-                selectedBlock == null || selectedBlock.parentOrder == null
-                  ? 'action.disabled'
-                  : undefined
+              color: selectedBlock == null ? 'action.disabled' : undefined
             }}
           >
             {t('Timing')}
@@ -184,8 +181,6 @@ export function VideoBlockEditorSettings({
               variant="subtitle2"
               sx={{
                 color:
-                  selectedBlock == null ||
-                  selectedBlock.parentOrder == null ||
                   selectedBlock?.source === VideoBlockSource.youTube
                     ? 'action.disabled'
                     : undefined

@@ -65,6 +65,7 @@ export const POSTER_IMAGE_BLOCK_DELETE = gql`
   ) {
     blockDelete(id: $id, parentBlockId: $parentBlockId) {
       id
+      parentOrder
     }
     videoBlockUpdate(id: $parentBlockId, input: { posterBlockId: null }) {
       id

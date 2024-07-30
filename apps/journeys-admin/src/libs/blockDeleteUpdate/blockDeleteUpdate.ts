@@ -24,7 +24,7 @@ const getNestedChildRefs = (
 
 export const blockDeleteUpdate = (
   selectedBlock: BlockIdentifier,
-  response: (BlockIdentifier & { parentOrder?: number | null })[] | undefined,
+  response: (BlockIdentifier & { parentOrder: number | null })[] | undefined,
   // biome-ignore lint/suspicious/noExplicitAny: update function gives this type
   cache: ApolloCache<any>,
   journeyId: string
@@ -38,7 +38,7 @@ export const blockDeleteUpdate = (
         }),
         fields: {
           parentOrder() {
-            return block.parentOrder ?? null
+            return block.parentOrder
           }
         }
       })

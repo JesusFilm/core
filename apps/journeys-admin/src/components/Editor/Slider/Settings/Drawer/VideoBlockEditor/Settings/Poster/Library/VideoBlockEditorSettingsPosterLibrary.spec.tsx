@@ -229,7 +229,8 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
         blockDelete: [
           {
             id: image.id,
-            __typename: 'ImageBlock'
+            __typename: 'ImageBlock',
+            parentOrder: null
           }
         ],
         videoBlockUpdate: {
@@ -453,7 +454,7 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
       fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
       await waitFor(() => expect(undoResult).toHaveBeenCalled())
       fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
-      await waitFor(() => expect(undoResult).toHaveBeenCalled())
+      await waitFor(() => expect(redoResult).toHaveBeenCalled())
     })
 
     it('deletes an image block', async () => {

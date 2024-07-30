@@ -6,65 +6,65 @@
 import { VideoBlockCreateInput, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 
 // ====================================================
-// GraphQL mutation operation: CardBlockVideoBlockCreate
+// GraphQL mutation operation: CoverVideoBlockCreate
 // ====================================================
 
-export interface CardBlockVideoBlockCreate_videoBlockCreate_video_title {
+export interface CoverVideoBlockCreate_videoBlockCreate_video_title {
   __typename: "Translation";
   value: string;
 }
 
-export interface CardBlockVideoBlockCreate_videoBlockCreate_video_variant {
+export interface CoverVideoBlockCreate_videoBlockCreate_video_variant {
   __typename: "VideoVariant";
   id: string;
   hls: string | null;
 }
 
-export interface CardBlockVideoBlockCreate_videoBlockCreate_video_variantLanguages_name {
+export interface CoverVideoBlockCreate_videoBlockCreate_video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
   primary: boolean;
 }
 
-export interface CardBlockVideoBlockCreate_videoBlockCreate_video_variantLanguages {
+export interface CoverVideoBlockCreate_videoBlockCreate_video_variantLanguages {
   __typename: "Language";
   id: string;
-  name: CardBlockVideoBlockCreate_videoBlockCreate_video_variantLanguages_name[];
+  name: CoverVideoBlockCreate_videoBlockCreate_video_variantLanguages_name[];
 }
 
-export interface CardBlockVideoBlockCreate_videoBlockCreate_video {
+export interface CoverVideoBlockCreate_videoBlockCreate_video {
   __typename: "Video";
   id: string;
-  title: CardBlockVideoBlockCreate_videoBlockCreate_video_title[];
+  title: CoverVideoBlockCreate_videoBlockCreate_video_title[];
   image: string | null;
-  variant: CardBlockVideoBlockCreate_videoBlockCreate_video_variant | null;
-  variantLanguages: CardBlockVideoBlockCreate_videoBlockCreate_video_variantLanguages[];
+  variant: CoverVideoBlockCreate_videoBlockCreate_video_variant | null;
+  variantLanguages: CoverVideoBlockCreate_videoBlockCreate_video_variantLanguages[];
 }
 
-export interface CardBlockVideoBlockCreate_videoBlockCreate_action_NavigateToBlockAction {
+export interface CoverVideoBlockCreate_videoBlockCreate_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface CardBlockVideoBlockCreate_videoBlockCreate_action_LinkAction {
+export interface CoverVideoBlockCreate_videoBlockCreate_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
-export interface CardBlockVideoBlockCreate_videoBlockCreate_action_EmailAction {
+export interface CoverVideoBlockCreate_videoBlockCreate_action_EmailAction {
   __typename: "EmailAction";
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
 
-export type CardBlockVideoBlockCreate_videoBlockCreate_action = CardBlockVideoBlockCreate_videoBlockCreate_action_NavigateToBlockAction | CardBlockVideoBlockCreate_videoBlockCreate_action_LinkAction | CardBlockVideoBlockCreate_videoBlockCreate_action_EmailAction;
+export type CoverVideoBlockCreate_videoBlockCreate_action = CoverVideoBlockCreate_videoBlockCreate_action_NavigateToBlockAction | CoverVideoBlockCreate_videoBlockCreate_action_LinkAction | CoverVideoBlockCreate_videoBlockCreate_action_EmailAction;
 
-export interface CardBlockVideoBlockCreate_videoBlockCreate {
+export interface CoverVideoBlockCreate_videoBlockCreate {
   __typename: "VideoBlock";
   id: string;
   parentBlockId: string | null;
@@ -136,17 +136,31 @@ export interface CardBlockVideoBlockCreate_videoBlockCreate {
    * internal source videos: video is only populated when videoID and
    * videoVariantLanguageId are present
    */
-  video: CardBlockVideoBlockCreate_videoBlockCreate_video | null;
+  video: CoverVideoBlockCreate_videoBlockCreate_video | null;
   /**
    * action that should be performed when the video ends
    */
-  action: CardBlockVideoBlockCreate_videoBlockCreate_action | null;
+  action: CoverVideoBlockCreate_videoBlockCreate_action | null;
 }
 
-export interface CardBlockVideoBlockCreate {
-  videoBlockCreate: CardBlockVideoBlockCreate_videoBlockCreate;
+export interface CoverVideoBlockCreate_cardBlockUpdate {
+  __typename: "CardBlock";
+  id: string;
+  /**
+   * coverBlockId is present if a child block should be used as a cover.
+   * This child block should not be rendered normally, instead it should be used
+   * as a background. Blocks are often of type ImageBlock or VideoBlock.
+   */
+  coverBlockId: string | null;
 }
 
-export interface CardBlockVideoBlockCreateVariables {
+export interface CoverVideoBlockCreate {
+  videoBlockCreate: CoverVideoBlockCreate_videoBlockCreate;
+  cardBlockUpdate: CoverVideoBlockCreate_cardBlockUpdate;
+}
+
+export interface CoverVideoBlockCreateVariables {
+  id: string;
   input: VideoBlockCreateInput;
+  cardBlockId: string;
 }

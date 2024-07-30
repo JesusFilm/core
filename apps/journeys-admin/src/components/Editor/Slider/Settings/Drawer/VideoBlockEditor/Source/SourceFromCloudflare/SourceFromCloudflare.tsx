@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
@@ -20,7 +21,7 @@ export function SourceFromCloudflare({
   const { t } = useTranslation('apps-journeys-admin')
   return (
     <>
-      <Box>
+      <Box sx={{ ml: 2, mr: 4 }}>
         <ImageBlockThumbnail
           selectedBlock={{
             src: `https://customer-${
@@ -36,6 +37,7 @@ export function SourceFromCloudflare({
       <Box flexGrow={1} minWidth={0}>
         <Typography
           variant="subtitle2"
+          color="text.secondary"
           sx={{
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
@@ -47,6 +49,7 @@ export function SourceFromCloudflare({
 
         <Typography
           variant="caption"
+          color="text.secondary"
           sx={{
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
@@ -56,7 +59,9 @@ export function SourceFromCloudflare({
           {t('Custom Video')}
         </Typography>
       </Box>
-      <Edit2Icon color="primary" />
+      <IconButton disabled sx={{ mr: 2 }}>
+        <Edit2Icon color="primary" />
+      </IconButton>
     </>
   )
 }
