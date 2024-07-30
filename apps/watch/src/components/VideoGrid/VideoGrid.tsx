@@ -7,6 +7,8 @@ import { VideoChildFields } from '../../../__generated__/VideoChildFields'
 import { useAlgoliaVideos } from '../../libs/algolia/useAlgoliaVideos'
 import { VideoCard } from '../VideoCard'
 
+import { EmptySearch } from '@core/journeys/ui/EmptySearch'
+
 interface VideoGridProps {
   videos?: VideoChildFields[]
   showLoadMore?: boolean
@@ -20,7 +22,12 @@ export function VideoGrid({
   containerSlug,
   variant = 'expanded'
 }: VideoGridProps): ReactElement {
-  const { hits: algoliaVideos, showMore, isLastPage } = useAlgoliaVideos()
+  const {
+    hits: algoliaVideos,
+    showMore,
+    isLastPage,
+    stalled
+  } = useAlgoliaVideos()
   const videos = coreVideos != null ? coreVideos : algoliaVideos
   return (
     <Grid
@@ -39,7 +46,12 @@ export function VideoGrid({
             />
           </Grid>
         ))}
-      {videos.length === 0 && (
+      {videos?.length === 0 && stalled === false && (
+        <Grid item xs={12} justifyContent="center" alignItems="center">
+          <EmptySearch />
+        </Grid>
+      )}
+      {stalled && (
         <>
           <Grid item xs={12} md={4} xl={3}>
             <VideoCard variant={variant} />
@@ -67,19 +79,19 @@ export function VideoGrid({
           </Grid>
         </>
       )}
-      {showLoadMore && (
+      {showLoadMore && videos.length > 0 && (
         <Grid item xs={12}>
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
             <LoadingButton
               variant="outlined"
               onClick={showMore}
-              loading={videos.length === 0}
+              loading={stalled}
               startIcon={<AddRounded />}
               disabled={isLastPage}
               loadingPosition="start"
               size="medium"
             >
-              {videos.length === 0
+              {stalled
                 ? 'Loading...'
                 : isLastPage !== true
                   ? 'Load More'

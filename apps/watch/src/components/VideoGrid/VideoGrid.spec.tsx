@@ -44,6 +44,7 @@ describe('VideoGrid', () => {
   describe('Core Videos', () => {
     it('should render core videos', () => {
       mockedUseAlgoliaVideos.mockReturnValue({
+        stalled: false,
         hits: transformedVideos,
         showMore: jest.fn(),
         isLastPage: false
@@ -66,6 +67,7 @@ describe('VideoGrid', () => {
   describe('Algolia Videos', () => {
     it('should render a video within the grid', async () => {
       mockedUseAlgoliaVideos.mockReturnValue({
+        stalled: false,
         hits: transformedVideos,
         showMore: jest.fn(),
         isLastPage: false
@@ -81,6 +83,7 @@ describe('VideoGrid', () => {
     it('should request most videos', async () => {
       const showMore = jest.fn()
       mockedUseAlgoliaVideos.mockReturnValue({
+        stalled: false,
         hits: transformedVideos,
         showMore,
         isLastPage: false
@@ -93,6 +96,7 @@ describe('VideoGrid', () => {
 
     it('should show no more videos button', async () => {
       mockedUseAlgoliaVideos.mockReturnValue({
+        stalled: false,
         hits: transformedVideos,
         showMore: jest.fn(),
         isLastPage: true
@@ -105,9 +109,10 @@ describe('VideoGrid', () => {
       ).toBeInTheDocument()
     })
 
-    it('should show loading button if loading', () => {
+    it('should show loading button if stalled', () => {
       mockedUseAlgoliaVideos.mockReturnValue({
-        hits: [],
+        stalled: true,
+        hits: transformedVideos,
         showMore: jest.fn(),
         isLastPage: true
       })
