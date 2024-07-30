@@ -1,3 +1,4 @@
+import Stack from '@mui/material/Stack'
 import {
   AuthAction,
   useUser,
@@ -9,7 +10,6 @@ import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
 import type { ReactElement } from 'react'
 
-import Stack from '@mui/material/Stack'
 import type { GetAdminJourney } from '../../../__generated__/GetAdminJourney'
 import type { UserJourneyOpen } from '../../../__generated__/UserJourneyOpen'
 import { JourneysReportType } from '../../../__generated__/globalTypes'

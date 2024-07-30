@@ -1,3 +1,4 @@
+import Stack from '@mui/material/Stack'
 import {
   AuthAction,
   useUser,
@@ -8,6 +9,7 @@ import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 
+import { HelpScoutBeacon } from '../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { ReportsNavigation } from '../../src/components/ReportsNavigation'
 import { VisitorsList } from '../../src/components/VisitorsList'
@@ -24,7 +26,16 @@ function ReportsVisitorsPage(): ReactElement {
         title={t('Visitors Analytics')}
         user={user}
         mainHeaderChildren={
-          <ReportsNavigation destination="journey" helpScoutGap />
+          <Stack
+            direction="row"
+            justifyContent="flex-end"
+            flexGrow={1}
+            alignItems="center"
+            gap={3}
+          >
+            <ReportsNavigation destination="journey" />
+            <HelpScoutBeacon variant="iconButton" />
+          </Stack>
         }
       >
         <VisitorsList />
