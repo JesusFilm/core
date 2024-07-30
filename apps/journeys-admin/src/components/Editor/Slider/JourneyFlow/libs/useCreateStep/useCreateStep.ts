@@ -30,8 +30,10 @@ import {
 } from '../../../../../../../__generated__/globalTypes'
 import { blockDeleteUpdate } from '../../../../../../libs/blockDeleteUpdate'
 import { blockRestoreUpdate } from '../../../../../../libs/useBlockRestoreMutation'
-import { stepAndCardBlockCreateCacheUpdate } from '../../../../../../libs/useStepAndCardBlockCreateMutation'
+import { stepBlockCreateUpdate } from '../../../../../../libs/useStepAndCardBlockCreateMutation'
 import { SourceBlocksAndCoordinates } from '../../JourneyFlow'
+
+type CreateStepInput = SourceBlocksAndCoordinates
 
 export const STEP_BLOCK_DELETE = gql`
   mutation StepBlockDelete($id: ID!, $journeyId: ID!, $input: StepBlockUpdateInput!, $stepBlockUpdateId: ID! ) {
@@ -92,9 +94,7 @@ export const STEP_BLOCK_CREATE = gql`
   }
 `
 
-export function useCreateStep(): (
-  sourceStepAndCoordinates: SourceBlocksAndCoordinates
-) => Promise<void> {
+export function useCreateStep(): (input: CreateStepInput) => Promise<void> {
   const { journey } = useJourney()
   const {
     state: { selectedStep },
@@ -115,18 +115,14 @@ export function useCreateStep(): (
   const [stepBlockCreate] = useMutation<
     StepBlockCreate,
     StepBlockCreateVariables
-  >(STEP_BLOCK_CREATE, {
-    update(cache, { data }) {
-      stepAndCardBlockCreateCacheUpdate(cache, data, journey?.id)
-    }
-  })
+  >(STEP_BLOCK_CREATE)
 
   return async function createStep({
     x,
     y,
     sourceStep
-  }: SourceBlocksAndCoordinates): Promise<void> {
-    if (journey == null) return
+  }: CreateStepInput): Promise<void> {
+    if (journey == null || selectedStep == null || sourceStep == null) return
     const step: StepBlock & { x: number; y: number } = {
       __typename: 'StepBlock',
       locked: false,
@@ -159,103 +155,101 @@ export function useCreateStep(): (
           type: 'SetSelectedStepByIdAction',
           selectedStepId: step.id
         })
-        if (sourceStep != null) {
-          void stepBlockCreate({
-            variables: {
-              stepBlockCreateInput: {
-                id: step.id,
-                journeyId: journey.id,
-                x,
-                y
-              },
-              cardBlockCreateInput: {
-                id: card.id,
-                journeyId: journey.id,
-                parentBlockId: step.id,
-                themeMode: ThemeMode.dark,
-                themeName: ThemeName.base
-              },
-              stepId: sourceStep.id,
+
+        void stepBlockCreate({
+          variables: {
+            stepBlockCreateInput: {
+              id: step.id,
               journeyId: journey.id,
-              stepBlockUpdateInput: {
-                nextBlockId: step.id
-              }
+              x,
+              y
             },
-            optimisticResponse: {
-              stepBlockCreate: step,
-              cardBlockCreate: card,
-              stepBlockUpdate: {
-                id: sourceStep.id,
-                __typename: 'StepBlock',
-                nextBlockId: step.id
-              }
+            cardBlockCreateInput: {
+              id: card.id,
+              journeyId: journey.id,
+              parentBlockId: step.id,
+              themeMode: ThemeMode.dark,
+              themeName: ThemeName.base
+            },
+            stepId: sourceStep.id,
+            journeyId: journey.id,
+            stepBlockUpdateInput: {
+              nextBlockId: step.id
             }
-          })
-        }
+          },
+          optimisticResponse: {
+            stepBlockCreate: step,
+            cardBlockCreate: card,
+            stepBlockUpdate: {
+              id: sourceStep.id,
+              __typename: 'StepBlock',
+              nextBlockId: step.id
+            }
+          },
+          update(cache, { data }) {
+            stepBlockCreateUpdate(cache, data, journey?.id)
+          }
+        })
       },
       async undo({ stepBeforeDelete }) {
-        if (sourceStep != null && stepBeforeDelete != null) {
-          dispatch({
-            type: 'SetSelectedStepByIdAction',
-            selectedStepId: stepBeforeDelete.id
-          })
+        dispatch({
+          type: 'SetSelectedStepByIdAction',
+          selectedStepId: stepBeforeDelete.id
+        })
 
-          void stepBlockDelete({
-            variables: {
-              id: step.id,
-              journeyId: journey.id,
-              stepBlockUpdateId: sourceStep.id,
-              input: {
-                nextBlockId: sourceStep?.nextBlockId
-              }
-            },
-            optimisticResponse: {
-              blockDelete: [step],
-              stepBlockUpdate: {
-                id: sourceStep.id,
-                __typename: 'StepBlock',
-                nextBlockId: sourceStep.nextBlockId
-              }
-            },
-            update(cache, { data }) {
-              blockDeleteUpdate(step, data?.blockDelete, cache, journey.id)
+        void stepBlockDelete({
+          variables: {
+            id: step.id,
+            journeyId: journey.id,
+            stepBlockUpdateId: sourceStep.id,
+            input: {
+              nextBlockId: sourceStep?.nextBlockId
             }
-          })
-        }
+          },
+          optimisticResponse: {
+            blockDelete: [step],
+            stepBlockUpdate: {
+              id: sourceStep.id,
+              __typename: 'StepBlock',
+              nextBlockId: sourceStep.nextBlockId
+            }
+          },
+          update(cache, { data }) {
+            blockDeleteUpdate(step, data?.blockDelete, cache, journey.id)
+          }
+        })
       },
       async redo() {
-        if (sourceStep != null) {
-          dispatch({
-            type: 'SetSelectedStepByIdAction',
-            selectedStepId: step.id
-          })
-          void stepBlockRestore({
-            variables: {
-              id: step.id,
-              stepBlockUpdateId: sourceStep.id,
-              journeyId: journey.id,
-              input: {
-                nextBlockId: step.id
-              }
-            },
-            optimisticResponse: {
-              blockRestore: [step, card],
-              stepBlockUpdate: {
-                id: sourceStep.id,
-                __typename: 'StepBlock',
-                nextBlockId: step.id
-              }
-            },
-            update(cache, { data }) {
-              blockRestoreUpdate(
-                { id: step.id },
-                data?.blockRestore,
-                cache,
-                journey.id
-              )
+        dispatch({
+          type: 'SetSelectedStepByIdAction',
+          selectedStepId: step.id
+        })
+        void stepBlockRestore({
+          variables: {
+            id: step.id,
+            stepBlockUpdateId: sourceStep.id,
+            journeyId: journey.id,
+            input: {
+              nextBlockId: step.id
             }
-          })
-        }
+          },
+          optimisticResponse: {
+            blockRestore: [step, card],
+            stepBlockUpdate: {
+              id: sourceStep.id,
+              __typename: 'StepBlock',
+              nextBlockId: step.id
+            }
+          },
+          update(cache, { data }) {
+            blockRestoreUpdate(
+              { id: step.id },
+              data?.blockRestore,
+              cache,
+              journey.id
+            )
+          }
+        })
       }
     })
   }

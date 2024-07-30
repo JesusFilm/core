@@ -1,4 +1,4 @@
 export {
   useStepAndCardBlockCreateMutation,
-  stepAndCardBlockCreateCacheUpdate
+  stepBlockCreateUpdate
 } from './useStepAndCardBlockCreateMutation'

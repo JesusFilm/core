@@ -32,8 +32,10 @@ import {
 import { blockDeleteUpdate } from '../../../../../../libs/blockDeleteUpdate'
 import { useBlockDeleteMutation } from '../../../../../../libs/useBlockDeleteMutation'
 import { blockRestoreUpdate } from '../../../../../../libs/useBlockRestoreMutation'
-import { stepAndCardBlockCreateCacheUpdate } from '../../../../../../libs/useStepAndCardBlockCreateMutation'
+import { stepBlockCreateUpdate } from '../../../../../../libs/useStepAndCardBlockCreateMutation'
 import { SourceBlocksAndCoordinates } from '../../JourneyFlow'
+
+type CreateStepFromSocialPreviewInput = SourceBlocksAndCoordinates
 
 export const STEP_BLOCK_CREATE_FROM_SOCIAL_PREVIEW = gql`
   ${STEP_FIELDS}
@@ -103,7 +105,7 @@ mutation StepBlockRestoreFromSocialPreview($id: ID!, $stepId: ID!, $parentOrder:
 }`
 
 export function useCreateStepFromSocialPreview(): (
-  coordinates: SourceBlocksAndCoordinates
+  input: CreateStepFromSocialPreviewInput
 ) => Promise<void> {
   const { journey } = useJourney()
   const {
@@ -116,11 +118,7 @@ export function useCreateStepFromSocialPreview(): (
   const [stepBlockCreateFromSocialPreview] = useMutation<
     StepBlockCreateFromSocialPreview,
     StepBlockCreateFromSocialPreviewVariables
-  >(STEP_BLOCK_CREATE_FROM_SOCIAL_PREVIEW, {
-    update(cache, { data }) {
-      stepAndCardBlockCreateCacheUpdate(cache, data, journey?.id)
-    }
-  })
+  >(STEP_BLOCK_CREATE_FROM_SOCIAL_PREVIEW)
 
   const [stepBlockDeleteFromSocialPreview] = useMutation<
     StepBlockDeleteFromSocialPreview,
@@ -135,7 +133,7 @@ export function useCreateStepFromSocialPreview(): (
   return async function createStepFromSocialPreview({
     x,
     y
-  }: { x: number; y: number }): Promise<void> {
+  }: CreateStepFromSocialPreviewInput): Promise<void> {
     if (journey == null) return
     const step: StepBlock & { x: number; y: number } = {
       __typename: 'StepBlock',
@@ -201,6 +199,9 @@ export function useCreateStepFromSocialPreview(): (
             stepBlockCreate: step,
             cardBlockCreate: card,
             blockOrderUpdate: [step, ...(optimisticSteps ?? [])]
+          },
+          update(cache, { data }) {
+            stepBlockCreateUpdate(cache, data, journey?.id)
           }
         })
       },

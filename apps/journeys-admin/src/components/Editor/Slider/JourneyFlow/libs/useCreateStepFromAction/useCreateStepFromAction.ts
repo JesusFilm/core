@@ -31,8 +31,10 @@ import {
 } from '../../../../../../../__generated__/globalTypes'
 import { blockDeleteUpdate } from '../../../../../../libs/blockDeleteUpdate'
 import { blockRestoreUpdate } from '../../../../../../libs/useBlockRestoreMutation'
-import { stepAndCardBlockCreateCacheUpdate } from '../../../../../../libs/useStepAndCardBlockCreateMutation'
+import { stepBlockCreateUpdate } from '../../../../../../libs/useStepAndCardBlockCreateMutation'
 import { SourceBlocksAndCoordinates } from '../../JourneyFlow'
+
+type CreateStepFromActionInput = SourceBlocksAndCoordinates
 
 export const STEP_BLOCK_DELETE_FROM_ACTION = gql`
   mutation StepBlockDeleteFromAction($id: ID!, $journeyId: ID!, $parentBlockId: ID, $input: BlockUpdateActionInput!, $blockUpdateActionId: ID! ) {
@@ -102,7 +104,7 @@ export const STEP_BLOCK_CREATE_FROM_ACTION = gql`
 `
 
 export function useCreateStepFromAction(): (
-  sourceBlocksAndCoordinates: SourceBlocksAndCoordinates
+  input: CreateStepFromActionInput
 ) => Promise<void> {
   const { journey } = useJourney()
   const {
@@ -131,8 +133,14 @@ export function useCreateStepFromAction(): (
     y,
     sourceStep,
     sourceBlock
-  }): Promise<void> {
-    if (journey == null) return
+  }: CreateStepFromActionInput): Promise<void> {
+    if (
+      journey == null ||
+      sourceBlock == null ||
+      sourceStep == null ||
+      selectedStep == null
+    )
+      return
     if (!isActionBlock(sourceBlock)) return
 
     const step: StepBlock & { x: number; y: number } = {
@@ -156,11 +164,9 @@ export function useCreateStepFromAction(): (
       backgroundColor: null,
       parentOrder: 0
     }
-
     add({
       parameters: { execute: {}, undo: { stepBeforeDelete: selectedStep } },
       async execute() {
-        if (sourceBlock == null) return
         dispatch({
           type: 'SetEditorFocusAction',
           selectedStepId: step.id,
@@ -200,8 +206,8 @@ export function useCreateStepFromAction(): (
             }
           },
           update(cache, { data }) {
+            stepBlockCreateUpdate(cache, data, journey?.id)
             if (data?.blockUpdateAction == null) return
-            stepAndCardBlockCreateCacheUpdate(cache, data, journey?.id)
             cache.modify({
               id: cache.identify({
                 __typename: sourceBlock.__typename,
@@ -215,72 +221,65 @@ export function useCreateStepFromAction(): (
         })
       },
       async undo({ stepBeforeDelete }) {
-        if (
-          sourceStep != null &&
-          stepBeforeDelete != null &&
-          sourceBlock != null &&
-          sourceBlock?.action != null
-        ) {
-          dispatch({
-            type: 'SetEditorFocusAction',
-            selectedStepId: stepBeforeDelete.id,
-            activeSlide: ActiveSlide.JourneyFlow
-          })
-          void stepBlockDeleteFromAction({
-            variables: {
-              id: step.id,
-              journeyId: journey.id,
-              blockUpdateActionId: sourceBlock.id,
-              input: {
-                gtmEventName: sourceBlock?.action?.gtmEventName ?? null,
-                email:
-                  'email' in sourceBlock.action
-                    ? sourceBlock?.action?.email
-                    : null,
-                url:
-                  'url' in sourceBlock.action ? sourceBlock?.action?.url : null,
-                blockId:
-                  'blockId' in sourceBlock.action
-                    ? sourceBlock?.action?.blockId
-                    : null,
-                target:
-                  'target' in sourceBlock.action
-                    ? (sourceBlock?.action?.target as string)
-                    : null
-              }
-            },
-            optimisticResponse: {
-              blockDelete: [step],
-              blockUpdateAction: {
-                parentBlockId: sourceBlock.id,
-                __typename: sourceBlock.action.__typename,
-                parentBlock: {
-                  ...sourceBlock
-                },
-                gtmEventName: sourceBlock?.action?.gtmEventName ?? null
-              }
-            },
-            update(cache, { data }, { variables }) {
-              if (data?.blockUpdateAction == null) return
-              blockDeleteUpdate(step, data?.blockDelete, cache, journey.id)
-              cache.modify({
-                id: cache.identify({
-                  __typename: sourceBlock.__typename,
-                  id: sourceBlock.id
-                }),
-                fields: {
-                  action: () => ({
-                    ...data.blockUpdateAction,
-                    ...variables?.input
-                  })
-                }
-              })
+        if (sourceBlock.action == null) return
+        dispatch({
+          type: 'SetEditorFocusAction',
+          selectedStepId: stepBeforeDelete.id,
+          activeSlide: ActiveSlide.JourneyFlow
+        })
+        void stepBlockDeleteFromAction({
+          variables: {
+            id: step.id,
+            journeyId: journey.id,
+            blockUpdateActionId: sourceBlock.id,
+            input: {
+              gtmEventName: sourceBlock?.action?.gtmEventName ?? null,
+              email:
+                'email' in sourceBlock.action
+                  ? sourceBlock?.action?.email
+                  : null,
+              url:
+                'url' in sourceBlock.action ? sourceBlock?.action?.url : null,
+              blockId:
+                'blockId' in sourceBlock.action
+                  ? sourceBlock?.action?.blockId
+                  : null,
+              target:
+                'target' in sourceBlock.action
+                  ? (sourceBlock?.action?.target as string)
+                  : null
             }
-          })
-        }
+          },
+          optimisticResponse: {
+            blockDelete: [step],
+            blockUpdateAction: {
+              parentBlockId: sourceBlock.id,
+              __typename: sourceBlock.action.__typename,
+              parentBlock: {
+                ...sourceBlock
+              },
+              gtmEventName: sourceBlock?.action?.gtmEventName ?? null
+            }
+          },
+          update(cache, { data }, { variables }) {
+            blockDeleteUpdate(step, data?.blockDelete, cache, journey.id)
+            if (data?.blockUpdateAction == null) return
+            cache.modify({
+              id: cache.identify({
+                __typename: sourceBlock.__typename,
+                id: sourceBlock.id
+              }),
+              fields: {
+                action: () => ({
+                  ...data.blockUpdateAction,
+                  ...variables?.input
+                })
+              }
+            })
+          }
+        })
       },
       async redo() {
-        if (sourceBlock == null) return
         dispatch({
           type: 'SetEditorFocusAction',
           selectedStepId: step.id,
@@ -307,13 +306,13 @@ export function useCreateStepFromAction(): (
             }
           },
           update(cache, { data }) {
-            if (data?.blockUpdateAction == null) return
             blockRestoreUpdate(
               { id: step.id },
               data?.blockRestore,
               cache,
               journey.id
             )
+            if (data?.blockUpdateAction == null) return
             cache.modify({
               id: cache.identify({
                 __typename: sourceBlock.__typename,

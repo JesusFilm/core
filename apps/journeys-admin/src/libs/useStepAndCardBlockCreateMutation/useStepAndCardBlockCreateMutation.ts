@@ -33,7 +33,7 @@ export const STEP_AND_CARD_BLOCK_CREATE = gql`
   }
 `
 
-export function stepAndCardBlockCreateCacheUpdate(
+export function stepBlockCreateUpdate(
   // biome-ignore lint/suspicious/noExplicitAny: update function gives this type
   cache: ApolloCache<any>,
   data: StepAndCardBlockCreate | null | undefined,
@@ -97,7 +97,7 @@ export function useStepAndCardBlockCreateMutation(
     update(...args) {
       options?.update?.(...args)
       const [cache, { data }] = args
-      stepAndCardBlockCreateCacheUpdate(cache, data, journey?.id)
+      stepBlockCreateUpdate(cache, data, journey?.id)
     }
   })
 
