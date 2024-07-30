@@ -17,6 +17,7 @@ export function Items(): ReactElement {
       flexDirection="row"
       gap={5}
       data-testid="ItemsStack"
+      alignItems="center"
     >
       {commands && (
         <>

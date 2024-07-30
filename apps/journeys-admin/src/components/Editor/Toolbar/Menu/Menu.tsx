@@ -12,6 +12,7 @@ import MoreIcon from '@core/shared/ui/icons/More'
 
 import { GetRole } from '../../../../../__generated__/GetRole'
 import { Role } from '../../../../../__generated__/globalTypes'
+import { HelpScoutBeacon } from '../../../HelpScoutBeacon'
 import { AccessItem } from '../Items/AccessItem'
 import { AnalyticsItem } from '../Items/AnalyticsItem'
 import { CopyLinkItem } from '../Items/CopyLinkItem'
@@ -109,6 +110,12 @@ export function Menu(): ReactElement {
           (journey?.template !== true || isPublisher != null) && (
             <CopyLinkItem variant="menu-item" onClose={handleCloseMenu} />
           )}
+        {!smUp && (
+          <>
+            <Divider />
+            <HelpScoutBeacon variant="menuItem" />
+          </>
+        )}
       </MuiMenu>
     </>
   )

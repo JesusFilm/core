@@ -18,6 +18,7 @@ import { EDIT_TOOLBAR_HEIGHT } from '../constants'
 import { ActiveContent } from '@core/journeys/ui/EditorProvider'
 import Button from '@mui/material/Button'
 import { useTranslation } from 'react-i18next'
+import { HelpScoutBeacon } from '../../HelpScoutBeacon'
 import { Items } from './Items'
 import { Menu } from './Menu'
 
@@ -25,10 +26,7 @@ export function Toolbar(): ReactElement {
   const { journey } = useJourney()
   const { t } = useTranslation('journeys-admin')
 
-  const {
-    state: { activeSlide },
-    dispatch
-  } = useEditor()
+  const { dispatch } = useEditor()
 
   function handleSelect(): void {
     dispatch({
@@ -145,6 +143,13 @@ export function Toolbar(): ReactElement {
           <Items />
         </>
       )}
+      <Box
+        sx={{
+          display: { xs: 'none', sm: 'block' }
+        }}
+      >
+        <HelpScoutBeacon variant="iconButton" />
+      </Box>
       <Menu />
     </Stack>
   )
