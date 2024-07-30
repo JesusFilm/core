@@ -4,7 +4,8 @@ import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import { ReactElement } from 'react'
 import { PageWrapper } from '../PageWrapper'
-import { ResourceHeading } from '../ResourceHeading'
+
+import { ResourceHeading } from '@core/journeys/ui/ResourceHeading'
 import { StrategySections } from '../StrategySections'
 
 export function StrategiesView(): ReactElement {
