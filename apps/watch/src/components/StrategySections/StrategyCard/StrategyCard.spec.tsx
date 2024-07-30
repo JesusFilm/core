@@ -17,10 +17,9 @@ describe('StrategyCard', () => {
   }
 
   beforeEach(() => {
-    const sendEvent = jest.fn()
     mockUseHits.mockReturnValue({
       hits: [item],
-      sendEvent: sendEvent
+      sendEvent: jest.fn()
     } as unknown as HitsRenderState)
   })
 
