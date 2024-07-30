@@ -1,4 +1,5 @@
 import { Meta, StoryObj } from '@storybook/react'
+import { InstantSearchTestWrapper } from 'libs/journeys/ui/src/libs/algolia/InstantSearchTestWrapper'
 import { ComponentProps } from 'react'
 import { watchConfig } from '../../../libs/storybook'
 import { StrategyItemProps } from './StrategyCard'
@@ -21,7 +22,11 @@ type Story = StoryObj<
 >
 
 const Template: Story = {
-  render: (args) => <StrategyCard {...args} />
+  render: (args) => (
+    <InstantSearchTestWrapper indexName="">
+      <StrategyCard {...args} />
+    </InstantSearchTestWrapper>
+  )
 }
 
 export const Default = {
