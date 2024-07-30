@@ -2,20 +2,55 @@ import { GetStaticProps } from 'next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { ReactElement } from 'react'
 
+import algoliasearch from 'algoliasearch'
+import singletonRouter from 'next/router'
+import { renderToString } from 'react-dom/server'
+import {
+  InstantSearch,
+  InstantSearchSSRProvider,
+  InstantSearchServerState,
+  getServerState
+} from 'react-instantsearch'
+import { createInstantSearchRouterNext } from 'react-instantsearch-router-nextjs'
 import i18nConfig from '../../next-i18next.config'
-import { PageWrapper } from '../../src/components/PageWrapper'
 import { StrategiesView } from '../../src/components/StrategiesView'
 import { getFlags } from '../../src/libs/getFlags'
 
-function StrategiesPage(): ReactElement {
+const searchClient = algoliasearch(
+  process.env.NEXT_PUBLIC_ALGOLIA_APP_ID ?? '',
+  process.env.NEXT_PUBLIC_ALGOLIA_API_KEY ?? ''
+)
+
+interface StrategiesPageProps {
+  serverState?: InstantSearchServerState
+}
+
+function StrategiesPage({ serverState }: StrategiesPageProps): ReactElement {
   return (
-    <PageWrapper>
-      <StrategiesView />
-    </PageWrapper>
+    <InstantSearchSSRProvider {...serverState}>
+      <InstantSearch
+        searchClient={searchClient}
+        future={{ preserveSharedStateOnUnmount: true }}
+        insights
+        routing={{
+          router: createInstantSearchRouterNext({
+            serverUrl: 'http://localhost:4300/strategies',
+            singletonRouter,
+            routerOptions: {
+              cleanUrlOnDispose: false
+            }
+          })
+        }}
+      >
+        <StrategiesView />
+      </InstantSearch>
+    </InstantSearchSSRProvider>
   )
 }
 
-export const getStaticProps: GetStaticProps = async ({ locale }) => {
+export const getStaticProps: GetStaticProps<StrategiesPageProps> = async ({
+  locale
+}) => {
   const flags = await getFlags()
 
   if (flags.strategies !== true)
@@ -25,10 +60,15 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
       props: {}
     }
 
+  const serverState = await getServerState(<StrategiesPage />, {
+    renderToString
+  })
+
   return {
     revalidate: 3600,
     props: {
       flags,
+      serverState,
       ...(await serverSideTranslations(
         locale ?? 'en',
         ['apps-watch'],
