@@ -15,13 +15,34 @@ import {
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import MessageCircle from '@core/shared/ui/icons/MessageCircle'
-import Share from '@core/shared/ui/icons/Share'
-import ThumbsUp from '@core/shared/ui/icons/ThumbsUp'
-import UserProfileCircle from '@core/shared/ui/icons/UserProfileCircle'
-
+import Tooltip from '@mui/material/Tooltip'
+import { alpha } from '@mui/system'
+import { useTranslation } from 'react-i18next'
 import { useUpdateEdge } from '../../libs/useUpdateEdge'
 import { BaseNode, HandleVariant } from '../BaseNode'
+
+const tooltipProps = {
+  placement: 'top' as const,
+  arrow: true,
+  slotProps: {
+    popper: {
+      modifiers: [
+        {
+          name: 'offset',
+          options: {
+            offset: [0, -8]
+          }
+        }
+      ]
+    },
+    tooltip: {
+      sx: {
+        px: 2,
+        py: 0
+      }
+    }
+  }
+}
 
 export function SocialPreviewNode(): ReactElement {
   const { journey } = useJourney()
@@ -29,6 +50,7 @@ export function SocialPreviewNode(): ReactElement {
     state: { showAnalytics }
   } = useEditor()
   const updateEdge = useUpdateEdge()
+  const { t } = useTranslation('apps-journeys-admin')
 
   const {
     dispatch,
@@ -79,204 +101,202 @@ export function SocialPreviewNode(): ReactElement {
       positionTargetHandle={false}
     >
       {({ selected }) => (
-        <Card
-          data-testid="SocialPreviewNode"
-          sx={{
-            height: 168,
-            width: 130.5,
-            borderRadius: 2,
-            display: 'block',
-            px: 1.5,
-            outline: (theme) =>
-              `2px solid ${
-                selected === true
-                  ? theme.palette.primary.main
-                  : selected === 'descendant'
-                    ? theme.palette.divider
-                    : 'transparent'
-              }`,
-            outlineOffset: '5px',
-            ...(showAnalytics === true && {
-              backgroundColor: 'transparent',
+        <Tooltip title={t('Social Media Preview')} {...tooltipProps}>
+          <Card
+            data-testid="SocialPreviewNode"
+            sx={{
+              height: 168,
+              width: 130.5,
+              borderRadius: 2,
+              display: 'block',
+              px: 1.5,
               outline: (theme) =>
-                `2px solid ${alpha(theme.palette.secondary.dark, 0.1)}`,
-              outlineOffset: 0,
-              opacity: 0.7,
-              boxShadow: 'none'
-            })
-          }}
-          onClick={() => handleClick()}
-        >
-          <Stack
-            direction="row"
-            height="30px"
-            justifyContent="space-between"
-            alignItems="center"
-            spacing={1}
+                `2px solid ${
+                  selected === true
+                    ? theme.palette.primary.main
+                    : selected === 'descendant'
+                      ? theme.palette.divider
+                      : 'transparent'
+                }`,
+              outlineOffset: '5px',
+              ...(showAnalytics === true && {
+                backgroundColor: 'transparent',
+                outline: ({ palette }) =>
+                  `2px solid ${alpha(palette.secondary.dark, 0.1)}`,
+                outlineOffset: 0,
+                opacity: 0.7,
+                boxShadow: 'none'
+              })
+            }}
+            onClick={() => handleClick()}
           >
-            <UserProfileCircle
-              sx={{
-                fontSize: 14,
-                color: (theme) =>
-                  showAnalytics === true
-                    ? alpha(theme.palette.secondary.dark, 0.1)
-                    : 'background.default'
-              }}
-            />
-            <Box flexGrow={1}>
+            <Stack
+              direction="row"
+              height="30px"
+              justifyContent="space-between"
+              alignItems="center"
+              spacing={1}
+            >
               <Box
-                width={45}
+                width={13}
+                height={13}
+                borderRadius={3.25}
+                sx={{
+                  bgcolor: ({ palette }) =>
+                    showAnalytics === true
+                      ? alpha(palette.secondary.dark, 0.1)
+                      : 'background.default'
+                }}
+              />
+              <Box flexGrow={1}>
+                <Box
+                  width={45}
+                  height={9}
+                  borderRadius={2}
+                  sx={{
+                    bgcolor: ({ palette }) =>
+                      showAnalytics === true
+                        ? alpha(palette.secondary.dark, 0.1)
+                        : 'background.default'
+                  }}
+                />
+              </Box>
+              <Box
+                width={9}
                 height={9}
                 borderRadius={2}
                 sx={{
-                  backgroundColor: (theme) =>
+                  bgcolor: ({ palette }) =>
                     showAnalytics === true
-                      ? alpha(theme.palette.secondary.dark, 0.1)
+                      ? alpha(palette.secondary.dark, 0.1)
                       : 'background.default'
                 }}
               />
-            </Box>
-            <Box
-              width={9}
-              height={9}
-              borderRadius={2}
-              sx={{
-                backgroundColor: (theme) =>
-                  showAnalytics === true
-                    ? alpha(theme.palette.secondary.dark, 0.1)
-                    : 'background.default'
-              }}
-            />
-          </Stack>
-          <CardMedia
-            sx={{
-              width: 118.5,
-              height: 90,
-              display: 'flex',
-              flexDirection: 'column'
-            }}
-          >
-            {journey?.primaryImageBlock?.src == null ? (
-              <Box
-                data-testid="SocialPreviewPostEmpty"
-                display="block"
-                width={118.5}
-                height={90}
-                borderRadius={1}
-                sx={{
-                  backgroundColor: (theme) =>
-                    alpha(theme.palette.secondary.dark, 0.1)
-                }}
-              />
-            ) : (
-              <Image
-                src={journey.primaryImageBlock.src}
-                alt={journey.primaryImageBlock.alt ?? ''}
-                width={118.5}
-                height={90}
-                style={{
-                  borderRadius: 1.5,
-                  maxWidth: '100%',
-                  objectFit: 'cover'
-                }}
-              />
-            )}
-          </CardMedia>
-          <Stack
-            gap={2}
-            sx={{
-              flexDirection: 'column',
-              display: 'flex',
-              height: 36
-            }}
-          >
-            <Stack gap={0.75} sx={{ mt: 1 }}>
-              {journey?.seoTitle == null ||
-              isEmpty(journey?.seoTitle?.trim()) ? (
-                <Box
-                  data-testid="SocialPreviewTitleEmpty"
-                  width={118.5}
-                  height={9}
-                  borderRadius={2}
-                  sx={{
-                    backgroundColor: (theme) =>
-                      showAnalytics === true
-                        ? alpha(theme.palette.secondary.dark, 0.1)
-                        : 'background.default'
-                  }}
-                />
-              ) : (
-                <Typography
-                  variant="subtitle1"
-                  fontSize={7}
-                  lineHeight="9px"
-                  color="secondary.dark"
-                  noWrap
-                >
-                  {journey.seoTitle}
-                </Typography>
-              )}
-              {journey?.seoDescription == null ||
-              isEmpty(journey?.seoDescription?.trim()) ? (
-                <Box
-                  data-testid="SocialPreviewDescriptionEmpty"
-                  width={118.5}
-                  height={9}
-                  sx={{
-                    backgroundColor: (theme) =>
-                      showAnalytics === true
-                        ? alpha(theme.palette.secondary.dark, 0.1)
-                        : 'background.default'
-                  }}
-                  borderRadius={2}
-                />
-              ) : (
-                <Typography
-                  variant="body2"
-                  fontSize={4.5}
-                  lineHeight="9px"
-                  color="secondary.light"
-                  noWrap
-                >
-                  {journey.seoDescription}
-                </Typography>
-              )}
             </Stack>
+            <Tooltip title={t('Social Image')} {...tooltipProps}>
+              <CardMedia
+                sx={{
+                  width: 118.5,
+                  height: 90,
+                  display: 'flex',
+                  flexDirection: 'column'
+                }}
+              >
+                {journey?.primaryImageBlock?.src == null ? (
+                  <Box
+                    data-testid="SocialPreviewPostEmpty"
+                    display="block"
+                    width={118.5}
+                    height={90}
+                    borderRadius={1}
+                    sx={{
+                      bgcolor: ({ palette }) =>
+                        showAnalytics === true
+                          ? alpha(palette.secondary.dark, 0.1)
+                          : 'background.default'
+                    }}
+                  />
+                ) : (
+                  <Image
+                    src={journey.primaryImageBlock.src}
+                    alt={journey.primaryImageBlock.alt ?? ''}
+                    width={118.5}
+                    height={90}
+                    style={{
+                      borderRadius: 1,
+                      maxWidth: '100%',
+                      objectFit: 'cover'
+                    }}
+                  />
+                )}
+              </CardMedia>
+            </Tooltip>
             <Stack
-              flexDirection="row"
-              justifyContent="space-around"
-              color="background.default"
+              sx={{
+                flexDirection: 'column',
+                display: 'flex'
+              }}
             >
-              <ThumbsUp
-                sx={{
-                  fontSize: 9,
-                  color: (theme) =>
-                    showAnalytics === true
-                      ? alpha(theme.palette.secondary.dark, 0.1)
-                      : 'background.default'
-                }}
-              />
-              <MessageCircle
-                sx={{
-                  fontSize: 9,
-                  color: (theme) =>
-                    showAnalytics === true
-                      ? alpha(theme.palette.secondary.dark, 0.1)
-                      : 'background.default'
-                }}
-              />
-              <Share
-                sx={{
-                  fontSize: 9,
-                  color: (theme) =>
-                    showAnalytics === true
-                      ? alpha(theme.palette.secondary.dark, 0.1)
-                      : 'background.default'
-                }}
-              />
+              <Stack gap={0.75} sx={{ mt: 1 }}>
+                <Tooltip title={t('Headline')} {...tooltipProps}>
+                  {journey?.seoTitle == null ||
+                  isEmpty(journey?.seoTitle?.trim()) ? (
+                    <Box
+                      data-testid="SocialPreviewTitleEmpty"
+                      width={118.5}
+                      height={9}
+                      borderRadius={0.75}
+                      sx={{
+                        bgcolor: ({ palette }) =>
+                          showAnalytics === true
+                            ? alpha(palette.secondary.dark, 0.1)
+                            : 'background.default'
+                      }}
+                    />
+                  ) : (
+                    <Typography
+                      variant="subtitle1"
+                      fontSize={7}
+                      lineHeight="9px"
+                      color="secondary.dark"
+                      noWrap
+                    >
+                      {journey.seoTitle}
+                    </Typography>
+                  )}
+                </Tooltip>
+                <Tooltip title={t('Secondary Text')} {...tooltipProps}>
+                  {journey?.seoDescription == null ||
+                  isEmpty(journey?.seoDescription?.trim()) ? (
+                    <Box
+                      data-testid="SocialPreviewDescriptionEmpty"
+                      width={118.5}
+                      height={9}
+                      borderRadius={0.75}
+                      sx={{
+                        bgcolor: ({ palette }) =>
+                          showAnalytics === true
+                            ? alpha(palette.secondary.dark, 0.1)
+                            : 'background.default'
+                      }}
+                    />
+                  ) : (
+                    <Typography
+                      variant="body2"
+                      fontSize={4.5}
+                      lineHeight="9px"
+                      color="secondary.light"
+                      noWrap
+                    >
+                      {journey.seoDescription}
+                    </Typography>
+                  )}
+                </Tooltip>
+              </Stack>
+              <Stack
+                flexDirection="row"
+                justifyContent="space-around"
+                color="background.default"
+                p={1.75}
+              >
+                {[0, 1, 2].map((i) => (
+                  <Box
+                    key={i}
+                    width={9}
+                    height={9}
+                    borderRadius="4.5px"
+                    sx={{
+                      bgcolor: ({ palette }) =>
+                        showAnalytics === true
+                          ? alpha(palette.secondary.dark, 0.1)
+                          : 'background.default'
+                    }}
+                  />
+                ))}
+              </Stack>
             </Stack>
-          </Stack>
-        </Card>
+          </Card>
+        </Tooltip>
       )}
     </BaseNode>
   )
