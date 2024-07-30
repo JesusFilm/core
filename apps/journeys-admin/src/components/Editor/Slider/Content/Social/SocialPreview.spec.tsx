@@ -38,8 +38,8 @@ describe('SocialPreview', () => {
       </MockedProvider>
     )
 
-    expect(screen.getByText('Social App View')).toBeInTheDocument()
-    expect(screen.getByText('Messaging App View')).toBeInTheDocument()
+    expect(screen.getByText('Social Post View')).toBeInTheDocument()
+    expect(screen.getByText('Message View')).toBeInTheDocument()
   })
 
   it('should only render Message and Post for mobile viewport', () => {
@@ -53,8 +53,8 @@ describe('SocialPreview', () => {
       </MockedProvider>
     )
 
-    expect(screen.getByText('Social App View')).toBeInTheDocument()
-    expect(screen.getByText('Messaging App View')).toBeInTheDocument()
+    expect(screen.getByText('Social Post View')).toBeInTheDocument()
+    expect(screen.getByText('Message View')).toBeInTheDocument()
   })
 
   it('should dispatch active slide action on click', () => {
