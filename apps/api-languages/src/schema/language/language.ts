@@ -62,7 +62,7 @@ export const Language = builder.prismaObject('Language', {
         })
       }
     }),
-    countries: t.relation('countries'),
+    countryLanguages: t.relation('countryLanguages'),
     audioPreview: t.relation('audioPreview', { nullable: true })
   })
 })
@@ -104,7 +104,9 @@ builder.queryFields((t) => ({
       where: t.arg({ type: LanguagesFilter, required: false })
     },
     resolve: async (query, _parent, { offset, limit, where }) => {
-      const filter: Prisma.LanguageWhereInput = {}
+      const filter: Prisma.LanguageWhereInput = {
+        hasVideos: true
+      }
       if (where?.ids != null) filter.id = { in: where?.ids }
       return await prisma.language.findMany({
         ...query,

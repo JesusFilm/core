@@ -3,8 +3,10 @@ import { Job } from 'bullmq'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
 import { PrismaService } from '../../lib/prisma.service'
+import { ImporterBibleBookNamesService } from '../importer/importerBibleBookNames/importerBibleBookNames.service'
 import { ImporterBibleBooksService } from '../importer/importerBibleBooks/importerBibleBooks.service'
 import { ImporterBibleCitationsService } from '../importer/importerBibleCitations/importerBibleCitations.service'
+import { ImporterKeywordsService } from '../importer/importerKeywords/importerKeywords.service'
 import { ImporterVideoDescriptionService } from '../importer/importerVideoDescriptions/importerVideoDescriptions.service'
 import { ImporterVideoImageAltService } from '../importer/importerVideoImageAlt/importerVideoImageAlt.service'
 import { ImporterVideoSnippetsService } from '../importer/importerVideoSnippets/importerVideoSnippets.service'
@@ -15,7 +17,6 @@ import { ImporterVideoVariantDownloadsService } from '../importer/importerVideoV
 import { ImporterVideoVariantsService } from '../importer/importerVideoVariants/importerVideoVariants.service'
 import { ImporterVideosService } from '../importer/importerVideos/importerVideos.service'
 import { ImporterVideosChildrenService } from '../importer/importerVideosChildren/importerVideosChildren.service'
-import { ImporterBibleBookNamesService } from '../importer/importerBibleBookNames/importerBibleBookNames.service'
 import { BigQueryConsumer } from './bigQuery.consumer'
 import { BigQueryService } from './bigQuery.service'
 
@@ -89,6 +90,10 @@ describe('BigQueryConsumer', () => {
         {
           provide: ImporterBibleBookNamesService,
           useValue: mockDeep<ImporterBibleBookNamesService>()
+        },
+        {
+          provide: ImporterKeywordsService,
+          useValue: mockDeep<ImporterKeywordsService>()
         }
       ]
     }).compile()

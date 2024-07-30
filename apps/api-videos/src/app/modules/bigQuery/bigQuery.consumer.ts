@@ -8,6 +8,7 @@ import { ImporterService } from '../importer/importer.service'
 import { ImporterBibleBookNamesService } from '../importer/importerBibleBookNames/importerBibleBookNames.service'
 import { ImporterBibleBooksService } from '../importer/importerBibleBooks/importerBibleBooks.service'
 import { ImporterBibleCitationsService } from '../importer/importerBibleCitations/importerBibleCitations.service'
+import { ImporterKeywordsService } from '../importer/importerKeywords/importerKeywords.service'
 import { ImporterVideoDescriptionService } from '../importer/importerVideoDescriptions/importerVideoDescriptions.service'
 import { ImporterVideoImageAltService } from '../importer/importerVideoImageAlt/importerVideoImageAlt.service'
 import { ImporterVideoSnippetsService } from '../importer/importerVideoSnippets/importerVideoSnippets.service'
@@ -48,7 +49,8 @@ export class BigQueryConsumer extends WorkerHost {
     private readonly importerVideosChildrenService: ImporterVideosChildrenService,
     private readonly importerBibleBooksService: ImporterBibleBooksService,
     private readonly importerBibleBookNamesService: ImporterBibleBookNamesService,
-    private readonly importerBibleCitationsService: ImporterBibleCitationsService
+    private readonly importerBibleCitationsService: ImporterBibleCitationsService,
+    private readonly importerKeywordsService: ImporterKeywordsService
   ) {
     super()
     this.tables = [
@@ -119,6 +121,11 @@ export class BigQueryConsumer extends WorkerHost {
         table:
           'jfp-data-warehouse.jfp_mmdb_prod.core_videoBibleCitation_arclight_data',
         service: this.importerBibleCitationsService,
+        hasUpdatedAt: true
+      },
+      {
+        table: 'jfp-data-warehouse.jfp_mmdb_prod.core_keywords_arclight_data',
+        service: this.importerKeywordsService,
         hasUpdatedAt: true
       }
     ]

@@ -77,6 +77,16 @@ input BlocksFilter
   typenames: [String!]
 }
 
+input BlockUpdateActionInput
+  @join__type(graph: JOURNEYS)
+{
+  gtmEventName: String
+  email: String
+  url: String
+  target: String
+  blockId: String
+}
+
 type Browser
   @join__type(graph: JOURNEYS)
 {
@@ -277,6 +287,7 @@ input CardBlockUpdateInput
   @join__type(graph: JOURNEYS)
 {
   parentBlockId: ID
+  coverBlockId: ID
   backgroundColor: String
   fullscreen: Boolean
   themeMode: ThemeMode
@@ -1402,6 +1413,7 @@ type Mutation
     """drop this parameter after merging teams"""
     journeyId: ID
   ): EmailAction! @join__field(graph: JOURNEYS)
+  blockUpdateAction(id: ID!, input: BlockUpdateActionInput): Action! @join__field(graph: JOURNEYS)
 
   """blockDelete returns the updated sibling blocks on successful delete"""
   blockDelete(

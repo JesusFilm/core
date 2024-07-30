@@ -1,6 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -78,7 +78,7 @@ describe('CardLayout', () => {
       fullscreen: false,
       children: []
     }
-    const { getByText } = render(
+    render(
       <MockedProvider>
         <JourneyProvider value={{ journey, variant: 'admin' }}>
           <EditorProvider initialState={{ selectedBlock: card }}>
@@ -87,7 +87,10 @@ describe('CardLayout', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    expect(getByText('Contained')).toBeInTheDocument()
+    expect(screen.getByTestId('selected').children[0]).toHaveAttribute(
+      'alt',
+      'Contained'
+    )
   })
 
   it('shows Expanded', () => {
@@ -103,7 +106,7 @@ describe('CardLayout', () => {
       fullscreen: true,
       children: []
     }
-    const { getByText } = render(
+    render(
       <MockedProvider>
         <JourneyProvider value={{ journey, variant: 'admin' }}>
           <EditorProvider initialState={{ selectedBlock: card }}>
@@ -112,7 +115,10 @@ describe('CardLayout', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    expect(getByText('Expanded')).toBeInTheDocument()
+    expect(screen.getByTestId('selected').children[0]).toHaveAttribute(
+      'alt',
+      'Expanded'
+    )
   })
 
   it('works in a step block', () => {
@@ -137,7 +143,7 @@ describe('CardLayout', () => {
       parentOrder: 0,
       children: [card]
     }
-    const { getByText } = render(
+    render(
       <MockedProvider>
         <JourneyProvider value={{ journey, variant: 'admin' }}>
           <EditorProvider initialState={{ selectedBlock: step }}>
@@ -146,7 +152,10 @@ describe('CardLayout', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    expect(getByText('Contained')).toBeInTheDocument()
+    expect(screen.getByTestId('selected').children[0]).toHaveAttribute(
+      'alt',
+      'Contained'
+    )
   })
 
   it('changes to gql selection', async () => {
@@ -175,7 +184,7 @@ describe('CardLayout', () => {
       fullscreen: false,
       children: []
     }
-    const { getByTestId } = render(
+    render(
       <MockedProvider
         cache={cache}
         mocks={[
@@ -198,7 +207,7 @@ describe('CardLayout', () => {
         </EditorProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('true'))
+    fireEvent.click(screen.getByTestId('true'))
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
@@ -233,7 +242,7 @@ describe('CardLayout', () => {
       fullscreen: false,
       children: []
     }
-    const { getByTestId, getByRole } = render(
+    render(
       <MockedProvider
         cache={cache}
         mocks={[
@@ -264,9 +273,9 @@ describe('CardLayout', () => {
         </EditorProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('true'))
+    fireEvent.click(screen.getByTestId('true'))
     await waitFor(() => expect(result).toHaveBeenCalled())
-    fireEvent.click(getByRole('button', { name: 'Undo' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
     await waitFor(() => expect(result2).toHaveBeenCalled())
   })
 })

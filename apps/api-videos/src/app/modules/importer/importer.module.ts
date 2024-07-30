@@ -2,7 +2,10 @@ import { Module } from '@nestjs/common'
 
 import { PrismaService } from '../../lib/prisma.service'
 
+import { ImporterBibleBookNamesService } from './importerBibleBookNames/importerBibleBookNames.service'
 import { ImporterBibleBooksService } from './importerBibleBooks/importerBibleBooks.service'
+import { ImporterBibleCitationsService } from './importerBibleCitations/importerBibleCitations.service'
+import { ImporterKeywordsService } from './importerKeywords/importerKeywords.service'
 import { ImporterVideoDescriptionService } from './importerVideoDescriptions/importerVideoDescriptions.service'
 import { ImporterVideoImageAltService } from './importerVideoImageAlt/importerVideoImageAlt.service'
 import { ImporterVideoSnippetsService } from './importerVideoSnippets/importerVideoSnippets.service'
@@ -13,12 +16,14 @@ import { ImporterVideoVariantDownloadsService } from './importerVideoVariantDown
 import { ImporterVideoVariantsService } from './importerVideoVariants/importerVideoVariants.service'
 import { ImporterVideosService } from './importerVideos/importerVideos.service'
 import { ImporterVideosChildrenService } from './importerVideosChildren/importerVideosChildren.service'
-import { ImporterBibleCitationsService } from './importerBibleCitations/importerBibleCitations.service'
-import { ImporterBibleBookNamesService } from './importerBibleBookNames/importerBibleBookNames.service'
 
 @Module({
   providers: [
     PrismaService,
+    ImporterBibleBooksService,
+    ImporterBibleBookNamesService,
+    ImporterBibleCitationsService,
+    ImporterKeywordsService,
     ImporterVideosService,
     ImporterVideosChildrenService,
     ImporterVideoTitleService,
@@ -28,12 +33,13 @@ import { ImporterBibleBookNamesService } from './importerBibleBookNames/importer
     ImporterVideoImageAltService,
     ImporterVideoVariantsService,
     ImporterVideoVariantDownloadsService,
-    ImporterVideoSubtitlesService,
-    ImporterBibleBooksService,
-    ImporterBibleCitationsService,
-    ImporterBibleBookNamesService
+    ImporterVideoSubtitlesService
   ],
   exports: [
+    ImporterBibleBooksService,
+    ImporterBibleBookNamesService,
+    ImporterBibleCitationsService,
+    ImporterKeywordsService,
     ImporterVideosService,
     ImporterVideosChildrenService,
     ImporterVideoTitleService,
@@ -43,10 +49,7 @@ import { ImporterBibleBookNamesService } from './importerBibleBookNames/importer
     ImporterVideoImageAltService,
     ImporterVideoVariantsService,
     ImporterVideoVariantDownloadsService,
-    ImporterVideoSubtitlesService,
-    ImporterBibleBooksService,
-    ImporterBibleCitationsService,
-    ImporterBibleBookNamesService
+    ImporterVideoSubtitlesService
   ]
 })
 export class ImporterModule {}

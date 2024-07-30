@@ -7,6 +7,7 @@ import { ReactElement, useState } from 'react'
 import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../__generated__/BlockFields'
+import { ImageBlockUpdateInput } from '../../../../../../../__generated__/globalTypes'
 import { ImageBlockHeader } from '../ImageBlockHeader'
 
 const ImageLibrary = dynamic(
@@ -19,7 +20,7 @@ const ImageLibrary = dynamic(
 
 interface ImageSourceProps {
   selectedBlock: ImageBlock | null
-  onChange: (block: ImageBlock) => Promise<void>
+  onChange: (block: ImageBlockUpdateInput) => Promise<void>
   onDelete?: () => Promise<void>
   loading?: boolean
   error?: boolean

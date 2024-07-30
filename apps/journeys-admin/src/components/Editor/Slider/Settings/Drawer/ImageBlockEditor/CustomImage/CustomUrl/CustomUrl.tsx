@@ -13,6 +13,7 @@ import ChevronUpIcon from '@core/shared/ui/icons/ChevronUp'
 import LinkIcon from '@core/shared/ui/icons/Link'
 
 import { CreateCloudflareUploadByUrl } from '../../../../../../../../../__generated__/CreateCloudflareUploadByUrl'
+import { ImageBlockUpdateInput } from '../../../../../../../../../__generated__/globalTypes'
 import { TextFieldForm } from '../../../../../../../TextFieldForm'
 
 export const CREATE_CLOUDFLARE_UPLOAD_BY_URL = gql`
@@ -24,7 +25,7 @@ export const CREATE_CLOUDFLARE_UPLOAD_BY_URL = gql`
 `
 
 interface CustomUrlProps {
-  onChange: (src: string) => void
+  onChange: (input: ImageBlockUpdateInput) => void
 }
 
 export function CustomUrl({ onChange }: CustomUrlProps): ReactElement {
@@ -44,7 +45,7 @@ export function CustomUrl({ onChange }: CustomUrlProps): ReactElement {
       const src = `https://imagedelivery.net/${
         process.env.NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY ?? ''
       }/${data?.createCloudflareUploadByUrl.id}/public`
-      onChange(src)
+      onChange({ src })
     }
   }
 

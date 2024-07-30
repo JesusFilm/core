@@ -4,11 +4,12 @@ import { ReactElement } from 'react'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/BlockFields'
 
+import { ImageBlockUpdateInput } from '../../../../../../../../__generated__/globalTypes'
 import { CustomUrl } from './CustomUrl'
 import { ImageUpload } from './ImageUpload'
 
 interface CustomImageProps {
-  onChange: (src: string) => void
+  onChange: (input: ImageBlockUpdateInput) => void
   setUploading?: (uploading?: boolean) => void
   selectedBlock: ImageBlock | null
   loading?: boolean
