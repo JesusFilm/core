@@ -77,16 +77,20 @@ describe('Button color selector', () => {
   beforeEach(() => jest.clearAllMocks())
 
   it('should show button color properties', () => {
-    const { getByRole } = render(
+    render(
       <MockedProvider>
         <EditorProvider initialState={{ selectedBlock }}>
           <Color />
         </EditorProvider>
       </MockedProvider>
     )
-    expect(getByRole('button', { name: 'Primary' })).toHaveClass('Mui-selected')
-    expect(getByRole('button', { name: 'Secondary' })).toBeInTheDocument()
-    expect(getByRole('button', { name: 'Error' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Primary' })).toHaveClass(
+      'Mui-selected'
+    )
+    expect(
+      screen.getByRole('button', { name: 'Secondary' })
+    ).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Error' })).toBeInTheDocument()
   })
 
   it('should change the color property', async () => {
