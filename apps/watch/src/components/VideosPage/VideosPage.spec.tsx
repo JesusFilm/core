@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import { ClearRefinementsRenderState } from 'instantsearch.js/es/connectors/clear-refinements/connectClearRefinements'
+import { HitsRenderState } from 'instantsearch.js/es/connectors/hits/connectHits'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
 import {
@@ -12,7 +13,6 @@ import {
 import { useAlgoliaVideos } from '../../libs/algolia/useAlgoliaVideos'
 import type { CoreVideo } from '../../libs/algolia/useAlgoliaVideos'
 import { VideosPage } from './VideosPage'
-import { HitsRenderState } from 'instantsearch.js/es/connectors/hits/connectHits'
 
 jest.mock('react-instantsearch')
 
