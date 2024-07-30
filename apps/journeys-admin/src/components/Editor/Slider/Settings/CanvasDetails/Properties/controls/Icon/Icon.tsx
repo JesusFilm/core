@@ -33,7 +33,10 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/BlockFields'
-import { IconBlockNameUpdate } from '../../../../../../../../../__generated__/IconBlockNameUpdate'
+import {
+  IconBlockNameUpdate,
+  IconBlockNameUpdateVariables
+} from '../../../../../../../../../__generated__/IconBlockNameUpdate'
 import { IconFields } from '../../../../../../../../../__generated__/IconFields'
 import {
   IconColor,
@@ -146,10 +149,9 @@ export const icons = [
 export const ICON_BLOCK_NAME_UPDATE = gql`
   mutation IconBlockNameUpdate(
     $id: ID!
-    $journeyId: ID!
     $input: IconBlockUpdateInput!
   ) {
-    iconBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+    iconBlockUpdate(id: $id, input: $input) {
       id
       name
     }
@@ -160,9 +162,10 @@ type IconParentBlock<T = TreeBlock<ButtonBlock>> = T
 interface IconProps extends Pick<TreeBlock<IconFields>, 'id'> {}
 
 export function Icon({ id }: IconProps): ReactElement {
-  const [iconBlockNameUpdate] = useMutation<IconBlockNameUpdate>(
-    ICON_BLOCK_NAME_UPDATE
-  )
+  const [iconBlockNameUpdate] = useMutation<
+    IconBlockNameUpdate,
+    IconBlockNameUpdateVariables
+  >(ICON_BLOCK_NAME_UPDATE)
   const { journey } = useJourney()
   const { state } = useEditor()
   const selectedBlock = state.selectedBlock as IconParentBlock
@@ -179,7 +182,6 @@ export function Icon({ id }: IconProps): ReactElement {
     await iconBlockNameUpdate({
       variables: {
         id,
-        journeyId: journey.id,
         input: {
           name
         }
