@@ -43,6 +43,7 @@ function HomePage({ serverState }: HomePageProps): ReactElement {
       <InstantSearch
         insights
         searchClient={searchClient}
+        indexName="video-variants-stg"
         future={{ preserveSharedStateOnUnmount: true }}
         stalledSearchDelay={500}
         routing={{

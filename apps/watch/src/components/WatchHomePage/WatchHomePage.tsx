@@ -12,7 +12,7 @@ import { PageWrapper } from '../PageWrapper'
 import { VideoGrid } from '../VideoGrid'
 
 import { SearchBar } from '@core/journeys/ui/SearchBar'
-import { Index, useConfigure } from 'react-instantsearch'
+import { useConfigure } from 'react-instantsearch'
 import { HomeHero } from './HomeHero'
 import { SeeAllVideos } from './SeeAllVideos'
 
@@ -39,12 +39,10 @@ export function WatchHomePage(): ReactElement {
           data-testid="WatchHomePage"
         >
           <Container maxWidth="xxl" sx={{ paddingY: '4rem' }}>
-            <Index indexName="video-variants-stg">
-              <Box sx={{ pb: 10 }}>
-                <SearchBar />
-              </Box>
-              <VideoGrid variant="contained" />
-            </Index>
+            <Box sx={{ pb: 10 }}>
+              <SearchBar />
+            </Box>
+            <VideoGrid variant="contained" />
             <SeeAllVideos />
             <Box
               sx={{
