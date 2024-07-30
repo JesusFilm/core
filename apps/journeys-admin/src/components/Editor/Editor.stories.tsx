@@ -127,7 +127,7 @@ export const SocialPreview = {
     await userEvent.click(socialPreviewNode)
 
     await waitFor(async () => {
-      await screen.getByText('Social App View')
+      await screen.getByText('Social Post View')
     })
   }
 }
