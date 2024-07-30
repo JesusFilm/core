@@ -35,7 +35,7 @@ export function BeaconButton({
             width: 24,
             height: 24,
             color:
-              buttonColor === 'primary' ? 'secondary.dark' : 'background.paper'
+              buttonColor === 'primary' ? 'secondary.light' : 'background.paper'
             // color:
             //   mdUp || newUserPaths.includes(router.route)
             //     ? 'secondary.dark'
