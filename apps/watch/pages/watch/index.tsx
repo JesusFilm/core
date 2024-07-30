@@ -44,6 +44,7 @@ function HomePage({ serverState }: HomePageProps): ReactElement {
         insights
         searchClient={searchClient}
         future={{ preserveSharedStateOnUnmount: true }}
+        stalledSearchDelay={500}
         routing={{
           router: createInstantSearchRouterNext({
             serverUrl: process.env.NEXT_PUBLIC_WATCH_URL,

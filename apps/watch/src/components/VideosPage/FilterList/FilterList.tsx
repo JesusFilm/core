@@ -75,6 +75,14 @@ const subtitleLanguageIds = [
   '184528'
 ]
 
+function extractQueryParams(url: string) {
+  const params = new URLSearchParams(url.split('?')[1])
+  const query = params.get('query')
+  const languageId = params.get('refinementList[languageId][0]')
+  const subtitleId = params.get('refinementList[subtitles][0]')
+  return { query, languageId, subtitleId }
+}
+
 interface FilterListProps {
   languagesData?: GetLanguages
   languagesLoading: boolean
@@ -87,13 +95,8 @@ export function FilterList({
   const { t } = useTranslation()
   const router = useRouter()
 
-  const query = router?.query?.query as string | undefined
-  const languageId = router?.query?.['refinementList[languageId][0]'] as
-    | string
-    | undefined
-  const subtitleId = router?.query?.['refinementList[subtitles][0]'] as
-    | string
-    | undefined
+  const decodedUrl = decodeURIComponent(router?.asPath ?? '')
+  const { query, languageId, subtitleId } = extractQueryParams(decodedUrl)
 
   const { refine } = useClearRefinements({
     includedAttributes: ['languageId', 'subtitles']
@@ -149,7 +152,7 @@ export function FilterList({
       subtitleLanguage: languageOptionFromIds([subtitleId ?? '']),
       title: query ?? ''
     }),
-    [languageId, subtitleId, query, languagesMap]
+    [languagesMap]
   )
 
   function handleRefine({
@@ -186,9 +189,9 @@ export function FilterList({
   // biome-ignore lint/correctness/useExhaustiveDependencies: effect to only run on componentDidMount
   useEffect(() => {
     handleRefine({
-      title: initialValues.title,
-      languageId: initialValues.language.id,
-      subtitleLanguageId: initialValues.subtitleLanguage.id
+      title: query ?? '',
+      languageId: languageId ?? '',
+      subtitleLanguageId: subtitleId ?? ''
     })
   }, [initialValues])
 

@@ -70,17 +70,15 @@ export function transformItems(items: AlgoliaVideo[]): CoreVideo[] {
 }
 
 export function useAlgoliaVideos() {
-  const { hits, showMore, isLastPage } = useInfiniteHits<AlgoliaVideo>()
-
+  const isInitialRender = useRef(true)
   const { status } = useInstantSearch()
-
-  const transformedHits = transformItems(hits)
+  const { hits, showMore, isLastPage } = useInfiniteHits<AlgoliaVideo>()
 
   const { items, refine } = useRefinementList({
     attribute: 'languageId'
   })
 
-  const isInitialRender = useRef(true)
+  const transformedHits = transformItems(hits)
 
   useEffect(() => {
     if (isInitialRender) {
