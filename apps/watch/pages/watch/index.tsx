@@ -1,5 +1,5 @@
 import { gql } from '@apollo/client'
-import { GetStaticProps } from 'next'
+import { GetServerSideProps } from 'next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import singletonRouter from 'next/router'
 import { ReactElement } from 'react'
@@ -35,19 +35,21 @@ const searchClient = algoliasearch(
 
 interface HomePageProps {
   serverState?: InstantSearchServerState
+  serverUrl?: string
 }
 
-function HomePage({ serverState }: HomePageProps): ReactElement {
+function HomePage({ serverState, serverUrl }: HomePageProps): ReactElement {
   return (
     <InstantSearchSSRProvider {...serverState}>
       <InstantSearch
         insights
         searchClient={searchClient}
+        indexName="video-variants-stg"
         future={{ preserveSharedStateOnUnmount: true }}
         stalledSearchDelay={500}
         routing={{
           router: createInstantSearchRouterNext({
-            serverUrl: process.env.NEXT_PUBLIC_WATCH_URL,
+            serverUrl: serverUrl,
             singletonRouter,
             routerOptions: {
               cleanUrlOnDispose: false
@@ -73,18 +75,21 @@ function HomePage({ serverState }: HomePageProps): ReactElement {
   )
 }
 
-export const getStaticProps: GetStaticProps<HomePageProps> = async ({
+export const getServerSideProps: GetServerSideProps<HomePageProps> = async ({
+  req,
   locale
 }) => {
-  const serverState = await getServerState(<HomePage />, {
+  const protocol = req.headers.referer?.split('://')[0] || 'https'
+  const serverUrl = `${protocol}://${req.headers.host}${req.url}`
+  const serverState = await getServerState(<HomePage serverUrl={serverUrl} />, {
     renderToString
   })
 
   return {
-    revalidate: 3600,
     props: {
       flags: await getFlags(),
       serverState,
+      serverUrl,
       ...(await serverSideTranslations(
         locale ?? 'en',
         ['apps-watch'],
@@ -93,4 +98,5 @@ export const getStaticProps: GetStaticProps<HomePageProps> = async ({
     }
   }
 }
+
 export default HomePage

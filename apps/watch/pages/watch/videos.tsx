@@ -1,5 +1,5 @@
 import { ApolloProvider, NormalizedCacheObject, gql } from '@apollo/client'
-import { GetStaticProps } from 'next'
+import { GetServerSideProps } from 'next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import singletonRouter from 'next/router'
 import { ReactElement } from 'react'
@@ -47,10 +47,12 @@ const searchClient = algoliasearch(
 interface VideosPageProps {
   initialApolloState?: NormalizedCacheObject
   serverState?: InstantSearchServerState
+  serverUrl?: string
 }
 
 function VideosPage({
   serverState,
+  serverUrl,
   initialApolloState
 }: VideosPageProps): ReactElement {
   const client = useApolloClient({
@@ -66,7 +68,7 @@ function VideosPage({
           future={{ preserveSharedStateOnUnmount: true }}
           routing={{
             router: createInstantSearchRouterNext({
-              serverUrl: 'http://localhost:4300/watch/videos',
+              serverUrl: serverUrl,
               singletonRouter,
               routerOptions: {
                 cleanUrlOnDispose: false
@@ -93,12 +95,18 @@ function VideosPage({
   )
 }
 
-export const getStaticProps: GetStaticProps<VideosPageProps> = async ({
+export const getServerSideProps: GetServerSideProps<VideosPageProps> = async ({
+  req,
   locale
 }) => {
-  const serverState = await getServerState(<VideosPage />, {
-    renderToString
-  })
+  const protocol = req.headers.referer?.split('://')[0] || 'https'
+  const serverUrl = `${protocol}://${req.headers.host}${req.url}`
+  const serverState = await getServerState(
+    <VideosPage serverUrl={serverUrl} />,
+    {
+      renderToString
+    }
+  )
 
   const apolloClient = createApolloClient()
 
@@ -119,10 +127,10 @@ export const getStaticProps: GetStaticProps<VideosPageProps> = async ({
   })
 
   return {
-    revalidate: 3600,
     props: {
       flags: await getFlags(),
       serverState,
+      serverUrl,
       initialApolloState: apolloClient.cache.extract(),
       ...(await serverSideTranslations(
         locale ?? 'en',
@@ -132,4 +140,5 @@ export const getStaticProps: GetStaticProps<VideosPageProps> = async ({
     }
   }
 }
+
 export default VideosPage
