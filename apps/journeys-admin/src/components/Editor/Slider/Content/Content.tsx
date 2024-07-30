@@ -61,6 +61,7 @@ export function Content(): ReactElement {
             right: 0,
             bottom: 0,
             left: 0,
+            userSelect: 'none',
             display: 'flex',
             justifyContent: 'space-between',
             transition: (theme) =>

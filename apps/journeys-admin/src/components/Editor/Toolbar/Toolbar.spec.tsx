@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
 
@@ -21,6 +21,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 describe('Toolbar', () => {
   const defaultJourney = {
     journey: {
+      id: 'journeyId',
       title: 'My Awesome Journey Title',
       description: 'My Awesome Journey Description',
       primaryImageBlock: null,
@@ -60,6 +61,15 @@ describe('Toolbar', () => {
     const { getByText } = render(toolbar(defaultJourney))
     expect(getByText('My Awesome Journey Title')).toBeInTheDocument()
     expect(getByText('My Awesome Journey Description')).toBeInTheDocument()
+  })
+
+  it('should open the title dialog when selected', async () => {
+    render(toolbar(defaultJourney))
+
+    fireEvent.click(screen.getByRole('button', { name: 'Click to edit' }))
+    await waitFor(() => {
+      expect(screen.getByTestId('TitleDescriptionDialog')).toBeInTheDocument()
+    })
   })
 
   it('should render items stack on Toolbar', () => {
@@ -114,13 +124,13 @@ describe('Toolbar', () => {
     return (
       <MockedProvider>
         <SnackbarProvider>
-          <EditorProvider>
-            <JourneyProvider value={journey}>
+          <JourneyProvider value={journey}>
+            <EditorProvider>
               <TestEditorState />
               <Toolbar />
               <Slider />
-            </JourneyProvider>
-          </EditorProvider>
+            </EditorProvider>
+          </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
     )

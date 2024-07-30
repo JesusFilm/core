@@ -198,7 +198,7 @@ export const reducer = (
     case 'SetActiveSlideAction':
       return {
         ...state,
-        activeSlide: action.activeSlide
+        activeSlide: state.showAnalytics === true ? 0 : action.activeSlide
       }
     case 'SetSelectedAttributeIdAction':
       return {
