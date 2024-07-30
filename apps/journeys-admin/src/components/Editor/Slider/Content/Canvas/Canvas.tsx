@@ -67,7 +67,6 @@ export function Canvas(): ReactElement {
   }, [])
 
   function handleFooterClick(): void {
-    if (showAnalytics === true) return
     dispatch({
       type: 'SetActiveCanvasDetailsDrawerAction',
       activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer
@@ -166,7 +165,8 @@ export function Canvas(): ReactElement {
             sx={{
               display: 'flex',
               flexDirection: 'column',
-              height: `${calculateScaledHeight(CARD_HEIGHT, scale)}`
+              height: `${calculateScaledHeight(CARD_HEIGHT, scale)}`,
+              pointerEvents: showAnalytics === true ? 'none' : 'auto'
             }}
           >
             <Box

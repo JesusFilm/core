@@ -43,6 +43,7 @@ export const BLOCK_DELETE_FOR_COVER_IMAGE = gql`
       parentBlockId: $parentBlockId
     ) {
       id
+      parentOrder
     }
   }
 `
