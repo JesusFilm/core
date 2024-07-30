@@ -1,19 +1,11 @@
 import { render, screen } from '@testing-library/react'
 import { HitsRenderState } from 'instantsearch.js/es/connectors/hits/connectHits'
 import { useHits } from 'react-instantsearch'
-import { StrategyCard, StrategyItemProps } from './StrategyCard'
+import { StrategyCard } from './StrategyCard'
 
 jest.mock('react-instantsearch')
 
 const mockUseHits = useHits as jest.MockedFunction<typeof useHits>
-
-function mockHits(item: StrategyItemProps) {
-  const sendEvent = jest.fn()
-  mockUseHits.mockReturnValue({
-    hits: [item],
-    sendEvent: sendEvent
-  } as unknown as HitsRenderState)
-}
 
 describe('StrategyCard', () => {
   const item = {
@@ -25,7 +17,11 @@ describe('StrategyCard', () => {
   }
 
   beforeEach(() => {
-    mockHits(item)
+    const sendEvent = jest.fn()
+    mockUseHits.mockReturnValue({
+      hits: [item],
+      sendEvent: sendEvent
+    } as unknown as HitsRenderState)
   })
 
   it('should render strategy card', () => {
