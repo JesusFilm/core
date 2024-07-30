@@ -10,6 +10,7 @@ import {
 } from 'react-instantsearch'
 import { convertLanguagesToOptions } from '../../../components/TemplateGallery/HeaderAndLanguageFilter/convertLanguagesToOptions'
 import { useLanguagesQuery } from '../../useLanguagesQuery'
+import { SendEventForHits } from 'instantsearch.js/es/lib/utils'
 
 interface Tags {
   Topics: string[]
@@ -41,6 +42,7 @@ export interface AlgoliaJourney extends Hit<BaseHit> {
 export interface UseJourneyHitsResults {
   hits: AlgoliaJourney[]
   results?: SearchResults<Hit<BaseHit>> | undefined
+  sendEvent: SendEventForHits
   loading: boolean
   refinements: string[]
 }
@@ -77,7 +79,7 @@ export function useAlgoliaJourneys(): UseJourneyHitsResults {
   })
   const languageOptions = convertLanguagesToOptions(data?.languages)
 
-  const { hits, results } = useHits({
+  const { hits, results, sendEvent } = useHits({
     transformItems
   })
   const enrichedJourneys = enrichHits(hits, languageOptions)
@@ -97,5 +99,5 @@ export function useAlgoliaJourneys(): UseJourneyHitsResults {
     .flatMap((refinement) => refinement.refinements.flatMap((ref) => ref.label))
     .filter((ref) => !languages.includes(ref))
 
-  return { hits: enrichedJourneys, results, loading, refinements }
+  return { hits: enrichedJourneys, results, sendEvent, loading, refinements }
 }

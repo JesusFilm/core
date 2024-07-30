@@ -17,7 +17,10 @@ import {
   getJourneyLanguage,
   isAlgoliaJourney
 } from '../../libs/algolia/algoliaJourneyUtils'
-import { AlgoliaJourney } from '../../libs/algolia/useAlgoliaJourneys'
+import {
+  AlgoliaJourney,
+  useAlgoliaJourneys
+} from '../../libs/algolia/useAlgoliaJourneys'
 import { GetJourneys_journeys as Journey } from '../../libs/useJourneysQuery/__generated__/GetJourneys'
 
 interface HoverLayerProps {
@@ -55,6 +58,9 @@ export function TemplateGalleryCard({
   priority
 }: TemplateGalleryCardProps): ReactElement {
   const router = useRouter()
+  const { hits, sendEvent } = useAlgoliaJourneys()
+  const hit = hits.filter((hit) => hit.objectID === journey?.id)
+
   const journeyBasePath = router.pathname.startsWith('/journeys')
     ? '/journeys'
     : '/templates'
@@ -119,6 +125,10 @@ export function TemplateGalleryCard({
             height: 'inherit',
             color: 'inherit',
             textDecoration: 'none'
+          }}
+          onClick={(event) => {
+            event.stopPropagation()
+            sendEvent('click', hit, 'Journey Clicked')
           }}
         >
           {journey != null ? (
