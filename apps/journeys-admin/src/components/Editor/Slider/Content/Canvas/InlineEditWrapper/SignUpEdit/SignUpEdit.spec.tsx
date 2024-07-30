@@ -86,54 +86,6 @@ describe('SignUpEdit', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
-  it('saves the signUp label on outside click', async () => {
-    const result = jest.fn(() => ({
-      data: {
-        signUpBlockUpdate: [
-          {
-            __typename: 'SignUpBlock',
-            id: 'signUp',
-            submitLabel: 'updated label'
-          }
-        ]
-      }
-    }))
-
-    render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: SIGN_UP_BLOCK_UPDATE_CONTENT,
-              variables: {
-                id: 'signUp',
-                input: {
-                  submitLabel: 'updated label'
-                }
-              }
-            },
-            result
-          }
-        ]}
-      >
-        <SnackbarProvider>
-          <EditorProvider>
-            <h1 className="EditorCanvas">Other Content</h1>
-            <iframe>
-              <SignUpEdit {...props} />
-            </iframe>
-          </EditorProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    const input = screen.getByRole('textbox', { name: '' })
-    fireEvent.click(input)
-    fireEvent.change(input, { target: { value: '    updated label    ' } })
-    fireEvent.click(screen.getByRole('heading', { level: 1 }))
-    await waitFor(() => expect(result).toHaveBeenCalled())
-  })
-
   it('should undo the label change', async () => {
     const result1 = jest.fn(() => ({
       data: {

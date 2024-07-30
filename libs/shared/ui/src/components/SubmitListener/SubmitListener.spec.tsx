@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { Form, Formik } from 'formik'
 
 import { SubmitListener } from '.'
@@ -32,34 +32,5 @@ describe('SubmitListener', () => {
         expect.any(Object)
       )
     )
-  })
-
-  it('calls handleBlurSubmit when blurred', async () => {
-    const handleBlurSubmit = jest.fn()
-    const handleSubmit = jest.fn()
-
-    render(
-      <Formik initialValues={{ name: '' }} onSubmit={handleSubmit}>
-        {({ values, handleChange, setStatus }) => (
-          <>
-            <Form>
-              <input
-                id="name"
-                name="name"
-                value={values.name}
-                onChange={handleChange}
-                onBlur={() => setStatus({ onBlurSubmit: true })}
-                aria-label="name"
-              />
-              <SubmitListener />
-            </Form>
-          </>
-        )}
-      </Formik>
-    )
-
-    expect(handleBlurSubmit).not.toHaveBeenCalled()
-    fireEvent.blur(screen.getByRole('textbox', { name: 'name' }))
-    waitFor(() => expect(handleBlurSubmit).toHaveBeenCalled())
   })
 })

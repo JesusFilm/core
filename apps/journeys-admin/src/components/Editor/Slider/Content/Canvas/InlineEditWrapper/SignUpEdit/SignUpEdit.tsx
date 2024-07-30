@@ -44,20 +44,15 @@ export function SignUpEdit({
     dispatch
   } = useEditor()
 
-  const initialValues: { [key: string]: string } = {
-    [`edit-${id}`]: submitLabel ?? ''
+  const initialValues: { submitLabel: string } = {
+    submitLabel: submitLabel ?? ''
   }
 
-  type InitialValuesType = typeof initialValues
-
-  async function handleSaveBlock(values: InitialValuesType): Promise<void> {
-    const fieldValue = values[`edit-${id}`]
-    const currentSubmitLabel = fieldValue.trim().replace(/\n/g, '')
-
+  async function handleSaveBlock(values: typeof initialValues): Promise<void> {
     await add({
       parameters: {
         execute: {
-          submitLabel: currentSubmitLabel
+          submitLabel: values.submitLabel
         },
         undo: {
           submitLabel
@@ -69,7 +64,6 @@ export function SignUpEdit({
           selectedBlock,
           selectedStep
         })
-
         await signUpBlockUpdate({
           variables: {
             id,
@@ -93,15 +87,18 @@ export function SignUpEdit({
       onSubmit={handleSaveBlock}
       enableReinitialize
     >
-      {({ values, handleChange, setStatus }) => (
+      {({ values, handleChange, setStatus, setFieldValue }) => (
         <>
           <InlineEditInput
-            name={`edit-${id}`}
+            name="submitLabel"
             fullWidth
             multiline
             autoFocus
-            onBlur={() => setStatus({ onBlurSubmit: true })}
-            value={values[`edit-${id}`]}
+            onBlur={(e) => {
+              setFieldValue('submitLabel', e.currentTarget.value.trim())
+              setStatus({ onBlurSubmit: true })
+            }}
+            value={values.submitLabel}
             onChange={handleChange}
             onClick={(e) => e.stopPropagation()}
           />
