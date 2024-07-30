@@ -31,6 +31,12 @@ function IntegrationPage(): ReactElement {
             flexGrow={1}
             alignItems="center"
             gap={3}
+            sx={{
+              display: {
+                xs: 'none',
+                md: 'flex'
+              }
+            }}
           >
             <HelpScoutBeacon variant="iconButton" />
           </Stack>

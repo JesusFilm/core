@@ -18,8 +18,6 @@ import Plus1Icon from '@core/shared/ui/icons/Plus1'
 import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
 import { useFlags } from '@core/shared/ui/FlagsProvider'
-import { Divider } from '@mui/material'
-import { HelpScoutBeacon } from '../../HelpScoutBeacon'
 import { MenuItem } from '../../MenuItem'
 import { TeamAvatars } from '../TeamAvatars'
 
@@ -230,19 +228,6 @@ export function TeamMenu(): ReactElement {
             }}
           />
         )}
-        <Box
-          sx={{
-            display: { sm: 'block', md: 'none' }
-          }}
-        >
-          <Divider />
-          <HelpScoutBeacon
-            variant="menuItem"
-            handleClick={() => {
-              setAnchorEl(null)
-            }}
-          />
-        </Box>
       </Menu>
     </>
   )

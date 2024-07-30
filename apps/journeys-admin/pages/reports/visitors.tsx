@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import {
   AuthAction,
@@ -8,7 +9,6 @@ import {
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
-
 import { HelpScoutBeacon } from '../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { ReportsNavigation } from '../../src/components/ReportsNavigation'
@@ -34,7 +34,16 @@ function ReportsVisitorsPage(): ReactElement {
             gap={3}
           >
             <ReportsNavigation destination="journey" />
-            <HelpScoutBeacon variant="iconButton" />
+            <Box
+              sx={{
+                display: {
+                  xs: 'none',
+                  md: 'flex'
+                }
+              }}
+            >
+              <HelpScoutBeacon variant="iconButton" />
+            </Box>
           </Stack>
         }
       >

@@ -1,4 +1,3 @@
-import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import {
   AuthAction,
@@ -37,23 +36,6 @@ function SingleVisitorReportsPage(): ReactElement {
             <Typography variant="subtitle1">{t('Visitor Details')}</Typography>
             <HelpScoutBeacon variant="iconButton" />
           </>
-        }
-        mainHeaderChildren={
-          <Stack
-            direction="row"
-            justifyContent="flex-end"
-            flexGrow={1}
-            alignItems="center"
-            gap={3}
-            sx={{
-              display: {
-                xs: 'flex',
-                md: 'none'
-              }
-            }}
-          >
-            <HelpScoutBeacon variant="iconButton" />
-          </Stack>
         }
         backHrefHistory={journeyId != null ? undefined : true}
       >

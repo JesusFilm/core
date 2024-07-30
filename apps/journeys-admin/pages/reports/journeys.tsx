@@ -36,7 +36,16 @@ function ReportsJourneysPage(): ReactElement {
             gap={3}
           >
             <ReportsNavigation destination="visitor" />
-            <HelpScoutBeacon variant="iconButton" />
+            <Box
+              sx={{
+                display: {
+                  xs: 'none',
+                  md: 'flex'
+                }
+              }}
+            >
+              <HelpScoutBeacon variant="iconButton" />
+            </Box>
           </Stack>
         }
       >

@@ -45,7 +45,17 @@ function PublisherIndexPage(): ReactElement {
         title={t('Templates Admin')}
         user={user}
         mainHeaderChildren={
-          <Stack direction="row" justifyContent="flex-end" flexGrow={1}>
+          <Stack
+            direction="row"
+            justifyContent="flex-end"
+            flexGrow={1}
+            sx={{
+              display: {
+                xs: 'none',
+                md: 'flex'
+              }
+            }}
+          >
             <HelpScoutBeacon variant="iconButton" />
           </Stack>
         }
