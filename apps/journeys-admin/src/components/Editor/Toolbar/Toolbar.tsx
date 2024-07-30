@@ -143,6 +143,7 @@ export function Toolbar(): ReactElement {
           <Items />
         </>
       )}
+      <Menu />
       <Box
         sx={{
           display: { xs: 'none', sm: 'block' }
@@ -150,7 +151,6 @@ export function Toolbar(): ReactElement {
       >
         <HelpScoutBeacon variant="iconButton" />
       </Box>
-      <Menu />
     </Stack>
   )
 }

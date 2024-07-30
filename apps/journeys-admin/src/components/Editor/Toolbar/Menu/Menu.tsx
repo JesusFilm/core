@@ -55,7 +55,7 @@ export function Menu(): ReactElement {
     <>
       <IconButton
         id="edit-journey-actions"
-        edge="end"
+        // edge="end"
         aria-label={t('Edit Journey Actions')}
         aria-controls="edit-journey-actions"
         aria-haspopup="true"
@@ -63,6 +63,7 @@ export function Menu(): ReactElement {
         onClick={handleShowMenu}
         disabled={journey == null}
         data-testid="ToolbarMenuButton"
+        sx={{ p: 0 }}
       >
         <MoreIcon />
       </IconButton>
