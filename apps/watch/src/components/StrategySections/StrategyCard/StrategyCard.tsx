@@ -7,6 +7,7 @@ import { useTheme } from '@mui/material/styles'
 import Image from 'next/image'
 import NextLink from 'next/link'
 import { ReactElement } from 'react'
+import { useHits } from 'react-instantsearch'
 
 export interface StrategyItemProps {
   id: string
@@ -26,6 +27,9 @@ export function StrategyCard({
   priority = true
 }: StrategyCardProps): ReactElement {
   const theme = useTheme()
+  const { hits, sendEvent } = useHits()
+  const hit = hits.filter((hit) => hit.objectID === item?.id)
+
   return (
     <Card
       data-testid="StrategyCard"
@@ -67,6 +71,10 @@ export function StrategyCard({
             height: 'inherit',
             color: 'inherit',
             textDecoration: 'none'
+          }}
+          onClick={(event) => {
+            event.stopPropagation()
+            sendEvent('click', hit, 'Strategy Clicked')
           }}
         >
           <Stack

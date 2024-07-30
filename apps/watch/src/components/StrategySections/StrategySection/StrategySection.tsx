@@ -19,7 +19,7 @@ interface StrategyCardItem {
 
 function transformAlgoliaStrategies(hits: Hit[]): StrategyCardItem[] {
   return hits.map((hit) => ({
-    id: hit.ObjectID,
+    id: hit.objectID,
     title: hit.post_title,
     description: hit.content,
     imageUrl: hit.images.thumbnail?.url,
