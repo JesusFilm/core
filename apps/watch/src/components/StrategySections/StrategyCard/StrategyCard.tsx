@@ -24,7 +24,7 @@ interface StrategyCardProps {
 
 export function StrategyCard({
   item,
-  priority
+  priority = true
 }: StrategyCardProps): ReactElement {
   const theme = useTheme()
   const { hits, sendEvent } = useHits()
@@ -91,6 +91,8 @@ export function StrategyCard({
           >
             {item?.imageUrl != null ? (
               <Image
+                rel={priority === true ? 'preload' : undefined}
+                priority={priority}
                 className="MuiImageBackground-root"
                 src={item?.imageUrl}
                 alt={item?.title ?? ''}
