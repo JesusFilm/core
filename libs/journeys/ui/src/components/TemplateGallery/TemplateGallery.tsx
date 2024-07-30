@@ -11,6 +11,9 @@ import { TagCarousels } from './TagCarousels'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 import Stack from '@mui/material/Stack'
+import { castArray } from 'lodash'
+import { useRouter } from 'next/router'
+import { HeaderAndLanguageFilter } from './HeaderAndLanguageFilter'
 
 interface TemplateGalleryProps {
   hideOverflow?: boolean
@@ -18,16 +21,35 @@ interface TemplateGalleryProps {
 }
 
 function TemplateGalleryContent() {
+  const router = useRouter()
+
+  const selectedLanguageIds = router.isReady
+    ? castArray(router.query.languageIds ?? ['529'])
+    : undefined
+
+  function handleLanguageIdsChange(values: string[]): void {
+    void router.push(
+      { query: { ...router.query, languageIds: values } },
+      undefined,
+      { shallow: true }
+    )
+  }
+
   return (
     <Stack spacing={10}>
       {/* TODO: Remove temporary theme fix for styling journeys admin components */}
       <ThemeProvider
-        themeName={ThemeName.website}
+        themeName={ThemeName.journeysAdmin}
         themeMode={ThemeMode.light}
         nested
       >
-        <SearchBar />
+        <HeaderAndLanguageFilter
+          selectedLanguageIds={selectedLanguageIds}
+          onChange={handleLanguageIdsChange}
+        />
       </ThemeProvider>
+
+      <SearchBar />
 
       {/* TODO: Remove temporary theme fix for styling journeys admin components */}
       <ThemeProvider

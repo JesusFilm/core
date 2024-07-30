@@ -18,9 +18,9 @@ import {
 import { LanguageOption } from '@core/shared/ui/MultipleLanguageAutocomplete'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
+import { useClearRefinements, useRefinementList } from 'react-instantsearch'
 import { setBeaconPageViewed } from '../../../libs/setBeaconPageViewed'
 import { useLanguagesQuery } from '../../../libs/useLanguagesQuery'
-
 import { LanguagesFilterPopper } from './LanguagesFilterPopper/LanguagesFilterPopper'
 import { convertLanguagesToOptions } from './convertLanguagesToOptions'
 
@@ -169,6 +169,13 @@ export function HeaderAndLanguageFilter({
     if (popperAnchor != null) setAnchorEl(popperAnchor)
   }, [anchorEl])
 
+  const { refine: clearRefinements } = useClearRefinements({
+    includedAttributes: ['languageId']
+  })
+  const { refine } = useRefinementList({
+    attribute: 'languageId'
+  })
+
   const { data, loading } = useLanguagesQuery({
     languageId: '529',
     // make sure these variables are the same as in pages/templates/index.ts
@@ -235,6 +242,12 @@ export function HeaderAndLanguageFilter({
     onChange(ids)
   }
 
+  useEffect(() => {
+    // TODO(jk): this should only clear language refinements
+    clearRefinements()
+    selectedLanguageIds?.forEach(refine)
+  }, [selectedLanguageIds])
+
   const options = useMemo(() => {
     return (
       data?.languages?.map(({ id, name }) => {
@@ -268,7 +281,7 @@ export function HeaderAndLanguageFilter({
         alignItems="center"
         direction="row"
         flexWrap={{ xs: 'wrap', md: 'initial' }}
-        sx={{ pb: { xs: 6, md: 9 }, position: 'relative' }}
+        sx={{ pb: 0, position: 'relative' }}
       >
         {count === 2 && (
           <Trans t={t} values={{ firstLanguage, secondLanguage }}>
