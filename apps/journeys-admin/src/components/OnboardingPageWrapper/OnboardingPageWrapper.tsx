@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
 import CardActions from '@mui/material/CardActions'
@@ -11,6 +12,7 @@ import { use100vh } from 'react-div-100vh'
 
 import { LanguageSwitcher } from '../LanguageSwitcher'
 
+import { HelpScoutBeacon } from '../HelpScoutBeacon'
 import { OnboardingDrawer } from './OnboardingDrawer'
 
 interface OnboardingPageWrapperProps {
@@ -36,6 +38,15 @@ export function OnboardingPageWrapper({
         backgroundColor: { xs: 'background.default', md: 'background.paper' }
       }}
     >
+      <Box
+        sx={{
+          position: 'absolute',
+          right: { xs: 12, sm: 8, md: 28 },
+          top: { xs: 24, sm: 8, md: 24 }
+        }}
+      >
+        <HelpScoutBeacon variant="iconButton" />
+      </Box>
       <OnboardingDrawer />
       <Stack
         justifyContent="safe center"
