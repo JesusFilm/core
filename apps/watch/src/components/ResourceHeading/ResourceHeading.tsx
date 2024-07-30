@@ -21,7 +21,7 @@ export function ResourceHeading({
   const { t } = useTranslation('apps-watch')
   return (
     <Trans t={t}>
-      <Typography variant="h4">
+      <Typography variant="h5">
         {`${heading} for every `}
         <StyledSpan>interaction</StyledSpan>
       </Typography>
