@@ -13,6 +13,7 @@ import {
 import { createInstantSearchRouterNext } from 'react-instantsearch-router-nextjs'
 
 import algoliasearch from 'algoliasearch'
+import { UiState } from 'instantsearch.js'
 import i18nConfig from '../../next-i18next.config'
 import { WatchHomePage as VideoHomePage } from '../../src/components/WatchHomePage'
 import { getFlags } from '../../src/libs/getFlags'
@@ -53,11 +54,9 @@ function HomePage({ serverState }: HomePageProps): ReactElement {
           }),
           stateMapping: {
             stateToRoute(uiState) {
-              return {
-                [process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? '']: {
-                  ...uiState[process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? '']
-                }
-              }
+              return uiState[
+                process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
+              ] as unknown as UiState
             },
             routeToState(routeState) {
               return {
