@@ -172,18 +172,28 @@ describe('EditorContext', () => {
         const state: EditorState = {
           steps: [block],
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
-          activeFab: ActiveFab.Add,
-          activeSlide: ActiveSlide.JourneyFlow,
+          activeSlide: ActiveSlide.Content,
           activeContent: ActiveContent.Canvas,
-          showAnalytics: true
+          showAnalytics: true,
+          selectedBlockId: 'step0.id',
+          selectedBlock: {
+            id: 'step0.id',
+            __typename: 'StepBlock',
+            parentBlockId: null,
+            parentOrder: 0,
+            locked: false,
+            nextBlockId: null,
+            children: []
+          }
         }
+        console.log('Initial stateeeeeee:', state)
+        const newState = reducer(state, {
+          type: 'SetSelectedBlockAction',
+          selectedBlock: block
+        })
 
-        expect(
-          reducer(state, {
-            type: 'SetSelectedBlockAction',
-            selectedBlock: block
-          })
-        ).toEqual(state)
+        console.log('New stateeeeeeee:', newState)
+        expect(newState).toEqual(state)
       })
 
       it('should change to content view when block selected', () => {
