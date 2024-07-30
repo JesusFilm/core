@@ -5,12 +5,14 @@ import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refine
 import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
 import {
   useClearRefinements,
+  useHits,
   useRefinementList,
   useSearchBox
 } from 'react-instantsearch'
 import { useAlgoliaVideos } from '../../libs/algolia/useAlgoliaVideos'
 import type { CoreVideo } from '../../libs/algolia/useAlgoliaVideos'
 import { VideosPage } from './VideosPage'
+import { HitsRenderState } from 'instantsearch.js/es/connectors/hits/connectHits'
 
 jest.mock('react-instantsearch')
 
@@ -24,6 +26,7 @@ jest.mock('next/router', () => ({
 jest.mock('react-instantsearch')
 jest.mock('../../libs/algolia/useAlgoliaVideos')
 
+const mockUseHits = useHits as jest.MockedFunction<typeof useHits>
 const mockUseAlgoliaVideos = useAlgoliaVideos as jest.MockedFunction<
   typeof useAlgoliaVideos
 >
@@ -69,10 +72,16 @@ describe('VideosPage', () => {
 
   beforeEach(() => {
     mockUseAlgoliaVideos.mockReturnValue({
+      stalled: false,
       hits: transformedVideos,
       showMore: jest.fn(),
       isLastPage: false
     })
+
+    mockUseHits.mockReturnValue({
+      hits: transformedVideos,
+      sendEvent: jest.fn()
+    } as unknown as HitsRenderState)
 
     mockUseSearchBox.mockReturnValue({
       refine: jest.fn
