@@ -1,3 +1,5 @@
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import {
   AuthAction,
   useUser,
@@ -8,7 +10,7 @@ import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
-
+import { HelpScoutBeacon } from '../../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../../src/components/PageWrapper'
 import { VisitorInfo } from '../../../src/components/VisitorInfo'
 import { DetailsForm } from '../../../src/components/VisitorInfo/DetailsForm'
@@ -30,7 +32,29 @@ function SingleVisitorReportsPage(): ReactElement {
         backHref={`/journeys/${journeyId}/reports/visitors`}
         user={user}
         sidePanelChildren={<DetailsForm id={id} />}
-        sidePanelTitle={t('Visitor Details')}
+        sidePanelTitle={
+          <>
+            <Typography variant="subtitle1">{t('Visitor Details')}</Typography>
+            <HelpScoutBeacon variant="iconButton" />
+          </>
+        }
+        mainHeaderChildren={
+          <Stack
+            direction="row"
+            justifyContent="flex-end"
+            flexGrow={1}
+            alignItems="center"
+            gap={3}
+            sx={{
+              display: {
+                xs: 'flex',
+                md: 'none'
+              }
+            }}
+          >
+            <HelpScoutBeacon variant="iconButton" />
+          </Stack>
+        }
         backHrefHistory={journeyId != null ? undefined : true}
       >
         <VisitorInfo id={id} />
