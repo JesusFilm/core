@@ -21,6 +21,5 @@ export interface ButtonBlockUpdateVariant {
 
 export interface ButtonBlockUpdateVariantVariables {
   id: string;
-  journeyId: string;
   input: ButtonBlockUpdateInput;
 }
