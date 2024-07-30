@@ -105,6 +105,7 @@ export function Post(): ReactElement {
                   alt={journey.primaryImageBlock.alt ?? ''}
                   width={208}
                   height={158}
+                  draggable="false"
                   style={{
                     borderRadius: '5px',
                     maxWidth: '100%',
