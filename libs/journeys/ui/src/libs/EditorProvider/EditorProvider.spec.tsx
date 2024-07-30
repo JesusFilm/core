@@ -172,7 +172,7 @@ describe('EditorContext', () => {
         const state: EditorState = {
           steps: [block],
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
-          activeSlide: ActiveSlide.Content,
+          activeSlide: ActiveSlide.JourneyFlow,
           activeContent: ActiveContent.Canvas,
           showAnalytics: true,
           selectedBlockId: 'step0.id',
@@ -186,13 +186,13 @@ describe('EditorContext', () => {
             children: []
           }
         }
-        console.log('Initial stateeeeeee:', state)
+        console.log('Initial state:', state)
         const newState = reducer(state, {
-          type: 'SetSelectedBlockAction',
-          selectedBlock: block
+          type: 'SetActiveSlideAction',
+          activeSlide: ActiveSlide.Content
         })
 
-        console.log('New stateeeeeeee:', newState)
+        console.log('New state:', newState)
         expect(newState).toEqual(state)
       })
 

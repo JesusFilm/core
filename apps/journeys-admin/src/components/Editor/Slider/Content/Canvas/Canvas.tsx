@@ -89,9 +89,7 @@ export function Canvas(): ReactElement {
   }
 
   function handleSelectCard(): void {
-    if (showAnalytics) {
-      return
-    }
+    if (showAnalytics === true) return
     const iframeDocument =
       frameRef.current?.contentDocument ??
       frameRef.current?.contentWindow?.document
@@ -168,7 +166,7 @@ export function Canvas(): ReactElement {
               display: 'flex',
               flexDirection: 'column',
               height: `${calculateScaledHeight(CARD_HEIGHT, scale)}`,
-              pointerEvents: `${showAnalytics === true ? 'none' : 'auto'}`
+              pointerEvents: showAnalytics === true ? 'none' : 'auto'
             }}
           >
             <Box
