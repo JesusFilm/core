@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import { ReactFlowProvider } from 'reactflow'
 
 import { EditorState } from '@core/journeys/ui/EditorProvider'
@@ -23,6 +23,7 @@ import {
 import { mockReactFlow } from '../../../../../../../test/mockReactFlow'
 import { TestEditorState } from '../../../../../../libs/TestEditorState'
 
+import userEvent from '@testing-library/user-event'
 import { SocialPreviewNode } from '.'
 
 describe('SocialPreviewNode', () => {
@@ -188,5 +189,24 @@ describe('SocialPreviewNode', () => {
 
     fireEvent.click(screen.getByTestId('SocialPreviewNode'))
     expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
+  })
+
+  it('should render tooltip', async () => {
+    render(
+      <ReactFlowProvider>
+        <MockedProvider>
+          <JourneyProvider value={{ journey: defaultJourney }}>
+            <SocialPreviewNode />
+          </JourneyProvider>
+        </MockedProvider>
+      </ReactFlowProvider>
+    )
+
+    const node = screen.getByTestId('SocialPreviewNode')
+
+    await userEvent.hover(node)
+
+    const tip = await screen.findByRole('tooltip')
+    expect(within(tip).getByText('Social Media Preview')).toBeVisible()
   })
 })

@@ -1,11 +1,12 @@
-import { MockedProvider } from '@apollo/client/testing'
-import { render } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { JourneyFields as Journey } from '../../../../../../../__generated__/JourneyFields'
 
-import { Message } from './Message'
+import { MockedProvider } from '@apollo/client/testing'
+import userEvent from '@testing-library/user-event'
+import { Message } from '.'
 
 describe('Message', () => {
   it('should display blank socialpreviewmessage', () => {
@@ -50,5 +51,26 @@ describe('Message', () => {
     )
     expect(getByText('journey title')).toBeInTheDocument()
     expect(getByText('journey description')).toBeInTheDocument()
+  })
+
+  it('should render tooltip on hover', async () => {
+    render(
+      <JourneyProvider
+        value={{
+          journey: {
+            id: 'journey.id'
+          } as unknown as Journey
+        }}
+      >
+        <Message />
+      </JourneyProvider>
+    )
+
+    const message = screen.getByTestId('SecondaryText')
+
+    await userEvent.hover(message)
+
+    const tip = await screen.findByRole('tooltip')
+    expect(within(tip).getByText('Secondary Text')).toBeVisible()
   })
 })
