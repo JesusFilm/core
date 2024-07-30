@@ -27,7 +27,7 @@ export function StrategySections({
   }
 
   return (
-    <Stack data-testid="StrategySections" sx={{ pt: 4, gap: 16 }}>
+    <Stack data-testid="StrategySections" sx={{ pt: 0, gap: 10 }}>
       {!hasResult && <EmptySearch />}
       {index ? (
         <Index indexName="wp_dev_posts_mission-trip">

@@ -12,8 +12,8 @@ export function StrategiesView(): ReactElement {
   return (
     <PageWrapper>
       <Box sx={{ backgroundColor: 'background.default' }}>
-        <Container maxWidth="xxl">
-          <Stack sx={{ p: 4, gap: 4 }}>
+        <Container maxWidth="xxl" sx={{ px: { xs: 0 }, py: { xs: 6, sm: 9 } }}>
+          <Stack sx={{ p: 0, gap: 10 }}>
             <ResourceHeading heading="Resource" />
             <SearchBar />
             <StrategySections index />
