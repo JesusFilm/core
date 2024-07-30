@@ -2,7 +2,7 @@ import Box from '@mui/material/Box'
 import { MouseEvent, ReactElement, useEffect, useRef, useState } from 'react'
 
 import { WrapperProps } from '@core/journeys/ui/BlockRenderer'
-import { ActiveFab, useEditor } from '@core/journeys/ui/EditorProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { QuickControls } from '../QuickControls'
@@ -39,22 +39,12 @@ export function SelectableWrapper({
     })
   }
 
-  const selectBlock = (block: TreeBlock): void => {
-    dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Edit })
-    updateEditor(block)
-  }
-
-  const editBlock = (): void => {
-    dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Save })
-  }
-
   // TODO: Test dispatch via E2E
   const handleSelectBlock = (e: MouseEvent<HTMLElement>): void => {
     // Allow RadioQuestion select event to be overridden by RadioOption select/edit events (no e.stopPropogation)
     if (block.__typename === 'RadioQuestionBlock') {
       // Directly edit RadioQuestionBlock
       updateEditor(block)
-      editBlock()
     } else if (block.__typename === 'RadioOptionBlock') {
       // this stopPropagation prevents links from being opened in the editor when clicked radioOptions are selected
       e.stopPropagation()
@@ -65,16 +55,14 @@ export function SelectableWrapper({
       if (selectedBlock?.id === block.id) {
         // Must override RadioQuestionBlock selected during event capture
         dispatch({ type: 'SetSelectedBlockAction', selectedBlock: block })
-        editBlock()
       } else if (parentSelected || siblingSelected) {
-        selectBlock(block)
+        updateEditor(block)
       }
     } else {
       e.stopPropagation()
       if (selectedBlock?.id === block.id && isInlineEditable) {
-        editBlock()
       } else {
-        selectBlock(block)
+        updateEditor(block)
       }
     }
   }
@@ -101,6 +89,16 @@ export function SelectableWrapper({
         }
       : {}
 
+  let borderRadius = '4px'
+  switch (block.__typename) {
+    case 'RadioOptionBlock':
+      borderRadius = '8px'
+      break
+    case 'ImageBlock':
+      borderRadius = '16px'
+      break
+  }
+
   useEffect(() => {
     setOpen(selectedBlock?.id === block.id)
   }, [selectedBlock, block])
@@ -121,7 +119,7 @@ export function SelectableWrapper({
         '&:last-child': {
           '& > *': { mb: '0px' }
         },
-        borderRadius: block.__typename === 'RadioOptionBlock' ? '8px' : '4px',
+        borderRadius,
         outline: selectedBlock?.id === block.id ? '2px solid #C52D3A' : 'none',
         outlineOffset: '5px',
         zIndex: selectedBlock?.id === block.id ? 1 : 0,

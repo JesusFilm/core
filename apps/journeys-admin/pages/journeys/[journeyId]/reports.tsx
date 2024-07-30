@@ -1,4 +1,3 @@
-import Box from '@mui/material/Box'
 import {
   AuthAction,
   useUser,
@@ -8,18 +7,19 @@ import {
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
-import { ReactElement } from 'react'
+import type { ReactElement } from 'react'
 
-import { GetAdminJourney } from '../../../__generated__/GetAdminJourney'
-import { UserJourneyOpen } from '../../../__generated__/UserJourneyOpen'
+import type { GetAdminJourney } from '../../../__generated__/GetAdminJourney'
+import type { UserJourneyOpen } from '../../../__generated__/UserJourneyOpen'
 import { JourneysReportType } from '../../../__generated__/globalTypes'
 import { MemoizedDynamicReport } from '../../../src/components/DynamicPowerBiReport'
 import { PageWrapper } from '../../../src/components/PageWrapper'
+import { PlausibleEmbedDashboard } from '../../../src/components/PlausibleEmbedDashboard'
 import { ReportsNavigation } from '../../../src/components/ReportsNavigation'
 import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'
 import { GET_ADMIN_JOURNEY, USER_JOURNEY_OPEN } from '../[journeyId]'
 
-function JourneyReportsPage(): ReactElement {
+function JourneyReportsPage({ flags }): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const user = useUser()
   const router = useRouter()
@@ -33,18 +33,23 @@ function JourneyReportsPage(): ReactElement {
         title={t('Journey Analytics')}
         user={user}
         backHref={`/journeys/${journeyId}`}
-      >
-        <Box sx={{ height: 'calc(100vh - 48px)' }}>
+        mainHeaderChildren={
           <ReportsNavigation
-            reportType={JourneysReportType.singleFull}
+            destination="visitor"
             journeyId={journeyId}
-            selected="journeys"
+            helpScoutGap
           />
+        }
+        mainBodyPadding={false}
+      >
+        {flags.editorAnalytics === true ? (
+          <PlausibleEmbedDashboard />
+        ) : (
           <MemoizedDynamicReport
             reportType={JourneysReportType.singleFull}
             journeyId={journeyId}
           />
-        </Box>
+        )}
       </PageWrapper>
     </>
   )
@@ -56,7 +61,7 @@ export const getServerSideProps = withUserTokenSSR({
   if (user == null)
     return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
-  const { apolloClient, redirect, translations } = await initAndAuthApp({
+  const { apolloClient, redirect, translations, flags } = await initAndAuthApp({
     user,
     locale,
     resolvedUrl
@@ -87,7 +92,8 @@ export const getServerSideProps = withUserTokenSSR({
 
   return {
     props: {
-      ...translations
+      ...translations,
+      flags
     }
   }
 })

@@ -4,6 +4,7 @@ import { Form, Formik } from 'formik'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
+import { SubmitListener } from '@core/shared/ui/SubmitListener'
 import Search1Icon from '@core/shared/ui/icons/Search1'
 
 interface UnsplashSearchProps {
@@ -50,6 +51,7 @@ export function UnsplashSearch({
             }}
             data-testid="UnsplashSearch"
           />
+          <SubmitListener />
         </Form>
       )}
     </Formik>

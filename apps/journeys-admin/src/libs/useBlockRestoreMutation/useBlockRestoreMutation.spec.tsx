@@ -26,7 +26,7 @@ describe('useBlockRestoreMutation', () => {
     request: {
       query: BLOCK_RESTORE,
       variables: {
-        blockRestoreId: stepBlock.id
+        id: stepBlock.id
       }
     },
     result: jest.fn(() => ({
@@ -58,7 +58,7 @@ describe('useBlockRestoreMutation', () => {
       await waitFor(async () => {
         await result.current[0]({
           variables: {
-            blockRestoreId: stepBlock.id
+            id: stepBlock.id
           }
         })
         expect(useBlockRestoreMutationMock.result).toHaveBeenCalled()
