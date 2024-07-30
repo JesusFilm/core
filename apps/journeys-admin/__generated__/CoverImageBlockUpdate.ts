@@ -3,21 +3,21 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ImageBlockCreateInput } from "./globalTypes";
+import { ImageBlockUpdateInput } from "./globalTypes";
 
 // ====================================================
-// GraphQL mutation operation: CardBlockImageBlockCreate
+// GraphQL mutation operation: CoverImageBlockUpdate
 // ====================================================
 
-export interface CardBlockImageBlockCreate_imageBlockCreate {
+export interface CoverImageBlockUpdate_imageBlockUpdate {
   __typename: "ImageBlock";
   id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
   src: string | null;
   alt: string;
-  parentBlockId: string | null;
   width: number;
   height: number;
-  parentOrder: number | null;
   /**
    * blurhash is a compact representation of a placeholder for an image.
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
@@ -25,10 +25,11 @@ export interface CardBlockImageBlockCreate_imageBlockCreate {
   blurhash: string;
 }
 
-export interface CardBlockImageBlockCreate {
-  imageBlockCreate: CardBlockImageBlockCreate_imageBlockCreate;
+export interface CoverImageBlockUpdate {
+  imageBlockUpdate: CoverImageBlockUpdate_imageBlockUpdate;
 }
 
-export interface CardBlockImageBlockCreateVariables {
-  input: ImageBlockCreateInput;
+export interface CoverImageBlockUpdateVariables {
+  id: string;
+  input: ImageBlockUpdateInput;
 }
