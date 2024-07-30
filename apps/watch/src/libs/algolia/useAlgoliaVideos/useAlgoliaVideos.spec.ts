@@ -77,6 +77,7 @@ describe('useAlgoliaVideos', () => {
     } as unknown as InfiniteHitsRenderState)
 
     mockUseRefinementList.mockReturnValue({
+      items: [],
       refine: jest.fn()
     } as unknown as RefinementListRenderState)
 
@@ -113,6 +114,7 @@ describe('useAlgoliaVideos', () => {
       asPath: '/watch'
     } as unknown as NextRouter)
     mockUseRefinementList.mockReturnValue({
+      items: [],
       refine
     } as unknown as RefinementListRenderState)
 
@@ -127,6 +129,22 @@ describe('useAlgoliaVideos', () => {
       asPath: '/watch/videos?languages=1'
     } as unknown as NextRouter)
     mockUseRefinementList.mockReturnValue({
+      items: [
+        {
+          count: 100,
+          isRefined: false,
+          value: '529',
+          label: '529',
+          highlighted: '529'
+        },
+        {
+          count: 100,
+          isRefined: true,
+          value: '1',
+          label: '1',
+          highlighted: '1'
+        }
+      ],
       refine
     } as unknown as RefinementListRenderState)
 

@@ -13,7 +13,6 @@ import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
-
 import i18nConfig from '../next-i18next.config'
 import { useApolloClient } from '../src/libs/apolloClient'
 
@@ -21,8 +20,6 @@ import 'swiper/css'
 import 'swiper/css/a11y'
 import 'swiper/css/navigation'
 import '../public/watch/assets/fonts/fonts.css'
-import algoliasearch from 'algoliasearch'
-import { InstantSearch } from 'react-instantsearch'
 
 const clientSideEmotionCache = createEmotionCache({ prepend: false })
 
@@ -31,11 +28,6 @@ type WatchAppProps = NextJsAppProps<{
 }> & {
   emotionCache?: EmotionCache
 }
-
-const searchClient = algoliasearch(
-  process.env.NEXT_PUBLIC_ALGOLIA_APP_ID ?? '',
-  process.env.NEXT_PUBLIC_ALGOLIA_API_KEY ?? ''
-)
 
 function WatchApp({
   Component,
@@ -114,9 +106,7 @@ function WatchApp({
             themeName={ThemeName.website}
             themeMode={ThemeMode.light}
           >
-            <InstantSearch searchClient={searchClient}>
-              <Component {...pageProps} />
-            </InstantSearch>
+            <Component {...pageProps} />
           </ThemeProvider>
         </CacheProvider>
       </ApolloProvider>

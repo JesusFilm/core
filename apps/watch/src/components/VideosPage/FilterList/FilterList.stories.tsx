@@ -20,7 +20,6 @@ const Template: StoryObj<typeof FilterList> = {
     return (
       <InstantSearchTestWrapper indexName="video-variants-stg">
         <FilterList
-          filter={{}}
           languagesData={{ languages }}
           languagesLoading={false}
         />

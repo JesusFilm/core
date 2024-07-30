@@ -61,7 +61,7 @@ describe('FilterList', () => {
       }
     ]
 
-    it('should refine and update url on audio language filter', async () => {
+    it('should refine by language on audio language filter', async () => {
       const refineLanguages = jest.fn()
 
       mockUseRefinementList.mockReturnValue({
@@ -70,11 +70,7 @@ describe('FilterList', () => {
       } as unknown as RefinementListRenderState)
 
       render(
-        <FilterList
-          filter={{}}
-          languagesData={{ languages }}
-          languagesLoading={false}
-        />
+        <FilterList languagesData={{ languages }} languagesLoading={false} />
       )
 
       const langaugesComboboxEl = screen.getAllByRole('combobox', {
@@ -86,16 +82,10 @@ describe('FilterList', () => {
       await waitFor(() => screen.getAllByText('English')[0])
       fireEvent.click(screen.getAllByText('English')[0])
       expect(langaugesComboboxEl).toHaveValue('English')
-      await waitFor(() =>
-        expect(push).toHaveBeenCalledWith(
-          '/watch/videos?languages=529',
-          undefined,
-          { shallow: true }
-        )
-      )
-      expect(refineLanguages).toHaveBeenCalled()
+      await waitFor(() => expect(refineLanguages).toHaveBeenCalled())
     })
   })
+
   describe('Subtitles Filter', () => {
     const subtitleItems = [
       {
@@ -113,7 +103,7 @@ describe('FilterList', () => {
         highlighted: '21028'
       }
     ]
-    it('should refine and update url on subtitle language filter', async () => {
+    it('should refine by subtitle on subtitle language filter', async () => {
       const refineSubtitles = jest.fn()
 
       mockUseRefinementList.mockReturnValue({
@@ -122,11 +112,7 @@ describe('FilterList', () => {
       } as unknown as RefinementListRenderState)
 
       render(
-        <FilterList
-          filter={{}}
-          languagesData={{ languages }}
-          languagesLoading={false}
-        />
+        <FilterList languagesData={{ languages }} languagesLoading={false} />
       )
 
       const subtitleComboboxEl = screen.getAllByRole('combobox', {
@@ -137,19 +123,12 @@ describe('FilterList', () => {
       fireEvent.keyDown(subtitleComboboxEl, { key: 'ArrowDown' })
       await waitFor(() => screen.getAllByText('English')[0])
       fireEvent.click(screen.getAllByText('English')[0])
-      await waitFor(() =>
-        expect(push).toHaveBeenCalledWith(
-          '/watch/videos?subtitles=529',
-          undefined,
-          { shallow: true }
-        )
-      )
-      expect(refineSubtitles).toHaveBeenCalled()
+      await waitFor(() => expect(refineSubtitles).toHaveBeenCalled())
     })
   })
 
   describe('Search Filter', () => {
-    it('should refine and update url on title search', async () => {
+    it('should refine by title on title search', async () => {
       const refine = jest.fn()
 
       mockUseSearchBox.mockReturnValue({
@@ -157,23 +136,12 @@ describe('FilterList', () => {
       } as unknown as SearchBoxRenderState)
 
       render(
-        <FilterList
-          filter={{}}
-          languagesData={{ languages }}
-          languagesLoading={false}
-        />
+        <FilterList languagesData={{ languages }} languagesLoading={false} />
       )
       fireEvent.change(screen.getByRole('textbox', { name: 'Search Titles' }), {
         target: { value: 'Jesus' }
       })
-      await waitFor(() =>
-        expect(push).toHaveBeenCalledWith(
-          '/watch/videos?title=Jesus',
-          undefined,
-          { shallow: true }
-        )
-      )
-      expect(refine).toHaveBeenCalled()
+      await waitFor(() => expect(refine).toHaveBeenCalled())
     })
   })
 })

@@ -35,7 +35,7 @@ export function WatchHomePage(): ReactElement {
           data-testid="WatchHomePage"
         >
           <Container maxWidth="xxl" sx={{ paddingY: '4rem' }}>
-            <Index indexName={'video-variants-stg'}>
+            <Index indexName="video-variants-stg">
               <Box sx={{ pb: 10 }}>
                 <SearchBar />
               </Box>

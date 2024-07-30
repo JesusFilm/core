@@ -6,7 +6,7 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Formik } from 'formik'
 import { useTranslation } from 'next-i18next'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/compat/router'
 import { ReactElement, useEffect, useMemo } from 'react'
 import {
   useClearRefinements,
@@ -17,7 +17,6 @@ import {
 import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
 import { GetLanguages } from '../../../../__generated__/GetLanguages'
-import { VideoPageFilter } from '../utils/getQueryParameters'
 import { LanguagesFilter } from './LanguagesFilter'
 
 const subtitleLanguageIds = [
@@ -77,18 +76,25 @@ const subtitleLanguageIds = [
 ]
 
 interface FilterListProps {
-  filter: VideoPageFilter
   languagesData?: GetLanguages
   languagesLoading: boolean
 }
 
 export function FilterList({
-  filter,
   languagesData,
   languagesLoading
 }: FilterListProps): ReactElement {
   const { t } = useTranslation()
   const router = useRouter()
+
+  const query = router?.query?.query as string | undefined
+  const languageId = router?.query?.['refinementList[languageId][0]'] as
+    | string
+    | undefined
+  const subtitleId = router?.query?.['refinementList[subtitles][0]'] as
+    | string
+    | undefined
+
   const { refine } = useClearRefinements({
     includedAttributes: ['languageId', 'subtitles']
   })
@@ -137,11 +143,14 @@ export function FilterList({
     }
   }
 
-  const initialValues = {
-    language: languageOptionFromIds(filter.availableVariantLanguageIds),
-    subtitleLanguage: languageOptionFromIds(filter.subtitleLanguageIds),
-    title: filter.title ?? ''
-  }
+  const initialValues = useMemo(
+    () => ({
+      language: languageOptionFromIds([languageId ?? '']),
+      subtitleLanguage: languageOptionFromIds([subtitleId ?? '']),
+      title: query ?? ''
+    }),
+    [languageId, subtitleId, query, languagesMap]
+  )
 
   function handleRefine({
     title,
@@ -152,7 +161,9 @@ export function FilterList({
     languageId: string
     subtitleLanguageId: string
   }): void {
-    if (title) refineSearch(title)
+    if (title) {
+      refineSearch(title)
+    }
     if (languageId) {
       refine()
       refineLanguages(languageId)
@@ -164,17 +175,6 @@ export function FilterList({
   }
 
   function handleSubmit(values: typeof initialValues): void {
-    const params = new URLSearchParams(router.query as Record<string, string>)
-    const setQueryParam = (name: string, value?: string | null) =>
-      value ? params.set(name, value) : params.delete(name)
-
-    setQueryParam('languages', values.language.id)
-    setQueryParam('subtitles', values.subtitleLanguage.id)
-    setQueryParam('title', values.title)
-
-    void router.push(`/watch/videos?${params.toString()}`, undefined, {
-      shallow: true
-    })
     handleRefine({
       title: values.title,
       languageId: values.language.id,
@@ -182,6 +182,7 @@ export function FilterList({
     })
   }
 
+  // TODO: handleRefine not updating on initial render
   // biome-ignore lint/correctness/useExhaustiveDependencies: effect to only run on componentDidMount
   useEffect(() => {
     handleRefine({
@@ -189,7 +190,7 @@ export function FilterList({
       languageId: initialValues.language.id,
       subtitleLanguageId: initialValues.subtitleLanguage.id
     })
-  }, [])
+  }, [initialValues])
 
   return (
     <Formik
