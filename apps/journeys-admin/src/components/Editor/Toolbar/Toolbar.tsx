@@ -27,7 +27,7 @@ import { Menu } from './Menu'
 const TitleDescriptionDialog = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "./TitleDescriptionDialog" */ './TitleDescriptionDialog/TitleDescriptionDialog'
+      /* webpackChunkName: "Editor/Toolbar/TitleDescriptionDialog" */ './TitleDescriptionDialog/TitleDescriptionDialog'
     ).then((mod) => mod.TitleDescriptionDialog),
   { ssr: false }
 )
