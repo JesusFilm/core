@@ -69,6 +69,12 @@ export interface EditorState {
    */
   selectedBlock?: TreeBlock
   /**
+   * selectedBlockId indicates which block is currently selected on the Canvas
+   * and the JourneyFlow. It also indicates which attributes should be
+   * displayed in relation to the SelectedBlock.
+   */
+  selectedBlockId?: string
+  /**
    * selectedGoalUrl indicates which Goal to show on GoalDetails for editing.
    * If SelectedGoalUrl is unset then the information about goals will be shown.
    */
@@ -78,6 +84,14 @@ export interface EditorState {
    * the JourneyFlow.
    */
   selectedStep?: TreeBlock<StepBlock>
+  /**
+   * selectedStepId indicates which step is currently displayed by the Canvas
+   * and the JourneyFlow. However, this can be used to selected the step before
+   * it is added to the steps array i.e in creation mutations. This is important as running a dispatch
+   * action to set the selected step before it is added to the steps array will
+   * not work.
+   */
+  selectedStepId?: string
   steps?: Array<TreeBlock<StepBlock>>
 }
 interface SetActiveContentAction {
@@ -103,6 +117,10 @@ interface SetSelectedBlockOnlyAction {
 export interface SetSelectedBlockByIdAction {
   type: 'SetSelectedBlockByIdAction'
   selectedBlockId?: string
+}
+export interface SetSelectedStepByIdAction {
+  type: 'SetSelectedStepByIdAction'
+  selectedStepId?: string
 }
 interface SetActiveCanvasDetailsDrawerAction {
   type: 'SetActiveCanvasDetailsDrawerAction'
@@ -141,8 +159,10 @@ export interface SetEditorFocusAction {
   activeSlide?: ActiveSlide
   selectedAttributeId?: string
   selectedBlock?: TreeBlock
+  selectedBlockId?: string
   selectedGoalUrl?: string
   selectedStep?: TreeBlock<StepBlock>
+  selectedStepId?: string
 }
 export type EditorAction =
   | SetActiveCanvasDetailsDrawerAction
@@ -154,6 +174,7 @@ export type EditorAction =
   | SetSelectedBlockByIdAction
   | SetSelectedGoalUrlAction
   | SetSelectedStepAction
+  | SetSelectedStepByIdAction
   | SetStepsAction
   | SetShowAnalyticsAction
   | SetAnalyticsAction
@@ -177,7 +198,7 @@ export const reducer = (
     case 'SetActiveSlideAction':
       return {
         ...state,
-        activeSlide: action.activeSlide
+        activeSlide: state.showAnalytics === true ? 0 : action.activeSlide
       }
     case 'SetSelectedAttributeIdAction':
       return {
@@ -187,6 +208,7 @@ export const reducer = (
     case 'SetSelectedBlockAction':
       return {
         ...state,
+        selectedBlockId: action.selectedBlock?.id,
         selectedBlock: action.selectedBlock,
         activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
         activeContent: ActiveContent.Canvas,
@@ -200,6 +222,7 @@ export const reducer = (
     case 'SetSelectedBlockByIdAction':
       return {
         ...state,
+        selectedBlockId: action.selectedBlockId,
         selectedBlock:
           action.selectedBlockId != null
             ? searchBlocks(state.steps ?? [], action.selectedBlockId)
@@ -215,8 +238,22 @@ export const reducer = (
     case 'SetSelectedStepAction':
       return {
         ...state,
+        selectedStepId: action.selectedStep?.id,
         selectedStep: action.selectedStep,
         selectedBlock: action.selectedStep,
+        activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+        activeContent: ActiveContent.Canvas
+      }
+    case 'SetSelectedStepByIdAction':
+      return {
+        ...state,
+        selectedStepId: action.selectedStepId,
+        selectedStep:
+          action.selectedStepId != null
+            ? (searchBlocks(state.steps ?? [], action.selectedStepId, {
+                filter: 'searchStepsOnly'
+              }) as TreeBlock<StepBlock>)
+            : undefined,
         activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
         activeContent: ActiveContent.Canvas
       }
@@ -225,8 +262,8 @@ export const reducer = (
         ...state,
         steps: action.steps,
         selectedStep:
-          state.selectedStep != null
-            ? action.steps.find(({ id }) => id === state.selectedStep?.id)
+          state.selectedStepId != null
+            ? action.steps.find(({ id }) => id === state.selectedStepId)
             : action.steps[0],
         selectedBlock:
           state.selectedBlock != null
@@ -252,17 +289,29 @@ export const reducer = (
         selectedAttributeId,
         selectedGoalUrl,
         selectedBlock,
-        selectedStep
+        selectedBlockId,
+        selectedStep,
+        selectedStepId
       } = action
       if (selectedStep != null)
         stateCopy = reducer(stateCopy, {
           type: 'SetSelectedStepAction',
           selectedStep
         })
+      if (selectedStepId != null)
+        stateCopy = reducer(stateCopy, {
+          type: 'SetSelectedStepByIdAction',
+          selectedStepId
+        })
       if (selectedBlock != null)
         stateCopy = reducer(stateCopy, {
           type: 'SetSelectedBlockAction',
           selectedBlock
+        })
+      if (selectedBlockId != null)
+        stateCopy = reducer(stateCopy, {
+          type: 'SetSelectedBlockByIdAction',
+          selectedBlockId
         })
       if (activeSlide != null)
         stateCopy = reducer(stateCopy, {

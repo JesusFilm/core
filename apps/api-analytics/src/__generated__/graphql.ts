@@ -68,6 +68,14 @@ export type Block = {
   parentOrder?: Maybe<Scalars['Int']['output']>;
 };
 
+export type BlockUpdateActionInput = {
+  blockId?: InputMaybe<Scalars['String']['input']>;
+  email?: InputMaybe<Scalars['String']['input']>;
+  gtmEventName?: InputMaybe<Scalars['String']['input']>;
+  target?: InputMaybe<Scalars['String']['input']>;
+  url?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type BlocksFilter = {
   journeyIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   typenames?: InputMaybe<Array<Scalars['String']['input']>>;
@@ -228,6 +236,7 @@ export type CardBlockCreateInput = {
 
 export type CardBlockUpdateInput = {
   backgroundColor?: InputMaybe<Scalars['String']['input']>;
+  coverBlockId?: InputMaybe<Scalars['ID']['input']>;
   fullscreen?: InputMaybe<Scalars['Boolean']['input']>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
   themeMode?: InputMaybe<ThemeMode>;
@@ -1101,6 +1110,7 @@ export type Mutation = {
   blockOrderUpdate: Array<Block>;
   /** blockRestore is used for redo/undo */
   blockRestore: Array<Block>;
+  blockUpdateAction: Action;
   blockUpdateEmailAction: EmailAction;
   blockUpdateLinkAction: LinkAction;
   blockUpdateNavigateToBlockAction: NavigateToBlockAction;
@@ -1250,6 +1260,12 @@ export type MutationBlockOrderUpdateArgs = {
 
 export type MutationBlockRestoreArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type MutationBlockUpdateActionArgs = {
+  id: Scalars['ID']['input'];
+  input?: InputMaybe<BlockUpdateActionInput>;
 };
 
 
@@ -3033,6 +3049,7 @@ export type Video = {
   slug: Scalars['String']['output'];
   snippet: Array<Translation>;
   studyQuestions: Array<Translation>;
+  subtitles: Array<VideoSubtitle>;
   title: Array<Translation>;
   variant?: Maybe<VideoVariant>;
   variantLanguages: Array<Language>;
@@ -3060,6 +3077,13 @@ export type VideoSnippetArgs = {
 
 
 export type VideoStudyQuestionsArgs = {
+  languageId?: InputMaybe<Scalars['ID']['input']>;
+  primary?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+export type VideoSubtitlesArgs = {
+  edition?: InputMaybe<Scalars['String']['input']>;
   languageId?: InputMaybe<Scalars['ID']['input']>;
   primary?: InputMaybe<Scalars['Boolean']['input']>;
 };
@@ -3486,6 +3510,15 @@ export type VideoStartEventCreateInput = {
   stepId?: InputMaybe<Scalars['ID']['input']>;
   /** source of the video */
   value?: InputMaybe<VideoBlockSource>;
+};
+
+export type VideoSubtitle = {
+  __typename?: 'VideoSubtitle';
+  edition: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  languageId: Scalars['String']['output'];
+  srtSrc?: Maybe<Scalars['String']['output']>;
+  vttSrc?: Maybe<Scalars['String']['output']>;
 };
 
 /**

@@ -10,6 +10,7 @@ import {
   VideoImageAlt,
   VideoSnippet,
   VideoStudyQuestion,
+  VideoSubtitle,
   VideoTitle,
   VideoVariant
 } from '.prisma/api-videos-client'
@@ -89,6 +90,16 @@ describe('VideoResolver', () => {
     videoId: '20615'
   }
 
+  const videoSubtitle: VideoSubtitle = {
+    id: 'subtitleId',
+    edition: 'base',
+    videoId: 'video.id',
+    languageId: '529',
+    primary: true,
+    vttSrc: 'vttSrc',
+    srtSrc: 'srtSrc'
+  }
+
   beforeEach(async () => {
     const videoService = {
       provide: VideoService,
@@ -127,6 +138,10 @@ describe('VideoResolver', () => {
     prismaService.videoVariant.findUnique.mockResolvedValue(videoVariant[0])
     prismaService.videoVariant.findMany.mockResolvedValue(videoVariant)
     prismaService.video.count.mockResolvedValue(1)
+    prismaService.videoSubtitle.findMany.mockResolvedValue([
+      videoSubtitle,
+      videoSubtitle
+    ])
   })
 
   describe('videos', () => {
@@ -558,6 +573,66 @@ describe('VideoResolver', () => {
       expect(prismaService.bibleCitation.findMany).toHaveBeenCalledWith({
         where: { videoId: video.id },
         orderBy: { order: 'asc' }
+      })
+    })
+  })
+
+  describe('subtitles', () => {
+    it('returns subtitles', async () => {
+      expect(await resolver.subtitles(video, '529', true, 'base')).toEqual([
+        {
+          id: 'subtitleId',
+          videoId: 'video.id',
+          languageId: '529',
+          primary: true,
+          edition: 'base',
+          vttSrc: 'vttSrc',
+          srtSrc: 'srtSrc'
+        },
+        {
+          id: 'subtitleId',
+          videoId: 'video.id',
+          languageId: '529',
+          edition: 'base',
+          primary: true,
+          vttSrc: 'vttSrc',
+          srtSrc: 'srtSrc'
+        }
+      ])
+      expect(prismaService.videoSubtitle.findMany).toHaveBeenCalledWith({
+        where: {
+          videoId: video.id,
+          OR: [{ languageId: '529' }, { primary: true }, { edition: 'base' }]
+        },
+        orderBy: { primary: 'desc' }
+      })
+    })
+    it('returns all subtitles', async () => {
+      expect(await resolver.subtitles(video)).toEqual([
+        {
+          id: 'subtitleId',
+          videoId: 'video.id',
+          languageId: '529',
+          primary: true,
+          edition: 'base',
+          vttSrc: 'vttSrc',
+          srtSrc: 'srtSrc'
+        },
+        {
+          id: 'subtitleId',
+          videoId: 'video.id',
+          languageId: '529',
+          edition: 'base',
+          primary: true,
+          vttSrc: 'vttSrc',
+          srtSrc: 'srtSrc'
+        }
+      ])
+      expect(prismaService.videoSubtitle.findMany).toHaveBeenCalledWith({
+        where: {
+          videoId: video.id
+        },
+        orderBy: { primary: 'desc' }
       })
     })
   })

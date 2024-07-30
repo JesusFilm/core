@@ -74,6 +74,7 @@ export class BigQueryConsumer extends WorkerHost {
   async process(_job: Job): Promise<void> {
     await this.importerVideosService.getUsedSlugs()
     await this.importerVideoVariantsService.getExistingIds()
+
     await this.importerBibleBooksService.getExistingIds()
 
     for (const index in this.tables) {
