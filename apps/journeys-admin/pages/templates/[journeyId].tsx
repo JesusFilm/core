@@ -1,18 +1,17 @@
-import { GetStaticProps } from 'next'
-import { useUser, withUser, withUserTokenSSR } from 'next-firebase-auth'
-import { useTranslation } from 'next-i18next'
-import { NextSeo } from 'next-seo'
-import { useRouter } from 'next/router'
-import { ReactElement, useEffect } from 'react'
-
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { TemplateView } from '@core/journeys/ui/TemplateView'
 import { GET_JOURNEY, useJourneyQuery } from '@core/journeys/ui/useJourneyQuery'
 import { GET_JOURNEYS } from '@core/journeys/ui/useJourneysQuery'
 import { GET_TAGS } from '@core/journeys/ui/useTagsQuery'
-
-import { Box } from '@mui/material'
+import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
+import { GetStaticProps } from 'next'
+import { useUser, withUser, withUserTokenSSR } from 'next-firebase-auth'
+import { useTranslation } from 'next-i18next'
+import { NextSeo } from 'next-seo'
+import { useRouter } from 'next/router'
+import { ReactElement, useEffect } from 'react'
 import { GetJourney, GetJourneyVariables } from '../../__generated__/GetJourney'
 import {
   GetJourneys,
@@ -20,6 +19,7 @@ import {
 } from '../../__generated__/GetJourneys'
 import { GetTags } from '../../__generated__/GetTags'
 import { IdType } from '../../__generated__/globalTypes'
+import { HelpScoutBeacon } from '../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 
@@ -56,6 +56,17 @@ function TemplateDetailsPage(): ReactElement {
           backHrefHistory
           mainBodyPadding={false}
           showMainHeader={user?.id != null}
+          mainHeaderChildren={
+            <Stack
+              direction="row"
+              justifyContent="flex-end"
+              flexGrow={1}
+              alignItems="center"
+              gap={3}
+            >
+              <HelpScoutBeacon variant="iconButton" />
+            </Stack>
+          }
           showAppHeader={user?.id != null}
           showNavBar={user?.id != null}
           background="background.paper"
