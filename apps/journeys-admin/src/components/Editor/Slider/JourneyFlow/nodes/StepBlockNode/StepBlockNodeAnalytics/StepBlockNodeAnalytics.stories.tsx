@@ -42,7 +42,8 @@ export const Default = {
         visitorsExitAtStep: 100,
         timeOnPage: 72
       }
-    ]
+    ],
+    totalVisitors: 1000
   }
 }
 
