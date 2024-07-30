@@ -158,7 +158,7 @@ describe('EditorContext', () => {
           selectedBlock: block
         })
       })
-      it('should not set selected block when showAnalytics is true', () => {
+      it('should not set ActiveSlide when showAnalytics is true', () => {
         const block: TreeBlock = {
           id: 'step0.id',
           __typename: 'StepBlock',
@@ -186,13 +186,11 @@ describe('EditorContext', () => {
             children: []
           }
         }
-        console.log('Initial state:', state)
         const newState = reducer(state, {
           type: 'SetActiveSlideAction',
           activeSlide: ActiveSlide.Content
         })
 
-        console.log('New state:', newState)
         expect(newState).toEqual(state)
       })
 
