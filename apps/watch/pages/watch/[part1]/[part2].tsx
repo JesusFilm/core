@@ -52,7 +52,11 @@ const searchClient = algoliasearch(
 
 export default function Part2Page({ content }: Part2PageProps): ReactElement {
   return (
-    <InstantSearch searchClient={searchClient} indexName="video-variants-stg">
+    <InstantSearch
+      insights
+      searchClient={searchClient}
+      indexName="video-variants-stg"
+    >
       <SnackbarProvider>
         <LanguageProvider>
           <VideoProvider value={{ content }}>

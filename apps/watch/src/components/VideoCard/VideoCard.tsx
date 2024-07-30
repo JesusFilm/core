@@ -12,7 +12,7 @@ import NextLink from 'next/link'
 import { ReactElement } from 'react'
 
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
-
+import { useHits } from 'react-instantsearch'
 import { VideoChildFields } from '../../../__generated__/VideoChildFields'
 import { VideoLabel } from '../../../__generated__/globalTypes'
 import { getLabelDetails } from '../../libs/utils/getLabelDetails/getLabelDetails'
@@ -73,6 +73,9 @@ export function VideoCard({
   )
   const href = getSlug(containerSlug, video?.label, video?.variant?.slug)
 
+  const { hits, sendEvent } = useHits()
+  const hit = hits.filter((hit) => hit.videoId === video?.id)
+
   const { t } = useTranslation('apps-watch')
   return (
     <NextLink href={href} passHref legacyBehavior>
@@ -83,6 +86,10 @@ export function VideoCard({
         sx={{ pointerEvents: video != null ? 'auto' : 'none' }}
         aria-label="VideoCard"
         data-testid={video != null ? `VideoCard-${video.id}` : 'VideoCard'}
+        onClick={(event) => {
+          event.stopPropagation()
+          sendEvent('click', hit, 'Video Clicked')
+        }}
       >
         <Stack spacing={3}>
           <ImageButton
