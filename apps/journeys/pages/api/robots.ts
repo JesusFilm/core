@@ -19,7 +19,16 @@ export default async function handler(
     process.env.NEXT_PUBLIC_ROOT_DOMAIN != null &&
     hostname === process.env.NEXT_PUBLIC_ROOT_DOMAIN
   ) {
-    return res.status(200).send('User-agent: *\nDisallow: /')
+    return res.status(200).send(`
+      User-agent: Twitterbot
+      Allow: /
+
+      User-agent: facebookexternalhit
+      Allow: /
+
+      User-agent: *
+      Disallow: /
+    `)
   }
 
   return res.status(200).send('User-agent: *\nAllow: /')

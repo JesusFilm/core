@@ -1,1 +1,1 @@
-export { BaseNode } from './BaseNode'
+export { BaseNode, HandleVariant } from './BaseNode'

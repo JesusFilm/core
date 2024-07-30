@@ -4,7 +4,7 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 
 import type { GetJourneyAnalytics_journeyReferrer as JourneyReferrer } from '@core/journeys/ui/useJourneyAnalyticsQuery/__generated__/GetJourneyAnalytics'
 import type { NodeProps } from 'reactflow'
-import { BaseNode } from '../BaseNode'
+import { BaseNode, HandleVariant } from '../BaseNode'
 import { BaseReferrer } from './BaseReferrer'
 import { OtherReferrer } from './OtherReferrer'
 
@@ -22,7 +22,7 @@ export function ReferrerNode({ data }: ReferrerNodeProps) {
   return (
     <BaseNode
       id="referrer"
-      sourceHandle={showAnalytics ? 'disabled' : 'hide'}
+      sourceHandle={HandleVariant.Disabled}
       isSourceConnected
     >
       <Box

@@ -15,10 +15,14 @@ export const countryName = {
   primary: true
 }
 
-export const countryContinent = {
+export const continent = {
+  id: 'North America'
+}
+
+export const continentName = {
   id: '1',
-  countryId: country.id,
-  value: 'North America',
+  continentId: country.id,
+  value: continent.id,
   languageId: '529',
   primary: true
 }

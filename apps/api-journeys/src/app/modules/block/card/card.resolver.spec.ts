@@ -54,7 +54,8 @@ describe('CardBlockResolver', () => {
     backgroundColor: '#FFF',
     themeMode: ThemeMode.light,
     themeName: ThemeName.base,
-    fullscreen: true
+    fullscreen: true,
+    coverBlockId: 'coverBlockId'
   }
   const blockService = {
     provide: BlockService,

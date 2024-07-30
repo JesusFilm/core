@@ -5,23 +5,29 @@ import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { cache } from '../../yoga'
 import { language } from '../language/language.mock'
-import { country, countryContinent, countryName } from './country.mock'
+import { continent, continentName, country, countryName } from './country.mock'
 import { Country } from '.prisma/api-languages-client'
 
 const COUNTRY_QUERY = graphql(`
   query Country($languageId: ID, $primary: Boolean) {
     country(id: "AD") {
-      continent(languageId: $languageId, primary: $primary) {
-        value
-        primary
+      continent {
+        id
+        name(languageId: $languageId, primary: $primary) {
+          value
+          primary
+        }
       }
       flagPngSrc
       flagWebpSrc
       id
-      languages {
-        id
-        iso3
-        bcp47
+      countryLanguages {
+        speakers
+        language {
+          id
+          iso3
+          bcp47
+        }
       }
       latitude
       longitude
@@ -44,10 +50,12 @@ describe('country', () => {
   it('should query country', async () => {
     prismaMock.country.findUnique.mockResolvedValue({
       ...country,
-      languages: [language]
+      languages: [language],
+      continent: continent,
+      countryLanguages: [{ id: '1', language, speakers: 100 }]
     } as unknown as Country)
     prismaMock.countryName.findMany.mockResolvedValue([countryName])
-    prismaMock.countryContinent.findMany.mockResolvedValue([countryContinent])
+    prismaMock.continentName.findMany.mockResolvedValue([continentName])
     const data = await client({
       document: COUNTRY_QUERY,
       variables: {
@@ -57,7 +65,12 @@ describe('country', () => {
     })
     expect(prismaMock.country.findUnique).toHaveBeenCalledWith({
       include: {
-        languages: true
+        continent: true,
+        countryLanguages: {
+          include: {
+            language: true
+          }
+        }
       },
       where: {
         id: 'AD'
@@ -77,9 +90,15 @@ describe('country', () => {
     })
     expect(data).toHaveProperty('data.country', {
       ...country,
-      languages: [omit(language, ['createdAt', 'updatedAt'])],
-      continent: [
-        { ...omit(countryContinent, ['id', 'countryId', 'languageId']) }
+      continent: {
+        ...continent,
+        name: [{ ...omit(continentName, ['id', 'continentId', 'languageId']) }]
+      },
+      countryLanguages: [
+        {
+          language: omit(language, ['createdAt', 'updatedAt', 'hasVideos']),
+          speakers: 100
+        }
       ],
       name: [{ ...omit(countryName, ['id', 'countryId', 'languageId']) }]
     })
