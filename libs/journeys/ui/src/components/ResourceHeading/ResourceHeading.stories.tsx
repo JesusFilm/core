@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
-import { watchConfig } from '../../libs/storybook'
+import { watchConfig } from '../../../../../../apps/watch/src/libs/storybook'
 import { ResourceHeading } from './ResourceHeading'
 
 const ResourceHeadingStory: Meta<typeof ResourceHeading> = {

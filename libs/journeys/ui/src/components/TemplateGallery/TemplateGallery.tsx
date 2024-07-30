@@ -11,7 +11,7 @@ import { TagCarousels } from './TagCarousels'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 import Stack from '@mui/material/Stack'
-import { ResourceHeading } from '../../../../../../apps/watch/src/components/ResourceHeading'
+import { ResourceHeading } from '../ResourceHeading'
 
 interface TemplateGalleryProps {
   hideOverflow?: boolean

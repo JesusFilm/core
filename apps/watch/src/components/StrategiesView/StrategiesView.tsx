@@ -3,7 +3,8 @@ import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import { ReactElement } from 'react'
-import { ResourceHeading } from '../ResourceHeading'
+
+import { ResourceHeading } from '@core/journeys/ui/ResourceHeading'
 import { StrategySections } from '../StrategySections'
 
 export function StrategiesView(): ReactElement {
