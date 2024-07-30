@@ -5,6 +5,8 @@ import dynamic from 'next/dynamic'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
 
+import algoliasearch from 'algoliasearch'
+import { InstantSearch } from 'react-instantsearch'
 import { GetVideoContent } from '../../../__generated__/GetVideoContent'
 import { VideoContentFields } from '../../../__generated__/VideoContentFields'
 import i18nConfig from '../../../next-i18next.config'
@@ -43,19 +45,26 @@ const DynamicVideoContainerPage = dynamic(
     )
 )
 
+const searchClient = algoliasearch(
+  process.env.NEXT_PUBLIC_ALGOLIA_APP_ID ?? '',
+  process.env.NEXT_PUBLIC_ALGOLIA_API_KEY ?? ''
+)
+
 export default function Part2Page({ content }: Part2PageProps): ReactElement {
   return (
-    <SnackbarProvider>
-      <LanguageProvider>
-        <VideoProvider value={{ content }}>
-          {content.variant?.hls != null ? (
-            <DynamicVideoContentPage />
-          ) : (
-            <DynamicVideoContainerPage />
-          )}
-        </VideoProvider>
-      </LanguageProvider>
-    </SnackbarProvider>
+    <InstantSearch searchClient={searchClient}>
+      <SnackbarProvider>
+        <LanguageProvider>
+          <VideoProvider value={{ content }}>
+            {content.variant?.hls != null ? (
+              <DynamicVideoContentPage />
+            ) : (
+              <DynamicVideoContainerPage />
+            )}
+          </VideoProvider>
+        </LanguageProvider>
+      </SnackbarProvider>
+    </InstantSearch>
   )
 }
 
