@@ -3,68 +3,73 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { VideoBlockUpdateInput, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
+import { VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 
 // ====================================================
-// GraphQL mutation operation: CardBlockVideoBlockUpdate
+// GraphQL mutation operation: CoverBlockRestore
 // ====================================================
 
-export interface CardBlockVideoBlockUpdate_videoBlockUpdate_video_title {
+export interface CoverBlockRestore_blockRestore_ButtonBlock {
+  __typename: "ButtonBlock" | "CardBlock" | "FormBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "StepBlock" | "TextResponseBlock" | "TypographyBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+  id: string;
+}
+
+export interface CoverBlockRestore_blockRestore_VideoBlock_video_title {
   __typename: "Translation";
   value: string;
 }
 
-export interface CardBlockVideoBlockUpdate_videoBlockUpdate_video_variant {
+export interface CoverBlockRestore_blockRestore_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
   hls: string | null;
 }
 
-export interface CardBlockVideoBlockUpdate_videoBlockUpdate_video_variantLanguages_name {
+export interface CoverBlockRestore_blockRestore_VideoBlock_video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
   primary: boolean;
 }
 
-export interface CardBlockVideoBlockUpdate_videoBlockUpdate_video_variantLanguages {
+export interface CoverBlockRestore_blockRestore_VideoBlock_video_variantLanguages {
   __typename: "Language";
   id: string;
-  name: CardBlockVideoBlockUpdate_videoBlockUpdate_video_variantLanguages_name[];
+  name: CoverBlockRestore_blockRestore_VideoBlock_video_variantLanguages_name[];
 }
 
-export interface CardBlockVideoBlockUpdate_videoBlockUpdate_video {
+export interface CoverBlockRestore_blockRestore_VideoBlock_video {
   __typename: "Video";
   id: string;
-  title: CardBlockVideoBlockUpdate_videoBlockUpdate_video_title[];
+  title: CoverBlockRestore_blockRestore_VideoBlock_video_title[];
   image: string | null;
-  variant: CardBlockVideoBlockUpdate_videoBlockUpdate_video_variant | null;
-  variantLanguages: CardBlockVideoBlockUpdate_videoBlockUpdate_video_variantLanguages[];
+  variant: CoverBlockRestore_blockRestore_VideoBlock_video_variant | null;
+  variantLanguages: CoverBlockRestore_blockRestore_VideoBlock_video_variantLanguages[];
 }
 
-export interface CardBlockVideoBlockUpdate_videoBlockUpdate_action_NavigateToBlockAction {
+export interface CoverBlockRestore_blockRestore_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface CardBlockVideoBlockUpdate_videoBlockUpdate_action_LinkAction {
+export interface CoverBlockRestore_blockRestore_VideoBlock_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
-export interface CardBlockVideoBlockUpdate_videoBlockUpdate_action_EmailAction {
+export interface CoverBlockRestore_blockRestore_VideoBlock_action_EmailAction {
   __typename: "EmailAction";
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
 
-export type CardBlockVideoBlockUpdate_videoBlockUpdate_action = CardBlockVideoBlockUpdate_videoBlockUpdate_action_NavigateToBlockAction | CardBlockVideoBlockUpdate_videoBlockUpdate_action_LinkAction | CardBlockVideoBlockUpdate_videoBlockUpdate_action_EmailAction;
+export type CoverBlockRestore_blockRestore_VideoBlock_action = CoverBlockRestore_blockRestore_VideoBlock_action_NavigateToBlockAction | CoverBlockRestore_blockRestore_VideoBlock_action_LinkAction | CoverBlockRestore_blockRestore_VideoBlock_action_EmailAction;
 
-export interface CardBlockVideoBlockUpdate_videoBlockUpdate {
+export interface CoverBlockRestore_blockRestore_VideoBlock {
   __typename: "VideoBlock";
   id: string;
   parentBlockId: string | null;
@@ -136,19 +141,51 @@ export interface CardBlockVideoBlockUpdate_videoBlockUpdate {
    * internal source videos: video is only populated when videoID and
    * videoVariantLanguageId are present
    */
-  video: CardBlockVideoBlockUpdate_videoBlockUpdate_video | null;
+  video: CoverBlockRestore_blockRestore_VideoBlock_video | null;
   /**
    * action that should be performed when the video ends
    */
-  action: CardBlockVideoBlockUpdate_videoBlockUpdate_action | null;
+  action: CoverBlockRestore_blockRestore_VideoBlock_action | null;
 }
 
-export interface CardBlockVideoBlockUpdate {
-  videoBlockUpdate: CardBlockVideoBlockUpdate_videoBlockUpdate;
-}
-
-export interface CardBlockVideoBlockUpdateVariables {
+export interface CoverBlockRestore_blockRestore_ImageBlock {
+  __typename: "ImageBlock";
   id: string;
-  journeyId: string;
-  input: VideoBlockUpdateInput;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  src: string | null;
+  alt: string;
+  width: number;
+  height: number;
+  /**
+   * blurhash is a compact representation of a placeholder for an image.
+   * Find a frontend implementation at https: // github.com/woltapp/blurhash
+   */
+  blurhash: string;
+}
+
+export type CoverBlockRestore_blockRestore = CoverBlockRestore_blockRestore_ButtonBlock | CoverBlockRestore_blockRestore_VideoBlock | CoverBlockRestore_blockRestore_ImageBlock;
+
+export interface CoverBlockRestore_cardBlockUpdate {
+  __typename: "CardBlock";
+  id: string;
+  /**
+   * coverBlockId is present if a child block should be used as a cover.
+   * This child block should not be rendered normally, instead it should be used
+   * as a background. Blocks are often of type ImageBlock or VideoBlock.
+   */
+  coverBlockId: string | null;
+}
+
+export interface CoverBlockRestore {
+  /**
+   * blockRestore is used for redo/undo
+   */
+  blockRestore: CoverBlockRestore_blockRestore[];
+  cardBlockUpdate: CoverBlockRestore_cardBlockUpdate;
+}
+
+export interface CoverBlockRestoreVariables {
+  id: string;
+  cardBlockId: string;
 }

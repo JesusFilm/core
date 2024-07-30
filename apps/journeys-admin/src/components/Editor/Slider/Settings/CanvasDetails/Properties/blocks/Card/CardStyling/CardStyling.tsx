@@ -1,15 +1,10 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
-import Divider from '@mui/material/Divider'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next'
 import Image from 'next/image'
 import { ReactElement } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
-import PaletteIcon from '@core/shared/ui/icons/Palette'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import { CardBlockThemeModeUpdate } from '../../../../../../../../../../__generated__/CardBlockThemeModeUpdate'
@@ -54,7 +49,6 @@ export function CardStyling(): ReactElement {
   const [cardBlockUpdate] = useMutation<CardBlockThemeModeUpdate>(
     CARD_BLOCK_THEME_MODE_UPDATE
   )
-  const { t } = useTranslation('apps-journeys-admin')
 
   async function handleChange(themeMode: ThemeMode): Promise<void> {
     if (cardBlock != null) {
@@ -96,33 +90,6 @@ export function CardStyling(): ReactElement {
 
   return (
     <>
-      <Box sx={{ p: 4, display: { xs: 'flex', sm: 'none' } }}>
-        <Stack spacing={4} direction="row">
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: 'background.default',
-              color: 'text.secondary',
-              width: 58,
-              height: 58,
-              borderRadius: 2
-            }}
-          >
-            <PaletteIcon fontSize="large" />
-          </Box>
-          <Stack direction="column" justifyContent="center">
-            <Typography variant="subtitle2">
-              {cardBlock?.themeMode == null && t('Default')}
-              {cardBlock?.themeMode === ThemeMode.light && t('Light')}
-              {cardBlock?.themeMode === ThemeMode.dark && t('Dark')}
-            </Typography>
-            <Typography variant="caption">{t('Card Style')}</Typography>
-          </Stack>
-        </Stack>
-      </Box>
-      <Divider sx={{ mb: 4, display: { xs: 'flex', sm: 'none' } }} />
       <Box>
         <HorizontalSelect
           onChange={handleChange}
@@ -132,7 +99,9 @@ export function CardStyling(): ReactElement {
           <Box
             id={ThemeMode.light}
             sx={{ display: 'flex' }}
-            data-testid="Light"
+            data-testid={
+              cardBlock?.themeMode === ThemeMode.light ? 'selected' : 'Light'
+            }
           >
             <Image
               src={cardStyleLight}
@@ -145,7 +114,13 @@ export function CardStyling(): ReactElement {
               }}
             />
           </Box>
-          <Box id={ThemeMode.dark} sx={{ display: 'flex' }} data-testid="Dark">
+          <Box
+            id={ThemeMode.dark}
+            sx={{ display: 'flex' }}
+            data-testid={
+              cardBlock?.themeMode === ThemeMode.dark ? 'selected' : 'Dark'
+            }
+          >
             <Image
               src={cardStyleDark}
               alt="Dark"
