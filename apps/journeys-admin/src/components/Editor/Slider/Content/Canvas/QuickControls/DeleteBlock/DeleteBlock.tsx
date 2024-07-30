@@ -43,7 +43,7 @@ export function DeleteBlock({
   const disableAction = currentBlock == null || disabled || loading
 
   const handleDeleteBlock = async (): Promise<void> => {
-    if (currentBlock != null) await addBlockDelete(currentBlock)
+    if (currentBlock != null) void addBlockDelete(currentBlock)
     handleCloseDialog()
   }
 

@@ -16,7 +16,7 @@ export function setBlockRestoreEditorState(
     dispatch({
       type: 'SetEditorFocusAction',
       activeSlide: ActiveSlide.JourneyFlow,
-      selectedStep: currentBlock,
+      selectedStepId: currentBlock.id,
       activeContent: ActiveContent.Canvas
     })
   } else {
@@ -24,8 +24,8 @@ export function setBlockRestoreEditorState(
       type: 'SetEditorFocusAction',
       activeContent: ActiveContent.Canvas,
       activeSlide: ActiveSlide.Content,
-      selectedBlock: currentBlock,
-      selectedStep: selectedStep
+      selectedBlockId: currentBlock.id,
+      selectedStepId: selectedStep.id
     })
   }
 }

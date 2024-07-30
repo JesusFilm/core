@@ -1,9 +1,10 @@
+import { useApolloClient } from '@apollo/client'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useState } from 'react'
-import { useTranslation } from 'react-i18next'
+import { BlockFields_CardBlock as CardBlock } from '../../../../../__generated__/BlockFields'
 import { blockDeleteUpdate } from '../../../../libs/blockDeleteUpdate'
 import { useBlockDeleteMutation } from '../../../../libs/useBlockDeleteMutation'
 import { useBlockRestoreMutation } from '../../../../libs/useBlockRestoreMutation'
@@ -12,7 +13,6 @@ import { setBlockRestoreEditorState } from './setBlockRestoreEditorState'
 
 export function useBlockDeleteCommand() {
   const [loading, setLoading] = useState(false)
-  const { t } = useTranslation('apps-journeys-admin')
   const { add } = useCommand()
   const {
     state: { selectedBlock, selectedStep, steps },
@@ -22,6 +22,14 @@ export function useBlockDeleteCommand() {
   const [blockDelete] = useBlockDeleteMutation()
 
   const [blockRestore] = useBlockRestoreMutation()
+
+  function flatten(children: TreeBlock[]): TreeBlock[] {
+    return children.reduce<TreeBlock[]>(
+      (result, item) => [...result, item, ...flatten(item.children)],
+      []
+    )
+  }
+  const client = useApolloClient()
 
   async function addBlockDelete(currentBlock: TreeBlock): Promise<void> {
     if (
@@ -37,9 +45,21 @@ export function useBlockDeleteCommand() {
     const deletedBlockType = currentBlock.__typename
     const stepsBeforeDelete = steps
     const stepBeforeDelete = selectedStep
+
+    const card = selectedStep?.children.find(
+      (block) => block.__typename === 'CardBlock'
+    ) as TreeBlock<CardBlock> | undefined
+
+    const cachedStep = client.cache.extract()[`StepBlock:${selectedStep.id}`]
+    const flattenedChildren = flatten(currentBlock.children)
+    const stepSiblingsBeforeDelete = steps.map((block) => block)
+    const canvasSiblingsBeforeDelete = card?.children.filter(
+      (block) => block.id !== currentBlock.id
+    )
+
     try {
       setLoading(true)
-      await add({
+      void add({
         parameters: {
           execute: {
             currentBlock: currentBlock,
@@ -63,7 +83,8 @@ export function useBlockDeleteCommand() {
           journeyId
         }) {
           setBlockRestoreEditorState(currentBlock, stepBeforeDelete, dispatch)
-          await blockDelete(currentBlock, {
+          void blockDelete(currentBlock, {
+            optimisticResponse: { blockDelete: [currentBlock] },
             update(cache, { data }) {
               if (
                 data?.blockDelete != null &&
@@ -89,10 +110,28 @@ export function useBlockDeleteCommand() {
           })
         },
         async undo({ currentBlock, stepBeforeDelete }) {
-          await blockRestore({
-            variables: { id: currentBlock.id }
-          })
           setBlockRestoreEditorState(currentBlock, stepBeforeDelete, dispatch)
+          void blockRestore({
+            variables: { id: currentBlock.id },
+            optimisticResponse:
+              currentBlock.__typename === 'StepBlock'
+                ? {
+                    blockRestore: [
+                      { ...currentBlock, ...cachedStep },
+                      ...flattenedChildren
+                      // todo: return sibling steps with correct order
+                      // // ...steps
+                      // ...siblingsBeforeDelete
+                    ]
+                  }
+                : {
+                    blockRestore: [
+                      currentBlock,
+                      ...flattenedChildren,
+                      ...(canvasSiblingsBeforeDelete ?? [])
+                    ]
+                  }
+          })
         }
       })
     } finally {
