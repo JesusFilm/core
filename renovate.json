@@ -1,0 +1,9 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "branchPrefix": "24-01-RB-chore-",
+  "reviewers": ["mikeallisonJS", "tataihono"],
+  "assignees": ["mikeallisonJS"],
+  "labels": ["effort: 1", "priority: 2day", "type: chore"],
+  "schedule": ["after 10pm and before 5:00am"]
+}
