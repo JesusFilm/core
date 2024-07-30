@@ -17,6 +17,7 @@ describe('TemplateSections', () => {
   beforeEach(() => {
     mockUseAlgoliaJourneys.mockReturnValue({
       hits: algoliaJourneys,
+      sendEvent: jest.fn(),
       loading: false,
       refinements: []
     })
@@ -45,6 +46,7 @@ describe('TemplateSections', () => {
     it('should render tag carousels if more than 5 journeys in a category', async () => {
       mockUseAlgoliaJourneys.mockReturnValue({
         hits: algoliaJourneys.concat(algoliaJourneys),
+        sendEvent: jest.fn(),
         loading: false,
         refinements: []
       })
@@ -65,6 +67,8 @@ describe('TemplateSections', () => {
     beforeEach(() => {
       mockUseAlgoliaJourneys.mockReturnValue({
         hits: algoliaJourneys,
+        sendEvent: jest.fn(),
+
         loading: false,
         refinements: ['Acceptance', 'Depression']
       })
@@ -85,6 +89,8 @@ describe('TemplateSections', () => {
     beforeEach(() => {
       mockUseAlgoliaJourneys.mockReturnValue({
         hits: algoliaJourneys,
+        sendEvent: jest.fn(),
+
         loading: false,
         refinements: ['Addiction', 'Acceptance']
       })
@@ -109,6 +115,8 @@ describe('TemplateSections', () => {
     beforeEach(() => {
       mockUseAlgoliaJourneys.mockReturnValue({
         hits: [],
+        sendEvent: jest.fn(),
+
         loading: false,
         refinements: []
       })

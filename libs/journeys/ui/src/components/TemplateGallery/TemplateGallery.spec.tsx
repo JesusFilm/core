@@ -41,6 +41,7 @@ describe('TemplateGallery', () => {
   beforeEach(() => {
     mockUseAlgoliaJourneys.mockReturnValue({
       hits: algoliaJourneys,
+      sendEvent: jest.fn(),
       loading: false,
       refinements: []
     })

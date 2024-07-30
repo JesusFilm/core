@@ -49,7 +49,8 @@ describe('useAlgoliaJourneys', () => {
   beforeEach(() => {
     mockUseHits.mockReturnValue({
       hits: algoliaHits,
-      results: algoliaResults
+      results: algoliaResults,
+      sendEvent: jest.fn()
     } as unknown as HitsRenderState)
 
     mockUseInstantSearch.mockReturnValue({
@@ -129,6 +130,11 @@ describe('useAlgoliaJourneys', () => {
   it('should return results', () => {
     const { result } = renderHook(() => useAlgoliaJourneys())
     expect(result.current.results).toBeDefined()
+  })
+
+  it('should return results', () => {
+    const { result } = renderHook(() => useAlgoliaJourneys())
+    expect(result.current.sendEvent).toBeDefined()
   })
 
   it('should return loading', () => {
