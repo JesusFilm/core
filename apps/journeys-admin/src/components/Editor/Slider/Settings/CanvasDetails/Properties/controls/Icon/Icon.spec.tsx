@@ -8,10 +8,11 @@ import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../
 import { IconFields } from '../../../../../../../../../__generated__/IconFields'
 import { IconName } from '../../../../../../../../../__generated__/globalTypes'
 
+import { CommandRedoItem } from '../../../../../../Toolbar/Items/CommandRedoItem'
+import { CommandUndoItem } from '../../../../../../Toolbar/Items/CommandUndoItem'
 import { ICON_BLOCK_NAME_UPDATE } from './Icon'
 
 import { Icon } from '.'
-
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
@@ -42,6 +43,52 @@ describe('Icon', () => {
     endIconId: null,
     action: null,
     children: [icon]
+  }
+
+  const iconUpdateMock = {
+    request: {
+      query: ICON_BLOCK_NAME_UPDATE,
+      variables: {
+        id: icon.id,
+        input: {
+          name: IconName.CheckCircleRounded
+        }
+      }
+    },
+    result: jest.fn(() => ({
+      data: {
+        iconBlockUpdate: {
+          id: 'iconBlock.id',
+          parentBlockId: 'buttonBlockId',
+          name: IconName.CheckCircleRounded,
+          color: null,
+          size: null
+        }
+      }
+    }))
+  }
+
+  const iconUpdateMock2 = {
+    request: {
+      query: ICON_BLOCK_NAME_UPDATE,
+      variables: {
+        id: icon.id,
+        input: {
+          name: IconName.ArrowForwardRounded
+        }
+      }
+    },
+    result: jest.fn(() => ({
+      data: {
+        iconBlockUpdate: {
+          id: 'iconBlock.id',
+          parentBlockId: 'buttonBlockId',
+          name: IconName.ArrowForwardRounded,
+          color: null,
+          size: null
+        }
+      }
+    }))
   }
 
   beforeEach(() => jest.clearAllMocks())
@@ -89,35 +136,8 @@ describe('Icon', () => {
       children: [testIcon]
     }
 
-    const result = jest.fn(() => ({
-      data: {
-        iconBlockUpdate: {
-          id: 'iconBlock.id',
-          parentBlockId: 'buttonBlockId',
-          name: IconName.ArrowForwardRounded,
-          color: null,
-          size: null
-        }
-      }
-    }))
-
     render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: ICON_BLOCK_NAME_UPDATE,
-              variables: {
-                id: icon.id,
-                input: {
-                  name: IconName.ArrowForwardRounded
-                }
-              }
-            },
-            result
-          }
-        ]}
-      >
+      <MockedProvider mocks={[iconUpdateMock]}>
         <EditorProvider initialState={{ selectedBlock: testSelectedBlock }}>
           <Icon id={testIcon.id} />
         </EditorProvider>
@@ -125,8 +145,8 @@ describe('Icon', () => {
     )
 
     fireEvent.mouseDown(screen.getByRole('button', { name: 'icon-name' }))
-    fireEvent.click(screen.getByRole('option', { name: 'Arrow Right' }))
-    await waitFor(() => expect(result).toHaveBeenCalled())
+    fireEvent.click(screen.getByRole('option', { name: 'Check Circle' }))
+    await waitFor(() => expect(iconUpdateMock.result).toHaveBeenCalled())
   })
 
   it('removes icon when selecing the default option', async () => {
@@ -170,44 +190,46 @@ describe('Icon', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
-  it('changes the icon when selecting a different icon', async () => {
-    const result = jest.fn(() => ({
-      data: {
-        iconBlockUpdate: {
-          id: 'iconBlock.id',
-          journeyId: 'journeyId',
-          parentBlockId: 'buttonBlockId',
-          name: IconName.BeenhereRounded,
-          color: null,
-          size: null
-        }
-      }
-    }))
-
+  it('should undo the icon change', async () => {
     render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: ICON_BLOCK_NAME_UPDATE,
-              variables: {
-                id: icon.id,
-                input: {
-                  name: IconName.BeenhereRounded
-                }
-              }
-            },
-            result
-          }
-        ]}
-      >
+      <MockedProvider mocks={[iconUpdateMock, iconUpdateMock2]}>
         <EditorProvider initialState={{ selectedBlock }}>
+          <CommandUndoItem variant="button" />
           <Icon id={icon.id} />
         </EditorProvider>
       </MockedProvider>
     )
     fireEvent.mouseDown(screen.getByRole('button', { name: 'icon-name' }))
-    fireEvent.click(screen.getByRole('option', { name: 'Been Here' }))
-    await waitFor(() => expect(result).toHaveBeenCalled())
+    fireEvent.click(screen.getByRole('option', { name: 'Check Circle' }))
+    await waitFor(() => expect(iconUpdateMock.result).toHaveBeenCalled())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(iconUpdateMock2.result).toHaveBeenCalled())
+  })
+
+  it('should redo the undone icon change', async () => {
+    const firstUpdateMock = {
+      ...iconUpdateMock,
+      maxUsageCount: 2
+    }
+
+    render(
+      <MockedProvider mocks={[firstUpdateMock, iconUpdateMock2]}>
+        <EditorProvider initialState={{ selectedBlock }}>
+          <CommandUndoItem variant="button" />
+          <CommandRedoItem variant="button" />
+          <Icon id={icon.id} />
+        </EditorProvider>
+      </MockedProvider>
+    )
+    fireEvent.mouseDown(screen.getByRole('button', { name: 'icon-name' }))
+    fireEvent.click(screen.getByRole('option', { name: 'Check Circle' }))
+    await waitFor(() => expect(firstUpdateMock.result).toHaveBeenCalled())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(iconUpdateMock2.result).toHaveBeenCalled())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+    await waitFor(() => expect(firstUpdateMock.result).toHaveBeenCalled())
   })
 })
