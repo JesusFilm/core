@@ -51,6 +51,6 @@ telemetry:
           match: .*
           headers: true
           body: true
-batching:
-  enabled: true
-  mode: batch_http_link
+    tracing:
+      datadog:
+        enabled: true
