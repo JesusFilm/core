@@ -1,3 +1,4 @@
+import Stack from '@mui/material/Stack'
 import {
   AuthAction,
   useUser,
@@ -8,6 +9,7 @@ import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 import { GrowthSpacesIntegrationDetails } from '../../../../src/components/GrowthSpaces'
+import { HelpScoutBeacon } from '../../../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../../../src/components/PageWrapper'
 import { initAndAuthApp } from '../../../../src/libs/initAndAuthApp'
 
@@ -18,7 +20,22 @@ function IntegrationPage(): ReactElement {
   return (
     <>
       <NextSeo title={t('Growth Spaces')} />
-      <PageWrapper title={t('Growth Spaces')} user={user} backHrefHistory>
+      <PageWrapper
+        title={t('Growth Spaces')}
+        user={user}
+        backHrefHistory
+        mainHeaderChildren={
+          <Stack
+            direction="row"
+            justifyContent="flex-end"
+            flexGrow={1}
+            alignItems="center"
+            gap={3}
+          >
+            <HelpScoutBeacon variant="iconButton" />
+          </Stack>
+        }
+      >
         <GrowthSpacesIntegrationDetails />
       </PageWrapper>
     </>

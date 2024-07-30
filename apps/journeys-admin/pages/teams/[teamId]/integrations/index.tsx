@@ -1,3 +1,4 @@
+import Stack from '@mui/material/Stack'
 import {
   AuthAction,
   useUser,
@@ -7,7 +8,7 @@ import {
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
-
+import { HelpScoutBeacon } from '../../../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../../../src/components/PageWrapper'
 import { TeamIntegrations } from '../../../../src/components/Team/TeamIntegrations'
 import { initAndAuthApp } from '../../../../src/libs/initAndAuthApp'
@@ -24,6 +25,17 @@ function IntegrationsIndexPage(): ReactElement {
         user={user}
         backHrefHistory
         mainBodyPadding={false}
+        mainHeaderChildren={
+          <Stack
+            direction="row"
+            justifyContent="flex-end"
+            flexGrow={1}
+            alignItems="center"
+            gap={3}
+          >
+            <HelpScoutBeacon variant="iconButton" />
+          </Stack>
+        }
       >
         <TeamIntegrations />
       </PageWrapper>
