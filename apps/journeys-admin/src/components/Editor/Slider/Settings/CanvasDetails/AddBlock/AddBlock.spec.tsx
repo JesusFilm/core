@@ -17,7 +17,7 @@ import { ThemeProvider } from '../../../../../ThemeProvider'
 
 import { AddBlock } from '.'
 
-describe('AddNewBlock', () => {
+describe('AddBlock', () => {
   const selectedStep: TreeBlock<StepBlock> = {
     __typename: 'StepBlock',
     id: 'stepId',
