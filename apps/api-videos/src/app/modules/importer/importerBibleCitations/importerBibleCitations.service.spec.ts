@@ -3,7 +3,6 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { PrismaService } from '../../../lib/prisma.service'
 import { ImporterBibleBooksService } from '../importerBibleBooks/importerBibleBooks.service'
 import { ImporterVideosService } from '../importerVideos/importerVideos.service'
-
 import { ImporterBibleCitationsService } from './importerBibleCitations.service'
 
 describe('ImporterBibleCitationsService', () => {

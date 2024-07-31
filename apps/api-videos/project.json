@@ -55,12 +55,6 @@
         "command": "npm run ts-node apps/api-videos/src/app/modules/bigQuery/bigQuery.console.ts"
       }
     },
-    "diff": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npm run ts-node apps/api-videos/src/app/modules/importer/importerSeedDiff/importerSeedDiff.ts"
-      }
-    },
     "serve": {
       "executor": "@nx/js:node",
       "options": {
