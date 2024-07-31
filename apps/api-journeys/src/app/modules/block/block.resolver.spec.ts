@@ -293,6 +293,9 @@ describe('BlockResolver', () => {
           journeyId: block.journeyId,
           deletedAt: null,
           NOT: { id: block.id }
+        },
+        include: {
+          action: true
         }
       })
       expect(service.getDescendants).toHaveBeenCalledWith(block.id, [

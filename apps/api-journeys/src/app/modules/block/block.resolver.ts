@@ -231,7 +231,8 @@ export class BlockResolver {
           journeyId: updatedBlock.journeyId,
           deletedAt: null,
           NOT: { id: updatedBlock.id }
-        }
+        },
+        include: { action: true }
       })
 
       const children: Block[] = await this.blockService.getDescendants(
