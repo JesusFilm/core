@@ -4,7 +4,15 @@ import { useRouter } from 'next/router'
 import Script from 'next/script'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 
-export function BeaconInit(): ReactElement {
+interface BeaconInitProps {
+  userName?: string
+  userEmail?: string
+}
+
+export function BeaconInit({
+  userName,
+  userEmail
+}: BeaconInitProps): ReactElement {
   const { breakpoints, zIndex } = useTheme()
   const user = useUser()
   const router = useRouter()
@@ -16,8 +24,8 @@ export function BeaconInit(): ReactElement {
     if (hasLoaded && window.Beacon != null) {
       window.Beacon('on', 'open', () => {
         window.Beacon?.('prefill', {
-          name: user?.displayName ?? '',
-          email: user?.email ?? ''
+          name: userName ?? user?.displayName ?? '',
+          email: userEmail ?? user?.email ?? ''
         })
       })
     }

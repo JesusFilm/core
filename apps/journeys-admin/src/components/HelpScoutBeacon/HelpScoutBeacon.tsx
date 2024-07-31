@@ -13,12 +13,16 @@ interface HelpScoutBeaconProps {
   variant?: 'iconButton' | 'menuItem'
   iconButtonColor?: 'primary' | 'secondary'
   handleClick?: () => void
+  userName?: string
+  userEmail?: string
 }
 
 export function HelpScoutBeacon({
   variant = 'iconButton',
   iconButtonColor = 'primary',
-  handleClick
+  handleClick,
+  userName,
+  userEmail
 }: HelpScoutBeaconProps): ReactElement {
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
@@ -42,7 +46,7 @@ export function HelpScoutBeacon({
 
   return (
     <>
-      <BeaconInit />
+      <BeaconInit userName={userName} userEmail={userEmail} />
       {variant === 'iconButton' && (
         <IconButton
           data-testid="HelpScoutBeaconIconButton"
