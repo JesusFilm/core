@@ -1,0 +1,1 @@
+export { useCoverBlockDeleteMutation } from './useCoverBlockDeleteMutation'

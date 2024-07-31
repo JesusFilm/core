@@ -25,19 +25,22 @@ generator pothos {
 }
 
 model Language {
-  id               String             @id
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt
+  id               String            @id
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
   bcp47            String?
   iso3             String?
-  name             LanguageName[]     @relation(name: "name")
-  nameLanguage     LanguageName[]     @relation(name: "nameLanguage")
+  hasVideos        Boolean           @default(true)
+  name             LanguageName[]    @relation(name: "name")
+  nameLanguage     LanguageName[]    @relation(name: "nameLanguage")
   countries        Country[]
   countryName      CountryName[]
-  countryContinent CountryContinent[]
   audioPreview     AudioPreview?
+  countryLanguages CountryLanguage[]
+  continentNames   ContinentName[]
 
   @@index(bcp47(type: Hash))
+  @@index(hasVideos)
 }
 
 model LanguageName {
@@ -56,15 +59,31 @@ model LanguageName {
 }
 
 model Country {
-  id          String             @id
-  name        CountryName[]
-  population  Int?
-  continent   CountryContinent[]
-  latitude    Float?
-  longitude   Float?
-  flagPngSrc  String?
-  flagWebpSrc String?
-  languages   Language[]
+  id               String            @id
+  name             CountryName[]
+  population       Int?
+  continentId      String?
+  latitude         Float?
+  longitude        Float?
+  flagPngSrc       String?
+  flagWebpSrc      String?
+  languages        Language[]
+  countryLanguages CountryLanguage[]
+  continent        Continent?        @relation(fields: [continentId], references: [id])
+}
+
+model CountryLanguage {
+  id              String   @id @default(uuid())
+  languageId      String
+  countryId       String
+  speakers        Int
+  displaySpeakers Int?
+  language        Language @relation(fields: [languageId], references: [id])
+  country         Country  @relation(fields: [countryId], references: [id])
+
+  @@unique([languageId, countryId])
+  @@index(languageId(type: Hash))
+  @@index(countryId(type: Hash))
 }
 
 model CountryName {
@@ -82,19 +101,25 @@ model CountryName {
   @@index(countryId(type: Hash))
 }
 
-model CountryContinent {
-  id         String   @id @default(uuid())
-  value      String
-  countryId  String
-  languageId String
-  primary    Boolean
-  country    Country  @relation(fields: [countryId], references: [id])
-  language   Language @relation(fields: [languageId], references: [id])
+model Continent {
+  id        String          @id @default(uuid())
+  name      ContinentName[]
+  countries Country[]
+}
 
-  @@unique([languageId, countryId])
+model ContinentName {
+  id          String    @id @default(uuid())
+  value       String
+  continentId String
+  languageId  String
+  primary     Boolean
+  continent   Continent @relation(fields: [continentId], references: [id])
+  language    Language  @relation(fields: [languageId], references: [id])
+
+  @@unique([languageId, continentId])
   @@index(languageId(type: Hash))
   @@index(primary(type: Hash))
-  @@index(countryId(type: Hash))
+  @@index(continentId(type: Hash))
 }
 
 model AudioPreview {

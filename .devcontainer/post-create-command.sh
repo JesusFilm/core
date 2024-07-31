@@ -32,7 +32,7 @@ npm i
 # - update .devcontainer/post-create-command.sh apollo router version (...nix/vX.X.X)
 # - update app/api-gateway/Dockerfile image version (...router/vX.X.X)
 # - inform all developers to rebuild their containers
-curl -sSL https://router.apollo.dev/download/nix/v1.43.1 | sh
+curl -sSL https://router.apollo.dev/download/nix/v1.51.0 | sh
 mv router apps/api-gateway/
 
 # update plausible db
