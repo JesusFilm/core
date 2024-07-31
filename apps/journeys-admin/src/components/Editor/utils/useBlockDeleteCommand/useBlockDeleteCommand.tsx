@@ -88,24 +88,25 @@ export function useBlockDeleteCommand() {
           stepsBeforeDelete,
           journeyId
         }) {
-          setBlockRestoreEditorState(currentBlock, stepBeforeDelete, dispatch)
+          if (
+            deletedBlockParentOrder != null &&
+            (currentBlock == null || currentBlock?.id === selectedBlock?.id)
+          ) {
+            const selected = getSelected({
+              parentOrder: deletedBlockParentOrder,
+              siblings:
+                currentBlock.__typename === 'StepBlock'
+                  ? stepSiblingsBeforeDelete
+                  : canvasSiblingsBeforeDelete ?? [],
+              type: deletedBlockType,
+              steps: stepsBeforeDelete,
+              selectedStep: stepBeforeDelete
+            })
+            selected != null && dispatch(selected)
+          }
           void blockDelete(currentBlock, {
             optimisticResponse: { blockDelete: [currentBlock] },
             update(cache, { data }) {
-              if (
-                data?.blockDelete != null &&
-                deletedBlockParentOrder != null &&
-                (currentBlock == null || currentBlock?.id === selectedBlock?.id)
-              ) {
-                const selected = getSelected({
-                  parentOrder: deletedBlockParentOrder,
-                  siblings: data.blockDelete,
-                  type: deletedBlockType,
-                  steps: stepsBeforeDelete,
-                  selectedStep: stepBeforeDelete
-                })
-                selected != null && dispatch(selected)
-              }
               blockDeleteUpdate(
                 currentBlock,
                 data?.blockDelete,
