@@ -165,7 +165,7 @@ export function Canvas(): ReactElement {
             sx={{
               display: 'flex',
               flexDirection: 'column',
-              height: `${calculateScaledHeight(CARD_HEIGHT, scale)}`,
+              height: `${calculateScaledHeight(CARD_HEIGHT + 64, scale)}`,
               pointerEvents: showAnalytics === true ? 'none' : 'auto'
             }}
           >
@@ -173,12 +173,15 @@ export function Canvas(): ReactElement {
               data-testId="CanvasContainer"
               sx={{
                 position: 'relative',
+                aspectRatio: 19.5 / 9,
                 width: CARD_WIDTH,
-                height: CARD_HEIGHT,
+                minHeight: CARD_HEIGHT,
                 transform: `scale(${scale})`,
-                margin: `calc(${calculateScaledMargin(CARD_HEIGHT, scale)} + ${
-                  scale < 0.65 ? '20px' : '0px'
-                }) ${calculateScaledMargin(CARD_WIDTH, scale)}`,
+                // margin: `calc(${calculateScaledMargin(CARD_HEIGHT, scale)} + ${
+                //   scale < 0.65 ? '20px' : '0px'
+                // }) ${calculateScaledMargin(CARD_WIDTH, scale)}`,
+                margin: `${calculateScaledMargin(CARD_HEIGHT, scale)} ${calculateScaledMargin(CARD_WIDTH, scale)}`,
+
                 borderRadius: 8,
                 transition: (theme) =>
                   theme.transitions.create('border-color', {
