@@ -158,6 +158,41 @@ describe('EditorContext', () => {
           selectedBlock: block
         })
       })
+      it('should not set ActiveSlide when showAnalytics is true', () => {
+        const block: TreeBlock = {
+          id: 'step0.id',
+          __typename: 'StepBlock',
+          parentBlockId: null,
+          parentOrder: 0,
+          locked: false,
+          nextBlockId: null,
+          children: []
+        }
+
+        const state: EditorState = {
+          steps: [block],
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+          activeSlide: ActiveSlide.JourneyFlow,
+          activeContent: ActiveContent.Canvas,
+          showAnalytics: true,
+          selectedBlockId: 'step0.id',
+          selectedBlock: {
+            id: 'step0.id',
+            __typename: 'StepBlock',
+            parentBlockId: null,
+            parentOrder: 0,
+            locked: false,
+            nextBlockId: null,
+            children: []
+          }
+        }
+        const newState = reducer(state, {
+          type: 'SetActiveSlideAction',
+          activeSlide: ActiveSlide.Content
+        })
+
+        expect(newState).toEqual(state)
+      })
 
       it('should change to content view when block selected', () => {
         const block: TreeBlock = {
