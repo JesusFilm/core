@@ -69,7 +69,7 @@ function TemplateDetailsPage(): ReactElement {
                 }
               }}
             >
-              <HelpScoutBeacon variant="iconButton" />
+              <HelpScoutBeacon />
             </Stack>
           }
           showAppHeader={user?.id != null}

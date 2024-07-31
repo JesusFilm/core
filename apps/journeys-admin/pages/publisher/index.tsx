@@ -56,7 +56,7 @@ function PublisherIndexPage(): ReactElement {
               }
             }}
           >
-            <HelpScoutBeacon variant="iconButton" />
+            <HelpScoutBeacon />
           </Stack>
         }
       >

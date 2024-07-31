@@ -38,7 +38,7 @@ function IntegrationPage(): ReactElement {
               }
             }}
           >
-            <HelpScoutBeacon variant="iconButton" />
+            <HelpScoutBeacon />
           </Stack>
         }
       >

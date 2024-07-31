@@ -45,7 +45,7 @@ export function OnboardingPageWrapper({
           top: { xs: 24, sm: 8, md: 24 }
         }}
       >
-        <HelpScoutBeacon variant="iconButton" />
+        <HelpScoutBeacon />
       </Box>
       <OnboardingDrawer />
       <Stack

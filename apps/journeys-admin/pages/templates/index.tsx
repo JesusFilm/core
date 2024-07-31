@@ -64,7 +64,7 @@ function TemplateIndexPage(): ReactElement {
             display: { xs: userSignedIn ? 'none' : 'block', md: 'block' }
           }}
         >
-          <HelpScoutBeacon variant="iconButton" />
+          <HelpScoutBeacon />
         </Box>
         <Box
           sx={{

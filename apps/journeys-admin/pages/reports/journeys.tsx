@@ -44,7 +44,7 @@ function ReportsJourneysPage(): ReactElement {
                 }
               }}
             >
-              <HelpScoutBeacon variant="iconButton" />
+              <HelpScoutBeacon />
             </Box>
           </Stack>
         }

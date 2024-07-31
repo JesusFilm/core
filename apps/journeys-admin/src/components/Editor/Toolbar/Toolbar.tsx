@@ -230,7 +230,7 @@ export function Toolbar(): ReactElement {
           display: { xs: 'none', sm: 'block' }
         }}
       >
-        <HelpScoutBeacon variant="iconButton" />
+        <HelpScoutBeacon />
       </Box>
     </Stack>
   )

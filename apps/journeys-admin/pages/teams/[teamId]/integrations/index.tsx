@@ -39,7 +39,7 @@ function IntegrationsIndexPage(): ReactElement {
               }
             }}
           >
-            <HelpScoutBeacon variant="iconButton" />
+            <HelpScoutBeacon />
           </Stack>
         }
       >

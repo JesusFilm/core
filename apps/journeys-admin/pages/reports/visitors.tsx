@@ -42,7 +42,7 @@ function ReportsVisitorsPage(): ReactElement {
                 }
               }}
             >
-              <HelpScoutBeacon variant="iconButton" />
+              <HelpScoutBeacon />
             </Box>
           </Stack>
         }

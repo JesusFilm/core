@@ -34,7 +34,7 @@ function SingleVisitorReportsPage(): ReactElement {
         sidePanelTitle={
           <>
             <Typography variant="subtitle1">{t('Visitor Details')}</Typography>
-            <HelpScoutBeacon variant="iconButton" />
+            <HelpScoutBeacon />
           </>
         }
         backHrefHistory={journeyId != null ? undefined : true}

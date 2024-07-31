@@ -44,7 +44,7 @@ function JourneyReportsPage({ flags }): ReactElement {
             gap={3}
           >
             <ReportsNavigation destination="visitor" journeyId={journeyId} />
-            <HelpScoutBeacon variant="iconButton" />
+            <HelpScoutBeacon />
           </Stack>
         }
         mainBodyPadding={false}
@@ -83,7 +83,7 @@ export const getServerSideProps = withUserTokenSSR({
         id: query?.journeyId
       }
     })
-  } catch (error) {
+  } catch (_) {
     return {
       redirect: {
         permanent: false,

@@ -218,7 +218,7 @@ function JourneyVisitorsPage(): ReactElement {
             <Typography variant="subtitle1">{t('Filters')}</Typography>
             <Stack direction="row" gap={3} alignItems="center">
               <ClearAllButton handleClearAll={handleClearAll} />
-              <HelpScoutBeacon variant="iconButton" />
+              <HelpScoutBeacon />
             </Stack>
           </>
         }
@@ -267,7 +267,7 @@ export const getServerSideProps = withUserTokenSSR({
         id: query?.journeyId
       }
     })
-  } catch (error) {
+  } catch (_) {
     return {
       redirect: {
         permanent: false,

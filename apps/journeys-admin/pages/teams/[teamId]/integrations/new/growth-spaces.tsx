@@ -38,7 +38,7 @@ function GrowthSpacesConfigPage(): ReactElement {
               }
             }}
           >
-            <HelpScoutBeacon variant="iconButton" />
+            <HelpScoutBeacon />
           </Stack>
         }
       >

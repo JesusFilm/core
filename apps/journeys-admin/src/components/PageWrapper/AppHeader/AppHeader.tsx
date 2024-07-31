@@ -57,7 +57,7 @@ export function AppHeader({ onClick }: MainBodyContainerProps): ReactElement {
                 alt="Next Steps"
               />
             </Stack>
-            <HelpScoutBeacon variant="iconButton" buttonColor="secondary" />
+            <HelpScoutBeacon iconButtonColor="secondary" />
           </Stack>
         </Toolbar>
       </AppBar>

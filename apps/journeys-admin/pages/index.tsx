@@ -69,7 +69,7 @@ function IndexPage(): ReactElement {
             <Typography variant="subtitle1">
               {t('Create a New Journey')}
             </Typography>
-            <HelpScoutBeacon variant="iconButton" />
+            <HelpScoutBeacon />
           </>
         }
       >
