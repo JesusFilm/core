@@ -43,13 +43,14 @@ telemetry:
     spans:
       mode: spec_compliant
   exporters:
+    logging:
+      stdout:
+        enabled: true
+      experimental_when_header:
+        - name: origin
+          match: .*
+          headers: true
+          body: true
     tracing:
-      otlp:
+      datadog:
         enabled: true
-    metrics:
-      otlp:
-        enabled: true
-        temporality: delta
-experimental_batching:
-  enabled: true
-  mode: batch_http_link

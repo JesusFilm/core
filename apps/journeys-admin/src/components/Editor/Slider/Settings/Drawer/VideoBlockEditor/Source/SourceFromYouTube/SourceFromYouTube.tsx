@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
@@ -20,7 +21,7 @@ export function SourceFromYouTube({
   const { t } = useTranslation('apps-journeys-admin')
   return (
     <>
-      <Box>
+      <Box sx={{ ml: 2, mr: 4 }}>
         <ImageBlockThumbnail
           selectedBlock={{
             src: selectedBlock.image ?? '',
@@ -32,6 +33,7 @@ export function SourceFromYouTube({
       <Box flexGrow={1} minWidth={0}>
         <Typography
           variant="subtitle2"
+          color="text.secondary"
           sx={{
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
@@ -43,6 +45,7 @@ export function SourceFromYouTube({
 
         <Typography
           variant="caption"
+          color="text.secondary"
           sx={{
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
@@ -52,7 +55,9 @@ export function SourceFromYouTube({
           {t('YouTube')}
         </Typography>
       </Box>
-      <Edit2Icon color="primary" />
+      <IconButton disabled sx={{ mr: 2 }}>
+        <Edit2Icon color="primary" />
+      </IconButton>
     </>
   )
 }
