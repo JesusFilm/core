@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common'
-
 import { z } from 'zod'
 
 import { Prisma } from '.prisma/api-videos-client'
@@ -19,7 +18,7 @@ const videoVariantsSchema = z.object({
   languageId: z.number().transform(String),
   videoId: z.string(),
   slug: z.string(),
-  languageName: z.string(),
+  languageName: z.string().nullable(),
   edition: z
     .string()
     .nullable()
@@ -51,7 +50,10 @@ export class ImporterVideoVariantsService extends ImporterService<VideoVariants>
   private transform(
     videoVariant: VideoVariants
   ): Prisma.VideoVariantUncheckedCreateInput | null {
-    if (this.importerVideosService.usedSlugs?.[videoVariant.videoId] == null)
+    if (
+      this.importerVideosService.usedSlugs?.[videoVariant.videoId] == null ||
+      videoVariant.languageName == null
+    )
       return null
     // throw new Error(
     //   `video for variant id: ${
@@ -94,6 +96,6 @@ export class ImporterVideoVariantsService extends ImporterService<VideoVariants>
       data: transformedVideoVariants as Prisma.VideoVariantCreateManyInput[],
       skipDuplicates: true
     })
-    this.ids = [...this.ids, ...videoVariants.map(({ id }) => id)]
+    this.ids = this.ids.concat(videoVariants.map(({ id }) => id))
   }
 }

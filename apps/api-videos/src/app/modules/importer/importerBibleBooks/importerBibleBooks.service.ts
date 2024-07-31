@@ -77,6 +77,7 @@ export class ImporterBibleBooksService extends ImporterService<BibleBook> {
         }
       }
     })
+    this.ids.push(bibleBook.id)
   }
 
   protected async saveMany(bibleBooks: BibleBook[]): Promise<void> {
@@ -96,9 +97,11 @@ export class ImporterBibleBooksService extends ImporterService<BibleBook> {
       skipDuplicates: true
     })
 
+    this.ids = bibleBooks.map(({ id }) => id)
+
     await this.prismaService.bibleBookName.createMany({
-      data: bibleBookNames.filter(
-        ({ bibleBookId }) => !this.ids.includes(bibleBookId)
+      data: bibleBookNames.filter(({ bibleBookId }) =>
+        this.ids.includes(bibleBookId)
       ),
       skipDuplicates: true
     })
