@@ -35,7 +35,9 @@ describe('language', () => {
       document: LANGUAGES_QUERY
     })
     expect(prismaMock.language.findMany).toHaveBeenCalledWith({
-      where: {}
+      where: {
+        hasVideos: true
+      }
     })
     expect(prismaMock.languageName.findMany).toHaveBeenCalledWith({
       where: {
@@ -66,7 +68,9 @@ describe('language', () => {
       }
     })
     expect(prismaMock.language.findMany).toHaveBeenCalledWith({
-      where: {}
+      where: {
+        hasVideos: true
+      }
     })
     expect(prismaMock.languageName.findMany).toHaveBeenCalledWith({
       where: {
