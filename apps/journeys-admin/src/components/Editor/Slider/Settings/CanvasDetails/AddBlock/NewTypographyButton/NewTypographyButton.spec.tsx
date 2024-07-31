@@ -125,7 +125,7 @@ describe('NewTypographyButton', () => {
                 input: {
                   journeyId: 'journeyId',
                   parentBlockId: 'cardId',
-                  content: '',
+                  content: 'Add your text here...',
                   variant: 'h1'
                 }
               }

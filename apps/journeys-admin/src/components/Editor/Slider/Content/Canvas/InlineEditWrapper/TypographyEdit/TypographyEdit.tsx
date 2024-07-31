@@ -1,6 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useRef, useState } from 'react'
 
 import { Typography } from '@core/journeys/ui/Typography'
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -8,12 +8,13 @@ import { hasTouchScreen } from '@core/shared/ui/deviceUtils'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { SubmitListener } from '@core/shared/ui/SubmitListener'
+import { Formik } from 'formik'
 import {
   TypographyBlockUpdateContent,
   TypographyBlockUpdateContentVariables
 } from '../../../../../../../../__generated__/TypographyBlockUpdateContent'
 import { TypographyFields } from '../../../../../../../../__generated__/TypographyFields'
-import { useBlockDeleteCommand } from '../../../../../utils/useBlockDeleteCommand'
 import { InlineEditInput } from '../InlineEditInput'
 import { useOnClickOutside } from '../useOnClickOutside'
 
@@ -28,9 +29,7 @@ export const TYPOGRAPHY_BLOCK_UPDATE_CONTENT = gql`
     }
   }
 `
-interface TypographyEditProps extends TreeBlock<TypographyFields> {
-  deleteSelf: () => void
-}
+interface TypographyEditProps extends TreeBlock<TypographyFields> {}
 
 export function TypographyEdit({
   id,
@@ -38,7 +37,6 @@ export function TypographyEdit({
   align,
   color,
   content,
-  deleteSelf,
   ...props
 }: TypographyEditProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -47,116 +45,104 @@ export function TypographyEdit({
     TypographyBlockUpdateContentVariables
   >(TYPOGRAPHY_BLOCK_UPDATE_CONTENT)
 
-  const [value, setValue] = useState(content)
-  const [selection, setSelection] = useState({ start: 0, end: value.length })
+  const typog = useRef<HTMLInputElement>()
+
+  const [selection, setSelection] = useState({ start: 0, end: content.length })
   const {
     state: { selectedBlock, selectedStep },
     dispatch
   } = useEditor()
   const { add } = useCommand()
-  const { addBlockDelete } = useBlockDeleteCommand()
 
-  async function handleSaveBlock(): Promise<void> {
-    const currentContent = value.trimStart().trimEnd()
-    const isEmptyNewBlock = content === '' && currentContent === ''
-    const isEmptyBlock = content !== '' && currentContent === ''
-    const isFirstUpdate = content === '' && currentContent !== ''
+  const initialValues: { contentLabel: string } = {
+    contentLabel: content ?? ''
+  }
 
-    if (isEmptyNewBlock) {
-      deleteSelf()
-    } else if (content === currentContent) {
-      return
-    } else if (isFirstUpdate && selectedBlock != null) {
-      await add({
-        parameters: {
-          execute: { content: currentContent },
-          undo: {}
-        },
-        async execute({ content }) {
-          dispatch({
-            type: 'SetEditorFocusAction',
-            selectedBlock,
-            selectedStep
-          })
+  async function handleSaveBlock(values: typeof initialValues): Promise<void> {
+    const currentContent = values.contentLabel.trimStart().trimEnd()
 
-          await typographyBlockUpdate({
-            variables: {
+    // if (content === currentContent) return
+
+    // if (selectedBlock != null) {
+    await add({
+      parameters: {
+        execute: { content: currentContent },
+        undo: { content }
+      },
+      async execute({ content }) {
+        console.log('here')
+        dispatch({
+          type: 'SetEditorFocusAction',
+          selectedBlock,
+          selectedStep
+        })
+
+        await typographyBlockUpdate({
+          variables: {
+            id,
+            input: { content }
+          },
+          optimisticResponse: {
+            typographyBlockUpdate: {
               id,
-              input: { content }
-            },
-            optimisticResponse: {
-              typographyBlockUpdate: {
-                id,
-                __typename: 'TypographyBlock',
-                content
-              }
+              __typename: 'TypographyBlock',
+              content
             }
-          })
-        },
-        async undo() {
-          deleteSelf()
-        }
-      })
-    } else if (isEmptyBlock && selectedBlock != null) {
-      addBlockDelete(selectedBlock)
-    } else {
-      await add({
-        parameters: {
-          execute: { content: currentContent },
-          undo: { content }
-        },
-        async execute({ content }) {
-          dispatch({
-            type: 'SetEditorFocusAction',
-            selectedBlock,
-            selectedStep
-          })
+          }
+        })
+      }
+    })
 
-          await typographyBlockUpdate({
-            variables: {
-              id,
-              input: { content }
-            },
-            optimisticResponse: {
-              typographyBlockUpdate: {
-                id,
-                __typename: 'TypographyBlock',
-                content
-              }
-            }
-          })
-        }
-      })
-    }
+    // }
   }
 
   const inputRef = useOnClickOutside(async () => {
-    await handleSaveBlock()
+    // await handleSaveBlock
+    if (typog.current != null) typog.current.blur()
   })
 
   const input = (
-    <InlineEditInput
-      name={`edit-${id}`}
-      ref={inputRef}
-      multiline
-      fullWidth
-      autoFocus={!hasTouchScreen()}
-      value={value}
-      placeholder={t('Add your text here...')}
-      onSelect={(e) => {
-        const input = e.target as HTMLTextAreaElement
-        setSelection({
-          start: input.selectionStart ?? 0,
-          end: input.selectionEnd ?? value.length
-        })
-      }}
-      onFocus={(e) => {
-        const input = e.target as HTMLTextAreaElement
-        input.setSelectionRange(selection.start, selection.end)
-      }}
-      onBlur={handleSaveBlock}
-      onChange={(e) => setValue(e.target.value)}
-    />
+    <Formik
+      initialValues={initialValues}
+      onSubmit={handleSaveBlock}
+      enableReinitialize
+    >
+      {({ values, handleChange, setFieldValue }) => (
+        <>
+          <InlineEditInput
+            name="contentLabel"
+            ref={inputRef}
+            inputRef={typog}
+            multiline
+            fullWidth
+            autoFocus={!hasTouchScreen()}
+            value={values.contentLabel}
+            placeholder={t('Add your text here...')}
+            onSelect={(e) => {
+              const input = e.target as HTMLTextAreaElement
+              setSelection({
+                start: input.selectionStart ?? 0,
+                end: input.selectionEnd ?? values.contentLabel.length
+              })
+            }}
+            onFocus={(e) => {
+              const input = e.target as HTMLTextAreaElement
+              input.setSelectionRange(selection.start, selection.end)
+            }}
+            onBlur={(e) => {
+              setFieldValue('contentLabel', e.currentTarget.value)
+              dispatch({
+                type: 'SetEditorFocusAction',
+                selectedStep: selectedStep,
+                selectedBlock: selectedStep
+              })
+            }}
+            onChange={handleChange}
+          />
+          <SubmitListener />
+        </>
+      )}
+    </Formik>
   )
 
   return (

@@ -2,7 +2,6 @@ import { ReactElement } from 'react'
 
 import { WrapperProps } from '@core/journeys/ui/BlockRenderer'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { ButtonFields } from '../../../../../../../__generated__/ButtonFields'
 import { RadioOptionFields } from '../../../../../../../__generated__/RadioOptionFields'
@@ -10,9 +9,6 @@ import { RadioQuestionFields } from '../../../../../../../__generated__/RadioQue
 import { SignUpFields } from '../../../../../../../__generated__/SignUpFields'
 import { TextResponseFields } from '../../../../../../../__generated__/TextResponseFields'
 import { TypographyFields } from '../../../../../../../__generated__/TypographyFields'
-import { blockDeleteUpdate } from '../../../../../../libs/blockDeleteUpdate'
-import { useBlockDeleteMutation } from '../../../../../../libs/useBlockDeleteMutation'
-import getSelected from '../QuickControls/DeleteBlock/utils/getSelected'
 
 import { ButtonEdit } from './ButtonEdit'
 import { RadioOptionEdit } from './RadioOptionEdit'
@@ -34,48 +30,19 @@ export function InlineEditWrapper({
   block,
   children
 }: InlineEditWrapperProps): ReactElement {
-  const [blockDelete] = useBlockDeleteMutation()
-
   const {
-    state: { selectedBlock, selectedStep, steps },
-    dispatch
+    state: { selectedBlock }
   } = useEditor()
-  const { journey } = useJourney()
 
   const showEditable =
     selectedBlock?.id === block.id ||
     (block.__typename === 'RadioQuestionBlock' &&
-      selectedBlock?.parentBlockId === block.id)
-
-  // TODO: Refactor out delete block logic
-  const handleDeleteBlock = async (): Promise<void> => {
-    if (selectedBlock == null || journey == null || steps == null) return
-
-    const deletedBlockParentOrder = selectedBlock.parentOrder
-    const deletedBlockType = selectedBlock.__typename
-    const stepsBeforeDelete = steps
-    const stepBeforeDelete = selectedStep
-
-    await blockDelete(selectedBlock, {
-      update(cache, { data }) {
-        if (data?.blockDelete != null && deletedBlockParentOrder != null) {
-          const selected = getSelected({
-            parentOrder: deletedBlockParentOrder,
-            siblings: data.blockDelete,
-            type: deletedBlockType,
-            steps: stepsBeforeDelete,
-            selectedStep: stepBeforeDelete
-          })
-          selected != null && dispatch(selected)
-        }
-        blockDeleteUpdate(block, data?.blockDelete, cache, journey.id)
-      }
-    })
-  }
+      selectedBlock?.parentBlockId === block.id) ||
+    block.__typename === 'TypographyBlock'
 
   const EditComponent =
     block.__typename === 'TypographyBlock' ? (
-      <TypographyEdit {...block} deleteSelf={handleDeleteBlock} />
+      <TypographyEdit {...block} />
     ) : block.__typename === 'ButtonBlock' ? (
       <ButtonEdit {...block} />
     ) : block.__typename === 'RadioOptionBlock' ? (
