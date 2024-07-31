@@ -150,11 +150,6 @@ export function SignUpEdit({
           onClick={(e) => e.stopPropagation()}
         />
       }
-      sx={{
-        '&:hover': {
-          backgroundColor: 'primary.main'
-        }
-      }}
     />
   )
 }
