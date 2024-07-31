@@ -27,7 +27,7 @@ function transformAlgoliaStrategies(hits: Hit[]): StrategyCardItem[] {
   }))
 }
 
-interface StrategySectionProps {
+export interface StrategySectionProps {
   handleItemSearch: (index: number, value: boolean) => void
   index: number
 }
@@ -39,6 +39,7 @@ export function StrategySection({
   const { breakpoints } = useTheme()
 
   const { hits } = useHits()
+  console.log(hits)
 
   const items = transformAlgoliaStrategies(hits)
 
@@ -90,7 +91,7 @@ export function StrategySection({
           </Container>
         </Box>
       ) : (
-        <></>
+        <Box data-testid="Empty strategy">Strastegy section</Box>
       )}
     </>
   )
