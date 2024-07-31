@@ -19,7 +19,8 @@
     "**/*.js",
     "**/*.jsx",
     "next-env.d.ts",
-    "../../libs/journeys/ui/src/ImageBlockProvider/ImageBlockProvider.tsx"
-, "src/components/Editor/Slider/JourneyFlow/libs/useCreateStep/useCreateStep.mockts"  ],
+    "../../libs/journeys/ui/src/ImageBlockProvider/ImageBlockProvider.tsx",
+    "src/components/Editor/Slider/JourneyFlow/libs/useCreateStep/useCreateStep.mockts"
+  ],
   "exclude": ["node_modules", "jest.config.ts"]
 }
