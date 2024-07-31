@@ -216,12 +216,16 @@ export class BlockResolver {
           action: true
         }
       })
-      if (updatedBlock.parentOrder != null)
-        await this.blockService.reorderBlock(
-          updatedBlock,
-          updatedBlock.parentOrder,
-          tx
-        )
+      if (updatedBlock?.parentOrder == null)
+        throw new GraphQLError('updated block has no parent order', {
+          extensions: { code: 'INTERNAL_SERVER_ERROR' }
+        })
+
+      const updatedBlockAndSiblings = await this.blockService.reorderBlock(
+        updatedBlock,
+        updatedBlock.parentOrder,
+        tx
+      )
       const blocks = await tx.block.findMany({
         where: {
           journeyId: updatedBlock.journeyId,
@@ -234,7 +238,7 @@ export class BlockResolver {
         updatedBlock.id,
         blocks
       )
-      return [updatedBlock, ...children]
+      return [...updatedBlockAndSiblings, ...children]
     })
   }
 }
