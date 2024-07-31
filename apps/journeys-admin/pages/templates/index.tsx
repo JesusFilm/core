@@ -23,6 +23,7 @@ import {
 } from '../../__generated__/GetLanguages'
 import { GetMe } from '../../__generated__/GetMe'
 import { GetTags } from '../../__generated__/GetTags'
+import { HelpScoutBeacon } from '../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { GET_ME } from '../../src/components/PageWrapper/NavigationDrawer/UserNavigation'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
@@ -53,6 +54,16 @@ function TemplateIndexPage(): ReactElement {
         showNavBar={user?.id != null}
         background="background.paper"
       >
+        <Box
+          sx={{
+            position: 'absolute',
+            right: 16,
+            top: 8,
+            display: { xs: 'none', md: 'block' }
+          }}
+        >
+          <HelpScoutBeacon variant="iconButton" />
+        </Box>
         <Box
           sx={{
             maxWidth: { md: '90vw' },
