@@ -50,9 +50,12 @@ export function useBlockDeleteCommand() {
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
 
-    const cachedStep = client.cache.extract()[`StepBlock:${selectedStep.id}`]
+    const cachedStepWithXandY =
+      client.cache.extract()[`StepBlock:${selectedStep.id}`]
     const flattenedChildren = flatten(currentBlock.children)
-    const stepSiblingsBeforeDelete = steps.map((block) => block)
+    const stepSiblingsBeforeDelete = steps.filter(
+      (block) => block.id !== currentBlock.id
+    )
     const canvasSiblingsBeforeDelete = card?.children.filter(
       (block) => block.id !== currentBlock.id
     )
@@ -117,11 +120,9 @@ export function useBlockDeleteCommand() {
               currentBlock.__typename === 'StepBlock'
                 ? {
                     blockRestore: [
-                      { ...currentBlock, ...cachedStep },
-                      ...flattenedChildren
-                      // todo: return sibling steps with correct order
-                      // // ...steps
-                      // ...siblingsBeforeDelete
+                      { ...currentBlock, ...cachedStepWithXandY },
+                      ...flattenedChildren,
+                      ...stepSiblingsBeforeDelete
                     ]
                   }
                 : {
