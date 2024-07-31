@@ -2,9 +2,9 @@ import Box from '@mui/material/Box'
 import { useTranslation } from 'next-i18next'
 import { ComponentProps, ReactElement } from 'react'
 
+import { useCommand } from '@core/journeys/ui/CommandProvider'
 import FlipLeftIcon from '@core/shared/ui/icons/FlipLeft'
 
-import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { Item } from '../Item/Item'
 
 interface CommandUndoItemProps {
