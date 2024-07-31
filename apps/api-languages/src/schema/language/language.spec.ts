@@ -65,13 +65,14 @@ describe('language', () => {
     })
     expect(prismaMock.languageName.findMany).toHaveBeenCalledWith({
       where: {
-        parentLanguageId: '20615'
+        parentLanguageId: '20615',
+        OR: [{ languageId: '529' }, { primary: true }]
       },
       include: { language: true },
       orderBy: { primary: 'desc' }
     })
     expect(data).toHaveProperty('data.language', {
-      ...omit(language, ['createdAt', 'updatedAt']),
+      ...omit(language, ['createdAt', 'updatedAt', 'hasVideos']),
       name: languageName.map((languageName) =>
         omit(languageName, ['id', 'languageId', 'parentLanguageId'])
       ),
@@ -119,7 +120,7 @@ describe('language', () => {
       orderBy: { primary: 'desc' }
     })
     expect(data).toHaveProperty('data.language', {
-      ...omit(language, ['createdAt', 'updatedAt']),
+      ...omit(language, ['createdAt', 'updatedAt', 'hasVideos']),
       name: languageName.map((languageName) =>
         omit(languageName, ['id', 'languageId', 'parentLanguageId'])
       ),
