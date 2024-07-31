@@ -66,7 +66,7 @@ export function useBlockDeleteCommand() {
         parameters: {
           execute: {
             currentBlock: currentBlock,
-            stepBeforeDelete: stepBeforeDelete,
+            stepBeforeDelete,
             deletedBlockParentOrder,
             deletedBlockType,
             stepsBeforeDelete: stepsBeforeDelete,
@@ -74,7 +74,8 @@ export function useBlockDeleteCommand() {
           },
           undo: {
             currentBlock: currentBlock,
-            stepBeforeDelete: stepBeforeDelete
+            stepBeforeDelete,
+            flattenedChildren
           }
         },
         async execute({
@@ -112,7 +113,7 @@ export function useBlockDeleteCommand() {
             }
           })
         },
-        async undo({ currentBlock, stepBeforeDelete }) {
+        async undo({ currentBlock, stepBeforeDelete, flattenedChildren }) {
           setBlockRestoreEditorState(currentBlock, stepBeforeDelete, dispatch)
           void blockRestore({
             variables: { id: currentBlock.id },
