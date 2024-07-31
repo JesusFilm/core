@@ -43,12 +43,6 @@
         }
       }
     },
-    "seed": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npm run ts-node apps/api-videos/db/seed.ts"
-      }
-    },
     "ingest": {
       "executor": "nx:run-commands",
       "options": {
@@ -137,17 +131,6 @@
       "options": {
         "commands": [
           "npx prisma migrate reset --schema apps/api-videos/db/schema.prisma --force"
-        ]
-      }
-    },
-    "prisma-seed": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          {
-            "command": "npm run ts-node apps/api-videos/db/seed.ts {args.mode} {args.id}",
-            "forwardAllArgs": false
-          }
         ]
       }
     },
