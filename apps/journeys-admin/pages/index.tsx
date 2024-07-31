@@ -1,4 +1,5 @@
 import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import {
   AuthAction,
   useUser,
@@ -13,7 +14,6 @@ import { ReactElement, useEffect } from 'react'
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
 
-import { Typography } from '@mui/material'
 import {
   GetAdminJourneys,
   GetAdminJourneysVariables

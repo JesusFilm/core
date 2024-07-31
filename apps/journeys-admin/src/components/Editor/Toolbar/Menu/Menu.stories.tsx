@@ -1,4 +1,4 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockedResponse } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 
@@ -12,6 +12,7 @@ import { JourneyStatus, Role } from '../../../../../__generated__/globalTypes'
 
 import { GET_ROLE } from './Menu'
 
+import { ComponentPropsWithoutRef } from 'react'
 import { Menu } from '.'
 
 const Demo: Meta<typeof Menu> = {
@@ -36,25 +37,25 @@ const getUserRoleMock: MockedResponse<GetRole> = {
   }
 }
 
-const Template: StoryObj<typeof Menu> = {
-  render: ({ mocks, template }) => {
+const Template: StoryObj<
+  ComponentPropsWithoutRef<typeof Menu> & { template: boolean }
+> = {
+  render: ({ template }) => {
     return (
-      <MockedProvider mocks={mocks}>
-        <JourneyProvider
-          value={{
-            journey: {
-              status: JourneyStatus.draft,
-              tags: [],
-              template
-            } as unknown as Journey,
-            variant: 'admin'
-          }}
-        >
-          <EditorProvider>
-            <Menu />
-          </EditorProvider>
-        </JourneyProvider>
-      </MockedProvider>
+      <JourneyProvider
+        value={{
+          journey: {
+            status: JourneyStatus.draft,
+            tags: [],
+            template
+          } as unknown as Journey,
+          variant: 'admin'
+        }}
+      >
+        <EditorProvider>
+          <Menu />
+        </EditorProvider>
+      </JourneyProvider>
     )
   }
 }
@@ -69,8 +70,10 @@ export const Default = {
 
 export const Publisher = {
   ...Template,
-  args: {
-    mocks: [getUserRoleMock]
+  parameters: {
+    apolloClient: {
+      mocks: [getUserRoleMock]
+    }
   },
   play: async () => {
     const menuButton = screen.getByRole('button')

@@ -1,16 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { HelpScoutBeacon } from './HelpScoutBeacon'
 
-jest.mock('next-firebase-auth', () => ({
-  __esModule: true,
-  useUser: jest.fn(() => ({
-    id: 'userId',
-    name: 'userName',
-    email: 'user@example.com'
-  }))
-}))
-
-describe('HelpScountBeacon', () => {
+describe('HelpScoutBeacon', () => {
   it('should render icon button', () => {
     const handleClick = jest.fn()
 
