@@ -1,3 +1,4 @@
+import { FormObject } from '@core/journeys/ui/setBeaconPageViewed'
 import HelpCircleContained from '@core/shared/ui/icons/HelpCircleContained'
 import XCircleContained from '@core/shared/ui/icons/XCircleContained'
 import IconButton from '@mui/material/IconButton'
@@ -13,16 +14,14 @@ interface HelpScoutBeaconProps {
   variant?: 'iconButton' | 'menuItem'
   iconButtonColor?: 'primary' | 'secondary'
   handleClick?: () => void
-  userName?: string
-  userEmail?: string
+  userInfo?: FormObject
 }
 
 export function HelpScoutBeacon({
   variant = 'iconButton',
   iconButtonColor = 'primary',
   handleClick,
-  userName,
-  userEmail
+  userInfo
 }: HelpScoutBeaconProps): ReactElement {
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
@@ -46,7 +45,7 @@ export function HelpScoutBeacon({
 
   return (
     <>
-      <BeaconInit userName={userName} userEmail={userEmail} />
+      <BeaconInit userInfo={userInfo} />
       {variant === 'iconButton' && (
         <IconButton
           data-testid="HelpScoutBeaconIconButton"

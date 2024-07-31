@@ -1,20 +1,15 @@
+import { FormObject } from '@core/journeys/ui/setBeaconPageViewed'
 import { useTheme } from '@mui/material/styles'
-import { useUser } from 'next-firebase-auth'
 import { useRouter } from 'next/router'
 import Script from 'next/script'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 
 interface BeaconInitProps {
-  userName?: string
-  userEmail?: string
+  userInfo?: FormObject
 }
 
-export function BeaconInit({
-  userName,
-  userEmail
-}: BeaconInitProps): ReactElement {
+export function BeaconInit({ userInfo }: BeaconInitProps): ReactElement {
   const { breakpoints, zIndex } = useTheme()
-  const user = useUser()
   const router = useRouter()
   const previousUrlRef = useRef(router.asPath)
 
@@ -24,8 +19,8 @@ export function BeaconInit({
     if (hasLoaded && window.Beacon != null) {
       window.Beacon('on', 'open', () => {
         window.Beacon?.('prefill', {
-          name: userName ?? user?.displayName ?? '',
-          email: userEmail ?? user?.email ?? ''
+          name: userInfo?.name ?? '',
+          email: userInfo?.email ?? ''
         })
       })
     }
@@ -40,7 +35,7 @@ export function BeaconInit({
     return () => {
       router.events.off('routeChangeComplete', handleRouteChange)
     }
-  }, [hasLoaded, router, user])
+  }, [hasLoaded, router, userInfo])
 
   return (
     <>

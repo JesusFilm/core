@@ -12,6 +12,7 @@ import { use100vh } from 'react-div-100vh'
 
 import { LanguageSwitcher } from '../LanguageSwitcher'
 
+import { User } from 'next-firebase-auth'
 import { HelpScoutBeacon } from '../HelpScoutBeacon'
 import { OnboardingDrawer } from './OnboardingDrawer'
 
@@ -19,12 +20,14 @@ interface OnboardingPageWrapperProps {
   title?: string
   emailSubject: string
   children: ReactNode
+  user?: User
 }
 
 export function OnboardingPageWrapper({
   title,
   emailSubject,
-  children
+  children,
+  user
 }: OnboardingPageWrapperProps): ReactElement {
   const [open, setOpen] = useState(false)
   const viewportHeight = use100vh()
@@ -45,7 +48,12 @@ export function OnboardingPageWrapper({
           top: { xs: 24, sm: 8, md: 24 }
         }}
       >
-        <HelpScoutBeacon />
+        <HelpScoutBeacon
+          userInfo={{
+            name: user?.displayName ?? '',
+            email: user?.email ?? ''
+          }}
+        />
       </Box>
       <OnboardingDrawer />
       <Stack

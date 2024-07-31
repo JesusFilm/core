@@ -44,7 +44,12 @@ function JourneyReportsPage({ flags }): ReactElement {
             gap={3}
           >
             <ReportsNavigation destination="visitor" journeyId={journeyId} />
-            <HelpScoutBeacon />
+            <HelpScoutBeacon
+              userInfo={{
+                name: user?.displayName ?? '',
+                email: user?.email ?? ''
+              }}
+            />
           </Stack>
         }
         mainBodyPadding={false}

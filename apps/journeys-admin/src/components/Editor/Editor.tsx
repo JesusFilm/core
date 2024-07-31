@@ -9,6 +9,7 @@ import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/Block
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 
 import { useFlags } from '@core/shared/ui/FlagsProvider'
+import { User } from 'next-firebase-auth'
 import { HotkeysProvider } from 'react-hotkeys-hook'
 import { Fab } from './Fab'
 import { Hotkeys } from './Hotkeys'
@@ -19,6 +20,7 @@ interface EditorProps {
   journey?: Journey
   selectedStepId?: string
   initialState?: Partial<EditorState>
+  user?: User
 }
 
 /**
@@ -29,7 +31,8 @@ interface EditorProps {
 export function Editor({
   journey,
   selectedStepId,
-  initialState
+  initialState,
+  user
 }: EditorProps): ReactElement {
   const steps =
     journey != null
@@ -52,7 +55,7 @@ export function Editor({
       >
         <HotkeysProvider>
           {commands && <Hotkeys />}
-          <Toolbar />
+          <Toolbar user={user} />
           <Slider />
           <Fab variant="mobile" />
         </HotkeysProvider>

@@ -42,7 +42,12 @@ function ReportsVisitorsPage(): ReactElement {
                 }
               }}
             >
-              <HelpScoutBeacon />
+              <HelpScoutBeacon
+                userInfo={{
+                  name: user?.displayName ?? '',
+                  email: user?.email ?? ''
+                }}
+              />
             </Box>
           </Stack>
         }

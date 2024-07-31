@@ -18,6 +18,7 @@ import { EDIT_TOOLBAR_HEIGHT } from '../constants'
 import { ActiveContent } from '@core/journeys/ui/EditorProvider'
 import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
 import Button from '@mui/material/Button'
+import { User } from 'next-firebase-auth'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'react-i18next'
@@ -33,7 +34,11 @@ const TitleDescriptionDialog = dynamic(
   { ssr: false }
 )
 
-export function Toolbar(): ReactElement {
+interface ToolbarProps {
+  user?: User
+}
+
+export function Toolbar({ user }: ToolbarProps): ReactElement {
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
@@ -224,13 +229,18 @@ export function Toolbar(): ReactElement {
           <Items />
         </>
       )}
-      <Menu />
+      <Menu user={user} />
       <Box
         sx={{
           display: { xs: 'none', sm: 'block' }
         }}
       >
-        <HelpScoutBeacon />
+        <HelpScoutBeacon
+          userInfo={{
+            name: user?.displayName ?? '',
+            email: user?.email ?? ''
+          }}
+        />
       </Box>
     </Stack>
   )

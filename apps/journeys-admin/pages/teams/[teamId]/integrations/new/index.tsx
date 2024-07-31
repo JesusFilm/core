@@ -39,7 +39,12 @@ function IntegrationsIndexPage(): ReactElement {
               }
             }}
           >
-            <HelpScoutBeacon />
+            <HelpScoutBeacon
+              userInfo={{
+                name: user?.displayName ?? '',
+                email: user?.email ?? ''
+              }}
+            />
           </Stack>
         }
       >

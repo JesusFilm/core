@@ -10,6 +10,7 @@ import { MouseEvent, ReactElement, useState } from 'react'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import MoreIcon from '@core/shared/ui/icons/More'
 
+import { User } from 'next-firebase-auth'
 import { GetRole } from '../../../../../__generated__/GetRole'
 import { Role } from '../../../../../__generated__/globalTypes'
 import { HelpScoutBeacon } from '../../../HelpScoutBeacon'
@@ -35,7 +36,11 @@ export const GET_ROLE = gql`
   }
 `
 
-export function Menu(): ReactElement {
+interface MenuProps {
+  user?: User
+}
+
+export function Menu({ user }: MenuProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const { journey } = useJourney()
   const { t } = useTranslation('apps-journeys-admin')
@@ -113,7 +118,13 @@ export function Menu(): ReactElement {
         {!smUp && (
           <>
             <Divider />
-            <HelpScoutBeacon variant="menuItem" />
+            <HelpScoutBeacon
+              variant="menuItem"
+              userInfo={{
+                name: user?.displayName ?? '',
+                email: user?.email ?? ''
+              }}
+            />
           </>
         )}
       </MuiMenu>

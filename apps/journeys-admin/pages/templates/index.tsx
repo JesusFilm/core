@@ -64,7 +64,12 @@ function TemplateIndexPage(): ReactElement {
             display: { xs: userSignedIn ? 'none' : 'block', md: 'block' }
           }}
         >
-          <HelpScoutBeacon />
+          <HelpScoutBeacon
+            userInfo={{
+              name: user?.displayName ?? '',
+              email: user?.email ?? ''
+            }}
+          />
         </Box>
         <Box
           sx={{

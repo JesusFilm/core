@@ -8,15 +8,20 @@ import { ReactElement } from 'react'
 
 import Menu1Icon from '@core/shared/ui/icons/Menu1'
 
+import { User } from 'next-firebase-auth'
 import taskbarIcon from '../../../../public/taskbar-icon.svg'
 import { HelpScoutBeacon } from '../../HelpScoutBeacon'
 import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
 
 export interface MainBodyContainerProps {
   onClick: () => void
+  user?: User
 }
 
-export function AppHeader({ onClick }: MainBodyContainerProps): ReactElement {
+export function AppHeader({
+  onClick,
+  user
+}: MainBodyContainerProps): ReactElement {
   const { toolbar } = usePageWrapperStyles()
 
   return (
@@ -57,7 +62,13 @@ export function AppHeader({ onClick }: MainBodyContainerProps): ReactElement {
                 alt="Next Steps"
               />
             </Stack>
-            <HelpScoutBeacon iconButtonColor="secondary" />
+            <HelpScoutBeacon
+              iconButtonColor="secondary"
+              userInfo={{
+                name: user?.displayName ?? '',
+                email: user?.email ?? ''
+              }}
+            />
           </Stack>
         </Toolbar>
       </AppBar>

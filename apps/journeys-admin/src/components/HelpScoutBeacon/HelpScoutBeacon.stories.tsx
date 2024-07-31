@@ -16,27 +16,20 @@ const Template: StoryObj<ComponentPropsWithRef<typeof HelpScoutBeacon>> = {
 
 export const Default = {
   ...Template,
-  args: {
-    userName: 'user name',
-    userEmail: 'user email'
-  }
+  args: {}
 }
 
 export const IconSecondary = {
   ...Template,
   args: {
-    iconButtonColor: 'secondary',
-    userName: 'user name',
-    userEmail: 'user email'
+    iconButtonColor: 'secondary'
   }
 }
 
 export const MenuItem = {
   ...Template,
   args: {
-    variant: 'menuItem',
-    userName: 'user name',
-    userEmail: 'user email'
+    variant: 'menuItem'
   }
 }
 

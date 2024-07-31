@@ -16,15 +16,6 @@ import { GET_ROLE } from './Menu'
 
 import { Menu } from '.'
 
-jest.mock('next-firebase-auth', () => ({
-  __esModule: true,
-  useUser: jest.fn(() => ({
-    id: 'userId',
-    name: 'userName',
-    email: 'user@example.com'
-  }))
-}))
-
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: jest.fn()

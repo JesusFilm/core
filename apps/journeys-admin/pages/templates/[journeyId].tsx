@@ -69,7 +69,12 @@ function TemplateDetailsPage(): ReactElement {
                 }
               }}
             >
-              <HelpScoutBeacon />
+              <HelpScoutBeacon
+                userInfo={{
+                  name: user?.displayName ?? '',
+                  email: user?.email ?? ''
+                }}
+              />
             </Stack>
           }
           showAppHeader={user?.id != null}
