@@ -21,6 +21,7 @@ import Button from '@mui/material/Button'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'react-i18next'
+import { AccessAvatars } from '../../AccessAvatars'
 import { Items } from './Items'
 import { Menu } from './Menu'
 
@@ -220,6 +221,16 @@ export function Toolbar(): ReactElement {
               onClose={handleDialogClose}
             />
           </Stack>
+          <Tooltip
+            data-testid="ToolbarTooltip"
+            title={t('Manage Editors')}
+            arrow
+          >
+            <AccessAvatars
+              journeyId={journey.id}
+              userJourneys={journey.userJourneys ?? undefined}
+            />
+          </Tooltip>
           <Items />
         </>
       )}
