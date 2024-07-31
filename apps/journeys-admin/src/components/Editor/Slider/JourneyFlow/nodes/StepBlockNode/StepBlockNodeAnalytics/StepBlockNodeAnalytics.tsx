@@ -72,7 +72,7 @@ export function StepBlockNodeAnalytics({
   const timeOnPage = stepStats?.timeOnPage ?? 0
 
   const totalVisitors = analytics?.totalVisitors ?? 0
-  const EXIT_RATE_THRESHOLD = 50
+  const EXIT_RATE_THRESHOLD = 1
   const hideExitRate = totalVisitors < EXIT_RATE_THRESHOLD
 
   return (
