@@ -2,22 +2,17 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
 import { PrismaService } from '../../../lib/prisma.service'
-import { ImporterVideoVariantsService } from '../importerVideoVariants/importerVideoVariants.service'
-import { ImporterVideosService } from '../importerVideos/importerVideos.service'
 
 import { ImporterVideoVariantDownloadsService } from './importerVideoVariantDownloads.service'
 
 describe('ImporterVideoVariantDownloadsService', () => {
   let service: ImporterVideoVariantDownloadsService,
-    prismaService: DeepMockProxy<PrismaService>,
-    videoVariantsService: ImporterVideoVariantsService
+    prismaService: DeepMockProxy<PrismaService>
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ImporterVideoVariantDownloadsService,
-        ImporterVideoVariantsService,
-        ImporterVideosService,
         {
           provide: PrismaService,
           useValue: mockDeep<PrismaService>()
@@ -28,9 +23,6 @@ describe('ImporterVideoVariantDownloadsService', () => {
     service = module.get<ImporterVideoVariantDownloadsService>(
       ImporterVideoVariantDownloadsService
     )
-    videoVariantsService = module.get<ImporterVideoVariantsService>(
-      ImporterVideoVariantsService
-    )
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
@@ -38,7 +30,7 @@ describe('ImporterVideoVariantDownloadsService', () => {
 
   describe('import', () => {
     it('should upsert video variant download', async () => {
-      videoVariantsService.ids = ['mockVariantId']
+      service.videoVariantIds = ['mockVariantId']
       await service.import({
         quality: 'low',
         size: 1111112,
@@ -68,7 +60,7 @@ describe('ImporterVideoVariantDownloadsService', () => {
     })
 
     it('should save many video variant downloads', async () => {
-      videoVariantsService.ids = ['mockVariantId', 'mockVariantId2']
+      service.videoVariantIds = ['mockVariantId', 'mockVariantId2']
       await service.importMany([
         {
           quality: 'low',
@@ -105,6 +97,7 @@ describe('ImporterVideoVariantDownloadsService', () => {
     })
 
     it('should throw error when row is invalid', async () => {
+      service.videoVariantIds = ['mockVariantId']
       await expect(
         service.import({
           id: 'mockValue0',
@@ -115,6 +108,7 @@ describe('ImporterVideoVariantDownloadsService', () => {
     })
 
     it('should throw error when row has no id', async () => {
+      service.videoVariantIds = ['mockVariantId']
       await expect(
         service.import({
           label: 'short',
@@ -124,7 +118,7 @@ describe('ImporterVideoVariantDownloadsService', () => {
     })
 
     it('should throw error if video variant is not found', async () => {
-      videoVariantsService.ids = []
+      prismaService.videoVariant.findMany.mockResolvedValueOnce([])
       await expect(
         service.import({
           quality: 'low',

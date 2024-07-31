@@ -160,6 +160,7 @@ export class BigQueryConsumer extends WorkerHost {
     this.importerVideosService.ids = []
     this.importerVideoVariantsService.ids = []
     this.importerBibleBooksService.ids = []
+    this.importerVideoVariantsDownloadService.videoVariantIds = []
   }
 
   async processTable(

@@ -6,7 +6,6 @@ import { VideoVariantDownloadQuality } from '.prisma/api-videos-client'
 
 import { PrismaService } from '../../../lib/prisma.service'
 import { ImporterService } from '../importer.service'
-import { ImporterVideoVariantsService } from '../importerVideoVariants/importerVideoVariants.service'
 
 const videoVariantDownloadsSchema = z
   .object({
@@ -29,22 +28,27 @@ type VideoVariantDownloads = z.infer<typeof videoVariantDownloadsSchema>
 @Injectable()
 export class ImporterVideoVariantDownloadsService extends ImporterService<VideoVariantDownloads> {
   schema = videoVariantDownloadsSchema
+  videoVariantIds: string[] = []
 
-  constructor(
-    private readonly prismaService: PrismaService,
-    private readonly importerVideoVariantsService: ImporterVideoVariantsService
-  ) {
+  constructor(private readonly prismaService: PrismaService) {
     super()
+  }
+
+  // This is used to fix a foreign key constraint error after createMany
+  async getExistingVariantIds(): Promise<void> {
+    if (this.videoVariantIds.length === 0) {
+      const results = await this.prismaService.videoVariant.findMany({
+        select: { id: true }
+      })
+      this.videoVariantIds = results.map(({ id }) => id)
+    }
   }
 
   protected async save(
     videoVariantDownloads: VideoVariantDownloads
   ): Promise<void> {
-    if (
-      !this.importerVideoVariantsService.ids.includes(
-        videoVariantDownloads.videoVariantId
-      )
-    )
+    await this.getExistingVariantIds()
+    if (!this.videoVariantIds.includes(videoVariantDownloads.videoVariantId))
       throw new Error(
         `Video variant with id ${videoVariantDownloads.videoVariantId} not found`
       )
@@ -63,11 +67,11 @@ export class ImporterVideoVariantDownloadsService extends ImporterService<VideoV
   protected async saveMany(
     videoVariantDownloads: VideoVariantDownloads[]
   ): Promise<void> {
-    const data = videoVariantDownloads.filter(({ videoVariantId }) =>
-      this.importerVideoVariantsService.ids.includes(videoVariantId)
-    )
+    await this.getExistingVariantIds()
     await this.prismaService.videoVariantDownload.createMany({
-      data,
+      data: videoVariantDownloads.filter(({ videoVariantId }) =>
+        this.videoVariantIds.includes(videoVariantId)
+      ),
       skipDuplicates: true
     })
   }
