@@ -2,7 +2,7 @@ import Box from '@mui/material/Box'
 import { useTranslation } from 'next-i18next'
 import { ComponentProps, ReactElement } from 'react'
 
-import ArrowLeftIcon from '@core/shared/ui/icons/ArrowLeft'
+import FlipLeftIcon from '@core/shared/ui/icons/FlipLeft'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { Item } from '../Item/Item'
@@ -26,7 +26,7 @@ export function CommandUndoItem({
       <Item
         variant={variant}
         label={t('Undo')}
-        icon={<ArrowLeftIcon />}
+        icon={<FlipLeftIcon />}
         onClick={handleClick}
         ButtonProps={{ disabled: state.undo == null }}
       />
