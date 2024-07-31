@@ -42,6 +42,8 @@ function TemplateIndexPage(): ReactElement {
     void query.refetch()
   }, [user.id, query])
 
+  const userSignedIn = user?.id != null
+
   return (
     <>
       <NextSeo title={t('Journey Templates')} />
@@ -50,8 +52,8 @@ function TemplateIndexPage(): ReactElement {
         user={user}
         mainBodyPadding={false}
         showMainHeader={false}
-        showAppHeader={user?.id != null}
-        showNavBar={user?.id != null}
+        showAppHeader={userSignedIn}
+        showNavBar={userSignedIn}
         background="background.paper"
       >
         <Box
@@ -59,7 +61,7 @@ function TemplateIndexPage(): ReactElement {
             position: 'absolute',
             right: 16,
             top: 8,
-            display: { xs: 'none', md: 'block' }
+            display: { xs: userSignedIn ? 'none' : 'block', md: 'block' }
           }}
         >
           <HelpScoutBeacon variant="iconButton" />
