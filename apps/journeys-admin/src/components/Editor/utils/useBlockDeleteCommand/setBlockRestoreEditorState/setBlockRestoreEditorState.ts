@@ -17,6 +17,7 @@ export function setBlockRestoreEditorState(
       type: 'SetEditorFocusAction',
       activeSlide: ActiveSlide.JourneyFlow,
       selectedStepId: currentBlock.id,
+      selectedBlockId: currentBlock.id,
       activeContent: ActiveContent.Canvas
     })
   } else {
@@ -24,8 +25,8 @@ export function setBlockRestoreEditorState(
       type: 'SetEditorFocusAction',
       activeContent: ActiveContent.Canvas,
       activeSlide: ActiveSlide.Content,
-      selectedBlockId: currentBlock.id,
-      selectedStepId: selectedStep.id
+      selectedBlock: currentBlock,
+      selectedStep: selectedStep
     })
   }
 }
