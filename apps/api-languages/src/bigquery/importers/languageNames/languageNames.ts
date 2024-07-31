@@ -13,7 +13,7 @@ const languageNameSchema = z
   })
   .transform((value) => ({
     ...value,
-    primary: value.languageId === '529'
+    primary: value.languageId === value.parentLanguageId
   }))
 
 const bigQueryTableName =
