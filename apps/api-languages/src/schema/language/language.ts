@@ -50,7 +50,10 @@ export const Language = builder.prismaObject('Language', {
       resolve: async (query, language, { languageId, primary }) => {
         const where: Prisma.LanguageNameWhereInput = {
           parentLanguageId: language.id,
-          OR: languageId == null && primary == null ? undefined : []
+          OR:
+            languageId == null && primary == null
+              ? [{ languageId: '529' }, { primary: true }]
+              : []
         }
         if (languageId != null) where.OR?.push({ languageId })
         if (primary != null) where.OR?.push({ primary })
@@ -104,9 +107,7 @@ builder.queryFields((t) => ({
       where: t.arg({ type: LanguagesFilter, required: false })
     },
     resolve: async (query, _parent, { offset, limit, where }) => {
-      const filter: Prisma.LanguageWhereInput = {
-        hasVideos: true
-      }
+      const filter: Prisma.LanguageWhereInput = {}
       if (where?.ids != null) filter.id = { in: where?.ids }
       return await prisma.language.findMany({
         ...query,

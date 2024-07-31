@@ -35,13 +35,12 @@ describe('language', () => {
       document: LANGUAGES_QUERY
     })
     expect(prismaMock.language.findMany).toHaveBeenCalledWith({
-      where: {
-        hasVideos: true
-      }
+      where: {}
     })
     expect(prismaMock.languageName.findMany).toHaveBeenCalledWith({
       where: {
-        parentLanguageId: '20615'
+        parentLanguageId: '20615',
+        OR: [{ languageId: '529' }, { primary: true }]
       },
       include: { language: true },
       orderBy: { primary: 'desc' }
@@ -67,9 +66,7 @@ describe('language', () => {
       }
     })
     expect(prismaMock.language.findMany).toHaveBeenCalledWith({
-      where: {
-        hasVideos: true
-      }
+      where: {}
     })
     expect(prismaMock.languageName.findMany).toHaveBeenCalledWith({
       where: {
