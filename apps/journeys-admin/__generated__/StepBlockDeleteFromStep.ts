@@ -6,16 +6,16 @@
 import { StepBlockUpdateInput } from "./globalTypes";
 
 // ====================================================
-// GraphQL mutation operation: StepBlockDelete
+// GraphQL mutation operation: StepBlockDeleteFromStep
 // ====================================================
 
-export interface StepBlockDelete_blockDelete_ImageBlock {
+export interface StepBlockDeleteFromStep_blockDelete_ImageBlock {
   __typename: "ImageBlock" | "ButtonBlock" | "CardBlock" | "FormBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
   parentOrder: number | null;
 }
 
-export interface StepBlockDelete_blockDelete_StepBlock {
+export interface StepBlockDeleteFromStep_blockDelete_StepBlock {
   __typename: "StepBlock";
   id: string;
   parentOrder: number | null;
@@ -26,9 +26,9 @@ export interface StepBlockDelete_blockDelete_StepBlock {
   nextBlockId: string | null;
 }
 
-export type StepBlockDelete_blockDelete = StepBlockDelete_blockDelete_ImageBlock | StepBlockDelete_blockDelete_StepBlock;
+export type StepBlockDeleteFromStep_blockDelete = StepBlockDeleteFromStep_blockDelete_ImageBlock | StepBlockDeleteFromStep_blockDelete_StepBlock;
 
-export interface StepBlockDelete_stepBlockUpdate {
+export interface StepBlockDeleteFromStep_stepBlockUpdate {
   __typename: "StepBlock";
   id: string;
   /**
@@ -38,15 +38,15 @@ export interface StepBlockDelete_stepBlockUpdate {
   nextBlockId: string | null;
 }
 
-export interface StepBlockDelete {
+export interface StepBlockDeleteFromStep {
   /**
    * blockDelete returns the updated sibling blocks on successful delete
    */
-  blockDelete: StepBlockDelete_blockDelete[];
-  stepBlockUpdate: StepBlockDelete_stepBlockUpdate;
+  blockDelete: StepBlockDeleteFromStep_blockDelete[];
+  stepBlockUpdate: StepBlockDeleteFromStep_stepBlockUpdate;
 }
 
-export interface StepBlockDeleteVariables {
+export interface StepBlockDeleteFromStepVariables {
   id: string;
   journeyId: string;
   input: StepBlockUpdateInput;

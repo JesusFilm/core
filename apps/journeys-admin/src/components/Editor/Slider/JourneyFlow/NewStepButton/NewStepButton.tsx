@@ -6,7 +6,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Plus3Icon from '@core/shared/ui/icons/Plus3'
 
 import { Item } from '../../../Toolbar/Items/Item'
-import { useCreateStepFromButton } from '../libs/useCreateStepFromButton'
+import { useCreateStep } from '../libs/useCreateStep'
 import {
   STEP_NODE_CARD_HEIGHT,
   STEP_NODE_CARD_WIDTH
@@ -15,7 +15,7 @@ import {
 export function NewStepButton(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
-  const createStepFromButton = useCreateStepFromButton()
+  const createStep = useCreateStep()
   const reactFlowInstance = useReactFlow()
 
   async function handleClick(event: MouseEvent): Promise<void> {
@@ -27,7 +27,7 @@ export function NewStepButton(): ReactElement {
 
     const xCoordinate = Math.trunc(x) - STEP_NODE_CARD_WIDTH
     const yCoordinate = Math.trunc(y) + STEP_NODE_CARD_HEIGHT / 2
-    await createStepFromButton({ x: xCoordinate, y: yCoordinate })
+    await createStep({ x: xCoordinate, y: yCoordinate })
   }
 
   return (

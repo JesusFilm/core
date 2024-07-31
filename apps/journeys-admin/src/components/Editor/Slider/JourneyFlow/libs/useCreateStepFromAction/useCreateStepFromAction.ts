@@ -7,7 +7,7 @@ import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { STEP_FIELDS } from '@core/journeys/ui/Step/stepFields'
 import { BLOCK_FIELDS } from '@core/journeys/ui/block/blockFields'
-import { isActionBlock } from '@core/journeys/ui/isActionBlock'
+import { ActionBlock } from '@core/journeys/ui/isActionBlock'
 
 import {
   BlockFields_CardBlock as CardBlock,
@@ -32,9 +32,11 @@ import {
 import { blockDeleteUpdate } from '../../../../../../libs/blockDeleteUpdate'
 import { blockRestoreUpdate } from '../../../../../../libs/useBlockRestoreMutation'
 import { stepBlockCreateUpdate } from '../../../../../../libs/useStepAndCardBlockCreateMutation'
-import { SourceBlocksAndCoordinates } from '../../JourneyFlow'
+import { CreateStepFromStepInput } from '../useCreateStepFromStep'
 
-type CreateStepFromActionInput = SourceBlocksAndCoordinates
+export type CreateStepFromActionInput = CreateStepFromStepInput & {
+  sourceBlock: ActionBlock
+}
 
 export const STEP_BLOCK_DELETE_FROM_ACTION = gql`
   mutation StepBlockDeleteFromAction($id: ID!, $journeyId: ID!, $parentBlockId: ID, $input: BlockUpdateActionInput!, $blockUpdateActionId: ID! ) {
@@ -141,7 +143,6 @@ export function useCreateStepFromAction(): (
       selectedStep == null
     )
       return
-    if (!isActionBlock(sourceBlock)) return
 
     const step: StepBlock & { x: number; y: number } = {
       __typename: 'StepBlock',

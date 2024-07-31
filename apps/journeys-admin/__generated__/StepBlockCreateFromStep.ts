@@ -6,10 +6,10 @@
 import { StepBlockCreateInput, CardBlockCreateInput, StepBlockUpdateInput, ThemeMode, ThemeName } from "./globalTypes";
 
 // ====================================================
-// GraphQL mutation operation: StepBlockCreate
+// GraphQL mutation operation: StepBlockCreateFromStep
 // ====================================================
 
-export interface StepBlockCreate_stepBlockCreate {
+export interface StepBlockCreateFromStep_stepBlockCreate {
   __typename: "StepBlock";
   id: string;
   parentBlockId: string | null;
@@ -36,7 +36,7 @@ export interface StepBlockCreate_stepBlockCreate {
   y: number | null;
 }
 
-export interface StepBlockCreate_cardBlockCreate {
+export interface StepBlockCreateFromStep_cardBlockCreate {
   __typename: "CardBlock";
   id: string;
   parentBlockId: string | null;
@@ -69,7 +69,7 @@ export interface StepBlockCreate_cardBlockCreate {
   fullscreen: boolean;
 }
 
-export interface StepBlockCreate_stepBlockUpdate {
+export interface StepBlockCreateFromStep_stepBlockUpdate {
   __typename: "StepBlock";
   id: string;
   /**
@@ -79,13 +79,13 @@ export interface StepBlockCreate_stepBlockUpdate {
   nextBlockId: string | null;
 }
 
-export interface StepBlockCreate {
-  stepBlockCreate: StepBlockCreate_stepBlockCreate;
-  cardBlockCreate: StepBlockCreate_cardBlockCreate;
-  stepBlockUpdate: StepBlockCreate_stepBlockUpdate;
+export interface StepBlockCreateFromStep {
+  stepBlockCreate: StepBlockCreateFromStep_stepBlockCreate;
+  cardBlockCreate: StepBlockCreateFromStep_cardBlockCreate;
+  stepBlockUpdate: StepBlockCreateFromStep_stepBlockUpdate;
 }
 
-export interface StepBlockCreateVariables {
+export interface StepBlockCreateFromStepVariables {
   stepBlockCreateInput: StepBlockCreateInput;
   cardBlockCreateInput: CardBlockCreateInput;
   stepId: string;

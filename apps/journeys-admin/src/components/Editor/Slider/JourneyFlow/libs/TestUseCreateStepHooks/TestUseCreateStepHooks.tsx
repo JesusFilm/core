@@ -6,12 +6,13 @@ import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { BlockFields_StepBlock as StepBlock } from '@core/journeys/ui/block/__generated__/BlockFields'
 import { ActionBlock } from '@core/journeys/ui/isActionBlock'
+
 import { CommandRedoItem } from '../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../Toolbar/Items/CommandUndoItem'
 import { useCreateStep } from '../useCreateStep'
 import { useCreateStepFromAction } from '../useCreateStepFromAction'
-import { useCreateStepFromButton } from '../useCreateStepFromButton'
 import { useCreateStepFromSocialPreview } from '../useCreateStepFromSocialPreview'
+import { useCreateStepFromStep } from '../useCreateStepFromStep'
 
 interface TestUseCreateStepHooksProps {
   sourceStep?: TreeBlock<StepBlock>
@@ -23,14 +24,14 @@ function CreateStepComponent({
   sourceStep,
   sourceBlock
 }: TestUseCreateStepHooksProps): ReactElement {
-  const createStep = useCreateStep()
+  const createStepFromStep = useCreateStepFromStep()
   const createStepFromAction = useCreateStepFromAction()
   const createStepFromSocialPreview = useCreateStepFromSocialPreview()
-  const createStepFromButton = useCreateStepFromButton()
+  const createStep = useCreateStep()
 
-  async function handleCreateStepClick() {
+  async function handleCreateStepFromStepClick() {
     if (sourceStep == null) return
-    await createStep({
+    await createStepFromStep({
       x: 777,
       y: 777,
       sourceStep: sourceStep
@@ -38,7 +39,7 @@ function CreateStepComponent({
   }
 
   async function handleCreateStepFromActionClick() {
-    if (sourceStep == null && sourceBlock == null) return
+    if (sourceStep == null || sourceBlock == null) return
     await createStepFromAction({
       x: 777,
       y: 777,
@@ -54,8 +55,8 @@ function CreateStepComponent({
     })
   }
 
-  async function handleCreateStepFromButtonClick() {
-    await createStepFromButton({
+  async function handleCreateStepClick() {
+    await createStep({
       x: -200,
       y: 38
     })
@@ -63,7 +64,10 @@ function CreateStepComponent({
 
   return (
     <>
-      <div data-testId="useCreateStep" onClick={handleCreateStepClick} />
+      <div
+        data-testId="useCreateStepFromStep"
+        onClick={handleCreateStepFromStepClick}
+      />
       <div
         data-testId="useCreateStepFromAction"
         onClick={handleCreateStepFromActionClick}
@@ -72,10 +76,7 @@ function CreateStepComponent({
         data-testId="useCreateStepFromSocialPreview"
         onClick={handleCreateStepFromSocialPreviewClick}
       />
-      <div
-        data-testId="useCreateStepFromButton"
-        onClick={handleCreateStepFromButtonClick}
-      />
+      <div data-testId="useCreateStep" onClick={handleCreateStepClick} />
     </>
   )
 }

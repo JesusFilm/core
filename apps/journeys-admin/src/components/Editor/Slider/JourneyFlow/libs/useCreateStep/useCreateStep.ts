@@ -1,98 +1,21 @@
-import { gql, useMutation } from '@apollo/client'
 import { v4 as uuidv4 } from 'uuid'
 
-import { CARD_FIELDS } from '@core/journeys/ui/Card/cardFields'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { STEP_FIELDS } from '@core/journeys/ui/Step/stepFields'
-import { BLOCK_FIELDS } from '@core/journeys/ui/block/blockFields'
-
 import {
   BlockFields_CardBlock as CardBlock,
   BlockFields_StepBlock as StepBlock
 } from '../../../../../../../__generated__/BlockFields'
 import {
-  StepBlockCreate,
-  StepBlockCreateVariables
-} from '../../../../../../../__generated__/StepBlockCreate'
-import {
-  StepBlockDelete,
-  StepBlockDeleteVariables
-} from '../../../../../../../__generated__/StepBlockDelete'
-import {
-  StepBlockRestore,
-  StepBlockRestoreVariables
-} from '../../../../../../../__generated__/StepBlockRestore'
-import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../__generated__/globalTypes'
-import { blockDeleteUpdate } from '../../../../../../libs/blockDeleteUpdate'
-import { blockRestoreUpdate } from '../../../../../../libs/useBlockRestoreMutation'
-import { stepBlockCreateUpdate } from '../../../../../../libs/useStepAndCardBlockCreateMutation'
-import { SourceBlocksAndCoordinates } from '../../JourneyFlow'
+import { useBlockDeleteMutation } from '../../../../../../libs/useBlockDeleteMutation'
+import { useBlockRestoreMutation } from '../../../../../../libs/useBlockRestoreMutation'
+import { useStepAndCardBlockCreateMutation } from '../../../../../../libs/useStepAndCardBlockCreateMutation'
 
-type CreateStepInput = SourceBlocksAndCoordinates
-
-export const STEP_BLOCK_DELETE = gql`
-  mutation StepBlockDelete($id: ID!, $journeyId: ID!, $input: StepBlockUpdateInput!, $stepBlockUpdateId: ID! ) {
-    blockDelete(id: $id, journeyId: $journeyId) {
-      id
-      parentOrder
-      ... on StepBlock {
-        nextBlockId
-      }
-    }
-    stepBlockUpdate(id: $stepBlockUpdateId, journeyId: $journeyId, input: $input) {
-      id
-      nextBlockId
-    }
-  }
-`
-
-export const STEP_BLOCK_RESTORE = gql`
-${BLOCK_FIELDS}
-mutation StepBlockRestore($id: ID!, $journeyId: ID!, $stepBlockUpdateId: ID!, $input: StepBlockUpdateInput!) {
-  blockRestore(id: $id) {
-    id
-    ...BlockFields
-    ... on StepBlock {
-      id
-      x
-      y
-    }
-  }
-  stepBlockUpdate(id: $stepBlockUpdateId, journeyId: $journeyId, input: $input) {
-      id
-      nextBlockId
-    }
-}`
-
-export const STEP_BLOCK_CREATE = gql`
-  ${STEP_FIELDS}
-  ${CARD_FIELDS}
-  mutation StepBlockCreate(
-    $stepBlockCreateInput: StepBlockCreateInput!
-    $cardBlockCreateInput: CardBlockCreateInput!
-    $stepId: ID!,
-    $journeyId: ID!,
-    $stepBlockUpdateInput: StepBlockUpdateInput!
-  ) {
-    stepBlockCreate(input: $stepBlockCreateInput) {
-      ...StepFields
-      x
-      y
-    }
-    cardBlockCreate(input: $cardBlockCreateInput) {
-      ...CardFields
-    },
-    stepBlockUpdate(id: $stepId, journeyId: $journeyId, input: $stepBlockUpdateInput) {
-      id
-      nextBlockId
-    }
-  }
-`
+export type CreateStepInput = { x: number; y: number }
 
 export function useCreateStep(): (input: CreateStepInput) => Promise<void> {
   const { journey } = useJourney()
@@ -101,28 +24,13 @@ export function useCreateStep(): (input: CreateStepInput) => Promise<void> {
     dispatch
   } = useEditor()
   const { add } = useCommand()
+  const [blockDelete] = useBlockDeleteMutation()
+  const [blockRestore] = useBlockRestoreMutation()
+  const [stepAndCardBlockCreate] = useStepAndCardBlockCreateMutation()
 
-  const [stepBlockDelete] = useMutation<
-    StepBlockDelete,
-    StepBlockDeleteVariables
-  >(STEP_BLOCK_DELETE)
+  return async function createStep({ x, y }: CreateStepInput) {
+    if (journey == null) return
 
-  const [stepBlockRestore] = useMutation<
-    StepBlockRestore,
-    StepBlockRestoreVariables
-  >(STEP_BLOCK_RESTORE)
-
-  const [stepBlockCreate] = useMutation<
-    StepBlockCreate,
-    StepBlockCreateVariables
-  >(STEP_BLOCK_CREATE)
-
-  return async function createStep({
-    x,
-    y,
-    sourceStep
-  }: CreateStepInput): Promise<void> {
-    if (journey == null || selectedStep == null || sourceStep == null) return
     const step: StepBlock & { x: number; y: number } = {
       __typename: 'StepBlock',
       locked: false,
@@ -144,7 +52,6 @@ export function useCreateStep(): (input: CreateStepInput) => Promise<void> {
       backgroundColor: null,
       parentOrder: 0
     }
-
     await add({
       parameters: {
         execute: {},
@@ -152,11 +59,11 @@ export function useCreateStep(): (input: CreateStepInput) => Promise<void> {
       },
       async execute() {
         dispatch({
-          type: 'SetSelectedStepByIdAction',
-          selectedStepId: step.id
+          type: 'SetEditorFocusAction',
+          selectedStepId: step.id,
+          activeSlide: ActiveSlide.JourneyFlow
         })
-
-        void stepBlockCreate({
+        void stepAndCardBlockCreate({
           variables: {
             stepBlockCreateInput: {
               id: step.id,
@@ -170,84 +77,37 @@ export function useCreateStep(): (input: CreateStepInput) => Promise<void> {
               parentBlockId: step.id,
               themeMode: ThemeMode.dark,
               themeName: ThemeName.base
-            },
-            stepId: sourceStep.id,
-            journeyId: journey.id,
-            stepBlockUpdateInput: {
-              nextBlockId: step.id
             }
           },
           optimisticResponse: {
             stepBlockCreate: step,
-            cardBlockCreate: card,
-            stepBlockUpdate: {
-              id: sourceStep.id,
-              __typename: 'StepBlock',
-              nextBlockId: step.id
-            }
-          },
-          update(cache, { data }) {
-            stepBlockCreateUpdate(cache, data, journey?.id)
+            cardBlockCreate: card
           }
         })
       },
       async undo({ stepBeforeDelete }) {
+        if (stepBeforeDelete == null) return
         dispatch({
-          type: 'SetSelectedStepByIdAction',
-          selectedStepId: stepBeforeDelete.id
+          type: 'SetEditorFocusAction',
+          selectedStepId: stepBeforeDelete.id,
+          activeSlide: ActiveSlide.JourneyFlow
         })
-
-        void stepBlockDelete({
-          variables: {
-            id: step.id,
-            journeyId: journey.id,
-            stepBlockUpdateId: sourceStep.id,
-            input: {
-              nextBlockId: sourceStep?.nextBlockId
-            }
-          },
+        void blockDelete(step, {
           optimisticResponse: {
-            blockDelete: [step],
-            stepBlockUpdate: {
-              id: sourceStep.id,
-              __typename: 'StepBlock',
-              nextBlockId: sourceStep.nextBlockId
-            }
-          },
-          update(cache, { data }) {
-            blockDeleteUpdate(step, data?.blockDelete, cache, journey.id)
+            blockDelete: [step]
           }
         })
       },
       async redo() {
         dispatch({
-          type: 'SetSelectedStepByIdAction',
-          selectedStepId: step.id
+          type: 'SetEditorFocusAction',
+          selectedStepId: step.id,
+          activeSlide: ActiveSlide.JourneyFlow
         })
-        void stepBlockRestore({
-          variables: {
-            id: step.id,
-            stepBlockUpdateId: sourceStep.id,
-            journeyId: journey.id,
-            input: {
-              nextBlockId: step.id
-            }
-          },
+        void blockRestore({
+          variables: { id: step.id },
           optimisticResponse: {
-            blockRestore: [step, card],
-            stepBlockUpdate: {
-              id: sourceStep.id,
-              __typename: 'StepBlock',
-              nextBlockId: step.id
-            }
-          },
-          update(cache, { data }) {
-            blockRestoreUpdate(
-              { id: step.id },
-              data?.blockRestore,
-              cache,
-              journey.id
-            )
+            blockRestore: [step, card]
           }
         })
       }

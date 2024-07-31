@@ -33,9 +33,9 @@ import { blockDeleteUpdate } from '../../../../../../libs/blockDeleteUpdate'
 import { useBlockDeleteMutation } from '../../../../../../libs/useBlockDeleteMutation'
 import { blockRestoreUpdate } from '../../../../../../libs/useBlockRestoreMutation'
 import { stepBlockCreateUpdate } from '../../../../../../libs/useStepAndCardBlockCreateMutation'
-import { SourceBlocksAndCoordinates } from '../../JourneyFlow'
+import { CreateStepInput } from '../useCreateStep/useCreateStep'
 
-type CreateStepFromSocialPreviewInput = SourceBlocksAndCoordinates
+type CreateStepFromSocialPreviewInput = CreateStepInput
 
 export const STEP_BLOCK_CREATE_FROM_SOCIAL_PREVIEW = gql`
   ${STEP_FIELDS}
