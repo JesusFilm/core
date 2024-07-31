@@ -1,9 +1,11 @@
+import { useState } from 'react'
+
 import { useApolloClient } from '@apollo/client'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
-import { useState } from 'react'
+
 import { BlockFields_CardBlock as CardBlock } from '../../../../../__generated__/BlockFields'
 import { blockDeleteUpdate } from '../../../../libs/blockDeleteUpdate'
 import { useBlockDeleteMutation } from '../../../../libs/useBlockDeleteMutation'
