@@ -34,6 +34,7 @@ describe('useCreateStepFromAction', () => {
         <TestUseCreateStepHooks
           sourceStep={mockStepBlock}
           sourceBlock={mockOriginButtonBlock}
+          selectedStep={mockStepBlock}
         />
       </MockedProvider>
     )

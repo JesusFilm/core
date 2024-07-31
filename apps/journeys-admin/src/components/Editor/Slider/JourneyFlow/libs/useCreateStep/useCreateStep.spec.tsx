@@ -47,7 +47,10 @@ describe('useCreateStep', () => {
         mocks={[{ ...mockStepBlockCreate, result }]}
         cache={cache}
       >
-        <TestUseCreateStepHooks sourceStep={mockStepBlock} />
+        <TestUseCreateStepHooks
+          sourceStep={mockStepBlock}
+          selectedStep={mockStepBlock}
+        />
       </MockedProvider>
     )
 
