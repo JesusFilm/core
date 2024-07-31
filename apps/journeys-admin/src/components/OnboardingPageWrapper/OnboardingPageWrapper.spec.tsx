@@ -14,7 +14,7 @@ jest.mock('next-firebase-auth', () => ({
 
 describe('OnboardingPageWrapper', () => {
   it('should render OnboardingPageWrapper', () => {
-    const { getByRole, getByText } = render(
+    const { getByRole, getByText, getByTestId } = render(
       <MockedProvider>
         <OnboardingPageWrapper
           title="Custom Title"
@@ -26,6 +26,7 @@ describe('OnboardingPageWrapper', () => {
     )
     expect(getByRole('heading', { name: 'Custom Title' })).toBeInTheDocument()
     expect(getByText('Child')).toBeInTheDocument()
+    expect(getByTestId('HelpScoutBeaconIconButton')).toBeInTheDocument()
   })
 
   it('should show onboarding utilities', async () => {

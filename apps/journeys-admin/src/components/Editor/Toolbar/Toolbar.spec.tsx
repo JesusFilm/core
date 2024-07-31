@@ -66,6 +66,11 @@ describe('Toolbar', () => {
     expect(getByAltText('Next Steps')).toBeInTheDocument() // NextSteps logo
   })
 
+  it('should render help scout beacon', () => {
+    const { getByTestId } = render(toolbar(defaultJourney))
+    expect(getByTestId('HelpScoutBeaconIconButton')).toBeInTheDocument()
+  })
+
   it('should render title & description on Toolbar', () => {
     const { getByText } = render(toolbar(defaultJourney))
     expect(getByText('My Awesome Journey Title')).toBeInTheDocument()

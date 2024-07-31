@@ -45,6 +45,7 @@ export function HelpScoutBeacon({
       <BeaconInit />
       {variant === 'iconButton' && (
         <IconButton
+          data-testid="HelpScoutBeaconIconButton"
           size="large"
           edge="start"
           color="inherit"
@@ -64,7 +65,10 @@ export function HelpScoutBeacon({
         </IconButton>
       )}
       {variant === 'menuItem' && (
-        <MenuItem onClick={handleBeaconClick}>
+        <MenuItem
+          data-testid="HelpScoutBeaconMenuItem"
+          onClick={handleBeaconClick}
+        >
           <ListItemIcon>
             <HelpCircleContained />
           </ListItemIcon>

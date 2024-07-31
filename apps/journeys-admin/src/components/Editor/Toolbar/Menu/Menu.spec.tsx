@@ -339,6 +339,7 @@ describe('Toolbar Menu', () => {
       expect(getByRole('menuitem', { name: 'Share' })).toBeInTheDocument()
       expect(getByTestId('menu-divider')).toBeInTheDocument()
       expect(getByRole('menuitem', { name: 'Copy Link' })).toBeInTheDocument()
+      expect(getByRole('menuitem', { name: 'Help' })).toBeInTheDocument()
     })
   })
 })
