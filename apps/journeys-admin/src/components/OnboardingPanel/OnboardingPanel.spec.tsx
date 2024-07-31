@@ -20,6 +20,15 @@ import { getOnboardingJourneysMock, getTeamsMock } from './data'
 
 import { OnboardingPanel } from '.'
 
+jest.mock('next-firebase-auth', () => ({
+  __esModule: true,
+  useUser: jest.fn(() => ({
+    id: 'userId',
+    name: 'userName',
+    email: 'user@example.com'
+  }))
+}))
+
 jest.mock('next/router', () => ({
   __esModule: true,
   useRouter: jest.fn()

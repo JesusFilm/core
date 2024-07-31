@@ -16,6 +16,15 @@ import { GET_ROLE } from './Menu'
 
 import { Menu } from '.'
 
+jest.mock('next-firebase-auth', () => ({
+  __esModule: true,
+  useUser: jest.fn(() => ({
+    id: 'userId',
+    name: 'userName',
+    email: 'user@example.com'
+  }))
+}))
+
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: jest.fn()
@@ -282,6 +291,13 @@ describe('Toolbar Menu', () => {
     )
 
     it('should render mobile menu items', () => {
+      mockedUseRouter.mockReturnValue({
+        events: {
+          on: jest.fn(),
+          off: jest.fn()
+        }
+      } as unknown as NextRouter)
+
       const selectedBlock: TreeBlock<StepBlock> = {
         __typename: 'StepBlock',
         id: 'stepId',

@@ -19,6 +19,15 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: () => true
 }))
 
+jest.mock('next-firebase-auth', () => ({
+  __esModule: true,
+  useUser: jest.fn(() => ({
+    id: 'userId',
+    name: 'userName',
+    email: 'user@example.com'
+  }))
+}))
+
 describe('TemplateSettingsDialog', () => {
   const onClose = jest.fn()
 

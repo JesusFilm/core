@@ -17,6 +17,15 @@ import { ThemeProvider } from '../../../../../../../../ThemeProvider'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 import { VIDEO_BLOCK_UPDATE, VideoOptions } from './VideoOptions'
 
+jest.mock('next-firebase-auth', () => ({
+  __esModule: true,
+  useUser: jest.fn(() => ({
+    id: 'userId',
+    name: 'userName',
+    email: 'user@example.com'
+  }))
+}))
+
 const video: TreeBlock<VideoBlock> = {
   id: 'video1.id',
   __typename: 'VideoBlock',

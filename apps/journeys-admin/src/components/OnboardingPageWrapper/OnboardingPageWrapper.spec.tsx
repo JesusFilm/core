@@ -3,6 +3,15 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { OnboardingPageWrapper } from './OnboardingPageWrapper'
 
+jest.mock('next-firebase-auth', () => ({
+  __esModule: true,
+  useUser: jest.fn(() => ({
+    id: 'userId',
+    name: 'userName',
+    email: 'user@example.com'
+  }))
+}))
+
 describe('OnboardingPageWrapper', () => {
   it('should render OnboardingPageWrapper', () => {
     const { getByRole, getByText } = render(
