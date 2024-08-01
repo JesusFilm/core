@@ -151,9 +151,7 @@ export class BigQueryConsumer extends WorkerHost {
       }
     }
 
-    console.log('beginning processing children')
     await this.importerVideosChildrenService.process()
-    console.log('finished processing children')
 
     // cleanup for future runs
     this.importerVideosService.usedSlugs = undefined
