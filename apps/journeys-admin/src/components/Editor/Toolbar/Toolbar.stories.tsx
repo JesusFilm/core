@@ -5,6 +5,7 @@ import { ComponentProps } from 'react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../__generated__/BlockFields'
@@ -31,30 +32,36 @@ const image: ImageBlock = {
   blurhash: ''
 }
 
+type Flag = 'commands'
+
 const Template: StoryObj<
-  ComponentProps<typeof Toolbar> & { primaryImageBlock: ImageBlock }
+  ComponentProps<typeof Toolbar> & { primaryImageBlock: ImageBlock } & {
+    flags: Record<Flag, boolean>
+  }
 > = {
-  render: ({ primaryImageBlock }) => {
+  render: ({ primaryImageBlock, flags }) => {
     return (
       <MockedProvider>
-        <JourneyProvider
-          value={{
-            journey: {
-              title: 'My awesome journey',
-              description: 'My awesome journey description',
-              status: JourneyStatus.published,
-              primaryImageBlock,
-              tags: []
-            } as unknown as Journey,
-            variant: 'admin'
-          }}
-        >
-          <EditorProvider>
-            <Stack direction="row">
-              <Toolbar />
-            </Stack>
-          </EditorProvider>
-        </JourneyProvider>
+        <FlagsProvider flags={flags}>
+          <JourneyProvider
+            value={{
+              journey: {
+                title: 'My awesome journey',
+                description: 'My awesome journey description',
+                status: JourneyStatus.published,
+                primaryImageBlock,
+                tags: []
+              } as unknown as Journey,
+              variant: 'admin'
+            }}
+          >
+            <EditorProvider>
+              <Stack direction="row">
+                <Toolbar />
+              </Stack>
+            </EditorProvider>
+          </JourneyProvider>
+        </FlagsProvider>
       </MockedProvider>
     )
   }
@@ -71,4 +78,12 @@ export const WithJourneyImage = {
   }
 }
 
+export const WithFlags = {
+  ...Template,
+  args: {
+    flags: {
+      commands: true
+    }
+  }
+}
 export default Demo
