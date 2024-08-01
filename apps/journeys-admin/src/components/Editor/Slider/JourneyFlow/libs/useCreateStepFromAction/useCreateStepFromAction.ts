@@ -22,6 +22,10 @@ import {
   StepBlockDeleteFromActionVariables
 } from '../../../../../../../__generated__/StepBlockDeleteFromAction'
 import {
+  StepBlockDeleteFromActionWhereNull,
+  StepBlockDeleteFromActionWhereNullVariables
+} from '../../../../../../../__generated__/StepBlockDeleteFromActionWhereNull'
+import {
   StepBlockRestoreFromAction,
   StepBlockRestoreFromActionVariables
 } from '../../../../../../../__generated__/StepBlockRestoreFromAction'
@@ -53,6 +57,23 @@ export const STEP_BLOCK_DELETE_FROM_ACTION = gql`
             id
         }
         gtmEventName
+    }
+  }
+`
+
+export const STEP_BLOCK_DELETE_FROM_ACTION_WHERE_NULL = gql`
+  mutation StepBlockDeleteFromActionWhereNull($id: ID!, $journeyId: ID!, $parentBlockId: ID, $blockDeleteActionId: ID! ) {
+    blockDelete(id: $id, journeyId: $journeyId, parentBlockId: $parentBlockId) {
+      id
+      parentOrder
+      ... on StepBlock {
+        nextBlockId
+      }
+    }
+    blockDeleteAction(id: $blockDeleteActionId) {
+      id
+      parentBlockId
+      parentOrder
     }
   }
 `
@@ -119,6 +140,11 @@ export function useCreateStepFromAction(): (
     StepBlockDeleteFromAction,
     StepBlockDeleteFromActionVariables
   >(STEP_BLOCK_DELETE_FROM_ACTION)
+
+  const [stepBlockDeleteFromActionWhereNull] = useMutation<
+    StepBlockDeleteFromActionWhereNull,
+    StepBlockDeleteFromActionWhereNullVariables
+  >(STEP_BLOCK_DELETE_FROM_ACTION_WHERE_NULL)
 
   const [stepBlockCreateFromAction] = useMutation<
     StepBlockCreateFromAction,
@@ -222,63 +248,82 @@ export function useCreateStepFromAction(): (
         })
       },
       async undo({ stepBeforeDelete }) {
-        if (sourceBlock.action == null) return
         dispatch({
           type: 'SetEditorFocusAction',
           selectedStepId: stepBeforeDelete.id,
           activeSlide: ActiveSlide.JourneyFlow
         })
-        void stepBlockDeleteFromAction({
-          variables: {
-            id: step.id,
-            journeyId: journey.id,
-            blockUpdateActionId: sourceBlock.id,
-            input: {
-              gtmEventName: sourceBlock?.action?.gtmEventName ?? null,
-              email:
-                'email' in sourceBlock.action
-                  ? sourceBlock?.action?.email
-                  : null,
-              url:
-                'url' in sourceBlock.action ? sourceBlock?.action?.url : null,
-              blockId:
-                'blockId' in sourceBlock.action
-                  ? sourceBlock?.action?.blockId
-                  : null,
-              target:
-                'target' in sourceBlock.action
-                  ? (sourceBlock?.action?.target as string)
-                  : null
-            }
-          },
-          optimisticResponse: {
-            blockDelete: [step],
-            blockUpdateAction: {
-              parentBlockId: sourceBlock.id,
-              __typename: sourceBlock.action.__typename,
-              parentBlock: {
-                ...sourceBlock
-              },
-              gtmEventName: sourceBlock?.action?.gtmEventName ?? null
-            }
-          },
-          update(cache, { data }, { variables }) {
-            blockDeleteUpdate(step, data?.blockDelete, cache, journey.id)
-            if (data?.blockUpdateAction == null) return
-            cache.modify({
-              id: cache.identify({
-                __typename: sourceBlock.__typename,
-                id: sourceBlock.id
-              }),
-              fields: {
-                action: () => ({
-                  ...data.blockUpdateAction,
-                  ...variables?.input
-                })
+
+        if (sourceBlock.action != null) {
+          void stepBlockDeleteFromAction({
+            variables: {
+              id: step.id,
+              journeyId: journey.id,
+              blockUpdateActionId: sourceBlock.id,
+              input: {
+                gtmEventName: sourceBlock?.action?.gtmEventName ?? null,
+                email:
+                  'email' in sourceBlock.action
+                    ? sourceBlock?.action?.email
+                    : null,
+                url:
+                  'url' in sourceBlock.action ? sourceBlock?.action?.url : null,
+                blockId:
+                  'blockId' in sourceBlock.action
+                    ? sourceBlock?.action?.blockId
+                    : null,
+                target:
+                  'target' in sourceBlock.action
+                    ? (sourceBlock?.action?.target as string)
+                    : null
               }
-            })
-          }
-        })
+            },
+            optimisticResponse: {
+              blockDelete: [step],
+              blockUpdateAction: {
+                parentBlockId: sourceBlock.id,
+                __typename: sourceBlock.action.__typename,
+                parentBlock: {
+                  ...sourceBlock
+                },
+                gtmEventName: sourceBlock?.action?.gtmEventName ?? null
+              }
+            },
+            update(cache, { data }, { variables }) {
+              blockDeleteUpdate(step, data?.blockDelete, cache, journey.id)
+              if (data?.blockUpdateAction == null) return
+              cache.modify({
+                id: cache.identify({
+                  __typename: sourceBlock.__typename,
+                  id: sourceBlock.id
+                }),
+                fields: {
+                  action: () => ({
+                    ...data.blockUpdateAction,
+                    ...variables?.input
+                  })
+                }
+              })
+            }
+          })
+        } else {
+          // void stepBlockDeleteFromActionWhereNull({
+          //   variables: {
+          //     id: step.id,
+          //     journeyId: journey.id,
+          //     blockDeleteActionId: sourceBlock.id
+          //   },
+          //   optimisticResponse: {
+          //     blockDelete: [step],
+          //     blockDeleteAction: {
+          //       id: sourceBlock.id
+          //     }
+          //   },
+          //   update(cache, { data }) {
+          //     console.log(data)
+          //   }
+          // })
+        }
       },
       async redo() {
         dispatch({
