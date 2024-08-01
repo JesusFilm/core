@@ -32,7 +32,10 @@ export function AnalyticsDataPoint({
         },
         tooltip: {
           sx: {
-            py: 0
+            py: 2,
+            maxWidth: '185px',
+            lineHeight: '12px',
+            textAlign: 'center'
           }
         }
       }}

@@ -1,4 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import ArrowBackRounded from '@mui/icons-material/ArrowBackRounded'
 import ArrowForwardRounded from '@mui/icons-material/ArrowForwardRounded'
 import BeenhereRounded from '@mui/icons-material/BeenhereRounded'
@@ -27,9 +29,6 @@ import Typography from '@mui/material/Typography'
 import { init, t } from 'i18next'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
-
-import { useEditor } from '@core/journeys/ui/EditorProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/BlockFields'
 import {
@@ -188,6 +187,7 @@ export function Icon({ id }: IconProps): ReactElement {
           selectedBlock,
           selectedStep: state.selectedStep
         })
+
         await iconBlockNameUpdate({
           variables: {
             id,

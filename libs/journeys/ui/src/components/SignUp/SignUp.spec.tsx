@@ -1,5 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { usePlausible } from 'next-plausible'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
@@ -242,7 +242,7 @@ describe('SignUp', () => {
   })
 
   it('should be in a loading state when waiting for response', async () => {
-    const { getByRole, getByLabelText } = render(
+    const { getByTestId, getByLabelText } = render(
       <ApolloLoadingProvider>
         <SnackbarProvider>
           <SignUp {...block} uuid={() => 'uuid'} />
@@ -251,7 +251,7 @@ describe('SignUp', () => {
     )
     const name = getByLabelText('Name')
     const email = getByLabelText('Email')
-    const submit = getByRole('button', { name: 'Submit' })
+    const submit = getByTestId('submit')
 
     fireEvent.change(name, { target: { value: 'Anon' } })
     fireEvent.change(email, { target: { value: '123abc@gmail.com' } })
@@ -497,5 +497,57 @@ describe('SignUp', () => {
     const email = getAllByRole('textbox')[1]
     fireEvent.click(email)
     expect(email.matches(':focus')).not.toBeTruthy()
+  })
+
+  it('should show default submit text if submit label is empty', () => {
+    const emptyLabelBLockMock = {
+      ...block,
+      submitLabel: ''
+    }
+
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <SignUp {...emptyLabelBLockMock} uuid={() => 'uuid'} />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByTestId('submit')).toHaveTextContent('Submit')
+  })
+
+  it('should show default submit text if submit label is null', () => {
+    const input = <h1>Submit</h1>
+    const emptyLabelBLockMock = {
+      ...block,
+      editableSubmitLabel: input
+    }
+
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <SignUp {...emptyLabelBLockMock} uuid={() => 'uuid'} />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByTestId('submit')).toHaveTextContent('Submit')
+  })
+
+  it('should show submit label text', () => {
+    const emptyLabelBLockMock = {
+      ...block,
+      submitLabel: 'Hello'
+    }
+
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <SignUp {...emptyLabelBLockMock} uuid={() => 'uuid'} />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByTestId('submit')).toHaveTextContent('Hello')
   })
 })

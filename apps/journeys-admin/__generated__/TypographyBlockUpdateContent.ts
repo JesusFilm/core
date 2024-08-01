@@ -3,8 +3,6 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { TypographyBlockUpdateInput } from "./globalTypes";
-
 // ====================================================
 // GraphQL mutation operation: TypographyBlockUpdateContent
 // ====================================================
@@ -21,6 +19,5 @@ export interface TypographyBlockUpdateContent {
 
 export interface TypographyBlockUpdateContentVariables {
   id: string;
-  journeyId: string;
-  input: TypographyBlockUpdateInput;
+  content: string;
 }

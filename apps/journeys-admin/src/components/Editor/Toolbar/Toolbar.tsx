@@ -1,36 +1,58 @@
+import dynamic from 'next/dynamic'
+import Image from 'next/image'
+import NextLink from 'next/link'
+import { useRouter } from 'next/router'
+import { ReactElement, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
+import { ActiveContent } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
+import ThumbsUpIcon from '@core/shared/ui/icons/ThumbsUp'
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
-import Image from 'next/image'
-import NextLink from 'next/link'
-import { ReactElement } from 'react'
-
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import ThumbsUpIcon from '@core/shared/ui/icons/ThumbsUp'
 
 import logo from '../../../../public/taskbar-icon.svg'
 import { EDIT_TOOLBAR_HEIGHT } from '../constants'
+import { CommandRedoItem } from './Items/CommandRedoItem'
+import { CommandUndoItem } from './Items/CommandUndoItem'
 
-import { ActiveContent } from '@core/journeys/ui/EditorProvider'
-import Button from '@mui/material/Button'
-import { useTranslation } from 'react-i18next'
 import { Items } from './Items'
 import { Menu } from './Menu'
 
+const TitleDescriptionDialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/Toolbar/TitleDescriptionDialog" */ './TitleDescriptionDialog/TitleDescriptionDialog'
+    ).then((mod) => mod.TitleDescriptionDialog),
+  { ssr: false }
+)
+
 export function Toolbar(): ReactElement {
+  const router = useRouter()
+  const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
-  const { t } = useTranslation('journeys-admin')
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const { dispatch } = useEditor()
+  const { commands } = useFlags()
 
-  const {
-    state: { activeSlide },
-    dispatch
-  } = useEditor()
+  function setRoute(param: string): void {
+    void router.push({ query: { ...router.query, param } }, undefined, {
+      shallow: true
+    })
+    router.events.on('routeChangeComplete', () => {
+      setBeaconPageViewed(param)
+    })
+  }
 
-  function handleSelect(): void {
+  function handleSocialImageClick(): void {
     dispatch({
       type: 'SetActiveSlideAction',
       activeSlide: ActiveSlide.Content
@@ -39,6 +61,15 @@ export function Toolbar(): ReactElement {
       type: 'SetActiveContentAction',
       activeContent: ActiveContent.Social
     })
+  }
+
+  function handleDialogOpen(): void {
+    setRoute('title')
+    setDialogOpen(true)
+  }
+
+  function handleDialogClose(): void {
+    setDialogOpen(false)
   }
 
   return (
@@ -73,6 +104,12 @@ export function Toolbar(): ReactElement {
       </NextLink>
       {journey != null && (
         <>
+          {commands && (
+            <>
+              <CommandUndoItem variant="icon-button" />
+              <CommandRedoItem variant="icon-button" />
+            </>
+          )}
           <Tooltip
             title={t('Social Image')}
             arrow
@@ -88,7 +125,7 @@ export function Toolbar(): ReactElement {
             }}
           >
             <Button
-              onClick={handleSelect}
+              onClick={handleSocialImageClick}
               data-testid="ToolbarSocialImage"
               style={{ backgroundColor: 'transparent' }}
               disableRipple
@@ -120,27 +157,78 @@ export function Toolbar(): ReactElement {
             </Button>
           </Tooltip>
 
-          <Stack flexGrow={1} sx={{ minWidth: 0 }}>
-            <Typography
-              variant="subtitle1"
+          <Stack flexGrow={1} flexShrink={1} sx={{ minWidth: 0 }}>
+            <Box
+              flexShrink={1}
               sx={{
+                display: 'inline-flex',
                 overflow: 'hidden',
                 whiteSpace: 'nowrap',
                 textOverflow: 'ellipsis'
               }}
             >
-              {journey.title}
-            </Typography>
-            <Typography
-              variant="caption"
-              sx={{
-                overflow: 'hidden',
-                whiteSpace: 'nowrap',
-                textOverflow: 'ellipsis'
-              }}
-            >
-              {journey.description}
-            </Typography>
+              <Tooltip
+                title="Click to edit"
+                placement="bottom"
+                arrow
+                PopperProps={{
+                  modifiers: [
+                    {
+                      name: 'offset',
+                      options: {
+                        offset: journey.description === '' ? [0, 2] : [0, -10.3]
+                      }
+                    }
+                  ]
+                }}
+              >
+                <Button
+                  variant="text"
+                  onClick={handleDialogOpen}
+                  color="secondary"
+                  sx={{
+                    maxWidth: 'auto',
+                    display: 'block',
+                    textAlign: 'left',
+                    overflow: 'hidden',
+                    whiteSpace: 'nowrap',
+                    textOverflow: 'ellipsis',
+                    borderRadius: '8px',
+                    flexShrink: 1
+                  }}
+                >
+                  <Typography
+                    variant="subtitle1"
+                    sx={{
+                      overflow: 'hidden',
+                      whiteSpace: 'nowrap',
+                      textOverflow: 'ellipsis',
+                      flexShrink: 1
+                    }}
+                  >
+                    {journey.title}
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      maxWidth: 'auto',
+                      overflow: 'hidden',
+                      whiteSpace: 'nowrap',
+                      textOverflow: 'ellipsis',
+                      flexShrink: 1,
+                      fontWeight: 'normal'
+                    }}
+                  >
+                    {journey.description}
+                  </Typography>
+                </Button>
+              </Tooltip>
+            </Box>
+
+            <TitleDescriptionDialog
+              open={dialogOpen}
+              onClose={handleDialogClose}
+            />
           </Stack>
           <Items />
         </>

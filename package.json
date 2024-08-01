@@ -84,6 +84,7 @@
     "@types/mailchimp__mailchimp_marketing": "^3.0.19",
     "adal-node": "^0.2.3",
     "algoliasearch": "^4.22.0",
+    "apollo-link-debounce": "^3.0.0",
     "aws-sdk": "^2.1557.0",
     "axios": "^1.6.8",
     "blurhash": "^2.0.5",

@@ -198,7 +198,7 @@ export const reducer = (
     case 'SetActiveSlideAction':
       return {
         ...state,
-        activeSlide: action.activeSlide
+        activeSlide: state.showAnalytics === true ? 0 : action.activeSlide
       }
     case 'SetSelectedAttributeIdAction':
       return {
@@ -402,7 +402,34 @@ export function EditorProvider({
           selectedBlock: initialState.selectedBlock
         })
     }
-  }, [initialState?.selectedStep, initialState?.selectedBlock])
+
+    if (initialState?.activeCanvasDetailsDrawer != null) {
+      dispatch({
+        type: 'SetActiveCanvasDetailsDrawerAction',
+        activeCanvasDetailsDrawer: initialState.activeCanvasDetailsDrawer
+      })
+    }
+
+    if (initialState?.activeContent != null) {
+      dispatch({
+        type: 'SetActiveContentAction',
+        activeContent: initialState.activeContent
+      })
+    }
+
+    if (initialState?.activeSlide != null) {
+      dispatch({
+        type: 'SetActiveSlideAction',
+        activeSlide: initialState.activeSlide
+      })
+    }
+  }, [
+    initialState?.selectedStep,
+    initialState?.selectedBlock,
+    initialState?.activeCanvasDetailsDrawer,
+    initialState?.activeContent,
+    initialState?.activeSlide
+  ])
 
   return (
     <EditorContext.Provider value={{ state, dispatch }}>
