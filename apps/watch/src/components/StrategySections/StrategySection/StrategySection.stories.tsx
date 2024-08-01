@@ -7,6 +7,9 @@ import algoliasearch from 'algoliasearch'
 import { ComponentProps } from 'react'
 import { watchConfig } from '../../../libs/storybook'
 import { StrategySection } from './StrategySection'
+import { parameters } from '.storybook/preview'
+import { getStrategyCardDataHandlers } from './StrategySection.handlers'
+import { SWRConfig } from 'swr'
 
 const StrategySectionStory: Meta<typeof StrategySection> = {
   ...watchConfig,
@@ -14,27 +17,16 @@ const StrategySectionStory: Meta<typeof StrategySection> = {
   title: 'Watch/StrategySections/StrategySection'
 }
 
-const searchClient = algoliasearch(
-  process.env.NEXT_PUBLIC_ALGOLIA_APP_ID ?? '',
-  process.env.NEXT_PUBLIC_ALGOLIA_API_KEY ?? ''
-)
-
 type Story = StoryObj<ComponentProps<typeof StrategySection>>
 
 const Template: Story = {
   render: (args) => (
-    // hello
-    //   <InstantSearch
-    //   searchClient={searchClient}
-    //   indexName="wp_dev_posts_mission-trip"
-    //   >
     <InstantSearchTestWrapper indexName="wp_dev_posts_mission-trip">
       <Box>
         <SearchBar />
       </Box>
       <StrategySection {...args} />
     </InstantSearchTestWrapper>
-    // </InstantSearch>
   )
 }
 
@@ -43,6 +35,11 @@ export const Default = {
   args: {
     handleItemSearch: jest.fn(),
     index: 0
+  },
+  parameters: {
+    msw: {
+       handlers: [getStrategyCardDataHandlers]
+    }
   }
 }
 

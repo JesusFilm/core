@@ -39,7 +39,6 @@ export function StrategySection({
   const { breakpoints } = useTheme()
 
   const { hits } = useHits()
-  console.log(hits)
 
   const items = transformAlgoliaStrategies(hits)
 
