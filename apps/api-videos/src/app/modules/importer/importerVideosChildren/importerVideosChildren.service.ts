@@ -1,6 +1,8 @@
+import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../../../lib/prisma.service'
 import { ImporterVideosService } from '../importerVideos/importerVideos.service'
 
+@Injectable()
 export class ImporterVideosChildrenService {
   constructor(
     private readonly prismaService: PrismaService,
@@ -8,6 +10,7 @@ export class ImporterVideosChildrenService {
   ) {}
 
   async process(): Promise<void> {
+    console.log('beginning processing children')
     const videoChildren = await this.prismaService.video.findMany({
       select: { id: true, childIds: true }
     })
@@ -19,11 +22,7 @@ export class ImporterVideosChildrenService {
           data: {
             children: {
               connect: video.childIds
-                .filter((id) =>
-                  Object.keys(
-                    this.importerVideosService.usedSlugs ?? {}
-                  ).includes(id)
-                )
+                .filter((id) => this.importerVideosService.ids.includes(id))
                 .map((id) => ({ id }))
             }
           }
@@ -32,5 +31,6 @@ export class ImporterVideosChildrenService {
         console.log('error', error)
       }
     }
+    console.log('finished processing children')
   }
 }
