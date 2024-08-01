@@ -46,8 +46,8 @@ export function SignUpEdit({
     setValue(submitLabel)
   }, [submitLabel])
 
-  async function handleSubmit(value: string): Promise<void> {
-    await add({
+  function handleSubmit(value: string): void {
+    add({
       parameters: {
         execute: {
           submitLabel: value
@@ -56,8 +56,8 @@ export function SignUpEdit({
           submitLabel: submitLabel ?? ''
         }
       },
-      async execute({ submitLabel }) {
-        await signUpBlockUpdate({
+      execute({ submitLabel }) {
+        void signUpBlockUpdate({
           variables: {
             id,
             submitLabel
@@ -75,13 +75,13 @@ export function SignUpEdit({
           }
         })
       },
-      async undo({ submitLabel }) {
+      undo({ submitLabel }) {
         dispatch({
           type: 'SetEditorFocusAction',
           selectedBlock,
           selectedStep
         })
-        await signUpBlockUpdate({
+        void signUpBlockUpdate({
           variables: {
             id,
             submitLabel
@@ -99,13 +99,13 @@ export function SignUpEdit({
           }
         })
       },
-      async redo({ submitLabel }) {
+      redo({ submitLabel }) {
         dispatch({
           type: 'SetEditorFocusAction',
           selectedBlock,
           selectedStep
         })
-        await signUpBlockUpdate({
+        void signUpBlockUpdate({
           variables: {
             id,
             submitLabel
