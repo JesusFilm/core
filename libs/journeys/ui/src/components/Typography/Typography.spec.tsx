@@ -57,4 +57,20 @@ describe('Typography', () => {
       screen.getByRole('heading', { name: 'Add your text here...', level: 3 })
     ).toHaveTextContent('Add your text here...')
   })
+
+  it('should render editable content text', () => {
+    const editableContent = <>hello</>
+    const emptyContentMock = {
+      ...block,
+      content: '',
+      placeholderText: 'Add your text here...',
+      editableContent
+    }
+
+    render(<Typography {...emptyContentMock} />)
+
+    expect(
+      screen.getByRole('heading', { name: 'hello', level: 3 })
+    ).toHaveTextContent('hello')
+  })
 })
