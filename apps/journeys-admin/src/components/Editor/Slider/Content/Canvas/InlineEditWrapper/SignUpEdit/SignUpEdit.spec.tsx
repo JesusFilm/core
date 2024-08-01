@@ -99,7 +99,7 @@ describe('SignUpEdit', () => {
 
     const input = screen.getByRole('textbox', { name: '' })
     fireEvent.click(input)
-    fireEvent.change(input, { target: { value: 'Submit update   ' } })
+    fireEvent.change(input, { target: { value: 'Submit update' } })
     fireEvent.blur(input)
     await waitFor(() => expect(mockUpdateSuccess1.result).toHaveBeenCalled())
   })
@@ -117,7 +117,7 @@ describe('SignUpEdit', () => {
 
     const input = screen.getByRole('textbox', { name: '' })
     fireEvent.click(input)
-    fireEvent.change(input, { target: { value: 'Submit   ' } })
+    fireEvent.change(input, { target: { value: 'Submit' } })
     fireEvent.blur(input)
     await waitFor(() =>
       expect(mockUpdateSuccess1.result).not.toHaveBeenCalled()
