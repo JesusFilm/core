@@ -47,7 +47,7 @@ export function StrategySections({
           {indexes.map((indexName, index) => (
             <StrategySection
               key={indexName}
-              index={index}
+              index={index + 1}
               handleItemSearch={handleItemSearch}
             />
           ))}

@@ -90,7 +90,7 @@ export function StrategySection({
           </Container>
         </Box>
       ) : (
-        <Box data-testid="Empty strategy">Strastegy section</Box>
+        <></>
       )}
     </>
   )
