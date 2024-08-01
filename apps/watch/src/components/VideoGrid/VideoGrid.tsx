@@ -47,11 +47,6 @@ export function VideoGrid({
             />
           </Grid>
         ))}
-      {!loading && noResults && (
-        <Grid item xs={12} justifyContent="center" alignItems="center">
-          <EmptySearch />
-        </Grid>
-      )}
       {loading && videos?.length === 0 && (
         <>
           <Grid item xs={12} md={4} xl={3}>
@@ -79,6 +74,11 @@ export function VideoGrid({
             <VideoCard variant={variant} />
           </Grid>
         </>
+      )}
+      {!loading && noResults && (
+        <Grid item xs={12} justifyContent="center" alignItems="center">
+          <EmptySearch />
+        </Grid>
       )}
       {showLoadMore && videos.length > 0 && (
         <Grid item xs={12}>
