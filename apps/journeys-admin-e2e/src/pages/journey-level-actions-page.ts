@@ -327,11 +327,16 @@ export class JourneyLevelActions {
 
   async clickHelpBtn() {
     await expect(
-      this.page.getByTestId('HelpScoutBeaconIconButton')
+      this.page
+        .getByTestId('side-header')
+        .getByTestId('HelpScoutBeaconIconButton')
     ).toBeEnabled({
       timeout: thirtySecondsTimeout
     })
-    await this.page.getByTestId('HelpScoutBeaconIconButton').click()
+    await this.page
+      .getByTestId('side-header')
+      .getByTestId('HelpScoutBeaconIconButton')
+      .click()
   }
 
   async verifyHelpWindowOpened() {
