@@ -326,9 +326,7 @@ export class JourneyLevelActions {
   }
 
   async clickHelpBtn() {
-    await expect(
-      this.page.locator('div[data-testid="HelpScoutBeaconIconButton"]')
-    ).toBeEnabled({
+    await expect(this.page.locator('button[aria-label="Help"]')).toBeEnabled({
       timeout: thirtySecondsTimeout
     })
     await this.page.locator('button[aria-label="Help"]').click()
