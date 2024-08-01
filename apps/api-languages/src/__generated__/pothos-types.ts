@@ -1,5 +1,5 @@
 /* eslint-disable */
-import type { Prisma, Language, LanguageName, Country, CountryName, CountryContinent, AudioPreview, ImportTimes } from ".prisma/api-languages-client";
+import type { Prisma, Language, LanguageName, Country, CountryLanguage, CountryName, Continent, ContinentName, AudioPreview, ImportTimes } from ".prisma/api-languages-client";
 export default interface PrismaTypes {
     Language: {
         Name: "Language";
@@ -11,8 +11,8 @@ export default interface PrismaTypes {
         Where: Prisma.LanguageWhereInput;
         Create: {};
         Update: {};
-        RelationName: "name" | "nameLanguage" | "countries" | "countryName" | "countryContinent" | "audioPreview";
-        ListRelations: "name" | "nameLanguage" | "countries" | "countryName" | "countryContinent";
+        RelationName: "name" | "nameLanguage" | "countries" | "countryName" | "audioPreview" | "countryLanguages" | "continentNames";
+        ListRelations: "name" | "nameLanguage" | "countries" | "countryName" | "countryLanguages" | "continentNames";
         Relations: {
             name: {
                 Shape: LanguageName[];
@@ -34,15 +34,20 @@ export default interface PrismaTypes {
                 Name: "CountryName";
                 Nullable: false;
             };
-            countryContinent: {
-                Shape: CountryContinent[];
-                Name: "CountryContinent";
-                Nullable: false;
-            };
             audioPreview: {
                 Shape: AudioPreview | null;
                 Name: "AudioPreview";
                 Nullable: true;
+            };
+            countryLanguages: {
+                Shape: CountryLanguage[];
+                Name: "CountryLanguage";
+                Nullable: false;
+            };
+            continentNames: {
+                Shape: ContinentName[];
+                Name: "ContinentName";
+                Nullable: false;
             };
         };
     };
@@ -81,22 +86,52 @@ export default interface PrismaTypes {
         Where: Prisma.CountryWhereInput;
         Create: {};
         Update: {};
-        RelationName: "name" | "continent" | "languages";
-        ListRelations: "name" | "continent" | "languages";
+        RelationName: "name" | "languages" | "countryLanguages" | "continent";
+        ListRelations: "name" | "languages" | "countryLanguages";
         Relations: {
             name: {
                 Shape: CountryName[];
                 Name: "CountryName";
                 Nullable: false;
             };
-            continent: {
-                Shape: CountryContinent[];
-                Name: "CountryContinent";
-                Nullable: false;
-            };
             languages: {
                 Shape: Language[];
                 Name: "Language";
+                Nullable: false;
+            };
+            countryLanguages: {
+                Shape: CountryLanguage[];
+                Name: "CountryLanguage";
+                Nullable: false;
+            };
+            continent: {
+                Shape: Continent | null;
+                Name: "Continent";
+                Nullable: true;
+            };
+        };
+    };
+    CountryLanguage: {
+        Name: "CountryLanguage";
+        Shape: CountryLanguage;
+        Include: Prisma.CountryLanguageInclude;
+        Select: Prisma.CountryLanguageSelect;
+        OrderBy: Prisma.CountryLanguageOrderByWithRelationInput;
+        WhereUnique: Prisma.CountryLanguageWhereUniqueInput;
+        Where: Prisma.CountryLanguageWhereInput;
+        Create: {};
+        Update: {};
+        RelationName: "language" | "country";
+        ListRelations: never;
+        Relations: {
+            language: {
+                Shape: Language;
+                Name: "Language";
+                Nullable: false;
+            };
+            country: {
+                Shape: Country;
+                Name: "Country";
                 Nullable: false;
             };
         };
@@ -126,22 +161,47 @@ export default interface PrismaTypes {
             };
         };
     };
-    CountryContinent: {
-        Name: "CountryContinent";
-        Shape: CountryContinent;
-        Include: Prisma.CountryContinentInclude;
-        Select: Prisma.CountryContinentSelect;
-        OrderBy: Prisma.CountryContinentOrderByWithRelationInput;
-        WhereUnique: Prisma.CountryContinentWhereUniqueInput;
-        Where: Prisma.CountryContinentWhereInput;
+    Continent: {
+        Name: "Continent";
+        Shape: Continent;
+        Include: Prisma.ContinentInclude;
+        Select: Prisma.ContinentSelect;
+        OrderBy: Prisma.ContinentOrderByWithRelationInput;
+        WhereUnique: Prisma.ContinentWhereUniqueInput;
+        Where: Prisma.ContinentWhereInput;
         Create: {};
         Update: {};
-        RelationName: "country" | "language";
+        RelationName: "name" | "countries";
+        ListRelations: "name" | "countries";
+        Relations: {
+            name: {
+                Shape: ContinentName[];
+                Name: "ContinentName";
+                Nullable: false;
+            };
+            countries: {
+                Shape: Country[];
+                Name: "Country";
+                Nullable: false;
+            };
+        };
+    };
+    ContinentName: {
+        Name: "ContinentName";
+        Shape: ContinentName;
+        Include: Prisma.ContinentNameInclude;
+        Select: Prisma.ContinentNameSelect;
+        OrderBy: Prisma.ContinentNameOrderByWithRelationInput;
+        WhereUnique: Prisma.ContinentNameWhereUniqueInput;
+        Where: Prisma.ContinentNameWhereInput;
+        Create: {};
+        Update: {};
+        RelationName: "continent" | "language";
         ListRelations: never;
         Relations: {
-            country: {
-                Shape: Country;
-                Name: "Country";
+            continent: {
+                Shape: Continent;
+                Name: "Continent";
                 Nullable: false;
             };
             language: {
