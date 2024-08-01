@@ -14,24 +14,7 @@ import { useCustomDomainsQuery } from '../../../../../../libs/useCustomDomainsQu
 const tooltipProps = {
   placement: 'top' as const,
   arrow: true,
-  slotProps: {
-    popper: {
-      modifiers: [
-        {
-          name: 'offset',
-          options: {
-            offset: [0, -8]
-          }
-        }
-      ]
-    },
-    tooltip: {
-      sx: {
-        px: 2,
-        py: 0
-      }
-    }
-  }
+  enterTouchDelay: 0
 }
 
 interface MessageBubbleProps {
@@ -124,7 +107,28 @@ export function Message(): ReactElement {
             <MessageBubble width={315} direction="right">
               <Stack direction="column" sx={{ p: 1 }}>
                 <Stack direction="row" gap={2} alignItems="center">
-                  <Tooltip title={t('Social Image')} {...tooltipProps}>
+                  <Tooltip
+                    {...tooltipProps}
+                    title={t('Social Image')}
+                    slotProps={{
+                      popper: {
+                        modifiers: [
+                          {
+                            name: 'offset',
+                            options: {
+                              offset: [0, -8]
+                            }
+                          }
+                        ]
+                      },
+                      tooltip: {
+                        sx: {
+                          px: 2,
+                          py: 0
+                        }
+                      }
+                    }}
+                  >
                     {journey?.primaryImageBlock?.src == null ? (
                       <Box
                         width={78}

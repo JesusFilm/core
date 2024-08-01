@@ -14,25 +14,7 @@ import Tooltip from '@mui/material/Tooltip'
 const tooltipProps = {
   placement: 'top' as const,
   arrow: true,
-  enterTouchDelay: 0,
-  slotProps: {
-    popper: {
-      modifiers: [
-        {
-          name: 'offset',
-          options: {
-            offset: [0, -8]
-          }
-        }
-      ]
-    },
-    tooltip: {
-      sx: {
-        px: 2,
-        py: 0
-      }
-    }
-  }
+  enterTouchDelay: 0
 }
 
 export function Post(): ReactElement {
@@ -98,7 +80,28 @@ export function Post(): ReactElement {
                 bgcolor="background.default"
               />
             </Stack>
-            <Tooltip title={t('Social Image')} {...tooltipProps}>
+            <Tooltip
+              {...tooltipProps}
+              title={t('Social Image')}
+              slotProps={{
+                popper: {
+                  modifiers: [
+                    {
+                      name: 'offset',
+                      options: {
+                        offset: [0, -8]
+                      }
+                    }
+                  ]
+                },
+                tooltip: {
+                  sx: {
+                    px: 2,
+                    py: 0
+                  }
+                }
+              }}
+            >
               <CardMedia
                 sx={{
                   mb: 2.5,
@@ -134,7 +137,28 @@ export function Post(): ReactElement {
               </CardMedia>
             </Tooltip>
             <Stack gap={1.5} sx={{ mb: 2.75 }} data-testid="Headline">
-              <Tooltip title={t('Headline')} {...tooltipProps}>
+              <Tooltip
+                {...tooltipProps}
+                title={t('Headline')}
+                slotProps={{
+                  popper: {
+                    modifiers: [
+                      {
+                        name: 'offset',
+                        options: {
+                          offset: [0, -8]
+                        }
+                      }
+                    ]
+                  },
+                  tooltip: {
+                    sx: {
+                      px: 2,
+                      py: 0
+                    }
+                  }
+                }}
+              >
                 {isEmpty(journey?.seoTitle?.trim()) ? (
                   <Box
                     width={208}
@@ -154,7 +178,28 @@ export function Post(): ReactElement {
                   </Typography>
                 )}
               </Tooltip>
-              <Tooltip title={t('Secondary Text')} {...tooltipProps}>
+              <Tooltip
+                {...tooltipProps}
+                title={t('Secondary Text')}
+                slotProps={{
+                  popper: {
+                    modifiers: [
+                      {
+                        name: 'offset',
+                        options: {
+                          offset: [0, -8]
+                        }
+                      }
+                    ]
+                  },
+                  tooltip: {
+                    sx: {
+                      px: 2,
+                      py: 0
+                    }
+                  }
+                }}
+              >
                 {isEmpty(journey?.seoDescription?.trim()) ? (
                   <Box
                     width={208}
