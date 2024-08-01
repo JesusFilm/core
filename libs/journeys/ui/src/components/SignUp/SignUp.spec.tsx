@@ -515,4 +515,39 @@ describe('SignUp', () => {
 
     expect(screen.getByTestId('submit')).toHaveTextContent('Submit')
   })
+
+  it('should show default submit text if submit label is null', () => {
+    const input = <h1>Submit</h1>
+    const emptyLabelBLockMock = {
+      ...block,
+      editableSubmitLabel: input
+    }
+
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <SignUp {...emptyLabelBLockMock} uuid={() => 'uuid'} />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByTestId('submit')).toHaveTextContent('Submit')
+  })
+
+  it('should show submit label text', () => {
+    const emptyLabelBLockMock = {
+      ...block,
+      submitLabel: 'Hello'
+    }
+
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <SignUp {...emptyLabelBLockMock} uuid={() => 'uuid'} />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByTestId('submit')).toHaveTextContent('Hello')
+  })
 })
