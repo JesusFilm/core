@@ -4,13 +4,11 @@ import CardActionArea from '@mui/material/CardActionArea'
 import CardActions from '@mui/material/CardActions'
 import CardContent from '@mui/material/CardContent'
 import NextLink from 'next/link'
-import { ReactElement, useEffect, useRef } from 'react'
-
+import { ReactElement, useEffect, useRef, useState } from 'react'
 import {
   GetAdminJourneys,
   GetAdminJourneys_journeys as Journey
 } from '../../../../__generated__/GetAdminJourneys'
-
 import { JourneyCardInfo } from './JourneyCardInfo'
 import { JourneyCardMenu } from './JourneyCardMenu'
 import { JourneyCardText } from './JourneyCardText'
@@ -30,6 +28,7 @@ export function JourneyCard({
   refetch
 }: JourneyCardProps): ReactElement {
   const duplicatedJourneyRef = useRef<HTMLDivElement>(null)
+  const [clicked, setClicked] = useState<boolean>(false)
 
   useEffect(() => {
     if (duplicatedJourneyId != null && duplicatedJourneyRef.current != null) {
@@ -67,9 +66,21 @@ export function JourneyCard({
           legacyBehavior
           prefetch={false}
         >
-          <CardActionArea sx={{ borderRadius: 0 }}>
-            <CardContent sx={{ px: 6, py: 4 }}>
-              <JourneyCardText journey={journey} variant={variant} />
+          <CardActionArea
+            sx={{ borderRadius: 0, pointerEvents: clicked ? 'none' : 'auto' }}
+            onClick={() => setClicked(true)}
+          >
+            <CardContent
+              sx={{
+                px: 6,
+                py: 4
+              }}
+            >
+              <JourneyCardText
+                journey={journey}
+                variant={variant}
+                loading={clicked}
+              />
             </CardContent>
           </CardActionArea>
         </NextLink>

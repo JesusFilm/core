@@ -7,12 +7,15 @@ import { intlFormat, isThisYear, parseISO } from 'date-fns'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
+import CircularProgress from '@mui/material/CircularProgress'
+import Stack from '@mui/material/Stack'
 import { GetAdminJourneys_journeys as Journey } from '../../../../../__generated__/GetAdminJourneys'
 import { JourneyCardVariant } from '../journeyCardVariant'
 
 interface JourneyCardTextProps {
   journey: Journey
   variant: JourneyCardVariant
+  loading?: boolean
 }
 
 const StyledBadge = styled(Badge)(() => ({
@@ -26,7 +29,8 @@ const StyledBadge = styled(Badge)(() => ({
 
 export function JourneyCardText({
   journey,
-  variant
+  variant,
+  loading = false
 }: JourneyCardTextProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
@@ -43,15 +47,21 @@ export function JourneyCardText({
           </Tooltip>
         }
       >
-        <Typography
-          variant="subtitle1"
-          component="div"
-          noWrap
-          gutterBottom
-          sx={{ color: 'secondary.main' }}
-        >
-          {journey.title}
-        </Typography>
+        <Stack direction="row" spacing="10px" alignItems="center">
+          <Typography
+            variant="subtitle1"
+            component="div"
+            noWrap
+            gutterBottom
+            sx={{ color: 'secondary.main' }}
+          >
+            {journey.title}
+          </Typography>
+          <CircularProgress
+            size={20}
+            sx={{ display: loading ? 'auto' : 'none' }}
+          />
+        </Stack>
       </StyledBadge>
 
       <Typography
