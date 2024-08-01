@@ -57,7 +57,6 @@ describe('SignUpEdit', () => {
       query: SIGN_UP_BLOCK_UPDATE_SUBMIT_LABEL,
       variables: {
         id: 'signUp',
-
         submitLabel: 'Submit'
       }
     },
