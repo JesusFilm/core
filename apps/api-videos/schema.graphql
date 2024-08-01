@@ -72,14 +72,6 @@ type Keyword {
   videos: [Video!]!
 }
 
-type Query {
-  keywords(languageId: ID): [Keyword!]!
-  videos(where: VideosFilter, offset: Int, limit: Int): [Video!]! @cacheControl(maxAge: 86400)
-  video(id: ID!, idType: IdType): Video @cacheControl(maxAge: 86400)
-  _entities(representations: [_Any!]!): [_Entity]!
-  _service: _Service!
-}
-
 extend type Language
   @key(fields: "id")
 {
@@ -121,6 +113,13 @@ input VideosFilter {
   labels: [VideoLabel!]
   ids: [ID!]
   subtitleLanguageIds: [ID!]
+}
+
+type Query {
+  videos(where: VideosFilter, offset: Int, limit: Int): [Video!]! @cacheControl(maxAge: 86400)
+  video(id: ID!, idType: IdType): Video @cacheControl(maxAge: 86400)
+  _entities(representations: [_Any!]!): [_Entity]!
+  _service: _Service!
 }
 
 enum VideoVariantDownloadQuality {

@@ -5,10 +5,6 @@ type Keyword {
   videos: [Video!]!
 }
 
-type Query {
-  keywords(languageId: ID): [Keyword!]!
-}
-
 extend type Video {
   keywords(languageId: ID): VideoVariant
 }

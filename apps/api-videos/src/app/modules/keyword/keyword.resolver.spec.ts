@@ -41,19 +41,6 @@ describe('KeywordResolver', () => {
     ) as DeepMockProxy<PrismaService>
   })
 
-  describe('keywords', () => {
-    it('returns keywords', async () => {
-      prismaService.keyword.findMany.mockResolvedValue([keyword])
-      prismaService.video.findMany.mockResolvedValue([video])
-      expect(await resolver.keywords('529')).toEqual([keyword])
-      expect(prismaService.keyword.findMany).toHaveBeenCalledWith({
-        where: {
-          languageId: '529'
-        }
-      })
-    })
-  })
-
   describe('language', () => {
     it('returns language', async () => {
       expect(await resolver.language(keyword)).toEqual({
