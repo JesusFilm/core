@@ -104,7 +104,7 @@ export function useBlockDeleteCommand() {
             })
             selected != null && dispatch(selected)
           }
-          await blockDelete(currentBlock, {
+          void blockDelete(currentBlock, {
             optimisticResponse: { blockDelete: [currentBlock] },
             update(cache, { data }) {
               blockDeleteUpdate(
@@ -118,7 +118,7 @@ export function useBlockDeleteCommand() {
         },
         async undo({ currentBlock, stepBeforeDelete, flattenedChildren }) {
           setBlockRestoreEditorState(currentBlock, stepBeforeDelete, dispatch)
-          await blockRestore({
+          void blockRestore({
             variables: { id: currentBlock.id },
             optimisticResponse:
               currentBlock.__typename === 'StepBlock'
