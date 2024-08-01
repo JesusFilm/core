@@ -147,8 +147,7 @@ export function SignUpEdit({
           value={value}
           onChange={(e) => {
             setValue(e.target.value)
-            if (submitLabel !== e.target.value.trim())
-              handleSubmit(e.target.value.trim())
+            handleSubmit(e.target.value)
           }}
           // Stop click and drag outside the iframe deselcting selected block
           onClick={(e) => e.stopPropagation()}
