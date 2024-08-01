@@ -2,7 +2,6 @@ import { render, screen } from '@testing-library/react'
 import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
 import { useSearchBox } from 'react-instantsearch'
 import { StrategiesView } from './StrategiesView'
-import '@core/journeys/ui/i18n'
 
 jest.mock('react-instantsearch')
 
