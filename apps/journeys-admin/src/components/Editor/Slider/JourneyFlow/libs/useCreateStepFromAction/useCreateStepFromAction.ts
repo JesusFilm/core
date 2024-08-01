@@ -165,7 +165,7 @@ export function useCreateStepFromAction(): (
       backgroundColor: null,
       parentOrder: 0
     }
-    add({
+    await add({
       parameters: { execute: {}, undo: { stepBeforeDelete: selectedStep } },
       async execute() {
         dispatch({
@@ -173,7 +173,7 @@ export function useCreateStepFromAction(): (
           selectedStepId: step.id,
           activeSlide: ActiveSlide.JourneyFlow
         })
-        void stepBlockCreateFromAction({
+        await stepBlockCreateFromAction({
           variables: {
             stepBlockCreateInput: {
               id: step.id,
@@ -228,7 +228,7 @@ export function useCreateStepFromAction(): (
           selectedStepId: stepBeforeDelete.id,
           activeSlide: ActiveSlide.JourneyFlow
         })
-        void stepBlockDeleteFromAction({
+        await stepBlockDeleteFromAction({
           variables: {
             id: step.id,
             journeyId: journey.id,
@@ -286,7 +286,7 @@ export function useCreateStepFromAction(): (
           selectedStepId: step.id,
           activeSlide: ActiveSlide.JourneyFlow
         })
-        void stepBlockRestoreFromAction({
+        await stepBlockRestoreFromAction({
           variables: {
             id: step.id,
             blockUpdateActionId: sourceBlock.id,
