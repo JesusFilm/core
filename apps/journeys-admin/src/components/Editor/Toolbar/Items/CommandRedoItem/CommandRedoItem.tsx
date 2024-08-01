@@ -2,9 +2,9 @@ import Box from '@mui/material/Box'
 import { useTranslation } from 'next-i18next'
 import { ComponentProps, ReactElement } from 'react'
 
-import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
-
 import { useCommand } from '@core/journeys/ui/CommandProvider'
+import FlipRightIcon from '@core/shared/ui/icons/FlipRight'
+
 import { Item } from '../Item/Item'
 
 interface CommandRedoItemProps {
@@ -26,7 +26,7 @@ export function CommandRedoItem({
       <Item
         variant={variant}
         label={t('Redo')}
-        icon={<ArrowRightIcon />}
+        icon={<FlipRightIcon />}
         onClick={handleClick}
         ButtonProps={{ disabled: state.redo == null }}
       />

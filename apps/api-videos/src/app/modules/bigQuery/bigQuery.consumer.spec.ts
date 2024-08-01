@@ -5,6 +5,7 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { PrismaService } from '../../lib/prisma.service'
 import { ImporterBibleBooksService } from '../importer/importerBibleBooks/importerBibleBooks.service'
 import { ImporterBibleCitationsService } from '../importer/importerBibleCitations/importerBibleCitations.service'
+import { ImporterKeywordsService } from '../importer/importerKeywords/importerKeywords.service'
 import { ImporterVideoSubtitlesService } from '../importer/importerVideoSubtitle/importerVideoSubtitle.service'
 import { ImporterVideoVariantsService } from '../importer/importerVideoVariants/importerVideoVariants.service'
 import { ImporterVideosService } from '../importer/importerVideos/importerVideos.service'
@@ -55,6 +56,10 @@ describe('BigQueryConsumer', () => {
         {
           provide: ImporterBibleBookNamesService,
           useValue: mockDeep<ImporterBibleBookNamesService>()
+        },
+        {
+          provide: ImporterKeywordsService,
+          useValue: mockDeep<ImporterKeywordsService>()
         }
       ]
     }).compile()
