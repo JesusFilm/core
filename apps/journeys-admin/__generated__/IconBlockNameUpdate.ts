@@ -21,6 +21,5 @@ export interface IconBlockNameUpdate {
 
 export interface IconBlockNameUpdateVariables {
   id: string;
-  journeyId: string;
   input: IconBlockUpdateInput;
 }

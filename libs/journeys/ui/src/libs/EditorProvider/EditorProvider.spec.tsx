@@ -158,6 +158,41 @@ describe('EditorContext', () => {
           selectedBlock: block
         })
       })
+      it('should not set ActiveSlide when showAnalytics is true', () => {
+        const block: TreeBlock = {
+          id: 'step0.id',
+          __typename: 'StepBlock',
+          parentBlockId: null,
+          parentOrder: 0,
+          locked: false,
+          nextBlockId: null,
+          children: []
+        }
+
+        const state: EditorState = {
+          steps: [block],
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+          activeSlide: ActiveSlide.JourneyFlow,
+          activeContent: ActiveContent.Canvas,
+          showAnalytics: true,
+          selectedBlockId: 'step0.id',
+          selectedBlock: {
+            id: 'step0.id',
+            __typename: 'StepBlock',
+            parentBlockId: null,
+            parentOrder: 0,
+            locked: false,
+            nextBlockId: null,
+            children: []
+          }
+        }
+        const newState = reducer(state, {
+          type: 'SetActiveSlideAction',
+          activeSlide: ActiveSlide.Content
+        })
+
+        expect(newState).toEqual(state)
+      })
 
       it('should change to content view when block selected', () => {
         const block: TreeBlock = {
@@ -676,23 +711,23 @@ describe('EditorContext', () => {
   })
 
   describe('EditorProvider', () => {
+    const block: TreeBlock = {
+      id: 'step0.id',
+      __typename: 'StepBlock',
+      parentBlockId: null,
+      parentOrder: 0,
+      locked: false,
+      nextBlockId: null,
+      children: []
+    }
+
+    const initialState = {
+      steps: [block],
+      selectedBlock: block,
+      selectedStep: block
+    }
+
     it('should set initial state', () => {
-      const block: TreeBlock = {
-        id: 'step0.id',
-        __typename: 'StepBlock',
-        parentBlockId: null,
-        parentOrder: 0,
-        locked: false,
-        nextBlockId: null,
-        children: []
-      }
-
-      const initialState = {
-        steps: [block],
-        selectedBlock: block,
-        selectedStep: block
-      }
-
       const wrapper = ({ children }: { children: ReactNode }): ReactNode => (
         <EditorProvider initialState={initialState}>{children}</EditorProvider>
       )
@@ -709,6 +744,35 @@ describe('EditorContext', () => {
         activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
         activeSlide: ActiveSlide.Content,
         activeContent: ActiveContent.Canvas
+      })
+    })
+
+    it('should set initial state for discrete states', () => {
+      const wrapper = ({ children }: { children: ReactNode }): ReactNode => (
+        <EditorProvider
+          initialState={{
+            ...initialState,
+            activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer,
+            activeSlide: ActiveSlide.JourneyFlow,
+            activeContent: ActiveContent.Social
+          }}
+        >
+          {children}
+        </EditorProvider>
+      )
+      const { result } = renderHook(() => useContext(EditorContext), {
+        wrapper
+      })
+
+      expect(result.current.state).toEqual({
+        steps: [block],
+        selectedStep: block,
+        selectedBlock: block,
+        selectedStepId: 'step0.id',
+        selectedBlockId: 'step0.id',
+        activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer,
+        activeSlide: ActiveSlide.JourneyFlow,
+        activeContent: ActiveContent.Social
       })
     })
   })

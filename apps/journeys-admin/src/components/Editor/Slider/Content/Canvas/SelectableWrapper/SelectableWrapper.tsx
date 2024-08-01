@@ -97,6 +97,12 @@ export function SelectableWrapper({
     case 'ImageBlock':
       borderRadius = '16px'
       break
+    case 'SignUpBlock':
+      borderRadius = '4px 4px 16px 16px'
+      break
+    case 'ButtonBlock':
+      borderRadius = '8px'
+      break
   }
 
   useEffect(() => {

@@ -210,6 +210,7 @@ export const SignUp = ({
             />
             <LoadingButton
               type="submit"
+              data-testid="submit"
               variant="contained"
               loading={loading}
               size="large"
@@ -222,7 +223,13 @@ export const SignUp = ({
                 mb: 0
               }}
             >
-              <span>{editableSubmitLabel ?? submitLabel ?? t('Submit')}</span>
+              <span>
+                {editableSubmitLabel != null
+                  ? editableSubmitLabel
+                  : submitLabel != null && submitLabel !== ''
+                    ? submitLabel
+                    : t('Submit')}
+              </span>
             </LoadingButton>
           </Form>
         )}
