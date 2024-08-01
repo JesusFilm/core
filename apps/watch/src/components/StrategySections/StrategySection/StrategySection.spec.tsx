@@ -20,17 +20,17 @@ describe('StrategySection', () => {
     const items = screen.getAllByTestId('StrategyCard')
     expect(items).toHaveLength(2)
 
-    // title of strategy section
-    expect(
-      screen.getByRole('heading', { level: 5, name: 'Mission Trips' })
-    ).toBeInTheDocument()
-    // title of first strategy card
-    expect(
-      screen.getByRole('heading', {
-        level: 6,
-        name: 'London Bridges 1 One Week'
-      })
-    ).toBeInTheDocument()
+    const strategySectionTitle = screen.getByRole('heading', {
+      level: 5,
+      name: 'Mission Trips'
+    })
+    expect(strategySectionTitle).toBeInTheDocument()
+
+    const strategyCardTitle = screen.getByRole('heading', {
+      level: 6,
+      name: 'London Bridges 1 One Week'
+    })
+    expect(strategyCardTitle).toBeInTheDocument()
   })
 
   it('should call handleitemsearch', () => {

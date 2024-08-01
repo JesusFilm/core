@@ -19,4 +19,15 @@ describe('StrategySections', () => {
     render(<StrategySections />)
     expect(screen.getAllByTestId('StrategySection')).toHaveLength(2)
   })
+
+  it('should render emptysearch component when no there are no hits', () => {
+    mockedUseHits.mockReturnValue({
+      hits: []
+    } as unknown as HitsRenderState)
+
+    render(<StrategySections />)
+
+    expect(screen.getByText('Sorry, no results')).toBeInTheDocument()
+    expect(screen.queryByTestId('StrategySection')).not.toBeInTheDocument()
+  })
 })
