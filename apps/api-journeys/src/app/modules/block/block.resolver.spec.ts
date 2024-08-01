@@ -293,6 +293,9 @@ describe('BlockResolver', () => {
           journeyId: block.journeyId,
           deletedAt: null,
           NOT: { id: block.id }
+        },
+        include: {
+          action: true
         }
       })
       expect(service.getDescendants).toHaveBeenCalledWith(block.id, [
@@ -304,6 +307,16 @@ describe('BlockResolver', () => {
     it('should throw error if block not found', async () => {
       await expect(resolver.blockRestore('1', ability)).rejects.toThrow(
         'block not found'
+      )
+    })
+
+    it('should throw error if block does not have a parent order', async () => {
+      prismaService.block.findUnique.mockResolvedValue({
+        ...blockWithUserTeam,
+        parentOrder: null
+      })
+      await expect(resolver.blockRestore('1', ability)).rejects.toThrow(
+        'updated block has no parent order'
       )
     })
 
