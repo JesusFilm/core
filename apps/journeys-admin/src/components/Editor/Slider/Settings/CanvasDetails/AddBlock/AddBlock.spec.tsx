@@ -134,13 +134,11 @@ describe('AddBlock', () => {
         </ThemeProvider>
       </MockedProvider>
     )
+    expect(screen.getByText('activeCanvasDetailsDrawer: 2')).toBeInTheDocument()
 
-    await waitFor(() =>
-      expect(screen.getByTestId('X2Icon')).toBeInTheDocument()
-    )
-    await waitFor(
-      async () => await userEvent.click(screen.getByTestId('X2Icon'))
-    )
+    const closeButton = screen.getByTestId('X2Icon')
+    expect(closeButton).toBeInTheDocument()
+    await waitFor(() => userEvent.click(closeButton))
 
     expect(screen.getByText('activeCanvasDetailsDrawer: 0')).toBeInTheDocument()
   })
