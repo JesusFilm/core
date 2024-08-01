@@ -1,86 +1,64 @@
 import { gql, useMutation } from '@apollo/client'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useRef, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
 import { Typography } from '@core/journeys/ui/Typography'
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { hasTouchScreen } from '@core/shared/ui/deviceUtils'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { SubmitListener } from '@core/shared/ui/SubmitListener'
-import { Formik } from 'formik'
 import {
   TypographyBlockUpdateContent,
   TypographyBlockUpdateContentVariables
 } from '../../../../../../../../__generated__/TypographyBlockUpdateContent'
 import { TypographyFields } from '../../../../../../../../__generated__/TypographyFields'
 import { InlineEditInput } from '../InlineEditInput'
-import { useOnClickOutside } from '../useOnClickOutside'
 
 export const TYPOGRAPHY_BLOCK_UPDATE_CONTENT = gql`
   mutation TypographyBlockUpdateContent(
     $id: ID!
-    $input: TypographyBlockUpdateInput!
+    $content: String!
   ) {
-    typographyBlockUpdate(id: $id, input: $input) {
+    typographyBlockUpdate(id: $id, input: { content: $content }) {
       id
       content
     }
   }
 `
-interface TypographyEditProps extends TreeBlock<TypographyFields> {}
-
 export function TypographyEdit({
   id,
-  variant,
-  align,
-  color,
   content,
+  __typename,
   ...props
-}: TypographyEditProps): ReactElement {
+}: TreeBlock<TypographyFields>): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [typographyBlockUpdate] = useMutation<
     TypographyBlockUpdateContent,
     TypographyBlockUpdateContentVariables
   >(TYPOGRAPHY_BLOCK_UPDATE_CONTENT)
 
-  const typog = useRef<HTMLInputElement>()
-
-  const [selection, setSelection] = useState({ start: 0, end: content.length })
+  const [value, setValue] = useState(content)
+  const { add } = useCommand()
   const {
     state: { selectedBlock, selectedStep },
     dispatch
   } = useEditor()
-  const { add } = useCommand()
 
-  const initialValues: { contentLabel: string } = {
-    contentLabel: content ?? ''
-  }
+  useEffect(() => {
+    setValue(content)
+  }, [content])
 
-  async function handleSaveBlock(values: typeof initialValues): Promise<void> {
-    const currentContent = values.contentLabel.trimStart().trimEnd()
-
-    // if (content === currentContent) return
-
-    // if (selectedBlock != null) {
+  async function handleSubmit(value: string): Promise<void> {
     await add({
       parameters: {
-        execute: { content: currentContent },
+        execute: { content: value },
         undo: { content }
       },
       async execute({ content }) {
-        console.log('here')
-        dispatch({
-          type: 'SetEditorFocusAction',
-          selectedBlock,
-          selectedStep
-        })
-
         await typographyBlockUpdate({
           variables: {
             id,
-            input: { content }
+            content
           },
           optimisticResponse: {
             typographyBlockUpdate: {
@@ -88,72 +66,95 @@ export function TypographyEdit({
               __typename: 'TypographyBlock',
               content
             }
+          },
+          context: {
+            debounceKey: `${__typename}:${id}`,
+            debounceTimeout: 500
+          }
+        })
+      },
+      async undo({ content }) {
+        dispatch({
+          type: 'SetEditorFocusAction',
+          selectedBlock,
+          selectedStep
+        })
+        void typographyBlockUpdate({
+          variables: {
+            id,
+            content
+          },
+          optimisticResponse: {
+            typographyBlockUpdate: {
+              id,
+              __typename: 'TypographyBlock',
+              content
+            }
+          },
+          context: {
+            debounceKey: `${__typename}:${id}`,
+            debounceTimeout: 0
+          }
+        })
+      },
+      async redo({ content }) {
+        dispatch({
+          type: 'SetEditorFocusAction',
+          selectedBlock,
+          selectedStep
+        })
+        void typographyBlockUpdate({
+          variables: {
+            id,
+            content
+          },
+          optimisticResponse: {
+            typographyBlockUpdate: {
+              id,
+              __typename: 'TypographyBlock',
+              content
+            }
+          },
+          context: {
+            debounceKey: `${__typename}:${id}`,
+            debounceTimeout: 0
           }
         })
       }
     })
-
-    // }
   }
-
-  const inputRef = useOnClickOutside(async () => {
-    // await handleSaveBlock
-    if (typog.current != null) typog.current.blur()
-  })
-
-  const input = (
-    <Formik
-      initialValues={initialValues}
-      onSubmit={handleSaveBlock}
-      enableReinitialize
-    >
-      {({ values, handleChange, setFieldValue }) => (
-        <>
-          <InlineEditInput
-            name="contentLabel"
-            ref={inputRef}
-            inputRef={typog}
-            multiline
-            fullWidth
-            autoFocus={!hasTouchScreen()}
-            value={values.contentLabel}
-            placeholder={t('Add your text here...')}
-            onSelect={(e) => {
-              const input = e.target as HTMLTextAreaElement
-              setSelection({
-                start: input.selectionStart ?? 0,
-                end: input.selectionEnd ?? values.contentLabel.length
-              })
-            }}
-            onFocus={(e) => {
-              const input = e.target as HTMLTextAreaElement
-              input.setSelectionRange(selection.start, selection.end)
-            }}
-            onBlur={(e) => {
-              setFieldValue('contentLabel', e.currentTarget.value)
-              dispatch({
-                type: 'SetEditorFocusAction',
-                selectedStep: selectedStep,
-                selectedBlock: selectedStep
-              })
-            }}
-            onChange={handleChange}
-          />
-          <SubmitListener />
-        </>
-      )}
-    </Formik>
-  )
 
   return (
     <Typography
       {...props}
+      __typename={__typename}
       id={id}
-      variant={variant}
-      align={align}
-      color={color}
       content={content}
-      editableContent={input}
+      editableContent={
+        <InlineEditInput
+          name="contentLabel"
+          fullWidth
+          multiline
+          inputRef={(ref) => {
+            if (ref) {
+              ref.focus()
+            }
+          }}
+          onFocus={(e) =>
+            e.currentTarget.setSelectionRange(
+              e.currentTarget.value.length,
+              e.currentTarget.value.length
+            )
+          }
+          value={value}
+          placeholder={t('Add your text here...')}
+          onChange={(e) => {
+            setValue(e.target.value)
+            if (content !== e.target.value.trim())
+              handleSubmit(e.target.value.trim())
+          }}
+        />
+      }
     />
   )
 }
