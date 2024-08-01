@@ -28,6 +28,7 @@ export function SubmitListener(): null {
     const valuesEqualInitialValues = isEqual(values, initialValues)
 
     if (!valuesEqualLastValues) updateState(values)
+
     if (!valuesEqualLastValues && !valuesEqualInitialValues && isValid)
       handleSubmit()
   }, [values, isValid, initialValues, lastValues, handleSubmit])
