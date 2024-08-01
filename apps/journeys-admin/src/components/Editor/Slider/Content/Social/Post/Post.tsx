@@ -15,7 +15,6 @@ const tooltipProps = {
   placement: 'top' as const,
   arrow: true,
   enterTouchDelay: 0,
-  leaveTouchDelay: 500,
   slotProps: {
     popper: {
       modifiers: [
