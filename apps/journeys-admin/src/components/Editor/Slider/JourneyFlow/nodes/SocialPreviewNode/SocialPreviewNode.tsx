@@ -6,7 +6,7 @@ import { alpha } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import isEmpty from 'lodash/isEmpty'
 import Image from 'next/image'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
 import {
   ActiveContent,
@@ -33,9 +33,6 @@ const zoomSelector = (s) => {
 
 export function SocialPreviewNode(): ReactElement {
   const { journey } = useJourney()
-  const {
-    state: { showAnalytics }
-  } = useEditor()
   const updateEdge = useUpdateEdge()
   const { t } = useTranslation('apps-journeys-admin')
   const [showTooltip, setShowTooltip] = useState(false)
@@ -43,7 +40,7 @@ export function SocialPreviewNode(): ReactElement {
 
   const {
     dispatch,
-    state: { activeContent }
+    state: { activeContent, activeSlide, showAnalytics }
   } = useEditor()
 
   function handleClick(): void {
@@ -66,8 +63,6 @@ export function SocialPreviewNode(): ReactElement {
         type: 'SetActiveSlideAction',
         activeSlide: ActiveSlide.Content
       })
-
-      setShowTooltip(false)
     }
   }
 
@@ -76,6 +71,12 @@ export function SocialPreviewNode(): ReactElement {
   ): Promise<void> {
     void updateEdge({ source: 'SocialPreview', target: params.target })
   }
+
+  useEffect(() => {
+    if (activeSlide !== ActiveSlide.JourneyFlow) {
+      setShowTooltip(false)
+    }
+  }, [activeContent, activeSlide])
 
   return (
     <BaseNode
