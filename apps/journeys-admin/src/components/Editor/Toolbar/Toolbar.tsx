@@ -1,29 +1,29 @@
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
+import { ActiveContent } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
+import ThumbsUpIcon from '@core/shared/ui/icons/ThumbsUp'
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
-import Image from 'next/image'
-import NextLink from 'next/link'
-import { ReactElement, useState } from 'react'
-
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import ThumbsUpIcon from '@core/shared/ui/icons/ThumbsUp'
-
-import logo from '../../../../public/taskbar-icon.svg'
-import { EDIT_TOOLBAR_HEIGHT } from '../constants'
-
-import { ActiveContent } from '@core/journeys/ui/EditorProvider'
-import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
-import Button from '@mui/material/Button'
 import { User } from 'next-firebase-auth'
 import dynamic from 'next/dynamic'
+import Image from 'next/image'
+import NextLink from 'next/link'
 import { useRouter } from 'next/router'
+import { ReactElement, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import logo from '../../../../public/taskbar-icon.svg'
 import { HelpScoutBeacon } from '../../HelpScoutBeacon'
+import { EDIT_TOOLBAR_HEIGHT } from '../constants'
 import { Items } from './Items'
+import { CommandRedoItem } from './Items/CommandRedoItem'
+import { CommandUndoItem } from './Items/CommandUndoItem'
 import { Menu } from './Menu'
 
 const TitleDescriptionDialog = dynamic(
@@ -44,6 +44,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
   const { journey } = useJourney()
   const [dialogOpen, setDialogOpen] = useState(false)
   const { dispatch } = useEditor()
+  const { commands } = useFlags()
 
   function setRoute(param: string): void {
     void router.push({ query: { ...router.query, param } }, undefined, {
@@ -106,6 +107,12 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
       </NextLink>
       {journey != null && (
         <>
+          {commands && (
+            <>
+              <CommandUndoItem variant="icon-button" />
+              <CommandRedoItem variant="icon-button" />
+            </>
+          )}
           <Tooltip
             title={t('Social Image')}
             arrow
