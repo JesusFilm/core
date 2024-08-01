@@ -38,6 +38,7 @@ export function TypographyEdit({
   >(TYPOGRAPHY_BLOCK_UPDATE_CONTENT)
 
   const [value, setValue] = useState(content)
+  const [selection, setSelection] = useState({ start: 0, end: value.length })
   const { add } = useCommand()
   const {
     state: { selectedBlock, selectedStep },
@@ -141,13 +142,20 @@ export function TypographyEdit({
             }
           }}
           onFocus={(e) =>
-            e.currentTarget.setSelectionRange(
-              e.currentTarget.value.length,
-              e.currentTarget.value.length
+            (e.currentTarget as HTMLInputElement).setSelectionRange(
+              selection.start,
+              selection.end
             )
           }
           value={value}
           placeholder={t('Add your text here...')}
+          onSelect={(e) => {
+            const input = e.target as HTMLInputElement
+            setSelection({
+              start: input.selectionStart ?? 0,
+              end: input.selectionEnd ?? value.length
+            })
+          }}
           onChange={(e) => {
             setValue(e.target.value)
             if (content !== e.target.value.trim())

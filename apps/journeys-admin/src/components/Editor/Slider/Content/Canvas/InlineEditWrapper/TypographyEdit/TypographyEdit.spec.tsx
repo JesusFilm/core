@@ -180,9 +180,7 @@ describe('TypographyEdit', () => {
         query: TYPOGRAPHY_BLOCK_UPDATE_CONTENT,
         variables: {
           id: 'typography.id',
-          input: {
-            content: 'new'
-          }
+          content: 'new'
         }
       },
       result: result1
@@ -193,9 +191,7 @@ describe('TypographyEdit', () => {
         query: TYPOGRAPHY_BLOCK_UPDATE_CONTENT,
         variables: {
           id: 'typography.id',
-          input: {
-            content: 'test content'
-          }
+          content: 'test content'
         }
       },
       result: result2
@@ -216,8 +212,8 @@ describe('TypographyEdit', () => {
     fireEvent.blur(input)
     await waitFor(() => expect(result1).toHaveBeenCalled())
 
-    // fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
-    // await waitFor(() => expect(result2).toHaveBeenCalled())
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(result2).toHaveBeenCalled())
   })
 
   it('should redo the typography content change', async () => {
@@ -250,9 +246,7 @@ describe('TypographyEdit', () => {
         query: TYPOGRAPHY_BLOCK_UPDATE_CONTENT,
         variables: {
           id: 'typography.id',
-          input: {
-            content: 'new'
-          }
+          content: 'new'
         }
       },
       result: result1,
@@ -264,9 +258,7 @@ describe('TypographyEdit', () => {
         query: TYPOGRAPHY_BLOCK_UPDATE_CONTENT,
         variables: {
           id: 'typography.id',
-          input: {
-            content: 'test content'
-          }
+          content: 'test content'
         }
       },
       result: result2
