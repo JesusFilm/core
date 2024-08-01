@@ -21,29 +21,6 @@ import { useTranslation } from 'react-i18next'
 import { useUpdateEdge } from '../../libs/useUpdateEdge'
 import { BaseNode, HandleVariant } from '../BaseNode'
 
-const tooltipProps = {
-  placement: 'top' as const,
-  arrow: true,
-  slotProps: {
-    popper: {
-      modifiers: [
-        {
-          name: 'offset',
-          options: {
-            offset: [0, -8]
-          }
-        }
-      ]
-    },
-    tooltip: {
-      sx: {
-        px: 2,
-        py: 0
-      }
-    }
-  }
-}
-
 export function SocialPreviewNode(): ReactElement {
   const { journey } = useJourney()
   const {
@@ -101,7 +78,29 @@ export function SocialPreviewNode(): ReactElement {
       positionTargetHandle={false}
     >
       {({ selected }) => (
-        <Tooltip title={t('Social Media Preview')} {...tooltipProps}>
+        <Tooltip
+          title={t('Social Media Preview')}
+          placement="top"
+          arrow
+          slotProps={{
+            popper: {
+              modifiers: [
+                {
+                  name: 'offset',
+                  options: {
+                    offset: [0, 3]
+                  }
+                }
+              ]
+            },
+            tooltip: {
+              sx: {
+                px: 2,
+                py: 0
+              }
+            }
+          }}
+        >
           <Card
             data-testid="SocialPreviewNode"
             sx={{
@@ -173,22 +172,56 @@ export function SocialPreviewNode(): ReactElement {
                 }}
               />
             </Stack>
-            <Tooltip title={t('Social Image')} {...tooltipProps}>
-              <CardMedia
-                sx={{
-                  width: 118.5,
-                  height: 90,
-                  display: 'flex',
-                  flexDirection: 'column'
-                }}
-              >
-                {journey?.primaryImageBlock?.src == null ? (
+            <CardMedia
+              sx={{
+                width: 118.5,
+                height: 90,
+                display: 'flex',
+                flexDirection: 'column'
+              }}
+            >
+              {journey?.primaryImageBlock?.src == null ? (
+                <Box
+                  data-testid="SocialPreviewPostEmpty"
+                  display="block"
+                  width={118.5}
+                  height={90}
+                  borderRadius={1}
+                  sx={{
+                    bgcolor: ({ palette }) =>
+                      showAnalytics === true
+                        ? alpha(palette.secondary.dark, 0.1)
+                        : 'background.default'
+                  }}
+                />
+              ) : (
+                <Image
+                  src={journey.primaryImageBlock.src}
+                  alt={journey.primaryImageBlock.alt ?? ''}
+                  width={118.5}
+                  height={90}
+                  style={{
+                    borderRadius: 1,
+                    maxWidth: '100%',
+                    objectFit: 'cover'
+                  }}
+                />
+              )}
+            </CardMedia>
+            <Stack
+              sx={{
+                flexDirection: 'column',
+                display: 'flex'
+              }}
+            >
+              <Stack gap={0.75} sx={{ mt: 1 }}>
+                {journey?.seoTitle == null ||
+                isEmpty(journey?.seoTitle?.trim()) ? (
                   <Box
-                    data-testid="SocialPreviewPostEmpty"
-                    display="block"
+                    data-testid="SocialPreviewTitleEmpty"
                     width={118.5}
-                    height={90}
-                    borderRadius={1}
+                    height={9}
+                    borderRadius={0.75}
                     sx={{
                       bgcolor: ({ palette }) =>
                         showAnalytics === true
@@ -197,81 +230,41 @@ export function SocialPreviewNode(): ReactElement {
                     }}
                   />
                 ) : (
-                  <Image
-                    src={journey.primaryImageBlock.src}
-                    alt={journey.primaryImageBlock.alt ?? ''}
+                  <Typography
+                    variant="subtitle1"
+                    fontSize={7}
+                    lineHeight="9px"
+                    color="secondary.dark"
+                    noWrap
+                  >
+                    {journey.seoTitle}
+                  </Typography>
+                )}
+                {journey?.seoDescription == null ||
+                isEmpty(journey?.seoDescription?.trim()) ? (
+                  <Box
+                    data-testid="SocialPreviewDescriptionEmpty"
                     width={118.5}
-                    height={90}
-                    style={{
-                      borderRadius: 1,
-                      maxWidth: '100%',
-                      objectFit: 'cover'
+                    height={9}
+                    borderRadius={0.75}
+                    sx={{
+                      bgcolor: ({ palette }) =>
+                        showAnalytics === true
+                          ? alpha(palette.secondary.dark, 0.1)
+                          : 'background.default'
                     }}
                   />
+                ) : (
+                  <Typography
+                    variant="body2"
+                    fontSize={4.5}
+                    lineHeight="9px"
+                    color="secondary.light"
+                    noWrap
+                  >
+                    {journey.seoDescription}
+                  </Typography>
                 )}
-              </CardMedia>
-            </Tooltip>
-            <Stack
-              sx={{
-                flexDirection: 'column',
-                display: 'flex'
-              }}
-            >
-              <Stack gap={0.75} sx={{ mt: 1 }}>
-                <Tooltip title={t('Headline')} {...tooltipProps}>
-                  {journey?.seoTitle == null ||
-                  isEmpty(journey?.seoTitle?.trim()) ? (
-                    <Box
-                      data-testid="SocialPreviewTitleEmpty"
-                      width={118.5}
-                      height={9}
-                      borderRadius={0.75}
-                      sx={{
-                        bgcolor: ({ palette }) =>
-                          showAnalytics === true
-                            ? alpha(palette.secondary.dark, 0.1)
-                            : 'background.default'
-                      }}
-                    />
-                  ) : (
-                    <Typography
-                      variant="subtitle1"
-                      fontSize={7}
-                      lineHeight="9px"
-                      color="secondary.dark"
-                      noWrap
-                    >
-                      {journey.seoTitle}
-                    </Typography>
-                  )}
-                </Tooltip>
-                <Tooltip title={t('Secondary Text')} {...tooltipProps}>
-                  {journey?.seoDescription == null ||
-                  isEmpty(journey?.seoDescription?.trim()) ? (
-                    <Box
-                      data-testid="SocialPreviewDescriptionEmpty"
-                      width={118.5}
-                      height={9}
-                      borderRadius={0.75}
-                      sx={{
-                        bgcolor: ({ palette }) =>
-                          showAnalytics === true
-                            ? alpha(palette.secondary.dark, 0.1)
-                            : 'background.default'
-                      }}
-                    />
-                  ) : (
-                    <Typography
-                      variant="body2"
-                      fontSize={4.5}
-                      lineHeight="9px"
-                      color="secondary.light"
-                      noWrap
-                    >
-                      {journey.seoDescription}
-                    </Typography>
-                  )}
-                </Tooltip>
               </Stack>
               <Stack
                 flexDirection="row"
