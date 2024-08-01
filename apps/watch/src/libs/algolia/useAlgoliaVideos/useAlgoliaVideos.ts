@@ -1,10 +1,5 @@
 import { BaseHit, Hit } from 'instantsearch.js'
-import { useEffect, useRef } from 'react'
-import {
-  useInfiniteHits,
-  useInstantSearch,
-  useRefinementList
-} from 'react-instantsearch'
+import { useInfiniteHits, useInstantSearch } from 'react-instantsearch'
 import {
   VideoChildFields_imageAlt,
   VideoChildFields_snippet,
@@ -70,23 +65,10 @@ export function transformItems(items: AlgoliaVideo[]): CoreVideo[] {
 }
 
 export function useAlgoliaVideos() {
-  const isInitialRender = useRef(true)
   const { status } = useInstantSearch()
   const { hits, showMore, isLastPage } = useInfiniteHits<AlgoliaVideo>()
 
-  const { items, refine } = useRefinementList({
-    attribute: 'languageId'
-  })
-
   const transformedHits = transformItems(hits)
-
-  useEffect(() => {
-    if (isInitialRender) {
-      isInitialRender.current = false
-      const hasRefinedLanguage = items.some((item) => item.isRefined)
-      if (!hasRefinedLanguage) refine('529')
-    }
-  }, [items, refine])
 
   return {
     stalled: status === 'stalled',

@@ -98,8 +98,8 @@ export function FilterList({
   const decodedUrl = decodeURIComponent(router?.asPath ?? '')
   const { query, languageId, subtitleId } = extractQueryParams(decodedUrl)
 
-  const { refine } = useClearRefinements({
-    includedAttributes: ['languageId', 'subtitles']
+  const { refine: clearSubtitleRefine } = useClearRefinements({
+    includedAttributes: ['subtitles']
   })
   const { refine: refineSearch } = useSearchBox()
   const { items: languageItems, refine: refineLanguages } = useRefinementList({
@@ -168,11 +168,10 @@ export function FilterList({
       refineSearch(title)
     }
     if (languageId) {
-      refine()
       refineLanguages(languageId)
     }
     if (subtitleLanguageId) {
-      refine()
+      clearSubtitleRefine()
       refineSubtitles(subtitleLanguageId)
     }
   }
@@ -185,7 +184,6 @@ export function FilterList({
     })
   }
 
-  // TODO: handleRefine not updating on initial render
   // biome-ignore lint/correctness/useExhaustiveDependencies: effect to only run on componentDidMount
   useEffect(() => {
     handleRefine({

@@ -5,6 +5,7 @@ import singletonRouter from 'next/router'
 import { ReactElement } from 'react'
 import { renderToString } from 'react-dom/server'
 import {
+  Configure,
   InstantSearch,
   InstantSearchSSRProvider,
   InstantSearchServerState,
@@ -69,6 +70,7 @@ function HomePage({ serverState, serverUrl }: HomePageProps): ReactElement {
           }
         }}
       >
+        <Configure filters="languageId:529" />
         <VideoHomePage />
       </InstantSearch>
     </InstantSearchSSRProvider>
