@@ -6,8 +6,7 @@ import { alpha } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import isEmpty from 'lodash/isEmpty'
 import Image from 'next/image'
-import type { ReactElement } from 'react'
-import type { OnConnect } from 'reactflow'
+import { ReactElement, useState } from 'react'
 
 import {
   ActiveContent,
@@ -18,8 +17,19 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Tooltip from '@mui/material/Tooltip'
 import { alpha } from '@mui/system'
 import { useTranslation } from 'react-i18next'
+import { OnConnect, useStore } from 'reactflow'
 import { useUpdateEdge } from '../../libs/useUpdateEdge'
 import { BaseNode, HandleVariant } from '../BaseNode'
+
+const zoomSelector = (s) => {
+  const zoom = s.transform[2]
+
+  // Zoom : Offset
+  // 0.5 : -4
+  // 1.0 : -2
+  // 2.0 : -5
+  return 6 * zoom - 7 // Slope intercept
+}
 
 export function SocialPreviewNode(): ReactElement {
   const { journey } = useJourney()
@@ -28,6 +38,8 @@ export function SocialPreviewNode(): ReactElement {
   } = useEditor()
   const updateEdge = useUpdateEdge()
   const { t } = useTranslation('apps-journeys-admin')
+  const [showTooltip, setShowTooltip] = useState(false)
+  const scaledOffset = useStore(zoomSelector)
 
   const {
     dispatch,
@@ -54,6 +66,8 @@ export function SocialPreviewNode(): ReactElement {
         type: 'SetActiveSlideAction',
         activeSlide: ActiveSlide.Content
       })
+
+      setShowTooltip(false)
     }
   }
 
@@ -82,13 +96,16 @@ export function SocialPreviewNode(): ReactElement {
           title={t('Social Media Preview')}
           placement="top"
           arrow
+          open={showTooltip}
+          onOpen={() => setShowTooltip(true)}
+          onClose={() => setShowTooltip(false)}
           slotProps={{
             popper: {
               modifiers: [
                 {
                   name: 'offset',
                   options: {
-                    offset: [0, 3]
+                    offset: [0, scaledOffset]
                   }
                 }
               ]
