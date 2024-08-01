@@ -166,7 +166,7 @@ export function useCreateStepFromSocialPreview(): (
       return step
     })
 
-    add({
+    void add({
       parameters: {
         execute: { optimisticSteps },
         undo: { stepBeforeDelete: oldFirstStep, steps },
@@ -212,7 +212,7 @@ export function useCreateStepFromSocialPreview(): (
             selectedStepId: stepBeforeDelete.id,
             activeSlide: ActiveSlide.JourneyFlow
           })
-          stepBlockDeleteFromSocialPreview({
+          void stepBlockDeleteFromSocialPreview({
             variables: {
               id: step.id,
               journeyId: journey.id,

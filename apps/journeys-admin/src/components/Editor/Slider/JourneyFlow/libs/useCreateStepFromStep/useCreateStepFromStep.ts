@@ -150,7 +150,7 @@ export function useCreateStepFromStep(): (
       parentOrder: 0
     }
 
-    await add({
+    void add({
       parameters: {
         execute: {},
         undo: { stepBeforeDelete: selectedStep }

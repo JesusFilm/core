@@ -52,7 +52,7 @@ export function useCreateStep(): (input: CreateStepInput) => Promise<void> {
       backgroundColor: null,
       parentOrder: 0
     }
-    await add({
+    void add({
       parameters: {
         execute: {},
         undo: { stepBeforeDelete: selectedStep }
@@ -86,10 +86,9 @@ export function useCreateStep(): (input: CreateStepInput) => Promise<void> {
         })
       },
       async undo({ stepBeforeDelete }) {
-        if (stepBeforeDelete == null) return
         dispatch({
           type: 'SetEditorFocusAction',
-          selectedStepId: stepBeforeDelete.id,
+          selectedStepId: stepBeforeDelete?.id,
           activeSlide: ActiveSlide.JourneyFlow
         })
         void blockDelete(step, {
