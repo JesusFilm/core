@@ -1,89 +1,155 @@
 import { gql, useMutation } from '@apollo/client'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useCommand } from '@core/journeys/ui/CommandProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { SignUp } from '@core/journeys/ui/SignUp'
 import type { TreeBlock } from '@core/journeys/ui/block'
 
-import { SignUpBlockUpdateContent } from '../../../../../../../../__generated__/SignUpBlockUpdateContent'
+import {
+  SignUpBlockUpdateSubmitLabel,
+  SignUpBlockUpdateSubmitLabelVariables
+} from '../../../../../../../../__generated__/SignUpBlockUpdateSubmitLabel'
 import { SignUpFields } from '../../../../../../../../__generated__/SignUpFields'
 import { InlineEditInput } from '../InlineEditInput'
-import { useOnClickOutside } from '../useOnClickOutside/useOnClickOutside'
 
-export const SIGN_UP_BLOCK_UPDATE_CONTENT = gql`
-  mutation SignUpBlockUpdateContent(
+export const SIGN_UP_BLOCK_UPDATE_SUBMIT_LABEL = gql`
+  mutation SignUpBlockUpdateSubmitLabel(
     $id: ID!
-    $journeyId: ID!
-    $input: SignUpBlockUpdateInput!
+    $submitLabel: String!
   ) {
-    signUpBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+    signUpBlockUpdate(id: $id, input: { submitLabel: $submitLabel }) {
       id
       submitLabel
     }
   }
 `
-interface SignUpEditProps extends TreeBlock<SignUpFields> {}
-
 export function SignUpEdit({
   id,
   submitLabel,
+  __typename,
   ...signUpProps
-}: SignUpEditProps): ReactElement {
-  const [signUpBlockUpdate] = useMutation<SignUpBlockUpdateContent>(
-    SIGN_UP_BLOCK_UPDATE_CONTENT
-  )
+}: TreeBlock<SignUpFields>): ReactElement {
+  const [signUpBlockUpdate] = useMutation<
+    SignUpBlockUpdateSubmitLabel,
+    SignUpBlockUpdateSubmitLabelVariables
+  >(SIGN_UP_BLOCK_UPDATE_SUBMIT_LABEL, {
+    context: { debounceKey: `${__typename}:${id}` }
+  })
 
-  const { journey } = useJourney()
-  const [value, setValue] = useState(submitLabel ?? '')
+  const [value, setValue] = useState(submitLabel)
+  const { add } = useCommand()
+  const {
+    state: { selectedBlock, selectedStep },
+    dispatch
+  } = useEditor()
 
-  async function handleSaveBlock(): Promise<void> {
-    const currentSubmitLabel = value.trim().replace(/\n/g, '')
-    if (journey == null || submitLabel === currentSubmitLabel) return
+  useEffect(() => {
+    setValue(submitLabel)
+  }, [submitLabel])
 
-    await signUpBlockUpdate({
-      variables: {
-        id,
-        journeyId: journey.id,
-        input: { submitLabel: currentSubmitLabel }
-      },
-      optimisticResponse: {
-        signUpBlockUpdate: {
-          id,
-          __typename: 'SignUpBlock',
-          submitLabel: currentSubmitLabel
+  async function handleSubmit(value: string): Promise<void> {
+    await add({
+      parameters: {
+        execute: {
+          submitLabel: value
+        },
+        undo: {
+          submitLabel: submitLabel ?? ''
         }
+      },
+      async execute({ submitLabel }) {
+        await signUpBlockUpdate({
+          variables: {
+            id,
+            submitLabel
+          },
+          optimisticResponse: {
+            signUpBlockUpdate: {
+              id,
+              __typename: 'SignUpBlock',
+              submitLabel
+            }
+          }
+        })
+      },
+      async undo({ submitLabel }) {
+        dispatch({
+          type: 'SetEditorFocusAction',
+          selectedBlock,
+          selectedStep
+        })
+        await signUpBlockUpdate({
+          variables: {
+            id,
+            submitLabel
+          },
+          optimisticResponse: {
+            signUpBlockUpdate: {
+              id,
+              __typename: 'SignUpBlock',
+              submitLabel
+            }
+          },
+          context: {
+            debounceTimeout: 0
+          }
+        })
+      },
+      async redo({ submitLabel }) {
+        dispatch({
+          type: 'SetEditorFocusAction',
+          selectedBlock,
+          selectedStep
+        })
+        await signUpBlockUpdate({
+          variables: {
+            id,
+            submitLabel
+          },
+          optimisticResponse: {
+            signUpBlockUpdate: {
+              id,
+              __typename: 'SignUpBlock',
+              submitLabel
+            }
+          },
+          context: {
+            debounceTimeout: 0
+          }
+        })
       }
     })
   }
-  const inputRef = useOnClickOutside(async () => await handleSaveBlock())
-
-  const input = (
-    <InlineEditInput
-      name={`edit-${id}`}
-      ref={inputRef}
-      fullWidth
-      multiline
-      autoFocus
-      onBlur={handleSaveBlock}
-      value={value}
-      onChange={(e) => {
-        setValue(e.currentTarget.value)
-      }}
-      onClick={(e) => e.stopPropagation()}
-    />
-  )
 
   return (
     <SignUp
       {...signUpProps}
+      __typename={__typename}
       id={id}
       submitLabel={submitLabel}
-      editableSubmitLabel={input}
-      sx={{
-        '&:hover': {
-          backgroundColor: 'primary.main'
-        }
-      }}
+      editableSubmitLabel={
+        <InlineEditInput
+          name="submitLabel"
+          fullWidth
+          multiline
+          inputRef={(ref) => ref && ref.focus()}
+          onFocus={(e) =>
+            e.currentTarget.setSelectionRange(
+              e.currentTarget.value.length,
+              e.currentTarget.value.length
+            )
+          }
+          value={value}
+          onChange={(e) => {
+            setValue(e.target.value)
+            if (submitLabel !== e.target.value.trim())
+              handleSubmit(e.target.value.trim())
+          }}
+          // Stop click and drag outside the iframe deselcting selected block
+          onClick={(e) => e.stopPropagation()}
+        />
+      }
     />
   )
 }

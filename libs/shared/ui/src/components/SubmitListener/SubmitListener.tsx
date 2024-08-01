@@ -4,7 +4,8 @@ import isEqual from 'lodash/isEqual'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 export function SubmitListener(): null {
-  const { submitForm, values, initialValues, isValid } = useFormikContext()
+  const { submitForm, values, initialValues, isValid, status } =
+    useFormikContext()
   const [lastValues, updateState] = useState(values)
 
   const debouncedSubmit = useMemo(
@@ -28,10 +29,13 @@ export function SubmitListener(): null {
     const valuesEqualInitialValues = isEqual(values, initialValues)
 
     if (!valuesEqualLastValues) updateState(values)
-
     if (!valuesEqualLastValues && !valuesEqualInitialValues && isValid)
       handleSubmit()
   }, [values, isValid, initialValues, lastValues, handleSubmit])
+
+  useEffect(() => {
+    if (status?.onBlurSubmit === true) debouncedSubmit.flush()
+  }, [status, debouncedSubmit])
 
   return null
 }

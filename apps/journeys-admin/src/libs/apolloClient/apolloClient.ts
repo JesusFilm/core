@@ -1,6 +1,12 @@
 import MutationQueueLink from '@adobe/apollo-link-mutation-queue'
-import { ApolloClient, HttpLink, NormalizedCacheObject } from '@apollo/client'
+import {
+  ApolloClient,
+  ApolloLink,
+  HttpLink,
+  NormalizedCacheObject
+} from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
+import DebounceLink from 'apollo-link-debounce'
 import { getApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
 import { useMemo } from 'react'
@@ -10,13 +16,14 @@ import { cache } from './cache'
 const ssrMode = typeof window === 'undefined'
 let apolloClient: ApolloClient<NormalizedCacheObject>
 
+const DEFAULT_DEBOUNCE_TIMEOUT = 500
+
 export function createApolloClient(
   token?: string
 ): ApolloClient<NormalizedCacheObject> {
   const httpLink = new HttpLink({
     uri: process.env.NEXT_PUBLIC_GATEWAY_URL
   })
-
   const authLink = setContext(async (_, { headers }) => {
     const firebaseToken = ssrMode
       ? token
@@ -29,12 +36,19 @@ export function createApolloClient(
       }
     }
   })
-
   const mutationQueueLink = new MutationQueueLink()
+  const debounceLink = new DebounceLink(DEFAULT_DEBOUNCE_TIMEOUT)
+
+  const link = ApolloLink.from([
+    debounceLink,
+    mutationQueueLink,
+    authLink,
+    httpLink
+  ])
 
   return new ApolloClient({
     ssrMode,
-    link: mutationQueueLink.concat(authLink.concat(httpLink)),
+    link,
     cache: cache(),
     name: 'journeys-admin',
     version: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA,
