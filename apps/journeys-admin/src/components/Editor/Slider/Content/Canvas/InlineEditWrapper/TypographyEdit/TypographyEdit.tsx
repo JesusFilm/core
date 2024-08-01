@@ -158,8 +158,7 @@ export function TypographyEdit({
           }}
           onChange={(e) => {
             setValue(e.target.value)
-            if (content !== e.target.value.trim())
-              handleSubmit(e.target.value.trim())
+            handleSubmit(e.target.value)
           }}
         />
       }
