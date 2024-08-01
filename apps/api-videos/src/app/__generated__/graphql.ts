@@ -65,6 +65,7 @@ export class BibleCitation {
 export class Video {
     __typename?: 'Video';
     bibleCitations: BibleCitation[];
+    keywords?: Nullable<VideoVariant>;
     id: string;
     label: VideoLabel;
     primaryLanguageId: string;
@@ -85,6 +86,24 @@ export class Video {
     variant?: Nullable<VideoVariant>;
 }
 
+export class Keyword {
+    __typename?: 'Keyword';
+    id: string;
+    value: string;
+    language: Language;
+    videos: Video[];
+}
+
+export abstract class IQuery {
+    __typename?: 'IQuery';
+
+    abstract keywords(languageId?: Nullable<string>): Keyword[] | Promise<Keyword[]>;
+
+    abstract videos(where?: Nullable<VideosFilter>, offset?: Nullable<number>, limit?: Nullable<number>): Video[] | Promise<Video[]>;
+
+    abstract video(id: string, idType?: Nullable<IdType>): Nullable<Video> | Promise<Nullable<Video>>;
+}
+
 export class LanguageWithSlug {
     __typename?: 'LanguageWithSlug';
     language?: Nullable<Language>;
@@ -98,14 +117,6 @@ export class VideoSubtitle {
     edition: string;
     vttSrc?: Nullable<string>;
     srtSrc?: Nullable<string>;
-}
-
-export abstract class IQuery {
-    __typename?: 'IQuery';
-
-    abstract videos(where?: Nullable<VideosFilter>, offset?: Nullable<number>, limit?: Nullable<number>): Video[] | Promise<Video[]>;
-
-    abstract video(id: string, idType?: Nullable<IdType>): Nullable<Video> | Promise<Nullable<Video>>;
 }
 
 export class VideoVariantDownload {
