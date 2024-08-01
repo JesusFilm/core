@@ -40,14 +40,14 @@ export function MinRows(): ReactElement {
 
   async function handleChange(minRows: number): Promise<void> {
     if (selectedBlock == null) return
-    await add({
+    add({
       parameters: {
         execute: { minRows },
         undo: {
           minRows: selectedBlock.minRows
         }
       },
-      async execute({ minRows }) {
+      execute({ minRows }) {
         dispatch({
           type: 'SetEditorFocusAction',
           selectedBlock,
@@ -55,7 +55,7 @@ export function MinRows(): ReactElement {
           selectedAttributeId: state.selectedAttributeId
         })
 
-        await textResponseMinRowsUpdate({
+        void textResponseMinRowsUpdate({
           variables: {
             id: selectedBlock.id,
             input: {

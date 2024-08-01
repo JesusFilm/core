@@ -55,9 +55,10 @@ export function Integrations(): ReactElement {
   const value = selectedIntegration?.type.concat(
     ` - ${selectedIntegration?.accessSecretPart}`
   )
-  const options = data?.integrations.map((integration) =>
-    integration.type.concat(` - ${integration.accessSecretPart}`)
-  )
+  const options =
+    data?.integrations.map((integration) =>
+      integration.type.concat(` - ${integration.accessSecretPart}`)
+    ) ?? []
 
   async function handleChange(event: SelectChangeEvent) {
     if (selectedBlock == null) return
@@ -99,17 +100,15 @@ export function Integrations(): ReactElement {
     })
   }
 
-  return (
+  return options?.length > 0 ? (
     <>
-      <Typography variant="subtitle2">
-        {t('Growth Spaces Integrations')}
-      </Typography>
+      <Typography variant="subtitle2">{t('Growth Spaces')}</Typography>
       <Select
-        label="Integrations"
+        label={t('Select Integration')}
         value={value ?? ''}
         onChange={handleChange}
         options={options}
       />
     </>
-  )
+  ) : null
 }

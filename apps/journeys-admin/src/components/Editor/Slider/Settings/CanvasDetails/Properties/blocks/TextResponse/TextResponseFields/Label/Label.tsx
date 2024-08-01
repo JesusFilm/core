@@ -1,14 +1,14 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
-import { Form, Formik } from 'formik'
+import {} from 'formik'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
+import { v4 as uuidv4 } from 'uuid'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { SubmitListener } from '@core/shared/ui/SubmitListener'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
 import {
@@ -28,10 +28,6 @@ export const TEXT_RESPONSE_LABEL_UPDATE = gql`
   }
 `
 
-interface Values {
-  label: string
-}
-
 export function Label(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [textResponseLabelUpdate] = useMutation<
@@ -39,28 +35,62 @@ export function Label(): ReactElement {
     TextResponseLabelUpdateVariables
   >(TEXT_RESPONSE_LABEL_UPDATE)
   const { state, dispatch } = useEditor()
-  const { add } = useCommand()
+  const {
+    add,
+    state: { undo }
+  } = useCommand()
 
   const selectedBlock = state.selectedBlock as
     | TreeBlock<TextResponseBlock>
     | undefined
+  const [value, setValue] = useState(selectedBlock?.label ?? '')
+  const [commandInput, setCommandInput] = useState({ id: uuidv4(), value })
 
-  async function handleSubmit({ label }: Values): Promise<void> {
-    if (selectedBlock == null || selectedBlock.label === label) return
+  // biome-ignore lint/correctness/useExhaustiveDependencies: only run effect when undo changes
+  useEffect(() => {
+    if (undo == null || undo.id === commandInput.id) return
+    resetCommandInput()
+  }, [undo?.id])
 
-    await add({
+  useEffect(() => {
+    setValue(selectedBlock?.label ?? '')
+  }, [selectedBlock?.label])
+
+  function resetCommandInput() {
+    setCommandInput({ id: uuidv4(), value })
+  }
+
+  function handleSubmit(value: string): void {
+    if (selectedBlock == null) return
+
+    add({
       parameters: {
-        execute: { label },
-        undo: { label: selectedBlock.label }
+        execute: {
+          label: value,
+          context: {},
+          runDispatch: false
+        },
+        undo: {
+          label: commandInput.value,
+          context: { debounceTimeout: 1 },
+          runDispatch: true
+        },
+        redo: {
+          label: value,
+          context: { debounceTimeout: 1 },
+          runDispatch: true
+        }
       },
-      async execute({ label }) {
-        dispatch({
-          type: 'SetEditorFocusAction',
-          selectedBlock,
-          selectedStep: state.selectedStep
-        })
+      execute({ label, context, runDispatch }) {
+        if (runDispatch)
+          dispatch({
+            type: 'SetEditorFocusAction',
+            selectedBlock,
+            selectedStep: state.selectedStep,
+            selectedAttributeId: state.selectedAttributeId
+          })
 
-        await textResponseLabelUpdate({
+        void textResponseLabelUpdate({
           variables: {
             id: selectedBlock.id,
             input: {
@@ -73,53 +103,33 @@ export function Label(): ReactElement {
               label,
               __typename: 'TextResponseBlock'
             }
+          },
+          context: {
+            debounceKey: `${selectedBlock.__typename}:${selectedBlock.id}`,
+            ...context
           }
         })
       }
     })
   }
 
-  const initialValues: Values = {
-    label: selectedBlock?.label ?? ''
-  }
-
   return (
     <Box sx={{ p: 4, pt: 0 }} data-testid="Label">
-      {selectedBlock != null ? (
-        <Formik
-          initialValues={initialValues}
-          onSubmit={handleSubmit}
-          enableReinitialize
-        >
-          {({ values, handleChange, handleBlur }) => (
-            <Form>
-              <TextField
-                id="label"
-                name="label"
-                variant="filled"
-                label={t('Label')}
-                fullWidth
-                value={values.label}
-                placeholder={t('Your answer here')}
-                inputProps={{ maxLength: 250 }}
-                onChange={handleChange}
-                onBlur={handleBlur}
-              />
-              <SubmitListener />
-            </Form>
-          )}
-        </Formik>
-      ) : (
-        <TextField
-          variant="filled"
-          label={t('Label')}
-          fullWidth
-          disabled
-          sx={{
-            pb: 4
-          }}
-        />
-      )}
+      <TextField
+        id="label"
+        name="label"
+        variant="filled"
+        label={t('Label')}
+        placeholder={t('Your answer here')}
+        fullWidth
+        inputProps={{ maxLength: 250 }}
+        value={value}
+        onFocus={resetCommandInput}
+        onChange={(e) => {
+          setValue(e.target.value)
+          handleSubmit(e.target.value)
+        }}
+      />
     </Box>
   )
 }
