@@ -226,7 +226,7 @@ export const SignUp = ({
               <span>
                 {editableSubmitLabel != null
                   ? editableSubmitLabel
-                  : submitLabel !== ''
+                  : submitLabel != null && submitLabel !== ''
                     ? submitLabel
                     : t('Submit')}
               </span>
