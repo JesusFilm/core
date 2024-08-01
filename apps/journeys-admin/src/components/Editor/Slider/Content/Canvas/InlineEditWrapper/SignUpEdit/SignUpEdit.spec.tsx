@@ -9,9 +9,8 @@ import { SignUpFields } from '../../../../../../../../__generated__/SignUpFields
 
 import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
-import { SIGN_UP_BLOCK_UPDATE_SUBMIT_LABEL } from './SignUpEdit'
 
-import { SignUpEdit } from '.'
+import { SIGN_UP_BLOCK_UPDATE_SUBMIT_LABEL, SignUpEdit } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
