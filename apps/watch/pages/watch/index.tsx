@@ -1,5 +1,5 @@
 import { gql } from '@apollo/client'
-import { GetServerSideProps } from 'next'
+import { GetStaticProps } from 'next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import singletonRouter from 'next/router'
 import { ReactElement } from 'react'
@@ -36,21 +36,19 @@ const searchClient = algoliasearch(
 
 interface HomePageProps {
   serverState?: InstantSearchServerState
-  serverUrl?: string
 }
 
-function HomePage({ serverState, serverUrl }: HomePageProps): ReactElement {
+function HomePage({ serverState }: HomePageProps): ReactElement {
   return (
     <InstantSearchSSRProvider {...serverState}>
       <InstantSearch
         insights
         searchClient={searchClient}
-        indexName="video-variants-stg"
         future={{ preserveSharedStateOnUnmount: true }}
         stalledSearchDelay={500}
         routing={{
           router: createInstantSearchRouterNext({
-            serverUrl: serverUrl,
+            serverUrl: process.env.NEXT_PUBLIC_WATCH_URL,
             singletonRouter,
             routerOptions: {
               cleanUrlOnDispose: false
@@ -77,21 +75,18 @@ function HomePage({ serverState, serverUrl }: HomePageProps): ReactElement {
   )
 }
 
-export const getServerSideProps: GetServerSideProps<HomePageProps> = async ({
-  req,
+export const getStaticProps: GetStaticProps<HomePageProps> = async ({
   locale
 }) => {
-  const protocol = req.headers.referer?.split('://')[0] || 'https'
-  const serverUrl = `${protocol}://${req.headers.host}${req.url}`
-  const serverState = await getServerState(<HomePage serverUrl={serverUrl} />, {
+  const serverState = await getServerState(<HomePage />, {
     renderToString
   })
 
   return {
+    revalidate: 3600,
     props: {
       flags: await getFlags(),
       serverState,
-      serverUrl,
       ...(await serverSideTranslations(
         locale ?? 'en',
         ['apps-watch'],
@@ -100,5 +95,4 @@ export const getServerSideProps: GetServerSideProps<HomePageProps> = async ({
     }
   }
 }
-
 export default HomePage
