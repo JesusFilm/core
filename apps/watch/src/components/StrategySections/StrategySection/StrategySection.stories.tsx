@@ -3,13 +3,10 @@ import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearc
 import { Box } from '@mui/material'
 import { jest } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
-import algoliasearch from 'algoliasearch'
 import { ComponentProps } from 'react'
 import { watchConfig } from '../../../libs/storybook'
 import { StrategySection } from './StrategySection'
-import { parameters } from '.storybook/preview'
 import { getStrategyCardDataHandlers } from './StrategySection.handlers'
-import { SWRConfig } from 'swr'
 
 const StrategySectionStory: Meta<typeof StrategySection> = {
   ...watchConfig,
@@ -38,7 +35,7 @@ export const Default = {
   },
   parameters: {
     msw: {
-       handlers: [getStrategyCardDataHandlers]
+      handlers: [getStrategyCardDataHandlers]
     }
   }
 }
