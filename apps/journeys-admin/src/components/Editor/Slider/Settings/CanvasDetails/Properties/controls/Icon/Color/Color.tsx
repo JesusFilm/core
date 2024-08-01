@@ -41,9 +41,9 @@ export function Color({ id, iconColor }: ColorProps): ReactElement {
   } = useEditor()
   const { add } = useCommand()
 
-  async function handleChange(color: IconColor): Promise<void> {
+  function handleChange(color: IconColor): void {
     if (color !== iconColor && color != null) {
-      await add({
+      add({
         parameters: {
           execute: {
             color
@@ -52,14 +52,13 @@ export function Color({ id, iconColor }: ColorProps): ReactElement {
             color: iconColor
           }
         },
-        async execute({ color }) {
+        execute({ color }) {
           dispatch({
             type: 'SetEditorFocusAction',
             selectedBlock,
             selectedStep
           })
-
-          await iconBlockColorUpdate({
+          void iconBlockColorUpdate({
             variables: {
               id,
               input: {
