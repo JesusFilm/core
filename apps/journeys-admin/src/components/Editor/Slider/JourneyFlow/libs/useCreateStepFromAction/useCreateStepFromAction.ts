@@ -22,9 +22,9 @@ import {
   StepBlockDeleteFromActionVariables
 } from '../../../../../../../__generated__/StepBlockDeleteFromAction'
 import {
-  StepBlockDeleteFromActionWhereNull,
-  StepBlockDeleteFromActionWhereNullVariables
-} from '../../../../../../../__generated__/StepBlockDeleteFromActionWhereNull'
+  StepBlockDeleteFromActionWithoutAction,
+  StepBlockDeleteFromActionWithoutActionVariables
+} from '../../../../../../../__generated__/StepBlockDeleteFromActionWithoutAction'
 import {
   StepBlockRestoreFromAction,
   StepBlockRestoreFromActionVariables
@@ -61,8 +61,8 @@ export const STEP_BLOCK_DELETE_FROM_ACTION = gql`
   }
 `
 
-export const STEP_BLOCK_DELETE_FROM_ACTION_WHERE_NULL = gql`
-  mutation StepBlockDeleteFromActionWhereNull($id: ID!, $journeyId: ID!, $parentBlockId: ID, $blockDeleteActionId: ID! ) {
+export const STEP_BLOCK_DELETE_FROM_ACTION_WITHOUT_ACTION = gql`
+  mutation StepBlockDeleteFromActionWithoutAction($id: ID!, $journeyId: ID!, $parentBlockId: ID, $blockDeleteActionId: ID! ) {
     blockDelete(id: $id, journeyId: $journeyId, parentBlockId: $parentBlockId) {
       id
       parentOrder
@@ -72,8 +72,31 @@ export const STEP_BLOCK_DELETE_FROM_ACTION_WHERE_NULL = gql`
     }
     blockDeleteAction(id: $blockDeleteActionId) {
       id
-      parentBlockId
-      parentOrder
+      ... on RadioOptionBlock {
+        action {
+          parentBlockId
+        }
+      }
+     ... on ButtonBlock {
+      action {
+          parentBlockId
+        }
+     }
+     ... on SignUpBlock {
+      action {
+          parentBlockId
+        }
+     }
+     ... on FormBlock {
+      action {
+          parentBlockId
+        }
+     }
+     ... on VideoBlock {
+      action {
+          parentBlockId
+        }
+     }
     }
   }
 `
@@ -141,10 +164,10 @@ export function useCreateStepFromAction(): (
     StepBlockDeleteFromActionVariables
   >(STEP_BLOCK_DELETE_FROM_ACTION)
 
-  const [stepBlockDeleteFromActionWhereNull] = useMutation<
-    StepBlockDeleteFromActionWhereNull,
-    StepBlockDeleteFromActionWhereNullVariables
-  >(STEP_BLOCK_DELETE_FROM_ACTION_WHERE_NULL)
+  const [stepBlockDeleteFromActionWithoutAction] = useMutation<
+    StepBlockDeleteFromActionWithoutAction,
+    StepBlockDeleteFromActionWithoutActionVariables
+  >(STEP_BLOCK_DELETE_FROM_ACTION_WITHOUT_ACTION)
 
   const [stepBlockCreateFromAction] = useMutation<
     StepBlockCreateFromAction,
@@ -307,22 +330,24 @@ export function useCreateStepFromAction(): (
             }
           })
         } else {
-          // void stepBlockDeleteFromActionWhereNull({
-          //   variables: {
-          //     id: step.id,
-          //     journeyId: journey.id,
-          //     blockDeleteActionId: sourceBlock.id
-          //   },
-          //   optimisticResponse: {
-          //     blockDelete: [step],
-          //     blockDeleteAction: {
-          //       id: sourceBlock.id
-          //     }
-          //   },
-          //   update(cache, { data }) {
-          //     console.log(data)
-          //   }
-          // })
+          void stepBlockDeleteFromActionWithoutAction({
+            variables: {
+              id: step.id,
+              journeyId: journey.id,
+              blockDeleteActionId: sourceBlock.id
+            },
+            optimisticResponse: {
+              blockDelete: [step],
+              blockDeleteAction: {
+                id: sourceBlock.id,
+                __typename: sourceBlock.__typename,
+                action: null
+              }
+            },
+            update(cache, { data }) {
+              blockDeleteUpdate(step, data?.blockDelete, cache, journey.id)
+            }
+          })
         }
       },
       async redo() {

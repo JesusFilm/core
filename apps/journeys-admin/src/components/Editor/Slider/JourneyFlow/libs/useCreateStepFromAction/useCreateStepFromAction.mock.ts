@@ -16,6 +16,10 @@ import {
   StepBlockDeleteFromActionVariables
 } from '../../../../../../../__generated__/StepBlockDeleteFromAction'
 import {
+  StepBlockDeleteFromActionWithoutAction,
+  StepBlockDeleteFromActionWithoutActionVariables
+} from '../../../../../../../__generated__/StepBlockDeleteFromActionWithoutAction'
+import {
   StepBlockRestoreFromAction,
   StepBlockRestoreFromActionVariables
 } from '../../../../../../../__generated__/StepBlockRestoreFromAction'
@@ -26,6 +30,7 @@ import {
 import {
   STEP_BLOCK_CREATE_FROM_ACTION,
   STEP_BLOCK_DELETE_FROM_ACTION,
+  STEP_BLOCK_DELETE_FROM_ACTION_WITHOUT_ACTION,
   STEP_BLOCK_RESTORE_FROM_ACTION
 } from './useCreateStepFromAction'
 
@@ -60,6 +65,11 @@ export const mockOriginButtonBlock: TreeBlock<ButtonBlock> = {
   },
   children: []
 } as unknown as TreeBlock<ButtonBlock>
+
+export const mockOriginButtonBlockWithoutAction: TreeBlock<ButtonBlock> = {
+  ...mockOriginButtonBlock,
+  action: null
+}
 
 export const mockNewCardBlock: TreeBlock<CardBlock> = {
   __typename: 'CardBlock',
@@ -162,6 +172,30 @@ export const mockStepBlockDeleteFromAction: MockedResponse<
           ...mockOriginButtonBlock
         },
         gtmEventName: mockOriginButtonBlock?.action?.gtmEventName ?? null
+      }
+    }
+  }
+}
+
+export const stepBlockDeleteFromActionWithoutAction: MockedResponse<
+  StepBlockDeleteFromActionWithoutAction,
+  StepBlockDeleteFromActionWithoutActionVariables
+> = {
+  request: {
+    query: STEP_BLOCK_DELETE_FROM_ACTION_WITHOUT_ACTION,
+    variables: {
+      id: 'newStep.id',
+      journeyId: 'journey-id',
+      blockDeleteActionId: 'button.id'
+    }
+  },
+  result: {
+    data: {
+      blockDelete: [],
+      blockDeleteAction: {
+        id: mockOriginButtonBlockWithoutAction.id,
+        __typename: mockOriginButtonBlockWithoutAction.__typename,
+        action: null
       }
     }
   }

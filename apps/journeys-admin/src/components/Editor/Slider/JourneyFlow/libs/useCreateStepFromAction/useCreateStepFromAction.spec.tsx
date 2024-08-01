@@ -8,9 +8,11 @@ import {
   mockNewCardBlock,
   mockNewStepBlock,
   mockOriginButtonBlock,
+  mockOriginButtonBlockWithoutAction,
   mockStepBlock,
   mockStepBlockCreateFromAction,
-  mockStepBlockDeleteFromAction
+  mockStepBlockDeleteFromAction,
+  stepBlockDeleteFromActionWithoutAction
 } from './useCreateStepFromAction.mock'
 
 jest.mock('uuid', () => ({
@@ -65,6 +67,39 @@ describe('useCreateStepFromAction', () => {
         <TestUseCreateStepHooks
           sourceStep={mockStepBlock}
           sourceBlock={mockOriginButtonBlock}
+          selectedStep={mockStepBlock}
+        />
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByTestId('useCreateStepFromAction'))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(result2).toHaveBeenCalled())
+  })
+
+  it('should undo a step block whose origin block has no action', async () => {
+    mockUuidv4.mockReturnValueOnce(mockNewStepBlock.id)
+    mockUuidv4.mockReturnValueOnce(mockNewCardBlock.id)
+
+    const result = jest
+      .fn()
+      .mockResolvedValue(mockStepBlockCreateFromAction.result)
+
+    const result2 = jest
+      .fn()
+      .mockResolvedValue(stepBlockDeleteFromActionWithoutAction.result)
+
+    render(
+      <MockedProvider
+        mocks={[
+          { ...mockStepBlockCreateFromAction, result },
+          { ...stepBlockDeleteFromActionWithoutAction, result: result2 }
+        ]}
+      >
+        <TestUseCreateStepHooks
+          sourceStep={mockStepBlock}
+          sourceBlock={mockOriginButtonBlockWithoutAction}
           selectedStep={mockStepBlock}
         />
       </MockedProvider>
