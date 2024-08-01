@@ -65,13 +65,15 @@ describe('ActionService', () => {
     it('should upsert email action', async () => {
       await service.emailActionUpdate('id', blockWithUserTeam, {
         gtmEventName: null,
-        email: 'mycuteemail@hi.com'
+        email: 'mycuteemail@hi.com',
+        id: 'someCustomId'
       })
       expect(prismaService.action.upsert).toHaveBeenCalledWith({
         create: {
           email: 'mycuteemail@hi.com',
           gtmEventName: null,
-          parentBlock: { connect: { id: '1' } }
+          parentBlock: { connect: { id: '1' } },
+          id: 'someCustomId'
         },
         include: { parentBlock: { include: { action: true } } },
         update: {
@@ -100,13 +102,15 @@ describe('ActionService', () => {
     it('should upsert navigate to block action', async () => {
       await service.navigateToBlockActionUpdate('id', blockWithUserTeam, {
         gtmEventName: null,
-        blockId: 'mycuteemail@hi.com'
+        blockId: 'mycuteemail@hi.com',
+        id: 'someCustomId'
       })
       expect(prismaService.action.upsert).toHaveBeenCalledWith({
         create: {
           block: { connect: { id: 'mycuteemail@hi.com' } },
           gtmEventName: null,
-          parentBlock: { connect: { id: '1' } }
+          parentBlock: { connect: { id: '1' } },
+          id: 'someCustomId'
         },
         include: { parentBlock: { include: { action: true } } },
         update: {
@@ -141,14 +145,16 @@ describe('ActionService', () => {
       await service.linkActionUpdate('id', blockWithUserTeam, {
         gtmEventName: 'gtmEventName',
         url: 'mycuteemail@hi.com',
-        target: undefined
+        target: undefined,
+        id: 'someCustomId'
       })
       expect(prismaService.action.upsert).toHaveBeenCalledWith({
         create: {
           gtmEventName: 'gtmEventName',
           parentBlock: { connect: { id: '1' } },
           target: undefined,
-          url: 'mycuteemail@hi.com'
+          url: 'mycuteemail@hi.com',
+          id: 'someCustomId'
         },
         include: { parentBlock: { include: { action: true } } },
         update: {

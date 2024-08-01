@@ -27,22 +27,26 @@ type EmailAction implements Action {
 }
 
 input NavigateToBlockActionInput {
+  id: ID
   gtmEventName: String
   blockId: String!
 }
 
 input LinkActionInput {
+  id: ID
   gtmEventName: String
   url: String!
   target: String
 }
 
 input EmailActionInput {
+  id: ID
   gtmEventName: String
   email: String!
 }
 
 input BlockUpdateActionInput {
+  id: ID
   gtmEventName: String
   email: String
   url: String

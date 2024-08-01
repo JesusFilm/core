@@ -16,18 +16,21 @@ import { canBlockHaveAction } from './canBlockHaveAction'
 import { Action, Block } from '.prisma/api-journeys-client'
 
 const linkActionInputSchema = z.object({
-  gtmEventName: z.string().nullable(),
+  id: z.string().nullish(),
+  gtmEventName: z.string().nullish(),
   url: z.string(),
-  target: z.string().nullable()
+  target: z.string().nullish()
 })
 
 const emailActionInputSchema = z.object({
-  gtmEventName: z.string().nullable(),
+  id: z.string().nullish(),
+  gtmEventName: z.string().nullish(),
   email: z.string().email()
 })
 
 const navigateToBlockActionInputSchema = z.object({
-  gtmEventName: z.string().nullable(),
+  id: z.string().nullish(),
+  gtmEventName: z.string().nullish(),
   blockId: z.string()
 })
 

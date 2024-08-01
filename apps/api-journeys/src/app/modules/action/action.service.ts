@@ -43,7 +43,7 @@ export class ActionService {
       },
       update: {
         ...ACTION_UPDATE_RESET,
-        ...input
+        ...omit(input, 'id')
       },
       include: { parentBlock: { include: { action: true } } }
     })
@@ -74,7 +74,7 @@ export class ActionService {
       },
       update: {
         ...ACTION_UPDATE_RESET,
-        ...inputWithBlockConnection
+        ...omit(inputWithBlockConnection, 'id')
       },
       include: { parentBlock: { include: { action: true } } }
     })
@@ -93,7 +93,7 @@ export class ActionService {
       },
       update: {
         ...ACTION_UPDATE_RESET,
-        ...input
+        ...omit(input, 'id')
       },
       include: { parentBlock: { include: { action: true } } }
     })

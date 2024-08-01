@@ -249,22 +249,26 @@ export enum VisitorStatus {
 }
 
 export class NavigateToBlockActionInput {
+    id?: Nullable<string>;
     gtmEventName?: Nullable<string>;
     blockId: string;
 }
 
 export class LinkActionInput {
+    id?: Nullable<string>;
     gtmEventName?: Nullable<string>;
     url: string;
     target?: Nullable<string>;
 }
 
 export class EmailActionInput {
+    id?: Nullable<string>;
     gtmEventName?: Nullable<string>;
     email: string;
 }
 
 export class BlockUpdateActionInput {
+    id?: Nullable<string>;
     gtmEventName?: Nullable<string>;
     email?: Nullable<string>;
     url?: Nullable<string>;
