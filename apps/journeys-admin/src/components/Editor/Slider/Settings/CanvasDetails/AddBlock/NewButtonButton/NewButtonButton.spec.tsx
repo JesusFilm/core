@@ -328,9 +328,9 @@ describe('NewButtonButton', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
       { __ref: 'TypographyBlock:typographyBlockId' },
-      { __ref: 'ButtonBlock:buttonBlockId' },
       { __ref: 'IconBlock:startIconId' },
-      { __ref: 'IconBlock:endIconId' }
+      { __ref: 'IconBlock:endIconId' },
+      { __ref: 'ButtonBlock:buttonBlockId' }
     ])
   })
 

@@ -16,6 +16,7 @@ import type {
   BlockFields_RadioQuestionBlock as RadioQuestionBlock
 } from '../../../../../../../../__generated__/BlockFields'
 import type { RadioQuestionBlockCreate } from '../../../../../../../../__generated__/RadioQuestionBlockCreate'
+import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
 import { Button } from '../Button'
 
@@ -64,53 +65,50 @@ export function NewRadioQuestionButton(): ReactElement {
     ) as TreeBlock<CardBlock> | undefined
 
     if (card != null && journey != null) {
-      const radioQuestionBlock: TreeBlock<RadioQuestionBlock> = {
+      const radioQuestionBlock: RadioQuestionBlock = {
         id: uuidv4(),
         parentBlockId: card.id,
         parentOrder: card.children.length ?? 0,
-        __typename: 'RadioQuestionBlock',
-        children: []
+        __typename: 'RadioQuestionBlock'
       }
-      const radioOptionBlock1: TreeBlock<RadioOptionBlock> = {
+      const radioOptionBlock1: RadioOptionBlock = {
         id: uuidv4(),
         parentBlockId: radioQuestionBlock.id,
         parentOrder: 0,
-        label: 'Option 1',
+        label: t('Option 1'),
         action: null,
-        __typename: 'RadioOptionBlock',
-        children: []
+        __typename: 'RadioOptionBlock'
       }
-      const radioOptionBlock2: TreeBlock<RadioOptionBlock> = {
+      const radioOptionBlock2: RadioOptionBlock = {
         id: uuidv4(),
         parentBlockId: radioQuestionBlock.id,
         parentOrder: 1,
-        label: 'Option 2',
+        label: t('Option 2'),
         action: null,
-        __typename: 'RadioOptionBlock',
-        children: []
+        __typename: 'RadioOptionBlock'
       }
 
       void addBlock({
-        optimisticBlock: radioQuestionBlock,
+        block: radioQuestionBlock,
         async execute() {
           void radioQuestionBlockCreate({
             variables: {
               input: {
                 journeyId: journey.id,
                 id: radioQuestionBlock.id,
-                parentBlockId: card.id
+                parentBlockId: radioQuestionBlock.parentBlockId
               },
               radioOptionBlockCreateInput1: {
                 id: radioOptionBlock1.id,
                 journeyId: journey.id,
                 parentBlockId: radioQuestionBlock.id,
-                label: t('Option 1')
+                label: radioOptionBlock1.label
               },
               radioOptionBlockCreateInput2: {
                 id: radioOptionBlock2.id,
                 journeyId: journey.id,
                 parentBlockId: radioQuestionBlock.id,
-                label: t('Option 2')
+                label: radioOptionBlock2.label
               }
             },
             optimisticResponse: {
@@ -119,45 +117,13 @@ export function NewRadioQuestionButton(): ReactElement {
               radioOption2: radioOptionBlock2
             },
             update(cache, { data }) {
-              if (data?.radioQuestionBlockCreate != null) {
-                cache.modify({
-                  id: cache.identify({ __typename: 'Journey', id: journey.id }),
-                  fields: {
-                    blocks(existingBlockRefs = []) {
-                      const newBlockRef = cache.writeFragment({
-                        data: data.radioQuestionBlockCreate,
-                        fragment: gql`
-                        fragment NewBlock on Block {
-                          id
-                        }
-                      `
-                      })
-                      const newRadioOption1BlockRef = cache.writeFragment({
-                        data: data.radioOption1,
-                        fragment: gql`
-                        fragment NewBlock on Block {
-                          id
-                        }
-                      `
-                      })
-                      const newRadioOption2BlockRef = cache.writeFragment({
-                        data: data.radioOption2,
-                        fragment: gql`
-                        fragment NewBlock on Block {
-                          id
-                        }
-                      `
-                      })
-                      return [
-                        ...existingBlockRefs,
-                        newBlockRef,
-                        newRadioOption1BlockRef,
-                        newRadioOption2BlockRef
-                      ]
-                    }
-                  }
-                })
-              }
+              blockCreateUpdate(
+                cache,
+                journey.id,
+                data?.radioQuestionBlockCreate
+              )
+              blockCreateUpdate(cache, journey.id, data?.radioOption1)
+              blockCreateUpdate(cache, journey.id, data?.radioOption2)
             }
           })
         }

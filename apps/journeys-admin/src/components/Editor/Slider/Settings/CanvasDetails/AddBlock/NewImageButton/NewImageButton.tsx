@@ -14,6 +14,7 @@ import {
   BlockFields_ImageBlock as ImageBlock
 } from '../../../../../../../../__generated__/BlockFields'
 import { ImageBlockCreate } from '../../../../../../../../__generated__/ImageBlockCreate'
+import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
 import { Button } from '../Button'
 
@@ -45,7 +46,7 @@ export function NewImageButton(): ReactElement {
     ) as TreeBlock<CardBlock> | undefined
 
     if (card != null && journey != null) {
-      const imageBlock: TreeBlock<ImageBlock> = {
+      const imageBlock: ImageBlock = {
         id: uuid(),
         parentBlockId: card.id,
         parentOrder: card.children.length ?? 0,
@@ -54,11 +55,10 @@ export function NewImageButton(): ReactElement {
         width: 0,
         height: 0,
         blurhash: '',
-        __typename: 'ImageBlock' as const,
-        children: []
+        __typename: 'ImageBlock' as const
       }
       void addBlock({
-        optimisticBlock: imageBlock,
+        block: imageBlock,
         async execute() {
           void imageBlockCreate({
             variables: {
@@ -66,45 +66,13 @@ export function NewImageButton(): ReactElement {
                 id: imageBlock.id,
                 journeyId: journey.id,
                 parentBlockId: imageBlock.parentBlockId,
-                src: null,
-                alt: 'Default Image Icon'
+                src: imageBlock.src,
+                alt: imageBlock.alt
               }
             },
             optimisticResponse: { imageBlockCreate: imageBlock },
             update(cache, { data }) {
-              if (data?.imageBlockCreate != null) {
-                cache.modify({
-                  fields: {
-                    blocks(existingBlockRefs = []) {
-                      const newBlockRef = cache.writeFragment({
-                        data: data.imageBlockCreate,
-                        fragment: gql`
-                        fragment NewBlock on Block {
-                          id
-                        }
-                      `
-                      })
-                      return [...existingBlockRefs, newBlockRef]
-                    }
-                  }
-                })
-                cache.modify({
-                  id: cache.identify({ __typename: 'Journey', id: journey.id }),
-                  fields: {
-                    blocks(existingBlockRefs = []) {
-                      const newBlockRef = cache.writeFragment({
-                        data: data.imageBlockCreate,
-                        fragment: gql`
-                        fragment NewBlock on Block {
-                          id
-                        }
-                      `
-                      })
-                      return [...existingBlockRefs, newBlockRef]
-                    }
-                  }
-                })
-              }
+              blockCreateUpdate(cache, journey?.id, data?.imageBlockCreate)
             }
           })
         }

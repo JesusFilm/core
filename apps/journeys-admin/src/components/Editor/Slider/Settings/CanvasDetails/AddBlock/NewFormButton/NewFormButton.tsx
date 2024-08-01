@@ -7,10 +7,9 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { FORM_FIELDS } from '@core/journeys/ui/Form/formFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import File5Icon from '@core/shared/ui/icons/File5'
-
-import { TreeBlock } from '@core/journeys/ui/block'
 import { BlockFields_FormBlock as FormBlock } from '../../../../../../../../__generated__/BlockFields'
 import type { FormBlockCreate } from '../../../../../../../../__generated__/FormBlockCreate'
+import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
 import { Button } from '../Button'
 
@@ -39,48 +38,30 @@ export function NewFormButton(): ReactElement {
     )
 
     if (card != null && journey != null) {
-      const formBlock: TreeBlock<FormBlock> = {
+      const formBlock: FormBlock = {
         id: uuidv4(),
         parentBlockId: card.id,
         parentOrder: card.children.length ?? 0,
         form: null,
         action: null,
-        __typename: 'FormBlock' as const,
-        children: []
+        __typename: 'FormBlock' as const
       }
       void addBlock({
-        optimisticBlock: formBlock,
+        block: formBlock,
         async execute() {
           void formBlockCreate({
             variables: {
               input: {
                 id: formBlock.id,
                 journeyId: journey.id,
-                parentBlockId: card.id
+                parentBlockId: formBlock.parentBlockId
               }
             },
             optimisticResponse: {
               formBlockCreate: formBlock
             },
             update(cache, { data }) {
-              if (data?.formBlockCreate != null) {
-                cache.modify({
-                  id: cache.identify({ __typename: 'Journey', id: journey.id }),
-                  fields: {
-                    blocks(existingBlocksRefs = []) {
-                      const newBlockRef = cache.writeFragment({
-                        data: data.formBlockCreate,
-                        fragment: gql`
-                        fragment NewBlock on Block {
-                          id
-                        }
-                      `
-                      })
-                      return [...existingBlocksRefs, newBlockRef]
-                    }
-                  }
-                })
-              }
+              blockCreateUpdate(cache, journey?.id, data?.formBlockCreate)
             }
           })
         }

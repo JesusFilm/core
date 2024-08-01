@@ -35,7 +35,7 @@ describe('useBlockCreateCommand', () => {
     })
 
     await result.current.addBlock({
-      optimisticBlock: {
+      block: {
         id: 'videoBlockId'
       } as unknown as TreeBlock,
       execute

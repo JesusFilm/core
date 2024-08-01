@@ -18,6 +18,7 @@ import {
   ButtonSize,
   ButtonVariant
 } from '../../../../../../../../__generated__/globalTypes'
+import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand/useBlockCreateCommand'
 import { Button } from '../Button'
 
@@ -53,8 +54,7 @@ export function NewButtonButton(): ReactElement {
     useMutation<ButtonBlockCreate>(BUTTON_BLOCK_CREATE)
   const { journey } = useJourney()
   const {
-    state: { selectedStep },
-    dispatch
+    state: { selectedStep }
   } = useEditor()
   const { addBlock } = useBlockCreateCommand()
 
@@ -64,7 +64,7 @@ export function NewButtonButton(): ReactElement {
     ) as TreeBlock<CardBlock> | undefined
 
     if (card != null && journey != null) {
-      const button: TreeBlock<ButtonBlock> = {
+      const button: ButtonBlock = {
         id: uuidv4(),
         __typename: 'ButtonBlock',
         parentBlockId: card.id,
@@ -75,23 +75,22 @@ export function NewButtonButton(): ReactElement {
         parentOrder: card.children.length ?? 0,
         startIconId: uuidv4(),
         endIconId: uuidv4(),
-        action: null,
-        children: []
+        action: null
       }
 
       void addBlock({
-        optimisticBlock: button,
-        async execute() {
+        block: button,
+        execute() {
           void buttonBlockCreate({
             variables: {
               input: {
                 id: button.id,
                 journeyId: journey.id,
-                parentBlockId: card.id,
+                parentBlockId: button.parentBlockId,
                 label: '',
-                variant: ButtonVariant.contained,
-                color: ButtonColor.primary,
-                size: ButtonSize.medium
+                variant: button.buttonVariant,
+                color: button.buttonColor,
+                size: button.size
               },
               iconBlockCreateInput1: {
                 id: button.startIconId,
@@ -135,45 +134,9 @@ export function NewButtonButton(): ReactElement {
               buttonBlockUpdate: button
             },
             update(cache, { data }) {
-              if (data?.buttonBlockUpdate != null) {
-                cache.modify({
-                  id: cache.identify({ __typename: 'Journey', id: journey.id }),
-                  fields: {
-                    blocks(existingBlockRefs = []) {
-                      const newStartIconBlockRef = cache.writeFragment({
-                        data: data.startIcon,
-                        fragment: gql`
-                      fragment NewBlock on Block {
-                        id
-                      }
-                    `
-                      })
-                      const newEndIconBlockRef = cache.writeFragment({
-                        data: data.endIcon,
-                        fragment: gql`
-                      fragment NewBlock on Block {
-                        id
-                      }
-                    `
-                      })
-                      const newBlockRef = cache.writeFragment({
-                        data: data.buttonBlockUpdate,
-                        fragment: gql`
-                      fragment NewBlock on Block {
-                        id
-                      }
-                    `
-                      })
-                      return [
-                        ...existingBlockRefs,
-                        newBlockRef,
-                        newStartIconBlockRef,
-                        newEndIconBlockRef
-                      ]
-                    }
-                  }
-                })
-              }
+              blockCreateUpdate(cache, journey.id, data?.startIcon)
+              blockCreateUpdate(cache, journey.id, data?.endIcon)
+              blockCreateUpdate(cache, journey.id, data?.buttonBlockUpdate)
             }
           })
         }

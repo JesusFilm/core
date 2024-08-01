@@ -15,6 +15,7 @@ import type {
   BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../../__generated__/BlockFields'
 import type { VideoBlockCreate } from '../../../../../../../../__generated__/VideoBlockCreate'
+import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
 import { Button } from '../Button'
 
@@ -73,41 +74,24 @@ export function NewVideoButton({
         children: []
       }
       void addBlock({
-        optimisticBlock: video,
+        block: video,
         async execute() {
           void videoBlockCreate({
             variables: {
               input: {
                 id: video.id,
                 journeyId: journey.id,
-                parentBlockId: card.id,
-                autoplay: true,
-                muted: false,
-                fullsize: true
+                parentBlockId: video.parentBlockId,
+                autoplay: video.autoplay,
+                muted: video.muted,
+                fullsize: video.fullsize
               }
             },
             optimisticResponse: {
               videoBlockCreate: video
             },
             update(cache, { data }) {
-              if (data?.videoBlockCreate != null) {
-                cache.modify({
-                  id: cache.identify({ __typename: 'Journey', id: journey.id }),
-                  fields: {
-                    blocks(existingBlockRefs = []) {
-                      const newBlockRef = cache.writeFragment({
-                        data: data.videoBlockCreate,
-                        fragment: gql`
-                        fragment NewBlock on Block {
-                          id
-                        }
-                      `
-                      })
-                      return [...existingBlockRefs, newBlockRef]
-                    }
-                  }
-                })
-              }
+              blockCreateUpdate(cache, journey?.id, data?.videoBlockCreate)
             }
           })
         }

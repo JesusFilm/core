@@ -15,6 +15,7 @@ import {
 } from '../../../../../../../../__generated__/BlockFields'
 import { TypographyBlockCreate } from '../../../../../../../../__generated__/TypographyBlockCreate'
 import { TypographyVariant } from '../../../../../../../../__generated__/globalTypes'
+import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
 import { Button } from '../Button'
 
@@ -63,38 +64,21 @@ export function NewTypographyButton(): ReactElement {
       }
 
       void addBlock({
-        optimisticBlock: typography,
+        block: typography,
         async execute() {
           void typographyBlockCreate({
             variables: {
               input: {
                 id: typography.id,
                 journeyId: journey.id,
-                parentBlockId: card.id,
+                parentBlockId: typography.parentBlockId,
                 content: typography.content,
                 variant: typography.variant
               }
             },
             optimisticResponse: { typographyBlockCreate: typography },
             update(cache, { data }) {
-              if (data?.typographyBlockCreate != null) {
-                cache.modify({
-                  id: cache.identify({ __typename: 'Journey', id: journey.id }),
-                  fields: {
-                    blocks(existingBlockRefs = []) {
-                      const newBlockRef = cache.writeFragment({
-                        data: data.typographyBlockCreate,
-                        fragment: gql`
-                        fragment NewBlock on Block {
-                          id
-                        }
-                      `
-                      })
-                      return [...existingBlockRefs, newBlockRef]
-                    }
-                  }
-                })
-              }
+              blockCreateUpdate(cache, journey?.id, data?.typographyBlockCreate)
             }
           })
         }

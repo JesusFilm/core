@@ -37,7 +37,7 @@ export function blockRestoreUpdate(
   // biome-ignore lint/suspicious/noExplicitAny: update function gives this type
   cache: ApolloCache<any>,
   journeyId: string | undefined
-) {
+): void {
   if (response != null) {
     const selected = response.find((block) => selectedBlock?.id === block.id)
     const cacheOptions = {

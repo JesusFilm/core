@@ -1,18 +1,16 @@
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
-import { TreeBlock } from '@core/journeys/ui/block'
 import { BlockFields } from '../../../../../__generated__/BlockFields'
-import { BlockRestore_blockRestore as RestoredBlock } from '../../../../../__generated__/BlockRestore'
 import { useBlockDeleteMutation } from '../../../../libs/useBlockDeleteMutation'
 import { useBlockRestoreMutation } from '../../../../libs/useBlockRestoreMutation'
 
 interface AddBlockParameters {
-  execute: () => Promise<void>
-  optimisticBlock: TreeBlock<BlockFields>
+  execute: () => void
+  block: BlockFields
 }
 
 export function useBlockCreateCommand(): {
-  addBlock: (params: AddBlockParameters) => Promise<void>
+  addBlock: (params: AddBlockParameters) => void
 } {
   const { add } = useCommand()
   const [blockDelete] = useBlockDeleteMutation()
@@ -22,52 +20,50 @@ export function useBlockCreateCommand(): {
     dispatch
   } = useEditor()
 
-  async function addBlock({
-    optimisticBlock,
-    execute
-  }: AddBlockParameters): Promise<void> {
+  function addBlock({ block, execute }: AddBlockParameters): void {
     void add({
       parameters: {
         execute: {},
         undo: {
           selectedStep,
           previousBlock: selectedBlock,
-          block: optimisticBlock
+          block: block
         },
-        redo: { selectedStep, block: optimisticBlock }
+        redo: { selectedStep, block: block }
       },
       execute: () => {
         dispatch({
           type: 'SetEditorFocusAction',
-          selectedBlockId: optimisticBlock.id,
+          selectedBlockId: block?.id,
           activeSlide: ActiveSlide.Content
         })
         void execute()
       },
-      undo: async ({ selectedStep, previousBlock, block }) => {
+      undo: ({ selectedStep, previousBlock, block }) => {
         dispatch({
           type: 'SetEditorFocusAction',
           selectedStepId: selectedStep?.id,
           selectedBlockId: previousBlock?.id,
           activeSlide: ActiveSlide.Content
         })
-        await blockDelete(block, {
+        void blockDelete(block, {
           optimisticResponse: { blockDelete: [] }
         })
       },
-      redo: async ({ selectedStep, block }) => {
+      redo: ({ selectedStep, block }) => {
         dispatch({
           type: 'SetEditorFocusAction',
           selectedStepId: selectedStep?.id,
-          selectedBlockId: optimisticBlock.id,
+          selectedBlockId: block?.id,
           activeSlide: ActiveSlide.Content
         })
-        await blockRestore({
+        void blockRestore({
           variables: {
-            id: block.id
+            id: block?.id
           },
           optimisticResponse: {
-            blockRestore: [{ ...block } as unknown as RestoredBlock]
+            blockRestore:
+              block?.__typename !== 'StepBlock' ? [{ ...block }] : []
           }
         })
       }

@@ -427,8 +427,8 @@ describe('NewSignUpButton', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
       { __ref: 'VideoBlock:videoBlockId' },
-      { __ref: 'SignUpBlock:signUpBlockId' },
-      { __ref: 'IconBlock:iconId' }
+      { __ref: 'IconBlock:iconId' },
+      { __ref: 'SignUpBlock:signUpBlockId' }
     ])
   })
 
