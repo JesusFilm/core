@@ -2,7 +2,10 @@ import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearc
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 import { watchConfig } from '../../libs/storybook'
-import { getStrategyCardDataHandlers } from '../StrategySections/StrategySection/StrategySection.handlers'
+import {
+  emptyResultsHandler,
+  getStrategyCardDataHandlers
+} from '../StrategySections/StrategySection/StrategySection.handlers'
 import { StrategiesView } from './StrategiesView'
 
 const StrategiesViewStory: Meta<typeof StrategiesView> = {
@@ -16,7 +19,7 @@ type Story = StoryObj<ComponentProps<typeof StrategiesView> & { query: string }>
 const Template: Story = {
   render: (args) => (
     <InstantSearchTestWrapper indexName="new-index-name" query={args.query}>
-      <StrategiesView index={args.index} />
+      <StrategiesView />
     </InstantSearchTestWrapper>
   )
 }
@@ -24,8 +27,7 @@ const Template: Story = {
 export const Default = {
   ...Template,
   args: {
-    query: '',
-    index: false
+    query: ''
   },
   parameters: {
     msw: {
@@ -37,12 +39,11 @@ export const Default = {
 export const NoResultsFound = {
   ...Template,
   args: {
-    query: 'Hello',
-    index: true
+    query: 'Hello'
   },
   parameters: {
     msw: {
-      handlers: [getStrategyCardDataHandlers]
+      handlers: [emptyResultsHandler]
     }
   }
 }
