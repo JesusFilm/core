@@ -26,7 +26,7 @@ export function useBlockDeleteCommand() {
   const [blockRestore] = useBlockRestoreMutation()
 
   function flatten(children: TreeBlock[]): TreeBlock[] {
-    return children.reduce<TreeBlock[]>(
+    return children?.reduce<TreeBlock[]>(
       (result, item) => [...result, item, ...flatten(item.children)],
       []
     )
@@ -48,13 +48,13 @@ export function useBlockDeleteCommand() {
     const stepsBeforeDelete = steps
     const stepBeforeDelete = selectedStep
 
-    const card = selectedStep?.children.find(
+    const card = selectedStep?.children?.find(
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
 
     const cachedStepWithXandY =
       client.cache.extract()[`StepBlock:${selectedStep.id}`]
-    const flattenedChildren = flatten(currentBlock.children)
+    const flattenedChildren = flatten(currentBlock?.children)
     const stepSiblingsBeforeDelete = steps.filter(
       (block) => block.id !== currentBlock.id
     )
