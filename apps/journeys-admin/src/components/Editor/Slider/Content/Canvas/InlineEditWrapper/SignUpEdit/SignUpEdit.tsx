@@ -33,9 +33,7 @@ export function SignUpEdit({
   const [signUpBlockUpdate] = useMutation<
     SignUpBlockUpdateSubmitLabel,
     SignUpBlockUpdateSubmitLabelVariables
-  >(SIGN_UP_BLOCK_UPDATE_SUBMIT_LABEL, {
-    context: { debounceKey: `${__typename}:${id}` }
-  })
+  >(SIGN_UP_BLOCK_UPDATE_SUBMIT_LABEL)
 
   const [value, setValue] = useState(submitLabel)
   const { add } = useCommand()
@@ -70,6 +68,10 @@ export function SignUpEdit({
               __typename: 'SignUpBlock',
               submitLabel
             }
+          },
+          context: {
+            debounceKey: `${__typename}:${id}`,
+            debounceTimeout: 500
           }
         })
       },
@@ -92,6 +94,7 @@ export function SignUpEdit({
             }
           },
           context: {
+            debounceKey: `${__typename}:${id}`,
             debounceTimeout: 0
           }
         })
@@ -115,6 +118,7 @@ export function SignUpEdit({
             }
           },
           context: {
+            debounceKey: `${__typename}:${id}`,
             debounceTimeout: 0
           }
         })
