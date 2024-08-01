@@ -151,7 +151,7 @@ export class BigQueryConsumer extends WorkerHost {
       }
     }
 
-    await this.importerVideosChildrenService.process()
+    // await this.importerVideosChildrenService.process()
 
     // cleanup for future runs
     this.importerVideosService.usedSlugs = undefined
