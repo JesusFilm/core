@@ -14,7 +14,7 @@ export class KeywordResolver {
     })
   }
 
-  @ResolveField()
+  @ResolveField('language')
   async language(
     @Parent() keyword
   ): Promise<{ __typename: string; id: string }> {
