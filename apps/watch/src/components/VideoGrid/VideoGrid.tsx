@@ -26,7 +26,8 @@ export function VideoGrid({
     hits: algoliaVideos,
     showMore,
     isLastPage,
-    stalled
+    loading,
+    noResults
   } = useAlgoliaVideos()
   const videos = coreVideos != null ? coreVideos : algoliaVideos
   return (
@@ -46,12 +47,12 @@ export function VideoGrid({
             />
           </Grid>
         ))}
-      {videos?.length === 0 && stalled === false && (
+      {!loading && noResults && (
         <Grid item xs={12} justifyContent="center" alignItems="center">
           <EmptySearch />
         </Grid>
       )}
-      {stalled && (
+      {loading && videos?.length === 0 && (
         <>
           <Grid item xs={12} md={4} xl={3}>
             <VideoCard variant={variant} />
@@ -85,13 +86,13 @@ export function VideoGrid({
             <LoadingButton
               variant="outlined"
               onClick={showMore}
-              loading={stalled}
+              loading={loading}
               startIcon={<AddRounded />}
               disabled={isLastPage}
               loadingPosition="start"
               size="medium"
             >
-              {stalled
+              {loading
                 ? 'Loading...'
                 : isLastPage !== true
                   ? 'Load More'

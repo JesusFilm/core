@@ -65,13 +65,14 @@ export function transformItems(items: AlgoliaVideo[]): CoreVideo[] {
 }
 
 export function useAlgoliaVideos() {
-  const { status } = useInstantSearch()
+  const { status, results } = useInstantSearch()
   const { hits, showMore, isLastPage } = useInfiniteHits<AlgoliaVideo>()
 
   const transformedHits = transformItems(hits)
 
   return {
-    stalled: status === 'stalled',
+    loading: status === 'stalled' || status === 'loading',
+    noResults: !results.__isArtificial && results.nbHits === 0,
     hits: transformedHits,
     showMore,
     isLastPage
