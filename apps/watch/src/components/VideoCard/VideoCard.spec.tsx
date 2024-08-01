@@ -1,21 +1,58 @@
 import { render } from '@testing-library/react'
 
+import { VideoCard } from '.'
+import {
+  CoreVideo,
+  useAlgoliaVideos
+} from '../../libs/algolia/useAlgoliaVideos'
 import { videos } from '../Videos/__generated__/testData'
 
-import { HitsRenderState } from 'instantsearch.js/es/connectors/hits/connectHits'
-import { useHits } from 'react-instantsearch'
-import { VideoCard } from '.'
-
 jest.mock('react-instantsearch')
+jest.mock('../../libs/algolia/useAlgoliaVideos')
 
-const mockUseHits = useHits as jest.MockedFunction<typeof useHits>
+const mockedUseAlgoliaVideos = useAlgoliaVideos as jest.MockedFunction<
+  typeof useAlgoliaVideos
+>
 
 describe('VideoCard', () => {
+  const transformedVideos = [
+    {
+      __typename: 'Video',
+      childrenCount: 49,
+      id: 'videoId',
+      image:
+        'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_GOJ-0-0.mobileCinematicHigh.jpg',
+      imageAlt: [
+        {
+          value: 'Life of Jesus (Gospel of John)'
+        }
+      ],
+      label: 'featureFilm',
+      slug: 'video-slug/english',
+      snippet: [],
+      title: [
+        {
+          value: 'title1'
+        }
+      ],
+      variant: {
+        duration: 10994,
+        hls: null,
+        id: '2_529-GOJ-0-0',
+        slug: 'video-slug/english'
+      }
+    }
+  ] as unknown as CoreVideo[]
+
   beforeEach(() => {
-    mockUseHits.mockReturnValue({
-      hits: videos,
+    mockedUseAlgoliaVideos.mockReturnValue({
+      loading: false,
+      noResults: false,
+      hits: transformedVideos,
+      showMore: jest.fn(),
+      isLastPage: false,
       sendEvent: jest.fn()
-    } as unknown as HitsRenderState)
+    })
   })
 
   describe('video contained', () => {

@@ -12,9 +12,9 @@ import NextLink from 'next/link'
 import { ReactElement } from 'react'
 
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
-import { useHits } from 'react-instantsearch'
 import { VideoChildFields } from '../../../__generated__/VideoChildFields'
 import { VideoLabel } from '../../../__generated__/globalTypes'
+import { useAlgoliaVideos } from '../../libs/algolia/useAlgoliaVideos'
 import { getLabelDetails } from '../../libs/utils/getLabelDetails/getLabelDetails'
 
 interface VideoCardProps {
@@ -73,7 +73,7 @@ export function VideoCard({
   )
   const href = getSlug(containerSlug, video?.label, video?.variant?.slug)
 
-  const { hits, sendEvent } = useHits()
+  const { hits, sendEvent } = useAlgoliaVideos()
   const hit = hits.filter((hit) => hit.videoId === video?.id)
 
   const { t } = useTranslation('apps-watch')

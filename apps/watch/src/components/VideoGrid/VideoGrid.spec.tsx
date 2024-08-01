@@ -44,10 +44,12 @@ describe('VideoGrid', () => {
   describe('Core Videos', () => {
     it('should render core videos', () => {
       mockedUseAlgoliaVideos.mockReturnValue({
-        stalled: false,
+        loading: false,
+        noResults: false,
         hits: transformedVideos,
         showMore: jest.fn(),
-        isLastPage: false
+        isLastPage: false,
+        sendEvent: jest.fn()
       })
 
       render(<VideoGrid videos={videos} />)
@@ -67,10 +69,12 @@ describe('VideoGrid', () => {
   describe('Algolia Videos', () => {
     it('should render a video within the grid', async () => {
       mockedUseAlgoliaVideos.mockReturnValue({
-        stalled: false,
+        loading: false,
+        noResults: false,
         hits: transformedVideos,
         showMore: jest.fn(),
-        isLastPage: false
+        isLastPage: false,
+        sendEvent: jest.fn()
       })
 
       render(<VideoGrid />)
@@ -83,10 +87,12 @@ describe('VideoGrid', () => {
     it('should request most videos', async () => {
       const showMore = jest.fn()
       mockedUseAlgoliaVideos.mockReturnValue({
-        stalled: false,
+        loading: false,
+        noResults: false,
         hits: transformedVideos,
         showMore,
-        isLastPage: false
+        isLastPage: false,
+        sendEvent: jest.fn()
       })
 
       render(<VideoGrid showLoadMore />)
@@ -96,10 +102,12 @@ describe('VideoGrid', () => {
 
     it('should show no more videos button', async () => {
       mockedUseAlgoliaVideos.mockReturnValue({
-        stalled: false,
+        loading: false,
+        noResults: false,
         hits: transformedVideos,
         showMore: jest.fn(),
-        isLastPage: true
+        isLastPage: true,
+        sendEvent: jest.fn()
       })
 
       render(<VideoGrid showLoadMore />)
@@ -109,12 +117,14 @@ describe('VideoGrid', () => {
       ).toBeInTheDocument()
     })
 
-    it('should show loading button if stalled', () => {
+    it('should show loading button if loading or stalled', () => {
       mockedUseAlgoliaVideos.mockReturnValue({
-        stalled: true,
+        loading: true,
+        noResults: false,
         hits: transformedVideos,
         showMore: jest.fn(),
-        isLastPage: true
+        isLastPage: true,
+        sendEvent: jest.fn()
       })
 
       render(<VideoGrid showLoadMore />)
@@ -122,6 +132,21 @@ describe('VideoGrid', () => {
       expect(
         screen.getByRole('button', { name: 'Loading...' })
       ).toBeInTheDocument()
+    })
+
+    it('should show no results if no hits returned', () => {
+      mockedUseAlgoliaVideos.mockReturnValue({
+        loading: false,
+        noResults: true,
+        hits: [],
+        showMore: jest.fn(),
+        isLastPage: true,
+        sendEvent: jest.fn()
+      })
+
+      render(<VideoGrid showLoadMore />)
+
+      expect(screen.getByText('Sorry, no results')).toBeInTheDocument()
     })
   })
 })

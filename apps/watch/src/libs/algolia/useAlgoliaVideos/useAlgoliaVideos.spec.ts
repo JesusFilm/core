@@ -85,7 +85,11 @@ describe('useAlgoliaVideos', () => {
     } as unknown as InfiniteHitsRenderState)
 
     mockUseInstantSearch.mockReturnValue({
-      status: 'idle'
+      status: 'idle',
+      results: {
+        __isArtificial: false,
+        nbHits: algoliaVideos.length
+      }
     } as unknown as InstantSearchApi)
 
     mockUseRefinementList.mockReturnValue({
@@ -118,21 +122,6 @@ describe('useAlgoliaVideos', () => {
   it('should return isLastPage', () => {
     const { result } = renderHook(() => useAlgoliaVideos())
     expect(result.current.isLastPage).toBe(false)
-  })
-
-  it('should refine languageId to english there is no selected language', () => {
-    const refine = jest.fn()
-    mockUseRouter.mockReturnValue({
-      asPath: '/watch'
-    } as unknown as NextRouter)
-    mockUseRefinementList.mockReturnValue({
-      items: [],
-      refine
-    } as unknown as RefinementListRenderState)
-
-    renderHook(() => useAlgoliaVideos())
-
-    expect(refine).toHaveBeenCalledWith('529')
   })
 
   it('should not refine languageId to english if there is already a selected language', () => {

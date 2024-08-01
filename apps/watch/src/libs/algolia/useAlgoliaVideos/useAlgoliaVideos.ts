@@ -66,7 +66,8 @@ export function transformItems(items: AlgoliaVideo[]): CoreVideo[] {
 
 export function useAlgoliaVideos() {
   const { status, results } = useInstantSearch()
-  const { hits, showMore, isLastPage } = useInfiniteHits<AlgoliaVideo>()
+  const { hits, showMore, isLastPage, sendEvent } =
+    useInfiniteHits<AlgoliaVideo>()
 
   const transformedHits = transformItems(hits)
 
@@ -75,6 +76,7 @@ export function useAlgoliaVideos() {
     noResults: !results.__isArtificial && results.nbHits === 0,
     hits: transformedHits,
     showMore,
-    isLastPage
+    isLastPage,
+    sendEvent
   }
 }
