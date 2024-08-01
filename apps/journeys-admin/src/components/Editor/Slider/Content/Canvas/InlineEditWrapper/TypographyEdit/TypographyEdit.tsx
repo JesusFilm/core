@@ -49,14 +49,14 @@ export function TypographyEdit({
     setValue(content)
   }, [content])
 
-  async function handleSubmit(value: string): Promise<void> {
-    await add({
+  function handleSubmit(value: string): void {
+    add({
       parameters: {
         execute: { content: value },
         undo: { content }
       },
       async execute({ content }) {
-        await typographyBlockUpdate({
+        void typographyBlockUpdate({
           variables: {
             id,
             content
@@ -74,7 +74,7 @@ export function TypographyEdit({
           }
         })
       },
-      async undo({ content }) {
+      undo({ content }) {
         dispatch({
           type: 'SetEditorFocusAction',
           selectedBlock,
@@ -98,7 +98,7 @@ export function TypographyEdit({
           }
         })
       },
-      async redo({ content }) {
+      redo({ content }) {
         dispatch({
           type: 'SetEditorFocusAction',
           selectedBlock,
