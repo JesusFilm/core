@@ -13,6 +13,13 @@ export interface Command<
   UndoParameters = ExecuteParameters
 > {
   /**
+   * Unique identifier for the command. If successive commands have the same id,
+   * they will be treated as the same command and only the most recent will be
+   * kept. If not provided, the command will be treated as unique. Only the most
+   * recent command is compared.
+   */
+  id?: string
+  /**
    * Parameters for the command. Will be passed to execute, redo, and undo
    * functions.
    */
@@ -92,10 +99,22 @@ export const reducer = (
 ): CommandState => {
   switch (action.type) {
     case 'AddCommandAction': {
-      const commands = [
-        ...state.commands.slice(0, state.commandIndex),
-        action.command
-      ]
+      let commands
+      if (
+        action.command.id != null &&
+        state.commands[state.commandIndex - 1]?.id === action.command.id
+      ) {
+        commands = [
+          ...state.commands.slice(0, state.commandIndex - 1),
+          action.command
+        ]
+      } else {
+        commands = [
+          ...state.commands.slice(0, state.commandIndex),
+          action.command
+        ]
+      }
+
       if (commands.length > MAX_UNDO_COMMANDS) {
         return {
           ...state,
