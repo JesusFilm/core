@@ -176,20 +176,20 @@ export function Icon({ id }: IconProps): ReactElement {
   ) as TreeBlock<IconFields>
   const iconName = iconBlock?.iconName ?? ''
 
-  async function iconUpdate(name: IconName | null): Promise<void> {
-    await add({
+  function iconUpdate(name: IconName | null): void {
+    add({
       parameters: {
         execute: { name },
         undo: { name: iconName === '' ? null : iconName }
       },
-      async execute({ name }) {
+      execute({ name }) {
         dispatch({
           type: 'SetEditorFocusAction',
           selectedBlock,
           selectedStep: state.selectedStep
         })
 
-        await iconBlockNameUpdate({
+        void iconBlockNameUpdate({
           variables: {
             id,
             input: {
@@ -208,12 +208,12 @@ export function Icon({ id }: IconProps): ReactElement {
     })
   }
 
-  async function handleChange(event: SelectChangeEvent): Promise<void> {
+  function handleChange(event: SelectChangeEvent): void {
     const newName = event.target.value as IconName
     if (event.target.value === '') {
-      await iconUpdate(null)
+      iconUpdate(null)
     } else if (newName !== iconName) {
-      await iconUpdate(newName)
+      iconUpdate(newName)
     }
   }
 
