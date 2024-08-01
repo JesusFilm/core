@@ -4,7 +4,7 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 export function EmptySearch(): ReactElement {
-  const { t } = useTranslation('apps-watch')
+  const { t } = useTranslation('libs-journeys-ui')
   return (
     <Paper
       elevation={0}
