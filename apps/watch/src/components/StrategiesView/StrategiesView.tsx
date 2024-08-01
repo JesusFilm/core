@@ -8,13 +8,7 @@ import { PageWrapper } from '../PageWrapper'
 import { ResourceHeading } from '@core/journeys/ui/ResourceHeading'
 import { StrategySections } from '../StrategySections'
 
-interface StrategiesViewProps {
-  index?: boolean
-}
-
-export function StrategiesView({
-  index = true
-}: StrategiesViewProps): ReactElement {
+export function StrategiesView(): ReactElement {
   return (
     <PageWrapper>
       <Box sx={{ backgroundColor: 'background.default' }}>
@@ -22,7 +16,7 @@ export function StrategiesView({
           <Stack sx={{ p: 0, gap: 10 }}>
             <ResourceHeading heading="Resource" />
             <SearchBar />
-            <StrategySections index={index} />
+            <StrategySections />
           </Stack>
         </Container>
       </Box>
