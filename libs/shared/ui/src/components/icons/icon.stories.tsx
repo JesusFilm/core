@@ -4,7 +4,6 @@ import { Meta, StoryObj } from '@storybook/react'
 
 // import CircularProgress from '@mui/material/CircularProgress'
 import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
-
 // import { CenterCheck } from './CenterCheck'
 import { Icon, IconName } from './Icon'
 
@@ -91,6 +90,8 @@ const iconNames: IconName[] = [
   'Filter',
   'Flame',
   'FlexAlignBottom1',
+  'FlipLeft',
+  'FlipRight',
   'FolderDown1',
   'FolderUp1',
   'Globe',
