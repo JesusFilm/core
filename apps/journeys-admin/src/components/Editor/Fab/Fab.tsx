@@ -13,7 +13,6 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
-
 import type { BlockFields_CardBlock as CardBlock } from '../../../../__generated__/BlockFields'
 
 interface FabProps {
@@ -41,7 +40,7 @@ export function Fab({ variant }: FabProps): ReactElement {
     })
   }
 
-  function handleAddFab(event: MouseEvent): void {
+  function handleAddBlock(event: MouseEvent): void {
     event.stopPropagation()
     dispatch({
       type: 'SetSelectedBlockAction',
@@ -58,6 +57,11 @@ export function Fab({ variant }: FabProps): ReactElement {
           ? ActiveCanvasDetailsDrawer.Properties
           : ActiveCanvasDetailsDrawer.AddBlock
     })
+  }
+
+  function handleAddStep(event: MouseEvent): void {
+    event.stopPropagation()
+    console.log('added fab')
   }
 
   const cardBlock = selectedStep?.children.find(
@@ -81,7 +85,7 @@ export function Fab({ variant }: FabProps): ReactElement {
   return (
     <Zoom in={fabIn} unmountOnExit data-testid="Fab">
       <MuiFab
-        variant={mdUp ? 'extended' : 'circular'}
+        variant="extended"
         size="large"
         color="primary"
         disabled={disabled}
@@ -91,10 +95,20 @@ export function Fab({ variant }: FabProps): ReactElement {
           right: { xs: 16, md: 'auto' },
           fontWeight: 'bold'
         }}
-        onClick={handleAddFab}
+        onClick={
+          activeSlide === ActiveSlide.JourneyFlow
+            ? handleAddStep
+            : handleAddBlock
+        }
       >
         <Plus2Icon sx={{ mr: { xs: 0, md: 3 } }} />
-        {mdUp ? t('Add Block') : ''}
+        {activeSlide === ActiveSlide.JourneyFlow
+          ? mdUp
+            ? t('Add Step')
+            : t('Step')
+          : mdUp
+            ? t('Add Block')
+            : t('Block')}
       </MuiFab>
     </Zoom>
   )
