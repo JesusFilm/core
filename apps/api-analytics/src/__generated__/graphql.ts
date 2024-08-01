@@ -72,6 +72,7 @@ export type BlockUpdateActionInput = {
   blockId?: InputMaybe<Scalars['String']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
   gtmEventName?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['ID']['input']>;
   target?: InputMaybe<Scalars['String']['input']>;
   url?: InputMaybe<Scalars['String']['input']>;
 };
@@ -302,9 +303,30 @@ export type CloudflareVideo = {
   userId: Scalars['ID']['output'];
 };
 
+export type Continent = {
+  __typename?: 'Continent';
+  countries: Array<Country>;
+  id: Scalars['ID']['output'];
+  name: Array<ContinentName>;
+};
+
+
+export type ContinentNameArgs = {
+  languageId?: InputMaybe<Scalars['ID']['input']>;
+  primary?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type ContinentName = {
+  __typename?: 'ContinentName';
+  language: Language;
+  primary: Scalars['Boolean']['output'];
+  value: Scalars['String']['output'];
+};
+
 export type Country = {
   __typename?: 'Country';
-  continent: Array<CountryContinent>;
+  continent: Continent;
+  countryLanguages: Array<CountryLanguage>;
   flagPngSrc?: Maybe<Scalars['String']['output']>;
   flagWebpSrc?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
@@ -316,22 +338,18 @@ export type Country = {
 };
 
 
-export type CountryContinentArgs = {
-  languageId?: InputMaybe<Scalars['ID']['input']>;
-  primary?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-
 export type CountryNameArgs = {
   languageId?: InputMaybe<Scalars['ID']['input']>;
   primary?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-export type CountryContinent = {
-  __typename?: 'CountryContinent';
+export type CountryLanguage = {
+  __typename?: 'CountryLanguage';
+  country: Country;
+  displaySpeakers?: Maybe<Scalars['Int']['output']>;
+  id: Scalars['ID']['output'];
   language: Language;
-  primary: Scalars['Boolean']['output'];
-  value: Scalars['String']['output'];
+  speakers: Scalars['Int']['output'];
 };
 
 export type CountryName = {
@@ -427,6 +445,7 @@ export type EmailAction = Action & {
 export type EmailActionInput = {
   email: Scalars['String']['input'];
   gtmEventName?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export type Error = {
@@ -1011,7 +1030,7 @@ export type Language = {
   __typename?: 'Language';
   audioPreview?: Maybe<AudioPreview>;
   bcp47?: Maybe<Scalars['String']['output']>;
-  countries: Array<Country>;
+  countryLanguages: Array<CountryLanguage>;
   id: Scalars['ID']['output'];
   iso3?: Maybe<Scalars['String']['output']>;
   name: Array<LanguageName>;
@@ -1056,6 +1075,7 @@ export type LinkAction = Action & {
 
 export type LinkActionInput = {
   gtmEventName?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['ID']['input']>;
   target?: InputMaybe<Scalars['String']['input']>;
   url: Scalars['String']['input'];
 };
@@ -1840,6 +1860,7 @@ export type NavigateToBlockAction = Action & {
 export type NavigateToBlockActionInput = {
   blockId: Scalars['String']['input'];
   gtmEventName?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export type OperatingSystem = {

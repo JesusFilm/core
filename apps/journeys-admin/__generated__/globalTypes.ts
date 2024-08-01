@@ -337,6 +337,7 @@ export interface CustomDomainUpdateInput {
 }
 
 export interface EmailActionInput {
+  id?: string | null;
   gtmEventName?: string | null;
   email: string;
 }
@@ -494,6 +495,7 @@ export interface LanguagesFilter {
 }
 
 export interface LinkActionInput {
+  id?: string | null;
   gtmEventName?: string | null;
   url: string;
   target?: string | null;
@@ -504,6 +506,7 @@ export interface MeInput {
 }
 
 export interface NavigateToBlockActionInput {
+  id?: string | null;
   gtmEventName?: string | null;
   blockId: string;
 }
