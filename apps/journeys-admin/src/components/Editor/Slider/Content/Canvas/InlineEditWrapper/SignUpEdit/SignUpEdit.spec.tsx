@@ -7,9 +7,11 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { SignUpFields } from '../../../../../../../../__generated__/SignUpFields'
 
-import { SIGN_UP_BLOCK_UPDATE_CONTENT, SignUpEdit } from '.'
 import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
+import { SIGN_UP_BLOCK_UPDATE_SUBMIT_LABEL } from './SignUpEdit'
+
+import { SignUpEdit } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -28,6 +30,51 @@ describe('SignUpEdit', () => {
     children: []
   }
 
+  beforeEach(() => jest.clearAllMocks())
+
+  const mockUpdateSuccess1 = {
+    request: {
+      query: SIGN_UP_BLOCK_UPDATE_SUBMIT_LABEL,
+      variables: {
+        id: 'signUp',
+        submitLabel: 'Submit update'
+      }
+    },
+    result: jest.fn(() => ({
+      data: {
+        signUpBlockUpdate: [
+          {
+            __typename: 'SignUpBlock',
+            id: 'signUp',
+            submitLabel: 'Submit update'
+          }
+        ]
+      }
+    }))
+  }
+
+  const mockUpdateSuccess2 = {
+    request: {
+      query: SIGN_UP_BLOCK_UPDATE_SUBMIT_LABEL,
+      variables: {
+        id: 'signUp',
+
+        submitLabel: 'Submit'
+      }
+    },
+    result: jest.fn(() => ({
+      data: {
+        signUpBlockUpdate: [
+          {
+            __typename: 'SignUpBlock',
+            id: 'signUp',
+            submitLabel: 'Submit'
+          }
+        ]
+      }
+    }))
+  }
+
   it('selects the input on click', async () => {
     render(
       <MockedProvider>
@@ -41,36 +88,9 @@ describe('SignUpEdit', () => {
     await waitFor(() => expect(input).toHaveFocus())
   })
 
-  it('saves the signUp label on onBlur', async () => {
-    const result = jest.fn(() => ({
-      data: {
-        signUpBlockUpdate: [
-          {
-            __typename: 'SignUpBlock',
-            id: 'signUp',
-            submitLabel: 'updated label'
-          }
-        ]
-      }
-    }))
-
+  it('should submit if the value has changed', async () => {
     render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: SIGN_UP_BLOCK_UPDATE_CONTENT,
-              variables: {
-                id: 'signUp',
-                input: {
-                  submitLabel: 'updated label'
-                }
-              }
-            },
-            result
-          }
-        ]}
-      >
+      <MockedProvider mocks={[mockUpdateSuccess1]}>
         <SnackbarProvider>
           <EditorProvider>
             <SignUpEdit {...props} />
@@ -81,62 +101,32 @@ describe('SignUpEdit', () => {
 
     const input = screen.getByRole('textbox', { name: '' })
     fireEvent.click(input)
-    fireEvent.change(input, { target: { value: '    updated label    ' } })
+    fireEvent.change(input, { target: { value: 'Submit update   ' } })
     fireEvent.blur(input)
-    await waitFor(() => expect(result).toHaveBeenCalled())
+    await waitFor(() => expect(mockUpdateSuccess1.result).toHaveBeenCalled())
+  })
+
+  it('should not submit if the current value is the same', async () => {
+    render(
+      <MockedProvider mocks={[mockUpdateSuccess1]}>
+        <SnackbarProvider>
+          <EditorProvider>
+            <SignUpEdit {...props} />
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    const input = screen.getByRole('textbox', { name: '' })
+    fireEvent.click(input)
+    fireEvent.change(input, { target: { value: 'Submit   ' } })
+    fireEvent.blur(input)
+    await waitFor(() =>
+      expect(mockUpdateSuccess1.result).not.toHaveBeenCalled()
+    )
   })
 
   it('should undo the label change', async () => {
-    const result1 = jest.fn(() => ({
-      data: {
-        signUpBlockUpdate: [
-          {
-            __typename: 'SignUpBlock',
-            id: 'signUp',
-            submitLabel: 'updated label'
-          }
-        ]
-      }
-    }))
-
-    const result2 = jest.fn(() => ({
-      data: {
-        signUpBlockUpdate: [
-          {
-            __typename: 'SignUpBlock',
-            id: 'signUp',
-            submitLabel: 'Submit'
-          }
-        ]
-      }
-    }))
-
-    const mockUpdateSuccess1 = {
-      request: {
-        query: SIGN_UP_BLOCK_UPDATE_CONTENT,
-        variables: {
-          id: 'signUp',
-          input: {
-            submitLabel: 'updated label'
-          }
-        }
-      },
-      result: result1
-    }
-
-    const mockUpdateSuccess2 = {
-      request: {
-        query: SIGN_UP_BLOCK_UPDATE_CONTENT,
-        variables: {
-          id: 'signUp',
-          input: {
-            submitLabel: 'Submit'
-          }
-        }
-      },
-      result: result2
-    }
-
     render(
       <MockedProvider mocks={[mockUpdateSuccess1, mockUpdateSuccess2]}>
         <SnackbarProvider>
@@ -150,68 +140,22 @@ describe('SignUpEdit', () => {
 
     const input = screen.getByRole('textbox', { name: '' })
     fireEvent.click(input)
-    fireEvent.change(input, { target: { value: 'updated label' } })
+    fireEvent.change(input, { target: { value: 'Submit update' } })
     fireEvent.blur(input)
-    await waitFor(() => expect(result1).toHaveBeenCalled())
+    await waitFor(() => expect(mockUpdateSuccess1.result).toHaveBeenCalled())
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
-    await waitFor(() => expect(result2).toHaveBeenCalled())
+    await waitFor(() => expect(mockUpdateSuccess2.result).toHaveBeenCalled())
   })
 
   it('should redo the undone label change', async () => {
-    const result1 = jest.fn(() => ({
-      data: {
-        signUpBlockUpdate: [
-          {
-            __typename: 'SignUpBlock',
-            id: 'signUp',
-            submitLabel: 'updated label'
-          }
-        ]
-      }
-    }))
-
-    const result2 = jest.fn(() => ({
-      data: {
-        signUpBlockUpdate: [
-          {
-            __typename: 'SignUpBlock',
-            id: 'signUp',
-            submitLabel: 'Submit'
-          }
-        ]
-      }
-    }))
-
-    const mockUpdateSuccess1 = {
-      request: {
-        query: SIGN_UP_BLOCK_UPDATE_CONTENT,
-        variables: {
-          id: 'signUp',
-          input: {
-            submitLabel: 'updated label'
-          }
-        }
-      },
-      result: result1,
+    const firstUpdateMock = {
+      ...mockUpdateSuccess1,
       maxUsageCount: 2
     }
 
-    const mockUpdateSuccess2 = {
-      request: {
-        query: SIGN_UP_BLOCK_UPDATE_CONTENT,
-        variables: {
-          id: 'signUp',
-          input: {
-            submitLabel: 'Submit'
-          }
-        }
-      },
-      result: result2
-    }
-
     render(
-      <MockedProvider mocks={[mockUpdateSuccess1, mockUpdateSuccess2]}>
+      <MockedProvider mocks={[firstUpdateMock, mockUpdateSuccess2]}>
         <SnackbarProvider>
           <EditorProvider>
             <CommandUndoItem variant="button" />
@@ -224,14 +168,14 @@ describe('SignUpEdit', () => {
 
     const input = screen.getByRole('textbox', { name: '' })
     fireEvent.click(input)
-    fireEvent.change(input, { target: { value: 'updated label' } })
+    fireEvent.change(input, { target: { value: 'Submit update' } })
     fireEvent.blur(input)
-    await waitFor(() => expect(result1).toHaveBeenCalled())
+    await waitFor(() => expect(firstUpdateMock.result).toHaveBeenCalled())
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
-    await waitFor(() => expect(result2).toHaveBeenCalled())
+    await waitFor(() => expect(mockUpdateSuccess2.result).toHaveBeenCalled())
 
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
-    await waitFor(() => expect(result1).toHaveBeenCalled())
+    await waitFor(() => expect(firstUpdateMock.result).toHaveBeenCalled())
   })
 })
