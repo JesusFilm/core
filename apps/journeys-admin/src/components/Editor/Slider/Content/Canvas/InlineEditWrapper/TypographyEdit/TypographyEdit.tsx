@@ -1,6 +1,7 @@
 import { gql, useMutation } from '@apollo/client'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
+import { v4 as uuidv4 } from 'uuid'
 
 import { Typography } from '@core/journeys/ui/Typography'
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -38,24 +39,58 @@ export function TypographyEdit({
   >(TYPOGRAPHY_BLOCK_UPDATE_CONTENT)
 
   const [value, setValue] = useState(content)
+  const [commandInput, setCommandInput] = useState({ id: uuidv4(), value })
   const [selection, setSelection] = useState({ start: 0, end: value.length })
-  const { add } = useCommand()
+  const {
+    add,
+    state: { undo }
+  } = useCommand()
   const {
     state: { selectedBlock, selectedStep },
     dispatch
   } = useEditor()
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <only run effect when undo changes>
+  useEffect(() => {
+    if (undo == null || undo.id === commandInput.id) return
+    resetCommandInput()
+  }, [undo?.id])
+
   useEffect(() => {
     setValue(content)
   }, [content])
 
+  function resetCommandInput() {
+    setCommandInput({ id: uuidv4(), value })
+  }
+
   function handleSubmit(value: string): void {
     add({
+      id: commandInput.id,
       parameters: {
-        execute: { content: value },
-        undo: { content }
+        execute: {
+          content: value,
+          context: {},
+          runDispatch: false
+        },
+        undo: {
+          content: commandInput.value,
+          context: { debounceTimeout: 1 },
+          runDispatch: true
+        },
+        redo: {
+          content: value,
+          context: { debounceTimeout: 1 },
+          runDispatch: true
+        }
       },
-      async execute({ content }) {
+      execute({ content, context, runDispatch }) {
+        if (runDispatch)
+          dispatch({
+            type: 'SetEditorFocusAction',
+            selectedBlock,
+            selectedStep
+          })
         void typographyBlockUpdate({
           variables: {
             id,
@@ -70,55 +105,7 @@ export function TypographyEdit({
           },
           context: {
             debounceKey: `${__typename}:${id}`,
-            debounceTimeout: 500
-          }
-        })
-      },
-      undo({ content }) {
-        dispatch({
-          type: 'SetEditorFocusAction',
-          selectedBlock,
-          selectedStep
-        })
-        void typographyBlockUpdate({
-          variables: {
-            id,
-            content
-          },
-          optimisticResponse: {
-            typographyBlockUpdate: {
-              id,
-              __typename: 'TypographyBlock',
-              content
-            }
-          },
-          context: {
-            debounceKey: `${__typename}:${id}`,
-            debounceTimeout: 0
-          }
-        })
-      },
-      redo({ content }) {
-        dispatch({
-          type: 'SetEditorFocusAction',
-          selectedBlock,
-          selectedStep
-        })
-        void typographyBlockUpdate({
-          variables: {
-            id,
-            content
-          },
-          optimisticResponse: {
-            typographyBlockUpdate: {
-              id,
-              __typename: 'TypographyBlock',
-              content
-            }
-          },
-          context: {
-            debounceKey: `${__typename}:${id}`,
-            debounceTimeout: 0
+            ...context
           }
         })
       }
@@ -141,12 +128,13 @@ export function TypographyEdit({
               ref.focus()
             }
           }}
-          onFocus={(e) =>
-            (e.currentTarget as HTMLInputElement).setSelectionRange(
+          onFocus={(e) => {
+            ;(e.currentTarget as HTMLInputElement).setSelectionRange(
               selection.start,
               selection.end
             )
-          }
+            resetCommandInput()
+          }}
           value={value}
           placeholder={t('Add your text here...')}
           onSelect={(e) => {
