@@ -18,7 +18,7 @@ type Story = StoryObj<ComponentProps<typeof StrategySection>>
 
 const Template: Story = {
   render: (args) => (
-    <InstantSearchTestWrapper indexName="wp_dev_posts_mission-trip">
+    <InstantSearchTestWrapper indexName="indexName">
       <Box sx={{ display: 'none' }}>
         <SearchBar />
       </Box>
