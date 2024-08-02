@@ -8,13 +8,30 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, ReactNode, useEffect, useRef, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import Tooltip from '@mui/material/Tooltip'
+import Tooltip, { tooltipClasses } from '@mui/material/Tooltip'
 import { useCustomDomainsQuery } from '../../../../../../libs/useCustomDomainsQuery'
 
 const tooltipProps = {
   placement: 'top' as const,
   arrow: true,
-  enterTouchDelay: 0
+  enterTouchDelay: 0,
+  slotProps: {
+    popper: {
+      sx: {
+        [`&.${tooltipClasses.popper}[data-popper-placement*="top"] .${tooltipClasses.tooltip}`]:
+          {
+            marginBottom: '6px'
+          }
+      }
+    },
+    tooltip: {
+      sx: {
+        padding: '6px 8px',
+        lineHeight: '12px',
+        textAlign: 'center'
+      }
+    }
+  }
 }
 
 interface MessageBubbleProps {
@@ -107,28 +124,7 @@ export function Message(): ReactElement {
             <MessageBubble width={315} direction="right">
               <Stack direction="column" sx={{ p: 1 }}>
                 <Stack direction="row" gap={2} alignItems="center">
-                  <Tooltip
-                    {...tooltipProps}
-                    title={t('Social Image')}
-                    slotProps={{
-                      popper: {
-                        modifiers: [
-                          {
-                            name: 'offset',
-                            options: {
-                              offset: [0, -8]
-                            }
-                          }
-                        ]
-                      },
-                      tooltip: {
-                        sx: {
-                          px: 2,
-                          py: 0
-                        }
-                      }
-                    }}
-                  >
+                  <Tooltip title={t('Social Image')} {...tooltipProps}>
                     {journey?.primaryImageBlock?.src == null ? (
                       <Box
                         width={78}
