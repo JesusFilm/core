@@ -589,7 +589,7 @@ describe('EditorContext', () => {
             type: 'SetEditorFocusAction'
           })
         ).toEqual({
-          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer,
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
           activeContent: 'canvas',
           activeSlide: ActiveSlide.Content,
           selectedAttributeId: 'selectedAttributeId',
