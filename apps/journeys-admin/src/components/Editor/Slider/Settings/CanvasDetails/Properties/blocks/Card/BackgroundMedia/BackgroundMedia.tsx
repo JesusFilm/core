@@ -86,22 +86,22 @@ export function BackgroundMedia(): ReactElement {
     }
   }, [coverBlock?.__typename])
 
-  async function handleTypeChange(
+  function handleTypeChange(
     _,
     newBlockType: BackgroundMediaBlockType | null
-  ): Promise<void> {
+  ): void {
     if (newBlockType == null || journey == null || cardBlock == null) return
 
     setBlockType(newBlockType)
 
     if (coverBlock != null) {
-      await add({
+      add({
         parameters: {
           execute: {},
           undo: {}
         },
-        async execute() {
-          await deleteBlock({
+        execute() {
+          void deleteBlock({
             variables: {
               id: coverBlock.id,
               cardBlockId: cardBlock.id
@@ -124,8 +124,8 @@ export function BackgroundMedia(): ReactElement {
             }
           })
         },
-        async undo() {
-          await restoreBlock({
+        undo() {
+          void restoreBlock({
             variables: {
               id: coverBlock.id,
               cardBlockId: cardBlock.id

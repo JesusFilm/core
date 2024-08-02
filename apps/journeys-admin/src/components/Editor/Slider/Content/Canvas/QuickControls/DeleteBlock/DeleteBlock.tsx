@@ -30,7 +30,7 @@ export function DeleteBlock({
     state: { selectedBlock }
   } = useEditor()
   const currentBlock = block ?? selectedBlock
-  const { addBlockDelete, loading } = useBlockDeleteCommand()
+  const { addBlockDelete } = useBlockDeleteCommand()
 
   const blockType = currentBlock?.__typename === 'StepBlock' ? 'Card' : 'Block'
   const [openDialog, setOpenDialog] = useState(false)
@@ -40,10 +40,10 @@ export function DeleteBlock({
     closeMenu?.()
   }
 
-  const disableAction = currentBlock == null || disabled || loading
+  const disableAction = currentBlock == null || disabled
 
-  const handleDeleteBlock = async (): Promise<void> => {
-    if (currentBlock != null) await addBlockDelete(currentBlock)
+  function handleDeleteBlock(): void {
+    if (currentBlock != null) addBlockDelete(currentBlock)
     handleCloseDialog()
   }
 
@@ -58,7 +58,6 @@ export function DeleteBlock({
           submitLabel: t('Delete'),
           closeLabel: t('Cancel')
         }}
-        loading={loading}
       >
         <Typography>
           {t('Are you sure you would like to delete this card?')}

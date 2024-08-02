@@ -32,7 +32,7 @@ interface AddActionParameters {
 }
 
 export function useActionCommand(): {
-  addAction: (params: AddActionParameters) => Promise<void>
+  addAction: (params: AddActionParameters) => void
 } {
   const { add } = useCommand()
   const { dispatch } = useEditor()
@@ -43,7 +43,7 @@ export function useActionCommand(): {
     useBlockActionNavigateToBlockUpdateMutation()
 
   return {
-    async addAction({
+    addAction({
       blockId,
       blockTypename,
       action,
@@ -59,7 +59,7 @@ export function useActionCommand(): {
             action: undoAction
           }
         },
-        async execute({ action }) {
+        execute({ action }) {
           const block = {
             id: blockId,
             __typename: blockTypename
@@ -71,13 +71,13 @@ export function useActionCommand(): {
             })
           switch (action?.__typename) {
             case 'LinkAction':
-              return await actionLinkUpdate(block, action.url)
+              return void actionLinkUpdate(block, action.url)
             case 'EmailAction':
-              return await actionEmailUpdate(block, action.email)
+              return void actionEmailUpdate(block, action.email)
             case 'NavigateToBlockAction':
-              return await actionNavigateToBlockUpdate(block, action.blockId)
+              return void actionNavigateToBlockUpdate(block, action.blockId)
             default:
-              return await actionDelete(block)
+              return void actionDelete(block)
           }
         }
       })

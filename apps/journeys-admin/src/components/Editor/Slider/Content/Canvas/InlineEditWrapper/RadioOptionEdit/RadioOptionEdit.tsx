@@ -47,23 +47,23 @@ export function RadioOptionEdit({
     label === 'Option 1' || label === 'Option 2' ? '' : label
   )
 
-  async function handleSaveBlock(): Promise<void> {
+  function handleSaveBlock(): void {
     const currentLabel = value.trim().replace(/\n/g, '')
     if (label === currentLabel) return
 
-    await add({
+    add({
       parameters: {
         execute: { label: currentLabel },
         undo: { label }
       },
-      async execute({ label }) {
+      execute({ label }) {
         dispatch({
           type: 'SetEditorFocusAction',
           selectedBlock,
           selectedStep
         })
 
-        await radioOptionBlockUpdate({
+        void radioOptionBlockUpdate({
           variables: {
             id,
             input: { label }

@@ -38,37 +38,37 @@ export function Color(): ReactElement {
     | TreeBlock<TypographyBlock>
     | undefined
 
-  async function handleChange(color: TypographyColor): Promise<void> {
-    if (selectedBlock != null && color != null) {
-      await add({
-        parameters: {
-          execute: { color },
-          undo: {
-            color: selectedBlock.color
-          }
-        },
-        async execute({ color }) {
-          dispatch({
-            type: 'SetEditorFocusAction',
-            selectedStep,
-            selectedBlock
-          })
-          await typographyBlockUpdate({
-            variables: {
-              id: selectedBlock.id,
-              input: { color }
-            },
-            optimisticResponse: {
-              typographyBlockUpdate: {
-                id: selectedBlock.id,
-                color,
-                __typename: 'TypographyBlock'
-              }
-            }
-          })
+  function handleChange(color: TypographyColor): void {
+    if (selectedBlock == null || color == null) return
+
+    add({
+      parameters: {
+        execute: { color },
+        undo: {
+          color: selectedBlock.color
         }
-      })
-    }
+      },
+      execute({ color }) {
+        dispatch({
+          type: 'SetEditorFocusAction',
+          selectedStep,
+          selectedBlock
+        })
+        void typographyBlockUpdate({
+          variables: {
+            id: selectedBlock.id,
+            input: { color }
+          },
+          optimisticResponse: {
+            typographyBlockUpdate: {
+              id: selectedBlock.id,
+              color,
+              __typename: 'TypographyBlock'
+            }
+          }
+        })
+      }
+    })
   }
 
   const options = [

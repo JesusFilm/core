@@ -46,7 +46,7 @@ export function ImageOptions(): ReactElement {
     await updateImageBlock({ src: null, alt: '' })
   }
 
-  async function updateImageBlock(input: ImageBlockUpdateInput): Promise<void> {
+  function updateImageBlock(input: ImageBlockUpdateInput): void {
     const block: ImageBlock = {
       ...imageBlock,
       ...input,
@@ -56,18 +56,18 @@ export function ImageOptions(): ReactElement {
       width: input.width ?? imageBlock.width
     }
 
-    await add({
+    add({
       parameters: {
         execute: block,
         undo: imageBlock
       },
-      async execute(block) {
+      execute(block) {
         dispatch({
           type: 'SetEditorFocusAction',
           selectedBlock,
           selectedStep
         })
-        await imageBlockUpdate({
+        void imageBlockUpdate({
           variables: {
             id: imageBlock.id,
             input: pick(block, Object.keys(input))
@@ -84,7 +84,7 @@ export function ImageOptions(): ReactElement {
     <Box sx={{ px: 4, pb: 4 }}>
       <ImageSource
         selectedBlock={imageBlock}
-        onChange={updateImageBlock}
+        onChange={async (input) => updateImageBlock(input)}
         onDelete={deleteImageBlock}
       />
     </Box>
