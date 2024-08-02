@@ -17,6 +17,9 @@ const nextConfig = {
       { protocol: 'https', hostname: 'images.unsplash.com' },
       { protocol: 'https', hostname: 'imagizer.imageshack.com' },
       { protocol: 'https', hostname: 'i.ytimg.com' },
+      // jesusfilm wordpress website
+      { protocol: 'https', hostname: 'develop.jesusfilm.org' },
+      { protocol: 'https', hostname: 'jesusfilm.org' },
       // arclight image provider - cloudfront
       { protocol: 'https', hostname: 'd1wl257kev7hsz.cloudfront.net' },
       // cloudflare

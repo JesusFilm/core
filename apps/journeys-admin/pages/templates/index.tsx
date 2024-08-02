@@ -59,7 +59,7 @@ function TemplateIndexPage(): ReactElement {
             px: { xs: 6, sm: 8, md: 10 }
           }}
         >
-          <TemplateGallery />
+          <TemplateGallery algoliaIndex="api-journeys-journeys-dev" />
         </Box>
       </PageWrapper>
     </>

@@ -12,7 +12,12 @@ import NextLink from 'next/link'
 import { ReactElement } from 'react'
 
 import { useRouter } from 'next/router'
-import { abbreviateLanguageName } from '../../libs/abbreviateLanguageName'
+import {
+  getAlgoliaJourneyLanguage,
+  getJourneyLanguage,
+  isAlgoliaJourney
+} from '../../libs/algolia/algoliaJourneyUtils'
+import { AlgoliaJourney } from '../../libs/algolia/useAlgoliaJourneys'
 import { GetJourneys_journeys as Journey } from '../../libs/useJourneysQuery/__generated__/GetJourneys'
 
 interface HoverLayerProps {
@@ -41,7 +46,7 @@ export function HoverLayer({ className }: HoverLayerProps): ReactElement {
 }
 
 interface TemplateGalleryCardProps {
-  item?: Journey
+  item?: Journey | AlgoliaJourney
   priority?: boolean
 }
 
@@ -55,23 +60,20 @@ export function TemplateGalleryCard({
     : '/templates'
   const journeyIdPath = `${journeyBasePath}/${journey?.id ?? ''}`
 
-  const localLanguage = journey?.language?.name.find(
-    ({ primary }) => !primary
-  )?.value
-  const nativeLanguage =
-    journey?.language?.name.find(({ primary }) => primary)?.value ?? ''
-
-  const displayLanguage = abbreviateLanguageName(
-    localLanguage ?? nativeLanguage
-  )
+  let displayLanguage = ''
+  if (isAlgoliaJourney(journey)) {
+    displayLanguage = getAlgoliaJourneyLanguage(journey)
+  } else if (journey !== undefined) {
+    displayLanguage = getJourneyLanguage(journey)
+  }
 
   const theme = useTheme()
   const { t } = useTranslation('libs-journeys-ui')
   const date =
-    journey != null
+    journey != null && journey.createdAt
       ? intlFormat(parseISO(String(journey.createdAt)), {
           month: 'short',
-          year: isThisYear(parseISO(String(journey?.createdAt)))
+          year: isThisYear(parseISO(String(journey.createdAt)))
             ? undefined
             : 'numeric'
         }).replace(' ', ', ')

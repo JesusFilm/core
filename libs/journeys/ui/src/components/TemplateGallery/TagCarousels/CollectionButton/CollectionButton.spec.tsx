@@ -1,31 +1,71 @@
 import { fireEvent } from '@storybook/testing-library'
-import { render } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 
+import {
+  RefinementListItem,
+  RefinementListRenderState
+} from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
+import { useRefinementList } from 'react-instantsearch'
 import { CollectionButton } from '.'
 
-describe('CollectionButton', () => {
-  const name = [
-    { __typename: 'Translation' as const, value: 'NUA', primary: true }
-  ]
-  const tag = {
-    id: 'tagId',
-    __typename: 'Tag' as const,
-    name,
-    service: null,
-    parentId: 'collection'
+const name = [
+  { __typename: 'Translation' as const, value: 'NUA', primary: true }
+]
+const tag = {
+  id: 'tagId',
+  __typename: 'Tag' as const,
+  name,
+  service: null,
+  parentId: 'collection'
+}
+
+const collectionRefinements = [
+  {
+    count: 1,
+    isRefined: false,
+    value: 'Jesus Film',
+    label: 'Jesus Film',
+    highlighted: 'Jesus Film'
+  },
+  {
+    count: 1,
+    isRefined: false,
+    value: 'NUA',
+    label: 'NUA',
+    highlighted: 'NUA'
   }
+] as RefinementListItem[]
+
+jest.mock('react-instantsearch')
+
+const mockUseRefinementList = useRefinementList as jest.MockedFunction<
+  typeof useRefinementList
+>
+
+function mockRefinementList() {
+  const onClick = jest.fn()
+  mockUseRefinementList.mockReturnValue({
+    refine: onClick
+  } as unknown as RefinementListRenderState)
+  return onClick
+}
+
+describe('CollectionButton', () => {
+  beforeEach(() => {
+    mockRefinementList()
+  })
 
   it('should render a collection button with image', () => {
-    const { getByRole } = render(
-      <CollectionButton item={tag} onClick={jest.fn()} />
-    )
+    render(<CollectionButton item={tag} />)
 
-    expect(getByRole('button', { name: 'NUA tag NUA NUA' })).toBeInTheDocument()
-    expect(getByRole('img')).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'NUA tag NUA NUA' })
+    ).toBeInTheDocument()
+    expect(screen.getByRole('img')).toBeInTheDocument()
   })
 
   it('should render a collection button with placeholder', () => {
-    const { getByRole, getByTestId } = render(
+    render(
       <CollectionButton
         item={{
           ...tag,
@@ -37,34 +77,35 @@ describe('CollectionButton', () => {
             }
           ]
         }}
-        onClick={jest.fn()}
       />
     )
 
-    expect(getByRole('button', { name: 'New New' })).toBeInTheDocument()
-    expect(getByTestId('InsertPhotoRoundedIcon')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'New New' })).toBeInTheDocument()
+    expect(screen.getByTestId('InsertPhotoRoundedIcon')).toBeInTheDocument()
   })
 
   it('should render loading skeleton if no tag is passed', () => {
-    const onClick = jest.fn()
+    const onClick = mockRefinementList()
+    render(<CollectionButton item={undefined} />)
 
-    const { getByTestId, getByRole } = render(
-      <CollectionButton item={undefined} onClick={onClick} />
-    )
-
-    expect(getByTestId('collections-button-loading')).toBeInTheDocument()
-    fireEvent.click(getByRole('button'))
+    expect(screen.getByTestId('collections-button-loading')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button'))
     expect(onClick).not.toHaveBeenCalled()
   })
 
   it('should call onClick on button click', () => {
-    const onClick = jest.fn()
-    const { getByRole } = render(
-      <CollectionButton item={tag} onClick={onClick} />
-    )
+    const onClick = mockRefinementList()
+    render(<CollectionButton item={tag} />)
 
-    fireEvent.click(getByRole('button', { name: 'NUA tag NUA NUA' }))
+    fireEvent.click(screen.getByRole('button', { name: 'NUA tag NUA NUA' }))
+    expect(onClick).toHaveBeenCalledWith(tag.name[0].value)
+  })
 
-    expect(onClick).toHaveBeenCalledWith(tag.id)
+  it('should unrefine others when clicked', () => {
+    const onClick = mockRefinementList()
+    render(<CollectionButton item={tag} />)
+
+    fireEvent.click(screen.getByRole('button', { name: 'NUA tag NUA NUA' }))
+    expect(onClick).toHaveBeenCalledWith(collectionRefinements[1].value)
   })
 })

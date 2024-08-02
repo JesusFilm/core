@@ -1,40 +1,88 @@
 import { fireEvent } from '@storybook/testing-library'
-import { render } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 
+import {
+  RefinementListItem,
+  RefinementListRenderState
+} from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
+import { useRefinementList } from 'react-instantsearch'
 import { FeltNeedsButton } from '.'
 
-describe('FeltNeedsButton', () => {
-  const name = [
-    { __typename: 'Translation' as const, value: 'Acceptance', primary: true }
-  ]
-  const tag = {
-    id: 'tagId',
-    __typename: 'Tag' as const,
-    name,
-    service: null,
-    parentId: 'feltNeeds'
+const name = [
+  { __typename: 'Translation' as const, value: 'Acceptance', primary: true }
+]
+
+const tag = {
+  id: 'tagId',
+  __typename: 'Tag' as const,
+  name,
+  service: null,
+  parentId: 'feltNeeds'
+}
+
+const feltNeedsRefinements = [
+  {
+    count: 1,
+    isRefined: true,
+    value: 'Anxiety',
+    label: 'Anxiety',
+    highlighted: 'Anxiety'
+  },
+  {
+    count: 2,
+    isRefined: false,
+    value: 'Acceptance',
+    label: 'Acceptance',
+    highlighted: 'Acceptance'
+  },
+  {
+    count: 2,
+    isRefined: false,
+    value: 'Depression',
+    label: 'Depression',
+    highlighted: 'Depression'
   }
+] as RefinementListItem[]
+
+jest.mock('react-instantsearch')
+
+const mockUseRefinementList = useRefinementList as jest.MockedFunction<
+  typeof useRefinementList
+>
+
+function mockRefinementList() {
+  const onClick = jest.fn()
+  mockUseRefinementList.mockReturnValue({
+    refine: onClick
+  } as unknown as RefinementListRenderState)
+  return onClick
+}
+
+describe('FeltNeedsButton', () => {
+  beforeEach(() => {
+    mockRefinementList()
+  })
 
   it('should render a felt needs button', () => {
-    const { getByRole, queryByTestId } = render(
-      <FeltNeedsButton item={tag} onClick={jest.fn()} />
-    )
+    render(<FeltNeedsButton item={tag} />)
 
     expect(
-      getByRole('button', { name: 'Acceptance tag Acceptance Acceptance' })
+      screen.getByRole('button', {
+        name: 'Acceptance tag Acceptance Acceptance'
+      })
     ).toBeInTheDocument()
-    expect(queryByTestId('felt-needs-button-loading')).not.toBeInTheDocument()
+    expect(
+      screen.queryByTestId('felt-needs-button-loading')
+    ).not.toBeInTheDocument()
   })
 
   it('should render loading skeleton if no tag is passed', () => {
-    const { getByTestId } = render(
-      <FeltNeedsButton item={undefined} onClick={jest.fn()} />
-    )
-    expect(getByTestId('felt-needs-button-loading')).toBeInTheDocument()
+    render(<FeltNeedsButton item={undefined} />)
+    expect(screen.getByTestId('felt-needs-button-loading')).toBeInTheDocument()
   })
 
   it('should render without image', () => {
-    const { getByRole, queryByTestId } = render(
+    render(
       <FeltNeedsButton
         item={{
           ...tag,
@@ -46,25 +94,36 @@ describe('FeltNeedsButton', () => {
             }
           ]
         }}
-        onClick={jest.fn()}
       />
     )
     expect(
-      getByRole('button', { name: 'invalid name invalid name' })
+      screen.getByRole('button', { name: 'invalid name invalid name' })
     ).toBeInTheDocument()
-    expect(queryByTestId('felt-needs-button-loading')).not.toBeInTheDocument()
+    expect(
+      screen.queryByTestId('felt-needs-button-loading')
+    ).not.toBeInTheDocument()
   })
 
   it('should call onClick on button click', () => {
-    const onClick = jest.fn()
-    const { getByRole } = render(
-      <FeltNeedsButton item={tag} onClick={onClick} />
-    )
-
+    const onClick = mockRefinementList()
+    render(<FeltNeedsButton item={tag} />)
     fireEvent.click(
-      getByRole('button', { name: 'Acceptance tag Acceptance Acceptance' })
+      screen.getByRole('button', {
+        name: 'Acceptance tag Acceptance Acceptance'
+      })
     )
+    expect(onClick).toHaveBeenCalledWith(tag.name[0].value)
+  })
 
-    expect(onClick).toHaveBeenCalledWith(tag.id)
+  it('should unrefine others when clicked', () => {
+    const onClick = mockRefinementList()
+    render(<FeltNeedsButton item={tag} />)
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: 'Acceptance tag Acceptance Acceptance'
+      })
+    )
+    expect(onClick).toHaveBeenCalledWith(feltNeedsRefinements[0].value)
+    expect(onClick).toHaveBeenCalledWith(feltNeedsRefinements[1].value)
   })
 })
