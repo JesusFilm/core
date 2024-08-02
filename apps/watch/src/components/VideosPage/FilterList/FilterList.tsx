@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography'
 import { Formik } from 'formik'
 import { useTranslation } from 'next-i18next'
 import { useRouter } from 'next/compat/router'
-import { ReactElement, useEffect, useMemo } from 'react'
+import { ChangeEvent, ReactElement, useMemo } from 'react'
 import {
   useClearRefinements,
   useRefinementList,
@@ -93,8 +93,8 @@ export function FilterList({
   languagesLoading
 }: FilterListProps): ReactElement {
   const { t } = useTranslation()
-  const router = useRouter()
 
+  const router = useRouter()
   const decodedUrl = decodeURIComponent(router?.asPath ?? '')
   const { query, languageId, subtitleId } = extractQueryParams(decodedUrl)
 
@@ -148,25 +148,20 @@ export function FilterList({
 
   const initialValues = useMemo(
     () => ({
+      title: query ?? '',
       language: languageOptionFromIds([languageId ?? '']),
-      subtitleLanguage: languageOptionFromIds([subtitleId ?? '']),
-      title: query ?? ''
+      subtitleLanguage: languageOptionFromIds([subtitleId ?? ''])
     }),
     [languagesMap]
   )
 
   function handleRefine({
-    title,
     languageId,
     subtitleLanguageId
   }: {
-    title: string
     languageId: string
     subtitleLanguageId: string
   }): void {
-    if (title) {
-      refineSearch(title)
-    }
     if (languageId) {
       refineLanguages(languageId)
     }
@@ -178,20 +173,17 @@ export function FilterList({
 
   function handleSubmit(values: typeof initialValues): void {
     handleRefine({
-      title: values.title,
       languageId: values.language.id,
       subtitleLanguageId: values.subtitleLanguage.id
     })
   }
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: effect to only run on componentDidMount
-  useEffect(() => {
-    handleRefine({
-      title: query ?? '',
-      languageId: languageId ?? '',
-      subtitleLanguageId: subtitleId ?? ''
-    })
-  }, [initialValues])
+  const handleTitleChange =
+    (setFieldValue) => (e: ChangeEvent<HTMLInputElement>) => {
+      const { name, value } = e.target
+      refineSearch(value)
+      setFieldValue(name, value)
+    }
 
   return (
     <Formik
@@ -199,7 +191,7 @@ export function FilterList({
       onSubmit={handleSubmit}
       enableReinitialize
     >
-      {({ values, setFieldValue, handleChange, handleBlur }) => (
+      {({ values, setFieldValue, handleBlur }) => (
         <Stack data-testid="FilterList" gap={4}>
           <Stack spacing={2}>
             <Stack direction="row" spacing={2}>
@@ -239,7 +231,7 @@ export function FilterList({
             <TextField
               value={values.title}
               name="title"
-              onChange={handleChange}
+              onChange={handleTitleChange(setFieldValue)}
               onBlur={handleBlur}
               label="Search Titles"
               variant="outlined"
