@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockLink, MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
@@ -10,6 +10,9 @@ import { SignUpFields } from '../../../../../../../../__generated__/SignUpFields
 import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
+import { ApolloLink } from '@apollo/client'
+import userEvent from '@testing-library/user-event'
+import DebounceLink from 'apollo-link-debounce'
 import { SIGN_UP_BLOCK_UPDATE_SUBMIT_LABEL, SignUpEdit } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -28,8 +31,6 @@ describe('SignUpEdit', () => {
     action: null,
     children: []
   }
-
-  beforeEach(() => jest.clearAllMocks())
 
   const mockUpdateSuccess1 = {
     request: {
@@ -73,6 +74,8 @@ describe('SignUpEdit', () => {
     }))
   }
 
+  beforeEach(() => jest.clearAllMocks())
+
   it('selects the input on click', async () => {
     render(
       <MockedProvider>
@@ -87,8 +90,13 @@ describe('SignUpEdit', () => {
   })
 
   it('should submit if the value has changed', async () => {
+    const link = ApolloLink.from([
+      new DebounceLink(500),
+      new MockLink([mockUpdateSuccess1])
+    ])
+
     render(
-      <MockedProvider mocks={[mockUpdateSuccess1]}>
+      <MockedProvider link={link}>
         <SnackbarProvider>
           <EditorProvider>
             <SignUpEdit {...props} />
@@ -98,15 +106,18 @@ describe('SignUpEdit', () => {
     )
 
     const input = screen.getByRole('textbox', { name: '' })
-    fireEvent.click(input)
-    fireEvent.change(input, { target: { value: 'Submit update' } })
-    fireEvent.blur(input)
+    userEvent.type(input, ' update')
     await waitFor(() => expect(mockUpdateSuccess1.result).toHaveBeenCalled())
   })
 
   it('should not submit if the current value is the same', async () => {
+    const link = ApolloLink.from([
+      new DebounceLink(500),
+      new MockLink([mockUpdateSuccess1])
+    ])
+
     render(
-      <MockedProvider mocks={[mockUpdateSuccess1]}>
+      <MockedProvider link={link}>
         <SnackbarProvider>
           <EditorProvider>
             <SignUpEdit {...props} />
@@ -116,17 +127,22 @@ describe('SignUpEdit', () => {
     )
 
     const input = screen.getByRole('textbox', { name: '' })
-    fireEvent.click(input)
-    fireEvent.change(input, { target: { value: 'Submit' } })
-    fireEvent.blur(input)
+    userEvent.tripleClick(input)
+    userEvent.type(input, 'Submit')
+
     await waitFor(() =>
       expect(mockUpdateSuccess1.result).not.toHaveBeenCalled()
     )
   })
 
   it('should undo the label change', async () => {
+    const link = ApolloLink.from([
+      new DebounceLink(500),
+      new MockLink([mockUpdateSuccess1, mockUpdateSuccess2])
+    ])
+
     render(
-      <MockedProvider mocks={[mockUpdateSuccess1, mockUpdateSuccess2]}>
+      <MockedProvider link={link}>
         <SnackbarProvider>
           <EditorProvider>
             <CommandUndoItem variant="button" />
@@ -137,9 +153,7 @@ describe('SignUpEdit', () => {
     )
 
     const input = screen.getByRole('textbox', { name: '' })
-    fireEvent.click(input)
-    fireEvent.change(input, { target: { value: 'Submit update' } })
-    fireEvent.blur(input)
+    userEvent.type(input, ' update')
     await waitFor(() => expect(mockUpdateSuccess1.result).toHaveBeenCalled())
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
@@ -152,8 +166,13 @@ describe('SignUpEdit', () => {
       maxUsageCount: 2
     }
 
+    const link = ApolloLink.from([
+      new DebounceLink(500),
+      new MockLink([firstUpdateMock, mockUpdateSuccess2])
+    ])
+
     render(
-      <MockedProvider mocks={[firstUpdateMock, mockUpdateSuccess2]}>
+      <MockedProvider link={link}>
         <SnackbarProvider>
           <EditorProvider>
             <CommandUndoItem variant="button" />
@@ -165,9 +184,7 @@ describe('SignUpEdit', () => {
     )
 
     const input = screen.getByRole('textbox', { name: '' })
-    fireEvent.click(input)
-    fireEvent.change(input, { target: { value: 'Submit update' } })
-    fireEvent.blur(input)
+    userEvent.type(input, ' update')
     await waitFor(() => expect(firstUpdateMock.result).toHaveBeenCalled())
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))

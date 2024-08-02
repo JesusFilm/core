@@ -162,6 +162,7 @@ describe('TypographyEdit', () => {
     const input = screen.getByRole('textbox') as HTMLInputElement
     await userEvent.type(input, 'test', { skipClick: true })
     await waitFor(() => expect(mockUpdateSuccess1.result).toHaveBeenCalled())
+    expect(input).toHaveTextContent('test')
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
     await waitFor(() => expect(mockUpdateSuccess2.result).toHaveBeenCalled())
