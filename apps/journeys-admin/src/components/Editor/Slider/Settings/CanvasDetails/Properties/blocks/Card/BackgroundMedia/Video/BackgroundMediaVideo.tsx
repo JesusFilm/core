@@ -93,7 +93,7 @@ export function BackgroundMediaVideo({
   const [deleteBlock] = useCoverBlockDeleteMutation()
   const [restoreBlock] = useCoverBlockRestoreMutation()
 
-  async function createVideoBlock(input: VideoBlockUpdateInput): Promise<void> {
+  function createVideoBlock(input: VideoBlockUpdateInput): void {
     if (journey == null || cardBlock == null) return
 
     const block: VideoBlock = {
@@ -119,19 +119,19 @@ export function BackgroundMediaVideo({
       objectFit: input.objectFit ?? null
     }
 
-    await add({
+    add({
       parameters: {
         execute: {},
         undo: {}
       },
-      async execute() {
+      execute() {
         dispatch({
           type: 'SetEditorFocusAction',
           activeSlide: ActiveSlide.Content,
           selectedStep: selectedStep,
           activeContent: ActiveContent.Canvas
         })
-        await createBlock({
+        void createBlock({
           variables: {
             id: block.id,
             cardBlockId: cardBlock.id,
@@ -173,14 +173,14 @@ export function BackgroundMediaVideo({
           }
         })
       },
-      async undo() {
+      undo() {
         dispatch({
           type: 'SetEditorFocusAction',
           activeSlide: ActiveSlide.Content,
           selectedStep: selectedStep,
           activeContent: ActiveContent.Canvas
         })
-        await deleteBlock({
+        void deleteBlock({
           variables: {
             id: block.id,
             cardBlockId: cardBlock.id
@@ -198,14 +198,14 @@ export function BackgroundMediaVideo({
           }
         })
       },
-      async redo() {
+      redo() {
         dispatch({
           type: 'SetEditorFocusAction',
           activeSlide: ActiveSlide.Content,
           selectedStep: selectedStep,
           activeContent: ActiveContent.Canvas
         })
-        await restoreBlock({
+        void restoreBlock({
           variables: {
             id: block.id,
             cardBlockId: cardBlock.id
@@ -226,7 +226,7 @@ export function BackgroundMediaVideo({
     })
   }
 
-  async function updateVideoBlock(input: VideoBlockUpdateInput): Promise<void> {
+  function updateVideoBlock(input: VideoBlockUpdateInput): void {
     if (
       journey == null ||
       coverBlock == null ||
@@ -240,19 +240,19 @@ export function BackgroundMediaVideo({
       source: input.source ?? coverBlock.source
     }
 
-    await add({
+    add({
       parameters: {
         execute: block,
         undo: coverBlock
       },
-      async execute(block) {
+      execute(block) {
         dispatch({
           type: 'SetEditorFocusAction',
           activeSlide: ActiveSlide.Content,
           selectedStep: selectedStep,
           activeContent: ActiveContent.Canvas
         })
-        await updateBlock({
+        void updateBlock({
           variables: {
             id: coverBlock.id,
             input: pick(block, Object.keys(input))
@@ -265,7 +265,7 @@ export function BackgroundMediaVideo({
     })
   }
 
-  async function deleteVideoBlock(): Promise<void> {
+  function deleteVideoBlock(): void {
     if (
       journey == null ||
       coverBlock == null ||
@@ -274,19 +274,19 @@ export function BackgroundMediaVideo({
     )
       return
 
-    await add({
+    add({
       parameters: {
         execute: {},
         undo: {}
       },
-      async execute() {
+      execute() {
         dispatch({
           type: 'SetEditorFocusAction',
           activeSlide: ActiveSlide.Content,
           selectedStep: selectedStep,
           activeContent: ActiveContent.Canvas
         })
-        await deleteBlock({
+        void deleteBlock({
           variables: {
             id: coverBlock.id,
             cardBlockId: cardBlock.id
@@ -304,14 +304,14 @@ export function BackgroundMediaVideo({
           }
         })
       },
-      async undo() {
+      undo() {
         dispatch({
           type: 'SetEditorFocusAction',
           activeSlide: ActiveSlide.Content,
           selectedStep: selectedStep,
           activeContent: ActiveContent.Canvas
         })
-        await restoreBlock({
+        void restoreBlock({
           variables: {
             id: coverBlock.id,
             cardBlockId: cardBlock.id

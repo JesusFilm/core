@@ -345,7 +345,7 @@ describe('CommandContext', () => {
           wrapper
         })
 
-        await result.current.undo()
+        result.current.undo()
 
         rerender()
 
@@ -383,7 +383,7 @@ describe('CommandContext', () => {
           wrapper
         })
 
-        await result.current.undo()
+        result.current.undo()
 
         rerender()
 
@@ -417,7 +417,7 @@ describe('CommandContext', () => {
           wrapper
         })
 
-        await result.current.undo()
+        result.current.undo()
 
         rerender()
 
@@ -452,7 +452,7 @@ describe('CommandContext', () => {
           wrapper
         })
 
-        await result.current.redo()
+        result.current.redo()
 
         rerender()
 
@@ -491,7 +491,7 @@ describe('CommandContext', () => {
           wrapper
         })
 
-        await result.current.redo()
+        result.current.redo()
 
         rerender()
 
@@ -525,7 +525,7 @@ describe('CommandContext', () => {
           wrapper
         })
 
-        await result.current.redo()
+        result.current.redo()
 
         rerender()
 
@@ -551,7 +551,7 @@ describe('CommandContext', () => {
           wrapper
         })
 
-        await result.current.add(command)
+        result.current.add(command)
 
         rerender()
 

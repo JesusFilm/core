@@ -50,42 +50,42 @@ export function CardStyling(): ReactElement {
     CARD_BLOCK_THEME_MODE_UPDATE
   )
 
-  async function handleChange(themeMode: ThemeMode): Promise<void> {
-    if (cardBlock != null) {
-      await add({
-        parameters: {
-          execute: {
-            themeMode
-          },
-          undo: {
-            themeMode: cardBlock.themeMode
-          }
+  function handleChange(themeMode: ThemeMode): void {
+    if (cardBlock == null) return
+
+    add({
+      parameters: {
+        execute: {
+          themeMode
         },
-        async execute({ themeMode }) {
-          dispatch({
-            type: 'SetEditorFocusAction',
-            selectedStep
-          })
-          await cardBlockUpdate({
-            variables: {
-              id: cardBlock.id,
-              input: {
-                themeMode,
-                themeName: ThemeName.base
-              }
-            },
-            optimisticResponse: {
-              cardBlockUpdate: {
-                id: cardBlock.id,
-                __typename: 'CardBlock',
-                themeMode,
-                themeName: ThemeName.base
-              }
-            }
-          })
+        undo: {
+          themeMode: cardBlock.themeMode
         }
-      })
-    }
+      },
+      execute({ themeMode }) {
+        dispatch({
+          type: 'SetEditorFocusAction',
+          selectedStep
+        })
+        void cardBlockUpdate({
+          variables: {
+            id: cardBlock.id,
+            input: {
+              themeMode,
+              themeName: ThemeName.base
+            }
+          },
+          optimisticResponse: {
+            cardBlockUpdate: {
+              id: cardBlock.id,
+              __typename: 'CardBlock',
+              themeMode,
+              themeName: ThemeName.base
+            }
+          }
+        })
+      }
+    })
   }
 
   return (
