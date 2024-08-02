@@ -99,7 +99,7 @@ export const STEP_BLOCK_CREATE_FROM_STEP = gql`
 
 export function useCreateStepFromStep(): (
   input: CreateStepFromStepInput
-) => Promise<void> {
+) => void {
   const { journey } = useJourney()
   const {
     state: { selectedStep },
@@ -122,12 +122,13 @@ export function useCreateStepFromStep(): (
     StepBlockCreateFromStepVariables
   >(STEP_BLOCK_CREATE_FROM_STEP)
 
-  return async function createStepFromStep({
+  return function createStepFromStep({
     x,
     y,
     sourceStep
-  }: CreateStepFromStepInput): Promise<void> {
+  }: CreateStepFromStepInput): void {
     if (journey == null || selectedStep == null || sourceStep == null) return
+
     const step: StepBlock & { x: number; y: number } = {
       __typename: 'StepBlock',
       locked: false,
@@ -150,17 +151,16 @@ export function useCreateStepFromStep(): (
       parentOrder: 0
     }
 
-    void add({
+    add({
       parameters: {
         execute: {},
         undo: { stepBeforeDelete: selectedStep }
       },
-      async execute() {
+      execute() {
         dispatch({
           type: 'SetSelectedStepByIdAction',
           selectedStepId: step.id
         })
-
         void stepBlockCreateFromStep({
           variables: {
             stepBlockCreateInput: {
@@ -196,12 +196,11 @@ export function useCreateStepFromStep(): (
           }
         })
       },
-      async undo({ stepBeforeDelete }) {
+      undo({ stepBeforeDelete }) {
         dispatch({
           type: 'SetSelectedStepByIdAction',
           selectedStepId: stepBeforeDelete.id
         })
-
         void stepBlockDeleteFromStep({
           variables: {
             id: step.id,
@@ -224,7 +223,7 @@ export function useCreateStepFromStep(): (
           }
         })
       },
-      async redo() {
+      redo() {
         dispatch({
           type: 'SetSelectedStepByIdAction',
           selectedStepId: step.id

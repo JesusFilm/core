@@ -151,7 +151,7 @@ export const STEP_BLOCK_CREATE_FROM_ACTION = gql`
 
 export function useCreateStepFromAction(): (
   input: CreateStepFromActionInput
-) => Promise<void> {
+) => void {
   const { journey } = useJourney()
   const {
     state: { selectedStep },
@@ -179,12 +179,12 @@ export function useCreateStepFromAction(): (
     StepBlockRestoreFromActionVariables
   >(STEP_BLOCK_RESTORE_FROM_ACTION)
 
-  return async function createStepFromAction({
+  return function createStepFromAction({
     x,
     y,
     sourceStep,
     sourceBlock
-  }: CreateStepFromActionInput): Promise<void> {
+  }: CreateStepFromActionInput): void {
     if (
       journey == null ||
       sourceBlock == null ||
@@ -214,9 +214,9 @@ export function useCreateStepFromAction(): (
       backgroundColor: null,
       parentOrder: 0
     }
-    void add({
+    add({
       parameters: { execute: {}, undo: { stepBeforeDelete: selectedStep } },
-      async execute() {
+      execute() {
         dispatch({
           type: 'SetEditorFocusAction',
           selectedStepId: step.id,
@@ -270,7 +270,7 @@ export function useCreateStepFromAction(): (
           }
         })
       },
-      async undo({ stepBeforeDelete }) {
+      undo({ stepBeforeDelete }) {
         dispatch({
           type: 'SetEditorFocusAction',
           selectedStepId: stepBeforeDelete.id,
@@ -350,7 +350,7 @@ export function useCreateStepFromAction(): (
           })
         }
       },
-      async redo() {
+      redo() {
         dispatch({
           type: 'SetEditorFocusAction',
           selectedStepId: step.id,
