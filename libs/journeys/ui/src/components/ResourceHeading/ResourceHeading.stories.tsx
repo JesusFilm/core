@@ -1,10 +1,10 @@
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
-import { watchConfig } from '../../../../../../apps/watch/src/libs/storybook'
 import { ResourceHeading } from './ResourceHeading'
 
 const ResourceHeadingStory: Meta<typeof ResourceHeading> = {
-  ...watchConfig,
+  ...simpleComponentConfig,
   component: ResourceHeading,
   title: 'Watch/ResourceHeading'
 }
