@@ -93,7 +93,8 @@ export async function checkConditionalRedirect({
       return { destination: currentRedirect, permanent: false }
     }
     if (resolvedUrl.startsWith('/onboarding-form')) return
-    return { destination: `/onboarding-form${redirect}`, permanent: false }
+    // TODO: restore onboarding form check once form works again
+    // return { destination: `/onboarding-form${redirect}`, permanent: false }
   }
 
   if (data.teams.length === 0) {
