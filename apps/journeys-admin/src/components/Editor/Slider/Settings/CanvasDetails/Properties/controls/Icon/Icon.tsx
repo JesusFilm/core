@@ -149,9 +149,9 @@ export const icons = [
 export const ICON_BLOCK_NAME_UPDATE = gql`
   mutation IconBlockNameUpdate(
     $id: ID!
-    $input: IconBlockUpdateInput!
+    $name: IconName
   ) {
-    iconBlockUpdate(id: $id, input: $input) {
+    iconBlockUpdate(id: $id, input: {name: $name}) {
       id
       name
     }
@@ -192,9 +192,7 @@ export function Icon({ id }: IconProps): ReactElement {
         void iconBlockNameUpdate({
           variables: {
             id,
-            input: {
-              name
-            }
+            name
           },
           optimisticResponse: {
             iconBlockUpdate: {

@@ -63,9 +63,7 @@ describe('Typography color selector', () => {
               query: TYPOGRAPHY_BLOCK_UPDATE_COLOR,
               variables: {
                 id: 'id',
-                input: {
-                  color: TypographyColor.secondary
-                }
+                color: TypographyColor.secondary
               }
             },
             result
@@ -118,9 +116,7 @@ describe('Typography color selector', () => {
               query: TYPOGRAPHY_BLOCK_UPDATE_COLOR,
               variables: {
                 id: 'id',
-                input: {
-                  color: TypographyColor.secondary
-                }
+                color: TypographyColor.secondary
               }
             },
             result: result1
@@ -130,9 +126,7 @@ describe('Typography color selector', () => {
               query: TYPOGRAPHY_BLOCK_UPDATE_COLOR,
               variables: {
                 id: 'id',
-                input: {
-                  color: TypographyColor.error
-                }
+                color: TypographyColor.error
               }
             },
             result: result2
