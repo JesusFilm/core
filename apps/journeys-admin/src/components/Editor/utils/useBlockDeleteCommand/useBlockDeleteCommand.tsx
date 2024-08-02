@@ -8,7 +8,6 @@ import { BlockFields_CardBlock as CardBlock } from '../../../../../__generated__
 import { blockDeleteUpdate } from '../../../../libs/blockDeleteUpdate'
 import { useBlockDeleteMutation } from '../../../../libs/useBlockDeleteMutation'
 import { useBlockRestoreMutation } from '../../../../libs/useBlockRestoreMutation'
-import getSelected from '../../Slider/Content/Canvas/QuickControls/DeleteBlock/utils/getSelected'
 import { setBlockRestoreEditorState } from './setBlockRestoreEditorState'
 
 export function useBlockDeleteCommand(): {
@@ -57,8 +56,13 @@ export function useBlockDeleteCommand(): {
     const stepSiblingsBeforeDelete = steps.filter(
       (block) => block.id !== currentBlock.id
     )
-    const canvasSiblingsBeforeDelete = card?.children.filter(
-      (block) => block.id !== currentBlock.id
+    const canvasSiblingsBeforeDelete =
+      card?.children.filter((block) => block.id !== currentBlock.id) ?? []
+    const canvasSiblingsAfterDelete = canvasSiblingsBeforeDelete.map(
+      (block, index) => ({
+        ...block,
+        parentOrder: block.parentOrder != null ? index : null
+      })
     )
 
     add({
@@ -85,24 +89,32 @@ export function useBlockDeleteCommand(): {
         stepsBeforeDelete,
         journeyId
       }) {
-        if (
-          deletedBlockParentOrder != null &&
-          (currentBlock == null || currentBlock?.id === selectedBlock?.id)
-        ) {
-          const selected = getSelected({
-            parentOrder: deletedBlockParentOrder,
-            siblings:
-              currentBlock.__typename === 'StepBlock'
-                ? stepSiblingsBeforeDelete
-                : canvasSiblingsBeforeDelete ?? [],
-            type: deletedBlockType,
-            steps: stepsBeforeDelete,
-            selectedStep: stepBeforeDelete
-          })
-          selected != null && dispatch(selected)
-        }
+        // if (
+        //   deletedBlockParentOrder != null &&
+        //   (currentBlock == null || currentBlock?.id === selectedBlock?.id)
+        // ) {
+        //   const selected = getSelected({
+        //     parentOrder: deletedBlockParentOrder,
+        //     siblings:
+        //       currentBlock.__typename === 'StepBlock'
+        //         ? stepSiblingsBeforeDelete
+        //         : canvasSiblingsBeforeDelete ?? [],
+        //     type: deletedBlockType,
+        //     steps: stepsBeforeDelete,
+        //     selectedStep: stepBeforeDelete
+        //   })
+        //   selected != null && dispatch(selected)
+        // }
+        console.log(canvasSiblingsAfterDelete[deletedBlockParentOrder])
+
+        dispatch({
+          type: 'SetEditorFocusAction',
+          selectedBlockId:
+            canvasSiblingsAfterDelete[deletedBlockParentOrder]?.id,
+          selectedStepId: selectedStep.id
+        })
         void blockDelete(currentBlock, {
-          optimisticResponse: { blockDelete: [currentBlock] },
+          optimisticResponse: { blockDelete: canvasSiblingsAfterDelete },
           update(cache, { data }) {
             blockDeleteUpdate(currentBlock, data?.blockDelete, cache, journeyId)
           }
@@ -125,7 +137,7 @@ export function useBlockDeleteCommand(): {
                   blockRestore: [
                     currentBlock,
                     ...flattenedChildren,
-                    ...(canvasSiblingsBeforeDelete ?? [])
+                    ...canvasSiblingsBeforeDelete
                   ]
                 }
         })
