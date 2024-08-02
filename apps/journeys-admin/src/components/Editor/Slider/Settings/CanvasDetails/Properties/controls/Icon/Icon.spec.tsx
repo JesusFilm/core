@@ -109,9 +109,7 @@ describe('Icon', () => {
               query: ICON_BLOCK_NAME_UPDATE,
               variables: {
                 id: icon.id,
-                input: {
-                  name: IconName.ArrowForwardRounded
-                }
+                name: IconName.ArrowForwardRounded
               }
             },
             result
@@ -150,9 +148,7 @@ describe('Icon', () => {
               query: ICON_BLOCK_NAME_UPDATE,
               variables: {
                 id: icon.id,
-                input: {
-                  name: null
-                }
+                name: null
               }
             },
             result
@@ -190,9 +186,7 @@ describe('Icon', () => {
               query: ICON_BLOCK_NAME_UPDATE,
               variables: {
                 id: icon.id,
-                input: {
-                  name: IconName.BeenhereRounded
-                }
+                name: IconName.BeenhereRounded
               }
             },
             result
@@ -227,9 +221,7 @@ describe('Icon', () => {
         query: ICON_BLOCK_NAME_UPDATE,
         variables: {
           id: icon.id,
-          input: {
-            name: IconName.BeenhereRounded
-          }
+          name: IconName.BeenhereRounded
         }
       },
       result: result1
@@ -252,9 +244,7 @@ describe('Icon', () => {
         query: ICON_BLOCK_NAME_UPDATE,
         variables: {
           id: icon.id,
-          input: {
-            name: IconName.ArrowForwardRounded
-          }
+          name: IconName.ArrowForwardRounded
         }
       },
       result: result2
@@ -295,9 +285,7 @@ describe('Icon', () => {
         query: ICON_BLOCK_NAME_UPDATE,
         variables: {
           id: icon.id,
-          input: {
-            name: IconName.BeenhereRounded
-          }
+          name: IconName.BeenhereRounded
         }
       },
       result: result1,
@@ -321,9 +309,7 @@ describe('Icon', () => {
         query: ICON_BLOCK_NAME_UPDATE,
         variables: {
           id: icon.id,
-          input: {
-            name: IconName.ArrowForwardRounded
-          }
+          name: IconName.ArrowForwardRounded
         }
       },
       result: result2
