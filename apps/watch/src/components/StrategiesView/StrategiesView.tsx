@@ -16,7 +16,7 @@ export function StrategiesView(): ReactElement {
           <Stack sx={{ p: 0, gap: 10 }}>
             <ResourceHeading heading="Resource" />
             <SearchBar />
-            <StrategySections />
+            <StrategySections index />
           </Stack>
         </Container>
       </Box>
