@@ -59,7 +59,7 @@ export function NewRadioQuestionButton(): ReactElement {
   } = useEditor()
   const { addBlock } = useBlockCreateCommand()
 
-  async function handleClick(): Promise<void> {
+  function handleClick(): void {
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
@@ -90,7 +90,7 @@ export function NewRadioQuestionButton(): ReactElement {
 
       void addBlock({
         block: radioQuestionBlock,
-        async execute() {
+        execute() {
           void radioQuestionBlockCreate({
             variables: {
               input: {

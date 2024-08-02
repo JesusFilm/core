@@ -32,7 +32,7 @@ export function NewFormButton(): ReactElement {
   } = useEditor()
   const { addBlock } = useBlockCreateCommand()
 
-  async function handleClick(): Promise<void> {
+  function handleClick(): void {
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
     )
@@ -44,11 +44,11 @@ export function NewFormButton(): ReactElement {
         parentOrder: card.children.length ?? 0,
         form: null,
         action: null,
-        __typename: 'FormBlock' as const
+        __typename: 'FormBlock'
       }
       void addBlock({
         block: formBlock,
-        async execute() {
+        execute() {
           void formBlockCreate({
             variables: {
               input: {

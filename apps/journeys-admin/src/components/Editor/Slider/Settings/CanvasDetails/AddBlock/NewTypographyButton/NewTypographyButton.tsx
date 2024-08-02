@@ -40,7 +40,7 @@ export function NewTypographyButton(): ReactElement {
   } = useEditor()
   const { addBlock } = useBlockCreateCommand()
 
-  async function handleClick(): Promise<void> {
+  function handleClick(): void {
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
@@ -65,7 +65,7 @@ export function NewTypographyButton(): ReactElement {
 
       void addBlock({
         block: typography,
-        async execute() {
+        execute() {
           void typographyBlockCreate({
             variables: {
               input: {

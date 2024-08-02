@@ -44,7 +44,7 @@ export function NewVideoButton({
   } = useEditor()
   const { addBlock } = useBlockCreateCommand()
 
-  async function handleClick(): Promise<void> {
+  function handleClick(): void {
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
@@ -75,7 +75,7 @@ export function NewVideoButton({
       }
       void addBlock({
         block: video,
-        async execute() {
+        execute() {
           void videoBlockCreate({
             variables: {
               input: {

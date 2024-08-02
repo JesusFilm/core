@@ -54,7 +54,7 @@ export function NewSignUpButton(): ReactElement {
   } = useEditor()
   const { addBlock } = useBlockCreateCommand()
 
-  async function handleClick(): Promise<void> {
+  function handleClick(): void {
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
@@ -81,7 +81,7 @@ export function NewSignUpButton(): ReactElement {
 
       void addBlock({
         block: signUpBlock,
-        async execute() {
+        execute() {
           void signUpBlockCreate({
             variables: {
               input: {

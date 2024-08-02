@@ -40,7 +40,7 @@ export function NewImageButton(): ReactElement {
   } = useEditor()
   const { addBlock } = useBlockCreateCommand()
 
-  async function handleClick(): Promise<void> {
+  function handleClick(): void {
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
@@ -55,11 +55,11 @@ export function NewImageButton(): ReactElement {
         width: 0,
         height: 0,
         blurhash: '',
-        __typename: 'ImageBlock' as const
+        __typename: 'ImageBlock'
       }
       void addBlock({
         block: imageBlock,
-        async execute() {
+        execute() {
           void imageBlockCreate({
             variables: {
               input: {
