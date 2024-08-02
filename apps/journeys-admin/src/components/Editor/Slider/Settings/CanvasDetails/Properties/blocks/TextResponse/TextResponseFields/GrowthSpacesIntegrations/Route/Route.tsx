@@ -1,12 +1,10 @@
 import { ReactElement } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import Typography from '@mui/material/Typography'
 import { useTranslation } from 'react-i18next'
 
 import { gql, useMutation } from '@apollo/client'
 import { TreeBlock } from '@core/journeys/ui/block'
-import { SelectChangeEvent } from '@mui/material/Select'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../../__generated__/BlockFields'
@@ -46,7 +44,7 @@ export function Route(): ReactElement {
     TextResponseRouteUpdateVariables
   >(TEXT_RESPONSE_ROUTE_UPDATE)
 
-  const { data } = useIntegrationQuery({
+  const { data, loading } = useIntegrationQuery({
     teamId: activeTeam?.id as string
   })
 
@@ -54,33 +52,28 @@ export function Route(): ReactElement {
     (integration) => selectedBlock?.integrationId === integration.id
   )
 
-  const value = selectedIntegration?.routes.find(
-    (route) => route.id === selectedBlock?.routeId
-  )?.name
+  const options =
+    selectedIntegration?.routes.map(({ id, name }) => ({
+      value: id,
+      label: name
+    })) ?? []
 
-  const options = selectedIntegration?.routes.map((route) => route.name)
-
-  async function handleChange(event: SelectChangeEvent) {
+  async function handleChange(routeId: string | null) {
     if (selectedBlock == null) return
-    const route = selectedIntegration?.routes.find(
-      (route) => route.name === event.target.value
-    )
 
-    if (route == null) return
-
-    await add({
+    add({
       parameters: {
-        execute: { routeId: route.id },
+        execute: { routeId },
         undo: { routeId: selectedBlock.routeId }
       },
-      async execute({ routeId }) {
+      execute({ routeId }) {
         dispatch({
           type: 'SetEditorFocusAction',
           selectedBlock,
           selectedStep: state.selectedStep,
           selectedAttributeId: state.selectedAttributeId
         })
-        await textResponseRouteUpdate({
+        textResponseRouteUpdate({
           variables: {
             id: selectedBlock.id,
             input: {
@@ -101,12 +94,11 @@ export function Route(): ReactElement {
 
   return (
     <>
-      {selectedBlock?.integrationId && (
+      {selectedBlock?.integrationId != null && !loading && (
         <>
-          <Typography variant="subtitle2">{t('Route')}</Typography>
           <Select
-            label="Routes"
-            value={value ?? ''}
+            label={t('Route')}
+            value={selectedBlock?.routeId ?? undefined}
             onChange={handleChange}
             options={options}
           />

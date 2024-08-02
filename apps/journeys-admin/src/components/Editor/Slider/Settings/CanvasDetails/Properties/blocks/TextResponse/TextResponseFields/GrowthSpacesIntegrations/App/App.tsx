@@ -15,22 +15,25 @@ import { useIntegrationQuery } from '../../../../../../../../../../../libs/useIn
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
-import { SelectChangeEvent } from '@mui/material/Select'
 import { Select } from '../Select'
 
 export const TEXT_RESPONSE_INTEGRATION_UPDATE = gql`
   mutation TextResponseIntegrationUpdate(
     $id: ID!, 
-    $input: TextResponseBlockUpdateInput!
+    $integrationId: String
+    $routeId: String
   ) {
-    textResponseBlockUpdate(id: $id, input: $input) {
+    textResponseBlockUpdate(
+      id: $id, input: { integrationId: $integrationId, routeId: $routeId }
+    ) {
       id
       integrationId
+      routeId
     }
   }
 `
 
-export function Integrations(): ReactElement {
+export function App(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
   const { state, dispatch } = useEditor()
@@ -45,54 +48,48 @@ export function Integrations(): ReactElement {
     TextResponseIntegrationUpdateVariables
   >(TEXT_RESPONSE_INTEGRATION_UPDATE)
 
-  const { data } = useIntegrationQuery({
+  const { data, loading } = useIntegrationQuery({
     teamId: activeTeam?.id as string
   })
 
-  const selectedIntegration = data?.integrations.find(
-    (integration) => selectedBlock?.integrationId === integration.id
-  )
-  const value = selectedIntegration?.type.concat(
-    ` - ${selectedIntegration?.accessSecretPart}`
-  )
   const options =
-    data?.integrations.map((integration) =>
-      integration.type.concat(` - ${integration.accessSecretPart}`)
-    ) ?? []
+    data?.integrations
+      .filter(({ __typename }) => __typename === 'IntegrationGrowthSpaces')
+      .map(({ id, accessId }) => ({ value: id, label: accessId })) ?? []
 
-  async function handleChange(event: SelectChangeEvent) {
+  function handleChange(integrationId: string | null): void {
     if (selectedBlock == null) return
-    const accessSecretPart = event.target.value.split(' - ')[1]
-    const integrationId = data?.integrations.find(
-      (integration) => integration.accessSecretPart === accessSecretPart
-    )?.id
 
-    if (integrationId == null) return
-
-    await add({
+    add({
       parameters: {
-        execute: { integrationId },
-        undo: { integrationId: selectedBlock.integrationId }
+        execute: {
+          integrationId,
+          routeId: null
+        },
+        undo: {
+          integrationId: selectedBlock.integrationId,
+          routeId: selectedBlock.routeId
+        }
       },
-      async execute({ integrationId }) {
+      execute({ integrationId, routeId }) {
         dispatch({
           type: 'SetEditorFocusAction',
           selectedBlock,
           selectedStep: state.selectedStep,
           selectedAttributeId: state.selectedAttributeId
         })
-        await textResponseIntegrationUpdate({
+        void textResponseIntegrationUpdate({
           variables: {
             id: selectedBlock.id,
-            input: {
-              integrationId
-            }
+            integrationId,
+            routeId
           },
           optimisticResponse: {
             textResponseBlockUpdate: {
               id: selectedBlock.id,
               __typename: 'TextResponseBlock',
-              integrationId
+              integrationId,
+              routeId
             }
           }
         })
@@ -100,15 +97,17 @@ export function Integrations(): ReactElement {
     })
   }
 
-  return options?.length > 0 ? (
+  return !loading && options.length > 0 ? (
     <>
       <Typography variant="subtitle2">{t('Growth Spaces')}</Typography>
       <Select
-        label={t('Select Integration')}
-        value={value ?? ''}
+        label={t('App ID')}
+        value={selectedBlock?.integrationId ?? undefined}
         onChange={handleChange}
         options={options}
       />
     </>
-  ) : null
+  ) : (
+    <></>
+  )
 }

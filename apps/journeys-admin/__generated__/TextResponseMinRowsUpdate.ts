@@ -3,8 +3,6 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { TextResponseBlockUpdateInput } from "./globalTypes";
-
 // ====================================================
 // GraphQL mutation operation: TextResponseMinRowsUpdate
 // ====================================================
@@ -21,5 +19,5 @@ export interface TextResponseMinRowsUpdate {
 
 export interface TextResponseMinRowsUpdateVariables {
   id: string;
-  input: TextResponseBlockUpdateInput;
+  minRows?: number | null;
 }

@@ -16,9 +16,9 @@ import { ToggleButtonGroup } from '../../../../controls/ToggleButtonGroup'
 export const TEXT_RESPONSE_MIN_ROWS_UPDATE = gql`
   mutation TextResponseMinRowsUpdate(
     $id: ID!
-    $input: TextResponseBlockUpdateInput!
+    $minRows: Int
   ) {
-    textResponseBlockUpdate(id: $id,input: $input) {
+    textResponseBlockUpdate(id: $id, input: { minRows: $minRows }) {
       id
       minRows
     }
@@ -42,7 +42,7 @@ export function MinRows(): ReactElement {
     if (selectedBlock == null) return
     add({
       parameters: {
-        execute: { minRows },
+        execute: { minRows: minRows as number | null },
         undo: {
           minRows: selectedBlock.minRows
         }
@@ -54,13 +54,10 @@ export function MinRows(): ReactElement {
           selectedStep: state.selectedStep,
           selectedAttributeId: state.selectedAttributeId
         })
-
         void textResponseMinRowsUpdate({
           variables: {
             id: selectedBlock.id,
-            input: {
-              minRows
-            }
+            minRows
           },
           optimisticResponse: {
             textResponseBlockUpdate: {

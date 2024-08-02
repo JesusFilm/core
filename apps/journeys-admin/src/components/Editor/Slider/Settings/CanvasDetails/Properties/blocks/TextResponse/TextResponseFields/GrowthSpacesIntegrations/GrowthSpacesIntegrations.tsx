@@ -5,7 +5,7 @@ import { ReactElement } from 'react'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
 import { TextResponseType } from '../../../../../../../../../../../__generated__/globalTypes'
-import { Integrations } from './Integrations'
+import { App } from './App'
 import { Route } from './Route'
 
 export function GrowthSpacesIntegrations(): ReactElement {
@@ -19,7 +19,7 @@ export function GrowthSpacesIntegrations(): ReactElement {
       {(selectedBlock?.type === TextResponseType.email ||
         selectedBlock?.type === TextResponseType.name) && (
         <Stack gap={4} sx={{ p: 4, pt: 0 }}>
-          <Integrations />
+          <App />
           <Route />
         </Stack>
       )}

@@ -18,9 +18,9 @@ import {
 export const TEXT_RESPONSE_HINT_UPDATE = gql`
   mutation TextResponseHintUpdate(
     $id: ID!
-    $input: TextResponseBlockUpdateInput!
+    $hint: String!
   ) {
-    textResponseBlockUpdate(id: $id, input: $input) {
+    textResponseBlockUpdate(id: $id, input: { hint: $hint }) {
       id
       hint
     }
@@ -92,9 +92,7 @@ export function Hint(): ReactElement {
         void textResponseHintUpdate({
           variables: {
             id: selectedBlock.id,
-            input: {
-              hint
-            }
+            hint
           },
           optimisticResponse: {
             textResponseBlockUpdate: {

@@ -1,12 +1,14 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { renderHook, waitFor } from '@testing-library/react'
 import { act } from 'react'
+
+import { useIntegrationQuery } from '.'
 import {
   GetIntegration_integrations as Integration,
   GetIntegration_integrations_routes as Route
 } from '../../../__generated__/GetIntegration'
 import { IntegrationType } from '../../../__generated__/globalTypes'
-import { GET_INTEGRATION, useIntegrationQuery } from './useIntegrationQuery'
+import { GET_INTEGRATION } from './useIntegrationQuery'
 
 describe('useIntegrationQuery', () => {
   const route: Route = {

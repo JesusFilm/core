@@ -19,9 +19,9 @@ import {
 export const TEXT_RESPONSE_LABEL_UPDATE = gql`
   mutation TextResponseLabelUpdate(
     $id: ID!
-    $input: TextResponseBlockUpdateInput!
+    $label: String!
   ) {
-    textResponseBlockUpdate(id: $id, input: $input) {
+    textResponseBlockUpdate(id: $id, input: { label: $label }) {
       id
       label
     }
@@ -93,9 +93,7 @@ export function Label(): ReactElement {
         void textResponseLabelUpdate({
           variables: {
             id: selectedBlock.id,
-            input: {
-              label
-            }
+            label
           },
           optimisticResponse: {
             textResponseBlockUpdate: {
