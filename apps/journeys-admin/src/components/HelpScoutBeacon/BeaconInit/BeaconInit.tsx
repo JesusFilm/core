@@ -77,7 +77,7 @@ export function BeaconInit({ userInfo }: BeaconInitProps): ReactElement {
           max-height: none;
           height: calc(100vh - 47px);
         }
-        .hsds-beacon .dDhkLh {
+        .BeaconFabButtonFrame {
           /* hides the icon */
           display: none !important;
         }
