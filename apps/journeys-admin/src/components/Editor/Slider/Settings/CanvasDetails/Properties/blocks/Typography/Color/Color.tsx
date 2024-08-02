@@ -20,7 +20,7 @@ export const TYPOGRAPHY_BLOCK_UPDATE_COLOR = gql`
     $id: ID!
     $color: TypographyColor!
   ) {
-    typographyBlockUpdate(id: $id, input: {color: $input}) {
+    typographyBlockUpdate(id: $id, input: {color: $color}) {
       id
       color
     }
