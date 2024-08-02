@@ -52,21 +52,20 @@ export const getServerSideProps = withUserTokenSSR({
 
   if (redirect != null) return { redirect }
 
-  let form
   try {
-    form = await formiumClient.getFormBySlug(
+    const form = await formiumClient.getFormBySlug(
       process.env.NEXT_PUBLIC_FORMIUM_PROJECT_SLUG ?? ''
     )
+
+    return {
+      props: {
+        initialApolloState: apolloClient.cache.extract(),
+        form,
+        ...translations
+      }
+    }
   } catch (_) {
     return { redirect: { permanent: false, destination: '/' } }
-  }
-
-  return {
-    props: {
-      initialApolloState: apolloClient.cache.extract(),
-      form,
-      ...translations
-    }
   }
 })
 
