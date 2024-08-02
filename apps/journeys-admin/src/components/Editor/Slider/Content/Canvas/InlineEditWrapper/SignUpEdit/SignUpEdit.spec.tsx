@@ -110,31 +110,6 @@ describe('SignUpEdit', () => {
     await waitFor(() => expect(mockUpdateSuccess1.result).toHaveBeenCalled())
   })
 
-  it('should not submit if the current value is the same', async () => {
-    const link = ApolloLink.from([
-      new DebounceLink(500),
-      new MockLink([mockUpdateSuccess1])
-    ])
-
-    render(
-      <MockedProvider link={link}>
-        <SnackbarProvider>
-          <EditorProvider>
-            <SignUpEdit {...props} />
-          </EditorProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    const input = screen.getByRole('textbox', { name: '' })
-    userEvent.tripleClick(input)
-    userEvent.type(input, 'Submit')
-
-    await waitFor(() =>
-      expect(mockUpdateSuccess1.result).not.toHaveBeenCalled()
-    )
-  })
-
   it('should undo the label change', async () => {
     const link = ApolloLink.from([
       new DebounceLink(500),
@@ -192,5 +167,30 @@ describe('SignUpEdit', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
     await waitFor(() => expect(firstUpdateMock.result).toHaveBeenCalled())
+  })
+
+  it('should not submit if the current value is the same', async () => {
+    const link = ApolloLink.from([
+      new DebounceLink(500),
+      new MockLink([mockUpdateSuccess1])
+    ])
+
+    render(
+      <MockedProvider link={link}>
+        <SnackbarProvider>
+          <EditorProvider>
+            <SignUpEdit {...props} />
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    const input = screen.getByRole('textbox', { name: '' })
+    userEvent.tripleClick(input)
+    userEvent.type(input, 'Submit')
+
+    await waitFor(() =>
+      expect(mockUpdateSuccess1.result).not.toHaveBeenCalled()
+    )
   })
 })
