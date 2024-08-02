@@ -2,9 +2,22 @@ import { render } from '@testing-library/react'
 
 import { videos } from '../Videos/__generated__/testData'
 
+import { HitsRenderState } from 'instantsearch.js/es/connectors/hits/connectHits'
+import { useHits } from 'react-instantsearch'
 import { VideoCard } from '.'
 
+jest.mock('react-instantsearch')
+
+const mockUseHits = useHits as jest.MockedFunction<typeof useHits>
+
 describe('VideoCard', () => {
+  beforeEach(() => {
+    mockUseHits.mockReturnValue({
+      hits: videos,
+      sendEvent: jest.fn()
+    } as unknown as HitsRenderState)
+  })
+
   describe('video contained', () => {
     it('displays image', () => {
       const { getByRole } = render(

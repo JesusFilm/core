@@ -6,14 +6,17 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Formik } from 'formik'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import { useRouter } from 'next/compat/router'
+import { ReactElement, useEffect, useMemo } from 'react'
+import {
+  useClearRefinements,
+  useRefinementList,
+  useSearchBox
+} from 'react-instantsearch'
 
 import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
-
 import { GetLanguages } from '../../../../__generated__/GetLanguages'
-import { VideoPageFilter } from '../utils/getQueryParameters'
-
 import { LanguagesFilter } from './LanguagesFilter'
 
 const subtitleLanguageIds = [
@@ -72,62 +75,125 @@ const subtitleLanguageIds = [
   '184528'
 ]
 
+function extractQueryParams(url: string) {
+  const params = new URLSearchParams(url.split('?')[1])
+  const query = params.get('query')
+  const languageId = params.get('refinementList[languageId][0]')
+  const subtitleId = params.get('refinementList[subtitles][0]')
+  return { query, languageId, subtitleId }
+}
+
 interface FilterListProps {
-  filter: VideoPageFilter
-  onChange: (filter: VideoPageFilter) => void
   languagesData?: GetLanguages
   languagesLoading: boolean
 }
 
 export function FilterList({
-  filter,
-  onChange,
   languagesData,
   languagesLoading
 }: FilterListProps): ReactElement {
   const { t } = useTranslation()
-  const subtitleLanguages = languagesData?.languages.filter((language) =>
-    subtitleLanguageIds.includes(language.id)
+  const router = useRouter()
+
+  const decodedUrl = decodeURIComponent(router?.asPath ?? '')
+  const { query, languageId, subtitleId } = extractQueryParams(decodedUrl)
+
+  const { refine } = useClearRefinements({
+    includedAttributes: ['languageId', 'subtitles']
+  })
+  const { refine: refineSearch } = useSearchBox()
+  const { items: languageItems, refine: refineLanguages } = useRefinementList({
+    attribute: 'languageId',
+    limit: 5000
+  })
+  const { items: subtitleItems, refine: refineSubtitles } = useRefinementList({
+    attribute: 'subtitles',
+    limit: 5000
+  })
+
+  const languagesMap = useMemo(
+    () => new Map(languagesData?.languages.map((lang) => [lang.id, lang])),
+    [languagesData]
   )
 
-  function languageOptionFromIds(ids?: string[]): LanguageOption {
-    if (ids == null || ids.length === 0) return { id: '' }
+  const languages = useMemo(
+    () =>
+      languageItems
+        .map((item) => languagesMap.get(item.value))
+        .filter((lang): lang is NonNullable<typeof lang> => lang !== undefined),
+    [languageItems, languagesMap]
+  )
 
-    const language = languagesData?.languages.find(
-      (language) => language.id === ids[0]
-    )
+  const subtitles = useMemo(
+    () =>
+      subtitleItems
+        .map((item) => languagesMap.get(item.value))
+        .filter(
+          (lang): lang is NonNullable<typeof lang> =>
+            lang !== undefined && subtitleLanguageIds.includes(lang.id)
+        ),
+    [subtitleItems, languagesMap]
+  )
 
-    if (language != null) {
-      return {
-        id: language.id,
-        localName: language.name.find(({ primary }) => !primary)?.value,
-        nativeName: language.name.find(({ primary }) => primary)?.value
-      }
+  const languageOptionFromIds = (ids?: string[]): LanguageOption => {
+    if (!ids?.length || !languagesMap) return { id: '' }
+    const language = languagesMap.get(ids[0])
+    if (!language) return { id: '' }
+    return {
+      id: language.id,
+      localName: language.name.find(({ primary }) => !primary)?.value,
+      nativeName: language.name.find(({ primary }) => primary)?.value
     }
-
-    return { id: '' }
   }
 
-  const initialValues = {
-    language: languageOptionFromIds(filter.availableVariantLanguageIds),
-    subtitleLanguage: languageOptionFromIds(filter.subtitleLanguageIds),
-    title: filter.title ?? ''
+  const initialValues = useMemo(
+    () => ({
+      language: languageOptionFromIds([languageId ?? '']),
+      subtitleLanguage: languageOptionFromIds([subtitleId ?? '']),
+      title: query ?? ''
+    }),
+    [languagesMap]
+  )
+
+  function handleRefine({
+    title,
+    languageId,
+    subtitleLanguageId
+  }: {
+    title: string
+    languageId: string
+    subtitleLanguageId: string
+  }): void {
+    if (title) {
+      refineSearch(title)
+    }
+    if (languageId) {
+      refine()
+      refineLanguages(languageId)
+    }
+    if (subtitleLanguageId) {
+      refine()
+      refineSubtitles(subtitleLanguageId)
+    }
   }
 
   function handleSubmit(values: typeof initialValues): void {
-    onChange({
-      availableVariantLanguageIds:
-        values.language != null && values.language.id !== ''
-          ? [values.language.id]
-          : undefined,
-      subtitleLanguageIds:
-        values.subtitleLanguage != null && values.subtitleLanguage.id !== ''
-          ? [values.subtitleLanguage.id]
-          : undefined,
-      title:
-        values.title != null && values.title !== '' ? values.title : undefined
+    handleRefine({
+      title: values.title,
+      languageId: values.language.id,
+      subtitleLanguageId: values.subtitleLanguage.id
     })
   }
+
+  // TODO: handleRefine not updating on initial render
+  // biome-ignore lint/correctness/useExhaustiveDependencies: effect to only run on componentDidMount
+  useEffect(() => {
+    handleRefine({
+      title: query ?? '',
+      languageId: languageId ?? '',
+      subtitleLanguageId: subtitleId ?? ''
+    })
+  }, [initialValues])
 
   return (
     <Formik
@@ -147,8 +213,9 @@ export function FilterList({
                 await setFieldValue('language', language)
               }
               value={values.language}
-              languages={languagesData?.languages}
+              languages={languages}
               loading={languagesLoading}
+              helperText={`${languages.length} languages`}
             />
           </Stack>
           <Stack spacing={2}>
@@ -161,9 +228,9 @@ export function FilterList({
                 await setFieldValue('subtitleLanguage', subtitleLanguage)
               }
               value={values.subtitleLanguage}
-              languages={subtitleLanguages}
+              languages={subtitles}
               loading={languagesLoading}
-              helperText="54 languages"
+              helperText={`${subtitles.length} languages`}
             />
           </Stack>
           <Stack spacing={2}>

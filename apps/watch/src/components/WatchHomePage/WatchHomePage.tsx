@@ -8,19 +8,20 @@ import { ReactElement } from 'react'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
-import { VideoChildFields } from '../../../__generated__/VideoChildFields'
 import { PageWrapper } from '../PageWrapper'
 import { VideoGrid } from '../VideoGrid'
 
+import { SearchBar } from '@core/journeys/ui/SearchBar'
+import { useConfigure } from 'react-instantsearch'
 import { HomeHero } from './HomeHero'
 import { SeeAllVideos } from './SeeAllVideos'
 
-interface WatchHomePageProps {
-  videos: VideoChildFields[]
-}
-
-export function WatchHomePage({ videos }: WatchHomePageProps): ReactElement {
+export function WatchHomePage(): ReactElement {
   const { t } = useTranslation('apps-watch')
+
+  useConfigure({
+    ruleContexts: ['home_page']
+  })
 
   return (
     <PageWrapper
@@ -38,7 +39,10 @@ export function WatchHomePage({ videos }: WatchHomePageProps): ReactElement {
           data-testid="WatchHomePage"
         >
           <Container maxWidth="xxl" sx={{ paddingY: '4rem' }}>
-            <VideoGrid videos={videos} variant="contained" />
+            <Box sx={{ pb: 10 }}>
+              <SearchBar />
+            </Box>
+            <VideoGrid variant="contained" />
             <SeeAllVideos />
             <Box
               sx={{
