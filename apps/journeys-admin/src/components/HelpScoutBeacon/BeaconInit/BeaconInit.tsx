@@ -2,7 +2,7 @@ import { FormObject } from '@core/journeys/ui/setBeaconPageViewed'
 import { useTheme } from '@mui/material/styles'
 import { useRouter } from 'next/router'
 import Script from 'next/script'
-import { ReactElement, useEffect, useRef, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
 interface BeaconInitProps {
   userInfo?: FormObject
@@ -11,7 +11,6 @@ interface BeaconInitProps {
 export function BeaconInit({ userInfo }: BeaconInitProps): ReactElement {
   const { breakpoints, zIndex } = useTheme()
   const router = useRouter()
-  const previousUrlRef = useRef(router.asPath)
 
   const [hasLoaded, setHasLoaded] = useState(false)
 
@@ -24,12 +23,9 @@ export function BeaconInit({ userInfo }: BeaconInitProps): ReactElement {
         })
       })
     }
-    // close the beacon when the url changes if it's still open
-    const handleRouteChange = (url): void => {
-      if (url !== previousUrlRef.current) {
-        window.Beacon?.('close')
-        previousUrlRef.current = url
-      }
+    // close the beacon when the url changes
+    const handleRouteChange = (): void => {
+      window.Beacon?.('close')
     }
     router.events.on('routeChangeComplete', handleRouteChange)
     return () => {
@@ -55,6 +51,7 @@ export function BeaconInit({ userInfo }: BeaconInitProps): ReactElement {
             // icon shows close button on mobile more consistently
             style: 'icon',
             position: 'right',
+            hideFABOnMobile: true
           },
         });
         `}
@@ -71,11 +68,11 @@ export function BeaconInit({ userInfo }: BeaconInitProps): ReactElement {
           transform: scale(0.9) !important;
         }
         .hsds-beacon .BeaconContainer.is-configDisplayRight {
-          top: 47px;
+          top: 65px;
           right: 0px;
           width: 327px;
           max-height: none;
-          height: calc(100vh - 47px);
+          height: calc(100vh - 65px);
         }
         .BeaconFabButtonFrame {
           /* hides the icon */

@@ -124,6 +124,7 @@ export function Menu({ user }: MenuProps): ReactElement {
                 name: user?.displayName ?? '',
                 email: user?.email ?? ''
               }}
+              handleClick={handleCloseMenu}
             />
           </>
         )}
