@@ -3,7 +3,6 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useState } from 'react'
-import { useTranslation } from 'react-i18next'
 import { blockDeleteUpdate } from '../../../../libs/blockDeleteUpdate'
 import { useBlockDeleteMutation } from '../../../../libs/useBlockDeleteMutation'
 import { useBlockRestoreMutation } from '../../../../libs/useBlockRestoreMutation'
@@ -12,7 +11,6 @@ import { setBlockRestoreEditorState } from './setBlockRestoreEditorState'
 
 export function useBlockDeleteCommand() {
   const [loading, setLoading] = useState(false)
-  const { t } = useTranslation('apps-journeys-admin')
   const { add } = useCommand()
   const {
     state: { selectedBlock, selectedStep, steps },

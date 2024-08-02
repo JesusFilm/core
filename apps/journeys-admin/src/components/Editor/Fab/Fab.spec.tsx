@@ -114,7 +114,6 @@ describe('Fab', () => {
           initialState={{
             ...state,
             activeSlide: ActiveSlide.Drawer,
-            activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.AddBlock,
             selectedStep
           }}
         >

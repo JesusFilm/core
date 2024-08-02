@@ -1,1 +1,4 @@
-export { useStepAndCardBlockCreateMutation } from './useStepAndCardBlockCreateMutation'
+export {
+  useStepAndCardBlockCreateMutation,
+  stepBlockCreateUpdate
+} from './useStepAndCardBlockCreateMutation'

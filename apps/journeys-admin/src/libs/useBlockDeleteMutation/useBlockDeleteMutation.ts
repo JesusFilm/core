@@ -62,7 +62,7 @@ export function useBlockDeleteMutation(
         },
         ...options
       })
-    } catch (e) {
+    } catch {
       return undefined
     }
   }

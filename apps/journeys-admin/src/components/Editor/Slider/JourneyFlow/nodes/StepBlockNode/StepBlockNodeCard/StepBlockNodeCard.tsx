@@ -22,12 +22,6 @@ interface StepBlockNodeCardProps {
   selected: boolean
 }
 
-const analyticStyles = {
-  opacity: 0.8,
-  boxShadow: 'none',
-  bgcolor: 'transparent'
-}
-
 export function StepBlockNodeCard({
   step,
   selected
@@ -147,7 +141,8 @@ export function StepBlockNodeCard({
                 '-webkit-box-orient': 'vertical',
                 '-webkit-line-clamp': '1',
                 overflow: 'hidden',
-                fontSize: 9
+                fontSize: 9,
+                lineHeight: 2
               }}
             >
               {description !== '' ? description : ''}
@@ -163,7 +158,7 @@ export function StepBlockNodeCard({
               fontSize: 11,
               fontWeight: 'bold',
               alignSelf: 'flex-start',
-              lineHeight: 1.3
+              lineHeight: 1.2
             }}
           >
             {title != null && title !== '' ? (
@@ -187,7 +182,7 @@ export function StepBlockNodeCard({
               '-webkit-box-orient': 'vertical',
               '-webkit-line-clamp': '2',
               fontSize: 10,
-              lineHeight: '1.2',
+              lineHeight: 1.2,
               overflow: 'hidden'
             }}
           >
