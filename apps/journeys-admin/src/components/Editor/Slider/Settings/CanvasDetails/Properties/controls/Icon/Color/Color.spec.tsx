@@ -67,9 +67,7 @@ describe('Color', () => {
               query: ICON_BLOCK_COLOR_UPDATE,
               variables: {
                 id: 'iconBlock.id',
-                input: {
-                  color: IconColor.secondary
-                }
+                color: IconColor.secondary
               }
             },
             result
@@ -104,9 +102,7 @@ describe('Color', () => {
         query: ICON_BLOCK_COLOR_UPDATE,
         variables: {
           id: 'iconBlock.id',
-          input: {
-            color: IconColor.secondary
-          }
+          color: IconColor.secondary
         }
       },
       result: result1
@@ -129,9 +125,7 @@ describe('Color', () => {
         query: ICON_BLOCK_COLOR_UPDATE,
         variables: {
           id: 'iconBlock.id',
-          input: {
-            color: IconColor.inherit
-          }
+          color: IconColor.inherit
         }
       },
       result: result2
@@ -174,9 +168,7 @@ describe('Color', () => {
         query: ICON_BLOCK_COLOR_UPDATE,
         variables: {
           id: 'iconBlock.id',
-          input: {
-            color: IconColor.secondary
-          }
+          color: IconColor.secondary
         }
       },
       result: result1,
@@ -200,9 +192,7 @@ describe('Color', () => {
         query: ICON_BLOCK_COLOR_UPDATE,
         variables: {
           id: 'iconBlock.id',
-          input: {
-            color: IconColor.inherit
-          }
+          color: IconColor.inherit
         }
       },
       result: result2

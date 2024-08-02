@@ -18,9 +18,9 @@ import { ToggleButtonGroup } from '../../ToggleButtonGroup'
 export const ICON_BLOCK_COLOR_UPDATE = gql`
   mutation IconBlockColorUpdate(
     $id: ID!
-    $input: IconBlockUpdateInput!
+    $color: IconColor!
   ) {
-    iconBlockUpdate(id: $id, input: $input) {
+    iconBlockUpdate(id: $id, input: {color: $input}) {
       id
       color
     }
@@ -61,9 +61,7 @@ export function Color({ id, iconColor }: ColorProps): ReactElement {
           void iconBlockColorUpdate({
             variables: {
               id,
-              input: {
-                color
-              }
+              color
             },
             optimisticResponse: {
               iconBlockUpdate: {

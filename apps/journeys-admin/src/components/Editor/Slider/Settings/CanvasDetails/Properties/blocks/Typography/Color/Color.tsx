@@ -42,22 +42,22 @@ export function Color(): ReactElement {
     | TreeBlock<TypographyBlock>
     | undefined
 
-  async function handleChange(color: TypographyColor): Promise<void> {
+  function handleChange(color: TypographyColor): void {
     if (selectedBlock != null && color != null) {
-      await add({
+      add({
         parameters: {
           execute: { color },
           undo: {
             color: selectedBlock.color
           }
         },
-        async execute({ color }) {
+        execute({ color }) {
           dispatch({
             type: 'SetEditorFocusAction',
             selectedStep,
             selectedBlock
           })
-          await typographyBlockUpdate({
+          void typographyBlockUpdate({
             variables: {
               id: selectedBlock.id,
               color
