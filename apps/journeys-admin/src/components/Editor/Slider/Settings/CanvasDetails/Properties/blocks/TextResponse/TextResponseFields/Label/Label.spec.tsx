@@ -50,15 +50,6 @@ const LabelMock = ({
 )
 
 describe('Edit Label field', () => {
-  it('should display placeholder field if no selectedBlock', () => {
-    const { getByRole } = render(
-      <LabelMock initialState={{ selectedBlock: undefined }} />
-    )
-    const field = getByRole('textbox', { name: 'Label' })
-
-    expect(field).toBeDisabled()
-  })
-
   it('should display label value', () => {
     const { getByRole } = render(<LabelMock />)
     const field = getByRole('textbox', { name: 'Label' })

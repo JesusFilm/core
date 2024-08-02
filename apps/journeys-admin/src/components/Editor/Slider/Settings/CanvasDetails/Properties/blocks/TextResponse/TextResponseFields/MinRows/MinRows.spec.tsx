@@ -64,7 +64,7 @@ describe('MinRows', () => {
               query: TEXT_RESPONSE_MIN_ROWS_UPDATE,
               variables: {
                 id: selectedBlock.id,
-                input: { minRows: 4 }
+                minRows: 4
               }
             },
             result
@@ -108,9 +108,7 @@ describe('MinRows', () => {
               query: TEXT_RESPONSE_MIN_ROWS_UPDATE,
               variables: {
                 id: selectedBlock.id,
-                input: {
-                  minRows: 4
-                }
+                minRows: 4
               }
             },
             result: result1
@@ -120,9 +118,7 @@ describe('MinRows', () => {
               query: TEXT_RESPONSE_MIN_ROWS_UPDATE,
               variables: {
                 id: selectedBlock.id,
-                input: {
-                  minRows: 3
-                }
+                minRows: 3
               }
             },
             result: result2
@@ -170,9 +166,7 @@ describe('MinRows', () => {
               query: TEXT_RESPONSE_MIN_ROWS_UPDATE,
               variables: {
                 id: selectedBlock.id,
-                input: {
-                  minRows: 4
-                }
+                minRows: 4
               }
             },
             result: result1,
@@ -183,9 +177,7 @@ describe('MinRows', () => {
               query: TEXT_RESPONSE_MIN_ROWS_UPDATE,
               variables: {
                 id: selectedBlock.id,
-                input: {
-                  minRows: 3
-                }
+                minRows: 3
               }
             },
             result: result2
