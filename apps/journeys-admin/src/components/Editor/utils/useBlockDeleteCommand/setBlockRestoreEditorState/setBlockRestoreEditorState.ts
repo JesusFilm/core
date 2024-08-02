@@ -16,7 +16,8 @@ export function setBlockRestoreEditorState(
     dispatch({
       type: 'SetEditorFocusAction',
       activeSlide: ActiveSlide.JourneyFlow,
-      selectedStep: currentBlock,
+      selectedStep:
+        currentBlock.id === selectedStep.id ? currentBlock : selectedStep,
       activeContent: ActiveContent.Canvas
     })
   } else {
