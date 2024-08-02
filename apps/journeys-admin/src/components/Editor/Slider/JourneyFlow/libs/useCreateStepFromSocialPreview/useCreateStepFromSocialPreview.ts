@@ -106,7 +106,7 @@ mutation StepBlockRestoreFromSocialPreview($id: ID!, $stepId: ID!, $parentOrder:
 
 export function useCreateStepFromSocialPreview(): (
   input: CreateStepFromSocialPreviewInput
-) => Promise<void> {
+) => void {
   const { journey } = useJourney()
   const {
     state: { steps },
@@ -130,10 +130,10 @@ export function useCreateStepFromSocialPreview(): (
     StepBlockRestoreFromSocialPreviewVariables
   >(STEP_BLOCK_RESTORE_FROM_SOCIAL_PREVIEW)
 
-  return async function createStepFromSocialPreview({
+  return function createStepFromSocialPreview({
     x,
     y
-  }: CreateStepFromSocialPreviewInput): Promise<void> {
+  }: CreateStepFromSocialPreviewInput): void {
     if (journey == null) return
     const step: StepBlock & { x: number; y: number } = {
       __typename: 'StepBlock',
@@ -166,13 +166,13 @@ export function useCreateStepFromSocialPreview(): (
       return step
     })
 
-    void add({
+    add({
       parameters: {
         execute: { optimisticSteps },
         undo: { stepBeforeDelete: oldFirstStep, steps },
         redo: { optimisticSteps }
       },
-      async execute({ optimisticSteps }) {
+      execute({ optimisticSteps }) {
         dispatch({
           type: 'SetSelectedStepByIdAction',
           selectedStepId: step.id
@@ -205,7 +205,7 @@ export function useCreateStepFromSocialPreview(): (
           }
         })
       },
-      async undo({ stepBeforeDelete, steps }) {
+      undo({ stepBeforeDelete, steps }) {
         if (stepBeforeDelete != null) {
           dispatch({
             type: 'SetEditorFocusAction',
@@ -228,10 +228,10 @@ export function useCreateStepFromSocialPreview(): (
             }
           })
         } else {
-          blockDelete(step, { optimisticResponse: { blockDelete: [] } })
+          void blockDelete(step, { optimisticResponse: { blockDelete: [] } })
         }
       },
-      async redo({ optimisticSteps }) {
+      redo({ optimisticSteps }) {
         dispatch({
           type: 'SetEditorFocusAction',
           selectedStepId: step.id,

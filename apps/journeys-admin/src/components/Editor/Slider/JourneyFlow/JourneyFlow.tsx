@@ -213,7 +213,7 @@ export function JourneyFlow(): ReactElement {
     connectingParams.current = params
   }, [])
   const onConnectEnd = useCallback<OnConnectEnd>(
-    async (event) => {
+    (event) => {
       if (
         reactFlowInstance == null ||
         connectingParams.current == null ||
@@ -275,14 +275,14 @@ export function JourneyFlow(): ReactElement {
 
         switch (edgeSource.sourceType) {
           case 'step':
-            void createStepFromStep(input)
+            createStepFromStep(input)
             break
           case 'socialPreview':
-            void createStepFromSocialPreview(input)
+            createStepFromSocialPreview(input)
             break
           case 'action': {
             if (!isActionBlock(sourceBlock)) break
-            void createStepFromAction({ ...input, sourceBlock })
+            createStepFromAction({ ...input, sourceBlock })
             break
           }
         }
