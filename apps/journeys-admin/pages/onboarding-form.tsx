@@ -10,7 +10,6 @@ import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 
 import { formiumClient } from '@core/shared/ui/formiumClient'
-
 import { OnboardingForm } from '../src/components/OnboardingForm'
 import { OnboardingPageWrapper } from '../src/components/OnboardingPageWrapper'
 import { initAndAuthApp } from '../src/libs/initAndAuthApp'
@@ -53,9 +52,14 @@ export const getServerSideProps = withUserTokenSSR({
 
   if (redirect != null) return { redirect }
 
-  const form = await formiumClient.getFormBySlug(
-    process.env.NEXT_PUBLIC_FORMIUM_PROJECT_SLUG ?? ''
-  )
+  let form
+  try {
+    form = await formiumClient.getFormBySlug(
+      process.env.NEXT_PUBLIC_FORMIUM_PROJECT_SLUG ?? ''
+    )
+  } catch (_) {
+    return { redirect: { permanent: false, destination: '/' } }
+  }
 
   return {
     props: {
