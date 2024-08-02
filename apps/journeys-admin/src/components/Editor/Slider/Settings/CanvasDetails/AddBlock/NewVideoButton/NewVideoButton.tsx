@@ -73,7 +73,7 @@ export function NewVideoButton({
         __typename: 'VideoBlock',
         children: []
       }
-      void addBlock({
+      addBlock({
         block: video,
         execute() {
           void videoBlockCreate({

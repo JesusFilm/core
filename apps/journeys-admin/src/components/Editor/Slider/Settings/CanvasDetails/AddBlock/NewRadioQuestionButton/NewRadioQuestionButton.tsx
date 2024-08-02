@@ -88,7 +88,7 @@ export function NewRadioQuestionButton(): ReactElement {
         __typename: 'RadioOptionBlock'
       }
 
-      void addBlock({
+      addBlock({
         block: radioQuestionBlock,
         execute() {
           void radioQuestionBlockCreate({

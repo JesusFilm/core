@@ -21,7 +21,7 @@ export function useBlockCreateCommand(): {
   } = useEditor()
 
   function addBlock({ block, execute }: AddBlockParameters): void {
-    void add({
+    add({
       parameters: {
         execute: {},
         undo: {
@@ -31,7 +31,7 @@ export function useBlockCreateCommand(): {
         },
         redo: { selectedStep, block: block }
       },
-      execute: () => {
+      execute() {
         dispatch({
           type: 'SetEditorFocusAction',
           selectedBlockId: block?.id,
@@ -39,7 +39,7 @@ export function useBlockCreateCommand(): {
         })
         void execute()
       },
-      undo: ({ selectedStep, previousBlock, block }) => {
+      undo({ selectedStep, previousBlock, block }) {
         dispatch({
           type: 'SetEditorFocusAction',
           selectedStepId: selectedStep?.id,
@@ -50,7 +50,7 @@ export function useBlockCreateCommand(): {
           optimisticResponse: { blockDelete: [] }
         })
       },
-      redo: ({ selectedStep, block }) => {
+      redo({ selectedStep, block }) {
         dispatch({
           type: 'SetEditorFocusAction',
           selectedStepId: selectedStep?.id,

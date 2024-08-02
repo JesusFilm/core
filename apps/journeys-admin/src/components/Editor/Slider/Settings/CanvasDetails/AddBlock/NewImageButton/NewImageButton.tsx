@@ -57,7 +57,7 @@ export function NewImageButton(): ReactElement {
         blurhash: '',
         __typename: 'ImageBlock'
       }
-      void addBlock({
+      addBlock({
         block: imageBlock,
         execute() {
           void imageBlockCreate({

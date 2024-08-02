@@ -78,7 +78,7 @@ export function NewButtonButton(): ReactElement {
         action: null
       }
 
-      void addBlock({
+      addBlock({
         block: button,
         execute() {
           void buttonBlockCreate({

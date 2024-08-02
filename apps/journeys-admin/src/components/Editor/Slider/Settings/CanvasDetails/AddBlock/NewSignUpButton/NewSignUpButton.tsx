@@ -79,7 +79,7 @@ export function NewSignUpButton(): ReactElement {
         __typename: 'IconBlock'
       }
 
-      void addBlock({
+      addBlock({
         block: signUpBlock,
         execute() {
           void signUpBlockCreate({

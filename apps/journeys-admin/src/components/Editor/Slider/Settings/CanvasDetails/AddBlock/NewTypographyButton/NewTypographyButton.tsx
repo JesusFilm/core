@@ -63,7 +63,7 @@ export function NewTypographyButton(): ReactElement {
         children: []
       }
 
-      void addBlock({
+      addBlock({
         block: typography,
         execute() {
           void typographyBlockCreate({

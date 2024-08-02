@@ -58,7 +58,7 @@ export function NewTextResponseButton(): ReactElement {
         integrationId: null,
         __typename: 'TextResponseBlock'
       }
-      void addBlock({
+      addBlock({
         block: textResponseBlock,
         execute() {
           void textResponseBlockCreate({

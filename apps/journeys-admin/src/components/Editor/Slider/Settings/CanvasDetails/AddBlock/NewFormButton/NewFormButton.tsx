@@ -46,7 +46,7 @@ export function NewFormButton(): ReactElement {
         action: null,
         __typename: 'FormBlock'
       }
-      void addBlock({
+      addBlock({
         block: formBlock,
         execute() {
           void formBlockCreate({

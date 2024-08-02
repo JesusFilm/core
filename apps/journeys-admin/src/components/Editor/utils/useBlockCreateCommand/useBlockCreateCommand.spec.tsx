@@ -34,7 +34,7 @@ describe('useBlockCreateCommand', () => {
       )
     })
 
-    await result.current.addBlock({
+    result.current.addBlock({
       block: {
         id: 'videoBlockId'
       } as unknown as TreeBlock,
