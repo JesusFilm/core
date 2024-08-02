@@ -50,7 +50,7 @@ import { CustomEdge } from './edges/CustomEdge'
 import { StartEdge } from './edges/StartEdge'
 import { type PositionMap, arrangeSteps } from './libs/arrangeSteps'
 import { transformSteps } from './libs/transformSteps'
-import { useCreateStep } from './libs/useCreateStep'
+import { useCreateStepFromStep } from './libs/useCreateStepFromStep'
 import { useDeleteEdge } from './libs/useDeleteEdge'
 import { useDeleteOnKeyPress } from './libs/useDeleteOnKeyPress'
 import { useUpdateEdge } from './libs/useUpdateEdge'
@@ -60,7 +60,12 @@ import { StepBlockNode } from './nodes/StepBlockNode'
 import { STEP_NODE_CARD_HEIGHT } from './nodes/StepBlockNode/libs/sizes'
 
 import 'reactflow/dist/style.css'
+import { isActionBlock } from '@core/journeys/ui/isActionBlock'
+import { searchBlocks } from '@core/journeys/ui/searchBlocks'
 import { ReferrerEdge } from './edges/ReferrerEdge'
+import { convertToEdgeSource } from './libs/convertToEdgeSource'
+import { useCreateStepFromAction } from './libs/useCreateStepFromAction'
+import { useCreateStepFromSocialPreview } from './libs/useCreateStepFromSocialPreview'
 import { ReferrerNode } from './nodes/ReferrerNode'
 
 // some styles can only be updated through css after render
@@ -102,7 +107,9 @@ export function JourneyFlow(): ReactElement {
   const [referrerNodes, setReferrerNodes] = useNodesState([])
   const [referrerEdges, setReferrerEdges] = useEdgesState([])
 
-  const createStep = useCreateStep()
+  const createStepFromStep = useCreateStepFromStep()
+  const createStepFromAction = useCreateStepFromAction()
+  const createStepFromSocialPreview = useCreateStepFromSocialPreview()
   const updateEdge = useUpdateEdge()
   const deleteEdge = useDeleteEdge()
   const { onSelectionChange } = useDeleteOnKeyPress()
@@ -242,15 +249,52 @@ export function JourneyFlow(): ReactElement {
           y: yPos
         })
 
-        void createStep({
-          x: Math.trunc(x),
-          y: Math.trunc(y) - STEP_NODE_CARD_HEIGHT / 2,
+        const edgeSource = convertToEdgeSource({
           source: connectingParams.current.nodeId,
           sourceHandle: connectingParams.current.handleId
         })
+
+        const sourceStep =
+          edgeSource.sourceType === 'step' || edgeSource.sourceType === 'action'
+            ? steps?.find((step) => step.id === edgeSource.stepId)
+            : null
+
+        const sourceBlock =
+          edgeSource.sourceType === 'action'
+            ? searchBlocks(
+                sourceStep != null ? [sourceStep] : [],
+                edgeSource.blockId
+              )
+            : null
+
+        const input = {
+          x: Math.trunc(x),
+          y: Math.trunc(y) - STEP_NODE_CARD_HEIGHT / 2,
+          sourceStep
+        }
+
+        switch (edgeSource.sourceType) {
+          case 'step':
+            void createStepFromStep(input)
+            break
+          case 'socialPreview':
+            void createStepFromSocialPreview(input)
+            break
+          case 'action': {
+            if (!isActionBlock(sourceBlock)) break
+            void createStepFromAction({ ...input, sourceBlock })
+            break
+          }
+        }
       }
     },
-    [reactFlowInstance, connectingParams, createStep]
+    [
+      reactFlowInstance,
+      connectingParams,
+      createStepFromStep,
+      createStepFromSocialPreview,
+      createStepFromAction
+    ]
   )
   const onNodeDragStop: NodeDragHandler = async (
     _event,

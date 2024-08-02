@@ -5,9 +5,9 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
-
 import { stepAndCardBlockCreateMock } from '../../../../../libs/useStepAndCardBlockCreateMutation/useStepAndCardBlockCreateMutation.mock'
 
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { NewStepButton } from '.'
 
 jest.mock('uuid', () => ({
@@ -39,9 +39,11 @@ describe('NewStepButton', () => {
     render(
       <MockedProvider mocks={[{ ...stepAndCardBlockCreateMock, result }]}>
         <JourneyProvider value={{ journey: defaultJourney }}>
-          <ReactFlowProvider>
-            <NewStepButton />
-          </ReactFlowProvider>
+          <EditorProvider>
+            <ReactFlowProvider>
+              <NewStepButton />
+            </ReactFlowProvider>
+          </EditorProvider>
         </JourneyProvider>
       </MockedProvider>
     )
