@@ -11,12 +11,13 @@ import {
   InstantSearchServerState,
   getServerState
 } from 'react-instantsearch'
-import { createInstantSearchRouterNext } from 'react-instantsearch-router-nextjs'
 
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 
 import algoliasearch from 'algoliasearch'
 import { UiState } from 'instantsearch.js'
+import { RouterProps } from 'instantsearch.js/es/middlewares'
+import { createInstantSearchRouterNext } from 'react-instantsearch-router-nextjs'
 import i18nConfig from '../../next-i18next.config'
 import { Videos } from '../../src/components/VideosPage'
 import {
@@ -50,10 +51,30 @@ interface VideosPageProps {
   serverState?: InstantSearchServerState
 }
 
-function VideosPage({
-  serverState,
-  initialApolloState
-}: VideosPageProps): ReactElement {
+const nextRouter: RouterProps = {
+  // Manages the URL paramers with instant search state
+  router: createInstantSearchRouterNext({
+    serverUrl: process.env.NEXT_PUBLIC_WATCH_URL,
+    singletonRouter,
+    routerOptions: {
+      cleanUrlOnDispose: false
+    }
+  }),
+  stateMapping: {
+    stateToRoute(uiState) {
+      return uiState[
+        process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
+      ] as unknown as UiState
+    },
+    routeToState(routeState) {
+      return {
+        [process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? '']: routeState
+      }
+    }
+  }
+}
+
+function VideosPage({ initialApolloState }: VideosPageProps): ReactElement {
   const client = useApolloClient({
     initialState: initialApolloState
   })
@@ -83,34 +104,15 @@ function VideosPage({
   }
 
   return (
-    <InstantSearchSSRProvider {...serverState}>
+    // Don't pass in server state because it will be stale if any state set by url
+    <InstantSearchSSRProvider>
       <ApolloProvider client={client}>
         <InstantSearch
           insights
           searchClient={searchClient}
           future={{ preserveSharedStateOnUnmount: true }}
+          routing={nextRouter}
           onStateChange={onStateChange}
-          routing={{
-            router: createInstantSearchRouterNext({
-              serverUrl: 'http://localhost:4300/watch/videos',
-              singletonRouter,
-              routerOptions: {
-                cleanUrlOnDispose: false
-              }
-            }),
-            stateMapping: {
-              stateToRoute(uiState) {
-                return uiState[
-                  process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
-                ] as unknown as UiState
-              },
-              routeToState(routeState) {
-                return {
-                  [process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? '']: routeState
-                }
-              }
-            }
-          }}
         >
           <Videos index />
         </InstantSearch>

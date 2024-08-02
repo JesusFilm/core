@@ -15,6 +15,7 @@ import { createInstantSearchRouterNext } from 'react-instantsearch-router-nextjs
 
 import algoliasearch from 'algoliasearch'
 import { UiState } from 'instantsearch.js'
+import { RouterProps } from 'instantsearch.js/es/middlewares'
 import i18nConfig from '../../next-i18next.config'
 import { WatchHomePage as VideoHomePage } from '../../src/components/WatchHomePage'
 import { getFlags } from '../../src/libs/getFlags'
@@ -38,35 +39,41 @@ interface HomePageProps {
   serverState?: InstantSearchServerState
 }
 
-function HomePage({ serverState }: HomePageProps): ReactElement {
+export const nextRouter: RouterProps = {
+  // Manages the URL paramers with instant search state
+  router: createInstantSearchRouterNext({
+    serverUrl: process.env.NEXT_PUBLIC_WATCH_URL,
+    singletonRouter,
+    routerOptions: {
+      cleanUrlOnDispose: false
+    }
+  }),
+  stateMapping: {
+    stateToRoute(uiState) {
+      return uiState[
+        process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
+      ] as unknown as UiState
+    },
+    routeToState(routeState) {
+      return {
+        [process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? '']: routeState
+      }
+    }
+  }
+}
+
+function HomePage(): ReactElement {
+  const index = 'video-variants-stg'
   return (
-    <InstantSearchSSRProvider {...serverState}>
+    // Don't pass in server state because it will be stale if any state set by url
+    <InstantSearchSSRProvider>
       <InstantSearch
         insights
         searchClient={searchClient}
+        indexName={index}
         future={{ preserveSharedStateOnUnmount: true }}
         stalledSearchDelay={500}
-        routing={{
-          router: createInstantSearchRouterNext({
-            serverUrl: process.env.NEXT_PUBLIC_WATCH_URL,
-            singletonRouter,
-            routerOptions: {
-              cleanUrlOnDispose: false
-            }
-          }),
-          stateMapping: {
-            stateToRoute(uiState) {
-              return uiState[
-                process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
-              ] as unknown as UiState
-            },
-            routeToState(routeState) {
-              return {
-                [process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? '']: routeState
-              }
-            }
-          }
-        }}
+        routing={nextRouter}
       >
         <Configure filters="languageId:529" />
         <VideoHomePage />
@@ -95,4 +102,5 @@ export const getStaticProps: GetStaticProps<HomePageProps> = async ({
     }
   }
 }
+
 export default HomePage
