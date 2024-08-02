@@ -91,11 +91,34 @@ describe('Post', () => {
       </JourneyProvider>
     )
 
-    const preview = screen.getByTestId('Headline')
+    const headline = screen.getByTestId('HeadlineSkeleton')
 
-    await userEvent.hover(preview)
+    await userEvent.hover(headline)
 
     const tip = await screen.findByRole('tooltip')
     expect(within(tip).getByText('Headline')).toBeVisible()
+  })
+
+  it('should render secondary text tooltip', async () => {
+    render(
+      <JourneyProvider
+        value={{
+          journey: {
+            id: 'journey.id'
+          } as unknown as Journey
+        }}
+      >
+        <ThemeProvider>
+          <Post />
+        </ThemeProvider>
+      </JourneyProvider>
+    )
+
+    const headline = screen.getByTestId('SecondaryTextSkeleton')
+
+    await userEvent.hover(headline)
+
+    const tip = await screen.findByRole('tooltip')
+    expect(within(tip).getByText('Secondary Text')).toBeVisible()
   })
 })
