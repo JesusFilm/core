@@ -132,7 +132,7 @@ export function Post(): ReactElement {
                 )}
               </CardMedia>
             </Tooltip>
-            <Stack gap={1.5} sx={{ mb: 2.75 }} data-testid="Headline">
+            <Stack gap={1.5} sx={{ mb: 2.75 }}>
               <Tooltip title={t('Headline')} {...tooltipProps}>
                 {isEmpty(journey?.seoTitle?.trim()) ? (
                   <Box
@@ -140,6 +140,7 @@ export function Post(): ReactElement {
                     height={15}
                     borderRadius={1.25}
                     bgcolor="background.default"
+                    data-testid="HeadlineSkeleton"
                   />
                 ) : (
                   <Typography
@@ -160,6 +161,7 @@ export function Post(): ReactElement {
                     height={15}
                     borderRadius={1.25}
                     bgcolor="background.default"
+                    data-testid="SecondaryTextSkeleton"
                   />
                 ) : (
                   <Typography

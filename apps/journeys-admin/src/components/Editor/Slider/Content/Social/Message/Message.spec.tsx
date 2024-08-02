@@ -53,20 +53,68 @@ describe('Message', () => {
     expect(getByText('journey description')).toBeInTheDocument()
   })
 
-  it('should render tooltip on hover', async () => {
+  it('should render social image tooltip', async () => {
     render(
-      <JourneyProvider
-        value={{
-          journey: {
-            id: 'journey.id'
-          } as unknown as Journey
-        }}
-      >
-        <Message />
-      </JourneyProvider>
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: {
+              id: 'journey.id'
+            } as unknown as Journey
+          }}
+        >
+          <Message />
+        </JourneyProvider>
+      </MockedProvider>
     )
 
-    const message = screen.getByTestId('SecondaryText')
+    const preview = screen.getByTestId('social-preview-message-empty')
+
+    await userEvent.hover(preview)
+
+    const tip = await screen.findByRole('tooltip')
+    expect(within(tip).getByText('Social Image')).toBeVisible()
+  })
+
+  it('should render headline tooltip', async () => {
+    render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: {
+              id: 'journey.id'
+            } as unknown as Journey
+          }}
+        >
+          <Message />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const headline = screen.getByTestId('HeadlineSkeleton')
+
+    await userEvent.hover(headline)
+
+    const tip = await screen.findByRole('tooltip')
+    expect(within(tip).getByText('Headline')).toBeVisible()
+  })
+
+  it('should render secondary text tooltip on hover', async () => {
+    render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: {
+              id: 'journey.id'
+            } as unknown as Journey
+          }}
+        >
+          <Message />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const message = screen.getByTestId('SecondaryTextSkeleton')
 
     await userEvent.hover(message)
 
