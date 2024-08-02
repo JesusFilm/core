@@ -160,6 +160,7 @@ export function Message(): ReactElement {
                           height={15}
                           bgcolor="#EFEFEF"
                           borderRadius="5px"
+                          data-testid="HeadlineSkeleton"
                         />
                       ) : (
                         <Typography
@@ -181,6 +182,7 @@ export function Message(): ReactElement {
                           height={15}
                           bgcolor="#EFEFEF"
                           borderRadius="5px"
+                          data-testid="SecondaryTextSkeleton"
                         />
                       ) : (
                         <Typography
