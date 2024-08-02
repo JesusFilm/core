@@ -5,7 +5,6 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../../__generated__/BlockFields'
-import { blockDeleteUpdate } from '../../../../libs/blockDeleteUpdate'
 import { useBlockDeleteMutation } from '../../../../libs/useBlockDeleteMutation'
 import { useBlockRestoreMutation } from '../../../../libs/useBlockRestoreMutation'
 import { setBlockRestoreEditorState } from './setBlockRestoreEditorState'
@@ -15,12 +14,11 @@ export function useBlockDeleteCommand(): {
 } {
   const { add } = useCommand()
   const {
-    state: { selectedBlock, selectedStep, steps },
+    state: { selectedStep, steps },
     dispatch
   } = useEditor()
   const { journey } = useJourney()
   const [blockDelete] = useBlockDeleteMutation()
-
   const [blockRestore] = useBlockRestoreMutation()
 
   function flatten(children: TreeBlock[]): TreeBlock[] {
@@ -42,17 +40,11 @@ export function useBlockDeleteCommand(): {
       return
 
     const deletedBlockParentOrder = currentBlock.parentOrder
-    const deletedBlockType = currentBlock.__typename
-    const stepsBeforeDelete = steps
-    const stepBeforeDelete = selectedStep
-
     const card = selectedStep?.children?.find(
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
-
     const cachedStepWithXandY =
       client.cache.extract()[`StepBlock:${selectedStep.id}`]
-    const flattenedChildren = flatten(currentBlock?.children)
     const stepSiblingsBeforeDelete = steps.filter(
       (block) => block.id !== currentBlock.id
     )
@@ -64,64 +56,29 @@ export function useBlockDeleteCommand(): {
         parentOrder: block.parentOrder != null ? index : null
       })
     )
-
     add({
       parameters: {
-        execute: {
-          currentBlock: currentBlock,
-          stepBeforeDelete,
-          deletedBlockParentOrder,
-          deletedBlockType,
-          stepsBeforeDelete: stepsBeforeDelete,
-          journeyId: journey.id
-        },
-        undo: {
-          currentBlock: currentBlock,
-          stepBeforeDelete,
-          flattenedChildren
-        }
+        execute: {},
+        undo: {}
       },
-      execute({
-        currentBlock,
-        stepBeforeDelete,
-        deletedBlockParentOrder,
-        deletedBlockType,
-        stepsBeforeDelete,
-        journeyId
-      }) {
-        // if (
-        //   deletedBlockParentOrder != null &&
-        //   (currentBlock == null || currentBlock?.id === selectedBlock?.id)
-        // ) {
-        //   const selected = getSelected({
-        //     parentOrder: deletedBlockParentOrder,
-        //     siblings:
-        //       currentBlock.__typename === 'StepBlock'
-        //         ? stepSiblingsBeforeDelete
-        //         : canvasSiblingsBeforeDelete ?? [],
-        //     type: deletedBlockType,
-        //     steps: stepsBeforeDelete,
-        //     selectedStep: stepBeforeDelete
-        //   })
-        //   selected != null && dispatch(selected)
-        // }
-        console.log(canvasSiblingsAfterDelete[deletedBlockParentOrder])
-
+      execute() {
         dispatch({
           type: 'SetEditorFocusAction',
-          selectedBlockId:
-            canvasSiblingsAfterDelete[deletedBlockParentOrder]?.id,
-          selectedStepId: selectedStep.id
+          selectedBlock:
+            deletedBlockParentOrder != null
+              ? canvasSiblingsAfterDelete.find(
+                  ({ parentOrder }) => parentOrder === deletedBlockParentOrder
+                )
+              : undefined,
+          selectedStep
         })
         void blockDelete(currentBlock, {
-          optimisticResponse: { blockDelete: canvasSiblingsAfterDelete },
-          update(cache, { data }) {
-            blockDeleteUpdate(currentBlock, data?.blockDelete, cache, journeyId)
-          }
+          optimisticResponse: { blockDelete: canvasSiblingsAfterDelete }
         })
       },
-      undo({ currentBlock, stepBeforeDelete, flattenedChildren }) {
-        setBlockRestoreEditorState(currentBlock, stepBeforeDelete, dispatch)
+      undo() {
+        const flattenedChildren = flatten(currentBlock?.children)
+        setBlockRestoreEditorState(currentBlock, selectedStep, dispatch)
         void blockRestore({
           variables: { id: currentBlock.id },
           optimisticResponse:
