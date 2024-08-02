@@ -47,43 +47,42 @@ export function NewTypographyButton(): ReactElement {
     const checkTypography = card?.children.map((block) =>
       block.children.find((child) => child.__typename === 'TypographyBlock')
     )
-    if (card != null && checkTypography !== undefined && journey != null) {
-      const typography: TreeBlock<TypographyBlock> = {
-        id: uuidv4(),
-        parentBlockId: card.id,
-        parentOrder: card.children.length ?? 0,
-        align: null,
-        color: null,
-        content: '',
-        variant:
-          checkTypography.length > 0
-            ? TypographyVariant.body2
-            : TypographyVariant.h1,
-        __typename: 'TypographyBlock',
-        children: []
-      }
-
-      addBlock({
-        block: typography,
-        execute() {
-          void typographyBlockCreate({
-            variables: {
-              input: {
-                id: typography.id,
-                journeyId: journey.id,
-                parentBlockId: typography.parentBlockId,
-                content: typography.content,
-                variant: typography.variant
-              }
-            },
-            optimisticResponse: { typographyBlockCreate: typography },
-            update(cache, { data }) {
-              blockCreateUpdate(cache, journey?.id, data?.typographyBlockCreate)
-            }
-          })
-        }
-      })
+    if (card == null || checkTypography == null || journey == null) return
+    const typography: TreeBlock<TypographyBlock> = {
+      id: uuidv4(),
+      parentBlockId: card.id,
+      parentOrder: card.children.length ?? 0,
+      align: null,
+      color: null,
+      content: '',
+      variant:
+        checkTypography.length > 0
+          ? TypographyVariant.body2
+          : TypographyVariant.h1,
+      __typename: 'TypographyBlock',
+      children: []
     }
+
+    addBlock({
+      block: typography,
+      execute() {
+        void typographyBlockCreate({
+          variables: {
+            input: {
+              id: typography.id,
+              journeyId: journey.id,
+              parentBlockId: typography.parentBlockId,
+              content: typography.content,
+              variant: typography.variant
+            }
+          },
+          optimisticResponse: { typographyBlockCreate: typography },
+          update(cache, { data }) {
+            blockCreateUpdate(cache, journey?.id, data?.typographyBlockCreate)
+          }
+        })
+      }
+    })
   }
 
   return (

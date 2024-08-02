@@ -63,85 +63,84 @@ export function NewButtonButton(): ReactElement {
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
 
-    if (card != null && journey != null) {
-      const button: ButtonBlock = {
-        id: uuidv4(),
-        __typename: 'ButtonBlock',
-        parentBlockId: card.id,
-        label: '',
-        buttonVariant: ButtonVariant.contained,
-        buttonColor: ButtonColor.primary,
-        size: ButtonSize.medium,
-        parentOrder: card.children.length ?? 0,
-        startIconId: uuidv4(),
-        endIconId: uuidv4(),
-        action: null
-      }
+    if (card == null || journey == null) return
+    const button: ButtonBlock = {
+      id: uuidv4(),
+      __typename: 'ButtonBlock',
+      parentBlockId: card.id,
+      label: '',
+      buttonVariant: ButtonVariant.contained,
+      buttonColor: ButtonColor.primary,
+      size: ButtonSize.medium,
+      parentOrder: card.children.length ?? 0,
+      startIconId: uuidv4(),
+      endIconId: uuidv4(),
+      action: null
+    }
 
-      addBlock({
-        block: button,
-        execute() {
-          void buttonBlockCreate({
-            variables: {
-              input: {
-                id: button.id,
-                journeyId: journey.id,
-                parentBlockId: button.parentBlockId,
-                label: '',
-                variant: button.buttonVariant,
-                color: button.buttonColor,
-                size: button.size
-              },
-              iconBlockCreateInput1: {
-                id: button.startIconId,
-                journeyId: journey.id,
-                parentBlockId: button.id,
-                name: null
-              },
-              iconBlockCreateInput2: {
-                id: button.endIconId,
-                journeyId: journey.id,
-                parentBlockId: button.id,
-                name: null
-              },
+    addBlock({
+      block: button,
+      execute() {
+        void buttonBlockCreate({
+          variables: {
+            input: {
               id: button.id,
               journeyId: journey.id,
-              updateInput: {
-                startIconId: button.startIconId,
-                endIconId: button.endIconId
-              }
+              parentBlockId: button.parentBlockId,
+              label: '',
+              variant: button.buttonVariant,
+              color: button.buttonColor,
+              size: button.size
             },
-            optimisticResponse: {
-              buttonBlockCreate: button,
-              startIcon: {
-                id: button.startIconId as string,
-                parentBlockId: button.id,
-                parentOrder: null,
-                iconName: null,
-                iconSize: null,
-                iconColor: null,
-                __typename: 'IconBlock'
-              },
-              endIcon: {
-                id: button.endIconId as string,
-                parentBlockId: button.id,
-                parentOrder: null,
-                iconName: null,
-                iconSize: null,
-                iconColor: null,
-                __typename: 'IconBlock'
-              },
-              buttonBlockUpdate: button
+            iconBlockCreateInput1: {
+              id: button.startIconId,
+              journeyId: journey.id,
+              parentBlockId: button.id,
+              name: null
             },
-            update(cache, { data }) {
-              blockCreateUpdate(cache, journey.id, data?.startIcon)
-              blockCreateUpdate(cache, journey.id, data?.endIcon)
-              blockCreateUpdate(cache, journey.id, data?.buttonBlockUpdate)
+            iconBlockCreateInput2: {
+              id: button.endIconId,
+              journeyId: journey.id,
+              parentBlockId: button.id,
+              name: null
+            },
+            id: button.id,
+            journeyId: journey.id,
+            updateInput: {
+              startIconId: button.startIconId,
+              endIconId: button.endIconId
             }
-          })
-        }
-      })
-    }
+          },
+          optimisticResponse: {
+            buttonBlockCreate: button,
+            startIcon: {
+              id: button.startIconId as string,
+              parentBlockId: button.id,
+              parentOrder: null,
+              iconName: null,
+              iconSize: null,
+              iconColor: null,
+              __typename: 'IconBlock'
+            },
+            endIcon: {
+              id: button.endIconId as string,
+              parentBlockId: button.id,
+              parentOrder: null,
+              iconName: null,
+              iconSize: null,
+              iconColor: null,
+              __typename: 'IconBlock'
+            },
+            buttonBlockUpdate: button
+          },
+          update(cache, { data }) {
+            blockCreateUpdate(cache, journey.id, data?.startIcon)
+            blockCreateUpdate(cache, journey.id, data?.endIcon)
+            blockCreateUpdate(cache, journey.id, data?.buttonBlockUpdate)
+          }
+        })
+      }
+    })
   }
 
   return (

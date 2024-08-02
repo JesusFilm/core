@@ -45,45 +45,41 @@ export function NewTextResponseButton(): ReactElement {
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
 
-    if (card != null && journey != null) {
-      const textResponseBlock: TextResponseBlock = {
-        id: uuidv4(),
-        parentBlockId: card.id,
-        parentOrder: card.children.length ?? 0,
-        label: t('Your answer here'),
-        hint: null,
-        minRows: null,
-        type: null,
-        routeId: null,
-        integrationId: null,
-        __typename: 'TextResponseBlock'
-      }
-      addBlock({
-        block: textResponseBlock,
-        execute() {
-          void textResponseBlockCreate({
-            variables: {
-              input: {
-                id: textResponseBlock.id,
-                journeyId: journey.id,
-                parentBlockId: textResponseBlock.parentBlockId,
-                label: textResponseBlock.label
-              }
-            },
-            optimisticResponse: {
-              textResponseBlockCreate: textResponseBlock
-            },
-            update(cache, { data }) {
-              blockCreateUpdate(
-                cache,
-                journey?.id,
-                data?.textResponseBlockCreate
-              )
-            }
-          })
-        }
-      })
+    if (card == null || journey == null) return
+
+    const textResponseBlock: TextResponseBlock = {
+      id: uuidv4(),
+      parentBlockId: card.id,
+      parentOrder: card.children.length ?? 0,
+      label: t('Your answer here'),
+      hint: null,
+      minRows: null,
+      type: null,
+      routeId: null,
+      integrationId: null,
+      __typename: 'TextResponseBlock'
     }
+    addBlock({
+      block: textResponseBlock,
+      execute() {
+        void textResponseBlockCreate({
+          variables: {
+            input: {
+              id: textResponseBlock.id,
+              journeyId: journey.id,
+              parentBlockId: textResponseBlock.parentBlockId,
+              label: textResponseBlock.label
+            }
+          },
+          optimisticResponse: {
+            textResponseBlockCreate: textResponseBlock
+          },
+          update(cache, { data }) {
+            blockCreateUpdate(cache, journey?.id, data?.textResponseBlockCreate)
+          }
+        })
+      }
+    })
   }
   return (
     <Button

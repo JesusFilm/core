@@ -49,54 +49,54 @@ export function NewVideoButton({
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
 
-    if (card != null && journey != null) {
-      const video: TreeBlock<VideoBlock> = {
-        id: uuidv4(),
-        parentBlockId: card.id,
-        parentOrder: 0,
-        muted: false,
-        autoplay: true,
-        startAt: null,
-        endAt: null,
-        posterBlockId: null,
-        fullsize: true,
-        videoId: null,
-        videoVariantLanguageId: null,
-        source: VideoBlockSource.internal,
-        title: null,
-        description: null,
-        image: null,
-        duration: null,
-        objectFit: null,
-        video: null,
-        action: null,
-        __typename: 'VideoBlock',
-        children: []
-      }
-      addBlock({
-        block: video,
-        execute() {
-          void videoBlockCreate({
-            variables: {
-              input: {
-                id: video.id,
-                journeyId: journey.id,
-                parentBlockId: video.parentBlockId,
-                autoplay: video.autoplay,
-                muted: video.muted,
-                fullsize: video.fullsize
-              }
-            },
-            optimisticResponse: {
-              videoBlockCreate: video
-            },
-            update(cache, { data }) {
-              blockCreateUpdate(cache, journey?.id, data?.videoBlockCreate)
-            }
-          })
-        }
-      })
+    if (card == null || journey == null) return
+
+    const video: TreeBlock<VideoBlock> = {
+      id: uuidv4(),
+      parentBlockId: card.id,
+      parentOrder: 0,
+      muted: false,
+      autoplay: true,
+      startAt: null,
+      endAt: null,
+      posterBlockId: null,
+      fullsize: true,
+      videoId: null,
+      videoVariantLanguageId: null,
+      source: VideoBlockSource.internal,
+      title: null,
+      description: null,
+      image: null,
+      duration: null,
+      objectFit: null,
+      video: null,
+      action: null,
+      __typename: 'VideoBlock',
+      children: []
     }
+    addBlock({
+      block: video,
+      execute() {
+        void videoBlockCreate({
+          variables: {
+            input: {
+              id: video.id,
+              journeyId: journey.id,
+              parentBlockId: video.parentBlockId,
+              autoplay: video.autoplay,
+              muted: video.muted,
+              fullsize: video.fullsize
+            }
+          },
+          optimisticResponse: {
+            videoBlockCreate: video
+          },
+          update(cache, { data }) {
+            blockCreateUpdate(cache, journey?.id, data?.videoBlockCreate)
+          }
+        })
+      }
+    })
   }
 
   return (

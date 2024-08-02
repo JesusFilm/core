@@ -37,36 +37,36 @@ export function NewFormButton(): ReactElement {
       (block) => block.__typename === 'CardBlock'
     )
 
-    if (card != null && journey != null) {
-      const formBlock: FormBlock = {
-        id: uuidv4(),
-        parentBlockId: card.id,
-        parentOrder: card.children.length ?? 0,
-        form: null,
-        action: null,
-        __typename: 'FormBlock'
-      }
-      addBlock({
-        block: formBlock,
-        execute() {
-          void formBlockCreate({
-            variables: {
-              input: {
-                id: formBlock.id,
-                journeyId: journey.id,
-                parentBlockId: formBlock.parentBlockId
-              }
-            },
-            optimisticResponse: {
-              formBlockCreate: formBlock
-            },
-            update(cache, { data }) {
-              blockCreateUpdate(cache, journey?.id, data?.formBlockCreate)
-            }
-          })
-        }
-      })
+    if (card == null || journey == null) return
+
+    const formBlock: FormBlock = {
+      id: uuidv4(),
+      parentBlockId: card.id,
+      parentOrder: card.children.length ?? 0,
+      form: null,
+      action: null,
+      __typename: 'FormBlock'
     }
+    addBlock({
+      block: formBlock,
+      execute() {
+        void formBlockCreate({
+          variables: {
+            input: {
+              id: formBlock.id,
+              journeyId: journey.id,
+              parentBlockId: formBlock.parentBlockId
+            }
+          },
+          optimisticResponse: {
+            formBlockCreate: formBlock
+          },
+          update(cache, { data }) {
+            blockCreateUpdate(cache, journey?.id, data?.formBlockCreate)
+          }
+        })
+      }
+    })
   }
 
   return (

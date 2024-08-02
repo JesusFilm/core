@@ -58,63 +58,63 @@ export function NewSignUpButton(): ReactElement {
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
-    if (card != null && journey != null) {
-      const signUpBlock: SignUpBlock = {
-        id: uuidv4(),
-        parentBlockId: card.id,
-        parentOrder: card.children.length ?? 0,
-        submitLabel: t('Submit'),
-        submitIconId: uuidv4(),
-        action: null,
-        __typename: 'SignUpBlock'
-      }
+    if (card == null || journey == null) return
 
-      const submitIcon: IconBlock = {
-        id: signUpBlock.submitIconId as string,
-        parentBlockId: signUpBlock.id,
-        parentOrder: null,
-        iconName: null,
-        iconSize: null,
-        iconColor: null,
-        __typename: 'IconBlock'
-      }
+    const signUpBlock: SignUpBlock = {
+      id: uuidv4(),
+      parentBlockId: card.id,
+      parentOrder: card.children.length ?? 0,
+      submitLabel: t('Submit'),
+      submitIconId: uuidv4(),
+      action: null,
+      __typename: 'SignUpBlock'
+    }
 
-      addBlock({
-        block: signUpBlock,
-        execute() {
-          void signUpBlockCreate({
-            variables: {
-              input: {
-                id: signUpBlock.id,
-                journeyId: journey.id,
-                parentBlockId: signUpBlock.parentBlockId,
-                submitLabel: signUpBlock.submitLabel
-              },
-              iconBlockCreateInput: {
-                id: submitIcon.id,
-                journeyId: journey.id,
-                parentBlockId: signUpBlock.id,
-                name: null
-              },
+    const submitIcon: IconBlock = {
+      id: signUpBlock.submitIconId as string,
+      parentBlockId: signUpBlock.id,
+      parentOrder: null,
+      iconName: null,
+      iconSize: null,
+      iconColor: null,
+      __typename: 'IconBlock'
+    }
+
+    addBlock({
+      block: signUpBlock,
+      execute() {
+        void signUpBlockCreate({
+          variables: {
+            input: {
               id: signUpBlock.id,
               journeyId: journey.id,
-              updateInput: {
-                submitIconId: submitIcon.id
-              }
+              parentBlockId: signUpBlock.parentBlockId,
+              submitLabel: signUpBlock.submitLabel
             },
-            optimisticResponse: {
-              signUpBlockCreate: signUpBlock,
-              submitIcon: submitIcon,
-              signUpBlockUpdate: signUpBlock
+            iconBlockCreateInput: {
+              id: submitIcon.id,
+              journeyId: journey.id,
+              parentBlockId: signUpBlock.id,
+              name: null
             },
-            update(cache, { data }) {
-              blockCreateUpdate(cache, journey?.id, data?.submitIcon)
-              blockCreateUpdate(cache, journey?.id, data?.signUpBlockUpdate)
+            id: signUpBlock.id,
+            journeyId: journey.id,
+            updateInput: {
+              submitIconId: submitIcon.id
             }
-          })
-        }
-      })
-    }
+          },
+          optimisticResponse: {
+            signUpBlockCreate: signUpBlock,
+            submitIcon: submitIcon,
+            signUpBlockUpdate: signUpBlock
+          },
+          update(cache, { data }) {
+            blockCreateUpdate(cache, journey?.id, data?.submitIcon)
+            blockCreateUpdate(cache, journey?.id, data?.signUpBlockUpdate)
+          }
+        })
+      }
+    })
   }
 
   return (

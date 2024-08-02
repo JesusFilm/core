@@ -45,39 +45,39 @@ export function NewImageButton(): ReactElement {
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
 
-    if (card != null && journey != null) {
-      const imageBlock: ImageBlock = {
-        id: uuid(),
-        parentBlockId: card.id,
-        parentOrder: card.children.length ?? 0,
-        src: null,
-        alt: 'Default Image Icon',
-        width: 0,
-        height: 0,
-        blurhash: '',
-        __typename: 'ImageBlock'
-      }
-      addBlock({
-        block: imageBlock,
-        execute() {
-          void imageBlockCreate({
-            variables: {
-              input: {
-                id: imageBlock.id,
-                journeyId: journey.id,
-                parentBlockId: imageBlock.parentBlockId,
-                src: imageBlock.src,
-                alt: imageBlock.alt
-              }
-            },
-            optimisticResponse: { imageBlockCreate: imageBlock },
-            update(cache, { data }) {
-              blockCreateUpdate(cache, journey?.id, data?.imageBlockCreate)
-            }
-          })
-        }
-      })
+    if (card == null || journey == null) return
+
+    const imageBlock: ImageBlock = {
+      id: uuid(),
+      parentBlockId: card.id,
+      parentOrder: card.children.length ?? 0,
+      src: null,
+      alt: 'Default Image Icon',
+      width: 0,
+      height: 0,
+      blurhash: '',
+      __typename: 'ImageBlock'
     }
+    addBlock({
+      block: imageBlock,
+      execute() {
+        void imageBlockCreate({
+          variables: {
+            input: {
+              id: imageBlock.id,
+              journeyId: journey.id,
+              parentBlockId: imageBlock.parentBlockId,
+              src: imageBlock.src,
+              alt: imageBlock.alt
+            }
+          },
+          optimisticResponse: { imageBlockCreate: imageBlock },
+          update(cache, { data }) {
+            blockCreateUpdate(cache, journey?.id, data?.imageBlockCreate)
+          }
+        })
+      }
+    })
   }
 
   return (

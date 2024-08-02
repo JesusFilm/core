@@ -64,71 +64,67 @@ export function NewRadioQuestionButton(): ReactElement {
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
 
-    if (card != null && journey != null) {
-      const radioQuestionBlock: RadioQuestionBlock = {
-        id: uuidv4(),
-        parentBlockId: card.id,
-        parentOrder: card.children.length ?? 0,
-        __typename: 'RadioQuestionBlock'
-      }
-      const radioOptionBlock1: RadioOptionBlock = {
-        id: uuidv4(),
-        parentBlockId: radioQuestionBlock.id,
-        parentOrder: 0,
-        label: t('Option 1'),
-        action: null,
-        __typename: 'RadioOptionBlock'
-      }
-      const radioOptionBlock2: RadioOptionBlock = {
-        id: uuidv4(),
-        parentBlockId: radioQuestionBlock.id,
-        parentOrder: 1,
-        label: t('Option 2'),
-        action: null,
-        __typename: 'RadioOptionBlock'
-      }
+    if (card == null || journey == null) return
 
-      addBlock({
-        block: radioQuestionBlock,
-        execute() {
-          void radioQuestionBlockCreate({
-            variables: {
-              input: {
-                journeyId: journey.id,
-                id: radioQuestionBlock.id,
-                parentBlockId: radioQuestionBlock.parentBlockId
-              },
-              radioOptionBlockCreateInput1: {
-                id: radioOptionBlock1.id,
-                journeyId: journey.id,
-                parentBlockId: radioQuestionBlock.id,
-                label: radioOptionBlock1.label
-              },
-              radioOptionBlockCreateInput2: {
-                id: radioOptionBlock2.id,
-                journeyId: journey.id,
-                parentBlockId: radioQuestionBlock.id,
-                label: radioOptionBlock2.label
-              }
-            },
-            optimisticResponse: {
-              radioQuestionBlockCreate: radioQuestionBlock,
-              radioOption1: radioOptionBlock1,
-              radioOption2: radioOptionBlock2
-            },
-            update(cache, { data }) {
-              blockCreateUpdate(
-                cache,
-                journey.id,
-                data?.radioQuestionBlockCreate
-              )
-              blockCreateUpdate(cache, journey.id, data?.radioOption1)
-              blockCreateUpdate(cache, journey.id, data?.radioOption2)
-            }
-          })
-        }
-      })
+    const radioQuestionBlock: RadioQuestionBlock = {
+      id: uuidv4(),
+      parentBlockId: card.id,
+      parentOrder: card.children.length ?? 0,
+      __typename: 'RadioQuestionBlock'
     }
+    const radioOptionBlock1: RadioOptionBlock = {
+      id: uuidv4(),
+      parentBlockId: radioQuestionBlock.id,
+      parentOrder: 0,
+      label: t('Option 1'),
+      action: null,
+      __typename: 'RadioOptionBlock'
+    }
+    const radioOptionBlock2: RadioOptionBlock = {
+      id: uuidv4(),
+      parentBlockId: radioQuestionBlock.id,
+      parentOrder: 1,
+      label: t('Option 2'),
+      action: null,
+      __typename: 'RadioOptionBlock'
+    }
+
+    addBlock({
+      block: radioQuestionBlock,
+      execute() {
+        void radioQuestionBlockCreate({
+          variables: {
+            input: {
+              journeyId: journey.id,
+              id: radioQuestionBlock.id,
+              parentBlockId: radioQuestionBlock.parentBlockId
+            },
+            radioOptionBlockCreateInput1: {
+              id: radioOptionBlock1.id,
+              journeyId: journey.id,
+              parentBlockId: radioQuestionBlock.id,
+              label: radioOptionBlock1.label
+            },
+            radioOptionBlockCreateInput2: {
+              id: radioOptionBlock2.id,
+              journeyId: journey.id,
+              parentBlockId: radioQuestionBlock.id,
+              label: radioOptionBlock2.label
+            }
+          },
+          optimisticResponse: {
+            radioQuestionBlockCreate: radioQuestionBlock,
+            radioOption1: radioOptionBlock1,
+            radioOption2: radioOptionBlock2
+          },
+          update(cache, { data }) {
+            blockCreateUpdate(cache, journey.id, data?.radioQuestionBlockCreate)
+            blockCreateUpdate(cache, journey.id, data?.radioOption1)
+            blockCreateUpdate(cache, journey.id, data?.radioOption2)
+          }
+        })
+      }
+    })
   }
 
   return (
