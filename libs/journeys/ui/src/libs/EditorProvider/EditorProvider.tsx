@@ -179,6 +179,7 @@ export type EditorAction =
   | SetShowAnalyticsAction
   | SetAnalyticsAction
   | SetEditorFocusAction
+  | SetSelectedStepByIdAction
 
 export const reducer = (
   state: EditorState,
@@ -337,6 +338,11 @@ export const reducer = (
         stateCopy = reducer(stateCopy, {
           type: 'SetSelectedGoalUrlAction',
           selectedGoalUrl
+        })
+      if (selectedStepId != null)
+        stateCopy = reducer(stateCopy, {
+          type: 'SetSelectedStepByIdAction',
+          selectedStepId
         })
       return stateCopy
     }
