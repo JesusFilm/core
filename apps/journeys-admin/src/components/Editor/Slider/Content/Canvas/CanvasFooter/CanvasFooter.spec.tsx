@@ -17,7 +17,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 describe('CanvasFooter', () => {
   it('should render fab when not in analytics mode', () => {
-    ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
+    (useMediaQuery as jest.Mock).mockImplementation(() => true)
 
     const initialState = {
       showAnalytics: false
