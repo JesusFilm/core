@@ -9,7 +9,6 @@ import { CommandProvider } from '@core/journeys/ui/CommandProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-
 import {
   BlockFields_CardBlock as CardBlock,
   BlockFields_VideoBlock as VideoBlock

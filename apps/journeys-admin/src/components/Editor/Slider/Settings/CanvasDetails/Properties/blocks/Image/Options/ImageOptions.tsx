@@ -18,10 +18,7 @@ import { ImageSource } from '../../../../../Drawer/ImageSource'
 
 export const IMAGE_BLOCK_UPDATE = gql`
   ${IMAGE_FIELDS}
-  mutation ImageBlockUpdate(
-    $id: ID!
-    $input: ImageBlockUpdateInput!
-  ) {
+  mutation ImageBlockUpdate($id: ID!, $input: ImageBlockUpdateInput!) {
     imageBlockUpdate(id: $id, input: $input) {
       id
       ...ImageFields

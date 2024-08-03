@@ -7,8 +7,6 @@ import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { StepBlockNodeAnalytics } from './StepBlockNodeAnalytics'
 
-
-
 const StepBlockNodeAnalyticsDemo: Meta<typeof StepBlockNodeAnalytics> = {
   ...simpleComponentConfig,
   component: StepBlockNodeAnalytics,

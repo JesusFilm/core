@@ -89,12 +89,10 @@ describe('IntegrationGrothSpacesService', () => {
     ) as DeepMockProxy<PrismaService>
     mockAxiosGet = jest.fn()
     mockAxiosPost = jest.fn()
-    mockAxios.create = jest
-      .fn()
-      .mockImplementation(async () => ({
-        get: mockAxiosGet,
-        post: mockAxiosPost
-      }))
+    mockAxios.create = jest.fn().mockImplementation(async () => ({
+      get: mockAxiosGet,
+      post: mockAxiosPost
+    }))
 
     process.env = { ...OLD_ENV }
   })

@@ -14,7 +14,6 @@ import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplica
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
 import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
 
-
 import { TeamCreate } from '../../../../__generated__/TeamCreate'
 import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActiveTeamId'
 import { TeamCreateForm } from '../TeamCreateForm'

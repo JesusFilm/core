@@ -7,7 +7,7 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
 import { TextResponseType } from '../../../../../../../../../../../__generated__/globalTypes'
 
-import { GrowthSpacesIntegrations } from "."
+import { GrowthSpacesIntegrations } from '.'
 
 describe('GrowthSpacesIntegrations', () => {
   const selectedBlock: TreeBlock<TextResponseBlock> = {

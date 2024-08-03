@@ -802,6 +802,8 @@ export class Publisher {
       this.page.locator(
         'div[role="dialog"] div[id*="about-tabpanel"] div[data-testid="ImageBlockHeader"] img'
       )
-    ).not.toHaveAttribute('src', this.uploadedImgSrc as string, { timeout: 30000 })
+    ).not.toHaveAttribute('src', this.uploadedImgSrc as string, {
+      timeout: 30000
+    })
   }
 }

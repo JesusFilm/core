@@ -90,10 +90,7 @@ export function ImageBlockEditor({
   const handleSrcChange = async (
     input: ImageBlockUpdateInput
   ): Promise<void> => {
-    if (
-      input.src === selectedBlock?.src ||
-      !(await srcSchema.isValid(input))
-    )
+    if (input.src === selectedBlock?.src || !(await srcSchema.isValid(input)))
       return
 
     const block: ImageBlockUpdateInput = {

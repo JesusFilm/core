@@ -7,7 +7,6 @@ import { BlockFields_ButtonBlock } from '../../../../../../../../__generated__/B
 
 import { LinkNodeAnalytics } from '.'
 
-
 describe('LinkNodeAnalytics', () => {
   it('should render with count', () => {
     const block = {

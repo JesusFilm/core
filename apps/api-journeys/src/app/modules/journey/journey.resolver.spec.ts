@@ -2197,8 +2197,9 @@ describe('JourneyResolver', () => {
         ...journey,
         plausibleToken: 'plausibleToken'
       }
-      expect(await resolver.plausibleToken(ability, journeyWithToken)).toBeNull(
-        )
+      expect(
+        await resolver.plausibleToken(ability, journeyWithToken)
+      ).toBeNull()
     })
   })
 })

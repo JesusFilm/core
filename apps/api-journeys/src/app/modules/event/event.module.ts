@@ -7,7 +7,6 @@ import { BlockService } from '../block/block.service'
 import { IntegrationGrowthSpacesService } from '../integration/growthSpaces/growthSpaces.service'
 import { VisitorService } from '../visitor/visitor.service'
 
-
 import {
   ButtonClickEventResolver,
   ChatOpenEventResolver

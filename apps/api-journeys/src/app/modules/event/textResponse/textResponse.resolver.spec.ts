@@ -11,8 +11,6 @@ import { PrismaService } from '../../../lib/prisma.service'
 import { IntegrationGrowthSpacesService } from '../../integration/growthSpaces/growthSpaces.service'
 import { EventService } from '../event.service'
 
-
-
 import { TextResponseSubmissionEventResolver } from './textResponse.resolver'
 
 describe('TextResponseEventResolver', () => {

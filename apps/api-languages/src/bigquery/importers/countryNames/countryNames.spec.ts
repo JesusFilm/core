@@ -5,8 +5,6 @@ import { parse, parseMany, processTable } from '../../importer'
 
 import { importCountryNames, importMany, importOne } from './countryNames'
 
-
-
 const countryName = {
   countryId: 'AD',
   languageId: '529',

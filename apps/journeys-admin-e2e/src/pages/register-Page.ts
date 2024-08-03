@@ -96,7 +96,9 @@ export class Register {
         )
         .first()
     ).toHaveAttribute('aria-expanded', 'true')
-    await this.page.locator('div[role="region"]  input[name="token"]').fill(otp as string)
+    await this.page
+      .locator('div[role="region"]  input[name="token"]')
+      .fill(otp as string)
   }
 
   async clickValidateEmailBtn() {

@@ -7,7 +7,6 @@ import { mockReactFlow } from '../../../../../../../test/mockReactFlow'
 
 import { ReferrerNode } from '.'
 
-
 describe('ReferrerNode', () => {
   beforeEach(() => {
     mockReactFlow()

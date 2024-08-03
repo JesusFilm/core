@@ -77,7 +77,7 @@ export function LanguageSwitcher({
         }
       })
     setLanguages(formattedLanguages)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentLanguageCode])
 
   return (

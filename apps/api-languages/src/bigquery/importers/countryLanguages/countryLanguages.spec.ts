@@ -9,8 +9,6 @@ import {
   importOne
 } from './countryLanguages'
 
-
-
 const countryLanguage = {
   countryId: 'AD',
   languageId: '529',

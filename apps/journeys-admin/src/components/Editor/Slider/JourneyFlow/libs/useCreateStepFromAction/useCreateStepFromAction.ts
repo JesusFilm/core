@@ -43,7 +43,13 @@ export type CreateStepFromActionInput = CreateStepFromStepInput & {
 }
 
 export const STEP_BLOCK_DELETE_FROM_ACTION = gql`
-  mutation StepBlockDeleteFromAction($id: ID!, $journeyId: ID!, $parentBlockId: ID, $input: BlockUpdateActionInput!, $blockUpdateActionId: ID! ) {
+  mutation StepBlockDeleteFromAction(
+    $id: ID!
+    $journeyId: ID!
+    $parentBlockId: ID
+    $input: BlockUpdateActionInput!
+    $blockUpdateActionId: ID!
+  ) {
     blockDelete(id: $id, journeyId: $journeyId, parentBlockId: $parentBlockId) {
       id
       parentOrder
@@ -51,18 +57,23 @@ export const STEP_BLOCK_DELETE_FROM_ACTION = gql`
         nextBlockId
       }
     }
-    blockUpdateAction(id: $blockUpdateActionId, input: $input ) {
-        parentBlockId
-        parentBlock {
-            id
-        }
-        gtmEventName
+    blockUpdateAction(id: $blockUpdateActionId, input: $input) {
+      parentBlockId
+      parentBlock {
+        id
+      }
+      gtmEventName
     }
   }
 `
 
 export const STEP_BLOCK_DELETE_FROM_ACTION_WITHOUT_ACTION = gql`
-  mutation StepBlockDeleteFromActionWithoutAction($id: ID!, $journeyId: ID!, $parentBlockId: ID, $blockDeleteActionId: ID! ) {
+  mutation StepBlockDeleteFromActionWithoutAction(
+    $id: ID!
+    $journeyId: ID!
+    $parentBlockId: ID
+    $blockDeleteActionId: ID!
+  ) {
     blockDelete(id: $id, journeyId: $journeyId, parentBlockId: $parentBlockId) {
       id
       parentOrder
@@ -77,50 +88,55 @@ export const STEP_BLOCK_DELETE_FROM_ACTION_WITHOUT_ACTION = gql`
           parentBlockId
         }
       }
-     ... on ButtonBlock {
-      action {
+      ... on ButtonBlock {
+        action {
           parentBlockId
         }
-     }
-     ... on SignUpBlock {
-      action {
+      }
+      ... on SignUpBlock {
+        action {
           parentBlockId
         }
-     }
-     ... on FormBlock {
-      action {
+      }
+      ... on FormBlock {
+        action {
           parentBlockId
         }
-     }
-     ... on VideoBlock {
-      action {
+      }
+      ... on VideoBlock {
+        action {
           parentBlockId
         }
-     }
+      }
     }
   }
 `
 
 export const STEP_BLOCK_RESTORE_FROM_ACTION = gql`
-${BLOCK_FIELDS}
-mutation StepBlockRestoreFromAction($id: ID!, $blockUpdateActionId: ID!, $input: BlockUpdateActionInput!) {
-  blockRestore(id: $id) {
-    id
-    ...BlockFields
-    ... on StepBlock {
+  ${BLOCK_FIELDS}
+  mutation StepBlockRestoreFromAction(
+    $id: ID!
+    $blockUpdateActionId: ID!
+    $input: BlockUpdateActionInput!
+  ) {
+    blockRestore(id: $id) {
       id
-      x
-      y
+      ...BlockFields
+      ... on StepBlock {
+        id
+        x
+        y
+      }
+    }
+    blockUpdateAction(id: $blockUpdateActionId, input: $input) {
+      parentBlockId
+      parentBlock {
+        id
+      }
+      gtmEventName
     }
   }
-  blockUpdateAction(id: $blockUpdateActionId, input: $input ) {
-        parentBlockId
-        parentBlock {
-            id
-        }
-        gtmEventName
-    }
-}`
+`
 
 export const STEP_BLOCK_CREATE_FROM_ACTION = gql`
   ${STEP_FIELDS}
@@ -128,7 +144,7 @@ export const STEP_BLOCK_CREATE_FROM_ACTION = gql`
   mutation StepBlockCreateFromAction(
     $stepBlockCreateInput: StepBlockCreateInput!
     $cardBlockCreateInput: CardBlockCreateInput!
-    $blockId: ID!,
+    $blockId: ID!
     $blockUpdateActionInput: BlockUpdateActionInput!
   ) {
     stepBlockCreate(input: $stepBlockCreateInput) {
@@ -138,13 +154,13 @@ export const STEP_BLOCK_CREATE_FROM_ACTION = gql`
     }
     cardBlockCreate(input: $cardBlockCreateInput) {
       ...CardFields
-    },
-    blockUpdateAction(id: $blockId, input: $blockUpdateActionInput ) {
-        parentBlockId
-        parentBlock {
-            id
-        }
-        gtmEventName
+    }
+    blockUpdateAction(id: $blockId, input: $blockUpdateActionInput) {
+      parentBlockId
+      parentBlock {
+        id
+      }
+      gtmEventName
     }
   }
 `

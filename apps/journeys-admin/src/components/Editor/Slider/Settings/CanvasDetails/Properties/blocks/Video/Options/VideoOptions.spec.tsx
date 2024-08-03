@@ -15,7 +15,6 @@ import { videos } from '../../../../../Drawer/VideoLibrary/VideoFromLocal/data'
 import { GET_VIDEO } from '../../../../../Drawer/VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
 import { GET_VIDEOS } from '../../../../../Drawer/VideoLibrary/VideoFromLocal/VideoFromLocal'
 
-
 import { VIDEO_BLOCK_UPDATE, VideoOptions } from './VideoOptions'
 
 const video: TreeBlock<VideoBlock> = {

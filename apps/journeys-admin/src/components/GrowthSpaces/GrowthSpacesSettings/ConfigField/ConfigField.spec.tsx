@@ -32,11 +32,7 @@ describe('ConfigField', () => {
 
   it('should show the value on text field click', async () => {
     render(
-      <ConfigField
-        label="Access Key"
-        value="accessKey"
-        onChange={jest.fn()}
-      />
+      <ConfigField label="Access Key" value="accessKey" onChange={jest.fn()} />
     )
     const input = screen.getByDisplayValue('accessKey')
     fireEvent.click(input)
@@ -46,11 +42,7 @@ describe('ConfigField', () => {
 
   it('should toggle value visibility upon clicking eye icon', () => {
     render(
-      <ConfigField
-        label="Access Key"
-        value="accessKey"
-        onChange={jest.fn()}
-      />
+      <ConfigField label="Access Key" value="accessKey" onChange={jest.fn()} />
     )
     const input = screen.getByDisplayValue('accessKey')
     expect(input).toHaveAttribute('type', 'password')
@@ -71,11 +63,7 @@ describe('ConfigField', () => {
 
   it('should show reveal secret text on hover', () => {
     render(
-      <ConfigField
-        label="Access Key"
-        value="accessKey"
-        onChange={jest.fn()}
-      />
+      <ConfigField label="Access Key" value="accessKey" onChange={jest.fn()} />
     )
     const input = screen.getByDisplayValue('accessKey')
     fireEvent.mouseEnter(input)

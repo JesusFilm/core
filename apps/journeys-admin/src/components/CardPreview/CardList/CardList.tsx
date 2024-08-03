@@ -111,8 +111,8 @@ export function CardList({
     activeContent === ActiveContent.Goals
       ? 'goals'
       : activeContent === ActiveContent.Social
-        ? 'social'
-        : selected?.id
+      ? 'social'
+      : selected?.id
 
   return (
     <HorizontalSelect

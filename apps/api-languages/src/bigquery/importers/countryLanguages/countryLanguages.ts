@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { Prisma } from '.prisma/api-languages-client'
 
 import { prisma } from '../../../lib/prisma'
-import { parse, parseMany , processTable } from '../../importer'
+import { parse, parseMany, processTable } from '../../importer'
 
 const countryLanguageSchema = z
   .object({

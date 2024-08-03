@@ -18,8 +18,8 @@ import { TEXT_RESPONSE_LABEL_UPDATE } from '../Label/Label'
 
 export const TEXT_RESPONSE_TYPE_UPDATE = gql`
   mutation TextResponseTypeUpdate(
-    $id: ID!, 
-    $journeyId: ID!, 
+    $id: ID!
+    $journeyId: ID!
     $input: TextResponseBlockUpdateInput!
   ) {
     textResponseBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {

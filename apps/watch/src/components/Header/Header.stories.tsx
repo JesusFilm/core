@@ -8,7 +8,6 @@ import { watchConfig } from '../../libs/storybook'
 
 import { Header } from './Header'
 
-
 const HeaderStory: Meta<typeof Header> = {
   ...watchConfig,
   component: Header,

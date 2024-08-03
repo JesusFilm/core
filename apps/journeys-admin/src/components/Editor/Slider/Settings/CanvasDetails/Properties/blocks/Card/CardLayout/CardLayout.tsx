@@ -14,15 +14,11 @@ import {
 } from '../../../../../../../../../../__generated__/CardBlockLayoutUpdate'
 import { HorizontalSelect } from '../../../../../../../../HorizontalSelect'
 
-
 import cardLayoutContained from './assets/card-layout-contained.svg'
 import cardLayoutExpanded from './assets/card-layout-expanded.svg'
 
 export const CARD_BLOCK_LAYOUT_UPDATE = gql`
-  mutation CardBlockLayoutUpdate(
-    $id: ID!
-    $input: CardBlockUpdateInput!
-  ) {
+  mutation CardBlockLayoutUpdate($id: ID!, $input: CardBlockUpdateInput!) {
     cardBlockUpdate(id: $id, input: $input) {
       id
       fullscreen

@@ -5,7 +5,6 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyAnalytics } from '@core/journeys/ui/useJourneyAnalyticsQuery/useJourneyAnalyticsQuery.mock'
 
-
 import { GetJourney_journey } from '../../../../../../__generated__/GetJourney'
 
 import { earliestStatsCollected } from './AnalyticsOverlaySwitch'

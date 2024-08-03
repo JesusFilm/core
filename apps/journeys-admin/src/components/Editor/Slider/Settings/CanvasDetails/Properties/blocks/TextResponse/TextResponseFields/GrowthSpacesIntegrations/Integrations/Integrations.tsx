@@ -17,8 +17,8 @@ import { Select } from '../Select'
 
 export const TEXT_RESPONSE_INTEGRATION_UPDATE = gql`
   mutation TextResponseIntegrationUpdate(
-    $id: ID!, 
-    $journeyId: ID!, 
+    $id: ID!
+    $journeyId: ID!
     $input: TextResponseBlockUpdateInput!
   ) {
     textResponseBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {

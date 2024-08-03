@@ -16,7 +16,10 @@ import { useBlockDeleteMutation } from '../../../../../../libs/useBlockDeleteMut
 import { useBlockRestoreMutation } from '../../../../../../libs/useBlockRestoreMutation'
 import { useStepAndCardBlockCreateMutation } from '../../../../../../libs/useStepAndCardBlockCreateMutation'
 
-export interface CreateStepInput { x: number; y: number }
+export interface CreateStepInput {
+  x: number
+  y: number
+}
 
 export function useCreateStep(): (input: CreateStepInput) => Promise<void> {
   const { journey } = useJourney()

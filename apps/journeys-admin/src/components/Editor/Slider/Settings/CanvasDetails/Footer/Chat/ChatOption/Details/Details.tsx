@@ -9,7 +9,6 @@ import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
-
 import CheckBroken from '@core/shared/ui/icons/CheckBroken'
 import CheckContained from '@core/shared/ui/icons/CheckContained'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'

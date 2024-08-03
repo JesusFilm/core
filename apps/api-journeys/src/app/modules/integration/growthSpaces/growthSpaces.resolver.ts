@@ -17,7 +17,6 @@ import { PrismaService } from '../../../lib/prisma.service'
 
 import { IntegrationGrowthSpacesService } from './growthSpaces.service'
 
-
 @Resolver('IntegrationGrowthSpaces')
 export class IntegrationGrowthSpacesResolver {
   constructor(

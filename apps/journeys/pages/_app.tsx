@@ -92,7 +92,9 @@ function JourneysApp({
                 site: 'datadoghq.com',
                 service: 'journeys',
                 env: '${process.env.NEXT_PUBLIC_VERCEL_ENV ?? ''}',
-                version: '${process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA ?? ''}',
+                version: '${
+                  process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA ?? ''
+                }',
                 sampleRate: 50,
                 sessionReplaySampleRate: 10,
                 trackInteractions: true,

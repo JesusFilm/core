@@ -10,7 +10,6 @@ import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 
-
 import { Fab } from './Fab'
 import { Hotkeys } from './Hotkeys'
 import { Slider } from './Slider'

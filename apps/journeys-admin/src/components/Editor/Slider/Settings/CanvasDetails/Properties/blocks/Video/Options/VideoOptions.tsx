@@ -6,7 +6,6 @@ import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { VIDEO_FIELDS } from '@core/journeys/ui/Video/videoFields'
 
-
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import { VideoBlockUpdateInput } from '../../../../../../../../../../__generated__/globalTypes'
 import {
@@ -17,10 +16,7 @@ import { VideoBlockEditor } from '../../../../../Drawer/VideoBlockEditor'
 
 export const VIDEO_BLOCK_UPDATE = gql`
   ${VIDEO_FIELDS}
-  mutation VideoBlockUpdate(
-    $id: ID!
-    $input: VideoBlockUpdateInput!
-  ) {
+  mutation VideoBlockUpdate($id: ID!, $input: VideoBlockUpdateInput!) {
     videoBlockUpdate(id: $id, input: $input) {
       ...VideoFields
     }

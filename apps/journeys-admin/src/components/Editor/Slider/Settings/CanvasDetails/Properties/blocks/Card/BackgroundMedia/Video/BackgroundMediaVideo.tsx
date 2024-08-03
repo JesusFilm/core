@@ -55,10 +55,7 @@ export const COVER_VIDEO_BLOCK_CREATE = gql`
 
 export const COVER_VIDEO_BLOCK_UPDATE = gql`
   ${VIDEO_FIELDS}
-  mutation CoverVideoBlockUpdate(
-    $id: ID!
-    $input: VideoBlockUpdateInput!
-  ) {
+  mutation CoverVideoBlockUpdate($id: ID!, $input: VideoBlockUpdateInput!) {
     videoBlockUpdate(id: $id, input: $input) {
       ...VideoFields
     }

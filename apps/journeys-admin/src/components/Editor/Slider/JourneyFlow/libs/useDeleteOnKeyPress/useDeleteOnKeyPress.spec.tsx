@@ -17,7 +17,6 @@ import { StepFields as StepBlock } from '../../../../../../../__generated__/Step
 import { useBlockDeleteMutation } from '../../../../../../libs/useBlockDeleteMutation'
 import { useDeleteEdge } from '../useDeleteEdge'
 
-
 import { useDeleteOnKeyPress } from './useDeleteOnKeyPress'
 
 jest.mock('reactflow', () => {

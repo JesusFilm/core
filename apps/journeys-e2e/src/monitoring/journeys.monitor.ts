@@ -12,6 +12,6 @@ test('Homepage checks', async ({ page }) => {
   const factOrFictionText = page
     .frameLocator("//iframe[contains(@src, '/embed/fact-or-fiction')]")
     .locator('.MuiTypography-h2')
-    
+
   await expect(factOrFictionText).toHaveText('Fact or Fiction')
 })

@@ -11,7 +11,6 @@ import { PrismaService } from '../../lib/prisma.service'
 
 import { IntegrationResolver } from './integration.resolver'
 
-
 describe('IntegrationResolver', () => {
   let resolver: IntegrationResolver,
     prismaService: DeepMockProxy<PrismaService>,

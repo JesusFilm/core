@@ -9,7 +9,9 @@ import { IntegrationGrowthSpacesCreate } from '../../../../__generated__/Integra
 import { GrowthSpacesSettings } from '../GrowthSpacesSettings'
 
 export const INTEGRATION_GROWTH_SPACES_CREATE = gql`
-  mutation IntegrationGrowthSpacesCreate($input: IntegrationGrowthSpacesCreateInput!) {
+  mutation IntegrationGrowthSpacesCreate(
+    $input: IntegrationGrowthSpacesCreateInput!
+  ) {
     integrationGrowthSpacesCreate(input: $input) {
       id
     }
@@ -46,7 +48,9 @@ export function GrowthSpacesCreateIntegration(): ReactElement {
           preventDuplicate: true
         })
         await router.push(
-          `/teams/${teamId as string}/integrations/${data.integrationGrowthSpacesCreate.id}`
+          `/teams/${teamId as string}/integrations/${
+            data.integrationGrowthSpacesCreate.id
+          }`
         )
       } else {
         enqueueSnackbar(

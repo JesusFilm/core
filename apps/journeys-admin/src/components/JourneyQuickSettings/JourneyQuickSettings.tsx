@@ -34,7 +34,9 @@ export function JourneyQuickSettings({
   const [tabValue, setTabValue] = useState(0)
   const theme = useTheme()
 
-  const url = `${process.env.NEXT_PUBLIC_JOURNEYS_URL ?? 'https://your.nextstep.is'}/${journey?.slug ?? ''}`
+  const url = `${
+    process.env.NEXT_PUBLIC_JOURNEYS_URL ?? 'https://your.nextstep.is'
+  }/${journey?.slug ?? ''}`
   return (
     <Stack
       direction={{ xs: 'column', md: 'row' }}

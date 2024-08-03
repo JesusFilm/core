@@ -227,10 +227,10 @@ export function Button({
           size === 'large'
             ? 6
             : size === 'medium'
-              ? 5
-              : size === 'small'
-                ? 4
-                : 5
+            ? 5
+            : size === 'small'
+            ? 4
+            : 5
       }}
       data-testid={`JourneysButton-${blockId}`}
     >

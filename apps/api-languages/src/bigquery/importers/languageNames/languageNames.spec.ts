@@ -5,8 +5,6 @@ import { parse, parseMany, processTable } from '../../importer'
 
 import { importLanguageNames, importMany, importOne } from './languageNames'
 
-
-
 const languageName = {
   parentLanguageId: '529',
   languageId: '529',

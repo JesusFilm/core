@@ -11,7 +11,6 @@ import {
   importOne
 } from './languages'
 
-
 const language = {
   id: '529',
   iso3: 'eng',

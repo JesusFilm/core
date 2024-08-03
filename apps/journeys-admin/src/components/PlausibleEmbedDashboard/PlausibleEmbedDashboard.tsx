@@ -113,7 +113,9 @@ export function PlausibleEmbedDashboard({
           <StyledIFrame
             data-testid="PlausibleEmbedDashboard"
             plausible-embed
-            src={`${host ?? ''}/share/api-journeys-journey-${journeyId}?auth=${data?.journey.plausibleToken}&embed=true&theme=light&background=transparent`}
+            src={`${host ?? ''}/share/api-journeys-journey-${journeyId}?auth=${
+              data?.journey.plausibleToken
+            }&embed=true&theme=light&background=transparent`}
             loading="lazy"
             onLoad={() => {
               setTimeout(() => {

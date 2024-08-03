@@ -9,7 +9,6 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { STEP_FIELDS } from '@core/journeys/ui/Step/stepFields'
 
-
 import {
   BlockFields_CardBlock as CardBlock,
   BlockFields_StepBlock as StepBlock
@@ -40,7 +39,12 @@ export type CreateStepFromStepInput = CreateStepInput & {
 }
 
 export const STEP_BLOCK_DELETE_FROM_STEP = gql`
-  mutation StepBlockDeleteFromStep($id: ID!, $journeyId: ID!, $input: StepBlockUpdateInput!, $stepBlockUpdateId: ID! ) {
+  mutation StepBlockDeleteFromStep(
+    $id: ID!
+    $journeyId: ID!
+    $input: StepBlockUpdateInput!
+    $stepBlockUpdateId: ID!
+  ) {
     blockDelete(id: $id, journeyId: $journeyId) {
       id
       parentOrder
@@ -48,7 +52,11 @@ export const STEP_BLOCK_DELETE_FROM_STEP = gql`
         nextBlockId
       }
     }
-    stepBlockUpdate(id: $stepBlockUpdateId, journeyId: $journeyId, input: $input) {
+    stepBlockUpdate(
+      id: $stepBlockUpdateId
+      journeyId: $journeyId
+      input: $input
+    ) {
       id
       nextBlockId
     }
@@ -56,22 +64,32 @@ export const STEP_BLOCK_DELETE_FROM_STEP = gql`
 `
 
 export const STEP_BLOCK_RESTORE_FROM_STEP = gql`
-${BLOCK_FIELDS}
-mutation StepBlockRestoreFromStep($id: ID!, $journeyId: ID!, $stepBlockUpdateId: ID!, $input: StepBlockUpdateInput!) {
-  blockRestore(id: $id) {
-    id
-    ...BlockFields
-    ... on StepBlock {
+  ${BLOCK_FIELDS}
+  mutation StepBlockRestoreFromStep(
+    $id: ID!
+    $journeyId: ID!
+    $stepBlockUpdateId: ID!
+    $input: StepBlockUpdateInput!
+  ) {
+    blockRestore(id: $id) {
       id
-      x
-      y
+      ...BlockFields
+      ... on StepBlock {
+        id
+        x
+        y
+      }
     }
-  }
-  stepBlockUpdate(id: $stepBlockUpdateId, journeyId: $journeyId, input: $input) {
+    stepBlockUpdate(
+      id: $stepBlockUpdateId
+      journeyId: $journeyId
+      input: $input
+    ) {
       id
       nextBlockId
     }
-}`
+  }
+`
 
 export const STEP_BLOCK_CREATE_FROM_STEP = gql`
   ${STEP_FIELDS}
@@ -79,8 +97,8 @@ export const STEP_BLOCK_CREATE_FROM_STEP = gql`
   mutation StepBlockCreateFromStep(
     $stepBlockCreateInput: StepBlockCreateInput!
     $cardBlockCreateInput: CardBlockCreateInput!
-    $stepId: ID!,
-    $journeyId: ID!,
+    $stepId: ID!
+    $journeyId: ID!
     $stepBlockUpdateInput: StepBlockUpdateInput!
   ) {
     stepBlockCreate(input: $stepBlockCreateInput) {
@@ -90,8 +108,12 @@ export const STEP_BLOCK_CREATE_FROM_STEP = gql`
     }
     cardBlockCreate(input: $cardBlockCreateInput) {
       ...CardFields
-    },
-    stepBlockUpdate(id: $stepId, journeyId: $journeyId, input: $stepBlockUpdateInput) {
+    }
+    stepBlockUpdate(
+      id: $stepId
+      journeyId: $journeyId
+      input: $stepBlockUpdateInput
+    ) {
       id
       nextBlockId
     }

@@ -6,7 +6,6 @@ import { Integration } from '.prisma/api-journeys-client'
 import { UserTeamRole } from '../../__generated__/graphql'
 import { Action, AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
 
-
 describe('integrationAcl', () => {
   let factory: AppCaslFactory, ability: AppAbility
   const user = { id: 'userId' }

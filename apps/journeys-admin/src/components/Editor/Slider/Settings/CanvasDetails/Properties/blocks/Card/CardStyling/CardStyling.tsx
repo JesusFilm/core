@@ -15,15 +15,11 @@ import {
 } from '../../../../../../../../../../__generated__/globalTypes'
 import { HorizontalSelect } from '../../../../../../../../HorizontalSelect'
 
-
 import cardStyleDark from './assets/card-style-dark.svg'
 import cardStyleLight from './assets/card-style-light.svg'
 
 export const CARD_BLOCK_THEME_MODE_UPDATE = gql`
-  mutation CardBlockThemeModeUpdate(
-    $id: ID!
-    $input: CardBlockUpdateInput!
-  ) {
+  mutation CardBlockThemeModeUpdate($id: ID!, $input: CardBlockUpdateInput!) {
     cardBlockUpdate(id: $id, input: $input) {
       id
       themeMode

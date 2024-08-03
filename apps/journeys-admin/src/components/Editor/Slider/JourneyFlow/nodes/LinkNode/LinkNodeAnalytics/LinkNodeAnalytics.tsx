@@ -2,7 +2,6 @@ import Box from '@mui/material/Box'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { ActionBlock } from '@core/journeys/ui/isActionBlock'
 import { getTargetEventKey } from '@core/journeys/ui/plausibleHelpers/plausibleHelpers'

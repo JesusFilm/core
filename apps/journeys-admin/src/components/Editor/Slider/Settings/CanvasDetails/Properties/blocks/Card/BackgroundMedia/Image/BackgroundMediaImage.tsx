@@ -52,10 +52,7 @@ export const COVER_IMAGE_BLOCK_CREATE = gql`
 
 export const COVER_IMAGE_BLOCK_UPDATE = gql`
   ${IMAGE_FIELDS}
-  mutation CoverImageBlockUpdate(
-    $id: ID!
-    $input: ImageBlockUpdateInput!
-  ) {
+  mutation CoverImageBlockUpdate($id: ID!, $input: ImageBlockUpdateInput!) {
     imageBlockUpdate(id: $id, input: $input) {
       ...ImageFields
     }
