@@ -2,9 +2,9 @@ import { gql, useMutation, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Collapse from '@mui/material/Collapse'
 import IconButton from '@mui/material/IconButton'
+import { darken, styled, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Zoom from '@mui/material/Zoom'
-import { darken, styled, useTheme } from '@mui/material/styles'
 import { useTranslation } from 'next-i18next'
 import { type ReactElement, useEffect, useRef, useState } from 'react'
 import { Swiper, type SwiperRef, SwiperSlide } from 'swiper/react'
@@ -18,8 +18,8 @@ import {
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import ChevronUpIcon from '@core/shared/ui/icons/ChevronUp'
 
-import type { UpdateJourneyFlowBackButtonClicked } from '../../../../__generated__/UpdateJourneyFlowBackButtonClicked'
 import type { getJourneyFlowBackButtonClicked } from '../../../../__generated__/getJourneyFlowBackButtonClicked'
+import type { UpdateJourneyFlowBackButtonClicked } from '../../../../__generated__/UpdateJourneyFlowBackButtonClicked'
 import { DRAWER_WIDTH, EDIT_TOOLBAR_HEIGHT } from '../constants'
 
 import { Content } from './Content'
@@ -106,8 +106,8 @@ export function Slider(): ReactElement {
   }, [activeSlide])
 
   useEffect(() => {
-    if (swiperRef.current) {
-      swiperRef.current.swiper.allowTouchMove = !showAnalytics
+    if (swiperRef.current != null) {
+      swiperRef.current.swiper.allowTouchMove = showAnalytics === false
       swiperRef.current.swiper.setGrabCursor()
     }
   }, [showAnalytics])

@@ -1,6 +1,8 @@
 import { Meta, StoryObj } from '@storybook/react'
 import { SnackbarProvider } from 'notistack'
-import { simpleComponentConfig } from '../../../../../libs/shared/ui/src/libs/simpleComponentConfig'
+
+import { simpleComponentConfig } from '@core/shared/ui/simpleComponentConfig'
+
 import { JourneyQuickSettings } from './JourneyQuickSettings'
 
 const JourneyQuickSettingsStory: Meta<typeof JourneyQuickSettings> = {

@@ -1,8 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { RadioOptionFields } from '../../../../../../../../__generated__/RadioOptionFields'
 import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'

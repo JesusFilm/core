@@ -57,7 +57,7 @@ export async function main(mode: string, target?: string): Promise<void> {
       const videos = await getArclightMediaComponents(page)
       count = videos.length
       for (const arclightVideo of videos) {
-        ;({ resumed, errors } = await handleArclightMediaComponent(
+        ({ resumed, errors } = await handleArclightMediaComponent(
           arclightVideo,
           importedVideos,
           resumed,
@@ -79,7 +79,7 @@ export async function main(mode: string, target?: string): Promise<void> {
       const videos = await getArclightMediaComponents(page)
       count = videos.length
       for (const arclightVideo of videos) {
-        ;({ resumed, errors } = await handleArclightMediaComponent(
+        ({ resumed, errors } = await handleArclightMediaComponent(
           arclightVideo,
           importedVideos,
           resumed,
@@ -106,7 +106,7 @@ export async function main(mode: string, target?: string): Promise<void> {
       console.log('no arclight video found for id:', target)
       return
     }
-    ;({ resumed, errors } = await handleArclightMediaComponent(
+    ({ resumed, errors } = await handleArclightMediaComponent(
       arclightVideo,
       importedVideos,
       resumed,
@@ -127,7 +127,7 @@ export async function main(mode: string, target?: string): Promise<void> {
       console.log('no arclight video found for id:', target)
       return
     }
-    ;({ resumed, errors } = await handleArclightMediaComponent(
+    ({ resumed, errors } = await handleArclightMediaComponent(
       arclightVideo,
       importedVideos,
       resumed,

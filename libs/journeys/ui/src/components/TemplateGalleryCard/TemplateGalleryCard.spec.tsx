@@ -1,4 +1,5 @@
 import { render } from '@testing-library/react'
+import { NextRouter, useRouter } from 'next/router'
 
 import {
   JourneyStatus,
@@ -8,8 +9,8 @@ import {
 import { GetJourneys_journeys as Journey } from '../../libs/useJourneysQuery/__generated__/GetJourneys'
 
 import { TemplateGalleryCard } from '.'
+
 import '../../../test/i18n'
-import { NextRouter, useRouter } from 'next/router'
 
 jest.mock('next/router', () => ({
   __esModule: true,

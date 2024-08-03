@@ -116,7 +116,6 @@ class TestRequest implements HttpRequest {
     return await new Promise((resolve) => {
       this.body?.on('readable', () => {
         let chunk: string | null | undefined
-        // biome-ignore lint/suspicious/noAssignInExpressions: <explanation>
         while ((chunk = this.body?.read()) !== null) {
           if (chunk != null) {
             resolve(chunk.length)

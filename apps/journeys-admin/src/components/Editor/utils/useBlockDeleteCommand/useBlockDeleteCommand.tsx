@@ -1,15 +1,21 @@
+import { useState } from 'react'
+
+import { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { TreeBlock } from '@core/journeys/ui/block'
-import { useState } from 'react'
+
 import { blockDeleteUpdate } from '../../../../libs/blockDeleteUpdate'
 import { useBlockDeleteMutation } from '../../../../libs/useBlockDeleteMutation'
 import { useBlockRestoreMutation } from '../../../../libs/useBlockRestoreMutation'
 import getSelected from '../../Slider/Content/Canvas/QuickControls/DeleteBlock/utils/getSelected'
+
 import { setBlockRestoreEditorState } from './setBlockRestoreEditorState'
 
-export function useBlockDeleteCommand() {
+export function useBlockDeleteCommand(): {
+  addBlockDelete: (currentBlock: TreeBlock) => Promise<void>
+  loading: boolean
+} {
   const [loading, setLoading] = useState(false)
   const { add } = useCommand()
   const {
@@ -40,16 +46,16 @@ export function useBlockDeleteCommand() {
       await add({
         parameters: {
           execute: {
-            currentBlock: currentBlock,
-            stepBeforeDelete: stepBeforeDelete,
+            currentBlock,
+            stepBeforeDelete,
             deletedBlockParentOrder,
             deletedBlockType,
-            stepsBeforeDelete: stepsBeforeDelete,
+            stepsBeforeDelete,
             journeyId: journey.id
           },
           undo: {
-            currentBlock: currentBlock,
-            stepBeforeDelete: stepBeforeDelete
+            currentBlock,
+            stepBeforeDelete
           }
         },
         async execute({

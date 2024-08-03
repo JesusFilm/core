@@ -1,5 +1,8 @@
+import { Language } from '.prisma/api-languages-client'
+
 import { prismaMock } from '../../../../test/prismaMock'
 import { parse, parseMany, processTable } from '../../importer'
+
 import {
   clearExistingLanguageIds,
   getExistingPrismaLanguageIds,
@@ -8,7 +11,6 @@ import {
   importOne
 } from './languages'
 
-import { Language } from '.prisma/api-languages-client'
 
 const language = {
   id: '529',
@@ -130,6 +132,7 @@ describe('importers/languages/languages', () => {
         skipDuplicates: true
       })
     })
+
     it('should throw error if some rows are invalid', async () => {
       prismaMock.language.findMany.mockResolvedValue([])
       await importLanguages()
@@ -149,7 +152,7 @@ describe('importers/languages/languages', () => {
             id: '529'
           }
         ])
-      ).rejects.toThrowError()
+      ).rejects.toThrow()
     })
   })
 })

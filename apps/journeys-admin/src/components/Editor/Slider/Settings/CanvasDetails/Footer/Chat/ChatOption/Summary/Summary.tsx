@@ -8,9 +8,9 @@ import { ChangeEvent, ReactElement } from 'react'
 
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
+import { MessagePlatform } from '../../../../../../../../../../__generated__/globalTypes'
 import { JourneyChatButtonCreate } from '../../../../../../../../../../__generated__/JourneyChatButtonCreate'
 import { JourneyChatButtonRemove } from '../../../../../../../../../../__generated__/JourneyChatButtonRemove'
-import { MessagePlatform } from '../../../../../../../../../../__generated__/globalTypes'
 
 export const JOURNEY_CHAT_BUTTON_CREATE = gql`
   mutation JourneyChatButtonCreate(

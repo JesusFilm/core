@@ -1,18 +1,18 @@
-import { ReactElement } from 'react'
-
 import { gql, useMutation } from '@apollo/client'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { SelectChangeEvent } from '@mui/material/Select'
 import Typography from '@mui/material/Typography'
+import { ReactElement } from 'react'
+// eslint-disable-next-line no-restricted-imports
 import { useTranslation } from 'react-i18next'
 
+import { TreeBlock } from '@core/journeys/ui/block'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useTeam } from '@core/journeys/ui/TeamProvider'
+
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../../__generated__/BlockFields'
 import { TextResponseIntegrationUpdate } from '../../../../../../../../../../../../__generated__/TextResponseIntegrationUpdate'
 import { useIntegrationQuery } from '../../../../../../../../../../../libs/useIntegrationQuery'
-
-import { TreeBlock } from '@core/journeys/ui/block'
-import { SelectChangeEvent } from '@mui/material/Select'
 import { Select } from '../Select'
 
 export const TEXT_RESPONSE_INTEGRATION_UPDATE = gql`
@@ -54,7 +54,7 @@ export function Integrations(): ReactElement {
     integration.type.concat(` - ${integration.accessSecretPart}`)
   )
 
-  async function handleChange(event: SelectChangeEvent) {
+  async function handleChange(event: SelectChangeEvent): Promise<void> {
     if (journey == null || selectedBlock == null) return
     const accessSecretPart = event.target.value.split(' - ')[1]
     const integrationId = data?.integrations.find(

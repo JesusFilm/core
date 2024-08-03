@@ -1,10 +1,13 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import { TreeBlock } from '@core/journeys/ui/block'
 import { render, screen } from '@testing-library/react'
+
+import { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
 import { TextResponseType } from '../../../../../../../../../../../__generated__/globalTypes'
-import { GrowthSpacesIntegrations } from '../GrowthSpacesIntegrations'
+
+import { GrowthSpacesIntegrations } from "."
 
 describe('GrowthSpacesIntegrations', () => {
   const selectedBlock: TreeBlock<TextResponseBlock> = {
@@ -20,6 +23,7 @@ describe('GrowthSpacesIntegrations', () => {
     type: TextResponseType.email,
     children: []
   }
+
   describe('Email', () => {
     it('should render Growth Spaces Integrations if type is email', () => {
       render(

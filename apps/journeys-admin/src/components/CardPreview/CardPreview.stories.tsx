@@ -7,8 +7,8 @@ import noop from 'lodash/noop'
 import { ComponentProps, ReactNode, useState } from 'react'
 import { DragDropContext } from 'react-beautiful-dnd'
 
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import {

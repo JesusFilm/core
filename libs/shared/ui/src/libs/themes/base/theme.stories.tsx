@@ -1,8 +1,6 @@
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import TextField from '@mui/material/TextField'
-import Typography, { TypographyProps } from '@mui/material/Typography'
 import {
   Breakpoint,
   PaletteColor,
@@ -11,6 +9,8 @@ import {
   styled,
   useTheme
 } from '@mui/material/styles'
+import TextField from '@mui/material/TextField'
+import Typography, { TypographyProps } from '@mui/material/Typography'
 import { Meta, StoryObj } from '@storybook/react'
 import { ReactElement, useEffect, useState } from 'react'
 

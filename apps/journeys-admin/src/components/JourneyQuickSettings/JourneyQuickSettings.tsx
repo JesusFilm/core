@@ -15,6 +15,7 @@ import ShareIcon from '@core/shared/ui/icons/Share'
 import { Item } from '../Editor/Toolbar/Items/Item'
 import { PreviewItem } from '../Editor/Toolbar/Items/PreviewItem'
 import { OnboardingTemplateCard } from '../OnboardingPageWrapper/OnboardingDrawer/OnboardingTemplateCard'
+
 import { JourneyQuickSettingsChat } from './JourneyQuickSettingsChat'
 import { JourneyQuickSettingsGoals } from './JourneyQuickSettingsGoals'
 import { JourneyQuickSettingsTabs } from './JourneyQuickSettingsTabs'

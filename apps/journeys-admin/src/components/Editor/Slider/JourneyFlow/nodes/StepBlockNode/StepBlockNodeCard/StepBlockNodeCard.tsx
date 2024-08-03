@@ -6,16 +6,16 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 
 import {
   BlockFields_CardBlock as CardBlock,
   BlockFields_StepBlock as StepBlock
 } from '../../../../../../../../__generated__/BlockFields'
-import { StepBlockNodeIcon } from '../StepBlockNodeIcon'
 import { getCardMetadata } from '../libs/getCardMetadata'
 import { STEP_NODE_CARD_HEIGHT, STEP_NODE_CARD_WIDTH } from '../libs/sizes'
+import { StepBlockNodeIcon } from '../StepBlockNodeIcon'
 
 interface StepBlockNodeCardProps {
   step: TreeBlock<StepBlock>
@@ -60,7 +60,7 @@ export function StepBlockNodeCard({
 
   const nodeBgImage = priorityImage ?? bgImage
 
-  const conditionalStyles = showAnalytics
+  const conditionalStyles = (showAnalytics === true)
     ? {
         opacity: 0.8,
         bgcolor: 'transparent',
@@ -76,7 +76,7 @@ export function StepBlockNodeCard({
     <Card
       data-testid="StepBlockNodeCard"
       elevation={selected ? 6 : 1}
-      title={showAnalytics ? '' : t('Click to edit or drag')}
+      title={(showAnalytics === true) ? '' : t('Click to edit or drag')}
       onClick={handleClick}
       sx={{
         width: STEP_NODE_CARD_WIDTH,

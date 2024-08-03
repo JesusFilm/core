@@ -3,6 +3,7 @@ import pick from 'lodash/pick'
 import { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import {
   ActiveContent,
@@ -11,7 +12,6 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 import { IMAGE_FIELDS } from '@core/journeys/ui/Image/imageFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 
 import {
   BlockFields_CardBlock as CardBlock,
@@ -114,7 +114,7 @@ export function BackgroundMediaImage({
         dispatch({
           type: 'SetEditorFocusAction',
           activeSlide: ActiveSlide.Content,
-          selectedStep: selectedStep,
+          selectedStep,
           activeContent: ActiveContent.Canvas
         })
         await createBlock({
@@ -164,7 +164,7 @@ export function BackgroundMediaImage({
         dispatch({
           type: 'SetEditorFocusAction',
           activeSlide: ActiveSlide.Content,
-          selectedStep: selectedStep,
+          selectedStep,
           activeContent: ActiveContent.Canvas
         })
         await deleteBlock({
@@ -189,7 +189,7 @@ export function BackgroundMediaImage({
         dispatch({
           type: 'SetEditorFocusAction',
           activeSlide: ActiveSlide.Content,
-          selectedStep: selectedStep,
+          selectedStep,
           activeContent: ActiveContent.Canvas
         })
         await restoreBlock({
@@ -239,7 +239,7 @@ export function BackgroundMediaImage({
         dispatch({
           type: 'SetEditorFocusAction',
           activeSlide: ActiveSlide.Content,
-          selectedStep: selectedStep,
+          selectedStep,
           activeContent: ActiveContent.Canvas
         })
         await updateBlock({
@@ -273,7 +273,7 @@ export function BackgroundMediaImage({
         dispatch({
           type: 'SetEditorFocusAction',
           activeSlide: ActiveSlide.Content,
-          selectedStep: selectedStep,
+          selectedStep,
           activeContent: ActiveContent.Canvas
         })
         await deleteBlock({
@@ -298,7 +298,7 @@ export function BackgroundMediaImage({
         dispatch({
           type: 'SetEditorFocusAction',
           activeSlide: ActiveSlide.Content,
-          selectedStep: selectedStep,
+          selectedStep,
           activeContent: ActiveContent.Canvas
         })
         await restoreBlock({

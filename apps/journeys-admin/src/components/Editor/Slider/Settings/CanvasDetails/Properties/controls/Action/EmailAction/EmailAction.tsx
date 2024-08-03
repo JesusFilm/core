@@ -5,8 +5,8 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { object, string } from 'yup'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import Mail2Icon from '@core/shared/ui/icons/Mail2'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
@@ -35,6 +35,7 @@ export function EmailAction(): ReactElement {
 
   async function handleSubmit(email: string): Promise<void> {
     if (selectedBlock != null) {
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       const { id, action, __typename } = selectedBlock
       await addAction({
         blockId: id,

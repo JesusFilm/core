@@ -1,18 +1,23 @@
 import { gql, useMutation } from '@apollo/client'
 import { v4 as uuidv4 } from 'uuid'
 
+import { TreeBlock } from '@core/journeys/ui/block'
+import { BLOCK_FIELDS } from '@core/journeys/ui/block/blockFields'
 import { CARD_FIELDS } from '@core/journeys/ui/Card/cardFields'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { STEP_FIELDS } from '@core/journeys/ui/Step/stepFields'
-import { BLOCK_FIELDS } from '@core/journeys/ui/block/blockFields'
 
-import { TreeBlock } from '@core/journeys/ui/block'
+
 import {
   BlockFields_CardBlock as CardBlock,
   BlockFields_StepBlock as StepBlock
 } from '../../../../../../../__generated__/BlockFields'
+import {
+  ThemeMode,
+  ThemeName
+} from '../../../../../../../__generated__/globalTypes'
 import {
   StepBlockCreateFromStep,
   StepBlockCreateFromStepVariables
@@ -25,10 +30,6 @@ import {
   StepBlockRestoreFromStep,
   StepBlockRestoreFromStepVariables
 } from '../../../../../../../__generated__/StepBlockRestoreFromStep'
-import {
-  ThemeMode,
-  ThemeName
-} from '../../../../../../../__generated__/globalTypes'
 import { blockDeleteUpdate } from '../../../../../../libs/blockDeleteUpdate'
 import { blockRestoreUpdate } from '../../../../../../libs/useBlockRestoreMutation'
 import { stepBlockCreateUpdate } from '../../../../../../libs/useStepAndCardBlockCreateMutation'

@@ -1,8 +1,11 @@
-import { importLanguageNames, importMany, importOne } from './languageNames'
+import { LanguageName } from '.prisma/api-languages-client'
 
 import { prismaMock } from '../../../../test/prismaMock'
 import { parse, parseMany, processTable } from '../../importer'
-import { LanguageName } from '.prisma/api-languages-client'
+
+import { importLanguageNames, importMany, importOne } from './languageNames'
+
+
 
 const languageName = {
   parentLanguageId: '529',
@@ -73,6 +76,7 @@ describe('bigquery/importers/languageNames', () => {
         update: languageName
       })
     })
+
     it('should throw error if language not found', async () => {
       await importLanguageNames([])
       await expect(
@@ -81,7 +85,7 @@ describe('bigquery/importers/languageNames', () => {
           languageId: '529',
           parentLanguageId: '529'
         })
-      ).rejects.toThrowError()
+      ).rejects.toThrow()
     })
   })
 
@@ -107,6 +111,7 @@ describe('bigquery/importers/languageNames', () => {
         skipDuplicates: true
       })
     })
+
     it('should throw error if some rows do not match schema', async () => {
       prismaMock.languageName.createMany.mockImplementation()
       await importLanguageNames(['529'])
@@ -127,7 +132,7 @@ describe('bigquery/importers/languageNames', () => {
             languageId: '529'
           }
         ])
-      ).rejects.toThrowError()
+      ).rejects.toThrow()
     })
   })
 })

@@ -3,8 +3,9 @@ import Box from '@mui/material/Box'
 import Image from 'next/image'
 import { ReactElement } from 'react'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { useCommand } from '@core/journeys/ui/CommandProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import {
@@ -13,7 +14,7 @@ import {
 } from '../../../../../../../../../../__generated__/CardBlockLayoutUpdate'
 import { HorizontalSelect } from '../../../../../../../../HorizontalSelect'
 
-import { useCommand } from '@core/journeys/ui/CommandProvider'
+
 import cardLayoutContained from './assets/card-layout-contained.svg'
 import cardLayoutExpanded from './assets/card-layout-expanded.svg'
 
@@ -62,7 +63,7 @@ export function CardLayout(): ReactElement {
       execute: async ({ fullscreen }) => {
         dispatch({
           type: 'SetEditorFocusAction',
-          selectedStep: selectedStep
+          selectedStep
         })
         await cardBlockUpdate({
           variables: {

@@ -1,18 +1,22 @@
 import { gql, useMutation } from '@apollo/client'
 import { v4 as uuidv4 } from 'uuid'
 
+import { BLOCK_FIELDS } from '@core/journeys/ui/block/blockFields'
 import { CARD_FIELDS } from '@core/journeys/ui/Card/cardFields'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
+import { ActionBlock } from '@core/journeys/ui/isActionBlock'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { STEP_FIELDS } from '@core/journeys/ui/Step/stepFields'
-import { BLOCK_FIELDS } from '@core/journeys/ui/block/blockFields'
-import { ActionBlock } from '@core/journeys/ui/isActionBlock'
 
 import {
   BlockFields_CardBlock as CardBlock,
   BlockFields_StepBlock as StepBlock
 } from '../../../../../../../__generated__/BlockFields'
+import {
+  ThemeMode,
+  ThemeName
+} from '../../../../../../../__generated__/globalTypes'
 import {
   StepBlockCreateFromAction,
   StepBlockCreateFromActionVariables
@@ -29,10 +33,6 @@ import {
   StepBlockRestoreFromAction,
   StepBlockRestoreFromActionVariables
 } from '../../../../../../../__generated__/StepBlockRestoreFromAction'
-import {
-  ThemeMode,
-  ThemeName
-} from '../../../../../../../__generated__/globalTypes'
 import { blockDeleteUpdate } from '../../../../../../libs/blockDeleteUpdate'
 import { blockRestoreUpdate } from '../../../../../../libs/useBlockRestoreMutation'
 import { stepBlockCreateUpdate } from '../../../../../../libs/useStepAndCardBlockCreateMutation'

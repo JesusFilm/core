@@ -9,6 +9,7 @@ import { IMAGE_FIELDS } from '@core/journeys/ui/Image/imageFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../../__generated__/BlockFields'
+import { ImageBlockUpdateInput } from '../../../../../../../../../../__generated__/globalTypes'
 import {
   PosterImageBlockCreate,
   PosterImageBlockCreateVariables
@@ -25,7 +26,6 @@ import {
   PosterImageBlockUpdate,
   PosterImageBlockUpdateVariables
 } from '../../../../../../../../../../__generated__/PosterImageBlockUpdate'
-import { ImageBlockUpdateInput } from '../../../../../../../../../../__generated__/globalTypes'
 import { blockDeleteUpdate } from '../../../../../../../../../libs/blockDeleteUpdate'
 import { blockRestoreUpdate } from '../../../../../../../../../libs/useBlockRestoreMutation'
 import { ImageLibrary } from '../../../../ImageLibrary'

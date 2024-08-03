@@ -5,8 +5,8 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { object, string } from 'yup'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import LinkIcon from '@core/shared/ui/icons/Link'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
@@ -51,6 +51,7 @@ export function LinkAction(): ReactElement {
     // checks if url has a protocol
     const url = /^\w+:\/\//.test(src) ? src : `https://${src}`
     if (selectedBlock != null) {
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       const { id, action, __typename } = selectedBlock
       await addAction({
         blockId: id,

@@ -1,10 +1,13 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
-import { TreeBlock } from '@core/journeys/ui/block'
-import { BlockFields_StepBlock as StepBlock } from '@core/journeys/ui/block/__generated__/BlockFields'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
+
+import { TreeBlock } from '@core/journeys/ui/block'
+import { BlockFields_StepBlock as StepBlock } from '@core/journeys/ui/block/__generated__/BlockFields'
+
 import { TestUseCreateStepHooks } from '../TestUseCreateStepHooks'
+
 import {
   mockStepBlock,
   mockStepBlockCreateFromStep,

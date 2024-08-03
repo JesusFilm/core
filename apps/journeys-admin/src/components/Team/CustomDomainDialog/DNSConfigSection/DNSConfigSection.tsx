@@ -2,12 +2,12 @@ import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
+import { styled } from '@mui/material/styles'
 import Table from '@mui/material/Table'
 import TableCell from '@mui/material/TableCell'
 import TableContainer from '@mui/material/TableContainer'
 import TableRow from '@mui/material/TableRow'
 import Typography from '@mui/material/Typography'
-import { styled } from '@mui/material/styles'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect } from 'react'
@@ -63,7 +63,6 @@ export function DNSConfigSection({
     CheckCustomDomainVariables
   >(CHECK_CUSTOM_DOMAIN)
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     async function checkCustomDomainInUseEffect(): Promise<void> {
       if (customDomain != null) {
@@ -81,6 +80,7 @@ export function DNSConfigSection({
       return () => clearInterval(interval)
     }
     // only rerun useEffect when the id changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [checkCustomDomain, customDomain?.id])
 
   async function handleCopyClick(value: string): Promise<void> {
