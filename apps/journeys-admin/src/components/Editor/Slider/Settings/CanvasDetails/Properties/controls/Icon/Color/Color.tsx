@@ -20,7 +20,7 @@ export const ICON_BLOCK_COLOR_UPDATE = gql`
     $id: ID!
     $color: IconColor!
   ) {
-    iconBlockUpdate(id: $id, input: {color: $input}) {
+    iconBlockUpdate(id: $id, input: {color: $color}) {
       id
       color
     }
