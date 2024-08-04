@@ -52,10 +52,10 @@ export function LinkAction(): ReactElement {
 
     // checks if url has a protocol
     const url = /^\w+:\/\//.test(src) ? src : `https://${src}`
-    const { id, action, __typename: typename } = selectedBlock
+    const { id, action, __typename: blockTypename } = selectedBlock
     addAction({
       blockId: id,
-      blockTypename: typename,
+      blockTypename,
       action: {
         __typename: 'LinkAction',
         parentBlockId: id,
