@@ -73,16 +73,19 @@ export function useBlockDeleteCommand(): {
         undo: {}
       },
       execute() {
+        const nextSelectedStep =
+          stepSiblingsAfterDelete.find(
+            ({ parentOrder }) => parentOrder === deletedBlockParentOrder
+          ) ??
+          stepSiblingsAfterDelete.find(({ parentOrder }) => {
+            if (deletedBlockParentOrder != null)
+              return parentOrder === deletedBlockParentOrder - 1
+          })
         currentBlock.__typename === 'StepBlock'
           ? dispatch({
               type: 'SetEditorFocusAction',
-              selectedStep:
-                deletedBlockParentOrder != null
-                  ? stepSiblingsAfterDelete.find(
-                      ({ parentOrder }) =>
-                        parentOrder === deletedBlockParentOrder - 1
-                    )
-                  : undefined,
+              selectedStep: nextSelectedStep,
+              selectedBlock: nextSelectedStep,
               activeSlide: ActiveSlide.JourneyFlow,
               activeContent: ActiveContent.Canvas
             })
@@ -96,7 +99,8 @@ export function useBlockDeleteCommand(): {
                     )
                   : undefined,
               selectedStep,
-              activeContent: ActiveContent.Canvas
+              activeContent: ActiveContent.Canvas,
+              activeSlide: ActiveSlide.Content
             })
 
         void blockDelete(currentBlock, {
