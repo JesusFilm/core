@@ -500,7 +500,7 @@ describe('EditorContext', () => {
         })
       })
 
-      it('should override previous set block with selected step', () => {
+      it('should retain previously set steps and blocks', () => {
         const block: TreeBlock = {
           id: 'card0.id',
           __typename: 'CardBlock',
@@ -535,7 +535,9 @@ describe('EditorContext', () => {
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
           activeSlide: ActiveSlide.JourneyFlow,
           selectedBlock: block,
+          selectedBlockId: block.id,
           selectedStep: step,
+          selectedStepId: step.id,
           activeContent: ActiveContent.Canvas
         }
         expect(
@@ -546,7 +548,7 @@ describe('EditorContext', () => {
         ).toEqual({
           ...state,
           steps: [updatedStep],
-          selectedBlock: updatedStep,
+          selectedBlock: updatedBlock,
           selectedStep: updatedStep
         })
       })
