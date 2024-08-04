@@ -107,7 +107,7 @@ export const reducer = (
       }
       return {
         ...state,
-        commands: commands,
+        commands,
         commandIndex: commands.length,
         undo: action.command,
         redo: undefined
@@ -160,9 +160,9 @@ export const CommandContext = createContext<CommandContextType>({
     commands: []
   },
   dispatch: () => null,
-  add: () => Promise.resolve(),
-  undo: () => Promise.resolve(),
-  redo: () => Promise.resolve()
+  add: async () => await Promise.resolve(),
+  undo: async () => await Promise.resolve(),
+  redo: async () => await Promise.resolve()
 })
 
 interface CommandProviderProps {
@@ -180,7 +180,7 @@ export function CommandProvider({
     ...initialState
   })
 
-  async function undo() {
+  async function undo(): Promise<void> {
     if (state.undo == null) return
     dispatch({ type: 'UndoCallbackAction' })
     if (state.undo.undo != null) {
@@ -190,7 +190,7 @@ export function CommandProvider({
     }
   }
 
-  async function redo() {
+  async function redo(): Promise<void> {
     if (state.redo == null) return
     dispatch({ type: 'RedoCallbackAction' })
     if (state.redo.redo != null) {
@@ -204,7 +204,9 @@ export function CommandProvider({
     }
   }
 
-  async function add<E = unknown, R = E, U = E>(command: Command<E, R, U>) {
+  async function add<E = unknown, R = E, U = E>(
+    command: Command<E, R, U>
+  ): Promise<void> {
     await command.execute(command.parameters.execute)
     dispatch({ type: 'AddCommandAction', command: command as Command })
   }

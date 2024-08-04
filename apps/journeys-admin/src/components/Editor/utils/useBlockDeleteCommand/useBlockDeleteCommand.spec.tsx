@@ -1,20 +1,23 @@
 import { MockedProvider } from '@apollo/client/testing'
+import { act, renderHook, waitFor } from '@testing-library/react'
+
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
-import { act, renderHook, waitFor } from '@testing-library/react'
+
 import {
   deleteCardBlockMock,
   deleteStepMock,
   selectedStep
 } from '../../../../libs/useBlockDeleteMutation/useBlockDeleteMutation.mock'
 import { cardBlock } from '../../../../libs/useBlockRestoreMutation/useBlockRestoreMutation.mock'
+
 import { useBlockDeleteCommand } from './useBlockDeleteCommand'
 
 describe('useBlockDeleteCommand', () => {
   const initiatEditorState = {
     steps: [selectedStep],
-    selectedStep: selectedStep,
+    selectedStep,
     selectedBlock: cardBlock
   }
 

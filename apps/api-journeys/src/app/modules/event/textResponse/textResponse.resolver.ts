@@ -3,8 +3,10 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
 
+import { Prisma } from '.prisma/api-journeys-client'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
+
 import {
   TextResponseSubmissionEvent,
   TextResponseSubmissionEventCreateInput,
@@ -13,7 +15,6 @@ import {
 import { PrismaService } from '../../../lib/prisma.service'
 import { IntegrationGrowthSpacesService } from '../../integration/growthSpaces/growthSpaces.service'
 import { EventService } from '../event.service'
-import { Prisma } from '.prisma/api-journeys-client'
 
 @Resolver('TextResponseSubmissionEvent')
 export class TextResponseSubmissionEventResolver {

@@ -10,9 +10,9 @@ import {
   useRef
 } from 'react'
 
-import { CommandProvider } from '../CommandProvider'
 import type { TreeBlock } from '../block'
 import { BlockFields_StepBlock as StepBlock } from '../block/__generated__/BlockFields'
+import { CommandProvider } from '../CommandProvider'
 import { searchBlocks } from '../searchBlocks'
 import { type JourneyAnalytics } from '../useJourneyAnalyticsQuery'
 
@@ -179,6 +179,7 @@ export type EditorAction =
   | SetShowAnalyticsAction
   | SetAnalyticsAction
   | SetEditorFocusAction
+  | SetSelectedStepByIdAction
 
 export const reducer = (
   state: EditorState,
@@ -337,6 +338,11 @@ export const reducer = (
         stateCopy = reducer(stateCopy, {
           type: 'SetSelectedGoalUrlAction',
           selectedGoalUrl
+        })
+      if (selectedStepId != null)
+        stateCopy = reducer(stateCopy, {
+          type: 'SetSelectedStepByIdAction',
+          selectedStepId
         })
       return stateCopy
     }

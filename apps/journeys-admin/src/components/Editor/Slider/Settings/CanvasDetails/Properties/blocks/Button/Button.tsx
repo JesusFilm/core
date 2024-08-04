@@ -3,25 +3,26 @@ import capitalize from 'lodash/capitalize'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect } from 'react'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'
 import LinkIcon from '@core/shared/ui/icons/Link'
 import SpaceHorizontalIcon from '@core/shared/ui/icons/SpaceHorizontal'
 import TransformIcon from '@core/shared/ui/icons/Transform'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/BlockFields'
-import { IconFields } from '../../../../../../../../../__generated__/IconFields'
 import {
   ButtonColor,
   ButtonSize,
   ButtonVariant
 } from '../../../../../../../../../__generated__/globalTypes'
+import { IconFields } from '../../../../../../../../../__generated__/IconFields'
 import { Accordion } from '../../Accordion'
 import { Action } from '../../controls/Action'
 import { getAction } from '../../controls/Action/utils/actions'
 import { ColorDisplayIcon } from '../../controls/ColorDisplayIcon'
 import { Icon, icons } from '../../controls/Icon'
+
 import { Color } from './Color'
 import { Size } from './Size'
 import { Variant } from './Variant'

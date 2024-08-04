@@ -5,13 +5,14 @@ import { usePlausible } from 'next-plausible'
 import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
+import { blockHistoryVar, treeBlocksVar } from '@core/journeys/ui/block'
 import {
   STEP_NEXT_EVENT_CREATE,
   STEP_PREVIOUS_EVENT_CREATE
 } from '@core/journeys/ui/Card/Card'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { blockHistoryVar, treeBlocksVar } from '@core/journeys/ui/block'
 import { keyify } from '@core/journeys/ui/plausibleHelpers'
+
 import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 import {
   StepNextEventCreate_stepNextEventCreate as StepNextCreateResult,
@@ -90,7 +91,7 @@ describe('HotkeyNavigation', () => {
       stepNextEventCreate: {
         id: 'uuid',
         __typename: 'StepNextEvent'
-      } as StepNextCreateResult
+      } satisfies StepNextCreateResult
     }
   }))
   const stepPreviousResult = jest.fn(() => ({
@@ -98,7 +99,7 @@ describe('HotkeyNavigation', () => {
       stepPreviousEventCreate: {
         id: 'uuid',
         __typename: 'StepPreviousEvent'
-      } as StepPreviousCreateResult
+      } satisfies StepPreviousCreateResult
     }
   }))
 
@@ -269,7 +270,7 @@ describe('HotkeyNavigation', () => {
 
       render(
         <MockedProvider mocks={[stepNextEventCreateMock]}>
-          <HotkeyNavigation rtl={true} />
+          <HotkeyNavigation rtl />
         </MockedProvider>
       )
 
@@ -283,7 +284,7 @@ describe('HotkeyNavigation', () => {
 
       render(
         <MockedProvider mocks={[stepPreviousEventCreateMock]}>
-          <HotkeyNavigation rtl={true} />
+          <HotkeyNavigation rtl />
         </MockedProvider>
       )
 

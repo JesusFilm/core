@@ -1,10 +1,11 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
+
 import { DebouncedHexColorPicker } from './DebouncedHexColorPicker'
 
 describe('DebouncedHexColorPicker', () => {
   it('should handle change when moving the hue', async () => {
     const onChange = jest.fn()
-    const { getByRole, container } = render(
+    const { container } = render(
       <DebouncedHexColorPicker color="#C62828" onChange={onChange} />
     )
 
@@ -18,7 +19,7 @@ describe('DebouncedHexColorPicker', () => {
 
   it('should handle change when moving the saturation', async () => {
     const onChange = jest.fn()
-    const { getByRole, container } = render(
+    const { container } = render(
       <DebouncedHexColorPicker color="#C62828" onChange={onChange} />
     )
 

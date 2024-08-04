@@ -1,4 +1,6 @@
+import { ReactElement } from 'react'
 import { getBezierPath } from 'reactflow'
+
 import { BaseEdge } from '../BaseEdge'
 
 export function ReferrerEdge({
@@ -9,7 +11,7 @@ export function ReferrerEdge({
   targetY,
   sourcePosition,
   targetPosition
-}) {
+}): ReactElement {
   const [edgePath] = getBezierPath({
     sourceX,
     sourceY,
