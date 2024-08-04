@@ -34,7 +34,7 @@ const block: TreeBlock<TextResponseBlock> = {
   children: []
 }
 
-const mockUpdateSuccess1 = {
+const mockLabelUpdate1 = {
   request: {
     query: TEXT_RESPONSE_LABEL_UPDATE,
     variables: {
@@ -52,7 +52,7 @@ const mockUpdateSuccess1 = {
   }))
 }
 
-const mockUpdateSuccess2 = {
+const mockLabelUpdate2 = {
   request: {
     query: TEXT_RESPONSE_LABEL_UPDATE,
     variables: {
@@ -70,10 +70,12 @@ const mockUpdateSuccess2 = {
   }))
 }
 
+beforeEach(() => jest.clearAllMocks())
+
 describe('Edit Label field', () => {
   it('should display label value', () => {
     render(
-      <MockedProvider mocks={[mockUpdateSuccess1]} addTypename={false}>
+      <MockedProvider mocks={[mockLabelUpdate1]} addTypename={false}>
         <EditorProvider initialState={{ selectedBlock: block }}>
           <Label />
         </EditorProvider>
@@ -86,7 +88,7 @@ describe('Edit Label field', () => {
 
   it('should not be able to type beyond max character limit', () => {
     render(
-      <MockedProvider mocks={[mockUpdateSuccess1]} addTypename={false}>
+      <MockedProvider mocks={[mockLabelUpdate1]} addTypename={false}>
         <EditorProvider initialState={{ selectedBlock: block }}>
           <Label />
         </EditorProvider>
@@ -100,7 +102,7 @@ describe('Edit Label field', () => {
   it('should change the label', async () => {
     const link = ApolloLink.from([
       new DebounceLink(500),
-      new MockLink([mockUpdateSuccess1])
+      new MockLink([mockLabelUpdate1])
     ])
 
     render(
@@ -114,13 +116,13 @@ describe('Edit Label field', () => {
     const field = screen.getByRole('textbox', { name: 'Label' })
 
     userEvent.type(field, ' more')
-    await waitFor(() => expect(mockUpdateSuccess1.result).toHaveBeenCalled())
+    await waitFor(() => expect(mockLabelUpdate1.result).toHaveBeenCalled())
   })
 
   it('should undo the label change', async () => {
     const link = ApolloLink.from([
       new DebounceLink(500),
-      new MockLink([mockUpdateSuccess1, mockUpdateSuccess2])
+      new MockLink([mockLabelUpdate1, mockLabelUpdate2])
     ])
 
     render(
@@ -133,21 +135,21 @@ describe('Edit Label field', () => {
     )
     const field = screen.getByRole('textbox', { name: 'Label' })
     userEvent.type(field, ' more')
-    await waitFor(() => expect(mockUpdateSuccess1.result).toHaveBeenCalled())
+    await waitFor(() => expect(mockLabelUpdate1.result).toHaveBeenCalled())
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
-    await waitFor(() => expect(mockUpdateSuccess2.result).toHaveBeenCalled())
+    await waitFor(() => expect(mockLabelUpdate2.result).toHaveBeenCalled())
   })
 
   it('should redo the change to label that was undone', async () => {
-    const firstUpdateMock = {
-      ...mockUpdateSuccess1,
+    const firstLabelUpdateMock = {
+      ...mockLabelUpdate1,
       maxUsageCount: 2
     }
 
     const link = ApolloLink.from([
       new DebounceLink(500),
-      new MockLink([firstUpdateMock, mockUpdateSuccess2])
+      new MockLink([firstLabelUpdateMock, mockLabelUpdate2])
     ])
 
     render(
@@ -163,12 +165,12 @@ describe('Edit Label field', () => {
     const field = screen.getByRole('textbox', { name: 'Label' })
     userEvent.type(field, ' more')
 
-    await waitFor(() => expect(firstUpdateMock.result).toHaveBeenCalled())
+    await waitFor(() => expect(firstLabelUpdateMock.result).toHaveBeenCalled())
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
-    await waitFor(() => expect(mockUpdateSuccess2.result).toHaveBeenCalled())
+    await waitFor(() => expect(mockLabelUpdate2.result).toHaveBeenCalled())
 
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
-    await waitFor(() => expect(firstUpdateMock.result).toHaveBeenCalled())
+    await waitFor(() => expect(firstLabelUpdateMock.result).toHaveBeenCalled())
   })
 })
