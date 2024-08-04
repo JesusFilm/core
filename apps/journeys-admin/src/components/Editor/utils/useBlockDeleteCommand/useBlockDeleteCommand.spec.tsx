@@ -20,7 +20,7 @@ import { useBlockDeleteCommand } from './useBlockDeleteCommand'
 describe('useBlockDeleteCommand', () => {
   const initiatEditorState = {
     steps: [selectedStep],
-    selectedStep: selectedStep,
+    selectedStep,
     selectedBlock: cardBlock
   }
 

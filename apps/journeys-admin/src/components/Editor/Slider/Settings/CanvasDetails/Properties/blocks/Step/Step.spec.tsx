@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
 import {
   ActiveContent,
   EditorProvider,
@@ -12,7 +13,6 @@ import {
   ActiveSlide
 } from '@core/journeys/ui/EditorProvider/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../../__generated__/BlockFields'
 

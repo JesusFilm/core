@@ -2,17 +2,21 @@ import { gql, useMutation } from '@apollo/client'
 import cloneDeep from 'lodash/cloneDeep'
 import { v4 as uuidv4 } from 'uuid'
 
+import { BLOCK_FIELDS } from '@core/journeys/ui/block/blockFields'
 import { CARD_FIELDS } from '@core/journeys/ui/Card/cardFields'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { STEP_FIELDS } from '@core/journeys/ui/Step/stepFields'
-import { BLOCK_FIELDS } from '@core/journeys/ui/block/blockFields'
 
 import {
   BlockFields_CardBlock as CardBlock,
   BlockFields_StepBlock as StepBlock
 } from '../../../../../../../__generated__/BlockFields'
+import {
+  ThemeMode,
+  ThemeName
+} from '../../../../../../../__generated__/globalTypes'
 import {
   StepBlockCreateFromSocialPreview,
   StepBlockCreateFromSocialPreviewVariables
@@ -25,10 +29,6 @@ import {
   StepBlockRestoreFromSocialPreview,
   StepBlockRestoreFromSocialPreviewVariables
 } from '../../../../../../../__generated__/StepBlockRestoreFromSocialPreview'
-import {
-  ThemeMode,
-  ThemeName
-} from '../../../../../../../__generated__/globalTypes'
 import { blockDeleteUpdate } from '../../../../../../libs/blockDeleteUpdate'
 import { useBlockDeleteMutation } from '../../../../../../libs/useBlockDeleteMutation'
 import { blockRestoreUpdate } from '../../../../../../libs/useBlockRestoreMutation'
@@ -43,7 +43,7 @@ export const STEP_BLOCK_CREATE_FROM_SOCIAL_PREVIEW = gql`
   mutation StepBlockCreateFromSocialPreview(
     $stepBlockCreateInput: StepBlockCreateInput!
     $cardBlockCreateInput: CardBlockCreateInput!
-    $stepId: ID!,
+    $stepId: ID!
     $parentOrder: Int!
   ) {
     stepBlockCreate(input: $stepBlockCreateInput) {
@@ -53,11 +53,8 @@ export const STEP_BLOCK_CREATE_FROM_SOCIAL_PREVIEW = gql`
     }
     cardBlockCreate(input: $cardBlockCreateInput) {
       ...CardFields
-    },
-    blockOrderUpdate(
-      id: $stepId
-      parentOrder: $parentOrder
-    ) {
+    }
+    blockOrderUpdate(id: $stepId, parentOrder: $parentOrder) {
       id
       parentOrder
     }
@@ -65,7 +62,12 @@ export const STEP_BLOCK_CREATE_FROM_SOCIAL_PREVIEW = gql`
 `
 
 export const STEP_BLOCK_DELETE_FROM_SOCIAL_PREVIEW = gql`
-  mutation StepBlockDeleteFromSocialPreview($id: ID!, $journeyId: ID!, $parentOrder: Int!, $stepId: ID! ) {
+  mutation StepBlockDeleteFromSocialPreview(
+    $id: ID!
+    $journeyId: ID!
+    $parentOrder: Int!
+    $stepId: ID!
+  ) {
     blockDelete(id: $id, journeyId: $journeyId) {
       id
       parentOrder
@@ -73,10 +75,7 @@ export const STEP_BLOCK_DELETE_FROM_SOCIAL_PREVIEW = gql`
         nextBlockId
       }
     }
-    blockOrderUpdate(
-      id: $stepId
-      parentOrder: $parentOrder
-    ) {
+    blockOrderUpdate(id: $stepId, parentOrder: $parentOrder) {
       id
       parentOrder
     }
@@ -84,25 +83,27 @@ export const STEP_BLOCK_DELETE_FROM_SOCIAL_PREVIEW = gql`
 `
 
 export const STEP_BLOCK_RESTORE_FROM_SOCIAL_PREVIEW = gql`
-${BLOCK_FIELDS}
-mutation StepBlockRestoreFromSocialPreview($id: ID!, $stepId: ID!, $parentOrder: Int!) {
-  blockRestore(id: $id) {
-    id
-    ...BlockFields
-    ... on StepBlock {
+  ${BLOCK_FIELDS}
+  mutation StepBlockRestoreFromSocialPreview(
+    $id: ID!
+    $stepId: ID!
+    $parentOrder: Int!
+  ) {
+    blockRestore(id: $id) {
       id
-      x
-      y
+      ...BlockFields
+      ... on StepBlock {
+        id
+        x
+        y
+      }
     }
-  }
-  blockOrderUpdate(
-      id: $stepId
-      parentOrder: $parentOrder
-    ) {
+    blockOrderUpdate(id: $stepId, parentOrder: $parentOrder) {
       id
       parentOrder
     }
-}`
+  }
+`
 
 export function useCreateStepFromSocialPreview(): (
   input: CreateStepFromSocialPreviewInput

@@ -2,7 +2,6 @@ import { StoryObj } from '@storybook/react'
 import { ComponentPropsWithoutRef } from 'react'
 
 import Cursor4Icon from '@core/shared/ui/icons/Cursor4'
-
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { AnalyticsDataPoint } from './AnalyticsDataPoint'

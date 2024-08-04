@@ -1,8 +1,8 @@
+import type { TreeBlock } from '@core/journeys/ui/block'
 import {
   SetSelectedBlockByIdAction,
   SetSelectedStepAction
 } from '@core/journeys/ui/EditorProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 
 import {
   BlockFields_StepBlock as StepBlock,

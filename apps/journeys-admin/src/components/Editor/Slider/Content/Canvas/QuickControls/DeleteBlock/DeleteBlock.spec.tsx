@@ -4,14 +4,13 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { BlockDelete } from '../../../../../../../../__generated__/BlockDelete'
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
-
 import { TestEditorState } from '../../../../../../../libs/TestEditorState'
 import { BLOCK_DELETE } from '../../../../../../../libs/useBlockDeleteMutation'
 import {
@@ -22,9 +21,9 @@ import {
   selectedBlock,
   selectedStep
 } from '../../../../../../../libs/useBlockDeleteMutation/useBlockDeleteMutation.mock'
-
 import { restoreStepMock } from '../../../../../../../libs/useBlockRestoreMutation/useBlockRestoreMutation.mock'
 import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
+
 import { DeleteBlock } from './DeleteBlock'
 
 jest.mock('@mui/material/useMediaQuery', () => ({

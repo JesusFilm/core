@@ -1,12 +1,12 @@
 import { BullModule } from '@nestjs/bullmq'
+import { CacheModule } from '@nestjs/cache-manager'
 import { Module } from '@nestjs/common'
 
 import { PrismaService } from '../../lib/prisma.service'
 import { BlockService } from '../block/block.service'
+import { IntegrationGrowthSpacesService } from '../integration/growthSpaces/growthSpaces.service'
 import { VisitorService } from '../visitor/visitor.service'
 
-import { CacheModule } from '@nestjs/cache-manager'
-import { IntegrationGrowthSpacesService } from '../integration/growthSpaces/growthSpaces.service'
 import {
   ButtonClickEventResolver,
   ChatOpenEventResolver

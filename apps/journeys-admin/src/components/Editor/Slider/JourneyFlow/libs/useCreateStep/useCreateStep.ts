@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
 import {
   BlockFields_CardBlock as CardBlock,
   BlockFields_StepBlock as StepBlock
@@ -15,7 +16,10 @@ import { useBlockDeleteMutation } from '../../../../../../libs/useBlockDeleteMut
 import { useBlockRestoreMutation } from '../../../../../../libs/useBlockRestoreMutation'
 import { useStepAndCardBlockCreateMutation } from '../../../../../../libs/useStepAndCardBlockCreateMutation'
 
-export type CreateStepInput = { x: number; y: number }
+export interface CreateStepInput {
+  x: number
+  y: number
+}
 
 export function useCreateStep(): (input: CreateStepInput) => void {
   const { journey } = useJourney()

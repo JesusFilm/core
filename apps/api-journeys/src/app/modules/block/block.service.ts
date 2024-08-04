@@ -2,10 +2,11 @@ import { Injectable } from '@nestjs/common'
 import omit from 'lodash/omit'
 import { v4 as uuidv4 } from 'uuid'
 
+import { Action, Block, Prisma } from '.prisma/api-journeys-client'
 import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
 import { ToPostgresql } from '@core/nest/decorators/ToPostgresql'
+
 import { PrismaService } from '../../lib/prisma.service'
-import { Action, Block, Prisma } from '.prisma/api-journeys-client'
 
 export const OMITTED_BLOCK_FIELDS = ['__typename', 'journeyId', 'isCover']
 
@@ -153,7 +154,7 @@ export class BlockService {
             coverBlockId: newBlock.coverBlockId ?? undefined,
             nextBlockId: newBlock.nextBlockId ?? undefined,
             action:
-              !isActionEmpty && newBlock.action
+              !isActionEmpty && newBlock.action != null
                 ? { create: newBlock.action }
                 : undefined
           }
@@ -373,17 +374,18 @@ export class BlockService {
       )
     )
   }
+
   async getDescendants(
     parentBlockId: string,
     blocks: Block[],
     result: Block[] = []
   ): Promise<Block[]> {
-    blocks.forEach((childBlock) => {
+    for (const childBlock of blocks) {
       if (childBlock.parentBlockId === parentBlockId) {
         result.push(childBlock)
-        this.getDescendants(childBlock.id, blocks, result)
+        await this.getDescendants(childBlock.id, blocks, result)
       }
-    })
+    }
 
     return result
   }

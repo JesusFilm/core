@@ -108,7 +108,7 @@ export const reducer = (
       }
       return {
         ...state,
-        commands: commands,
+        commands,
         commandIndex: commands.length,
         undo: action.command,
         redo: undefined
