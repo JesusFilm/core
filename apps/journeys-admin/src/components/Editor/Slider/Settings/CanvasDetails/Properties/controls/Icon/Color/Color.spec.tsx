@@ -46,8 +46,16 @@ describe('Color', () => {
       }
     ]
   }
-  it('should change the icon color', async () => {
-    const result = jest.fn(() => ({
+
+  const mockIconColorUpdate1 = {
+    request: {
+      query: ICON_BLOCK_COLOR_UPDATE,
+      variables: {
+        id: 'iconBlock.id',
+        color: IconColor.secondary
+      }
+    },
+    result: jest.fn(() => ({
       data: {
         iconBlockUpdate: {
           id: 'iconBlock.id',
@@ -58,61 +66,17 @@ describe('Color', () => {
         }
       }
     }))
+  }
 
-    const { getByRole } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: ICON_BLOCK_COLOR_UPDATE,
-              variables: {
-                id: 'iconBlock.id',
-                input: {
-                  color: IconColor.secondary
-                }
-              }
-            },
-            result
-          }
-        ]}
-      >
-        <EditorProvider initialState={{ selectedBlock }}>
-          <Color id="iconBlock.id" iconColor={IconColor.inherit} />
-        </EditorProvider>
-      </MockedProvider>
-    )
-    expect(getByRole('button', { name: 'Default' })).toHaveClass('Mui-selected')
-    fireEvent.click(getByRole('button', { name: 'Secondary' }))
-    await waitFor(() => expect(result).toHaveBeenCalled())
-  })
-
-  it('should undo the icon color change', async () => {
-    const result1 = jest.fn(() => ({
-      data: {
-        iconBlockUpdate: {
-          id: 'iconBlock.id',
-          parentBlockId: 'buttonBlockId',
-          name: IconName.ArrowForwardRounded,
-          color: IconColor.secondary,
-          size: null
-        }
+  const mockIconColorUpdate2 = {
+    request: {
+      query: ICON_BLOCK_COLOR_UPDATE,
+      variables: {
+        id: 'iconBlock.id',
+        color: IconColor.inherit
       }
-    }))
-
-    const mockUpdateSuccess1 = {
-      request: {
-        query: ICON_BLOCK_COLOR_UPDATE,
-        variables: {
-          id: 'iconBlock.id',
-          input: {
-            color: IconColor.secondary
-          }
-        }
-      },
-      result: result1
-    }
-
-    const result2 = jest.fn(() => ({
+    },
+    result: jest.fn(() => ({
       data: {
         iconBlockUpdate: {
           id: 'iconBlock.id',
@@ -123,22 +87,26 @@ describe('Color', () => {
         }
       }
     }))
+  }
 
-    const mockUpdateSuccess2 = {
-      request: {
-        query: ICON_BLOCK_COLOR_UPDATE,
-        variables: {
-          id: 'iconBlock.id',
-          input: {
-            color: IconColor.inherit
-          }
-        }
-      },
-      result: result2
-    }
+  beforeEach(() => jest.clearAllMocks())
 
+  it('should change the icon color', async () => {
+    const { getByRole } = render(
+      <MockedProvider mocks={[mockIconColorUpdate1]}>
+        <EditorProvider initialState={{ selectedBlock }}>
+          <Color id="iconBlock.id" iconColor={IconColor.inherit} />
+        </EditorProvider>
+      </MockedProvider>
+    )
+    expect(getByRole('button', { name: 'Default' })).toHaveClass('Mui-selected')
+    fireEvent.click(getByRole('button', { name: 'Secondary' }))
+    await waitFor(() => expect(mockIconColorUpdate1.result).toHaveBeenCalled())
+  })
+
+  it('should undo the icon color change', async () => {
     render(
-      <MockedProvider mocks={[mockUpdateSuccess1, mockUpdateSuccess2]}>
+      <MockedProvider mocks={[mockIconColorUpdate1, mockIconColorUpdate2]}>
         <EditorProvider initialState={{ selectedBlock }}>
           <CommandUndoItem variant="button" />
           <Color id="iconBlock.id" iconColor={IconColor.inherit} />
@@ -150,66 +118,19 @@ describe('Color', () => {
       'Mui-selected'
     )
     fireEvent.click(screen.getByRole('button', { name: 'Secondary' }))
-    await waitFor(() => expect(result1).toHaveBeenCalled())
+    await waitFor(() => expect(mockIconColorUpdate1.result).toHaveBeenCalled())
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
-    await waitFor(() => expect(result2).toHaveBeenCalled())
+    await waitFor(() => expect(mockIconColorUpdate2.result).toHaveBeenCalled())
   })
 
   it('should redo the icon color change that was undone', async () => {
-    const result1 = jest.fn(() => ({
-      data: {
-        iconBlockUpdate: {
-          id: 'iconBlock.id',
-          parentBlockId: 'buttonBlockId',
-          name: IconName.ArrowForwardRounded,
-          color: IconColor.secondary,
-          size: null
-        }
-      }
-    }))
-
-    const mockUpdateSuccess1 = {
-      request: {
-        query: ICON_BLOCK_COLOR_UPDATE,
-        variables: {
-          id: 'iconBlock.id',
-          input: {
-            color: IconColor.secondary
-          }
-        }
-      },
-      result: result1,
+    const mockFirstUpdate = {
+      ...mockIconColorUpdate1,
       maxUsageCount: 2
     }
-
-    const result2 = jest.fn(() => ({
-      data: {
-        iconBlockUpdate: {
-          id: 'iconBlock.id',
-          parentBlockId: 'buttonBlockId',
-          name: IconName.ArrowForwardRounded,
-          color: IconColor.inherit,
-          size: null
-        }
-      }
-    }))
-
-    const mockUpdateSuccess2 = {
-      request: {
-        query: ICON_BLOCK_COLOR_UPDATE,
-        variables: {
-          id: 'iconBlock.id',
-          input: {
-            color: IconColor.inherit
-          }
-        }
-      },
-      result: result2
-    }
-
     render(
-      <MockedProvider mocks={[mockUpdateSuccess1, mockUpdateSuccess2]}>
+      <MockedProvider mocks={[mockFirstUpdate, mockIconColorUpdate2]}>
         <EditorProvider initialState={{ selectedBlock }}>
           <CommandUndoItem variant="button" />
           <CommandRedoItem variant="button" />
@@ -222,12 +143,12 @@ describe('Color', () => {
       'Mui-selected'
     )
     fireEvent.click(screen.getByRole('button', { name: 'Secondary' }))
-    await waitFor(() => expect(result1).toHaveBeenCalled())
+    await waitFor(() => expect(mockFirstUpdate.result).toHaveBeenCalled())
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
-    await waitFor(() => expect(result2).toHaveBeenCalled())
+    await waitFor(() => expect(mockIconColorUpdate2.result).toHaveBeenCalled())
 
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
-    await waitFor(() => expect(result1).toHaveBeenCalled())
+    await waitFor(() => expect(mockFirstUpdate.result).toHaveBeenCalled())
   })
 })

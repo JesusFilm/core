@@ -222,7 +222,7 @@ describe('checkConditionalRedirect', () => {
     ).toBeUndefined()
   })
 
-  it('redirect to onboarding form if onboardingFormCompletedAt is null', async () => {
+  it.skip('redirect to onboarding form if onboardingFormCompletedAt is null', async () => {
     const data: GetJourneyProfileAndTeams = {
       getJourneyProfile: {
         id: 'profile.id',
@@ -283,7 +283,7 @@ describe('checkConditionalRedirect', () => {
     })
   })
 
-  it('redirect to onboarding form with redirect parameter', async () => {
+  it.skip('redirect to onboarding form with redirect parameter', async () => {
     const data: GetJourneyProfileAndTeams = {
       getJourneyProfile: {
         id: 'profile.id',

@@ -7,7 +7,10 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { BlockFields_TypographyBlock as TypographyBlock } from '../../../../../../../../../../__generated__/BlockFields'
-import { TypographyBlockUpdateColor } from '../../../../../../../../../../__generated__/TypographyBlockUpdateColor'
+import {
+  TypographyBlockUpdateColor,
+  TypographyBlockUpdateColorVariables
+} from '../../../../../../../../../../__generated__/TypographyBlockUpdateColor'
 import { TypographyColor } from '../../../../../../../../../../__generated__/globalTypes'
 import { ColorDisplayIcon } from '../../../controls/ColorDisplayIcon'
 import { ToggleButtonGroup } from '../../../controls/ToggleButtonGroup'
@@ -15,9 +18,9 @@ import { ToggleButtonGroup } from '../../../controls/ToggleButtonGroup'
 export const TYPOGRAPHY_BLOCK_UPDATE_COLOR = gql`
   mutation TypographyBlockUpdateColor(
     $id: ID!
-    $input: TypographyBlockUpdateInput!
+    $color: TypographyColor!
   ) {
-    typographyBlockUpdate(id: $id, input: $input) {
+    typographyBlockUpdate(id: $id, input: {color: $color}) {
       id
       color
     }
@@ -26,9 +29,10 @@ export const TYPOGRAPHY_BLOCK_UPDATE_COLOR = gql`
 
 export function Color(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [typographyBlockUpdate] = useMutation<TypographyBlockUpdateColor>(
-    TYPOGRAPHY_BLOCK_UPDATE_COLOR
-  )
+  const [typographyBlockUpdate] = useMutation<
+    TypographyBlockUpdateColor,
+    TypographyBlockUpdateColorVariables
+  >(TYPOGRAPHY_BLOCK_UPDATE_COLOR)
   const { add } = useCommand()
   const {
     state: { selectedBlock: stateSelectedBlock, selectedStep },
@@ -38,25 +42,25 @@ export function Color(): ReactElement {
     | TreeBlock<TypographyBlock>
     | undefined
 
-  async function handleChange(color: TypographyColor): Promise<void> {
+  function handleChange(color: TypographyColor): void {
     if (selectedBlock != null && color != null) {
-      await add({
+      add({
         parameters: {
           execute: { color },
           undo: {
             color: selectedBlock.color
           }
         },
-        async execute({ color }) {
+        execute({ color }) {
           dispatch({
             type: 'SetEditorFocusAction',
             selectedStep,
             selectedBlock
           })
-          await typographyBlockUpdate({
+          void typographyBlockUpdate({
             variables: {
               id: selectedBlock.id,
-              input: { color }
+              color
             },
             optimisticResponse: {
               typographyBlockUpdate: {
