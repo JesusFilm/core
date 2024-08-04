@@ -31,7 +31,7 @@ const selectedBlock: TreeBlock<TextResponseBlock> = {
   children: []
 }
 
-const minRowsUpdate1 = {
+const mockMinRowsUpdate1 = {
   request: {
     query: TEXT_RESPONSE_MIN_ROWS_UPDATE,
     variables: {
@@ -49,7 +49,7 @@ const minRowsUpdate1 = {
   }))
 }
 
-const minRowsUpdate2 = {
+const mockMinRowsUpdate2 = {
   request: {
     query: TEXT_RESPONSE_MIN_ROWS_UPDATE,
     variables: {
@@ -67,7 +67,7 @@ const minRowsUpdate2 = {
   }))
 }
 
-const minRowsUpdate3 = {
+const mockMinRowsUpdate3 = {
   request: {
     query: TEXT_RESPONSE_MIN_ROWS_UPDATE,
     variables: {
@@ -105,7 +105,7 @@ describe('MinRows', () => {
 
   it('should change rows of text response', async () => {
     render(
-      <MockedProvider mocks={[minRowsUpdate1]}>
+      <MockedProvider mocks={[mockMinRowsUpdate1]}>
         <EditorProvider initialState={{ selectedBlock }}>
           <MinRows />
         </EditorProvider>
@@ -113,13 +113,13 @@ describe('MinRows', () => {
     )
 
     fireEvent.click(screen.getByRole('button', { name: 'Four Rows' }))
-    await waitFor(() => expect(minRowsUpdate1.result).toHaveBeenCalled())
+    await waitFor(() => expect(mockMinRowsUpdate1.result).toHaveBeenCalled())
   })
 
   it('should undo min rows change', async () => {
     render(
       <MockedProvider
-        mocks={[minRowsUpdate1, minRowsUpdate2]}
+        mocks={[mockMinRowsUpdate1, mockMinRowsUpdate2]}
         addTypename={false}
       >
         <EditorProvider initialState={{ selectedBlock }}>
@@ -130,16 +130,16 @@ describe('MinRows', () => {
     )
 
     fireEvent.click(screen.getByRole('button', { name: 'Four Rows' }))
-    await waitFor(() => expect(minRowsUpdate1.result).toHaveBeenCalled())
+    await waitFor(() => expect(mockMinRowsUpdate1.result).toHaveBeenCalled())
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
-    await waitFor(() => expect(minRowsUpdate2.result).toHaveBeenCalled())
+    await waitFor(() => expect(mockMinRowsUpdate2.result).toHaveBeenCalled())
   })
 
   it('should redo the change to min rows that was undone', async () => {
     render(
       <MockedProvider
-        mocks={[minRowsUpdate1, minRowsUpdate2, minRowsUpdate3]}
+        mocks={[mockMinRowsUpdate1, mockMinRowsUpdate2, mockMinRowsUpdate3]}
         addTypename={false}
       >
         <EditorProvider initialState={{ selectedBlock }}>
@@ -151,18 +151,18 @@ describe('MinRows', () => {
     )
 
     fireEvent.click(screen.getByRole('button', { name: 'Four Rows' }))
-    await waitFor(() => expect(minRowsUpdate1.result).toHaveBeenCalled())
+    await waitFor(() => expect(mockMinRowsUpdate1.result).toHaveBeenCalled())
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
-    await waitFor(() => expect(minRowsUpdate2.result).toHaveBeenCalled())
+    await waitFor(() => expect(mockMinRowsUpdate2.result).toHaveBeenCalled())
 
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
-    await waitFor(() => expect(minRowsUpdate3.result).toHaveBeenCalled())
+    await waitFor(() => expect(mockMinRowsUpdate3.result).toHaveBeenCalled())
   })
 
   it('should not call mutation if no selected block', async () => {
     render(
-      <MockedProvider mocks={[minRowsUpdate1]} addTypename={false}>
+      <MockedProvider mocks={[mockMinRowsUpdate1]} addTypename={false}>
         <EditorProvider initialState={{}}>
           <MinRows />
         </EditorProvider>
@@ -170,6 +170,8 @@ describe('MinRows', () => {
     )
 
     fireEvent.click(screen.getByRole('button', { name: 'Four Rows' }))
-    await waitFor(() => expect(minRowsUpdate1.result).not.toHaveBeenCalled())
+    await waitFor(() =>
+      expect(mockMinRowsUpdate1.result).not.toHaveBeenCalled()
+    )
   })
 })
