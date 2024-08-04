@@ -189,4 +189,23 @@ describe('Edit Hint field', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
     await waitFor(() => expect(mockHintUpdate3.result).toHaveBeenCalled())
   })
+
+  it('should not call mutation if not selectedBlock', async () => {
+    const link = ApolloLink.from([
+      new DebounceLink(500),
+      new MockLink([mockHintUpdate1])
+    ])
+
+    render(
+      <MockedProvider link={link} addTypename={false}>
+        <EditorProvider initialState={{}}>
+          <Hint />
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    const field = screen.getByRole('textbox', { name: 'Hint' })
+    await userEvent.type(field, ' more')
+    await waitFor(() => expect(mockHintUpdate1.result).not.toHaveBeenCalled())
+  })
 })
