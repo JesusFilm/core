@@ -1,19 +1,19 @@
+import { ApolloLink } from '@apollo/client'
 import { MockLink, MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import DebounceLink from 'apollo-link-debounce'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
+import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../../Toolbar/Items/CommandUndoItem'
 
 import { TEXT_RESPONSE_LABEL_UPDATE } from './Label'
 
-import { ApolloLink } from '@apollo/client'
-import userEvent from '@testing-library/user-event'
-import DebounceLink from 'apollo-link-debounce'
 import { Label } from '.'
-import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRedoItem'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -81,8 +81,8 @@ describe('Edit Label field', () => {
         </EditorProvider>
       </MockedProvider>
     )
-    const field = screen.getByRole('textbox', { name: 'Label' })
 
+    const field = screen.getByRole('textbox', { name: 'Label' })
     expect(field).toHaveValue('Your answer here')
   })
 
@@ -94,8 +94,8 @@ describe('Edit Label field', () => {
         </EditorProvider>
       </MockedProvider>
     )
-    const field = screen.getByRole('textbox', { name: 'Label' })
 
+    const field = screen.getByRole('textbox', { name: 'Label' })
     expect(field).toHaveAttribute('maxlength', '250')
   })
 
@@ -114,7 +114,6 @@ describe('Edit Label field', () => {
     )
 
     const field = screen.getByRole('textbox', { name: 'Label' })
-
     userEvent.type(field, ' more')
     await waitFor(() => expect(mockLabelUpdate1.result).toHaveBeenCalled())
   })
@@ -133,6 +132,7 @@ describe('Edit Label field', () => {
         </EditorProvider>
       </MockedProvider>
     )
+
     const field = screen.getByRole('textbox', { name: 'Label' })
     userEvent.type(field, ' more')
     await waitFor(() => expect(mockLabelUpdate1.result).toHaveBeenCalled())
@@ -164,7 +164,6 @@ describe('Edit Label field', () => {
 
     const field = screen.getByRole('textbox', { name: 'Label' })
     userEvent.type(field, ' more')
-
     await waitFor(() => expect(firstLabelUpdateMock.result).toHaveBeenCalled())
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
