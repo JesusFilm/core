@@ -5,12 +5,12 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
-import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../../Toolbar/Items/CommandUndoItem'
 
 import { TEXT_RESPONSE_MIN_ROWS_UPDATE } from './MinRows'
 
 import { MinRows } from '.'
+import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRedoItem'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -31,99 +31,95 @@ const selectedBlock: TreeBlock<TextResponseBlock> = {
   children: []
 }
 
+const minRowsUpdate1 = {
+  request: {
+    query: TEXT_RESPONSE_MIN_ROWS_UPDATE,
+    variables: {
+      id: selectedBlock.id,
+      minRows: 4
+    }
+  },
+  result: jest.fn(() => ({
+    data: {
+      textResponseBlockUpdate: {
+        id: selectedBlock.id,
+        minRows: 4
+      }
+    }
+  }))
+}
+
+const minRowsUpdate2 = {
+  request: {
+    query: TEXT_RESPONSE_MIN_ROWS_UPDATE,
+    variables: {
+      id: selectedBlock.id,
+      minRows: 3
+    }
+  },
+  result: jest.fn(() => ({
+    data: {
+      textResponseBlockUpdate: {
+        id: selectedBlock.id,
+        minRows: 3
+      }
+    }
+  }))
+}
+
+const minRowsUpdate3 = {
+  request: {
+    query: TEXT_RESPONSE_MIN_ROWS_UPDATE,
+    variables: {
+      id: selectedBlock.id,
+      minRows: 4
+    }
+  },
+  result: jest.fn(() => ({
+    data: {
+      textResponseBlockUpdate: {
+        id: selectedBlock.id,
+        minRows: 4
+      }
+    }
+  }))
+}
+
+beforeEach(() => jest.clearAllMocks())
+
 describe('MinRows', () => {
   it('should select Three Rows by default', () => {
-    const { getByRole } = render(
+    render(
       <MockedProvider>
         <EditorProvider initialState={{ selectedBlock }}>
           <MinRows />
         </EditorProvider>
       </MockedProvider>
     )
-    expect(getByRole('button', { name: 'Three Rows' })).toHaveAttribute(
+
+    expect(screen.getByRole('button', { name: 'Three Rows' })).toHaveAttribute(
       'aria-pressed',
       'true'
     )
   })
 
   it('should change rows of text response', async () => {
-    const result = jest.fn(() => ({
-      data: {
-        textResponseBlockUpdate: {
-          id: selectedBlock.id,
-          minRows: 4
-        }
-      }
-    }))
-
-    const { getByRole } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: TEXT_RESPONSE_MIN_ROWS_UPDATE,
-              variables: {
-                id: selectedBlock.id,
-                minRows: 4
-              }
-            },
-            result
-          }
-        ]}
-      >
+    render(
+      <MockedProvider mocks={[minRowsUpdate1]}>
         <EditorProvider initialState={{ selectedBlock }}>
           <MinRows />
         </EditorProvider>
       </MockedProvider>
     )
 
-    fireEvent.click(getByRole('button', { name: 'Four Rows' }))
-    await waitFor(() => expect(result).toHaveBeenCalled())
+    fireEvent.click(screen.getByRole('button', { name: 'Four Rows' }))
+    await waitFor(() => expect(minRowsUpdate1.result).toHaveBeenCalled())
   })
 
   it('should undo min rows change', async () => {
-    const result1 = jest.fn(() => ({
-      data: {
-        textResponseBlockUpdate: {
-          id: selectedBlock.id,
-          journeyId: 'journey.id'
-        }
-      }
-    }))
-
-    const result2 = jest.fn(() => ({
-      data: {
-        textResponseBlockUpdate: {
-          id: selectedBlock.id,
-          minRows: 3
-        }
-      }
-    }))
-
     render(
       <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: TEXT_RESPONSE_MIN_ROWS_UPDATE,
-              variables: {
-                id: selectedBlock.id,
-                minRows: 4
-              }
-            },
-            result: result1
-          },
-          {
-            request: {
-              query: TEXT_RESPONSE_MIN_ROWS_UPDATE,
-              variables: {
-                id: selectedBlock.id,
-                minRows: 3
-              }
-            },
-            result: result2
-          }
-        ]}
+        mocks={[minRowsUpdate1, minRowsUpdate2]}
         addTypename={false}
       >
         <EditorProvider initialState={{ selectedBlock }}>
@@ -134,55 +130,16 @@ describe('MinRows', () => {
     )
 
     fireEvent.click(screen.getByRole('button', { name: 'Four Rows' }))
-    await waitFor(() => expect(result1).toHaveBeenCalled())
+    await waitFor(() => expect(minRowsUpdate1.result).toHaveBeenCalled())
+
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
-    await waitFor(() => expect(result2).toHaveBeenCalled())
+    await waitFor(() => expect(minRowsUpdate2.result).toHaveBeenCalled())
   })
 
   it('should redo the change to min rows that was undone', async () => {
-    const result1 = jest.fn(() => ({
-      data: {
-        textResponseBlockUpdate: {
-          id: selectedBlock.id,
-          minRows: 4
-        }
-      }
-    }))
-
-    const result2 = jest.fn(() => ({
-      data: {
-        textResponseBlockUpdate: {
-          id: selectedBlock.id,
-          minRows: 3
-        }
-      }
-    }))
-
     render(
       <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: TEXT_RESPONSE_MIN_ROWS_UPDATE,
-              variables: {
-                id: selectedBlock.id,
-                minRows: 4
-              }
-            },
-            result: result1,
-            maxUsageCount: 2
-          },
-          {
-            request: {
-              query: TEXT_RESPONSE_MIN_ROWS_UPDATE,
-              variables: {
-                id: selectedBlock.id,
-                minRows: 3
-              }
-            },
-            result: result2
-          }
-        ]}
+        mocks={[minRowsUpdate1, minRowsUpdate2, minRowsUpdate3]}
         addTypename={false}
       >
         <EditorProvider initialState={{ selectedBlock }}>
@@ -194,12 +151,25 @@ describe('MinRows', () => {
     )
 
     fireEvent.click(screen.getByRole('button', { name: 'Four Rows' }))
-    await waitFor(() => expect(result1).toHaveBeenCalled())
+    await waitFor(() => expect(minRowsUpdate1.result).toHaveBeenCalled())
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
-    await waitFor(() => expect(result2).toHaveBeenCalled())
+    await waitFor(() => expect(minRowsUpdate2.result).toHaveBeenCalled())
 
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
-    await waitFor(() => expect(result1).toHaveBeenCalled())
+    await waitFor(() => expect(minRowsUpdate3.result).toHaveBeenCalled())
+  })
+
+  it('should not call mutation if no selected block', async () => {
+    render(
+      <MockedProvider mocks={[minRowsUpdate1]} addTypename={false}>
+        <EditorProvider initialState={{}}>
+          <MinRows />
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Four Rows' }))
+    await waitFor(() => expect(minRowsUpdate1.result).not.toHaveBeenCalled())
   })
 })
