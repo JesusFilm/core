@@ -1,3 +1,4 @@
+/* eslint-disable playwright/expect-expect */
 import { chromium, test } from '@playwright/test'
 import { playAudit } from 'playwright-lighthouse'
 

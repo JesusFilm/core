@@ -1,5 +1,7 @@
 import { MockedResponse } from '@apollo/client/testing'
+
 import { TreeBlock } from '@core/journeys/ui/block'
+
 import {
   BlockDelete,
   BlockDeleteVariables

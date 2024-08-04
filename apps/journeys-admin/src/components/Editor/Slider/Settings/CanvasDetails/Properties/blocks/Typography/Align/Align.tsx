@@ -2,16 +2,16 @@ import { gql, useMutation } from '@apollo/client'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import AlignCenterIcon from '@core/shared/ui/icons/AlignCenter'
 import AlignLeftIcon from '@core/shared/ui/icons/AlignLeft'
 import AlignRightIcon from '@core/shared/ui/icons/AlignRight'
 
 import { BlockFields_TypographyBlock as TypographyBlock } from '../../../../../../../../../../__generated__/BlockFields'
-import { TypographyBlockUpdateAlign } from '../../../../../../../../../../__generated__/TypographyBlockUpdateAlign'
 import { TypographyAlign } from '../../../../../../../../../../__generated__/globalTypes'
+import { TypographyBlockUpdateAlign } from '../../../../../../../../../../__generated__/TypographyBlockUpdateAlign'
 import { ToggleButtonGroup } from '../../../controls/ToggleButtonGroup'
 
 export const TYPOGRAPHY_BLOCK_UPDATE_ALIGN = gql`

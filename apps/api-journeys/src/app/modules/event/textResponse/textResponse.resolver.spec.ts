@@ -1,15 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+
+import { Block, JourneyVisitor, Visitor } from '.prisma/api-journeys-client'
 
 import {
   TextResponseSubmissionEventCreateInput,
   TextResponseType
 } from '../../../__generated__/graphql'
 import { PrismaService } from '../../../lib/prisma.service'
-import { EventService } from '../event.service'
-import { Block, JourneyVisitor, Visitor } from '.prisma/api-journeys-client'
-
-import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { IntegrationGrowthSpacesService } from '../../integration/growthSpaces/growthSpaces.service'
+import { EventService } from '../event.service'
+
 import { TextResponseSubmissionEventResolver } from './textResponse.resolver'
 
 describe('TextResponseEventResolver', () => {

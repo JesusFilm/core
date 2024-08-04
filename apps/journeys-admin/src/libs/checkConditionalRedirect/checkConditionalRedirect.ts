@@ -86,7 +86,7 @@ export async function checkConditionalRedirect({
       new Date(2023, 9, 5)
     )
   ) {
-    if (currentRedirect?.match(/^\/templates\/[\w\-]+\/quick/) != null) {
+    if (currentRedirect?.match(/^\/templates\/[\w-]+\/quick/) != null) {
       await apolloClient.mutate<JourneyProfileOnboardingFormComplete>({
         mutation: JOURNEY_PROFILE_ONBOARDING_FORM_COMPLETE
       })
@@ -98,7 +98,7 @@ export async function checkConditionalRedirect({
   }
 
   if (data.teams.length === 0) {
-    if (currentRedirect?.match(/^\/templates\/[\w\-]+\/quick/) != null) {
+    if (currentRedirect?.match(/^\/templates\/[\w-]+\/quick/) != null) {
       await apolloClient.mutate<TeamCreate, TeamCreateVariables>({
         mutation: TEAM_CREATE,
         variables: { input: { title: teamName ?? 'My Team' } }

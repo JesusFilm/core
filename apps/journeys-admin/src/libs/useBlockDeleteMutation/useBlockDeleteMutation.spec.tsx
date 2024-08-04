@@ -2,9 +2,9 @@ import { MockedProvider } from '@apollo/client/testing'
 import { renderHook, waitFor } from '@testing-library/react'
 import { act } from 'react-dom/test-utils'
 
+import { TreeBlock } from '@core/journeys/ui/block'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
-import { TreeBlock } from '@core/journeys/ui/block'
 
 import { GetJourney_journey_blocks_TypographyBlock as TypographyBlock } from '../../../__generated__/GetJourney'
 

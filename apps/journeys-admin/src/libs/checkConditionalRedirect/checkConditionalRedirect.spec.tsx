@@ -1,11 +1,11 @@
 import { ApolloClient, NormalizedCacheObject } from '@apollo/client'
 
 import { GetJourneyProfileAndTeams } from '../../../__generated__/GetJourneyProfileAndTeams'
+import { TEAM_CREATE } from '../useTeamCreateMutation/useTeamCreateMutation'
 
 import { GET_JOURNEY_PROFILE_AND_TEAMS } from './checkConditionalRedirect'
 
 import { checkConditionalRedirect } from '.'
-import { TEAM_CREATE } from '../useTeamCreateMutation/useTeamCreateMutation'
 
 const meData = {
   me: {

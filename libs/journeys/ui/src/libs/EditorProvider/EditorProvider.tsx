@@ -10,9 +10,9 @@ import {
   useRef
 } from 'react'
 
-import { CommandProvider } from '../CommandProvider'
 import type { TreeBlock } from '../block'
 import { BlockFields_StepBlock as StepBlock } from '../block/__generated__/BlockFields'
+import { CommandProvider } from '../CommandProvider'
 import { searchBlocks } from '../searchBlocks'
 import { type JourneyAnalytics } from '../useJourneyAnalyticsQuery'
 

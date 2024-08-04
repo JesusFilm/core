@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 import { Action, Block, Journey } from '.prisma/api-journeys-client'
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 
 import { UserTeamRole } from '../../__generated__/graphql'
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
@@ -277,6 +277,7 @@ describe('ActionResolver', () => {
         resolver.blockUpdateAction(ability, blockWithUserTeam.id, input)
       ).rejects.toThrow('no valid inputs provided')
     })
+
     it('throws an error if no block is found', async () => {
       const input = {
         gtmEventName: null,

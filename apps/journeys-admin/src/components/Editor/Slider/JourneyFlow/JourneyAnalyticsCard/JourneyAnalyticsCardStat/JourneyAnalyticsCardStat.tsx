@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
+import { ReactElement } from 'react'
 
 interface NumberStatProps {
   label: string
@@ -9,7 +10,7 @@ interface NumberStatProps {
 export function JourneyAnalyticsCardStat({
   label,
   count = 0
-}: NumberStatProps) {
+}: NumberStatProps): ReactElement {
   const formatter = Intl.NumberFormat('en', { notation: 'compact' })
 
   return (

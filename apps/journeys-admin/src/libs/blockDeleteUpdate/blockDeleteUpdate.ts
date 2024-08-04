@@ -24,8 +24,8 @@ const getNestedChildRefs = (
 
 export const blockDeleteUpdate = (
   selectedBlock: BlockIdentifier,
-  response: (BlockIdentifier & { parentOrder: number | null })[] | undefined,
-  // biome-ignore lint/suspicious/noExplicitAny: update function gives this type
+  response: Array<BlockIdentifier & { parentOrder: number | null }> | undefined,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   cache: ApolloCache<any>,
   journeyId: string
 ): void => {

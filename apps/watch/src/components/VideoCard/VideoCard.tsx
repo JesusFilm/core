@@ -4,17 +4,17 @@ import ButtonBase from '@mui/material/ButtonBase'
 import Link from '@mui/material/Link'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { SxProps, styled } from '@mui/material/styles'
-import { useTranslation } from 'next-i18next'
+import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import NextLink from 'next/link'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
-import { VideoChildFields } from '../../../__generated__/VideoChildFields'
 import { VideoLabel } from '../../../__generated__/globalTypes'
+import { VideoChildFields } from '../../../__generated__/VideoChildFields'
 import { getLabelDetails } from '../../libs/utils/getLabelDetails/getLabelDetails'
 
 interface VideoCardProps {

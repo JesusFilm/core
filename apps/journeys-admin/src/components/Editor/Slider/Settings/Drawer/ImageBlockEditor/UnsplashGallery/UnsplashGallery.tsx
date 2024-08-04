@@ -6,6 +6,7 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/BlockFields'
+import { ImageBlockUpdateInput } from '../../../../../../../../__generated__/globalTypes'
 import {
   ListUnsplashCollectionPhotos,
   ListUnsplashCollectionPhotosVariables
@@ -14,7 +15,7 @@ import {
   SearchUnsplashPhotos,
   SearchUnsplashPhotosVariables
 } from '../../../../../../../../__generated__/SearchUnsplashPhotos'
-import { ImageBlockUpdateInput } from '../../../../../../../../__generated__/globalTypes'
+
 import { UnsplashCollections } from './UnsplashCollections'
 import { UnsplashList } from './UnsplashList'
 import { UnsplashSearch } from './UnsplashSearch'

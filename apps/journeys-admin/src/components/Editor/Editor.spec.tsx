@@ -113,7 +113,7 @@ describe('Editor', () => {
   })
 
   it('should render the Fab', async () => {
-    ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
+    (useMediaQuery as jest.Mock).mockImplementation(() => true)
 
     render(
       <MockedProvider>

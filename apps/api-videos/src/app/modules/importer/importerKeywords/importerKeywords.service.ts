@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import omit from 'lodash/omit'
 import { z } from 'zod'
+
 import { PrismaService } from '../../../lib/prisma.service'
 import { ImporterService } from '../importer.service'
 import { ImporterVideosService } from '../importerVideos/importerVideos.service'
@@ -18,9 +19,10 @@ const keywordSchema = z
     ...omit(data, ['videoIds', 'datastream_metadata']),
     id: data.datastream_metadata.uuid,
     languageId: data.languageId.toString(),
-    videos: data.videoIds
-      ? { connect: data.videoIds.split(',').map((id) => ({ id })) }
-      : undefined
+    videos:
+      data.videoIds != null
+        ? { connect: data.videoIds.split(',').map((id) => ({ id })) }
+        : undefined
   }))
 
 type Keyword = z.infer<typeof keywordSchema>
@@ -37,7 +39,7 @@ export class ImporterKeywordsService extends ImporterService<Keyword> {
   }
 
   protected filterValidVideos(keyword: Keyword): Keyword {
-    if (keyword.videos && keyword.videos.connect) {
+    if (keyword.videos?.connect != null) {
       const validVideoIds = this.importerVideosService.ids
       keyword.videos.connect = keyword.videos.connect.filter((v) =>
         validVideoIds.some((id) => id === v.id)
@@ -75,7 +77,10 @@ export class ImporterKeywordsService extends ImporterService<Keyword> {
     })
 
     for (const keyword of filteredKeywords) {
-      if (keyword.videos?.connect && keyword.videos.connect.length > 0) {
+      if (
+        keyword.videos?.connect != null &&
+        keyword.videos.connect.length > 0
+      ) {
         await this.prismaService.keyword.update({
           where: { id: keyword.id },
           data: {
