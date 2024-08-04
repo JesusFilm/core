@@ -38,8 +38,8 @@ describe('DeleteBlock', () => {
     cache.restore({
       'Journey:journey-id': {
         blocks: [
-          { __ref: `CardBlock:card1.id` },
-          { __ref: `TypographyBlock:typography0.id` }
+          { __ref: 'CardBlock:card1.id' },
+          { __ref: 'TypographyBlock:typography0.id' }
         ],
         id: 'journey-id',
         __typename: 'Journey'
@@ -86,8 +86,8 @@ describe('DeleteBlock', () => {
     cache.restore({
       'Journey:journey-id': {
         blocks: [
-          { __ref: `CardBlock:card1.id` },
-          { __ref: `TypographyBlock:typography0.id` }
+          { __ref: 'CardBlock:card1.id' },
+          { __ref: 'TypographyBlock:typography0.id' }
         ],
         id: 'journey-id',
         __typename: 'Journey'
@@ -135,9 +135,9 @@ describe('DeleteBlock', () => {
     cache.restore({
       'Journey:journey-id': {
         blocks: [
-          { __ref: `StepBlock:stepId` },
-          { __ref: `CardBlock:card1.id` },
-          { __ref: `TypographyBlock:typography0.id` }
+          { __ref: 'StepBlock:stepId' },
+          { __ref: 'CardBlock:blockId' },
+          { __ref: 'TypographyBlock:typography0.id' }
         ],
         id: 'journey-id',
         __typename: 'Journey'
@@ -195,9 +195,9 @@ describe('DeleteBlock', () => {
     cache.restore({
       'Journey:journey-id': {
         blocks: [
-          { __ref: `StepBlock:stepId` },
-          { __ref: `CardBlock:card1.id` },
-          { __ref: `TypographyBlock:typography0.id` }
+          { __ref: 'StepBlock:stepId' },
+          { __ref: 'CardBlock:blockId' },
+          { __ref: 'TypographyBlock:typography0.id' }
         ],
         id: 'journey-id',
         __typename: 'Journey'
@@ -282,7 +282,7 @@ describe('DeleteBlock', () => {
       nextBlockId: null,
       children: [
         {
-          id: 'card1.id',
+          id: 'blockId',
           __typename: 'CardBlock',
           parentBlockId: 'passedInStepId',
           parentOrder: 0,
@@ -300,9 +300,7 @@ describe('DeleteBlock', () => {
       request: {
         query: BLOCK_DELETE,
         variables: {
-          id: passedInStep.id,
-          parentBlockId: passedInStep.parentBlockId,
-          journeyId: 'journey-id'
+          id: passedInStep.id
         }
       },
       result: jest.fn(() => ({
@@ -323,9 +321,9 @@ describe('DeleteBlock', () => {
     cache.restore({
       'Journey:journey-id': {
         blocks: [
-          { __ref: `StepBlock:passedInStepId` },
-          { __ref: `CardBlock:card1.id` },
-          { __ref: `TypographyBlock:typography0.id` }
+          { __ref: 'StepBlock:passedInStepId' },
+          { __ref: 'CardBlock:blockId' },
+          { __ref: 'TypographyBlock:typography0.id' }
         ],
         id: 'journey-id',
         __typename: 'Journey'
@@ -350,13 +348,13 @@ describe('DeleteBlock', () => {
           >
             <EditorProvider
               initialState={{
-                selectedBlock: { ...selectedStep, id: 'passedInStepId' },
-                selectedStep,
-                steps: [selectedStep, selectedStep]
+                selectedBlock: passedInStep,
+                selectedStep: passedInStep,
+                steps: [passedInStep, selectedStep]
               }}
             >
-              <DeleteBlock variant="list-item" block={passedInStep} />
               <TestEditorState />
+              <DeleteBlock variant="list-item" block={passedInStep} />
             </EditorProvider>
           </JourneyProvider>
         </MockedProvider>
@@ -390,9 +388,9 @@ describe('DeleteBlock', () => {
     cache.restore({
       'Journey:journey-id': {
         blocks: [
-          { __ref: `StepBlock:stepId` },
-          { __ref: `CardBlock:card1.id` },
-          { __ref: `TypographyBlock:typography0.id` }
+          { __ref: 'StepBlock:stepId' },
+          { __ref: 'CardBlock:blockId' },
+          { __ref: 'TypographyBlock:typography0.id' }
         ],
         id: 'journey-id',
         __typename: 'Journey'
