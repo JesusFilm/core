@@ -371,6 +371,8 @@ describe('EditorContext', () => {
         ).toEqual({
           ...state,
           selectedStep: step2,
+          selectedBlock: step2,
+          selectedBlockId: 'step1.id',
           selectedStepId: 'step1.id',
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
         })
@@ -391,7 +393,9 @@ describe('EditorContext', () => {
         ).toEqual({
           ...state,
           selectedStepId: 'step1.id',
-          selectedStep: undefined
+          selectedStep: undefined,
+          selectedBlock: undefined,
+          selectedBlockId: 'step1.id'
         })
       })
 
@@ -460,6 +464,7 @@ describe('EditorContext', () => {
           selectedStep: step,
           selectedStepId: 'step0.id',
           selectedBlock: step,
+          selectedBlockId: 'step0.id',
           active: undefined
         })
       })
@@ -495,7 +500,7 @@ describe('EditorContext', () => {
         })
       })
 
-      it('should retain previously set steps and blocks', () => {
+      it('should override previous set block with selected step', () => {
         const block: TreeBlock = {
           id: 'card0.id',
           __typename: 'CardBlock',
@@ -541,7 +546,7 @@ describe('EditorContext', () => {
         ).toEqual({
           ...state,
           steps: [updatedStep],
-          selectedBlock: updatedBlock,
+          selectedBlock: updatedStep,
           selectedStep: updatedStep
         })
       })
@@ -594,20 +599,9 @@ describe('EditorContext', () => {
           activeContent: 'canvas',
           activeSlide: ActiveSlide.Content,
           selectedAttributeId: 'selectedAttributeId',
-          selectedBlock: {
-            __typename: 'CardBlock',
-            backgroundColor: null,
-            children: [],
-            coverBlockId: null,
-            fullscreen: false,
-            id: 'card0.id',
-            parentBlockId: null,
-            parentOrder: 0,
-            themeMode: null,
-            themeName: null
-          },
+          selectedBlock: step,
           selectedGoalUrl: 'https://www.example.com',
-          selectedBlockId: 'card0.id',
+          selectedBlockId: 'step0.id',
           selectedStepId: 'step0.id',
           selectedStep: {
             __typename: 'StepBlock',
