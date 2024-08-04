@@ -28,10 +28,12 @@ const mockedUseAlgoliaVideos = useAlgoliaVideos as jest.MockedFunction<
 describe('VideoContainerPage', () => {
   beforeEach(() => {
     mockedUseAlgoliaVideos.mockReturnValue({
-      stalled: false,
+      loading: false,
+      noResults: false,
       hits: [],
       showMore: jest.fn(),
-      isLastPage: false
+      isLastPage: false,
+      sendEvent: jest.fn()
     })
     jest.clearAllMocks()
   })

@@ -1,9 +1,9 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
-import { ClearRefinementsRenderState } from 'instantsearch.js/es/connectors/clear-refinements/connectClearRefinements'
-import { HitsRenderState } from 'instantsearch.js/es/connectors/hits/connectHits'
-import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
-import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
+import type { ClearRefinementsRenderState } from 'instantsearch.js/es/connectors/clear-refinements/connectClearRefinements'
+import type { HitsRenderState } from 'instantsearch.js/es/connectors/hits/connectHits'
+import type { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
+import type { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
 import {
   useClearRefinements,
   useHits,
@@ -72,10 +72,12 @@ describe('VideosPage', () => {
 
   beforeEach(() => {
     mockUseAlgoliaVideos.mockReturnValue({
-      stalled: false,
+      loading: false,
+      noResults: false,
       hits: transformedVideos,
       showMore: jest.fn(),
-      isLastPage: false
+      isLastPage: false,
+      sendEvent: jest.fn()
     })
 
     mockUseHits.mockReturnValue({
