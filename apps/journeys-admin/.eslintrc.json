@@ -28,8 +28,7 @@
             "allowAsStatement": true
           }
         ],
-        "@typescript-eslint/no-misused-promises": "off",
-        "@typescript-eslint/naming-convention": "off"
+        "@typescript-eslint/no-misused-promises": "off"
       }
     },
     {

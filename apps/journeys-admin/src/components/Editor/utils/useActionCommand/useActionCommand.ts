@@ -71,13 +71,17 @@ export function useActionCommand(): {
             })
           switch (action?.__typename) {
             case 'LinkAction':
-              return void actionLinkUpdate(block, action.url)
+              void actionLinkUpdate(block, action.url)
+              break
             case 'EmailAction':
-              return void actionEmailUpdate(block, action.email)
+              void actionEmailUpdate(block, action.email)
+              break
             case 'NavigateToBlockAction':
-              return void actionNavigateToBlockUpdate(block, action.blockId)
+              void actionNavigateToBlockUpdate(block, action.blockId)
+              break
             default:
-              return void actionDelete(block)
+              void actionDelete(block)
+              break
           }
         }
       })
