@@ -172,25 +172,29 @@ describe('SelectableWrapper', () => {
 
     fireEvent.click(getByRole('img'))
     expect(getByTestId(`SelectableWrapper-${imageBlock.id}`)).toHaveStyle({
-      outline: '2px solid #C52D3A',
-      zIndex: '1'
+      outline: '2px solid',
+      zIndex: '1',
+      outlineColor: '#C52D3A'
     })
     fireEvent.click(getByText('typography content'))
     expect(getByTestId(`SelectableWrapper-${typographyBlock.id}`)).toHaveStyle({
-      outline: '2px solid #C52D3A',
-      zIndex: '1'
+      outline: '2px solid',
+      zIndex: '1',
+      outlineColor: '#C52D3A'
     })
 
     fireEvent.click(getByText('button label'))
     expect(getByTestId(`SelectableWrapper-${buttonBlock.id}`)).toHaveStyle({
-      outline: '2px solid #C52D3A',
-      zIndex: '1'
+      outline: '2px solid',
+      zIndex: '1',
+      outlineColor: '#C52D3A'
     })
     fireEvent.click(getByText('sign up label'))
     await waitFor(() =>
       expect(getByTestId(`SelectableWrapper-${signUpBlock.id}`)).toHaveStyle({
-        outline: '2px solid #C52D3A',
-        zIndex: '1'
+        outline: '2px solid',
+        zIndex: '1',
+        outlineColor: '#C52D3A'
       })
     )
     fireEvent.click(
@@ -199,8 +203,9 @@ describe('SelectableWrapper', () => {
     expect(
       getByTestId(`SelectableWrapper-${radioQuestionBlock.id}`)
     ).toHaveStyle({
-      outline: '2px solid #C52D3A',
-      zIndex: '1'
+      outline: '2px solid',
+      zIndex: '1',
+      outlineColor: '#C52D3A'
     })
 
     expect(push).not.toHaveBeenCalled()
@@ -230,8 +235,9 @@ describe('SelectableWrapper', () => {
     expect(
       getByTestId(`SelectableWrapper-${radioQuestionBlock.id}`)
     ).toHaveStyle({
-      outline: '2px solid #C52D3A',
-      zIndex: '1'
+      outline: '2px solid',
+      zIndex: '1',
+      outlineColor: '#C52D3A'
     })
   })
 
@@ -258,8 +264,9 @@ describe('SelectableWrapper', () => {
 
     fireEvent.click(getByRole('button', { name: 'Option 1' }))
     expect(getByTestId(`SelectableWrapper-RadioOption1`)).toHaveStyle({
-      outline: '2px solid #C52D3A',
-      zIndex: '1'
+      outline: '2px solid',
+      zIndex: '1',
+      outlineColor: '#C52D3A'
     })
     expect(push).not.toHaveBeenCalled()
   })
@@ -287,8 +294,9 @@ describe('SelectableWrapper', () => {
 
     fireEvent.click(getByRole('button', { name: 'Option 1' }))
     expect(getByTestId(`SelectableWrapper-RadioOption1`)).toHaveStyle({
-      outline: '2px solid #C52D3A',
-      zIndex: '1'
+      outline: '2px solid',
+      zIndex: '1',
+      outlineColor: '#C52D3A'
     })
     expect(push).not.toHaveBeenCalled()
   })

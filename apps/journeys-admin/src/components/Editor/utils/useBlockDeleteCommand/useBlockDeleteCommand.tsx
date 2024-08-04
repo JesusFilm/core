@@ -1,10 +1,15 @@
 import { useApolloClient } from '@apollo/client'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import {
+  ActiveContent,
+  ActiveSlide,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../../__generated__/BlockFields'
+import { blockDeleteUpdate } from '../../../../libs/blockDeleteUpdate'
 import { useBlockDeleteMutation } from '../../../../libs/useBlockDeleteMutation'
 import { useBlockRestoreMutation } from '../../../../libs/useBlockRestoreMutation'
 import { setBlockRestoreEditorState } from './setBlockRestoreEditorState'
@@ -48,6 +53,12 @@ export function useBlockDeleteCommand(): {
     const stepSiblingsBeforeDelete = steps.filter(
       (block) => block.id !== currentBlock.id
     )
+    const stepSiblingsAfterDelete = stepSiblingsBeforeDelete.map(
+      (block, index) => ({
+        ...block,
+        parentOrder: block.parentOrder != null ? index : null
+      })
+    )
     const canvasSiblingsBeforeDelete =
       card?.children.filter((block) => block.id !== currentBlock.id) ?? []
     const canvasSiblingsAfterDelete = canvasSiblingsBeforeDelete.map(
@@ -62,18 +73,42 @@ export function useBlockDeleteCommand(): {
         undo: {}
       },
       execute() {
-        dispatch({
-          type: 'SetEditorFocusAction',
-          selectedBlock:
-            deletedBlockParentOrder != null
-              ? canvasSiblingsAfterDelete.find(
-                  ({ parentOrder }) => parentOrder === deletedBlockParentOrder
-                )
-              : undefined,
-          selectedStep
-        })
+        currentBlock.__typename === 'StepBlock'
+          ? dispatch({
+              type: 'SetEditorFocusAction',
+              selectedStep:
+                deletedBlockParentOrder != null
+                  ? stepSiblingsAfterDelete.find(
+                      ({ parentOrder }) =>
+                        parentOrder === deletedBlockParentOrder - 1
+                    )
+                  : undefined,
+              activeSlide: ActiveSlide.JourneyFlow,
+              activeContent: ActiveContent.Canvas
+            })
+          : dispatch({
+              type: 'SetEditorFocusAction',
+              selectedBlock:
+                deletedBlockParentOrder != null
+                  ? canvasSiblingsAfterDelete.find(
+                      ({ parentOrder }) =>
+                        parentOrder === deletedBlockParentOrder - 1
+                    )
+                  : undefined,
+              selectedStep,
+              activeContent: ActiveContent.Canvas
+            })
+
         void blockDelete(currentBlock, {
-          optimisticResponse: { blockDelete: canvasSiblingsAfterDelete }
+          optimisticResponse: { blockDelete: canvasSiblingsAfterDelete },
+          update(cache, { data }) {
+            blockDeleteUpdate(
+              currentBlock,
+              data?.blockDelete,
+              cache,
+              journey.id
+            )
+          }
         })
       },
       undo() {
