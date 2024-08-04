@@ -1,11 +1,11 @@
 import { ReactElement } from 'react'
 
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { BlockFields_StepBlock as StepBlock } from '@core/journeys/ui/block/__generated__/BlockFields'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { ActionBlock } from '@core/journeys/ui/isActionBlock'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
 import { CommandRedoItem } from '../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../Toolbar/Items/CommandUndoItem'
@@ -18,7 +18,7 @@ interface TestUseCreateStepHooksProps {
   sourceStep?: TreeBlock<StepBlock>
   sourceBlock?: ActionBlock
   selectedStep?: TreeBlock<StepBlock>
-  steps?: TreeBlock<StepBlock>[]
+  steps?: Array<TreeBlock<StepBlock>>
 }
 function CreateStepComponent({
   sourceStep,
@@ -29,33 +29,33 @@ function CreateStepComponent({
   const createStepFromSocialPreview = useCreateStepFromSocialPreview()
   const createStep = useCreateStep()
 
-  async function handleCreateStepFromStepClick() {
+  async function handleCreateStepFromStepClick(): Promise<void> {
     if (sourceStep == null) return
     await createStepFromStep({
       x: 777,
       y: 777,
-      sourceStep: sourceStep
+      sourceStep
     })
   }
 
-  async function handleCreateStepFromActionClick() {
+  async function handleCreateStepFromActionClick(): Promise<void> {
     if (sourceStep == null || sourceBlock == null) return
     await createStepFromAction({
       x: 777,
       y: 777,
-      sourceStep: sourceStep,
-      sourceBlock: sourceBlock
+      sourceStep,
+      sourceBlock
     })
   }
 
-  async function handleCreateStepFromSocialPreviewClick() {
+  async function handleCreateStepFromSocialPreviewClick(): Promise<void> {
     await createStepFromSocialPreview({
       x: 777,
       y: 777
     })
   }
 
-  async function handleCreateStepClick() {
+  async function handleCreateStepClick(): Promise<void> {
     await createStep({
       x: -200,
       y: 38

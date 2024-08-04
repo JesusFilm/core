@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { expect } from '@playwright/test'
 import dayjs from 'dayjs'
 import { Page } from 'playwright-core'
@@ -95,7 +96,9 @@ export class Register {
         )
         .first()
     ).toHaveAttribute('aria-expanded', 'true')
-    await this.page.locator('div[role="region"]  input[name="token"]').fill(otp)
+    await this.page
+      .locator('div[role="region"]  input[name="token"]')
+      .fill(otp as string)
   }
 
   async clickValidateEmailBtn() {

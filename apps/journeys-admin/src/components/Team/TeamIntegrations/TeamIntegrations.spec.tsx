@@ -1,8 +1,9 @@
-import { NextRouter, useRouter } from 'next/router'
-
 import { MockedProvider } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
+import { NextRouter, useRouter } from 'next/router'
+
 import { getIntegrationMock } from '../../../libs/useIntegrationQuery/useIntegrationQuery.mock'
+
 import { TeamIntegrations } from './TeamIntegrations'
 
 jest.mock('next/router', () => ({

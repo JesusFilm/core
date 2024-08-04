@@ -29,8 +29,8 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/BlockFields'
 import {
@@ -42,6 +42,8 @@ import {
   IconColor,
   IconName
 } from '../../../../../../../../../__generated__/globalTypes'
+import { IconBlockNameUpdate } from '../../../../../../../../../__generated__/IconBlockNameUpdate'
+import { IconFields } from '../../../../../../../../../__generated__/IconFields'
 
 import { Color } from './Color'
 

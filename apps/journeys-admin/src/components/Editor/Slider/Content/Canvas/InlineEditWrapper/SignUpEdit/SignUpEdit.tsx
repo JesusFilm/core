@@ -2,10 +2,9 @@ import { gql, useMutation } from '@apollo/client'
 import { ReactElement, useEffect, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
-import { useCommand } from '@core/journeys/ui/CommandProvider'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { SignUp } from '@core/journeys/ui/SignUp'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { SignUp } from '@core/journeys/ui/SignUp'
 
 import {
   SignUpBlockUpdateSubmitLabel,

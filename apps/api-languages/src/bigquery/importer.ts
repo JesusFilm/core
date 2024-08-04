@@ -117,6 +117,7 @@ export function parseMany<T>(
   for (const row of rows) {
     const data = schema.safeParse(row)
     if (data.success) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       validRows.push(data.data)
     } else {
       console.log(data.error)

@@ -1,8 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_FormBlock as JourneyFormBlock } from '../../../../../../../../../../../__generated__/BlockFields'
 import { FormBlockUpdateCredentials_formBlockUpdate as FormBlock } from '../../../../../../../../../../../__generated__/FormBlockUpdateCredentials'

@@ -4,7 +4,6 @@ import { useEffect } from 'react'
 export function useHandleNewAccountRedirect(): void {
   const router = useRouter()
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     const redirectUrl = router.query.redirect as string
 
@@ -29,5 +28,6 @@ export function useHandleNewAccountRedirect(): void {
         query: { redirect: updatedRedirectUrl }
       })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 }

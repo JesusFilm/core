@@ -3,8 +3,9 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
-import { Typography } from '@core/journeys/ui/Typography'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { Typography } from '@core/journeys/ui/Typography'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'

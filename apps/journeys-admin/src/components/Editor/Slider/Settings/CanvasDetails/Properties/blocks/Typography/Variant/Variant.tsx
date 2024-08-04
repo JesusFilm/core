@@ -3,21 +3,21 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
-import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import DashIcon from '@core/shared/ui/icons/Dash'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 import { BlockFields_TypographyBlock as TypographyBlock } from '../../../../../../../../../../__generated__/BlockFields'
-import { TypographyBlockUpdateVariant } from '../../../../../../../../../../__generated__/TypographyBlockUpdateVariant'
 import {
   ThemeMode,
   ThemeName,
   TypographyVariant
 } from '../../../../../../../../../../__generated__/globalTypes'
+import { TypographyBlockUpdateVariant } from '../../../../../../../../../../__generated__/TypographyBlockUpdateVariant'
 import { ToggleButtonGroup } from '../../../controls/ToggleButtonGroup'
 
 export const TYPOGRAPHY_BLOCK_UPDATE_VARIANT = gql`

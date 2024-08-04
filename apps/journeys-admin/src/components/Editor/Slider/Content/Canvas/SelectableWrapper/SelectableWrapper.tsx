@@ -1,9 +1,9 @@
 import Box from '@mui/material/Box'
 import { MouseEvent, ReactElement, useEffect, useRef, useState } from 'react'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { WrapperProps } from '@core/journeys/ui/BlockRenderer'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { QuickControls } from '../QuickControls'
 
@@ -60,6 +60,7 @@ export function SelectableWrapper({
       }
     } else {
       e.stopPropagation()
+      // eslint-disable-next-line no-empty
       if (selectedBlock?.id === block.id && isInlineEditable) {
       } else {
         updateEditor(block)

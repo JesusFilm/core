@@ -3,8 +3,8 @@ import { render, waitFor } from '@testing-library/react'
 
 import { GET_TAGS } from '../../../libs/useTagsQuery'
 
-import { TemplateTags } from './TemplateTags'
 import { parentTags, tags } from './data'
+import { TemplateTags } from './TemplateTags'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,

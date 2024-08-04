@@ -2,14 +2,13 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
 import {
   ActiveCanvasDetailsDrawer,
   EditorProvider
 } from '@core/journeys/ui/EditorProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
-import { AddBlock } from '.'
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'
 import {
   TypographyAlign,
@@ -18,6 +17,8 @@ import {
 } from '../../../../../../../__generated__/globalTypes'
 import { TestEditorState } from '../../../../../../libs/TestEditorState'
 import { ThemeProvider } from '../../../../../ThemeProvider'
+
+import { AddBlock } from '.'
 
 describe('AddBlock', () => {
   const selectedStep: TreeBlock<StepBlock> = {
@@ -138,7 +139,7 @@ describe('AddBlock', () => {
 
     const closeButton = screen.getByTestId('X2Icon')
     expect(closeButton).toBeInTheDocument()
-    await waitFor(() => userEvent.click(closeButton))
+    await waitFor(async () => await userEvent.click(closeButton))
 
     expect(screen.getByText('activeCanvasDetailsDrawer: 0')).toBeInTheDocument()
   })

@@ -7,8 +7,8 @@ import {
   useMutation
 } from '@apollo/client'
 
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import {
   BlockDelete,

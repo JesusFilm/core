@@ -4,6 +4,7 @@ import { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 
+import { IconColor } from '../../../../../../../../../../__generated__/globalTypes'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import {
@@ -11,7 +12,6 @@ import {
   IconBlockColorUpdateVariables
 } from '../../../../../../../../../../__generated__/IconBlockColorUpdate'
 import { IconFields } from '../../../../../../../../../../__generated__/IconFields'
-import { IconColor } from '../../../../../../../../../../__generated__/globalTypes'
 import { ColorDisplayIcon } from '../../ColorDisplayIcon'
 import { ToggleButtonGroup } from '../../ToggleButtonGroup'
 

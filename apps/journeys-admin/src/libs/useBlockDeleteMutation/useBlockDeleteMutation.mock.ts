@@ -1,8 +1,8 @@
 import { MockedResponse } from '@apollo/client/testing'
 
-import { BlockDelete } from '../../../__generated__/BlockDelete'
-
 import { TreeBlock } from '@core/journeys/ui/block'
+
+import { BlockDelete } from '../../../__generated__/BlockDelete'
 import {
   BlockFields_CardBlock as CardBlock,
   BlockFields_StepBlock as StepBlock,
@@ -13,6 +13,7 @@ import {
   TypographyColor,
   TypographyVariant
 } from '../../../__generated__/globalTypes'
+
 import { BLOCK_DELETE } from './useBlockDeleteMutation'
 
 export const selectedBlock: TreeBlock<TypographyBlock> = {

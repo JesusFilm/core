@@ -18,6 +18,7 @@ describe('bigquery/queue', () => {
 
   describe('init', () => {
     it('should create a queue', () => {
+      // eslint-disable-next-line import/dynamic-import-chunkname
       import('./queue')
       expect(Queue).toHaveBeenCalledWith(queueName, {
         connection: bullConnection
