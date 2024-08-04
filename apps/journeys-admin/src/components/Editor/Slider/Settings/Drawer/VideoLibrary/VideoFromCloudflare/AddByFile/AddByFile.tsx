@@ -121,7 +121,9 @@ export function AddByFile({
         // the following if statement is required for testing in jest
         let buffer: ReadStream | File
         if (process.env.NODE_ENV === 'test') {
+          // eslint-disable-next-line @typescript-eslint/no-var-requires
           buffer = require('fs').createReadStream(
+            // eslint-disable-next-line @typescript-eslint/no-var-requires
             require('path').join(
               __dirname,
               (file as unknown as { path: string }).path
@@ -205,8 +207,8 @@ export function AddByFile({
             isDragAccept || uploading
               ? 'rgba(239, 239, 239, 0.9)'
               : error != null || fileRejected
-                ? 'rgba(197, 45, 58, 0.08)'
-                : 'rgba(239, 239, 239, 0.35)',
+              ? 'rgba(197, 45, 58, 0.08)'
+              : 'rgba(239, 239, 239, 0.35)',
           borderColor: 'divider',
           borderStyle: noBorder ? undefined : 'dashed',
           borderRadius: 2,

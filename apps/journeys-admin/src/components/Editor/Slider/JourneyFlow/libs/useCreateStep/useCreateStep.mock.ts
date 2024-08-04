@@ -1,5 +1,7 @@
 import { MockedResponse } from '@apollo/client/testing'
+
 import { TreeBlock } from '@core/journeys/ui/block'
+
 import {
   BlockDelete,
   BlockDeleteVariables
@@ -44,9 +46,7 @@ export const mockBlockDelete: MockedResponse<
   request: {
     query: BLOCK_DELETE,
     variables: {
-      id: 'newStep.id',
-      journeyId: 'journey-id',
-      parentBlockId: null
+      id: 'newStep.id'
     }
   },
   result: {

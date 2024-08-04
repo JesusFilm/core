@@ -1,3 +1,4 @@
+/* eslint-disable i18next/no-literal-string */
 import { GetStaticProps } from 'next'
 import { useTranslation } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'

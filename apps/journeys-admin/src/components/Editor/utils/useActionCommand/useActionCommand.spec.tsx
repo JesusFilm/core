@@ -2,9 +2,8 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, renderHook, screen, waitFor } from '@testing-library/react'
 
 import { CommandProvider } from '@core/journeys/ui/CommandProvider'
-
 import { ActiveContent, EditorProvider } from '@core/journeys/ui/EditorProvider'
-import { useActionCommand } from '.'
+
 import {
   BlockActionDelete,
   BlockActionDeleteVariables
@@ -15,6 +14,8 @@ import { blockActionEmailUpdateMock } from '../../../../libs/useBlockActionEmail
 import { blockActionLinkUpdateMock } from '../../../../libs/useBlockActionLinkUpdateMutation/useBlockActionLinkUpdateMutation.mock'
 import { blockActionNavigateToBlockUpdateMock } from '../../../../libs/useBlockActionNavigateToBlockUpdateMutation/useBlockActionNavigateToBlockUpdateMutation.mock'
 import { CommandUndoItem } from '../../Toolbar/Items/CommandUndoItem'
+
+import { useActionCommand } from '.'
 
 const blockActionDeleteMock: MockedResponse<
   BlockActionDelete,

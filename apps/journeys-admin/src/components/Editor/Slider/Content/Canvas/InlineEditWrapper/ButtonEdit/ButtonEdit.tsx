@@ -2,9 +2,9 @@ import { gql, useMutation } from '@apollo/client'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { Button } from '@core/journeys/ui/Button'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { ButtonBlockUpdateContent } from '../../../../../../../../__generated__/ButtonBlockUpdateContent'
 import { ButtonFields } from '../../../../../../../../__generated__/ButtonFields'

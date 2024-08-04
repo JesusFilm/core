@@ -1,12 +1,12 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
+import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { TreeBlock } from '@core/journeys/ui/block'
 
-import { JourneyFields as Journey } from '../../../../../../../__generated__/JourneyFields'
 import { VideoBlockSource } from '../../../../../../../__generated__/globalTypes'
+import { JourneyFields as Journey } from '../../../../../../../__generated__/JourneyFields'
 import { TestEditorState } from '../../../../../../libs/TestEditorState'
 
 import { CARD_VIDEO_CREATE } from './Templates/CardVideo/CardVideo'

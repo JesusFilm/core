@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+
 import { GrowthSpacesSettings } from './GrowthSpacesSettings'
 
 describe('GrowthSpacesSettings', () => {
@@ -8,6 +9,7 @@ describe('GrowthSpacesSettings', () => {
     )
     expect(screen.getByDisplayValue('accessId')).toBeInTheDocument()
     expect(screen.getByDisplayValue('accessSecret')).toBeInTheDocument()
+    // eslint-disable-next-line jest/valid-expect
     expect(screen.getByRole('button', { name: 'Save' }))
   })
 

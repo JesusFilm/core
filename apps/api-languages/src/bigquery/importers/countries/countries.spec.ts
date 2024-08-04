@@ -1,8 +1,9 @@
-import { importCountries, importMany, importOne } from './countries'
+import { Country } from '.prisma/api-languages-client'
 
 import { prismaMock } from '../../../../test/prismaMock'
 import { parse, parseMany, processTable } from '../../importer'
-import { Country } from '.prisma/api-languages-client'
+
+import { importCountries, importMany, importOne } from './countries'
 
 const country = {
   id: 'AD',
@@ -115,6 +116,7 @@ describe('bigquery/importers/countries', () => {
         skipDuplicates: true
       })
     })
+
     it('should throw error if some rows do not match schema', async () => {
       prismaMock.country.createMany.mockImplementation()
       await expect(
@@ -134,7 +136,7 @@ describe('bigquery/importers/countries', () => {
             languageId: '529'
           }
         ])
-      ).rejects.toThrowError()
+      ).rejects.toThrow()
     })
   })
 })

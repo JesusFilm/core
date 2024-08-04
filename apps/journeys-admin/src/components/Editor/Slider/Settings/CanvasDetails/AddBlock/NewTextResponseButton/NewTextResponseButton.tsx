@@ -3,10 +3,10 @@ import { useTranslation } from 'next-i18next'
 import type { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { TEXT_RESPONSE_FIELDS } from '@core/journeys/ui/TextResponse/textResponseFields'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import TextInput1Icon from '@core/shared/ui/icons/TextInput1'
 
 import type {

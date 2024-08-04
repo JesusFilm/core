@@ -11,6 +11,7 @@ export class LeftNav {
 
   async clickProfile(): Promise<void> {
     try {
+      // eslint-disable-next-line playwright/no-wait-for-selector
       const profileListItem = await this.page.waitForSelector(
         '[data-testid="NavigationListItemProfile"]',
         { timeout: sixtySecondsTimeout }
@@ -42,6 +43,7 @@ export class LeftNav {
   async logout(): Promise<void> {
     // Click on Log out
     await Promise.all([
+      // eslint-disable-next-line playwright/no-wait-for-selector
       this.page.waitForSelector('[data-testid="JourneysAdminMenuItemLogOut"]'),
       this.page.click('[data-testid="JourneysAdminMenuItemLogOut"]')
     ])

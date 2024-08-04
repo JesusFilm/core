@@ -9,6 +9,7 @@ import { IMAGE_FIELDS } from '@core/journeys/ui/Image/imageFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../../__generated__/BlockFields'
+import { ImageBlockUpdateInput } from '../../../../../../../../../../__generated__/globalTypes'
 import {
   PosterImageBlockCreate,
   PosterImageBlockCreateVariables
@@ -25,7 +26,6 @@ import {
   PosterImageBlockUpdate,
   PosterImageBlockUpdateVariables
 } from '../../../../../../../../../../__generated__/PosterImageBlockUpdate'
-import { ImageBlockUpdateInput } from '../../../../../../../../../../__generated__/globalTypes'
 import { blockDeleteUpdate } from '../../../../../../../../../libs/blockDeleteUpdate'
 import { blockRestoreUpdate } from '../../../../../../../../../libs/useBlockRestoreMutation'
 import { ImageLibrary } from '../../../../ImageLibrary'
@@ -49,20 +49,14 @@ export const POSTER_IMAGE_BLOCK_CREATE = gql`
 
 export const POSTER_IMAGE_BLOCK_UPDATE = gql`
   ${IMAGE_FIELDS}
-  mutation PosterImageBlockUpdate(
-    $id: ID!
-    $input: ImageBlockUpdateInput!
-  ) {
+  mutation PosterImageBlockUpdate($id: ID!, $input: ImageBlockUpdateInput!) {
     imageBlockUpdate(id: $id, input: $input) {
       ...ImageFields
     }
   }
 `
 export const POSTER_IMAGE_BLOCK_DELETE = gql`
-  mutation PosterImageBlockDelete(
-    $id: ID!
-    $parentBlockId: ID!
-  ) {
+  mutation PosterImageBlockDelete($id: ID!, $parentBlockId: ID!) {
     blockDelete(id: $id, parentBlockId: $parentBlockId) {
       id
       parentOrder
@@ -76,13 +70,10 @@ export const POSTER_IMAGE_BLOCK_DELETE = gql`
 
 export const POSTER_IMAGE_BLOCK_RESTORE = gql`
   ${IMAGE_FIELDS}
-  mutation PosterImageBlockRestore(
-    $id: ID!
-    $videoBlockId: ID!
-  ) {
+  mutation PosterImageBlockRestore($id: ID!, $videoBlockId: ID!) {
     blockRestore(id: $id) {
       id
-      ...on ImageBlock {
+      ... on ImageBlock {
         ...ImageFields
       }
     }
@@ -199,10 +190,10 @@ export function VideoBlockEditorSettingsPosterLibrary({
                   const newBlockRef = cache.writeFragment({
                     data: data.imageBlockCreate,
                     fragment: gql`
-                        fragment NewBlock on Block {
-                          id
-                        }
-                      `
+                      fragment NewBlock on Block {
+                        id
+                      }
+                    `
                   })
                   return [...existingBlockRefs, newBlockRef]
                 }

@@ -2,10 +2,10 @@ import { gql, useMutation } from '@apollo/client'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { RadioOption } from '@core/journeys/ui/RadioOption'
-import type { TreeBlock } from '@core/journeys/ui/block'
 
 import {
   RadioOptionBlockUpdateContent,
@@ -79,7 +79,7 @@ export function RadioOptionEdit({
       }
     })
   }
-  const inputRef = useOnClickOutside(async () => await handleSaveBlock())
+  const inputRef = useOnClickOutside(async () => handleSaveBlock())
 
   const input = (
     <InlineEditInput

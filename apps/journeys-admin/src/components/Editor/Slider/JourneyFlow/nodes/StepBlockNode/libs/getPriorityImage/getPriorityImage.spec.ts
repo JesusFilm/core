@@ -47,13 +47,13 @@ const emptyCard: TreeBlock<CardBlock> = {
 }
 
 describe('getPriorityImage', () => {
-  it('should return the image source string ', () => {
+  it('should return the image source string', () => {
     const priorityImage = getPriorityImage(card.children)
-    expect(priorityImage).toEqual('https://url.com')
+    expect(priorityImage).toBe('https://url.com')
   })
 
   it('should return the null if no image block is given', () => {
     const priorityImage = getPriorityImage(emptyCard.children)
-    expect(priorityImage).toEqual(undefined)
+    expect(priorityImage).toBeUndefined()
   })
 })
