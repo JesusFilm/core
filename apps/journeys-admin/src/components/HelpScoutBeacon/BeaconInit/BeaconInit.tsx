@@ -69,9 +69,9 @@ export function BeaconInit({ userInfo }: BeaconInitProps): ReactElement {
         }
         .hsds-beacon .BeaconContainer.is-configDisplayRight {
           top: 65px;
-          right: 0px;
+          right: 16px;
           width: 327px;
-          max-height: none;
+          max-height: calc(100vh - 81px);
           height: calc(100vh - 65px);
         }
         .BeaconFabButtonFrame {

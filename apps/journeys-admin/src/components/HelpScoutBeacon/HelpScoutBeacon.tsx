@@ -1,4 +1,4 @@
-import { FormObject } from '@core/journeys/ui/setBeaconPageViewed'
+import type { FormObject } from '@core/journeys/ui/setBeaconPageViewed'
 import HelpCircleContained from '@core/shared/ui/icons/HelpCircleContained'
 import XCircleContained from '@core/shared/ui/icons/XCircleContained'
 import IconButton from '@mui/material/IconButton'
@@ -7,8 +7,9 @@ import ListItemText from '@mui/material/ListItemText'
 import MenuItem from '@mui/material/MenuItem'
 import { useTranslation } from 'next-i18next'
 import { useRouter } from 'next/router'
-import { ReactElement, useState } from 'react'
+import {type  ReactElement, useState } from 'react'
 import { BeaconInit } from './BeaconInit'
+import Tooltip from '@mui/material/Tooltip'
 
 interface HelpScoutBeaconProps {
   variant?: 'iconButton' | 'menuItem'
@@ -47,25 +48,24 @@ export function HelpScoutBeacon({
     <>
       <BeaconInit userInfo={userInfo} />
       {variant === 'iconButton' && (
-        <IconButton
-          data-testid="HelpScoutBeaconIconButton"
-          size="large"
-          edge="start"
-          color="inherit"
-          aria-label="Help"
-          onClick={handleBeaconClick}
-          sx={{
-            m: 0,
-            width: 24,
-            height: 24,
-            color:
-              iconButtonColor === 'primary'
+        <Tooltip title={t('Help')} arrow sx={{m: 0}}>
+          <IconButton
+            data-testid="HelpScoutBeaconIconButton"
+            size="medium"
+            edge="start"
+            color="inherit"
+            aria-label="Help"
+            onClick={handleBeaconClick}
+            sx={{
+              color:
+                iconButtonColor === 'primary'
                 ? 'secondary.light'
                 : 'background.paper'
-          }}
-        >
-          {beaconOpen ? <XCircleContained /> : <HelpCircleContained />}
-        </IconButton>
+            }}
+            >
+            {beaconOpen ? <XCircleContained/> : <HelpCircleContained/>}
+          </IconButton>
+        </Tooltip>
       )}
       {variant === 'menuItem' && (
         <MenuItem
