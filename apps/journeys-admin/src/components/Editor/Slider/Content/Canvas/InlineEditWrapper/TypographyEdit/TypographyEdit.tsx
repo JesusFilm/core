@@ -4,11 +4,10 @@ import { ReactElement, useEffect, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { Typography } from '@core/journeys/ui/Typography'
-
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { Typography } from '@core/journeys/ui/Typography'
+
 import {
   TypographyBlockUpdateContent,
   TypographyBlockUpdateContentVariables
@@ -17,10 +16,7 @@ import { TypographyFields } from '../../../../../../../../__generated__/Typograp
 import { InlineEditInput } from '../InlineEditInput'
 
 export const TYPOGRAPHY_BLOCK_UPDATE_CONTENT = gql`
-  mutation TypographyBlockUpdateContent(
-    $id: ID!
-    $content: String!
-  ) {
+  mutation TypographyBlockUpdateContent($id: ID!, $content: String!) {
     typographyBlockUpdate(id: $id, input: { content: $content }) {
       id
       content
@@ -61,7 +57,7 @@ export function TypographyEdit({
     setValue(content)
   }, [content])
 
-  function resetCommandInput() {
+  function resetCommandInput(): void {
     setCommandInput({ id: uuidv4(), value })
   }
 
@@ -125,9 +121,7 @@ export function TypographyEdit({
           fullWidth
           multiline
           inputRef={(ref) => {
-            if (ref) {
-              ref.focus()
-            }
+            if (ref != null) ref.focus()
           }}
           onFocus={(e) => {
             ;(e.currentTarget as HTMLInputElement).setSelectionRange(

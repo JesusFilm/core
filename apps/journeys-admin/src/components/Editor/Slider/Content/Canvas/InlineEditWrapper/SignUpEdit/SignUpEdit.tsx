@@ -3,7 +3,8 @@ import { ReactElement, useEffect, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useCommand } from '@core/journeys/ui/CommandProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { SignUp } from '@core/journeys/ui/SignUp'
 
 import {
@@ -14,10 +15,7 @@ import { SignUpFields } from '../../../../../../../../__generated__/SignUpFields
 import { InlineEditInput } from '../InlineEditInput'
 
 export const SIGN_UP_BLOCK_UPDATE_SUBMIT_LABEL = gql`
-  mutation SignUpBlockUpdateSubmitLabel(
-    $id: ID!
-    $submitLabel: String!
-  ) {
+  mutation SignUpBlockUpdateSubmitLabel($id: ID!, $submitLabel: String!) {
     signUpBlockUpdate(id: $id, input: { submitLabel: $submitLabel }) {
       id
       submitLabel
@@ -56,7 +54,7 @@ export function SignUpEdit({
     setValue(submitLabel)
   }, [submitLabel])
 
-  function resetCommandInput() {
+  function resetCommandInput(): void {
     setCommandInput({ id: uuidv4(), value })
   }
 
@@ -119,7 +117,9 @@ export function SignUpEdit({
           name="submitLabel"
           fullWidth
           multiline
-          inputRef={(ref) => ref && ref.focus()}
+          inputRef={(ref) => {
+            if (ref != null) ref.focus()
+          }}
           onFocus={(e) =>
             e.currentTarget.setSelectionRange(
               e.currentTarget.value.length,

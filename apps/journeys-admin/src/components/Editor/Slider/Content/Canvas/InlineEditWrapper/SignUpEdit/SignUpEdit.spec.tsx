@@ -1,19 +1,17 @@
+import { ApolloLink } from '@apollo/client'
 import { MockLink, MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import DebounceLink from 'apollo-link-debounce'
 import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { SignUpFields } from '../../../../../../../../__generated__/SignUpFields'
-
 import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
-import { ApolloLink } from '@apollo/client'
-import userEvent from '@testing-library/user-event'
-import DebounceLink from 'apollo-link-debounce'
 import { SIGN_UP_BLOCK_UPDATE_SUBMIT_LABEL, SignUpEdit } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -107,7 +105,7 @@ describe('SignUpEdit', () => {
     )
 
     const input = screen.getByRole('textbox', { name: '' })
-    userEvent.type(input, ' update')
+    await userEvent.type(input, ' update')
     await waitFor(() => expect(mockUpdateSuccess1.result).toHaveBeenCalled())
   })
 
@@ -129,7 +127,7 @@ describe('SignUpEdit', () => {
     )
 
     const input = screen.getByRole('textbox', { name: '' })
-    userEvent.type(input, ' update')
+    await userEvent.type(input, ' update')
     await waitFor(() => expect(mockUpdateSuccess1.result).toHaveBeenCalled())
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
@@ -160,7 +158,7 @@ describe('SignUpEdit', () => {
     )
 
     const input = screen.getByRole('textbox', { name: '' })
-    userEvent.type(input, ' update')
+    await userEvent.type(input, ' update')
     await waitFor(() => expect(firstUpdateMock.result).toHaveBeenCalled())
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
@@ -187,8 +185,8 @@ describe('SignUpEdit', () => {
     )
 
     const input = screen.getByRole('textbox', { name: '' })
-    userEvent.tripleClick(input)
-    userEvent.type(input, 'Submit')
+    await userEvent.tripleClick(input)
+    await userEvent.type(input, 'Submit')
 
     await waitFor(() =>
       expect(mockUpdateSuccess1.result).not.toHaveBeenCalled()

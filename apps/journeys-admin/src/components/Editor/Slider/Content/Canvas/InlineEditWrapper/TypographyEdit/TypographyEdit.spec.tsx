@@ -1,6 +1,8 @@
+import { ApolloLink } from '@apollo/client'
 import { MockLink, MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import DebounceLink from 'apollo-link-debounce'
 import { ComponentProps } from 'react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -8,12 +10,10 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
 import { TypographyVariant } from '../../../../../../../../__generated__/globalTypes'
-
-import { ApolloLink } from '@apollo/client'
-import DebounceLink from 'apollo-link-debounce'
-import { TYPOGRAPHY_BLOCK_UPDATE_CONTENT, TypographyEdit } from '.'
 import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
+
+import { TYPOGRAPHY_BLOCK_UPDATE_CONTENT, TypographyEdit } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -159,7 +159,7 @@ describe('TypographyEdit', () => {
       </MockedProvider>
     )
 
-    const input = screen.getByRole('textbox') as HTMLInputElement
+    const input = screen.getByRole('textbox')
     await userEvent.type(input, 'test', { skipClick: true })
     await waitFor(() => expect(mockUpdateSuccess1.result).toHaveBeenCalled())
     expect(input).toHaveTextContent('test')
@@ -189,7 +189,7 @@ describe('TypographyEdit', () => {
       </MockedProvider>
     )
 
-    const input = screen.getByRole('textbox') as HTMLInputElement
+    const input = screen.getByRole('textbox')
     await userEvent.type(input, 'test', { skipClick: true })
     await waitFor(() => expect(firstUpdateMock.result).toHaveBeenCalled())
 

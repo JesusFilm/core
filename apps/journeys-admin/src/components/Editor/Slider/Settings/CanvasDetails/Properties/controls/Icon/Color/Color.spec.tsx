@@ -9,7 +9,6 @@ import {
   IconColor,
   IconName
 } from '../../../../../../../../../../__generated__/globalTypes'
-
 import { CommandRedoItem } from '../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 
