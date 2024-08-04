@@ -1,10 +1,12 @@
 import { render, screen } from '@testing-library/react'
 import { HitsRenderState } from 'instantsearch.js/es/connectors/hits/connectHits'
 import { useHits } from 'react-instantsearch'
-import { StrategySection } from '.'
+
 import { strategyItems } from './data'
 
-jest.mock('react-instantsearch')
+import { StrategySection } from '.'
+
+jest.mock('react-instantsearch') 
 
 const mockedUseHits = useHits as jest.MockedFunction<typeof useHits>
 

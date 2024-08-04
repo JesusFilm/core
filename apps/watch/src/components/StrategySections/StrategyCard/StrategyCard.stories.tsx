@@ -1,7 +1,10 @@
 import { Meta, StoryObj } from '@storybook/react'
-import { InstantSearchTestWrapper } from 'libs/journeys/ui/src/libs/algolia/InstantSearchTestWrapper'
 import { ComponentProps } from 'react'
+
+import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
+
 import { watchConfig } from '../../../libs/storybook'
+
 import { StrategyCard } from './StrategyCard'
 
 const StrategyCardStory: Meta<typeof StrategyCard> = {

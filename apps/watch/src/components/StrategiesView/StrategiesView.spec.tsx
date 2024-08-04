@@ -2,27 +2,29 @@ import { render, screen } from '@testing-library/react'
 import { HitsRenderState } from 'instantsearch.js/es/connectors/hits/connectHits'
 import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
 import { useHits, useSearchBox } from 'react-instantsearch'
-import { strategyItems } from '../StrategySections/StrategySection/data'
-import { StrategiesView } from './StrategiesView'
 
+import { strategyItems } from '../StrategySections/StrategySection/data'
+
+import { StrategiesView } from './StrategiesView'
+ 
 jest.mock('react-instantsearch')
 
 const mockUseSearchBox = useSearchBox as jest.MockedFunction<
   typeof useSearchBox
 >
 
-function mockSearchBox() {
+function mockSearchBox(): jest.Mock<any,any,any> {
   const refine = jest.fn()
   mockUseSearchBox.mockReturnValue({
     query: 'Hello World!',
-    refine: refine
+    refine
   } as unknown as SearchBoxRenderState)
   return refine
 }
 
 const mockedUseHits = useHits as jest.MockedFunction<typeof useHits>
 
-function mockUseHits() {
+function mockUseHits():void {
   mockedUseHits.mockReturnValue({
     hits: strategyItems
   } as unknown as HitsRenderState)

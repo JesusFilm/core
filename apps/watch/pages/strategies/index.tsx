@@ -1,18 +1,18 @@
 /* eslint-disable i18next/no-literal-string */
+import algoliasearch from 'algoliasearch'
 import { GetStaticProps } from 'next'
+import singletonRouter from 'next/router'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { ReactElement } from 'react'
-
-import algoliasearch from 'algoliasearch'
-import singletonRouter from 'next/router'
 import { renderToString } from 'react-dom/server'
 import {
   InstantSearch,
   InstantSearchSSRProvider,
   InstantSearchServerState,
-  getServerState
+  getServerState 
 } from 'react-instantsearch'
 import { createInstantSearchRouterNext } from 'react-instantsearch-router-nextjs'
+
 import i18nConfig from '../../next-i18next.config'
 import { StrategiesView } from '../../src/components/StrategiesView'
 import { getFlags } from '../../src/libs/getFlags'

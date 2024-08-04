@@ -1,11 +1,14 @@
-import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
+
+import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
+
 import { watchConfig } from '../../libs/storybook'
 import {
   emptyResultsHandler,
   getStrategyCardDataHandlers
 } from '../StrategySections/StrategySection/StrategySection.handlers'
+ 
 import { StrategiesView } from './StrategiesView'
 
 const StrategiesViewStory: Meta<typeof StrategiesView> = {

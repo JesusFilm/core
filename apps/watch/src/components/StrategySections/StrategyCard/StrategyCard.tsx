@@ -2,9 +2,9 @@ import InsertPhotoRoundedIcon from '@mui/icons-material/InsertPhotoRounded'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { useTheme } from '@mui/material/styles'
-import Image from 'next/image'
+import Typography from '@mui/material/Typography'
+import Image from 'next/image' 
 import NextLink from 'next/link'
 import { ReactElement } from 'react'
 import { useHits } from 'react-instantsearch'
@@ -91,7 +91,7 @@ export function StrategyCard({
           >
             {item?.imageUrl != null ? (
               <Image
-                rel={priority === true ? 'preload' : undefined}
+                rel={priority ? 'preload' : undefined}
                 priority={priority}
                 className="MuiImageBackground-root"
                 src={item?.imageUrl}

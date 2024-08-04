@@ -1,5 +1,5 @@
-import { http, HttpResponse } from 'msw'
-
+import { HttpResponse, http } from 'msw'
+ 
 import { strategyItems } from './data'
 
 export const getStrategyCardDataHandlers = [
