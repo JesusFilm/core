@@ -29,10 +29,7 @@
           }
         ],
         "@typescript-eslint/no-misused-promises": "off",
-        "@typescript-eslint/naming-convention": {
-          "selector": "variable",
-          "leadingUnderscore": "allow"
-        }
+        "@typescript-eslint/naming-convention": "off"
       }
     },
     {
