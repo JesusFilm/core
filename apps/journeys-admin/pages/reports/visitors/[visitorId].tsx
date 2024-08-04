@@ -1,4 +1,5 @@
 import Typography from '@mui/material/Typography'
+import { useRouter } from 'next/router'
 import {
   AuthAction,
   useUser,
@@ -7,8 +8,7 @@ import {
 } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import { useRouter } from 'next/router'
-import { ReactElement } from 'react'
+import type { ReactElement } from 'react'
 import { HelpScoutBeacon } from '../../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../../src/components/PageWrapper'
 import { VisitorInfo } from '../../../src/components/VisitorInfo'
@@ -28,7 +28,7 @@ function SingleVisitorReportsPage(): ReactElement {
       <NextSeo title={t('Visitor Info')} />
       <PageWrapper
         title={t("Visitor's Activity")}
-        backHref={`/journeys/${journeyId}/reports/visitors`}
+        backHref={`/journeys/${journeyId as string}/reports/visitors`}
         user={user}
         sidePanelChildren={<DetailsForm id={id} />}
         sidePanelTitle={

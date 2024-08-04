@@ -1,17 +1,17 @@
 import { MockedProvider } from '@apollo/client/testing'
+import Slider from '@mui/material/Slider'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
 
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
-
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import { Slider } from '@mui/material'
-import { Toolbar } from '.'
 import { TestEditorState } from '../../../libs/TestEditorState'
+
+import { Toolbar } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,

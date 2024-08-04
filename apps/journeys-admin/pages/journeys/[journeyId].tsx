@@ -1,24 +1,17 @@
 import { gql, useQuery } from '@apollo/client'
-import {
-  AuthAction,
-  useUser,
-  withUser,
-  withUserTokenSSR
-} from 'next-firebase-auth'
+import { useRouter } from 'next/router'
+import { useUser, AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import { useRouter } from 'next/router'
-import { ReactElement } from 'react'
-
-import { ActiveContent } from '@core/journeys/ui/EditorProvider'
+import type { ReactElement } from 'react'
+import type { ActiveContent } from '@core/journeys/ui/EditorProvider'
 import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
-
-import {
+import type {
   GetAdminJourney,
   GetAdminJourneyVariables
 } from '../../__generated__/GetAdminJourney'
-import { GetCustomDomains } from '../../__generated__/GetCustomDomains'
-import { UserJourneyOpen } from '../../__generated__/UserJourneyOpen'
+import type { GetCustomDomains } from '../../__generated__/GetCustomDomains'
+import type { UserJourneyOpen } from '../../__generated__/UserJourneyOpen'
 import { AccessDenied } from '../../src/components/AccessDenied'
 import { Editor } from '../../src/components/Editor'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
@@ -59,8 +52,8 @@ function JourneyEditPage({ status }): ReactElement {
           status === 'noAccess'
             ? t('Request Access')
             : data?.journey?.title != null
-              ? t('Edit {{title}}', { title: data.journey.title })
-              : t('Edit Journey')
+            ? t('Edit {{title}}', { title: data.journey.title })
+            : t('Edit Journey')
         }
         description={data?.journey?.description ?? undefined}
       />
@@ -129,7 +122,7 @@ export const getServerSideProps = withUserTokenSSR({
       return {
         redirect: {
           permanent: false,
-          destination: `/`
+          destination: '/'
         }
       }
     }

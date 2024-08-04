@@ -1,23 +1,23 @@
+import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
+import type { GetStaticProps } from 'next'
+import { useRouter } from 'next/router'
+import { useUser, withUser, withUserTokenSSR } from 'next-firebase-auth'
+import { useTranslation } from 'next-i18next'
+import { NextSeo } from 'next-seo'
+import {type  ReactElement, useEffect } from 'react'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { TemplateView } from '@core/journeys/ui/TemplateView'
 import { GET_JOURNEY, useJourneyQuery } from '@core/journeys/ui/useJourneyQuery'
 import { GET_JOURNEYS } from '@core/journeys/ui/useJourneysQuery'
 import { GET_TAGS } from '@core/journeys/ui/useTagsQuery'
-import Box from '@mui/material/Box'
-import Stack from '@mui/material/Stack'
-import { GetStaticProps } from 'next'
-import { useUser, withUser, withUserTokenSSR } from 'next-firebase-auth'
-import { useTranslation } from 'next-i18next'
-import { NextSeo } from 'next-seo'
-import { useRouter } from 'next/router'
-import { ReactElement, useEffect } from 'react'
-import { GetJourney, GetJourneyVariables } from '../../__generated__/GetJourney'
-import {
+import type { GetJourney, GetJourneyVariables } from '../../__generated__/GetJourney'
+import type {
   GetJourneys,
   GetJourneysVariables
 } from '../../__generated__/GetJourneys'
-import { GetTags } from '../../__generated__/GetTags'
+import type { GetTags } from '../../__generated__/GetTags'
 import { IdType } from '../../__generated__/globalTypes'
 import { HelpScoutBeacon } from '../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../src/components/PageWrapper'
@@ -31,11 +31,17 @@ function TemplateDetailsPage(): ReactElement {
     id: router.query.journeyId as string,
     idType: IdType.databaseId
   })
-  const { query } = useTeam()
+  const { activeTeam, refetch, query } = useTeam()
 
-  useEffect(() => {
-    void query.refetch()
-  }, [user.id, query])
+  /* 
+    biome-ignore lint/correctness/useExhaustiveDependencies: 
+    ensure team is refetched if user is not loaded before provider
+  */
+    useEffect(() => {
+      if (activeTeam == null) {
+        void refetch()
+      }
+    }, [user.id, query, activeTeam, refetch])
 
   return (
     <>

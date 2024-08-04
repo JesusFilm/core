@@ -1,8 +1,8 @@
+import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
-import Box from '@mui/material/Box'
 import { TeamIntegrations } from '.'
 
 const TeamIntegrationsStory: Meta<typeof TeamIntegrations> = {

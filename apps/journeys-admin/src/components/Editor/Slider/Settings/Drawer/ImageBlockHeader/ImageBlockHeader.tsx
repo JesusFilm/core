@@ -67,12 +67,12 @@ export function ImageBlockHeader({
               {loading
                 ? t('Image is uploading...')
                 : selectedBlock?.src != null
-                  ? t('Selected Image')
-                  : showAdd
-                    ? t('Select Image')
-                    : error === true
-                      ? t('Upload failed')
-                      : t('No Image Selected')}
+                ? t('Selected Image')
+                : showAdd
+                ? t('Select Image')
+                : error === true
+                ? t('Upload failed')
+                : t('No Image Selected')}
             </Typography>
             <Typography
               variant="caption"

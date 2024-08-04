@@ -5,18 +5,17 @@ import CardContent from '@mui/material/CardContent'
 import Stack from '@mui/material/Stack'
 import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
-import { GetServerSideProps } from 'next'
-import { useUser, withUser, withUserTokenSSR } from 'next-firebase-auth'
-import { useTranslation } from 'next-i18next'
+import type {  GetServerSideProps } from 'next'
 import NextLink from 'next/link'
+import {useUser, withUser, withUserTokenSSR } from 'next-firebase-auth'
+import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useState } from 'react'
-
-import {
+import {type ReactElement, useState } from 'react'
+import type {
   JourneysEmailPreference,
   JourneysEmailPreferenceVariables
 } from '../../__generated__/JourneysEmailPreference'
-import {
+import type {
   UpdateJourneysEmailPreference,
   UpdateJourneysEmailPreferenceVariables,
   UpdateJourneysEmailPreference_updateJourneysEmailPreference
@@ -86,7 +85,7 @@ function EmailPreferencesPage({
             }
           }
         }).then(() => {
-          enqueueSnackbar(t(`Email Preferences Updated.`), {
+          enqueueSnackbar(t('Email Preferences Updated.'), {
             variant: 'success',
             preventDuplicate: false
           })

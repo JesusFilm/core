@@ -63,7 +63,7 @@ export function HostForm({
         await hostDelete({
           variables: { id: host.id, teamId: journey.team.id },
           update(
-            // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             cache: ApolloCache<any>
           ) {
             cache.evict({

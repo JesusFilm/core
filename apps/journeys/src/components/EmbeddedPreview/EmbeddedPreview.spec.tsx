@@ -3,17 +3,17 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { v4 as uuidv4 } from 'uuid'
 
+import { blockHistoryVar } from '@core/journeys/ui/block'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { STEP_VIEW_EVENT_CREATE } from '@core/journeys/ui/Step/Step'
-import { blockHistoryVar } from '@core/journeys/ui/block'
 
-import { JourneyFields as Journey } from '../../../__generated__/JourneyFields'
 import {
   JourneyStatus,
   MessagePlatform,
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
+import { JourneyFields as Journey } from '../../../__generated__/JourneyFields'
 import { basic } from '../../libs/testData/storyData'
 import {
   JOURNEY_VIEW_EVENT_CREATE,

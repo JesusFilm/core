@@ -8,17 +8,14 @@ import {
 } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import { useRouter } from 'next/router'
-import { ReactElement, useEffect } from 'react'
-
+import { type ReactElement, useEffect } from 'react'
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
-
-import {
+import type {
   GetAdminJourneys,
   GetAdminJourneysVariables
 } from '../__generated__/GetAdminJourneys'
-import {
+import type {
   UpdateLastActiveTeamId,
   UpdateLastActiveTeamIdVariables
 } from '../__generated__/UpdateLastActiveTeamId'
@@ -31,6 +28,7 @@ import { TeamMenu } from '../src/components/Team/TeamMenu'
 import { TeamSelect } from '../src/components/Team/TeamSelect'
 import { initAndAuthApp } from '../src/libs/initAndAuthApp'
 import { GET_ADMIN_JOURNEYS } from '../src/libs/useAdminJourneysQuery/useAdminJourneysQuery'
+import { useRouter } from 'next/router'
 
 function IndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -38,12 +36,15 @@ function IndexPage(): ReactElement {
   const router = useRouter()
   const { query, activeTeam, refetch } = useTeam()
 
-  // MA - ensure team is refetched if user is not loaded before provider
-  useEffect(() => {
+  /* 
+    biome-ignore lint/correctness/useExhaustiveDependencies: 
+    ensure team is refetched if user is not loaded before provider
+  */
+    useEffect(() => {
     if (activeTeam == null) {
-      refetch()
+      void refetch()
     }
-  }, [user.id, query, activeTeam])
+  }, [user.id, query, activeTeam, refetch])
 
   return (
     <>

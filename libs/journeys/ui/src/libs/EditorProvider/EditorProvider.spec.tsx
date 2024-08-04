@@ -2,6 +2,7 @@ import { renderHook } from '@testing-library/react'
 import { ReactNode, useContext } from 'react'
 
 import type { TreeBlock } from '../block'
+import { type JourneyAnalytics } from '../useJourneyAnalyticsQuery'
 
 import { EditorContext, reducer } from './EditorProvider'
 
@@ -12,7 +13,6 @@ import {
   EditorProvider,
   EditorState
 } from '.'
-import { type JourneyAnalytics } from '../useJourneyAnalyticsQuery'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -158,6 +158,7 @@ describe('EditorContext', () => {
           selectedBlock: block
         })
       })
+
       it('should not set ActiveSlide when showAnalytics is true', () => {
         const block: TreeBlock = {
           id: 'step0.id',
@@ -589,7 +590,7 @@ describe('EditorContext', () => {
             type: 'SetEditorFocusAction'
           })
         ).toEqual({
-          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer,
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
           activeContent: 'canvas',
           activeSlide: ActiveSlide.Content,
           selectedAttributeId: 'selectedAttributeId',
