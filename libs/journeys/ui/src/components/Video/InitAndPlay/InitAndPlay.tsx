@@ -12,8 +12,8 @@ import Player from 'video.js/dist/types/player'
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 
 import { VideoBlockSource } from '../../../../__generated__/globalTypes'
-import { useJourney } from '../../../libs/JourneyProvider'
 import { TreeBlock, useBlocks } from '../../../libs/block'
+import { useJourney } from '../../../libs/JourneyProvider'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
 
 interface InitAndPlayProps {

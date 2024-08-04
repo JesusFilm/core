@@ -4,11 +4,11 @@ import { styled } from '@mui/material/styles'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import Clock1 from '@core/shared/ui/icons/Clock1'
 import TrendDown1 from '@core/shared/ui/icons/TrendDown1'
 import UserProfile3 from '@core/shared/ui/icons/UserProfile3'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { AnalyticsDataPoint } from '../../../AnalyticsDataPoint'
 
 const StatsOverlay = styled(Stack)(({ theme }) => ({

@@ -6,7 +6,6 @@ import { CaslFactory } from './caslFactory'
   imports: [],
   exports: []
 })
-// biome-ignore lint/complexity/noStaticOnlyClass: <explanation>
 export class CaslAuthModule {
   /**
    * @param caslFactory Class that extends CaslFactory and defines the user's abilities

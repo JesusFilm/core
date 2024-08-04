@@ -4,8 +4,8 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { VideoLabel } from '../../../../../../../../__generated__/globalTypes'
 
-import { GET_VIDEOS } from './VideoFromLocal'
 import { videos } from './data'
+import { GET_VIDEOS } from './VideoFromLocal'
 
 import { VideoFromLocal } from '.'
 

@@ -2,9 +2,9 @@ import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 
 import {
   BlockFields_CardBlock as CardBlock,
@@ -16,8 +16,8 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../../../../__generated__/globalTypes'
-
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
+
 import { CARD_BLOCK_THEME_MODE_UPDATE, CardStyling } from './CardStyling'
 
 jest.mock('@mui/material/useMediaQuery', () => ({

@@ -1,12 +1,13 @@
+import { CountryLanguage } from '.prisma/api-languages-client'
+
+import { prismaMock } from '../../../../test/prismaMock'
+import { parse, parseMany, processTable } from '../../importer'
+
 import {
   importCountryLanguages,
   importMany,
   importOne
 } from './countryLanguages'
-
-import { prismaMock } from '../../../../test/prismaMock'
-import { parse, parseMany, processTable } from '../../importer'
-import { CountryLanguage } from '.prisma/api-languages-client'
 
 const countryLanguage = {
   countryId: 'AD',
@@ -78,6 +79,7 @@ describe('bigquery/importers/countryLanguages', () => {
         update: countryLanguage
       })
     })
+
     it('should throw error if language not found', async () => {
       await importCountryLanguages([], ['AD'])
       await expect(
@@ -87,8 +89,9 @@ describe('bigquery/importers/countryLanguages', () => {
           countryId: 'AD',
           displaySpeakers: null
         })
-      ).rejects.toThrowError()
+      ).rejects.toThrow()
     })
+
     it('should throw error if country not found', async () => {
       await importCountryLanguages(['529'], [])
       await expect(
@@ -98,7 +101,7 @@ describe('bigquery/importers/countryLanguages', () => {
           countryId: 'AD',
           displaySpeakers: null
         })
-      ).rejects.toThrowError()
+      ).rejects.toThrow()
     })
   })
 
@@ -126,6 +129,7 @@ describe('bigquery/importers/countryLanguages', () => {
         skipDuplicates: true
       })
     })
+
     it('should throw error if some rows do not match schema', async () => {
       prismaMock.countryLanguage.createMany.mockImplementation()
       await importCountryLanguages(['529'], ['AD'])
@@ -148,7 +152,7 @@ describe('bigquery/importers/countryLanguages', () => {
             languageId: '529'
           }
         ])
-      ).rejects.toThrowError()
+      ).rejects.toThrow()
     })
   })
 })

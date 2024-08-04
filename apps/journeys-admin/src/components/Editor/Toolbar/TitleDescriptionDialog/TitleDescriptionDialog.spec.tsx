@@ -1,21 +1,20 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
 
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import { screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { TitleDescriptionDialog } from '.'
 import {
   JourneySettingsUpdate,
   JourneySettingsUpdateVariables
 } from '../../../../../__generated__/JourneySettingsUpdate'
 import { JOURNEY_SETTINGS_UPDATE } from '../../../../libs/useJourneyUpdateMutation/useJourneyUpdateMutation'
 import { journey } from '../../../JourneyList/ActiveJourneyList/ActivePriorityList/ActiveJourneyListData'
+
+import { TitleDescriptionDialog } from '.'
 
 const onClose = jest.fn()
 
@@ -67,7 +66,7 @@ describe('TitleDescriptionDialog', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    userEvent.type(screen.getAllByRole('textbox')[0], 'New Journey')
+    await userEvent.type(screen.getAllByRole('textbox')[0], 'New Journey')
     fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
     await waitFor(() => expect(onClose).toHaveBeenCalled())
     expect(journey.title).not.toBe('New Journey')

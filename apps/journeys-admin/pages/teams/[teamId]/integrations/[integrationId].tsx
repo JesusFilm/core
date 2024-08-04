@@ -7,6 +7,7 @@ import {
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
+
 import { GrowthSpacesIntegrationDetails } from '../../../../src/components/GrowthSpaces'
 import { PageWrapper } from '../../../../src/components/PageWrapper'
 import { initAndAuthApp } from '../../../../src/libs/initAndAuthApp'

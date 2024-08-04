@@ -11,6 +11,7 @@
     "**/*.spec.tsx",
     "**/*.spec.js",
     "**/*.spec.jsx",
+    "**/*.mock.tsx",
     "**/*.d.ts",
     "setupTests.ts"
   ]
