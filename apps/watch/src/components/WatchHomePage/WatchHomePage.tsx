@@ -3,16 +3,17 @@ import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import type { ReactElement } from 'react'
+import { useConfigure } from 'react-instantsearch'
 
+import { SearchBar } from '@core/journeys/ui/SearchBar'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import { PageWrapper } from '../PageWrapper'
 import { VideoGrid } from '../VideoGrid'
 
-import { SearchBar } from '@core/journeys/ui/SearchBar'
-import { useConfigure } from 'react-instantsearch'
+
 import { HomeHero } from './HomeHero'
 import { SeeAllVideos } from './SeeAllVideos'
 

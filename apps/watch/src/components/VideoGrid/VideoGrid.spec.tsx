@@ -1,7 +1,9 @@
 import { fireEvent, render, screen } from '@testing-library/react'
+
 import { useAlgoliaVideos } from '../../libs/algolia/useAlgoliaVideos'
 import type { CoreVideo } from '../../libs/algolia/useAlgoliaVideos'
 import { videos } from '../Videos/__generated__/testData'
+
 import { VideoGrid } from './VideoGrid'
 
 jest.mock('react-instantsearch')

@@ -1,11 +1,11 @@
 import { render, waitFor } from '@testing-library/react'
 
-import { videos } from '../Videos/__generated__/testData'
-
 import {
-  CoreVideo,
+  type CoreVideo,
   useAlgoliaVideos
 } from '../../libs/algolia/useAlgoliaVideos'
+import { videos } from '../Videos/__generated__/testData'
+
 import { VideoCarousel } from './VideoCarousel'
 
 jest.mock('../../libs/algolia/useAlgoliaVideos')

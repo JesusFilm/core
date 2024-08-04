@@ -1,21 +1,22 @@
 import { gql } from '@apollo/client'
-import { GetStaticProps } from 'next'
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import algoliasearch from 'algoliasearch'
+import type { UiState } from 'instantsearch.js'
+import type { RouterProps } from 'instantsearch.js/es/middlewares'
+import type { GetStaticProps } from 'next'
 import singletonRouter from 'next/router'
-import { ReactElement } from 'react'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import type { ReactElement } from 'react'
 import { renderToString } from 'react-dom/server'
 import {
   Configure,
   InstantSearch,
   InstantSearchSSRProvider,
-  InstantSearchServerState,
+  type InstantSearchServerState,
   getServerState
 } from 'react-instantsearch'
 import { createInstantSearchRouterNext } from 'react-instantsearch-router-nextjs'
 
-import algoliasearch from 'algoliasearch'
-import { UiState } from 'instantsearch.js'
-import { RouterProps } from 'instantsearch.js/es/middlewares'
+
 import i18nConfig from '../../next-i18next.config'
 import { WatchHomePage as VideoHomePage } from '../../src/components/WatchHomePage'
 import { getFlags } from '../../src/libs/getFlags'

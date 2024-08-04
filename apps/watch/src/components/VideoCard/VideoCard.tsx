@@ -12,8 +12,9 @@ import { useTranslation } from 'next-i18next'
 import type { ReactElement } from 'react'
 
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
-import type { VideoChildFields } from '../../../__generated__/VideoChildFields'
+
 import { VideoLabel } from '../../../__generated__/globalTypes'
+import type { VideoChildFields } from '../../../__generated__/VideoChildFields'
 import { useAlgoliaVideos } from '../../libs/algolia/useAlgoliaVideos'
 import { getLabelDetails } from '../../libs/utils/getLabelDetails/getLabelDetails'
 

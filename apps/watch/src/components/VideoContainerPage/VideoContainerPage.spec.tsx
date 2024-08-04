@@ -2,12 +2,12 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
+import { useAlgoliaVideos } from '../../libs/algolia/useAlgoliaVideos'
 import { getVideoChildrenMock } from '../../libs/useVideoChildren/getVideoChildrenMock'
 import { VideoProvider } from '../../libs/videoContext'
 import { videos } from '../Videos/__generated__/testData'
 
 import { VideoContainerPage } from '.'
-import { useAlgoliaVideos } from '../../libs/algolia/useAlgoliaVideos'
 
 jest.mock('next/router', () => ({
   __esModule: true,

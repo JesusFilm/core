@@ -1,23 +1,24 @@
-import { ApolloProvider, NormalizedCacheObject, gql } from '@apollo/client'
-import { GetStaticProps } from 'next'
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { ApolloProvider, type NormalizedCacheObject, gql } from '@apollo/client'
+import algoliasearch from 'algoliasearch'
+import type { UiState } from 'instantsearch.js'
+import type { RouterProps } from 'instantsearch.js/es/middlewares'
+import type { GetStaticProps } from 'next'
 import singletonRouter from 'next/router'
-import { ReactElement } from 'react'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import type { ReactElement } from 'react'
 import { renderToString } from 'react-dom/server'
 import {
   InstantSearch,
-  InstantSearchProps,
+  type InstantSearchProps,
   InstantSearchSSRProvider,
-  InstantSearchServerState,
+  type InstantSearchServerState,
   getServerState
 } from 'react-instantsearch'
+import { createInstantSearchRouterNext } from 'react-instantsearch-router-nextjs'
 
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 
-import algoliasearch from 'algoliasearch'
-import { UiState } from 'instantsearch.js'
-import { RouterProps } from 'instantsearch.js/es/middlewares'
-import { createInstantSearchRouterNext } from 'react-instantsearch-router-nextjs'
+
 import i18nConfig from '../../next-i18next.config'
 import { Videos } from '../../src/components/VideosPage'
 import {

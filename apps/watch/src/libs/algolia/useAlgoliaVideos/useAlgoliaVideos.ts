@@ -1,12 +1,13 @@
-import { BaseHit, Hit } from 'instantsearch.js'
+import type { BaseHit, Hit } from 'instantsearch.js'
 import { useInfiniteHits, useInstantSearch } from 'react-instantsearch'
-import {
+
+import type { VideoLabel } from '../../../../__generated__/globalTypes'
+import type {
   VideoChildFields_imageAlt,
   VideoChildFields_snippet,
   VideoChildFields_title,
   VideoChildFields_variant
 } from '../../../../__generated__/VideoChildFields'
-import { VideoLabel } from '../../../../__generated__/globalTypes'
 
 export interface AlgoliaVideo extends Hit<BaseHit> {
   videoId: string

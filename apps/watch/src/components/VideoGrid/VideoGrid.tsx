@@ -3,11 +3,13 @@ import LoadingButton from '@mui/lab/LoadingButton'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import type { ComponentProps, ReactElement } from 'react'
+
+import { EmptySearch } from '@core/journeys/ui/EmptySearch'
+
 import type { VideoChildFields } from '../../../__generated__/VideoChildFields'
 import { useAlgoliaVideos } from '../../libs/algolia/useAlgoliaVideos'
 import { VideoCard } from '../VideoCard'
 
-import { EmptySearch } from '@core/journeys/ui/EmptySearch'
 
 interface VideoGridProps {
   videos?: VideoChildFields[]
@@ -94,7 +96,7 @@ export function VideoGrid({
             >
               {loading
                 ? 'Loading...'
-                : isLastPage !== true
+                : !isLastPage
                   ? 'Load More'
                   : 'No More Videos'}
             </LoadingButton>

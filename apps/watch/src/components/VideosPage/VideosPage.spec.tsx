@@ -10,8 +10,10 @@ import {
   useRefinementList,
   useSearchBox
 } from 'react-instantsearch'
+
 import { useAlgoliaVideos } from '../../libs/algolia/useAlgoliaVideos'
 import type { CoreVideo } from '../../libs/algolia/useAlgoliaVideos'
+
 import { VideosPage } from './VideosPage'
 
 jest.mock('react-instantsearch')

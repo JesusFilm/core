@@ -5,18 +5,20 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Formik } from 'formik'
-import { useTranslation } from 'next-i18next'
 import { useRouter } from 'next/compat/router'
-import { ChangeEvent, ReactElement, useMemo } from 'react'
+import { useTranslation } from 'next-i18next'
+import { type ChangeEvent, type ReactElement, useMemo } from 'react'
 import {
   useClearRefinements,
   useRefinementList,
   useSearchBox
 } from 'react-instantsearch'
 
-import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
+import type { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
-import { GetLanguages } from '../../../../__generated__/GetLanguages'
+
+import type { GetLanguages } from '../../../../__generated__/GetLanguages'
+
 import { LanguagesFilter } from './LanguagesFilter'
 
 const subtitleLanguageIds = [

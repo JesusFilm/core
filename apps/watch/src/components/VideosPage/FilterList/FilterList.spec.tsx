@@ -1,14 +1,16 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { ClearRefinementsRenderState } from 'instantsearch.js/es/connectors/clear-refinements/connectClearRefinements'
-import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
-import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
-import { NextRouter, useRouter } from 'next/router'
+import type { ClearRefinementsRenderState } from 'instantsearch.js/es/connectors/clear-refinements/connectClearRefinements'
+import type { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
+import type { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
+import { type NextRouter, useRouter } from 'next/router'
 import {
   useClearRefinements,
   useRefinementList,
   useSearchBox
 } from 'react-instantsearch'
+
 import { languages } from '../testData'
+
 import { FilterList } from './FilterList'
 
 jest.mock('react-instantsearch')
@@ -103,6 +105,7 @@ describe('FilterList', () => {
         highlighted: '21028'
       }
     ]
+
     it('should refine by subtitle on subtitle language filter', async () => {
       const refineSubtitles = jest.fn()
 

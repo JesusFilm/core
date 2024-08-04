@@ -1,9 +1,11 @@
-import { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react'
 
 import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
-import { WatchHomePage } from '.'
+
 import { watchConfig } from '../../libs/storybook'
 import { videos } from '../Videos/__generated__/testData'
+
+import { WatchHomePage } from '.'
 
 const WatchHomePageStory: Meta<typeof WatchHomePage> = {
   ...watchConfig,

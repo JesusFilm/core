@@ -1,12 +1,13 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
+
+import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
 
 import { watchConfig } from '../../libs/storybook/config'
 import { videos } from '../Videos/__generated__/testData'
 
-import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
 import { VideoGrid } from './VideoGrid'
 
 const VideoGridStory: Meta<typeof VideoGrid> = {

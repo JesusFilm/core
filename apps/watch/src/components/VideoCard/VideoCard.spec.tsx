@@ -1,11 +1,12 @@
 import { render } from '@testing-library/react'
 
-import { VideoCard } from '.'
 import {
-  CoreVideo,
+  type CoreVideo,
   useAlgoliaVideos
 } from '../../libs/algolia/useAlgoliaVideos'
 import { videos } from '../Videos/__generated__/testData'
+
+import { VideoCard } from '.'
 
 jest.mock('react-instantsearch')
 jest.mock('../../libs/algolia/useAlgoliaVideos')

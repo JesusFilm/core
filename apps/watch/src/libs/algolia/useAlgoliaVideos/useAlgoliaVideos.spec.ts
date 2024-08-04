@@ -1,13 +1,14 @@
 import { renderHook } from '@testing-library/react'
-import { InfiniteHitsRenderState } from 'instantsearch.js/es/connectors/infinite-hits/connectInfiniteHits'
-import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
-import { NextRouter, useRouter } from 'next/router'
+import type { InfiniteHitsRenderState } from 'instantsearch.js/es/connectors/infinite-hits/connectInfiniteHits'
+import type { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
+import { type NextRouter, useRouter } from 'next/router'
 import {
-  InstantSearchApi,
+  type InstantSearchApi,
   useInfiniteHits,
   useInstantSearch,
   useRefinementList
 } from 'react-instantsearch'
+
 import type { AlgoliaVideo, CoreVideo } from './useAlgoliaVideos'
 import { transformItems, useAlgoliaVideos } from './useAlgoliaVideos'
 
