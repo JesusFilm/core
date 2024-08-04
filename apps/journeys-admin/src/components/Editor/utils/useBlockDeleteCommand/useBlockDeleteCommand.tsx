@@ -1,4 +1,6 @@
 import { useApolloClient } from '@apollo/client'
+
+import { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import {
   ActiveContent,
@@ -6,12 +8,12 @@ import {
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { TreeBlock } from '@core/journeys/ui/block'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../../__generated__/BlockFields'
 import { blockDeleteUpdate } from '../../../../libs/blockDeleteUpdate'
 import { useBlockDeleteMutation } from '../../../../libs/useBlockDeleteMutation'
 import { useBlockRestoreMutation } from '../../../../libs/useBlockRestoreMutation'
+
 import { setBlockRestoreEditorState } from './setBlockRestoreEditorState'
 
 export function useBlockDeleteCommand(): {
@@ -78,8 +80,9 @@ export function useBlockDeleteCommand(): {
             ({ parentOrder }) => parentOrder === deletedBlockParentOrder
           ) ??
           stepSiblingsAfterDelete.find(({ parentOrder }) => {
-            if (deletedBlockParentOrder != null)
-              return parentOrder === deletedBlockParentOrder - 1
+            return deletedBlockParentOrder != null
+              ? parentOrder === deletedBlockParentOrder - 1
+              : null
           })
         currentBlock.__typename === 'StepBlock'
           ? dispatch({

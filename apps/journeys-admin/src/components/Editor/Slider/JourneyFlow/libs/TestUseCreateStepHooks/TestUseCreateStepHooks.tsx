@@ -29,7 +29,7 @@ function CreateStepComponent({
   const createStepFromSocialPreview = useCreateStepFromSocialPreview()
   const createStep = useCreateStep()
 
-  function handleCreateStepFromStepClick() {
+  function handleCreateStepFromStepClick(): void {
     if (sourceStep == null) return
 
     createStepFromStep({
@@ -39,7 +39,7 @@ function CreateStepComponent({
     })
   }
 
-  function handleCreateStepFromActionClick() {
+  function handleCreateStepFromActionClick(): void {
     if (sourceStep == null || sourceBlock == null) return
 
     createStepFromAction({
@@ -50,14 +50,14 @@ function CreateStepComponent({
     })
   }
 
-  function handleCreateStepFromSocialPreviewClick() {
+  function handleCreateStepFromSocialPreviewClick(): void {
     createStepFromSocialPreview({
       x: 777,
       y: 777
     })
   }
 
-  function handleCreateStepClick() {
+  function handleCreateStepClick(): void {
     createStep({
       x: -200,
       y: 38

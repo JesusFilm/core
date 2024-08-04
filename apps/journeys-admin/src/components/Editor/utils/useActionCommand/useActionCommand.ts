@@ -50,7 +50,7 @@ export function useActionCommand(): {
       undoAction,
       editorFocus
     }: AddActionParameters) {
-      await add({
+      add({
         parameters: {
           execute: {
             action

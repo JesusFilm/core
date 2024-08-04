@@ -79,7 +79,7 @@ export function RadioOptionEdit({
       }
     })
   }
-  const inputRef = useOnClickOutside(async () => await handleSaveBlock())
+  const inputRef = useOnClickOutside(async () => handleSaveBlock())
 
   const input = (
     <InlineEditInput

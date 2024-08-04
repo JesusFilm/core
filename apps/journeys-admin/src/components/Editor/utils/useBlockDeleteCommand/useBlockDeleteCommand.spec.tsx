@@ -1,9 +1,11 @@
 import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, renderHook, screen, waitFor } from '@testing-library/react'
+
 import { CommandProvider } from '@core/journeys/ui/CommandProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
-import { fireEvent, renderHook, screen, waitFor } from '@testing-library/react'
+
 import {
   deleteCardBlockMock,
   deleteStepMock,
@@ -15,6 +17,7 @@ import {
   useBlockRestoreMutationMock
 } from '../../../../libs/useBlockRestoreMutation/useBlockRestoreMutation.mock'
 import { CommandUndoItem } from '../../Toolbar/Items/CommandUndoItem'
+
 import { useBlockDeleteCommand } from './useBlockDeleteCommand'
 
 describe('useBlockDeleteCommand', () => {

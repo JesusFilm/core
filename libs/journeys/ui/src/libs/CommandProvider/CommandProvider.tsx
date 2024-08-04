@@ -181,7 +181,7 @@ export function CommandProvider({
     ...initialState
   })
 
-  function undo() {
+  function undo(): void {
     if (state.undo == null) return
     dispatch({ type: 'UndoCallbackAction' })
     if (state.undo.undo != null) {
@@ -191,7 +191,7 @@ export function CommandProvider({
     }
   }
 
-  function redo() {
+  function redo(): void {
     if (state.redo == null) return
     dispatch({ type: 'RedoCallbackAction' })
     if (state.redo.redo != null) {
@@ -205,7 +205,7 @@ export function CommandProvider({
     }
   }
 
-  function add<E = unknown, R = E, U = E>(command: Command<E, R, U>) {
+  function add<E = unknown, R = E, U = E>(command: Command<E, R, U>): void {
     command.execute(command.parameters.execute)
     dispatch({ type: 'AddCommandAction', command: command as Command })
   }

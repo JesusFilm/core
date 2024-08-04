@@ -6,8 +6,6 @@ import {
   BlockDelete,
   BlockDeleteVariables
 } from '../../../__generated__/BlockDelete'
-
-import { TreeBlock } from '@core/journeys/ui/block'
 import {
   BlockFields_CardBlock as CardBlock,
   BlockFields_StepBlock as StepBlock,
