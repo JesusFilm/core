@@ -49,10 +49,10 @@ export function Action(): ReactElement {
   function removeAction(): void {
     if (selectedBlock == null) return
 
-    const { id, action, __typename } = selectedBlock
+    const { id, action, __typename: typename } = selectedBlock
     addAction({
       blockId: id,
-      blockTypename: __typename,
+      blockTypename: typename,
       action: null,
       undoAction: action,
       editorFocus: {

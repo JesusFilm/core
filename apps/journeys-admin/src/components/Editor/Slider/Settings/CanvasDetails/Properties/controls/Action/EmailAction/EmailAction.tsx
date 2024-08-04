@@ -36,10 +36,10 @@ export function EmailAction(): ReactElement {
   function handleSubmit(email: string): void {
     if (selectedBlock == null) return
 
-    const { id, action, __typename } = selectedBlock
+    const { id, action, __typename: typename } = selectedBlock
     addAction({
       blockId: id,
-      blockTypename: __typename,
+      blockTypename: typename,
       action: {
         __typename: 'EmailAction',
         parentBlockId: id,
