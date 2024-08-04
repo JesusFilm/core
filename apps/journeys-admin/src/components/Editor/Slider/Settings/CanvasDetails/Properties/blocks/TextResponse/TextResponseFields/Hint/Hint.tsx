@@ -60,7 +60,6 @@ export function Hint(): ReactElement {
 
   function handleSubmit(value: string): void {
     if (selectedBlock == null) return
-
     add({
       id: commandInput.id,
       parameters: {

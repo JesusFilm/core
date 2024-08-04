@@ -62,7 +62,6 @@ export function Label(): ReactElement {
 
   function handleSubmit(value: string): void {
     if (selectedBlock == null) return
-
     add({
       parameters: {
         execute: {
