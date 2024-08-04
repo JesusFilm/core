@@ -70,6 +70,24 @@ const mockLabelUpdate2 = {
   }))
 }
 
+const mockLabelUpdate3 = {
+  request: {
+    query: TEXT_RESPONSE_LABEL_UPDATE,
+    variables: {
+      id: block.id,
+      label: 'Your answer here more'
+    }
+  },
+  result: jest.fn(() => ({
+    data: {
+      textResponseBlockUpdate: {
+        id: block.id,
+        label: 'Your answer here more'
+      }
+    }
+  }))
+}
+
 beforeEach(() => jest.clearAllMocks())
 
 describe('Edit Label field', () => {
@@ -142,14 +160,9 @@ describe('Edit Label field', () => {
   })
 
   it('should redo the change to label that was undone', async () => {
-    const firstLabelUpdateMock = {
-      ...mockLabelUpdate1,
-      maxUsageCount: 2
-    }
-
     const link = ApolloLink.from([
       new DebounceLink(500),
-      new MockLink([firstLabelUpdateMock, mockLabelUpdate2])
+      new MockLink([mockLabelUpdate1, mockLabelUpdate2, mockLabelUpdate3])
     ])
 
     render(
@@ -164,12 +177,31 @@ describe('Edit Label field', () => {
 
     const field = screen.getByRole('textbox', { name: 'Label' })
     userEvent.type(field, ' more')
-    await waitFor(() => expect(firstLabelUpdateMock.result).toHaveBeenCalled())
+    await waitFor(() => expect(mockLabelUpdate1.result).toHaveBeenCalled())
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
     await waitFor(() => expect(mockLabelUpdate2.result).toHaveBeenCalled())
 
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
-    await waitFor(() => expect(firstLabelUpdateMock.result).toHaveBeenCalled())
+    await waitFor(() => expect(mockLabelUpdate3.result).toHaveBeenCalled())
+  })
+
+  it('should not call mutation if not selectedBlock', async () => {
+    const link = ApolloLink.from([
+      new DebounceLink(500),
+      new MockLink([mockLabelUpdate1])
+    ])
+
+    render(
+      <MockedProvider link={link} addTypename={false}>
+        <EditorProvider initialState={{}}>
+          <Label />
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    const field = screen.getByRole('textbox', { name: 'Label' })
+    await userEvent.type(field, ' more')
+    await waitFor(() => expect(mockLabelUpdate1.result).not.toHaveBeenCalled())
   })
 })
