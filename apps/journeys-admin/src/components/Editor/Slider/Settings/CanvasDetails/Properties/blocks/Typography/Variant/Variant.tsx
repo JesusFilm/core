@@ -60,37 +60,37 @@ export function Variant(): ReactElement {
     </ThemeProvider>
   )
 
-  async function handleChange(variant: TypographyVariant): Promise<void> {
-    if (selectedBlock != null && variant != null) {
-      await add({
-        parameters: {
-          execute: { variant },
-          undo: {
-            variant: selectedBlock.variant
-          }
-        },
-        async execute({ variant }) {
-          dispatch({
-            type: 'SetEditorFocusAction',
-            selectedStep,
-            selectedBlock
-          })
-          await typographyBlockUpdate({
-            variables: {
-              id: selectedBlock.id,
-              input: { variant }
-            },
-            optimisticResponse: {
-              typographyBlockUpdate: {
-                id: selectedBlock.id,
-                variant,
-                __typename: 'TypographyBlock'
-              }
-            }
-          })
+  function handleChange(variant: TypographyVariant): void {
+    if (selectedBlock == null || variant == null) return
+
+    add({
+      parameters: {
+        execute: { variant },
+        undo: {
+          variant: selectedBlock.variant
         }
-      })
-    }
+      },
+      execute({ variant }) {
+        dispatch({
+          type: 'SetEditorFocusAction',
+          selectedStep,
+          selectedBlock
+        })
+        void typographyBlockUpdate({
+          variables: {
+            id: selectedBlock.id,
+            input: { variant }
+          },
+          optimisticResponse: {
+            typographyBlockUpdate: {
+              id: selectedBlock.id,
+              variant,
+              __typename: 'TypographyBlock'
+            }
+          }
+        })
+      }
+    })
   }
 
   const options = [

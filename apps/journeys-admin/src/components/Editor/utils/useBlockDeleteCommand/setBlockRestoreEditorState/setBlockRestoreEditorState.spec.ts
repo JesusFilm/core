@@ -61,14 +61,8 @@ describe('setBlockRestoreEditorState', () => {
     expect(dispatch).toHaveBeenCalledWith({
       activeContent: 'canvas',
       activeSlide: 0,
-      selectedStep: {
-        __typename: 'StepBlock',
-        children: [],
-        id: 'step',
-        journeyId: 'journeyId',
-        nextBlockId: 'someId',
-        parentBlockId: null
-      },
+      selectedBlockId: 'step',
+      selectedStepId: 'step',
       type: 'SetEditorFocusAction'
     })
   })

@@ -40,36 +40,36 @@ export function Color(): ReactElement {
     | undefined
 
   function handleChange(color: TypographyColor): void {
-    if (selectedBlock != null && color != null) {
-      add({
-        parameters: {
-          execute: { color },
-          undo: {
-            color: selectedBlock.color
-          }
-        },
-        execute({ color }) {
-          dispatch({
-            type: 'SetEditorFocusAction',
-            selectedStep,
-            selectedBlock
-          })
-          void typographyBlockUpdate({
-            variables: {
-              id: selectedBlock.id,
-              color
-            },
-            optimisticResponse: {
-              typographyBlockUpdate: {
-                id: selectedBlock.id,
-                color,
-                __typename: 'TypographyBlock'
-              }
-            }
-          })
+    if (selectedBlock == null || color == null) return
+
+    add({
+      parameters: {
+        execute: { color },
+        undo: {
+          color: selectedBlock.color
         }
-      })
-    }
+      },
+      execute({ color }) {
+        dispatch({
+          type: 'SetEditorFocusAction',
+          selectedStep,
+          selectedBlock
+        })
+        void typographyBlockUpdate({
+          variables: {
+            id: selectedBlock.id,
+            input: { color }
+          },
+          optimisticResponse: {
+            typographyBlockUpdate: {
+              id: selectedBlock.id,
+              color,
+              __typename: 'TypographyBlock'
+            }
+          }
+        })
+      }
+    })
   }
 
   const options = [

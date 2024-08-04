@@ -54,7 +54,7 @@ export function useDeleteOnKeyPress(): {
           sourceHandle: selected.sourceHandle
         })
       } else {
-        if (selected != null) void addBlockDelete(selected)
+        if (selected != null) addBlockDelete(selected)
       }
 
       setSelected(undefined)
