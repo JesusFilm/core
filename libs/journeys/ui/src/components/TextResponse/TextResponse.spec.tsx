@@ -127,7 +127,7 @@ describe('TextResponse', () => {
       </MockedProvider>
     )
 
-    expect(screen.getByLabelText('Your answer here'))
+    expect(screen.getByLabelText('Your answer here')).toBeInTheDocument()
   })
 
   it('should be in a loading state when waiting for response', async () => {
