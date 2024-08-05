@@ -102,8 +102,11 @@ export function SelectableWrapper({
       borderRadius = '4px 4px 16px 16px'
       break
     case 'ButtonBlock':
-      borderRadius = '8px'
-      break
+      if (block.buttonVariant === 'contained') {
+        if (block.size === 'large') borderRadius = '16px'
+        if (block.size === 'medium') borderRadius = '12px'
+        if (block.size === 'small') borderRadius = '8px'
+      }
   }
 
   useEffect(() => {
