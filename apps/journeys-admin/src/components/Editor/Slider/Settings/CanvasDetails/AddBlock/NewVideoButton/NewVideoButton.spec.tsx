@@ -137,9 +137,7 @@ describe('NewVideoButton', () => {
       request: {
         ...deleteBlock.request,
         variables: {
-          id: 'videoBlockId',
-          journeyId: 'journeyId',
-          parentBlockId: 'cardId'
+          id: 'videoBlockId'
         }
       },
       result: deleteResult
@@ -213,9 +211,7 @@ describe('NewVideoButton', () => {
       request: {
         ...deleteBlock.request,
         variables: {
-          id: 'videoBlockId',
-          journeyId: 'journeyId',
-          parentBlockId: 'cardId'
+          id: 'videoBlockId'
         }
       },
       result: deleteResult

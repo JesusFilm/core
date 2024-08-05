@@ -6,19 +6,19 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import type { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
-import { deleteBlockMock as deleteBlock } from '../../../../../../../libs/useBlockDeleteMutation/useBlockDeleteMutation.mock'
-import { useBlockRestoreMutationMock as blockRestore } from '../../../../../../../libs/useBlockRestoreMutation/useBlockRestoreMutation.mock'
-
-import { FORM_BLOCK_CREATE } from './NewFormButton'
-
-import { NewFormButton } from '.'
 import {
   FormBlockCreate,
   FormBlockCreateVariables
 } from '../../../../../../../../__generated__/FormBlockCreate'
+import type { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
+import { deleteBlockMock as deleteBlock } from '../../../../../../../libs/useBlockDeleteMutation/useBlockDeleteMutation.mock'
+import { useBlockRestoreMutationMock as blockRestore } from '../../../../../../../libs/useBlockRestoreMutation/useBlockRestoreMutation.mock'
 import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
+
+import { FORM_BLOCK_CREATE } from './NewFormButton'
+
+import { NewFormButton } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -120,9 +120,7 @@ describe('NewFormButton', () => {
       request: {
         ...deleteBlock.request,
         variables: {
-          id: 'formBlockId',
-          journeyId: 'journeyId',
-          parentBlockId: 'cardId'
+          id: 'formBlockId'
         }
       },
       result: deleteResult
@@ -168,9 +166,7 @@ describe('NewFormButton', () => {
       request: {
         ...deleteBlock.request,
         variables: {
-          id: 'formBlockId',
-          journeyId: 'journeyId',
-          parentBlockId: 'cardId'
+          id: 'formBlockId'
         }
       },
       result: deleteResult

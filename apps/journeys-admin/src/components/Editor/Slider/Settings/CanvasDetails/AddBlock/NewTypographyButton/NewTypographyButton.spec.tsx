@@ -121,9 +121,7 @@ describe('NewTypographyButton', () => {
       request: {
         ...deleteBlock.request,
         variables: {
-          id: 'typographyBlockId',
-          journeyId: 'journeyId',
-          parentBlockId: 'cardId'
+          id: 'typographyBlockId'
         }
       },
       result: deleteResult
@@ -192,9 +190,7 @@ describe('NewTypographyButton', () => {
       request: {
         ...deleteBlock.request,
         variables: {
-          id: 'typographyBlockId',
-          journeyId: 'journeyId',
-          parentBlockId: 'cardId'
+          id: 'typographyBlockId'
         }
       },
       result: deleteResult

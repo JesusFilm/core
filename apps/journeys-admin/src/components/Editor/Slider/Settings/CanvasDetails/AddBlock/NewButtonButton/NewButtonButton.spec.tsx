@@ -7,24 +7,24 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
+import {
+  ButtonBlockCreate,
+  ButtonBlockCreateVariables
+} from '../../../../../../../../__generated__/ButtonBlockCreate'
 import type { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
 import {
   ButtonColor,
   ButtonSize,
   ButtonVariant
 } from '../../../../../../../../__generated__/globalTypes'
-
-import { BUTTON_BLOCK_CREATE } from './NewButtonButton'
-
-import { NewButtonButton } from '.'
-import {
-  ButtonBlockCreate,
-  ButtonBlockCreateVariables
-} from '../../../../../../../../__generated__/ButtonBlockCreate'
 import { deleteBlockMock as deleteBlock } from '../../../../../../../libs/useBlockDeleteMutation/useBlockDeleteMutation.mock'
 import { useBlockRestoreMutationMock as blockRestore } from '../../../../../../../libs/useBlockRestoreMutation/useBlockRestoreMutation.mock'
 import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
+
+import { BUTTON_BLOCK_CREATE } from './NewButtonButton'
+
+import { NewButtonButton } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -186,9 +186,7 @@ describe('NewButtonButton', () => {
       request: {
         ...deleteBlock.request,
         variables: {
-          id: 'buttonBlockId',
-          journeyId: 'journeyId',
-          parentBlockId: 'cardId'
+          id: 'buttonBlockId'
         }
       },
       result: deleteResult
@@ -234,9 +232,7 @@ describe('NewButtonButton', () => {
       request: {
         ...deleteBlock.request,
         variables: {
-          id: 'buttonBlockId',
-          journeyId: 'journeyId',
-          parentBlockId: 'cardId'
+          id: 'buttonBlockId'
         }
       },
       result: deleteResult

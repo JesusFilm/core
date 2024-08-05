@@ -9,12 +9,12 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import type { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
 import { deleteBlockMock as deleteBlock } from '../../../../../../../libs/useBlockDeleteMutation/useBlockDeleteMutation.mock'
 import { useBlockRestoreMutationMock as blockRestore } from '../../../../../../../libs/useBlockRestoreMutation/useBlockRestoreMutation.mock'
+import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
+import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
 import { RADIO_QUESTION_BLOCK_CREATE } from './NewRadioQuestionButton'
 
 import { NewRadioQuestionButton } from '.'
-import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
-import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -180,9 +180,7 @@ describe('NewRadioQuestionButton', () => {
       request: {
         ...deleteBlock.request,
         variables: {
-          id: 'uuid',
-          journeyId: 'journeyId',
-          parentBlockId: 'cardId'
+          id: 'uuid'
         }
       },
       result: deleteResult
@@ -283,9 +281,7 @@ describe('NewRadioQuestionButton', () => {
       request: {
         ...deleteBlock.request,
         variables: {
-          id: 'uuid',
-          journeyId: 'journeyId',
-          parentBlockId: 'cardId'
+          id: 'uuid'
         }
       },
       result: deleteResult

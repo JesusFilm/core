@@ -10,12 +10,12 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import type { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
 import { deleteBlockMock as deleteBlock } from '../../../../../../../libs/useBlockDeleteMutation/useBlockDeleteMutation.mock'
 import { useBlockRestoreMutationMock as blockRestore } from '../../../../../../../libs/useBlockRestoreMutation/useBlockRestoreMutation.mock'
+import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
+import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
 import { SIGN_UP_BLOCK_CREATE } from './NewSignUpButton'
 
 import { NewSignUpButton } from '.'
-import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
-import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -167,9 +167,7 @@ describe('NewSignUpButton', () => {
       request: {
         ...deleteBlock.request,
         variables: {
-          id: 'signUpBlockId',
-          journeyId: 'journeyId',
-          parentBlockId: 'cardId'
+          id: 'signUpBlockId'
         }
       },
       result: deleteResult
@@ -261,9 +259,7 @@ describe('NewSignUpButton', () => {
       request: {
         ...deleteBlock.request,
         variables: {
-          id: 'signUpBlockId',
-          journeyId: 'journeyId',
-          parentBlockId: 'cardId'
+          id: 'signUpBlockId'
         }
       },
       result: deleteResult

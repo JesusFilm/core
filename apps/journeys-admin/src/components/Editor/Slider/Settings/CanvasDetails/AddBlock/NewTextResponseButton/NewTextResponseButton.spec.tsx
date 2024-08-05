@@ -123,9 +123,7 @@ describe('NewTextResponseButton', () => {
       request: {
         ...deleteBlock.request,
         variables: {
-          id: 'textResponseBlock.id',
-          journeyId: 'journey.id',
-          parentBlockId: 'card.id'
+          id: 'textResponseBlock.id'
         }
       },
       result: deleteResult
@@ -172,9 +170,7 @@ describe('NewTextResponseButton', () => {
       request: {
         ...deleteBlock.request,
         variables: {
-          id: 'textResponseBlock.id',
-          journeyId: 'journey.id',
-          parentBlockId: 'card.id'
+          id: 'textResponseBlock.id'
         }
       },
       result: deleteResult
