@@ -4,9 +4,11 @@ import { ReactElement, useState } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { Button } from '@core/journeys/ui/Button'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
-import { ButtonBlockUpdateContent } from '../../../../../../../../__generated__/ButtonBlockUpdateContent'
+import {
+  ButtonBlockUpdateContent,
+  ButtonBlockUpdateContentVariables
+} from '../../../../../../../../__generated__/ButtonBlockUpdateContent'
 import { ButtonFields } from '../../../../../../../../__generated__/ButtonFields'
 import { InlineEditInput } from '../InlineEditInput'
 import { useOnClickOutside } from '../useOnClickOutside'
@@ -30,20 +32,19 @@ export function ButtonEdit({
 }: ButtonEditProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
-  const [buttonBlockUpdate] = useMutation<ButtonBlockUpdateContent>(
-    BUTTON_BLOCK_UPDATE_CONTENT
-  )
-  const { journey } = useJourney()
+  const [buttonBlockUpdate] = useMutation<
+    ButtonBlockUpdateContent,
+    ButtonBlockUpdateContentVariables
+  >(BUTTON_BLOCK_UPDATE_CONTENT)
   const [value, setValue] = useState(label)
 
   async function handleSaveBlock(): Promise<void> {
     const currentLabel = value.trim().replace(/\n/g, '')
-    if (journey == null || label === currentLabel) return
+    if (label === currentLabel) return
 
     await buttonBlockUpdate({
       variables: {
         id,
-        journeyId: journey.id,
         input: { label: currentLabel }
       },
       optimisticResponse: {

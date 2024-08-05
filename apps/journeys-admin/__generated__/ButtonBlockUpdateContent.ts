@@ -21,6 +21,5 @@ export interface ButtonBlockUpdateContent {
 
 export interface ButtonBlockUpdateContentVariables {
   id: string;
-  journeyId: string;
   input: ButtonBlockUpdateInput;
 }
