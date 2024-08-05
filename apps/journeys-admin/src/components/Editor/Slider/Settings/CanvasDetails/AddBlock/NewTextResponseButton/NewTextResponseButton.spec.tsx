@@ -9,15 +9,15 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import type { BlockFields_StepBlock as StepBlock } from '../../../../../../../../__generated__/BlockFields'
 import type { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
+import { TextResponseType } from '../../../../../../../../__generated__/globalTypes'
 import { deleteBlockMock as deleteBlock } from '../../../../../../../libs/useBlockDeleteMutation/useBlockDeleteMutation.mock'
 import { useBlockRestoreMutationMock as blockRestore } from '../../../../../../../libs/useBlockRestoreMutation/useBlockRestoreMutation.mock'
+import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
+import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
 import { TEXT_RESPONSE_BLOCK_CREATE } from './NewTextResponseButton'
 
 import { NewTextResponseButton } from '.'
-import { TextResponseType } from '../../../../../../../../__generated__/globalTypes'
-import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
-import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,

@@ -1,8 +1,10 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { renderHook } from '@testing-library/react'
+
 import { TreeBlock } from '@core/journeys/ui/block'
 import { BlockFields_CardBlock as CardBlock } from '@core/journeys/ui/block/__generated__/BlockFields'
-import { renderHook } from '@testing-library/react'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+
 import { useBlockCreateCommand } from './useBlockCreateCommand'
 
 const block: CardBlock = {
@@ -18,11 +20,11 @@ const block: CardBlock = {
 }
 const execute = jest.fn().mockResolvedValue(block)
 
-beforeEach(() => {
-  jest.clearAllMocks()
-})
-
 describe('useBlockCreateCommand', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
   it('should run the execute command and return a block', async () => {
     const { result } = renderHook(() => useBlockCreateCommand(), {
       wrapper: ({ children }) => (

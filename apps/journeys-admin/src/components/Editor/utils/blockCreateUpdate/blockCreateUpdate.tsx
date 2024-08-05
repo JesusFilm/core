@@ -1,8 +1,10 @@
 import { ApolloCache, gql } from '@apollo/client'
+
 import { BlockFields } from '../../../../../__generated__/BlockFields'
 
 export function blockCreateUpdate(
-  // biome-ignore lint/suspicious/noExplicitAny: update function gives this type
+  // apollo gives any type to ApolloCache generic
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   cache: ApolloCache<any>,
   journeyId: string | undefined,
   data: { id: string; __typename: BlockFields['__typename'] } | undefined | null
@@ -13,12 +15,12 @@ export function blockCreateUpdate(
     fields: {
       blocks(existingBlocksRefs = []) {
         const newBlockRef = cache.writeFragment({
-          data: data,
+          data,
           fragment: gql`
-              fragment NewBlock on Block {
-                id
-              }
-            `
+            fragment NewBlock on Block {
+              id
+            }
+          `
         })
         return [...existingBlocksRefs, newBlockRef]
       }

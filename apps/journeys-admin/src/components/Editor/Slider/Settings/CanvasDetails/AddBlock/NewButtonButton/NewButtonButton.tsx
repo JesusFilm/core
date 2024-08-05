@@ -4,13 +4,13 @@ import type { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { BlockFields_ButtonBlock as ButtonBlock } from '@core/journeys/ui/block/__generated__/BlockFields'
 import { BUTTON_FIELDS } from '@core/journeys/ui/Button/buttonFields'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { ICON_FIELDS } from '@core/journeys/ui/Icon/iconFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Cursor6Icon from '@core/shared/ui/icons/Cursor6'
 
-import { BlockFields_ButtonBlock as ButtonBlock } from '@core/journeys/ui/block/__generated__/BlockFields'
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../__generated__/BlockFields'
 import { ButtonBlockCreate } from '../../../../../../../../__generated__/ButtonBlockCreate'
 import {

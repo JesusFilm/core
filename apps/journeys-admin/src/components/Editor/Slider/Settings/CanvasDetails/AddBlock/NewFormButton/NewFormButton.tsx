@@ -7,6 +7,7 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { FORM_FIELDS } from '@core/journeys/ui/Form/formFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import File5Icon from '@core/shared/ui/icons/File5'
+
 import { BlockFields_FormBlock as FormBlock } from '../../../../../../../../__generated__/BlockFields'
 import type { FormBlockCreate } from '../../../../../../../../__generated__/FormBlockCreate'
 import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
