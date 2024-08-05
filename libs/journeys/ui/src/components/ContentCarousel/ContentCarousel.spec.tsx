@@ -6,8 +6,8 @@ import {
   JourneyStatus,
   ThemeMode,
   ThemeName
-} from '../../../../../journeys/ui/__generated__/globalTypes'
-import { GetJourneys_journeys as Journey } from '../../../../../journeys/ui/src/libs/useJourneysQuery/__generated__/GetJourneys'
+} from '../../../__generated__/globalTypes'
+import { GetJourneys_journeys as Journey } from '../../libs/useJourneysQuery/__generated__/GetJourneys'
 
 import { ContentCarousel } from './ContentCarousel'
 

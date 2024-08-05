@@ -4,16 +4,17 @@ import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent, waitFor } from '@storybook/testing-library'
 import { ComponentProps } from 'react'
 
-import { sharedUiConfig } from '../../libs/sharedUiConfig'
+import { journeyUiConfig } from '../../libs/journeyUiConfig'
+
 
 import { ContentCarousel } from './ContentCarousel'
 
 const ContentCarouselStory: Meta<typeof ContentCarousel> = {
-  ...sharedUiConfig,
+  ...journeyUiConfig,
   component: ContentCarousel,
   title: 'Shared-Ui/ContentCarousel',
   parameters: {
-    ...sharedUiConfig.parameters,
+    ...journeyUiConfig.parameters,
     layout: 'fullscreen'
   }
 }

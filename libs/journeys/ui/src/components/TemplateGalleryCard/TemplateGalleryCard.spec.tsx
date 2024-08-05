@@ -1,5 +1,7 @@
-import { render } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { NextRouter, useRouter } from 'next/router'
+
 
 import {
   JourneyStatus,
@@ -160,4 +162,18 @@ describe('TemplateGalleryCard from different route', () => {
       '/journeys/template-id'
     )
   })
+
+  it('should focus templategallerycard', async () => {
+    mockUseRouter.mockReturnValue({
+      pathname: '/journeys'
+    } as unknown as NextRouter)
+    render(<TemplateGalleryCard item={journey} />)
+
+    await waitFor(async () => await userEvent.tab())
+    expect(screen.getByLabelText('templateGalleryCard')).toHaveStyle(
+      'outline: 2px solid'
+    )
+  })
 })
+
+
