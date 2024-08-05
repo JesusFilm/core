@@ -248,6 +248,7 @@ describe('SelectableWrapper', () => {
             initialState={{
               selectedBlockId: radioQuestionBlock.id,
               selectedBlock: radioQuestionBlock,
+              selectedBlockId: radioQuestionBlock.id,
               steps: [step([radioQuestionBlock])]
             }}
           >
@@ -281,6 +282,7 @@ describe('SelectableWrapper', () => {
             initialState={{
               selectedBlockId: radioOption1.id,
               selectedBlock: radioOption1,
+              selectedBlockId: radioOption1.id,
               steps: [step([radioQuestionBlock])]
             }}
           >
@@ -295,7 +297,9 @@ describe('SelectableWrapper', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(getByRole('button', { name: 'Option 1' }))
+    await waitFor(() => {
+      fireEvent.click(getByRole('button', { name: 'Option 1' }))
+    })
     expect(getByTestId(`SelectableWrapper-RadioOption1`)).toHaveStyle({
       outline: '2px solid',
       zIndex: '1',
