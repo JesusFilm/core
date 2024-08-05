@@ -18,6 +18,7 @@ test('Filters', async ({ page }) => {
   await page.getByTestId('SeeAllVideos').click()
 
   // all tiles aren't loading. Change it to use events when that is implemented in the code
+  // eslint-disable-next-line playwright/no-wait-for-timeout
   await page.waitForTimeout(8 * 1000)
 
   // Take screenshot
@@ -63,6 +64,7 @@ test('Filters', async ({ page }) => {
     .getByLabel('Search Languages')
     .fill('eng')
   await page.getByRole('option', { name: 'English' }).click()
+  // eslint-disable-next-line playwright/no-networkidle
   await page.waitForLoadState('networkidle')
   await page.press('body', 'Tab')
 

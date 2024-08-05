@@ -2,8 +2,11 @@ import Grid from '@mui/material/Grid'
 import { useTranslation } from 'next-i18next'
 import type { ReactElement } from 'react'
 
-import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import {
+  ActiveCanvasDetailsDrawer,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 
 import type { BlockFields_CardBlock as CardBlock } from '../../../../../../../__generated__/BlockFields'
@@ -36,8 +39,8 @@ export function AddBlock(): ReactElement {
 
   function onClose(): void {
     dispatch({
-      type: 'SetActiveSlideAction',
-      activeSlide: ActiveSlide.JourneyFlow
+      type: 'SetActiveCanvasDetailsDrawerAction',
+      activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
     })
   }
 

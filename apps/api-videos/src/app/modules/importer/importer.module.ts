@@ -6,9 +6,9 @@ import { ImporterBibleBookNamesService } from './importerBibleBookNames/importer
 import { ImporterBibleBooksService } from './importerBibleBooks/importerBibleBooks.service'
 import { ImporterBibleCitationsService } from './importerBibleCitations/importerBibleCitations.service'
 import { ImporterKeywordsService } from './importerKeywords/importerKeywords.service'
+import { ImporterVideosService } from './importerVideos/importerVideos.service'
 import { ImporterVideoSubtitlesService } from './importerVideoSubtitle/importerVideoSubtitle.service'
 import { ImporterVideoVariantsService } from './importerVideoVariants/importerVideoVariants.service'
-import { ImporterVideosService } from './importerVideos/importerVideos.service'
 
 @Module({
   providers: [

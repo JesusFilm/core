@@ -3,14 +3,19 @@ import { useTranslation } from 'next-i18next'
 import type { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { TEXT_RESPONSE_FIELDS } from '@core/journeys/ui/TextResponse/textResponseFields'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import TextInput1Icon from '@core/shared/ui/icons/TextInput1'
 
-import type { BlockFields_CardBlock as CardBlock } from '../../../../../../../../__generated__/BlockFields'
+import type {
+  BlockFields_CardBlock as CardBlock,
+  BlockFields_TextResponseBlock as TextResponseBlock
+} from '../../../../../../../../__generated__/BlockFields'
 import type { TextResponseBlockCreate } from '../../../../../../../../__generated__/TextResponseBlockCreate'
+import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
+import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand/useBlockCreateCommand'
 import { Button } from '../Button'
 
 export const TEXT_RESPONSE_BLOCK_CREATE = gql`
@@ -31,55 +36,50 @@ export function NewTextResponseButton(): ReactElement {
     useMutation<TextResponseBlockCreate>(TEXT_RESPONSE_BLOCK_CREATE)
   const { journey } = useJourney()
   const {
-    state: { selectedStep },
-    dispatch
+    state: { selectedStep }
   } = useEditor()
+  const { addBlock } = useBlockCreateCommand()
 
-  const handleClick = async (): Promise<void> => {
-    const id = uuidv4()
+  function handleClick(): void {
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
 
-    if (card != null && journey != null) {
-      const { data } = await textResponseBlockCreate({
-        variables: {
-          input: {
-            id,
-            journeyId: journey.id,
-            parentBlockId: card.id,
-            label: t('Your answer here')
-          }
-        },
-        update(cache, { data }) {
-          if (data?.textResponseBlockCreate != null) {
-            cache.modify({
-              id: cache.identify({ __typename: 'Journey', id: journey.id }),
-              fields: {
-                blocks(existingBlockRefs = []) {
-                  const newBlockRef = cache.writeFragment({
-                    data: data.textResponseBlockCreate,
-                    fragment: gql`
-                      fragment NewBlock on Block {
-                        id
-                      }
-                    `
-                  })
-                  return [...existingBlockRefs, newBlockRef]
-                }
-              }
-            })
-          }
-        }
-      })
+    if (card == null || journey == null) return
 
-      if (data?.textResponseBlockCreate != null) {
-        dispatch({
-          type: 'SetSelectedBlockByIdAction',
-          selectedBlockId: data.textResponseBlockCreate.id
+    const textResponseBlock: TextResponseBlock = {
+      id: uuidv4(),
+      parentBlockId: card.id,
+      parentOrder: card.children.length ?? 0,
+      label: t('Your answer here'),
+      hint: null,
+      minRows: null,
+      type: null,
+      routeId: null,
+      integrationId: null,
+      __typename: 'TextResponseBlock'
+    }
+    addBlock({
+      block: textResponseBlock,
+      execute() {
+        void textResponseBlockCreate({
+          variables: {
+            input: {
+              id: textResponseBlock.id,
+              journeyId: journey.id,
+              parentBlockId: textResponseBlock.parentBlockId,
+              label: textResponseBlock.label
+            }
+          },
+          optimisticResponse: {
+            textResponseBlockCreate: textResponseBlock
+          },
+          update(cache, { data }) {
+            blockCreateUpdate(cache, journey?.id, data?.textResponseBlockCreate)
+          }
         })
       }
-    }
+    })
   }
   return (
     <Button

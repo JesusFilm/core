@@ -4,8 +4,8 @@ import { ReactElement, useState } from 'react'
 
 import ShareIcon from '@core/shared/ui/icons/Share'
 
-import { useJourney } from '../../../../libs/JourneyProvider'
 import { useBlocks } from '../../../../libs/block'
+import { useJourney } from '../../../../libs/JourneyProvider'
 import {
   JourneyPlausibleEvents,
   keyify

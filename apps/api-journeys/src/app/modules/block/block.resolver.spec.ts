@@ -1,13 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 import {
   Block,
   Journey,
   Prisma,
   UserTeamRole
 } from '.prisma/api-journeys-client'
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
 import { PrismaService } from '../../lib/prisma.service'
@@ -293,6 +293,9 @@ describe('BlockResolver', () => {
           journeyId: block.journeyId,
           deletedAt: null,
           NOT: { id: block.id }
+        },
+        include: {
+          action: true
         }
       })
       expect(service.getDescendants).toHaveBeenCalledWith(block.id, [
@@ -304,6 +307,16 @@ describe('BlockResolver', () => {
     it('should throw error if block not found', async () => {
       await expect(resolver.blockRestore('1', ability)).rejects.toThrow(
         'block not found'
+      )
+    })
+
+    it('should throw error if block does not have a parent order', async () => {
+      prismaService.block.findUnique.mockResolvedValue({
+        ...blockWithUserTeam,
+        parentOrder: null
+      })
+      await expect(resolver.blockRestore('1', ability)).rejects.toThrow(
+        'updated block has no parent order'
       )
     })
 

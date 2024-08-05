@@ -253,6 +253,14 @@ export enum VisitorStatus {
   warning = "warning",
 }
 
+export interface BlockUpdateActionInput {
+  gtmEventName?: string | null;
+  email?: string | null;
+  url?: string | null;
+  target?: string | null;
+  blockId?: string | null;
+}
+
 export interface ButtonBlockCreateInput {
   id?: string | null;
   journeyId: string;
@@ -371,12 +379,6 @@ export interface IconBlockCreateInput {
   id?: string | null;
   parentBlockId: string;
   journeyId: string;
-  name?: IconName | null;
-  color?: IconColor | null;
-  size?: IconSize | null;
-}
-
-export interface IconBlockUpdateInput {
   name?: IconName | null;
   color?: IconColor | null;
   size?: IconSize | null;

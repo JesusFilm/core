@@ -1,10 +1,10 @@
 import { gql, useMutation } from '@apollo/client'
 
+import { HostUpdateInput } from '../../../__generated__/globalTypes'
 import {
   UpdateHost_hostUpdate as Host,
   UpdateHost
 } from '../../../__generated__/UpdateHost'
-import { HostUpdateInput } from '../../../__generated__/globalTypes'
 
 export const UPDATE_HOST = gql`
   mutation UpdateHost($id: ID!, $teamId: ID!, $input: HostUpdateInput) {

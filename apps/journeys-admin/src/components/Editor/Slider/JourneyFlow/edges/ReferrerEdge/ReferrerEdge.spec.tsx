@@ -1,7 +1,9 @@
 import { render, screen } from '@testing-library/react'
 import { Position, ReactFlowProvider } from 'reactflow'
-import { ReferrerEdge } from '.'
+
 import { mockReactFlow } from '../../../../../../../test/mockReactFlow'
+
+import { ReferrerEdge } from '.'
 
 describe('ReferrerEdge', () => {
   beforeEach(() => {

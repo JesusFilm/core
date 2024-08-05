@@ -29,8 +29,8 @@ export function ToPostgresql() {
               isObject(result) ? toPostgresql(result) : result
             )
           : isObject(obj)
-            ? toPostgresql(obj)
-            : obj
+          ? toPostgresql(obj)
+          : obj
       )
       const result: TransformObject = await childFunction.apply(this, newArgs)
       return Array.isArray(result)

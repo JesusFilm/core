@@ -1,8 +1,8 @@
 import { Args, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 
 import { Prisma } from '.prisma/api-videos-client'
-
 import { Translation } from '@core/nest/common/TranslationModule'
+
 import { PrismaService } from '../../lib/prisma.service'
 
 @Resolver('BibleBook')

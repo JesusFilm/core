@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { expect } from '@playwright/test'
 import dayjs from 'dayjs'
 import { Page } from 'playwright-core'
@@ -6,7 +7,6 @@ import testData from '../utils/testData.json'
 
 let randomNumber = ''
 const thirtySecondsTimeout = 30000
-const fifteenSecondsTimeout = 30000
 export class TeamsPage {
   readonly page: Page
   constructor(page: Page) {
