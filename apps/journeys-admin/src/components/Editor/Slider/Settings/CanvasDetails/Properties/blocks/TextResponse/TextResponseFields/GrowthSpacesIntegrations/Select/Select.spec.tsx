@@ -24,7 +24,7 @@ describe('Select', () => {
 
     render(
       <Select
-        label={'Select Option'}
+        label="Select Option"
         value="1"
         options={options}
         onChange={onChange}
