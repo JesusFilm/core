@@ -7,7 +7,7 @@ import { ReactElement, useEffect } from 'react'
 import { useHits } from 'react-instantsearch'
 import { SwiperOptions } from 'swiper/types'
 
-import { ContentCarousel } from '@core/shared/ui/ContentCarousel'
+import { ContentCarousel } from '@core/journeys/ui/ContentCarousel'
 
 import { StrategyCard } from '../StrategyCard'
 
