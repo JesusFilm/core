@@ -359,7 +359,7 @@ describe('NewTypographyButton', () => {
           parentOrder: 0,
           align: null,
           color: null,
-          content: null,
+          content: '',
           variant: null,
           __typename: 'TypographyBlock'
         }

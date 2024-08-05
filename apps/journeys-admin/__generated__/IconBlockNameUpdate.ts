@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { IconBlockUpdateInput, IconName } from "./globalTypes";
+import { IconName } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: IconBlockNameUpdate
@@ -21,6 +21,5 @@ export interface IconBlockNameUpdate {
 
 export interface IconBlockNameUpdateVariables {
   id: string;
-  journeyId: string;
-  input: IconBlockUpdateInput;
+  name?: IconName | null;
 }
