@@ -35,7 +35,7 @@ describe('RadioOptionEdit', () => {
     const input = getByRole('textbox')
     fireEvent.click(input)
     expect(input).toHaveFocus()
-    expect(input).toHaveAttribute('placeholder', 'Type your text here...')
+    expect(input).toHaveAttribute('placeholder', 'Add your text here...')
   })
 
   it('saves the option label on onBlur', async () => {
