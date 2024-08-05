@@ -1,13 +1,16 @@
-import type { ReactElement } from 'react'
+import { User } from 'next-firebase-auth'
+import { ReactElement } from 'react'
 import { HotkeysProvider } from 'react-hotkeys-hook'
-import type { User } from 'next-firebase-auth'
-import type { TreeBlock } from '@core/journeys/ui/block'
-import { EditorProvider, type  EditorState } from '@core/journeys/ui/EditorProvider'
+
+import { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { transformer } from '@core/journeys/ui/transformer'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
-import type { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
-import type { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
+
+import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
+import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
+
 import { Fab } from './Fab'
 import { Hotkeys } from './Hotkeys'
 import { Slider } from './Slider'

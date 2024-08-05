@@ -1,3 +1,4 @@
+import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
 import {
   AuthAction,
@@ -11,7 +12,6 @@ import { ReactElement, useEffect } from 'react'
 
 import { useUserRoleQuery } from '@core/journeys/ui/useUserRoleQuery'
 
-import Stack from '@mui/material/Stack'
 import {
   GetAdminJourneys,
   GetAdminJourneysVariables

@@ -10,13 +10,14 @@ import {
 } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import { type ReactElement, useState } from 'react'
-import type { GetAdminJourney } from '../../../../__generated__/GetAdminJourney'
-import type {
+import { ReactElement, useState } from 'react'
+
+import { GetAdminJourney } from '../../../../__generated__/GetAdminJourney'
+import {
   GetJourneyVisitors,
   GetJourneyVisitors_visitors_edges as VisitorEdge
 } from '../../../../__generated__/GetJourneyVisitors'
-import type { UserJourneyOpen } from '../../../../__generated__/UserJourneyOpen'
+import { UserJourneyOpen } from '../../../../__generated__/UserJourneyOpen'
 import { HelpScoutBeacon } from '../../../../src/components/HelpScoutBeacon'
 import { JourneyVisitorsList } from '../../../../src/components/JourneyVisitorsList'
 import { ClearAllButton } from '../../../../src/components/JourneyVisitorsList/FilterDrawer/ClearAllButton'

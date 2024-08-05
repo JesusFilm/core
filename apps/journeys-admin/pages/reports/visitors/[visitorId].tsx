@@ -8,7 +8,8 @@ import {
 } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import type { ReactElement } from 'react'
+import { ReactElement } from 'react'
+
 import { HelpScoutBeacon } from '../../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../../src/components/PageWrapper'
 import { VisitorInfo } from '../../../src/components/VisitorInfo'

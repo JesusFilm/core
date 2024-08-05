@@ -9,6 +9,7 @@ import {
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
+
 import { HelpScoutBeacon } from '../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { ReportsNavigation } from '../../src/components/ReportsNavigation'

@@ -1,6 +1,7 @@
 import { MockedResponse } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
+import { ComponentPropsWithoutRef } from 'react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -12,7 +13,6 @@ import { JourneyStatus, Role } from '../../../../../__generated__/globalTypes'
 
 import { GET_ROLE } from './Menu'
 
-import { ComponentPropsWithoutRef } from 'react'
 import { Menu } from '.'
 
 const Demo: Meta<typeof Menu> = {

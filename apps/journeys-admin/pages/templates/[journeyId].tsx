@@ -1,23 +1,25 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import type { GetStaticProps } from 'next'
+import { GetStaticProps } from 'next'
 import { useRouter } from 'next/router'
 import { useUser, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import {type  ReactElement, useEffect } from 'react'
+import { ReactElement, useEffect } from 'react'
+
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { TemplateView } from '@core/journeys/ui/TemplateView'
 import { GET_JOURNEY, useJourneyQuery } from '@core/journeys/ui/useJourneyQuery'
 import { GET_JOURNEYS } from '@core/journeys/ui/useJourneysQuery'
 import { GET_TAGS } from '@core/journeys/ui/useTagsQuery'
-import type { GetJourney, GetJourneyVariables } from '../../__generated__/GetJourney'
-import type {
+
+import { GetJourney, GetJourneyVariables } from '../../__generated__/GetJourney'
+import {
   GetJourneys,
   GetJourneysVariables
 } from '../../__generated__/GetJourneys'
-import type { GetTags } from '../../__generated__/GetTags'
+import { GetTags } from '../../__generated__/GetTags'
 import { IdType } from '../../__generated__/globalTypes'
 import { HelpScoutBeacon } from '../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../src/components/PageWrapper'
@@ -33,15 +35,11 @@ function TemplateDetailsPage(): ReactElement {
   })
   const { activeTeam, refetch, query } = useTeam()
 
-  /* 
-    biome-ignore lint/correctness/useExhaustiveDependencies: 
-    ensure team is refetched if user is not loaded before provider
-  */
-    useEffect(() => {
-      if (activeTeam == null) {
-        void refetch()
-      }
-    }, [user.id, query, activeTeam, refetch])
+  useEffect(() => {
+    if (activeTeam == null) {
+      void refetch()
+    }
+  }, [user.id, query, activeTeam, refetch])
 
   return (
     <>

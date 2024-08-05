@@ -9,9 +9,10 @@ import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
-import { type ReactElement, useState } from 'react'
+import { User } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
-import type { User } from 'next-firebase-auth'
+import { ReactElement, useState } from 'react'
+
 import {
   ActiveContent,
   ActiveSlide,
@@ -21,9 +22,11 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import ThumbsUpIcon from '@core/shared/ui/icons/ThumbsUp'
+
 import logo from '../../../../public/taskbar-icon.svg'
 import { HelpScoutBeacon } from '../../HelpScoutBeacon'
 import { EDIT_TOOLBAR_HEIGHT } from '../constants'
+
 import { Items } from './Items'
 import { CommandRedoItem } from './Items/CommandRedoItem'
 import { CommandUndoItem } from './Items/CommandUndoItem'

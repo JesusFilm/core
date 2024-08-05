@@ -5,17 +5,18 @@ import CardContent from '@mui/material/CardContent'
 import Stack from '@mui/material/Stack'
 import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
-import type {  GetServerSideProps } from 'next'
+import { GetServerSideProps } from 'next'
 import NextLink from 'next/link'
-import {useUser, withUser, withUserTokenSSR } from 'next-firebase-auth'
+import { useUser, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import {type ReactElement, useState } from 'react'
-import type {
+import { ReactElement, useState } from 'react'
+
+import {
   JourneysEmailPreference,
   JourneysEmailPreferenceVariables
 } from '../../__generated__/JourneysEmailPreference'
-import type {
+import {
   UpdateJourneysEmailPreference,
   UpdateJourneysEmailPreferenceVariables,
   UpdateJourneysEmailPreference_updateJourneysEmailPreference

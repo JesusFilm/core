@@ -7,7 +7,9 @@ import {
 } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
 import type { ReactElement } from 'react'
+// eslint-disable-next-line no-restricted-imports
 import { useTranslation } from 'react-i18next'
+
 import { HelpScoutBeacon } from '../../../../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../../../../src/components/PageWrapper'
 import { Integrations } from '../../../../../src/components/Team/Integrations'

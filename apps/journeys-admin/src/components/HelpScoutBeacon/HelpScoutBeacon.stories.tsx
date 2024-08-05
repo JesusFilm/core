@@ -1,6 +1,8 @@
-import { simpleComponentConfig } from '@core/shared/ui/storybook'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentPropsWithRef } from 'react'
+
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
+
 import { HelpScoutBeacon } from './HelpScoutBeacon'
 
 const HelpScoutBeaconStory: Meta<typeof HelpScoutBeacon> = {

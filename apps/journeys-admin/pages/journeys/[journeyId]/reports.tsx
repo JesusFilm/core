@@ -1,5 +1,5 @@
-import { useRouter } from 'next/router'
 import Stack from '@mui/material/Stack'
+import { useRouter } from 'next/router'
 import {
   AuthAction,
   useUser,
@@ -8,10 +8,11 @@ import {
 } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import type { ReactElement } from 'react'
-import type { GetAdminJourney } from '../../../__generated__/GetAdminJourney'
+import { ReactElement } from 'react'
+
+import { GetAdminJourney } from '../../../__generated__/GetAdminJourney'
 import { JourneysReportType } from '../../../__generated__/globalTypes'
-import type { UserJourneyOpen } from '../../../__generated__/UserJourneyOpen'
+import { UserJourneyOpen } from '../../../__generated__/UserJourneyOpen'
 import { MemoizedDynamicReport } from '../../../src/components/DynamicPowerBiReport'
 import { HelpScoutBeacon } from '../../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../../src/components/PageWrapper'

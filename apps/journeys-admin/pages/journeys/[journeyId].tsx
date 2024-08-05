@@ -1,17 +1,24 @@
 import { gql, useQuery } from '@apollo/client'
 import { useRouter } from 'next/router'
-import { useUser, AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
+import {
+  AuthAction,
+  useUser,
+  withUser,
+  withUserTokenSSR
+} from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import type { ReactElement } from 'react'
-import type { ActiveContent } from '@core/journeys/ui/EditorProvider'
+import { ReactElement } from 'react'
+
+import { ActiveContent } from '@core/journeys/ui/EditorProvider'
 import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
-import type {
+
+import {
   GetAdminJourney,
   GetAdminJourneyVariables
 } from '../../__generated__/GetAdminJourney'
-import type { GetCustomDomains } from '../../__generated__/GetCustomDomains'
-import type { UserJourneyOpen } from '../../__generated__/UserJourneyOpen'
+import { GetCustomDomains } from '../../__generated__/GetCustomDomains'
+import { UserJourneyOpen } from '../../__generated__/UserJourneyOpen'
 import { AccessDenied } from '../../src/components/AccessDenied'
 import { Editor } from '../../src/components/Editor'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
