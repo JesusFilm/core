@@ -97,7 +97,7 @@ export function SignUpEdit({
             }
           },
           context: {
-            debounceKey: `${signUpProps.__typename}:${id}`,
+            debounceKey: `SignUpBlock:${id}`,
             ...context
           }
         })
@@ -108,7 +108,6 @@ export function SignUpEdit({
   return (
     <SignUp
       {...signUpProps}
-      __typename={signUpProps.__typename}
       id={id}
       submitLabel={submitLabel}
       editableSubmitLabel={
