@@ -1,6 +1,8 @@
+import { render, screen } from '@testing-library/react'
+
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
-import { render, screen } from '@testing-library/react'
+
 import { EmptySearch } from './EmptySearch'
 
 describe('EmptySearch', () => {
