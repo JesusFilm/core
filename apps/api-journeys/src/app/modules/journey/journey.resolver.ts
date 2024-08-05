@@ -471,6 +471,7 @@ export class JourneyResolver {
       id,
       null,
       duplicateStepIds,
+      undefined,
       duplicateJourneyId,
       duplicateStepIds
     )

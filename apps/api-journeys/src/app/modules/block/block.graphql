@@ -14,6 +14,11 @@ input BlocksFilter {
   typenames: [String!]
 }
 
+input BlockDuplicateIdMap {
+  oldId: ID!
+  newId: ID!
+}
+
 extend type Query {
   blocks(where: BlocksFilter): [Block!]!
   block(id: ID!): Block!
@@ -43,6 +48,10 @@ extend type Mutation {
     parentOrder defines the position to add the duplicated block. Negative values defines the position from the end of the array. Positions greater than the length of the array or null parentOrder will add duplicate at end of the array.
     """
     parentOrder: Int
+    """
+    idMap is used to set custom ids for the duplicated block and it's descendants.
+    """
+    idMap: [BlockDuplicateIdMap!]
     """
     drop this parameter after merging teams
     """

@@ -329,10 +329,7 @@ describe('BlockService', () => {
         .mockResolvedValueOnce(blockChild)
       prismaService.block.findMany.mockResolvedValue([block, block2])
       prismaService.block.findUnique.mockResolvedValue(block)
-      prismaService.block.update
-        .mockResolvedValueOnce(duplicatedBlock)
-        .mockResolvedValueOnce(blockChild)
-        .mockResolvedValueOnce(block2)
+
       service.getSiblingsInternal = jest
         .fn()
         .mockReturnValue([block, duplicatedBlock, block2])
@@ -348,6 +345,10 @@ describe('BlockService', () => {
         { ...block, id: block2.id },
         { ...duplicatedBlock, parentOrder: '2' }
       ]
+      prismaService.block.update
+        .mockResolvedValueOnce(duplicatedBlock)
+        .mockResolvedValueOnce(blockChild)
+        .mockResolvedValueOnce(block2)
 
       service.reorderSiblings = jest.fn().mockReturnValue(blockAndSiblings)
 
@@ -363,6 +364,37 @@ describe('BlockService', () => {
       ])
     })
 
+    it('should return the duplicated block, its siblings and children with custom ids', async () => {
+      const blockAndSiblings = [
+        block,
+        { ...block, id: block2.id },
+        { ...duplicatedBlock, parentOrder: '2', id: 'newBlockId' }
+      ]
+      service.reorderSiblings = jest.fn().mockReturnValue(blockAndSiblings)
+      service.getDuplicateBlockAndChildren = jest
+        .fn()
+        .mockReturnValue([{ ...duplicatedBlock, id: 'newBlockId' }, blockChild])
+      prismaService.block.update
+        .mockResolvedValueOnce({ ...duplicatedBlock, id: 'newBlockId' })
+        .mockResolvedValueOnce(blockChild)
+
+      expect(
+        await service.duplicateBlock(block, undefined, [
+          { oldId: block.id, newId: 'newBlockId' }
+        ])
+      ).toEqual([
+        blockResponse,
+        { ...blockResponse, id: block2.id },
+        {
+          ...omit(duplicatedBlock, 'typename'),
+          __typename: duplicatedBlock.typename,
+          parentOrder: '2',
+          id: 'newBlockId'
+        },
+        blockChild
+      ])
+    })
+
     it('should duplicate step block with new x and y', async () => {
       const newStepBlock = {
         ...stepBlock,
@@ -373,8 +405,12 @@ describe('BlockService', () => {
       service.getDuplicateBlockAndChildren = jest
         .fn()
         .mockReturnValue([newStepBlock])
+      prismaService.block.update
+        .mockResolvedValueOnce(duplicatedBlock)
+        .mockResolvedValueOnce(blockChild)
+        .mockResolvedValueOnce(block2)
 
-      await service.duplicateBlock(newStepBlock, 1, 2, 3)
+      await service.duplicateBlock(newStepBlock, 1, undefined, 2, 3)
       expect(prismaService.block.update).toHaveBeenCalledWith({
         where: { id: newStepBlock.id },
         include: { action: true },
@@ -391,6 +427,11 @@ describe('BlockService', () => {
     })
 
     it('should add duplicated block at end by default', async () => {
+      prismaService.block.update
+        .mockResolvedValueOnce(duplicatedBlock)
+        .mockResolvedValueOnce(blockChild)
+        .mockResolvedValueOnce(block2)
+
       await service.duplicateBlock(block)
 
       expect(service.reorderSiblings).toHaveBeenCalledWith([
@@ -401,6 +442,11 @@ describe('BlockService', () => {
     })
 
     it('should add duplicate block at position specified', async () => {
+      prismaService.block.update
+        .mockResolvedValueOnce(duplicatedBlock)
+        .mockResolvedValueOnce(blockChild)
+        .mockResolvedValueOnce(block2)
+
       await service.duplicateBlock(block, 1)
 
       expect(service.reorderSiblings).toHaveBeenCalledWith([
@@ -411,6 +457,11 @@ describe('BlockService', () => {
     })
 
     it('should add duplicate block at end if parentOrder exceeds list length', async () => {
+      prismaService.block.update
+        .mockResolvedValueOnce(duplicatedBlock)
+        .mockResolvedValueOnce(blockChild)
+        .mockResolvedValueOnce(block2)
+
       await service.duplicateBlock(block, 5)
 
       expect(service.reorderSiblings).toHaveBeenCalledWith([
@@ -421,6 +472,11 @@ describe('BlockService', () => {
     })
 
     it('should add duplicate block from end if parentOrder is negative', async () => {
+      prismaService.block.update
+        .mockResolvedValueOnce(duplicatedBlock)
+        .mockResolvedValueOnce(blockChild)
+        .mockResolvedValueOnce(block2)
+
       await service.duplicateBlock(block, -1)
 
       expect(service.reorderSiblings).toHaveBeenCalledWith([
@@ -461,7 +517,7 @@ describe('BlockService', () => {
       })
     })
 
-    it('should return block with specific id', async () => {
+    it('should return block and children with specific ids', async () => {
       prismaService.block.findUnique
         .mockResolvedValueOnce(stepBlock)
         .mockResolvedValueOnce(cardBlock)
@@ -469,12 +525,7 @@ describe('BlockService', () => {
         .mockResolvedValueOnce(buttonBlock)
         .mockResolvedValueOnce(imageBlock)
         .mockResolvedValueOnce(iconBlock)
-      mockUuidv4
-        .mockReturnValueOnce(`${cardBlock.id}Copy`)
-        .mockReturnValueOnce(`${videoBlock.id}Copy`)
-        .mockReturnValueOnce(`${buttonBlock.id}Copy`)
-        .mockReturnValueOnce(`${imageBlock.id}Copy`)
-        .mockReturnValue(`${iconBlock.id}Copy`)
+
       prismaService.block.findMany
         .mockResolvedValueOnce([cardBlock])
         .mockResolvedValueOnce([videoBlock, buttonBlock])
@@ -482,14 +533,20 @@ describe('BlockService', () => {
         .mockResolvedValueOnce([iconBlock])
         .mockResolvedValue([])
 
-      // StepBlock uses specific id. Child block id's, parentBlockIds & unique block ids (coverBlockId, posterBlockId & iconIds) are randomised
-      // Actions remain the same & nextBlockId is made null
       expect(
         await service.getDuplicateBlockAndChildren(
           stepBlock.id,
           journey.id,
           null,
-          'specificStepId'
+          'specificStepId',
+          [
+            { oldId: stepBlock.id, newId: 'specificStepId' },
+            { oldId: cardBlock.id, newId: 'specificCardId' },
+            { oldId: videoBlock.id, newId: 'specificVideoId' },
+            { oldId: imageBlock.id, newId: 'specificImageId' },
+            { oldId: buttonBlock.id, newId: 'specificButtonId' },
+            { oldId: iconBlock.id, newId: 'specificIconId' }
+          ]
         )
       ).toEqual([
         {
@@ -500,32 +557,32 @@ describe('BlockService', () => {
         },
         {
           ...cardBlock,
-          id: `${cardBlock.id}Copy`,
+          id: 'specificCardId',
           parentBlockId: 'specificStepId',
-          coverBlockId: `${videoBlock.id}Copy`
+          coverBlockId: 'specificVideoId'
         },
         {
           ...videoBlock,
-          id: `${videoBlock.id}Copy`,
-          parentBlockId: `${cardBlock.id}Copy`,
-          posterBlockId: `${imageBlock.id}Copy`
+          id: 'specificVideoId',
+          parentBlockId: 'specificCardId',
+          posterBlockId: 'specificImageId'
         },
         {
           ...imageBlock,
-          id: `${imageBlock.id}Copy`,
-          parentBlockId: `${videoBlock.id}Copy`
+          id: 'specificImageId',
+          parentBlockId: 'specificVideoId'
         },
         {
           ...buttonBlock,
-          id: `${buttonBlock.id}Copy`,
-          parentBlockId: `${cardBlock.id}Copy`,
-          endIconId: `${iconBlock.id}Copy`,
+          id: 'specificButtonId',
+          parentBlockId: 'specificCardId',
+          endIconId: 'specificIconId',
           action: omit(buttonBlock.action, 'parentBlockId')
         },
         {
           ...iconBlock,
-          id: `${iconBlock.id}Copy`,
-          parentBlockId: `${buttonBlock.id}Copy`
+          id: 'specificIconId',
+          parentBlockId: 'specificButtonId'
         }
       ])
 
@@ -543,6 +600,7 @@ describe('BlockService', () => {
           buttonBlock.id,
           journey.id,
           cardBlock.id,
+          undefined,
           undefined,
           'journey2',
           duplicateStepIds
@@ -580,6 +638,7 @@ describe('BlockService', () => {
           '1',
           null,
           duplicateStepIds,
+          undefined,
           'journey2',
           duplicateStepIds
         )
@@ -594,6 +653,7 @@ describe('BlockService', () => {
         '1',
         null,
         'step1',
+        undefined,
         'journey2',
         duplicateStepIds
       )

@@ -129,11 +129,41 @@ describe('BlockResolver', () => {
     it('duplicates the block and its children', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
       expect(
-        await resolver.blockDuplicate(ability, 'blockId', 2, 3, 4)
+        await resolver.blockDuplicate(ability, 'blockId', 2, undefined, 3, 4)
       ).toEqual([blockWithUserTeam, blockWithUserTeam])
       expect(service.duplicateBlock).toHaveBeenCalledWith(
         blockWithUserTeam,
         2,
+        undefined,
+        3,
+        4
+      )
+    })
+
+    it('duplicates the block and its children with custom ids', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
+      expect(
+        await resolver.blockDuplicate(
+          ability,
+          'blockId',
+          2,
+          [
+            { oldId: 'oldButtonId', newId: 'newButtonId' },
+            { oldId: 'oldStartIconId', newId: 'newStartIconId' },
+            { oldId: 'oldEndIconId', newId: 'newEndIconId' }
+          ],
+          3,
+          4
+        )
+      ).toEqual([blockWithUserTeam, blockWithUserTeam])
+      expect(service.duplicateBlock).toHaveBeenCalledWith(
+        blockWithUserTeam,
+        2,
+        [
+          { oldId: 'oldButtonId', newId: 'newButtonId' },
+          { oldId: 'oldStartIconId', newId: 'newStartIconId' },
+          { oldId: 'oldEndIconId', newId: 'newEndIconId' }
+        ],
         3,
         4
       )
