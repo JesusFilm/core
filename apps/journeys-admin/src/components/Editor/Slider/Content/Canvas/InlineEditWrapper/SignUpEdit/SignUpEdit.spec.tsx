@@ -1,12 +1,6 @@
 import { ApolloLink } from '@apollo/client'
 import { MockLink, MockedProvider } from '@apollo/client/testing'
-import {
-  fireEvent,
-  render,
-  screen,
-  screen,
-  waitFor
-} from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import DebounceLink from 'apollo-link-debounce'
 import { SnackbarProvider } from 'notistack'
@@ -35,50 +29,6 @@ describe('SignUpEdit', () => {
     submitIconId: null,
     action: null,
     children: []
-  }
-
-  beforeEach(() => jest.clearAllMocks())
-
-  const mockUpdateSuccess1 = {
-    request: {
-      query: SIGN_UP_BLOCK_UPDATE_SUBMIT_LABEL,
-      variables: {
-        id: 'signUp',
-        submitLabel: 'Submit update'
-      }
-    },
-    result: jest.fn(() => ({
-      data: {
-        signUpBlockUpdate: [
-          {
-            __typename: 'SignUpBlock',
-            id: 'signUp',
-            submitLabel: 'Submit update'
-          }
-        ]
-      }
-    }))
-  }
-
-  const mockUpdateSuccess2 = {
-    request: {
-      query: SIGN_UP_BLOCK_UPDATE_SUBMIT_LABEL,
-      variables: {
-        id: 'signUp',
-        submitLabel: 'Submit'
-      }
-    },
-    result: jest.fn(() => ({
-      data: {
-        signUpBlockUpdate: [
-          {
-            __typename: 'SignUpBlock',
-            id: 'signUp',
-            submitLabel: 'Submit'
-          }
-        ]
-      }
-    }))
   }
 
   const mockUpdateSuccess1 = {
