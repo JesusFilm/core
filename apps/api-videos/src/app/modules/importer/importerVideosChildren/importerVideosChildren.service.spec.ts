@@ -1,10 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
-import { PrismaService } from '../../../lib/prisma.service'
-import { ImporterVideosService } from '../importerVideos/importerVideos.service'
-import { ImporterVideosChildrenService } from './importerVideosChildren.service'
 
 import { Video } from '.prisma/api-videos-client'
+
+import { PrismaService } from '../../../lib/prisma.service'
+import { ImporterVideosService } from '../importerVideos/importerVideos.service'
+
+import { ImporterVideosChildrenService } from './importerVideosChildren.service'
+
 
 describe('ImporterVideosChildrenService', () => {
   let service: ImporterVideosChildrenService,
@@ -34,7 +37,7 @@ describe('ImporterVideosChildrenService', () => {
     ) as DeepMockProxy<PrismaService>
     importerVideosService = module.get<DeepMockProxy<ImporterVideosService>>(
       ImporterVideosService
-    ) as DeepMockProxy<ImporterVideosService>
+    )
     prismaService.video.findMany.mockResolvedValue([])
     prismaService.video.update.mockImplementation()
   })
