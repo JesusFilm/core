@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test'
 
+// just to run the tests daily
 test('has title', async ({ page }) => {
   await page.goto('/')
 
