@@ -299,6 +299,7 @@ export class BlockService {
       ...updatedBlockProps,
       ...defaultDuplicateBlock
     }
+    console.log(duplicateBlock)
 
     const duplicateChildren = await this.getDuplicateChildren(
       children,
@@ -309,6 +310,7 @@ export class BlockService {
       duplicateJourneyId,
       duplicateStepIds
     )
+    console.log([duplicateBlock as BlockWithAction, ...duplicateChildren])
 
     return [duplicateBlock as BlockWithAction, ...duplicateChildren]
   }
