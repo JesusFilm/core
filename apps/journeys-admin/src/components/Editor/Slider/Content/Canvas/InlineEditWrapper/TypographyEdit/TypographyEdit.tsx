@@ -26,7 +26,6 @@ export const TYPOGRAPHY_BLOCK_UPDATE_CONTENT = gql`
 export function TypographyEdit({
   id,
   content,
-  __typename,
   ...props
 }: TreeBlock<TypographyFields>): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -101,7 +100,7 @@ export function TypographyEdit({
             }
           },
           context: {
-            debounceKey: `${__typename}:${id}`,
+            debounceKey: `${props?.__typename}:${id}`,
             ...context
           }
         })
@@ -112,7 +111,6 @@ export function TypographyEdit({
   return (
     <Typography
       {...props}
-      __typename={__typename}
       id={id}
       content={content}
       editableContent={

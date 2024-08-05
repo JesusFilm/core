@@ -25,7 +25,6 @@ export const SIGN_UP_BLOCK_UPDATE_SUBMIT_LABEL = gql`
 export function SignUpEdit({
   id,
   submitLabel,
-  __typename,
   ...signUpProps
 }: TreeBlock<SignUpFields>): ReactElement {
   const [signUpBlockUpdate] = useMutation<
@@ -98,7 +97,7 @@ export function SignUpEdit({
             }
           },
           context: {
-            debounceKey: `${__typename}:${id}`,
+            debounceKey: `${signUpProps.__typename}:${id}`,
             ...context
           }
         })
@@ -109,7 +108,6 @@ export function SignUpEdit({
   return (
     <SignUp
       {...signUpProps}
-      __typename={__typename}
       id={id}
       submitLabel={submitLabel}
       editableSubmitLabel={
