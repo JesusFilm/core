@@ -5,18 +5,8 @@
   "projectType": "library",
   "targets": {
     "lint": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npx @biomejs/biome check --diagnostic-level=warn",
-        "cwd": "libs/nest/powerBi"
-      }
-    },
-    "lint:fix": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npx @biomejs/biome check --write",
-        "cwd": "libs/nest/powerBi"
-      }
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
     },
     "test": {
       "executor": "@nx/jest:jest",

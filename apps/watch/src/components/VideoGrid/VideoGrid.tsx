@@ -84,8 +84,8 @@ export function VideoGrid({
               {loading === true
                 ? 'Loading...'
                 : hasNextPage === true
-                  ? 'Load More'
-                  : 'No More Videos'}
+                ? 'Load More'
+                : 'No More Videos'}
             </LoadingButton>
           </Box>
         </Grid>

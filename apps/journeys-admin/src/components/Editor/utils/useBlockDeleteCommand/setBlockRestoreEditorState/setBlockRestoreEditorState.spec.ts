@@ -1,9 +1,11 @@
 import { TreeBlock } from '@core/journeys/ui/block'
+
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../__generated__/BlockFields'
 import {
   cardBlock,
   stepBlock
 } from '../../../../../libs/useBlockRestoreMutation/useBlockRestoreMutation.mock'
+
 import { setBlockRestoreEditorState } from './setBlockRestoreEditorState'
 
 describe('setBlockRestoreEditorState', () => {
@@ -12,9 +14,11 @@ describe('setBlockRestoreEditorState', () => {
     ...stepBlock,
     __typename: 'StepBlock'
   }
+
   beforeEach(() => {
     jest.clearAllMocks()
   })
+
   it('should update editor state when current block is not a step block', () => {
     setBlockRestoreEditorState(
       cardBlock as TreeBlock,
@@ -57,14 +61,8 @@ describe('setBlockRestoreEditorState', () => {
     expect(dispatch).toHaveBeenCalledWith({
       activeContent: 'canvas',
       activeSlide: 0,
-      selectedStep: {
-        __typename: 'StepBlock',
-        children: [],
-        id: 'step',
-        journeyId: 'journeyId',
-        nextBlockId: 'someId',
-        parentBlockId: null
-      },
+      selectedBlockId: 'step',
+      selectedStepId: 'step',
       type: 'SetEditorFocusAction'
     })
   })

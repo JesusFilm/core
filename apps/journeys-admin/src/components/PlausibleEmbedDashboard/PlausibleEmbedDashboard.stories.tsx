@@ -1,13 +1,16 @@
 import type { MockedResponse } from '@apollo/client/testing'
-import { simpleComponentConfig } from '@core/shared/ui/storybook'
 import Box from '@mui/material/Box'
 import type { Meta, StoryObj } from '@storybook/react'
 import type { ComponentPropsWithRef } from 'react'
+
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
+
 import type {
   GetAdminJourneyWithPlausibleToken,
   GetAdminJourneyWithPlausibleToken_journey as Journey
 } from '../../../__generated__/GetAdminJourneyWithPlausibleToken'
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
+
 import {
   GET_ADMIN_JOURNEY_WITH_PLAUSIBLE_TOKEN,
   PlausibleEmbedDashboard

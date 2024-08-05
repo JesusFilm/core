@@ -1,3 +1,4 @@
+/* eslint-disable i18next/no-literal-string */
 import { ReactElement } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'

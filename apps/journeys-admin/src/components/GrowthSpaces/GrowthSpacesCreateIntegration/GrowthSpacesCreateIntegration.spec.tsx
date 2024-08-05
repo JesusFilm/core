@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
+
 import {
   GrowthSpacesCreateIntegration,
   INTEGRATION_GROWTH_SPACES_CREATE

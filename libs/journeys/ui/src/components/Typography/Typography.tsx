@@ -7,6 +7,7 @@ import { TypographyFields } from './__generated__/TypographyFields'
 
 export interface TypographyProps extends TreeBlock<TypographyFields> {
   editableContent?: ReactElement
+  placeholderText?: string
 }
 
 export function Typography({
@@ -14,19 +15,28 @@ export function Typography({
   color,
   align,
   content,
-  editableContent
+  editableContent,
+  placeholderText
 }: TypographyProps): ReactElement {
+  let displayContent: ReactElement | string = content
+
+  if (editableContent != null) {
+    displayContent = editableContent
+  } else if (content === '' && placeholderText != null) {
+    displayContent = placeholderText
+  }
+
   return (
     <MuiTypography
       variant={variant ?? undefined}
       align={align ?? undefined}
-      color={color ?? undefined}
+      color={content === '' ? 'text.disabled' : color ?? undefined}
       paragraph={variant === 'overline' || variant === 'caption'}
       gutterBottom
       whiteSpace="pre-line"
       data-testid="JourneysTypography"
     >
-      {editableContent ?? content}
+      {displayContent}
     </MuiTypography>
   )
 }

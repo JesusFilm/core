@@ -1,25 +1,24 @@
-import { ReactElement } from 'react'
-
-import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { gql, useMutation } from '@apollo/client'
+import { SelectChangeEvent } from '@mui/material/Select'
 import Typography from '@mui/material/Typography'
+import { ReactElement } from 'react'
+// eslint-disable-next-line no-restricted-imports
 import { useTranslation } from 'react-i18next'
 
-import { gql, useMutation } from '@apollo/client'
 import { TreeBlock } from '@core/journeys/ui/block'
-import { SelectChangeEvent } from '@mui/material/Select'
-
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useTeam } from '@core/journeys/ui/TeamProvider'
+
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../../__generated__/BlockFields'
 import { TextResponseRouteUpdate } from '../../../../../../../../../../../../__generated__/TextResponseRouteUpdate'
 import { useIntegrationQuery } from '../../../../../../../../../../../libs/useIntegrationQuery'
-
 import { Select } from '../Select'
 
 export const TEXT_RESPONSE_ROUTE_UPDATE = gql`
   mutation TextResponseRouteUpdate(
-    $id: ID!, 
-    $journeyId: ID!, 
+    $id: ID!
+    $journeyId: ID!
     $input: TextResponseBlockUpdateInput!
   ) {
     textResponseBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
@@ -56,7 +55,7 @@ export function Route(): ReactElement {
 
   const options = selectedIntegration?.routes.map((route) => route.name)
 
-  async function handleChange(event: SelectChangeEvent) {
+  async function handleChange(event: SelectChangeEvent): Promise<void> {
     if (journey == null || selectedBlock == null) return
     const route = selectedIntegration?.routes.find(
       (route) => route.name === event.target.value
@@ -84,7 +83,7 @@ export function Route(): ReactElement {
 
   return (
     <>
-      {selectedBlock?.integrationId && (
+      {selectedBlock?.integrationId != null && (
         <>
           <Typography variant="subtitle2">{t('Route')}</Typography>
           <Select

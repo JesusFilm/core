@@ -3,8 +3,8 @@ import { ReactElement, ReactNode } from 'react'
 
 import { NextImage } from '@core/shared/ui/NextImage'
 
-import { useJourney } from '../../../libs/JourneyProvider'
 import type { TreeBlock } from '../../../libs/block'
+import { useJourney } from '../../../libs/JourneyProvider'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
 import { OverlayContent } from '../OverlayContent'
 

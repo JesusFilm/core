@@ -1,5 +1,3 @@
-
-
 type BibleCitation {
   osisId: String!
   bibleBook: BibleBook!

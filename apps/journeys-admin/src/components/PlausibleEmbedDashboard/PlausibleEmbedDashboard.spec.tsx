@@ -1,13 +1,15 @@
 import { MockedProvider, type MockedResponse } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import { type NextRouter, useRouter } from 'next/router'
-import { PlausibleEmbedDashboard } from '.'
+
 import type {
   GetAdminJourneyWithPlausibleToken,
   GetAdminJourneyWithPlausibleToken_journey as Journey
 } from '../../../__generated__/GetAdminJourneyWithPlausibleToken'
 
 import { GET_ADMIN_JOURNEY_WITH_PLAUSIBLE_TOKEN } from './PlausibleEmbedDashboard'
+
+import { PlausibleEmbedDashboard } from '.'
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -53,6 +55,7 @@ describe('PlausibleEmbedDashboard', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(screen.getByTestId('PlausibleEmbedDashboard')).toBeInTheDocument()
   })
+
   it('should show loading message', () => {
     render(
       <MockedProvider>

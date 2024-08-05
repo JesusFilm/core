@@ -4,8 +4,8 @@ import { ReactElement, useState } from 'react'
 import ThumbsDown from '@core/shared/ui/icons/ThumbsDown'
 import ThumbsUp from '@core/shared/ui/icons/ThumbsUp'
 
-import { useJourney } from '../../../../libs/JourneyProvider'
 import { useBlocks } from '../../../../libs/block'
+import { useJourney } from '../../../../libs/JourneyProvider'
 import {
   JourneyPlausibleEvents,
   keyify

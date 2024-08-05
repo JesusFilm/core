@@ -9,14 +9,15 @@ import { ImporterBibleCitationsService } from '../importer/importerBibleCitation
 import { ImporterKeywordsService } from '../importer/importerKeywords/importerKeywords.service'
 import { ImporterVideoDescriptionService } from '../importer/importerVideoDescriptions/importerVideoDescriptions.service'
 import { ImporterVideoImageAltService } from '../importer/importerVideoImageAlt/importerVideoImageAlt.service'
+import { ImporterVideosService } from '../importer/importerVideos/importerVideos.service'
+import { ImporterVideosChildrenService } from '../importer/importerVideosChildren/importerVideosChildren.service'
 import { ImporterVideoSnippetsService } from '../importer/importerVideoSnippets/importerVideoSnippets.service'
 import { ImporterVideoStudyQuestionsService } from '../importer/importerVideoStudyQuestions/importerVideoStudyQuestions.service'
 import { ImporterVideoSubtitlesService } from '../importer/importerVideoSubtitle/importerVideoSubtitle.service'
 import { ImporterVideoTitleService } from '../importer/importerVideoTitles/importerVideoTitle.service'
 import { ImporterVideoVariantDownloadsService } from '../importer/importerVideoVariantDownloads/importerVideoVariantDownloads.service'
 import { ImporterVideoVariantsService } from '../importer/importerVideoVariants/importerVideoVariants.service'
-import { ImporterVideosService } from '../importer/importerVideos/importerVideos.service'
-import { ImporterVideosChildrenService } from '../importer/importerVideosChildren/importerVideosChildren.service'
+
 import { BigQueryConsumer } from './bigQuery.consumer'
 import { BigQueryService } from './bigQuery.service'
 
