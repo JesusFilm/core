@@ -4,12 +4,12 @@ import { SnackbarProvider } from 'notistack'
 import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import {
   TreeBlock,
   blockHistoryVar,
   treeBlocksVar
 } from '@core/journeys/ui/block'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
 
 import {

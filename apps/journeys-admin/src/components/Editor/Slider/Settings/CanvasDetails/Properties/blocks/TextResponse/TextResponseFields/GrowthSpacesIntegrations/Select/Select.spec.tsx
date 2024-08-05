@@ -1,4 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/react'
+
 import { Select } from './Select'
 
 describe('Select', () => {
@@ -7,7 +8,7 @@ describe('Select', () => {
     const onChange = jest.fn()
 
     render(
-      <Select label={'Select Option'} options={options} onChange={onChange} />
+      <Select label="Select Option" options={options} onChange={onChange} />
     )
 
     expect(screen.getAllByText('Select Option')[0]).toBeInTheDocument()

@@ -1,17 +1,17 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
+import { styled } from '@mui/material/styles'
 import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
-import { styled } from '@mui/material/styles'
-import { useTranslation } from 'next-i18next'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
 import Image3Icon from '@core/shared/ui/icons/Image3'
 import VideoOnIcon from '@core/shared/ui/icons/VideoOn'
@@ -26,6 +26,7 @@ import { blockDeleteUpdate } from '../../../../../../../../../libs/blockDeleteUp
 import { blockRestoreUpdate } from '../../../../../../../../../libs/useBlockRestoreMutation'
 import { useCoverBlockDeleteMutation } from '../../../../../../../../../libs/useCoverBlockDeleteMutation'
 import { useCoverBlockRestoreMutation } from '../../../../../../../../../libs/useCoverBlockRestoreMutation'
+
 import { BackgroundMediaVideo } from './Video/BackgroundMediaVideo'
 
 const BackgroundMediaImage = dynamic(
@@ -86,22 +87,22 @@ export function BackgroundMedia(): ReactElement {
     }
   }, [coverBlock?.__typename])
 
-  async function handleTypeChange(
+  function handleTypeChange(
     _,
     newBlockType: BackgroundMediaBlockType | null
-  ): Promise<void> {
+  ): void {
     if (newBlockType == null || journey == null || cardBlock == null) return
 
     setBlockType(newBlockType)
 
     if (coverBlock != null) {
-      await add({
+      add({
         parameters: {
           execute: {},
           undo: {}
         },
-        async execute() {
-          await deleteBlock({
+        execute() {
+          void deleteBlock({
             variables: {
               id: coverBlock.id,
               cardBlockId: cardBlock.id
@@ -124,8 +125,8 @@ export function BackgroundMedia(): ReactElement {
             }
           })
         },
-        async undo() {
-          await restoreBlock({
+        undo() {
+          void restoreBlock({
             variables: {
               id: coverBlock.id,
               cardBlockId: cardBlock.id

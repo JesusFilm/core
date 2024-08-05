@@ -1,8 +1,11 @@
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { render, screen } from '@testing-library/react'
 import { type NodeProps, ReactFlowProvider } from 'reactflow'
-import { ReferrerNode } from '.'
+
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+
 import { mockReactFlow } from '../../../../../../../test/mockReactFlow'
+
+import { ReferrerNode } from '.'
 
 describe('ReferrerNode', () => {
   beforeEach(() => {

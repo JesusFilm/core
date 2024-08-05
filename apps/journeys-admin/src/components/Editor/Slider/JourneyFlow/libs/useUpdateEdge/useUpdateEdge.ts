@@ -1,9 +1,9 @@
 import get from 'lodash/get'
 import { Edge } from 'reactflow'
 
+import { TreeBlock } from '@core/journeys/ui/block'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { TreeBlock } from '@core/journeys/ui/block'
 import { searchBlocks } from '@core/journeys/ui/searchBlocks'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'
@@ -100,7 +100,7 @@ export function useUpdateEdge(): (
           edgeSource.blockId
         )
         if (block != null) {
-          await addAction({
+          addAction({
             blockId: block.id,
             blockTypename: block.__typename,
             action: {

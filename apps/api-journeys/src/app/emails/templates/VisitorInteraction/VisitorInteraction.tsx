@@ -14,6 +14,7 @@ import { Tailwind } from '@react-email/tailwind'
 import { intlFormat, parseISO } from 'date-fns'
 import { ReactElement, ReactNode } from 'react'
 
+import { Event, Prisma } from '.prisma/api-journeys-client'
 import {
   ActionCard,
   BodyWrapper,
@@ -22,7 +23,6 @@ import {
   UnsubscribeLink
 } from '@core/nest/common/email/components'
 import { User } from '@core/nest/common/firebaseClient'
-import { Event, Prisma } from '.prisma/api-journeys-client'
 
 type Visitor = Prisma.VisitorGetPayload<{
   select: {

@@ -142,6 +142,7 @@ type Story = StoryObj<ComponentProps<typeof Card>>
 
 const Template: Story = {
   render: ({ ...args }) => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const theme = useTheme()
     return (
       <MockedProvider>

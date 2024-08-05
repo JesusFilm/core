@@ -5,16 +5,21 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { v4 as uuidv4 } from 'uuid'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { CommandProvider } from '@core/journeys/ui/CommandProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 
-import { VideoBlockEditorSettingsPosterLibrary } from '.'
 import {
   BlockFields_ImageBlock as ImageBlock,
   BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../../../../../../../../__generated__/GetJourney'
+import {
+  JourneyStatus,
+  ThemeMode,
+  ThemeName,
+  VideoBlockSource
+} from '../../../../../../../../../../__generated__/globalTypes'
 import {
   PosterImageBlockCreate,
   PosterImageBlockCreateVariables
@@ -31,21 +36,18 @@ import {
   PosterImageBlockUpdate,
   PosterImageBlockUpdateVariables
 } from '../../../../../../../../../../__generated__/PosterImageBlockUpdate'
-import {
-  JourneyStatus,
-  ThemeMode,
-  ThemeName,
-  VideoBlockSource
-} from '../../../../../../../../../../__generated__/globalTypes'
 import { CommandRedoItem } from '../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 import { createCloudflareUploadByUrlMock } from '../../../../ImageBlockEditor/CustomImage/CustomUrl/data'
+
 import {
   POSTER_IMAGE_BLOCK_CREATE,
   POSTER_IMAGE_BLOCK_DELETE,
   POSTER_IMAGE_BLOCK_RESTORE,
   POSTER_IMAGE_BLOCK_UPDATE
 } from './VideoBlockEditorSettingsPosterLibrary'
+
+import { VideoBlockEditorSettingsPosterLibrary } from '.'
 
 jest.mock('uuid', () => ({
   __esModule: true,
@@ -158,7 +160,7 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
   let originalEnv
 
   beforeEach(() => {
-    ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
+    (useMediaQuery as jest.Mock).mockImplementation(() => true)
     originalEnv = process.env
     process.env = {
       ...originalEnv,

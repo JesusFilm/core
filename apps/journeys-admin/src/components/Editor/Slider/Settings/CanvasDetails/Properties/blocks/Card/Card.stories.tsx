@@ -2,8 +2,8 @@ import { jest } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../__generated__/BlockFields'

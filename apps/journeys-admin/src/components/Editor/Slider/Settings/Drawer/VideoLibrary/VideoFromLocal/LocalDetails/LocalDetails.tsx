@@ -11,10 +11,10 @@ import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 import CheckIcon from '@core/shared/ui/icons/Check'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
+import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
 
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { GetVideo } from '../../../../../../../../../__generated__/GetVideo'
@@ -126,7 +126,6 @@ export function LocalDetails({
     }
   }
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     const newSelectedLanguage =
       videoBlock?.videoId === id &&
@@ -135,6 +134,7 @@ export function LocalDetails({
         : DEFAULT_LANGUAGE
 
     setSelectedLanguage(newSelectedLanguage)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data])
 
   useEffect(() => {

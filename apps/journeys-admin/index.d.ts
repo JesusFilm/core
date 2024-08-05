@@ -1,13 +1,12 @@
 declare module '*.svg' {
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const content: any
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   export const ReactComponent: any
   export default content
 }
 export type DateTime = string
 
 declare global {
-  // biome-ignore lint/suspicious/noRedeclare: <explanation>
   type DateTime = string
 }

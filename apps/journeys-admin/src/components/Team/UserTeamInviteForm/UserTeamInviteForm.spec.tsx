@@ -9,8 +9,8 @@ import {
 import { GetLastActiveTeamIdAndTeams } from '@core/journeys/ui/TeamProvider/__generated__/GetLastActiveTeamIdAndTeams'
 
 import { GetUserTeamsAndInvites } from '../../../../__generated__/GetUserTeamsAndInvites'
-import { UserTeamInviteCreate } from '../../../../__generated__/UserTeamInviteCreate'
 import { UserTeamRole } from '../../../../__generated__/globalTypes'
+import { UserTeamInviteCreate } from '../../../../__generated__/UserTeamInviteCreate'
 import { GET_USER_TEAMS_AND_INVITES } from '../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
 import { TeamManageWrapper } from '../TeamManageDialog/TeamManageWrapper'
 

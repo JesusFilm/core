@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import {
   BlockFields_ButtonBlock as ButtonBlock,

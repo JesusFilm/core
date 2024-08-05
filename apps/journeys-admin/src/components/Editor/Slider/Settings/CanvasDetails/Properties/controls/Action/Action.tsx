@@ -6,8 +6,8 @@ import Stack from '@mui/material/Stack'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 import {
@@ -16,8 +16,8 @@ import {
   BlockFields_SignUpBlock as SignUpBlock,
   BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../../../__generated__/BlockFields'
-
 import { useActionCommand } from '../../../../../../utils/useActionCommand'
+
 import { EmailAction } from './EmailAction'
 import { LinkAction } from './LinkAction'
 import { NavigateToBlockAction } from './NavigateToBlockAction'
@@ -46,24 +46,24 @@ export function Action(): ReactElement {
     setAction(selectedBlock?.action?.__typename ?? 'None')
   }, [selectedBlock?.action?.__typename])
 
-  async function removeAction(): Promise<void> {
-    if (selectedBlock != null) {
-      const { id, action, __typename } = selectedBlock
-      await addAction({
-        blockId: id,
-        blockTypename: __typename,
-        action: null,
-        undoAction: action,
-        editorFocus: {
-          selectedStep,
-          selectedBlock
-        }
-      })
-    }
+  function removeAction(): void {
+    if (selectedBlock == null) return
+
+    const { id, action, __typename: blockTypename } = selectedBlock
+    addAction({
+      blockId: id,
+      blockTypename,
+      action: null,
+      undoAction: action,
+      editorFocus: {
+        selectedStep,
+        selectedBlock
+      }
+    })
   }
 
-  async function handleChange(event: SelectChangeEvent): Promise<void> {
-    if (event.target.value === 'None') await removeAction()
+  function handleChange(event: SelectChangeEvent): void {
+    if (event.target.value === 'None') removeAction()
     setAction(event.target.value as ActionValue)
   }
 

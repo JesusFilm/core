@@ -11,10 +11,7 @@ import {
 } from '../../../__generated__/CoverBlockDelete'
 
 export const COVER_BLOCK_DELETE = gql`
-  mutation CoverBlockDelete(
-    $id: ID!
-    $cardBlockId: ID!
-  ) {
+  mutation CoverBlockDelete($id: ID!, $cardBlockId: ID!) {
     blockDelete(id: $id) {
       id
       parentOrder

@@ -1,4 +1,5 @@
 import { GetJourneyAnalytics } from '../__generated__/GetJourneyAnalytics'
+
 import { transformJourneyAnalytics } from './transformJourneyAnalytics'
 
 describe('transformJourneyAnalytics', () => {

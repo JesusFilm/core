@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { TypographyBlockUpdateInput, TypographyColor } from "./globalTypes";
+import { TypographyColor } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: TypographyBlockUpdateColor
@@ -21,5 +21,5 @@ export interface TypographyBlockUpdateColor {
 
 export interface TypographyBlockUpdateColorVariables {
   id: string;
-  input: TypographyBlockUpdateInput;
+  color: TypographyColor;
 }

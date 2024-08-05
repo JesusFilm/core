@@ -1,22 +1,22 @@
 import { MutationResult } from '@apollo/client'
+import { MockedProvider } from '@apollo/client/testing'
 import { act, renderHook, waitFor } from '@testing-library/react'
 import { Edge, OnSelectionChangeParams, useKeyPress } from 'reactflow'
 
+import { TreeBlock } from '@core/journeys/ui/block'
 import {
   ActiveSlide,
   EditorProvider,
   EditorState
 } from '@core/journeys/ui/EditorProvider'
-import { TreeBlock } from '@core/journeys/ui/block'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
 import { BlockDelete } from '../../../../../../../__generated__/BlockDelete'
 import { StepFields as StepBlock } from '../../../../../../../__generated__/StepFields'
 import { useBlockDeleteMutation } from '../../../../../../libs/useBlockDeleteMutation'
 import { useDeleteEdge } from '../useDeleteEdge'
 
-import { MockedProvider } from '@apollo/client/testing'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 import { useDeleteOnKeyPress } from './useDeleteOnKeyPress'
 
 jest.mock('reactflow', () => {

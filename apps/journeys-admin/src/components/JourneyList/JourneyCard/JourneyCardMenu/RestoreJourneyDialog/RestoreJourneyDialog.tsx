@@ -7,8 +7,8 @@ import { ReactElement } from 'react'
 import { Dialog } from '@core/shared/ui/Dialog'
 
 import { GetAdminJourneys } from '../../../../../../__generated__/GetAdminJourneys'
-import { JourneyRestore } from '../../../../../../__generated__/JourneyRestore'
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
+import { JourneyRestore } from '../../../../../../__generated__/JourneyRestore'
 
 export const JOURNEY_RESTORE = gql`
   mutation JourneyRestore($ids: [ID!]!) {

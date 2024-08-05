@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { string, z } from 'zod'
+
 import { PrismaService } from '../../../lib/prisma.service'
 import { ImporterService } from '../importer.service'
 
@@ -25,8 +26,8 @@ export class ImporterBibleBooksService extends ImporterService<BibleBook> {
     super()
   }
 
-  getExistingIds(): Promise<void> {
-    return this.prismaService.bibleBook
+  async getExistingIds(): Promise<void> {
+    return await this.prismaService.bibleBook
       .findMany({
         select: { id: true }
       })
@@ -35,7 +36,7 @@ export class ImporterBibleBooksService extends ImporterService<BibleBook> {
       })
   }
 
-  trimBibleBook(bibleBook: BibleBook) {
+  trimBibleBook(bibleBook: BibleBook): Omit<BibleBook, 'name' | 'languageId'> {
     const { name, languageId, ...trimmedBibleBook } = bibleBook
     return trimmedBibleBook
   }

@@ -3,8 +3,10 @@ import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
+
 import { IntegrationType } from '../../../../__generated__/globalTypes'
 import { BreadcrumbNavigation } from '../BreadcrumbNavigation'
+
 import { IntegrationsButton } from './IntegrationsButton'
 
 export function Integrations(): ReactElement {
@@ -22,7 +24,9 @@ export function Integrations(): ReactElement {
         <BreadcrumbNavigation />
         <Stack direction="row" gap={4} sx={{ flexWrap: 'wrap', mt: 10 }}>
           <IntegrationsButton
-            url={`/teams/${router.query.teamId}/integrations/new/growth-spaces`}
+            url={`/teams/${
+              router.query.teamId as string
+            }/integrations/new/growth-spaces`}
             type={IntegrationType.growthSpaces}
           />
         </Stack>

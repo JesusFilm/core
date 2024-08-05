@@ -14,11 +14,11 @@ import { useTeam } from '@core/journeys/ui/TeamProvider'
 import AddSquare4Icon from '@core/shared/ui/icons/AddSquare4'
 import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'
 
-import { UserTeamInviteCreate } from '../../../../__generated__/UserTeamInviteCreate'
 import {
   UserTeamInviteCreateInput,
   UserTeamRole
 } from '../../../../__generated__/globalTypes'
+import { UserTeamInviteCreate } from '../../../../__generated__/UserTeamInviteCreate'
 
 export const USER_TEAM_INVITE_CREATE = gql`
   mutation UserTeamInviteCreate(
@@ -124,8 +124,8 @@ export function UserTeamInviteForm({
                 role !== UserTeamRole.manager
                   ? t('Only a manager can invite new members to the team')
                   : touched?.email != null && errors.email != null
-                    ? errors.email
-                    : null
+                  ? errors.email
+                  : null
               }
               autoComplete="off"
               InputProps={{

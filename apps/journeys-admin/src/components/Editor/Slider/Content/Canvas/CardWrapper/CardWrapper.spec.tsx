@@ -2,10 +2,10 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render } from '@testing-library/react'
 import { ReactElement } from 'react'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { WrappersProps } from '@core/journeys/ui/BlockRenderer'
 import { Card } from '@core/journeys/ui/Card'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { VideoBlockSource } from '../../../../../../../__generated__/globalTypes'
 import { TestEditorState } from '../../../../../../libs/TestEditorState'

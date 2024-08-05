@@ -7,9 +7,9 @@ import FolderDown1Icon from '@core/shared/ui/icons/FolderDown1'
 import FolderUp1Icon from '@core/shared/ui/icons/FolderUp1'
 
 import { GetAdminJourneys } from '../../../../../../../__generated__/GetAdminJourneys'
+import { JourneyStatus } from '../../../../../../../__generated__/globalTypes'
 import { JourneyArchive } from '../../../../../../../__generated__/JourneyArchive'
 import { JourneyUnarchive } from '../../../../../../../__generated__/JourneyUnarchive'
-import { JourneyStatus } from '../../../../../../../__generated__/globalTypes'
 import { MenuItem } from '../../../../../MenuItem'
 
 export const JOURNEY_ARCHIVE = gql`

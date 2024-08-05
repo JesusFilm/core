@@ -3,7 +3,9 @@ import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
+// eslint-disable-next-line no-restricted-imports
 import { useTranslation } from 'react-i18next'
+
 import { ConfigField } from './ConfigField'
 
 interface GrowthSpacesSettingsProps {

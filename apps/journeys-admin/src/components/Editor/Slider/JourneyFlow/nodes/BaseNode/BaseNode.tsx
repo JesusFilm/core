@@ -20,13 +20,6 @@ import {
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
 
-export enum HandleVariant {
-  None = 'none', // not rendered - Default value
-  Shown = 'shown', // rendered, visible and connectable
-  Hidden = 'hidden', // rendered, not visible or connectable.
-  Disabled = 'disabled' // rendered, visible, not connectable
-}
-
 import {
   ACTION_BUTTON_HEIGHT,
   HANDLE_BORDER_WIDTH,
@@ -38,6 +31,13 @@ import {
 } from '../StepBlockNode/libs/sizes'
 
 import { PulseWrapper } from './PulseWrapper'
+
+export enum HandleVariant {
+  None = 'none', // not rendered - Default value
+  Shown = 'shown', // rendered, visible and connectable
+  Hidden = 'hidden', // rendered, not visible or connectable.
+  Disabled = 'disabled' // rendered, visible, not connectable
+}
 
 const StyledHandle = styled(Handle)(() => ({}))
 const connectionHandleIdSelector = (state): string | null =>

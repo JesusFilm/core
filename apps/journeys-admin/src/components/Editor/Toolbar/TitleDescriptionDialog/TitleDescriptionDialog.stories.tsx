@@ -5,10 +5,11 @@ import { ReactElement, useState } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
-import { TitleDescriptionDialog } from './TitleDescriptionDialog'
-
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
+
 import { JOURNEY_SETTINGS_UPDATE } from '../../../../libs/useJourneyUpdateMutation/useJourneyUpdateMutation'
+
+import { TitleDescriptionDialog } from './TitleDescriptionDialog'
 
 const TitleDialogStory: Meta<typeof TitleDescriptionDialog> = {
   ...simpleComponentConfig,

@@ -1,3 +1,6 @@
+import { SxProps } from '@mui/material/styles'
+import { ReactElement } from 'react'
+
 import CheckBroken from '@core/shared/ui/icons/CheckBroken'
 import CheckContained from '@core/shared/ui/icons/CheckContained'
 import Facebook from '@core/shared/ui/icons/Facebook'
@@ -32,8 +35,6 @@ import Viber from '@core/shared/ui/icons/Viber'
 import Vk from '@core/shared/ui/icons/Vk'
 import WhatsApp from '@core/shared/ui/icons/WhatsApp'
 
-import { SxProps } from '@mui/system'
-import { ReactElement } from 'react'
 import { MessagePlatform } from '../../../__generated__/globalTypes'
 
 interface ChatIconProps {

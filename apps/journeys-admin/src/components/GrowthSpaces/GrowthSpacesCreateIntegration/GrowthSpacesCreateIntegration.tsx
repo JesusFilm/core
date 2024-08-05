@@ -2,12 +2,16 @@ import { gql, useMutation } from '@apollo/client'
 import { useRouter } from 'next/router'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
+// eslint-disable-next-line no-restricted-imports
 import { useTranslation } from 'react-i18next'
+
 import { IntegrationGrowthSpacesCreate } from '../../../../__generated__/IntegrationGrowthSpacesCreate'
 import { GrowthSpacesSettings } from '../GrowthSpacesSettings'
 
 export const INTEGRATION_GROWTH_SPACES_CREATE = gql`
-  mutation IntegrationGrowthSpacesCreate($input: IntegrationGrowthSpacesCreateInput!) {
+  mutation IntegrationGrowthSpacesCreate(
+    $input: IntegrationGrowthSpacesCreateInput!
+  ) {
     integrationGrowthSpacesCreate(input: $input) {
       id
     }
@@ -44,7 +48,9 @@ export function GrowthSpacesCreateIntegration(): ReactElement {
           preventDuplicate: true
         })
         await router.push(
-          `/teams/${teamId}/integrations/${data.integrationGrowthSpacesCreate.id}`
+          `/teams/${teamId as string}/integrations/${
+            data.integrationGrowthSpacesCreate.id
+          }`
         )
       } else {
         enqueueSnackbar(

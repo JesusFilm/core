@@ -54,10 +54,12 @@ type Video @key(fields: "id primaryLanguageId") @cacheControl(maxAge: 86400) {
   """
   childrenCount: Int!
   variantLanguagesWithSlug: [LanguageWithSlug!]!
-  subtitles(languageId: ID, primary: Boolean, edition: String): [VideoSubtitle!]!
+  subtitles(
+    languageId: ID
+    primary: Boolean
+    edition: String
+  ): [VideoSubtitle!]!
 }
-
-
 
 input VideosFilter {
   availableVariantLanguageIds: [ID!]

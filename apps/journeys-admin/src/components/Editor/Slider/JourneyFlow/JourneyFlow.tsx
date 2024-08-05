@@ -33,7 +33,9 @@ import {
 } from 'reactflow'
 
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
+import { isActionBlock } from '@core/journeys/ui/isActionBlock'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { searchBlocks } from '@core/journeys/ui/searchBlocks'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import ArrowRefresh6Icon from '@core/shared/ui/icons/ArrowRefresh6'
 
@@ -44,29 +46,27 @@ import type {
 import { useStepBlockPositionUpdateMutation } from '../../../../libs/useStepBlockPositionUpdateMutation'
 
 import { AnalyticsOverlaySwitch } from './AnalyticsOverlaySwitch'
-import { JourneyAnalyticsCard } from './JourneyAnalyticsCard'
-import { NewStepButton } from './NewStepButton'
 import { CustomEdge } from './edges/CustomEdge'
+import { ReferrerEdge } from './edges/ReferrerEdge'
 import { StartEdge } from './edges/StartEdge'
+import { JourneyAnalyticsCard } from './JourneyAnalyticsCard'
 import { type PositionMap, arrangeSteps } from './libs/arrangeSteps'
+import { convertToEdgeSource } from './libs/convertToEdgeSource'
 import { transformSteps } from './libs/transformSteps'
+import { useCreateStepFromAction } from './libs/useCreateStepFromAction'
+import { useCreateStepFromSocialPreview } from './libs/useCreateStepFromSocialPreview'
 import { useCreateStepFromStep } from './libs/useCreateStepFromStep'
 import { useDeleteEdge } from './libs/useDeleteEdge'
 import { useDeleteOnKeyPress } from './libs/useDeleteOnKeyPress'
 import { useUpdateEdge } from './libs/useUpdateEdge'
+import { NewStepButton } from './NewStepButton'
 import { LinkNode } from './nodes/LinkNode'
+import { ReferrerNode } from './nodes/ReferrerNode'
 import { SocialPreviewNode } from './nodes/SocialPreviewNode'
 import { StepBlockNode } from './nodes/StepBlockNode'
 import { STEP_NODE_CARD_HEIGHT } from './nodes/StepBlockNode/libs/sizes'
 
 import 'reactflow/dist/style.css'
-import { isActionBlock } from '@core/journeys/ui/isActionBlock'
-import { searchBlocks } from '@core/journeys/ui/searchBlocks'
-import { ReferrerEdge } from './edges/ReferrerEdge'
-import { convertToEdgeSource } from './libs/convertToEdgeSource'
-import { useCreateStepFromAction } from './libs/useCreateStepFromAction'
-import { useCreateStepFromSocialPreview } from './libs/useCreateStepFromSocialPreview'
-import { ReferrerNode } from './nodes/ReferrerNode'
 
 // some styles can only be updated through css after render
 const additionalEdgeStyles = {
@@ -213,7 +213,7 @@ export function JourneyFlow(): ReactElement {
     connectingParams.current = params
   }, [])
   const onConnectEnd = useCallback<OnConnectEnd>(
-    async (event) => {
+    (event) => {
       if (
         reactFlowInstance == null ||
         connectingParams.current == null ||
@@ -275,14 +275,14 @@ export function JourneyFlow(): ReactElement {
 
         switch (edgeSource.sourceType) {
           case 'step':
-            void createStepFromStep(input)
+            createStepFromStep(input)
             break
           case 'socialPreview':
-            void createStepFromSocialPreview(input)
+            createStepFromSocialPreview(input)
             break
           case 'action': {
             if (!isActionBlock(sourceBlock)) break
-            void createStepFromAction({ ...input, sourceBlock })
+            createStepFromAction({ ...input, sourceBlock })
             break
           }
         }
@@ -290,7 +290,7 @@ export function JourneyFlow(): ReactElement {
     },
     [
       reactFlowInstance,
-      connectingParams,
+      steps,
       createStepFromStep,
       createStepFromSocialPreview,
       createStepFromAction
@@ -371,18 +371,18 @@ export function JourneyFlow(): ReactElement {
     }
 
   useEffect(() => {
-    if (analytics?.referrers) {
+    if (analytics?.referrers != null) {
       const { nodes, edges } = analytics.referrers
 
       setReferrerEdges(edges)
       setReferrerNodes(nodes)
     }
-  }, [JSON.stringify(analytics?.referrers)])
+  }, [analytics?.referrers, setReferrerEdges, setReferrerNodes])
 
   useEffect(() => {
-    setReferrerNodes((nds) => nds.map(hideReferrers(!showAnalytics)))
-    setReferrerEdges((eds) => eds.map(hideReferrers(!showAnalytics)))
-  }, [showAnalytics])
+    setReferrerNodes((nds) => nds.map(hideReferrers(showAnalytics === false)))
+    setReferrerEdges((eds) => eds.map(hideReferrers(showAnalytics === false)))
+  }, [setReferrerEdges, setReferrerNodes, showAnalytics])
 
   return (
     <Box
@@ -390,7 +390,7 @@ export function JourneyFlow(): ReactElement {
         width: '100%',
         height: '100%',
         ...additionalEdgeStyles,
-        ...(showAnalytics && analyticEdgeStyles)
+        ...(showAnalytics === true && analyticEdgeStyles)
       }}
       data-testid="JourneyFlow"
     >
@@ -448,7 +448,7 @@ export function JourneyFlow(): ReactElement {
           color="#aaa"
           gap={16}
           style={
-            showAnalytics
+            showAnalytics === true
               ? {
                   backgroundColor: '#DEE8EF'
                 }

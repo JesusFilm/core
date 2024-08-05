@@ -10,22 +10,22 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { useCommand } from '@core/journeys/ui/CommandProvider'
 import {
   ActiveContent,
   ActiveSlide,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
-import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
+import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import { ThemeMode, ThemeName, getTheme } from '@core/shared/ui/themes'
 
 import { CardBlockBackgroundColorUpdate } from '../../../../../../../../../../__generated__/CardBlockBackgroundColorUpdate'
 import { CardFields } from '../../../../../../../../../../__generated__/CardFields'
 
-import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { DebouncedHexColorPicker } from './DebouncedHexColorPicker'
 import { PaletteColorPicker } from './PaletteColorPicker'
 import { Swatch } from './Swatch'
@@ -96,7 +96,7 @@ export function BackgroundColor(): ReactElement {
 
   async function handleColorChange(color: string): Promise<void> {
     if (cardBlock != null) {
-      add({
+      await add({
         parameters: {
           execute: {
             color: color.toUpperCase()
@@ -109,7 +109,7 @@ export function BackgroundColor(): ReactElement {
           dispatch({
             type: 'SetEditorFocusAction',
             activeSlide: ActiveSlide.Content,
-            selectedStep: selectedStep,
+            selectedStep,
             activeContent: ActiveContent.Canvas
           })
           await cardBlockUpdate({

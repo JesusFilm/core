@@ -54,7 +54,7 @@ export const mockReactFlow = (): void => {
       }
     }
   })
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ;(global.SVGElement as any).prototype.getBBox = () => ({
     x: 0,
     y: 0,

@@ -1,6 +1,7 @@
+import Fade from '@mui/material/Fade'
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { alpha } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { NodeProps } from 'reactflow'
@@ -10,10 +11,9 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { filterActionBlocks } from '@core/journeys/ui/filterActionBlocks'
 import { getGoalDetails } from '@core/journeys/ui/getGoalDetails'
 
-import { Fade } from '@mui/material'
-import { BaseNode } from '../BaseNode'
-import { HandleVariant } from '../BaseNode'
+import { BaseNode, HandleVariant } from '../BaseNode'
 import { LINK_NODE_HEIGHT, LINK_NODE_WIDTH } from '../StepBlockNode/libs/sizes'
+
 import { LinkNodeAnalytics } from './LinkNodeAnalytics'
 
 export function LinkNode({ id }: NodeProps): ReactElement {

@@ -6,8 +6,8 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { GetJourney_journey as Journey } from '../../../../../../../../../__generated__/GetJourney'
-
 import { BLOCK_ACTION_DELETE } from '../../../../../../../../libs/useBlockActionDeleteMutation/useBlockActionDeleteMutation'
+
 import { Action } from './Action'
 import { steps } from './data'
 

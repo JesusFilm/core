@@ -94,7 +94,7 @@ export class ImporterVideosService extends ImporterService<Video> {
     })
     this.ids = [...this.ids, ...transformedVideos.map(({ id }) => id)]
     for (const video of transformedVideos) {
-      ;(this.usedSlugs as Record<string, string>)[video.id] = video.slug
+      (this.usedSlugs as Record<string, string>)[video.id] = video.slug
     }
   }
 }

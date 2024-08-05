@@ -1,23 +1,25 @@
 import { gql, useMutation } from '@apollo/client'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { TreeBlock } from '@core/journeys/ui/block'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
+
+import { TreeBlock } from '@core/journeys/ui/block'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
-import { TextResponseLabelUpdate } from '../../../../../../../../../../../__generated__/TextResponseLabelUpdate'
-import { TextResponseTypeUpdate } from '../../../../../../../../../../../__generated__/TextResponseTypeUpdate'
 import {
   TextResponseBlockUpdateInput,
   TextResponseType
 } from '../../../../../../../../../../../__generated__/globalTypes'
+import { TextResponseLabelUpdate } from '../../../../../../../../../../../__generated__/TextResponseLabelUpdate'
+import { TextResponseTypeUpdate } from '../../../../../../../../../../../__generated__/TextResponseTypeUpdate'
 import { ToggleButtonGroup } from '../../../../controls/ToggleButtonGroup'
 import { TEXT_RESPONSE_LABEL_UPDATE } from '../Label/Label'
 
 export const TEXT_RESPONSE_TYPE_UPDATE = gql`
   mutation TextResponseTypeUpdate(
-    $id: ID!, 
-    $journeyId: ID!, 
+    $id: ID!
+    $journeyId: ID!
     $input: TextResponseBlockUpdateInput!
   ) {
     textResponseBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
@@ -92,14 +94,14 @@ export function Type(): ReactElement {
           id: selectedBlock.id,
           journeyId: journey.id,
           input: {
-            label: label
+            label
           }
         },
         optimisticResponse: {
           textResponseBlockUpdate: {
             id: selectedBlock?.id,
             __typename: 'TextResponseBlock',
-            label: label
+            label
           }
         }
       })

@@ -13,6 +13,7 @@ describe('Hotkeys', () => {
   it('should undo command when undo button is clicked', async () => {
     const command0: Command = {
       parameters: { execute: { arg1: 'execute' }, undo: { arg1: 'undo' } },
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
       execute: () => {},
       undo: jest.fn()
     }
@@ -27,8 +28,8 @@ describe('Hotkeys', () => {
       wrapper
     })
 
-    result.current.add(command0)
-    await waitFor(() => expect(result.current.state.undo).not.toBeUndefined())
+    await result.current.add(command0)
+    await waitFor(() => expect(result.current.state.undo).toBeDefined())
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
     expect(command0.undo).toHaveBeenCalledWith({ arg1: 'undo' })
   })
@@ -45,7 +46,7 @@ describe('Hotkeys', () => {
       wrapper
     })
 
-    expect(result.current.state.commands.length).toBe(0)
+    expect(result.current.state.commands).toHaveLength(0)
     expect(screen.getByRole('button', { name: 'Undo' })).toBeDisabled()
   })
 })

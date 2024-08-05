@@ -1,13 +1,13 @@
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
+import { formatISO } from 'date-fns'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useJourneyAnalyticsQuery } from '@core/journeys/ui/useJourneyAnalyticsQuery'
-import { formatISO } from 'date-fns'
 
 // Used to for filter all time stats
 export const earliestStatsCollected = '2024-06-01'

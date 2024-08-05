@@ -1,17 +1,17 @@
 import MuiFab from '@mui/material/Fab'
-import Zoom from '@mui/material/Zoom'
 import type { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import Zoom from '@mui/material/Zoom'
 import { useTranslation } from 'next-i18next'
 import type { MouseEvent, ReactElement } from 'react'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
 import {
   ActiveCanvasDetailsDrawer,
   ActiveContent,
   ActiveSlide,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 import type { BlockFields_CardBlock as CardBlock } from '../../../../__generated__/BlockFields'

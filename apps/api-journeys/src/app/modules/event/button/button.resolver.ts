@@ -3,9 +3,9 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 
+import { Prisma } from '.prisma/api-journeys-client'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
-import { Prisma } from '.prisma/api-journeys-client'
 
 import {
   ButtonAction,

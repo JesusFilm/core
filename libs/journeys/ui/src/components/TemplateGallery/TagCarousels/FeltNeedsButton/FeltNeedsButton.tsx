@@ -1,8 +1,8 @@
 import Box from '@mui/material/Box'
 import ButtonBase from '@mui/material/ButtonBase'
 import Skeleton from '@mui/material/Skeleton'
-import Typography from '@mui/material/Typography'
 import { useTheme } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import NextImage, { StaticImageData } from 'next/image'
 import { ReactElement } from 'react'
 

@@ -8,5 +8,5 @@ export function getClient(
   return buildHTTPExecutor({
     ...options,
     fetch: yoga.fetch.bind({})
-  }) as ReturnType<typeof buildHTTPExecutor>
+  })
 }

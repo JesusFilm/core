@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { GraphQLResolveInfo, Kind } from 'graphql'
 import { DeepMockProxy } from 'jest-mock-extended'
 
-import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 import {
   Journey,
   JourneyStatus,
@@ -9,6 +9,7 @@ import {
   ThemeName,
   UserTeamRole
 } from '.prisma/api-journeys-client'
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 
 import {
   IdType,
@@ -22,7 +23,6 @@ import {
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
 import { PrismaService } from '../../lib/prisma.service'
 
-import { GraphQLResolveInfo, Kind } from 'graphql'
 import { PlausibleResolver } from './plausible.resolver'
 import { PlausibleService } from './plausible.service'
 
@@ -231,6 +231,7 @@ describe('PlausibleResolver', () => {
       )
       expect(actual).toEqual(result)
     })
+
     it('should return aggregate stats for fragment spread', async () => {
       prismaService.journey.findUnique.mockResolvedValue(journeyWithUserTeam)
       const mockAggregateValue: PlausibleStatsAggregateValue = {

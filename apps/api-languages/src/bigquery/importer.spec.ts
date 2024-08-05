@@ -1,6 +1,7 @@
 import { z } from 'zod'
 
 import { prismaMock } from '../../test/prismaMock'
+
 import {
   client,
   createQueryJob,
@@ -16,6 +17,7 @@ describe('bigquery/importer', () => {
   beforeEach(() => {
     jest.restoreAllMocks()
   })
+
   afterEach(() => {
     jest.clearAllMocks()
   })
@@ -38,7 +40,7 @@ describe('bigquery/importer', () => {
   describe('getCurrentTimeStamp', () => {
     it('should get current timestamp', async () => {
       const timestamp = await getCurrentTimeStamp()
-      expect(timestamp).toEqual('timestamp')
+      expect(timestamp).toBe('timestamp')
     })
   })
 
@@ -67,7 +69,7 @@ describe('bigquery/importer', () => {
         id: 'id',
         name: 2
       }
-      expect(() => parse(schema, row)).toThrowError()
+      expect(() => parse(schema, row)).toThrow()
     })
   })
 
@@ -101,6 +103,7 @@ describe('bigquery/importer', () => {
         inValidRowIds: []
       })
     })
+
     it('should parse many rows with invalid rows', () => {
       const schema = z.object({
         id: z.string(),
@@ -144,6 +147,7 @@ describe('bigquery/importer', () => {
         where: { modelName: 'table' }
       })
     })
+
     it('should process a table', async () => {
       prismaMock.importTimes.findUnique.mockResolvedValue(null)
       prismaMock.importTimes.upsert.mockResolvedValue({
@@ -159,6 +163,7 @@ describe('bigquery/importer', () => {
         where: { modelName: 'table' }
       })
     })
+
     it('should process a table with prior import', async () => {
       prismaMock.importTimes.findUnique.mockResolvedValue({
         modelName: 'table',

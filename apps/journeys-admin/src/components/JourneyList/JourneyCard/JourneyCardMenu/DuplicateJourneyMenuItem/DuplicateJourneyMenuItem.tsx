@@ -1,16 +1,16 @@
 import { FetchResult } from '@apollo/client'
 import CircularProgress from '@mui/material/CircularProgress'
-import { useTranslation } from 'next-i18next'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
-import { useTeam } from '@core/journeys/ui/TeamProvider'
+import { CopyToTeamDialog } from '@core/journeys/ui/CopyToTeamDialog'
 import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
+import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import CopyLeftIcon from '@core/shared/ui/icons/CopyLeft'
 
-import { CopyToTeamDialog } from '@core/journeys/ui/CopyToTeamDialog'
 import { JourneyDuplicate } from '../../../../../../__generated__/JourneyDuplicate'
 import { MenuItem } from '../../../../MenuItem'
 

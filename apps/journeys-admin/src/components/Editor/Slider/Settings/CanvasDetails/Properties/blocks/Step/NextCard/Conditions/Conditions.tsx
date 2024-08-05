@@ -1,13 +1,13 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
 import { useTheme } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
 
 import { StepBlockLockUpdate } from '../../../../../../../../../../../__generated__/StepBlockLockUpdate'

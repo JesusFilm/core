@@ -52,30 +52,35 @@ input BlockUpdateActionInput {
 
 extend type Mutation {
   blockDeleteAction(
-    id: ID!, 
-    """drop this parameter after merging teams"""
+    id: ID!
+    """
+    drop this parameter after merging teams
+    """
     journeyId: ID
   ): Block!
   blockUpdateNavigateToBlockAction(
     id: ID!
     input: NavigateToBlockActionInput!
-    """drop this parameter after merging teams"""
+    """
+    drop this parameter after merging teams
+    """
     journeyId: ID
   ): NavigateToBlockAction!
   blockUpdateLinkAction(
     id: ID!
     input: LinkActionInput!
-    """drop this parameter after merging teams"""
+    """
+    drop this parameter after merging teams
+    """
     journeyId: ID
   ): LinkAction!
   blockUpdateEmailAction(
     id: ID!
     input: EmailActionInput!
-    """drop this parameter after merging teams"""
+    """
+    drop this parameter after merging teams
+    """
     journeyId: ID
   ): EmailAction!
-  blockUpdateAction(
-    id: ID! 
-    input: BlockUpdateActionInput
-    ): Action!
+  blockUpdateAction(id: ID!, input: BlockUpdateActionInput): Action!
 }

@@ -4,9 +4,9 @@ import { ReactElement } from 'react'
 
 import CheckContainedIcon from '@core/shared/ui/icons/CheckContained'
 
+import { UserJourneyRole } from '../../../../../../__generated__/globalTypes'
 import { UserInviteRemove } from '../../../../../../__generated__/UserInviteRemove'
 import { UserJourneyApprove } from '../../../../../../__generated__/UserJourneyApprove'
-import { UserJourneyRole } from '../../../../../../__generated__/globalTypes'
 import { useUserInvitesLazyQuery } from '../../../../../libs/useUserInvitesLazyQuery'
 import { MenuItem } from '../../../../MenuItem'
 import { USER_INVITE_REMOVE } from '../RemoveUser/RemoveUser'

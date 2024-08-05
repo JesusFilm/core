@@ -1,12 +1,12 @@
-import { getTargetEventKey } from '@core/journeys/ui/plausibleHelpers/plausibleHelpers'
 import Box from '@mui/material/Box'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import Cursor4Icon from '@core/shared/ui/icons/Cursor4'
-
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { ActionBlock } from '@core/journeys/ui/isActionBlock'
+import { getTargetEventKey } from '@core/journeys/ui/plausibleHelpers/plausibleHelpers'
+import Cursor4Icon from '@core/shared/ui/icons/Cursor4'
+
 import { AnalyticsDataPoint } from '../../../AnalyticsDataPoint'
 
 interface LinkNodeAnalyticsProps {

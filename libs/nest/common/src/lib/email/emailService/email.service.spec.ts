@@ -1,5 +1,5 @@
-import { MailerService } from '@nestjs-modules/mailer'
 import { Test, TestingModule } from '@nestjs/testing'
+import { MailerService } from '@nestjs-modules/mailer'
 import { mockDeep } from 'jest-mock-extended'
 
 import { EmailService } from './email.service'

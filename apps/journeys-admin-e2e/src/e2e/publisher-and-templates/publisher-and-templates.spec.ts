@@ -1,4 +1,7 @@
+/* eslint-disable playwright/no-skipped-test */
+/* eslint-disable playwright/expect-expect */
 import { test } from '@playwright/test'
+
 import { CardLevelActionPage } from '../../pages/card-level-actions'
 import { JourneyLevelActions } from '../../pages/journey-level-actions-page'
 import { JourneyPage } from '../../pages/journey-page'
@@ -21,7 +24,7 @@ test.describe('Publisher page functionality', () => {
   })
 
   // Skip flaky test
-  //Discover page -> Create a new journey with one card -> Three dots on top right -> Create Template
+  // Discover page -> Create a new journey with one card -> Three dots on top right -> Create Template
   test.skip('Create a template via newly created journey', async ({ page }) => {
     const journeyPage = new JourneyPage(page)
     await journeyPage.clickCreateCustomJourney() // clicking the create custom journey button
@@ -29,7 +32,7 @@ test.describe('Publisher page functionality', () => {
     await journeyPage.createAndVerifyTemplate() // Making the created journey as template by clicking on 'Create Template' option and verifying the journey is updated in the template list of publisher page
   })
 
-  //Discover page -> Create a new journey with one card -> Three dots on top right -> Create Template
+  // Discover page -> Create a new journey with one card -> Three dots on top right -> Create Template
   test.fixme('Create a template via existing journey', async ({ page }) => {
     const journeyPage = new JourneyPage(page)
     await journeyPage.selectExistingJourney() // clicking existing journey in the journey list of discover page
@@ -42,21 +45,21 @@ test.describe('Publisher page functionality', () => {
     page
   }) => {
     const publisherPage = new Publisher(page)
-    //Verify the user able to navigate to template admin page through Publisher link
+    // Verify the user able to navigate to template admin page through Publisher link
     await publisherPage.navigateToPublisherPage()
-    //Verify the user able to move the single template from Active to archived page
+    // Verify the user able to move the single template from Active to archived page
     await publisherPage.verifyTemplateMovedToArchivedTab()
-    //Verify the user able to move the single template from Archived to Trash page
+    // Verify the user able to move the single template from Archived to Trash page
     await publisherPage.verifyTemplateMovedToTrashTab()
-    //Verify the user able to restore the template from Trash to active page
+    // Verify the user able to restore the template from Trash to active page
     await publisherPage.verifyTemplateRestoredToActiveTab()
-    //Verify the user able to move the template from Active to Trash page
+    // Verify the user able to move the template from Active to Trash page
     await publisherPage.verifyTemplateMovedToTrashTab()
-    //Verify the user able to delete the single file permanently in templates admin page
+    // Verify the user able to delete the single file permanently in templates admin page
     await publisherPage.verifyTemplateDetetedForever()
     await publisherPage.clickActiveTab()
     await publisherPage.verifyTemplateMovedToArchivedTab()
-    //Verify the user able to unarchive the template from Archived to active page
+    // Verify the user able to unarchive the template from Archived to active page
     await publisherPage.verifyTemplateMovedUnarchivedToActiveTab()
   })
 
@@ -65,25 +68,25 @@ test.describe('Publisher page functionality', () => {
   }) => {
     const publisherPage = new Publisher(page)
     await publisherPage.navigateToPublisherPage()
-    //Verify the user able to move the all journeys from Active to archived page
+    // Verify the user able to move the all journeys from Active to archived page
     await publisherPage.verifyAllTemplateMovedActiveToArchivedTab()
-    //Verify the user able to unarchive the all journeys from Archived to active page
+    // Verify the user able to unarchive the all journeys from Archived to active page
     await publisherPage.verifyAllTemplateMovedUnarchieToActiveTab()
     await publisherPage.getTemplateListOfActiveTab()
-    //Verify the user able to move the all journeys from Active to Trash page
+    // Verify the user able to move the all journeys from Active to Trash page
     await publisherPage.verifyAllJourneysMovedToTrash()
     await publisherPage.getTemplateListOfTrashTab()
-    //Verify the user able to restore the all journeys from Trash to active page
+    // Verify the user able to restore the all journeys from Trash to active page
     await publisherPage.verifyAllTemplateRestoredToActiveTab()
     await publisherPage.verifyAllTemplateMovedActiveToArchivedTab()
     await publisherPage.getTemplateListOfArchivedTab()
-    //Verify the user able to move the all journeys from Archived to Trash page
+    // Verify the user able to move the all journeys from Archived to Trash page
     await publisherPage.verifyAllJourneysMovedToTrash()
-    //Verify the user able to delete the all file permanently in templates admin page
+    // Verify the user able to delete the all file permanently in templates admin page
     await publisherPage.verifyAlltemplateDeletedForeverFromTrashTab()
   })
 
-  //Verify the user able to display the publisher help window
+  // Verify the user able to display the publisher help window
   test.fixme(
     'Verify the user able to display the publisher help window',
     async ({ page }) => {
@@ -115,7 +118,7 @@ test.describe('Publisher page functionality', () => {
   })
 
   // Skip flaky test
-  //Publisher-> Select existing template -> Three dots on top right -> Template Settings -> Categories
+  // Publisher-> Select existing template -> Three dots on top right -> Template Settings -> Categories
   test.skip('Publisher-> Select existing template -> Three dots on top right -> Template Settings -> Categories', async ({
     page
   }) => {
@@ -161,7 +164,7 @@ test.describe('Publisher page functionality', () => {
   })
 
   // TODO: fix failing test
-  //Publisher-> Select existing template -> Three dots on top right -> Template Settings -> About
+  // Publisher-> Select existing template -> Three dots on top right -> Template Settings -> About
   test.fixme(
     'Publisher-> Select existing template -> Three dots on top right -> Template Settings -> About',
     async ({ page }) => {
@@ -187,7 +190,7 @@ test.describe('Publisher page functionality', () => {
   )
 
   // Skip flaky test
-  //Publisher-> Select existing template -> Three dots on top right -> Language
+  // Publisher-> Select existing template -> Three dots on top right -> Language
   test.skip('Publisher-> Select existing template -> Three dots on top right -> Language', async ({
     page
   }) => {
@@ -217,14 +220,14 @@ test.describe('Verify template page functionality', () => {
   })
 
   // Skip flaky test
-  //Templates-> Select existing template -> Use This Template
+  // Templates-> Select existing template -> Use This Template
   test.skip('create a new journey via use this template button', async ({
     page
   }) => {
     const templatesPage = new TemplatePage(page)
     const journeyPage = new JourneyPage(page)
     const cardLevelActionPage = new CardLevelActionPage(page)
-    await templatesPage.navigateToTempalatePage() //navigating to templates page
+    await templatesPage.navigateToTempalatePage() // navigating to templates page
     await templatesPage.selectExistingTemplate() // clicking on existing template
     await templatesPage.verifySelectedTemplatePage() // verifying the page is navigated to selected template page
     await templatesPage.clickUseThisTemplateButton() // clilcking on 'use this template' button
@@ -232,11 +235,12 @@ test.describe('Verify template page functionality', () => {
     await templatesPage.clickAddBtnInPopup() // clicking add button in the 'add journey to team' popup
     await templatesPage.verifySelectedTemplateInCustomJourneyPage() // verifying the page is navigated to the custom journey page for selected template
     await journeyPage.clickOnJourneyCard() // clicking on the card
-    await cardLevelActionPage.clickAddBlockBtn() //clicking on add block button
+    await cardLevelActionPage.clickAddBlockBtn() // clicking on add block button
     await cardLevelActionPage.clickBtnInAddBlockDrawer('Text') // clicking on text button in add block drawer
     await journeyPage.verifyJourneyCreatedViaTemplate() // creating the journey of selected template and verifying the created journey is updated in the journey list
   })
-  //Templates-> Select existing template -> Preview
+
+  // Templates-> Select existing template -> Preview
   test('preview a template from the journey template page', async ({
     page,
     context
@@ -270,7 +274,8 @@ test.describe('Verify template page functionality', () => {
     await templatesPage.verifySelectedTemplatePage() // verifying the page is navigated to selected template page
     await templatesPage.verifyTemplateIsEdited(journeyName) // verifying the template is edited
   })
-  //Templates-> Help button on top right
+
+  // Templates-> Help button on top right
   test.skip('verify Help window displays via button on top right of the page', async ({
     page
   }) => {
@@ -281,7 +286,7 @@ test.describe('Verify template page functionality', () => {
     await journeyLevelActions.verifyHelpWindowOpened() // verifying the help window is showing in the publisher page
   })
 
-  //Filter: Topics, holidays, felt needs, collections
+  // Filter: Topics, holidays, felt needs, collections
   test.fixme(
     'Filter: Topics, holidays, felt needs, collections',
     async ({ page }) => {
@@ -302,7 +307,7 @@ test.describe('Verify template page functionality', () => {
     }
   )
 
-  //Filter: Audience
+  // Filter: Audience
   test.fixme('Filter: Audience', async ({ page }) => {
     const templatesPage = new TemplatePage(page)
     await templatesPage.navigateToTempalatePage() // navigating to templates page
@@ -313,7 +318,7 @@ test.describe('Verify template page functionality', () => {
     await templatesPage.filterClearIcon() // clicking on X icon in the filter field
   })
 
-  //Filter: Genre
+  // Filter: Genre
   test.fixme('Filter: Genre', async ({ page }) => {
     const templatesPage = new TemplatePage(page)
     await templatesPage.navigateToTempalatePage() // navigating to templates page
@@ -324,7 +329,7 @@ test.describe('Verify template page functionality', () => {
     await templatesPage.filterClearIcon() // clicking on X icon in the filter field
   })
 
-  //Filter: Acceptance, Depression
+  // Filter: Acceptance, Depression
   test.fixme('Filter: Acceptance, Depression', async ({ page }) => {
     const templatesPage = new TemplatePage(page)
     await templatesPage.navigateToTempalatePage() // navigating to templates page

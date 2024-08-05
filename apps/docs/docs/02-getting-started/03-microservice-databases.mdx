@@ -43,11 +43,13 @@ nx run-many --all --target=prisma-seed
 ```
 
 To ingest data from bigquery, you will need to start the ingest job. In one terminal, run:
+
 ```shell
 nf start
 ```
 
 In a separate terminal, run:
+
 ```shell
 nx run-many --all --target=ingest
 ```

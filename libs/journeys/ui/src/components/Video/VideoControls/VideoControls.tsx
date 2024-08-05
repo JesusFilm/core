@@ -17,8 +17,8 @@ import Player from 'video.js/dist/types/player'
 import { isIOS, isIPhone } from '@core/shared/ui/deviceUtils'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
-import { useJourney } from '../../../libs/JourneyProvider'
 import { useBlocks } from '../../../libs/block'
+import { useJourney } from '../../../libs/JourneyProvider'
 
 import { DesktopControls } from './DesktopControls'
 import { MobileControls } from './MobileControls'

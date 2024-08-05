@@ -34,7 +34,7 @@ export const STEP_AND_CARD_BLOCK_CREATE = gql`
 `
 
 export function stepBlockCreateUpdate(
-  // biome-ignore lint/suspicious/noExplicitAny: update function gives this type
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   cache: ApolloCache<any>,
   data: StepAndCardBlockCreate | null | undefined,
   journeyId: string | null | undefined
@@ -47,10 +47,10 @@ export function stepBlockCreateUpdate(
         const newStepBlockRef = cache.writeFragment({
           data: data.stepBlockCreate,
           fragment: gql`
-          fragment NewBlock on Block {
-            id
-          }
-        `
+            fragment NewBlock on Block {
+              id
+            }
+          `
         })
         return [...existingBlockRefs, newStepBlockRef]
       }

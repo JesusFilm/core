@@ -1,6 +1,7 @@
 import { StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
+import { TreeBlock } from '@core/journeys/ui/block'
 import {
   ActiveCanvasDetailsDrawer,
   ActiveContent,
@@ -8,7 +9,6 @@ import {
   EditorProvider,
   EditorState
 } from '@core/journeys/ui/EditorProvider'
-import { TreeBlock } from '@core/journeys/ui/block'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { StepFields as StepBlock } from '../../../../__generated__/StepFields'

@@ -1,12 +1,12 @@
 import { gql, useQuery } from '@apollo/client'
 import Link from '@mui/material/Link'
 import Stack from '@mui/material/Stack'
-import { useTranslation } from 'next-i18next'
 import NextLink from 'next/link'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
 
 import { BlockFields_FormBlock as FormBlock } from '../../../../../../../../../../__generated__/BlockFields'

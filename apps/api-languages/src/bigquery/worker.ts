@@ -10,7 +10,7 @@ import { bullConnection, queueName } from './queue'
 
 export const jobName = 'import-languages'
 
-export const jobFn = async (job: Job) => {
+export const jobFn = async (job: Job): Promise<void> => {
   if (job.name !== jobName) return
 
   const existingLanguageIds = await importLanguages()
@@ -21,6 +21,7 @@ export const jobFn = async (job: Job) => {
   await importCountryLanguages(existingLanguageIds, existingCountryIds)
 }
 
+// eslint-disable-next-line no-new
 new Worker(queueName, jobFn, {
   connection: bullConnection
 })

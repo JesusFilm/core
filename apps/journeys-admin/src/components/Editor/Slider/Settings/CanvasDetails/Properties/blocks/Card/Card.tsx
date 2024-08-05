@@ -1,11 +1,12 @@
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
-import { useTranslation } from 'next-i18next'
 import dynamic from 'next/dynamic'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import FlexAlignBottom1Icon from '@core/shared/ui/icons/FlexAlignBottom1'
 import Image3Icon from '@core/shared/ui/icons/Image3'
@@ -13,7 +14,6 @@ import PaletteIcon from '@core/shared/ui/icons/Palette'
 import VideoOnIcon from '@core/shared/ui/icons/VideoOn'
 import { ThemeMode, ThemeName, getTheme } from '@core/shared/ui/themes'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { Accordion } from '../../Accordion'
 
@@ -143,8 +143,8 @@ export function Card({
           themeMode == null
             ? t('Default')
             : themeMode === ThemeMode.light
-              ? t('Light')
-              : t('Dark')
+            ? t('Light')
+            : t('Dark')
         }
       >
         <CardStyling />

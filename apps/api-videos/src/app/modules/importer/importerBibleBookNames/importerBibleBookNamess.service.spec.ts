@@ -1,7 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+
 import { PrismaService } from '../../../lib/prisma.service'
 import { ImporterBibleBooksService } from '../importerBibleBooks/importerBibleBooks.service'
+
 import { ImporterBibleBookNamesService } from './importerBibleBookNames.service'
 
 describe('ImporterBibleBooksService', () => {
@@ -76,7 +78,7 @@ describe('ImporterBibleBooksService', () => {
           languageId: 629
         }
       ])
-      expect(prismaService.bibleBookName.createMany).toBeCalledWith({
+      expect(prismaService.bibleBookName.createMany).toHaveBeenCalledWith({
         data: [
           {
             bibleBookId: '1',

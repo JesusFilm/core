@@ -3,11 +3,12 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ReactFlowProvider } from 'reactflow'
 import { v4 as uuidv4 } from 'uuid'
 
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
+
 import { stepAndCardBlockCreateMock } from '../../../../../libs/useStepAndCardBlockCreateMutation/useStepAndCardBlockCreateMutation.mock'
 
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { NewStepButton } from '.'
 
 jest.mock('uuid', () => ({

@@ -1,11 +1,11 @@
 import findIndex from 'lodash/findIndex'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { BlockFields_StepBlock as StepBlock } from '@core/journeys/ui/block/__generated__/BlockFields'
 import {
   SetSelectedBlockByIdAction,
   SetSelectedStepAction
 } from '@core/journeys/ui/EditorProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
-import { BlockFields_StepBlock as StepBlock } from '@core/journeys/ui/block/__generated__/BlockFields'
 
 import { BlockDelete } from '../../../../../../../../../__generated__/BlockDelete'
 

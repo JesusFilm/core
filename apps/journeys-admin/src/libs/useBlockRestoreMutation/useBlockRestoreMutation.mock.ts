@@ -1,5 +1,7 @@
 import { MockedResponse } from '@apollo/client/testing'
+
 import { TreeBlock } from '@core/journeys/ui/block'
+
 import {
   BlockFields_CardBlock as CardBlock,
   BlockFields_StepBlock as StepBlock,
@@ -15,6 +17,7 @@ import {
   TypographyColor,
   TypographyVariant
 } from '../../../__generated__/globalTypes'
+
 import { BLOCK_RESTORE } from './useBlockRestoreMutation'
 
 export const stepBlock = {

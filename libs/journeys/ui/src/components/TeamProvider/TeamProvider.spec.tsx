@@ -3,11 +3,11 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ReactElement } from 'react'
 import TagManager from 'react-gtm-module'
 
-import { GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS } from './TeamProvider'
 import {
   GetLastActiveTeamIdAndTeams,
   GetLastActiveTeamIdAndTeams_teams as Team
 } from './__generated__/GetLastActiveTeamIdAndTeams'
+import { GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS } from './TeamProvider'
 
 import { TeamProvider, useTeam } from '.'
 
@@ -42,7 +42,7 @@ const TestComponent = (): ReactElement => {
         Change active to second team
       </button>
 
-      <button type="button" onClick={() => refetch()}>
+      <button type="button" onClick={async () => await refetch()}>
         Refetch
       </button>
     </>

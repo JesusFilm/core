@@ -2,8 +2,8 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
-import { JourneyFields_chatButtons as ChatButton } from '../../../../../../../../../__generated__/JourneyFields'
 import { MessagePlatform } from '../../../../../../../../../__generated__/globalTypes'
+import { JourneyFields_chatButtons as ChatButton } from '../../../../../../../../../__generated__/JourneyFields'
 
 import { ChatOption } from '.'
 

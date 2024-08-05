@@ -1,5 +1,7 @@
-import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+
+import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
+
 import { StepBlockNodeAnalytics } from '.'
 
 describe('StepBlockNodeAnalytics', () => {

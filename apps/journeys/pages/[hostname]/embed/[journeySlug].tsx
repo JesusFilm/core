@@ -1,7 +1,7 @@
 import { GetStaticPaths, GetStaticProps } from 'next'
+import { useRouter } from 'next/router'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { NextSeo } from 'next-seo'
-import { useRouter } from 'next/router'
 import { ReactElement, useMemo } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -15,8 +15,8 @@ import {
   GetJourneyVariables,
   GetJourney_journey as Journey
 } from '../../../__generated__/GetJourney'
-import { StepFields } from '../../../__generated__/StepFields'
 import { IdType } from '../../../__generated__/globalTypes'
+import { StepFields } from '../../../__generated__/StepFields'
 import i18nConfig from '../../../next-i18next.config'
 import { EmbeddedPreview } from '../../../src/components/EmbeddedPreview'
 import { JourneyPageWrapper } from '../../../src/components/JourneyPageWrapper'

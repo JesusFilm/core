@@ -1,12 +1,12 @@
 import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
 import { useTheme } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { StepFields } from '../../../../../../../../../../../__generated__/StepFields'
 import { useStepBlockNextBlockUpdateMutation } from '../../../../../../../../../../libs/useStepBlockNextBlockUpdateMutation'

@@ -4,7 +4,6 @@ import {
   GetJourneyAnalytics,
   GetJourneyAnalyticsVariables
 } from './__generated__/GetJourneyAnalytics'
-
 import { GET_JOURNEY_ANALYTICS } from './useJourneyAnalyticsQuery'
 
 export const getJourneyAnalytics: MockedResponse<

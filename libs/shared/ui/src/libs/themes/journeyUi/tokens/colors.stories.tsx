@@ -1,11 +1,11 @@
 import Box from '@mui/material/Box'
-import Typography, { TypographyProps } from '@mui/material/Typography'
 import {
   PaletteColor,
   PaletteOptions,
   SimplePaletteColorOptions,
   useTheme
 } from '@mui/material/styles'
+import Typography, { TypographyProps } from '@mui/material/Typography'
 import { Meta, StoryObj } from '@storybook/react'
 import { ReactElement } from 'react'
 

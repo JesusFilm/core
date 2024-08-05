@@ -1,5 +1,6 @@
-import type { GetJourneyAnalytics_journeyReferrer as JourneyReferrer } from '@core/journeys/ui/useJourneyAnalyticsQuery/__generated__/GetJourneyAnalytics'
 import type { Edge, Node } from 'reactflow'
+
+import type { GetJourneyAnalytics_journeyReferrer as JourneyReferrer } from '../__generated__/GetJourneyAnalytics'
 
 interface OtherSource {
   property: 'other sources'
@@ -18,7 +19,7 @@ const THREE_NODE_Y_POSITIONS = [
   START_OF_SOCIAL_PREVIEW + SOCIAL_PREVIEW_CARD_HEIGHT - REFERRER_NODE_HEIGHT
 ]
 
-function sortReferrers(a: JourneyReferrer, b: JourneyReferrer) {
+function sortReferrers(a: JourneyReferrer, b: JourneyReferrer): number {
   if (a.visitors === null) {
     return 1
   }
@@ -30,7 +31,10 @@ function sortReferrers(a: JourneyReferrer, b: JourneyReferrer) {
   return b.visitors - a.visitors
 }
 
-export function transformReferrers(referrers?: JourneyReferrer[]) {
+export function transformReferrers(referrers?: JourneyReferrer[]): {
+  nodes: Node[]
+  edges: Edge[]
+} {
   const nodes: Node[] = []
   const edges: Edge[] = []
 

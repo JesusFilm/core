@@ -4,12 +4,11 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { v4 as uuidv4 } from 'uuid'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { CommandProvider } from '@core/journeys/ui/CommandProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 
-import { CommandProvider } from '@core/journeys/ui/CommandProvider'
-import { BackgroundMediaVideo } from '.'
 import {
   BlockFields_CardBlock as CardBlock,
   BlockFields_VideoBlock as VideoBlock
@@ -48,13 +47,16 @@ import { COVER_BLOCK_RESTORE } from '../../../../../../../../../../libs/useCover
 import { ThemeProvider } from '../../../../../../../../../ThemeProvider'
 import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../../Toolbar/Items/CommandUndoItem'
+import { videos } from '../../../../../../Drawer/VideoLibrary/VideoFromLocal/data'
 import { GET_VIDEO } from '../../../../../../Drawer/VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
 import { GET_VIDEOS } from '../../../../../../Drawer/VideoLibrary/VideoFromLocal/VideoFromLocal'
-import { videos } from '../../../../../../Drawer/VideoLibrary/VideoFromLocal/data'
+
 import {
   COVER_VIDEO_BLOCK_CREATE,
   COVER_VIDEO_BLOCK_UPDATE
 } from './BackgroundMediaVideo'
+
+import { BackgroundMediaVideo } from '.'
 
 jest.mock('uuid', () => ({
   __esModule: true,
@@ -349,7 +351,7 @@ describe('BackgroundMediaVideo', () => {
         { __ref: `CardBlock:${card.id}` }
       ])
     )
-    expect(cache.extract()[`CardBlock:${card.id}`]?.coverBlockId).toEqual(null)
+    expect(cache.extract()[`CardBlock:${card.id}`]?.coverBlockId).toBeNull()
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
     await waitFor(() =>
       expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([

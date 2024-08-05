@@ -7,5 +7,5 @@
     "types": ["playwright", "node"],
     "resolveJsonModule": true
   },
-  "include": ["src/**/*.ts", "src/**/*.js"]
+  "include": ["src/**/*.ts", "src/**/*.js", "playwright.config.ts"]
 }

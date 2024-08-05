@@ -13,10 +13,7 @@ import {
 import { BlockFields } from '../../../__generated__/BlockFields'
 
 export const BLOCK_ACTION_EMAIL_UPDATE = gql`
-  mutation BlockActionEmailUpdate(
-    $id: ID!
-    $input: EmailActionInput!
-  ) {
+  mutation BlockActionEmailUpdate($id: ID!, $input: EmailActionInput!) {
     blockUpdateEmailAction(id: $id, input: $input) {
       parentBlockId
       gtmEventName

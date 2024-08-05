@@ -316,7 +316,7 @@ export function VideoBlockEditorSettings({
               }}
             />
           </Stack>
-          {values.autoplay === true && values.muted === false && (
+          {values.autoplay && !values.muted && (
             <Stack direction="row" alignItems="center" color="text.secondary">
               <InformationCircleContainedIcon sx={{ mr: 4 }} />
               <Typography variant="caption">

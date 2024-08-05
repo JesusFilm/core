@@ -1,8 +1,11 @@
+import Box from '@mui/material/Box'
+import { SxProps } from '@mui/material/styles'
+import { ReactElement } from 'react'
+
 import ChevronDown from '@core/shared/ui/icons/ChevronDown'
 import { FacebookIcon } from '@core/shared/ui/icons/FacebookIcon'
 import LinkAngled from '@core/shared/ui/icons/LinkAngled'
-import Box from '@mui/material/Box'
-import { SxProps } from '@mui/system'
+
 import { ReferrerValue } from '../ReferrerValue'
 
 const iconStyles = { fontSize: '18px' }
@@ -13,7 +16,11 @@ interface BaseReferrerProps {
   style?: SxProps
 }
 
-export function BaseReferrer({ property, visitors, style }: BaseReferrerProps) {
+export function BaseReferrer({
+  property,
+  visitors,
+  style
+}: BaseReferrerProps): ReactElement {
   let Icon
 
   switch (property) {

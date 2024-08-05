@@ -38,11 +38,8 @@
       }
     },
     "lint": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npx @biomejs/biome check --diagnostic-level=warn",
-        "cwd": "apps/api-analytics"
-      }
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
     },
     "test": {
       "executor": "@nx/jest:jest",

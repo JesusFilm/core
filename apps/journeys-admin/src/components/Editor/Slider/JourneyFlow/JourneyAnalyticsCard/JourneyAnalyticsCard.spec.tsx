@@ -1,5 +1,7 @@
-import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
 import { render, screen, within } from '@testing-library/react'
+
+import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
+
 import { JourneyAnalyticsCard } from './JourneyAnalyticsCard'
 
 describe('JourneyAnalyticsCard', () => {
@@ -19,7 +21,7 @@ describe('JourneyAnalyticsCard', () => {
 
     const stats = screen.getAllByTestId('JourneyAnalyticsCardStat')
 
-    expect(stats.length).toBe(3)
+    expect(stats).toHaveLength(3)
 
     expect(within(stats[0]).getByText('Visitors')).toBeInTheDocument()
     expect(within(stats[0]).getByText('100')).toBeInTheDocument()

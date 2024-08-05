@@ -22,7 +22,7 @@ import { GoalsListItem } from './GoalsListItem'
 interface GoalsListProps {
   goals: Goal[]
   variant?: 'minimal'
-  onClose?(): void
+  onClose?: () => void
 }
 
 export function GoalsList({

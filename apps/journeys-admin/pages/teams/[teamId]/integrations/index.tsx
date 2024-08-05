@@ -6,6 +6,7 @@ import {
 } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
+// eslint-disable-next-line no-restricted-imports
 import { useTranslation } from 'react-i18next'
 
 import { PageWrapper } from '../../../../src/components/PageWrapper'

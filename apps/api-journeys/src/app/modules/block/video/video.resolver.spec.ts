@@ -2,8 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import fetch, { Response } from 'node-fetch'
 
-import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 import { Block, Journey, UserTeamRole } from '.prisma/api-journeys-client'
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 
 import {
   VideoBlockCreateInput,

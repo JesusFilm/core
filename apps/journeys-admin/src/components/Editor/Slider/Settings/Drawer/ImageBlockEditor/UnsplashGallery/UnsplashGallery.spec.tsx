@@ -1,7 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
-import { UnsplashGallery } from '.'
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/BlockFields'
 import {
   ListUnsplashCollectionPhotos,
@@ -17,11 +16,14 @@ import {
   TriggerUnsplashDownloadVariables
 } from '../../../../../../../../__generated__/TriggerUnsplashDownload'
 import { ThemeProvider } from '../../../../../../ThemeProvider'
+
 import {
   LIST_UNSPLASH_COLLECTION_PHOTOS,
   SEARCH_UNSPLASH_PHOTOS
 } from './UnsplashGallery'
 import { TRIGGER_UNSPLASH_DOWNLOAD } from './UnsplashList/UnsplashList'
+
+import { UnsplashGallery } from '.'
 
 describe('UnsplashGallery', () => {
   const item: Result = {

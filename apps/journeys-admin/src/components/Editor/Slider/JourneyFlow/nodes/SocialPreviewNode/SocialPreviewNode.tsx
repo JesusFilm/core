@@ -2,8 +2,8 @@ import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardMedia from '@mui/material/CardMedia'
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { alpha } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import isEmpty from 'lodash/isEmpty'
 import Image from 'next/image'
 import type { ReactElement } from 'react'
@@ -18,8 +18,8 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import MessageCircle from '@core/shared/ui/icons/MessageCircle'
 import Share from '@core/shared/ui/icons/Share'
 import ThumbsUp from '@core/shared/ui/icons/ThumbsUp'
-
 import UserProfileCircle from '@core/shared/ui/icons/UserProfileCircle'
+
 import { useUpdateEdge } from '../../libs/useUpdateEdge'
 import { BaseNode, HandleVariant } from '../BaseNode'
 
@@ -69,7 +69,9 @@ export function SocialPreviewNode(): ReactElement {
       id="SocialPreview"
       selected={activeContent === ActiveContent.Social}
       sourceHandle={HandleVariant.Shown}
-      targetHandle={showAnalytics ? HandleVariant.Shown : HandleVariant.Hidden}
+      targetHandle={
+        showAnalytics === true ? HandleVariant.Shown : HandleVariant.Hidden
+      }
       onSourceConnect={handleSourceConnect}
       isSourceConnected
       positionTargetHandle={false}
@@ -88,11 +90,11 @@ export function SocialPreviewNode(): ReactElement {
                 selected === true
                   ? theme.palette.primary.main
                   : selected === 'descendant'
-                    ? theme.palette.divider
-                    : 'transparent'
+                  ? theme.palette.divider
+                  : 'transparent'
               }`,
             outlineOffset: '5px',
-            ...(showAnalytics && {
+            ...(showAnalytics === true && {
               backgroundColor: 'transparent',
               outline: (theme) =>
                 `2px solid ${alpha(theme.palette.secondary.dark, 0.1)}`,
@@ -114,7 +116,7 @@ export function SocialPreviewNode(): ReactElement {
               sx={{
                 fontSize: 14,
                 color: (theme) =>
-                  showAnalytics
+                  showAnalytics === true
                     ? alpha(theme.palette.secondary.dark, 0.1)
                     : 'background.default'
               }}
@@ -126,7 +128,7 @@ export function SocialPreviewNode(): ReactElement {
                 borderRadius={2}
                 sx={{
                   backgroundColor: (theme) =>
-                    showAnalytics
+                    showAnalytics === true
                       ? alpha(theme.palette.secondary.dark, 0.1)
                       : 'background.default'
                 }}
@@ -138,7 +140,7 @@ export function SocialPreviewNode(): ReactElement {
               borderRadius={2}
               sx={{
                 backgroundColor: (theme) =>
-                  showAnalytics
+                  showAnalytics === true
                     ? alpha(theme.palette.secondary.dark, 0.1)
                     : 'background.default'
               }}
@@ -196,7 +198,7 @@ export function SocialPreviewNode(): ReactElement {
                   borderRadius={2}
                   sx={{
                     backgroundColor: (theme) =>
-                      showAnalytics
+                      showAnalytics === true
                         ? alpha(theme.palette.secondary.dark, 0.1)
                         : 'background.default'
                   }}
@@ -220,7 +222,7 @@ export function SocialPreviewNode(): ReactElement {
                   height={9}
                   sx={{
                     backgroundColor: (theme) =>
-                      showAnalytics
+                      showAnalytics === true
                         ? alpha(theme.palette.secondary.dark, 0.1)
                         : 'background.default'
                   }}
@@ -247,7 +249,7 @@ export function SocialPreviewNode(): ReactElement {
                 sx={{
                   fontSize: 9,
                   color: (theme) =>
-                    showAnalytics
+                    showAnalytics === true
                       ? alpha(theme.palette.secondary.dark, 0.1)
                       : 'background.default'
                 }}
@@ -256,7 +258,7 @@ export function SocialPreviewNode(): ReactElement {
                 sx={{
                   fontSize: 9,
                   color: (theme) =>
-                    showAnalytics
+                    showAnalytics === true
                       ? alpha(theme.palette.secondary.dark, 0.1)
                       : 'background.default'
                 }}
@@ -265,7 +267,7 @@ export function SocialPreviewNode(): ReactElement {
                 sx={{
                   fontSize: 9,
                   color: (theme) =>
-                    showAnalytics
+                    showAnalytics === true
                       ? alpha(theme.palette.secondary.dark, 0.1)
                       : 'background.default'
                 }}

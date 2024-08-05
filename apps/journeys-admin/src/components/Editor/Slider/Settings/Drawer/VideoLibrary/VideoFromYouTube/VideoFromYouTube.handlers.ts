@@ -1,4 +1,4 @@
-import { http, delay } from 'msw'
+import { delay, http } from 'msw'
 
 import { YoutubePlaylist, YoutubeVideo } from './VideoFromYouTube'
 
@@ -196,7 +196,7 @@ export const getVideosWithOffsetAndUrl = http.get(
 export const getVideosLoading = http.get(
   'https://www.googleapis.com/youtube/v3/videos',
   async () => {
-    delay(1000 * 60 * 60 * 60)
+    await delay(1000 * 60 * 60 * 60)
     return new Response(
       JSON.stringify({
         items: [video1]

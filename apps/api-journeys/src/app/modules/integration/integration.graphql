@@ -3,12 +3,10 @@ enum IntegrationType {
 }
 
 interface Integration {
-  id: ID!       
+  id: ID!
   team: Team!
   type: IntegrationType!
 }
-
-
 
 extend type Query {
   integrations(teamId: ID!): [Integration!]!

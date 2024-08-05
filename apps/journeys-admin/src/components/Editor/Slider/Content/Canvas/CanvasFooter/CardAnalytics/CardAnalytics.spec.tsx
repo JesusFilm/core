@@ -1,8 +1,11 @@
+import { render, screen } from '@testing-library/react'
+
 import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { render, screen } from '@testing-library/react'
-import { JourneyFields as Journey } from '../../../../../../../../__generated__/JourneyFields'
+
 import { MessagePlatform } from '../../../../../../../../__generated__/globalTypes'
+import { JourneyFields as Journey } from '../../../../../../../../__generated__/JourneyFields'
+
 import { CardAnalytics } from './CardAnalytics'
 
 describe('CardAnalytics', () => {

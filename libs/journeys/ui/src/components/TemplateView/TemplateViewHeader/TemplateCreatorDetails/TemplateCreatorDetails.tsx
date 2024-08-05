@@ -1,8 +1,8 @@
 import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { SxProps } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
 interface TemplateCreatorDetailsProps {

@@ -5,16 +5,16 @@ import { ReactElement } from 'react'
 import TagManager from 'react-gtm-module'
 
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
-import { JourneyProvider } from '../../libs/JourneyProvider'
 import type { TreeBlock } from '../../libs/block'
 import { blockHistoryVar, treeBlocksVar } from '../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
+import { JourneyProvider } from '../../libs/JourneyProvider'
 
+import { TextResponseFields } from './__generated__/TextResponseFields'
 import {
   TEXT_RESPONSE_SUBMISSION_EVENT_CREATE,
   TextResponse
 } from './TextResponse'
-import { TextResponseFields } from './__generated__/TextResponseFields'
 
 jest.mock('react-gtm-module', () => ({
   __esModule: true,

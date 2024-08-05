@@ -44,6 +44,7 @@ describe('bigquery/worker', () => {
 
   describe('init', () => {
     it('should create a worker', () => {
+      // eslint-disable-next-line import/dynamic-import-chunkname
       import('./worker')
       expect(Worker).toHaveBeenCalledWith(queueName, jobFn, {
         connection: bullConnection

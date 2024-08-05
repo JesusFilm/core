@@ -1,8 +1,8 @@
 import Chip from '@mui/material/Chip'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
-import { useTranslation } from 'next-i18next'
 import NextLink from 'next/link'
+import { useTranslation } from 'next-i18next'
 import type { ReactElement, ReactNode } from 'react'
 
 import BarGroup3Icon from '@core/shared/ui/icons/BarGroup3'

@@ -1,10 +1,8 @@
-import './queue'
 import { importLanguagesQueue } from './queue'
-import './worker'
 import { jobName } from './worker'
 
 if (process.env.NODE_ENV === 'production') {
-  importLanguagesQueue.add(
+  void importLanguagesQueue.add(
     jobName,
     {},
     {

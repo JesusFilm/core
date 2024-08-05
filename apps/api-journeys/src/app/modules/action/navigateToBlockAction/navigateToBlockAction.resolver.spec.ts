@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 import { Action, Block, Journey } from '.prisma/api-journeys-client'
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 
 import {
   NavigateToBlockActionInput,
@@ -11,14 +11,13 @@ import {
 import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
 import { PrismaService } from '../../../lib/prisma.service'
 import { BlockService } from '../../block/block.service'
-
 import { ActionService } from '../action.service'
+
 import { NavigateToBlockActionResolver } from './navigateToBlockAction.resolver'
 
 describe('NavigateToBlockActionResolver', () => {
   let resolver: NavigateToBlockActionResolver,
     prismaService: DeepMockProxy<PrismaService>,
-    blockService: DeepMockProxy<BlockService>,
     actionService: DeepMockProxy<ActionService>,
     ability: AppAbility
 
@@ -98,9 +97,6 @@ describe('NavigateToBlockActionResolver', () => {
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
-    blockService = module.get<BlockService>(
-      BlockService
-    ) as DeepMockProxy<BlockService>
     actionService = module.get<ActionService>(
       ActionService
     ) as DeepMockProxy<ActionService>

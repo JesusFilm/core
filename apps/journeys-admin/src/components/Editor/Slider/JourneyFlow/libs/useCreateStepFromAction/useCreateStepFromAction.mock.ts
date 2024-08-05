@@ -1,4 +1,5 @@
 import { MockedResponse } from '@apollo/client/testing'
+
 import { TreeBlock } from '@core/journeys/ui/block'
 
 import {
@@ -6,7 +7,10 @@ import {
   BlockFields_CardBlock as CardBlock,
   BlockFields_StepBlock as StepBlock
 } from '../../../../../../../__generated__/BlockFields'
-
+import {
+  ThemeMode,
+  ThemeName
+} from '../../../../../../../__generated__/globalTypes'
 import {
   StepBlockCreateFromAction,
   StepBlockCreateFromActionVariables
@@ -23,10 +27,7 @@ import {
   StepBlockRestoreFromAction,
   StepBlockRestoreFromActionVariables
 } from '../../../../../../../__generated__/StepBlockRestoreFromAction'
-import {
-  ThemeMode,
-  ThemeName
-} from '../../../../../../../__generated__/globalTypes'
+
 import {
   STEP_BLOCK_CREATE_FROM_ACTION,
   STEP_BLOCK_DELETE_FROM_ACTION,

@@ -3,6 +3,7 @@ import pick from 'lodash/pick'
 import { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import {
   ActiveContent,
@@ -11,7 +12,6 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 import { IMAGE_FIELDS } from '@core/journeys/ui/Image/imageFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 
 import {
   BlockFields_CardBlock as CardBlock,
@@ -52,10 +52,7 @@ export const COVER_IMAGE_BLOCK_CREATE = gql`
 
 export const COVER_IMAGE_BLOCK_UPDATE = gql`
   ${IMAGE_FIELDS}
-  mutation CoverImageBlockUpdate(
-    $id: ID!
-    $input: ImageBlockUpdateInput!
-  ) {
+  mutation CoverImageBlockUpdate($id: ID!, $input: ImageBlockUpdateInput!) {
     imageBlockUpdate(id: $id, input: $input) {
       ...ImageFields
     }
@@ -90,7 +87,7 @@ export function BackgroundMediaImage({
   const [deleteBlock] = useCoverBlockDeleteMutation()
   const [restoreBlock] = useCoverBlockRestoreMutation()
 
-  async function createImageBlock(input: ImageBlockUpdateInput): Promise<void> {
+  function createImageBlock(input: ImageBlockUpdateInput): void {
     if (journey == null || cardBlock == null) return
 
     const block: ImageBlock = {
@@ -105,19 +102,19 @@ export function BackgroundMediaImage({
       parentOrder: null
     }
 
-    await add({
+    add({
       parameters: {
         execute: {},
         undo: {}
       },
-      async execute() {
+      execute() {
         dispatch({
           type: 'SetEditorFocusAction',
           activeSlide: ActiveSlide.Content,
-          selectedStep: selectedStep,
+          selectedStep,
           activeContent: ActiveContent.Canvas
         })
-        await createBlock({
+        void createBlock({
           variables: {
             id: block.id,
             cardBlockId: cardBlock.id,
@@ -160,14 +157,14 @@ export function BackgroundMediaImage({
           }
         })
       },
-      async undo() {
+      undo() {
         dispatch({
           type: 'SetEditorFocusAction',
           activeSlide: ActiveSlide.Content,
-          selectedStep: selectedStep,
+          selectedStep,
           activeContent: ActiveContent.Canvas
         })
-        await deleteBlock({
+        void deleteBlock({
           variables: {
             id: block.id,
             cardBlockId: cardBlock.id
@@ -185,14 +182,14 @@ export function BackgroundMediaImage({
           }
         })
       },
-      async redo() {
+      redo() {
         dispatch({
           type: 'SetEditorFocusAction',
           activeSlide: ActiveSlide.Content,
-          selectedStep: selectedStep,
+          selectedStep,
           activeContent: ActiveContent.Canvas
         })
-        await restoreBlock({
+        void restoreBlock({
           variables: {
             id: block.id,
             cardBlockId: cardBlock.id
@@ -213,7 +210,7 @@ export function BackgroundMediaImage({
     })
   }
 
-  async function updateImageBlock(input: ImageBlockUpdateInput): Promise<void> {
+  function updateImageBlock(input: ImageBlockUpdateInput): void {
     if (
       journey == null ||
       coverBlock == null ||
@@ -230,19 +227,19 @@ export function BackgroundMediaImage({
       width: input.width ?? coverBlock.width
     }
 
-    await add({
+    add({
       parameters: {
         execute: block,
         undo: coverBlock
       },
-      async execute(block) {
+      execute(block) {
         dispatch({
           type: 'SetEditorFocusAction',
           activeSlide: ActiveSlide.Content,
-          selectedStep: selectedStep,
+          selectedStep,
           activeContent: ActiveContent.Canvas
         })
-        await updateBlock({
+        void updateBlock({
           variables: {
             id: coverBlock.id,
             input: pick(block, Object.keys(input))
@@ -255,7 +252,7 @@ export function BackgroundMediaImage({
     })
   }
 
-  async function deleteImageBlock(): Promise<void> {
+  function deleteImageBlock(): void {
     if (
       journey == null ||
       coverBlock == null ||
@@ -264,19 +261,19 @@ export function BackgroundMediaImage({
     )
       return
 
-    await add({
+    add({
       parameters: {
         execute: {},
         undo: {}
       },
-      async execute() {
+      execute() {
         dispatch({
           type: 'SetEditorFocusAction',
           activeSlide: ActiveSlide.Content,
-          selectedStep: selectedStep,
+          selectedStep,
           activeContent: ActiveContent.Canvas
         })
-        await deleteBlock({
+        void deleteBlock({
           variables: {
             id: coverBlock.id,
             cardBlockId: cardBlock.id
@@ -294,14 +291,14 @@ export function BackgroundMediaImage({
           }
         })
       },
-      async undo() {
+      undo() {
         dispatch({
           type: 'SetEditorFocusAction',
           activeSlide: ActiveSlide.Content,
-          selectedStep: selectedStep,
+          selectedStep,
           activeContent: ActiveContent.Canvas
         })
-        await restoreBlock({
+        void restoreBlock({
           variables: {
             id: coverBlock.id,
             cardBlockId: cardBlock.id
@@ -343,7 +340,7 @@ export function BackgroundMediaImage({
         coverBlock?.__typename === 'ImageBlock' ? coverBlock : null
       }
       onChange={handleChange}
-      onDelete={deleteImageBlock}
+      onDelete={async () => deleteImageBlock()}
     />
   )
 }

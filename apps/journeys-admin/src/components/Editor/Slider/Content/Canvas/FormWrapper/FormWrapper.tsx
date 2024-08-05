@@ -21,13 +21,13 @@ export function FormWrapper({ block, children }: WrapperProps): ReactElement {
 
   // Issue: Formium component does not rerender if form is updated
   // Force Formium component to rerender
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     setRenderElement(defaultRenderElement)
 
     if (formBlock.__typename === 'FormBlock' && formBlock?.form != null) {
       setTimeout(() => setRenderElement(children), 500)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formBlock.form])
 
   return renderElement

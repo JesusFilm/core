@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router'
 import {
   AuthAction,
   useUser,
@@ -6,12 +7,11 @@ import {
 } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import { useRouter } from 'next/router'
 import type { ReactElement } from 'react'
 
 import type { GetAdminJourney } from '../../../__generated__/GetAdminJourney'
-import type { UserJourneyOpen } from '../../../__generated__/UserJourneyOpen'
 import { JourneysReportType } from '../../../__generated__/globalTypes'
+import type { UserJourneyOpen } from '../../../__generated__/UserJourneyOpen'
 import { MemoizedDynamicReport } from '../../../src/components/DynamicPowerBiReport'
 import { PageWrapper } from '../../../src/components/PageWrapper'
 import { PlausibleEmbedDashboard } from '../../../src/components/PlausibleEmbedDashboard'

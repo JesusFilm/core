@@ -1,5 +1,6 @@
 import clsx from 'clsx'
 import { ReactElement } from 'react'
+// eslint-disable-next-line no-restricted-imports
 import { useTranslation } from 'react-i18next'
 
 import styles from './FeatureList.module.css'

@@ -1,4 +1,5 @@
 import { render } from '@testing-library/react'
+import { NextRouter, useRouter } from 'next/router'
 
 import {
   GetJourneyVisitors_visitors_edges_node_visitor as Visitor,
@@ -6,7 +7,6 @@ import {
 } from '../../../../__generated__/GetJourneyVisitors'
 import { VisitorStatus } from '../../../../__generated__/globalTypes'
 
-import { NextRouter, useRouter } from 'next/router'
 import { VisitorCard } from '.'
 
 jest.mock('next/router', () => ({

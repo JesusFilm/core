@@ -10,7 +10,7 @@ import { RadioOptionFields } from '../RadioOption/__generated__/RadioOptionField
 import { RadioQuestionFields } from '../RadioQuestion/__generated__/RadioQuestionFields'
 import { STEP_VIEW_EVENT_CREATE } from '../Step/Step'
 
-import { BlockRenderer } from '.'
+import { BlockRenderer } from './BlockRenderer'
 
 jest.mock('uuid', () => ({
   __esModule: true,

@@ -3,8 +3,9 @@ import Box from '@mui/material/Box'
 import Image from 'next/image'
 import { ReactElement } from 'react'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { useCommand } from '@core/journeys/ui/CommandProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import {
@@ -13,15 +14,11 @@ import {
 } from '../../../../../../../../../../__generated__/CardBlockLayoutUpdate'
 import { HorizontalSelect } from '../../../../../../../../HorizontalSelect'
 
-import { useCommand } from '@core/journeys/ui/CommandProvider'
 import cardLayoutContained from './assets/card-layout-contained.svg'
 import cardLayoutExpanded from './assets/card-layout-expanded.svg'
 
 export const CARD_BLOCK_LAYOUT_UPDATE = gql`
-  mutation CardBlockLayoutUpdate(
-    $id: ID!
-    $input: CardBlockUpdateInput!
-  ) {
+  mutation CardBlockLayoutUpdate($id: ID!, $input: CardBlockUpdateInput!) {
     cardBlockUpdate(id: $id, input: $input) {
       id
       fullscreen
@@ -48,9 +45,10 @@ export function CardLayout(): ReactElement {
         )
   ) as TreeBlock<CardBlock> | undefined
 
-  async function handleLayoutChange(fullscreen: boolean): Promise<void> {
+  function handleLayoutChange(fullscreen: boolean): void {
     if (cardBlock == null) return
-    await add({
+
+    add({
       parameters: {
         execute: {
           fullscreen
@@ -59,12 +57,12 @@ export function CardLayout(): ReactElement {
           fullscreen: !fullscreen
         }
       },
-      execute: async ({ fullscreen }) => {
+      execute({ fullscreen }) {
         dispatch({
           type: 'SetEditorFocusAction',
-          selectedStep: selectedStep
+          selectedStep
         })
-        await cardBlockUpdate({
+        void cardBlockUpdate({
           variables: {
             id: cardBlock.id,
             input: {
@@ -87,7 +85,7 @@ export function CardLayout(): ReactElement {
     <>
       <Box>
         <HorizontalSelect
-          onChange={async (val) => await handleLayoutChange(val === 'true')}
+          onChange={(val) => handleLayoutChange(val === 'true')}
           id={cardBlock?.fullscreen.toString()}
           sx={{ px: 4, pb: 4, pt: 1 }}
         >

@@ -4,9 +4,9 @@ import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
+import { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { TreeBlock } from '@core/journeys/ui/block'
 import { transformer } from '@core/journeys/ui/transformer'
 import CopyLeftIcon from '@core/shared/ui/icons/CopyLeft'
 

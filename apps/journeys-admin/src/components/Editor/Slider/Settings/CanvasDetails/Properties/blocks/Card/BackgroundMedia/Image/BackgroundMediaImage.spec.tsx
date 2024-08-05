@@ -5,11 +5,10 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { v4 as uuidv4 } from 'uuid'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { CommandProvider } from '@core/journeys/ui/CommandProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 
-import { BackgroundMediaImage } from '.'
 import {
   BlockFields_CardBlock as CardBlock,
   BlockFields_ImageBlock as ImageBlock
@@ -42,10 +41,13 @@ import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRe
 import { CommandUndoItem } from '../../../../../../../../Toolbar/Items/CommandUndoItem'
 import { createCloudflareUploadByUrlMock } from '../../../../../../Drawer/ImageBlockEditor/CustomImage/CustomUrl/data'
 import { listUnsplashCollectionPhotosMock } from '../../../../../../Drawer/ImageBlockEditor/UnsplashGallery/data'
+
 import {
   COVER_IMAGE_BLOCK_CREATE,
   COVER_IMAGE_BLOCK_UPDATE
 } from './BackgroundMediaImage'
+
+import { BackgroundMediaImage } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -129,7 +131,7 @@ describe('BackgroundMediaImage', () => {
   let originalEnv
 
   beforeEach(() => {
-    ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
+    (useMediaQuery as jest.Mock).mockImplementation(() => true)
     originalEnv = process.env
     process.env = {
       ...originalEnv,
@@ -293,7 +295,7 @@ describe('BackgroundMediaImage', () => {
         { __ref: `CardBlock:${card.id}` }
       ])
     )
-    expect(cache.extract()[`CardBlock:${card.id}`]?.coverBlockId).toEqual(null)
+    expect(cache.extract()[`CardBlock:${card.id}`]?.coverBlockId).toBeNull()
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
     await waitFor(() =>
       expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([

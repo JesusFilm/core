@@ -3,9 +3,9 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 
 import type { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
 import {
@@ -30,7 +30,7 @@ jest.mock('uuid', () => ({
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
-//TODO(jk): need to refactor!
+// TODO(jk): need to refactor!
 describe('NewButtonButton', () => {
   const selectedStep: TreeBlock = {
     __typename: 'StepBlock',

@@ -33,6 +33,7 @@ async function upsertTag(
     }
   })
 
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   await childrenNames.map(async (name) => {
     await upsertTag(name, [], tag.id, service)
   })

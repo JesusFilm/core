@@ -32,10 +32,10 @@ export const StyledFirebaseAuth = ({
   useEffect(() => {
     // Firebase UI only works on the Client. So we're loading the package only after
     // the component has mounted, so that this works when doing server-side rendering.
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     setFirebaseui(require('firebaseui') as typeof import('firebaseui'))
   }, [])
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (firebaseui === null) return
 
@@ -65,6 +65,7 @@ export const StyledFirebaseAuth = ({
       unregisterAuthObserver()
       firebaseUiWidget.reset()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [firebaseui, uiConfig])
 
   return <div className={className} ref={elementRef} />

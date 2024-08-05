@@ -9,6 +9,7 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Form, Formik, FormikValues } from 'formik'
 import { GraphQLError } from 'graphql'
+import { useRouter } from 'next/router'
 import {
   AuthAction,
   useUser,
@@ -16,7 +17,6 @@ import {
   withUserTokenSSR
 } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
-import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
 import { number, object } from 'yup'
 

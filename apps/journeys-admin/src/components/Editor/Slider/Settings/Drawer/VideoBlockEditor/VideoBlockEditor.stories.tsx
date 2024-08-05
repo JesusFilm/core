@@ -11,18 +11,18 @@ import {
   BlockFields_ImageBlock as ImageBlock,
   BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../__generated__/BlockFields'
+import { GetVideos } from '../../../../../../../__generated__/GetVideos'
 import {
   GetVideoVariantLanguages,
   GetVideoVariantLanguages_video
 } from '../../../../../../../__generated__/GetVideoVariantLanguages'
-import { GetVideos } from '../../../../../../../__generated__/GetVideos'
 import {
   ThemeMode,
   VideoBlockSource
 } from '../../../../../../../__generated__/globalTypes'
 import { Drawer } from '../Drawer'
-import { GET_VIDEOS } from '../VideoLibrary/VideoFromLocal/VideoFromLocal'
 import { videos } from '../VideoLibrary/VideoFromLocal/data'
+import { GET_VIDEOS } from '../VideoLibrary/VideoFromLocal/VideoFromLocal'
 
 import { GET_VIDEO_VARIANT_LANGUAGES } from './Source/SourceFromLocal/SourceFromLocal'
 import { VideoBlockEditor } from './VideoBlockEditor'

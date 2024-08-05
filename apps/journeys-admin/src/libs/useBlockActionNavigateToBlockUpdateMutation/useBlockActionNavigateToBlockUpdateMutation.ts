@@ -18,10 +18,7 @@ export const BLOCK_ACTION_NAVIGATE_TO_BLOCK_UPDATE = gql`
     $id: ID!
     $input: NavigateToBlockActionInput!
   ) {
-    blockUpdateNavigateToBlockAction(
-      id: $id
-      input: $input
-    ) {
+    blockUpdateNavigateToBlockAction(id: $id, input: $input) {
       parentBlockId
       gtmEventName
       blockId

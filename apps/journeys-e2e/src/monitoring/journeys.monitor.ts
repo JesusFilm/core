@@ -9,9 +9,9 @@ test('Homepage checks', async ({ page }) => {
   const response = await page.goto('https://your.nextstep.is/')
   expect(response?.status()).toEqual(200)
   await expect(page).toHaveTitle(/Next Steps/)
-  const factOrFictionText = await page
+  const factOrFictionText = page
     .frameLocator("//iframe[contains(@src, '/embed/fact-or-fiction')]")
     .locator('.MuiTypography-h2')
-    .textContent()
-  expect(factOrFictionText).toEqual('Fact or Fiction')
+
+  await expect(factOrFictionText).toHaveText('Fact or Fiction')
 })

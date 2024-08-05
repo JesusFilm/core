@@ -1,8 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { RadioOptionFields } from '../../../../../../../../__generated__/RadioOptionFields'
 import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
@@ -35,7 +35,7 @@ describe('RadioOptionEdit', () => {
     const input = getByRole('textbox')
     fireEvent.click(input)
     expect(input).toHaveFocus()
-    expect(input).toHaveAttribute('placeholder', 'Type your text here...')
+    expect(input).toHaveAttribute('placeholder', 'Add your text here...')
   })
 
   it('saves the option label on onBlur', async () => {

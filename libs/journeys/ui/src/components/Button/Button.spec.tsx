@@ -4,7 +4,6 @@ import { usePlausible } from 'next-plausible'
 import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
-import { keyify } from '@core/journeys/ui/plausibleHelpers'
 import {
   ButtonColor,
   ButtonSize,
@@ -14,18 +13,19 @@ import {
   IconSize,
   MessagePlatform
 } from '../../../__generated__/globalTypes'
-import { JourneyProvider } from '../../libs/JourneyProvider'
-import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
 import { handleAction } from '../../libs/action'
 import { TreeBlock, blockHistoryVar, treeBlocksVar } from '../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
+import { JourneyProvider } from '../../libs/JourneyProvider'
+import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
+import { keyify } from '../../libs/plausibleHelpers'
 
-import { BUTTON_CLICK_EVENT_CREATE, CHAT_OPEN_EVENT_CREATE } from './Button'
 import {
   ButtonFields,
   ButtonFields_action,
   ButtonFields_action_LinkAction as LinkAction
 } from './__generated__/ButtonFields'
+import { BUTTON_CLICK_EVENT_CREATE, CHAT_OPEN_EVENT_CREATE } from './Button'
 import { GoalType } from './utils/getLinkActionGoal'
 
 import { Button } from '.'
@@ -131,6 +131,7 @@ const journey = {
 describe('Button', () => {
   const originalLocation = window.location
   const mockOrigin = 'https://example.com'
+
   beforeAll(() => {
     Object.defineProperty(window, 'location', {
       value: {

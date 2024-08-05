@@ -1,11 +1,13 @@
+import { InMemoryCache } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { CommandProvider } from '@core/journeys/ui/CommandProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 
 import {
   BlockFields_CardBlock as CardBlock,
@@ -13,12 +15,6 @@ import {
   BlockFields_StepBlock as StepBlock,
   BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../../../../__generated__/BlockFields'
-import { GetJourney_journey as Journey } from '../../../../../../../../../../__generated__/GetJourney'
-import { VideoBlockSource } from '../../../../../../../../../../__generated__/globalTypes'
-import { ThemeProvider } from '../../../../../../../../ThemeProvider'
-
-import { InMemoryCache } from '@apollo/client'
-import { CommandProvider } from '@core/journeys/ui/CommandProvider'
 import {
   CoverBlockDelete,
   CoverBlockDeleteVariables
@@ -27,10 +23,14 @@ import {
   CoverBlockRestore,
   CoverBlockRestoreVariables
 } from '../../../../../../../../../../__generated__/CoverBlockRestore'
+import { GetJourney_journey as Journey } from '../../../../../../../../../../__generated__/GetJourney'
+import { VideoBlockSource } from '../../../../../../../../../../__generated__/globalTypes'
 import { COVER_BLOCK_DELETE } from '../../../../../../../../../libs/useCoverBlockDeleteMutation/useCoverBlockDeleteMutation'
 import { COVER_BLOCK_RESTORE } from '../../../../../../../../../libs/useCoverBlockRestoreMutation/useCoverBlockRestoreMutation'
+import { ThemeProvider } from '../../../../../../../../ThemeProvider'
 import { CommandRedoItem } from '../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
+
 import { BackgroundMedia } from './BackgroundMedia'
 
 jest.mock('@mui/material/useMediaQuery', () => ({

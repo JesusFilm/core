@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+
 import { PrismaService } from '../../../lib/prisma.service'
+
 import { ImporterBibleBooksService } from './importerBibleBooks.service'
 
 describe('ImporterBibleBooksService', () => {
@@ -109,7 +111,7 @@ describe('ImporterBibleBooksService', () => {
           extraStuff: 'randomData'
         }
       ])
-      expect(prismaService.bibleBook.createMany).toBeCalledWith({
+      expect(prismaService.bibleBook.createMany).toHaveBeenCalledWith({
         data: [
           {
             id: '1',
@@ -130,7 +132,7 @@ describe('ImporterBibleBooksService', () => {
         ],
         skipDuplicates: true
       })
-      expect(prismaService.bibleBookName.createMany).toBeCalledWith({
+      expect(prismaService.bibleBookName.createMany).toHaveBeenCalledWith({
         data: [
           {
             value: 'Genesis',

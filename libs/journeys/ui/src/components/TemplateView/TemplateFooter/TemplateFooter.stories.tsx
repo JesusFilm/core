@@ -8,8 +8,8 @@ import { simpleComponentConfig } from '@core/shared/ui/storybook'
 import { JourneyProvider } from '../../../libs/JourneyProvider'
 import { JourneyFields as Journey } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
 
-import { TemplateFooter } from './TemplateFooter'
 import { journey } from './data'
+import { TemplateFooter } from './TemplateFooter'
 
 const TemplateFooterStory: Meta<typeof TemplateFooter> = {
   ...simpleComponentConfig,

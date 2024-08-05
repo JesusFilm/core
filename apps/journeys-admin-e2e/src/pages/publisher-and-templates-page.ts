@@ -1,11 +1,15 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { expect } from '@playwright/test'
 import { Page } from 'playwright-core'
+
 import testData from '../utils/testData.json'
+
 export class Publisher {
   readonly page: Page
   constructor(page: Page) {
     this.page = page
   }
+
   templateName: string
   templateList: string[]
   topicFilter: string
@@ -23,6 +27,7 @@ export class Publisher {
     await this.clickArchivedTab()
     await this.verifyCreatedNewTemplateMovedToArchiveOrNot()
   }
+
   async verifyTemplateMovedToTrashTab() {
     await this.clickThreeDotOfTemple()
     await this.clickTrashOption()
@@ -31,6 +36,7 @@ export class Publisher {
     await this.clickTrashTab()
     await this.verifyCreatedNewTemplateMovedToTrashTabOrNot()
   }
+
   async verifyTemplateDetetedForever() {
     await this.clickThreeDotOfTemple()
     await this.clickDeleteForeverOption()
@@ -38,6 +44,7 @@ export class Publisher {
     await this.verifyToastMessage('Journey Deleted')
     await this.verifyCreatedNewTemplateRemovedFromTrashTabOrNot()
   }
+
   async verifyTemplateRestoredToActiveTab() {
     await this.clickThreeDotOfTemple()
     await this.clickTheRestore()
@@ -46,6 +53,7 @@ export class Publisher {
     await this.clickActiveTab()
     await this.verifyTemplateMovedToActivePage()
   }
+
   async verifyTemplateMovedUnarchivedToActiveTab() {
     await this.clickThreeDotOfTemple()
     await this.clickUnarchiveOption()
@@ -53,6 +61,7 @@ export class Publisher {
     await this.clickActiveTab()
     await this.verifyTemplateMovedToActivePage()
   }
+
   async verifyAllTemplateMovedActiveToArchivedTab() {
     await this.getTemplateListOfActiveTab()
     await this.clickThreeDotBesideSortByOption()
@@ -63,6 +72,7 @@ export class Publisher {
     await this.clickArchivedTab()
     await this.verifyAllTemplateMovedToArchivedTab()
   }
+
   async verifyAllTemplateMovedUnarchieToActiveTab() {
     await this.getTemplateListOfArchivedTab()
     await this.clickThreeDotBesideSortByOption()
@@ -73,6 +83,7 @@ export class Publisher {
     await this.clickActiveTab()
     await this.verifyAllTemplateMovedToActiveTab()
   }
+
   async verifyAllJourneysMovedToTrash() {
     await this.clickThreeDotBesideSortByOption()
     await this.selectThreeDotOptionsBesideSortByOption('Trash All')
@@ -81,6 +92,7 @@ export class Publisher {
     await this.clickTrashTab()
     await this.verifyAllTemplateMovedToTrashTab()
   }
+
   async verifyAllTemplateRestoredToActiveTab() {
     await this.clickThreeDotBesideSortByOption()
     await this.selectThreeDotOptionsBesideSortByOption('Restore All')
@@ -89,6 +101,7 @@ export class Publisher {
     await this.clickActiveTab()
     await this.verifyAllTemplateMovedToActiveTab()
   }
+
   async verifyAlltemplateDeletedForeverFromTrashTab() {
     await this.clickThreeDotBesideSortByOption()
     await this.selectThreeDotOptionsBesideSortByOption('Delete All Forever')
@@ -96,12 +109,14 @@ export class Publisher {
     await this.verifyToastMessage('Journeys Deleted')
     await this.verifyAllTemplateAreDeletedFromTrashTab()
   }
+
   async setFilterBelowCategoriesTabInTemplateSettingPopup(filter: string) {
     await this.clickOpenDropDownIconToFilter(filter)
     await this.setFilterBelowCategoryTab(filter)
     await this.addFilterBelowCategoryTab(filter)
     await this.clickCloseDropDownIconToFilter(filter)
   }
+
   async getExistingTemplateName() {
     await expect(
       this.page.locator('div[aria-label="template-card"]').first()
@@ -126,6 +141,7 @@ export class Publisher {
       }
     }
   }
+
   async clickThreeDotOfTemple() {
     await this.page
       .locator(
@@ -136,11 +152,13 @@ export class Publisher {
       .first()
       .click()
   }
+
   async clickArchiveOption() {
     await this.page
       .locator('li[data-testid="JourneysAdminMenuItemArchive"]')
       .click()
   }
+
   async clickArchivedTab() {
     await this.page.locator('button[id*="archived-status-panel-tab"]').click()
     await expect(
@@ -149,6 +167,7 @@ export class Publisher {
       )
     ).toBeVisible()
   }
+
   async verifyCreatedNewTemplateMovedToArchiveOrNot() {
     await expect(
       this.page.locator(
@@ -157,16 +176,19 @@ export class Publisher {
       )
     ).toBeVisible()
   }
+
   async clickTrashOption() {
     await this.page
       .locator('li[data-testid="JourneysAdminMenuItem"]', { hasText: 'Trash' })
       .click()
   }
+
   async clickDeleteBtn() {
     await this.page
       .locator('div[role="dialog"] button', { hasText: 'Delete' })
       .click()
   }
+
   async verifyToastMessage(message: string) {
     await expect(
       this.page.locator('#notistack-snackbar', { hasText: message })
@@ -175,6 +197,7 @@ export class Publisher {
       timeout: 300000
     })
   }
+
   async clickTrashTab() {
     await this.page.locator('button[id*="trashed-status-panel-tab"]').click()
     await expect(
@@ -183,6 +206,7 @@ export class Publisher {
       )
     ).toBeVisible()
   }
+
   async verifyCreatedNewTemplateMovedToTrashTabOrNot() {
     await expect(
       this.page.locator(
@@ -191,6 +215,7 @@ export class Publisher {
       )
     ).toBeVisible()
   }
+
   async clickDeleteForeverOption() {
     await this.page
       .locator('li[data-testid="JourneysAdminMenuItemDelete"] span', {
@@ -198,6 +223,7 @@ export class Publisher {
       })
       .click()
   }
+
   async verifyCreatedNewTemplateRemovedFromTrashTabOrNot() {
     await expect(
       this.page.locator(
@@ -206,6 +232,7 @@ export class Publisher {
       )
     ).toBeHidden()
   }
+
   async navigateToPublisherPage() {
     await this.page
       .locator('a[data-testid="NavigationListItemPublisher"]')
@@ -214,6 +241,7 @@ export class Publisher {
       this.page.locator('div[data-testid="JourneysAdminTemplateList"]')
     ).toBeVisible({ timeout: 60000 })
   }
+
   async clickThreeDotOfExistingTemplate() {
     await this.page
       .locator('div[aria-label="template-card"]', {
@@ -222,6 +250,7 @@ export class Publisher {
       .locator('#journey-actions')
       .click()
   }
+
   async clickTheRestore() {
     await this.page
       .locator('li[data-testid="JourneysAdminMenuItemRestore"] span', {
@@ -229,11 +258,13 @@ export class Publisher {
       })
       .click()
   }
+
   async clickRestoreBtn() {
     await this.page
       .locator('div[role="dialog"] button', { hasText: 'Restore' })
       .click()
   }
+
   async clickActiveTab() {
     await this.page.locator('button[id*="active-status-panel-tab"]').click()
     await expect(
@@ -242,6 +273,7 @@ export class Publisher {
       )
     ).toBeVisible()
   }
+
   async verifyTemplateMovedToActivePage() {
     await expect(
       this.page.locator(
@@ -250,11 +282,13 @@ export class Publisher {
       )
     ).toBeVisible()
   }
+
   async clickUnarchiveOption() {
     await this.page
       .locator('li[data-testid="JourneysAdminMenuItemUnarchive"]')
       .click()
   }
+
   async getTemplateListOfActiveTab() {
     await expect(
       this.page
@@ -269,6 +303,7 @@ export class Publisher {
       )
       .allInnerTexts()
   }
+
   async clickThreeDotBesideSortByOption() {
     await this.page
       .locator(
@@ -276,6 +311,7 @@ export class Publisher {
       )
       .click()
   }
+
   async selectThreeDotOptionsBesideSortByOption(option) {
     await this.page
       .locator('ul[aria-labelledby="edit-journey-actions"] li', {
@@ -283,6 +319,7 @@ export class Publisher {
       })
       .click()
   }
+
   async clickDialogBoxBtn(buttonName) {
     await this.page
       .locator('div[data-testid="dialog-action"] button', {
@@ -290,6 +327,7 @@ export class Publisher {
       })
       .click()
   }
+
   async verifyActiveTabShowsEmptyMessage() {
     await expect(
       this.page.locator('div[aria-labelledby*="active-status-panel-tab"] h6', {
@@ -297,6 +335,7 @@ export class Publisher {
       })
     ).toBeVisible()
   }
+
   async verifyAllTemplateMovedToArchivedTab() {
     let matchCount = 0
     await expect(
@@ -318,6 +357,7 @@ export class Publisher {
     }
     expect(matchCount === this.templateList.length).toBeTruthy()
   }
+
   async getTemplateListOfArchivedTab() {
     await expect(
       this.page
@@ -332,6 +372,7 @@ export class Publisher {
       )
       .allInnerTexts()
   }
+
   async verifyEmptyMessageInArchivedTab() {
     await expect(
       this.page.locator('div[id*="archived-status-panel-tabpanel"] h6', {
@@ -339,6 +380,7 @@ export class Publisher {
       })
     ).toBeVisible()
   }
+
   async verifyAllTemplateMovedToActiveTab() {
     let matchCount = 0
     await expect(
@@ -360,6 +402,7 @@ export class Publisher {
     }
     expect(matchCount === this.templateList.length).toBeTruthy()
   }
+
   async verifyAllTemplateMovedToTrashTab() {
     let matchCount = 0
     await expect(
@@ -381,6 +424,7 @@ export class Publisher {
     }
     expect(matchCount === this.templateList.length).toBeTruthy()
   }
+
   async getTemplateListOfTrashTab() {
     await expect(
       this.page
@@ -395,6 +439,7 @@ export class Publisher {
       )
       .allInnerTexts()
   }
+
   async verifyAllTemplateAreDeletedFromTrashTab() {
     await expect(
       this.page.locator(
@@ -407,6 +452,7 @@ export class Publisher {
       })
     ).toBeVisible()
   }
+
   async clickOnTemplateInPublisherPage() {
     await this.page
       .locator('div[aria-label="template-card"]', {
@@ -414,9 +460,11 @@ export class Publisher {
       })
       .click()
   }
+
   async clickThreeDotInEditTempletePage() {
     await this.page.locator('button[aria-label="Edit Journey Actions"]').click()
   }
+
   async clickTheDotOptionsInEditTemplatePage(option: string) {
     await this.page
       .locator(
@@ -425,11 +473,13 @@ export class Publisher {
       )
       .click()
   }
+
   async verifyTheTitileBelowMetaDataTab() {
     await expect(
       this.page.locator('div[id*="metadata-tabpanel"] input#title')
     ).toHaveAttribute('value', this.templateName)
   }
+
   async verifyDescriptionBelowMetaDataTab() {
     await expect(
       this.page.locator('div[id*="metadata-tabpanel"] textarea#description')
@@ -437,6 +487,7 @@ export class Publisher {
       'Use journey description for notes about the audience, topic, traffic source, etc. Only you and other editors can see it.'
     )
   }
+
   async verifyLanguageOfTemplateBelowMetaDataTab() {
     await expect(
       this.page.locator(
@@ -444,11 +495,13 @@ export class Publisher {
       )
     ).toHaveAttribute('value', 'English', { timeout: 50000 })
   }
+
   async clickSaveBtn() {
     await this.page
       .locator('div[data-testid="dialog-action"] button', { hasText: 'Save' })
       .click()
   }
+
   async verifyTemplateSettingSaveToastMessage() {
     await expect(
       this.page.locator('div#notistack-snackbar', {
@@ -461,6 +514,7 @@ export class Publisher {
       })
     ).toHaveCount(0, { timeout: 30000 })
   }
+
   async setFilterBelowCategoryTab(filter: string) {
     const selectedFilter = await this.page
       .locator('div[role="presentation"] ul[role="listbox"] li')
@@ -497,6 +551,7 @@ export class Publisher {
       }
     }
   }
+
   async addFilterBelowCategoryTab(filter: string) {
     if (filter === 'Felt Needs' || filter === 'Collections') {
       let selectedFilter = ' '
@@ -527,6 +582,7 @@ export class Publisher {
       .locator('button[aria-label="Open"]')
       .click({ timeout: 40000 })
   }
+
   async clickCloseDropDownIconToFilter(filter: string) {
     await this.page
       .locator('div[id*="categories-tabpanel"] > div > div', {
@@ -535,13 +591,14 @@ export class Publisher {
       .locator('button[aria-label="Close"]')
       .click()
   }
+
   async clickTabInTemplateSettingPopup(tabName: string) {
     await this.page
       .locator('div[role="dialog"] button[role="tab"]', { hasText: tabName })
       .click()
   }
 
-  //////////////
+  /// ///////////
   async clickDropDownOpenIconForFilters(filterOption: string) {
     await this.page
       .locator(
@@ -551,6 +608,7 @@ export class Publisher {
       .locator('button[aria-label="Open"]')
       .click()
   }
+
   async selectCheckBoxesForTopicDropDown(option: string) {
     let selectedFilter = ''
     switch (option) {
@@ -587,6 +645,7 @@ export class Publisher {
       .first()
       .click()
   }
+
   async clickDropDownCloseIconForFilters(filterOption: string) {
     await this.page
       .locator(
@@ -596,6 +655,7 @@ export class Publisher {
       .locator('button[aria-label="Close"]')
       .click()
   }
+
   async verifyCreatedTemplateOfSelectedFilterOption(filterOption: string) {
     let selectedFilter = ''
     switch (filterOption) {
@@ -640,9 +700,11 @@ export class Publisher {
         .count()
     ).toBeGreaterThanOrEqual(1)
   }
+
   async filterClearIcon() {
     await this.page.locator('button[aria-label="Clear"]').click()
   }
+
   async verifyCreatedTemplatInEnteredFilterOption(filter: string) {
     await this.clickDropDownOpenIconForFilters(
       'Topics, holidays, felt needs, collections'
@@ -654,6 +716,7 @@ export class Publisher {
     await this.verifyCreatedTemplateOfSelectedFilterOption(filter)
     await this.filterClearIcon()
   }
+
   async selectCheckBoxForFilters(filterOption) {
     let selectedFilter = ''
     switch (filterOption) {
@@ -697,16 +760,20 @@ export class Publisher {
     await this.verifyCreatedTemplateOfSelectedFilterOption(filterOption)
     await this.filterClearIcon()
   }
+
   async enterCreatorDescription() {
     await this.page
       .locator('textarea#creatorDescription')
       .fill(testData.cardLevelAction.descriptionText)
   }
+
   async clickImageUploadPlusIcon() {
     await this.page
       .locator('div[role="dialog"] div[data-testid="ImageBlockHeader"] button')
+      // eslint-disable-next-line playwright/no-force-option
       .click({ force: true })
   }
+
   async getImgScrUnderAboutTab() {
     if (
       await this.page
@@ -724,6 +791,7 @@ export class Publisher {
       this.uploadedImgSrc = ''
     }
   }
+
   async verifyImageUploaded() {
     await expect(
       this.page.locator(
@@ -734,6 +802,8 @@ export class Publisher {
       this.page.locator(
         'div[role="dialog"] div[id*="about-tabpanel"] div[data-testid="ImageBlockHeader"] img'
       )
-    ).not.toHaveAttribute('src', this.uploadedImgSrc, { timeout: 30000 })
+    ).not.toHaveAttribute('src', this.uploadedImgSrc as string, {
+      timeout: 30000
+    })
   }
 }

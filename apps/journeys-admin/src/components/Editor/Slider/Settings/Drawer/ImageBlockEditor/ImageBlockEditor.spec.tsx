@@ -3,12 +3,14 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 
-import { ImageBlockEditor } from '.'
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../__generated__/BlockFields'
+
 import {
   listUnsplashCollectionPhotosMock,
   triggerUnsplashDownloadMock
 } from './UnsplashGallery/data'
+
+import { ImageBlockEditor } from '.'
 
 jest.mock('next/router', () => ({
   __esModule: true,

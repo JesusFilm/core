@@ -1,10 +1,10 @@
 import { gql, useMutation } from '@apollo/client'
 import Button from '@mui/material/Button'
-import Typography from '@mui/material/Typography'
 import { Theme } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { useTranslation } from 'next-i18next'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'

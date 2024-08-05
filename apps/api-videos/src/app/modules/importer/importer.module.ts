@@ -8,14 +8,14 @@ import { ImporterBibleCitationsService } from './importerBibleCitations/importer
 import { ImporterKeywordsService } from './importerKeywords/importerKeywords.service'
 import { ImporterVideoDescriptionService } from './importerVideoDescriptions/importerVideoDescriptions.service'
 import { ImporterVideoImageAltService } from './importerVideoImageAlt/importerVideoImageAlt.service'
+import { ImporterVideosService } from './importerVideos/importerVideos.service'
+import { ImporterVideosChildrenService } from './importerVideosChildren/importerVideosChildren.service'
 import { ImporterVideoSnippetsService } from './importerVideoSnippets/importerVideoSnippets.service'
 import { ImporterVideoStudyQuestionsService } from './importerVideoStudyQuestions/importerVideoStudyQuestions.service'
 import { ImporterVideoSubtitlesService } from './importerVideoSubtitle/importerVideoSubtitle.service'
 import { ImporterVideoTitleService } from './importerVideoTitles/importerVideoTitle.service'
 import { ImporterVideoVariantDownloadsService } from './importerVideoVariantDownloads/importerVideoVariantDownloads.service'
 import { ImporterVideoVariantsService } from './importerVideoVariants/importerVideoVariants.service'
-import { ImporterVideosService } from './importerVideos/importerVideos.service'
-import { ImporterVideosChildrenService } from './importerVideosChildren/importerVideosChildren.service'
 
 @Module({
   providers: [

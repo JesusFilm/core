@@ -1,7 +1,9 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
+import { TreeBlock } from '@core/journeys/ui/block'
 import {
   ActiveCanvasDetailsDrawer,
   ActiveContent,
@@ -9,16 +11,14 @@ import {
   EditorProvider,
   EditorState
 } from '@core/journeys/ui/EditorProvider'
-import { TreeBlock } from '@core/journeys/ui/block'
-import useMediaQuery from '@mui/material/useMediaQuery'
 
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourney'
+import { getJourneyFlowBackButtonClicked } from '../../../../__generated__/getJourneyFlowBackButtonClicked'
+import { ThemeMode, ThemeName } from '../../../../__generated__/globalTypes'
 import {
   UpdateJourneyFlowBackButtonClicked,
   UpdateJourneyFlowBackButtonClickedVariables
 } from '../../../../__generated__/UpdateJourneyFlowBackButtonClicked'
-import { getJourneyFlowBackButtonClicked } from '../../../../__generated__/getJourneyFlowBackButtonClicked'
-import { ThemeMode, ThemeName } from '../../../../__generated__/globalTypes'
 import { mockReactFlow } from '../../../../test/mockReactFlow'
 import { TestEditorState } from '../../../libs/TestEditorState'
 

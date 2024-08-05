@@ -4,8 +4,8 @@ import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { JourneyFields as Journey } from '../../../../../../../../__generated__/JourneyFields'
 import { MessagePlatform } from '../../../../../../../../__generated__/globalTypes'
+import { JourneyFields as Journey } from '../../../../../../../../__generated__/JourneyFields'
 
 import { Chat } from '.'
 

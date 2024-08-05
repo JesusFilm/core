@@ -1,6 +1,6 @@
+import Box from '@mui/material/Box'
 import type { ReactElement } from 'react'
 
-import { Box } from '@mui/material'
 import { CardCta } from './Templates/CardCta'
 import { CardForm } from './Templates/CardForm'
 import { CardIntro } from './Templates/CardIntro'

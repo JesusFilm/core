@@ -8,6 +8,7 @@ import Grid from '@mui/material/Grid'
 import IconButton from '@mui/material/IconButton'
 import SwipeableDrawer from '@mui/material/SwipeableDrawer'
 import Toolbar from '@mui/material/Toolbar'
+import useScrollTrigger from '@mui/material/useScrollTrigger'
 import Image from 'next/image'
 import NextLink from 'next/link'
 import { MouseEventHandler, ReactElement, forwardRef, useState } from 'react'
@@ -15,10 +16,9 @@ import { MouseEventHandler, ReactElement, forwardRef, useState } from 'react'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
-import useScrollTrigger from '@mui/material/useScrollTrigger'
+import minimalLogo from './assets/minimal-logo.png'
 import { HeaderMenuPanel } from './HeaderMenuPanel'
 import { HeaderTabButtons } from './HeaderTabButtons'
-import minimalLogo from './assets/minimal-logo.png'
 
 interface LocalAppBarProps extends AppBarProps {
   showDivider?: boolean

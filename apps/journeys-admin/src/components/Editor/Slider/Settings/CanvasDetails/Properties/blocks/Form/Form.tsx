@@ -2,16 +2,16 @@ import Box from '@mui/material/Box'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect } from 'react'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import LinkIcon from '@core/shared/ui/icons/Link'
 import TextInput1Icon from '@core/shared/ui/icons/TextInput1'
 
 import { BlockFields_FormBlock as FormBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { Accordion } from '../../Accordion'
 import { Action } from '../../controls/Action'
-
 import { getAction } from '../../controls/Action/utils/actions'
+
 import { Credentials } from './Credentials'
 
 export function Form({ id, form, action }: TreeBlock<FormBlock>): ReactElement {

@@ -73,6 +73,7 @@ MyDocument.getInitialProps = async (ctx) => {
   // However, be aware that it can have global side effects.
   const cache = createEmotionCache({})
 
+  // eslint-disable-next-line @typescript-eslint/unbound-method
   const { extractCriticalToChunks } = createEmotionServer(cache)
 
   ctx.renderPage = async () =>
@@ -92,7 +93,6 @@ MyDocument.getInitialProps = async (ctx) => {
     <style
       data-emotion={`${style.key} ${style.ids.join(' ')}`}
       key={style.key}
-      // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
       dangerouslySetInnerHTML={{ __html: style.css }}
     />
   ))

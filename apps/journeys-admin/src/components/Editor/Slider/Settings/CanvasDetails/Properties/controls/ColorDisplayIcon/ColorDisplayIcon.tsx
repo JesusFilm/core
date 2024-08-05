@@ -2,9 +2,9 @@ import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
 import { ReactElement } from 'react'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../__generated__/BlockFields'

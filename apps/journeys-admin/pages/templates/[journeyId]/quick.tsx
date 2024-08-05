@@ -1,9 +1,10 @@
 import { gql } from '@apollo/client'
-import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useRouter } from 'next/router'
+import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { ReactElement, useEffect } from 'react'
 
 import { JOURNEY_DUPLICATE } from '@core/journeys/ui/useJourneyDuplicateMutation'
+
 import { GetTeams } from '../../../__generated__/GetTeams'
 import {
   JourneyDuplicate,
@@ -28,7 +29,7 @@ function TemplateQuickPage(): ReactElement {
   const router = useRouter()
 
   useEffect(() => {
-    router.push(`/templates/${router.query.journeyId}`)
+    void router.push(`/templates/${router.query.journeyId as string}`)
   }, [router])
 
   return <></>
@@ -60,7 +61,7 @@ export const getServerSideProps = withUserTokenSSR({
         teamId: getTeams.teams[0].id
       }
     })
-    if (journeyDuplicate?.journeyDuplicate.id) {
+    if (journeyDuplicate?.journeyDuplicate.id != null) {
       await apolloClient.mutate<
         JourneyNotificationUpdate,
         JourneyNotificationUpdateVariables
@@ -84,7 +85,7 @@ export const getServerSideProps = withUserTokenSSR({
 
   return {
     redirect: {
-      destination: `/templates/${query?.journeyId ?? ''}`,
+      destination: `/templates/${(query?.journeyId ?? '') as string}`,
       permanent: false
     }
   }

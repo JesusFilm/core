@@ -1,6 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
-import { useTranslation } from 'next-i18next'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { ComponentProps, ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'

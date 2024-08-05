@@ -1,7 +1,7 @@
 import { gql, useMutation } from '@apollo/client'
 import ButtonBase from '@mui/material/ButtonBase'
-import { useTranslation } from 'next-i18next'
 import Image from 'next/image'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { CARD_FIELDS } from '@core/journeys/ui/Card/cardFields'

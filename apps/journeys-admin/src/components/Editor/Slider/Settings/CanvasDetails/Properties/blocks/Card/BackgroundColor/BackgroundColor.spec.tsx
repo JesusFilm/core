@@ -2,25 +2,25 @@ import { InMemoryCache } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../../__generated__/BlockFields'
+import {
+  CardBlockBackgroundColorUpdate,
+  CardBlockBackgroundColorUpdateVariables
+} from '../../../../../../../../../../__generated__/CardBlockBackgroundColorUpdate'
 import { GetJourney_journey as Journey } from '../../../../../../../../../../__generated__/GetJourney'
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
 } from '../../../../../../../../../../__generated__/globalTypes'
-import { ThemeProvider } from '../../../../../../../../ThemeProvider'
-
-import {
-  CardBlockBackgroundColorUpdate,
-  CardBlockBackgroundColorUpdateVariables
-} from '../../../../../../../../../../__generated__/CardBlockBackgroundColorUpdate'
 import { TestEditorState } from '../../../../../../../../../libs/TestEditorState'
+import { ThemeProvider } from '../../../../../../../../ThemeProvider'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
+
 import {
   BackgroundColor,
   CARD_BLOCK_BACKGROUND_COLOR_UPDATE
@@ -247,7 +247,7 @@ describe('BackgroundColor', () => {
     await waitFor(() =>
       expect(cardBlockBackgroundColorUpdateUndoMockResult).toHaveBeenCalled()
     )
-    expect(getByText('activeContent: canvas'))
-    expect(getByText('activeSlide: 1'))
+    expect(getByText('activeContent: canvas')).toBeInTheDocument()
+    expect(getByText('activeSlide: 1')).toBeInTheDocument()
   })
 })

@@ -1,11 +1,14 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { render, screen, waitFor } from '@testing-library/react'
+import { NextRouter, useRouter } from 'next/router'
+
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
 } from '@core/journeys/ui/TeamProvider'
-import { render, screen, waitFor } from '@testing-library/react'
-import { NextRouter, useRouter } from 'next/router'
+
 import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
+
 import { BreadcrumbNavigation } from './BreadcrumbNavigation'
 
 jest.mock('next/router', () => ({

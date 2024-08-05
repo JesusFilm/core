@@ -5,14 +5,15 @@ import ImageListItem from '@mui/material/ImageListItem'
 import ImageListItemBar from '@mui/material/ImageListItemBar'
 import Link from '@mui/material/Link'
 import { ReactElement } from 'react'
+
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../__generated__/BlockFields'
+import { ImageBlockUpdateInput } from '../../../../../../../../../__generated__/globalTypes'
 import { ListUnsplashCollectionPhotos_listUnsplashCollectionPhotos as UnsplashCollectionPhotos } from '../../../../../../../../../__generated__/ListUnsplashCollectionPhotos'
 import { SearchUnsplashPhotos_searchUnsplashPhotos_results as UnsplashSearchPhotos } from '../../../../../../../../../__generated__/SearchUnsplashPhotos'
 import {
   TriggerUnsplashDownload,
   TriggerUnsplashDownloadVariables
 } from '../../../../../../../../../__generated__/TriggerUnsplashDownload'
-import { ImageBlockUpdateInput } from '../../../../../../../../../__generated__/globalTypes'
 
 export const TRIGGER_UNSPLASH_DOWNLOAD = gql`
   mutation TriggerUnsplashDownload($url: String!) {
@@ -84,6 +85,7 @@ export function UnsplashList({
           }}
         >
           <ButtonBase onClick={() => handleClick(item)}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               srcSet={`${item.urls.raw}&w=134&h=134&fit=crop&auto=format&dpr=2 2x`}
               src={`${item.urls.raw}&w=134&h=134&fit=crop&auto=format`}

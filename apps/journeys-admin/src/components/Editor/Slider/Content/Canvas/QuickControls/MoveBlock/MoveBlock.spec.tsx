@@ -2,9 +2,9 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
 import { blockOrderUpdateMock } from '../../../../../../../libs/useBlockOrderUpdateMutation/useBlockOrderUpdateMutation.mock'

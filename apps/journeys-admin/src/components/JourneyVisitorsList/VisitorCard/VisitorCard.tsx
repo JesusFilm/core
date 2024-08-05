@@ -3,11 +3,11 @@ import CardActionArea from '@mui/material/CardActionArea'
 import CardContent from '@mui/material/CardContent'
 import Stack from '@mui/material/Stack'
 import NextLink from 'next/link'
+import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 
 import { GetJourneyVisitors_visitors_edges_node as VisitorNode } from '../../../../__generated__/GetJourneyVisitors'
 
-import { useRouter } from 'next/router'
 import { VisitorCardDetails } from './VisitorCardDetails'
 import { VisitorCardHeader } from './VisitorCardHeader'
 
@@ -27,7 +27,7 @@ export function VisitorCard({
       <NextLink
         href={`/reports/visitors/${visitorNode?.visitorId ?? ''}/${
           router.query?.journeyId != null
-            ? `?journeyId=${router.query.journeyId}`
+            ? `?journeyId=${router.query.journeyId as string}`
             : ''
         }`}
         passHref

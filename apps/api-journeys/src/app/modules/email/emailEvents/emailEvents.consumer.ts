@@ -3,8 +3,8 @@ import { Processor, WorkerHost } from '@nestjs/bullmq'
 import { render } from '@react-email/render'
 import { Job } from 'bullmq'
 
-import { EmailService } from '@core/nest/common/email/emailService'
 import { Prisma } from '.prisma/api-journeys-client'
+import { EmailService } from '@core/nest/common/email/emailService'
 
 import { VisitorInteraction } from '../../../emails/templates/VisitorInteraction'
 import { fetchEmailDetails } from '../../../lib/fetchEmailDetails'

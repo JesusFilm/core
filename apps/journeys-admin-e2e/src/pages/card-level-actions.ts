@@ -1,6 +1,11 @@
+/* eslint-disable playwright/no-force-option */
+/* eslint-disable playwright/no-conditional-expect */
+/* eslint-disable playwright/no-wait-for-timeout */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { expect } from '@playwright/test'
 import dayjs from 'dayjs'
 import { Page } from 'playwright-core'
+
 import testData from '../utils/testData.json'
 
 const sixtySecondsTimeout = 60000
@@ -12,6 +17,7 @@ export class CardLevelActionPage {
   renameJourmeyName: string
   journeyCardFrame =
     'div[data-testid="EditorCanvas"] div[data-testid="CanvasContainer"] iframe'
+
   uploadedImgSrc
   seletedVideo
   pollRename: string
@@ -23,6 +29,7 @@ export class CardLevelActionPage {
       Math.floor(Math.random() * (100 - 999 + 1) + 999)
     this.journeyName = testData.journey.firstJourneyName + this.randomNumber
   }
+
   async clickOnJourneyCard() {
     await this.page
       .frameLocator(this.journeyCardFrame)
@@ -31,6 +38,7 @@ export class CardLevelActionPage {
       .first()
       .click()
   }
+
   async clickOnVideoJourneyCard() {
     await this.page
       .frameLocator(this.journeyCardFrame)
@@ -41,6 +49,7 @@ export class CardLevelActionPage {
       .first()
       .click({ timeout: sixtySecondsTimeout, force: true })
   }
+
   async clickAddBlockBtn() {
     await expect(
       this.page.locator('button[data-testid="Fab"]', { hasText: 'Add Block' })
@@ -57,6 +66,7 @@ export class CardLevelActionPage {
       })
       .click()
   }
+
   async enterTextInJourneysTypographyField() {
     await this.page
       .frameLocator(this.journeyCardFrame)
@@ -75,11 +85,13 @@ export class CardLevelActionPage {
       .first()
       .fill(this.journeyName)
   }
+
   async clickDoneBtn() {
     await this.page
       .locator('button[data-testid="Fab"]', { hasText: 'Done' })
       .click()
   }
+
   async verifyTextAddedInJourneyCard() {
     await expect(
       this.page
@@ -90,6 +102,7 @@ export class CardLevelActionPage {
         )
     ).toBeVisible()
   }
+
   async clickOnCreatedOrRenamedTextInJourneyCard(createdOrRenamed: string) {
     const text =
       createdOrRenamed === 'created' ? this.journeyName : this.renameJourmeyName
@@ -101,6 +114,7 @@ export class CardLevelActionPage {
       )
       .dblclick()
   }
+
   async editTextInJourneyCard() {
     this.renameJourmeyName =
       testData.journey.renameJourneyName + this.randomNumber
@@ -111,6 +125,7 @@ export class CardLevelActionPage {
       )
       .fill(this.renameJourmeyName)
   }
+
   async verifyTextUpdatedInJourneyCard() {
     await expect(
       this.page
@@ -121,6 +136,7 @@ export class CardLevelActionPage {
         )
     ).toBeVisible()
   }
+
   async changeFontStyleInJourneyCardText(styleName) {
     await this.page
       .locator('div[data-testid="ToggleButtonGroupVariant"] button', {
@@ -128,6 +144,7 @@ export class CardLevelActionPage {
       })
       .click()
   }
+
   async verifyTextStyleChangedInJourneyCard() {
     await expect(
       this.page
@@ -139,6 +156,7 @@ export class CardLevelActionPage {
         .locator('h1')
     ).toBeVisible()
   }
+
   async clickDeleteBtnInToolTipBar() {
     await expect(
       this.page
@@ -150,6 +168,7 @@ export class CardLevelActionPage {
       .locator('div[role="tooltip"] button[id="delete-block-actions"]')
       .click({ timeout: sixtySecondsTimeout, delay: 2000 })
   }
+
   async verifyAddedTextDeletedFromJourneyCard() {
     await expect(
       this.page
@@ -160,11 +179,13 @@ export class CardLevelActionPage {
         )
     ).toBeHidden({ timeout: sixtySecondsTimeout })
   }
+
   async waitUntilJourneyCardLoaded() {
     await expect(
       this.page.locator('div[data-testid="StrategyItem"] button')
     ).toBeVisible({ timeout: sixtySecondsTimeout })
   }
+
   async clickSelectImageBtn() {
     await this.page
       .locator(
@@ -173,6 +194,7 @@ export class CardLevelActionPage {
       )
       .click()
   }
+
   async clickImageSelectionTab(tabName: string) {
     await this.page
       .locator('div[aria-label="image selection tabs"] button', {
@@ -180,6 +202,7 @@ export class CardLevelActionPage {
       })
       .click()
   }
+
   async uploadImageInCustomTab() {
     await this.page
       .locator('div[data-testid="ImageUpload"] input')
@@ -190,6 +213,7 @@ export class CardLevelActionPage {
       )
     ).toBeHidden({ timeout: sixtySecondsTimeout })
   }
+
   async getImageSrc() {
     if (
       await this.page
@@ -207,15 +231,17 @@ export class CardLevelActionPage {
       this.uploadedImgSrc = ''
     }
   }
+
   async verifyImageGotChanged() {
     await expect(
       this.page.locator(
         'div[data-testid="ImageSource"] + div div[data-testid="ImageBlockThumbnail"] img'
       )
-    ).not.toHaveAttribute('src', this.uploadedImgSrc, {
+    ).not.toHaveAttribute('src', this.uploadedImgSrc as string, {
       timeout: sixtySecondsTimeout
     })
   }
+
   async verifyImgUploadedSuccessMsg() {
     await expect(
       this.page.locator('div[data-testid="ImageUpload"] p', {
@@ -223,6 +249,7 @@ export class CardLevelActionPage {
       })
     ).toBeVisible()
   }
+
   async clickImgFromFeatureOfGalleryTab() {
     await this.page
       .locator('ul[data-testid="UnsplashList"] li button')
@@ -234,6 +261,7 @@ export class CardLevelActionPage {
       )
     ).toBeHidden({ timeout: sixtySecondsTimeout })
   }
+
   async clickImgDeleteBtn() {
     await this.page
       .locator(
@@ -241,6 +269,7 @@ export class CardLevelActionPage {
       )
       .click()
   }
+
   async verifyImageIsDeleted() {
     await expect(
       this.page.locator(
@@ -248,16 +277,19 @@ export class CardLevelActionPage {
       )
     ).toBeHidden({ timeout: sixtySecondsTimeout })
   }
+
   async clickSelectVideoBtn() {
     await this.page
       .locator('div[data-testid="VideoBlockEditor"] button')
       .click()
   }
+
   async selectVideoTab(tabName) {
     await this.page
       .locator('div[data-testid="VideoLibrary"] button', { hasText: tabName })
       .click()
   }
+
   async uploadVideoInUploadTabOfVideoLibrary() {
     await this.page
       .locator('div[data-testid="VideoFromCloudflare"] input')
@@ -273,6 +305,7 @@ export class CardLevelActionPage {
       )
     ).toBeHidden({ timeout: sixtySecondsTimeout })
   }
+
   async verifyUploadVideoInJourney(uplodedType: string) {
     const videoName =
       uplodedType === 'created'
@@ -282,8 +315,9 @@ export class CardLevelActionPage {
       this.page.locator(
         'div[data-testid="VideoBlockEditor"] div[data-testid="ImageBlockThumbnail"] img[alt]'
       )
-    ).toHaveAttribute('alt', videoName)
+    ).toHaveAttribute('alt', videoName as string)
   }
+
   async clickVideoEditPenIcon() {
     await this.page
       .locator(
@@ -291,6 +325,7 @@ export class CardLevelActionPage {
       )
       .click()
   }
+
   async closeIconOfVideoDetails() {
     await expect(
       this.page
@@ -306,12 +341,14 @@ export class CardLevelActionPage {
       )
       .click({ delay: 3000 })
   }
+
   async selectVideoFromLibraryTabOfVideoLibararyPage() {
     await this.page
       .locator('div[data-testid="VideoList"] div[data-testid*="VideoListItem"]')
       .first()
       .click()
   }
+
   async getVideoNameVideoFromLibraryTabOfVideoLibraryPage() {
     this.seletedVideo = await this.page
       .locator(
@@ -320,15 +357,18 @@ export class CardLevelActionPage {
       .first()
       .innerText()
   }
+
   async clickVideoDeleteIconInDrawer() {
     await this.page.locator('button[aria-label="clear-video"]').click()
   }
+
   async clickSelectBtnAfrerSelectingVideo() {
     await this.page.waitForTimeout(3000)
     await this.page
       .locator('//button[text()="Select"]', { hasText: 'Select' })
       .click({ delay: 3000, force: true })
   }
+
   async verifyVideoDeletedFromDrawer() {
     await expect(
       this.page.locator(
@@ -336,27 +376,33 @@ export class CardLevelActionPage {
       )
     ).toBeHidden({ timeout: sixtySecondsTimeout })
   }
+
   async clickleftSideArrawIcon() {
     await this.page
       .locator('div[slot="container-start"] svg[data-testid="ChevronLeftIcon"]')
       .click()
   }
+
   async hoverOnExistingCard() {
     await this.page.locator('div[data-testid="StepBlock"]').first().hover()
   }
+
   async getjourneyCardCount() {
     this.journeyCardSize = await this.page
       .locator('div[data-testid="StepBlock"]')
       .count()
   }
+
   async clicThreeDotOfCard() {
     await this.page.locator('button[data-testid="EditStepFab"]').click()
   }
+
   async clickDuplicateCard() {
     await this.page
       .locator('li[data-testid="JourneysAdminMenuItemDuplicateStep"]')
       .click()
   }
+
   async clickDeleteCard() {
     await this.page
       .locator(
@@ -364,6 +410,7 @@ export class CardLevelActionPage {
       )
       .click()
   }
+
   async deleteAllAddedCardProperties() {
     const properties = await this.page
       .frameLocator(this.journeyCardFrame)
@@ -380,7 +427,9 @@ export class CardLevelActionPage {
           'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"]'
         )
         .last()
+        // eslint-disable-next-line playwright/no-force-option
         .dblclick({ force: true, delay: 1500 })
+      // eslint-disable-next-line playwright/missing-playwright-await
       await expect(
         this.page
           .frameLocator(this.journeyCardFrame)
@@ -403,6 +452,7 @@ export class CardLevelActionPage {
       await this.verifyToastMessage()
     }
   }
+
   async verifyToastMessage() {
     await expect(this.page.locator('#notistack-snackbar')).toBeVisible({
       timeout: sixtySecondsTimeout
@@ -411,6 +461,7 @@ export class CardLevelActionPage {
       timeout: sixtySecondsTimeout
     })
   }
+
   async verifyPollOptionAddedToCard() {
     await expect(
       this.page
@@ -421,6 +472,7 @@ export class CardLevelActionPage {
         .first()
     ).toBeVisible()
   }
+
   async clickOnPollOptionInCard(pollOption: number) {
     if (
       await this.page
@@ -461,6 +513,7 @@ export class CardLevelActionPage {
         .click()
     }
   }
+
   async clickOnPollProperties() {
     if (
       await this.page
@@ -479,12 +532,14 @@ export class CardLevelActionPage {
       .locator('div[data-testid="Action"] div[aria-haspopup="listbox"]')
       .click()
   }
+
   async clickUrlOrWebSiteOptionInPollOptionProperties() {
     await this.page
       .locator('ul[role="listbox"] li[data-value="LinkAction"]')
       .click()
     await this.page.locator('input#link').fill(testData.cardLevelAction.url)
   }
+
   async renamedPollOptionInCard(pollOption: number) {
     this.pollRename = testData.cardLevelAction.pollRename + this.randomNumber
     if (
@@ -531,9 +586,10 @@ export class CardLevelActionPage {
         'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOption"]'
       )
       .nth(pollOption - 1)
-      .locator('textarea[placeholder="Type your text here..."]')
+      .locator('textarea[placeholder="Add your text here..."]')
       .fill(this.pollRename)
   }
+
   async verifyPollOptionGotRenamed() {
     await expect(
       this.page
@@ -544,6 +600,7 @@ export class CardLevelActionPage {
         )
     ).toBeVisible()
   }
+
   async selectWholePollOptions() {
     // await this.page.frameLocator(this.journeyCardFrame).locator('div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid*="JourneysRadioQuestion"] button').first().click()
     await this.page
@@ -554,6 +611,7 @@ export class CardLevelActionPage {
       )
       .click()
   }
+
   async verifyPollOptionsDeletedFromCard() {
     await expect(
       this.page
@@ -563,6 +621,7 @@ export class CardLevelActionPage {
         )
     ).toBeHidden()
   }
+
   async verifyFeedBackAddedToCard() {
     await expect(
       this.page
@@ -573,6 +632,7 @@ export class CardLevelActionPage {
         .first()
     ).toBeVisible()
   }
+
   async clickFeedBackPropertiesDropDown(feedBackProperty: string) {
     await expect(
       this.page.locator(
@@ -598,16 +658,19 @@ export class CardLevelActionPage {
       console.log('%s is already opened', feedBackProperty)
     }
   }
+
   async enterLabelBelowFeedBcakProperty() {
     await this.page
       .locator('input#textResponseLabel')
       .fill(testData.cardLevelAction.feedBackLabel)
   }
+
   async enterHintBelowFeedBcakProperty() {
     await this.page
       .locator('input#textResponseHint')
       .fill(testData.cardLevelAction.feedBackHint)
   }
+
   async verifyLabelUpdatedIncard() {
     await expect(
       this.page
@@ -618,6 +681,7 @@ export class CardLevelActionPage {
         )
     ).toBeVisible()
   }
+
   async verifyHintUpdatedInCard() {
     await expect(
       this.page
@@ -628,17 +692,20 @@ export class CardLevelActionPage {
         )
     ).toBeVisible()
   }
+
   async clickActionOfFeedBackProperties() {
     await this.page
       .locator('div[data-testid="Action"] div[aria-haspopup="listbox"]')
       .click()
   }
+
   async selectEmailOptionInPrepertiesOptions() {
     await this.page
       .locator('ul[role="listbox"] li[data-value="EmailAction"]')
       .click()
     await this.page.locator('input#email').fill(testData.cardLevelAction.email)
   }
+
   async selectIconForProperties() {
     await this.page.locator('div[aria-label="icon-name"]').click()
     await this.page
@@ -647,6 +714,7 @@ export class CardLevelActionPage {
       )
       .click()
   }
+
   async verifySelectedIconInCardBelowFeedBack() {
     await expect(
       this.page
@@ -656,6 +724,7 @@ export class CardLevelActionPage {
         )
     ).toBeVisible()
   }
+
   async selectWholeFeedBackSection() {
     await this.page
       .frameLocator(this.journeyCardFrame)
@@ -664,6 +733,7 @@ export class CardLevelActionPage {
       )
       .click()
   }
+
   async verifyFeedBackDeletedFromCard() {
     await expect(
       this.page
@@ -673,6 +743,7 @@ export class CardLevelActionPage {
         )
     ).toBeHidden()
   }
+
   async verifySubscribeAddedToCard() {
     await expect(
       this.page
@@ -683,6 +754,7 @@ export class CardLevelActionPage {
         .first()
     ).toBeVisible()
   }
+
   async clickOnSelectCardOptionInPrepertiesOptions() {
     await this.page
       .locator('ul[role="listbox"] li[data-value="NavigateToBlockAction"]')
@@ -692,6 +764,7 @@ export class CardLevelActionPage {
       .first()
       .click()
   }
+
   async verifySelecetdIconInCardBelowSubscribe() {
     await expect(
       this.page
@@ -702,6 +775,7 @@ export class CardLevelActionPage {
         .first()
     ).toBeVisible()
   }
+
   async verifySubscribeDeletedFromCard() {
     await expect(
       this.page
@@ -712,6 +786,7 @@ export class CardLevelActionPage {
         .first()
     ).toBeHidden()
   }
+
   async selectWholeSubscribeSectionInCard() {
     await this.page
       .frameLocator(this.journeyCardFrame)
@@ -721,6 +796,7 @@ export class CardLevelActionPage {
       .first()
       .click()
   }
+
   async clickSubscribePropertiesDropDown(feedBackProperty: string) {
     await this.page
       .locator(
@@ -729,6 +805,7 @@ export class CardLevelActionPage {
       )
       .click()
   }
+
   async selectWholeFooterSectionInCard() {
     await this.page
       .frameLocator(this.journeyCardFrame)
@@ -737,6 +814,7 @@ export class CardLevelActionPage {
         'div[data-testid="CardWrapper"] + div[data-testid="JourneysStepFooter"] > div'
       )
       .click({ delay: 3000 })
+    // eslint-disable-next-line playwright/missing-playwright-await
     await expect(
       this.page.locator(
         'div[aria-labelledby*="hostedBy-tab"] div[data-testid="JourneysAdminContainedIconButton"] button'
@@ -753,6 +831,7 @@ export class CardLevelActionPage {
           .dblclick({ force: true })
       })
   }
+
   async clicSelectHostBtn() {
     await this.page
       .locator(
@@ -760,16 +839,19 @@ export class CardLevelActionPage {
       )
       .click()
   }
+
   async clickCreateNewBtn() {
     await this.page
       .locator('div[data-testid="HostList"] button', { hasText: 'Create New' })
       .click()
   }
+
   async enterHostName() {
     await this.page
       .locator('input#hostTitle')
       .fill(testData.cardLevelAction.hostName)
   }
+
   async enterLocation() {
     await this.page
       .locator('input#hostLocation')
@@ -782,6 +864,7 @@ export class CardLevelActionPage {
       .locator('input#hostLocation')
       .fill(testData.cardLevelAction.location)
   }
+
   async verifyHostNameAddedInCard() {
     await expect(
       this.page
@@ -797,6 +880,7 @@ export class CardLevelActionPage {
         )
     ).toBeHidden()
   }
+
   async clickTabInFooterProperties(tabName: string) {
     await this.page
       .locator('div[aria-label="image selection tabs"] button[role="tab"]', {
@@ -804,6 +888,7 @@ export class CardLevelActionPage {
       })
       .click()
   }
+
   async clickMessangerDropDown(messangerTitle: string) {
     if (
       await this.page
@@ -830,11 +915,13 @@ export class CardLevelActionPage {
       .locator('input[type="checkbox"]')
       .click()
   }
+
   async enterWhatsAppLink() {
     await this.page
       .locator('input#whatsApp')
       .fill(testData.cardLevelAction.whatsApp)
   }
+
   async verifyChatWidgetAddedToCard() {
     await expect(
       this.page
@@ -844,17 +931,21 @@ export class CardLevelActionPage {
         )
     ).toBeVisible()
   }
+
   async verifyCardDeletedInCustomJournetPage() {
     await expect(this.page.locator('div[data-testid="StepBlock"]')).toBeHidden()
   }
+
   async verifyCardDuplicated() {
     await expect(this.page.locator('div[data-testid="StepBlock"]')).toHaveCount(
       this.journeyCardSize + 1
     )
   }
+
   async getJourneyName() {
     return this.journeyName
   }
+
   async editTextInJourneysTypographyField() {
     let typographyPath = ''
     let textareaPath = ''
@@ -929,6 +1020,7 @@ export class CardLevelActionPage {
       await this.verifyTextAddedInJourneyCard()
     }
   }
+
   async closeIconOfVideoDetailsIfAppear() {
     try {
       await expect(
@@ -941,6 +1033,7 @@ export class CardLevelActionPage {
         .click({ delay: 3000 })
     } catch (err) {}
   }
+
   async deleteAllThePollOptions() {
     const pollOptionCount = await this.page
       .frameLocator(this.journeyCardFrame)

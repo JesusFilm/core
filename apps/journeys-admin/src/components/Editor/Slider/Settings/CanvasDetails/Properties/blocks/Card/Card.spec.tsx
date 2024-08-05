@@ -2,8 +2,8 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../__generated__/BlockFields'
 import {

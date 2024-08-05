@@ -1,5 +1,6 @@
 import { ApolloError } from '@apollo/client'
 import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
 import { Form, Formik, FormikValues } from 'formik'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
@@ -9,8 +10,8 @@ import { object, string } from 'yup'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
 
-import { Typography } from '@mui/material'
 import { useJourneyUpdateMutation } from '../../../../libs/useJourneyUpdateMutation'
+
 interface TitleDialogProps {
   open: boolean
   onClose: () => void

@@ -1,20 +1,20 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
-import { RadioOptionFields } from '../../../../../../../../__generated__/RadioOptionFields'
-import { RadioQuestionFields } from '../../../../../../../../__generated__/RadioQuestionFields'
 import {
   ThemeMode,
   ThemeName,
   TypographyVariant
 } from '../../../../../../../../__generated__/globalTypes'
+import { RadioOptionFields } from '../../../../../../../../__generated__/RadioOptionFields'
+import { RadioQuestionFields } from '../../../../../../../../__generated__/RadioQuestionFields'
 import { Canvas } from '../../Canvas'
 
 const RadioOptionEditStory: Meta<typeof Canvas> = {
