@@ -13,7 +13,7 @@ const mockUseSearchBox = useSearchBox as jest.MockedFunction<
   typeof useSearchBox
 >
 
-function mockSearchBox(): jest.Mock<any, any, any> {
+function mockSearchBox(): jest.Mock {
   const refine = jest.fn()
   mockUseSearchBox.mockReturnValue({
     query: 'Hello World!',
