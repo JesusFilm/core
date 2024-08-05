@@ -1,15 +1,17 @@
-import type { FormObject } from '@core/journeys/ui/setBeaconPageViewed'
-import HelpCircleContained from '@core/shared/ui/icons/HelpCircleContained'
-import XCircleContained from '@core/shared/ui/icons/XCircleContained'
 import IconButton from '@mui/material/IconButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import MenuItem from '@mui/material/MenuItem'
-import { useTranslation } from 'next-i18next'
-import { useRouter } from 'next/router'
-import {type  ReactElement, useState } from 'react'
-import { BeaconInit } from './BeaconInit'
 import Tooltip from '@mui/material/Tooltip'
+import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
+import { ReactElement, useState } from 'react'
+
+import { FormObject } from '@core/journeys/ui/setBeaconPageViewed'
+import HelpCircleContained from '@core/shared/ui/icons/HelpCircleContained'
+import XCircleContained from '@core/shared/ui/icons/XCircleContained'
+
+import { BeaconInit } from './BeaconInit'
 
 interface HelpScoutBeaconProps {
   variant?: 'iconButton' | 'menuItem'
@@ -48,7 +50,7 @@ export function HelpScoutBeacon({
     <>
       <BeaconInit userInfo={userInfo} />
       {variant === 'iconButton' && (
-        <Tooltip title={t('Help')} arrow sx={{m: 0}}>
+        <Tooltip title={t('Help')} arrow sx={{ m: 0 }}>
           <IconButton
             data-testid="HelpScoutBeaconIconButton"
             size="medium"
@@ -59,11 +61,11 @@ export function HelpScoutBeacon({
             sx={{
               color:
                 iconButtonColor === 'primary'
-                ? 'secondary.light'
-                : 'background.paper'
+                  ? 'secondary.light'
+                  : 'background.paper'
             }}
-            >
-            {beaconOpen ? <XCircleContained/> : <HelpCircleContained/>}
+          >
+            {beaconOpen ? <XCircleContained /> : <HelpCircleContained />}
           </IconButton>
         </Tooltip>
       )}

@@ -1,8 +1,9 @@
-import { FormObject } from '@core/journeys/ui/setBeaconPageViewed'
 import { useTheme } from '@mui/material/styles'
 import { useRouter } from 'next/router'
 import Script from 'next/script'
 import { ReactElement, useEffect, useState } from 'react'
+
+import { FormObject } from '@core/journeys/ui/setBeaconPageViewed'
 
 interface BeaconInitProps {
   userInfo?: FormObject
@@ -71,8 +72,8 @@ export function BeaconInit({ userInfo }: BeaconInitProps): ReactElement {
           top: 65px;
           right: 16px;
           width: 327px;
-          max-height: calc(100vh - 81px);
-          height: calc(100vh - 65px);
+          max-height: calc(100svh - 81px);
+          height: calc(100svh - 65px);
         }
         .BeaconFabButtonFrame {
           /* hides the icon */
