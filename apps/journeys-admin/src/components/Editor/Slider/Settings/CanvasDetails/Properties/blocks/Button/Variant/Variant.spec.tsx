@@ -147,4 +147,19 @@ describe('Button variant selector', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
     await waitFor(() => expect(mockFirstUpdate.result).toHaveBeenCalled())
   })
+
+  it('should not call mutation if no selected block', async () => {
+    render(
+      <MockedProvider mocks={[variantUpdateMock]}>
+        <EditorProvider initialState={{}}>
+          <Variant />
+        </EditorProvider>
+      </MockedProvider>
+    )
+    expect(screen.getByRole('button', { name: 'Contained' })).toHaveClass(
+      'Mui-selected'
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Text' }))
+    await waitFor(() => expect(variantUpdateMock.result).not.toHaveBeenCalled())
+  })
 })
