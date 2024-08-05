@@ -8,7 +8,6 @@ import { ImporterVideosService } from '../importerVideos/importerVideos.service'
 
 import { ImporterVideosChildrenService } from './importerVideosChildren.service'
 
-
 describe('ImporterVideosChildrenService', () => {
   let service: ImporterVideosChildrenService,
     prismaService: DeepMockProxy<PrismaService>,
