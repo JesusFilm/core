@@ -1,5 +1,5 @@
 {
-  "Button": "Button",
+  "Submit": "Submit",
   "Please select a valid team": "Please select a valid team",
   "Cancel": "Cancel",
   "Add": "Add",
@@ -13,7 +13,6 @@
   "Please enter a valid email address": "Please enter a valid email address",
   "Name": "Name",
   "Email": "Email",
-  "Submit": "Submit",
   "Journey": "Journey",
   "Copied to clipboard": "Copied to clipboard",
   "Share": "Share",
