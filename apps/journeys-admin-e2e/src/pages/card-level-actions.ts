@@ -586,7 +586,7 @@ export class CardLevelActionPage {
         'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOption"]'
       )
       .nth(pollOption - 1)
-      .locator('textarea[placeholder="Type your text here..."]')
+      .locator('textarea[placeholder="Add your text here..."]')
       .fill(this.pollRename)
   }
 

@@ -3,21 +3,21 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useCommand } from '@core/journeys/ui/CommandProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 
 import { IconColor } from '../../../../../../../../../../__generated__/globalTypes'
-import { IconBlockColorUpdate } from '../../../../../../../../../../__generated__/IconBlockColorUpdate'
+import {
+  IconBlockColorUpdate,
+  IconBlockColorUpdateVariables
+} from '../../../../../../../../../../__generated__/IconBlockColorUpdate'
 import { IconFields } from '../../../../../../../../../../__generated__/IconFields'
 import { ColorDisplayIcon } from '../../ColorDisplayIcon'
 import { ToggleButtonGroup } from '../../ToggleButtonGroup'
 
 export const ICON_BLOCK_COLOR_UPDATE = gql`
-  mutation IconBlockColorUpdate(
-    $id: ID!
-    $journeyId: ID!
-    $input: IconBlockUpdateInput!
-  ) {
-    iconBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+  mutation IconBlockColorUpdate($id: ID!, $color: IconColor!) {
+    iconBlockUpdate(id: $id, input: { color: $color }) {
       id
       color
     }
@@ -28,27 +28,46 @@ interface ColorProps extends Pick<TreeBlock<IconFields>, 'id' | 'iconColor'> {}
 
 export function Color({ id, iconColor }: ColorProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [iconBlockColorUpdate] = useMutation<IconBlockColorUpdate>(
-    ICON_BLOCK_COLOR_UPDATE
-  )
-  const { journey } = useJourney()
+  const [iconBlockColorUpdate] = useMutation<
+    IconBlockColorUpdate,
+    IconBlockColorUpdateVariables
+  >(ICON_BLOCK_COLOR_UPDATE)
+  const {
+    state: { selectedBlock, selectedStep },
+    dispatch
+  } = useEditor()
+  const { add } = useCommand()
 
-  async function handleChange(color: IconColor): Promise<void> {
-    if (color !== iconColor && color != null && journey != null) {
-      await iconBlockColorUpdate({
-        variables: {
-          id,
-          journeyId: journey.id,
-          input: {
+  function handleChange(color: IconColor): void {
+    if (color !== iconColor && color != null) {
+      add({
+        parameters: {
+          execute: {
             color
+          },
+          undo: {
+            color: iconColor
           }
         },
-        optimisticResponse: {
-          iconBlockUpdate: {
-            __typename: 'IconBlock',
-            id,
-            color
-          }
+        execute({ color }) {
+          dispatch({
+            type: 'SetEditorFocusAction',
+            selectedBlock,
+            selectedStep
+          })
+          void iconBlockColorUpdate({
+            variables: {
+              id,
+              color
+            },
+            optimisticResponse: {
+              iconBlockUpdate: {
+                __typename: 'IconBlock',
+                id,
+                color
+              }
+            }
+          })
         }
       })
     }
