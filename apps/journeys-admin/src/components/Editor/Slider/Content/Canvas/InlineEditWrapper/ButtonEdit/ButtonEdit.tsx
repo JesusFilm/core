@@ -12,12 +12,8 @@ import { InlineEditInput } from '../InlineEditInput'
 import { useOnClickOutside } from '../useOnClickOutside'
 
 export const BUTTON_BLOCK_UPDATE_CONTENT = gql`
-  mutation ButtonBlockUpdateContent(
-    $id: ID!
-    $journeyId: ID!
-    $input: ButtonBlockUpdateInput!
-  ) {
-    buttonBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+  mutation ButtonBlockUpdateContent($id: ID!, $input: ButtonBlockUpdateInput!) {
+    buttonBlockUpdate(id: $id, input: $input) {
       id
       label
     }
