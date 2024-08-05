@@ -1,13 +1,13 @@
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client'
 import { CACHE_MANAGER } from '@nestjs/cache-manager'
-
-import { decryptSymmetric, encryptSymmetric } from '@core/nest/common/crypto'
 import { Inject, Injectable } from '@nestjs/common'
+import axios, { AxiosError, AxiosInstance } from 'axios'
 import { Cache } from 'cache-manager'
 import { GraphQLError } from 'graphql/error'
-import { PrismaService } from '../../../lib/prisma.service'
 
-import axios, { AxiosError, AxiosInstance } from 'axios'
+import { Block, Integration, Prisma } from '.prisma/api-journeys-client'
+import { decryptSymmetric, encryptSymmetric } from '@core/nest/common/crypto'
+
 import {
   GetLanguagesQuery,
   GetLanguagesQueryVariables
@@ -18,12 +18,12 @@ import {
   IntegrationGrowthSpacesUpdateInput,
   IntegrationType
 } from '../../../__generated__/graphql'
-import { Block, Integration, Prisma } from '.prisma/api-journeys-client'
+import { PrismaService } from '../../../lib/prisma.service'
 
 const ONE_DAY_MS = 86400000
 
-const GET_LANGUAGES = gql`         
-    query GetLanguages($languageId: ID!) {
+const GET_LANGUAGES = gql`
+  query GetLanguages($languageId: ID!) {
     language(id: $languageId) {
       bcp47
       id
@@ -82,6 +82,7 @@ export class IntegrationGrowthSpacesService {
           }
         )
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       throw new GraphQLError(e.message, {
         extensions: { code: 'INTERNAL_SERVER_ERROR' }
       })
@@ -165,6 +166,7 @@ export class IntegrationGrowthSpacesService {
           }
         )
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       throw new GraphQLError(e.message, {
         extensions: { code: 'INTERNAL_SERVER_ERROR' }
       })

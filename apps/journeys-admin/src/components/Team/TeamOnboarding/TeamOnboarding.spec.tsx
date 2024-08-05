@@ -2,6 +2,7 @@ import { InMemoryCache } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
+import { User } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
 
@@ -17,7 +18,6 @@ import { TeamCreate } from '../../../../__generated__/TeamCreate'
 import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActiveTeamId'
 import { TEAM_CREATE } from '../../../libs/useTeamCreateMutation/useTeamCreateMutation'
 
-import { User } from 'next-firebase-auth'
 import { TeamOnboarding } from '.'
 
 jest.mock('next/router', () => ({
@@ -146,6 +146,7 @@ describe('TeamOnboarding', () => {
       getIdToken: async (forceRefresh?: boolean) => null,
       clientInitialized: false,
       firebaseUser: null,
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
       signOut: async () => {},
       serialize: (a?: { includeToken?: boolean }) => JSON.stringify({})
     }

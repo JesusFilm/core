@@ -1,12 +1,14 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/BlockFields'
-import { IconFields } from '../../../../../../../../../__generated__/IconFields'
 import { IconName } from '../../../../../../../../../__generated__/globalTypes'
+import { IconFields } from '../../../../../../../../../__generated__/IconFields'
+import { CommandRedoItem } from '../../../../../../Toolbar/Items/CommandRedoItem'
+import { CommandUndoItem } from '../../../../../../Toolbar/Items/CommandUndoItem'
 
 import { CommandUndoItem } from '../../../../../../Toolbar/Items/CommandUndoItem'
 import { ICON_BLOCK_NAME_UPDATE } from './Icon'
@@ -157,9 +159,7 @@ describe('Icon', () => {
               query: ICON_BLOCK_NAME_UPDATE,
               variables: {
                 id: icon.id,
-                input: {
-                  name: IconName.ArrowForwardRounded
-                }
+                name: IconName.ArrowForwardRounded
               }
             },
             result
@@ -198,9 +198,7 @@ describe('Icon', () => {
               query: ICON_BLOCK_NAME_UPDATE,
               variables: {
                 id: icon.id,
-                input: {
-                  name: null
-                }
+                name: null
               }
             },
             result
@@ -238,9 +236,7 @@ describe('Icon', () => {
               query: ICON_BLOCK_NAME_UPDATE,
               variables: {
                 id: icon.id,
-                input: {
-                  name: IconName.BeenhereRounded
-                }
+                name: IconName.BeenhereRounded
               }
             },
             result
@@ -252,15 +248,16 @@ describe('Icon', () => {
         </EditorProvider>
       </MockedProvider>
     )
+
     fireEvent.mouseDown(screen.getByRole('button', { name: 'icon-name' }))
-    fireEvent.click(screen.getByRole('option', { name: 'Check Circle' }))
-    await waitFor(() => expect(firstUpdateMock.result).toHaveBeenCalled())
+    fireEvent.click(screen.getByRole('option', { name: 'Been Here' }))
+    await waitFor(() => expect(result1).toHaveBeenCalled())
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
-    await waitFor(() => expect(iconUpdateMock2.result).toHaveBeenCalled())
+    await waitFor(() => expect(result2).toHaveBeenCalled())
 
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
-    await waitFor(() => expect(firstUpdateMock.result).toHaveBeenCalled())
+    await waitFor(() => expect(result1).toHaveBeenCalled())
   })
 
   it('should undo the icon change', async () => {
@@ -281,9 +278,7 @@ describe('Icon', () => {
         query: ICON_BLOCK_NAME_UPDATE,
         variables: {
           id: icon.id,
-          input: {
-            name: IconName.BeenhereRounded
-          }
+          name: IconName.BeenhereRounded
         }
       },
       result: result1
@@ -306,9 +301,7 @@ describe('Icon', () => {
         query: ICON_BLOCK_NAME_UPDATE,
         variables: {
           id: icon.id,
-          input: {
-            name: IconName.ArrowForwardRounded
-          }
+          name: IconName.ArrowForwardRounded
         }
       },
       result: result2
@@ -349,9 +342,7 @@ describe('Icon', () => {
         query: ICON_BLOCK_NAME_UPDATE,
         variables: {
           id: icon.id,
-          input: {
-            name: IconName.BeenhereRounded
-          }
+          name: IconName.BeenhereRounded
         }
       },
       result: result1,
@@ -375,9 +366,7 @@ describe('Icon', () => {
         query: ICON_BLOCK_NAME_UPDATE,
         variables: {
           id: icon.id,
-          input: {
-            name: IconName.ArrowForwardRounded
-          }
+          name: IconName.ArrowForwardRounded
         }
       },
       result: result2
@@ -422,9 +411,7 @@ describe('Icon', () => {
         query: ICON_BLOCK_NAME_UPDATE,
         variables: {
           id: icon.id,
-          input: {
-            name: IconName.BeenhereRounded
-          }
+          name: IconName.BeenhereRounded
         }
       },
       result: result1
@@ -447,9 +434,7 @@ describe('Icon', () => {
         query: ICON_BLOCK_NAME_UPDATE,
         variables: {
           id: icon.id,
-          input: {
-            name: IconName.ArrowForwardRounded
-          }
+          name: IconName.ArrowForwardRounded
         }
       },
       result: result2
@@ -490,9 +475,7 @@ describe('Icon', () => {
         query: ICON_BLOCK_NAME_UPDATE,
         variables: {
           id: icon.id,
-          input: {
-            name: IconName.BeenhereRounded
-          }
+          name: IconName.BeenhereRounded
         }
       },
       result: result1,
@@ -516,9 +499,7 @@ describe('Icon', () => {
         query: ICON_BLOCK_NAME_UPDATE,
         variables: {
           id: icon.id,
-          input: {
-            name: IconName.ArrowForwardRounded
-          }
+          name: IconName.ArrowForwardRounded
         }
       },
       result: result2

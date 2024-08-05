@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box'
-import { useTranslation } from 'next-i18next'
 import NextLink from 'next/link'
+import { useTranslation } from 'next-i18next'
 import { ComponentProps, ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'

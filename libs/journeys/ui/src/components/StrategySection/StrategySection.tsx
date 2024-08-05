@@ -66,7 +66,6 @@ export function StrategySection({
               loading="lazy"
               data-testid="strategy-iframe"
               onLoad={(event) =>
-                // biome-ignore lint/suspicious/noAssignInExpressions: <explanation>
                 ((event.target as HTMLIFrameElement).style.opacity = '1')
               }
               style={{

@@ -1,17 +1,18 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import { ButtonSize } from '../../../../../../../../../../__generated__/globalTypes'
-
 import { CommandRedoItem } from '../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
+
 import { BUTTON_BLOCK_UPDATE } from './Size'
 
 import { Size } from '.'
+
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
@@ -74,6 +75,7 @@ describe('Button size selector', () => {
   }
 
   beforeEach(() => jest.clearAllMocks())
+
   it('should show button size properties', () => {
     render(
       <MockedProvider>

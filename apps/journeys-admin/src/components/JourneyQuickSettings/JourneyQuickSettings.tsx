@@ -15,6 +15,7 @@ import ShareIcon from '@core/shared/ui/icons/Share'
 import { Item } from '../Editor/Toolbar/Items/Item'
 import { PreviewItem } from '../Editor/Toolbar/Items/PreviewItem'
 import { OnboardingTemplateCard } from '../OnboardingPageWrapper/OnboardingDrawer/OnboardingTemplateCard'
+
 import { JourneyQuickSettingsChat } from './JourneyQuickSettingsChat'
 import { JourneyQuickSettingsGoals } from './JourneyQuickSettingsGoals'
 import { JourneyQuickSettingsTabs } from './JourneyQuickSettingsTabs'
@@ -33,7 +34,9 @@ export function JourneyQuickSettings({
   const [tabValue, setTabValue] = useState(0)
   const theme = useTheme()
 
-  const url = `${process.env.NEXT_PUBLIC_JOURNEYS_URL ?? 'https://your.nextstep.is'}/${journey?.slug ?? ''}`
+  const url = `${
+    process.env.NEXT_PUBLIC_JOURNEYS_URL ?? 'https://your.nextstep.is'
+  }/${journey?.slug ?? ''}`
   return (
     <Stack
       direction={{ xs: 'column', md: 'row' }}

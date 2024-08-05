@@ -2,8 +2,8 @@ import Box from '@mui/material/Box'
 import Fade from '@mui/material/Fade'
 import { ReactElement, forwardRef, useEffect } from 'react'
 
-import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import { TreeBlock, useBlocks } from '@core/journeys/ui/block'
+import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 
 import { StepFields } from '../../../../__generated__/StepFields'
 

@@ -30,16 +30,20 @@ import { init, t } from 'i18next'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { useCommand } from '@core/journeys/ui/CommandProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/BlockFields'
+import {
+  IconColor,
+  IconName
+} from '../../../../../../../../../__generated__/globalTypes'
 import {
   IconBlockNameUpdate,
   IconBlockNameUpdateVariables
 } from '../../../../../../../../../__generated__/IconBlockNameUpdate'
 import { IconFields } from '../../../../../../../../../__generated__/IconFields'
-import {
-  IconColor,
-  IconName
-} from '../../../../../../../../../__generated__/globalTypes'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { Color } from './Color'
@@ -146,11 +150,8 @@ export const icons = [
 ]
 
 export const ICON_BLOCK_NAME_UPDATE = gql`
-  mutation IconBlockNameUpdate(
-    $id: ID!
-    $input: IconBlockUpdateInput!
-  ) {
-    iconBlockUpdate(id: $id, input: $input) {
+  mutation IconBlockNameUpdate($id: ID!, $name: IconName) {
+    iconBlockUpdate(id: $id, input: { name: $name }) {
       id
       name
     }
@@ -175,25 +176,23 @@ export function Icon({ id }: IconProps): ReactElement {
   ) as TreeBlock<IconFields>
   const iconName = iconBlock?.iconName ?? ''
 
-  async function iconUpdate(name: IconName | null): Promise<void> {
-    await add({
+  function iconUpdate(name: IconName | null): void {
+    add({
       parameters: {
         execute: { name },
         undo: { name: iconName === '' ? null : iconName }
       },
-      async execute({ name }) {
+      execute({ name }) {
         dispatch({
           type: 'SetEditorFocusAction',
           selectedBlock,
           selectedStep: state.selectedStep
         })
 
-        await iconBlockNameUpdate({
+        void iconBlockNameUpdate({
           variables: {
             id,
-            input: {
-              name
-            }
+            name
           },
           optimisticResponse: {
             iconBlockUpdate: {
@@ -207,12 +206,12 @@ export function Icon({ id }: IconProps): ReactElement {
     })
   }
 
-  async function handleChange(event: SelectChangeEvent): Promise<void> {
+  function handleChange(event: SelectChangeEvent): void {
     const newName = event.target.value as IconName
     if (event.target.value === '') {
-      await iconUpdate(null)
+      iconUpdate(null)
     } else if (newName !== iconName) {
-      await iconUpdate(newName)
+      iconUpdate(newName)
     }
   }
 

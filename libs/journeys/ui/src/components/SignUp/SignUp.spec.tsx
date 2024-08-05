@@ -5,17 +5,17 @@ import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
 import TagManager from 'react-gtm-module'
 
-import { keyify } from '@core/journeys/ui/plausibleHelpers'
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
-import { JourneyProvider } from '../../libs/JourneyProvider'
-import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
 import { handleAction } from '../../libs/action'
 import type { TreeBlock } from '../../libs/block'
 import { blockHistoryVar, treeBlocksVar } from '../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
+import { JourneyProvider } from '../../libs/JourneyProvider'
+import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
+import { keyify } from '../../libs/plausibleHelpers'
 
-import { SIGN_UP_SUBMISSION_EVENT_CREATE, SignUp } from './SignUp'
 import { SignUpFields } from './__generated__/SignUpFields'
+import { SIGN_UP_SUBMISSION_EVENT_CREATE, SignUp } from './SignUp'
 
 jest.mock('../../libs/action', () => {
   const originalModule = jest.requireActual('../../libs/action')
@@ -97,6 +97,7 @@ const SignUpMock = ({ mocks = [] }: SignUpMockProps): ReactElement => (
 describe('SignUp', () => {
   const originalLocation = window.location
   const mockOrigin = 'https://example.com'
+
   beforeAll(() => {
     Object.defineProperty(window, 'location', {
       value: {
@@ -373,6 +374,7 @@ describe('SignUp', () => {
       })
     })
   })
+
   it('should add submission event to plausible', async () => {
     blockHistoryVar([activeBlock])
     treeBlocksVar([activeBlock])

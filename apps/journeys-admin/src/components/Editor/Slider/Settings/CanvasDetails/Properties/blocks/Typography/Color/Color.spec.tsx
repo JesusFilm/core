@@ -1,14 +1,16 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
-import { Color } from '.'
 import { BlockFields_TypographyBlock as TypographyBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import { TypographyColor } from '../../../../../../../../../../__generated__/globalTypes'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
+
 import { TYPOGRAPHY_BLOCK_UPDATE_COLOR } from './Color'
+
+import { Color } from '.'
 
 describe('Typography color selector', () => {
   it('should show typography color properties', () => {
@@ -63,9 +65,7 @@ describe('Typography color selector', () => {
               query: TYPOGRAPHY_BLOCK_UPDATE_COLOR,
               variables: {
                 id: 'id',
-                input: {
-                  color: TypographyColor.secondary
-                }
+                color: TypographyColor.secondary
               }
             },
             result
@@ -118,9 +118,7 @@ describe('Typography color selector', () => {
               query: TYPOGRAPHY_BLOCK_UPDATE_COLOR,
               variables: {
                 id: 'id',
-                input: {
-                  color: TypographyColor.secondary
-                }
+                color: TypographyColor.secondary
               }
             },
             result: result1
@@ -130,9 +128,7 @@ describe('Typography color selector', () => {
               query: TYPOGRAPHY_BLOCK_UPDATE_COLOR,
               variables: {
                 id: 'id',
-                input: {
-                  color: TypographyColor.error
-                }
+                color: TypographyColor.error
               }
             },
             result: result2

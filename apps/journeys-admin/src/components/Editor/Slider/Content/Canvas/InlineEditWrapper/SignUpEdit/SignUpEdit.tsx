@@ -1,10 +1,11 @@
 import { gql, useMutation } from '@apollo/client'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useEffect, useState } from 'react'
+import { v4 as uuidv4 } from 'uuid'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { SignUp } from '@core/journeys/ui/SignUp'
-import type { TreeBlock } from '@core/journeys/ui/block'
 
 import {
   SignUpBlockUpdateSubmitLabel,
@@ -14,10 +15,7 @@ import { SignUpFields } from '../../../../../../../../__generated__/SignUpFields
 import { InlineEditInput } from '../InlineEditInput'
 
 export const SIGN_UP_BLOCK_UPDATE_SUBMIT_LABEL = gql`
-  mutation SignUpBlockUpdateSubmitLabel(
-    $id: ID!
-    $submitLabel: String!
-  ) {
+  mutation SignUpBlockUpdateSubmitLabel($id: ID!, $submitLabel: String!) {
     signUpBlockUpdate(id: $id, input: { submitLabel: $submitLabel }) {
       id
       submitLabel
@@ -36,28 +34,58 @@ export function SignUpEdit({
   >(SIGN_UP_BLOCK_UPDATE_SUBMIT_LABEL)
 
   const [value, setValue] = useState(submitLabel)
-  const { add } = useCommand()
+  const [commandInput, setCommandInput] = useState({ id: uuidv4(), value })
+  const {
+    add,
+    state: { undo }
+  } = useCommand()
   const {
     state: { selectedBlock, selectedStep },
     dispatch
   } = useEditor()
 
   useEffect(() => {
+    if (undo == null || undo.id === commandInput.id) return
+    resetCommandInput()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [undo?.id])
+
+  useEffect(() => {
     setValue(submitLabel)
   }, [submitLabel])
 
-  async function handleSubmit(value: string): Promise<void> {
-    await add({
+  function resetCommandInput(): void {
+    setCommandInput({ id: uuidv4(), value })
+  }
+
+  function handleSubmit(value: string): void {
+    add({
+      id: commandInput.id,
       parameters: {
         execute: {
-          submitLabel: value
+          submitLabel: value,
+          context: {},
+          runDispatch: false
         },
         undo: {
-          submitLabel: submitLabel ?? ''
+          submitLabel: commandInput.value,
+          context: { debounceTimeout: 1 },
+          runDispatch: true
+        },
+        redo: {
+          submitLabel: value,
+          context: { debounceTimeout: 1 },
+          runDispatch: true
         }
       },
-      async execute({ submitLabel }) {
-        await signUpBlockUpdate({
+      execute({ submitLabel, context, runDispatch }) {
+        if (runDispatch)
+          dispatch({
+            type: 'SetEditorFocusAction',
+            selectedBlock,
+            selectedStep
+          })
+        void signUpBlockUpdate({
           variables: {
             id,
             submitLabel
@@ -70,56 +98,8 @@ export function SignUpEdit({
             }
           },
           context: {
-            debounceKey: `${__typename}:${id}`,
-            debounceTimeout: 500
-          }
-        })
-      },
-      async undo({ submitLabel }) {
-        dispatch({
-          type: 'SetEditorFocusAction',
-          selectedBlock,
-          selectedStep
-        })
-        await signUpBlockUpdate({
-          variables: {
-            id,
-            submitLabel
-          },
-          optimisticResponse: {
-            signUpBlockUpdate: {
-              id,
-              __typename: 'SignUpBlock',
-              submitLabel
-            }
-          },
-          context: {
-            debounceKey: `${__typename}:${id}`,
-            debounceTimeout: 0
-          }
-        })
-      },
-      async redo({ submitLabel }) {
-        dispatch({
-          type: 'SetEditorFocusAction',
-          selectedBlock,
-          selectedStep
-        })
-        await signUpBlockUpdate({
-          variables: {
-            id,
-            submitLabel
-          },
-          optimisticResponse: {
-            signUpBlockUpdate: {
-              id,
-              __typename: 'SignUpBlock',
-              submitLabel
-            }
-          },
-          context: {
-            debounceKey: `${__typename}:${id}`,
-            debounceTimeout: 0
+            debounceKey: `${signUpProps.__typename}:${id}`,
+            ...context
           }
         })
       }
@@ -137,7 +117,9 @@ export function SignUpEdit({
           name="submitLabel"
           fullWidth
           multiline
-          inputRef={(ref) => ref && ref.focus()}
+          inputRef={(ref) => {
+            if (ref != null) ref.focus()
+          }}
           onFocus={(e) =>
             e.currentTarget.setSelectionRange(
               e.currentTarget.value.length,

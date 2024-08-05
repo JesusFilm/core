@@ -1,7 +1,9 @@
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { WrapperProps } from '@core/journeys/ui/BlockRenderer'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { Typography } from '@core/journeys/ui/Typography'
 
 import { ButtonFields } from '../../../../../../../__generated__/ButtonFields'
 import { RadioOptionFields } from '../../../../../../../__generated__/RadioOptionFields'

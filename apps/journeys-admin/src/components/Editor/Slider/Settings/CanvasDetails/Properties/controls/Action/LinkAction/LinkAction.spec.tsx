@@ -1,10 +1,9 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
-import { LinkAction } from '.'
 import {
   ButtonColor,
   ButtonSize,
@@ -14,6 +13,8 @@ import { BLOCK_ACTION_LINK_UPDATE } from '../../../../../../../../../libs/useBlo
 import { blockActionLinkUpdateMock } from '../../../../../../../../../libs/useBlockActionLinkUpdateMutation/useBlockActionLinkUpdateMutation.mock'
 import { blockActionNavigateToBlockUpdateMock } from '../../../../../../../../../libs/useBlockActionNavigateToBlockUpdateMutation/useBlockActionNavigateToBlockUpdateMutation.mock'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
+
+import { LinkAction } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,

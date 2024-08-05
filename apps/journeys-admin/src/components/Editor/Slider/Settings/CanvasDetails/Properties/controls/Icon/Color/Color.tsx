@@ -3,24 +3,21 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+
+import { IconColor } from '../../../../../../../../../../__generated__/globalTypes'
 import {
   IconBlockColorUpdate,
   IconBlockColorUpdateVariables
 } from '../../../../../../../../../../__generated__/IconBlockColorUpdate'
 import { IconFields } from '../../../../../../../../../../__generated__/IconFields'
-import { IconColor } from '../../../../../../../../../../__generated__/globalTypes'
 import { ColorDisplayIcon } from '../../ColorDisplayIcon'
 import { ToggleButtonGroup } from '../../ToggleButtonGroup'
 
 export const ICON_BLOCK_COLOR_UPDATE = gql`
-  mutation IconBlockColorUpdate(
-    $id: ID!
-    $input: IconBlockUpdateInput!
-  ) {
-    iconBlockUpdate(id: $id, input: $input) {
+  mutation IconBlockColorUpdate($id: ID!, $color: IconColor!) {
+    iconBlockUpdate(id: $id, input: { color: $color }) {
       id
       color
     }
@@ -41,9 +38,9 @@ export function Color({ id, iconColor }: ColorProps): ReactElement {
   } = useEditor()
   const { add } = useCommand()
 
-  async function handleChange(color: IconColor): Promise<void> {
+  function handleChange(color: IconColor): void {
     if (color !== iconColor && color != null) {
-      await add({
+      add({
         parameters: {
           execute: {
             color
@@ -52,19 +49,16 @@ export function Color({ id, iconColor }: ColorProps): ReactElement {
             color: iconColor
           }
         },
-        async execute({ color }) {
+        execute({ color }) {
           dispatch({
             type: 'SetEditorFocusAction',
             selectedBlock,
             selectedStep
           })
-
-          await iconBlockColorUpdate({
+          void iconBlockColorUpdate({
             variables: {
               id,
-              input: {
-                color
-              }
+              color
             },
             optimisticResponse: {
               iconBlockUpdate: {

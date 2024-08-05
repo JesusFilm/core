@@ -1,9 +1,11 @@
 import { render, screen } from '@testing-library/react'
 
-import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
-import { LinkNodeAnalytics } from '.'
+import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
+
 import { BlockFields_ButtonBlock } from '../../../../../../../../__generated__/BlockFields'
+
+import { LinkNodeAnalytics } from '.'
 
 describe('LinkNodeAnalytics', () => {
   it('should render with count', () => {

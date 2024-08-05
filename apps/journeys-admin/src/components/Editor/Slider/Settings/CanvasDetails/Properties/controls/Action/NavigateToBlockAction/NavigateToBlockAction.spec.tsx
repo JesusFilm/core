@@ -1,10 +1,10 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
+import { TreeBlock } from '@core/journeys/ui/block'
 import { ActiveSlide, EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { journey } from '@core/journeys/ui/TemplateView/TemplateFooter/data'
-import { TreeBlock } from '@core/journeys/ui/block'
 
 import {
   ButtonColor,
@@ -13,6 +13,7 @@ import {
 } from '../../../../../../../../../../__generated__/globalTypes'
 import { TestEditorState } from '../../../../../../../../../libs/TestEditorState'
 import { steps } from '../data'
+
 import { NavigateToBlockAction } from './NavigateToBlockAction'
 
 describe('NavigateToBlockAction', () => {

@@ -1,8 +1,8 @@
 import mailchimp from '@mailchimp/mailchimp_marketing'
 import { Injectable } from '@nestjs/common'
+import get from 'lodash/get'
 
 import { User } from '@core/nest/common/firebaseClient'
-import get from 'lodash/get'
 
 @Injectable()
 export class MailChimpService {
