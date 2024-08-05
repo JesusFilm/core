@@ -1,30 +1,30 @@
+import { gql, useMutation } from '@apollo/client'
+import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import { gql, useMutation } from '@apollo/client'
+import { TreeBlock } from '@core/journeys/ui/block'
+import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import Typography from '@mui/material/Typography'
-import { useTranslation } from 'react-i18next'
-
 import { useTeam } from '@core/journeys/ui/TeamProvider'
+
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../../__generated__/BlockFields'
 import {
   TextResponseIntegrationUpdate,
   TextResponseIntegrationUpdateVariables
 } from '../../../../../../../../../../../../__generated__/TextResponseIntegrationUpdate'
 import { useIntegrationQuery } from '../../../../../../../../../../../libs/useIntegrationQuery'
-
-import { useCommand } from '@core/journeys/ui/CommandProvider'
-import { TreeBlock } from '@core/journeys/ui/block'
 import { Select } from '../Select'
 
 export const TEXT_RESPONSE_INTEGRATION_UPDATE = gql`
   mutation TextResponseIntegrationUpdate(
-    $id: ID!, 
+    $id: ID!
     $integrationId: String
     $routeId: String
   ) {
     textResponseBlockUpdate(
-      id: $id, input: { integrationId: $integrationId, routeId: $routeId }
+      id: $id
+      input: { integrationId: $integrationId, routeId: $routeId }
     ) {
       id
       integrationId
@@ -54,6 +54,7 @@ export function App(): ReactElement {
 
   const options =
     data?.integrations
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       .filter(({ __typename }) => __typename === 'IntegrationGrowthSpaces')
       .map(({ id, accessId }) => ({ value: id, label: accessId })) ?? []
 

@@ -1,25 +1,27 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
+import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
 } from '@core/journeys/ui/TeamProvider'
-import { TreeBlock } from '@core/journeys/ui/block'
 
-import { App } from '.'
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../../__generated__/BlockFields'
 import { GetLastActiveTeamIdAndTeams } from '../../../../../../../../../../../../__generated__/GetLastActiveTeamIdAndTeams'
+import { TextResponseType } from '../../../../../../../../../../../../__generated__/globalTypes'
 import {
   TextResponseIntegrationUpdate,
   TextResponseIntegrationUpdateVariables
 } from '../../../../../../../../../../../../__generated__/TextResponseIntegrationUpdate'
-import { TextResponseType } from '../../../../../../../../../../../../__generated__/globalTypes'
 import { getIntegrationMock } from '../../../../../../../../../../../libs/useIntegrationQuery/useIntegrationQuery.mock'
 import { CommandRedoItem } from '../../../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../../../Toolbar/Items/CommandUndoItem'
+
 import { TEXT_RESPONSE_INTEGRATION_UPDATE } from './App'
+
+import { App } from '.'
 
 const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
   request: {
