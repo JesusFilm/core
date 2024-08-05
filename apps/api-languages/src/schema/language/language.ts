@@ -50,7 +50,10 @@ export const Language = builder.prismaObject('Language', {
       resolve: async (query, language, { languageId, primary }) => {
         const where: Prisma.LanguageNameWhereInput = {
           parentLanguageId: language.id,
-          OR: languageId == null && primary == null ? undefined : []
+          OR:
+            languageId == null && primary == null
+              ? [{ languageId: '529' }, { primary: true }]
+              : []
         }
         if (languageId != null) where.OR?.push({ languageId })
         if (primary != null) where.OR?.push({ primary })
