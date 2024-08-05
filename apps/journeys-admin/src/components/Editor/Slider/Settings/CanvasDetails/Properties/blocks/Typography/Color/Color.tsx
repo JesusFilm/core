@@ -58,7 +58,7 @@ export function Color(): ReactElement {
         void typographyBlockUpdate({
           variables: {
             id: selectedBlock.id,
-            input: { color }
+            color
           },
           optimisticResponse: {
             typographyBlockUpdate: {
