@@ -1,5 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
-import { ReactElement, useEffect, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -25,7 +25,6 @@ export const SIGN_UP_BLOCK_UPDATE_SUBMIT_LABEL = gql`
 export function SignUpEdit({
   id,
   submitLabel,
-  __typename,
   ...signUpProps
 }: TreeBlock<SignUpFields>): ReactElement {
   const [signUpBlockUpdate] = useMutation<
@@ -109,7 +108,7 @@ export function SignUpEdit({
   return (
     <SignUp
       {...signUpProps}
-      __typename={__typename}
+      __typename={signUpProps.__typename}
       id={id}
       submitLabel={submitLabel}
       editableSubmitLabel={

@@ -1,6 +1,4 @@
 import { gql, useMutation } from '@apollo/client'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import ArrowBackRounded from '@mui/icons-material/ArrowBackRounded'
 import ArrowForwardRounded from '@mui/icons-material/ArrowForwardRounded'
 import BeenhereRounded from '@mui/icons-material/BeenhereRounded'
@@ -45,7 +43,6 @@ import {
 } from '../../../../../../../../../__generated__/IconBlockNameUpdate'
 import { IconFields } from '../../../../../../../../../__generated__/IconFields'
 
-import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { Color } from './Color'
 
 void init({ defaultNS: 'apps-journeys-admin', fallbackLng: 'en' })
