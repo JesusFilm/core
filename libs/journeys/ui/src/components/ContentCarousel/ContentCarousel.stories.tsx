@@ -6,7 +6,6 @@ import { ComponentProps } from 'react'
 
 import { journeyUiConfig } from '../../libs/journeyUiConfig'
 
-
 import { ContentCarousel } from './ContentCarousel'
 
 const ContentCarouselStory: Meta<typeof ContentCarousel> = {

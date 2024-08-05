@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react'
- 
+
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 

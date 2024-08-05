@@ -6,14 +6,14 @@ import { useHits, useSearchBox } from 'react-instantsearch'
 import { strategyItems } from '../StrategySections/StrategySection/data'
 
 import { StrategiesView } from './StrategiesView'
- 
+
 jest.mock('react-instantsearch')
 
 const mockUseSearchBox = useSearchBox as jest.MockedFunction<
   typeof useSearchBox
 >
 
-function mockSearchBox(): jest.Mock<any,any,any> {
+function mockSearchBox(): jest.Mock<any, any, any> {
   const refine = jest.fn()
   mockUseSearchBox.mockReturnValue({
     query: 'Hello World!',
@@ -24,7 +24,7 @@ function mockSearchBox(): jest.Mock<any,any,any> {
 
 const mockedUseHits = useHits as jest.MockedFunction<typeof useHits>
 
-function mockUseHits():void {
+function mockUseHits(): void {
   mockedUseHits.mockReturnValue({
     hits: strategyItems
   } as unknown as HitsRenderState)

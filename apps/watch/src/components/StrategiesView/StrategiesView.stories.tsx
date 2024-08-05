@@ -8,7 +8,7 @@ import {
   emptyResultsHandler,
   getStrategyCardDataHandlers
 } from '../StrategySections/StrategySection/StrategySection.handlers'
- 
+
 import { StrategiesView } from './StrategiesView'
 
 const StrategiesViewStory: Meta<typeof StrategiesView> = {

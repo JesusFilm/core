@@ -1,7 +1,7 @@
 import Stack from '@mui/material/Stack'
 import { ReactElement, useState } from 'react'
 import { Index } from 'react-instantsearch'
- 
+
 import { EmptySearch } from '@core/journeys/ui/EmptySearch'
 
 import { StrategySection } from './StrategySection/StrategySection'
@@ -20,11 +20,9 @@ export function StrategySections({
 
   const resultsMap = new Map<number, boolean>()
 
-  function handleItemSearch(index: number, hasResult: boolean):void {
+  function handleItemSearch(index: number, hasResult: boolean): void {
     resultsMap.set(index, hasResult)
-    const hasAnyResults = Array.from(resultsMap.values()).some(
-      (value) => value
-    )
+    const hasAnyResults = Array.from(resultsMap.values()).some((value) => value)
     setHasResult(hasAnyResults)
   }
 

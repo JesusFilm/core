@@ -1,4 +1,4 @@
-import  Box  from '@mui/material/Box'
+import Box from '@mui/material/Box'
 import { jest } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
@@ -11,7 +11,7 @@ import { watchConfig } from '../../../libs/storybook'
 import { StrategySection } from './StrategySection'
 import { getStrategyCardDataHandlers } from './StrategySection.handlers'
 
-const StrategySectionStory: Meta<typeof StrategySection> = { 
+const StrategySectionStory: Meta<typeof StrategySection> = {
   ...watchConfig,
   component: StrategySection,
   title: 'Watch/StrategySections/StrategySection'

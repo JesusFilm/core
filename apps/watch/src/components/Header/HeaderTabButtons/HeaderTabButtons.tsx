@@ -6,7 +6,7 @@ import MuiMenu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import compact from 'lodash/compact'
 import { useRouter } from 'next/compat/router'
-import NextLink from 'next/link' 
+import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
 import { MouseEvent, ReactElement, useState } from 'react'
 
@@ -76,9 +76,10 @@ export function HeaderTabButtons(): ReactElement {
                 textAlign: 'center',
                 borderRadius: '40px !important',
                 border: '2px solid',
-                borderColor: (router?.pathname?.startsWith(href)??false)
-                  ? (theme) => theme.palette.primary.main
-                  : 'transparent'
+                borderColor:
+                  router?.pathname?.startsWith(href) ?? false
+                    ? (theme) => theme.palette.primary.main
+                    : 'transparent'
               }}
               startIcon={icon}
             >

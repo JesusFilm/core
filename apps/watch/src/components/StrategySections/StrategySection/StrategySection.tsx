@@ -11,7 +11,7 @@ import { ContentCarousel } from '@core/journeys/ui/ContentCarousel'
 
 import { StrategyCard } from '../StrategyCard'
 
-interface StrategyCardItem { 
+interface StrategyCardItem {
   id: string
   title: string
   description: string

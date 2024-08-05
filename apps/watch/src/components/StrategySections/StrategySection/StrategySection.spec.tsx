@@ -6,7 +6,7 @@ import { strategyItems } from './data'
 
 import { StrategySection } from '.'
 
-jest.mock('react-instantsearch') 
+jest.mock('react-instantsearch')
 
 const mockedUseHits = useHits as jest.MockedFunction<typeof useHits>
 

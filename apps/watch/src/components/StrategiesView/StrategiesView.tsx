@@ -3,7 +3,6 @@ import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import { ReactElement } from 'react'
 
- 
 import { ResourceHeading } from '@core/journeys/ui/ResourceHeading'
 import { SearchBar } from '@core/journeys/ui/SearchBar'
 

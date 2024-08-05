@@ -13,7 +13,7 @@ import { Role } from '../../../__generated__/globalTypes'
 import { useJourney } from '../../libs/JourneyProvider'
 import { useJourneysQuery } from '../../libs/useJourneysQuery'
 import { useUserRoleQuery } from '../../libs/useUserRoleQuery'
-import { ContentCarousel } from  '../ContentCarousel'
+import { ContentCarousel } from '../ContentCarousel'
 import { StrategySection } from '../StrategySection'
 import { TemplateGalleryCard } from '../TemplateGalleryCard'
 

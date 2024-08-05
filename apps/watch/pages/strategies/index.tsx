@@ -9,7 +9,7 @@ import {
   InstantSearch,
   InstantSearchSSRProvider,
   InstantSearchServerState,
-  getServerState 
+  getServerState
 } from 'react-instantsearch'
 import { createInstantSearchRouterNext } from 'react-instantsearch-router-nextjs'
 

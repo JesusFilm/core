@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import { HitsRenderState } from 'instantsearch.js/es/connectors/hits/connectHits'
 import { useHits } from 'react-instantsearch'
 
-import { StrategyCard } from './StrategyCard' 
+import { StrategyCard } from './StrategyCard'
 
 jest.mock('react-instantsearch')
 

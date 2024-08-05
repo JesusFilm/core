@@ -34,7 +34,7 @@ export function SearchBar(props: SearchBoxConnectorParams): ReactElement {
   const { query, refine } = useSearchBox(props)
   const [inputValue, setInputValue] = useState(query)
 
-  function setQuery(newQuery: string):void{
+  function setQuery(newQuery: string): void {
     setInputValue(newQuery)
     refine(newQuery)
   }

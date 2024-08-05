@@ -4,7 +4,7 @@ import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import kebabCase from 'lodash/kebabCase'
 import {
-  ComponentProps, 
+  ComponentProps,
   ReactElement,
   ReactNode,
   useEffect,
