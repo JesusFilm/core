@@ -6,15 +6,20 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
+import {
+  BlockFields_CardBlock as CardBlock,
+  BlockFields_TypographyBlock as TypographyBlock
+} from '../../../../../../../../__generated__/BlockFields'
 import type { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
+import { TypographyVariant } from '../../../../../../../../__generated__/globalTypes'
 import { deleteBlockMock as deleteBlock } from '../../../../../../../libs/useBlockDeleteMutation/useBlockDeleteMutation.mock'
 import { useBlockRestoreMutationMock as blockRestore } from '../../../../../../../libs/useBlockRestoreMutation/useBlockRestoreMutation.mock'
+import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
+import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
 import { TYPOGRAPHY_BLOCK_CREATE } from './NewTypographyButton'
 
 import { NewTypographyButton } from '.'
-import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
-import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -48,6 +53,31 @@ describe('NewTypographyButton', () => {
         children: []
       }
     ]
+  }
+
+  const cardBlock: TreeBlock<CardBlock> = {
+    id: 'cardId',
+    __typename: 'CardBlock',
+    parentBlockId: 'stepId',
+    coverBlockId: null,
+    parentOrder: 0,
+    backgroundColor: null,
+    themeMode: null,
+    themeName: null,
+    fullscreen: false,
+    children: []
+  }
+
+  const typographyBlock: TreeBlock<TypographyBlock> = {
+    id: 'typogBlock',
+    parentBlockId: 'cardId',
+    parentOrder: 0,
+    align: null,
+    color: null,
+    content: '',
+    variant: TypographyVariant.h1,
+    __typename: 'TypographyBlock',
+    children: []
   }
 
   it('should check if the mutation gets called', async () => {
@@ -91,6 +121,62 @@ describe('NewTypographyButton', () => {
           }}
         >
           <EditorProvider initialState={{ selectedStep }}>
+            <NewTypographyButton />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('button'))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
+  it('should create a body2 variant if another typography block already exists', async () => {
+    const cardWithTypog = { ...cardBlock, children: [typographyBlock] }
+
+    const stepWithExistingTypog = { ...selectedStep, children: [cardWithTypog] }
+
+    const result = jest.fn(() => ({
+      data: {
+        typographyBlockCreate: {
+          id: 'typographyBlockId',
+          parentBlockId: 'cardId',
+          journeyId: 'journeyId',
+          align: null,
+          color: null,
+          content: null,
+          variant: null
+        }
+      }
+    }))
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: TYPOGRAPHY_BLOCK_CREATE,
+              variables: {
+                input: {
+                  id: 'typographyBlockId',
+                  journeyId: 'journeyId',
+                  parentBlockId: 'cardId',
+                  content: '',
+                  variant: 'body2'
+                }
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            variant: 'admin'
+          }}
+        >
+          <EditorProvider
+            initialState={{ selectedStep: stepWithExistingTypog }}
+          >
             <NewTypographyButton />
           </EditorProvider>
         </JourneyProvider>

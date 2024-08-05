@@ -13,8 +13,8 @@ import {
   BlockFields_CardBlock as CardBlock,
   BlockFields_TypographyBlock as TypographyBlock
 } from '../../../../../../../../__generated__/BlockFields'
-import { TypographyBlockCreate } from '../../../../../../../../__generated__/TypographyBlockCreate'
 import { TypographyVariant } from '../../../../../../../../__generated__/globalTypes'
+import { TypographyBlockCreate } from '../../../../../../../../__generated__/TypographyBlockCreate'
 import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
 import { Button } from '../Button'
@@ -44,11 +44,12 @@ export function NewTypographyButton(): ReactElement {
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
-    const checkTypography = card?.children.map((block) =>
-      block.children.find((child) => child.__typename === 'TypographyBlock')
+    const checkTypography = card?.children.find(
+      (block) =>
+        block.__typename === 'TypographyBlock' && block.parentOrder != null
     )
-    if (card == null || checkTypography == null || journey == null) return
-    const typography: TreeBlock<TypographyBlock> = {
+    if (card == null || journey == null) return
+    const typographyBlock: TreeBlock<TypographyBlock> = {
       id: uuidv4(),
       parentBlockId: card.id,
       parentOrder: card.children.length ?? 0,
@@ -56,7 +57,7 @@ export function NewTypographyButton(): ReactElement {
       color: null,
       content: '',
       variant:
-        checkTypography.length > 0
+        checkTypography != null
           ? TypographyVariant.body2
           : TypographyVariant.h1,
       __typename: 'TypographyBlock',
@@ -64,19 +65,19 @@ export function NewTypographyButton(): ReactElement {
     }
 
     addBlock({
-      block: typography,
+      block: typographyBlock,
       execute() {
         void typographyBlockCreate({
           variables: {
             input: {
-              id: typography.id,
+              id: typographyBlock.id,
               journeyId: journey.id,
-              parentBlockId: typography.parentBlockId,
-              content: typography.content,
-              variant: typography.variant
+              parentBlockId: typographyBlock.parentBlockId,
+              content: typographyBlock.content,
+              variant: typographyBlock.variant
             }
           },
-          optimisticResponse: { typographyBlockCreate: typography },
+          optimisticResponse: { typographyBlockCreate: typographyBlock },
           update(cache, { data }) {
             blockCreateUpdate(cache, journey?.id, data?.typographyBlockCreate)
           }

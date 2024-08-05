@@ -1,5 +1,6 @@
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
+
 import { BlockFields } from '../../../../../__generated__/BlockFields'
 import { useBlockDeleteMutation } from '../../../../libs/useBlockDeleteMutation'
 import { useBlockRestoreMutation } from '../../../../libs/useBlockRestoreMutation'
@@ -27,9 +28,9 @@ export function useBlockCreateCommand(): {
         undo: {
           selectedStep,
           previousBlock: selectedBlock,
-          block: block
+          block
         },
-        redo: { selectedStep, block: block }
+        redo: { selectedStep, block }
       },
       execute() {
         dispatch({
@@ -42,7 +43,7 @@ export function useBlockCreateCommand(): {
       undo({ selectedStep, previousBlock, block }) {
         dispatch({
           type: 'SetEditorFocusAction',
-          selectedStepId: selectedStep?.id,
+          selectedStep,
           selectedBlockId: previousBlock?.id,
           activeSlide: ActiveSlide.Content
         })
@@ -53,7 +54,7 @@ export function useBlockCreateCommand(): {
       redo({ selectedStep, block }) {
         dispatch({
           type: 'SetEditorFocusAction',
-          selectedStepId: selectedStep?.id,
+          selectedStep,
           selectedBlockId: block?.id,
           activeSlide: ActiveSlide.Content
         })
