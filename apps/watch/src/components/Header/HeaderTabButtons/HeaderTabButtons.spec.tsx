@@ -2,9 +2,9 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { useRouter } from 'next/router'
 
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
+
 import { HeaderTabButtons } from './HeaderTabButtons'
 
 jest.mock('next/router', () => ({

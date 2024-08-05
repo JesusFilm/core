@@ -45,6 +45,7 @@ export function ImageBlockThumbnail({
         <Box
           component="img"
           srcSet={
+            // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
             isUnsplash
               ? `${selectedBlock.src
                   .replace('w=1080', 'w=55&h=55&auto=format&dpr=2')
@@ -53,6 +54,7 @@ export function ImageBlockThumbnail({
               : undefined
           }
           src={
+            // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
             isUnsplash
               ? selectedBlock.src
                   .replace('w=1080', 'w=55&h=55&auto=format')

@@ -7,8 +7,8 @@ import { ReactElement } from 'react'
 import { Dialog } from '@core/shared/ui/Dialog'
 
 import { GetAdminJourneys } from '../../../../../../__generated__/GetAdminJourneys'
-import { JourneyTrash } from '../../../../../../__generated__/JourneyTrash'
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
+import { JourneyTrash } from '../../../../../../__generated__/JourneyTrash'
 
 export const JOURNEY_TRASH = gql`
   mutation JourneyTrash($ids: [ID!]!) {

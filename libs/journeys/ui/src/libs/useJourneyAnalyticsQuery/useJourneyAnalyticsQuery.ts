@@ -6,8 +6,8 @@ import {
   useQuery
 } from '@apollo/client'
 import { useState } from 'react'
-
 import { Edge, Node } from 'reactflow'
+
 import {
   GetJourneyAnalytics,
   GetJourneyAnalyticsVariables

@@ -1,12 +1,12 @@
 import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+import { ThemeMode } from '@core/shared/ui/themes'
+
 import { watchConfig } from '../../libs/storybook'
 
-import { ThemeMode } from '@core/shared/ui/themes'
 import { Header } from './Header'
-
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 const HeaderStory: Meta<typeof Header> = {
   ...watchConfig,

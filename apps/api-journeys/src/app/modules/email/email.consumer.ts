@@ -5,9 +5,9 @@ import { Processor, WorkerHost } from '@nestjs/bullmq'
 import { render } from '@react-email/render'
 import { Job } from 'bullmq'
 
+import { Prisma } from '.prisma/api-journeys-client'
 import { EmailService } from '@core/nest/common/email/emailService'
 import { User } from '@core/nest/common/firebaseClient'
-import { Prisma } from '.prisma/api-journeys-client'
 
 import { gql } from '../../../__generated__'
 import {

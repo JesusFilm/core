@@ -99,8 +99,8 @@ export function UnsplashCollections({
               variant === 'Left'
                 ? 'linear-gradient(to left, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%)'
                 : variant === 'Right'
-                  ? 'linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%)'
-                  : 'transparent'
+                ? 'linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%)'
+                : 'transparent'
           }}
         />
         <IconButton

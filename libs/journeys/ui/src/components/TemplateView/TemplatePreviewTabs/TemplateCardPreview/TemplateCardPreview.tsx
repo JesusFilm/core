@@ -1,8 +1,8 @@
 import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { styled, useTheme } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import take from 'lodash/take'
 import { User } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
@@ -11,20 +11,20 @@ import { A11y, FreeMode, Mousewheel } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { SwiperOptions } from 'swiper/types'
 
-import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
-import { CardWrapper } from '@core/journeys/ui/CardWrapper'
-import { FramePortal } from '@core/journeys/ui/FramePortal'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { VideoWrapper } from '@core/journeys/ui/VideoWrapper'
-import { TreeBlock } from '@core/journeys/ui/block'
-import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 import { ThemeMode, ThemeName } from '../../../../../__generated__/globalTypes'
+import { TreeBlock } from '../../../../libs/block'
+import { useJourney } from '../../../../libs/JourneyProvider'
+import { getJourneyRTL } from '../../../../libs/rtl'
 import {
   GetJourney_journey_blocks_CardBlock as CardBlock,
   GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../../libs/useJourneyQuery/__generated__/GetJourney'
+import { BlockRenderer } from '../../../BlockRenderer'
+import { CardWrapper } from '../../../CardWrapper'
+import { FramePortal } from '../../../FramePortal'
+import { VideoWrapper } from '../../../VideoWrapper'
 import { CreateJourneyButton } from '../../CreateJourneyButton'
 
 interface TemplateCardPreviewProps {

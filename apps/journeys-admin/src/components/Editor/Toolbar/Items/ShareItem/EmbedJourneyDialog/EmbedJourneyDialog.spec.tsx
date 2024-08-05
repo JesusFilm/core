@@ -1,7 +1,7 @@
+import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
-import { MockedProvider } from '@apollo/client/testing'
 import { EmbedJourneyDialog } from './EmbedJourneyDialog'
 
 jest.mock('@mui/material/useMediaQuery', () => ({

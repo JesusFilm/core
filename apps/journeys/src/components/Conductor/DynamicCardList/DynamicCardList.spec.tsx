@@ -1,8 +1,8 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
-import { STEP_VIEW_EVENT_CREATE } from '@core/journeys/ui/Step/Step'
 import { TreeBlock, useBlocks } from '@core/journeys/ui/block'
+import { STEP_VIEW_EVENT_CREATE } from '@core/journeys/ui/Step/Step'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
 import { StepViewEventCreate } from '../../../../__generated__/StepViewEventCreate'

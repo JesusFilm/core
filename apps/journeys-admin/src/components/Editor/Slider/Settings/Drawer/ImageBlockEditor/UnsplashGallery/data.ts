@@ -1,4 +1,5 @@
 import { MockedResponse } from '@apollo/client/testing'
+
 import {
   ListUnsplashCollectionPhotos,
   ListUnsplashCollectionPhotosVariables
@@ -7,6 +8,7 @@ import {
   TriggerUnsplashDownload,
   TriggerUnsplashDownloadVariables
 } from '../../../../../../../../__generated__/TriggerUnsplashDownload'
+
 import { LIST_UNSPLASH_COLLECTION_PHOTOS } from './UnsplashGallery'
 import { TRIGGER_UNSPLASH_DOWNLOAD } from './UnsplashList/UnsplashList'
 
