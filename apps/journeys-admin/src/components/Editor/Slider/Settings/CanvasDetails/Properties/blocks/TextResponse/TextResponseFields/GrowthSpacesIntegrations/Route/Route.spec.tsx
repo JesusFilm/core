@@ -1,3 +1,4 @@
+import { FetchResult } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
@@ -7,20 +8,19 @@ import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
 } from '@core/journeys/ui/TeamProvider'
-import { TreeBlock } from '@core/journeys/ui/block'
 
-import { FetchResult } from '@apollo/client'
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../../__generated__/BlockFields'
 import { GetIntegration } from '../../../../../../../../../../../../__generated__/GetIntegration'
 import { GetLastActiveTeamIdAndTeams } from '../../../../../../../../../../../../__generated__/GetLastActiveTeamIdAndTeams'
+import { TextResponseType } from '../../../../../../../../../../../../__generated__/globalTypes'
 import {
   TextResponseRouteUpdate,
   TextResponseRouteUpdateVariables
 } from '../../../../../../../../../../../../__generated__/TextResponseRouteUpdate'
-import { TextResponseType } from '../../../../../../../../../../../../__generated__/globalTypes'
 import { getIntegrationMock } from '../../../../../../../../../../../libs/useIntegrationQuery/useIntegrationQuery.mock'
 import { CommandRedoItem } from '../../../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../../../Toolbar/Items/CommandUndoItem'
+
 import { Route, TEXT_RESPONSE_ROUTE_UPDATE } from './Route'
 
 const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
@@ -163,7 +163,7 @@ describe('Route', () => {
       </MockedProvider>
     )
     await waitFor(() => expect(result).toHaveBeenCalled())
-    expect(screen.queryByText('Route')).not.toBeInTheDocument
+    expect(screen.queryByText('Route')).not.toBeInTheDocument()
   })
 
   it('should undo change to routeId', async () => {

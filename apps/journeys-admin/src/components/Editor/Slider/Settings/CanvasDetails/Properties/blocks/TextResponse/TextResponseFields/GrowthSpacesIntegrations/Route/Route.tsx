@@ -1,17 +1,10 @@
 import { gql, useMutation } from '@apollo/client'
-import { SelectChangeEvent } from '@mui/material/Select'
-import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
-// eslint-disable-next-line no-restricted-imports
-import { useTranslation } from 'react-i18next'
 
 import { TreeBlock } from '@core/journeys/ui/block'
+import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useTranslation } from 'react-i18next'
-
-import { gql, useMutation } from '@apollo/client'
-import { TreeBlock } from '@core/journeys/ui/block'
-
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../../__generated__/BlockFields'
@@ -20,9 +13,6 @@ import {
   TextResponseRouteUpdateVariables
 } from '../../../../../../../../../../../../__generated__/TextResponseRouteUpdate'
 import { useIntegrationQuery } from '../../../../../../../../../../../libs/useIntegrationQuery'
-
-import { useCommand } from '@core/journeys/ui/CommandProvider'
-
 import { Select } from '../Select'
 
 export const TEXT_RESPONSE_ROUTE_UPDATE = gql`
@@ -66,7 +56,7 @@ export function Route(): ReactElement {
       label: name
     })) ?? []
 
-  async function handleChange(routeId: string | null) {
+  function handleChange(routeId: string | null): void {
     if (selectedBlock == null) return
 
     add({
@@ -81,7 +71,7 @@ export function Route(): ReactElement {
           selectedStep: state.selectedStep,
           selectedAttributeId: state.selectedAttributeId
         })
-        textResponseRouteUpdate({
+        void textResponseRouteUpdate({
           variables: {
             id: selectedBlock.id,
             input: {
