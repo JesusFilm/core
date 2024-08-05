@@ -90,7 +90,7 @@ export function RadioOptionEdit({
       autoFocus
       onBlur={handleSaveBlock}
       value={value}
-      placeholder={t('Type your text here...')}
+      placeholder={t('Add your text here...')}
       onChange={(e) => {
         setValue(e.currentTarget.value)
       }}
