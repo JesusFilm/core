@@ -3,13 +3,12 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import { ButtonColor } from '../../../../../../../../../../__generated__/globalTypes'
-
 import { CommandRedoItem } from '../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
+
 import { BUTTON_BLOCK_UPDATE } from './Color'
 
 import { Color } from '.'
@@ -40,9 +39,7 @@ describe('Button color selector', () => {
       query: BUTTON_BLOCK_UPDATE,
       variables: {
         id: 'id',
-        input: {
-          color: ButtonColor.secondary
-        }
+        color: ButtonColor.secondary
       }
     },
     result: jest.fn(() => ({
@@ -60,9 +57,7 @@ describe('Button color selector', () => {
       query: BUTTON_BLOCK_UPDATE,
       variables: {
         id: 'id',
-        input: {
-          color: ButtonColor.primary
-        }
+        color: ButtonColor.primary
       }
     },
     result: jest.fn(() => ({

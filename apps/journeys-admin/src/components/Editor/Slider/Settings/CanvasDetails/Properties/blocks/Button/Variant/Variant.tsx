@@ -3,10 +3,9 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-
 import { useCommand } from '@core/journeys/ui/CommandProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import {
   ButtonBlockUpdateVariant,
@@ -16,8 +15,8 @@ import { ButtonVariant } from '../../../../../../../../../../__generated__/globa
 import { ToggleButtonGroup } from '../../../controls/ToggleButtonGroup'
 
 export const BUTTON_BLOCK_UPDATE = gql`
-  mutation ButtonBlockUpdateVariant($id: ID!, $input: ButtonBlockUpdateInput!) {
-    buttonBlockUpdate(id: $id, input: $input) {
+  mutation ButtonBlockUpdateVariant($id: ID!, $variant: ButtonVariant!) {
+    buttonBlockUpdate(id: $id, input: { varaint: $variant }) {
       id
       variant
     }
@@ -37,23 +36,23 @@ export function Variant(): ReactElement {
     | TreeBlock<ButtonBlock>
     | undefined
 
-  async function handleChange(variant: ButtonVariant): Promise<void> {
+  function handleChange(variant: ButtonVariant): void {
     if (selectedBlock != null && variant != null) {
-      await add({
+      add({
         parameters: {
           execute: { variant },
           undo: { variant: selectedBlock.buttonVariant }
         },
-        async execute({ variant }) {
+        execute({ variant }) {
           dispatch({
             type: 'SetEditorFocusAction',
             selectedBlock,
             selectedStep: state.selectedStep
           })
-          await buttonBlockUpdate({
+          void buttonBlockUpdate({
             variables: {
               id: selectedBlock.id,
-              input: { variant }
+              variant
             },
             optimisticResponse: {
               buttonBlockUpdate: {

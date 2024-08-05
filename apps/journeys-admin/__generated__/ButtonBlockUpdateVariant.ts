@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ButtonBlockUpdateInput, ButtonVariant } from "./globalTypes";
+import { ButtonVariant } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: ButtonBlockUpdateVariant
@@ -21,5 +21,5 @@ export interface ButtonBlockUpdateVariant {
 
 export interface ButtonBlockUpdateVariantVariables {
   id: string;
-  input: ButtonBlockUpdateInput;
+  variant: ButtonVariant;
 }

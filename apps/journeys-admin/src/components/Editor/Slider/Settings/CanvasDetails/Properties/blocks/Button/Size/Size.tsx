@@ -3,8 +3,8 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import {
@@ -15,8 +15,8 @@ import { ButtonSize } from '../../../../../../../../../../__generated__/globalTy
 import { ToggleButtonGroup } from '../../../controls/ToggleButtonGroup'
 
 export const BUTTON_BLOCK_UPDATE = gql`
-  mutation ButtonBlockUpdateSize($id: ID!, $input: ButtonBlockUpdateInput!) {
-    buttonBlockUpdate(id: $id, input: $input) {
+  mutation ButtonBlockUpdateSize($id: ID!, $size: ButtonSize!) {
+    buttonBlockUpdate(id: $id, input: { size: $size }) {
       id
       size
     }
@@ -36,23 +36,23 @@ export function Size(): ReactElement {
     | TreeBlock<ButtonBlock>
     | undefined
 
-  async function handleChange(size: ButtonSize): Promise<void> {
+  function handleChange(size: ButtonSize): void {
     if (selectedBlock != null && size != null) {
-      await add({
+      add({
         parameters: {
           execute: { size },
           undo: { size: selectedBlock.size }
         },
-        async execute({ size }) {
+        execute({ size }) {
           dispatch({
             type: 'SetEditorFocusAction',
             selectedBlock,
             selectedStep: state.selectedStep
           })
-          await buttonBlockUpdate({
+          void buttonBlockUpdate({
             variables: {
               id: selectedBlock.id,
-              input: { size }
+              size
             },
             optimisticResponse: {
               buttonBlockUpdate: {

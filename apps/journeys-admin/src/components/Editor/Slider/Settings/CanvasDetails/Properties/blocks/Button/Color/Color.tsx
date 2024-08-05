@@ -3,10 +3,9 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-
 import { useCommand } from '@core/journeys/ui/CommandProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import {
   ButtonBlockUpdateColor,
@@ -17,8 +16,8 @@ import { ColorDisplayIcon } from '../../../controls/ColorDisplayIcon'
 import { ToggleButtonGroup } from '../../../controls/ToggleButtonGroup'
 
 export const BUTTON_BLOCK_UPDATE = gql`
-  mutation ButtonBlockUpdateColor($id: ID!, $input: ButtonBlockUpdateInput!) {
-    buttonBlockUpdate(id: $id, input: $input) {
+  mutation ButtonBlockUpdateColor($id: ID!, $color: ButtonColor!) {
+    buttonBlockUpdate(id: $id, input: { color: $color }) {
       id
       color
     }
@@ -38,23 +37,23 @@ export function Color(): ReactElement {
     | TreeBlock<ButtonBlock>
     | undefined
 
-  async function handleChange(color: ButtonColor): Promise<void> {
+  function handleChange(color: ButtonColor): void {
     if (selectedBlock != null && color != null) {
-      await add({
+      add({
         parameters: {
           execute: { color },
           undo: { color: selectedBlock.buttonColor }
         },
-        async execute({ color }) {
+        execute({ color }) {
           dispatch({
             type: 'SetEditorFocusAction',
             selectedBlock,
             selectedStep: state.selectedStep
           })
-          await buttonBlockUpdate({
+          void buttonBlockUpdate({
             variables: {
               id: selectedBlock.id,
-              input: { color }
+              color
             },
             optimisticResponse: {
               buttonBlockUpdate: {

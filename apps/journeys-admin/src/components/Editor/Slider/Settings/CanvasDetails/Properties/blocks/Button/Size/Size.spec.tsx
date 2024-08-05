@@ -39,9 +39,7 @@ describe('Button size selector', () => {
       query: BUTTON_BLOCK_UPDATE,
       variables: {
         id: 'id',
-        input: {
-          size: ButtonSize.small
-        }
+        size: ButtonSize.small
       }
     },
     result: jest.fn(() => ({
@@ -59,9 +57,7 @@ describe('Button size selector', () => {
       query: BUTTON_BLOCK_UPDATE,
       variables: {
         id: 'id',
-        input: {
-          size: ButtonSize.medium
-        }
+        size: ButtonSize.medium
       }
     },
     result: jest.fn(() => ({
