@@ -36,7 +36,7 @@ export function VideoOptions(): ReactElement {
 
   const selectedBlock = stateSelectedBlock as TreeBlock<VideoBlock> | undefined
 
-  async function handleChange(input: VideoBlockUpdateInput): Promise<void> {
+  function handleChange(input: VideoBlockUpdateInput): void {
     if (selectedBlock == null) return
 
     const inverseInput: VideoBlockUpdateInput = {}
@@ -60,7 +60,7 @@ export function VideoOptions(): ReactElement {
     if (input.objectFit !== undefined)
       inverseInput.objectFit = selectedBlock.objectFit
 
-    await add({
+    add({
       parameters: {
         execute: {
           input
@@ -69,13 +69,13 @@ export function VideoOptions(): ReactElement {
           input: inverseInput
         }
       },
-      async execute({ input }) {
+      execute({ input }) {
         dispatch({
           type: 'SetEditorFocusAction',
           selectedStep,
           selectedBlock
         })
-        await videoBlockUpdate({
+        void videoBlockUpdate({
           variables: {
             id: selectedBlock.id,
             input
@@ -93,7 +93,10 @@ export function VideoOptions(): ReactElement {
   }
 
   return selectedBlock?.__typename === 'VideoBlock' ? (
-    <VideoBlockEditor selectedBlock={selectedBlock} onChange={handleChange} />
+    <VideoBlockEditor
+      selectedBlock={selectedBlock}
+      onChange={async (input) => handleChange(input)}
+    />
   ) : (
     <></>
   )

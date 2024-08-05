@@ -45,9 +45,10 @@ export function CardLayout(): ReactElement {
         )
   ) as TreeBlock<CardBlock> | undefined
 
-  async function handleLayoutChange(fullscreen: boolean): Promise<void> {
+  function handleLayoutChange(fullscreen: boolean): void {
     if (cardBlock == null) return
-    await add({
+
+    add({
       parameters: {
         execute: {
           fullscreen
@@ -56,12 +57,12 @@ export function CardLayout(): ReactElement {
           fullscreen: !fullscreen
         }
       },
-      execute: async ({ fullscreen }) => {
+      execute({ fullscreen }) {
         dispatch({
           type: 'SetEditorFocusAction',
           selectedStep
         })
-        await cardBlockUpdate({
+        void cardBlockUpdate({
           variables: {
             id: cardBlock.id,
             input: {
@@ -84,7 +85,7 @@ export function CardLayout(): ReactElement {
     <>
       <Box>
         <HorizontalSelect
-          onChange={async (val) => await handleLayoutChange(val === 'true')}
+          onChange={(val) => handleLayoutChange(val === 'true')}
           id={cardBlock?.fullscreen.toString()}
           sx={{ px: 4, pb: 4, pt: 1 }}
         >

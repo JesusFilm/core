@@ -1,3 +1,4 @@
+import noop from 'lodash/noop'
 import {
   Dispatch,
   ReactElement,
@@ -143,15 +144,15 @@ interface CommandContextType {
    * Execute a command and add it to the command stack.
    * @param command Command to add
    */
-  add: <E = unknown, R = E, U = E>(command: Command<E, R, U>) => Promise<void>
+  add: <E = unknown, R = E, U = E>(command: Command<E, R, U>) => void
   /**
    * Undo the last command.
    */
-  undo: () => Promise<void>
+  undo: () => void
   /**
    * Redo the last undone command.
    */
-  redo: () => Promise<void>
+  redo: () => void
 }
 
 export const CommandContext = createContext<CommandContextType>({
@@ -160,9 +161,9 @@ export const CommandContext = createContext<CommandContextType>({
     commands: []
   },
   dispatch: () => null,
-  add: async () => await Promise.resolve(),
-  undo: async () => await Promise.resolve(),
-  redo: async () => await Promise.resolve()
+  add: noop,
+  undo: noop,
+  redo: noop
 })
 
 interface CommandProviderProps {
@@ -180,34 +181,32 @@ export function CommandProvider({
     ...initialState
   })
 
-  async function undo(): Promise<void> {
+  function undo(): void {
     if (state.undo == null) return
     dispatch({ type: 'UndoCallbackAction' })
     if (state.undo.undo != null) {
-      await state.undo.undo(state.undo.parameters?.undo)
+      state.undo.undo(state.undo.parameters?.undo)
     } else {
-      await state.undo.execute(state.undo.parameters?.undo)
+      state.undo.execute(state.undo.parameters?.undo)
     }
   }
 
-  async function redo(): Promise<void> {
+  function redo(): void {
     if (state.redo == null) return
     dispatch({ type: 'RedoCallbackAction' })
     if (state.redo.redo != null) {
-      await state.redo.redo(
+      state.redo.redo(
         state.redo.parameters?.redo ?? state.redo.parameters.execute
       )
     } else {
-      await state.redo.execute(
+      state.redo.execute(
         state.redo.parameters?.redo ?? state.redo.parameters.execute
       )
     }
   }
 
-  async function add<E = unknown, R = E, U = E>(
-    command: Command<E, R, U>
-  ): Promise<void> {
-    await command.execute(command.parameters.execute)
+  function add<E = unknown, R = E, U = E>(command: Command<E, R, U>): void {
+    command.execute(command.parameters.execute)
     dispatch({ type: 'AddCommandAction', command: command as Command })
   }
 
