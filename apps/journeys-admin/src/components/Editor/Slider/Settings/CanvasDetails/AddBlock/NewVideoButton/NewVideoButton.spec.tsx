@@ -9,12 +9,12 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import type { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
 import { deleteBlockMock as deleteBlock } from '../../../../../../../libs/useBlockDeleteMutation/useBlockDeleteMutation.mock'
 import { useBlockRestoreMutationMock as blockRestore } from '../../../../../../../libs/useBlockRestoreMutation/useBlockRestoreMutation.mock'
+import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
+import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
 import { VIDEO_BLOCK_CREATE } from './NewVideoButton'
 
 import { NewVideoButton } from '.'
-import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
-import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -49,9 +49,11 @@ describe('NewVideoButton', () => {
       }
     ]
   }
+
   beforeEach(() => {
     jest.clearAllMocks()
   })
+
   it('should check if the mutation gets called', async () => {
     const result = jest.fn(() => ({
       data: {

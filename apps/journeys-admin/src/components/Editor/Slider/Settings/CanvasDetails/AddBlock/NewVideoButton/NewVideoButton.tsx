@@ -9,11 +9,11 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { VIDEO_FIELDS } from '@core/journeys/ui/Video/videoFields'
 import VideoOnIcon from '@core/shared/ui/icons/VideoOn'
 
-import { VideoBlockSource } from 'libs/journeys/ui/__generated__/globalTypes'
 import type {
   BlockFields_CardBlock as CardBlock,
   BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../../__generated__/BlockFields'
+import { VideoBlockSource } from '../../../../../../../../__generated__/globalTypes'
 import type { VideoBlockCreate } from '../../../../../../../../__generated__/VideoBlockCreate'
 import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
