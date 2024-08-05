@@ -86,7 +86,7 @@ function VideosPage({ initialApolloState }: VideosPageProps): ReactElement {
   }) => {
     // Ensure there is always one languageId set and defaults to english
     const languageIds =
-      uiState['video-variants-stg'].refinementList?.languageId || []
+      uiState['video-variants-stg'].refinementList?.languageId ?? []
     if (languageIds.length !== 1) {
       const lastSelectedLanguage = languageIds.pop()
       setUiState({

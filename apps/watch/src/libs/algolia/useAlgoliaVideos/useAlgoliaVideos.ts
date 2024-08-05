@@ -1,4 +1,5 @@
 import type { BaseHit, Hit } from 'instantsearch.js'
+import type { SendEventForHits } from 'instantsearch.js/es/lib/utils'
 import { useInfiniteHits, useInstantSearch } from 'react-instantsearch'
 
 import type { VideoLabel } from '../../../../__generated__/globalTypes'
@@ -8,6 +9,7 @@ import type {
   VideoChildFields_title,
   VideoChildFields_variant
 } from '../../../../__generated__/VideoChildFields'
+
 
 export interface AlgoliaVideo extends Hit<BaseHit> {
   videoId: string
@@ -65,7 +67,14 @@ export function transformItems(items: AlgoliaVideo[]): CoreVideo[] {
   })) as unknown as CoreVideo[]
 }
 
-export function useAlgoliaVideos() {
+export function useAlgoliaVideos(): {
+  loading: boolean,
+  noResults: boolean,
+  hits: CoreVideo[],
+  showMore: () => void,
+  isLastPage: boolean,
+  sendEvent: SendEventForHits
+} {
   const { status, results } = useInstantSearch()
   const { hits, showMore, isLastPage, sendEvent } =
     useInfiniteHits<AlgoliaVideo>()
@@ -74,7 +83,7 @@ export function useAlgoliaVideos() {
 
   return {
     loading: status === 'stalled' || status === 'loading',
-    noResults: !results.__isArtificial && results.nbHits === 0,
+    noResults: results.__isArtificial === false && results.nbHits === 0,
     hits: transformedHits,
     showMore,
     isLastPage,

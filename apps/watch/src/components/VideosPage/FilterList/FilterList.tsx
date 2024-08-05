@@ -77,7 +77,13 @@ const subtitleLanguageIds = [
   '184528'
 ]
 
-function extractQueryParams(url: string) {
+interface FilterParams {
+  query: string | null
+  languageId: string | null
+  subtitleId: string | null
+}
+
+function extractQueryParams(url: string): FilterParams {
   const params = new URLSearchParams(url.split('?')[1])
   const query = params.get('query')
   const languageId = params.get('refinementList[languageId][0]')
@@ -138,9 +144,9 @@ export function FilterList({
   )
 
   const languageOptionFromIds = (ids?: string[]): LanguageOption => {
-    if (!ids?.length || !languagesMap) return { id: '' }
+    if (ids == null || languagesMap.size === 0) return { id: '' }
     const language = languagesMap.get(ids[0])
-    if (!language) return { id: '' }
+    if (language == null) return { id: '' }
     return {
       id: language.id,
       localName: language.name.find(({ primary }) => !primary)?.value,
@@ -164,10 +170,10 @@ export function FilterList({
     languageId: string
     subtitleLanguageId: string
   }): void {
-    if (languageId) {
+    if (languageId !== "") {
       refineLanguages(languageId)
     }
-    if (subtitleLanguageId) {
+    if (subtitleLanguageId !== "") {
       clearSubtitleRefine()
       refineSubtitles(subtitleLanguageId)
     }
