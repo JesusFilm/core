@@ -171,7 +171,7 @@ describe('SignUpEdit', () => {
   it('should not submit if the current value is the same', async () => {
     const link = ApolloLink.from([
       new DebounceLink(500),
-      new MockLink([mockUpdateSuccess1])
+      new MockLink([mockUpdateSuccess2])
     ])
 
     render(
@@ -185,11 +185,13 @@ describe('SignUpEdit', () => {
     )
 
     const input = screen.getByRole('textbox', { name: '' })
-    await userEvent.tripleClick(input)
-    await userEvent.type(input, 'Submit')
+    await userEvent.type(input, 'Submit', {
+      initialSelectionStart: 0,
+      initialSelectionEnd: 5
+    })
 
     await waitFor(() =>
-      expect(mockUpdateSuccess1.result).not.toHaveBeenCalled()
+      expect(mockUpdateSuccess2.result).not.toHaveBeenCalled()
     )
   })
 })
