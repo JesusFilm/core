@@ -116,9 +116,7 @@ export const deleteStepMock: MockedResponse<BlockDelete, BlockDeleteVariables> =
     request: {
       query: BLOCK_DELETE,
       variables: {
-        id: mockNewStepBlock.id,
-        parentBlockId: mockNewStepBlock.parentBlockId,
-        journeyId: 'journey-id'
+        id: mockNewStepBlock.id
       }
     },
     result: {

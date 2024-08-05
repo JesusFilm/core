@@ -41,36 +41,36 @@ export function Align(): ReactElement {
     | undefined
 
   async function handleChange(align: TypographyAlign): Promise<void> {
-    if (selectedBlock != null && align != null) {
-      await add({
-        parameters: {
-          execute: { align },
-          undo: {
-            align: selectedBlock.align
-          }
-        },
-        async execute({ align }) {
-          dispatch({
-            type: 'SetEditorFocusAction',
-            selectedStep,
-            selectedBlock
-          })
-          await typographyBlockUpdate({
-            variables: {
-              id: selectedBlock.id,
-              input: { align }
-            },
-            optimisticResponse: {
-              typographyBlockUpdate: {
-                id: selectedBlock.id,
-                align,
-                __typename: 'TypographyBlock'
-              }
-            }
-          })
+    if (selectedBlock == null || align == null) return
+
+    add({
+      parameters: {
+        execute: { align },
+        undo: {
+          align: selectedBlock.align
         }
-      })
-    }
+      },
+      execute({ align }) {
+        dispatch({
+          type: 'SetEditorFocusAction',
+          selectedStep,
+          selectedBlock
+        })
+        void typographyBlockUpdate({
+          variables: {
+            id: selectedBlock.id,
+            input: { align }
+          },
+          optimisticResponse: {
+            typographyBlockUpdate: {
+              id: selectedBlock.id,
+              align,
+              __typename: 'TypographyBlock'
+            }
+          }
+        })
+      }
+    })
   }
 
   const options = [

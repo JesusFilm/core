@@ -384,12 +384,6 @@ export interface IconBlockCreateInput {
   size?: IconSize | null;
 }
 
-export interface IconBlockUpdateInput {
-  name?: IconName | null;
-  color?: IconColor | null;
-  size?: IconSize | null;
-}
-
 export interface ImageBlockCreateInput {
   id?: string | null;
   parentBlockId?: string | null;

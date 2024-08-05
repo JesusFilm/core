@@ -56,7 +56,7 @@ describe('useActionCommand', () => {
           </MockedProvider>
         )
       })
-      await result.current.addAction({
+      result.current.addAction({
         blockId: 'button2.id',
         blockTypename: 'ButtonBlock',
         action: {
@@ -90,7 +90,7 @@ describe('useActionCommand', () => {
           </MockedProvider>
         )
       })
-      await result.current.addAction({
+      result.current.addAction({
         blockId: 'button2.id',
         blockTypename: 'ButtonBlock',
         action: {
@@ -124,7 +124,7 @@ describe('useActionCommand', () => {
           </MockedProvider>
         )
       })
-      await result.current.addAction({
+      result.current.addAction({
         blockId: 'button2.id',
         blockTypename: 'ButtonBlock',
         action: {
@@ -160,7 +160,7 @@ describe('useActionCommand', () => {
           </MockedProvider>
         )
       })
-      await result.current.addAction({
+      result.current.addAction({
         blockId: 'button2.id',
         blockTypename: 'ButtonBlock',
         action: null,
@@ -197,7 +197,7 @@ describe('useActionCommand', () => {
           </EditorProvider>
         )
       })
-      await result.current.addAction({
+      result.current.addAction({
         blockId: 'button2.id',
         blockTypename: 'ButtonBlock',
         action: {

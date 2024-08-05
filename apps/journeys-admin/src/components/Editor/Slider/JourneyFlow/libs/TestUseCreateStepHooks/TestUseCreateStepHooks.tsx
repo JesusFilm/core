@@ -29,18 +29,20 @@ function CreateStepComponent({
   const createStepFromSocialPreview = useCreateStepFromSocialPreview()
   const createStep = useCreateStep()
 
-  async function handleCreateStepFromStepClick(): Promise<void> {
+  function handleCreateStepFromStepClick(): void {
     if (sourceStep == null) return
-    await createStepFromStep({
+
+    createStepFromStep({
       x: 777,
       y: 777,
       sourceStep
     })
   }
 
-  async function handleCreateStepFromActionClick(): Promise<void> {
+  function handleCreateStepFromActionClick(): void {
     if (sourceStep == null || sourceBlock == null) return
-    await createStepFromAction({
+
+    createStepFromAction({
       x: 777,
       y: 777,
       sourceStep,
@@ -48,15 +50,15 @@ function CreateStepComponent({
     })
   }
 
-  async function handleCreateStepFromSocialPreviewClick(): Promise<void> {
-    await createStepFromSocialPreview({
+  function handleCreateStepFromSocialPreviewClick(): void {
+    createStepFromSocialPreview({
       x: 777,
       y: 777
     })
   }
 
-  async function handleCreateStepClick(): Promise<void> {
-    await createStep({
+  function handleCreateStepClick(): void {
+    createStep({
       x: -200,
       y: 38
     })

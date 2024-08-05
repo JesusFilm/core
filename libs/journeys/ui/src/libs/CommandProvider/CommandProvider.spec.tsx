@@ -60,6 +60,94 @@ describe('CommandContext', () => {
         })
       })
 
+      it('should update state when command index at end and the previous command id matches', () => {
+        const command0: Command = {
+          parameters: { execute: { arg1: 'execute' }, undo: { arg1: 'undo' } },
+          execute: () => {},
+          undo: () => {}
+        }
+        const command1: Command = {
+          id: 'commandId',
+          parameters: {
+            execute: { arg1: 'execute1' },
+            undo: { arg1: 'undo1' }
+          },
+          execute: () => {},
+          undo: () => {}
+        }
+        const state: CommandState = {
+          commandIndex: 2,
+          commands: [command0, command1],
+          undo: command0,
+          redo: command1
+        }
+        const command: Command = {
+          id: 'commandId',
+          parameters: {
+            execute: { arg1: 'execute2' },
+            undo: { arg1: 'undo2' }
+          },
+          execute: () => {},
+          undo: () => {}
+        }
+
+        expect(
+          reducer(state, {
+            type: 'AddCommandAction',
+            command
+          })
+        ).toEqual({
+          commandIndex: 2,
+          commands: [command0, command],
+          undo: command,
+          redo: undefined
+        })
+      })
+
+      it('should update state when command index at end and the previous command id does not match', () => {
+        const command0: Command = {
+          parameters: { execute: { arg1: 'execute' }, undo: { arg1: 'undo' } },
+          execute: () => {},
+          undo: () => {}
+        }
+        const command1: Command = {
+          id: 'commandId',
+          parameters: {
+            execute: { arg1: 'execute1' },
+            undo: { arg1: 'undo1' }
+          },
+          execute: () => {},
+          undo: () => {}
+        }
+        const state: CommandState = {
+          commandIndex: 2,
+          commands: [command0, command1],
+          undo: command0,
+          redo: command1
+        }
+        const command: Command = {
+          id: 'commandId2',
+          parameters: {
+            execute: { arg1: 'execute2' },
+            undo: { arg1: 'undo2' }
+          },
+          execute: () => {},
+          undo: () => {}
+        }
+
+        expect(
+          reducer(state, {
+            type: 'AddCommandAction',
+            command
+          })
+        ).toEqual({
+          commandIndex: 3,
+          commands: [command0, command1, command],
+          undo: command,
+          redo: undefined
+        })
+      })
+
       it('should update state when command index in middle', () => {
         const command0: Command = {
           parameters: { execute: { arg1: 'execute' }, undo: { arg1: 'undo' } },
@@ -91,6 +179,50 @@ describe('CommandContext', () => {
         ).toEqual({
           commandIndex: 2,
           commands: [command0, command],
+          undo: command,
+          redo: undefined
+        })
+      })
+
+      it('should update state when command index in middle and the previous command id matches', () => {
+        const command0: Command = {
+          id: 'commandId',
+          parameters: { execute: { arg1: 'execute' }, undo: { arg1: 'undo' } },
+          execute: () => {},
+          undo: () => {}
+        }
+        const command1: Command = {
+          parameters: {
+            execute: { arg1: 'execute1' },
+            undo: { arg1: 'undo1' }
+          },
+          execute: () => {},
+          undo: () => {}
+        }
+        const state: CommandState = {
+          commandIndex: 1,
+          commands: [command0, command1],
+          undo: command0,
+          redo: command1
+        }
+        const command: Command = {
+          id: 'commandId',
+          parameters: {
+            execute: { arg1: 'execute2' },
+            undo: { arg1: 'undo2' }
+          },
+          execute: () => {},
+          undo: () => {}
+        }
+
+        expect(
+          reducer(state, {
+            type: 'AddCommandAction',
+            command
+          })
+        ).toEqual({
+          commandIndex: 1,
+          commands: [command],
           undo: command,
           redo: undefined
         })
@@ -347,7 +479,7 @@ describe('CommandContext', () => {
           wrapper
         })
 
-        await result.current.undo()
+        result.current.undo()
 
         rerender()
 
@@ -385,7 +517,7 @@ describe('CommandContext', () => {
           wrapper
         })
 
-        await result.current.undo()
+        result.current.undo()
 
         rerender()
 
@@ -419,7 +551,7 @@ describe('CommandContext', () => {
           wrapper
         })
 
-        await result.current.undo()
+        result.current.undo()
 
         rerender()
 
@@ -454,7 +586,7 @@ describe('CommandContext', () => {
           wrapper
         })
 
-        await result.current.redo()
+        result.current.redo()
 
         rerender()
 
@@ -493,7 +625,7 @@ describe('CommandContext', () => {
           wrapper
         })
 
-        await result.current.redo()
+        result.current.redo()
 
         rerender()
 
@@ -527,7 +659,7 @@ describe('CommandContext', () => {
           wrapper
         })
 
-        await result.current.redo()
+        result.current.redo()
 
         rerender()
 
@@ -553,7 +685,7 @@ describe('CommandContext', () => {
           wrapper
         })
 
-        await result.current.add(command)
+        result.current.add(command)
 
         rerender()
 
