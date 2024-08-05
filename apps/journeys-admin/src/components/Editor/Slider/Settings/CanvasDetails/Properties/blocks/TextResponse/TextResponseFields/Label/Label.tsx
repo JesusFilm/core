@@ -43,17 +43,17 @@ export function Label(): ReactElement {
   const [value, setValue] = useState(selectedBlock?.label ?? '')
   const [commandInput, setCommandInput] = useState({ id: uuidv4(), value })
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: only run effect when undo changes
   useEffect(() => {
     if (undo == null || undo.id === commandInput.id) return
     resetCommandInput()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [undo?.id])
 
   useEffect(() => {
     setValue(selectedBlock?.label ?? '')
   }, [selectedBlock?.label])
 
-  function resetCommandInput() {
+  function resetCommandInput(): void {
     setCommandInput({ id: uuidv4(), value })
   }
 
