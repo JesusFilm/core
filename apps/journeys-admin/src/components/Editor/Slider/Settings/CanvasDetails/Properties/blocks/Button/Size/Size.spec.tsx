@@ -149,4 +149,19 @@ describe('Button size selector', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
     await waitFor(() => expect(mockFirstUpdate.result).toHaveBeenCalled())
   })
+
+  it('should not call mutation when no selected block', async () => {
+    render(
+      <MockedProvider mocks={[sizeUpdateMock]}>
+        <EditorProvider initialState={{}}>
+          <Size />
+        </EditorProvider>
+      </MockedProvider>
+    )
+    expect(screen.getByRole('button', { name: 'Medium' })).toHaveClass(
+      'Mui-selected'
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Small' }))
+    await waitFor(() => expect(sizeUpdateMock.result).not.toHaveBeenCalled())
+  })
 })
