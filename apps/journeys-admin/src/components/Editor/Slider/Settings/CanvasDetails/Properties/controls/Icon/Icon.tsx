@@ -28,21 +28,19 @@ import { init, t } from 'i18next'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import { useCommand } from '@core/journeys/ui/CommandProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/BlockFields'
 import {
-  IconBlockNameUpdate,
-  IconBlockNameUpdateVariables
-} from '../../../../../../../../../__generated__/IconBlockNameUpdate'
-import { IconFields } from '../../../../../../../../../__generated__/IconFields'
-import {
   IconColor,
   IconName
 } from '../../../../../../../../../__generated__/globalTypes'
-import { IconBlockNameUpdate } from '../../../../../../../../../__generated__/IconBlockNameUpdate'
+import {
+  IconBlockNameUpdate,
+  IconBlockNameUpdateVariables
+} from '../../../../../../../../../__generated__/IconBlockNameUpdate'
 import { IconFields } from '../../../../../../../../../__generated__/IconFields'
 
 import { Color } from './Color'
@@ -149,11 +147,8 @@ export const icons = [
 ]
 
 export const ICON_BLOCK_NAME_UPDATE = gql`
-  mutation IconBlockNameUpdate(
-    $id: ID!
-    $name: IconName
-  ) {
-    iconBlockUpdate(id: $id, input: {name: $name}) {
+  mutation IconBlockNameUpdate($id: ID!, $name: IconName) {
+    iconBlockUpdate(id: $id, input: { name: $name }) {
       id
       name
     }

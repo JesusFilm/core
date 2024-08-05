@@ -122,10 +122,8 @@ export function TypographyEdit({
             if (ref != null) ref.focus()
           }}
           onFocus={(e) => {
-            ;(e.currentTarget as HTMLInputElement).setSelectionRange(
-              selection.start,
-              selection.end
-            )
+            const target = e.currentTarget as HTMLInputElement
+            target.setSelectionRange(selection.start, selection.end)
             resetCommandInput()
           }}
           value={value}
