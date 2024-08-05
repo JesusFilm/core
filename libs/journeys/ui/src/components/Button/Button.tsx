@@ -255,7 +255,13 @@ export function Button({
             : undefined
         }
       >
-        {editableLabel ?? label}
+        <span>
+          {editableLabel != null
+            ? editableLabel
+            : label != null && label !== ''
+            ? label
+            : t('Button')}
+        </span>
       </MuiButton>
     </Box>
   )
