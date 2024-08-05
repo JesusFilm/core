@@ -1,18 +1,20 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
+import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
 } from '@core/journeys/ui/TeamProvider'
-import { TreeBlock } from '@core/journeys/ui/block'
+
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../../../../../../../../../../__generated__/GetJourney'
 import { GetLastActiveTeamIdAndTeams } from '../../../../../../../../../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { TextResponseType } from '../../../../../../../../../../../../__generated__/globalTypes'
 import { getIntegrationMock } from '../../../../../../../../../../../libs/useIntegrationQuery/useIntegrationQuery.mock'
+
 import { Route, TEXT_RESPONSE_ROUTE_UPDATE } from './Route'
 
 const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
@@ -130,6 +132,6 @@ describe('Integrations', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    expect(screen.queryByText('Route')).not.toBeInTheDocument
+    expect(screen.queryByText('Route')).not.toBeInTheDocument()
   })
 })

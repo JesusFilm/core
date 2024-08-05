@@ -1,3 +1,4 @@
+import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, screen } from '@testing-library/react'
 
@@ -12,7 +13,6 @@ import {
 import { TestEditorState } from '../../../../../libs/TestEditorState'
 import { ThemeProvider } from '../../../../ThemeProvider'
 
-import { MockedProvider } from '@apollo/client/testing'
 import { SocialPreview } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({

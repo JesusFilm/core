@@ -41,7 +41,7 @@
             "command": "./apps/api-gateway/router config schema > apps/api-gateway/routerSchema.json"
           },
           {
-            "command": "npx @biomejs/biome format apps/api-gateway/routerSchema.json --write"
+            "command": "npx prettier apps/api-gateway/routerSchema.json -w"
           }
         ]
       }

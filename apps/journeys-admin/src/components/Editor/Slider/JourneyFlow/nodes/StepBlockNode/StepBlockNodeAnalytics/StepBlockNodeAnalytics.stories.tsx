@@ -1,10 +1,11 @@
 import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
-import { StepBlockNodeAnalytics } from './StepBlockNodeAnalytics'
+import { ComponentPropsWithoutRef } from 'react'
 
 import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
-import { ComponentPropsWithoutRef } from 'react'
+
+import { StepBlockNodeAnalytics } from './StepBlockNodeAnalytics'
 
 const StepBlockNodeAnalyticsDemo: Meta<typeof StepBlockNodeAnalytics> = {
   ...simpleComponentConfig,

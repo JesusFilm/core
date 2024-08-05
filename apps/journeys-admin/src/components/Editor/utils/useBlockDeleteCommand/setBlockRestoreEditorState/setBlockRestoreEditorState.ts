@@ -1,10 +1,12 @@
+import { Dispatch } from 'react'
+
+import { TreeBlock } from '@core/journeys/ui/block'
 import {
   ActiveContent,
   ActiveSlide,
   EditorAction
 } from '@core/journeys/ui/EditorProvider'
-import { TreeBlock } from '@core/journeys/ui/block'
-import { Dispatch } from 'react'
+
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../__generated__/BlockFields'
 
 export function setBlockRestoreEditorState(
@@ -16,7 +18,8 @@ export function setBlockRestoreEditorState(
     dispatch({
       type: 'SetEditorFocusAction',
       activeSlide: ActiveSlide.JourneyFlow,
-      selectedStep: currentBlock,
+      selectedStepId: currentBlock.id,
+      selectedBlockId: currentBlock.id,
       activeContent: ActiveContent.Canvas
     })
   } else {
@@ -25,7 +28,7 @@ export function setBlockRestoreEditorState(
       activeContent: ActiveContent.Canvas,
       activeSlide: ActiveSlide.Content,
       selectedBlock: currentBlock,
-      selectedStep: selectedStep
+      selectedStep
     })
   }
 }
