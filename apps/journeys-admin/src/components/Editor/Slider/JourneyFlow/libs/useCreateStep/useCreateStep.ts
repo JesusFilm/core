@@ -21,7 +21,7 @@ export interface CreateStepInput {
   y: number
 }
 
-export function useCreateStep(): (input: CreateStepInput) => Promise<void> {
+export function useCreateStep(): (input: CreateStepInput) => void {
   const { journey } = useJourney()
   const {
     state: { selectedStep },
@@ -32,7 +32,7 @@ export function useCreateStep(): (input: CreateStepInput) => Promise<void> {
   const [blockRestore] = useBlockRestoreMutation()
   const [stepAndCardBlockCreate] = useStepAndCardBlockCreateMutation()
 
-  return async function createStep({ x, y }: CreateStepInput) {
+  return function createStep({ x, y }: CreateStepInput): void {
     if (journey == null) return
 
     const step: StepBlock & { x: number; y: number } = {
@@ -56,12 +56,12 @@ export function useCreateStep(): (input: CreateStepInput) => Promise<void> {
       backgroundColor: null,
       parentOrder: 0
     }
-    void add({
+    add({
       parameters: {
         execute: {},
         undo: { stepBeforeDelete: selectedStep }
       },
-      async execute() {
+      execute() {
         dispatch({
           type: 'SetEditorFocusAction',
           selectedStepId: step.id,
@@ -89,7 +89,7 @@ export function useCreateStep(): (input: CreateStepInput) => Promise<void> {
           }
         })
       },
-      async undo({ stepBeforeDelete }) {
+      undo({ stepBeforeDelete }) {
         dispatch({
           type: 'SetEditorFocusAction',
           selectedStepId: stepBeforeDelete?.id,
@@ -101,7 +101,7 @@ export function useCreateStep(): (input: CreateStepInput) => Promise<void> {
           }
         })
       },
-      async redo() {
+      redo() {
         dispatch({
           type: 'SetEditorFocusAction',
           selectedStepId: step.id,

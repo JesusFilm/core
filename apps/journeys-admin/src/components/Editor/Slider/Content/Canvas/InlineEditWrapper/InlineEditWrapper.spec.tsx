@@ -85,7 +85,8 @@ describe('InlineEditWrapper', () => {
     fireEvent.click(getByText('test content'))
     fireEvent.click(getByText('test content'))
     expect(getByTestId(`SelectableWrapper-${typographyBlock.id}`)).toHaveStyle({
-      outline: '2px solid #C52D3A',
+      outline: '2px solid',
+      outlineColor: '#C52D3A',
       zIndex: '1'
     })
     const input = getByDisplayValue('test content')
@@ -132,7 +133,8 @@ describe('InlineEditWrapper', () => {
     fireEvent.click(getByText('test label'))
     fireEvent.click(getByText('test label'))
     expect(getByTestId(`SelectableWrapper-${block.id}`)).toHaveStyle({
-      outline: '2px solid #C52D3A',
+      outline: '2px solid',
+      outlineColor: '#C52D3A',
       zIndex: '1'
     })
 
@@ -173,7 +175,8 @@ describe('InlineEditWrapper', () => {
     fireEvent.click(getByText('test label'))
     fireEvent.click(getByText('test label'))
     expect(getByTestId(`SelectableWrapper-${block.id}`)).toHaveStyle({
-      outline: '2px solid #C52D3A',
+      outline: '2px solid',
+      outlineColor: '#C52D3A',
       zIndex: '1'
     })
     const input = getByDisplayValue('test label')
@@ -236,7 +239,8 @@ describe('InlineEditWrapper', () => {
       // Select RadioQuestion
       await waitFor(() => fireEvent.click(getByText('option')))
       expect(getByTestId(`SelectableWrapper-${block.id}`)).toHaveStyle({
-        outline: '2px solid #C52D3A',
+        outline: '2px solid',
+        outlineColor: '#C52D3A',
         zIndex: '1'
       })
       expect(getByTestId(`${block.id}-add-option`)).toBeInTheDocument()
@@ -249,7 +253,8 @@ describe('InlineEditWrapper', () => {
             <EditorProvider
               initialState={{
                 steps: [step(block)],
-                selectedBlock: step(block).children[0]
+                selectedBlock: step(block).children[0],
+                selectedBlockId: step(block).children[0].id
               }}
             >
               {radioQuestion}
@@ -257,9 +262,10 @@ describe('InlineEditWrapper', () => {
           </SnackbarProvider>
         </MockedProvider>
       )
-      fireEvent.click(getByText('option'))
+      await waitFor(() => fireEvent.click(getByText('option')))
       expect(getByTestId(`SelectableWrapper-${option.id}`)).toHaveStyle({
-        outline: '2px solid #C52D3A',
+        outline: '2px solid',
+        outlineColor: '#C52D3A',
         zIndex: '1'
       })
 
@@ -283,10 +289,11 @@ describe('InlineEditWrapper', () => {
           </SnackbarProvider>
         </MockedProvider>
       )
-      fireEvent.click(getByText('option'))
-      fireEvent.click(getByText('option'))
+      await waitFor(() => fireEvent.click(getByText('option')))
+      await waitFor(() => fireEvent.click(getByText('option')))
       expect(getByTestId(`SelectableWrapper-${option.id}`)).toHaveStyle({
-        outline: '2px solid #C52D3A',
+        outline: '2px solid',
+        outlineColor: '#C52D3A',
         zIndex: '1'
       })
       const input = getByDisplayValue('option')

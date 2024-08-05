@@ -98,6 +98,12 @@ export function SelectableWrapper({
     case 'ImageBlock':
       borderRadius = '16px'
       break
+    case 'ButtonBlock':
+      if (block.buttonVariant === 'contained') {
+        if (block.size === 'large') borderRadius = '16px'
+        if (block.size === 'medium') borderRadius = '12px'
+        if (block.size === 'small') borderRadius = '8px'
+      }
   }
 
   useEffect(() => {
@@ -105,38 +111,43 @@ export function SelectableWrapper({
   }, [selectedBlock, block])
 
   return isSelectable ? (
-    <Box
-      ref={selectableRef}
-      data-testid={`SelectableWrapper-${block.id}`}
-      className={
-        block.__typename === 'RadioOptionBlock'
-          ? 'MuiButtonGroup-root MuiButtonGroup-grouped MuiButtonGroup-groupedVertical'
-          : ''
-      }
-      sx={{
-        '&:first-child': {
-          '& > *': { mt: '0px' }
-        },
-        '&:last-child': {
-          '& > *': { mb: '0px' }
-        },
-        borderRadius,
-        outline: selectedBlock?.id === block.id ? '2px solid #C52D3A' : 'none',
-        outlineOffset: '5px',
-        zIndex: selectedBlock?.id === block.id ? 1 : 0,
-        ...videoOutlineStyles
-      }}
-      onClickCapture={handleSelectBlock}
-      onClick={blockNonSelectionEvents}
-      onMouseDown={blockNonSelectionEvents}
-    >
-      {children}
+    <>
+      <Box
+        ref={selectableRef}
+        data-testid={`SelectableWrapper-${block.id}`}
+        className={
+          block.__typename === 'RadioOptionBlock'
+            ? 'MuiButtonGroup-root MuiButtonGroup-grouped MuiButtonGroup-groupedVertical'
+            : ''
+        }
+        sx={{
+          '&:first-child': {
+            '& > *': { mt: '0px' }
+          },
+          '&:last-child': {
+            '& > *': { mb: '0px' }
+          },
+          borderRadius,
+          outline: '2px solid ',
+          outlineColor:
+            selectedBlock?.id === block.id ? '#C52D3A' : 'transparent',
+          transition: (theme) => theme.transitions.create('outline-color'),
+          outlineOffset: '5px',
+          zIndex: selectedBlock?.id === block.id ? 1 : 0,
+          ...videoOutlineStyles
+        }}
+        onClickCapture={handleSelectBlock}
+        onClick={blockNonSelectionEvents}
+        onMouseDown={blockNonSelectionEvents}
+      >
+        {children}
+      </Box>
       <QuickControls
         open={open}
         anchorEl={selectableRef.current}
         block={block}
       />
-    </Box>
+    </>
   ) : (
     children
   )

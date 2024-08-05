@@ -136,7 +136,7 @@ export function VideoBlockEditorSettingsPosterLibrary({
     onLoad
   ])
 
-  async function createImageBlock(input: ImageBlockUpdateInput): Promise<void> {
+  function createImageBlock(input: ImageBlockUpdateInput): void {
     if (parentBlockId == null || journey == null) return
 
     const block: ImageBlock = {
@@ -151,7 +151,7 @@ export function VideoBlockEditorSettingsPosterLibrary({
       parentOrder: 0
     }
 
-    await add({
+    add({
       parameters: {
         execute: {
           block
@@ -163,8 +163,8 @@ export function VideoBlockEditorSettingsPosterLibrary({
           block
         }
       },
-      async execute({ block }) {
-        await createBlock({
+      execute({ block }) {
+        void createBlock({
           variables: {
             id: block.id,
             parentBlockId,
@@ -202,8 +202,8 @@ export function VideoBlockEditorSettingsPosterLibrary({
           }
         })
       },
-      async undo({ block }) {
-        await deleteBlock({
+      undo({ block }) {
+        void deleteBlock({
           variables: {
             id: block.id,
             parentBlockId
@@ -221,8 +221,8 @@ export function VideoBlockEditorSettingsPosterLibrary({
           }
         })
       },
-      async redo({ block }) {
-        await restoreBlock({
+      redo({ block }) {
+        void restoreBlock({
           variables: {
             id: block.id,
             videoBlockId: parentBlockId
@@ -243,7 +243,7 @@ export function VideoBlockEditorSettingsPosterLibrary({
     })
   }
 
-  async function updateImageBlock(input: ImageBlockUpdateInput): Promise<void> {
+  function updateImageBlock(input: ImageBlockUpdateInput): void {
     if (selectedBlock == null || journey == null) return
 
     const block: ImageBlock = {
@@ -255,13 +255,13 @@ export function VideoBlockEditorSettingsPosterLibrary({
       width: input.width ?? selectedBlock.width
     }
 
-    await add({
+    add({
       parameters: {
         execute: block,
         undo: selectedBlock
       },
-      async execute(block) {
-        await updateBlock({
+      execute(block) {
+        void updateBlock({
           variables: {
             id: selectedBlock.id,
             input: pick(block, Object.keys(input))
@@ -274,17 +274,17 @@ export function VideoBlockEditorSettingsPosterLibrary({
     })
   }
 
-  async function deleteImageBlock(): Promise<void> {
+  function deleteImageBlock(): void {
     if (selectedBlock == null || parentBlockId == null || journey == null)
       return
 
-    await add({
+    add({
       parameters: {
         execute: { selectedBlock, parentBlockId, journeyId: journey.id },
         undo: { selectedBlock, parentBlockId }
       },
-      async execute({ selectedBlock, parentBlockId, journeyId }) {
-        await deleteBlock({
+      execute({ selectedBlock, parentBlockId, journeyId }) {
+        void deleteBlock({
           variables: {
             id: selectedBlock.id,
             parentBlockId
@@ -307,8 +307,8 @@ export function VideoBlockEditorSettingsPosterLibrary({
           }
         })
       },
-      async undo({ selectedBlock, parentBlockId }) {
-        await restoreBlock({
+      undo({ selectedBlock, parentBlockId }) {
+        void restoreBlock({
           variables: {
             id: selectedBlock.id,
             videoBlockId: parentBlockId
@@ -334,13 +334,13 @@ export function VideoBlockEditorSettingsPosterLibrary({
     })
   }
 
-  async function handleChange(block: ImageBlock): Promise<void> {
-    if (block.src === '') return
+  function handleChange(input: ImageBlockUpdateInput): void {
+    if (input.src === '') return
 
     if (selectedBlock == null) {
-      await createImageBlock(block)
+      createImageBlock(input)
     } else {
-      await updateImageBlock(block)
+      updateImageBlock(input)
     }
   }
 
@@ -350,8 +350,8 @@ export function VideoBlockEditorSettingsPosterLibrary({
         <ImageLibrary
           open={open}
           onClose={onClose}
-          onChange={handleChange}
-          onDelete={deleteImageBlock}
+          onChange={async (input) => handleChange(input)}
+          onDelete={async () => deleteImageBlock()}
           selectedBlock={selectedBlock}
         />
       )}

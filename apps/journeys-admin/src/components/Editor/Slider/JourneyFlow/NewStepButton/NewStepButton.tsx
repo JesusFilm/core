@@ -18,8 +18,9 @@ export function NewStepButton(): ReactElement {
   const createStep = useCreateStep()
   const reactFlowInstance = useReactFlow()
 
-  async function handleClick(event: MouseEvent): Promise<void> {
+  function handleClick(event: MouseEvent): void {
     if (reactFlowInstance == null || journey == null) return
+
     const { x, y } = reactFlowInstance.screenToFlowPosition({
       x: event.clientX,
       y: event.clientY
@@ -27,7 +28,7 @@ export function NewStepButton(): ReactElement {
 
     const xCoordinate = Math.trunc(x) - STEP_NODE_CARD_WIDTH
     const yCoordinate = Math.trunc(y) + STEP_NODE_CARD_HEIGHT / 2
-    await createStep({ x: xCoordinate, y: yCoordinate })
+    createStep({ x: xCoordinate, y: yCoordinate })
   }
 
   return (

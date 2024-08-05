@@ -2,7 +2,10 @@ import { MockedResponse } from '@apollo/client/testing'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 
-import { BlockDelete } from '../../../__generated__/BlockDelete'
+import {
+  BlockDelete,
+  BlockDeleteVariables
+} from '../../../__generated__/BlockDelete'
 import {
   BlockFields_CardBlock as CardBlock,
   BlockFields_StepBlock as StepBlock,
@@ -39,7 +42,7 @@ export const block2: TreeBlock<TypographyBlock> = {
 }
 
 export const selectedStepCardBlock: TreeBlock<CardBlock> = {
-  id: 'card1.id',
+  id: 'blockId',
   __typename: 'CardBlock',
   parentBlockId: 'stepId',
   parentOrder: 0,
@@ -61,13 +64,14 @@ export const selectedStep: TreeBlock<StepBlock> = {
   children: [selectedStepCardBlock]
 }
 
-export const deleteBlockMock: MockedResponse<BlockDelete> = {
+export const deleteBlockMock: MockedResponse<
+  BlockDelete,
+  BlockDeleteVariables
+> = {
   request: {
     query: BLOCK_DELETE,
     variables: {
-      id: 'typography0.id',
-      journeyId: 'journey-id',
-      parentBlockId: 'card1.id'
+      id: 'typography0.id'
     }
   },
   result: {
@@ -83,13 +87,14 @@ export const deleteBlockMock: MockedResponse<BlockDelete> = {
   }
 }
 
-export const deleteCardBlockMock: MockedResponse<BlockDelete> = {
+export const deleteCardBlockMock: MockedResponse<
+  BlockDelete,
+  BlockDeleteVariables
+> = {
   request: {
     query: BLOCK_DELETE,
     variables: {
-      id: selectedStepCardBlock.id,
-      journeyId: 'journey-id',
-      parentBlockId: selectedStepCardBlock.parentBlockId
+      id: selectedStepCardBlock.id
     }
   },
   result: {
@@ -105,25 +110,24 @@ export const deleteCardBlockMock: MockedResponse<BlockDelete> = {
   }
 }
 
-export const deleteStepMock: MockedResponse<BlockDelete> = {
-  request: {
-    query: BLOCK_DELETE,
-    variables: {
-      id: selectedStep.id,
-      parentBlockId: selectedStep.parentBlockId,
-      journeyId: 'journey-id'
-    }
-  },
-  result: {
-    data: {
-      blockDelete: [
-        {
-          __typename: 'StepBlock',
-          id: selectedStep.id,
-          parentOrder: selectedStep.parentOrder,
-          nextBlockId: null
-        }
-      ]
+export const deleteStepMock: MockedResponse<BlockDelete, BlockDeleteVariables> =
+  {
+    request: {
+      query: BLOCK_DELETE,
+      variables: {
+        id: selectedStep.id
+      }
+    },
+    result: {
+      data: {
+        blockDelete: [
+          {
+            __typename: 'StepBlock',
+            id: selectedStep.id,
+            parentOrder: selectedStep.parentOrder,
+            nextBlockId: null
+          }
+        ]
+      }
     }
   }
-}

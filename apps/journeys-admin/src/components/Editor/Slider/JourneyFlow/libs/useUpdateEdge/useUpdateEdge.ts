@@ -100,7 +100,7 @@ export function useUpdateEdge(): (
           edgeSource.blockId
         )
         if (block != null) {
-          await addAction({
+          addAction({
             blockId: block.id,
             blockTypename: block.__typename,
             action: {
