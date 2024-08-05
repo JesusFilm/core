@@ -170,10 +170,10 @@ export function FilterList({
     languageId: string
     subtitleLanguageId: string
   }): void {
-    if (languageId !== "") {
+    if (languageId !== '') {
       refineLanguages(languageId)
     }
-    if (subtitleLanguageId !== "") {
+    if (subtitleLanguageId !== '') {
       clearSubtitleRefine()
       refineSubtitles(subtitleLanguageId)
     }

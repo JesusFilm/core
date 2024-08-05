@@ -10,7 +10,6 @@ import type {
   VideoChildFields_variant
 } from '../../../../__generated__/VideoChildFields'
 
-
 export interface AlgoliaVideo extends Hit<BaseHit> {
   videoId: string
   titles: string[]
@@ -68,11 +67,11 @@ export function transformItems(items: AlgoliaVideo[]): CoreVideo[] {
 }
 
 export function useAlgoliaVideos(): {
-  loading: boolean,
-  noResults: boolean,
-  hits: CoreVideo[],
-  showMore: () => void,
-  isLastPage: boolean,
+  loading: boolean
+  noResults: boolean
+  hits: CoreVideo[]
+  showMore: () => void
+  isLastPage: boolean
   sendEvent: SendEventForHits
 } {
   const { status, results } = useInstantSearch()

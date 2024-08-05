@@ -104,8 +104,8 @@ describe('useAlgoliaVideos', () => {
   })
 
   it('should have transformed algolia hits into videos', () => {
-      const transformedItems = transformItems(algoliaVideos)
-      expect(transformedItems).toEqual(transformedVideos)
+    const transformedItems = transformItems(algoliaVideos)
+    expect(transformedItems).toEqual(transformedVideos)
   })
 
   it('should return hits', async () => {

@@ -10,7 +10,6 @@ import type { VideoChildFields } from '../../../__generated__/VideoChildFields'
 import { useAlgoliaVideos } from '../../libs/algolia/useAlgoliaVideos'
 import { VideoCard } from '../VideoCard'
 
-
 interface VideoGridProps {
   videos?: VideoChildFields[]
   showLoadMore?: boolean
@@ -97,8 +96,8 @@ export function VideoGrid({
               {loading
                 ? 'Loading...'
                 : !isLastPage
-                  ? 'Load More'
-                  : 'No More Videos'}
+                ? 'Load More'
+                : 'No More Videos'}
             </LoadingButton>
           </Box>
         </Grid>

@@ -13,7 +13,6 @@ import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 import { PageWrapper } from '../PageWrapper'
 import { VideoGrid } from '../VideoGrid'
 
-
 import { HomeHero } from './HomeHero'
 import { SeeAllVideos } from './SeeAllVideos'
 
