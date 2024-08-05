@@ -9,7 +9,7 @@ import { ReactElement } from 'react'
 interface SelectProps {
   label: string
   value?: string
-  options?: { value: string; label: string }[]
+  options?: Array<{ value: string; label: string }>
   onChange: (value: string | null) => void
 }
 
