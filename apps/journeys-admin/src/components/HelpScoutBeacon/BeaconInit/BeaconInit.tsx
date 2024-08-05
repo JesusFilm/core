@@ -81,13 +81,13 @@ export function BeaconInit({ userInfo }: BeaconInitProps): ReactElement {
         }
         ${breakpoints.down('md')} {
           .hsds-beacon .BeaconContainer.is-configDisplayRight {
-            height: calc(100vh - 42px);
+            height: calc(100svh - 42px);
             border-radius: 0px;
             left: 0px;
             max-height: 100svh;
             right: 0px;
             top: 40px;
-            width: 100shv;
+            width: 100%;
           }
           .NotificationsFramecss__NotificationsFrameUI-sc-1ah8ai4-1 {
             // position: fixed !important;
