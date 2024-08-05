@@ -19,7 +19,7 @@ export function InstantSearchTestWrapper({
 
   const initState: UiState = {
     [indexName]: {
-      query: query
+      query
     }
   }
 

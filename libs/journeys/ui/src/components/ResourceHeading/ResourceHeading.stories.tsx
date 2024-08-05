@@ -1,6 +1,8 @@
-import { watchConfig } from '@core/shared/ui/storybook'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
+
+import { watchConfig } from '@core/shared/ui/storybook'
+
 import { ResourceHeading } from './ResourceHeading'
 
 const ResourceHeadingStory: Meta<typeof ResourceHeading> = {

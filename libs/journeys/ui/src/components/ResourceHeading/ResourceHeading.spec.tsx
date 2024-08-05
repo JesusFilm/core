@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+
 import { ResourceHeading } from './ResourceHeading'
 
 describe('ResourceHeading', () => {

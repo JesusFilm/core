@@ -1,7 +1,7 @@
-import { Typography } from '@mui/material'
-import { styled } from '@mui/system'
+import { styled } from '@mui/material/styles'
+import  Typography  from '@mui/material/Typography'
+import { Trans, useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
-import { Trans, useTranslation } from 'react-i18next'
 
 interface ResourceHeadingProps {
   heading: string

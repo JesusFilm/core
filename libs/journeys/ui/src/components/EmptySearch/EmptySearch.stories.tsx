@@ -1,8 +1,10 @@
-import { watchConfig } from '@core/shared/ui/storybook'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
-import { EmptySearch } from './EmptySearch'
 
+import { watchConfig } from '@core/shared/ui/storybook'
+
+import { EmptySearch } from './EmptySearch'
+ 
 const EmptySearchStory: Meta<typeof EmptySearch> = {
   ...watchConfig,
   component: EmptySearch,

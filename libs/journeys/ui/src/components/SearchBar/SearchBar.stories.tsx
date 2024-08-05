@@ -1,10 +1,13 @@
-import { Meta, StoryObj } from '@storybook/react'
 
-import { watchConfig } from '@core/shared/ui/storybook'
 import { expect } from '@storybook/jest'
+import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent, waitFor } from '@storybook/testing-library'
 import { ComponentProps } from 'react'
+
+import { watchConfig } from '@core/shared/ui/storybook'
+
 import { InstantSearchTestWrapper } from '../../libs/algolia/InstantSearchTestWrapper'
+
 import { SearchBar } from './SearchBar'
 
 const SearchBarStory: Meta<typeof SearchBar> = {
