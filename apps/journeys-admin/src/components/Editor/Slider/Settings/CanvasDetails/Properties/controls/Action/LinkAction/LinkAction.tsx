@@ -36,7 +36,7 @@ export function LinkAction(): ReactElement {
     }
     try {
       return new URL(urlInspect).toString() !== ''
-    } catch (error) {
+    } catch {
       return false
     }
   }
@@ -47,28 +47,27 @@ export function LinkAction(): ReactElement {
       .test('valid-url', t('Invalid URL'), checkURL)
   })
 
-  async function handleSubmit(src: string): Promise<void> {
+  function handleSubmit(src: string): void {
+    if (selectedBlock == null) return
+
     // checks if url has a protocol
     const url = /^\w+:\/\//.test(src) ? src : `https://${src}`
-    if (selectedBlock != null) {
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      const { id, action, __typename } = selectedBlock
-      await addAction({
-        blockId: id,
-        blockTypename: __typename,
-        action: {
-          __typename: 'LinkAction',
-          parentBlockId: id,
-          gtmEventName: '',
-          url
-        },
-        undoAction: action,
-        editorFocus: {
-          selectedStep,
-          selectedBlock
-        }
-      })
-    }
+    const { id, action, __typename: blockTypename } = selectedBlock
+    addAction({
+      blockId: id,
+      blockTypename,
+      action: {
+        __typename: 'LinkAction',
+        parentBlockId: id,
+        gtmEventName: '',
+        url
+      },
+      undoAction: action,
+      editorFocus: {
+        selectedStep,
+        selectedBlock
+      }
+    })
   }
 
   return (

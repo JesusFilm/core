@@ -3,8 +3,6 @@ import reject from 'lodash/reject'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 
-import { GetJourney_journey_blocks as Block } from '../../../__generated__/GetJourney'
-
 interface BlockIdentifier {
   __typename: TreeBlock['__typename']
   id: string
@@ -16,9 +14,7 @@ const getNestedChildRefs = (
   results: string[] = []
 ): string[] => {
   results.push(`${block.__typename}:${block.id}`)
-  ;(block as TreeBlock<Block>).children?.forEach((child) => {
-    results = getNestedChildRefs(child, results)
-  })
+  block.children?.forEach((child) => getNestedChildRefs(child, results))
   return results
 }
 

@@ -33,26 +33,25 @@ export function EmailAction(): ReactElement {
       .email(t('Email must be a valid email'))
   })
 
-  async function handleSubmit(email: string): Promise<void> {
-    if (selectedBlock != null) {
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      const { id, action, __typename } = selectedBlock
-      await addAction({
-        blockId: id,
-        blockTypename: __typename,
-        action: {
-          __typename: 'EmailAction',
-          parentBlockId: id,
-          gtmEventName: '',
-          email
-        },
-        undoAction: action,
-        editorFocus: {
-          selectedStep,
-          selectedBlock
-        }
-      })
-    }
+  function handleSubmit(email: string): void {
+    if (selectedBlock == null) return
+
+    const { id, action, __typename: blockTypename } = selectedBlock
+    addAction({
+      blockId: id,
+      blockTypename,
+      action: {
+        __typename: 'EmailAction',
+        parentBlockId: id,
+        gtmEventName: '',
+        email
+      },
+      undoAction: action,
+      editorFocus: {
+        selectedStep,
+        selectedBlock
+      }
+    })
   }
 
   return (

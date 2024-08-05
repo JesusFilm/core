@@ -46,25 +46,24 @@ export function Action(): ReactElement {
     setAction(selectedBlock?.action?.__typename ?? 'None')
   }, [selectedBlock?.action?.__typename])
 
-  async function removeAction(): Promise<void> {
-    if (selectedBlock != null) {
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      const { id, action, __typename } = selectedBlock
-      await addAction({
-        blockId: id,
-        blockTypename: __typename,
-        action: null,
-        undoAction: action,
-        editorFocus: {
-          selectedStep,
-          selectedBlock
-        }
-      })
-    }
+  function removeAction(): void {
+    if (selectedBlock == null) return
+
+    const { id, action, __typename: blockTypename } = selectedBlock
+    addAction({
+      blockId: id,
+      blockTypename,
+      action: null,
+      undoAction: action,
+      editorFocus: {
+        selectedStep,
+        selectedBlock
+      }
+    })
   }
 
-  async function handleChange(event: SelectChangeEvent): Promise<void> {
-    if (event.target.value === 'None') await removeAction()
+  function handleChange(event: SelectChangeEvent): void {
+    if (event.target.value === 'None') removeAction()
     setAction(event.target.value as ActionValue)
   }
 
