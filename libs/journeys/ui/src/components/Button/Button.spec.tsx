@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { usePlausible } from 'next-plausible'
 import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
@@ -571,6 +571,23 @@ describe('Button', () => {
         gtmEventName: 'gtmEventName',
         blockId: 'def'
       }
+    )
+  })
+
+  it('should show default button text if button label is empty', () => {
+    const emptyButtonLabelMock = {
+      ...block,
+      label: ''
+    }
+
+    render(
+      <MockedProvider>
+        <Button {...emptyButtonLabelMock} />
+      </MockedProvider>
+    )
+
+    expect(screen.getByRole('button', { name: 'Submit' })).toHaveTextContent(
+      'Submit'
     )
   })
 })
