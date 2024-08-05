@@ -99,7 +99,7 @@ export function Label(): ReactElement {
             }
           },
           context: {
-            debounceKey: `${selectedBlock.__typename}:${selectedBlock.id}`,
+            debounceKey: `TextResponseBlock:${selectedBlock.id}`,
             ...context
           }
         })
