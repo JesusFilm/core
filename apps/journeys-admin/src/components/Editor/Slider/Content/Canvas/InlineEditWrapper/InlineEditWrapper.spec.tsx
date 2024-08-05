@@ -253,7 +253,8 @@ describe('InlineEditWrapper', () => {
             <EditorProvider
               initialState={{
                 steps: [step(block)],
-                selectedBlock: step(block).children[0]
+                selectedBlock: step(block).children[0],
+                selectedBlockId: step(block).children[0].id
               }}
             >
               {radioQuestion}
