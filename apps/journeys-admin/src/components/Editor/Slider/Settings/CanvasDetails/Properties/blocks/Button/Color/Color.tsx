@@ -38,34 +38,33 @@ export function Color(): ReactElement {
     | undefined
 
   function handleChange(color: ButtonColor): void {
-    if (selectedBlock != null && color != null) {
-      add({
-        parameters: {
-          execute: { color },
-          undo: { color: selectedBlock.buttonColor }
-        },
-        execute({ color }) {
-          dispatch({
-            type: 'SetEditorFocusAction',
-            selectedBlock,
-            selectedStep: state.selectedStep
-          })
-          void buttonBlockUpdate({
-            variables: {
+    if (selectedBlock == null || color == null) return
+    add({
+      parameters: {
+        execute: { color },
+        undo: { color: selectedBlock.buttonColor }
+      },
+      execute({ color }) {
+        dispatch({
+          type: 'SetEditorFocusAction',
+          selectedBlock,
+          selectedStep: state.selectedStep
+        })
+        void buttonBlockUpdate({
+          variables: {
+            id: selectedBlock.id,
+            color
+          },
+          optimisticResponse: {
+            buttonBlockUpdate: {
               id: selectedBlock.id,
-              color
-            },
-            optimisticResponse: {
-              buttonBlockUpdate: {
-                id: selectedBlock.id,
-                color,
-                __typename: 'ButtonBlock'
-              }
+              color,
+              __typename: 'ButtonBlock'
             }
-          })
-        }
-      })
-    }
+          }
+        })
+      }
+    })
   }
 
   const options = [

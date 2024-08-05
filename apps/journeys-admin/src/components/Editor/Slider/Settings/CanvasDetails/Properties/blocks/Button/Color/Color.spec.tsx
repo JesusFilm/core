@@ -144,4 +144,16 @@ describe('Button color selector', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
     await waitFor(() => expect(mockFirstUpdate.result).toHaveBeenCalled())
   })
+
+  it('should not call mutation if no selected block', async () => {
+    render(
+      <MockedProvider mocks={[colorUpdateMock]}>
+        <EditorProvider initialState={{}}>
+          <Color />
+        </EditorProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Secondary' }))
+    await waitFor(() => expect(colorUpdateMock.result).not.toHaveBeenCalled())
+  })
 })
