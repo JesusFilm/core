@@ -344,11 +344,6 @@ export const reducer = (
           type: 'SetSelectedGoalUrlAction',
           selectedGoalUrl
         })
-      if (selectedStepId != null)
-        stateCopy = reducer(stateCopy, {
-          type: 'SetSelectedStepByIdAction',
-          selectedStepId
-        })
       return stateCopy
     }
   }
