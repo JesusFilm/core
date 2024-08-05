@@ -3,15 +3,14 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
+import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../../Toolbar/Items/CommandUndoItem'
 
 import { TEXT_RESPONSE_MIN_ROWS_UPDATE } from './MinRows'
 
 import { MinRows } from '.'
-import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRedoItem'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -86,9 +85,9 @@ const mockMinRowsUpdate3 = {
   }))
 }
 
-beforeEach(() => jest.clearAllMocks())
-
 describe('MinRows', () => {
+  beforeEach(() => jest.clearAllMocks())
+
   it('should select Three Rows by default', () => {
     render(
       <MockedProvider>

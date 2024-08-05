@@ -3,25 +3,13 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-<<<<<<< HEAD
-import { TreeBlock } from '@core/journeys/ui/block'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
-import { TextResponseTypeUpdate } from '../../../../../../../../../../../__generated__/TextResponseTypeUpdate'
 import { TextResponseType } from '../../../../../../../../../../../__generated__/globalTypes'
+import { TextResponseTypeUpdate } from '../../../../../../../../../../../__generated__/TextResponseTypeUpdate'
 import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../../Toolbar/Items/CommandUndoItem'
-=======
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
-import { GetJourney_journey as Journey } from '../../../../../../../../../../../__generated__/GetJourney'
-import { TextResponseType } from '../../../../../../../../../../../__generated__/globalTypes'
-import { TextResponseLabelUpdate } from '../../../../../../../../../../../__generated__/TextResponseLabelUpdate'
-import { TextResponseTypeUpdate } from '../../../../../../../../../../../__generated__/TextResponseTypeUpdate'
-import { TEXT_RESPONSE_LABEL_UPDATE } from '../Label/Label'
-
->>>>>>> eng-47-typography-label-command
 import { TEXT_RESPONSE_TYPE_UPDATE, Type } from './Type'
 
 describe('Type', () => {

@@ -4,8 +4,8 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import DebounceLink from 'apollo-link-debounce'
 
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
 import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRedoItem'
@@ -20,77 +20,77 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: () => true
 }))
 
-const block: TreeBlock<TextResponseBlock> = {
-  __typename: 'TextResponseBlock',
-  id: 'textResponse0.id',
-  parentBlockId: '0',
-  parentOrder: 0,
-  label: 'Your answer here',
-  hint: null,
-  minRows: null,
-  integrationId: null,
-  type: null,
-  routeId: null,
-  children: []
-}
+describe('Edit Label field', () => {
+  const block: TreeBlock<TextResponseBlock> = {
+    __typename: 'TextResponseBlock',
+    id: 'textResponse0.id',
+    parentBlockId: '0',
+    parentOrder: 0,
+    label: 'Your answer here',
+    hint: null,
+    minRows: null,
+    integrationId: null,
+    type: null,
+    routeId: null,
+    children: []
+  }
 
-const mockLabelUpdate1 = {
-  request: {
-    query: TEXT_RESPONSE_LABEL_UPDATE,
-    variables: {
-      id: block.id,
-      label: 'Your answer here more'
-    }
-  },
-  result: jest.fn(() => ({
-    data: {
-      textResponseBlockUpdate: {
+  const mockLabelUpdate1 = {
+    request: {
+      query: TEXT_RESPONSE_LABEL_UPDATE,
+      variables: {
         id: block.id,
         label: 'Your answer here more'
       }
-    }
-  }))
-}
+    },
+    result: jest.fn(() => ({
+      data: {
+        textResponseBlockUpdate: {
+          id: block.id,
+          label: 'Your answer here more'
+        }
+      }
+    }))
+  }
 
-const mockLabelUpdate2 = {
-  request: {
-    query: TEXT_RESPONSE_LABEL_UPDATE,
-    variables: {
-      id: block.id,
-      label: 'Your answer here'
-    }
-  },
-  result: jest.fn(() => ({
-    data: {
-      textResponseBlockUpdate: {
+  const mockLabelUpdate2 = {
+    request: {
+      query: TEXT_RESPONSE_LABEL_UPDATE,
+      variables: {
         id: block.id,
         label: 'Your answer here'
       }
-    }
-  }))
-}
+    },
+    result: jest.fn(() => ({
+      data: {
+        textResponseBlockUpdate: {
+          id: block.id,
+          label: 'Your answer here'
+        }
+      }
+    }))
+  }
 
-const mockLabelUpdate3 = {
-  request: {
-    query: TEXT_RESPONSE_LABEL_UPDATE,
-    variables: {
-      id: block.id,
-      label: 'Your answer here more'
-    }
-  },
-  result: jest.fn(() => ({
-    data: {
-      textResponseBlockUpdate: {
+  const mockLabelUpdate3 = {
+    request: {
+      query: TEXT_RESPONSE_LABEL_UPDATE,
+      variables: {
         id: block.id,
         label: 'Your answer here more'
       }
-    }
-  }))
-}
+    },
+    result: jest.fn(() => ({
+      data: {
+        textResponseBlockUpdate: {
+          id: block.id,
+          label: 'Your answer here more'
+        }
+      }
+    }))
+  }
 
-beforeEach(() => jest.clearAllMocks())
+  beforeEach(() => jest.clearAllMocks())
 
-describe('Edit Label field', () => {
   it('should display label value', () => {
     render(
       <MockedProvider mocks={[mockLabelUpdate1]} addTypename={false}>
@@ -132,7 +132,7 @@ describe('Edit Label field', () => {
     )
 
     const field = screen.getByRole('textbox', { name: 'Label' })
-    userEvent.type(field, ' more')
+    await userEvent.type(field, ' more')
     await waitFor(() => expect(mockLabelUpdate1.result).toHaveBeenCalled())
   })
 
@@ -152,7 +152,7 @@ describe('Edit Label field', () => {
     )
 
     const field = screen.getByRole('textbox', { name: 'Label' })
-    userEvent.type(field, ' more')
+    await userEvent.type(field, ' more')
     await waitFor(() => expect(mockLabelUpdate1.result).toHaveBeenCalled())
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
@@ -176,7 +176,7 @@ describe('Edit Label field', () => {
     )
 
     const field = screen.getByRole('textbox', { name: 'Label' })
-    userEvent.type(field, ' more')
+    await userEvent.type(field, ' more')
     await waitFor(() => expect(mockLabelUpdate1.result).toHaveBeenCalled())
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))

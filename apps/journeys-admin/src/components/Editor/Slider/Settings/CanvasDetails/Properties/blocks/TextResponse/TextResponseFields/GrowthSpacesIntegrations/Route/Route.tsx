@@ -22,6 +22,7 @@ import {
 import { useIntegrationQuery } from '../../../../../../../../../../../libs/useIntegrationQuery'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
+
 import { Select } from '../Select'
 
 export const TEXT_RESPONSE_ROUTE_UPDATE = gql`

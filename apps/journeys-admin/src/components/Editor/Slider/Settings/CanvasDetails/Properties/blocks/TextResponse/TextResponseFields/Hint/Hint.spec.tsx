@@ -1,101 +1,100 @@
+import { ApolloLink } from '@apollo/client'
 import { MockLink, MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import DebounceLink from 'apollo-link-debounce'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
+import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRedoItem'
+import { CommandUndoItem } from '../../../../../../../../Toolbar/Items/CommandUndoItem'
 
 import { TEXT_RESPONSE_HINT_UPDATE } from './Hint'
 
-import { ApolloLink } from '@apollo/client'
-import userEvent from '@testing-library/user-event'
-import DebounceLink from 'apollo-link-debounce'
 import { Hint } from '.'
-import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRedoItem'
-import { CommandUndoItem } from '../../../../../../../../Toolbar/Items/CommandUndoItem'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
 
-const block: TreeBlock<TextResponseBlock> = {
-  __typename: 'TextResponseBlock',
-  id: 'textResponse0.id',
-  parentBlockId: '0',
-  parentOrder: 0,
-  label: 'Your answer here',
-  hint: 'A hint message',
-  minRows: null,
-  integrationId: null,
-  type: null,
-  routeId: null,
-  children: []
-}
+describe('Edit Hint field', () => {
+  const block: TreeBlock<TextResponseBlock> = {
+    __typename: 'TextResponseBlock',
+    id: 'textResponse0.id',
+    parentBlockId: '0',
+    parentOrder: 0,
+    label: 'Your answer here',
+    hint: 'A hint message',
+    minRows: null,
+    integrationId: null,
+    type: null,
+    routeId: null,
+    children: []
+  }
 
-const initialState = {
-  selectedBlock: block
-}
+  const initialState = {
+    selectedBlock: block
+  }
 
-const mockHintUpdate1 = {
-  request: {
-    query: TEXT_RESPONSE_HINT_UPDATE,
-    variables: {
-      id: block.id,
-      hint: 'A hint message more'
-    }
-  },
-  result: jest.fn(() => ({
-    data: {
-      textResponseBlockUpdate: {
+  const mockHintUpdate1 = {
+    request: {
+      query: TEXT_RESPONSE_HINT_UPDATE,
+      variables: {
         id: block.id,
         hint: 'A hint message more'
       }
-    }
-  }))
-}
+    },
+    result: jest.fn(() => ({
+      data: {
+        textResponseBlockUpdate: {
+          id: block.id,
+          hint: 'A hint message more'
+        }
+      }
+    }))
+  }
 
-const mockHintUpdate2 = {
-  request: {
-    query: TEXT_RESPONSE_HINT_UPDATE,
-    variables: {
-      id: block.id,
-      hint: 'A hint message'
-    }
-  },
-  result: jest.fn(() => ({
-    data: {
-      textResponseBlockUpdate: {
+  const mockHintUpdate2 = {
+    request: {
+      query: TEXT_RESPONSE_HINT_UPDATE,
+      variables: {
         id: block.id,
         hint: 'A hint message'
       }
-    }
-  }))
-}
+    },
+    result: jest.fn(() => ({
+      data: {
+        textResponseBlockUpdate: {
+          id: block.id,
+          hint: 'A hint message'
+        }
+      }
+    }))
+  }
 
-const mockHintUpdate3 = {
-  request: {
-    query: TEXT_RESPONSE_HINT_UPDATE,
-    variables: {
-      id: block.id,
-      hint: 'A hint message more'
-    }
-  },
-  result: jest.fn(() => ({
-    data: {
-      textResponseBlockUpdate: {
+  const mockHintUpdate3 = {
+    request: {
+      query: TEXT_RESPONSE_HINT_UPDATE,
+      variables: {
         id: block.id,
         hint: 'A hint message more'
       }
-    }
-  }))
-}
+    },
+    result: jest.fn(() => ({
+      data: {
+        textResponseBlockUpdate: {
+          id: block.id,
+          hint: 'A hint message more'
+        }
+      }
+    }))
+  }
 
-beforeEach(() => jest.clearAllMocks())
+  beforeEach(() => jest.clearAllMocks())
 
-describe('Edit Hint field', () => {
   it('should display hint value', () => {
     render(
       <MockedProvider mocks={[]} addTypename={false}>
