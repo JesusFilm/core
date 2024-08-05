@@ -47,10 +47,10 @@ export function TypographyEdit({
     dispatch
   } = useEditor()
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <only run effect when undo changes>
   useEffect(() => {
     if (undo == null || undo.id === commandInput.id) return
     resetCommandInput()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [undo?.id])
 
   useEffect(() => {
