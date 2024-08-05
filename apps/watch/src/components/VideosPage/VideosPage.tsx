@@ -22,10 +22,12 @@ interface VideosPageProps {
 }
 
 export function VideosPage({ index = false }: VideosPageProps): ReactElement {
-  const { data: languagesData, loading: languagesLoading } =
-    useQuery<GetLanguages>(GET_LANGUAGES, {
-      variables: { languageId: '529' }
-    })
+	const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? '';
+
+	const { data: languagesData, loading: languagesLoading } =
+		useQuery<GetLanguages>(GET_LANGUAGES, {
+			variables: { languageId: '529' }
+		})
 
   useConfigure({
     ruleContexts: ['all_videos_page']
@@ -58,7 +60,7 @@ export function VideosPage({ index = false }: VideosPageProps): ReactElement {
       <Divider sx={{ height: 2, background: 'rgba(33, 33, 33, 0.08)' }} />
       <Container maxWidth="xxl" sx={{ py: 12 }}>
         {index ? (
-          <Index indexName="video-variants-stg">{videosPageSegment}</Index>
+          <Index indexName={indexName}>{videosPageSegment}</Index>
         ) : (
           <>{videosPageSegment}</>
         )}

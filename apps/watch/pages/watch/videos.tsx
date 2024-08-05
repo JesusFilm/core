@@ -75,6 +75,8 @@ const nextRouter: RouterProps = {
 }
 
 function VideosPage({ initialApolloState }: VideosPageProps): ReactElement {
+	const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
+
   const client = useApolloClient({
     initialState: initialApolloState
   })
@@ -85,15 +87,15 @@ function VideosPage({ initialApolloState }: VideosPageProps): ReactElement {
   }) => {
     // Ensure there is always one languageId set and defaults to english
     const languageIds =
-      uiState['video-variants-stg'].refinementList?.languageId ?? []
+      uiState[indexName].refinementList?.languageId ?? []
     if (languageIds.length !== 1) {
       const lastSelectedLanguage = languageIds.pop()
       setUiState({
         ...uiState,
-        'video-variants-stg': {
-          ...uiState['video-variants-stg'],
+        [indexName]: {
+          ...uiState[indexName],
           refinementList: {
-            ...uiState['video-variants-stg'].refinementList,
+            ...uiState[indexName].refinementList,
             languageId: [lastSelectedLanguage ?? '529']
           }
         }
@@ -111,6 +113,7 @@ function VideosPage({ initialApolloState }: VideosPageProps): ReactElement {
           insights
           searchClient={searchClient}
           future={{ preserveSharedStateOnUnmount: true }}
+					stalledSearchDelay={500}
           routing={nextRouter}
           onStateChange={onStateChange}
         >

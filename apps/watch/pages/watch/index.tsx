@@ -63,14 +63,15 @@ export const nextRouter: RouterProps = {
 }
 
 function HomePage(): ReactElement {
-  const index = 'video-variants-stg'
+	const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
+
   return (
     // Don't pass in server state because it will be stale if any state set by url
     <InstantSearchSSRProvider>
       <InstantSearch
         insights
         searchClient={searchClient}
-        indexName={index}
+        indexName={indexName}
         future={{ preserveSharedStateOnUnmount: true }}
         stalledSearchDelay={500}
         routing={nextRouter}
