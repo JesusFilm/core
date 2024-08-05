@@ -37,34 +37,33 @@ export function Size(): ReactElement {
     | undefined
 
   function handleChange(size: ButtonSize): void {
-    if (selectedBlock != null && size != null) {
-      add({
-        parameters: {
-          execute: { size },
-          undo: { size: selectedBlock.size }
-        },
-        execute({ size }) {
-          dispatch({
-            type: 'SetEditorFocusAction',
-            selectedBlock,
-            selectedStep: state.selectedStep
-          })
-          void buttonBlockUpdate({
-            variables: {
+    if (selectedBlock == null || size == null) return
+    add({
+      parameters: {
+        execute: { size },
+        undo: { size: selectedBlock.size }
+      },
+      execute({ size }) {
+        dispatch({
+          type: 'SetEditorFocusAction',
+          selectedBlock,
+          selectedStep: state.selectedStep
+        })
+        void buttonBlockUpdate({
+          variables: {
+            id: selectedBlock.id,
+            size
+          },
+          optimisticResponse: {
+            buttonBlockUpdate: {
               id: selectedBlock.id,
-              size
-            },
-            optimisticResponse: {
-              buttonBlockUpdate: {
-                id: selectedBlock.id,
-                size,
-                __typename: 'ButtonBlock'
-              }
+              size,
+              __typename: 'ButtonBlock'
             }
-          })
-        }
-      })
-    }
+          }
+        })
+      }
+    })
   }
 
   const options = [

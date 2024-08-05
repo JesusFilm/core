@@ -37,34 +37,33 @@ export function Variant(): ReactElement {
     | undefined
 
   function handleChange(variant: ButtonVariant): void {
-    if (selectedBlock != null && variant != null) {
-      add({
-        parameters: {
-          execute: { variant },
-          undo: { variant: selectedBlock.buttonVariant }
-        },
-        execute({ variant }) {
-          dispatch({
-            type: 'SetEditorFocusAction',
-            selectedBlock,
-            selectedStep: state.selectedStep
-          })
-          void buttonBlockUpdate({
-            variables: {
+    if (selectedBlock == null || variant == null) return
+    add({
+      parameters: {
+        execute: { variant },
+        undo: { variant: selectedBlock.buttonVariant }
+      },
+      execute({ variant }) {
+        dispatch({
+          type: 'SetEditorFocusAction',
+          selectedBlock,
+          selectedStep: state.selectedStep
+        })
+        void buttonBlockUpdate({
+          variables: {
+            id: selectedBlock.id,
+            variant
+          },
+          optimisticResponse: {
+            buttonBlockUpdate: {
               id: selectedBlock.id,
-              variant
-            },
-            optimisticResponse: {
-              buttonBlockUpdate: {
-                id: selectedBlock.id,
-                variant,
-                __typename: 'ButtonBlock'
-              }
+              variant,
+              __typename: 'ButtonBlock'
             }
-          })
-        }
-      })
-    }
+          }
+        })
+      }
+    })
   }
 
   const options = [
