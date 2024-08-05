@@ -9,9 +9,37 @@ import { SignUpBlockCreateInput, IconBlockCreateInput, SignUpBlockUpdateInput, I
 // GraphQL mutation operation: SignUpBlockCreate
 // ====================================================
 
+export interface SignUpBlockCreate_signUpBlockCreate_action_NavigateToBlockAction {
+  __typename: "NavigateToBlockAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  blockId: string;
+}
+
+export interface SignUpBlockCreate_signUpBlockCreate_action_LinkAction {
+  __typename: "LinkAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  url: string;
+}
+
+export interface SignUpBlockCreate_signUpBlockCreate_action_EmailAction {
+  __typename: "EmailAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  email: string;
+}
+
+export type SignUpBlockCreate_signUpBlockCreate_action = SignUpBlockCreate_signUpBlockCreate_action_NavigateToBlockAction | SignUpBlockCreate_signUpBlockCreate_action_LinkAction | SignUpBlockCreate_signUpBlockCreate_action_EmailAction;
+
 export interface SignUpBlockCreate_signUpBlockCreate {
   __typename: "SignUpBlock";
   id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  submitLabel: string | null;
+  submitIconId: string | null;
+  action: SignUpBlockCreate_signUpBlockCreate_action | null;
 }
 
 export interface SignUpBlockCreate_submitIcon {
