@@ -72,8 +72,8 @@ export function BeaconInit({ userInfo }: BeaconInitProps): ReactElement {
           top: 65px;
           right: 16px;
           width: 327px;
-          max-height: calc(100svh - 81px);
-          height: calc(100svh - 65px);
+          max-height: calc(100vh - 81px);
+          height: calc(100vh - 65px);
         }
         .BeaconFabButtonFrame {
           /* hides the icon */
@@ -84,10 +84,10 @@ export function BeaconInit({ userInfo }: BeaconInitProps): ReactElement {
             height: calc(100vh - 42px);
             border-radius: 0px;
             left: 0px;
-            max-height: 100%;
+            max-height: 100svh;
             right: 0px;
             top: 40px;
-            width: 100%;
+            width: 100shv;
           }
           .NotificationsFramecss__NotificationsFrameUI-sc-1ah8ai4-1 {
             // position: fixed !important;
