@@ -1269,6 +1269,7 @@ describe('JourneyResolver', () => {
         'journeyId',
         null,
         duplicateStepIds,
+        undefined,
         'duplicateJourneyId',
         duplicateStepIds
       )
@@ -1379,6 +1380,7 @@ describe('JourneyResolver', () => {
         'journeyId',
         null,
         duplicateStepIds,
+        undefined,
         'duplicateJourneyId',
         duplicateStepIds
       )
@@ -1447,6 +1449,7 @@ describe('JourneyResolver', () => {
         'journeyId',
         null,
         duplicateStepIds,
+        undefined,
         'duplicateJourneyId',
         duplicateStepIds
       )
