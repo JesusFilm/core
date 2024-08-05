@@ -4,17 +4,17 @@ import { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import {
-  BlockFields_IconBlock as IconBlock,
-  BlockFields_SignUpBlock as SignUpBlock
-} from '@core/journeys/ui/block/__generated__/BlockFields'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { ICON_FIELDS } from '@core/journeys/ui/Icon/iconFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { SIGN_UP_FIELDS } from '@core/journeys/ui/SignUp/signUpFields'
 import Mail2Icon from '@core/shared/ui/icons/Mail2'
 
-import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../__generated__/BlockFields'
+import {
+  BlockFields_CardBlock as CardBlock,
+  BlockFields_IconBlock as IconBlock,
+  BlockFields_SignUpBlock as SignUpBlock
+} from '../../../../../../../../__generated__/BlockFields'
 import { SignUpBlockCreate } from '../../../../../../../../__generated__/SignUpBlockCreate'
 import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
