@@ -1,9 +1,10 @@
 import { useQuery } from '@apollo/client'
+import Box from '@mui/material/Box'
 import { GetStaticProps } from 'next'
+import { useRouter } from 'next/router'
 import { useUser, withUser } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import { useRouter } from 'next/router'
 import { ReactElement, useEffect } from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
@@ -12,7 +13,6 @@ import { GET_JOURNEYS } from '@core/journeys/ui/useJourneysQuery'
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 import { GET_TAGS } from '@core/journeys/ui/useTagsQuery'
 
-import { Box } from '@mui/material'
 import {
   GetJourneys,
   GetJourneysVariables

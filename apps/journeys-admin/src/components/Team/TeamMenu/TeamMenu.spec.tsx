@@ -9,8 +9,8 @@ import {
   TeamProvider
 } from '@core/journeys/ui/TeamProvider'
 import { GetLastActiveTeamIdAndTeams } from '@core/journeys/ui/TeamProvider/__generated__/GetLastActiveTeamIdAndTeams'
-
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+
 import { TeamMenu } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -30,7 +30,7 @@ describe('TeamMenu', () => {
   const on = jest.fn()
 
   beforeEach(() => {
-    ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
+    (useMediaQuery as jest.Mock).mockImplementation(() => true)
     jest.clearAllMocks()
   })
 

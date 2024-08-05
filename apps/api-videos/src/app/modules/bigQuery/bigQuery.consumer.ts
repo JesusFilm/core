@@ -8,9 +8,9 @@ import { ImporterBibleBookNamesService } from '../importer/importerBibleBookName
 import { ImporterBibleBooksService } from '../importer/importerBibleBooks/importerBibleBooks.service'
 import { ImporterBibleCitationsService } from '../importer/importerBibleCitations/importerBibleCitations.service'
 import { ImporterKeywordsService } from '../importer/importerKeywords/importerKeywords.service'
+import { ImporterVideosService } from '../importer/importerVideos/importerVideos.service'
 import { ImporterVideoSubtitlesService } from '../importer/importerVideoSubtitle/importerVideoSubtitle.service'
 import { ImporterVideoVariantsService } from '../importer/importerVideoVariants/importerVideoVariants.service'
-import { ImporterVideosService } from '../importer/importerVideos/importerVideos.service'
 
 import { BigQueryService } from './bigQuery.service'
 
@@ -77,6 +77,7 @@ export class BigQueryConsumer extends WorkerHost {
 
     await this.importerBibleBooksService.getExistingIds()
 
+    // eslint-disable-next-line @typescript-eslint/no-for-in-array
     for (const index in this.tables) {
       try {
         const {

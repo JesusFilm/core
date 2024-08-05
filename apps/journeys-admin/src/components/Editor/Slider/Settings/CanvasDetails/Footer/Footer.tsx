@@ -1,14 +1,14 @@
 import Divider from '@mui/material/Divider'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
-import { useTranslation } from 'next-i18next'
 import dynamic from 'next/dynamic'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, SyntheticEvent, useEffect, useState } from 'react'
 
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
-import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import MessageChat1Icon from '@core/shared/ui/icons/MessageChat1'
 import UserProfileCircleIcon from '@core/shared/ui/icons/UserProfileCircle'
+import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
 import { Drawer } from '../../Drawer'
 

@@ -1,12 +1,14 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/BlockFields'
-import { IconFields } from '../../../../../../../../../__generated__/IconFields'
+import { GetJourney_journey as Journey } from '../../../../../../../../../__generated__/GetJourney'
 import { IconName } from '../../../../../../../../../__generated__/globalTypes'
+import { IconFields } from '../../../../../../../../../__generated__/IconFields'
 
 import { CommandUndoItem } from '../../../../../../Toolbar/Items/CommandUndoItem'
 import { ICON_BLOCK_NAME_UPDATE } from './Icon'

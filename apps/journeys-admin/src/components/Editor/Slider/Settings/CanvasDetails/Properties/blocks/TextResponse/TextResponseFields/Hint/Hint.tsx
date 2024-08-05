@@ -16,10 +16,7 @@ import {
 } from '../../../../../../../../../../../__generated__/TextResponseHintUpdate'
 
 export const TEXT_RESPONSE_HINT_UPDATE = gql`
-  mutation TextResponseHintUpdate(
-    $id: ID!
-    $hint: String!
-  ) {
+  mutation TextResponseHintUpdate($id: ID!, $hint: String!) {
     textResponseBlockUpdate(id: $id, input: { hint: $hint }) {
       id
       hint

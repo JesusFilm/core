@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import { renderHook } from '@testing-library/react'
 import { ReactNode } from 'react'
 
@@ -370,6 +371,7 @@ describe('CommandContext', () => {
       })
     })
 
+    // eslint-disable-next-line jest/no-identical-title
     it('should update state when command index in middle', () => {
       const command0: Command = {
         parameters: { execute: { arg1: 'execute' }, undo: { arg1: 'undo' } },
@@ -477,7 +479,7 @@ describe('CommandContext', () => {
           wrapper
         })
 
-        await result.current.undo()
+        result.current.undo()
 
         rerender()
 
@@ -515,7 +517,7 @@ describe('CommandContext', () => {
           wrapper
         })
 
-        await result.current.undo()
+        result.current.undo()
 
         rerender()
 
@@ -549,7 +551,7 @@ describe('CommandContext', () => {
           wrapper
         })
 
-        await result.current.undo()
+        result.current.undo()
 
         rerender()
 
@@ -584,7 +586,7 @@ describe('CommandContext', () => {
           wrapper
         })
 
-        await result.current.redo()
+        result.current.redo()
 
         rerender()
 
@@ -623,7 +625,7 @@ describe('CommandContext', () => {
           wrapper
         })
 
-        await result.current.redo()
+        result.current.redo()
 
         rerender()
 
@@ -657,7 +659,7 @@ describe('CommandContext', () => {
           wrapper
         })
 
-        await result.current.redo()
+        result.current.redo()
 
         rerender()
 
@@ -683,7 +685,7 @@ describe('CommandContext', () => {
           wrapper
         })
 
-        await result.current.add(command)
+        result.current.add(command)
 
         rerender()
 

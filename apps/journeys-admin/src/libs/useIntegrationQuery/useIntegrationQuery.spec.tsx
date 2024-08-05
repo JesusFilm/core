@@ -35,6 +35,7 @@ describe('useIntegrationQuery', () => {
       }
     ]
   }
+
   it('should get integrations for a team', async () => {
     const mockResult = jest.fn(() => {
       return {

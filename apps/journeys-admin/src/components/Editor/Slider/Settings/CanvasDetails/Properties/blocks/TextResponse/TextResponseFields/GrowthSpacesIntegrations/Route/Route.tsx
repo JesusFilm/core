@@ -1,5 +1,11 @@
+import { gql, useMutation } from '@apollo/client'
+import { SelectChangeEvent } from '@mui/material/Select'
+import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
+// eslint-disable-next-line no-restricted-imports
+import { useTranslation } from 'react-i18next'
 
+import { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useTranslation } from 'react-i18next'
 
@@ -7,6 +13,7 @@ import { gql, useMutation } from '@apollo/client'
 import { TreeBlock } from '@core/journeys/ui/block'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
+
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../../__generated__/BlockFields'
 import {
   TextResponseRouteUpdate,
@@ -19,7 +26,7 @@ import { Select } from '../Select'
 
 export const TEXT_RESPONSE_ROUTE_UPDATE = gql`
   mutation TextResponseRouteUpdate(
-    $id: ID!, 
+    $id: ID!
     $input: TextResponseBlockUpdateInput!
   ) {
     textResponseBlockUpdate(id: $id, input: $input) {

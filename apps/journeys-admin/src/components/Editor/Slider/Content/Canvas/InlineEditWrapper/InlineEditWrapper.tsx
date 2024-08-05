@@ -1,7 +1,9 @@
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { WrapperProps } from '@core/journeys/ui/BlockRenderer'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { Typography } from '@core/journeys/ui/Typography'
 
 import { ButtonFields } from '../../../../../../../__generated__/ButtonFields'
 import { RadioOptionFields } from '../../../../../../../__generated__/RadioOptionFields'
@@ -10,8 +12,6 @@ import { SignUpFields } from '../../../../../../../__generated__/SignUpFields'
 import { TextResponseFields } from '../../../../../../../__generated__/TextResponseFields'
 import { TypographyFields } from '../../../../../../../__generated__/TypographyFields'
 
-import { Typography } from '@core/journeys/ui/Typography'
-import { useTranslation } from 'react-i18next'
 import { ButtonEdit } from './ButtonEdit'
 import { RadioOptionEdit } from './RadioOptionEdit'
 import { RadioQuestionEdit } from './RadioQuestionEdit'

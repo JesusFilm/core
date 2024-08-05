@@ -3,6 +3,7 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
+import { TreeBlock } from '@core/journeys/ui/block'
 import { ActiveSlide, EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import {
@@ -12,7 +13,6 @@ import {
   edges,
   nodes
 } from '@core/journeys/ui/TemplateView/data'
-import { TreeBlock } from '@core/journeys/ui/block'
 import { transformer } from '@core/journeys/ui/transformer'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 

@@ -2,10 +2,10 @@ import { gql, useMutation } from '@apollo/client'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { RadioOption } from '@core/journeys/ui/RadioOption'
-import type { TreeBlock } from '@core/journeys/ui/block'
 
 import {
   RadioOptionBlockUpdateContent,
@@ -47,23 +47,23 @@ export function RadioOptionEdit({
     label === 'Option 1' || label === 'Option 2' ? '' : label
   )
 
-  async function handleSaveBlock(): Promise<void> {
+  function handleSaveBlock(): void {
     const currentLabel = value.trim().replace(/\n/g, '')
     if (label === currentLabel) return
 
-    await add({
+    add({
       parameters: {
         execute: { label: currentLabel },
         undo: { label }
       },
-      async execute({ label }) {
+      execute({ label }) {
         dispatch({
           type: 'SetEditorFocusAction',
           selectedBlock,
           selectedStep
         })
 
-        await radioOptionBlockUpdate({
+        void radioOptionBlockUpdate({
           variables: {
             id,
             input: { label }
@@ -79,7 +79,7 @@ export function RadioOptionEdit({
       }
     })
   }
-  const inputRef = useOnClickOutside(async () => await handleSaveBlock())
+  const inputRef = useOnClickOutside(async () => handleSaveBlock())
 
   const input = (
     <InlineEditInput

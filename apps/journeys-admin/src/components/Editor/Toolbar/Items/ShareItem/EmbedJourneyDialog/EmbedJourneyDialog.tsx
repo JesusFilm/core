@@ -4,9 +4,9 @@ import AccordionSummary from '@mui/material/AccordionSummary'
 import Box from '@mui/material/Box'
 import Link from '@mui/material/Link'
 import Stack from '@mui/material/Stack'
+import { Theme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
@@ -17,6 +17,7 @@ import { Dialog } from '@core/shared/ui/Dialog'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 import { useCustomDomainsQuery } from '../../../../../../libs/useCustomDomainsQuery'
+
 import { EmbedCardPreview } from './EmbedCardPreview'
 
 interface EmbedJourneyDialogProps {

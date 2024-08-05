@@ -3,8 +3,8 @@ import Divider from '@mui/material/Divider'
 import { ReactElement } from 'react'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/BlockFields'
-
 import { ImageBlockUpdateInput } from '../../../../../../../../__generated__/globalTypes'
+
 import { CustomUrl } from './CustomUrl'
 import { ImageUpload } from './ImageUpload'
 

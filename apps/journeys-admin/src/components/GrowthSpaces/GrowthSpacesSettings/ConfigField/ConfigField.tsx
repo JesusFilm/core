@@ -3,13 +3,14 @@ import IconButton from '@mui/material/IconButton'
 import InputAdornment from '@mui/material/InputAdornment'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
+import { Form, Formik, FormikValues } from 'formik'
 import { MouseEvent, ReactElement, useState } from 'react'
+// eslint-disable-next-line no-restricted-imports
+import { useTranslation } from 'react-i18next'
+import { object, string } from 'yup'
 
 import EyeClosedIcon from '@core/shared/ui/icons/EyeClosed'
 import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
-import { Form, Formik, FormikValues } from 'formik'
-import { useTranslation } from 'react-i18next'
-import { object, string } from 'yup'
 
 interface ConfigFieldProps {
   label: string
@@ -32,7 +33,7 @@ export function ConfigField({
   }
 
   function handleSubmit(values: FormikValues): void {
-    handleChange(values.value)
+    handleChange(values.value as string)
   }
 
   const validationSchema = object({
@@ -56,14 +57,16 @@ export function ConfigField({
           initialValues={{ value }}
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
-          enableReinitialize={true}
+          enableReinitialize
         >
           {({ values, errors, setFieldValue }) => (
             <Form>
               <TextField
                 type={visible ? 'text' : 'password'}
                 value={hover && !visible ? '' : values.value}
-                onChange={(e) => setFieldValue('value', e.target.value)}
+                onChange={async (e) =>
+                  await setFieldValue('value', e.target.value)
+                }
                 onBlur={() => handleSubmit(values)}
                 onClick={() => setVisible(true)}
                 onMouseEnter={() => setHover(true)}

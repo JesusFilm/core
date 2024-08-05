@@ -2,25 +2,22 @@ import { gql, useMutation } from '@apollo/client'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
-
 import { useCommand } from '@core/journeys/ui/CommandProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+
 import { BlockFields_TypographyBlock as TypographyBlock } from '../../../../../../../../../../__generated__/BlockFields'
+import { TypographyColor } from '../../../../../../../../../../__generated__/globalTypes'
 import {
   TypographyBlockUpdateColor,
   TypographyBlockUpdateColorVariables
 } from '../../../../../../../../../../__generated__/TypographyBlockUpdateColor'
-import { TypographyColor } from '../../../../../../../../../../__generated__/globalTypes'
 import { ColorDisplayIcon } from '../../../controls/ColorDisplayIcon'
 import { ToggleButtonGroup } from '../../../controls/ToggleButtonGroup'
 
 export const TYPOGRAPHY_BLOCK_UPDATE_COLOR = gql`
-  mutation TypographyBlockUpdateColor(
-    $id: ID!
-    $color: TypographyColor!
-  ) {
-    typographyBlockUpdate(id: $id, input: {color: $color}) {
+  mutation TypographyBlockUpdateColor($id: ID!, $color: TypographyColor!) {
+    typographyBlockUpdate(id: $id, input: { color: $color }) {
       id
       color
     }
@@ -43,36 +40,36 @@ export function Color(): ReactElement {
     | undefined
 
   function handleChange(color: TypographyColor): void {
-    if (selectedBlock != null && color != null) {
-      add({
-        parameters: {
-          execute: { color },
-          undo: {
-            color: selectedBlock.color
-          }
-        },
-        execute({ color }) {
-          dispatch({
-            type: 'SetEditorFocusAction',
-            selectedStep,
-            selectedBlock
-          })
-          void typographyBlockUpdate({
-            variables: {
-              id: selectedBlock.id,
-              color
-            },
-            optimisticResponse: {
-              typographyBlockUpdate: {
-                id: selectedBlock.id,
-                color,
-                __typename: 'TypographyBlock'
-              }
-            }
-          })
+    if (selectedBlock == null || color == null) return
+
+    add({
+      parameters: {
+        execute: { color },
+        undo: {
+          color: selectedBlock.color
         }
-      })
-    }
+      },
+      execute({ color }) {
+        dispatch({
+          type: 'SetEditorFocusAction',
+          selectedStep,
+          selectedBlock
+        })
+        void typographyBlockUpdate({
+          variables: {
+            id: selectedBlock.id,
+            input: { color }
+          },
+          optimisticResponse: {
+            typographyBlockUpdate: {
+              id: selectedBlock.id,
+              color,
+              __typename: 'TypographyBlock'
+            }
+          }
+        })
+      }
+    })
   }
 
   const options = [

@@ -1,3 +1,6 @@
+/* eslint-disable playwright/no-networkidle */
+/* eslint-disable @typescript-eslint/strict-boolean-expressions */
+/* eslint-disable playwright/no-conditional-in-test */
 import { expect, test } from '@playwright/test'
 
 /*  
@@ -13,8 +16,8 @@ test('NS Admin Monitoring: Check user can login and logout successfuly', async (
     )
   }
 
-  const email = process.env.PLAYWRIGHT_EMAIL as string
-  const password = process.env.PLAYWRIGHT_PASSWORD as string
+  const email = process.env.PLAYWRIGHT_EMAIL
+  const password = process.env.PLAYWRIGHT_PASSWORD
 
   await page.goto('https://admin.nextstep.is/')
 
@@ -27,6 +30,7 @@ test('NS Admin Monitoring: Check user can login and logout successfuly', async (
   await page.getByRole('button', { name: 'Continue with email' }).click()
 
   // Wait for the password input to appear
+  // eslint-disable-next-line playwright/no-wait-for-selector
   await page.waitForSelector('input[type="password"]')
   // Wait for all network calls to finish
   await page.waitForLoadState('networkidle')

@@ -1,7 +1,8 @@
 import { render, screen } from '@testing-library/react'
 
-import { IntegrationsButton } from '.'
 import { IntegrationType } from '../../../../../__generated__/globalTypes'
+
+import { IntegrationsButton } from '.'
 
 describe('IntegrationsButton', () => {
   it('should render integrations button', () => {

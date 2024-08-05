@@ -14,10 +14,7 @@ import {
 import { ToggleButtonGroup } from '../../../../controls/ToggleButtonGroup'
 
 export const TEXT_RESPONSE_MIN_ROWS_UPDATE = gql`
-  mutation TextResponseMinRowsUpdate(
-    $id: ID!
-    $minRows: Int
-  ) {
+  mutation TextResponseMinRowsUpdate($id: ID!, $minRows: Int) {
     textResponseBlockUpdate(id: $id, input: { minRows: $minRows }) {
       id
       minRows

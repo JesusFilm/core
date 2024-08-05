@@ -2,10 +2,10 @@ import { gql, useMutation } from '@apollo/client'
 import { ReactElement, useEffect, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { SignUp } from '@core/journeys/ui/SignUp'
-import type { TreeBlock } from '@core/journeys/ui/block'
 
 import {
   SignUpBlockUpdateSubmitLabel,
@@ -15,10 +15,7 @@ import { SignUpFields } from '../../../../../../../../__generated__/SignUpFields
 import { InlineEditInput } from '../InlineEditInput'
 
 export const SIGN_UP_BLOCK_UPDATE_SUBMIT_LABEL = gql`
-  mutation SignUpBlockUpdateSubmitLabel(
-    $id: ID!
-    $submitLabel: String!
-  ) {
+  mutation SignUpBlockUpdateSubmitLabel($id: ID!, $submitLabel: String!) {
     signUpBlockUpdate(id: $id, input: { submitLabel: $submitLabel }) {
       id
       submitLabel
@@ -28,7 +25,6 @@ export const SIGN_UP_BLOCK_UPDATE_SUBMIT_LABEL = gql`
 export function SignUpEdit({
   id,
   submitLabel,
-  __typename,
   ...signUpProps
 }: TreeBlock<SignUpFields>): ReactElement {
   const [signUpBlockUpdate] = useMutation<
@@ -47,17 +43,17 @@ export function SignUpEdit({
     dispatch
   } = useEditor()
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <only run effect when undo changes>
   useEffect(() => {
     if (undo == null || undo.id === commandInput.id) return
     resetCommandInput()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [undo?.id])
 
   useEffect(() => {
     setValue(submitLabel)
   }, [submitLabel])
 
-  function resetCommandInput() {
+  function resetCommandInput(): void {
     setCommandInput({ id: uuidv4(), value })
   }
 
@@ -101,7 +97,7 @@ export function SignUpEdit({
             }
           },
           context: {
-            debounceKey: `${__typename}:${id}`,
+            debounceKey: `${signUpProps.__typename}:${id}`,
             ...context
           }
         })
@@ -112,7 +108,6 @@ export function SignUpEdit({
   return (
     <SignUp
       {...signUpProps}
-      __typename={__typename}
       id={id}
       submitLabel={submitLabel}
       editableSubmitLabel={
@@ -120,7 +115,9 @@ export function SignUpEdit({
           name="submitLabel"
           fullWidth
           multiline
-          inputRef={(ref) => ref && ref.focus()}
+          inputRef={(ref) => {
+            if (ref != null) ref.focus()
+          }}
           onFocus={(e) =>
             e.currentTarget.setSelectionRange(
               e.currentTarget.value.length,

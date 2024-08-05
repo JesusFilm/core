@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Edge, OnSelectionChangeFunc, useKeyPress } from 'reactflow'
 
+import { TreeBlock } from '@core/journeys/ui/block'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields } from '../../../../../../../__generated__/BlockFields'
 import { useBlockDeleteCommand } from '../../../../utils/useBlockDeleteCommand'
-
-import { TreeBlock } from '@core/journeys/ui/block'
 import { useDeleteEdge } from '../useDeleteEdge'
 
 const isEdge = (element: Edge | BlockFields): element is Edge =>
@@ -16,7 +15,7 @@ export function useDeleteOnKeyPress(): {
   onSelectionChange: OnSelectionChangeFunc
 } {
   const {
-    state: { selectedBlock, activeSlide, showAnalytics, steps }
+    state: { selectedBlock, activeSlide, showAnalytics }
   } = useEditor()
 
   const deleteEdge = useDeleteEdge()
@@ -41,7 +40,7 @@ export function useDeleteOnKeyPress(): {
 
   const deleteEvent = useKeyPress(['Delete', 'Backspace'])
   const { addBlockDelete } = useBlockDeleteCommand()
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+
   useEffect(() => {
     if (
       deleteEvent &&
@@ -55,11 +54,12 @@ export function useDeleteOnKeyPress(): {
           sourceHandle: selected.sourceHandle
         })
       } else {
-        if (selected != null) void addBlockDelete(selected)
+        if (selected != null) addBlockDelete(selected)
       }
 
       setSelected(undefined)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deleteEvent])
 
   return { onSelectionChange }

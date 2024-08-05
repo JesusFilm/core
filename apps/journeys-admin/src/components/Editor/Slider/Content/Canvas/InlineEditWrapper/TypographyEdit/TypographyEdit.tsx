@@ -3,11 +3,11 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
-import { Typography } from '@core/journeys/ui/Typography'
 import type { TreeBlock } from '@core/journeys/ui/block'
-
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { Typography } from '@core/journeys/ui/Typography'
+
 import {
   TypographyBlockUpdateContent,
   TypographyBlockUpdateContentVariables
@@ -16,10 +16,7 @@ import { TypographyFields } from '../../../../../../../../__generated__/Typograp
 import { InlineEditInput } from '../InlineEditInput'
 
 export const TYPOGRAPHY_BLOCK_UPDATE_CONTENT = gql`
-  mutation TypographyBlockUpdateContent(
-    $id: ID!
-    $content: String!
-  ) {
+  mutation TypographyBlockUpdateContent($id: ID!, $content: String!) {
     typographyBlockUpdate(id: $id, input: { content: $content }) {
       id
       content
@@ -29,7 +26,6 @@ export const TYPOGRAPHY_BLOCK_UPDATE_CONTENT = gql`
 export function TypographyEdit({
   id,
   content,
-  __typename,
   ...props
 }: TreeBlock<TypographyFields>): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -50,17 +46,17 @@ export function TypographyEdit({
     dispatch
   } = useEditor()
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <only run effect when undo changes>
   useEffect(() => {
     if (undo == null || undo.id === commandInput.id) return
     resetCommandInput()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [undo?.id])
 
   useEffect(() => {
     setValue(content)
   }, [content])
 
-  function resetCommandInput() {
+  function resetCommandInput(): void {
     setCommandInput({ id: uuidv4(), value })
   }
 
@@ -104,7 +100,7 @@ export function TypographyEdit({
             }
           },
           context: {
-            debounceKey: `${__typename}:${id}`,
+            debounceKey: `${props?.__typename}:${id}`,
             ...context
           }
         })
@@ -115,7 +111,6 @@ export function TypographyEdit({
   return (
     <Typography
       {...props}
-      __typename={__typename}
       id={id}
       content={content}
       editableContent={
@@ -124,9 +119,7 @@ export function TypographyEdit({
           fullWidth
           multiline
           inputRef={(ref) => {
-            if (ref) {
-              ref.focus()
-            }
+            if (ref != null) ref.focus()
           }}
           onFocus={(e) => {
             ;(e.currentTarget as HTMLInputElement).setSelectionRange(

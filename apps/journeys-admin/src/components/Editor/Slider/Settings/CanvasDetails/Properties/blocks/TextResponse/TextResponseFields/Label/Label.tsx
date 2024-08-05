@@ -17,10 +17,7 @@ import {
 } from '../../../../../../../../../../../__generated__/TextResponseLabelUpdate'
 
 export const TEXT_RESPONSE_LABEL_UPDATE = gql`
-  mutation TextResponseLabelUpdate(
-    $id: ID!
-    $label: String!
-  ) {
+  mutation TextResponseLabelUpdate($id: ID!, $label: String!) {
     textResponseBlockUpdate(id: $id, input: { label: $label }) {
       id
       label
