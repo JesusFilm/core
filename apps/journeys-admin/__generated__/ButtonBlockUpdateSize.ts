@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ButtonBlockUpdateInput, ButtonSize } from "./globalTypes";
+import { ButtonSize } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: ButtonBlockUpdateSize
@@ -21,6 +21,5 @@ export interface ButtonBlockUpdateSize {
 
 export interface ButtonBlockUpdateSizeVariables {
   id: string;
-  journeyId: string;
-  input: ButtonBlockUpdateInput;
+  size: ButtonSize;
 }

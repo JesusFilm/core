@@ -52,7 +52,6 @@ export function useUpdateEdge(): (
         const { data } = await blockOrderUpdate({
           variables: {
             id: target,
-            journeyId: journey.id,
             parentOrder: 0
           },
           optimisticResponse: {

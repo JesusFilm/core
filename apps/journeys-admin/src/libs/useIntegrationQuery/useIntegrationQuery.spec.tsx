@@ -8,7 +8,9 @@ import {
 } from '../../../__generated__/GetIntegration'
 import { IntegrationType } from '../../../__generated__/globalTypes'
 
-import { GET_INTEGRATION, useIntegrationQuery } from './useIntegrationQuery'
+import { GET_INTEGRATION } from './useIntegrationQuery'
+
+import { useIntegrationQuery } from '.'
 
 describe('useIntegrationQuery', () => {
   const route: Route = {

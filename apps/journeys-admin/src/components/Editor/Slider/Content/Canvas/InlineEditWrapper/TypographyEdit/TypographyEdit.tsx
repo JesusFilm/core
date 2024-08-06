@@ -100,7 +100,7 @@ export function TypographyEdit({
             }
           },
           context: {
-            debounceKey: `${props?.__typename}:${id}`,
+            debounceKey: `TypographyBlock:${id}`,
             ...context
           }
         })

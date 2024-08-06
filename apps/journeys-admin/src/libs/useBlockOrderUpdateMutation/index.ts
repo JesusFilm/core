@@ -1,1 +1,4 @@
-export { useBlockOrderUpdateMutation } from './useBlockOrderUpdateMutation'
+export {
+  useBlockOrderUpdateMutation,
+  getNewParentOrder
+} from './useBlockOrderUpdateMutation'

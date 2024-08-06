@@ -10,7 +10,7 @@ import { SwiperOptions } from 'swiper/types'
 
 import { useJourneysQuery } from '../../libs/useJourneysQuery'
 import { GetJourneys_journeys as Journey } from '../../libs/useJourneysQuery/__generated__/GetJourneys'
-import { TemplateGalleryCarousel } from '../TemplateGallery/TemplateGalleryCarousel'
+import { ContentCarousel } from '../ContentCarousel'
 import { TemplateGalleryCard } from '../TemplateGalleryCard'
 
 interface Contents {
@@ -102,7 +102,7 @@ export function TemplateSections({
     <Stack spacing={8} data-testid="JourneysAdminTemplateSections">
       {tagIds?.length !== 1 &&
         (loading || (collection != null && collection.length > 0)) && (
-          <TemplateGalleryCarousel
+          <ContentCarousel
             priority
             heading={tagIds == null ? t('Featured & New') : t('Most Relevant')}
             items={collection}
@@ -142,7 +142,7 @@ export function TemplateSections({
         ({ category, journeys }, key) =>
           ((tagIds == null && journeys.length >= 5) ||
             tagIds?.includes(key) === true) && (
-            <TemplateGalleryCarousel
+            <ContentCarousel
               heading={category}
               items={journeys}
               renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}
