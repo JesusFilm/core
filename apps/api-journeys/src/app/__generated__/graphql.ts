@@ -416,6 +416,12 @@ export class StepBlockUpdateInput {
     y?: Nullable<number>;
 }
 
+export class StepBlockPositionUpdateInput {
+    id: string;
+    x?: Nullable<number>;
+    y?: Nullable<number>;
+}
+
 export class TextResponseBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
@@ -920,6 +926,8 @@ export abstract class IMutation {
     abstract stepBlockCreate(input: StepBlockCreateInput): StepBlock | Promise<StepBlock>;
 
     abstract stepBlockUpdate(id: string, input: StepBlockUpdateInput, journeyId?: Nullable<string>): StepBlock | Promise<StepBlock>;
+
+    abstract stepBlockPositionUpdatee(input: StepBlockPositionUpdateInput[]): StepBlock[] | Promise<StepBlock[]>;
 
     abstract textResponseBlockCreate(input: TextResponseBlockCreateInput): TextResponseBlock | Promise<TextResponseBlock>;
 
