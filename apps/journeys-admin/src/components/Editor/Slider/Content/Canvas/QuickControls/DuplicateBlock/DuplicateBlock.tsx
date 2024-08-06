@@ -73,11 +73,7 @@ export function DuplicateBlock({
   const disableAction = selectedBlock == null || disabled
 
   function handleDuplicateBlock(): void {
-    if (
-      selectedBlock == null ||
-      journey == null ||
-    )
-      return
+    if (selectedBlock == null || journey == null) return
     const { parentOrder } = selectedBlock
     if (parentOrder == null) return
 
