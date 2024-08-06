@@ -40,7 +40,7 @@ export function StepFooter({
       sx={{
         position: { xs: 'absolute', lg: 'relative' },
         zIndex: 1,
-        bottom: 0,
+        bottom: { xs: 12, lg: 0 },
         width: { xs: '100%', lg: 'auto' },
         ...sx
       }}

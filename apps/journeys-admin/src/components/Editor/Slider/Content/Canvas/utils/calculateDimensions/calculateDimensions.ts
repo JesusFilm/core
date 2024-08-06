@@ -1,7 +1,7 @@
 import { RefObject } from 'react'
 
-export const CARD_WIDTH = 375
-export const CARD_HEIGHT = 670
+export const CARD_WIDTH = 300
+export const CARD_HEIGHT = 650
 
 export function calculateScale(ref: RefObject<HTMLDivElement>): number {
   const current = ref.current
