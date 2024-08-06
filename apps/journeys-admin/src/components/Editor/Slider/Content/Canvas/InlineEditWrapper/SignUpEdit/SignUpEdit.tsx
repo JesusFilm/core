@@ -97,7 +97,7 @@ export function SignUpEdit({
             }
           },
           context: {
-            debounceKey: `${signUpProps.__typename}:${id}`,
+            debounceKey: `SignUpBlock:${id}`,
             ...context
           }
         })
