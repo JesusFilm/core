@@ -3,10 +3,13 @@ import Card from '@mui/material/Card'
 import CardMedia from '@mui/material/CardMedia'
 import Stack from '@mui/material/Stack'
 import { alpha } from '@mui/material/styles'
+import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import isEmpty from 'lodash/isEmpty'
 import Image from 'next/image'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
+import { OnConnect, useStore } from 'reactflow'
 
 import {
   ActiveContent,
@@ -14,13 +17,11 @@ import {
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import Tooltip from '@mui/material/Tooltip'
-import { useTranslation } from 'react-i18next'
-import { OnConnect, useStore } from 'reactflow'
+
 import { useUpdateEdge } from '../../libs/useUpdateEdge'
 import { BaseNode, HandleVariant } from '../BaseNode'
 
-const zoomSelector = (s) => {
+const zoomSelector = (s): number => {
   const zoom = s.transform[2]
 
   // Zoom : Offset

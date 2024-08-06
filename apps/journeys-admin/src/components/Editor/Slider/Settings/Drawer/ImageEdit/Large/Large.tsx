@@ -1,10 +1,10 @@
 import Box from '@mui/material/Box'
+import IconButton from '@mui/material/IconButton'
 import Skeleton from '@mui/material/Skeleton'
 import { ReactElement } from 'react'
 
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
-import IconButton from '@mui/material/IconButton'
 
 interface LargeProps {
   loading?: boolean
