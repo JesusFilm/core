@@ -46,6 +46,7 @@ export function setBeaconPageViewed(route: string): void {
 }
 
 export function setBeaconRoute(route: string): void {
-  if (window.Beacon == null) return
-  window.Beacon('navigate', route)
+  if (window.Beacon != null) {
+    window.Beacon('navigate', route)
+  }
 }

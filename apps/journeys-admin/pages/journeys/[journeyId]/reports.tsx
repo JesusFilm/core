@@ -33,7 +33,6 @@ function JourneyReportsPage({ flags }): ReactElement {
   const ref = useRef(null)
   const currentRef = ref.current
   const [open, setOpen] = useState(true)
-  setBeaconRoute('/ask/')
 
   const journeyId = router.query.journeyId as string
 
@@ -79,7 +78,10 @@ function JourneyReportsPage({ flags }): ReactElement {
             'We are collecting feedback on the new analytics new feature. Please take a moment to share your thoughts.'
           )}
           open={open}
-          handleClose={() => setOpen(false)}
+          handleClose={() => {
+            setBeaconRoute('/ask/')
+            setOpen(false)
+          }}
           currentRef={currentRef}
           pointerPosition="92%"
         />
