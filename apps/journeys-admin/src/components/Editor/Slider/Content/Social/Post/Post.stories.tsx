@@ -2,11 +2,11 @@ import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
 import {} from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
 
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { Post } from '.'
 
 const PostStory: Meta<typeof Post> = {
