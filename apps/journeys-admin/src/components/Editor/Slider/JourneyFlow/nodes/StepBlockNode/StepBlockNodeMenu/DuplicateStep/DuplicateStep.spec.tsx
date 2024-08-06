@@ -14,7 +14,13 @@ import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../../_
 import { GetJourney_journey as Journey } from '../../../../../../../../../__generated__/GetJourney'
 import { StepDuplicate } from '../../../../../../../../../__generated__/StepDuplicate'
 import { TestEditorState } from '../../../../../../../../libs/TestEditorState'
-import { selectedStep } from '../../../../../../../../libs/useBlockDeleteMutation/useBlockDeleteMutation.mock'
+import {
+  deleteBlockMock,
+  selectedStep
+} from '../../../../../../../../libs/useBlockDeleteMutation/useBlockDeleteMutation.mock'
+import { useBlockRestoreMutationMock as blockRestoreMock } from '../../../../../../../../libs/useBlockRestoreMutation/useBlockRestoreMutation.mock'
+import { CommandRedoItem } from '../../../../../../Toolbar/Items/CommandRedoItem'
+import { CommandUndoItem } from '../../../../../../Toolbar/Items/CommandUndoItem'
 
 import { STEP_DUPLICATE } from './DuplicateStep'
 
@@ -104,6 +110,135 @@ describe('DuplicateStep', () => {
     await waitFor(async () => await userEvent.click(duplicateButton))
 
     await waitFor(() => expect(mockDuplicateStepResult).toHaveBeenCalled())
+  })
+
+  it('should undo the duplicated step', async () => {
+    const mockDuplicateStepResult = jest.fn(() => ({
+      ...mockStepDuplicate.result
+    }))
+
+    const blockDeleteMockResult = jest
+      .fn()
+      .mockResolvedValue(deleteBlockMock.result)
+    render(
+      <MockedProvider
+        mocks={[
+          { ...mockStepDuplicate, result: mockDuplicateStepResult },
+          {
+            request: {
+              ...deleteBlockMock.request,
+              variables: { id: 'stepId' }
+            },
+            result: blockDeleteMockResult
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey }}>
+            <EditorProvider
+              initialState={{
+                steps: [{ ...selectedStep, parentOrder: 0 }]
+              }}
+            >
+              <DuplicateStep
+                step={selectedStep}
+                xPos={0}
+                yPos={0}
+                handleClick={noop}
+              />
+              <CommandUndoItem variant="button" />
+            </EditorProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    const duplicateButton = screen.getByRole('menuitem', {
+      name: 'Duplicate Card'
+    })
+    await waitFor(async () => await userEvent.click(duplicateButton))
+
+    await waitFor(() => expect(mockDuplicateStepResult).toHaveBeenCalled())
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Undo'
+      })
+    )
+    await waitFor(() => expect(blockDeleteMockResult).toHaveBeenCalled())
+  })
+
+  it('should redo the duplicated step', async () => {
+    const mockDuplicateStepResult = jest.fn(() => ({
+      ...mockStepDuplicate.result
+    }))
+
+    const blockDeleteMockResult = jest
+      .fn()
+      .mockResolvedValue(deleteBlockMock.result)
+
+    const blockRestoreMockResult = jest
+      .fn()
+      .mockResolvedValue(blockRestoreMock.result)
+
+    render(
+      <MockedProvider
+        mocks={[
+          { ...mockStepDuplicate, result: mockDuplicateStepResult },
+          {
+            request: {
+              ...deleteBlockMock.request,
+              variables: { id: 'stepId' }
+            },
+            result: blockDeleteMockResult
+          },
+          {
+            request: {
+              ...blockRestoreMock.request,
+              variables: { id: 'stepId' }
+            },
+            result: blockRestoreMockResult
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey }}>
+            <EditorProvider
+              initialState={{
+                steps: [{ ...selectedStep, parentOrder: 0 }]
+              }}
+            >
+              <DuplicateStep
+                step={selectedStep}
+                xPos={0}
+                yPos={0}
+                handleClick={noop}
+              />
+              <CommandUndoItem variant="button" />
+              <CommandRedoItem variant="button" />
+            </EditorProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    const duplicateButton = screen.getByRole('menuitem', {
+      name: 'Duplicate Card'
+    })
+    await waitFor(async () => await userEvent.click(duplicateButton))
+
+    await waitFor(() => expect(mockDuplicateStepResult).toHaveBeenCalled())
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Undo'
+      })
+    )
+    await waitFor(() => expect(blockDeleteMockResult).toHaveBeenCalled())
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Redo'
+      })
+    )
+    await waitFor(() => expect(blockRestoreMockResult).toHaveBeenCalled())
   })
 
   it('should update cache after duplication', async () => {
