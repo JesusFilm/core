@@ -18,10 +18,15 @@ import {
 } from '../../../../../../../../__generated__/globalTypes'
 
 import { BLOCK_DUPLICATE, DuplicateBlock } from './DuplicateBlock'
+import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
+}))
+
+jest.mock('uuid', () => ({
+  v4: () => 'newBlockId'
 }))
 
 describe('DuplicateBlock', () => {
@@ -45,7 +50,13 @@ describe('DuplicateBlock', () => {
       variables: {
         id: block.id,
         journeyId: 'journeyId',
-        parentOrder: blockOrder + 1
+        parentOrder: blockOrder + 1,
+        idMap: [
+          {
+            oldId: block.id,
+            newId: 'newBlockId'
+          }
+        ]
       }
     },
     result: {
@@ -54,7 +65,7 @@ describe('DuplicateBlock', () => {
           {
             __typename: 'TypographyBlock',
             id: 'duplicatedId'
-          }
+          } as TypographyBlock
         ]
       }
     }
@@ -83,6 +94,37 @@ describe('DuplicateBlock', () => {
       </MockedProvider>
     )
     const button = screen.getByRole('button')
+    expect(button).toContainElement(screen.getByTestId('CopyLeftIcon'))
+    await userEvent.click(button)
+    await waitFor(() => expect(duplicateBlockResultMock).toHaveBeenCalled())
+  })
+
+  it('should undo duplicate a block ', async () => {
+    const duplicateBlockResultMock = jest.fn(() => ({
+      ...duplicateBlockMock.result
+    }))
+    render(
+      <MockedProvider
+        mocks={[{ ...duplicateBlockMock, result: duplicateBlockResultMock }]}
+      >
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: { id: 'journeyId' } as unknown as Journey,
+              variant: 'admin'
+            }}
+          >
+            <EditorProvider initialState={{ selectedBlock: block }}>
+              <DuplicateBlock />
+              <CommandUndoItem variant="button" />
+            </EditorProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    const button = screen.getByRole('button', {
+      name: 'Duplicate Block Actions'
+    })
     expect(button).toContainElement(screen.getByTestId('CopyLeftIcon'))
     await userEvent.click(button)
     await waitFor(() => expect(duplicateBlockResultMock).toHaveBeenCalled())
