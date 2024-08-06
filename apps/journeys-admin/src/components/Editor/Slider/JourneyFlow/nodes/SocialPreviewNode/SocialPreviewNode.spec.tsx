@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, within } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { ReactFlowProvider } from 'reactflow'
 
 import { EditorState } from '@core/journeys/ui/EditorProvider'
@@ -23,7 +24,6 @@ import {
 import { mockReactFlow } from '../../../../../../../test/mockReactFlow'
 import { TestEditorState } from '../../../../../../libs/TestEditorState'
 
-import userEvent from '@testing-library/user-event'
 import { SocialPreviewNode } from '.'
 
 describe('SocialPreviewNode', () => {

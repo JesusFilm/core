@@ -1,11 +1,11 @@
 import { render, screen, within } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { JourneyFields as Journey } from '../../../../../../../__generated__/JourneyFields'
 import { ThemeProvider } from '../../../../../ThemeProvider'
 
-import userEvent from '@testing-library/user-event'
 import { Post } from '.'
 
 describe('Post', () => {
