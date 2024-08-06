@@ -21,6 +21,7 @@ export class TeamsPage {
   memberEmail = ''
 
   async createNewTeamAndVerifyCreatedTeam() {
+    await this.clickDismissIfDialogueComesUp()
     await this.clickThreeDotOfTeams()
     await this.clickThreeDotOptions('New Team')
     await this.enterTeamName()
@@ -59,6 +60,13 @@ export class TeamsPage {
   async verifyMemberAddedViaPlusIconAtTopOfTheRightCorner() {
     await this.clickMemberPlusIcon()
     await this.verifyMemberAdded()
+  }
+
+  async clickDismissIfDialogueComesUp() {
+    // First time user journey - Dismiss the "More journeys here" dialogue
+    await this.page
+      .locator('div.MuiStack-root button:has-text("Dismiss")')
+      .click()
   }
 
   async clickThreeDotOfTeams() {
