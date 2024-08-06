@@ -32,6 +32,7 @@ export function NotificationPopover({
         vertical: 35,
         horizontal: 'left'
       }}
+      onClose={handleClose}
       slotProps={{
         paper: {
           sx: {

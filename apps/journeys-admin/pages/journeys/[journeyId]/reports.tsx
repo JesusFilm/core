@@ -9,13 +9,14 @@ import {
 } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import { ReactElement } from 'react'
+import { ReactElement, useRef, useState } from 'react'
 
 import { GetAdminJourney } from '../../../__generated__/GetAdminJourney'
 import { JourneysReportType } from '../../../__generated__/globalTypes'
 import { UserJourneyOpen } from '../../../__generated__/UserJourneyOpen'
 import { MemoizedDynamicReport } from '../../../src/components/DynamicPowerBiReport'
 import { HelpScoutBeacon } from '../../../src/components/HelpScoutBeacon'
+import { NotificationPopover } from '../../../src/components/NotificationPopover'
 import { PageWrapper } from '../../../src/components/PageWrapper'
 import { PlausibleEmbedDashboard } from '../../../src/components/PlausibleEmbedDashboard'
 import { ReportsNavigation } from '../../../src/components/ReportsNavigation'
@@ -26,6 +27,10 @@ function JourneyReportsPage({ flags }): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const user = useUser()
   const router = useRouter()
+
+  const ref = useRef(null)
+  const currentRef = ref.current
+  const [open, setOpen] = useState(true)
 
   const journeyId = router.query.journeyId as string
 
@@ -45,7 +50,7 @@ function JourneyReportsPage({ flags }): ReactElement {
             gap={3}
           >
             <ReportsNavigation destination="visitor" journeyId={journeyId} />
-            <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+            <Box ref={ref} sx={{ display: { xs: 'none', md: 'flex' } }}>
               <HelpScoutBeacon
                 userInfo={{
                   name: user?.displayName ?? '',
@@ -65,6 +70,16 @@ function JourneyReportsPage({ flags }): ReactElement {
             journeyId={journeyId}
           />
         )}
+        <NotificationPopover
+          title={t('New Feature Feedback')}
+          description={t(
+            'We are collecting feedback on the new analytics new feature. Please take a moment to share your thoughts.'
+          )}
+          open={open}
+          handleClose={() => setOpen(false)}
+          currentRef={currentRef}
+          pointerPosition="92%"
+        />
       </PageWrapper>
     </>
   )
