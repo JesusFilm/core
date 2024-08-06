@@ -109,7 +109,7 @@ describe('transformSteps', () => {
         draggable: false,
         id: 'SocialPreview',
         position: {
-          x: -365,
+          x: -240,
           y: -46
         },
         type: 'SocialPreview'

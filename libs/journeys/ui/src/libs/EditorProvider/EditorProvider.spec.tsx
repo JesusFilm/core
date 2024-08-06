@@ -597,13 +597,13 @@ describe('EditorContext', () => {
             type: 'SetEditorFocusAction'
           })
         ).toEqual({
-          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer,
           activeContent: 'canvas',
           activeSlide: ActiveSlide.Content,
           selectedAttributeId: 'selectedAttributeId',
-          selectedBlock: step,
+          selectedBlock: block,
           selectedGoalUrl: 'https://www.example.com',
-          selectedBlockId: 'step0.id',
+          selectedBlockId: block.id,
           selectedStepId: 'step0.id',
           selectedStep: {
             __typename: 'StepBlock',
