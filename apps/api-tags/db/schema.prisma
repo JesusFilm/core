@@ -18,6 +18,12 @@ datasource db {
   url      = env("PG_DATABASE_URL_TAGS")
 }
 
+generator pothos {
+  provider     = "prisma-pothos-types"
+  clientOutput = ".prisma/api-tags-client"
+  output       = "../src/__generated__/pothos-types.ts"
+}
+
 enum Service {
   apiJourneys
   apiLanguages
