@@ -3,21 +3,20 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
-import { ButtonBlockUpdateVariant } from '../../../../../../../../../../__generated__/ButtonBlockUpdateVariant'
+import {
+  ButtonBlockUpdateVariant,
+  ButtonBlockUpdateVariantVariables
+} from '../../../../../../../../../../__generated__/ButtonBlockUpdateVariant'
 import { ButtonVariant } from '../../../../../../../../../../__generated__/globalTypes'
 import { ToggleButtonGroup } from '../../../controls/ToggleButtonGroup'
 
 export const BUTTON_BLOCK_UPDATE = gql`
-  mutation ButtonBlockUpdateVariant(
-    $id: ID!
-    $journeyId: ID!
-    $input: ButtonBlockUpdateInput!
-  ) {
-    buttonBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+  mutation ButtonBlockUpdateVariant($id: ID!, $variant: ButtonVariant!) {
+    buttonBlockUpdate(id: $id, input: { variant: $variant }) {
       id
       variant
     }
@@ -26,32 +25,45 @@ export const BUTTON_BLOCK_UPDATE = gql`
 
 export function Variant(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [buttonBlockUpdate] =
-    useMutation<ButtonBlockUpdateVariant>(BUTTON_BLOCK_UPDATE)
+  const [buttonBlockUpdate] = useMutation<
+    ButtonBlockUpdateVariant,
+    ButtonBlockUpdateVariantVariables
+  >(BUTTON_BLOCK_UPDATE)
 
-  const { journey } = useJourney()
-  const { state } = useEditor()
+  const { state, dispatch } = useEditor()
+  const { add } = useCommand()
   const selectedBlock = state.selectedBlock as
     | TreeBlock<ButtonBlock>
     | undefined
 
-  async function handleChange(variant: ButtonVariant): Promise<void> {
-    if (selectedBlock != null && variant != null && journey != null) {
-      await buttonBlockUpdate({
-        variables: {
-          id: selectedBlock.id,
-          journeyId: journey.id,
-          input: { variant }
-        },
-        optimisticResponse: {
-          buttonBlockUpdate: {
+  function handleChange(variant: ButtonVariant): void {
+    if (selectedBlock == null || variant == null) return
+    add({
+      parameters: {
+        execute: { variant },
+        undo: { variant: selectedBlock.buttonVariant }
+      },
+      execute({ variant }) {
+        dispatch({
+          type: 'SetEditorFocusAction',
+          selectedBlock,
+          selectedStep: state.selectedStep
+        })
+        void buttonBlockUpdate({
+          variables: {
             id: selectedBlock.id,
-            variant,
-            __typename: 'ButtonBlock'
+            variant
+          },
+          optimisticResponse: {
+            buttonBlockUpdate: {
+              id: selectedBlock.id,
+              variant,
+              __typename: 'ButtonBlock'
+            }
           }
-        }
-      })
-    }
+        })
+      }
+    })
   }
 
   const options = [
