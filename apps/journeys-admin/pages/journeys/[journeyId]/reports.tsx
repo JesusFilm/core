@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
 import {
@@ -44,12 +45,14 @@ function JourneyReportsPage({ flags }): ReactElement {
             gap={3}
           >
             <ReportsNavigation destination="visitor" journeyId={journeyId} />
-            <HelpScoutBeacon
-              userInfo={{
-                name: user?.displayName ?? '',
-                email: user?.email ?? ''
-              }}
-            />
+            <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+              <HelpScoutBeacon
+                userInfo={{
+                  name: user?.displayName ?? '',
+                  email: user?.email ?? ''
+                }}
+              />
+            </Box>
           </Stack>
         }
         mainBodyPadding={false}

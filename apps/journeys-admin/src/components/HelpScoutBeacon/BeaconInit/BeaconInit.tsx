@@ -5,6 +5,20 @@ import { ReactElement, useEffect, useState } from 'react'
 
 import { FormObject } from '@core/journeys/ui/setBeaconPageViewed'
 
+import {
+  BEACON_ICON_DISPLAY,
+  BEACON_STYLE,
+  DESKTOP_APP_BAR_GAP,
+  DESKTOP_CONTAINER_HEIGHT,
+  DESKTOP_CONTAINER_MAX_HEIGHT,
+  DESKTOP_CONTAINER_PADDING,
+  DESKTOP_CONTAINER_WIDTH,
+  MOBILE_APP_BAR_GAP,
+  MOBILE_CONTAINER_HEIGHT,
+  MOBILE_CONTAINER_MAX_HEIGHT,
+  MOBILE_CONTAINER_WIDTH
+} from './beaconProperties'
+
 interface BeaconInitProps {
   userInfo?: FormObject
 }
@@ -49,10 +63,8 @@ export function BeaconInit({ userInfo }: BeaconInitProps): ReactElement {
         window.Beacon('init', '4f0abc47-b29c-454a-b618-39b34fd116b8');
         window.Beacon('config', {
           display: {
-            // icon shows close button on mobile more consistently
-            style: 'icon',
-            position: 'right',
-            hideFABOnMobile: true
+            style: '${BEACON_STYLE}',
+            position: 'right'
           },
         });
         `}
@@ -62,32 +74,23 @@ export function BeaconInit({ userInfo }: BeaconInitProps): ReactElement {
           z-index: ${zIndex.modal + 2} !important;
           position: sticky;
         }
-        .hsds-beacon .BeaconFabButtonFrame.is-configDisplayRight,
-        .hsds-beacon .BeaconFabButtonFrame--left {
-          left: 6px !important;
-          bottom: 10px !important;
-          transform: scale(0.9) !important;
+        .BeaconFabButtonFrame {
+          display: ${BEACON_ICON_DISPLAY};
         }
         .hsds-beacon .BeaconContainer.is-configDisplayRight {
-          top: 65px;
-          right: 16px;
-          width: 327px;
-          max-height: calc(100vh - 81px);
-          height: calc(100vh - 65px);
-        }
-        .BeaconFabButtonFrame {
-          /* hides the icon */
-          display: none !important;
+          top: ${DESKTOP_APP_BAR_GAP};
+          right: ${DESKTOP_CONTAINER_PADDING};
+          width: ${DESKTOP_CONTAINER_WIDTH};
+          height: ${DESKTOP_CONTAINER_HEIGHT};
+          max-height: ${DESKTOP_CONTAINER_MAX_HEIGHT};
         }
         ${breakpoints.down('md')} {
           .hsds-beacon .BeaconContainer.is-configDisplayRight {
-            height: calc(100svh - 42px);
+            top: ${MOBILE_APP_BAR_GAP};
+            width: ${MOBILE_CONTAINER_WIDTH};
+            height: ${MOBILE_CONTAINER_HEIGHT};
+            max-height: ${MOBILE_CONTAINER_MAX_HEIGHT};
             border-radius: 0px;
-            left: 0px;
-            max-height: 100svh;
-            right: 0px;
-            top: 40px;
-            width: 100%;
           }
           .NotificationsFramecss__NotificationsFrameUI-sc-1ah8ai4-1 {
             // position: fixed !important;
@@ -102,6 +105,12 @@ export function BeaconInit({ userInfo }: BeaconInitProps): ReactElement {
             right: 25px !important;
             // width: 325px !important;
           }
+        }
+        .hsds-beacon .BeaconFabButtonFrame.is-configDisplayRight,
+        .hsds-beacon .BeaconFabButtonFrame--left {
+          left: 6px !important;
+          bottom: 10px !important;
+          transform: scale(0.9) !important;
         }
         `}</style>
     </>

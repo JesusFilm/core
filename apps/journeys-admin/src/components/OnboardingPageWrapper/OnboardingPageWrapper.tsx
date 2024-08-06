@@ -45,7 +45,7 @@ export function OnboardingPageWrapper({
         sx={{
           position: 'absolute',
           right: { xs: 12, sm: 8, md: 28 },
-          top: { xs: 24, sm: 8, md: 24 }
+          top: { xs: 16, sm: 8, md: 24 }
         }}
       >
         <HelpScoutBeacon
