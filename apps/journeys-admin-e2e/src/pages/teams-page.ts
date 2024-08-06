@@ -64,17 +64,14 @@ export class TeamsPage {
 
   async clickDismissIfDialogueComesUp() {
     // First time user journey - Dismiss the "More journeys here" dialogue
-    await this.page
-      .locator('div.MuiStack-root button:has-text("Dismiss")')
-      .click()
+    const selector = 'div.MuiStack-root button:has-text("Dismiss")'
+    if (await this.page.isVisible(selector)) {
+      await this.page.click(selector)
+    }
   }
 
   async clickThreeDotOfTeams() {
-    await this.page
-      .locator(
-        'div[data-testid="TeamSelect"] ~ div  button svg[data-testid="MoreIcon"]'
-      )
-      .click()
+    await this.page.getByTestId('MainPanelHeader').locator('button').click()
   }
 
   async clickThreeDotOptions(options) {
