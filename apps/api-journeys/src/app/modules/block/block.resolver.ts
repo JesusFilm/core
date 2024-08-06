@@ -6,7 +6,7 @@ import { GraphQLError } from 'graphql'
 import { Block, Prisma } from '.prisma/api-journeys-client'
 import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 
-import { BlocksFilter } from '../../__generated__/graphql'
+import { BlockDuplicateIdMap, BlocksFilter } from '../../__generated__/graphql'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'
@@ -61,6 +61,7 @@ export class BlockResolver {
     @CaslAbility() ability: AppAbility,
     @Args('id') id: string,
     @Args('parentOrder') parentOrder?: number,
+    @Args('idMap') idMap?: BlockDuplicateIdMap[],
     @Args('x') x?: number,
     @Args('y') y?: number
   ): Promise<Block[]> {
@@ -85,7 +86,13 @@ export class BlockResolver {
       throw new GraphQLError('user is not allowed to update block', {
         extensions: { code: 'FORBIDDEN' }
       })
-    return await this.blockService.duplicateBlock(block, parentOrder, x, y)
+    return await this.blockService.duplicateBlock(
+      block,
+      parentOrder,
+      idMap,
+      x,
+      y
+    )
   }
 
   @Mutation()

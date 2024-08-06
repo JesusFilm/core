@@ -166,8 +166,7 @@ export function Canvas(): ReactElement {
             sx={{
               display: 'flex',
               flexDirection: 'column',
-              height: `${calculateScaledHeight(CARD_HEIGHT, scale)}`,
-              pointerEvents: showAnalytics === true ? 'none' : 'auto'
+              height: `${calculateScaledHeight(CARD_HEIGHT, scale)}`
             }}
           >
             <Box
@@ -181,6 +180,7 @@ export function Canvas(): ReactElement {
                   scale < 0.65 ? '20px' : '0px'
                 }) ${calculateScaledMargin(CARD_WIDTH, scale)}`,
                 borderRadius: 6,
+                pointerEvents: showAnalytics === true ? 'none' : 'auto',
                 transition: (theme) =>
                   theme.transitions.create('border-color', {
                     duration: 200,

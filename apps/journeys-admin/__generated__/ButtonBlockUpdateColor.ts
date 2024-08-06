@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ButtonBlockUpdateInput, ButtonColor } from "./globalTypes";
+import { ButtonColor } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: ButtonBlockUpdateColor
@@ -21,6 +21,5 @@ export interface ButtonBlockUpdateColor {
 
 export interface ButtonBlockUpdateColorVariables {
   id: string;
-  journeyId: string;
-  input: ButtonBlockUpdateInput;
+  color: ButtonColor;
 }

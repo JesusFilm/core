@@ -3,21 +3,20 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
-import { ButtonBlockUpdateSize } from '../../../../../../../../../../__generated__/ButtonBlockUpdateSize'
+import {
+  ButtonBlockUpdateSize,
+  ButtonBlockUpdateSizeVariables
+} from '../../../../../../../../../../__generated__/ButtonBlockUpdateSize'
 import { ButtonSize } from '../../../../../../../../../../__generated__/globalTypes'
 import { ToggleButtonGroup } from '../../../controls/ToggleButtonGroup'
 
 export const BUTTON_BLOCK_UPDATE = gql`
-  mutation ButtonBlockUpdateSize(
-    $id: ID!
-    $journeyId: ID!
-    $input: ButtonBlockUpdateInput!
-  ) {
-    buttonBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+  mutation ButtonBlockUpdateSize($id: ID!, $size: ButtonSize!) {
+    buttonBlockUpdate(id: $id, input: { size: $size }) {
       id
       size
     }
@@ -26,32 +25,45 @@ export const BUTTON_BLOCK_UPDATE = gql`
 
 export function Size(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [buttonBlockUpdate] =
-    useMutation<ButtonBlockUpdateSize>(BUTTON_BLOCK_UPDATE)
+  const [buttonBlockUpdate] = useMutation<
+    ButtonBlockUpdateSize,
+    ButtonBlockUpdateSizeVariables
+  >(BUTTON_BLOCK_UPDATE)
 
-  const { journey } = useJourney()
-  const { state } = useEditor()
+  const { state, dispatch } = useEditor()
+  const { add } = useCommand()
   const selectedBlock = state.selectedBlock as
     | TreeBlock<ButtonBlock>
     | undefined
 
-  async function handleChange(size: ButtonSize): Promise<void> {
-    if (selectedBlock != null && size != null && journey != null) {
-      await buttonBlockUpdate({
-        variables: {
-          id: selectedBlock.id,
-          journeyId: journey.id,
-          input: { size }
-        },
-        optimisticResponse: {
-          buttonBlockUpdate: {
+  function handleChange(size: ButtonSize): void {
+    if (selectedBlock == null || size == null) return
+    add({
+      parameters: {
+        execute: { size },
+        undo: { size: selectedBlock.size }
+      },
+      execute({ size }) {
+        dispatch({
+          type: 'SetEditorFocusAction',
+          selectedBlock,
+          selectedStep: state.selectedStep
+        })
+        void buttonBlockUpdate({
+          variables: {
             id: selectedBlock.id,
-            size,
-            __typename: 'ButtonBlock'
+            size
+          },
+          optimisticResponse: {
+            buttonBlockUpdate: {
+              id: selectedBlock.id,
+              size,
+              __typename: 'ButtonBlock'
+            }
           }
-        }
-      })
-    }
+        })
+      }
+    })
   }
 
   const options = [
