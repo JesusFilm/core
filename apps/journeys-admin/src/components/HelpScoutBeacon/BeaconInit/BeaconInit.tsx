@@ -41,6 +41,7 @@ export function BeaconInit({ userInfo }: BeaconInitProps): ReactElement {
     // close the beacon when the url changes
     const handleRouteChange = (): void => {
       window.Beacon?.('close')
+      window.Beacon?.('navigate', '/')
     }
     router.events.on('routeChangeComplete', handleRouteChange)
     return () => {

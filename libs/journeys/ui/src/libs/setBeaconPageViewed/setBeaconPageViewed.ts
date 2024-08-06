@@ -25,7 +25,8 @@ declare global {
       ((fn: 'toggle') => void) &
       ((fn: 'search', value: string) => void) &
       ((fn: 'on', eventType: string, callback: () => void) => void) &
-      ((fn: 'prefill', formObject: FormObject) => void)
+      ((fn: 'prefill', formObject: FormObject) => void) &
+      ((fn: 'navigate', route: string) => void)
   }
 }
 
@@ -42,4 +43,9 @@ export function setBeaconPageViewed(route: string): void {
       window.Beacon?.('search', query)
     })
   }
+}
+
+export function setBeaconRoute(route: string): void {
+  if (window.Beacon == null) return
+  window.Beacon('navigate', route)
 }

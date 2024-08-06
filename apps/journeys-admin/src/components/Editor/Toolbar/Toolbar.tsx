@@ -22,6 +22,7 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
+import { setBeaconRoute } from '@core/journeys/ui/setBeaconPageViewed/setBeaconPageViewed'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import ThumbsUpIcon from '@core/shared/ui/icons/ThumbsUp'
 
@@ -65,6 +66,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
   const menuRef = useRef(null)
   useEffect(() => {
     if (showAnalytics === true) {
+      setBeaconRoute('/ask/')
       if (smUp) {
         setAnchorEl(helpScoutRef.current)
       } else {

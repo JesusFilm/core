@@ -11,6 +11,8 @@ import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement, useRef, useState } from 'react'
 
+import { setBeaconRoute } from '@core/journeys/ui/setBeaconPageViewed/setBeaconPageViewed'
+
 import { GetAdminJourney } from '../../../__generated__/GetAdminJourney'
 import { JourneysReportType } from '../../../__generated__/globalTypes'
 import { UserJourneyOpen } from '../../../__generated__/UserJourneyOpen'
@@ -31,6 +33,7 @@ function JourneyReportsPage({ flags }): ReactElement {
   const ref = useRef(null)
   const currentRef = ref.current
   const [open, setOpen] = useState(true)
+  setBeaconRoute('/ask/')
 
   const journeyId = router.query.journeyId as string
 
