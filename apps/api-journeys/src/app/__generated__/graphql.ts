@@ -927,7 +927,7 @@ export abstract class IMutation {
 
     abstract stepBlockUpdate(id: string, input: StepBlockUpdateInput, journeyId?: Nullable<string>): StepBlock | Promise<StepBlock>;
 
-    abstract stepBlockPositonUpdate(input: StepBlockPositionUpdateInput[]): StepBlock[] | Promise<StepBlock[]>;
+    abstract stepBlockPositionUpdatee(input: StepBlockPositionUpdateInput[]): StepBlock[] | Promise<StepBlock[]>;
 
     abstract textResponseBlockCreate(input: TextResponseBlockCreateInput): TextResponseBlock | Promise<TextResponseBlock>;
 

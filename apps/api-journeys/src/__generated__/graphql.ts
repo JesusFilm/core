@@ -1205,7 +1205,7 @@ export type Mutation = {
   signUpSubmissionEventCreate: SignUpSubmissionEvent;
   siteCreate: MutationSiteCreateResult;
   stepBlockCreate: StepBlock;
-  stepBlockPositonUpdate: Array<StepBlock>;
+  stepBlockPositionUpdate: Array<StepBlock>;
   stepBlockUpdate: StepBlock;
   stepNextEventCreate: StepNextEvent;
   stepPreviousEventCreate: StepPreviousEvent;
@@ -1641,7 +1641,7 @@ export type MutationStepBlockCreateArgs = {
 };
 
 
-export type MutationStepBlockPositonUpdateArgs = {
+export type MutationstepBlockPositionUpdateArgs = {
   input: Array<StepBlockPositionUpdateInput>;
 };
 

@@ -73,5 +73,7 @@ extend type Mutation {
     """
     journeyId: ID
   ): StepBlock!
-  stepBlockPositonUpdate(input: [StepBlockPositionUpdateInput!]!): [StepBlock!]!
+  stepBlockPositionUpdate(
+    input: [StepBlockPositionUpdateInput!]!
+  ): [StepBlock!]!
 }
