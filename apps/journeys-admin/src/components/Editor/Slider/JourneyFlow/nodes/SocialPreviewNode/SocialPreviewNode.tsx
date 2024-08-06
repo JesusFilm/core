@@ -6,7 +6,7 @@ import { alpha } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import isEmpty from 'lodash/isEmpty'
 import Image from 'next/image'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useState } from 'react'
 
 import {
   ActiveContent,
@@ -72,12 +72,6 @@ export function SocialPreviewNode(): ReactElement {
     void updateEdge({ source: 'SocialPreview', target: params.target })
   }
 
-  useEffect(() => {
-    if (activeSlide !== ActiveSlide.JourneyFlow) {
-      setShowTooltip(false)
-    }
-  }, [activeContent, activeSlide])
-
   return (
     <BaseNode
       id="SocialPreview"
@@ -97,7 +91,7 @@ export function SocialPreviewNode(): ReactElement {
           title={t('Social Media Preview')}
           placement="top"
           arrow
-          open={showTooltip}
+          open={activeSlide === ActiveSlide.JourneyFlow && showTooltip}
           onOpen={() => setShowTooltip(true)}
           onClose={() => setShowTooltip(false)}
           slotProps={{
