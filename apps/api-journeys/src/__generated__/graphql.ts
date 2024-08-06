@@ -1205,6 +1205,7 @@ export type Mutation = {
   signUpSubmissionEventCreate: SignUpSubmissionEvent;
   siteCreate: MutationSiteCreateResult;
   stepBlockCreate: StepBlock;
+  stepBlockPositonUpdate: Array<StepBlock>;
   stepBlockUpdate: StepBlock;
   stepNextEventCreate: StepNextEvent;
   stepPreviousEventCreate: StepPreviousEvent;
@@ -1637,6 +1638,11 @@ export type MutationSiteCreateArgs = {
 
 export type MutationStepBlockCreateArgs = {
   input: StepBlockCreateInput;
+};
+
+
+export type MutationStepBlockPositonUpdateArgs = {
+  input: Array<StepBlockPositionUpdateInput>;
 };
 
 
@@ -2585,6 +2591,12 @@ export type StepBlockCreateInput = {
    * y is used to position the block vertically in the journey flow diagram on
    * the editor.
    */
+  y?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type StepBlockPositionUpdateInput = {
+  id: Scalars['ID']['input'];
+  x?: InputMaybe<Scalars['Int']['input']>;
   y?: InputMaybe<Scalars['Int']['input']>;
 };
 
