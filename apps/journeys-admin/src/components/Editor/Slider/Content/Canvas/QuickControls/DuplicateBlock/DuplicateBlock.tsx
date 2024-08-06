@@ -76,7 +76,6 @@ export function DuplicateBlock({
     if (
       selectedBlock == null ||
       journey == null ||
-      selectedBlock?.parentOrder == null
     )
       return
     const { parentOrder } = selectedBlock
