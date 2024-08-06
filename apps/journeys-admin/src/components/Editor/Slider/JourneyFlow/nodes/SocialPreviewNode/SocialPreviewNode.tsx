@@ -15,7 +15,6 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Tooltip from '@mui/material/Tooltip'
-import { alpha } from '@mui/system'
 import { useTranslation } from 'react-i18next'
 import { OnConnect, useStore } from 'reactflow'
 import { useUpdateEdge } from '../../libs/useUpdateEdge'
