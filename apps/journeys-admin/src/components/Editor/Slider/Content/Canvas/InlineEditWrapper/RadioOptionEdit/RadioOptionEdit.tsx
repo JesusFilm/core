@@ -41,6 +41,7 @@ export function RadioOptionEdit({
 
   const [value, setValue] = useState(label)
   const [commandInput, setCommandInput] = useState({ id: uuidv4(), value })
+  const [selection, setSelection] = useState({ start: 0, end: value.length })
 
   const {
     add,
@@ -129,11 +130,18 @@ export function RadioOptionEdit({
           autoFocus
           onFocus={(e) => {
             const target = e.currentTarget as HTMLInputElement
-            target.setSelectionRange(target.value.length, target.value.length)
+            target.setSelectionRange(selection.start, selection.end)
             resetCommandInput()
           }}
           value={value}
           placeholder={t('Add your text here...')}
+          onSelect={(e) => {
+            const input = e.target as HTMLInputElement
+            setSelection({
+              start: input.selectionStart ?? 0,
+              end: input.selectionEnd ?? value.length
+            })
+          }}
           onChange={(e) => {
             setValue(e.currentTarget.value)
             handleSubmit(e.target.value)
