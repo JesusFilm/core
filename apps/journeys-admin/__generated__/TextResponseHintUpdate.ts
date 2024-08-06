@@ -3,8 +3,6 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { TextResponseBlockUpdateInput } from "./globalTypes";
-
 // ====================================================
 // GraphQL mutation operation: TextResponseHintUpdate
 // ====================================================
@@ -21,6 +19,5 @@ export interface TextResponseHintUpdate {
 
 export interface TextResponseHintUpdateVariables {
   id: string;
-  journeyId: string;
-  input: TextResponseBlockUpdateInput;
+  hint: string;
 }
