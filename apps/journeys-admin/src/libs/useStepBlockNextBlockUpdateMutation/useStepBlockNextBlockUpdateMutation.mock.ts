@@ -15,10 +15,7 @@ export const stepBlockNextBlockUpdateMock: MockedResponse<
     query: STEP_BLOCK_NEXT_BLOCK_UPDATE,
     variables: {
       id: 'step0.id',
-      journeyId: 'journey-id',
-      input: {
-        nextBlockId: null
-      }
+      nextBlockId: null
     }
   },
   result: {
@@ -27,6 +24,28 @@ export const stepBlockNextBlockUpdateMock: MockedResponse<
         __typename: 'StepBlock',
         id: 'step0.id',
         nextBlockId: null
+      }
+    }
+  }
+}
+
+export const stepBlockNextBlockUpdateToStepMock: MockedResponse<
+  StepBlockNextBlockUpdate,
+  StepBlockNextBlockUpdateVariables
+> = {
+  request: {
+    query: STEP_BLOCK_NEXT_BLOCK_UPDATE,
+    variables: {
+      id: 'step0.id',
+      nextBlockId: 'step1.id'
+    }
+  },
+  result: {
+    data: {
+      stepBlockUpdate: {
+        __typename: 'StepBlock',
+        id: 'step0.id',
+        nextBlockId: 'step1.id'
       }
     }
   }

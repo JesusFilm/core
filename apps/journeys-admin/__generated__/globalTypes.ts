@@ -505,11 +505,6 @@ export interface MeInput {
   redirect?: string | null;
 }
 
-export interface NavigateToBlockActionInput {
-  gtmEventName?: string | null;
-  blockId: string;
-}
-
 export interface RadioOptionBlockCreateInput {
   id?: string | null;
   journeyId: string;
