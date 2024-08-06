@@ -35,6 +35,8 @@ on:
         required: true
       DOPPLER_API_MEDIA_TOKEN:
         required: true
+      DOPPLER_API_NEXUS_TOKEN:
+        required: true
       DOPPLER_ARCLIGHT_TOKEN:
         required: true
       DOPPLER_DOCS_TOKEN:
@@ -116,6 +118,7 @@ jobs:
           DOPPLER_API_USERS_TOKEN: ${{ secrets.DOPPLER_API_USERS_TOKEN }}
           DOPPLER_API_VIDEOS_TOKEN: ${{ secrets.DOPPLER_API_VIDEOS_TOKEN }}
           DOPPLER_API_MEDIA_TOKEN: ${{ secrets.DOPPLER_API_MEDIA_TOKEN }}
+          DOPPLER_API_NEXUS_TOKEN: ${{ secrets.DOPPLER_API_NEXUS_TOKEN }}
           DOPPLER_ARCLIGHT_TOKEN: ${{ secrets.DOPPLER_ARCLIGHT_TOKEN }}
           DOPPLER_JOURNEYS_TOKEN: ${{ secrets.DOPPLER_JOURNEYS_TOKEN }}
           DOPPLER_JOURNEYS_ADMIN_TOKEN: ${{ secrets.DOPPLER_JOURNEYS_ADMIN_TOKEN }}

@@ -16,6 +16,8 @@ export type Scalars = {
   Float: { input: number; output: number; }
   DateTime: { input: any; output: any; }
   Json: { input: any; output: any; }
+  Object: { input: any; output: any; }
+  Upload: { input: any; output: any; }
   join__DirectiveArguments: { input: any; output: any; }
   join__FieldSet: { input: any; output: any; }
   link__Import: { input: any; output: any; }
@@ -34,6 +36,71 @@ export type AudioPreview = {
   size: Scalars['Int']['output'];
   value: Scalars['String']['output'];
 };
+
+export type Batch = {
+  __typename?: 'Batch';
+  batchTasks?: Maybe<Array<Maybe<BatchTask>>>;
+  completedTasks?: Maybe<Scalars['Int']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  failedTasks?: Maybe<Scalars['Int']['output']>;
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  progress?: Maybe<Scalars['Float']['output']>;
+  status?: Maybe<BatchStatus>;
+  totalTasks?: Maybe<Scalars['Int']['output']>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type BatchFilter = {
+  ids?: InputMaybe<Array<Scalars['ID']['input']>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  status?: InputMaybe<BatchStatus>;
+};
+
+export type BatchJobBatch = {
+  batchName: Scalars['String']['input'];
+  id: Scalars['ID']['input'];
+};
+
+export type BatchJobInput = {
+  batch: BatchJobBatch;
+  resources: Array<InputMaybe<BatchJobResource>>;
+};
+
+export type BatchJobResource = {
+  channel: Scalars['ID']['input'];
+  resource: Scalars['ID']['input'];
+};
+
+export enum BatchStatus {
+  Completed = 'completed',
+  Error = 'error',
+  Failed = 'failed',
+  Pending = 'pending',
+  Processing = 'processing'
+}
+
+export type BatchTask = {
+  __typename?: 'BatchTask';
+  batchId: Scalars['String']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  error?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  progress?: Maybe<Scalars['Int']['output']>;
+  status?: Maybe<BatchTaskStatus>;
+  task?: Maybe<Scalars['Object']['output']>;
+  type?: Maybe<Scalars['String']['output']>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+};
+
+export enum BatchTaskStatus {
+  Completed = 'completed',
+  Error = 'error',
+  Failed = 'failed',
+  Pending = 'pending',
+  Processing = 'processing'
+}
 
 export type BibleBook = {
   __typename?: 'BibleBook';
@@ -243,6 +310,43 @@ export type CardBlockUpdateInput = {
   themeName?: InputMaybe<ThemeName>;
 };
 
+export type Channel = {
+  __typename?: 'Channel';
+  connected?: Maybe<Scalars['Boolean']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  imageUrl?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  platform?: Maybe<Scalars['String']['output']>;
+  title?: Maybe<Scalars['String']['output']>;
+  youtubeId?: Maybe<Scalars['String']['output']>;
+};
+
+export type ChannelCreateInput = {
+  name: Scalars['String']['input'];
+  platform: Scalars['String']['input'];
+};
+
+export type ChannelFilter = {
+  connected?: InputMaybe<Scalars['Boolean']['input']>;
+  ids?: InputMaybe<Array<Scalars['ID']['input']>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  status?: InputMaybe<ChannelStatus>;
+};
+
+export enum ChannelStatus {
+  Created = 'created',
+  Deleted = 'deleted',
+  Published = 'published'
+}
+
+export type ChannelUpdateInput = {
+  name?: InputMaybe<Scalars['String']['input']>;
+  platform?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type ChatButton = {
   __typename?: 'ChatButton';
   id: Scalars['ID']['output'];
@@ -300,6 +404,11 @@ export type CloudflareVideo = {
   readyToStream: Scalars['Boolean']['output'];
   uploadUrl?: Maybe<Scalars['String']['output']>;
   userId: Scalars['ID']['output'];
+};
+
+export type ConnectYoutubeChannelInput = {
+  accessToken: Scalars['String']['input'];
+  channelId: Scalars['String']['input'];
 };
 
 export type Country = {
@@ -1119,6 +1228,10 @@ export type Mutation = {
   buttonClickEventCreate: ButtonClickEvent;
   cardBlockCreate: CardBlock;
   cardBlockUpdate: CardBlock;
+  channelConnect: Channel;
+  channelCreate: Channel;
+  channelDelete: Channel;
+  channelUpdate: Channel;
   chatButtonCreate: ChatButton;
   chatButtonRemove: ChatButton;
   chatButtonUpdate: ChatButton;
@@ -1178,6 +1291,10 @@ export type Mutation = {
   radioQuestionBlockCreate: RadioQuestionBlock;
   radioQuestionBlockUpdate: RadioQuestionBlock;
   radioQuestionSubmissionEventCreate: RadioQuestionSubmissionEvent;
+  resourceCreate: Resource;
+  resourceDelete: Resource;
+  resourceFromArray?: Maybe<Array<Maybe<Resource>>>;
+  resourceUpdate: Resource;
   signUpBlockCreate: SignUpBlock;
   signUpBlockUpdate?: Maybe<SignUpBlock>;
   signUpSubmissionEventCreate: SignUpSubmissionEvent;
@@ -1196,6 +1313,7 @@ export type Mutation = {
   typographyBlockCreate: TypographyBlock;
   typographyBlockUpdate: TypographyBlock;
   updateJourneysEmailPreference?: Maybe<JourneysEmailPreference>;
+  uploadToYoutube?: Maybe<Scalars['Boolean']['output']>;
   userImpersonate?: Maybe<Scalars['String']['output']>;
   userInviteAcceptAll: Array<UserInvite>;
   userInviteCreate?: Maybe<UserInvite>;
@@ -1316,6 +1434,27 @@ export type MutationCardBlockUpdateArgs = {
   id: Scalars['ID']['input'];
   input: CardBlockUpdateInput;
   journeyId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type MutationChannelConnectArgs = {
+  input: ConnectYoutubeChannelInput;
+};
+
+
+export type MutationChannelCreateArgs = {
+  input: ChannelCreateInput;
+};
+
+
+export type MutationChannelDeleteArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationChannelUpdateArgs = {
+  id: Scalars['ID']['input'];
+  input: ChannelUpdateInput;
 };
 
 
@@ -1590,6 +1729,27 @@ export type MutationRadioQuestionSubmissionEventCreateArgs = {
 };
 
 
+export type MutationResourceCreateArgs = {
+  input: ResourceCreateInput;
+};
+
+
+export type MutationResourceDeleteArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationResourceFromArrayArgs = {
+  input: ResourceFromArrayInput;
+};
+
+
+export type MutationResourceUpdateArgs = {
+  id: Scalars['ID']['input'];
+  input: ResourceUpdateInput;
+};
+
+
 export type MutationSignUpBlockCreateArgs = {
   input: SignUpBlockCreateInput;
 };
@@ -1686,6 +1846,12 @@ export type MutationTypographyBlockUpdateArgs = {
 
 export type MutationUpdateJourneysEmailPreferenceArgs = {
   input: JourneysEmailPreferenceUpdateInput;
+};
+
+
+export type MutationUploadToYoutubeArgs = {
+  channelId: Scalars['String']['input'];
+  resourceId: Scalars['String']['input'];
 };
 
 
@@ -2043,6 +2209,12 @@ export type PowerBiEmbed = {
   reportName: Scalars['String']['output'];
 };
 
+export enum PrivacyStatus {
+  Private = 'private',
+  Public = 'public',
+  Unlisted = 'unlisted'
+}
+
 export type Query = {
   __typename?: 'Query';
   adminJourney: Journey;
@@ -2054,8 +2226,12 @@ export type Query = {
    */
   adminJourneys: Array<Journey>;
   adminJourneysReport?: Maybe<PowerBiEmbed>;
+  batch: Batch;
+  batches?: Maybe<Array<Maybe<Batch>>>;
   block: Block;
   blocks: Array<Block>;
+  channel: Channel;
+  channels?: Maybe<Array<Channel>>;
   countries: Array<Country>;
   country?: Maybe<Country>;
   customDomain: CustomDomain;
@@ -2107,6 +2283,8 @@ export type Query = {
   languages: Array<Language>;
   listUnsplashCollectionPhotos: Array<UnsplashPhoto>;
   me?: Maybe<User>;
+  resource: Resource;
+  resources?: Maybe<Array<Resource>>;
   searchUnsplashPhotos: UnsplashQueryResponse;
   tags: Array<Tag>;
   team: Team;
@@ -2145,6 +2323,16 @@ export type QueryAdminJourneysReportArgs = {
 };
 
 
+export type QueryBatchArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryBatchesArgs = {
+  where?: InputMaybe<BatchFilter>;
+};
+
+
 export type QueryBlockArgs = {
   id: Scalars['ID']['input'];
 };
@@ -2152,6 +2340,16 @@ export type QueryBlockArgs = {
 
 export type QueryBlocksArgs = {
   where?: InputMaybe<BlocksFilter>;
+};
+
+
+export type QueryChannelArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryChannelsArgs = {
+  where?: InputMaybe<ChannelFilter>;
 };
 
 
@@ -2276,6 +2474,16 @@ export type QueryListUnsplashCollectionPhotosArgs = {
 
 export type QueryMeArgs = {
   input?: InputMaybe<MeInput>;
+};
+
+
+export type QueryResourceArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryResourcesArgs = {
+  where?: InputMaybe<ResourceFilter>;
 };
 
 
@@ -2413,6 +2621,70 @@ export type RadioQuestionSubmissionEventCreateInput = {
   value?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type Resource = {
+  __typename?: 'Resource';
+  category?: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  customThumbnail?: Maybe<Scalars['String']['output']>;
+  deletedAt?: Maybe<Scalars['DateTime']['output']>;
+  id: Scalars['ID']['output'];
+  isMadeForKids?: Maybe<Scalars['Boolean']['output']>;
+  mediaComponentId?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  notifySubscribers?: Maybe<Scalars['Boolean']['output']>;
+  playlistId?: Maybe<Scalars['String']['output']>;
+  privacy?: Maybe<PrivacyStatus>;
+  resourceLocalizations?: Maybe<Array<Maybe<ResourceLocalization>>>;
+  spokenLanguage?: Maybe<Scalars['String']['output']>;
+  status?: Maybe<ResourceStatus>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type ResourceCreateInput = {
+  name: Scalars['String']['input'];
+};
+
+export type ResourceFilter = {
+  ids?: InputMaybe<Array<Scalars['ID']['input']>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  status?: InputMaybe<ResourceStatus>;
+};
+
+export type ResourceFromArrayInput = {
+  accessToken: Scalars['String']['input'];
+  spreadsheetData: Array<SpreadsheetRowInput>;
+};
+
+export type ResourceFromGoogleDriveInput = {
+  authCode: Scalars['String']['input'];
+  fileIds: Array<Scalars['String']['input']>;
+};
+
+export type ResourceLocalization = {
+  __typename?: 'ResourceLocalization';
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  keywords?: Maybe<Scalars['String']['output']>;
+  language?: Maybe<Scalars['String']['output']>;
+  resourceId?: Maybe<Scalars['String']['output']>;
+  title?: Maybe<Scalars['String']['output']>;
+};
+
+export enum ResourceStatus {
+  Created = 'created',
+  Deleted = 'deleted',
+  Done = 'done',
+  Error = 'error',
+  Processing = 'processing',
+  Published = 'published',
+  Uploaded = 'uploaded'
+}
+
+export type ResourceUpdateInput = {
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
 export enum Role {
   /**
    * User can create templates and
@@ -2518,6 +2790,28 @@ export type SiteSharedLink = {
   __typename?: 'SiteSharedLink';
   id: Scalars['String']['output'];
   slug: Scalars['String']['output'];
+};
+
+export type SpreadsheetRowInput = {
+  audioTrackFile?: InputMaybe<Scalars['String']['input']>;
+  captionFile?: InputMaybe<Scalars['String']['input']>;
+  captionLanguage?: InputMaybe<Scalars['String']['input']>;
+  category?: InputMaybe<Scalars['String']['input']>;
+  channel?: InputMaybe<Scalars['String']['input']>;
+  customThumbnail?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  filename?: InputMaybe<Scalars['String']['input']>;
+  isMadeForKids?: InputMaybe<Scalars['String']['input']>;
+  keywords?: InputMaybe<Scalars['String']['input']>;
+  language?: InputMaybe<Scalars['String']['input']>;
+  mediaComponentId?: InputMaybe<Scalars['String']['input']>;
+  notifySubscribers?: InputMaybe<Scalars['String']['input']>;
+  playlistId?: InputMaybe<Scalars['String']['input']>;
+  privacy?: InputMaybe<Scalars['String']['input']>;
+  spokenLanguage?: InputMaybe<Scalars['String']['input']>;
+  textLanguage?: InputMaybe<Scalars['String']['input']>;
+  title?: InputMaybe<Scalars['String']['input']>;
+  videoId?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type StepBlock = Block & {
@@ -3746,6 +4040,7 @@ export enum Join__Graph {
   Journeys = 'JOURNEYS',
   Languages = 'LANGUAGES',
   Media = 'MEDIA',
+  Nexus = 'NEXUS',
   Tags = 'TAGS',
   Users = 'USERS',
   Videos = 'VIDEOS'
