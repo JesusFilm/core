@@ -6,7 +6,7 @@ export const TYPOGRAPHY_FIELDS = gql`
     parentBlockId
     parentOrder
     align
-    color
+    customColor
     content
     variant
   }

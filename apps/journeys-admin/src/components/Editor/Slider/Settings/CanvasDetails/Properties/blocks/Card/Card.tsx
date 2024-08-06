@@ -16,6 +16,7 @@ import { ThemeMode, ThemeName, getTheme } from '@core/shared/ui/themes'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { Accordion } from '../../Accordion'
+import { ColorDisplayIcon } from '../../controls/ColorDisplayIcon'
 
 const BackgroundColor = dynamic(
   async () =>
@@ -101,20 +102,7 @@ export function Card({
     <Box data-testid="CardProperties">
       <Accordion
         id={`${id}-background-color`}
-        icon={
-          <Paper sx={{ borderRadius: 1000, flexShrink: 0 }}>
-            <Box
-              data-testid="backgroundColorIcon"
-              sx={{
-                width: 25,
-                height: 25,
-                m: 1,
-                borderRadius: 1000,
-                backgroundColor: selectedCardColor
-              }}
-            />
-          </Paper>
-        }
+        icon={<ColorDisplayIcon color={selectedCardColor} custom />}
         name={t('Color')}
         value={selectedCardColor.toUpperCase()}
       >

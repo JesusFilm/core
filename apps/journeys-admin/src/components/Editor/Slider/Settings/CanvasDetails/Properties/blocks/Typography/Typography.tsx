@@ -18,7 +18,7 @@ import { Color } from './Color'
 import { Variant } from './Variant'
 
 export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
-  const { id, align, color, variant } = block
+  const { id, align, customColor: color, variant } = block
   const { t } = useTranslation('apps-journeys-admin')
 
   const { dispatch } = useEditor()
@@ -45,7 +45,7 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
 
       <Accordion
         id={`${id}-typography-color`}
-        icon={<ColorDisplayIcon color={color} />}
+        icon={<ColorDisplayIcon color={color} custom />}
         name={t('Color')}
         value={capitalize(color?.toString() ?? 'primary')}
       >

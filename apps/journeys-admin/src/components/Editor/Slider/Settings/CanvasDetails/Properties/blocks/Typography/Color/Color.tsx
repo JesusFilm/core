@@ -21,7 +21,7 @@ export const TYPOGRAPHY_BLOCK_UPDATE_COLOR = gql`
   mutation TypographyBlockUpdateColor($id: ID!, $color: TypographyColor!) {
     typographyBlockUpdate(id: $id, input: { color: $color }) {
       id
-      color
+      customColor
     }
   }
 `
@@ -63,7 +63,7 @@ export function Color(): ReactElement {
         parameters: {
           execute: { color },
           undo: {
-            color: selectedBlock.color
+            customColor: selectedBlock.customColor
           }
         },
         execute({ color }) {

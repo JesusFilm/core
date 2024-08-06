@@ -13,6 +13,58 @@ import { TYPOGRAPHY_BLOCK_UPDATE_COLOR } from './Color'
 import { Color } from '.'
 
 describe('Typography color selector', () => {
+  it('should render', () => {
+    render(
+      <MockedProvider>
+        <Color />
+      </MockedProvider>
+    )
+
+    expect(screen.getByTestId('TextColorPicker')).toBeInTheDocument()
+  })
+
+  it('should update color', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        typographyBlockUpdate: {
+          id: 'id',
+          customColor: '#ff0000'
+        }
+      }
+    }))
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: TYPOGRAPHY_BLOCK_UPDATE_COLOR,
+              variables: {
+                id: 'id',
+                journeyId: 'journeyId',
+                input: {
+                  customColor: '#ff0000',
+                }
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <Color />
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByRole('slider', { name: 'Color' }))
+
+    await waitFor(() => {
+      expect(result).toHaveBeenCalled()
+    })
+
+    // const picker = screen.getByTestId('TextColorPicker')
+
+    // fireEvent.click(getByRole)
+  })
   it('should show typography color properties', () => {
     const selectedBlock: TreeBlock<TypographyBlock> = {
       __typename: 'TypographyBlock',
@@ -21,6 +73,7 @@ describe('Typography color selector', () => {
       parentOrder: 0,
       align: null,
       color: null,
+      customColor: null,
       content: '',
       variant: null,
       children: []
@@ -44,7 +97,7 @@ describe('Typography color selector', () => {
       parentBlockId: 'parentBlockId',
       parentOrder: 0,
       align: null,
-      color: TypographyColor.error,
+      customColor: '#ffffff',
       content: '',
       variant: null,
       children: []
@@ -53,7 +106,7 @@ describe('Typography color selector', () => {
       data: {
         typographyBlockUpdate: {
           id: 'id',
-          color: TypographyColor.secondary
+          customColor: '#ff0000'
         }
       }
     }))
@@ -65,7 +118,9 @@ describe('Typography color selector', () => {
               query: TYPOGRAPHY_BLOCK_UPDATE_COLOR,
               variables: {
                 id: 'id',
-                color: TypographyColor.secondary
+                input: {
+                  customColor: '#ff0000'
+                }
               }
             },
             result
@@ -89,7 +144,7 @@ describe('Typography color selector', () => {
       parentBlockId: 'parentBlockId',
       parentOrder: 0,
       align: null,
-      color: TypographyColor.error,
+      customColor: '#ffffff',
       content: '',
       variant: null,
       children: []
@@ -98,7 +153,7 @@ describe('Typography color selector', () => {
       data: {
         typographyBlockUpdate: {
           id: 'id',
-          color: TypographyColor.secondary
+          customColor: '#ff0000'
         }
       }
     }))
@@ -106,7 +161,7 @@ describe('Typography color selector', () => {
       data: {
         typographyBlockUpdate: {
           id: 'id',
-          color: TypographyColor.error
+          customColor: '#ffffff'
         }
       }
     }))
@@ -118,7 +173,9 @@ describe('Typography color selector', () => {
               query: TYPOGRAPHY_BLOCK_UPDATE_COLOR,
               variables: {
                 id: 'id',
-                color: TypographyColor.secondary
+                input: {
+                  customColor: '#ff0000'
+                }
               }
             },
             result: result1
@@ -128,7 +185,9 @@ describe('Typography color selector', () => {
               query: TYPOGRAPHY_BLOCK_UPDATE_COLOR,
               variables: {
                 id: 'id',
-                color: TypographyColor.error
+                input: {
+                  customColor: '#ffffff'
+                }
               }
             },
             result: result2
