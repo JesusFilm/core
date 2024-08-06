@@ -146,7 +146,7 @@ export function StepBlockNodeCard({
                 lineHeight: 2
               }}
             >
-               {description !== '' ? description : ''}
+              {description !== '' ? description : ''}
             </Typography>
           )}
           <Typography
