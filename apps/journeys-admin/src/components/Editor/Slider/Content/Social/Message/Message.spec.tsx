@@ -1,11 +1,12 @@
+import { MockedProvider } from '@apollo/client/testing'
 import { render, screen, within } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { JourneyFields as Journey } from '../../../../../../../__generated__/JourneyFields'
 
-import { MockedProvider } from '@apollo/client/testing'
-import userEvent from '@testing-library/user-event'
+
 import { Message } from '.'
 
 describe('Message', () => {
