@@ -16,7 +16,7 @@ import { ToggleButtonGroup } from '../../../controls/ToggleButtonGroup'
 
 export const BUTTON_BLOCK_UPDATE = gql`
   mutation ButtonBlockUpdateVariant($id: ID!, $variant: ButtonVariant!) {
-    buttonBlockUpdate(id: $id, input: { varaint: $variant }) {
+    buttonBlockUpdate(id: $id, input: { variant: $variant }) {
       id
       variant
     }
