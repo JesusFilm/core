@@ -16,9 +16,12 @@ import {
   TypographyColor,
   TypographyVariant
 } from '../../../../../../../../__generated__/globalTypes'
+import { deleteBlockMock } from '../../../../../../../libs/useBlockDeleteMutation/useBlockDeleteMutation.mock'
+import { useBlockRestoreMutationMock as blockRestoreMock } from '../../../../../../../libs/useBlockRestoreMutation/useBlockRestoreMutation.mock'
+import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
+import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
 import { BLOCK_DUPLICATE, DuplicateBlock } from './DuplicateBlock'
-import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -65,7 +68,7 @@ describe('DuplicateBlock', () => {
           {
             __typename: 'TypographyBlock',
             id: 'duplicatedId'
-          } as TypographyBlock
+          } as unknown as TypographyBlock
         ]
       }
     }
@@ -99,13 +102,26 @@ describe('DuplicateBlock', () => {
     await waitFor(() => expect(duplicateBlockResultMock).toHaveBeenCalled())
   })
 
-  it('should undo duplicate a block ', async () => {
+  it('should undo duplicating a block', async () => {
     const duplicateBlockResultMock = jest.fn(() => ({
       ...duplicateBlockMock.result
     }))
+
+    const blockDeleteMockResult = jest
+      .fn()
+      .mockResolvedValue(deleteBlockMock.result)
     render(
       <MockedProvider
-        mocks={[{ ...duplicateBlockMock, result: duplicateBlockResultMock }]}
+        mocks={[
+          { ...duplicateBlockMock, result: duplicateBlockResultMock },
+          {
+            request: {
+              ...deleteBlockMock.request,
+              variables: { id: 'newBlockId' }
+            },
+            result: blockDeleteMockResult
+          }
+        ]}
       >
         <SnackbarProvider>
           <JourneyProvider
@@ -128,6 +144,80 @@ describe('DuplicateBlock', () => {
     expect(button).toContainElement(screen.getByTestId('CopyLeftIcon'))
     await userEvent.click(button)
     await waitFor(() => expect(duplicateBlockResultMock).toHaveBeenCalled())
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Undo'
+      })
+    )
+    await waitFor(() => expect(blockDeleteMockResult).toHaveBeenCalled())
+  })
+
+  it('should undo and redo duplicating a block', async () => {
+    const duplicateBlockResultMock = jest.fn(() => ({
+      ...duplicateBlockMock.result
+    }))
+
+    const blockDeleteMockResult = jest
+      .fn()
+      .mockResolvedValue(deleteBlockMock.result)
+
+    const blockRestoreMockResult = jest
+      .fn()
+      .mockResolvedValue(blockRestoreMock.result)
+    render(
+      <MockedProvider
+        mocks={[
+          { ...duplicateBlockMock, result: duplicateBlockResultMock },
+          {
+            request: {
+              ...deleteBlockMock.request,
+              variables: { id: 'newBlockId' }
+            },
+            result: blockDeleteMockResult
+          },
+          {
+            request: {
+              ...blockRestoreMock.request,
+              variables: { id: 'newBlockId' }
+            },
+            result: blockRestoreMockResult
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: { id: 'journeyId' } as unknown as Journey,
+              variant: 'admin'
+            }}
+          >
+            <EditorProvider initialState={{ selectedBlock: block }}>
+              <DuplicateBlock />
+              <CommandUndoItem variant="button" />
+              <CommandRedoItem variant="button" />
+            </EditorProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    const button = screen.getByRole('button', {
+      name: 'Duplicate Block Actions'
+    })
+    expect(button).toContainElement(screen.getByTestId('CopyLeftIcon'))
+    await userEvent.click(button)
+    await waitFor(() => expect(duplicateBlockResultMock).toHaveBeenCalled())
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Undo'
+      })
+    )
+    await waitFor(() => expect(blockDeleteMockResult).toHaveBeenCalled())
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Redo'
+      })
+    )
+    await waitFor(() => expect(blockRestoreMockResult).toHaveBeenCalled())
   })
 
   it('should be disabled if nothing is selected', () => {

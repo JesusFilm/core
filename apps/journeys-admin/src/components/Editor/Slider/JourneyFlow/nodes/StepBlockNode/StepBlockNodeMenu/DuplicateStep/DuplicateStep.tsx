@@ -106,7 +106,7 @@ export function DuplicateStep({
     const idMap: BlockDuplicateIdMap[] = [
       { oldId: step.id, newId: stepBlock.id }
     ]
-    const stepChildren = flatten(step.children).map((block) => {
+    const stepChildren = flatten(step.children)?.map((block) => {
       const id = uuidv4()
       idMap.push({ oldId: block.id, newId: id })
       return {
