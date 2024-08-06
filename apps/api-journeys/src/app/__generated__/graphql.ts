@@ -446,6 +446,7 @@ export class TypographyBlockCreateInput {
     content: string;
     variant?: Nullable<TypographyVariant>;
     color?: Nullable<TypographyColor>;
+    customColor?: Nullable<string>;
     align?: Nullable<TypographyAlign>;
 }
 
@@ -454,6 +455,7 @@ export class TypographyBlockUpdateInput {
     content?: Nullable<string>;
     variant?: Nullable<TypographyVariant>;
     color?: Nullable<TypographyColor>;
+    customColor?: Nullable<string>;
     align?: Nullable<TypographyAlign>;
 }
 
@@ -1335,6 +1337,7 @@ export class TypographyBlock implements Block {
     content: string;
     variant?: Nullable<TypographyVariant>;
     color?: Nullable<TypographyColor>;
+    customColor?: Nullable<string>;
     align?: Nullable<TypographyAlign>;
 }
 
