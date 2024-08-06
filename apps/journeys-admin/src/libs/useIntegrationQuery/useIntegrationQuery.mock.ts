@@ -35,12 +35,12 @@ export const getIntegrationMock: MockedResponse<
             {
               __typename: 'IntegrationGrowthSpacesRoute',
               id: 'route.id',
-              name: 'route.name'
+              name: 'My First Email'
             },
             {
               __typename: 'IntegrationGrowthSpacesRoute',
               id: 'route2.id',
-              name: 'route2.name'
+              name: 'On The Journey'
             }
           ]
         }

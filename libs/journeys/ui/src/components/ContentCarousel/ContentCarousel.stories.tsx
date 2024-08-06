@@ -4,27 +4,27 @@ import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent, waitFor } from '@storybook/testing-library'
 import { ComponentProps } from 'react'
 
-import { journeysAdminConfig } from '@core/shared/ui/storybook'
+import { journeyUiConfig } from '../../libs/journeyUiConfig'
 
-import { TemplateGalleryCarousel } from './TemplateGalleryCarousel'
+import { ContentCarousel } from './ContentCarousel'
 
-const TemplateGalleryCarouselStory: Meta<typeof TemplateGalleryCarousel> = {
-  ...journeysAdminConfig,
-  component: TemplateGalleryCarousel,
-  title: 'Journeys-Admin/TemplateGalleryCarousel',
+const ContentCarouselStory: Meta<typeof ContentCarousel> = {
+  ...journeyUiConfig,
+  component: ContentCarousel,
+  title: 'Shared-Ui/ContentCarousel',
   parameters: {
-    ...journeysAdminConfig.parameters,
+    ...journeyUiConfig.parameters,
     layout: 'fullscreen'
   }
 }
 
-const Template: StoryObj<ComponentProps<typeof TemplateGalleryCarousel>> = {
+const Template: StoryObj<ComponentProps<typeof ContentCarousel>> = {
   render: ({ ...args }) => {
     return (
       <Stack
         sx={{ backgroundColor: 'background.paper', p: 10, overflow: 'hidden' }}
       >
-        <TemplateGalleryCarousel
+        <ContentCarousel
           {...args}
           items={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((number) => {
             return { id: `${number}`, title: `item ${number}` }
@@ -108,4 +108,4 @@ export const Breakpoints = {
   }
 }
 
-export default TemplateGalleryCarouselStory
+export default ContentCarouselStory

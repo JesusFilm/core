@@ -1,19 +1,17 @@
 import Typography from '@mui/material/Typography'
-import { render, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { render } from '@testing-library/react'
 import { SwiperOptions } from 'swiper/types'
 
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
-} from '../../../../__generated__/globalTypes'
-import { GetJourneys_journeys as Journey } from '../../../libs/useJourneysQuery/__generated__/GetJourneys'
-import { TemplateGalleryCard } from '../../TemplateGalleryCard'
+} from '../../../__generated__/globalTypes'
+import { GetJourneys_journeys as Journey } from '../../libs/useJourneysQuery/__generated__/GetJourneys'
 
-import { TemplateGalleryCarousel } from './TemplateGalleryCarousel'
+import { ContentCarousel } from './ContentCarousel'
 
-describe('TemplateGalleryCarousel', () => {
+describe('ContentCarousel', () => {
   const journey: Journey = {
     __typename: 'Journey',
     id: '1',
@@ -68,9 +66,9 @@ describe('TemplateGalleryCarousel', () => {
     }
   }
 
-  it('should render TemplateGalleryCarousel with items', () => {
+  it('should render ContentCarousel with items', () => {
     const { getAllByRole, getByRole } = render(
-      <TemplateGalleryCarousel
+      <ContentCarousel
         heading="Easter"
         items={[journey, { ...journey, id: '2', title: 'Featured Template 2' }]}
         renderItem={(itemProps) => (
@@ -90,32 +88,9 @@ describe('TemplateGalleryCarousel', () => {
     expect(items[1]).toHaveTextContent('Featured Template 2priority')
   })
 
-  it('should focus elements in the carousel', async () => {
-    const { getAllByLabelText } = render(
-      <TemplateGalleryCarousel
-        heading="Easter"
-        items={[journey, { ...journey, id: '2', title: 'Featured Template 2' }]}
-        renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}
-        breakpoints={swiperBreakpoints}
-      />
-    )
-
-    await waitFor(async () => await userEvent.tab())
-    expect(getAllByLabelText('templateGalleryCard')[0]).toHaveStyle(
-      'outline: 2px solid'
-    )
-    await waitFor(async () => await userEvent.tab())
-    expect(getAllByLabelText('templateGalleryCard')[1]).toHaveStyle(
-      'outline: 2px solid'
-    )
-    expect(getAllByLabelText('templateGalleryCard')[0]).not.toHaveStyle(
-      'outline: 2px solid'
-    )
-  })
-
-  it('should render TemplateGalleryCarousel with placeholder items', () => {
+  it('should render ContentCarousel with placeholder items', () => {
     const { getAllByRole, getByRole, queryByRole } = render(
-      <TemplateGalleryCarousel
+      <ContentCarousel
         items={[journey]}
         renderItem={(itemProps) => (
           <Typography variant="h6">

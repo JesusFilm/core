@@ -32,6 +32,6 @@ export function useIntegrationQuery(
 ): QueryResult<GetIntegration, GetIntegrationVariables> {
   return useQuery<GetIntegration, GetIntegrationVariables>(GET_INTEGRATION, {
     variables,
-    fetchPolicy: 'cache-and-network'
+    skip: variables?.teamId == null
   })
 }
