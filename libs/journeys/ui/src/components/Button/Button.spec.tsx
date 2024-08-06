@@ -174,7 +174,7 @@ describe('Button', () => {
       }
     }))
 
-    const { getByRole } = render(
+    render(
       <MockedProvider
         mocks={[
           {
@@ -201,7 +201,7 @@ describe('Button', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByRole('button'))
+    fireEvent.click(screen.getByRole('button'))
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('buttonClick', {
       u: `${mockOrigin}/journey.id/step.id`,
@@ -255,7 +255,7 @@ describe('Button', () => {
     blockHistoryVar([activeBlock])
     treeBlocksVar([activeBlock])
 
-    const { getByRole } = render(
+    render(
       <MockedProvider
         mocks={[
           {
@@ -291,7 +291,7 @@ describe('Button', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByRole('button'))
+    fireEvent.click(screen.getByRole('button'))
     await waitFor(() =>
       expect(mockedDataLayer).toHaveBeenCalledWith({
         dataLayer: {
@@ -322,7 +322,7 @@ describe('Button', () => {
     blockHistoryVar([activeBlock])
     treeBlocksVar([activeBlock])
 
-    const { getByRole } = render(
+    render(
       <MockedProvider
         mocks={[
           {
@@ -359,7 +359,7 @@ describe('Button', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(getByRole('button'))
+    fireEvent.click(screen.getByRole('button'))
     await waitFor(() =>
       expect(mockedDataLayer).toHaveBeenCalledWith({
         dataLayer: {
@@ -403,7 +403,7 @@ describe('Button', () => {
       }
     }))
 
-    const { getByRole } = render(
+    render(
       <MockedProvider
         mocks={[
           {
@@ -427,7 +427,7 @@ describe('Button', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByRole('button'))
+    fireEvent.click(screen.getByRole('button'))
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('chatButtonClick', {
       u: `${mockOrigin}/journey.id/step.id`,
@@ -452,42 +452,46 @@ describe('Button', () => {
   })
 
   it('should render the button successfully', () => {
-    const { getByText, getByRole } = render(
+    render(
       <MockedProvider>
         <Button {...block} />
       </MockedProvider>
     )
-    expect(getByRole('button')).toHaveClass('MuiButton-root')
-    expect(getByRole('button')).toHaveClass('MuiButton-contained')
-    expect(getByRole('button')).toHaveClass('MuiButton-containedSizeSmall')
-    expect(getByText('This is a button')).toBeInTheDocument()
+    expect(screen.getByRole('button')).toHaveClass('MuiButton-root')
+    expect(screen.getByRole('button')).toHaveClass('MuiButton-contained')
+    expect(screen.getByRole('button')).toHaveClass(
+      'MuiButton-containedSizeSmall'
+    )
+    expect(screen.getByText('This is a button')).toBeInTheDocument()
   })
 
   it('should render with the contained value', () => {
-    const { getByRole } = render(
+    render(
       <MockedProvider>
         <Button {...block} buttonVariant={ButtonVariant.contained} />
       </MockedProvider>
     )
-    expect(getByRole('button')).toHaveClass('MuiButton-contained')
+    expect(screen.getByRole('button')).toHaveClass('MuiButton-contained')
   })
 
   it('should render with the size value', () => {
-    const { getByRole } = render(
+    render(
       <MockedProvider>
         <Button {...block} size={ButtonSize.small} />
       </MockedProvider>
     )
-    expect(getByRole('button')).toHaveClass('MuiButton-containedSizeSmall')
+    expect(screen.getByRole('button')).toHaveClass(
+      'MuiButton-containedSizeSmall'
+    )
   })
 
   it('should render the default color value', () => {
-    const { getByRole } = render(
+    render(
       <MockedProvider>
         <Button {...block} buttonColor={null} />
       </MockedProvider>
     )
-    expect(getByRole('button')).toHaveClass('MuiButton-containedPrimary')
+    expect(screen.getByRole('button')).toHaveClass('MuiButton-containedPrimary')
   })
 
   it('should render the start icon', () => {
@@ -507,15 +511,17 @@ describe('Button', () => {
         }
       ]
     }
-    const { getByTestId } = render(
+    render(
       <MockedProvider>
         <Button {...iconBlock} />
       </MockedProvider>
     )
-    expect(getByTestId('CheckCircleRoundedIcon')).toHaveClass('MuiSvgIcon-root')
-    expect(getByTestId('CheckCircleRoundedIcon').parentElement).toHaveClass(
-      'MuiButton-startIcon'
+    expect(screen.getByTestId('CheckCircleRoundedIcon')).toHaveClass(
+      'MuiSvgIcon-root'
     )
+    expect(
+      screen.getByTestId('CheckCircleRoundedIcon').parentElement
+    ).toHaveClass('MuiButton-startIcon')
   })
 
   it('should render the end icon', () => {
@@ -535,19 +541,21 @@ describe('Button', () => {
         }
       ]
     }
-    const { getByTestId } = render(
+    render(
       <MockedProvider>
         <Button {...iconBlock} />
       </MockedProvider>
     )
-    expect(getByTestId('CheckCircleRoundedIcon')).toHaveClass('MuiSvgIcon-root')
-    expect(getByTestId('CheckCircleRoundedIcon').parentElement).toHaveClass(
-      'MuiButton-endIcon'
+    expect(screen.getByTestId('CheckCircleRoundedIcon')).toHaveClass(
+      'MuiSvgIcon-root'
     )
+    expect(
+      screen.getByTestId('CheckCircleRoundedIcon').parentElement
+    ).toHaveClass('MuiButton-endIcon')
   })
 
   it('should call actionHandler on click', () => {
-    const { getByRole } = render(
+    render(
       <MockedProvider>
         <Button
           {...block}
@@ -560,7 +568,7 @@ describe('Button', () => {
         />
       </MockedProvider>
     )
-    fireEvent.click(getByRole('button'))
+    fireEvent.click(screen.getByRole('button'))
     expect(handleAction).toHaveBeenCalledWith(
       expect.objectContaining({
         push: expect.any(Function)
@@ -579,13 +587,11 @@ describe('Button', () => {
       ...block,
       label: ''
     }
-
     render(
       <MockedProvider>
         <Button {...emptyButtonLabelMock} />
       </MockedProvider>
     )
-
     expect(screen.getByRole('button', { name: 'Submit' })).toHaveTextContent(
       'Submit'
     )
