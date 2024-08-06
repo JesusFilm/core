@@ -50,3 +50,9 @@ export function setBeaconRoute(route: string): void {
     window.Beacon('navigate', route)
   }
 }
+
+export function openBeacon(): void {
+  if (window.Beacon != null) {
+    window.Beacon('open')
+  }
+}

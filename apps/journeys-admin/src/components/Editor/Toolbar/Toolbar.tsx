@@ -22,7 +22,10 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
-import { setBeaconRoute } from '@core/journeys/ui/setBeaconPageViewed/setBeaconPageViewed'
+import {
+  openBeacon,
+  setBeaconRoute
+} from '@core/journeys/ui/setBeaconPageViewed/setBeaconPageViewed'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import ThumbsUpIcon from '@core/shared/ui/icons/ThumbsUp'
 
@@ -287,9 +290,15 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
           'We are collecting feedback on the new analytics new feature. Please take a moment to share your thoughts.'
         )}
         open={Boolean(anchorEl)}
-        handleClose={() => setAnchorEl(null)}
         currentRef={anchorEl}
         pointerPosition={smUp ? '92%' : '94%'}
+        handleClose={() => setAnchorEl(null)}
+        popoverAction={{
+          label: t('Feedback'),
+          handleClick: () => {
+            openBeacon()
+          }
+        }}
       />
     </Stack>
   )

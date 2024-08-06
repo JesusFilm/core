@@ -1,7 +1,13 @@
 import { useTheme } from '@mui/material/styles'
 import { useRouter } from 'next/router'
 import Script from 'next/script'
-import { ReactElement, useEffect, useState } from 'react'
+import {
+  Dispatch,
+  ReactElement,
+  SetStateAction,
+  useEffect,
+  useState
+} from 'react'
 
 import { FormObject } from '@core/journeys/ui/setBeaconPageViewed'
 
@@ -17,13 +23,17 @@ import {
   MOBILE_CONTAINER_HEIGHT,
   MOBILE_CONTAINER_MAX_HEIGHT,
   MOBILE_CONTAINER_WIDTH
-} from './beaconProperties'
+} from './constants'
 
 interface BeaconInitProps {
+  setBeaconOpen: Dispatch<SetStateAction<boolean>>
   userInfo?: FormObject
 }
 
-export function BeaconInit({ userInfo }: BeaconInitProps): ReactElement {
+export function BeaconInit({
+  setBeaconOpen,
+  userInfo
+}: BeaconInitProps): ReactElement {
   const { breakpoints, zIndex } = useTheme()
   const router = useRouter()
 
@@ -36,6 +46,11 @@ export function BeaconInit({ userInfo }: BeaconInitProps): ReactElement {
           name: userInfo?.name ?? '',
           email: userInfo?.email ?? ''
         })
+        setBeaconOpen(true)
+      })
+
+      window.Beacon('on', 'close', () => {
+        setBeaconOpen(false)
       })
     }
     // close the beacon when the url changes
@@ -47,7 +62,7 @@ export function BeaconInit({ userInfo }: BeaconInitProps): ReactElement {
     return () => {
       router.events.off('routeChangeComplete', handleRouteChange)
     }
-  }, [hasLoaded, router, userInfo])
+  }, [hasLoaded, router, userInfo, setBeaconOpen])
 
   return (
     <>

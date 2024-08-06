@@ -1,4 +1,3 @@
-import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Popover from '@mui/material/Popover'
 import Stack from '@mui/material/Stack'
@@ -10,20 +9,34 @@ interface NotificationPopoverProps {
   title: string
   description: string
   open: boolean
-  handleClose: () => void
   currentRef: HTMLElement | null
   pointerPosition: string // percentage
+  handleClose: () => void
+  popoverAction?: PopoverAction
+}
+
+interface PopoverAction {
+  label: string
+  handleClick: () => void
 }
 
 export function NotificationPopover({
   title,
   description,
   open,
-  handleClose,
   currentRef,
-  pointerPosition
+  pointerPosition,
+  handleClose,
+  popoverAction
 }: NotificationPopoverProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  function handleClick(): void {
+    if (popoverAction != null) {
+      handleClose()
+      popoverAction.handleClick()
+    }
+  }
+
   return currentRef != null ? (
     <Popover
       open={open}
@@ -61,9 +74,12 @@ export function NotificationPopover({
           {title}
         </Typography>
         <Typography>{description}</Typography>
-        <Box textAlign="right">
+        <Stack direction="row" gap={3} sx={{ alignSelf: 'flex-end' }}>
           <Button onClick={handleClose}>{t('Dismiss')}</Button>
-        </Box>
+          {popoverAction != null && (
+            <Button onClick={handleClick}>{popoverAction.label}</Button>
+          )}
+        </Stack>
       </Stack>
     </Popover>
   ) : (

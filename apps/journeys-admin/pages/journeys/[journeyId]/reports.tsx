@@ -11,7 +11,10 @@ import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement, useRef, useState } from 'react'
 
-import { setBeaconRoute } from '@core/journeys/ui/setBeaconPageViewed/setBeaconPageViewed'
+import {
+  openBeacon,
+  setBeaconRoute
+} from '@core/journeys/ui/setBeaconPageViewed/setBeaconPageViewed'
 
 import { GetAdminJourney } from '../../../__generated__/GetAdminJourney'
 import { JourneysReportType } from '../../../__generated__/globalTypes'
@@ -60,31 +63,40 @@ function JourneyReportsPage({ flags }): ReactElement {
                 }}
               />
             </Box>
+
+            <NotificationPopover
+              title={t('New Feature Feedback')}
+              description={t(
+                'We are collecting feedback on the new analytics new feature. Please take a moment to share your thoughts.'
+              )}
+              open={open}
+              currentRef={currentRef}
+              pointerPosition="92%"
+              handleClose={() => {
+                setBeaconRoute('/ask/')
+                setOpen(false)
+              }}
+              popoverAction={{
+                label: t('Share Feedback'),
+                handleClick: () => {
+                  openBeacon()
+                }
+              }}
+            />
           </Stack>
         }
         mainBodyPadding={false}
       >
         {flags.editorAnalytics === true ? (
-          <PlausibleEmbedDashboard />
+          <>
+            <PlausibleEmbedDashboard />
+          </>
         ) : (
           <MemoizedDynamicReport
             reportType={JourneysReportType.singleFull}
             journeyId={journeyId}
           />
         )}
-        <NotificationPopover
-          title={t('New Feature Feedback')}
-          description={t(
-            'We are collecting feedback on the new analytics new feature. Please take a moment to share your thoughts.'
-          )}
-          open={open}
-          handleClose={() => {
-            setBeaconRoute('/ask/')
-            setOpen(false)
-          }}
-          currentRef={currentRef}
-          pointerPosition="92%"
-        />
       </PageWrapper>
     </>
   )
