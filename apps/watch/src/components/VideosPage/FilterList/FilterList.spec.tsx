@@ -2,10 +2,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import type { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import type { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
 import { type NextRouter, useRouter } from 'next/router'
-import {
-  useMenu,
-  useSearchBox
-} from 'react-instantsearch'
+import { useMenu, useSearchBox } from 'react-instantsearch'
 
 import { languages } from '../testData'
 
@@ -24,9 +21,7 @@ const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 const mockUseSearchBox = useSearchBox as jest.MockedFunction<
   typeof useSearchBox
 >
-const mockUseMenu = useMenu as jest.MockedFunction<
-  typeof useMenu
->
+const mockUseMenu = useMenu as jest.MockedFunction<typeof useMenu>
 
 describe('FilterList', () => {
   const push = jest.fn()
