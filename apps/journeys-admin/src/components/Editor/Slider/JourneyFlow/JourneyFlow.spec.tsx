@@ -23,6 +23,8 @@ import {
 import { StepFields as StepBlock } from '../../../../../__generated__/StepFields'
 import { mockReactFlow } from '../../../../../test/mockReactFlow'
 import { useStepBlockPositionUpdateMutation } from '../../../../libs/useStepBlockPositionUpdateMutation'
+import { CommandRedoItem } from '../../Toolbar/Items/CommandRedoItem'
+import { CommandUndoItem } from '../../Toolbar/Items/CommandUndoItem'
 
 import { GET_STEP_BLOCKS_WITH_POSITION } from './JourneyFlow'
 import { transformSteps } from './libs/transformSteps'
@@ -130,6 +132,7 @@ describe('JourneyFlow', () => {
             }}
           >
             <Box sx={{ width: '100vw', height: '100vh' }}>
+              <CommandUndoItem variant="button" />
               <JourneyFlow />
             </Box>
           </EditorProvider>
@@ -138,7 +141,31 @@ describe('JourneyFlow', () => {
     )
 
     await waitFor(() => expect(result).toHaveBeenCalled())
-    expect(mockUpdate).toHaveBeenCalledTimes(7)
+    expect(mockUpdate).toHaveBeenCalledWith({
+      optimisticResponse: {
+        stepBlockPositionUpdate: [
+          { __typename: 'StepBlock', id: 'step0.id', x: 0, y: -8 },
+          { __typename: 'StepBlock', id: 'step1.id', x: 600, y: -8 },
+          { __typename: 'StepBlock', id: 'step2.id', x: 1200, y: -8 },
+          { __typename: 'StepBlock', id: 'step3.id', x: 1800, y: -8 },
+          { __typename: 'StepBlock', id: 'step4.id', x: 2400, y: -8 },
+          { __typename: 'StepBlock', id: 'step5.id', x: 2500, y: -8 },
+          { __typename: 'StepBlock', id: 'step6.id', x: 3600, y: -8 }
+        ]
+      },
+      variables: {
+        input: [
+          { id: 'step0.id', x: 0, y: -8 },
+          { id: 'step1.id', x: 600, y: -8 },
+          { id: 'step2.id', x: 1200, y: -8 },
+          { id: 'step3.id', x: 1800, y: -8 },
+          { id: 'step4.id', x: 2400, y: -8 },
+          { id: 'step5.id', x: 2500, y: -8 },
+          { id: 'step6.id', x: 3600, y: -8 }
+        ]
+      }
+    })
+    expect(screen.getByRole('button', { name: 'Undo' })).toBeDisabled()
   })
 
   it('should reorganize graph', async () => {
@@ -159,6 +186,8 @@ describe('JourneyFlow', () => {
             initialState={{ steps, activeSlide: ActiveSlide.JourneyFlow }}
           >
             <Box sx={{ width: '100vw', height: '100vh' }}>
+              <CommandUndoItem variant="button" />
+              <CommandRedoItem variant="button" />
               <JourneyFlow />
             </Box>
           </EditorProvider>
@@ -166,9 +195,65 @@ describe('JourneyFlow', () => {
       </MockedProvider>
     )
 
+    const mockUpdateExecute = {
+      optimisticResponse: {
+        stepBlockPositionUpdate: [
+          { __typename: 'StepBlock', id: 'step0.id', x: 0, y: -8 },
+          { __typename: 'StepBlock', id: 'step1.id', x: 600, y: -8 },
+          { __typename: 'StepBlock', id: 'step2.id', x: 1200, y: -8 },
+          { __typename: 'StepBlock', id: 'step3.id', x: 1800, y: -8 },
+          { __typename: 'StepBlock', id: 'step4.id', x: 2400, y: -8 },
+          { __typename: 'StepBlock', id: 'step5.id', x: 2500, y: -8 },
+          { __typename: 'StepBlock', id: 'step6.id', x: 3600, y: -8 }
+        ]
+      },
+      variables: {
+        input: [
+          { id: 'step0.id', x: 0, y: -8 },
+          { id: 'step1.id', x: 600, y: -8 },
+          { id: 'step2.id', x: 1200, y: -8 },
+          { id: 'step3.id', x: 1800, y: -8 },
+          { id: 'step4.id', x: 2400, y: -8 },
+          { id: 'step5.id', x: 2500, y: -8 },
+          { id: 'step6.id', x: 3600, y: -8 }
+        ]
+      }
+    }
+
+    const mockUpdateUndo = {
+      optimisticResponse: {
+        stepBlockPositionUpdate: [
+          { __typename: 'StepBlock', id: 'step0.id', x: 0, y: 1 },
+          { __typename: 'StepBlock', id: 'step1.id', x: 300, y: 1 },
+          { __typename: 'StepBlock', id: 'step2.id', x: 600, y: 1 },
+          { __typename: 'StepBlock', id: 'step3.id', x: 900, y: 1 },
+          { __typename: 'StepBlock', id: 'step4.id', x: 1200, y: 1 },
+          { __typename: 'StepBlock', id: 'step5.id', x: 1500, y: 1 },
+          { __typename: 'StepBlock', id: 'step6.id', x: 1800, y: 1 }
+        ]
+      },
+      variables: {
+        input: [
+          { id: 'step0.id', x: 0, y: 1 },
+          { id: 'step1.id', x: 300, y: 1 },
+          { id: 'step2.id', x: 600, y: 1 },
+          { id: 'step3.id', x: 900, y: 1 },
+          { id: 'step4.id', x: 1200, y: 1 },
+          { id: 'step5.id', x: 1500, y: 1 },
+          { id: 'step6.id', x: 1800, y: 1 }
+        ]
+      }
+    }
+
     await waitFor(() => expect(result).toHaveBeenCalled())
     fireEvent.click(screen.getByTestId('ArrowRefresh6Icon'))
-    expect(mockUpdate).toHaveBeenCalled()
+    expect(mockUpdate).toHaveBeenCalledWith(mockUpdateExecute)
+    mockUpdate.mockClear()
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    expect(mockUpdate).toHaveBeenCalledWith(mockUpdateUndo)
+    mockUpdate.mockClear()
+    fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+    expect(mockUpdate).toHaveBeenCalledWith(mockUpdateExecute)
   })
 
   it('should hide new step button if in analytics mode', async () => {
