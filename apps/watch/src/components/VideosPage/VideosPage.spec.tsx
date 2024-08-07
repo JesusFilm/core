@@ -90,10 +90,6 @@ describe('VideosPage', () => {
       items: [],
       refine: jest.fn()
     } as unknown as RefinementListRenderState)
-
-    mockUseClearRefinements.mockReturnValue({
-      refine: jest.fn()
-    } as unknown as ClearRefinementsRenderState)
   })
 
   it('should render the languages filter', async () => {
