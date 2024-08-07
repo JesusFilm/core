@@ -10,11 +10,11 @@ import { ReactElement, useState } from 'react'
 import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
-import { useEditor } from '../../libs/EditorProvider'
-import { useJourney } from '../../libs/JourneyProvider'
 import { useBlocks } from '../../libs/block'
 import type { TreeBlock } from '../../libs/block'
+import { useEditor } from '../../libs/EditorProvider'
 import { getStepHeading } from '../../libs/getStepHeading'
+import { useJourney } from '../../libs/JourneyProvider'
 import { TextField } from '../TextField'
 
 import { TextResponseFields } from './__generated__/TextResponseFields'
@@ -118,7 +118,7 @@ export const TextResponse = ({
               <TextField
                 id="textResponse-field"
                 name="response"
-                label={label}
+                label={label === '' ? 'Your answer here' : label}
                 value={values.response}
                 helperText={hint != null ? hint : ''}
                 multiline
@@ -126,11 +126,11 @@ export const TextResponse = ({
                 minRows={minRows ?? 3}
                 onClick={(e) => e.stopPropagation()}
                 onChange={handleChange}
-                onBlurCapture={(e) => {
+                onBlurCapture={async (e) => {
                   handleBlur(e)
                   if (values.response !== value) {
                     setValue(values.response)
-                    onSubmitHandler(values)
+                    await onSubmitHandler(values)
                   }
                 }}
                 inputProps={{

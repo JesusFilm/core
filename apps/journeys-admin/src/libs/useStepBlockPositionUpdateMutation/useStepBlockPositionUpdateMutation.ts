@@ -11,13 +11,8 @@ import {
 } from '../../../__generated__/StepBlockPositionUpdate'
 
 export const STEP_BLOCK_POSITION_UPDATE = gql`
-  mutation StepBlockPositionUpdate(
-    $id: ID!
-    $journeyId: ID!
-    $x: Int!
-    $y: Int!
-  ) {
-    stepBlockUpdate(id: $id, journeyId: $journeyId, input: { x: $x, y: $y }) {
+  mutation StepBlockPositionUpdate($input: [StepBlockPositionUpdateInput!]!) {
+    stepBlockPositionUpdate(input: $input) {
       id
       x
       y

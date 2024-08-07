@@ -1,8 +1,8 @@
 import { gql, useQuery } from '@apollo/client'
+import { useRouter } from 'next/router'
 import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 
 import { ActiveContent } from '@core/journeys/ui/EditorProvider'
@@ -53,8 +53,8 @@ function JourneyEditPage({ status }): ReactElement {
           status === 'noAccess'
             ? t('Request Access')
             : data?.journey?.title != null
-              ? t('Edit {{title}}', { title: data.journey.title })
-              : t('Edit Journey')
+            ? t('Edit {{title}}', { title: data.journey.title })
+            : t('Edit Journey')
         }
         description={data?.journey?.description ?? undefined}
       />

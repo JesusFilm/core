@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { IconBlockUpdateInput, IconColor } from "./globalTypes";
+import { IconColor } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: IconBlockColorUpdate
@@ -21,6 +21,5 @@ export interface IconBlockColorUpdate {
 
 export interface IconBlockColorUpdateVariables {
   id: string;
-  journeyId: string;
-  input: IconBlockUpdateInput;
+  color: IconColor;
 }

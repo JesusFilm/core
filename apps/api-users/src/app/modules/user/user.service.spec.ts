@@ -4,8 +4,8 @@ import { UserRecord, getAuth } from 'firebase-admin/auth'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import omit from 'lodash/omit'
 
-import { auth } from '@core/nest/common/firebaseClient'
 import { User } from '.prisma/api-users-client'
+import { auth } from '@core/nest/common/firebaseClient'
 
 import { PrismaService } from '../../lib/prisma.service'
 

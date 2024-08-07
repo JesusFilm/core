@@ -1,15 +1,22 @@
 import { gql, useMutation } from '@apollo/client'
 import { useTranslation } from 'next-i18next'
 import type { ReactElement } from 'react'
+import { v4 as uuidv4 } from 'uuid'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { VIDEO_FIELDS } from '@core/journeys/ui/Video/videoFields'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import VideoOnIcon from '@core/shared/ui/icons/VideoOn'
 
-import type { BlockFields_CardBlock as CardBlock } from '../../../../../../../../__generated__/BlockFields'
+import type {
+  BlockFields_CardBlock as CardBlock,
+  BlockFields_VideoBlock as VideoBlock
+} from '../../../../../../../../__generated__/BlockFields'
+import { VideoBlockSource } from '../../../../../../../../__generated__/globalTypes'
 import type { VideoBlockCreate } from '../../../../../../../../__generated__/VideoBlockCreate'
+import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
+import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
 import { Button } from '../Button'
 
 interface NewVideoButtonProps {
@@ -33,54 +40,63 @@ export function NewVideoButton({
     useMutation<VideoBlockCreate>(VIDEO_BLOCK_CREATE)
   const { journey } = useJourney()
   const {
-    state: { selectedStep },
-    dispatch
+    state: { selectedStep }
   } = useEditor()
+  const { addBlock } = useBlockCreateCommand()
 
-  const handleClick = async (): Promise<void> => {
+  function handleClick(): void {
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
 
-    if (card != null && journey != null) {
-      const { data } = await videoBlockCreate({
-        variables: {
-          input: {
-            journeyId: journey.id,
-            parentBlockId: card.id,
-            autoplay: true,
-            muted: false,
-            fullsize: true
+    if (card == null || journey == null) return
+
+    const video: TreeBlock<VideoBlock> = {
+      id: uuidv4(),
+      parentBlockId: card.id,
+      parentOrder: 0,
+      muted: false,
+      autoplay: true,
+      startAt: null,
+      endAt: null,
+      posterBlockId: null,
+      fullsize: true,
+      videoId: null,
+      videoVariantLanguageId: null,
+      source: VideoBlockSource.internal,
+      title: null,
+      description: null,
+      image: null,
+      duration: null,
+      objectFit: null,
+      video: null,
+      action: null,
+      __typename: 'VideoBlock',
+      children: []
+    }
+    addBlock({
+      block: video,
+      execute() {
+        void videoBlockCreate({
+          variables: {
+            input: {
+              id: video.id,
+              journeyId: journey.id,
+              parentBlockId: video.parentBlockId,
+              autoplay: video.autoplay,
+              muted: video.muted,
+              fullsize: video.fullsize
+            }
+          },
+          optimisticResponse: {
+            videoBlockCreate: video
+          },
+          update(cache, { data }) {
+            blockCreateUpdate(cache, journey?.id, data?.videoBlockCreate)
           }
-        },
-        update(cache, { data }) {
-          if (data?.videoBlockCreate != null) {
-            cache.modify({
-              id: cache.identify({ __typename: 'Journey', id: journey.id }),
-              fields: {
-                blocks(existingBlockRefs = []) {
-                  const newBlockRef = cache.writeFragment({
-                    data: data.videoBlockCreate,
-                    fragment: gql`
-                      fragment NewBlock on Block {
-                        id
-                      }
-                    `
-                  })
-                  return [...existingBlockRefs, newBlockRef]
-                }
-              }
-            })
-          }
-        }
-      })
-      if (data?.videoBlockCreate != null) {
-        dispatch({
-          type: 'SetSelectedBlockByIdAction',
-          selectedBlockId: data.videoBlockCreate.id
         })
       }
-    }
+    })
   }
 
   return (

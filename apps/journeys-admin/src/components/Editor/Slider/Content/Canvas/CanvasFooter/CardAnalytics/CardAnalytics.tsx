@@ -1,15 +1,18 @@
+import Divider from '@mui/material/Divider'
+import Fade from '@mui/material/Fade'
+import Stack from '@mui/material/Stack'
+import Tooltip from '@mui/material/Tooltip'
+import Typography from '@mui/material/Typography'
+import { ReactElement, ReactNode } from 'react'
+// eslint-disable-next-line no-restricted-imports
+import { useTranslation } from 'react-i18next'
+
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { MessageChatIcon } from '@core/journeys/ui/MessageChatIcon'
 import ThumbsDownIcon from '@core/shared/ui/icons/ThumbsDown'
 import ThumbsUpIcon from '@core/shared/ui/icons/ThumbsUp'
-import { Typography } from '@mui/material'
-import Divider from '@mui/material/Divider'
-import Fade from '@mui/material/Fade'
-import Stack from '@mui/material/Stack'
-import Tooltip from '@mui/material/Tooltip'
-import { ReactElement, ReactNode } from 'react'
-import { useTranslation } from 'react-i18next'
+
 import { MessagePlatform } from '../../../../../../../../__generated__/globalTypes'
 
 export function CardAnalytics(): ReactElement {
@@ -29,11 +32,15 @@ export function CardAnalytics(): ReactElement {
   const secondaryChat = journey?.chatButtons[1]
   const primaryChatClicks =
     analytics?.targetMap.get(
-      `${selectedStep?.id}->link:${primaryChat?.link ?? ''}:${primaryChat?.platform ?? MessagePlatform.custom}`
+      `${selectedStep?.id}->link:${primaryChat?.link ?? ''}:${
+        primaryChat?.platform ?? MessagePlatform.custom
+      }`
     ) ?? 0
   const secondaryChatClicks =
     analytics?.targetMap.get(
-      `${selectedStep?.id}->link:${secondaryChat?.link}:${secondaryChat?.platform ?? MessagePlatform.custom}`
+      `${selectedStep?.id}->link:${secondaryChat?.link}:${
+        secondaryChat?.platform ?? MessagePlatform.custom
+      }`
     ) ?? 0
 
   return (

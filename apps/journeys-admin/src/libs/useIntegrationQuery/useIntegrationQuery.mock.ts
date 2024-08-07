@@ -1,9 +1,11 @@
 import { MockedResponse } from '@apollo/client/testing'
+
 import {
   GetIntegration,
   GetIntegrationVariables
 } from '../../../__generated__/GetIntegration'
 import { IntegrationType } from '../../../__generated__/globalTypes'
+
 import { GET_INTEGRATION } from './useIntegrationQuery'
 
 export const getIntegrationMock: MockedResponse<
@@ -33,12 +35,12 @@ export const getIntegrationMock: MockedResponse<
             {
               __typename: 'IntegrationGrowthSpacesRoute',
               id: 'route.id',
-              name: 'route.name'
+              name: 'My First Email'
             },
             {
               __typename: 'IntegrationGrowthSpacesRoute',
               id: 'route2.id',
-              name: 'route2.name'
+              name: 'On The Journey'
             }
           ]
         }

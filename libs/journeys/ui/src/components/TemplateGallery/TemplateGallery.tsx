@@ -3,8 +3,8 @@ import Grid from '@mui/material/Grid'
 import Paper from '@mui/material/Paper'
 import castArray from 'lodash/castArray'
 import difference from 'lodash/difference'
-import { useTranslation } from 'next-i18next'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { TemplateSections } from '../TemplateSections'
@@ -68,7 +68,7 @@ export function TemplateGallery({
       <Container
         maxWidth={false}
         sx={{
-          overflow: hideOverflow ? 'hidden' : 'none',
+          overflow: hideOverflow === true ? 'hidden' : 'none',
           px: { xs: 0 },
           py: { xs: 6, sm: 9 }
         }}

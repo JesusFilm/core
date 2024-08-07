@@ -47,7 +47,7 @@ jobs:
       #   uses: andstor/file-existence-action@v3
       #   with:
       #     files: 'dist/storybook/shared-storybook'
-        #👇 Adds Chromatic as a step in the workflow
+      #👇 Adds Chromatic as a step in the workflow
       # - name: Run VR tests
       #   if: ${{ steps.check_files.outputs.files_exists == 'true' }}
       #   uses: chromaui/action@v1
@@ -65,5 +65,5 @@ jobs:
       #     skip: '@(dependabot/**|00-00-CI-chore-update-translations)'
       #     untraced: '@(package*.json|.storybook/**)'
       #     traceChanged: 'expanded'
-          # dryRun: 'true'
-          # debug: 'true'
+      # dryRun: 'true'
+      # debug: 'true'

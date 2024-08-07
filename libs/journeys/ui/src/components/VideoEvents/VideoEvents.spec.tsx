@@ -5,14 +5,14 @@ import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 import videojs from 'video.js'
 
-import { keyify } from '@core/journeys/ui/plausibleHelpers'
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 
 import { VideoBlockSource } from '../../../__generated__/globalTypes'
-import { JourneyProvider } from '../../libs/JourneyProvider'
-import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
 import { TreeBlock, blockHistoryVar } from '../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
+import { JourneyProvider } from '../../libs/JourneyProvider'
+import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
+import { keyify } from '../../libs/plausibleHelpers'
 import { VideoTriggerFields_triggerAction } from '../VideoTrigger/__generated__/VideoTriggerFields'
 
 import {
@@ -59,6 +59,7 @@ describe('VideoEvents', () => {
   let props: VideoEventsProps
   const originalLocation = window.location
   const mockOrigin = 'https://example.com'
+
   beforeAll(() => {
     Object.defineProperty(window, 'location', {
       value: {

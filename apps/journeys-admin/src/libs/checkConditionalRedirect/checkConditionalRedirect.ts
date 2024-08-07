@@ -86,18 +86,19 @@ export async function checkConditionalRedirect({
       new Date(2023, 9, 5)
     )
   ) {
-    if (currentRedirect?.match(/^\/templates\/[\w\-]+\/quick/) != null) {
+    if (currentRedirect?.match(/^\/templates\/[\w-]+\/quick/) != null) {
       await apolloClient.mutate<JourneyProfileOnboardingFormComplete>({
         mutation: JOURNEY_PROFILE_ONBOARDING_FORM_COMPLETE
       })
       return { destination: currentRedirect, permanent: false }
     }
     if (resolvedUrl.startsWith('/onboarding-form')) return
-    return { destination: `/onboarding-form${redirect}`, permanent: false }
+    // TODO: restore onboarding form check once form works again
+    // return { destination: `/onboarding-form${redirect}`, permanent: false }
   }
 
   if (data.teams.length === 0) {
-    if (currentRedirect?.match(/^\/templates\/[\w\-]+\/quick/) != null) {
+    if (currentRedirect?.match(/^\/templates\/[\w-]+\/quick/) != null) {
       await apolloClient.mutate<TeamCreate, TeamCreateVariables>({
         mutation: TEAM_CREATE,
         variables: { input: { title: teamName ?? 'My Team' } }

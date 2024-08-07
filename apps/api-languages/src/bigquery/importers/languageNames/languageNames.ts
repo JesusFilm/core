@@ -1,9 +1,9 @@
 import { z } from 'zod'
 
-import { prisma } from '../../../lib/prisma'
-import { parseMany, processTable } from '../../importer'
-import { parse } from '../../importer'
 import { Prisma } from '.prisma/api-languages-client'
+
+import { prisma } from '../../../lib/prisma'
+import { parse, parseMany, processTable } from '../../importer'
 
 const languageNameSchema = z
   .object({
@@ -13,7 +13,7 @@ const languageNameSchema = z
   })
   .transform((value) => ({
     ...value,
-    primary: value.languageId === '529'
+    primary: value.languageId === value.parentLanguageId
   }))
 
 const bigQueryTableName =

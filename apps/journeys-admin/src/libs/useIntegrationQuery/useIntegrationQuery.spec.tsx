@@ -1,12 +1,16 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { renderHook, waitFor } from '@testing-library/react'
 import { act } from 'react'
+
 import {
   GetIntegration_integrations as Integration,
   GetIntegration_integrations_routes as Route
 } from '../../../__generated__/GetIntegration'
 import { IntegrationType } from '../../../__generated__/globalTypes'
-import { GET_INTEGRATION, useIntegrationQuery } from './useIntegrationQuery'
+
+import { GET_INTEGRATION } from './useIntegrationQuery'
+
+import { useIntegrationQuery } from '.'
 
 describe('useIntegrationQuery', () => {
   const route: Route = {
@@ -33,6 +37,7 @@ describe('useIntegrationQuery', () => {
       }
     ]
   }
+
   it('should get integrations for a team', async () => {
     const mockResult = jest.fn(() => {
       return {

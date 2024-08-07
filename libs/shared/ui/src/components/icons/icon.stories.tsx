@@ -91,6 +91,8 @@ const iconNames: IconName[] = [
   'Filter',
   'Flame',
   'FlexAlignBottom1',
+  'FlipLeft',
+  'FlipRight',
   'FolderDown1',
   'FolderUp1',
   'Globe',

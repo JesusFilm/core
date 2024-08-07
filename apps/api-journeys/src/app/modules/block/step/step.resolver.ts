@@ -4,11 +4,12 @@ import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 import omit from 'lodash/omit'
 
-import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 import { Block } from '.prisma/api-journeys-client'
+import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 
 import {
   StepBlockCreateInput,
+  StepBlockPositionUpdateInput,
   StepBlockUpdateInput
 } from '../../../__generated__/graphql'
 import { Action, AppAbility } from '../../../lib/casl/caslFactory'
@@ -97,6 +98,47 @@ export class StepBlockResolver {
         }
       )
     return await this.blockService.update(id, input)
+  }
+
+  @Mutation()
+  @UseGuards(AppCaslGuard)
+  async stepBlockPositionUpdate(
+    @CaslAbility() ability: AppAbility,
+    @Args('input') input: StepBlockPositionUpdateInput[]
+  ): Promise<Block[]> {
+    const blocks = await this.prismaService.block.findMany({
+      where: { id: { in: input.map(({ id }) => id) } },
+      include: {
+        action: true,
+        journey: {
+          include: {
+            team: { include: { userTeams: true } },
+            userJourneys: true
+          }
+        }
+      }
+    })
+    if (blocks.length !== input.length)
+      throw new GraphQLError('block not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    blocks.forEach((block) => {
+      if (!ability.can(Action.Update, subject('Journey', block.journey)))
+        throw new GraphQLError('user is not allowed to update block', {
+          extensions: { code: 'FORBIDDEN' }
+        })
+    })
+    return await this.prismaService.$transaction(async (tx) => {
+      return await Promise.all(
+        input.map(
+          async (input) =>
+            await tx.block.update({
+              where: { id: input.id },
+              data: { x: input.x, y: input.y }
+            })
+        )
+      )
+    })
   }
 
   @ResolveField()
