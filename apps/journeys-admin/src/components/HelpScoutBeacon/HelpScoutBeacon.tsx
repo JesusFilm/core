@@ -47,7 +47,6 @@ export function HelpScoutBeacon({
     }
     handleClick?.()
   }
-
   return (
     <>
       <BeaconInit userInfo={userInfo} />

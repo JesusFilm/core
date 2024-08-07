@@ -60,7 +60,6 @@ function JourneyReportsPage({ flags }): ReactElement {
                 }}
               />
             </Box>
-
             <NotificationPopover
               title={t('New Feature Feedback')}
               description={t(
