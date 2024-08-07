@@ -3,13 +3,13 @@ import Card from '@mui/material/Card'
 import CardMedia from '@mui/material/CardMedia'
 import Stack from '@mui/material/Stack'
 import { alpha } from '@mui/material/styles'
-import Tooltip from '@mui/material/Tooltip'
+import { Tooltip } from '@core/journeys/ui/Tooltip'
 import Typography from '@mui/material/Typography'
 import isEmpty from 'lodash/isEmpty'
 import Image from 'next/image'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
-import { OnConnect, useStore } from 'reactflow'
+import { OnConnect, ReactFlowStore, useStore } from 'reactflow'
 
 import {
   ActiveContent,
@@ -21,14 +21,12 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useUpdateEdge } from '../../libs/useUpdateEdge'
 import { BaseNode, HandleVariant } from '../BaseNode'
 
-const zoomSelector = (s): number => {
-  const zoom = s.transform[2]
+const zoomSelector = (store: ReactFlowStore): number => {
+  const zoom = store.transform[2]
 
-  // Zoom : Offset
-  // 0.5 : -4
-  // 1.0 : -2
-  // 2.0 : -5
-  return 6 * zoom - 7 // Slope intercept
+  // (react flow zoom min/max, tooltip offset) points for slope-intercept equation below:
+  // (0.5, -4), (1.0, -2), (2.0, -5)
+  return 6 * zoom - 7
 }
 
 export function SocialPreviewNode(): ReactElement {
@@ -104,12 +102,6 @@ export function SocialPreviewNode(): ReactElement {
                   }
                 }
               ]
-            },
-            tooltip: {
-              sx: {
-                px: 2,
-                py: 0
-              }
             }
           }}
         >
