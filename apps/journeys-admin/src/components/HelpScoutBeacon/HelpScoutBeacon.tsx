@@ -5,9 +5,10 @@ import MenuItem from '@mui/material/MenuItem'
 import Tooltip from '@mui/material/Tooltip'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
 import { FormObject } from '@core/journeys/ui/setBeaconPageViewed'
+import { isBeaconOpen } from '@core/journeys/ui/setBeaconPageViewed/setBeaconPageViewed'
 import HelpCircleContained from '@core/shared/ui/icons/HelpCircleContained'
 import XCircleContained from '@core/shared/ui/icons/XCircleContained'
 
@@ -29,6 +30,9 @@ export function HelpScoutBeacon({
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
   const [beaconOpen, setBeaconOpen] = useState(false)
+  useEffect(() => {
+    setBeaconOpen(isBeaconOpen())
+  }, [setBeaconOpen])
 
   const handleBeaconClick = (): void => {
     if (window.Beacon != null) {
