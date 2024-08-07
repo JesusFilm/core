@@ -45,7 +45,7 @@ telemetry:
   exporters:
     logging:
       common:
-        resource: 
+        resource:
           service.name: api-gateway
       stdout:
         enabled: true

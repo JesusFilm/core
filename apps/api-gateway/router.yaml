@@ -23,5 +23,5 @@ telemetry:
   exporters:
     logging:
       common:
-        resource: 
+        resource:
           service.name: api-gateway
