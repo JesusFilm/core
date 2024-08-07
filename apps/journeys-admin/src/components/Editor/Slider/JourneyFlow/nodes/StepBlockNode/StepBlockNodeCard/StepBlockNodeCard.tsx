@@ -159,7 +159,9 @@ export function StepBlockNodeCard({
               fontSize: 11,
               fontWeight: 'bold',
               alignSelf: 'flex-start',
-              lineHeight: 1.2
+              lineHeight: 1.2,
+              maxWidth: '125px',
+              wordBreak: 'break-word'
             }}
           >
             {title != null && title !== '' ? (
