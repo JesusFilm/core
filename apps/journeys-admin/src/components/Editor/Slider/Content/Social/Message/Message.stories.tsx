@@ -1,7 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
-import {} from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
@@ -35,7 +34,7 @@ export const Default = {
     journey: {
       id: 'journey.id',
       primaryImageBlock: {
-        src: 'https://images.unsplash.com/photo-1616488000000-000000000000?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80'
+        src: 'https://images.unsplash.com/photo-1552410260-0fd9b577afa6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0MDYwNDN8MHwxfGNvbGxlY3Rpb258Mnw0OTI0NTU2fHx8fHwyfHwxNzIyOTg3NzE3fA&ixlib=rb-4.0.3&q=80&w=1080'
       },
       seoDescription: 'journey description',
       seoTitle: 'journey title'
