@@ -2,9 +2,7 @@ import { useTheme } from '@mui/material/styles'
 import { useRouter } from 'next/router'
 import Script from 'next/script'
 import {
-  Dispatch,
   ReactElement,
-  SetStateAction,
   useEffect,
   useState
 } from 'react'
@@ -26,14 +24,10 @@ import {
 } from './constants'
 
 interface BeaconInitProps {
-  setBeaconOpen: Dispatch<SetStateAction<boolean>>
   userInfo?: FormObject
 }
 
-export function BeaconInit({
-  setBeaconOpen,
-  userInfo
-}: BeaconInitProps): ReactElement {
+export function BeaconInit({ userInfo }: BeaconInitProps): ReactElement {
   const { breakpoints, zIndex } = useTheme()
   const router = useRouter()
 
@@ -46,11 +40,6 @@ export function BeaconInit({
           name: userInfo?.name ?? '',
           email: userInfo?.email ?? ''
         })
-        setBeaconOpen(true)
-      })
-
-      window.Beacon('on', 'close', () => {
-        setBeaconOpen(false)
       })
     }
     // close the beacon when the url changes
@@ -62,7 +51,7 @@ export function BeaconInit({
     return () => {
       router.events.off('routeChangeComplete', handleRouteChange)
     }
-  }, [hasLoaded, router, userInfo, setBeaconOpen])
+  }, [hasLoaded, router, userInfo])
 
   return (
     <>

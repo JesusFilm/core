@@ -5,7 +5,7 @@ import MenuItem from '@mui/material/MenuItem'
 import Tooltip from '@mui/material/Tooltip'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useState } from 'react'
 
 import { FormObject } from '@core/journeys/ui/setBeaconPageViewed'
 import HelpCircleContained from '@core/shared/ui/icons/HelpCircleContained'
@@ -28,10 +28,7 @@ export function HelpScoutBeacon({
 }: HelpScoutBeaconProps): ReactElement {
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
-  const [beaconOpen, setBeaconOpen] = useState<null | boolean>(null)
-  useEffect(() => {
-    setBeaconOpen(false)
-  }, [setBeaconOpen])
+  const [beaconOpen, setBeaconOpen] = useState(false)
 
   const handleBeaconClick = (): void => {
     if (window.Beacon != null) {
@@ -50,7 +47,7 @@ export function HelpScoutBeacon({
 
   return (
     <>
-      <BeaconInit setBeaconOpen={setBeaconOpen} userInfo={userInfo} />
+      <BeaconInit userInfo={userInfo} />
       {variant === 'iconButton' && (
         <Tooltip title={t('Help')} arrow sx={{ m: 0 }}>
           <IconButton
@@ -67,8 +64,7 @@ export function HelpScoutBeacon({
                   : 'background.paper'
             }}
           >
-            {beaconOpen === true && <XCircleContained />}
-            {beaconOpen === false && <HelpCircleContained />}
+            {beaconOpen ? <XCircleContained /> : <HelpCircleContained />}
           </IconButton>
         </Tooltip>
       )}
