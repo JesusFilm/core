@@ -4,7 +4,6 @@ import Box from '@mui/material/Box'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
-import { CommandProvider } from '@core/journeys/ui/CommandProvider'
 import { ActiveSlide, EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import {
@@ -133,10 +132,8 @@ describe('JourneyFlow', () => {
             }}
           >
             <Box sx={{ width: '100vw', height: '100vh' }}>
-              <CommandProvider>
-                <CommandUndoItem variant="button" />
-                <JourneyFlow />
-              </CommandProvider>
+              <CommandUndoItem variant="button" />
+              <JourneyFlow />
             </Box>
           </EditorProvider>
         </JourneyProvider>
@@ -189,11 +186,9 @@ describe('JourneyFlow', () => {
             initialState={{ steps, activeSlide: ActiveSlide.JourneyFlow }}
           >
             <Box sx={{ width: '100vw', height: '100vh' }}>
-              <CommandProvider>
-                <CommandUndoItem variant="button" />
-                <CommandRedoItem variant="button" />
-                <JourneyFlow />
-              </CommandProvider>
+              <CommandUndoItem variant="button" />
+              <CommandRedoItem variant="button" />
+              <JourneyFlow />
             </Box>
           </EditorProvider>
         </JourneyProvider>
