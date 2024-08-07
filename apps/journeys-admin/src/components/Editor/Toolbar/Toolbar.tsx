@@ -16,16 +16,16 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 
 import {
+  openBeacon,
+  setBeaconPageViewed,
+  setBeaconRoute
+} from '@core/journeys/ui/beaconHooks'
+import {
   ActiveContent,
   ActiveSlide,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
-import {
-  openBeacon,
-  setBeaconRoute
-} from '@core/journeys/ui/setBeaconPageViewed/setBeaconPageViewed'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import ThumbsUpIcon from '@core/shared/ui/icons/ThumbsUp'
 

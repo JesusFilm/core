@@ -7,8 +7,7 @@ import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
 
-import { FormObject } from '@core/journeys/ui/setBeaconPageViewed'
-import { isBeaconOpen } from '@core/journeys/ui/setBeaconPageViewed/setBeaconPageViewed'
+import { FormObject, isBeaconOpen } from '@core/journeys/ui/beaconHooks'
 import HelpCircleContained from '@core/shared/ui/icons/HelpCircleContained'
 import XCircleContained from '@core/shared/ui/icons/XCircleContained'
 

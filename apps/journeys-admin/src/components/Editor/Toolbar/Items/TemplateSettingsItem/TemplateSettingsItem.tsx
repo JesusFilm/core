@@ -3,8 +3,8 @@ import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { ComponentProps, ReactElement, useState } from 'react'
 
+import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
 import SettingsIcon from '@core/shared/ui/icons/Settings'
 
 import { Item } from '../Item/Item'

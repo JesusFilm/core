@@ -12,7 +12,7 @@ export interface FormObject {
   email: string
 }
 
-// BeaconInfo contains information about the beacon
+// BeaconInfo contains all information about the beacon
 // add types as needed
 interface BeaconInfo {
   beaconId: string

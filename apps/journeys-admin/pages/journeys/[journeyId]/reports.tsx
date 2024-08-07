@@ -11,10 +11,7 @@ import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement, useRef, useState } from 'react'
 
-import {
-  openBeacon,
-  setBeaconRoute
-} from '@core/journeys/ui/setBeaconPageViewed/setBeaconPageViewed'
+import { openBeacon, setBeaconRoute } from '@core/journeys/ui/beaconHooks'
 
 import { GetAdminJourney } from '../../../__generated__/GetAdminJourney'
 import { JourneysReportType } from '../../../__generated__/globalTypes'

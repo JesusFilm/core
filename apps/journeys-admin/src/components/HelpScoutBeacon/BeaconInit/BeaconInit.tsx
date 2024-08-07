@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import Script from 'next/script'
 import { ReactElement, useEffect, useState } from 'react'
 
-import { FormObject } from '@core/journeys/ui/setBeaconPageViewed'
+import { FormObject } from '@core/journeys/ui/beaconHooks'
 
 import {
   BEACON_ICON_DISPLAY,
