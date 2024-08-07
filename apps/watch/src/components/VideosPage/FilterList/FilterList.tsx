@@ -5,13 +5,12 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Formik } from 'formik'
+import noop from 'lodash/noop'
 import { useRouter } from 'next/compat/router'
 import { useTranslation } from 'next-i18next'
-import { type ChangeEvent, type ReactElement, useEffect, useMemo } from 'react'
+import { type ChangeEvent, type ReactElement, useMemo } from 'react'
 import {
-  useClearRefinements,
   useMenu,
-  useRefinementList,
   useSearchBox
 } from 'react-instantsearch'
 
@@ -87,8 +86,8 @@ interface FilterParams {
 function extractQueryParams(url: string): FilterParams {
   const params = new URLSearchParams(url.split('?')[1])
   const query = params.get('query')
-  const languageId = params.get('refinementList[languageId][0]')
-  const subtitleId = params.get('refinementList[subtitles][0]')
+  const languageId = params.get('menu[languageId]') ?? '529'
+  const subtitleId = params.get('menu[subtitles]')
   return { query, languageId, subtitleId }
 }
 
@@ -116,12 +115,6 @@ export function FilterList({
     attribute: 'subtitles',
     limit: 5000
   })
-
-  useEffect(() => {
-    if (languageItems.filter((lang) => lang.isRefined).length === 0) {
-      refineLanguages('529')
-    }
-  }, [languageItems, refineLanguages])
 
   const languagesMap = useMemo(
     () => new Map(languagesData?.languages.map((lang) => [lang.id, lang])),
@@ -167,27 +160,21 @@ export function FilterList({
     [languagesMap]
   )
 
-  function handleRefine({
-    languageId,
-    subtitleLanguageId
-  }: {
-    languageId: string
-    subtitleLanguageId: string
-  }): void {
-    if (languageId !== '') {
-      refineLanguages(languageId)
+  const handleLanguageChange =
+    (setFieldValue) => async (value?: LanguageOption | undefined) => {
+      if (value?.id !== undefined && value?.id !== languageId) {
+        refineLanguages(value?.id)
+        await setFieldValue('language', value)
+      }
     }
-    if (subtitleLanguageId !== '') {
-      refineSubtitles(subtitleLanguageId)
-    }
-  }
 
-  function handleSubmit(values: typeof initialValues): void {
-    handleRefine({
-      languageId: values.language.id,
-      subtitleLanguageId: values.subtitleLanguage.id
-    })
-  }
+  const handleSubtitleChange =
+    (setFieldValue) => async (value?: LanguageOption | undefined) => {
+      if (value?.id !== undefined && value?.id !== subtitleId) {
+        refineSubtitles(value?.id)
+        await setFieldValue('subtitleLanguage', value)
+      }
+    }
 
   const handleTitleChange =
     (setFieldValue) => (e: ChangeEvent<HTMLInputElement>) => {
@@ -199,7 +186,7 @@ export function FilterList({
   return (
     <Formik
       initialValues={initialValues}
-      onSubmit={handleSubmit}
+      onSubmit={noop}
       enableReinitialize
     >
       {({ values, setFieldValue, handleBlur }) => (
@@ -210,9 +197,7 @@ export function FilterList({
               <Typography>{t('Languages')}</Typography>
             </Stack>
             <LanguagesFilter
-              onChange={async (language) =>
-                await setFieldValue('language', language)
-              }
+              onChange={handleLanguageChange(setFieldValue)}
               value={values.language}
               languages={languages}
               loading={languagesLoading}
@@ -225,9 +210,7 @@ export function FilterList({
               <Typography>{t('Subtitles')}</Typography>
             </Stack>
             <LanguagesFilter
-              onChange={async (subtitleLanguage) =>
-                await setFieldValue('subtitleLanguage', subtitleLanguage)
-              }
+              onChange={handleSubtitleChange(setFieldValue)}
               value={values.subtitleLanguage}
               languages={subtitles}
               loading={languagesLoading}
