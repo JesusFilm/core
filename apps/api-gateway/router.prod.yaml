@@ -42,12 +42,6 @@ telemetry:
   instrumentation:
     spans:
       mode: spec_compliant
-      supergraph:
-        attributes:
-          graphql.operation.name: true
-      router:
-        attributes:
-          dd.trace_id: true 
   exporters:
     logging:
       common:
