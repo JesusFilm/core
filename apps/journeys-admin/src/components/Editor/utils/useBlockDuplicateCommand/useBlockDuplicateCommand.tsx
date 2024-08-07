@@ -6,7 +6,6 @@ import {
   ActiveSlide,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields } from '../../../../../__generated__/BlockFields'
 import { BlockRestore_blockRestore as BlockRestore } from '../../../../../__generated__/BlockRestore'
@@ -22,7 +21,6 @@ export function useBlockDuplicateCommand(): {
   addBlockDuplicate: (args: AddBlockDuplicateParams) => void
 } {
   const { add } = useCommand()
-  const { journey } = useJourney()
 
   const {
     dispatch,
@@ -43,7 +41,7 @@ export function useBlockDuplicateCommand(): {
     block,
     execute
   }: AddBlockDuplicateParams): void {
-    if (selectedStep == null || journey == null || steps == null) return
+    if (selectedStep == null || steps == null) return
 
     const card = selectedStep.children.find(
       (block) => block.__typename === 'CardBlock'
