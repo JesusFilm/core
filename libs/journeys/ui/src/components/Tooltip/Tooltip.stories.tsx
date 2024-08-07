@@ -1,10 +1,11 @@
+import Button from '@mui/material/Button'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
 import { journeyUiConfig } from '../../libs/journeyUiConfig'
 import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
+
 import { Tooltip } from ".";
-import Button from '@mui/material/Button'
 
 const TooltipDemo: Meta<typeof Tooltip> = {
   ...journeyUiConfig,
