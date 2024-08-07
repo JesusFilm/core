@@ -30,7 +30,8 @@ const videoSchema = z.object({
     .nullable()
     .transform((value) =>
       value == null ? [] : value.substring(1, value.length - 1).split(',')
-    ),
+    )
+    .transform((value) => value.filter((id) => id.length > 0)),
   image: z.string().nullable()
 })
 
