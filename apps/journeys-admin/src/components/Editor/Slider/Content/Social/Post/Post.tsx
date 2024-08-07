@@ -1,7 +1,8 @@
 import Card from '@mui/material/Card'
 import CardMedia from '@mui/material/CardMedia'
 import Stack from '@mui/material/Stack'
-import Tooltip, { tooltipClasses } from '@mui/material/Tooltip'
+import { tooltipClasses } from '@mui/material/Tooltip'
+import { Tooltip } from '@core/journeys/ui/Tooltip'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/system/Box'
 import isEmpty from 'lodash/isEmpty'
@@ -24,13 +25,6 @@ const tooltipProps = {
           }
       }
     },
-    tooltip: {
-      sx: {
-        padding: '6px 8px',
-        lineHeight: '12px',
-        textAlign: 'center'
-      }
-    }
   }
 }
 
