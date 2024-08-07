@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
 
 import { watchConfig } from '../../../libs/storybook'
-import { languages } from '../testData'
+import { languages } from '../data'
 
 import { FilterList } from './FilterList'
 

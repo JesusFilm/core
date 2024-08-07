@@ -4,7 +4,7 @@ import type { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search
 import { type NextRouter, useRouter } from 'next/router'
 import { useMenu, useSearchBox } from 'react-instantsearch'
 
-import { languages } from '../testData'
+import { languages } from '../data'
 
 import { FilterList } from './FilterList'
 
