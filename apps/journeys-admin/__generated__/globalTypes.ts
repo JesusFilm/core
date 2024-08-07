@@ -562,6 +562,12 @@ export interface StepBlockCreateInput {
   y?: number | null;
 }
 
+export interface StepBlockPositionUpdateInput {
+  id: string;
+  x?: number | null;
+  y?: number | null;
+}
+
 export interface StepBlockUpdateInput {
   nextBlockId?: string | null;
   locked?: boolean | null;
