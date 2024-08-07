@@ -2,6 +2,9 @@ import { Injectable } from '@nestjs/common'
 import { GraphQLError } from 'graphql'
 import omit from 'lodash/omit'
 import { z } from 'zod'
+
+import { Action, Block } from '.prisma/api-journeys-client'
+
 import {
   EmailActionInput,
   LinkActionInput,
@@ -9,8 +12,8 @@ import {
 } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 import { BlockService } from '../block/block.service'
+
 import { ACTION_UPDATE_RESET } from './actionUpdateReset'
-import { Action, Block } from '.prisma/api-journeys-client'
 
 const emailSchema = z.object({
   email: z.string().email()

@@ -2,6 +2,7 @@ import { renderHook } from '@testing-library/react'
 import { ReactNode, useContext } from 'react'
 
 import type { TreeBlock } from '../block'
+import { type JourneyAnalytics } from '../useJourneyAnalyticsQuery'
 
 import { EditorContext, reducer } from './EditorProvider'
 
@@ -12,7 +13,6 @@ import {
   EditorProvider,
   EditorState
 } from '.'
-import { type JourneyAnalytics } from '../useJourneyAnalyticsQuery'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -158,6 +158,7 @@ describe('EditorContext', () => {
           selectedBlock: block
         })
       })
+
       it('should not set ActiveSlide when showAnalytics is true', () => {
         const block: TreeBlock = {
           id: 'step0.id',
@@ -370,6 +371,8 @@ describe('EditorContext', () => {
         ).toEqual({
           ...state,
           selectedStep: step2,
+          selectedBlock: step2,
+          selectedBlockId: 'step1.id',
           selectedStepId: 'step1.id',
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
         })
@@ -390,7 +393,9 @@ describe('EditorContext', () => {
         ).toEqual({
           ...state,
           selectedStepId: 'step1.id',
-          selectedStep: undefined
+          selectedStep: undefined,
+          selectedBlock: undefined,
+          selectedBlockId: 'step1.id'
         })
       })
 
@@ -459,6 +464,7 @@ describe('EditorContext', () => {
           selectedStep: step,
           selectedStepId: 'step0.id',
           selectedBlock: step,
+          selectedBlockId: 'step0.id',
           active: undefined
         })
       })
@@ -529,7 +535,9 @@ describe('EditorContext', () => {
           activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
           activeSlide: ActiveSlide.JourneyFlow,
           selectedBlock: block,
+          selectedBlockId: block.id,
           selectedStep: step,
+          selectedStepId: step.id,
           activeContent: ActiveContent.Canvas
         }
         expect(
@@ -589,24 +597,13 @@ describe('EditorContext', () => {
             type: 'SetEditorFocusAction'
           })
         ).toEqual({
-          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer,
           activeContent: 'canvas',
           activeSlide: ActiveSlide.Content,
           selectedAttributeId: 'selectedAttributeId',
-          selectedBlock: {
-            __typename: 'CardBlock',
-            backgroundColor: null,
-            children: [],
-            coverBlockId: null,
-            fullscreen: false,
-            id: 'card0.id',
-            parentBlockId: null,
-            parentOrder: 0,
-            themeMode: null,
-            themeName: null
-          },
+          selectedBlock: block,
           selectedGoalUrl: 'https://www.example.com',
-          selectedBlockId: 'card0.id',
+          selectedBlockId: block.id,
           selectedStepId: 'step0.id',
           selectedStep: {
             __typename: 'StepBlock',

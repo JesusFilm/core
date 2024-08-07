@@ -32,41 +32,43 @@ import {
   useNodesState
 } from 'reactflow'
 
+import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
+import { isActionBlock } from '@core/journeys/ui/isActionBlock'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { searchBlocks } from '@core/journeys/ui/searchBlocks'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import ArrowRefresh6Icon from '@core/shared/ui/icons/ArrowRefresh6'
 
 import type {
   GetStepBlocksWithPosition,
-  GetStepBlocksWithPositionVariables
+  GetStepBlocksWithPositionVariables,
+  GetStepBlocksWithPosition_blocks_StepBlock
 } from '../../../../../__generated__/GetStepBlocksWithPosition'
 import { useStepBlockPositionUpdateMutation } from '../../../../libs/useStepBlockPositionUpdateMutation'
 
 import { AnalyticsOverlaySwitch } from './AnalyticsOverlaySwitch'
-import { JourneyAnalyticsCard } from './JourneyAnalyticsCard'
-import { NewStepButton } from './NewStepButton'
 import { CustomEdge } from './edges/CustomEdge'
+import { ReferrerEdge } from './edges/ReferrerEdge'
 import { StartEdge } from './edges/StartEdge'
+import { JourneyAnalyticsCard } from './JourneyAnalyticsCard'
 import { type PositionMap, arrangeSteps } from './libs/arrangeSteps'
+import { convertToEdgeSource } from './libs/convertToEdgeSource'
 import { transformSteps } from './libs/transformSteps'
+import { useCreateStepFromAction } from './libs/useCreateStepFromAction'
+import { useCreateStepFromSocialPreview } from './libs/useCreateStepFromSocialPreview'
 import { useCreateStepFromStep } from './libs/useCreateStepFromStep'
 import { useDeleteEdge } from './libs/useDeleteEdge'
 import { useDeleteOnKeyPress } from './libs/useDeleteOnKeyPress'
 import { useUpdateEdge } from './libs/useUpdateEdge'
+import { NewStepButton } from './NewStepButton'
 import { LinkNode } from './nodes/LinkNode'
+import { ReferrerNode } from './nodes/ReferrerNode'
 import { SocialPreviewNode } from './nodes/SocialPreviewNode'
 import { StepBlockNode } from './nodes/StepBlockNode'
 import { STEP_NODE_CARD_HEIGHT } from './nodes/StepBlockNode/libs/sizes'
 
 import 'reactflow/dist/style.css'
-import { isActionBlock } from '@core/journeys/ui/isActionBlock'
-import { searchBlocks } from '@core/journeys/ui/searchBlocks'
-import { ReferrerEdge } from './edges/ReferrerEdge'
-import { convertToEdgeSource } from './libs/convertToEdgeSource'
-import { useCreateStepFromAction } from './libs/useCreateStepFromAction'
-import { useCreateStepFromSocialPreview } from './libs/useCreateStepFromSocialPreview'
-import { ReferrerNode } from './nodes/ReferrerNode'
 
 // some styles can only be updated through css after render
 const additionalEdgeStyles = {
@@ -96,7 +98,8 @@ export function JourneyFlow(): ReactElement {
   const { editorAnalytics } = useFlags()
   const theme = useTheme()
   const {
-    state: { steps, activeSlide, showAnalytics, analytics }
+    state: { steps, activeSlide, showAnalytics, analytics },
+    dispatch
   } = useEditor()
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance | null>(null)
@@ -114,30 +117,7 @@ export function JourneyFlow(): ReactElement {
   const deleteEdge = useDeleteEdge()
   const { onSelectionChange } = useDeleteOnKeyPress()
   const [stepBlockPositionUpdate] = useStepBlockPositionUpdateMutation()
-
-  async function blockPositionsUpdate(): Promise<void> {
-    if (journey == null || steps == null) return
-    const positions = arrangeSteps(steps)
-
-    Object.entries(positions).forEach(([id, position]) => {
-      void stepBlockPositionUpdate({
-        variables: {
-          id,
-          journeyId: journey.id,
-          x: position.x,
-          y: position.y
-        },
-        optimisticResponse: {
-          stepBlockUpdate: {
-            id,
-            __typename: 'StepBlock',
-            x: position.x,
-            y: position.y
-          }
-        }
-      })
-    })
-  }
+  const { add } = useCommand()
 
   const { data, refetch } = useQuery<
     GetStepBlocksWithPosition,
@@ -156,7 +136,7 @@ export function JourneyFlow(): ReactElement {
         )
       ) {
         // some steps have no x or y coordinates
-        void blockPositionsUpdate()
+        void allBlockPositionUpdate(true)
       } else {
         data.blocks.forEach((block) => {
           if (
@@ -173,6 +153,59 @@ export function JourneyFlow(): ReactElement {
       setNodes(nodes)
     }
   })
+
+  function blockPositionUpdate(
+    input: Array<{ id: string; x: number; y: number }>
+  ): void {
+    void stepBlockPositionUpdate({
+      variables: {
+        input
+      },
+      optimisticResponse: {
+        stepBlockPositionUpdate: input.map((step) => ({
+          ...step,
+          __typename: 'StepBlock'
+        }))
+      }
+    })
+  }
+
+  async function allBlockPositionUpdate(onload = false): Promise<void> {
+    if (steps == null || data == null) return
+
+    const input = Object.entries(arrangeSteps(steps)).map(([id, position]) => ({
+      id,
+      ...position
+    }))
+
+    if (onload) {
+      blockPositionUpdate(input)
+    } else {
+      add({
+        parameters: {
+          execute: {
+            input
+          },
+          undo: {
+            input: (
+              data.blocks as GetStepBlocksWithPosition_blocks_StepBlock[]
+            ).map((step) => ({
+              id: step.id,
+              x: step.x,
+              y: step.y
+            }))
+          }
+        },
+        execute({ input }) {
+          dispatch({
+            type: 'SetEditorFocusAction',
+            activeSlide: ActiveSlide.JourneyFlow
+          })
+          blockPositionUpdate(input)
+        }
+      })
+    }
+  }
 
   useEffect(() => {
     if (data?.blocks == null) return
@@ -213,7 +246,7 @@ export function JourneyFlow(): ReactElement {
     connectingParams.current = params
   }, [])
   const onConnectEnd = useCallback<OnConnectEnd>(
-    async (event) => {
+    (event) => {
       if (
         reactFlowInstance == null ||
         connectingParams.current == null ||
@@ -275,14 +308,14 @@ export function JourneyFlow(): ReactElement {
 
         switch (edgeSource.sourceType) {
           case 'step':
-            void createStepFromStep(input)
+            createStepFromStep(input)
             break
           case 'socialPreview':
-            void createStepFromSocialPreview(input)
+            createStepFromSocialPreview(input)
             break
           case 'action': {
             if (!isActionBlock(sourceBlock)) break
-            void createStepFromAction({ ...input, sourceBlock })
+            createStepFromAction({ ...input, sourceBlock })
             break
           }
         }
@@ -290,26 +323,43 @@ export function JourneyFlow(): ReactElement {
     },
     [
       reactFlowInstance,
-      connectingParams,
+      steps,
       createStepFromStep,
       createStepFromSocialPreview,
       createStepFromAction
     ]
   )
-  const onNodeDragStop: NodeDragHandler = async (
-    _event,
-    node
-  ): Promise<void> => {
-    if (journey == null || node.type !== 'StepBlock') return
+  const onNodeDragStop: NodeDragHandler = (_event, node): void => {
+    if (node.type !== 'StepBlock') return
+
+    const step = data?.blocks.find(
+      (step) => step.__typename === 'StepBlock' && step.id === node.id
+    )
+    if (step == null || step.__typename !== 'StepBlock') return
 
     const x = Math.trunc(node.position.x)
     const y = Math.trunc(node.position.y)
-    await stepBlockPositionUpdate({
-      variables: {
-        id: node.id,
-        journeyId: journey.id,
-        x,
-        y
+    add({
+      parameters: {
+        execute: {
+          x,
+          y
+        },
+        undo: {
+          x: step.x,
+          y: step.y
+        },
+        redo: {
+          x,
+          y
+        }
+      },
+      execute({ x, y }) {
+        dispatch({
+          type: 'SetEditorFocusAction',
+          activeSlide: ActiveSlide.JourneyFlow
+        })
+        blockPositionUpdate([{ id: node.id, x, y }])
       }
     })
   }
@@ -371,18 +421,18 @@ export function JourneyFlow(): ReactElement {
     }
 
   useEffect(() => {
-    if (analytics?.referrers) {
+    if (analytics?.referrers != null) {
       const { nodes, edges } = analytics.referrers
 
       setReferrerEdges(edges)
       setReferrerNodes(nodes)
     }
-  }, [JSON.stringify(analytics?.referrers)])
+  }, [analytics?.referrers, setReferrerEdges, setReferrerNodes])
 
   useEffect(() => {
-    setReferrerNodes((nds) => nds.map(hideReferrers(!showAnalytics)))
-    setReferrerEdges((eds) => eds.map(hideReferrers(!showAnalytics)))
-  }, [showAnalytics])
+    setReferrerNodes((nds) => nds.map(hideReferrers(showAnalytics === false)))
+    setReferrerEdges((eds) => eds.map(hideReferrers(showAnalytics === false)))
+  }, [setReferrerEdges, setReferrerNodes, showAnalytics])
 
   return (
     <Box
@@ -390,7 +440,7 @@ export function JourneyFlow(): ReactElement {
         width: '100%',
         height: '100%',
         ...additionalEdgeStyles,
-        ...(showAnalytics && analyticEdgeStyles)
+        ...(showAnalytics === true && analyticEdgeStyles)
       }}
       data-testid="JourneyFlow"
     >
@@ -438,7 +488,9 @@ export function JourneyFlow(): ReactElement {
               </Panel>
             )}
             <Controls showInteractive={false}>
-              <ControlButton onClick={blockPositionsUpdate}>
+              <ControlButton
+                onClick={async () => await allBlockPositionUpdate()}
+              >
                 <ArrowRefresh6Icon />
               </ControlButton>
             </Controls>
@@ -448,7 +500,7 @@ export function JourneyFlow(): ReactElement {
           color="#aaa"
           gap={16}
           style={
-            showAnalytics
+            showAnalytics === true
               ? {
                   backgroundColor: '#DEE8EF'
                 }

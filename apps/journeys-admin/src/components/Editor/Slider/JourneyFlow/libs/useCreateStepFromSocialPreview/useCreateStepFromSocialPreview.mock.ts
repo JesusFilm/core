@@ -1,15 +1,19 @@
 import { MockedResponse } from '@apollo/client/testing'
+
 import { TreeBlock } from '@core/journeys/ui/block'
+
 import {
   BlockDelete,
   BlockDeleteVariables
 } from '../../../../../../../__generated__/BlockDelete'
-
 import {
   BlockFields_CardBlock as CardBlock,
   BlockFields_StepBlock as StepBlock
 } from '../../../../../../../__generated__/BlockFields'
-
+import {
+  ThemeMode,
+  ThemeName
+} from '../../../../../../../__generated__/globalTypes'
 import {
   StepBlockCreateFromSocialPreview,
   StepBlockCreateFromSocialPreviewVariables
@@ -22,11 +26,8 @@ import {
   StepBlockRestoreFromSocialPreview,
   StepBlockRestoreFromSocialPreviewVariables
 } from '../../../../../../../__generated__/StepBlockRestoreFromSocialPreview'
-import {
-  ThemeMode,
-  ThemeName
-} from '../../../../../../../__generated__/globalTypes'
 import { BLOCK_DELETE } from '../../../../../../libs/useBlockDeleteMutation'
+
 import {
   STEP_BLOCK_CREATE_FROM_SOCIAL_PREVIEW,
   STEP_BLOCK_DELETE_FROM_SOCIAL_PREVIEW,
@@ -115,9 +116,7 @@ export const deleteStepMock: MockedResponse<BlockDelete, BlockDeleteVariables> =
     request: {
       query: BLOCK_DELETE,
       variables: {
-        id: mockNewStepBlock.id,
-        parentBlockId: mockNewStepBlock.parentBlockId,
-        journeyId: 'journey-id'
+        id: mockNewStepBlock.id
       }
     },
     result: {

@@ -29,10 +29,11 @@ interface AddActionParameters {
   action: Action
   undoAction: Action | undefined
   editorFocus?: Omit<SetEditorFocusAction, 'type'>
+  undoEditorFocus?: Omit<SetEditorFocusAction, 'type'>
 }
 
 export function useActionCommand(): {
-  addAction: (params: AddActionParameters) => Promise<void>
+  addAction: (params: AddActionParameters) => void
 } {
   const { add } = useCommand()
   const { dispatch } = useEditor()
@@ -43,23 +44,26 @@ export function useActionCommand(): {
     useBlockActionNavigateToBlockUpdateMutation()
 
   return {
-    async addAction({
+    addAction({
       blockId,
       blockTypename,
       action,
       undoAction,
-      editorFocus
+      editorFocus,
+      undoEditorFocus
     }: AddActionParameters) {
       add({
         parameters: {
           execute: {
-            action
+            action,
+            editorFocus
           },
           undo: {
-            action: undoAction
+            action: undoAction,
+            editorFocus: undoEditorFocus ?? editorFocus
           }
         },
-        async execute({ action }) {
+        execute({ action, editorFocus }) {
           const block = {
             id: blockId,
             __typename: blockTypename
@@ -71,13 +75,17 @@ export function useActionCommand(): {
             })
           switch (action?.__typename) {
             case 'LinkAction':
-              return await actionLinkUpdate(block, action.url)
+              void actionLinkUpdate(block, action.url)
+              break
             case 'EmailAction':
-              return await actionEmailUpdate(block, action.email)
+              void actionEmailUpdate(block, action.email)
+              break
             case 'NavigateToBlockAction':
-              return await actionNavigateToBlockUpdate(block, action.blockId)
+              void actionNavigateToBlockUpdate(block, action.blockId)
+              break
             default:
-              return await actionDelete(block)
+              void actionDelete(block)
+              break
           }
         }
       })
