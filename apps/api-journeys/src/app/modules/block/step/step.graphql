@@ -57,6 +57,12 @@ input StepBlockUpdateInput {
   y: Int
 }
 
+input StepBlockPositionUpdateInput {
+  id: ID!
+  x: Int
+  y: Int
+}
+
 extend type Mutation {
   stepBlockCreate(input: StepBlockCreateInput!): StepBlock!
   stepBlockUpdate(
@@ -67,4 +73,7 @@ extend type Mutation {
     """
     journeyId: ID
   ): StepBlock!
+  stepBlockPositionUpdate(
+    input: [StepBlockPositionUpdateInput!]!
+  ): [StepBlock!]!
 }
