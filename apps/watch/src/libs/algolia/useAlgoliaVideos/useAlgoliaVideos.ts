@@ -82,7 +82,7 @@ export function useAlgoliaVideos(): {
 
   return {
     loading: status === 'stalled' || status === 'loading',
-    noResults: results.__isArtificial === false && results.nbHits === 0,
+    noResults: !(results.__isArtificial ?? false) && results.nbHits === 0,
     hits: transformedHits,
     showMore,
     isLastPage,
