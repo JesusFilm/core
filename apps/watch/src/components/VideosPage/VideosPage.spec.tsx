@@ -3,11 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import type { HitsRenderState } from 'instantsearch.js/es/connectors/hits/connectHits'
 import type { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import type { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
-import {
-  useHits,
-  useMenu,
-  useSearchBox
-} from 'react-instantsearch'
+import { useHits, useMenu, useSearchBox } from 'react-instantsearch'
 
 import type { CoreVideo } from '../../libs/algolia/useAlgoliaVideos'
 import { useAlgoliaVideos } from '../../libs/algolia/useAlgoliaVideos'
@@ -33,9 +29,7 @@ const mockUseAlgoliaVideos = useAlgoliaVideos as jest.MockedFunction<
 const mockUseSearchBox = useSearchBox as jest.MockedFunction<
   typeof useSearchBox
 >
-const mockUseMenu = useMenu as jest.MockedFunction<
-  typeof useMenu
->
+const mockUseMenu = useMenu as jest.MockedFunction<typeof useMenu>
 
 describe('VideosPage', () => {
   const transformedVideos = [
