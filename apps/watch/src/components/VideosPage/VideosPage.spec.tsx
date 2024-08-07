@@ -1,18 +1,16 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
-import type { ClearRefinementsRenderState } from 'instantsearch.js/es/connectors/clear-refinements/connectClearRefinements'
 import type { HitsRenderState } from 'instantsearch.js/es/connectors/hits/connectHits'
 import type { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import type { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
 import {
-  useClearRefinements,
   useHits,
   useMenu,
   useSearchBox
 } from 'react-instantsearch'
 
-import { useAlgoliaVideos } from '../../libs/algolia/useAlgoliaVideos'
 import type { CoreVideo } from '../../libs/algolia/useAlgoliaVideos'
+import { useAlgoliaVideos } from '../../libs/algolia/useAlgoliaVideos'
 
 import { VideosPage } from './VideosPage'
 
@@ -37,9 +35,6 @@ const mockUseSearchBox = useSearchBox as jest.MockedFunction<
 >
 const mockUseMenu = useMenu as jest.MockedFunction<
   typeof useMenu
->
-const mockUseClearRefinements = useClearRefinements as jest.MockedFunction<
-  typeof useClearRefinements
 >
 
 describe('VideosPage', () => {
