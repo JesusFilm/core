@@ -1,3 +1,5 @@
+import { TreeBlock } from '@core/journeys/ui/block'
+import { BlockFields_CardBlock as CardBlock } from '@core/journeys/ui/block/__generated__/BlockFields'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import {
   ActiveContent,
@@ -24,22 +26,35 @@ export function useBlockDuplicateCommand(): {
 
   const {
     dispatch,
-    state: { selectedStep, selectedBlock }
+    state: { selectedStep, selectedBlock, steps }
   } = useEditor()
   const [blockDelete] = useBlockDeleteMutation()
   const [blockRestore] = useBlockRestoreMutation()
+
+  function flatten(children: TreeBlock[]): TreeBlock[] {
+    return children?.reduce<TreeBlock[]>((result, item) => {
+      result.push(item)
+      result.push(...flatten(item.children))
+      return result
+    }, [])
+  }
 
   function addBlockDuplicate({
     block,
     execute
   }: AddBlockDuplicateParams): void {
+    if (selectedStep == null || journey == null || steps == null) return
+
+    const card = selectedStep.children.find(
+      (block) => block.__typename === 'CardBlock'
+    ) as TreeBlock<CardBlock> | undefined
+
     add({
-      parameters: { execute: {}, undo: {} },
-      execute() {
-        execute()
-      },
-      undo() {
-        if (journey == null) return
+      parameters: { execute: {}, undo: { card, steps } },
+      execute,
+      undo({ card, steps }) {
+        if (card == null) return
+
         block.__typename === 'StepBlock'
           ? dispatch({
               type: 'SetEditorFocusAction',
@@ -56,7 +71,12 @@ export function useBlockDuplicateCommand(): {
               activeContent: ActiveContent.Canvas
             })
         void blockDelete(block, {
-          optimisticResponse: { blockDelete: [] }
+          optimisticResponse: {
+            blockDelete:
+              block.__typename === 'StepBlock'
+                ? [...steps]
+                : [...flatten(card.children)]
+          }
         })
       },
       redo() {
@@ -79,7 +99,10 @@ export function useBlockDuplicateCommand(): {
         void blockRestore({
           variables: { id: block.id },
           optimisticResponse: {
-            blockRestore: [block as BlockRestore]
+            blockRestore:
+              block.__typename === 'StepBlock'
+                ? [block as BlockRestore]
+                : [block as BlockRestore]
           }
         })
       }

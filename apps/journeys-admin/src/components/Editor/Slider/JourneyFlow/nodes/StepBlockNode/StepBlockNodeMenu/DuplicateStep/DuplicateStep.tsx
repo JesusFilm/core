@@ -106,7 +106,7 @@ export function DuplicateStep({
     const idMap: BlockDuplicateIdMap[] = [
       { oldId: step.id, newId: stepBlock.id }
     ]
-    const stepChildren = flatten(step.children)?.map((block) => {
+    const stepSiblings = flatten(step.children)?.map((block) => {
       const id = uuidv4()
       idMap.push({ oldId: block.id, newId: id })
       return {
@@ -139,7 +139,7 @@ export function DuplicateStep({
           optimisticResponse: {
             blockDuplicate: [
               stepBlock,
-              ...(stepChildren as StepBlockChildren[])
+              ...(stepSiblings as StepBlockChildren[])
             ]
           },
           update(cache, { data }) {
