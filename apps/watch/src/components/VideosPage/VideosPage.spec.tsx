@@ -7,7 +7,7 @@ import type { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search
 import {
   useClearRefinements,
   useHits,
-  useRefinementList,
+  useMenu,
   useSearchBox
 } from 'react-instantsearch'
 
@@ -35,8 +35,8 @@ const mockUseAlgoliaVideos = useAlgoliaVideos as jest.MockedFunction<
 const mockUseSearchBox = useSearchBox as jest.MockedFunction<
   typeof useSearchBox
 >
-const mockUseRefinementList = useRefinementList as jest.MockedFunction<
-  typeof useRefinementList
+const mockUseMenu = useMenu as jest.MockedFunction<
+  typeof useMenu
 >
 const mockUseClearRefinements = useClearRefinements as jest.MockedFunction<
   typeof useClearRefinements
@@ -91,7 +91,7 @@ describe('VideosPage', () => {
       refine: jest.fn
     } as unknown as SearchBoxRenderState)
 
-    mockUseRefinementList.mockReturnValue({
+    mockUseMenu.mockReturnValue({
       items: [],
       refine: jest.fn()
     } as unknown as RefinementListRenderState)

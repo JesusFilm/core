@@ -5,7 +5,7 @@ import type { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search
 import { type NextRouter, useRouter } from 'next/router'
 import {
   useClearRefinements,
-  useRefinementList,
+  useMenu,
   useSearchBox
 } from 'react-instantsearch'
 
@@ -26,11 +26,8 @@ const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 const mockUseSearchBox = useSearchBox as jest.MockedFunction<
   typeof useSearchBox
 >
-const mockUseRefinementList = useRefinementList as jest.MockedFunction<
-  typeof useRefinementList
->
-const mockUseClearRefinements = useClearRefinements as jest.MockedFunction<
-  typeof useClearRefinements
+const mockUseMenu = useMenu as jest.MockedFunction<
+  typeof useMenu
 >
 
 describe('FilterList', () => {
@@ -44,10 +41,6 @@ describe('FilterList', () => {
     mockUseRouter.mockReturnValue({
       push
     } as unknown as NextRouter)
-
-    mockUseClearRefinements.mockReturnValue({
-      refine: jest.fn()
-    } as unknown as ClearRefinementsRenderState)
 
     jest.clearAllMocks()
   })
@@ -66,7 +59,31 @@ describe('FilterList', () => {
     it('should refine by language on audio language filter', async () => {
       const refineLanguages = jest.fn()
 
-      mockUseRefinementList.mockReturnValue({
+      mockUseMenu.mockReturnValue({
+        items: [],
+        refine: refineLanguages
+      } as unknown as RefinementListRenderState)
+
+      render(
+        <FilterList languagesData={{ languages }} languagesLoading={false} />
+      )
+
+      const langaugesComboboxEl = screen.getAllByRole('combobox', {
+        name: 'Search Languages'
+      })[0]
+
+      fireEvent.focus(langaugesComboboxEl)
+      fireEvent.keyDown(langaugesComboboxEl, { key: 'ArrowDown' })
+      await waitFor(() => screen.getAllByText('Chinese')[0])
+      fireEvent.click(screen.getAllByText('Chinese')[0])
+      expect(langaugesComboboxEl).toHaveValue('Chinese')
+      await waitFor(() => expect(refineLanguages).toHaveBeenCalled())
+    })
+
+    it('should not refine by language if language already set', async () => {
+      const refineLanguages = jest.fn()
+
+      mockUseMenu.mockReturnValue({
         items: languageItems,
         refine: refineLanguages
       } as unknown as RefinementListRenderState)
@@ -84,7 +101,7 @@ describe('FilterList', () => {
       await waitFor(() => screen.getAllByText('English')[0])
       fireEvent.click(screen.getAllByText('English')[0])
       expect(langaugesComboboxEl).toHaveValue('English')
-      await waitFor(() => expect(refineLanguages).toHaveBeenCalled())
+      await waitFor(() => expect(refineLanguages).not.toHaveBeenCalled())
     })
   })
 
@@ -109,7 +126,7 @@ describe('FilterList', () => {
     it('should refine by subtitle on subtitle language filter', async () => {
       const refineSubtitles = jest.fn()
 
-      mockUseRefinementList.mockReturnValue({
+      mockUseMenu.mockReturnValue({
         items: subtitleItems,
         refine: refineSubtitles
       } as unknown as RefinementListRenderState)
