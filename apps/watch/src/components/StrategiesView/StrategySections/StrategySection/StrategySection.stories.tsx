@@ -6,7 +6,7 @@ import { ComponentProps } from 'react'
 import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
 import { SearchBar } from '@core/journeys/ui/SearchBar'
 
-import { watchConfig } from '../../../libs/storybook'
+import { watchConfig } from '../../../../libs/storybook'
 
 import { StrategySection } from './StrategySection'
 import { getStrategyCardDataHandlers } from './StrategySection.handlers'

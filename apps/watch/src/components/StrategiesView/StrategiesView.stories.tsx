@@ -4,12 +4,12 @@ import { ComponentProps } from 'react'
 import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
 
 import { watchConfig } from '../../libs/storybook'
+
+import { StrategiesView } from './StrategiesView'
 import {
   emptyResultsHandler,
   getStrategyCardDataHandlers
-} from '../StrategySections/StrategySection/StrategySection.handlers'
-
-import { StrategiesView } from './StrategiesView'
+} from './StrategySections/StrategySection/StrategySection.handlers'
 
 const StrategiesViewStory: Meta<typeof StrategiesView> = {
   ...watchConfig,

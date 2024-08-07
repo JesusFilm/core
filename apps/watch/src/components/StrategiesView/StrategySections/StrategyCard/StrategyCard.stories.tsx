@@ -3,7 +3,7 @@ import { ComponentProps } from 'react'
 
 import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
 
-import { watchConfig } from '../../../libs/storybook'
+import { watchConfig } from '../../../../libs/storybook'
 
 import { StrategyCard } from './StrategyCard'
 
