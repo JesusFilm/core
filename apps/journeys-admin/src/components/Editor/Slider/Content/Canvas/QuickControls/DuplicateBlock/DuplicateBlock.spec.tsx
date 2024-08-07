@@ -16,7 +16,10 @@ import {
   TypographyColor,
   TypographyVariant
 } from '../../../../../../../../__generated__/globalTypes'
-import { deleteBlockMock } from '../../../../../../../libs/useBlockDeleteMutation/useBlockDeleteMutation.mock'
+import {
+  deleteBlockMock,
+  selectedStep
+} from '../../../../../../../libs/useBlockDeleteMutation/useBlockDeleteMutation.mock'
 import { useBlockRestoreMutationMock as blockRestoreMock } from '../../../../../../../libs/useBlockRestoreMutation/useBlockRestoreMutation.mock'
 import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
@@ -89,7 +92,9 @@ describe('DuplicateBlock', () => {
               variant: 'admin'
             }}
           >
-            <EditorProvider initialState={{ selectedBlock: block }}>
+            <EditorProvider
+              initialState={{ selectedBlock: block, selectedStep }}
+            >
               <DuplicateBlock />
             </EditorProvider>
           </JourneyProvider>
@@ -130,7 +135,9 @@ describe('DuplicateBlock', () => {
               variant: 'admin'
             }}
           >
-            <EditorProvider initialState={{ selectedBlock: block }}>
+            <EditorProvider
+              initialState={{ selectedBlock: block, selectedStep }}
+            >
               <DuplicateBlock />
               <CommandUndoItem variant="button" />
             </EditorProvider>
@@ -191,7 +198,9 @@ describe('DuplicateBlock', () => {
               variant: 'admin'
             }}
           >
-            <EditorProvider initialState={{ selectedBlock: block }}>
+            <EditorProvider
+              initialState={{ selectedBlock: block, selectedStep }}
+            >
               <DuplicateBlock />
               <CommandUndoItem variant="button" />
               <CommandRedoItem variant="button" />
@@ -275,7 +284,9 @@ describe('DuplicateBlock', () => {
               variant: 'admin'
             }}
           >
-            <EditorProvider initialState={{ selectedBlock: block }}>
+            <EditorProvider
+              initialState={{ selectedBlock: block, selectedStep }}
+            >
               <DuplicateBlock />
             </EditorProvider>
           </JourneyProvider>
