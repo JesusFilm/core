@@ -76,7 +76,6 @@ function HomePage(): ReactElement {
         stalledSearchDelay={500}
         routing={nextRouter}
       >
-        <Configure filters="languageId:529" />
         <VideoHomePage />
       </InstantSearch>
     </InstantSearchSSRProvider>

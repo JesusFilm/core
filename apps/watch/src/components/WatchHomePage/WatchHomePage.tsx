@@ -20,7 +20,8 @@ export function WatchHomePage(): ReactElement {
   const { t } = useTranslation('apps-watch')
 
   useConfigure({
-    ruleContexts: ['home_page']
+    ruleContexts: ['home_page'],
+    filters: 'languageId:529'
   })
 
   return (
