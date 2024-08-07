@@ -107,37 +107,20 @@ export function FilterList({
   const { query, languageId, subtitleId } = extractQueryParams(decodedUrl)
 
   const { refine: refineSearch } = useSearchBox()
-  const { items: languageItems, refine: refineLanguages } = useMenu({
+  const { refine: refineLanguages } = useMenu({
     attribute: 'languageId',
-    limit: 5000
   })
-  const { items: subtitleItems, refine: refineSubtitles } = useMenu({
+  const { refine: refineSubtitles } = useMenu({
     attribute: 'subtitles',
-    limit: 5000
   })
+
+  const subtitleLanguages = languagesData?.languages.filter((language) =>
+    subtitleLanguageIds.includes(language.id)
+  )
 
   const languagesMap = useMemo(
     () => new Map(languagesData?.languages.map((lang) => [lang.id, lang])),
     [languagesData]
-  )
-
-  const languages = useMemo(
-    () =>
-      languageItems
-        .map((item) => languagesMap.get(item.value))
-        .filter((lang): lang is NonNullable<typeof lang> => lang !== undefined),
-    [languageItems, languagesMap]
-  )
-
-  const subtitles = useMemo(
-    () =>
-      subtitleItems
-        .map((item) => languagesMap.get(item.value))
-        .filter(
-          (lang): lang is NonNullable<typeof lang> =>
-            lang !== undefined && subtitleLanguageIds.includes(lang.id)
-        ),
-    [subtitleItems, languagesMap]
   )
 
   const languageOptionFromIds = (ids?: string[]): LanguageOption => {
@@ -199,9 +182,8 @@ export function FilterList({
             <LanguagesFilter
               onChange={handleLanguageChange(setFieldValue)}
               value={values.language}
-              languages={languages}
+              languages={languagesData?.languages}
               loading={languagesLoading}
-              helperText={`${languages.length} languages`}
             />
           </Stack>
           <Stack spacing={2}>
@@ -212,9 +194,9 @@ export function FilterList({
             <LanguagesFilter
               onChange={handleSubtitleChange(setFieldValue)}
               value={values.subtitleLanguage}
-              languages={subtitles}
+              languages={subtitleLanguages}
               loading={languagesLoading}
-              helperText={`${subtitles.length} languages`}
+              helperText={`${subtitleLanguages?.length ?? 53} languages`}
             />
           </Stack>
           <Stack spacing={2}>
