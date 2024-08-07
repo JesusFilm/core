@@ -32,6 +32,7 @@ import {
   useNodesState
 } from 'reactflow'
 
+import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import { isActionBlock } from '@core/journeys/ui/isActionBlock'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -41,7 +42,8 @@ import ArrowRefresh6Icon from '@core/shared/ui/icons/ArrowRefresh6'
 
 import type {
   GetStepBlocksWithPosition,
-  GetStepBlocksWithPositionVariables
+  GetStepBlocksWithPositionVariables,
+  GetStepBlocksWithPosition_blocks_StepBlock
 } from '../../../../../__generated__/GetStepBlocksWithPosition'
 import { useStepBlockPositionUpdateMutation } from '../../../../libs/useStepBlockPositionUpdateMutation'
 
@@ -96,7 +98,8 @@ export function JourneyFlow(): ReactElement {
   const { editorAnalytics } = useFlags()
   const theme = useTheme()
   const {
-    state: { steps, activeSlide, showAnalytics, analytics }
+    state: { steps, activeSlide, showAnalytics, analytics },
+    dispatch
   } = useEditor()
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance | null>(null)
@@ -114,30 +117,7 @@ export function JourneyFlow(): ReactElement {
   const deleteEdge = useDeleteEdge()
   const { onSelectionChange } = useDeleteOnKeyPress()
   const [stepBlockPositionUpdate] = useStepBlockPositionUpdateMutation()
-
-  async function blockPositionsUpdate(): Promise<void> {
-    if (journey == null || steps == null) return
-    const positions = arrangeSteps(steps)
-
-    Object.entries(positions).forEach(([id, position]) => {
-      void stepBlockPositionUpdate({
-        variables: {
-          id,
-          journeyId: journey.id,
-          x: position.x,
-          y: position.y
-        },
-        optimisticResponse: {
-          stepBlockUpdate: {
-            id,
-            __typename: 'StepBlock',
-            x: position.x,
-            y: position.y
-          }
-        }
-      })
-    })
-  }
+  const { add } = useCommand()
 
   const { data, refetch } = useQuery<
     GetStepBlocksWithPosition,
@@ -156,7 +136,7 @@ export function JourneyFlow(): ReactElement {
         )
       ) {
         // some steps have no x or y coordinates
-        void blockPositionsUpdate()
+        void allBlockPositionUpdate(true)
       } else {
         data.blocks.forEach((block) => {
           if (
@@ -173,6 +153,59 @@ export function JourneyFlow(): ReactElement {
       setNodes(nodes)
     }
   })
+
+  function blockPositionUpdate(
+    input: Array<{ id: string; x: number; y: number }>
+  ): void {
+    void stepBlockPositionUpdate({
+      variables: {
+        input
+      },
+      optimisticResponse: {
+        stepBlockPositionUpdate: input.map((step) => ({
+          ...step,
+          __typename: 'StepBlock'
+        }))
+      }
+    })
+  }
+
+  async function allBlockPositionUpdate(onload = false): Promise<void> {
+    if (steps == null || data == null) return
+
+    const input = Object.entries(arrangeSteps(steps)).map(([id, position]) => ({
+      id,
+      ...position
+    }))
+
+    if (onload) {
+      blockPositionUpdate(input)
+    } else {
+      add({
+        parameters: {
+          execute: {
+            input
+          },
+          undo: {
+            input: (
+              data.blocks as GetStepBlocksWithPosition_blocks_StepBlock[]
+            ).map((step) => ({
+              id: step.id,
+              x: step.x,
+              y: step.y
+            }))
+          }
+        },
+        execute({ input }) {
+          dispatch({
+            type: 'SetEditorFocusAction',
+            activeSlide: ActiveSlide.JourneyFlow
+          })
+          blockPositionUpdate(input)
+        }
+      })
+    }
+  }
 
   useEffect(() => {
     if (data?.blocks == null) return
@@ -296,20 +329,37 @@ export function JourneyFlow(): ReactElement {
       createStepFromAction
     ]
   )
-  const onNodeDragStop: NodeDragHandler = async (
-    _event,
-    node
-  ): Promise<void> => {
-    if (journey == null || node.type !== 'StepBlock') return
+  const onNodeDragStop: NodeDragHandler = (_event, node): void => {
+    if (node.type !== 'StepBlock') return
+
+    const step = data?.blocks.find(
+      (step) => step.__typename === 'StepBlock' && step.id === node.id
+    )
+    if (step == null || step.__typename !== 'StepBlock') return
 
     const x = Math.trunc(node.position.x)
     const y = Math.trunc(node.position.y)
-    await stepBlockPositionUpdate({
-      variables: {
-        id: node.id,
-        journeyId: journey.id,
-        x,
-        y
+    add({
+      parameters: {
+        execute: {
+          x,
+          y
+        },
+        undo: {
+          x: step.x,
+          y: step.y
+        },
+        redo: {
+          x,
+          y
+        }
+      },
+      execute({ x, y }) {
+        dispatch({
+          type: 'SetEditorFocusAction',
+          activeSlide: ActiveSlide.JourneyFlow
+        })
+        blockPositionUpdate([{ id: node.id, x, y }])
       }
     })
   }
@@ -438,7 +488,9 @@ export function JourneyFlow(): ReactElement {
               </Panel>
             )}
             <Controls showInteractive={false}>
-              <ControlButton onClick={blockPositionsUpdate}>
+              <ControlButton
+                onClick={async () => await allBlockPositionUpdate()}
+              >
                 <ArrowRefresh6Icon />
               </ControlButton>
             </Controls>
