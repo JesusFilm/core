@@ -1,5 +1,6 @@
 import { styled } from '@mui/material/styles'
-import MuiTooltip, { tooltipClasses, TooltipProps } from '@mui/material/Tooltip'
+import MuiTooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip'
+import { ReactElement } from 'react'
 
 const StyledTooltip = styled(({ className, ...props}: TooltipProps) => (
   <MuiTooltip {...props} classes={{ popper: className }} />
@@ -17,10 +18,10 @@ const StyledTooltip = styled(({ className, ...props}: TooltipProps) => (
   }
 }))
 
-export function Tooltip({ children, ...rest }: TooltipProps) {
+export function Tooltip({ children, ...rest }: TooltipProps): ReactElement {
   return <StyledTooltip
   {...rest}
   >
     {children}
-    </StyledTooltip>
+  </StyledTooltip>
 }

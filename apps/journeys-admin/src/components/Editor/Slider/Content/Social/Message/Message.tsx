@@ -1,7 +1,6 @@
 import Stack from '@mui/material/Stack'
 import { SxProps } from '@mui/material/styles'
 import { tooltipClasses } from '@mui/material/Tooltip'
-import { Tooltip } from '@core/journeys/ui/Tooltip'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/system/Box'
 import isEmpty from 'lodash/isEmpty'
@@ -10,6 +9,7 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, ReactNode, useEffect, useRef, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { Tooltip } from '@core/journeys/ui/Tooltip'
 
 import { useCustomDomainsQuery } from '../../../../../../libs/useCustomDomainsQuery'
 
