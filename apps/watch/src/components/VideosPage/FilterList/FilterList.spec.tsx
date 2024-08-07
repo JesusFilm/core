@@ -72,7 +72,6 @@ describe('FilterList', () => {
       expect(langaugesComboboxEl).toHaveValue('Chinese')
       await waitFor(() => expect(refineLanguages).toHaveBeenCalled())
     })
-
   })
 
   describe('Subtitles Filter', () => {
