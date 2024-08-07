@@ -6,6 +6,7 @@ import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearc
 import { watchConfig } from '../../libs/storybook'
 
 import { VideosPage } from './VideosPage'
+import { emptyResultsHandler, getAlgoliaVideosHandlers } from './VideosPage.handlers'
 
 const VideosStory: Meta<typeof VideosPage> = {
   ...watchConfig,
@@ -24,7 +25,21 @@ const Template: StoryObj<
 }
 
 export const Default = {
-  ...Template
+  ...Template,
+  parameters: {
+    msw: {
+      handlers: [getAlgoliaVideosHandlers]
+    }
+  }
+}
+
+export const NoResultsFound = {
+  ...Template,
+  parameters: {
+    msw: {
+      handlers: [emptyResultsHandler]
+    }
+  }
 }
 
 export default VideosStory
