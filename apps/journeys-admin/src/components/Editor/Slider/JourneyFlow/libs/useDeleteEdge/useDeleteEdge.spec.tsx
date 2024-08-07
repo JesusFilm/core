@@ -2,7 +2,6 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, renderHook, screen, waitFor } from '@testing-library/react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
-import { CommandProvider } from '@core/journeys/ui/CommandProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import {
@@ -85,12 +84,10 @@ describe('useDeleteEdge', () => {
               steps: [{ ...step0, nextBlockId: 'step1.id' }, step1]
             }}
           >
-            <CommandProvider>
-              <TestEditorState />
-              <CommandUndoItem variant="icon-button" />
-              <CommandRedoItem variant="icon-button" />
-              {children}
-            </CommandProvider>
+            <TestEditorState />
+            <CommandUndoItem variant="icon-button" />
+            <CommandRedoItem variant="icon-button" />
+            {children}
           </EditorProvider>
         </MockedProvider>
       )
