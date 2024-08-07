@@ -1,23 +1,23 @@
 import { gql, useMutation } from '@apollo/client'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
+import { v4 as uuidv4 } from 'uuid'
 
-import { Button } from '@core/journeys/ui/Button'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { Button } from '@core/journeys/ui/Button'
+import { useCommand } from '@core/journeys/ui/CommandProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 
-import { ButtonBlockUpdateContent } from '../../../../../../../../__generated__/ButtonBlockUpdateContent'
+import {
+  ButtonBlockUpdateContent,
+  ButtonBlockUpdateContentVariables
+} from '../../../../../../../../__generated__/ButtonBlockUpdateContent'
 import { ButtonFields } from '../../../../../../../../__generated__/ButtonFields'
 import { InlineEditInput } from '../InlineEditInput'
-import { useOnClickOutside } from '../useOnClickOutside'
 
 export const BUTTON_BLOCK_UPDATE_CONTENT = gql`
-  mutation ButtonBlockUpdateContent(
-    $id: ID!
-    $journeyId: ID!
-    $input: ButtonBlockUpdateInput!
-  ) {
-    buttonBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+  mutation ButtonBlockUpdateContent($id: ID!, $label: String!) {
+    buttonBlockUpdate(id: $id, input: { label: $label }) {
       id
       label
     }
@@ -34,49 +34,82 @@ export function ButtonEdit({
 }: ButtonEditProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
-  const [buttonBlockUpdate] = useMutation<ButtonBlockUpdateContent>(
-    BUTTON_BLOCK_UPDATE_CONTENT
-  )
-  const { journey } = useJourney()
+  const [buttonBlockUpdate] = useMutation<
+    ButtonBlockUpdateContent,
+    ButtonBlockUpdateContentVariables
+  >(BUTTON_BLOCK_UPDATE_CONTENT)
   const [value, setValue] = useState(label)
+  const [commandInput, setCommandInput] = useState({ id: uuidv4(), value })
+  const {
+    add,
+    state: { undo }
+  } = useCommand()
+  const {
+    state: { selectedBlock, selectedStep },
+    dispatch
+  } = useEditor()
 
-  async function handleSaveBlock(): Promise<void> {
-    const currentLabel = value.trim().replace(/\n/g, '')
-    if (journey == null || label === currentLabel) return
+  useEffect(() => {
+    if (undo == null || undo.id === commandInput.id) return
+    resetCommandInput()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [undo?.id])
 
-    await buttonBlockUpdate({
-      variables: {
-        id,
-        journeyId: journey.id,
-        input: { label: currentLabel }
-      },
-      optimisticResponse: {
-        buttonBlockUpdate: {
-          id,
-          __typename: 'ButtonBlock',
-          label: currentLabel
+  useEffect(() => {
+    setValue(label)
+  }, [label])
+
+  function resetCommandInput(): void {
+    setCommandInput({ id: uuidv4(), value })
+  }
+
+  function handleSubmit(value: string): void {
+    add({
+      id: commandInput.id,
+      parameters: {
+        execute: {
+          label: value,
+          context: {},
+          runDispatch: false
+        },
+        undo: {
+          label: commandInput.value,
+          context: { debounceTimeout: 1 },
+          runDispatch: true
+        },
+        redo: {
+          label: value,
+          context: { debounceTimeout: 1 },
+          runDispatch: true
         }
+      },
+      execute({ label, context, runDispatch }) {
+        if (runDispatch)
+          dispatch({
+            type: 'SetEditorFocusAction',
+            selectedBlock,
+            selectedStep
+          })
+        void buttonBlockUpdate({
+          variables: {
+            id,
+            label
+          },
+          optimisticResponse: {
+            buttonBlockUpdate: {
+              id,
+              __typename: 'ButtonBlock',
+              label
+            }
+          },
+          context: {
+            debounceKey: `ButtonBlock:${id}`,
+            ...context
+          }
+        })
       }
     })
   }
-  const inputRef = useOnClickOutside(async () => await handleSaveBlock())
-
-  const input = (
-    <InlineEditInput
-      name={`edit-${id}`}
-      ref={inputRef}
-      fullWidth
-      multiline
-      autoFocus
-      onBlur={handleSaveBlock}
-      value={value}
-      placeholder={t('Edit text...')}
-      onChange={(e) => {
-        setValue(e.currentTarget.value)
-      }}
-      onClick={(e) => e.stopPropagation()}
-    />
-  )
 
   return (
     <Button
@@ -85,7 +118,30 @@ export function ButtonEdit({
       buttonVariant={buttonVariant}
       buttonColor={buttonColor}
       label={label}
-      editableLabel={input}
+      editableLabel={
+        <InlineEditInput
+          name="buttonLabel"
+          fullWidth
+          multiline
+          autoFocus
+          inputRef={(ref) => {
+            if (ref != null) ref.focus()
+          }}
+          onFocus={(e) =>
+            e.currentTarget.setSelectionRange(
+              e.currentTarget.value.length,
+              e.currentTarget.value.length
+            )
+          }
+          value={value}
+          placeholder={t('Edit text...')}
+          onChange={(e) => {
+            setValue(e.target.value)
+            handleSubmit(e.target.value)
+          }}
+          onClick={(e) => e.stopPropagation()}
+        />
+      }
     />
   )
 }

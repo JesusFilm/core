@@ -1,12 +1,14 @@
 import { graphql } from 'gql.tada'
 import omit from 'lodash/omit'
 
+import { Country } from '.prisma/api-languages-client'
+
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { cache } from '../../yoga'
 import { language } from '../language/language.mock'
+
 import { continent, continentName, country, countryName } from './country.mock'
-import { Country } from '.prisma/api-languages-client'
 
 const COUNTRY_QUERY = graphql(`
   query Country($languageId: ID, $primary: Boolean) {
@@ -43,15 +45,15 @@ const COUNTRY_QUERY = graphql(`
 describe('country', () => {
   const client = getClient()
 
-  afterEach(() => {
-    cache.invalidate([{ typename: 'Language' }, { typename: 'Country' }])
+  afterEach(async () => {
+    await cache.invalidate([{ typename: 'Language' }, { typename: 'Country' }])
   })
 
   it('should query country', async () => {
     prismaMock.country.findUnique.mockResolvedValue({
       ...country,
       languages: [language],
-      continent: continent,
+      continent,
       countryLanguages: [{ id: '1', language, speakers: 100 }]
     } as unknown as Country)
     prismaMock.countryName.findMany.mockResolvedValue([countryName])

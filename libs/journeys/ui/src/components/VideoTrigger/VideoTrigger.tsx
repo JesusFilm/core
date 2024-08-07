@@ -1,14 +1,14 @@
 import fscreen from 'fscreen'
-import { usePlausible } from 'next-plausible'
 import { useRouter } from 'next/router'
+import { usePlausible } from 'next-plausible'
 import { ReactElement, useEffect, useState } from 'react'
 import Player from 'video.js/dist/types/player'
 
 import { isIPhone } from '@core/shared/ui/deviceUtils'
 
-import { useJourney } from '../../libs/JourneyProvider'
 import { handleAction } from '../../libs/action'
 import { type TreeBlock, useBlocks } from '../../libs/block'
+import { useJourney } from '../../libs/JourneyProvider'
 import { JourneyPlausibleEvents, keyify } from '../../libs/plausibleHelpers'
 
 import { VideoTriggerFields } from './__generated__/VideoTriggerFields'
@@ -31,11 +31,13 @@ export function VideoTrigger({
   const { journey, variant } = useJourney()
   const [triggered, setTriggered] = useState(false)
   const { blockHistory } = useBlocks()
-  const activeBlock = blockHistory[blockHistory.length - 1]
+  const activeBlock = blockHistory[blockHistory.length - 1] as
+    | TreeBlock
+    | undefined
   const plausible = usePlausible<JourneyPlausibleEvents>()
 
   useEffect(() => {
-    if (player != null && !triggered) {
+    if (player != null && !triggered && activeBlock?.id != null) {
       const handleTimeUpdate = (): void => {
         if (
           (player.currentTime() ?? 0) >= triggerStart - 0.25 &&
@@ -48,19 +50,21 @@ export function VideoTrigger({
             props: JourneyPlausibleEvents['VideoTrigger']
             u: string
           } = {
-            u: `${window.location.origin}/${journey?.id ?? ''}/${activeBlock.id}`,
+            u: `${window.location.origin}/${journey?.id ?? ''}/${
+              activeBlock.id
+            }`,
             props: {
               blockId,
               key: keyify({
                 stepId: blockId,
                 event: 'videoTrigger',
-                blockId: blockId,
+                blockId,
                 target: triggerAction
               }),
               simpleKey: keyify({
                 stepId: blockId,
                 event: 'videoTrigger',
-                blockId: blockId
+                blockId
               })
             }
           }
@@ -95,7 +99,9 @@ export function VideoTrigger({
     triggered,
     variant,
     blockId,
-    plausible
+    plausible,
+    journey?.id,
+    activeBlock?.id
   ])
 
   return <></>

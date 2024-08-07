@@ -4,13 +4,13 @@ import { usePlausible } from 'next-plausible'
 import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
+import { blockHistoryVar, treeBlocksVar } from '@core/journeys/ui/block'
+import { showNavigationVar } from '@core/journeys/ui/block/block'
 import {
   STEP_NEXT_EVENT_CREATE,
   STEP_PREVIOUS_EVENT_CREATE
 } from '@core/journeys/ui/Card/Card'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { blockHistoryVar, treeBlocksVar } from '@core/journeys/ui/block'
-import { showNavigationVar } from '@core/journeys/ui/block/block'
 import { keyify } from '@core/journeys/ui/plausibleHelpers'
 
 import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'

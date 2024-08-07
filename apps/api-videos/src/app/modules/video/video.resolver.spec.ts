@@ -614,6 +614,7 @@ describe('VideoResolver', () => {
         orderBy: { primary: 'desc' }
       })
     })
+
     it('returns all subtitles', async () => {
       expect(await resolver.subtitles(video)).toEqual([
         {

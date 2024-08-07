@@ -4,21 +4,21 @@ import get from 'lodash/get'
 
 import { PrismaService } from '../../lib/prisma.service'
 import { ImporterService } from '../importer/importer.service'
-
 import { ImporterBibleBookNamesService } from '../importer/importerBibleBookNames/importerBibleBookNames.service'
 import { ImporterBibleBooksService } from '../importer/importerBibleBooks/importerBibleBooks.service'
 import { ImporterBibleCitationsService } from '../importer/importerBibleCitations/importerBibleCitations.service'
 import { ImporterKeywordsService } from '../importer/importerKeywords/importerKeywords.service'
 import { ImporterVideoDescriptionService } from '../importer/importerVideoDescriptions/importerVideoDescriptions.service'
 import { ImporterVideoImageAltService } from '../importer/importerVideoImageAlt/importerVideoImageAlt.service'
+import { ImporterVideosService } from '../importer/importerVideos/importerVideos.service'
+import { ImporterVideosChildrenService } from '../importer/importerVideosChildren/importerVideosChildren.service'
 import { ImporterVideoSnippetsService } from '../importer/importerVideoSnippets/importerVideoSnippets.service'
 import { ImporterVideoStudyQuestionsService } from '../importer/importerVideoStudyQuestions/importerVideoStudyQuestions.service'
 import { ImporterVideoSubtitlesService } from '../importer/importerVideoSubtitle/importerVideoSubtitle.service'
 import { ImporterVideoTitleService } from '../importer/importerVideoTitles/importerVideoTitle.service'
 import { ImporterVideoVariantDownloadsService } from '../importer/importerVideoVariantDownloads/importerVideoVariantDownloads.service'
 import { ImporterVideoVariantsService } from '../importer/importerVideoVariants/importerVideoVariants.service'
-import { ImporterVideosService } from '../importer/importerVideos/importerVideos.service'
-import { ImporterVideosChildrenService } from '../importer/importerVideosChildren/importerVideosChildren.service'
+
 import { BigQueryService } from './bigQuery.service'
 
 interface BigQueryRowError {
@@ -136,6 +136,7 @@ export class BigQueryConsumer extends WorkerHost {
     await this.importerVideoVariantsService.getExistingIds()
     await this.importerBibleBooksService.getExistingIds()
 
+    // eslint-disable-next-line @typescript-eslint/no-for-in-array
     for (const index in this.tables) {
       try {
         const {
@@ -151,9 +152,7 @@ export class BigQueryConsumer extends WorkerHost {
       }
     }
 
-    console.log('beginning processing children')
     await this.importerVideosChildrenService.process()
-    console.log('finished processing children')
 
     // cleanup for future runs
     this.importerVideosService.usedSlugs = undefined

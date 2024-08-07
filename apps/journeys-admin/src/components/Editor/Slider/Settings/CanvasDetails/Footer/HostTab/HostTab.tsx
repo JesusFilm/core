@@ -80,9 +80,9 @@ export function HostTab(): ReactElement {
     GetAllTeamHostsVariables
   >(GET_ALL_TEAM_HOSTS)
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     void loadUser()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {

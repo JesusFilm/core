@@ -1,7 +1,6 @@
 import { Prisma } from '.prisma/api-languages-client'
 
 import { prisma } from '../../lib/prisma'
-
 import { builder } from '../builder'
 
 enum LanguageIdType {
@@ -89,11 +88,11 @@ builder.queryFields((t) => ({
     },
     resolve: async (query, _parent, { id, idType }) =>
       idType === LanguageIdType.bcp47
-        ? prisma.language.findFirst({
+        ? await prisma.language.findFirst({
             ...query,
             where: { bcp47: id }
           })
-        : prisma.language.findUnique({
+        : await prisma.language.findUnique({
             ...query,
             where: { id }
           })

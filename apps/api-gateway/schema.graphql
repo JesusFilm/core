@@ -70,6 +70,13 @@ interface Block
   parentOrder: Int
 }
 
+input BlockDuplicateIdMap
+  @join__type(graph: JOURNEYS)
+{
+  oldId: ID!
+  newId: ID!
+}
+
 input BlocksFilter
   @join__type(graph: JOURNEYS)
 {
@@ -1465,6 +1472,11 @@ type Mutation
     """
     parentOrder: Int
 
+    """
+    idMap is used to set custom ids for the duplicated block and it's descendants.
+    """
+    idMap: [BlockDuplicateIdMap!]
+
     """drop this parameter after merging teams"""
     journeyId: ID
 
@@ -1556,6 +1568,7 @@ type Mutation
     """drop this parameter after merging teams"""
     journeyId: ID
   ): StepBlock! @join__field(graph: JOURNEYS)
+  stepBlockPositionUpdate(input: [StepBlockPositionUpdateInput!]!): [StepBlock!]! @join__field(graph: JOURNEYS)
   textResponseBlockCreate(input: TextResponseBlockCreateInput!): TextResponseBlock! @join__field(graph: JOURNEYS)
   textResponseBlockUpdate(
     id: ID!
@@ -2362,6 +2375,14 @@ input StepBlockCreateInput
   y is used to position the block vertically in the journey flow diagram on
   the editor.
   """
+  y: Int
+}
+
+input StepBlockPositionUpdateInput
+  @join__type(graph: JOURNEYS)
+{
+  id: ID!
+  x: Int
   y: Int
 }
 

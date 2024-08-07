@@ -1,6 +1,7 @@
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
 import {
   ActiveContent,
   EditorProvider,
@@ -10,7 +11,6 @@ import {
   ActiveCanvasDetailsDrawer,
   ActiveSlide
 } from '@core/journeys/ui/EditorProvider/EditorProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 
 import type { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourney'
 import { TestEditorState } from '../../../libs/TestEditorState'
@@ -114,7 +114,6 @@ describe('Fab', () => {
           initialState={{
             ...state,
             activeSlide: ActiveSlide.Drawer,
-            activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.AddBlock,
             selectedStep
           }}
         >

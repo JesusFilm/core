@@ -3,8 +3,9 @@ import Box from '@mui/material/Box'
 import Image from 'next/image'
 import { ReactElement } from 'react'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { useCommand } from '@core/journeys/ui/CommandProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import { CardBlockThemeModeUpdate } from '../../../../../../../../../../__generated__/CardBlockThemeModeUpdate'
@@ -14,15 +15,11 @@ import {
 } from '../../../../../../../../../../__generated__/globalTypes'
 import { HorizontalSelect } from '../../../../../../../../HorizontalSelect'
 
-import { useCommand } from '@core/journeys/ui/CommandProvider'
 import cardStyleDark from './assets/card-style-dark.svg'
 import cardStyleLight from './assets/card-style-light.svg'
 
 export const CARD_BLOCK_THEME_MODE_UPDATE = gql`
-  mutation CardBlockThemeModeUpdate(
-    $id: ID!
-    $input: CardBlockUpdateInput!
-  ) {
+  mutation CardBlockThemeModeUpdate($id: ID!, $input: CardBlockUpdateInput!) {
     cardBlockUpdate(id: $id, input: $input) {
       id
       themeMode
@@ -50,42 +47,42 @@ export function CardStyling(): ReactElement {
     CARD_BLOCK_THEME_MODE_UPDATE
   )
 
-  async function handleChange(themeMode: ThemeMode): Promise<void> {
-    if (cardBlock != null) {
-      await add({
-        parameters: {
-          execute: {
-            themeMode
-          },
-          undo: {
-            themeMode: cardBlock.themeMode
-          }
+  function handleChange(themeMode: ThemeMode): void {
+    if (cardBlock == null) return
+
+    add({
+      parameters: {
+        execute: {
+          themeMode
         },
-        async execute({ themeMode }) {
-          dispatch({
-            type: 'SetEditorFocusAction',
-            selectedStep
-          })
-          await cardBlockUpdate({
-            variables: {
-              id: cardBlock.id,
-              input: {
-                themeMode,
-                themeName: ThemeName.base
-              }
-            },
-            optimisticResponse: {
-              cardBlockUpdate: {
-                id: cardBlock.id,
-                __typename: 'CardBlock',
-                themeMode,
-                themeName: ThemeName.base
-              }
-            }
-          })
+        undo: {
+          themeMode: cardBlock.themeMode
         }
-      })
-    }
+      },
+      execute({ themeMode }) {
+        dispatch({
+          type: 'SetEditorFocusAction',
+          selectedStep
+        })
+        void cardBlockUpdate({
+          variables: {
+            id: cardBlock.id,
+            input: {
+              themeMode,
+              themeName: ThemeName.base
+            }
+          },
+          optimisticResponse: {
+            cardBlockUpdate: {
+              id: cardBlock.id,
+              __typename: 'CardBlock',
+              themeMode,
+              themeName: ThemeName.base
+            }
+          }
+        })
+      }
+    })
   }
 
   return (

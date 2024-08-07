@@ -30,7 +30,8 @@ const videoSchema = z.object({
     .nullable()
     .transform((value) =>
       value == null ? [] : value.substring(1, value.length - 1).split(',')
-    ),
+    )
+    .transform((value) => value.filter((id) => id.length > 0)),
   image: z.string().nullable()
 })
 
@@ -94,7 +95,7 @@ export class ImporterVideosService extends ImporterService<Video> {
     })
     this.ids = [...this.ids, ...transformedVideos.map(({ id }) => id)]
     for (const video of transformedVideos) {
-      ;(this.usedSlugs as Record<string, string>)[video.id] = video.slug
+      (this.usedSlugs as Record<string, string>)[video.id] = video.slug
     }
   }
 }

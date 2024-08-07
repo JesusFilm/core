@@ -1,28 +1,31 @@
 import { gql, useMutation } from '@apollo/client'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { TreeBlock } from '@core/journeys/ui/block'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
+
+import { TreeBlock } from '@core/journeys/ui/block'
+import { useCommand } from '@core/journeys/ui/CommandProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
-import { TextResponseLabelUpdate } from '../../../../../../../../../../../__generated__/TextResponseLabelUpdate'
-import { TextResponseTypeUpdate } from '../../../../../../../../../../../__generated__/TextResponseTypeUpdate'
 import {
   TextResponseBlockUpdateInput,
   TextResponseType
 } from '../../../../../../../../../../../__generated__/globalTypes'
+import {
+  TextResponseTypeUpdate,
+  TextResponseTypeUpdateVariables
+} from '../../../../../../../../../../../__generated__/TextResponseTypeUpdate'
 import { ToggleButtonGroup } from '../../../../controls/ToggleButtonGroup'
-import { TEXT_RESPONSE_LABEL_UPDATE } from '../Label/Label'
 
 export const TEXT_RESPONSE_TYPE_UPDATE = gql`
   mutation TextResponseTypeUpdate(
-    $id: ID!, 
-    $journeyId: ID!, 
+    $id: ID!
     $input: TextResponseBlockUpdateInput!
   ) {
-    textResponseBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+    textResponseBlockUpdate(id: $id, input: $input) {
       id
       type
+      label
       integrationId
       routeId
     }
@@ -31,79 +34,84 @@ export const TEXT_RESPONSE_TYPE_UPDATE = gql`
 
 export function Type(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { journey } = useJourney()
-  const { state } = useEditor()
+  const { state, dispatch } = useEditor()
   const selectedBlock = state.selectedBlock as
     | TreeBlock<TextResponseBlock>
     | undefined
 
-  const [textResponseTypeUpdate] = useMutation<TextResponseTypeUpdate>(
-    TEXT_RESPONSE_TYPE_UPDATE
-  )
-  const [textResponseLabelUpdate] = useMutation<TextResponseLabelUpdate>(
-    TEXT_RESPONSE_LABEL_UPDATE
-  )
+  const { add } = useCommand()
 
-  async function handleChange(type: TextResponseType): Promise<void> {
-    if (journey == null || selectedBlock == null) return
+  const [textResponseTypeUpdate] = useMutation<
+    TextResponseTypeUpdate,
+    TextResponseTypeUpdateVariables
+  >(TEXT_RESPONSE_TYPE_UPDATE)
 
-    let input: TextResponseBlockUpdateInput = {
+  function handleChange(type: TextResponseType): void {
+    if (selectedBlock == null || type == null) return
+
+    const input: TextResponseBlockUpdateInput = {
       type
     }
     if (type !== TextResponseType.email && type !== TextResponseType.name) {
-      input = {
-        ...input,
-        integrationId: null,
-        routeId: null
-      }
+      input.integrationId = null
+      input.routeId = null
     }
 
-    let label
     switch (type) {
       case TextResponseType.email:
-        label = t('Email')
+        input.label = t('Email')
         break
       case TextResponseType.name:
-        label = t('Name')
+        input.label = t('Name')
         break
       default:
-        label = t('Your answer here')
+        input.label = t('Your answer here')
     }
 
-    await Promise.all([
-      await textResponseTypeUpdate({
-        variables: {
-          id: selectedBlock.id,
-          journeyId: journey.id,
-          input
-        },
-        optimisticResponse: {
-          textResponseBlockUpdate: {
-            id: selectedBlock.id,
-            __typename: 'TextResponseBlock',
-            type,
-            integrationId: null,
-            routeId: null
-          }
-        }
-      }),
-      await textResponseLabelUpdate({
-        variables: {
-          id: selectedBlock.id,
-          journeyId: journey.id,
+    add({
+      parameters: {
+        execute: { input },
+        undo: {
           input: {
-            label: label
-          }
-        },
-        optimisticResponse: {
-          textResponseBlockUpdate: {
-            id: selectedBlock?.id,
-            __typename: 'TextResponseBlock',
-            label: label
+            label: selectedBlock.label,
+            type: selectedBlock.type,
+            integrationId: selectedBlock.integrationId,
+            routeId: selectedBlock.routeId
           }
         }
-      })
-    ])
+      },
+      execute({ input }) {
+        dispatch({
+          type: 'SetEditorFocusAction',
+          selectedBlock,
+          selectedStep: state.selectedStep,
+          selectedAttributeId: state.selectedAttributeId
+        })
+        void textResponseTypeUpdate({
+          variables: {
+            id: selectedBlock.id,
+            input
+          },
+          optimisticResponse: {
+            textResponseBlockUpdate: {
+              id: selectedBlock.id,
+              __typename: 'TextResponseBlock',
+              ...input,
+              label: input.label != null ? input.label : selectedBlock.label,
+              type: input.type !== undefined ? input.type : selectedBlock.type,
+              integrationId:
+                input.integrationId !== undefined
+                  ? input.integrationId
+                  : selectedBlock.integrationId,
+              routeId:
+                input.routeId !== undefined
+                  ? input.routeId
+                  : selectedBlock.routeId
+            }
+          }
+        })
+      }
+    })
   }
 
   const options = [

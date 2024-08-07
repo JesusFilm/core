@@ -1,8 +1,9 @@
+import Box from '@mui/material/Box'
 import { GetStaticProps } from 'next'
+import { useRouter } from 'next/router'
 import { useUser, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import { useRouter } from 'next/router'
 import { ReactElement, useEffect } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -12,7 +13,6 @@ import { GET_JOURNEY, useJourneyQuery } from '@core/journeys/ui/useJourneyQuery'
 import { GET_JOURNEYS } from '@core/journeys/ui/useJourneysQuery'
 import { GET_TAGS } from '@core/journeys/ui/useTagsQuery'
 
-import { Box } from '@mui/material'
 import { GetJourney, GetJourneyVariables } from '../../__generated__/GetJourney'
 import {
   GetJourneys,

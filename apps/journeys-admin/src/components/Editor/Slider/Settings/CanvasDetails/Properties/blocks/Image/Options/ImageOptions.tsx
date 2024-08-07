@@ -3,25 +3,22 @@ import Box from '@mui/material/Box'
 import pick from 'lodash/pick'
 import { ReactElement } from 'react'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
-
 import { useCommand } from '@core/journeys/ui/CommandProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { IMAGE_FIELDS } from '@core/journeys/ui/Image/imageFields'
+
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../../__generated__/BlockFields'
+import { ImageBlockUpdateInput } from '../../../../../../../../../../__generated__/globalTypes'
 import {
   ImageBlockUpdate,
   ImageBlockUpdateVariables
 } from '../../../../../../../../../../__generated__/ImageBlockUpdate'
-import { ImageBlockUpdateInput } from '../../../../../../../../../../__generated__/globalTypes'
 import { ImageSource } from '../../../../../Drawer/ImageSource'
 
 export const IMAGE_BLOCK_UPDATE = gql`
   ${IMAGE_FIELDS}
-  mutation ImageBlockUpdate(
-    $id: ID!
-    $input: ImageBlockUpdateInput!
-  ) {
+  mutation ImageBlockUpdate($id: ID!, $input: ImageBlockUpdateInput!) {
     imageBlockUpdate(id: $id, input: $input) {
       id
       ...ImageFields
@@ -46,7 +43,7 @@ export function ImageOptions(): ReactElement {
     await updateImageBlock({ src: null, alt: '' })
   }
 
-  async function updateImageBlock(input: ImageBlockUpdateInput): Promise<void> {
+  function updateImageBlock(input: ImageBlockUpdateInput): void {
     const block: ImageBlock = {
       ...imageBlock,
       ...input,
@@ -56,18 +53,18 @@ export function ImageOptions(): ReactElement {
       width: input.width ?? imageBlock.width
     }
 
-    await add({
+    add({
       parameters: {
         execute: block,
         undo: imageBlock
       },
-      async execute(block) {
+      execute(block) {
         dispatch({
           type: 'SetEditorFocusAction',
           selectedBlock,
           selectedStep
         })
-        await imageBlockUpdate({
+        void imageBlockUpdate({
           variables: {
             id: imageBlock.id,
             input: pick(block, Object.keys(input))
@@ -84,7 +81,7 @@ export function ImageOptions(): ReactElement {
     <Box sx={{ px: 4, pb: 4 }}>
       <ImageSource
         selectedBlock={imageBlock}
-        onChange={updateImageBlock}
+        onChange={async (input) => updateImageBlock(input)}
         onDelete={deleteImageBlock}
       />
     </Box>

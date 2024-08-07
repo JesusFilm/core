@@ -7,8 +7,8 @@ import {
   BlockFields_ImageBlock as ImageBlock,
   BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../../../__generated__/BlockFields'
-import { VideoFields_video_variantLanguages } from '../../../../../../../../../__generated__/VideoFields'
 import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
+import { VideoFields_video_variantLanguages } from '../../../../../../../../../__generated__/VideoFields'
 import { getBackgroundImage } from '../getBackgroundImage'
 import { getCardHeadings } from '../getCardHeadings'
 import { getPriorityBlock } from '../getPriorityBlock'
@@ -74,7 +74,9 @@ export function getCardMetadata(
       priorityBlock.video?.title?.[0]?.value ?? priorityBlock.title ?? undefined
     const subtitle =
       priorityBlock.startAt !== null && priorityBlock.endAt !== null
-        ? `${secondsToTimeFormat(priorityBlock.startAt, { trimZeroes: true })}-${secondsToTimeFormat(priorityBlock.endAt, { trimZeroes: true })}`
+        ? `${secondsToTimeFormat(priorityBlock.startAt, {
+            trimZeroes: true
+          })}-${secondsToTimeFormat(priorityBlock.endAt, { trimZeroes: true })}`
         : undefined
 
     const description = getVideoDescription(priorityBlock)
@@ -122,8 +124,8 @@ export function getCardMetadata(
   const priorityImage = getPriorityImage(card.children)
 
   return {
-    title: imageTitle || title,
-    subtitle: imageSubititle || subtitle,
+    title: imageTitle ?? title,
+    subtitle: imageSubititle ?? subtitle,
     priorityBlock,
     bgImage,
     hasMultipleActions,

@@ -3,9 +3,12 @@ import { CacheModule } from '@nestjs/cache-manager'
 import { Test, TestingModule } from '@nestjs/testing'
 import axios, { AxiosError, AxiosResponse } from 'axios'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
-import { PrismaService } from '../../../lib/prisma.service'
-import { IntegrationGrowthSpacesService } from './growthSpaces.service'
+
 import { Block, Integration, Journey } from '.prisma/api-journeys-client'
+
+import { PrismaService } from '../../../lib/prisma.service'
+
+import { IntegrationGrowthSpacesService } from './growthSpaces.service'
 
 jest.mock('node-fetch', () => {
   const originalModule = jest.requireActual('node-fetch')
@@ -86,11 +89,10 @@ describe('IntegrationGrothSpacesService', () => {
     ) as DeepMockProxy<PrismaService>
     mockAxiosGet = jest.fn()
     mockAxiosPost = jest.fn()
-    mockAxios.create = jest
-      .fn()
-      .mockImplementation(
-        async () => await { get: mockAxiosGet, post: mockAxiosPost }
-      )
+    mockAxios.create = jest.fn().mockImplementation(async () => ({
+      get: mockAxiosGet,
+      post: mockAxiosPost
+    }))
 
     process.env = { ...OLD_ENV }
   })
@@ -142,7 +144,7 @@ describe('IntegrationGrothSpacesService', () => {
   })
 
   describe('routes', () => {
-    it('it should return routes', async () => {
+    it('should return routes', async () => {
       process.env.GROWTH_SPACES_URL = 'https://example.url.api/v1'
       process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET =
         'dontbefooledbythiskryptokeyitisactuallyfake='
@@ -217,6 +219,7 @@ describe('IntegrationGrothSpacesService', () => {
       expect(prismaService.journey.findUnique).not.toHaveBeenCalled()
     })
 
+    // eslint-disable-next-line jest/no-identical-title
     it('should silently exit function if integration cannot be found', async () => {
       prismaService.integration.findUnique.mockResolvedValue(null)
       await service.addSubscriber(
@@ -287,6 +290,7 @@ describe('IntegrationGrothSpacesService', () => {
 
       expect(mockApollo).toHaveBeenCalled()
     })
+
     it('should silently exit function if it cannot authenticate to Growth Spaces', async () => {
       prismaService.integration.findUnique.mockResolvedValue(integration)
       prismaService.journey.findUnique.mockResolvedValue(journey)
