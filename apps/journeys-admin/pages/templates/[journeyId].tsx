@@ -41,6 +41,8 @@ function TemplateDetailsPage(): ReactElement {
     }
   }, [user.id, query, activeTeam, refetch])
 
+  const userSignedIn = user?.id != null
+
   return (
     <>
       <NextSeo
@@ -58,7 +60,7 @@ function TemplateDetailsPage(): ReactElement {
           user={user}
           backHref="/templates"
           mainBodyPadding={false}
-          showMainHeader={user?.id != null}
+          showMainHeader={userSignedIn}
           mainHeaderChildren={
             <Stack
               direction="row"
@@ -81,10 +83,25 @@ function TemplateDetailsPage(): ReactElement {
               />
             </Stack>
           }
-          showAppHeader={user?.id != null}
-          showNavBar={user?.id != null}
+          showAppHeader={userSignedIn}
+          showNavBar={userSignedIn}
           background="background.paper"
         >
+          <Box
+            sx={{
+              position: 'absolute',
+              right: 16,
+              top: 8,
+              display: userSignedIn ? 'none' : 'block'
+            }}
+          >
+            <HelpScoutBeacon
+              userInfo={{
+                name: user?.displayName ?? '',
+                email: user?.email ?? ''
+              }}
+            />
+          </Box>
           <Box
             sx={{
               maxWidth: { md: '90vw' },
