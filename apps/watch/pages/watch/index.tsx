@@ -63,7 +63,7 @@ export const nextRouter: RouterProps = {
 }
 
 function HomePage(): ReactElement {
-	const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
+  const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
 
   return (
     // Don't pass in server state because it will be stale if any state set by url
