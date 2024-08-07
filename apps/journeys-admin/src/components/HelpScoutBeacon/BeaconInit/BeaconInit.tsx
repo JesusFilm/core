@@ -1,11 +1,7 @@
 import { useTheme } from '@mui/material/styles'
 import { useRouter } from 'next/router'
 import Script from 'next/script'
-import {
-  ReactElement,
-  useEffect,
-  useState
-} from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
 import { FormObject } from '@core/journeys/ui/setBeaconPageViewed'
 
