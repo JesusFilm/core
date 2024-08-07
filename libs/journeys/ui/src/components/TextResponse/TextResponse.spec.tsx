@@ -1,5 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
 import TagManager from 'react-gtm-module'
@@ -100,6 +100,34 @@ describe('TextResponse', () => {
     await waitFor(() => {
       expect(responseField).toHaveAttribute('maxlength', '1000')
     })
+  })
+
+  it('should show your answer here if label is empty', async () => {
+    const emptyLabelBlock: TreeBlock<TextResponseFields> = {
+      __typename: 'TextResponseBlock',
+      id: 'textResponse0.id',
+      parentBlockId: '0',
+      parentOrder: 0,
+      label: '',
+      hint: null,
+      minRows: null,
+      integrationId: null,
+      type: null,
+      routeId: null,
+      children: []
+    }
+
+    render(
+      <MockedProvider mocks={[]} addTypename={false}>
+        <JourneyProvider>
+          <SnackbarProvider>
+            <TextResponse {...emptyLabelBlock} uuid={() => 'uuid'} />
+          </SnackbarProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByLabelText('Your answer here')).toBeInTheDocument()
   })
 
   it('should be in a loading state when waiting for response', async () => {

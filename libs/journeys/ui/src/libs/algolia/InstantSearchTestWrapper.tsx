@@ -15,10 +15,7 @@ export function InstantSearchTestWrapper({
   children,
   ...props
 }: InstantSearchWrapperProps): ReactElement {
-  const searchClient = algoliasearch(
-    process.env.NEXT_PUBLIC_ALGOLIA_APP_ID ?? '',
-    process.env.NEXT_PUBLIC_ALGOLIA_API_KEY ?? ''
-  )
+  const searchClient = algoliasearch('algolia', 'algolia')
 
   const initState: UiState = {
     [indexName]: {

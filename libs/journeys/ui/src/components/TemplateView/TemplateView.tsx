@@ -13,8 +13,8 @@ import { Role } from '../../../__generated__/globalTypes'
 import { useJourney } from '../../libs/JourneyProvider'
 import { useJourneysQuery } from '../../libs/useJourneysQuery'
 import { useUserRoleQuery } from '../../libs/useUserRoleQuery'
+import { ContentCarousel } from '../ContentCarousel'
 import { StrategySection } from '../StrategySection'
-import { TemplateGalleryCarousel } from '../TemplateGallery/TemplateGalleryCarousel'
 import { TemplateGalleryCard } from '../TemplateGalleryCard'
 
 import { TemplateFooter } from './TemplateFooter'
@@ -147,7 +147,7 @@ export function TemplateView({
             />
           )}
           {relatedJourneys != null && relatedJourneys.length >= 1 && (
-            <TemplateGalleryCarousel
+            <ContentCarousel
               heading={t('Related Templates')}
               items={relatedJourneys}
               renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}

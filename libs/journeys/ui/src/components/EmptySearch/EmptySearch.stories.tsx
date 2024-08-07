@@ -1,7 +1,7 @@
-import type { Meta, StoryObj } from '@storybook/react'
-import type { ComponentProps } from 'react'
+import { Meta, StoryObj } from '@storybook/react'
+import { ComponentProps } from 'react'
 
-import { watchConfig } from '@core/shared/ui/storybook/config'
+import { watchConfig } from '@core/shared/ui/storybook'
 
 import { EmptySearch } from './EmptySearch'
 
