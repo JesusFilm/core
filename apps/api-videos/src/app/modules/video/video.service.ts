@@ -27,7 +27,11 @@ export class VideoService {
     const words = value.trim().split(/\s+/)
 
     const processedWords = words.map((word) => {
-      return `"${word.replace(specialChars, '\\$&')}"`
+      if (specialChars.test(word)) {
+        return `"${word.replace(specialChars, '\\$&')}"`
+      }
+
+      return word
     })
 
     return processedWords.join(' & ')
