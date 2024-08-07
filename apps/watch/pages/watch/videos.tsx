@@ -74,7 +74,7 @@ const nextRouter: RouterProps = {
 }
 
 function VideosPage({ initialApolloState }: VideosPageProps): ReactElement {
-	const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
+  const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
 
   const client = useApolloClient({
     initialState: initialApolloState
@@ -89,7 +89,7 @@ function VideosPage({ initialApolloState }: VideosPageProps): ReactElement {
           indexName={indexName}
           searchClient={searchClient}
           future={{ preserveSharedStateOnUnmount: true }}
-					stalledSearchDelay={500}
+          stalledSearchDelay={500}
           routing={nextRouter}
         >
           <Videos index />

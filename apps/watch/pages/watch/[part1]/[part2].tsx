@@ -51,14 +51,10 @@ const searchClient = algoliasearch(
 )
 
 export default function Part2Page({ content }: Part2PageProps): ReactElement {
-	const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
+  const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
 
   return (
-    <InstantSearch
-      insights
-      searchClient={searchClient}
-      indexName={indexName}
-    >
+    <InstantSearch insights searchClient={searchClient} indexName={indexName}>
       <SnackbarProvider>
         <LanguageProvider>
           <VideoProvider value={{ content }}>

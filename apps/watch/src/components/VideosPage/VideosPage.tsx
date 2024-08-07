@@ -22,12 +22,12 @@ interface VideosPageProps {
 }
 
 export function VideosPage({ index = false }: VideosPageProps): ReactElement {
-	const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? '';
+  const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
 
-	const { data: languagesData, loading: languagesLoading } =
-		useQuery<GetLanguages>(GET_LANGUAGES, {
-			variables: { languageId: '529' }
-		})
+  const { data: languagesData, loading: languagesLoading } =
+    useQuery<GetLanguages>(GET_LANGUAGES, {
+      variables: { languageId: '529' }
+    })
 
   useConfigure({
     ruleContexts: ['all_videos_page']

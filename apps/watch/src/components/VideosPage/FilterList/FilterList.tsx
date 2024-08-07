@@ -9,10 +9,7 @@ import noop from 'lodash/noop'
 import { useRouter } from 'next/compat/router'
 import { useTranslation } from 'next-i18next'
 import { type ChangeEvent, type ReactElement, useMemo } from 'react'
-import {
-  useMenu,
-  useSearchBox
-} from 'react-instantsearch'
+import { useMenu, useSearchBox } from 'react-instantsearch'
 
 import type { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
@@ -108,10 +105,10 @@ export function FilterList({
 
   const { refine: refineSearch } = useSearchBox()
   const { refine: refineLanguages } = useMenu({
-    attribute: 'languageId',
+    attribute: 'languageId'
   })
   const { refine: refineSubtitles } = useMenu({
-    attribute: 'subtitles',
+    attribute: 'subtitles'
   })
 
   const subtitleLanguages = languagesData?.languages.filter((language) =>
@@ -167,11 +164,7 @@ export function FilterList({
     }
 
   return (
-    <Formik
-      initialValues={initialValues}
-      onSubmit={noop}
-      enableReinitialize
-    >
+    <Formik initialValues={initialValues} onSubmit={noop} enableReinitialize>
       {({ values, setFieldValue, handleBlur }) => (
         <Stack data-testid="FilterList" gap={4}>
           <Stack spacing={2}>
