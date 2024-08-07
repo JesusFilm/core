@@ -31,11 +31,13 @@ export function VideoTrigger({
   const { journey, variant } = useJourney()
   const [triggered, setTriggered] = useState(false)
   const { blockHistory } = useBlocks()
-  const activeBlock = blockHistory[blockHistory.length - 1]
+  const activeBlock = blockHistory[blockHistory.length - 1] as
+    | TreeBlock
+    | undefined
   const plausible = usePlausible<JourneyPlausibleEvents>()
 
   useEffect(() => {
-    if (player != null && !triggered) {
+    if (player != null && !triggered && activeBlock?.id != null) {
       const handleTimeUpdate = (): void => {
         if (
           (player.currentTime() ?? 0) >= triggerStart - 0.25 &&
@@ -99,7 +101,7 @@ export function VideoTrigger({
     blockId,
     plausible,
     journey?.id,
-    activeBlock.id
+    activeBlock?.id
   ])
 
   return <></>
