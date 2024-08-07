@@ -253,6 +253,11 @@ export enum VisitorStatus {
   warning = "warning",
 }
 
+export interface BlockDuplicateIdMap {
+  oldId: string;
+  newId: string;
+}
+
 export interface BlockUpdateActionInput {
   gtmEventName?: string | null;
   email?: string | null;
