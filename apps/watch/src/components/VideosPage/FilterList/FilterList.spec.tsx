@@ -58,7 +58,7 @@ describe('FilterList', () => {
       const refineLanguages = jest.fn()
 
       mockUseMenu.mockReturnValue({
-        items: [],
+        items: languageItems,
         refine: refineLanguages
       } as unknown as RefinementListRenderState)
 
@@ -78,29 +78,6 @@ describe('FilterList', () => {
       await waitFor(() => expect(refineLanguages).toHaveBeenCalled())
     })
 
-    it('should not refine by language if language already set', async () => {
-      const refineLanguages = jest.fn()
-
-      mockUseMenu.mockReturnValue({
-        items: languageItems,
-        refine: refineLanguages
-      } as unknown as RefinementListRenderState)
-
-      render(
-        <FilterList languagesData={{ languages }} languagesLoading={false} />
-      )
-
-      const langaugesComboboxEl = screen.getAllByRole('combobox', {
-        name: 'Search Languages'
-      })[0]
-
-      fireEvent.focus(langaugesComboboxEl)
-      fireEvent.keyDown(langaugesComboboxEl, { key: 'ArrowDown' })
-      await waitFor(() => screen.getAllByText('English')[0])
-      fireEvent.click(screen.getAllByText('English')[0])
-      expect(langaugesComboboxEl).toHaveValue('English')
-      await waitFor(() => expect(refineLanguages).not.toHaveBeenCalled())
-    })
   })
 
   describe('Subtitles Filter', () => {

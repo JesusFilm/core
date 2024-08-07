@@ -8,7 +8,7 @@ import { Formik } from 'formik'
 import noop from 'lodash/noop'
 import { useRouter } from 'next/compat/router'
 import { useTranslation } from 'next-i18next'
-import { type ChangeEvent, type ReactElement, useMemo } from 'react'
+import { type ChangeEvent, type ReactElement, useEffect, useMemo } from 'react'
 import { useMenu, useSearchBox } from 'react-instantsearch'
 
 import type { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
@@ -83,7 +83,7 @@ interface FilterParams {
 function extractQueryParams(url: string): FilterParams {
   const params = new URLSearchParams(url.split('?')[1])
   const query = params.get('query')
-  const languageId = params.get('menu[languageId]') ?? '529'
+  const languageId = params.get('menu[languageId]')
   const subtitleId = params.get('menu[subtitles]')
   return { query, languageId, subtitleId }
 }
@@ -110,6 +110,12 @@ export function FilterList({
   const { refine: refineSubtitles } = useMenu({
     attribute: 'subtitles'
   })
+
+  useEffect(() => {
+    if (languageId == null) {
+      refineLanguages('529')
+    }
+  }, [languageId, refineLanguages])
 
   const subtitleLanguages = languagesData?.languages.filter((language) =>
     subtitleLanguageIds.includes(language.id)
@@ -142,9 +148,13 @@ export function FilterList({
 
   const handleLanguageChange =
     (setFieldValue) => async (value?: LanguageOption | undefined) => {
-      if (value?.id !== undefined && value?.id !== languageId) {
-        refineLanguages(value?.id)
-        await setFieldValue('language', value)
+      if (value?.id !== undefined) {
+        if (value?.id !== languageId) {
+          refineLanguages(value?.id)
+          await setFieldValue('language', value)
+        } else if (languageId === '529') {
+          await setFieldValue('language', value)
+        }
       }
     }
 
