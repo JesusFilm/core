@@ -9,7 +9,6 @@ import type { ReactElement } from 'react'
 import { renderToString } from 'react-dom/server'
 import {
   InstantSearch,
-  type InstantSearchProps,
   InstantSearchSSRProvider,
   type InstantSearchServerState,
   getServerState
@@ -81,41 +80,17 @@ function VideosPage({ initialApolloState }: VideosPageProps): ReactElement {
     initialState: initialApolloState
   })
 
-  const onStateChange: InstantSearchProps['onStateChange'] = ({
-    uiState,
-    setUiState
-  }) => {
-    // Ensure there is always one languageId set and defaults to english
-    const languageIds =
-      uiState[indexName].refinementList?.languageId ?? []
-    if (languageIds.length !== 1) {
-      const lastSelectedLanguage = languageIds.pop()
-      setUiState({
-        ...uiState,
-        [indexName]: {
-          ...uiState[indexName],
-          refinementList: {
-            ...uiState[indexName].refinementList,
-            languageId: [lastSelectedLanguage ?? '529']
-          }
-        }
-      })
-    } else {
-      setUiState(uiState)
-    }
-  }
-
   return (
     // Don't pass in server state because it will be stale if any state set by url
     <InstantSearchSSRProvider>
       <ApolloProvider client={client}>
         <InstantSearch
           insights
+          indexName={indexName}
           searchClient={searchClient}
           future={{ preserveSharedStateOnUnmount: true }}
 					stalledSearchDelay={500}
           routing={nextRouter}
-          onStateChange={onStateChange}
         >
           <Videos index />
         </InstantSearch>

@@ -7,9 +7,10 @@ import Typography from '@mui/material/Typography'
 import { Formik } from 'formik'
 import { useRouter } from 'next/compat/router'
 import { useTranslation } from 'next-i18next'
-import { type ChangeEvent, type ReactElement, useMemo } from 'react'
+import { type ChangeEvent, type ReactElement, useEffect, useMemo } from 'react'
 import {
   useClearRefinements,
+  useMenu,
   useRefinementList,
   useSearchBox
 } from 'react-instantsearch'
@@ -106,18 +107,21 @@ export function FilterList({
   const decodedUrl = decodeURIComponent(router?.asPath ?? '')
   const { query, languageId, subtitleId } = extractQueryParams(decodedUrl)
 
-  const { refine: clearSubtitleRefine } = useClearRefinements({
-    includedAttributes: ['subtitles']
-  })
   const { refine: refineSearch } = useSearchBox()
-  const { items: languageItems, refine: refineLanguages } = useRefinementList({
+  const { items: languageItems, refine: refineLanguages } = useMenu({
     attribute: 'languageId',
     limit: 5000
   })
-  const { items: subtitleItems, refine: refineSubtitles } = useRefinementList({
+  const { items: subtitleItems, refine: refineSubtitles } = useMenu({
     attribute: 'subtitles',
     limit: 5000
   })
+
+  useEffect(() => {
+    if (languageItems.filter((lang) => lang.isRefined).length === 0) {
+      refineLanguages('529')
+    }
+  }, [languageItems, refineLanguages])
 
   const languagesMap = useMemo(
     () => new Map(languagesData?.languages.map((lang) => [lang.id, lang])),
@@ -174,7 +178,6 @@ export function FilterList({
       refineLanguages(languageId)
     }
     if (subtitleLanguageId !== '') {
-      clearSubtitleRefine()
       refineSubtitles(subtitleLanguageId)
     }
   }
