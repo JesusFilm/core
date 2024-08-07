@@ -16,7 +16,10 @@ import AddSquare4Icon from '@core/shared/ui/icons/AddSquare4'
 import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
 
 import { BlockFields_RadioOptionBlock as RadioOptionBlock } from '../../../../../../../../__generated__/BlockFields'
-import { RadioOptionBlockCreate } from '../../../../../../../../__generated__/RadioOptionBlockCreate'
+import {
+  RadioOptionBlockCreate,
+  RadioOptionBlockCreateVariables
+} from '../../../../../../../../__generated__/RadioOptionBlockCreate'
 import { RadioQuestionFields } from '../../../../../../../../__generated__/RadioQuestionFields'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
 
@@ -43,9 +46,10 @@ export function RadioQuestionEdit({
   wrappers,
   ...props
 }: RadioQuestionEditProps): ReactElement {
-  const [radioOptionBlockCreate] = useMutation<RadioOptionBlockCreate>(
-    RADIO_OPTION_BLOCK_CREATE
-  )
+  const [radioOptionBlockCreate] = useMutation<
+    RadioOptionBlockCreate,
+    RadioOptionBlockCreateVariables
+  >(RADIO_OPTION_BLOCK_CREATE)
   const { journey } = useJourney()
   const { addBlock } = useBlockCreateCommand()
   const {
@@ -53,7 +57,7 @@ export function RadioQuestionEdit({
     dispatch
   } = useEditor()
 
-  const handleCreateOption = async (): Promise<void> => {
+  function handleCreateOption(): void {
     if (journey == null) return
 
     const radioOptionBlock: RadioOptionBlock = {
@@ -77,7 +81,7 @@ export function RadioQuestionEdit({
             input: {
               id: radioOptionBlock.id,
               journeyId: journey.id,
-              parentBlockId: radioOptionBlock.parentBlockId,
+              parentBlockId: radioOptionBlock.parentBlockId ?? id,
               label: radioOptionBlock.label
             }
           },
