@@ -82,12 +82,13 @@ export function StrategySection({
       {items.length > 0 ? (
         <Box data-testid="StrategySection">
           <Typography variant="h5">{label}</Typography>
-          <Container maxWidth={false} sx={{ overflow: 'hidden' }}>
+          <Container maxWidth={false}>
             <ContentCarousel
               items={items}
               renderItem={(itemProps) => <StrategyCard {...itemProps} />}
               breakpoints={swiperBreakpoints}
               slidesOffsetBefore={-32}
+              content="strategies-section"
             />
           </Container>
         </Box>
