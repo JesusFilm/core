@@ -13,10 +13,7 @@ import {
 import { BlockFields } from '../../../__generated__/BlockFields'
 
 export const BLOCK_ACTION_LINK_UPDATE = gql`
-  mutation BlockActionLinkUpdate(
-    $id: ID!
-    $input: LinkActionInput!
-  ) {
+  mutation BlockActionLinkUpdate($id: ID!, $input: LinkActionInput!) {
     blockUpdateLinkAction(id: $id, input: $input) {
       parentBlockId
       gtmEventName

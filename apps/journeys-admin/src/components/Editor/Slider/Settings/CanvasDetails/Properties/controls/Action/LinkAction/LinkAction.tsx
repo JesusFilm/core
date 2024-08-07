@@ -5,8 +5,8 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { object, string } from 'yup'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import LinkIcon from '@core/shared/ui/icons/Link'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
@@ -36,7 +36,7 @@ export function LinkAction(): ReactElement {
     }
     try {
       return new URL(urlInspect).toString() !== ''
-    } catch (error) {
+    } catch {
       return false
     }
   }
@@ -47,27 +47,27 @@ export function LinkAction(): ReactElement {
       .test('valid-url', t('Invalid URL'), checkURL)
   })
 
-  async function handleSubmit(src: string): Promise<void> {
+  function handleSubmit(src: string): void {
+    if (selectedBlock == null) return
+
     // checks if url has a protocol
     const url = /^\w+:\/\//.test(src) ? src : `https://${src}`
-    if (selectedBlock != null) {
-      const { id, action, __typename } = selectedBlock
-      await addAction({
-        blockId: id,
-        blockTypename: __typename,
-        action: {
-          __typename: 'LinkAction',
-          parentBlockId: id,
-          gtmEventName: '',
-          url
-        },
-        undoAction: action,
-        editorFocus: {
-          selectedStep,
-          selectedBlock
-        }
-      })
-    }
+    const { id, action, __typename: blockTypename } = selectedBlock
+    addAction({
+      blockId: id,
+      blockTypename,
+      action: {
+        __typename: 'LinkAction',
+        parentBlockId: id,
+        gtmEventName: '',
+        url
+      },
+      undoAction: action,
+      editorFocus: {
+        selectedStep,
+        selectedBlock
+      }
+    })
   }
 
   return (

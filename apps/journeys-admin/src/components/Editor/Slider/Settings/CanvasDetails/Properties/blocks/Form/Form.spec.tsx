@@ -3,8 +3,8 @@ import { Form as FormiumFormType } from '@formium/types'
 import { fireEvent, render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
-import { EditorProvider } from '@core/journeys/ui/EditorProvider/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider/EditorProvider'
 
 import {
   BlockFields_FormBlock_action as FormAction,

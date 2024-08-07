@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import omit from 'lodash/omit'
 import { z } from 'zod'
+
 import { PrismaService } from '../../../lib/prisma.service'
 import { ImporterService } from '../importer.service'
 import { ImporterBibleBooksService } from '../importerBibleBooks/importerBibleBooks.service'
@@ -14,7 +15,10 @@ const bibleCitationSchema = z
     position: z.number(),
     chapterStart: z.number(),
     chapterEnd: z.number().nullable(),
-    verseStart: z.number(),
+    verseStart: z
+      .number()
+      .nullable()
+      .transform((value) => value ?? 1),
     verseEnd: z.number().nullable(),
     datastream_metadata: z.object({
       uuid: z.string()

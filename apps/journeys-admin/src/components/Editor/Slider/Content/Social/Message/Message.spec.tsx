@@ -1,10 +1,10 @@
+import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { JourneyFields as Journey } from '../../../../../../../__generated__/JourneyFields'
 
-import { MockedProvider } from '@apollo/client/testing'
 import { Message } from './Message'
 
 describe('Message', () => {

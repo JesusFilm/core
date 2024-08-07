@@ -1,20 +1,21 @@
+import { subject } from '@casl/ability'
+import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
+
+import { Integration, Team } from '.prisma/api-journeys-client'
+import { CaslAbility } from '@core/nest/common/CaslAuthModule'
+
 import {
   IntegrationGrowthSpacesCreateInput,
   IntegrationGrowthSpacesRoute,
   IntegrationGrowthSpacesUpdateInput
 } from '../../../__generated__/graphql'
-
-import { PrismaService } from '../../../lib/prisma.service'
-
-import { subject } from '@casl/ability'
-import { CaslAbility } from '@core/nest/common/CaslAuthModule'
-import { UseGuards } from '@nestjs/common'
 import { Action, AppAbility } from '../../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../../lib/casl/caslGuard'
+import { PrismaService } from '../../../lib/prisma.service'
+
 import { IntegrationGrowthSpacesService } from './growthSpaces.service'
-import { Integration, Team } from '.prisma/api-journeys-client'
 
 @Resolver('IntegrationGrowthSpaces')
 export class IntegrationGrowthSpacesResolver {

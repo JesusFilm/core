@@ -4,6 +4,7 @@ import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { Form } from 'formik'
+import { User } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
 
@@ -14,10 +15,10 @@ import {
 } from '@core/journeys/ui/TeamProvider'
 import { GetLastActiveTeamIdAndTeams } from '@core/journeys/ui/TeamProvider/__generated__/GetLastActiveTeamIdAndTeams'
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
+
 import { TeamCreate } from '../../../../__generated__/TeamCreate'
 import { TEAM_CREATE } from '../../../libs/useTeamCreateMutation/useTeamCreateMutation'
 
-import { User } from 'next-firebase-auth'
 import { TeamCreateForm } from '.'
 
 describe('TeamCreateForm', () => {
@@ -177,6 +178,7 @@ describe('TeamCreateForm', () => {
       getIdToken: async (forceRefresh?: boolean) => null,
       clientInitialized: false,
       firebaseUser: null,
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
       signOut: async () => {},
       serialize: (a?: { includeToken?: boolean }) => JSON.stringify({})
     }
