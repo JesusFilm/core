@@ -1641,7 +1641,7 @@ export type MutationStepBlockCreateArgs = {
 };
 
 
-export type MutationstepBlockPositionUpdateArgs = {
+export type MutationStepBlockPositionUpdateArgs = {
   input: Array<StepBlockPositionUpdateInput>;
 };
 
