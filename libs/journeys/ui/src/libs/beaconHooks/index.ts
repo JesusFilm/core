@@ -1,7 +1,2 @@
-export {
-  setBeaconPageViewed,
-  setBeaconRoute,
-  openBeacon,
-  isBeaconOpen
-} from './beaconHooks'
+export { setBeaconPageViewed, setBeaconRoute, openBeacon } from './beaconHooks'
 export type { FormObject } from './beaconHooks'
