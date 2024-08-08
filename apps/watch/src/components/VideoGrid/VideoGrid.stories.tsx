@@ -10,6 +10,7 @@ import { videos } from '../Videos/__generated__/testData'
 
 import { VideoGrid } from './VideoGrid'
 
+
 const VideoGridStory: Meta<typeof VideoGrid> = {
   ...watchConfig,
   component: VideoGrid,
@@ -25,13 +26,13 @@ const Template: StoryObj<typeof VideoGrid> = {
             <VideoGrid {...args} />
           </Box>
           <Box>
-            <VideoGrid {...args} videos={[]} />
+            <VideoGrid {...args} videos={[]} loading />
           </Box>
           <Box>
-            <VideoGrid {...args} variant="contained" />
+            <VideoGrid {...args} variant="contained" hasNextPage={false} />
           </Box>
           <Box>
-            <VideoGrid {...args} videos={[]} variant="contained" />
+            <VideoGrid {...args} videos={[]} variant="contained" loading />
           </Box>
         </Stack>
       </InstantSearchTestWrapper>
@@ -50,7 +51,8 @@ export const Pagination = {
   ...Template,
   args: {
     videos: videos.slice(0, 3),
-    onLoadMore: noop
+    showLoadMore: true,
+    showMore: noop,
   }
 }
 

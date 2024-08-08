@@ -11,7 +11,7 @@ import { ThemeMode } from '@core/shared/ui/themes'
 
 import type { GetLanguages } from '../../../__generated__/GetLanguages'
 import { PageWrapper } from '../PageWrapper'
-import { VideoGrid } from '../VideoGrid/VideoGrid'
+import { AlgoliaVideoGrid } from '../VideoGrid/AlgoliaVideoGrid/AlgoliaVideoGrid'
 
 import { FilterList } from './FilterList'
 import { VideosHero } from './Hero'
@@ -42,7 +42,7 @@ export function VideosPage({ index = false }: VideosPageProps): ReactElement {
         />
       </Box>
       <Box sx={{ width: '100%' }}>
-        <VideoGrid variant="expanded" showLoadMore />
+        <AlgoliaVideoGrid variant="expanded" showLoadMore />
       </Box>
     </Stack>
   )

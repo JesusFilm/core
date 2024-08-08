@@ -11,7 +11,7 @@ import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import { PageWrapper } from '../PageWrapper'
-import { VideoGrid } from '../VideoGrid'
+import { AlgoliaVideoGrid } from '../VideoGrid/AlgoliaVideoGrid/AlgoliaVideoGrid'
 
 import { HomeHero } from './HomeHero'
 import { SeeAllVideos } from './SeeAllVideos'
@@ -43,7 +43,7 @@ export function WatchHomePage(): ReactElement {
             <Box sx={{ pb: 10 }}>
               <SearchBar />
             </Box>
-            <VideoGrid variant="contained" />
+            <AlgoliaVideoGrid variant="contained" />
             <SeeAllVideos />
             <Box
               sx={{
