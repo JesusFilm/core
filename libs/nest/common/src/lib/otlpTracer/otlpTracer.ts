@@ -34,7 +34,7 @@ export default function otlpTracer(serviceName: string): {
     instrumentations: [
       new HttpInstrumentation({
         ignoreIncomingRequestHook(req) {
-          return req.url?.endsWith('/.well-known/apollo/server-health') !== true
+          return req.url?.endsWith('/.well-known/apollo/server-health') ?? false
         }
       })
     ]
