@@ -2,16 +2,14 @@ import Button from '@mui/material/Button'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
-import { journeyUiConfig } from '../../libs/journeyUiConfig'
-import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { Tooltip } from ".";
 
 const TooltipDemo: Meta<typeof Tooltip> = {
-  ...journeyUiConfig,
   ...simpleComponentConfig,
   component: Tooltip,
-  title: 'Journeys-Ui/Tooltip'
+  title: 'Journeys-Admin/Tooltip'
 }
 
 type Story = StoryObj<ComponentProps<typeof Tooltip>>
@@ -41,11 +39,11 @@ export const Placed = {
   }
 }
 
-export const Arrow = {
+export const WithoutArrow = {
   ...Template,
   args: {
     title: 'Arrow',
-    arrow: true,
+    arrow: false,
     open: true,
   }
 }
