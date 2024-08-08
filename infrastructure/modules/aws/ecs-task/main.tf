@@ -172,6 +172,21 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
           protocol      = "udp"
           hostPort      = 8125
           containerPort = 8125
+        },
+        {
+          protocol      = "tcp"
+          hostPort      = 8126
+          containerPort = 8126
+        },
+        {
+          protocol      = "tcp"
+          hostPort      = 4317
+          containerPort = 4317
+        },
+        {
+          protocol      = "tcp"
+          hostPort      = 4318
+          containerPort = 4318
         }
       ]
       logConfiguration = {

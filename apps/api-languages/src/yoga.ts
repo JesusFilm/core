@@ -8,6 +8,7 @@ import StatsD from 'hot-shots'
 
 import { prisma } from './lib/prisma'
 import { schema } from './schema'
+import { tracingPlugin } from './tracer'
 
 const dogStatsD = new StatsD({
   port: 8125 // DogStatsD port
@@ -18,6 +19,7 @@ export const cache = createInMemoryCache()
 export const yoga = createYoga({
   schema,
   plugins: [
+    tracingPlugin,
     useStatsD({
       client: dogStatsD,
       prefix: 'gql',
