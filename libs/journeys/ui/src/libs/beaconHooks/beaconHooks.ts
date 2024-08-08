@@ -12,17 +12,6 @@ export interface FormObject {
   email: string
 }
 
-// BeaconInfo contains all information about the beacon
-// add types as needed
-interface BeaconInfo {
-  beaconId: string
-  beaconName: string
-  status: {
-    isMounted: boolean
-    isOpened: boolean
-  }
-}
-
 declare global {
   interface Window {
     Beacon?: ((fn: 'init', id: string) => void) &
@@ -37,8 +26,7 @@ declare global {
       ((fn: 'search', value: string) => void) &
       ((fn: 'on', eventType: string, callback: () => void) => void) &
       ((fn: 'prefill', formObject: FormObject) => void) &
-      ((fn: 'navigate', route: string) => void) &
-      ((fn: 'info') => BeaconInfo | null)
+      ((fn: 'navigate', route: string) => void)
   }
 }
 
@@ -67,14 +55,4 @@ export function openBeacon(): void {
   if (window.Beacon != null) {
     window.Beacon('open')
   }
-}
-
-export function isBeaconOpen(): boolean {
-  if (window.Beacon != null) {
-    const info = window.Beacon('info')
-    if (info != null) {
-      return info.status.isOpened
-    }
-  }
-  return false
 }
