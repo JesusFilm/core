@@ -1,5 +1,5 @@
 import { styled } from '@mui/material/styles'
-import MuiTooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip'
+import MuiTooltip, { TooltipProps as MuiTooltipProps, tooltipClasses } from '@mui/material/Tooltip'
 import { ReactElement } from 'react'
 
 const StyledTooltip = styled(({ className, ...props}: TooltipProps) => (
@@ -18,10 +18,16 @@ const StyledTooltip = styled(({ className, ...props}: TooltipProps) => (
   }
 }))
 
+interface TooltipProps extends MuiTooltipProps {
+  offset?: string | number
+}
+
 export function Tooltip({ children, ...rest }: TooltipProps): ReactElement {
   return <StyledTooltip
+  arrow
   {...rest}
-  >
+  enterTouchDelay={0}
+ >
     {children}
   </StyledTooltip>
 }
