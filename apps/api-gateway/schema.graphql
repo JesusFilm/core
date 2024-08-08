@@ -1284,6 +1284,14 @@ enum JourneyVisitorSort
 scalar Json
   @join__type(graph: JOURNEYS)
 
+type Keyword
+  @join__type(graph: VIDEOS)
+{
+  id: ID!
+  value: String!
+  language: Language!
+}
+
 type Language
   @join__type(graph: JOURNEYS, key: "id")
   @join__type(graph: LANGUAGES, key: "id")
@@ -2976,6 +2984,7 @@ type Video
   id: ID!
   primaryLanguageId: ID!
   bibleCitations: [BibleCitation!]! @join__field(graph: VIDEOS)
+  keywords(languageId: ID): [Keyword!]! @join__field(graph: VIDEOS)
   label: VideoLabel! @join__field(graph: VIDEOS)
   title(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   snippet(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
