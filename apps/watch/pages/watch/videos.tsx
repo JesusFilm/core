@@ -73,7 +73,10 @@ const nextRouter: RouterProps = {
   }
 }
 
-function VideosPage({ initialApolloState, serverState }: VideosPageProps): ReactElement {
+function VideosPage({
+  initialApolloState,
+  serverState
+}: VideosPageProps): ReactElement {
   const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
 
   const client = useApolloClient({
