@@ -61,12 +61,12 @@ export const nextRouter: RouterProps = {
   }
 }
 
-function HomePage(): ReactElement {
+function HomePage({ serverState }: HomePageProps): ReactElement {
   const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
 
   return (
     // Don't pass in server state because it will be stale if any state set by url
-    <InstantSearchSSRProvider>
+    <InstantSearchSSRProvider {...serverState}>
       <InstantSearch
         insights
         searchClient={searchClient}
@@ -82,8 +82,10 @@ function HomePage(): ReactElement {
 }
 
 export const getStaticProps: GetStaticProps<HomePageProps> = async ({
-  locale
+  locale,
+  params
 }) => {
+  console.log('params ', params)
   const serverState = await getServerState(<HomePage />, {
     renderToString
   })

@@ -73,7 +73,7 @@ const nextRouter: RouterProps = {
   }
 }
 
-function VideosPage({ initialApolloState }: VideosPageProps): ReactElement {
+function VideosPage({ initialApolloState, serverState }: VideosPageProps): ReactElement {
   const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
 
   const client = useApolloClient({
@@ -82,7 +82,7 @@ function VideosPage({ initialApolloState }: VideosPageProps): ReactElement {
 
   return (
     // Don't pass in server state because it will be stale if any state set by url
-    <InstantSearchSSRProvider>
+    <InstantSearchSSRProvider {...serverState}>
       <ApolloProvider client={client}>
         <InstantSearch
           insights
