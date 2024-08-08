@@ -8,7 +8,7 @@ import { watchConfig } from '../../libs/storybook'
 import { StrategiesView } from './StrategiesView'
 import {
   emptyResultsHandler,
-  getStrategyCardDataHandlers
+  getStrategySectionHandlers
 } from './StrategySections/StrategySection/StrategySection.handlers'
 
 const StrategiesViewStory: Meta<typeof StrategiesView> = {
@@ -20,8 +20,8 @@ const StrategiesViewStory: Meta<typeof StrategiesView> = {
 type Story = StoryObj<ComponentProps<typeof StrategiesView> & { query: string }>
 
 const Template: Story = {
-  render: (args) => (
-    <InstantSearchTestWrapper indexName="new-index-name" query={args.query}>
+  render: () => (
+    <InstantSearchTestWrapper indexName="indexName">
       <StrategiesView />
     </InstantSearchTestWrapper>
   )
@@ -29,12 +29,9 @@ const Template: Story = {
 
 export const Default = {
   ...Template,
-  args: {
-    query: ''
-  },
   parameters: {
     msw: {
-      handlers: [getStrategyCardDataHandlers]
+      handlers: [getStrategySectionHandlers]
     }
   }
 }

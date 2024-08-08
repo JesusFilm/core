@@ -10,7 +10,7 @@ import { StrategyCard } from './StrategyCard'
 const StrategyCardStory: Meta<typeof StrategyCard> = {
   ...watchConfig,
   component: StrategyCard,
-  title: 'Watch/StrategySections/StrategyCard'
+  title: 'Watch/StrategiesView/StrategySections/StrategyCard'
 }
 
 const longDescription =

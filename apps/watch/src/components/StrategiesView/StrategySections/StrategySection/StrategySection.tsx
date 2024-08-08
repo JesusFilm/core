@@ -46,6 +46,7 @@ export function StrategySection({
 
   useEffect(() => {
     handleItemSearch(index, items.length > 0)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [items])
 
   const label = (hits[0]?.post_type_label as string) ?? ''
