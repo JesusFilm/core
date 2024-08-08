@@ -1,11 +1,11 @@
-import { gql, useMutation } from '@apollo/client'
+import { Reference, gql, useMutation } from '@apollo/client'
 import ButtonBase from '@mui/material/ButtonBase'
-import noop from 'lodash/noop'
 import Image from 'next/image'
 import { useTranslation } from 'next-i18next'
 import type { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
+import { BLOCK_FIELDS } from '@core/journeys/ui/block/blockFields'
 import { CARD_FIELDS } from '@core/journeys/ui/Card/cardFields'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -26,6 +26,14 @@ import type {
   CardPollCreate,
   CardPollCreateVariables
 } from '../../../../../../../../../__generated__/CardPollCreate'
+import {
+  CardPollDelete,
+  CardPollDeleteVariables
+} from '../../../../../../../../../__generated__/CardPollDelete'
+import {
+  CardPollRestore,
+  CardPollRestoreVariables
+} from '../../../../../../../../../__generated__/CardPollRestore'
 import {
   ThemeMode,
   ThemeName,
@@ -88,6 +96,100 @@ export const CARD_POLL_CREATE = gql`
   }
 `
 
+export const CARD_POLL_DELETE = gql`
+  mutation CardPollDelete(
+    $imageId: ID!
+    $subtitleId: ID!
+    $titleId: ID!
+    $radioQuestionId: ID!
+    $radioOption1Id: ID!
+    $radioOption2Id: ID!
+    $radioOption3Id: ID!
+    $radioOption4Id: ID!
+    $bodyId: ID!
+  ) {
+    bodyDelete: blockDelete(id: $bodyId) {
+      id
+      parentOrder
+    }
+    radioOption4Delete: blockDelete(id: $radioOption4Id) {
+      id
+      parentOrder
+    }
+    radioOption3Delete: blockDelete(id: $radioOption3Id) {
+      id
+      parentOrder
+    }
+    radioOption2Delete: blockDelete(id: $radioOption2Id) {
+      id
+      parentOrder
+    }
+    radioOption1Delete: blockDelete(id: $radioOption1Id) {
+      id
+      parentOrder
+    }
+    radioQuestionDelete: blockDelete(id: $radioQuestionId) {
+      id
+      parentOrder
+    }
+    titleDelete: blockDelete(id: $titleId) {
+      id
+      parentOrder
+    }
+    subtitleDelete: blockDelete(id: $subtitleId) {
+      id
+      parentOrder
+    }
+    imageDelete: blockDelete(id: $imageId) {
+      id
+      parentOrder
+    }
+  }
+`
+
+export const CARD_POLL_RESTORE = gql`
+  ${BLOCK_FIELDS}
+  mutation CardPollRestore(
+    $imageId: ID!
+    $subtitleId: ID!
+    $titleId: ID!
+    $radioQuestionId: ID!
+    $radioOption1Id: ID!
+    $radioOption2Id: ID!
+    $radioOption3Id: ID!
+    $radioOption4Id: ID!
+    $bodyId: ID!
+  ) {
+    imageRestore: blockRestore(id: $imageId) {
+      ...BlockFields
+    }
+    subtitleRestore: blockRestore(id: $subtitleId) {
+      ...BlockFields
+    }
+    titleRestore: blockRestore(id: $titleId) {
+      ...BlockFields
+    }
+    radioQuestionRestore: blockRestore(id: $radioQuestionId) {
+      ...BlockFields
+    }
+    radioOption1Restore: blockRestore(id: $radioOption1Id) {
+      ...BlockFields
+    }
+    radioOption2Restore: blockRestore(id: $radioOption2Id) {
+      ...BlockFields
+    }
+    radioOption3Restore: blockRestore(id: $radioOption3Id) {
+      ...BlockFields
+    }
+    radioOption4Restore: blockRestore(id: $radioOption4Id) {
+      ...BlockFields
+    }
+    bodyRestore: blockRestore(id: $bodyId) {
+      ...BlockFields
+    }
+  }
+`
+
 export function CardPoll(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
@@ -99,8 +201,15 @@ export function CardPoll(): ReactElement {
   const [cardPollCreate] = useMutation<CardPollCreate, CardPollCreateVariables>(
     CARD_POLL_CREATE
   )
+  const [cardPollDelete] = useMutation<CardPollDelete, CardPollDeleteVariables>(
+    CARD_POLL_DELETE
+  )
+  const [cardPollRestore] = useMutation<
+    CardPollRestore,
+    CardPollRestoreVariables
+  >(CARD_POLL_RESTORE)
 
-  const handleClick = async (): Promise<void> => {
+  function handleClick(): void {
     const cardId = selectedStep?.children[0].id
     if (journey == null || cardId == null || selectedStep == null) return
     const imageBlock: ImageBlock = {
@@ -200,6 +309,17 @@ export function CardPoll(): ReactElement {
       fullscreen: true,
       __typename: 'CardBlock'
     }
+    const createdBlocks = [
+      imageBlock,
+      subtitle,
+      title,
+      radioQuestionBlock,
+      radioOptionBlock1,
+      radioOptionBlock2,
+      radioOptionBlock3,
+      radioOptionBlock4,
+      body
+    ]
 
     add({
       parameters: { execute: {}, undo: {} },
@@ -285,64 +405,141 @@ export function CardPoll(): ReactElement {
             cardBlockUpdate: cardBlock
           },
           update(cache, { data }) {
-            if (data != null) {
-              cache.modify({
-                id: cache.identify({ __typename: 'Journey', id: journey.id }),
-                fields: {
-                  blocks(existingBlockRefs = []) {
-                    const NEW_BLOCK_FRAGMENT = gql`
-                      fragment NewBlock on Block {
-                        id
-                      }
-                    `
-                    return [
-                      ...existingBlockRefs,
-                      cache.writeFragment({
-                        data: data.image,
-                        fragment: NEW_BLOCK_FRAGMENT
-                      }),
-                      cache.writeFragment({
-                        data: data.subtitle,
-                        fragment: NEW_BLOCK_FRAGMENT
-                      }),
-                      cache.writeFragment({
-                        data: data.title,
-                        fragment: NEW_BLOCK_FRAGMENT
-                      }),
-                      cache.writeFragment({
-                        data: data.radioQuestion,
-                        fragment: NEW_BLOCK_FRAGMENT
-                      }),
-                      cache.writeFragment({
-                        data: data.radioOption1,
-                        fragment: NEW_BLOCK_FRAGMENT
-                      }),
-                      cache.writeFragment({
-                        data: data.radioOption2,
-                        fragment: NEW_BLOCK_FRAGMENT
-                      }),
-                      cache.writeFragment({
-                        data: data.radioOption3,
-                        fragment: NEW_BLOCK_FRAGMENT
-                      }),
-                      cache.writeFragment({
-                        data: data.radioOption4,
-                        fragment: NEW_BLOCK_FRAGMENT
-                      }),
-                      cache.writeFragment({
-                        data: data.body,
+            if (data == null) return
+            cache.modify({
+              id: cache.identify({ __typename: 'Journey', id: journey.id }),
+              fields: {
+                blocks(existingBlockRefs = []) {
+                  const NEW_BLOCK_FRAGMENT = gql`
+                    fragment NewBlock on Block {
+                      id
+                    }
+                  `
+                  const keys = Object.keys(data).filter(
+                    (key) => key !== 'cardBlockUpdate'
+                  )
+                  return [
+                    ...existingBlockRefs,
+                    ...keys.map((key) => {
+                      return cache.writeFragment({
+                        data: data[key],
                         fragment: NEW_BLOCK_FRAGMENT
                       })
-                    ]
-                  }
+                    })
+                  ]
                 }
-              })
-            }
+              }
+            })
           }
         })
       },
       undo() {
-        noop()
+        void cardPollDelete({
+          variables: {
+            imageId: imageBlock.id,
+            subtitleId: subtitle.id,
+            titleId: title.id,
+            radioQuestionId: radioQuestionBlock.id,
+            radioOption1Id: radioOptionBlock1.id,
+            radioOption2Id: radioOptionBlock2.id,
+            radioOption3Id: radioOptionBlock3.id,
+            radioOption4Id: radioOptionBlock4.id,
+            bodyId: body.id
+          },
+          optimisticResponse: {
+            imageDelete: [],
+            subtitleDelete: [],
+            titleDelete: [],
+            radioQuestionDelete: [],
+            radioOption1Delete: [],
+            radioOption2Delete: [],
+            radioOption3Delete: [],
+            radioOption4Delete: [],
+            bodyDelete: []
+          },
+          update(cache, { data }) {
+            if (data == null) return
+            createdBlocks.forEach((block) => {
+              cache.modify({
+                id: cache.identify({ __typename: 'Journey', id: journey.id }),
+                fields: {
+                  blocks(existingBlockRefs: Reference[], { readField }) {
+                    return existingBlockRefs.filter(
+                      (ref) => readField('id', ref) !== block.id
+                    )
+                  }
+                }
+              })
+              cache.evict({
+                id: cache.identify({
+                  __typename: block.__typename,
+                  id: block.id
+                })
+              })
+              cache.gc()
+            })
+          }
+        })
+      },
+      redo() {
+        void cardPollRestore({
+          variables: {
+            imageId: imageBlock.id,
+            subtitleId: subtitle.id,
+            titleId: title.id,
+            radioQuestionId: radioQuestionBlock.id,
+            radioOption1Id: radioOptionBlock1.id,
+            radioOption2Id: radioOptionBlock2.id,
+            radioOption3Id: radioOptionBlock3.id,
+            radioOption4Id: radioOptionBlock4.id,
+            bodyId: body.id
+          },
+          optimisticResponse: {
+            imageRestore: [imageBlock],
+            subtitleRestore: [subtitle],
+            titleRestore: [title],
+            radioQuestionRestore: [radioQuestionBlock],
+            radioOption1Restore: [radioOptionBlock1],
+            radioOption2Restore: [radioOptionBlock2],
+            radioOption3Restore: [radioOptionBlock3],
+            radioOption4Restore: [radioOptionBlock4],
+            bodyRestore: [body]
+          },
+          update(cache, { data }) {
+            if (data == null) return
+            const keys = Object.keys(data)
+            keys.forEach((key) => {
+              data[key].forEach((block) => {
+                cache.modify({
+                  id: cache.identify({ __typename: 'Journey', id: journey.id }),
+                  fields: {
+                    blocks(existingBlockRefs: Reference[], { readField }) {
+                      const NEW_BLOCK_FRAGMENT = gql`
+                        fragment NewBlock on Block {
+                          id
+                        }
+                      `
+                      if (
+                        existingBlockRefs.some(
+                          (ref) => readField('id', ref) === block.id
+                        )
+                      ) {
+                        return existingBlockRefs
+                      }
+                      return [
+                        ...existingBlockRefs,
+                        cache.writeFragment({
+                          data: block,
+                          fragment: NEW_BLOCK_FRAGMENT
+                        })
+                      ]
+                    }
+                  }
+                })
+              })
+            })
+          }
+        })
       }
     })
   }
@@ -356,7 +553,6 @@ export function CardPoll(): ReactElement {
         src={cardPollImage}
         alt="Card Poll Template"
         draggable={false}
-        style={{ backgroundColor: 'red' }}
       />
     </ButtonBase>
   )
