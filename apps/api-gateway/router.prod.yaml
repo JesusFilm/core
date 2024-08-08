@@ -43,10 +43,20 @@ telemetry:
     spans:
       mode: spec_compliant
   exporters:
+    metrics:
+      common:
+        service_name: api-gateway
+      otlp:
+        enabled: true
+        temporality: delta
+    tracing:
+      common:
+        service_name: api-gateway
+      otlp:
+        enabled: true
     logging:
       common:
-        resource:
-          service.name: api-gateway
+        service_name: api-gateway
       stdout:
         enabled: true
       experimental_when_header:
@@ -54,6 +64,3 @@ telemetry:
           match: .*
           headers: true
           body: true
-    tracing:
-      datadog:
-        enabled: true
