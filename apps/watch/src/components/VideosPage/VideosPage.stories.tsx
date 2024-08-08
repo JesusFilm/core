@@ -6,7 +6,10 @@ import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearc
 import { watchConfig } from '../../libs/storybook'
 
 import { VideosPage } from './VideosPage'
-import { emptyResultsHandler, getAlgoliaVideosHandlers } from './VideosPage.handlers'
+import {
+  emptyResultsHandler,
+  getAlgoliaVideosHandlers
+} from './VideosPage.handlers'
 
 const VideosStory: Meta<typeof VideosPage> = {
   ...watchConfig,

@@ -9,7 +9,6 @@ import { getAlgoliaVideosHandlers } from '../VideosPage/VideosPage.handlers'
 
 import { VideoCard } from '.'
 
-
 const VideoCardStory: Meta<typeof VideoCard> = {
   ...watchConfig,
   component: VideoCard,
@@ -54,7 +53,7 @@ const Template: StoryObj<typeof VideoCard> = {
   }
 }
 
-export const Expanded = { 
+export const Expanded = {
   ...Template,
   parameters: {
     msw: {
@@ -63,14 +62,14 @@ export const Expanded = {
   }
 }
 
-export const Contained = { 
-  ...Template, 
+export const Contained = {
+  ...Template,
   args: { variant: 'contained' },
   parameters: {
     msw: {
       handlers: [getAlgoliaVideosHandlers]
     }
-  } 
+  }
 }
 
 export default VideoCardStory

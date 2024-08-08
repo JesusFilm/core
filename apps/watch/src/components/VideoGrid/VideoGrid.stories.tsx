@@ -10,7 +10,6 @@ import { videos } from '../Videos/__generated__/testData'
 
 import { VideoGrid } from './VideoGrid'
 
-
 const VideoGridStory: Meta<typeof VideoGrid> = {
   ...watchConfig,
   component: VideoGrid,
@@ -52,7 +51,7 @@ export const Pagination = {
   args: {
     videos: videos.slice(0, 3),
     showLoadMore: true,
-    showMore: noop,
+    showMore: noop
   }
 }
 
