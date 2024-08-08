@@ -4,8 +4,10 @@ import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearc
 
 import { watchConfig } from '../../libs/storybook'
 import { videos } from '../Videos/__generated__/testData'
+import { emptyResultsHandler, getAlgoliaVideosHandlers } from '../VideosPage/VideosPage.handlers'
 
 import { WatchHomePage } from '.'
+
 
 const WatchHomePageStory: Meta<typeof WatchHomePage> = {
   ...watchConfig,
@@ -25,6 +27,24 @@ const Template: StoryObj<typeof WatchHomePage> = {
   )
 }
 
-export const Default = { ...Template, args: { videos } }
+export const Default = { 
+  ...Template, 
+  args: { videos },
+  parameters: {
+    msw: {
+      handlers: [getAlgoliaVideosHandlers]
+    }
+  } 
+}
+
+export const NoResultsFound = { 
+  ...Template, 
+  args: { videos },
+  parameters: {
+    msw: {
+      handlers: [emptyResultsHandler]
+    }
+  } 
+}
 
 export default WatchHomePageStory
