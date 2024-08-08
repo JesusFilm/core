@@ -24,7 +24,7 @@ const Template: StoryObj<typeof VideoContainerPage> = {
   render: () => (
     <MockedProvider mocks={[getVideoChildrenMock]}>
       <VideoProvider value={{ content: videos[0] }}>
-        <InstantSearchTestWrapper indexName="video-variants-stg">
+        <InstantSearchTestWrapper>
           <VideoContainerPage />
         </InstantSearchTestWrapper>
       </VideoProvider>

@@ -19,7 +19,7 @@ const VideoGridStory: Meta<typeof VideoGrid> = {
 const Template: StoryObj<typeof VideoGrid> = {
   render: (args) => {
     return (
-      <InstantSearchTestWrapper indexName="video-variants-stg">
+      <InstantSearchTestWrapper>
         <Stack spacing={2}>
           <Box>
             <VideoGrid {...args} />

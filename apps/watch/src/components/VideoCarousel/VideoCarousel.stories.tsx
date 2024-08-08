@@ -27,7 +27,7 @@ const VideoCarouselStory: Meta<typeof VideoCarousel> = {
 const Template: StoryObj<typeof VideoCarousel> = {
   render: (args) => {
     return (
-      <InstantSearchTestWrapper indexName="video-variants-stg">
+      <InstantSearchTestWrapper>
         <ThemeProvider
           nested
           themeName={ThemeName.website}

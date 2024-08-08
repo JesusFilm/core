@@ -21,7 +21,7 @@ type Story = StoryObj<ComponentProps<typeof StrategySection>>
 
 const Template: Story = {
   render: (args) => (
-    <InstantSearchTestWrapper indexName="indexName">
+    <InstantSearchTestWrapper>
       <Box sx={{ display: 'none' }}>
         <SearchBar />
       </Box>

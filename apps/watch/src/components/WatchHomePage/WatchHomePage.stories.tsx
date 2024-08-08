@@ -21,7 +21,7 @@ const WatchHomePageStory: Meta<typeof WatchHomePage> = {
 
 const Template: StoryObj<typeof WatchHomePage> = {
   render: ({ ...args }) => (
-    <InstantSearchTestWrapper indexName="video-variants-stg">
+    <InstantSearchTestWrapper>
       <WatchHomePage {...args} />
     </InstantSearchTestWrapper>
   )

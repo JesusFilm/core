@@ -19,7 +19,7 @@ const VideoCardStory: Meta<typeof VideoCard> = {
 const Template: StoryObj<typeof VideoCard> = {
   render: (args) => {
     return (
-      <InstantSearchTestWrapper indexName="video-variants-stg">
+      <InstantSearchTestWrapper>
         <Grid container spacing={2} rowSpacing={8}>
           <Grid item xs={12} md={4} xl={3}>
             <VideoCard video={videos[0]} {...args} />
