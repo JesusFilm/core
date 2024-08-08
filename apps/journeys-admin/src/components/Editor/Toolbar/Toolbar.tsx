@@ -59,7 +59,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
     state: { showAnalytics },
     dispatch
   } = useEditor()
-  const { commands } = useFlags()
+  const { commands, editorAnalytics } = useFlags()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
@@ -284,22 +284,24 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
           }}
         />
       </Box>
-      <NotificationPopover
-        title={t('New Feature Feedback')}
-        description={t(
-          'We are collecting feedback on the new analytics new feature. Please take a moment to share your thoughts.'
-        )}
-        open={Boolean(anchorEl)}
-        currentRef={anchorEl}
-        pointerPosition={smUp ? '92%' : '94%'}
-        handleClose={() => setAnchorEl(null)}
-        popoverAction={{
-          label: t('Feedback'),
-          handleClick: () => {
-            openBeacon()
-          }
-        }}
-      />
+      {editorAnalytics && (
+        <NotificationPopover
+          title={t('New Feature Feedback')}
+          description={t(
+            'We are collecting feedback on the new analytics new feature. Please take a moment to share your thoughts.'
+          )}
+          open={Boolean(anchorEl)}
+          currentRef={anchorEl}
+          pointerPosition={smUp ? '92%' : '94%'}
+          handleClose={() => setAnchorEl(null)}
+          popoverAction={{
+            label: t('Feedback'),
+            handleClick: () => {
+              openBeacon()
+            }
+          }}
+        />
+      )}
     </Stack>
   )
 }

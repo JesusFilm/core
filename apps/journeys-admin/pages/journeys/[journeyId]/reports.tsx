@@ -60,6 +60,13 @@ function JourneyReportsPage({ flags }): ReactElement {
                 }}
               />
             </Box>
+          </Stack>
+        }
+        mainBodyPadding={false}
+      >
+        {flags.editorAnalytics === true ? (
+          <>
+            <PlausibleEmbedDashboard />
             <NotificationPopover
               title={t('New Feature Feedback')}
               description={t(
@@ -79,13 +86,6 @@ function JourneyReportsPage({ flags }): ReactElement {
                 }
               }}
             />
-          </Stack>
-        }
-        mainBodyPadding={false}
-      >
-        {flags.editorAnalytics === true ? (
-          <>
-            <PlausibleEmbedDashboard />
           </>
         ) : (
           <MemoizedDynamicReport
