@@ -12,13 +12,15 @@ import { Prisma } from '.prisma/api-languages-client'
 import type PrismaTypes from '../__generated__/pothos-types'
 import { prisma } from '../lib/prisma'
 
+const PrismaPlugin = pluginName
+
 export const builder = new SchemaBuilder<{
   PrismaTypes: PrismaTypes
   Scalars: {
     ID: { Input: string; Output: number | string }
   }
 }>({
-  plugins: [TracingPlugin, pluginName, DirectivesPlugin, FederationPlugin],
+  plugins: [TracingPlugin, PrismaPlugin, DirectivesPlugin, FederationPlugin],
   prisma: {
     client: prisma,
     dmmf: Prisma.dmmf,
