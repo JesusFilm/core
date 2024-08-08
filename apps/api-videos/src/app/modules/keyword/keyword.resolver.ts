@@ -4,7 +4,6 @@ import { Video } from '.prisma/api-videos-client'
 
 import { PrismaService } from '../../lib/prisma.service'
 
-
 @Resolver('Keyword')
 export class KeywordResolver {
   constructor(private readonly prismaService: PrismaService) {}
