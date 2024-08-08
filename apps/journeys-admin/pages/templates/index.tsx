@@ -23,6 +23,7 @@ import {
 } from '../../__generated__/GetLanguages'
 import { GetMe } from '../../__generated__/GetMe'
 import { GetTags } from '../../__generated__/GetTags'
+import { HelpScoutBeacon } from '../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { GET_ME } from '../../src/components/PageWrapper/NavigationDrawer/UserNavigation'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
@@ -41,6 +42,8 @@ function TemplateIndexPage(): ReactElement {
     void query.refetch()
   }, [user.id, query])
 
+  const userSignedIn = user?.id != null
+
   return (
     <>
       <NextSeo title={t('Journey Templates')} />
@@ -49,10 +52,25 @@ function TemplateIndexPage(): ReactElement {
         user={user}
         mainBodyPadding={false}
         showMainHeader={false}
-        showAppHeader={user?.id != null}
-        showNavBar={user?.id != null}
+        showAppHeader={userSignedIn}
+        showNavBar={userSignedIn}
         background="background.paper"
       >
+        <Box
+          sx={{
+            position: 'absolute',
+            right: 16,
+            top: 8,
+            display: { xs: userSignedIn ? 'none' : 'block', md: 'block' }
+          }}
+        >
+          <HelpScoutBeacon
+            userInfo={{
+              name: user?.displayName ?? '',
+              email: user?.email ?? ''
+            }}
+          />
+        </Box>
         <Box
           sx={{
             maxWidth: { md: '90vw' },

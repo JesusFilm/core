@@ -1,3 +1,5 @@
+import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
 import {
   AuthAction,
@@ -7,12 +9,13 @@ import {
 } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import type { ReactElement } from 'react'
+import { ReactElement } from 'react'
 
-import type { GetAdminJourney } from '../../../__generated__/GetAdminJourney'
+import { GetAdminJourney } from '../../../__generated__/GetAdminJourney'
 import { JourneysReportType } from '../../../__generated__/globalTypes'
-import type { UserJourneyOpen } from '../../../__generated__/UserJourneyOpen'
+import { UserJourneyOpen } from '../../../__generated__/UserJourneyOpen'
 import { MemoizedDynamicReport } from '../../../src/components/DynamicPowerBiReport'
+import { HelpScoutBeacon } from '../../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../../src/components/PageWrapper'
 import { PlausibleEmbedDashboard } from '../../../src/components/PlausibleEmbedDashboard'
 import { ReportsNavigation } from '../../../src/components/ReportsNavigation'
@@ -34,11 +37,23 @@ function JourneyReportsPage({ flags }): ReactElement {
         user={user}
         backHref={`/journeys/${journeyId}`}
         mainHeaderChildren={
-          <ReportsNavigation
-            destination="visitor"
-            journeyId={journeyId}
-            helpScoutGap
-          />
+          <Stack
+            direction="row"
+            justifyContent="flex-end"
+            flexGrow={1}
+            alignItems="center"
+            gap={3}
+          >
+            <ReportsNavigation destination="visitor" journeyId={journeyId} />
+            <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+              <HelpScoutBeacon
+                userInfo={{
+                  name: user?.displayName ?? '',
+                  email: user?.email ?? ''
+                }}
+              />
+            </Box>
+          </Stack>
         }
         mainBodyPadding={false}
       >
@@ -76,7 +91,7 @@ export const getServerSideProps = withUserTokenSSR({
         id: query?.journeyId
       }
     })
-  } catch (error) {
+  } catch (_) {
     return {
       redirect: {
         permanent: false,

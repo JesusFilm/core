@@ -29,6 +29,7 @@ function TeamsNewPage(): ReactElement {
       <OnboardingPageWrapper
         title={t('Create Your Workspace')}
         emailSubject={t('A question about creating a team for the first time.')}
+        user={user}
       >
         <TeamOnboarding user={user} />
       </OnboardingPageWrapper>

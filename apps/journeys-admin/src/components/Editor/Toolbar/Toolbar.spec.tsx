@@ -53,14 +53,21 @@ describe('Toolbar', () => {
   }
 
   it('should render NextSteps logo on Toolbar', () => {
-    const { getByAltText } = render(toolbar(defaultJourney))
-    expect(getByAltText('Next Steps')).toBeInTheDocument() // NextSteps logo
+    render(toolbar(defaultJourney))
+    expect(screen.getByAltText('Next Steps')).toBeInTheDocument() // NextSteps logo
+  })
+
+  it('should render help scout beacon', () => {
+    render(toolbar(defaultJourney))
+    expect(screen.getByTestId('HelpScoutBeaconIconButton')).toBeInTheDocument()
   })
 
   it('should render title & description on Toolbar', () => {
-    const { getByText } = render(toolbar(defaultJourney))
-    expect(getByText('My Awesome Journey Title')).toBeInTheDocument()
-    expect(getByText('My Awesome Journey Description')).toBeInTheDocument()
+    render(toolbar(defaultJourney))
+    expect(screen.getByText('My Awesome Journey Title')).toBeInTheDocument()
+    expect(
+      screen.getByText('My Awesome Journey Description')
+    ).toBeInTheDocument()
   })
 
   it('should open the title dialog when selected', async () => {
@@ -73,51 +80,53 @@ describe('Toolbar', () => {
   })
 
   it('should render items stack on Toolbar', () => {
-    const { getByTestId } = render(toolbar(defaultJourney))
-    expect(getByTestId('ItemsStack')).toBeInTheDocument()
+    render(toolbar(defaultJourney))
+    expect(screen.getByTestId('ItemsStack')).toBeInTheDocument()
   })
 
   it('should render menu button on Toolbar', () => {
-    const { getByTestId } = render(toolbar(defaultJourney))
-    expect(getByTestId('ToolbarMenuButton')).toBeInTheDocument()
-    expect(getByTestId('MoreIcon')).toBeInTheDocument()
+    render(toolbar(defaultJourney))
+    expect(screen.getByTestId('ToolbarMenuButton')).toBeInTheDocument()
+    expect(screen.getByTestId('MoreIcon')).toBeInTheDocument()
   })
 
   it('should render all journeys button', () => {
-    const { getByTestId } = render(toolbar(defaultJourney))
-    expect(getByTestId('ToolbarBackButton')).toHaveAttribute('href', '/')
-    expect(getByTestId('FormatListBulletedIcon')).toBeInTheDocument()
+    render(toolbar(defaultJourney))
+    expect(screen.getByTestId('ToolbarBackButton')).toHaveAttribute('href', '/')
+    expect(screen.getByTestId('FormatListBulletedIcon')).toBeInTheDocument()
   })
 
   it('should render journeys tooltip on hover', async () => {
-    const { getByTestId, getByText } = render(toolbar(defaultJourney))
-    fireEvent.mouseOver(getByTestId('ToolbarBackButton'))
+    render(toolbar(defaultJourney))
+    fireEvent.mouseOver(screen.getByTestId('ToolbarBackButton'))
     await waitFor(() => {
-      expect(getByText('See all journeys')).toBeInTheDocument()
+      expect(screen.getByText('See all journeys')).toBeInTheDocument()
     })
   })
 
   it('should render journey image', () => {
-    const { getByAltText, queryByTestId } = render(toolbar(socialImageJourney))
+    render(toolbar(socialImageJourney))
 
-    expect(getByAltText('random image from unsplash')).toBeInTheDocument()
-    expect(queryByTestId('ThumbsUpIcon')).not.toBeInTheDocument()
+    expect(
+      screen.getByAltText('random image from unsplash')
+    ).toBeInTheDocument()
+    expect(screen.queryByTestId('ThumbsUpIcon')).not.toBeInTheDocument()
   })
 
   it('should open the tooltip when the image is hovered over', async () => {
-    const { getByTestId, getByText } = render(toolbar(defaultJourney))
-    fireEvent.mouseOver(getByTestId('ToolbarSocialImage'))
+    render(toolbar(defaultJourney))
+    fireEvent.mouseOver(screen.getByTestId('ToolbarSocialImage'))
     await waitFor(() => {
-      expect(getByText('Social Image')).toBeInTheDocument()
+      expect(screen.getByText('Social Image')).toBeInTheDocument()
     })
   })
 
   it('should open the social preview when the image is clicked', () => {
-    const { getByText, getByTestId } = render(toolbar(socialImageJourney))
+    render(toolbar(socialImageJourney))
 
-    expect(getByText('activeSlide: 0')).toBeInTheDocument()
-    fireEvent.click(getByTestId('ToolbarSocialImage'))
-    expect(getByText('activeSlide: 1')).toBeInTheDocument()
+    expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('ToolbarSocialImage'))
+    expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
   })
 
   function toolbar(journey): ReactElement {

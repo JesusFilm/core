@@ -1,7 +1,8 @@
+import { User } from 'next-firebase-auth'
 import { ReactElement } from 'react'
 import { HotkeysProvider } from 'react-hotkeys-hook'
 
-import type { TreeBlock } from '@core/journeys/ui/block'
+import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { transformer } from '@core/journeys/ui/transformer'
@@ -19,6 +20,7 @@ interface EditorProps {
   journey?: Journey
   selectedStepId?: string
   initialState?: Partial<EditorState>
+  user?: User
 }
 
 /**
@@ -29,7 +31,8 @@ interface EditorProps {
 export function Editor({
   journey,
   selectedStepId,
-  initialState
+  initialState,
+  user
 }: EditorProps): ReactElement {
   const steps =
     journey != null
@@ -52,7 +55,7 @@ export function Editor({
       >
         <HotkeysProvider>
           {commands && <Hotkeys />}
-          <Toolbar />
+          <Toolbar user={user} />
           <Slider />
           <Fab variant="mobile" />
         </HotkeysProvider>

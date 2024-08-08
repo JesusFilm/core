@@ -340,14 +340,18 @@ describe('BlockResolver', () => {
       )
     })
 
-    it('should throw error if block does not have a parent order', async () => {
-      prismaService.block.findUnique.mockResolvedValue({
+    it('should only return the updated block without its siblings if parent order is null', async () => {
+      const blockWithoutParentOrder = {
         ...blockWithUserTeam,
         parentOrder: null
-      })
-      await expect(resolver.blockRestore('1', ability)).rejects.toThrow(
-        'updated block has no parent order'
-      )
+      }
+
+      prismaService.block.findUnique.mockResolvedValue(blockWithoutParentOrder)
+      prismaService.block.update.mockResolvedValue(blockWithoutParentOrder)
+
+      expect(await resolver.blockRestore('1', ability)).toEqual([
+        blockWithoutParentOrder
+      ])
     })
 
     it('should throw error if user does not have the correct permissions', async () => {

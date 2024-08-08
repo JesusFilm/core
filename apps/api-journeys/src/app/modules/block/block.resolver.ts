@@ -11,7 +11,7 @@ import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'
 
-import { BlockService } from './block.service'
+import { BlockService, BlockWithAction } from './block.service'
 
 @Resolver('Block')
 export class BlockResolver {
@@ -215,6 +215,7 @@ export class BlockResolver {
       })
 
     return await this.prismaService.$transaction(async (tx) => {
+      let res: BlockWithAction[] | undefined
       const updatedBlock = await tx.block.update({
         where: { id },
         data: {
@@ -224,16 +225,13 @@ export class BlockResolver {
           action: true
         }
       })
-      if (updatedBlock?.parentOrder == null)
-        throw new GraphQLError('updated block has no parent order', {
-          extensions: { code: 'INTERNAL_SERVER_ERROR' }
-        })
+      if (updatedBlock?.parentOrder != null)
+        res = await this.blockService.reorderBlock(
+          updatedBlock,
+          updatedBlock.parentOrder,
+          tx
+        )
 
-      const updatedBlockAndSiblings = await this.blockService.reorderBlock(
-        updatedBlock,
-        updatedBlock.parentOrder,
-        tx
-      )
       const blocks = await tx.block.findMany({
         where: {
           journeyId: updatedBlock.journeyId,
@@ -247,7 +245,9 @@ export class BlockResolver {
         updatedBlock.id,
         blocks
       )
-      return [...updatedBlockAndSiblings, ...children]
+
+      if (res == null) res = [updatedBlock]
+      return [...res, ...children]
     })
   }
 }

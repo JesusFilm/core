@@ -13,6 +13,7 @@ export function Items(): ReactElement {
       flexDirection="row"
       gap={5}
       data-testid="ItemsStack"
+      alignItems="center"
     >
       <AnalyticsItem variant="icon-button" />
       <StrategyItem variant="button" />

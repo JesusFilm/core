@@ -9,9 +9,9 @@ import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
+import { User } from 'next-firebase-auth'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
-// eslint-disable-next-line no-restricted-imports
-import { useTranslation } from 'react-i18next'
 
 import {
   ActiveContent,
@@ -24,6 +24,7 @@ import { useFlags } from '@core/shared/ui/FlagsProvider'
 import ThumbsUpIcon from '@core/shared/ui/icons/ThumbsUp'
 
 import logo from '../../../../public/taskbar-icon.svg'
+import { HelpScoutBeacon } from '../../HelpScoutBeacon'
 import { EDIT_TOOLBAR_HEIGHT } from '../constants'
 
 import { Items } from './Items'
@@ -39,7 +40,11 @@ const TitleDescriptionDialog = dynamic(
   { ssr: false }
 )
 
-export function Toolbar(): ReactElement {
+interface ToolbarProps {
+  user?: User
+}
+
+export function Toolbar({ user }: ToolbarProps): ReactElement {
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
@@ -237,7 +242,19 @@ export function Toolbar(): ReactElement {
           <Items />
         </>
       )}
-      <Menu />
+      <Menu user={user} />
+      <Box
+        sx={{
+          display: { xs: 'none', sm: 'block' }
+        }}
+      >
+        <HelpScoutBeacon
+          userInfo={{
+            name: user?.displayName ?? '',
+            email: user?.email ?? ''
+          }}
+        />
+      </Box>
     </Stack>
   )
 }

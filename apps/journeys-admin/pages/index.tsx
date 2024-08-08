@@ -1,4 +1,5 @@
 import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
 import {
   AuthAction,
@@ -22,6 +23,7 @@ import {
   UpdateLastActiveTeamId,
   UpdateLastActiveTeamIdVariables
 } from '../__generated__/UpdateLastActiveTeamId'
+import { HelpScoutBeacon } from '../src/components/HelpScoutBeacon'
 import { JourneyList } from '../src/components/JourneyList'
 import { OnboardingPanel } from '../src/components/OnboardingPanel'
 import { PageWrapper } from '../src/components/PageWrapper'
@@ -62,7 +64,19 @@ function IndexPage(): ReactElement {
           </Stack>
         }
         sidePanelChildren={<OnboardingPanel />}
-        sidePanelTitle={t('Create a New Journey')}
+        sidePanelTitle={
+          <>
+            <Typography variant="subtitle1">
+              {t('Create a New Journey')}
+            </Typography>
+            <HelpScoutBeacon
+              userInfo={{
+                name: user?.displayName ?? '',
+                email: user?.email ?? ''
+              }}
+            />
+          </>
+        }
       >
         <JourneyList user={user} />
       </PageWrapper>
