@@ -1,15 +1,14 @@
 import SchemaBuilder from '@pothos/core'
-import AuthzPlugin from '@pothos/plugin-authz'
 import DirectivesPlugin from '@pothos/plugin-directives'
 import ErrorsPlugin from '@pothos/plugin-errors'
 import FederationPlugin from '@pothos/plugin-federation'
 import pluginName from '@pothos/plugin-prisma'
+import ScopeAuthPlugin from '@pothos/plugin-scope-auth'
 
 import { Prisma, users as User } from '.prisma/api-analytics-client'
 
 import type PrismaTypes from '../__generated__/pothos-types'
 import { prisma } from '../lib/prisma'
-import { rules } from '../lib/rules'
 
 const PrismaPlugin = pluginName
 
@@ -20,7 +19,6 @@ export interface Context {
 
 export const builder = new SchemaBuilder<{
   Context: Context
-  AuthZRule: keyof typeof rules
   PrismaTypes: PrismaTypes
   Scalars: {
     ID: {
@@ -28,14 +26,25 @@ export const builder = new SchemaBuilder<{
       Output: string | number | bigint
     }
   }
+  AuthScopes: {
+    IsAuthenticated: boolean
+  }
 }>({
   plugins: [
-    AuthzPlugin,
+    ScopeAuthPlugin,
     ErrorsPlugin,
     DirectivesPlugin,
     PrismaPlugin,
     FederationPlugin
   ],
+  scopeAuth: {
+    authorizeOnSubscribe: true,
+    authScopes(context) {
+      return {
+        IsAuthenticated: context.currentUser != null
+      }
+    }
+  },
   prisma: {
     client: prisma,
     dmmf: Prisma.dmmf,

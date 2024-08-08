@@ -16,8 +16,8 @@ builder.mutationType({
   fields: (t) => ({
     siteCreate: t.prismaField({
       type: 'sites',
-      authz: {
-        rules: ['IsAuthenticated']
+      authScopes: {
+        IsAuthenticated: true
       },
       errors: {
         types: [Error]
