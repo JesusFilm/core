@@ -173,39 +173,11 @@ module "datadog_aurora" {
   subnet_id          = module.prod.vpc.public_subnets[0]
   security_group_ids = [module.prod.private_rds_security_group_id]
   rds_instances = [{
-    host             = module.api-journeys.database.aws_rds_cluster.endpoint
-    port             = module.api-journeys.database.aws_rds_cluster.port
-    username         = module.api-journeys.database.aws_rds_cluster.master_username
-    password         = module.api-journeys.database.random_password.result
-    db_instance_name = module.api-journeys.database.aws_rds_cluster.id
-    },
-    {
-      host             = module.api-tags.database.aws_rds_cluster.endpoint
-      port             = module.api-tags.database.aws_rds_cluster.port
-      username         = module.api-tags.database.aws_rds_cluster.master_username
-      password         = module.api-tags.database.random_password.result
-      db_instance_name = module.api-tags.database.aws_rds_cluster.id
-    },
-    {
-      host             = module.api-users.database.aws_rds_cluster.endpoint
-      port             = module.api-users.database.aws_rds_cluster.port
-      username         = module.api-users.database.aws_rds_cluster.master_username
-      password         = module.api-users.database.random_password.result
-      db_instance_name = module.api-users.database.aws_rds_cluster.id
-    },
-    {
-      host             = module.api-media.database.aws_rds_cluster.endpoint
-      port             = module.api-media.database.aws_rds_cluster.port
-      username         = module.api-media.database.aws_rds_cluster.master_username
-      password         = module.api-media.database.random_password.result
-      db_instance_name = module.api-media.database.aws_rds_cluster.id
-    },
-    {
-      host             = module.api-languages.database.aws_rds_cluster.endpoint
-      port             = module.api-languages.database.aws_rds_cluster.port
-      username         = module.api-languages.database.aws_rds_cluster.master_username
-      password         = module.api-languages.database.random_password.result
-      db_instance_name = module.api-languages.database.aws_rds_cluster.id
+    host             = module.postgresql.aws_rds_cluster.endpoint
+    port             = module.postgresql.aws_rds_cluster.port
+    username         = module.postgresql.aws_rds_cluster.master_username
+    password         = module.postgresql.random_password.result
+    db_instance_name = module.postgresql.aws_rds_cluster.id
   }]
 }
 
