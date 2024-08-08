@@ -215,7 +215,6 @@ export class BlockResolver {
       })
 
     return await this.prismaService.$transaction(async (tx) => {
-      let res: BlockWithAction[] | undefined
       const updatedBlock = await tx.block.update({
         where: { id },
         data: {
@@ -225,8 +224,9 @@ export class BlockResolver {
           action: true
         }
       })
+      let siblings: BlockWithAction[] = [updatedBlock]
       if (updatedBlock?.parentOrder != null)
-        res = await this.blockService.reorderBlock(
+        siblings = await this.blockService.reorderBlock(
           updatedBlock,
           updatedBlock.parentOrder,
           tx
@@ -246,8 +246,7 @@ export class BlockResolver {
         blocks
       )
 
-      if (res == null) res = [updatedBlock]
-      return [...res, ...children]
+      return [...siblings, ...children]
     })
   }
 }
