@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { TypographyBlockCreateInput, TypographyAlign, TypographyColor, TypographyVariant } from "./globalTypes";
+import { TypographyBlockCreateInput, TypographyAlign, TypographyVariant } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: TypographyBlockCreate
@@ -15,7 +15,7 @@ export interface TypographyBlockCreate_typographyBlockCreate {
   parentBlockId: string | null;
   parentOrder: number | null;
   align: TypographyAlign | null;
-  color: TypographyColor | null;
+  customColor: string | null;
   content: string;
   variant: TypographyVariant | null;
 }

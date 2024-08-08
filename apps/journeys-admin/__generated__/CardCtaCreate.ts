@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ImageBlockCreateInput, TypographyBlockCreateInput, ButtonBlockCreateInput, ButtonBlockUpdateInput, IconBlockCreateInput, CardBlockUpdateInput, TypographyAlign, TypographyColor, TypographyVariant, ButtonVariant, ButtonColor, ButtonSize, IconName, IconSize, IconColor, ThemeMode, ThemeName } from "./globalTypes";
+import { ImageBlockCreateInput, TypographyBlockCreateInput, ButtonBlockCreateInput, ButtonBlockUpdateInput, IconBlockCreateInput, CardBlockUpdateInput, TypographyAlign, TypographyVariant, ButtonVariant, ButtonColor, ButtonSize, IconName, IconSize, IconColor, ThemeMode, ThemeName } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CardCtaCreate
@@ -31,7 +31,7 @@ export interface CardCtaCreate_subtitle {
   parentBlockId: string | null;
   parentOrder: number | null;
   align: TypographyAlign | null;
-  color: TypographyColor | null;
+  customColor: string | null;
   content: string;
   variant: TypographyVariant | null;
 }
@@ -42,7 +42,7 @@ export interface CardCtaCreate_title {
   parentBlockId: string | null;
   parentOrder: number | null;
   align: TypographyAlign | null;
-  color: TypographyColor | null;
+  customColor: string | null;
   content: string;
   variant: TypographyVariant | null;
 }

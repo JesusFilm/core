@@ -12,7 +12,7 @@ import { TypographyColor } from "./globalTypes";
 export interface TypographyBlockUpdateColor_typographyBlockUpdate {
   __typename: "TypographyBlock";
   id: string;
-  color: TypographyColor | null;
+  customColor: string | null;
 }
 
 export interface TypographyBlockUpdateColor {

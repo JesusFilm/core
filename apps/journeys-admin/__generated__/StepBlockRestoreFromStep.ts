@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { StepBlockUpdateInput, ButtonVariant, ButtonColor, ButtonSize, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
+import { StepBlockUpdateInput, ButtonVariant, ButtonColor, ButtonSize, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: StepBlockRestoreFromStep
@@ -262,7 +262,7 @@ export interface StepBlockRestoreFromStep_blockRestore_TypographyBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   align: TypographyAlign | null;
-  color: TypographyColor | null;
+  customColor: string | null;
   content: string;
   variant: TypographyVariant | null;
 }

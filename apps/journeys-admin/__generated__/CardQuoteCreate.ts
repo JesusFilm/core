@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ImageBlockCreateInput, TypographyBlockCreateInput, CardBlockUpdateInput, TypographyAlign, TypographyColor, TypographyVariant, ThemeMode, ThemeName } from "./globalTypes";
+import { ImageBlockCreateInput, TypographyBlockCreateInput, CardBlockUpdateInput, TypographyAlign, TypographyVariant, ThemeMode, ThemeName } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CardQuoteCreate
@@ -31,7 +31,7 @@ export interface CardQuoteCreate_subtitle {
   parentBlockId: string | null;
   parentOrder: number | null;
   align: TypographyAlign | null;
-  color: TypographyColor | null;
+  customColor: string | null;
   content: string;
   variant: TypographyVariant | null;
 }
@@ -42,7 +42,7 @@ export interface CardQuoteCreate_title {
   parentBlockId: string | null;
   parentOrder: number | null;
   align: TypographyAlign | null;
-  color: TypographyColor | null;
+  customColor: string | null;
   content: string;
   variant: TypographyVariant | null;
 }
@@ -53,7 +53,7 @@ export interface CardQuoteCreate_body {
   parentBlockId: string | null;
   parentOrder: number | null;
   align: TypographyAlign | null;
-  color: TypographyColor | null;
+  customColor: string | null;
   content: string;
   variant: TypographyVariant | null;
 }

@@ -156,12 +156,6 @@ export enum TypographyAlign {
   right = "right",
 }
 
-export enum TypographyColor {
-  error = "error",
-  primary = "primary",
-  secondary = "secondary",
-}
-
 export enum TypographyVariant {
   body1 = "body1",
   body2 = "body2",
