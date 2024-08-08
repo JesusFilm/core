@@ -23,7 +23,7 @@ const tooltipProps = {
             marginBottom: '6px'
           }
       }
-    },
+    }
   }
 }
 
