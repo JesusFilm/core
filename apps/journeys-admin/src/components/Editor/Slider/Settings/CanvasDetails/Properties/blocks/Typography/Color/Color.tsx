@@ -4,9 +4,6 @@ import { type ReactElement, useRef, useState } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { BlockFields_TypographyBlock as TypographyBlock } from '../../../../../../../../../../__generated__/BlockFields'
-import { TypographyColor } from '../../../../../../../../../../__generated__/globalTypes'
-import { ColorDisplayIcon } from '../../../controls/ColorDisplayIcon'
-import { ToggleButtonGroup } from '../../../controls/ToggleButtonGroup'
 import { Box } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
 import { debounce } from 'lodash'
@@ -16,10 +13,29 @@ import {
   TypographyBlockUpdateColor,
   TypographyBlockUpdateColorVariables
 } from '../../../../../../../../../../__generated__/TypographyBlockUpdateColor'
+import { PaletteColorPicker } from '../../Card/BackgroundColor/PaletteColorPicker'
+
+const palette = [
+  { dark: '#C62828', light: '#FFCDD2' },
+  { dark: '#AD1457', light: '#F48FB1' },
+  { dark: '#6A1B9A', light: '#CE93D8' },
+  { dark: '#4527A0', light: '#B39DDB' },
+  { dark: '#283593', light: '#9FA8DA' },
+  { dark: '#1565C0', light: '#90CAF9' },
+  { dark: '#0277BD', light: '#81D4FA' },
+  { dark: '#006064', light: '#80DEEA' },
+  { dark: '#00695C', light: '#80CBC4' },
+  { dark: '#2E7D32', light: '#C8E6C9' },
+  { dark: '#33691E', light: '#C5E1A5' },
+  { dark: '#4E342E', light: '#D7CCC8' },
+  { dark: '#424242', light: '#E0E0E0' },
+  { dark: '#37474F', light: '#B0BEC5' },
+  { dark: '#30313D', light: '#FEFEFE' }
+]
 
 export const TYPOGRAPHY_BLOCK_UPDATE_COLOR = gql`
-  mutation TypographyBlockUpdateColor($id: ID!, $color: TypographyColor!) {
-    typographyBlockUpdate(id: $id, input: { color: $color }) {
+  mutation TypographyBlockUpdateColor($id: ID!, $customColor: String!) {
+    typographyBlockUpdate(id: $id, input: { customColor: $customColor }) {
       id
       customColor
     }
@@ -91,6 +107,12 @@ export function Color(): ReactElement {
 
   return (
     <Box sx={{ px: 4, pb: 4 }}>
+      <PaletteColorPicker
+        selectedColor={selectedColor}
+        colors={palette}
+        mode={theme.palette.mode}
+        onChange={handleColorChange}
+      />
       <HexColorPicker
         data-testid="TextColorPicker"
         color={selectedColor}
