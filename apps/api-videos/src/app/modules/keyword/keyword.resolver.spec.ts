@@ -1,10 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing'
-
-import { KeywordResolver } from './keyword.resolver'
-import { PrismaService } from '../../lib/prisma.service'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
 import { Keyword, Video } from '.prisma/api-videos-client'
+
+import { PrismaService } from '../../lib/prisma.service'
+
+import { KeywordResolver } from './keyword.resolver'
 
 describe('KeywordResolver', () => {
   let resolver: KeywordResolver, prismaService: DeepMockProxy<PrismaService>

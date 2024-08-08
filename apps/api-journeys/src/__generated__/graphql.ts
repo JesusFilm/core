@@ -1029,6 +1029,14 @@ export enum JourneysReportType {
   SingleSummary = 'singleSummary'
 }
 
+export type Keyword = {
+  __typename?: 'Keyword';
+  id: Scalars['ID']['output'];
+  language: Language;
+  value: Scalars['String']['output'];
+  videos: Array<Video>;
+};
+
 export type Language = {
   __typename?: 'Language';
   audioPreview?: Maybe<AudioPreview>;
@@ -3077,6 +3085,7 @@ export type Video = {
   id: Scalars['ID']['output'];
   image?: Maybe<Scalars['String']['output']>;
   imageAlt: Array<Translation>;
+  keywords?: Maybe<VideoVariant>;
   label: VideoLabel;
   noIndex?: Maybe<Scalars['Boolean']['output']>;
   primaryLanguageId: Scalars['ID']['output'];
@@ -3102,6 +3111,11 @@ export type VideoDescriptionArgs = {
 export type VideoImageAltArgs = {
   languageId?: InputMaybe<Scalars['ID']['input']>;
   primary?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+export type VideoKeywordsArgs = {
+  languageId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 

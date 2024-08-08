@@ -1,7 +1,9 @@
 import { Parent, ResolveField, Resolver } from '@nestjs/graphql'
-import { PrismaService } from '../../lib/prisma.service'
 
 import { Video } from '.prisma/api-videos-client'
+
+import { PrismaService } from '../../lib/prisma.service'
+
 
 @Resolver('Keyword')
 export class KeywordResolver {
