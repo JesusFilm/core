@@ -94,12 +94,10 @@ module "api-analytics" {
 }
 
 module "api-journeys" {
-  source                = "../../../apps/api-journeys/infrastructure"
-  ecs_config            = local.internal_ecs_config
-  env                   = "stage"
-  doppler_token         = data.aws_ssm_parameter.doppler_api_journeys_stage_token.value
-  subnet_group_name     = module.stage.vpc.db_subnet_group_name
-  vpc_security_group_id = module.stage.private_rds_security_group_id
+  source        = "../../../apps/api-journeys/infrastructure"
+  ecs_config    = local.internal_ecs_config
+  env           = "stage"
+  doppler_token = data.aws_ssm_parameter.doppler_api_journeys_stage_token.value
   alb = {
     arn      = module.stage.internal_alb.arn
     dns_name = module.stage.internal_alb.dns_name
@@ -107,12 +105,10 @@ module "api-journeys" {
 }
 
 module "api-languages" {
-  source                = "../../../apps/api-languages/infrastructure"
-  ecs_config            = local.internal_ecs_config
-  env                   = "stage"
-  doppler_token         = data.aws_ssm_parameter.doppler_api_languages_stage_token.value
-  subnet_group_name     = module.stage.vpc.db_subnet_group_name
-  vpc_security_group_id = module.stage.private_rds_security_group_id
+  source        = "../../../apps/api-languages/infrastructure"
+  ecs_config    = local.internal_ecs_config
+  env           = "stage"
+  doppler_token = data.aws_ssm_parameter.doppler_api_languages_stage_token.value
   alb = {
     arn      = module.stage.internal_alb.arn
     dns_name = module.stage.internal_alb.dns_name
@@ -120,12 +116,10 @@ module "api-languages" {
 }
 
 module "api-tags" {
-  source                = "../../../apps/api-tags/infrastructure"
-  ecs_config            = local.internal_ecs_config
-  env                   = "stage"
-  doppler_token         = data.aws_ssm_parameter.doppler_api_tags_stage_token.value
-  subnet_group_name     = module.stage.vpc.db_subnet_group_name
-  vpc_security_group_id = module.stage.private_rds_security_group_id
+  source        = "../../../apps/api-tags/infrastructure"
+  ecs_config    = local.internal_ecs_config
+  env           = "stage"
+  doppler_token = data.aws_ssm_parameter.doppler_api_tags_stage_token.value
   alb = {
     arn      = module.stage.internal_alb.arn
     dns_name = module.stage.internal_alb.dns_name
@@ -133,12 +127,10 @@ module "api-tags" {
 }
 
 module "api-users" {
-  source                = "../../../apps/api-users/infrastructure"
-  ecs_config            = local.internal_ecs_config
-  env                   = "stage"
-  doppler_token         = data.aws_ssm_parameter.doppler_api_users_stage_token.value
-  subnet_group_name     = module.stage.vpc.db_subnet_group_name
-  vpc_security_group_id = module.stage.private_rds_security_group_id
+  source        = "../../../apps/api-users/infrastructure"
+  ecs_config    = local.internal_ecs_config
+  env           = "stage"
+  doppler_token = data.aws_ssm_parameter.doppler_api_users_stage_token.value
   alb = {
     arn      = module.stage.internal_alb.arn
     dns_name = module.stage.internal_alb.dns_name
@@ -146,12 +138,10 @@ module "api-users" {
 }
 
 module "api-videos" {
-  source                = "../../../apps/api-videos/infrastructure"
-  ecs_config            = local.internal_ecs_config
-  env                   = "stage"
-  doppler_token         = data.aws_ssm_parameter.doppler_api_videos_stage_token.value
-  subnet_group_name     = module.stage.vpc.db_subnet_group_name
-  vpc_security_group_id = module.stage.private_rds_security_group_id
+  source        = "../../../apps/api-videos/infrastructure"
+  ecs_config    = local.internal_ecs_config
+  env           = "stage"
+  doppler_token = data.aws_ssm_parameter.doppler_api_videos_stage_token.value
   alb = {
     arn      = module.stage.internal_alb.arn
     dns_name = module.stage.internal_alb.dns_name
@@ -159,12 +149,10 @@ module "api-videos" {
 }
 
 module "api-media" {
-  source                = "../../../apps/api-media/infrastructure"
-  ecs_config            = local.internal_ecs_config
-  env                   = "stage"
-  doppler_token         = data.aws_ssm_parameter.doppler_api_media_stage_token.value
-  subnet_group_name     = module.stage.vpc.db_subnet_group_name
-  vpc_security_group_id = module.stage.private_rds_security_group_id
+  source        = "../../../apps/api-media/infrastructure"
+  ecs_config    = local.internal_ecs_config
+  env           = "stage"
+  doppler_token = data.aws_ssm_parameter.doppler_api_media_stage_token.value
   alb = {
     arn      = module.stage.internal_alb.arn
     dns_name = module.stage.internal_alb.dns_name
@@ -172,12 +160,10 @@ module "api-media" {
 }
 
 module "api-nexus" {
-  source                = "../../../apps/api-nexus/infrastructure"
-  ecs_config            = local.internal_ecs_config
-  env                   = "stage"
-  doppler_token         = data.aws_ssm_parameter.doppler_api_nexus_stage_token.value
-  subnet_group_name     = module.stage.vpc.db_subnet_group_name
-  vpc_security_group_id = module.stage.private_rds_security_group_id
+  source        = "../../../apps/api-nexus/infrastructure"
+  ecs_config    = local.internal_ecs_config
+  env           = "stage"
+  doppler_token = data.aws_ssm_parameter.doppler_api_nexus_stage_token.value
   alb = {
     arn      = module.stage.internal_alb.arn
     dns_name = module.stage.internal_alb.dns_name
@@ -212,39 +198,11 @@ module "datadog_aurora" {
   subnet_id          = module.stage.vpc.public_subnets[0]
   security_group_ids = [module.stage.private_rds_security_group_id]
   rds_instances = [{
-    host             = module.api-journeys.database.aws_rds_cluster.endpoint
-    port             = module.api-journeys.database.aws_rds_cluster.port
-    username         = module.api-journeys.database.aws_rds_cluster.master_username
-    password         = module.api-journeys.database.random_password.result
-    db_instance_name = module.api-journeys.database.aws_rds_cluster.id
-    },
-    {
-      host             = module.api-tags.database.aws_rds_cluster.endpoint
-      port             = module.api-tags.database.aws_rds_cluster.port
-      username         = module.api-tags.database.aws_rds_cluster.master_username
-      password         = module.api-tags.database.random_password.result
-      db_instance_name = module.api-tags.database.aws_rds_cluster.id
-    },
-    {
-      host             = module.api-users.database.aws_rds_cluster.endpoint
-      port             = module.api-users.database.aws_rds_cluster.port
-      username         = module.api-users.database.aws_rds_cluster.master_username
-      password         = module.api-users.database.random_password.result
-      db_instance_name = module.api-users.database.aws_rds_cluster.id
-    },
-    {
-      host             = module.api-media.database.aws_rds_cluster.endpoint
-      port             = module.api-media.database.aws_rds_cluster.port
-      username         = module.api-media.database.aws_rds_cluster.master_username
-      password         = module.api-media.database.random_password.result
-      db_instance_name = module.api-media.database.aws_rds_cluster.id
-    },
-    {
-      host             = module.api-languages.database.aws_rds_cluster.endpoint
-      port             = module.api-languages.database.aws_rds_cluster.port
-      username         = module.api-languages.database.aws_rds_cluster.master_username
-      password         = module.api-languages.database.random_password.result
-      db_instance_name = module.api-languages.database.aws_rds_cluster.id
+    host             = module.postgresql.aws_rds_cluster.endpoint
+    port             = module.postgresql.aws_rds_cluster.port
+    username         = module.postgresql.aws_rds_cluster.master_username
+    password         = module.postgresql.random_password.result
+    db_instance_name = module.postgresql.aws_rds_cluster.id
   }]
 }
 
@@ -270,7 +228,7 @@ module "journeys-admin" {
   doppler_token    = data.aws_ssm_parameter.doppler_journeys_admin_stage_token.value
   alb_listener_arn = module.stage.public_alb.alb_listener.arn
   alb_dns_name     = module.stage.public_alb.dns_name
-  host_name     = "admin-stage.nextstep.is"
+  host_name        = "admin-stage.nextstep.is"
 }
 
 module "postgresql" {
