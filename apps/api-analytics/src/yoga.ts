@@ -7,6 +7,7 @@ import { getUserFromApiKey } from './lib/auth'
 import { prisma } from './lib/prisma'
 import { schema } from './schema'
 import { Context } from './schema/builder'
+import { tracingPlugin } from './tracer'
 
 const dogStatsD = new StatsD({
   port: 8125 // DogStatsD port
@@ -26,6 +27,7 @@ export const yoga = createYoga({
     } satisfies Context
   },
   plugins: [
+    tracingPlugin,
     useStatsD({
       client: dogStatsD,
       prefix: 'gql',
