@@ -50,7 +50,6 @@ export const GET_JOURNEY_ANALYTICS = gql`
       }
     ) {
       property
-      events
       visitors
     }
     journeyReferrer: journeysPlausibleStatsBreakdown(
@@ -93,7 +92,6 @@ export const GET_JOURNEY_ANALYTICS = gql`
       }
     ) {
       property
-      events
       visitors
     }
     journeyAggregateVisitors: journeysPlausibleStatsAggregate(

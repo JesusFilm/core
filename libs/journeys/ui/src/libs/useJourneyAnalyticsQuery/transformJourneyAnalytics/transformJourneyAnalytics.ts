@@ -129,7 +129,6 @@ function getJourneyEvents(
     journeyEvents.push({
       ...reverseKeyify(action.property),
       events: action.visitors ?? 0
-      // events: action.events ?? 0
     })
   })
 
