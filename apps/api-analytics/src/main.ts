@@ -1,3 +1,5 @@
+import '@core/nest/common/tracer'
+
 import { createServer } from 'node:http'
 
 import { yoga } from './yoga'
