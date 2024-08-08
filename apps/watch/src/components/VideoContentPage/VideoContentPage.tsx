@@ -57,7 +57,15 @@ export function VideoContentPage(): ReactElement {
       container,
       childrenCount
     })
-  }, [childrenCount, container, id, image, imageAlt, label, slug, snippet, title, variant]);
+  }, [childrenCount, container, id, image, imageAlt, label, slug, snippet, title, variant])
+
+  useEffect(() => {
+    console.log('children ', children)
+  }, [children])
+
+  useEffect(() => {
+    console.log('realChildren ', realChildren)
+  }, [realChildren])
 
   return (
     <>
