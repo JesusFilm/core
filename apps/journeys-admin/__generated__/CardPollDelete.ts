@@ -7,43 +7,7 @@
 // GraphQL mutation operation: CardPollDelete
 // ====================================================
 
-export interface CardPollDelete_imageDelete {
-  __typename: "ImageBlock" | "ButtonBlock" | "CardBlock" | "FormBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "StepBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
-  id: string;
-  parentOrder: number | null;
-}
-
-export interface CardPollDelete_subtitleDelete {
-  __typename: "ImageBlock" | "ButtonBlock" | "CardBlock" | "FormBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "StepBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
-  id: string;
-  parentOrder: number | null;
-}
-
-export interface CardPollDelete_titleDelete {
-  __typename: "ImageBlock" | "ButtonBlock" | "CardBlock" | "FormBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "StepBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
-  id: string;
-  parentOrder: number | null;
-}
-
-export interface CardPollDelete_radioQuestionDelete {
-  __typename: "ImageBlock" | "ButtonBlock" | "CardBlock" | "FormBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "StepBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
-  id: string;
-  parentOrder: number | null;
-}
-
-export interface CardPollDelete_radioOption1Delete {
-  __typename: "ImageBlock" | "ButtonBlock" | "CardBlock" | "FormBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "StepBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
-  id: string;
-  parentOrder: number | null;
-}
-
-export interface CardPollDelete_radioOption2Delete {
-  __typename: "ImageBlock" | "ButtonBlock" | "CardBlock" | "FormBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "StepBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
-  id: string;
-  parentOrder: number | null;
-}
-
-export interface CardPollDelete_radioOption3Delete {
+export interface CardPollDelete_bodyDelete {
   __typename: "ImageBlock" | "ButtonBlock" | "CardBlock" | "FormBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "StepBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
   parentOrder: number | null;
@@ -55,7 +19,43 @@ export interface CardPollDelete_radioOption4Delete {
   parentOrder: number | null;
 }
 
-export interface CardPollDelete_bodyDelete {
+export interface CardPollDelete_radioOption3Delete {
+  __typename: "ImageBlock" | "ButtonBlock" | "CardBlock" | "FormBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "StepBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+  id: string;
+  parentOrder: number | null;
+}
+
+export interface CardPollDelete_radioOption2Delete {
+  __typename: "ImageBlock" | "ButtonBlock" | "CardBlock" | "FormBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "StepBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+  id: string;
+  parentOrder: number | null;
+}
+
+export interface CardPollDelete_radioOption1Delete {
+  __typename: "ImageBlock" | "ButtonBlock" | "CardBlock" | "FormBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "StepBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+  id: string;
+  parentOrder: number | null;
+}
+
+export interface CardPollDelete_radioQuestionDelete {
+  __typename: "ImageBlock" | "ButtonBlock" | "CardBlock" | "FormBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "StepBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+  id: string;
+  parentOrder: number | null;
+}
+
+export interface CardPollDelete_titleDelete {
+  __typename: "ImageBlock" | "ButtonBlock" | "CardBlock" | "FormBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "StepBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+  id: string;
+  parentOrder: number | null;
+}
+
+export interface CardPollDelete_subtitleDelete {
+  __typename: "ImageBlock" | "ButtonBlock" | "CardBlock" | "FormBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "StepBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+  id: string;
+  parentOrder: number | null;
+}
+
+export interface CardPollDelete_imageDelete {
   __typename: "ImageBlock" | "ButtonBlock" | "CardBlock" | "FormBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "StepBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
   parentOrder: number | null;
@@ -65,31 +65,7 @@ export interface CardPollDelete {
   /**
    * blockDelete returns the updated sibling blocks on successful delete
    */
-  imageDelete: CardPollDelete_imageDelete[];
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
-  subtitleDelete: CardPollDelete_subtitleDelete[];
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
-  titleDelete: CardPollDelete_titleDelete[];
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
-  radioQuestionDelete: CardPollDelete_radioQuestionDelete[];
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
-  radioOption1Delete: CardPollDelete_radioOption1Delete[];
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
-  radioOption2Delete: CardPollDelete_radioOption2Delete[];
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
-  radioOption3Delete: CardPollDelete_radioOption3Delete[];
+  bodyDelete: CardPollDelete_bodyDelete[];
   /**
    * blockDelete returns the updated sibling blocks on successful delete
    */
@@ -97,7 +73,31 @@ export interface CardPollDelete {
   /**
    * blockDelete returns the updated sibling blocks on successful delete
    */
-  bodyDelete: CardPollDelete_bodyDelete[];
+  radioOption3Delete: CardPollDelete_radioOption3Delete[];
+  /**
+   * blockDelete returns the updated sibling blocks on successful delete
+   */
+  radioOption2Delete: CardPollDelete_radioOption2Delete[];
+  /**
+   * blockDelete returns the updated sibling blocks on successful delete
+   */
+  radioOption1Delete: CardPollDelete_radioOption1Delete[];
+  /**
+   * blockDelete returns the updated sibling blocks on successful delete
+   */
+  radioQuestionDelete: CardPollDelete_radioQuestionDelete[];
+  /**
+   * blockDelete returns the updated sibling blocks on successful delete
+   */
+  titleDelete: CardPollDelete_titleDelete[];
+  /**
+   * blockDelete returns the updated sibling blocks on successful delete
+   */
+  subtitleDelete: CardPollDelete_subtitleDelete[];
+  /**
+   * blockDelete returns the updated sibling blocks on successful delete
+   */
+  imageDelete: CardPollDelete_imageDelete[];
 }
 
 export interface CardPollDeleteVariables {
