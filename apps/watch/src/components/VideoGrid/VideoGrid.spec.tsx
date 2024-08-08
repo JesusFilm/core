@@ -9,7 +9,7 @@ jest.mock('react-instantsearch')
 jest.mock('../../libs/algolia/useAlgoliaVideos')
 
 const mockedUseAlgoliaVideos = useAlgoliaVideos as jest.MockedFunction<
-typeof useAlgoliaVideos
+  typeof useAlgoliaVideos
 >
 
 describe('VideoGrid', () => {
@@ -105,9 +105,7 @@ describe('VideoGrid', () => {
 
     render(<VideoGrid videos={videos} showLoadMore hasNoResults />)
 
-    expect(
-      screen.queryByRole('button', { name: 'Load More' })
-    ).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Load More' })).toBeNull()
   })
 
   it('should render no results', () => {
@@ -122,8 +120,6 @@ describe('VideoGrid', () => {
 
     render(<VideoGrid videos={[]} hasNoResults />)
 
-    expect(
-      screen.getByText('Sorry, no results')
-    ).toBeInTheDocument()
+    expect(screen.getByText('Sorry, no results')).toBeInTheDocument()
   })
 })

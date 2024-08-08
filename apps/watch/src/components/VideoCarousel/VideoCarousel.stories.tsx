@@ -13,7 +13,6 @@ import { getAlgoliaVideosHandlers } from '../VideosPage/VideosPage.handlers'
 
 import { VideoCarousel } from './VideoCarousel'
 
-
 const VideoCarouselStory: Meta<typeof VideoCarousel> = {
   ...watchConfig,
   component: VideoCarousel,
