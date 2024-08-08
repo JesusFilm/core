@@ -43,7 +43,8 @@ export function TemplateView({
       where: {
         template: true,
         orderByRecent: true,
-        tagIds
+        tagIds,
+        limit: 10
       }
     }
   })

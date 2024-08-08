@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
 import CardActions from '@mui/material/CardActions'
@@ -5,10 +6,12 @@ import CardContent from '@mui/material/CardContent'
 import Stack from '@mui/material/Stack'
 import { SxProps, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import { User } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, ReactNode, useState } from 'react'
 import { use100vh } from 'react-div-100vh'
 
+import { HelpScoutBeacon } from '../HelpScoutBeacon'
 import { LanguageSwitcher } from '../LanguageSwitcher'
 
 import { OnboardingDrawer } from './OnboardingDrawer'
@@ -17,12 +20,14 @@ interface OnboardingPageWrapperProps {
   title?: string
   emailSubject: string
   children: ReactNode
+  user?: User
 }
 
 export function OnboardingPageWrapper({
   title,
   emailSubject,
-  children
+  children,
+  user
 }: OnboardingPageWrapperProps): ReactElement {
   const [open, setOpen] = useState(false)
   const viewportHeight = use100vh()
@@ -36,6 +41,20 @@ export function OnboardingPageWrapper({
         backgroundColor: { xs: 'background.default', md: 'background.paper' }
       }}
     >
+      <Box
+        sx={{
+          position: 'absolute',
+          right: { xs: 12, sm: 8, md: 28 },
+          top: { xs: 16, sm: 8, md: 24 }
+        }}
+      >
+        <HelpScoutBeacon
+          userInfo={{
+            name: user?.displayName ?? '',
+            email: user?.email ?? ''
+          }}
+        />
+      </Box>
       <OnboardingDrawer />
       <Stack
         justifyContent="safe center"

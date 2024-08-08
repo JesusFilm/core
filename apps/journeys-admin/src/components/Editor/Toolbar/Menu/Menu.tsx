@@ -4,6 +4,7 @@ import IconButton from '@mui/material/IconButton'
 import MuiMenu from '@mui/material/Menu'
 import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { User } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { MouseEvent, ReactElement, useState } from 'react'
 
@@ -12,6 +13,7 @@ import MoreIcon from '@core/shared/ui/icons/More'
 
 import { GetRole } from '../../../../../__generated__/GetRole'
 import { Role } from '../../../../../__generated__/globalTypes'
+import { HelpScoutBeacon } from '../../../HelpScoutBeacon'
 import { AccessItem } from '../Items/AccessItem'
 import { AnalyticsItem } from '../Items/AnalyticsItem'
 import { CopyLinkItem } from '../Items/CopyLinkItem'
@@ -34,7 +36,11 @@ export const GET_ROLE = gql`
   }
 `
 
-export function Menu(): ReactElement {
+interface MenuProps {
+  user?: User
+}
+
+export function Menu({ user }: MenuProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const { journey } = useJourney()
   const { t } = useTranslation('apps-journeys-admin')
@@ -54,7 +60,6 @@ export function Menu(): ReactElement {
     <>
       <IconButton
         id="edit-journey-actions"
-        edge="end"
         aria-label={t('Edit Journey Actions')}
         aria-controls="edit-journey-actions"
         aria-haspopup="true"
@@ -62,6 +67,7 @@ export function Menu(): ReactElement {
         onClick={handleShowMenu}
         disabled={journey == null}
         data-testid="ToolbarMenuButton"
+        sx={{ p: 0 }}
       >
         <MoreIcon />
       </IconButton>
@@ -109,6 +115,19 @@ export function Menu(): ReactElement {
           (journey?.template !== true || isPublisher != null) && (
             <CopyLinkItem variant="menu-item" onClose={handleCloseMenu} />
           )}
+        {!smUp && (
+          <>
+            <Divider />
+            <HelpScoutBeacon
+              variant="menuItem"
+              userInfo={{
+                name: user?.displayName ?? '',
+                email: user?.email ?? ''
+              }}
+              handleClick={handleCloseMenu}
+            />
+          </>
+        )}
       </MuiMenu>
     </>
   )
