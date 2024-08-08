@@ -60,7 +60,11 @@ export function HelpScoutBeacon({
     <>
       <BeaconInit userInfo={userInfo} loaded={loaded} setLoaded={setLoaded} />
       {variant === 'iconButton' && (
-        <Tooltip title={t('Help')} arrow sx={{ m: 0 }}>
+        <Tooltip
+          title={beaconOpen ? t('Close') : t('Help')}
+          arrow
+          sx={{ m: 0 }}
+        >
           <IconButton
             data-testid="HelpScoutBeaconIconButton"
             size="medium"
