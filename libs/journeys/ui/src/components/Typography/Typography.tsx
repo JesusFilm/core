@@ -12,7 +12,7 @@ export interface TypographyProps extends TreeBlock<TypographyFields> {
 
 export function Typography({
   variant,
-  color,
+  customColor,
   align,
   content,
   editableContent,
@@ -30,7 +30,7 @@ export function Typography({
     <MuiTypography
       variant={variant ?? undefined}
       align={align ?? undefined}
-      color={content === '' ? 'text.disabled' : color ?? undefined}
+      color={content === '' ? 'text.disabled' : customColor ?? undefined}
       paragraph={variant === 'overline' || variant === 'caption'}
       gutterBottom
       whiteSpace="pre-line"
