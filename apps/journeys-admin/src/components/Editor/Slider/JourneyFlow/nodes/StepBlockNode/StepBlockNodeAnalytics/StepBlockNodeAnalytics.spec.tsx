@@ -81,11 +81,13 @@ describe('StepBlockNodeAnalytics', () => {
     expect(screen.getAllByText('~')).toHaveLength(2)
     fireEvent.mouseOver(screen.getAllByText('~')[0])
     await waitFor(() =>
-      expect(screen.getByText('Need more data')).toBeInTheDocument()
+      expect(screen.getByText('Exit Rate: Needs more data')).toBeInTheDocument()
     )
     fireEvent.mouseOver(screen.getAllByText('~')[1])
     await waitFor(() =>
-      expect(screen.getByText('Need more data')).toBeInTheDocument()
+      expect(
+        screen.getByText('Visit Duration: Needs more data')
+      ).toBeInTheDocument()
     )
   })
 })

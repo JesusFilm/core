@@ -89,14 +89,18 @@ export function StepBlockNodeAnalytics({
       <AnalyticsDataPoint
         Icon={TrendDown1}
         tooltipTitle={
-          hideStats ? t('Need more data') : t('Approximate Exit rate')
+          hideStats
+            ? t('Exit Rate: Needs more data')
+            : t('Approximate Exit rate')
         }
         value={hideStats ? '~' : getPercentage(visitorsExitAtStep, visitors)}
       />
       <AnalyticsDataPoint
         Icon={Clock1}
         tooltipTitle={
-          hideStats ? t('Need more data') : t('Approximate Visit duration')
+          hideStats
+            ? t('Visit Duration: Needs more data')
+            : t('Approximate Visit duration')
         }
         value={hideStats ? '~' : formatTime(timeOnPage)}
       />
