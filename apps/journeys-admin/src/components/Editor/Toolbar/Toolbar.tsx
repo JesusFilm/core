@@ -288,7 +288,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
         <NotificationPopover
           title={t('New Feature Feedback')}
           description={t(
-            'We are collecting feedback on the new analytics new feature. Please take a moment to share your thoughts.'
+            'We are collecting feedback on the new analytics feature. Please take a moment to share your thoughts.'
           )}
           open={Boolean(anchorEl)}
           currentRef={anchorEl}

@@ -70,7 +70,7 @@ function JourneyReportsPage({ flags }): ReactElement {
             <NotificationPopover
               title={t('New Feature Feedback')}
               description={t(
-                'We are collecting feedback on the new analytics new feature. Please take a moment to share your thoughts.'
+                'We are collecting feedback on the new analytics feature. Please take a moment to share your thoughts.'
               )}
               open={open}
               currentRef={currentRef}
@@ -80,7 +80,7 @@ function JourneyReportsPage({ flags }): ReactElement {
                 setOpen(false)
               }}
               popoverAction={{
-                label: t('Share Feedback'),
+                label: t('Feedback'),
                 handleClick: () => {
                   openBeacon()
                 }
