@@ -21,7 +21,7 @@ import { Tooltip } from '../../../../../Tooltip'
 import { useUpdateEdge } from '../../libs/useUpdateEdge'
 import { BaseNode, HandleVariant } from '../BaseNode'
 
-// Calculates the tooltip offset to work with react flow zoom 
+// Calculates the tooltip offset to work with react flow zoom
 const getOffset = (store: ReactFlowStore): number => {
   const zoom = store.transform[2]
 

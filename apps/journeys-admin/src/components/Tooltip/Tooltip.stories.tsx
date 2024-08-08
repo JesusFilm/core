@@ -4,7 +4,7 @@ import { ComponentProps } from 'react'
 
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
-import { Tooltip } from ".";
+import { Tooltip } from '.'
 
 const TooltipDemo: Meta<typeof Tooltip> = {
   ...simpleComponentConfig,
@@ -26,7 +26,7 @@ export const Default = {
   ...Template,
   args: {
     title: 'Default',
-    open: true,
+    open: true
   }
 }
 
@@ -35,7 +35,7 @@ export const Placed = {
   args: {
     title: 'Placed',
     placement: 'right',
-    open: true,
+    open: true
   }
 }
 
@@ -44,7 +44,7 @@ export const WithoutArrow = {
   args: {
     title: 'Arrow',
     arrow: false,
-    open: true,
+    open: true
   }
 }
 
