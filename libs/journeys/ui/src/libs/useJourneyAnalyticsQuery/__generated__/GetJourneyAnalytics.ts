@@ -37,6 +37,10 @@ export interface GetJourneyAnalytics_journeyStepsActions {
    *  this metric corresponds to "Total Conversions" in the dashboard.
    */
   events: number | null;
+  /**
+   * The number of unique visitors.
+   */
+  visitors: number | null;
 }
 
 export interface GetJourneyAnalytics_journeyReferrer {
@@ -77,6 +81,10 @@ export interface GetJourneyAnalytics_journeyActionsSums {
    *  this metric corresponds to "Total Conversions" in the dashboard.
    */
   events: number | null;
+  /**
+   * The number of unique visitors.
+   */
+  visitors: number | null;
 }
 
 export interface GetJourneyAnalytics_journeyAggregateVisitors_visitors {
