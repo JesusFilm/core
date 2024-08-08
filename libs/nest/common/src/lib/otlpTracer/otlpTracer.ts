@@ -2,6 +2,7 @@ import { Tracer, trace } from '@opentelemetry/api'
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http'
 import { registerInstrumentations } from '@opentelemetry/instrumentation'
 import { HttpInstrumentation } from '@opentelemetry/instrumentation-http'
+import { RuntimeNodeInstrumentation } from '@opentelemetry/instrumentation-runtime-node'
 import { Resource } from '@opentelemetry/resources'
 import { SimpleSpanProcessor } from '@opentelemetry/sdk-trace-base'
 import { NodeTracerProvider } from '@opentelemetry/sdk-trace-node'
@@ -32,6 +33,9 @@ export default function otlpTracer(serviceName: string): {
 
   registerInstrumentations({
     instrumentations: [
+      new RuntimeNodeInstrumentation({
+        eventLoopUtilizationMeasurementInterval: 5000
+      }),
       new HttpInstrumentation({
         ignoreIncomingRequestHook(req) {
           return req.url?.endsWith('/.well-known/apollo/server-health') ?? false
