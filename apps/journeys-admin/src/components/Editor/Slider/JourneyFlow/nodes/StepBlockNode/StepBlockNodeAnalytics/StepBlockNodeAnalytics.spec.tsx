@@ -30,11 +30,11 @@ describe('StepBlockNodeAnalytics', () => {
     expect(screen.getByText('1m12s')).toBeInTheDocument()
     fireEvent.mouseOver(screen.getByText('10%'))
     await waitFor(() =>
-      expect(screen.getByText('Exit rate')).toBeInTheDocument()
+      expect(screen.getByText('Approximate Exit rate')).toBeInTheDocument()
     )
   })
 
-  it('should render fallbacks', () => {
+  it('should render fallback visitors', () => {
     const initialState = {
       analytics: {
         stepsStats: [
@@ -55,10 +55,9 @@ describe('StepBlockNodeAnalytics', () => {
     )
 
     expect(screen.getByText('0')).toBeInTheDocument()
-    expect(screen.getByText('0s')).toBeInTheDocument()
   })
 
-  it('should hide exit rate if total visitors is less than 50', async () => {
+  it('should hide exit rate and duration if total visitors is less than 50', async () => {
     const initialState = {
       analytics: {
         stepsStats: [
@@ -79,12 +78,14 @@ describe('StepBlockNodeAnalytics', () => {
       </EditorProvider>
     )
 
-    expect(screen.getByText('~')).toBeInTheDocument()
-    fireEvent.mouseOver(screen.getByText('~'))
+    expect(screen.getAllByText('~')).toHaveLength(2)
+    fireEvent.mouseOver(screen.getAllByText('~')[0])
     await waitFor(() =>
-      expect(
-        screen.getByText('Need more data to accurately show the exit rate')
-      ).toBeInTheDocument()
+      expect(screen.getByText('Need more data')).toBeInTheDocument()
+    )
+    fireEvent.mouseOver(screen.getAllByText('~')[1])
+    await waitFor(() =>
+      expect(screen.getByText('Need more data')).toBeInTheDocument()
     )
   })
 })
