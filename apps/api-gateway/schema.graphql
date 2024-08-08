@@ -1290,7 +1290,6 @@ type Keyword
   id: ID!
   value: String!
   language: Language!
-  videos: [Video!]!
 }
 
 type Language
@@ -2985,7 +2984,7 @@ type Video
   id: ID!
   primaryLanguageId: ID!
   bibleCitations: [BibleCitation!]! @join__field(graph: VIDEOS)
-  keywords(languageId: ID): VideoVariant @join__field(graph: VIDEOS)
+  keywords(languageId: ID): [Keyword!]! @join__field(graph: VIDEOS)
   label: VideoLabel! @join__field(graph: VIDEOS)
   title(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   snippet(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)

@@ -2,9 +2,8 @@ type Keyword {
   id: ID!
   value: String!
   language: Language!
-  videos: [Video!]!
 }
 
 extend type Video {
-  keywords(languageId: ID): VideoVariant
+  keywords(languageId: ID): [Keyword!]!
 }

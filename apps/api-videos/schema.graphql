@@ -40,7 +40,7 @@ type Video
   @cacheControl(maxAge: 86400)
 {
   bibleCitations: [BibleCitation!]!
-  keywords(languageId: ID): VideoVariant
+  keywords(languageId: ID): [Keyword!]!
   id: ID!
   label: VideoLabel!
   primaryLanguageId: ID!
@@ -69,7 +69,6 @@ type Keyword {
   id: ID!
   value: String!
   language: Language!
-  videos: [Video!]!
 }
 
 extend type Language
