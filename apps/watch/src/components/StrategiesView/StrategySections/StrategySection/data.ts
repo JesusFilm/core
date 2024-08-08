@@ -19,13 +19,12 @@ const strategyItem: Hit<BaseHit> = {
   },
   images: {
     thumbnail: {
-      url: 'https://develop.jesusfilm.org/wp-content/uploads/2022/11/1614904501165.jpg?w=150&h=150&crop=1',
+      url: 'https://example.thumbnail.com/thumbnail',
       width: '150',
       height: '150'
     }
   },
-  permalink:
-    'https://develop.jesusfilm.org/mission-trips/london-bridges-1-one-week/',
+  permalink: 'https://example.com/london-bridges-1-one-week/',
   post_mime_type: '',
   taxonomies: {
     category: ['Uncategorized'],
