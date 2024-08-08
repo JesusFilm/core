@@ -1,3 +1,6 @@
+// eslint-disable-next-line import/order --- import tracer first
+import { createSpanFn } from '../tracer'
+
 import SchemaBuilder from '@pothos/core'
 import DirectivesPlugin from '@pothos/plugin-directives'
 import ErrorsPlugin from '@pothos/plugin-errors'
@@ -5,13 +8,11 @@ import FederationPlugin from '@pothos/plugin-federation'
 import pluginName from '@pothos/plugin-prisma'
 import ScopeAuthPlugin from '@pothos/plugin-scope-auth'
 import TracingPlugin, { isRootField } from '@pothos/plugin-tracing'
-import { createOpenTelemetryWrapper } from '@pothos/tracing-opentelemetry'
 
 import { Prisma, users as User } from '.prisma/api-analytics-client'
 
 import type PrismaTypes from '../__generated__/pothos-types'
 import { prisma } from '../lib/prisma'
-import { tracer } from '../tracer'
 
 const PrismaPlugin = pluginName
 
@@ -19,10 +20,6 @@ export interface Context {
   currentUser?: User
   apiKey?: string
 }
-
-const createSpan = createOpenTelemetryWrapper(tracer, {
-  includeSource: true
-})
 
 export const builder = new SchemaBuilder<{
   Context: Context
@@ -60,6 +57,6 @@ export const builder = new SchemaBuilder<{
   },
   tracing: {
     default: (config) => isRootField(config),
-    wrap: (resolver, options) => createSpan(resolver, options)
+    wrap: (resolver, options) => createSpanFn(resolver, options)
   }
 })
