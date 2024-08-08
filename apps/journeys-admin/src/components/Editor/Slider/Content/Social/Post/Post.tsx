@@ -10,12 +10,11 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { Tooltip } from '@core/journeys/ui/Tooltip'
+
+import { Tooltip } from '../../../../../Tooltip'
 
 const tooltipProps = {
   placement: 'top' as const,
-  arrow: true,
-  enterTouchDelay: 0,
   slotProps: {
     popper: {
       sx: {

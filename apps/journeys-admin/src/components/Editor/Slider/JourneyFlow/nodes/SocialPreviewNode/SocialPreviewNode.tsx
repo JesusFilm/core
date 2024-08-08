@@ -16,16 +16,18 @@ import {
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { Tooltip } from '@core/journeys/ui/Tooltip'
 
+import { Tooltip } from '../../../../../Tooltip'
 import { useUpdateEdge } from '../../libs/useUpdateEdge'
 import { BaseNode, HandleVariant } from '../BaseNode'
 
-const zoomSelector = (store: ReactFlowStore): number => {
+// Calculates the tooltip offset to work with react flow zoom 
+const getOffset = (store: ReactFlowStore): number => {
   const zoom = store.transform[2]
 
-  // (react flow zoom min/max, tooltip offset) points for slope-intercept equation below:
-  // (0.5, -4), (1.0, -2), (2.0, -5)
+  // (react flow zoom min/max, tooltip offset to match zoom) used to calculate slope-intercept:
+  // (0.5, -4)
+  // (2.0, 5)
   return 6 * zoom - 7
 }
 
@@ -34,7 +36,7 @@ export function SocialPreviewNode(): ReactElement {
   const updateEdge = useUpdateEdge()
   const { t } = useTranslation('apps-journeys-admin')
   const [showTooltip, setShowTooltip] = useState(false)
-  const scaledOffset = useStore(zoomSelector)
+  const scaledOffset = useStore(getOffset)
 
   const {
     dispatch,
@@ -88,7 +90,6 @@ export function SocialPreviewNode(): ReactElement {
         <Tooltip
           title={t('Social Media Preview')}
           placement="top"
-          arrow
           open={activeSlide === ActiveSlide.JourneyFlow && showTooltip}
           onOpen={() => setShowTooltip(true)}
           onClose={() => setShowTooltip(false)}
@@ -205,7 +206,7 @@ export function SocialPreviewNode(): ReactElement {
                   width={118.5}
                   height={90}
                   style={{
-                    borderRadius: 1,
+                    borderRadius: 5,
                     maxWidth: '100%',
                     objectFit: 'cover'
                   }}
