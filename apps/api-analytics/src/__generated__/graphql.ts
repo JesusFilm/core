@@ -1034,7 +1034,6 @@ export type Keyword = {
   id: Scalars['ID']['output'];
   language: Language;
   value: Scalars['String']['output'];
-  videos: Array<Video>;
 };
 
 export type Language = {
@@ -3085,7 +3084,7 @@ export type Video = {
   id: Scalars['ID']['output'];
   image?: Maybe<Scalars['String']['output']>;
   imageAlt: Array<Translation>;
-  keywords?: Maybe<VideoVariant>;
+  keywords: Array<Keyword>;
   label: VideoLabel;
   noIndex?: Maybe<Scalars['Boolean']['output']>;
   primaryLanguageId: Scalars['ID']['output'];
