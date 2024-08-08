@@ -2,7 +2,7 @@ import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import { NextSeo } from 'next-seo'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
 import { useVideoChildren } from '../../libs/useVideoChildren'
 import { useVideo } from '../../libs/videoContext'
@@ -43,6 +43,21 @@ export function VideoContentPage(): ReactElement {
 
   const ogSlug = getSlug(container?.slug, label, variant?.slug)
   const realChildren = children.filter((video) => video.variant !== null)
+
+  useEffect(() => {
+    console.log('video ', {
+      title,
+      snippet,
+      image,
+      imageAlt,
+      slug,
+      variant,
+      id,
+      label,
+      container,
+      childrenCount
+    })
+  }, [childrenCount, container, id, image, imageAlt, label, slug, snippet, title, variant]);
 
   return (
     <>
