@@ -10,4 +10,4 @@ users-watcher: nx watcher api-users
 languages-serve: nx serve api-languages
 videos-serve: nx serve api-videos
 videos-watcher: nx watcher api-videos
-gateway: nx serve api-gateway
+gateway: nx serve api-gateway | npx pino-pretty -c -S -i resource,target -m message
