@@ -5,7 +5,6 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { BlockFields_TypographyBlock as TypographyBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import { Box } from '@mui/material'
-import { useTheme } from '@mui/material/styles'
 import { debounce } from 'lodash'
 import { HexColorPicker } from 'react-colorful'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -15,7 +14,58 @@ import {
 } from '../../../../../../../../../../__generated__/TypographyBlockUpdateColor'
 import { PaletteColorPicker } from '../../Card/BackgroundColor/PaletteColorPicker'
 
+import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../../__generated__/BlockFields'
+import { ThemeMode, ThemeName, getTheme } from '@core/shared/ui/themes'
+import { getJourneyRTL } from '@core/journeys/ui/rtl'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
+
+
+export const TYPOGRAPHY_BLOCK_UPDATE_COLOR = gql`
+  mutation TypographyBlockUpdateColor($id: ID!, $customColor: String!) {
+    typographyBlockUpdate(id: $id, input: { customColor: $customColor }) {
+      id
+      customColor
+    }
+  }
+`
+
+export function Color(): ReactElement {
+  const [typographyBlockUpdate] = useMutation<
+    TypographyBlockUpdateColor,
+    TypographyBlockUpdateColorVariables
+  >(TYPOGRAPHY_BLOCK_UPDATE_COLOR)
+  const { add } = useCommand()
+  const {
+    state: { selectedBlock: stateSelectedBlock, selectedStep },
+    dispatch
+  } = useEditor()
+  const selectedBlock = stateSelectedBlock as
+    | TreeBlock<TypographyBlock>
+    | undefined
+
+    const { journey } = useJourney()
+  const { rtl, locale } = getJourneyRTL(journey)
+
+  const card = selectedStep?.children.find(
+    (block) => block.__typename === 'CardBlock'
+  ) as TreeBlock<CardBlock> | undefined
+
+  const theme = getTheme({
+    themeName: card?.themeName ?? journey?.themeName ?? ThemeName.base,
+    themeMode: card?.themeMode ?? journey?.themeMode ?? ThemeMode.dark,
+    rtl,
+    locale
+  })
+
+  const [selectedColor, setSelectedColor] = useState(
+    selectedBlock?.customColor ?? theme.palette.primary.main
+  )
+
 const palette = [
+  { light: theme.palette.text.primary, dark: theme.palette.text.primary },
+  { light: theme.palette.text.secondary, dark: theme.palette.text.secondary },
+  { light: theme.palette.error.main, dark: theme.palette.error.main },
   { dark: '#C62828', light: '#FFCDD2' },
   { dark: '#AD1457', light: '#F48FB1' },
   { dark: '#6A1B9A', light: '#CE93D8' },
@@ -32,34 +82,6 @@ const palette = [
   { dark: '#37474F', light: '#B0BEC5' },
   { dark: '#30313D', light: '#FEFEFE' }
 ]
-
-export const TYPOGRAPHY_BLOCK_UPDATE_COLOR = gql`
-  mutation TypographyBlockUpdateColor($id: ID!, $customColor: String!) {
-    typographyBlockUpdate(id: $id, input: { customColor: $customColor }) {
-      id
-      customColor
-    }
-  }
-`
-
-export function Color(): ReactElement {
-  const theme = useTheme()
-  const [typographyBlockUpdate] = useMutation<
-    TypographyBlockUpdateColor,
-    TypographyBlockUpdateColorVariables
-  >(TYPOGRAPHY_BLOCK_UPDATE_COLOR)
-  const { add } = useCommand()
-  const {
-    state: { selectedBlock: stateSelectedBlock, selectedStep },
-    dispatch
-  } = useEditor()
-  const selectedBlock = stateSelectedBlock as
-    | TreeBlock<TypographyBlock>
-    | undefined
-
-  const [selectedColor, setSelectedColor] = useState(
-    selectedBlock?.customColor ?? theme.palette.primary.main
-  )
 
   const handleColorChange = async (color: string): Promise<void> => {
     void debouncedColorChange(color.toUpperCase())
@@ -110,7 +132,7 @@ export function Color(): ReactElement {
       <PaletteColorPicker
         selectedColor={selectedColor}
         colors={palette}
-        mode={theme.palette.mode}
+        mode="dark"
         onChange={handleColorChange}
       />
       <HexColorPicker
