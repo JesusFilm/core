@@ -30,7 +30,7 @@ describe('TeamMenu', () => {
   const on = jest.fn()
 
   beforeEach(() => {
-    (useMediaQuery as jest.Mock).mockImplementation(() => true)
+    ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
     jest.clearAllMocks()
   })
 
