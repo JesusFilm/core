@@ -3,6 +3,7 @@ import algoliasearch from 'algoliasearch'
 import type { UiState } from 'instantsearch.js'
 import type { RouterProps } from 'instantsearch.js/es/middlewares'
 import type { GetStaticProps } from 'next'
+import { useRouter } from 'next/compat/router'
 import singletonRouter from 'next/router'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import type { ReactElement } from 'react'
@@ -61,12 +62,14 @@ export const nextRouter: RouterProps = {
   }
 }
 
-function HomePage(): ReactElement {
+function HomePage({ serverState }: HomePageProps): ReactElement {
   const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
+  const router = useRouter()
 
   return (
-    // Don't pass in server state because it will be stale if any state set by url
-    <InstantSearchSSRProvider>
+    <InstantSearchSSRProvider
+      {...(router?.query.query == null ? serverState : undefined)}
+    >
       <InstantSearch
         insights
         searchClient={searchClient}
