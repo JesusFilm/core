@@ -10,7 +10,7 @@ import { ButtonAction, VideoBlockSource, MessagePlatform } from "./globalTypes";
 // ====================================================
 
 export interface GetVisitorEvents_visitor_events_RadioQuestionSubmissionEvent {
-  __typename: "RadioQuestionSubmissionEvent" | "StepViewEvent" | "StepNextEvent" | "StepPreviousEvent" | "TextResponseSubmissionEvent";
+  __typename: "RadioQuestionSubmissionEvent" | "StepViewEvent" | "StepNextEvent" | "StepPreviousEvent";
   id: string;
   journeyId: string;
   label: string | null;
@@ -338,7 +338,32 @@ export interface GetVisitorEvents_visitor_events_VideoProgressEvent {
   progress: number;
 }
 
-export type GetVisitorEvents_visitor_events = GetVisitorEvents_visitor_events_RadioQuestionSubmissionEvent | GetVisitorEvents_visitor_events_ButtonClickEvent | GetVisitorEvents_visitor_events_JourneyViewEvent | GetVisitorEvents_visitor_events_SignUpSubmissionEvent | GetVisitorEvents_visitor_events_VideoStartEvent | GetVisitorEvents_visitor_events_VideoCompleteEvent | GetVisitorEvents_visitor_events_ChatOpenEvent | GetVisitorEvents_visitor_events_VideoCollapseEvent | GetVisitorEvents_visitor_events_VideoExpandEvent | GetVisitorEvents_visitor_events_VideoPauseEvent | GetVisitorEvents_visitor_events_VideoPlayEvent | GetVisitorEvents_visitor_events_VideoProgressEvent;
+export interface GetVisitorEvents_visitor_events_TextResponseSubmissionEvent {
+  __typename: "TextResponseSubmissionEvent";
+  id: string;
+  /**
+   * ID of the journey that the buttonBlock belongs to
+   */
+  journeyId: string;
+  /**
+   * stepName of the parent stepBlock
+   */
+  label: string | null;
+  /**
+   * response from the TextResponseBlock form
+   */
+  value: string | null;
+  /**
+   * time event was created
+   */
+  createdAt: any;
+  /**
+   * the id of the block this event originates from
+   */
+  blockId: string | null;
+}
+
+export type GetVisitorEvents_visitor_events = GetVisitorEvents_visitor_events_RadioQuestionSubmissionEvent | GetVisitorEvents_visitor_events_ButtonClickEvent | GetVisitorEvents_visitor_events_JourneyViewEvent | GetVisitorEvents_visitor_events_SignUpSubmissionEvent | GetVisitorEvents_visitor_events_VideoStartEvent | GetVisitorEvents_visitor_events_VideoCompleteEvent | GetVisitorEvents_visitor_events_ChatOpenEvent | GetVisitorEvents_visitor_events_VideoCollapseEvent | GetVisitorEvents_visitor_events_VideoExpandEvent | GetVisitorEvents_visitor_events_VideoPauseEvent | GetVisitorEvents_visitor_events_VideoPlayEvent | GetVisitorEvents_visitor_events_VideoProgressEvent | GetVisitorEvents_visitor_events_TextResponseSubmissionEvent;
 
 export interface GetVisitorEvents_visitor {
   __typename: "Visitor";
