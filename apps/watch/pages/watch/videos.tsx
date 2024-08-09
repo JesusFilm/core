@@ -88,7 +88,10 @@ function extractQueryParams(url: string): FilterParams {
   return { query, languageId, subtitleId }
 }
 
-function VideosPage({ initialApolloState, serverState }: VideosPageProps): ReactElement {
+function VideosPage({
+  initialApolloState,
+  serverState
+}: VideosPageProps): ReactElement {
   const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
   const router = useRouter()
   const decodedUrl = decodeURIComponent(router?.asPath ?? '')
@@ -99,7 +102,11 @@ function VideosPage({ initialApolloState, serverState }: VideosPageProps): React
   })
 
   return (
-    <InstantSearchSSRProvider {...(query == null && languageId == null && subtitleId == null ? serverState : undefined)}>
+    <InstantSearchSSRProvider
+      {...(query == null && languageId == null && subtitleId == null
+        ? serverState
+        : undefined)}
+    >
       <ApolloProvider client={client}>
         <InstantSearch
           insights
