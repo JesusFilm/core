@@ -49,11 +49,13 @@ telemetry:
       otlp:
         enabled: true
         temporality: delta
+        protocol: http
     tracing:
       common:
         service_name: api-gateway
       otlp:
         enabled: true
+        protocol: http
     logging:
       common:
         service_name: api-gateway
