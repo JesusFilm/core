@@ -11,5 +11,6 @@ tracer.use('http', {
   blocklist: ['/.well-known/apollo/server-health']
 })
 tracer.use('graphql')
+tracer.use('express')
 
 export default tracer
