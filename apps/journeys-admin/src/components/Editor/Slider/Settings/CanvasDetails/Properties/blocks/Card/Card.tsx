@@ -1,5 +1,4 @@
 import Box from '@mui/material/Box'
-import Paper from '@mui/material/Paper'
 import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
