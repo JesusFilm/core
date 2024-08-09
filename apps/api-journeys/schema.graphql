@@ -1012,7 +1012,7 @@ type TypographyBlock implements Block {
   parentOrder: Int
   content: String!
   variant: TypographyVariant
-  color: TypographyColor
+  color: TypographyColor @deprecated(reason: "This field is being replaced by customColor")
   align: TypographyAlign
 }
 
@@ -1022,7 +1022,7 @@ input TypographyBlockCreateInput {
   parentBlockId: ID!
   content: String!
   variant: TypographyVariant
-  color: TypographyColor
+  color: TypographyColor @deprecated(reason: "This field is being replaced by customColor")
   align: TypographyAlign
 }
 
@@ -1030,7 +1030,7 @@ input TypographyBlockUpdateInput {
   parentBlockId: ID
   content: String
   variant: TypographyVariant
-  color: TypographyColor
+  color: TypographyColor @deprecated(reason: "This field is being replaced by customColor")
   align: TypographyAlign
 }
 
