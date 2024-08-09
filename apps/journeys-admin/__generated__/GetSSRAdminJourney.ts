@@ -12,11 +12,18 @@ export interface GetSSRAdminJourney_journey_team {
   id: string;
 }
 
+export interface GetSSRAdminJourney_journey_language {
+  __typename: "Language";
+  id: string;
+  bcp47: string | null;
+}
+
 export interface GetSSRAdminJourney_journey {
   __typename: "Journey";
   id: string;
   template: boolean | null;
   team: GetSSRAdminJourney_journey_team | null;
+  language: GetSSRAdminJourney_journey_language;
 }
 
 export interface GetSSRAdminJourney {
