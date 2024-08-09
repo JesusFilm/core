@@ -54,7 +54,7 @@ export function NotificationPopover({
             position: 'relative',
             overflow: 'visible',
             '&::before': {
-              backgroundColor: 'white',
+              backgroundColor: 'background.paper',
               content: '""',
               display: 'block',
               position: 'absolute',
