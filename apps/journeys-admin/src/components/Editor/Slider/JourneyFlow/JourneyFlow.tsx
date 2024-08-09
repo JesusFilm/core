@@ -2,6 +2,7 @@ import { gql, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Fade from '@mui/material/Fade'
 import { useTheme } from '@mui/material/styles'
+import { useRouter } from 'next/compat/router'
 import {
   type MouseEvent,
   type ReactElement,
@@ -35,7 +36,6 @@ import {
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import { isActionBlock } from '@core/journeys/ui/isActionBlock'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { searchBlocks } from '@core/journeys/ui/searchBlocks'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import ArrowRefresh6Icon from '@core/shared/ui/icons/ArrowRefresh6'
@@ -94,7 +94,7 @@ export const GET_STEP_BLOCKS_WITH_POSITION = gql`
 `
 
 export function JourneyFlow(): ReactElement {
-  const { journey } = useJourney()
+  const router = useRouter()
   const { editorAnalytics } = useFlags()
   const theme = useTheme()
   const {
@@ -119,13 +119,18 @@ export function JourneyFlow(): ReactElement {
   const [stepBlockPositionUpdate] = useStepBlockPositionUpdateMutation()
   const { add } = useCommand()
 
-  const { data, refetch } = useQuery<
+  const { data, loading } = useQuery<
     GetStepBlocksWithPosition,
     GetStepBlocksWithPositionVariables
   >(GET_STEP_BLOCKS_WITH_POSITION, {
     notifyOnNetworkStatusChange: true,
-    variables: { journeyIds: journey?.id != null ? [journey.id] : undefined },
-    skip: journey?.id == null,
+    variables: {
+      journeyIds:
+        router?.query.journeyId != null
+          ? [router.query.journeyId.toString()]
+          : undefined
+    },
+    skip: router?.query.journeyId == null,
     onCompleted: (data) => {
       if (
         data.blocks.some(
@@ -220,7 +225,7 @@ export function JourneyFlow(): ReactElement {
 
     setEdges(edges)
     setNodes(nodes)
-  }, [steps, data, theme, setEdges, setNodes, refetch])
+  }, [steps, data, theme, setEdges, setNodes])
 
   const onConnect = useCallback<OnConnect>(() => {
     // reset the start node on connections
@@ -457,7 +462,9 @@ export function JourneyFlow(): ReactElement {
         {activeSlide === ActiveSlide.JourneyFlow && (
           <>
             <Panel position="top-right">
-              {showAnalytics !== true && <NewStepButton />}
+              {showAnalytics !== true && (
+                <NewStepButton disabled={steps == null || loading} />
+              )}
             </Panel>
             {editorAnalytics && (
               <Panel position="top-left">
