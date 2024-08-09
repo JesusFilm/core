@@ -1,5 +1,6 @@
 import { Reference, gql, useMutation } from '@apollo/client'
 import ButtonBase from '@mui/material/ButtonBase'
+import omit from 'lodash/omit'
 import Image from 'next/image'
 import { useTranslation } from 'next-i18next'
 import type { ReactElement } from 'react'
@@ -212,7 +213,7 @@ export function CardPoll(): ReactElement {
   function handleClick(): void {
     const cardId = selectedStep?.children[0].id
     if (journey == null || cardId == null || selectedStep == null) return
-    const imageBlock: ImageBlock = {
+    const imageBlock = {
       __typename: 'ImageBlock',
       id: uuidv4(),
       parentBlockId: cardId,
@@ -222,8 +223,9 @@ export function CardPoll(): ReactElement {
       height: 3456,
       src: 'https://images.unsplash.com/photo-1488048924544-c818a467dacd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0MDYwNDN8MHwxfHNlYXJjaHwyMHx8aXNyYWVsfGVufDB8fHx8MTY5NTE3MDI2NHww&ixlib=rb-4.0.3&q=80&w=1080',
       width: 5184
-    }
-    const subtitle: TypographyBlock = {
+    } satisfies ImageBlock
+
+    const subtitle = {
       id: uuidv4(),
       parentBlockId: cardId,
       parentOrder: 0,
@@ -232,8 +234,9 @@ export function CardPoll(): ReactElement {
       content: t('Got an Opinion?'),
       variant: TypographyVariant.h6,
       __typename: 'TypographyBlock'
-    }
-    const title: TypographyBlock = {
+    } satisfies TypographyBlock
+
+    const title = {
       id: uuidv4(),
       parentBlockId: cardId,
       parentOrder: 1,
@@ -242,52 +245,52 @@ export function CardPoll(): ReactElement {
       content: t("Which of Jesus' teachings challenges you the most?"),
       variant: TypographyVariant.h2,
       __typename: 'TypographyBlock'
-    }
+    } satisfies TypographyBlock
 
-    const radioQuestionBlock: RadioQuestionBlock = {
+    const radioQuestionBlock = {
       id: uuidv4(),
       parentBlockId: cardId,
       parentOrder: 2,
       __typename: 'RadioQuestionBlock'
-    }
+    } satisfies RadioQuestionBlock
 
-    const radioOptionBlock1: RadioOptionBlock = {
+    const radioOptionBlock1 = {
       id: uuidv4(),
       parentBlockId: radioQuestionBlock.id,
       parentOrder: 0,
       label: t('Turning the other cheek'),
       action: null,
       __typename: 'RadioOptionBlock'
-    }
+    } satisfies RadioOptionBlock
 
-    const radioOptionBlock2: RadioOptionBlock = {
+    const radioOptionBlock2 = {
       id: uuidv4(),
       parentBlockId: radioQuestionBlock.id,
       parentOrder: 1,
       label: t('Loving your enemies'),
       action: null,
       __typename: 'RadioOptionBlock'
-    }
+    } satisfies RadioOptionBlock
 
-    const radioOptionBlock3: RadioOptionBlock = {
+    const radioOptionBlock3 = {
       id: uuidv4(),
       parentBlockId: radioQuestionBlock.id,
       parentOrder: 2,
       label: t('Not worrying about tomorrow'),
       action: null,
       __typename: 'RadioOptionBlock'
-    }
+    } satisfies RadioOptionBlock
 
-    const radioOptionBlock4: RadioOptionBlock = {
+    const radioOptionBlock4 = {
       id: uuidv4(),
       parentBlockId: radioQuestionBlock.id,
       parentOrder: 3,
       label: t('Seeking first the kingdom of God'),
       action: null,
       __typename: 'RadioOptionBlock'
-    }
+    } satisfies RadioOptionBlock
 
-    const body: TypographyBlock = {
+    const body = {
       id: uuidv4(),
       parentBlockId: cardId,
       parentOrder: 3,
@@ -296,9 +299,9 @@ export function CardPoll(): ReactElement {
       content: t('↑ Select an answer to continue'),
       variant: TypographyVariant.caption,
       __typename: 'TypographyBlock'
-    }
+    } satisfies TypographyBlock
 
-    const cardBlock: CardBlock = {
+    const cardBlock = {
       id: cardId,
       parentBlockId: selectedStep.id,
       parentOrder: 0,
@@ -308,7 +311,8 @@ export function CardPoll(): ReactElement {
       themeName: ThemeName.base,
       fullscreen: true,
       __typename: 'CardBlock'
-    }
+    } satisfies CardBlock
+
     const createdBlocks = [
       imageBlock,
       subtitle,
@@ -327,66 +331,57 @@ export function CardPoll(): ReactElement {
         void cardPollCreate({
           variables: {
             imageInput: {
-              id: imageBlock.id,
+              ...omit(imageBlock, ['__typename', 'parentOrder']),
               journeyId: journey.id,
-              parentBlockId: imageBlock.parentBlockId,
-              alt: imageBlock.alt,
-              blurhash: imageBlock.blurhash,
-              height: imageBlock.height,
-              src: imageBlock.src,
-              width: imageBlock.width,
               isCover: true
             },
             subtitleInput: {
-              id: subtitle.id,
-              journeyId: journey.id,
-              parentBlockId: subtitle.parentBlockId as string,
-              content: subtitle.content,
-              variant: subtitle.variant
+              ...omit(subtitle, ['__typename', 'parentOrder']),
+              journeyId: journey.id
             },
             titleInput: {
-              id: title.id,
-              journeyId: journey.id,
-              parentBlockId: title.parentBlockId as string,
-              content: title.content,
-              variant: title.variant
+              ...omit(title, ['__typename', 'parentOrder']),
+              journeyId: journey.id
             },
             radioQuestionInput: {
-              id: radioQuestionBlock.id,
-              journeyId: journey.id,
-              parentBlockId: radioQuestionBlock.parentBlockId as string
+              ...omit(radioQuestionBlock, ['__typename', 'parentOrder']),
+              journeyId: journey.id
             },
             radioOptionInput1: {
-              id: radioOptionBlock1.id,
-              journeyId: journey.id,
-              parentBlockId: radioOptionBlock1.parentBlockId as string,
-              label: radioOptionBlock1.label
+              ...omit(radioOptionBlock1, [
+                '__typename',
+                'parentOrder',
+                'action'
+              ]),
+              journeyId: journey.id
             },
             radioOptionInput2: {
-              id: radioOptionBlock2.id,
-              journeyId: journey.id,
-              parentBlockId: radioOptionBlock2.parentBlockId as string,
-              label: radioOptionBlock2.label
+              ...omit(radioOptionBlock2, [
+                '__typename',
+                'parentOrder',
+                'action'
+              ]),
+              journeyId: journey.id
             },
             radioOptionInput3: {
-              id: radioOptionBlock3.id,
-              journeyId: journey.id,
-              parentBlockId: radioOptionBlock3.parentBlockId as string,
-              label: radioOptionBlock3.label
+              ...omit(radioOptionBlock3, [
+                '__typename',
+                'parentOrder',
+                'action'
+              ]),
+              journeyId: journey.id
             },
             radioOptionInput4: {
-              id: radioOptionBlock4.id,
-              journeyId: journey.id,
-              parentBlockId: radioOptionBlock4.parentBlockId as string,
-              label: radioOptionBlock4.label
+              ...omit(radioOptionBlock4, [
+                '__typename',
+                'parentOrder',
+                'action'
+              ]),
+              journeyId: journey.id
             },
             bodyInput: {
-              id: body.id,
-              journeyId: journey.id,
-              parentBlockId: body.parentBlockId as string,
-              content: body.content,
-              variant: body.variant,
-              color: body.color
+              ...omit(body, ['__typename', 'parentOrder']),
+              journeyId: journey.id
             },
             journeyId: journey.id,
             cardId: cardBlock.id,
