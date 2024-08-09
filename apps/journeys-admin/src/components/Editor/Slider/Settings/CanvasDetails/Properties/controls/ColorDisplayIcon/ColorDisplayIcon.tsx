@@ -12,13 +12,20 @@ import {
   ButtonColor,
   IconColor,
   ThemeMode,
-  ThemeName,
-  TypographyColor
+  ThemeName
 } from '../../../../../../../../../__generated__/globalTypes'
 
-interface ColorDisplayIconProps {
-  color: TypographyColor | ButtonColor | IconColor | null
+interface ThemeColor {
+  color: ButtonColor | IconColor | null
+  custom?: false
 }
+
+interface CustomColor {
+  color: string | null
+  custom: true
+}
+
+type ColorDisplayIconProps = ThemeColor | CustomColor
 
 enum DisplayColor {
   primary = 'primary.main',
@@ -28,7 +35,8 @@ enum DisplayColor {
 }
 
 export function ColorDisplayIcon({
-  color
+  color,
+  custom = false
 }: ColorDisplayIconProps): ReactElement {
   const { journey } = useJourney()
   const {
@@ -38,6 +46,12 @@ export function ColorDisplayIcon({
   const card = selectedStep?.children.find(
     (block) => block.__typename === 'CardBlock'
   ) as TreeBlock<CardBlock> | undefined
+
+  let backgroundColor: string = DisplayColor.primary
+
+  if (color != null) {
+    backgroundColor = custom ? color : DisplayColor[color]
+  }
 
   return (
     <Paper
@@ -52,14 +66,13 @@ export function ColorDisplayIcon({
         nested
       >
         <Box
-          data-testid={`${color ?? 'primary'}-display-icon`}
+          data-testid={`${custom ? 'custom' : color ?? 'primary'}-display-icon`}
           sx={{
             width: 20,
             height: 20,
             m: 0.5,
             borderRadius: 1000,
-            backgroundColor:
-              color !== null ? DisplayColor[color] : DisplayColor.primary
+            backgroundColor
           }}
         />
       </ThemeProvider>

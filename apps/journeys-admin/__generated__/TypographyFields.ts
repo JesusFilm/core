@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { TypographyAlign, TypographyColor, TypographyVariant } from "./globalTypes";
+import { TypographyAlign, TypographyVariant } from "./globalTypes";
 
 // ====================================================
 // GraphQL fragment: TypographyFields
@@ -15,7 +15,7 @@ export interface TypographyFields {
   parentBlockId: string | null;
   parentOrder: number | null;
   align: TypographyAlign | null;
-  color: TypographyColor | null;
+  customColor: string | null;
   content: string;
   variant: TypographyVariant | null;
 }
