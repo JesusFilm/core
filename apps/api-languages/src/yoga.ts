@@ -1,3 +1,6 @@
+// eslint-disable-next-line import/order
+import { tracingPlugin } from './tracer'
+
 import {
   createInMemoryCache,
   useResponseCache
@@ -12,6 +15,7 @@ export const cache = createInMemoryCache()
 export const yoga = createYoga({
   schema,
   plugins: [
+    tracingPlugin,
     useReadinessCheck({
       endpoint: '/.well-known/apollo/server-health',
       check: async () => {

@@ -1,10 +1,11 @@
-import { authZEnvelopPlugin } from '@graphql-authz/envelop-plugin'
+// eslint-disable-next-line import/order --- import tracer first
+import { tracingPlugin } from './tracer'
+
 import { initContextCache } from '@pothos/core'
 import { createYoga, useReadinessCheck } from 'graphql-yoga'
 
 import { getUserFromApiKey } from './lib/auth'
 import { prisma } from './lib/prisma'
-import { rules } from './lib/rules'
 import { schema } from './schema'
 import { Context } from './schema/builder'
 
@@ -22,7 +23,7 @@ export const yoga = createYoga({
     } satisfies Context
   },
   plugins: [
-    authZEnvelopPlugin({ rules }),
+    tracingPlugin,
     useReadinessCheck({
       endpoint: '/.well-known/apollo/server-health',
       check: async () => {

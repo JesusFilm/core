@@ -6,7 +6,7 @@ import {
   gql
 } from '@apollo/client'
 import { InjectQueue } from '@nestjs/bullmq'
-import { Injectable, OnModuleInit } from '@nestjs/common'
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common'
 import axios, { AxiosInstance } from 'axios'
 import { Queue } from 'bullmq'
 import { GraphQLError } from 'graphql'
@@ -123,6 +123,8 @@ interface PlausibleAPIStatsAggregateResponse {
 
 @Injectable()
 export class PlausibleService implements OnModuleInit {
+  private readonly logger = new Logger(PlausibleService.name)
+
   client: ApolloClient<NormalizedCacheObject>
   plausibleClient: AxiosInstance
 
@@ -157,7 +159,7 @@ export class PlausibleService implements OnModuleInit {
   }
 
   async createSites(): Promise<void> {
-    console.log('creating team sites...')
+    this.logger.log('creating team sites...')
     const chunkedTeamIds = chunk(
       (
         await this.prismaService.team.findMany({
@@ -174,7 +176,7 @@ export class PlausibleService implements OnModuleInit {
       )
     }
 
-    console.log('creating journey sites...')
+    this.logger.log('creating journey sites...')
     const chunkedJourneyIds = chunk(
       (
         await this.prismaService.journey.findMany({
