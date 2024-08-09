@@ -1,12 +1,14 @@
 import { ApolloError, gql } from '@apollo/client'
-import { GetStaticPaths, GetStaticProps } from 'next'
+import algoliasearch from 'algoliasearch'
+import type { GetStaticPaths, GetStaticProps } from 'next'
 import dynamic from 'next/dynamic'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { SnackbarProvider } from 'notistack'
-import { ReactElement } from 'react'
+import type { ReactElement } from 'react'
+import { InstantSearch } from 'react-instantsearch'
 
-import { GetVideoContent } from '../../../__generated__/GetVideoContent'
-import { VideoContentFields } from '../../../__generated__/VideoContentFields'
+import type { GetVideoContent } from '../../../__generated__/GetVideoContent'
+import type { VideoContentFields } from '../../../__generated__/VideoContentFields'
 import i18nConfig from '../../../next-i18next.config'
 import { createApolloClient } from '../../../src/libs/apolloClient'
 import { getFlags } from '../../../src/libs/getFlags'
@@ -43,19 +45,28 @@ const DynamicVideoContainerPage = dynamic(
     )
 )
 
+const searchClient = algoliasearch(
+  process.env.NEXT_PUBLIC_ALGOLIA_APP_ID ?? '',
+  process.env.NEXT_PUBLIC_ALGOLIA_API_KEY ?? ''
+)
+
 export default function Part2Page({ content }: Part2PageProps): ReactElement {
+  const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
+
   return (
-    <SnackbarProvider>
-      <LanguageProvider>
-        <VideoProvider value={{ content }}>
-          {content.variant?.hls != null ? (
-            <DynamicVideoContentPage />
-          ) : (
-            <DynamicVideoContainerPage />
-          )}
-        </VideoProvider>
-      </LanguageProvider>
-    </SnackbarProvider>
+    <InstantSearch insights searchClient={searchClient} indexName={indexName}>
+      <SnackbarProvider>
+        <LanguageProvider>
+          <VideoProvider value={{ content }}>
+            {content.variant?.hls != null ? (
+              <DynamicVideoContentPage />
+            ) : (
+              <DynamicVideoContainerPage />
+            )}
+          </VideoProvider>
+        </LanguageProvider>
+      </SnackbarProvider>
+    </InstantSearch>
   )
 }
 
