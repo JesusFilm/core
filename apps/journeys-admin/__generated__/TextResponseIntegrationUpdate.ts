@@ -3,8 +3,6 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { TextResponseBlockUpdateInput } from "./globalTypes";
-
 // ====================================================
 // GraphQL mutation operation: TextResponseIntegrationUpdate
 // ====================================================
@@ -13,6 +11,7 @@ export interface TextResponseIntegrationUpdate_textResponseBlockUpdate {
   __typename: "TextResponseBlock";
   id: string;
   integrationId: string | null;
+  routeId: string | null;
 }
 
 export interface TextResponseIntegrationUpdate {
@@ -21,6 +20,6 @@ export interface TextResponseIntegrationUpdate {
 
 export interface TextResponseIntegrationUpdateVariables {
   id: string;
-  journeyId: string;
-  input: TextResponseBlockUpdateInput;
+  integrationId?: string | null;
+  routeId?: string | null;
 }

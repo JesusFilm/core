@@ -29,6 +29,7 @@ interface AddActionParameters {
   action: Action
   undoAction: Action | undefined
   editorFocus?: Omit<SetEditorFocusAction, 'type'>
+  undoEditorFocus?: Omit<SetEditorFocusAction, 'type'>
 }
 
 export function useActionCommand(): {
@@ -48,18 +49,21 @@ export function useActionCommand(): {
       blockTypename,
       action,
       undoAction,
-      editorFocus
+      editorFocus,
+      undoEditorFocus
     }: AddActionParameters) {
       add({
         parameters: {
           execute: {
-            action
+            action,
+            editorFocus
           },
           undo: {
-            action: undoAction
+            action: undoAction,
+            editorFocus: undoEditorFocus ?? editorFocus
           }
         },
-        execute({ action }) {
+        execute({ action, editorFocus }) {
           const block = {
             id: blockId,
             __typename: blockTypename

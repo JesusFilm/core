@@ -4,6 +4,7 @@ import { useRouter } from 'next/router'
 import { type ReactElement, useEffect, useRef, useState } from 'react'
 import { CSSTransition, TransitionGroup } from 'react-transition-group'
 
+import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import {
   ActiveCanvasDetailsDrawer,
@@ -14,7 +15,6 @@ import { FramePortal } from '@core/journeys/ui/FramePortal'
 import { getStepTheme } from '@core/journeys/ui/getStepTheme'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
-import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
 import { StepFooter } from '@core/journeys/ui/StepFooter'
 import { VideoWrapper } from '@core/journeys/ui/VideoWrapper'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
@@ -166,8 +166,7 @@ export function Canvas(): ReactElement {
             sx={{
               display: 'flex',
               flexDirection: 'column',
-              height: `${calculateScaledHeight(CARD_HEIGHT, scale)}`,
-              pointerEvents: showAnalytics === true ? 'none' : 'auto'
+              height: `${calculateScaledHeight(CARD_HEIGHT, scale)}`
             }}
           >
             <Box
@@ -181,6 +180,7 @@ export function Canvas(): ReactElement {
                   scale < 0.65 ? '20px' : '0px'
                 }) ${calculateScaledMargin(CARD_WIDTH, scale)}`,
                 borderRadius: 6,
+                pointerEvents: showAnalytics === true ? 'none' : 'auto',
                 transition: (theme) =>
                   theme.transitions.create('border-color', {
                     duration: 200,
