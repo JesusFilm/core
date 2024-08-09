@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
 import { GetStaticProps } from 'next'
 import { useRouter } from 'next/router'
 import { useUser, withUser, withUserTokenSSR } from 'next-firebase-auth'
@@ -20,6 +21,7 @@ import {
 } from '../../__generated__/GetJourneys'
 import { GetTags } from '../../__generated__/GetTags'
 import { IdType } from '../../__generated__/globalTypes'
+import { HelpScoutBeacon } from '../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 
@@ -31,11 +33,15 @@ function TemplateDetailsPage(): ReactElement {
     id: router.query.journeyId as string,
     idType: IdType.databaseId
   })
-  const { query } = useTeam()
+  const { activeTeam, refetch, query } = useTeam()
 
   useEffect(() => {
-    void query.refetch()
-  }, [user.id, query])
+    if (activeTeam == null) {
+      void refetch()
+    }
+  }, [user.id, query, activeTeam, refetch])
+
+  const userSignedIn = user?.id != null
 
   return (
     <>
@@ -54,11 +60,48 @@ function TemplateDetailsPage(): ReactElement {
           user={user}
           backHref="/templates"
           mainBodyPadding={false}
-          showMainHeader={user?.id != null}
-          showAppHeader={user?.id != null}
-          showNavBar={user?.id != null}
+          showMainHeader={userSignedIn}
+          mainHeaderChildren={
+            <Stack
+              direction="row"
+              justifyContent="flex-end"
+              flexGrow={1}
+              alignItems="center"
+              gap={3}
+              sx={{
+                display: {
+                  xs: 'none',
+                  md: 'flex'
+                }
+              }}
+            >
+              <HelpScoutBeacon
+                userInfo={{
+                  name: user?.displayName ?? '',
+                  email: user?.email ?? ''
+                }}
+              />
+            </Stack>
+          }
+          showAppHeader={userSignedIn}
+          showNavBar={userSignedIn}
           background="background.paper"
         >
+          <Box
+            sx={{
+              position: 'absolute',
+              right: 16,
+              top: 8,
+              display: userSignedIn ? 'none' : 'block'
+            }}
+          >
+            <HelpScoutBeacon
+              userInfo={{
+                name: user?.displayName ?? '',
+                email: user?.email ?? ''
+              }}
+            />
+          </Box>
           <Box
             sx={{
               maxWidth: { md: '90vw' },

@@ -118,7 +118,7 @@ export const TextResponse = ({
               <TextField
                 id="textResponse-field"
                 name="response"
-                label={label}
+                label={label === '' ? 'Your answer here' : label}
                 value={values.response}
                 helperText={hint != null ? hint : ''}
                 multiline

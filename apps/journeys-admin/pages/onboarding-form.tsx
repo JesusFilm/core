@@ -32,6 +32,7 @@ function OnboardingFormPage({ form }: OnboardingFormPageProps): ReactElement {
       <OnboardingPageWrapper
         title={t('User Insights')}
         emailSubject={t('a question about onboarding form')}
+        user={user}
       >
         <OnboardingForm form={form} user={user} />
       </OnboardingPageWrapper>

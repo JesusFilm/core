@@ -16,17 +16,6 @@ module "ecs-task" {
   alb_dns_name          = var.alb.dns_name
 }
 
-module "seed" {
-  source        = "../../../infrastructure/modules/aws/ecs-task-job"
-  name          = "${local.service_config.name}-seed"
-  doppler_token = var.doppler_token
-  environment_variables = [
-    "PG_DATABASE_URL_JOURNEYS"
-  ]
-  task_execution_role_arn = var.ecs_config.task_execution_role_arn
-  env                     = var.env
-}
-
 module "database" {
   source                  = "../../../infrastructure/modules/aws/aurora"
   name                    = local.service_config.name
