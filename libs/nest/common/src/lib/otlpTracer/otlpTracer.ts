@@ -15,6 +15,8 @@ import {
 import { ASTNode, print } from 'graphql'
 import { Plugin } from 'graphql-yoga'
 
+import { PrismaInstrumentation } from '@prisma/instrumentation'
+
 export default function otlpTracer(serviceName: string): {
   provider: NodeTracerProvider
   tracer: Tracer
@@ -33,6 +35,7 @@ export default function otlpTracer(serviceName: string): {
 
   registerInstrumentations({
     instrumentations: [
+      new PrismaInstrumentation(),
       new RuntimeNodeInstrumentation({
         eventLoopUtilizationMeasurementInterval: 5000
       }),

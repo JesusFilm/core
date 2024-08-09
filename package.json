@@ -89,6 +89,7 @@
     "@pothos/plugin-tracing": "^1.1.0",
     "@pothos/tracing-opentelemetry": "^1.1.0",
     "@prisma/client": "^5.2.0",
+    "@prisma/instrumentation": "^5.18.0",
     "@react-email/components": "^0.0.17",
     "@react-email/render": "^0.0.13",
     "@storybook/core-server": "7.6.6",
