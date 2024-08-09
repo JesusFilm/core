@@ -125,6 +125,7 @@ export function JourneyFlow(): ReactElement {
   >(GET_STEP_BLOCKS_WITH_POSITION, {
     notifyOnNetworkStatusChange: true,
     variables: { journeyIds: journey?.id != null ? [journey.id] : undefined },
+    skip: journey?.id == null,
     onCompleted: (data) => {
       if (
         data.blocks.some(

@@ -17,8 +17,18 @@ import {
   GetAdminJourney,
   GetAdminJourneyVariables
 } from '../../__generated__/GetAdminJourney'
-import { GetCustomDomains } from '../../__generated__/GetCustomDomains'
-import { UserJourneyOpen } from '../../__generated__/UserJourneyOpen'
+import {
+  GetCustomDomains,
+  GetCustomDomainsVariables
+} from '../../__generated__/GetCustomDomains'
+import {
+  GetSSRAdminJourney,
+  GetSSRAdminJourneyVariables
+} from '../../__generated__/GetSSRAdminJourney'
+import {
+  UserJourneyOpen,
+  UserJourneyOpenVariables
+} from '../../__generated__/UserJourneyOpen'
 import { AccessDenied } from '../../src/components/AccessDenied'
 import { Editor } from '../../src/components/Editor'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
@@ -29,6 +39,22 @@ export const GET_ADMIN_JOURNEY = gql`
   query GetAdminJourney($id: ID!) {
     journey: adminJourney(id: $id, idType: databaseId) {
       ...JourneyFields
+    }
+  }
+`
+
+export const GET_SSR_ADMIN_JOURNEY = gql`
+  query GetSSRAdminJourney($id: ID!) {
+    journey: adminJourney(id: $id, idType: databaseId) {
+      id
+      template
+      team {
+        id
+      }
+      language {
+        id
+        bcp47
+      }
     }
   }
 `
@@ -95,16 +121,19 @@ export const getServerSideProps = withUserTokenSSR({
   if (redirect != null) return { redirect }
 
   try {
-    const { data } = await apolloClient.query<GetAdminJourney>({
-      query: GET_ADMIN_JOURNEY,
+    const { data } = await apolloClient.query<
+      GetSSRAdminJourney,
+      GetSSRAdminJourneyVariables
+    >({
+      query: GET_SSR_ADMIN_JOURNEY,
       variables: {
-        id: query?.journeyId
+        id: query?.journeyId as string
       }
     })
 
     if (data.journey?.team?.id != null) {
       // from: src/components/Editor/Properties/JourneyLink/JourneyLink.tsx
-      await apolloClient.query<GetCustomDomains>({
+      await apolloClient.query<GetCustomDomains, GetCustomDomainsVariables>({
         query: GET_CUSTOM_DOMAINS,
         variables: {
           teamId: data.journey.team.id
@@ -120,7 +149,7 @@ export const getServerSideProps = withUserTokenSSR({
         }
       }
     }
-    await apolloClient.mutate<UserJourneyOpen>({
+    await apolloClient.mutate<UserJourneyOpen, UserJourneyOpenVariables>({
       mutation: USER_JOURNEY_OPEN,
       variables: { id: data.journey?.id }
     })
