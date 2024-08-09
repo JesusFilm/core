@@ -98,9 +98,10 @@ export function GoalsList({
             <TableHead
               sx={{
                 '& .MuiTableCell-stickyHeader': {
-                    bgcolor: 'background.paper',
-                    borderBottom: ({ palette }) => variant !== 'minimal' ? `1.5px solid ${palette.divider}` : 0
-                  }
+                  bgcolor: 'background.paper',
+                  borderBottom: ({ palette }) =>
+                    variant !== 'minimal' ? `1.5px solid ${palette.divider}` : 0
+                }
               }}
             >
               <TableRow sx={{ backgroundColor: 'background.paper' }}>
