@@ -160,7 +160,7 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
   let originalEnv
 
   beforeEach(() => {
-    (useMediaQuery as jest.Mock).mockImplementation(() => true)
+    ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
     originalEnv = process.env
     process.env = {
       ...originalEnv,

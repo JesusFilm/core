@@ -113,7 +113,7 @@ describe('PageWrapper', () => {
     })
 
     it('should show the side nav bar', () => {
-      (useMediaQuery as jest.Mock).mockImplementation(() => true)
+      ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
 
       const { getByTestId, getByText, queryByRole } = render(
         <MockedProvider>

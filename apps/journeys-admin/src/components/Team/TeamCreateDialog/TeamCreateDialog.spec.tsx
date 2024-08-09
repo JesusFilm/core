@@ -25,7 +25,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 describe('TeamCreateDialog', () => {
   beforeEach(() => {
-    (useMediaQuery as jest.Mock).mockImplementation(() => true)
+    ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
   })
 
   const teamCreateMock: MockedResponse<TeamCreate> = {

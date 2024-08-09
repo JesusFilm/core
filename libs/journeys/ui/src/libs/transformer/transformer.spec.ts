@@ -21,6 +21,17 @@ describe('transformer', () => {
           locked: false
         },
         {
+          __typename: 'CardBlock',
+          backgroundColor: '#30313D',
+          coverBlockId: '404-imageBlock-id',
+          fullscreen: false,
+          id: 'invalidRoot',
+          parentBlockId: null,
+          parentOrder: 0,
+          themeMode: null,
+          themeName: null
+        },
+        {
           __typename: 'RadioQuestionBlock',
           id: 'Question1',
           parentBlockId: 'Root1',

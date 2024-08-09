@@ -11,3 +11,6 @@ schema.graphql
 .storybook/static/mockServiceWorker.js
 /.nx/cache
 /.nx/workspace-data
+.next/
+.terraform/
+playwright-report/

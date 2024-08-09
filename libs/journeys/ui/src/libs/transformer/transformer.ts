@@ -22,5 +22,5 @@ export function transformer(data: BlockFields[]): TreeBlock[] {
       tree.push(newNode)
     }
   })
-  return tree
+  return tree.filter(({ __typename: typename }) => typename === 'StepBlock')
 }
