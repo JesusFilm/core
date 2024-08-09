@@ -1,0 +1,26 @@
+{
+  "name": "yoga",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/yoga/src",
+  "projectType": "library",
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/libs/yoga"],
+      "options": {
+        "jestConfig": "libs/nest/decorators/jest.config.ts"
+      }
+    },
+    "codecov": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "codecov -f coverage/libs/yoga/cobertura-coverage.xml -F libs.nest.decorators"
+      }
+    }
+  },
+  "tags": []
+}

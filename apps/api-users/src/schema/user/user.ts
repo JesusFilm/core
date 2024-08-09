@@ -1,6 +1,23 @@
 import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 
+export function validateIpV4(s: string | null): boolean {
+  if (s == null) return true // localhost
+
+  const match = s.match(/([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})/g)
+  const ip = match?.[0] ?? ''
+  return (
+    ip === '3.13.104.200' || // prod aws nat
+    ip === '18.225.26.131' || // stage aws nat
+    ip === '127.0.0.1' // localhsot
+  )
+}
+
+export function isValidInterOp(token: string, address: string): boolean {
+  const validIp = validateIpV4(address)
+  return token === process.env.INTEROP_TOKEN && validIp
+}
+
 const CreateVerificationRequestInput = builder.inputType(
   'CreateVerificationRequestInput',
   {
@@ -57,6 +74,27 @@ builder.queryFields((t) => ({
       return await prisma.user.findUnique({
         ...query,
         where: { email }
+      })
+    }
+  }),
+  me: t.prismaField({
+    type: 'User',
+    nullable: true,
+    args: {
+      input: t.arg({
+        type: MeInput,
+        required: false
+      })
+    },
+    resolve: async (query, _parent, { input }) => {
+      if (input?.redirect != null) {
+        return { redirect: input.redirect }
+      }
+      return await prisma.user.findOrFetchUser({
+        ...query,
+        include: {
+          userRole: true
+        }
       })
     }
   })
