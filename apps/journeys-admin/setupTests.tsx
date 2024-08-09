@@ -9,7 +9,7 @@ import { mswServer } from './test/mswServer'
 import './test/i18n'
 
 configure({ asyncUtilTimeout: 2500 })
-
+// dummy text just to create env
 jest.mock('next/image', () => ({
   __esModule: true,
   default: ({ src, alt, priority, className }) => (
