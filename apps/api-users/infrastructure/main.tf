@@ -15,14 +15,3 @@ module "ecs-task" {
   alb_listener_arn      = module.alb-listener.arn
   alb_dns_name          = var.alb.dns_name
 }
-
-module "database" {
-  source                  = "../../../infrastructure/modules/aws/aurora"
-  name                    = local.service_config.name
-  env                     = var.env
-  doppler_token           = var.doppler_token
-  doppler_project         = local.service_config.name
-  subnet_group_name       = var.subnet_group_name
-  vpc_security_group_id   = var.vpc_security_group_id
-  PG_DATABASE_URL_ENV_VAR = "PG_DATABASE_URL_USERS"
-}

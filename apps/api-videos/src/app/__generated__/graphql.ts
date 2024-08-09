@@ -65,6 +65,7 @@ export class BibleCitation {
 export class Video {
     __typename?: 'Video';
     bibleCitations: BibleCitation[];
+    keywords?: Keyword[];
     id: string;
     label: VideoLabel;
     primaryLanguageId: string;
@@ -83,6 +84,13 @@ export class Video {
     variantLanguagesWithSlug: LanguageWithSlug[];
     subtitles?: VideoSubtitle[];
     variant?: Nullable<VideoVariant>;
+}
+
+export class Keyword {
+    __typename?: 'Keyword';
+    id: string;
+    value: string;
+    language: Language;
 }
 
 export class LanguageWithSlug {
