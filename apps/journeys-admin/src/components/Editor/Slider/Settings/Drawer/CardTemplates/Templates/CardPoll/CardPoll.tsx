@@ -96,7 +96,7 @@ export const CARD_POLL_CREATE = gql`
     }
   }
 `
-
+// the delete needs to done in the reverse order of the create - this is needed to preserve the accurate block order
 export const CARD_POLL_DELETE = gql`
   mutation CardPollDelete(
     $imageId: ID!
