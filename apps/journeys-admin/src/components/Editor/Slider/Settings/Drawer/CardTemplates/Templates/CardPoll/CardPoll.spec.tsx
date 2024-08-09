@@ -92,12 +92,16 @@ describe('CardPoll', () => {
           journeyId: 'journeyId',
           parentBlockId: 'cardId',
           content: 'Got an Opinion?',
+          align: null,
+          color: null,
           variant: TypographyVariant.h6
         },
         titleInput: {
           id: 'titleId',
           journeyId: 'journeyId',
           parentBlockId: 'cardId',
+          align: null,
+          color: null,
           content: "Which of Jesus' teachings challenges you the most?",
           variant: TypographyVariant.h2
         },
@@ -135,6 +139,7 @@ describe('CardPoll', () => {
           journeyId: 'journeyId',
           parentBlockId: 'cardId',
           content: '↑ Select an answer to continue',
+          align: null,
           variant: TypographyVariant.caption,
           color: TypographyColor.secondary
         },
