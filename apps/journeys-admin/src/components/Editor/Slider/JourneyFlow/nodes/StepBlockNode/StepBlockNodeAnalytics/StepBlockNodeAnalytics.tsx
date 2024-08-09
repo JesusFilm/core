@@ -5,6 +5,7 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import Clock1 from '@core/shared/ui/icons/Clock1'
 import TrendDown1 from '@core/shared/ui/icons/TrendDown1'
 import UserProfile3 from '@core/shared/ui/icons/UserProfile3'
@@ -63,6 +64,7 @@ export function StepBlockNodeAnalytics({
   stepId
 }: StepBlockNodeAnalyticsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const { plausibleThreshold } = useFlags()
   const {
     state: { analytics }
   } = useEditor()
@@ -72,7 +74,7 @@ export function StepBlockNodeAnalytics({
   const timeOnPage = stepStats?.timeOnPage ?? 0
 
   const totalVisitors = analytics?.totalVisitors ?? 0
-  const VISITOR_THRESHOLD = 50
+  const VISITOR_THRESHOLD = plausibleThreshold ? 1 : 50
   const hideStats = totalVisitors < VISITOR_THRESHOLD
 
   return (
