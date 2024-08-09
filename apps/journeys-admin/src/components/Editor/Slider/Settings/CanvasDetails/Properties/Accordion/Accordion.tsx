@@ -8,8 +8,8 @@ import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
 import { ReactElement, ReactNode } from 'react'
 
+import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
 
 interface AccordionProps {
   id: string
