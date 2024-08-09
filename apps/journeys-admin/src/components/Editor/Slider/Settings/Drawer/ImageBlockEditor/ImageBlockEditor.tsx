@@ -8,7 +8,7 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, SyntheticEvent, useState } from 'react'
 import { object, string } from 'yup'
 
-import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
+import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
 import Grid1Icon from '@core/shared/ui/icons/Grid1'
 import Image3Icon from '@core/shared/ui/icons/Image3'
 import StarsIcon from '@core/shared/ui/icons/Stars'
