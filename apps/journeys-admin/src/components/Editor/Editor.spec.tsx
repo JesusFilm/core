@@ -1,6 +1,8 @@
 import { MockedProvider, type MockedResponse } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { render, screen, waitFor } from '@testing-library/react'
+import { useRouter } from 'next/compat/router'
+import { NextRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -19,10 +21,17 @@ import { GET_STEP_BLOCKS_WITH_POSITION } from './Slider/JourneyFlow/JourneyFlow'
 
 import { Editor } from '.'
 
+jest.mock('next/compat/router', () => ({
+  __esModule: true,
+  useRouter: jest.fn()
+}))
+
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: jest.fn()
 }))
+
+const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('Editor', () => {
   const journey: Journey = {
@@ -84,6 +93,10 @@ describe('Editor', () => {
 
   beforeEach(() => {
     mockReactFlow()
+
+    mockedUseRouter.mockReturnValue({
+      query: { journeyId: journey.id }
+    } as unknown as NextRouter)
   })
 
   it('should render the Toolbar', () => {

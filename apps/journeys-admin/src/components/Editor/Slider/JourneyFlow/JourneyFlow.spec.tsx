@@ -2,6 +2,8 @@ import { MutationResult } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { useRouter } from 'next/compat/router'
+import { NextRouter } from 'next/router'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { ActiveSlide, EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -31,6 +33,13 @@ import { transformSteps } from './libs/transformSteps'
 
 import { JourneyFlow } from '.'
 
+jest.mock('next/compat/router', () => ({
+  __esModule: true,
+  useRouter: jest.fn()
+}))
+
+const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+
 jest.mock('../../../../libs/useStepBlockPositionUpdateMutation', () => {
   return {
     useStepBlockPositionUpdateMutation: jest
@@ -55,7 +64,13 @@ const mockTransformSteps = transformSteps as jest.MockedFunction<
 >
 
 describe('JourneyFlow', () => {
-  beforeEach(() => mockReactFlow())
+  beforeEach(() => {
+    mockReactFlow()
+
+    mockedUseRouter.mockReturnValue({
+      query: { journeyId: defaultJourney.id }
+    } as unknown as NextRouter)
+  })
 
   const mockGetStepBlocksWithPosition: MockedResponse<
     GetStepBlocksWithPosition,
@@ -101,8 +116,10 @@ describe('JourneyFlow', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
 
     expect(screen.getByTestId('JourneyFlow')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Add Step' })).toBeInTheDocument()
-    expect(screen.getAllByTestId('StepBlockNodeCard')).toHaveLength(7)
+    expect(screen.getByRole('button', { name: 'Add Step' })).not.toBeDisabled()
+    await waitFor(() =>
+      expect(screen.getAllByTestId('StepBlockNodeCard')).toHaveLength(7)
+    )
     expect(
       screen.getByRole('checkbox', { name: 'Analytics Overlay' })
     ).toBeInTheDocument()
