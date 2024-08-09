@@ -18,7 +18,7 @@ import {
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import { LanguageOption } from '@core/shared/ui/MultipleLanguageAutocomplete'
 
-import { setBeaconPageViewed } from '../../../libs/setBeaconPageViewed'
+import { setBeaconPageViewed } from '../../../libs/beaconHooks'
 import { useLanguagesQuery } from '../../../libs/useLanguagesQuery'
 
 import { convertLanguagesToOptions } from './convertLanguagesToOptions'

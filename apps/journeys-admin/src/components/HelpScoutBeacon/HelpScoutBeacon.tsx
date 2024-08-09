@@ -5,9 +5,9 @@ import MenuItem from '@mui/material/MenuItem'
 import Tooltip from '@mui/material/Tooltip'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
-import { FormObject } from '@core/journeys/ui/setBeaconPageViewed'
+import { FormObject } from '@core/journeys/ui/beaconHooks'
 import HelpCircleContained from '@core/shared/ui/icons/HelpCircleContained'
 import XCircleContained from '@core/shared/ui/icons/XCircleContained'
 
@@ -28,9 +28,10 @@ export function HelpScoutBeacon({
 }: HelpScoutBeaconProps): ReactElement {
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
+  const [loaded, setLoaded] = useState(false)
   const [beaconOpen, setBeaconOpen] = useState(false)
 
-  const handleBeaconClick = (): void => {
+  function handleBeaconToggle(): void {
     if (window.Beacon != null) {
       window.Beacon('on', 'open', () => {
         setBeaconOpen(true)
@@ -38,19 +39,32 @@ export function HelpScoutBeacon({
       window.Beacon('on', 'close', () => {
         setBeaconOpen(false)
       })
+    }
+  }
+
+  useEffect(() => {
+    handleBeaconToggle()
+  }, [loaded, setBeaconOpen])
+
+  const handleBeaconClick = (): void => {
+    if (window.Beacon != null) {
+      handleBeaconToggle()
       window.Beacon('toggle')
     } else {
       void router.push('https://support.nextstep.is/')
     }
-
     handleClick?.()
   }
 
   return (
     <>
-      <BeaconInit userInfo={userInfo} />
+      <BeaconInit userInfo={userInfo} loaded={loaded} setLoaded={setLoaded} />
       {variant === 'iconButton' && (
-        <Tooltip title={t('Help')} arrow sx={{ m: 0 }}>
+        <Tooltip
+          title={beaconOpen ? t('Close') : t('Help')}
+          arrow
+          sx={{ m: 0 }}
+        >
           <IconButton
             data-testid="HelpScoutBeaconIconButton"
             size="medium"
