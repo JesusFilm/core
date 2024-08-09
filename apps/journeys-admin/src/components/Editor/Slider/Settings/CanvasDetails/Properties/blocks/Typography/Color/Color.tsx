@@ -1,25 +1,27 @@
 import { gql, useMutation } from '@apollo/client'
-import { type ReactElement, useRef, useState } from 'react'
+import Box from '@mui/material/Box'
+import Divider from '@mui/material/Divider'
+import Tab from '@mui/material/Tab'
+import Tabs from '@mui/material/Tabs'
+import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next'
+import { type ReactElement, useState } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
-import { BlockFields_TypographyBlock as TypographyBlock } from '../../../../../../../../../../__generated__/BlockFields'
-import { Box } from '@mui/material'
-import { debounce } from 'lodash'
-import { HexColorPicker } from 'react-colorful'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { getJourneyRTL } from '@core/journeys/ui/rtl'
+import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
+import { ThemeMode, ThemeName, getTheme } from '@core/shared/ui/themes'
+
+import { BlockFields_CardBlock as CardBlock , BlockFields_TypographyBlock as TypographyBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import {
   TypographyBlockUpdateColor,
   TypographyBlockUpdateColorVariables
 } from '../../../../../../../../../../__generated__/TypographyBlockUpdateColor'
+import { DebouncedHexColorPicker } from '../../Card/BackgroundColor/DebouncedHexColorPicker'
 import { PaletteColorPicker } from '../../Card/BackgroundColor/PaletteColorPicker'
-
-import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../../__generated__/BlockFields'
-import { ThemeMode, ThemeName, getTheme } from '@core/shared/ui/themes'
-import { getJourneyRTL } from '@core/journeys/ui/rtl'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-
-
 
 export const TYPOGRAPHY_BLOCK_UPDATE_COLOR = gql`
   mutation TypographyBlockUpdateColor($id: ID!, $customColor: String!) {
@@ -40,12 +42,13 @@ export function Color(): ReactElement {
     state: { selectedBlock: stateSelectedBlock, selectedStep },
     dispatch
   } = useEditor()
+  const { journey } = useJourney()
+  const { rtl, locale } = getJourneyRTL(journey)
+  const { t } = useTranslation('apps-journeys-admin')
+
   const selectedBlock = stateSelectedBlock as
     | TreeBlock<TypographyBlock>
     | undefined
-
-    const { journey } = useJourney()
-  const { rtl, locale } = getJourneyRTL(journey)
 
   const card = selectedStep?.children.find(
     (block) => block.__typename === 'CardBlock'
@@ -58,9 +61,8 @@ export function Color(): ReactElement {
     locale
   })
 
-  const [selectedColor, setSelectedColor] = useState(
-    selectedBlock?.customColor ?? theme.palette.primary.main
-  )
+  const [tabValue, setTabValue] = useState(0)
+  const selectedColor = selectedBlock?.customColor ?? theme.palette.primary.main
 
 const palette = [
   { light: theme.palette.text.primary, dark: theme.palette.text.primary },
@@ -83,18 +85,11 @@ const palette = [
   { dark: '#30313D', light: '#FEFEFE' }
 ]
 
-  const handleColorChange = async (color: string): Promise<void> => {
-    void debouncedColorChange(color.toUpperCase())
+  function handleTabChange(_event, newValue: number): void {
+    setTabValue(newValue)
   }
 
-  const debouncedColorChange = useRef(
-    debounce(async (color: string) => {
-      void changeTypographyColor(color)
-      setSelectedColor(color)
-    }, 100)
-  ).current
-
-  function changeTypographyColor(color: string): void {
+  function handleColorChange(color: string): void {
     if (selectedBlock == null || color == null) return
 
       add({
@@ -127,20 +122,64 @@ const palette = [
       })
   }
 
-  return (
-    <Box sx={{ px: 4, pb: 4 }}>
-      <PaletteColorPicker
+  const palettePicker = (
+    <PaletteColorPicker
         selectedColor={selectedColor}
         colors={palette}
         mode="dark"
         onChange={handleColorChange}
       />
-      <HexColorPicker
+  )
+
+  const hexColorPicker = (
+    <Box sx={{ p: 4}}>
+      <DebouncedHexColorPicker
         data-testid="TextColorPicker"
         color={selectedColor}
         onChange={handleColorChange}
         style={{ width: '100%', height: 125 }}
       />
     </Box>
+  )
+
+
+  return (
+    <>
+      <Box
+        sx={{
+          display: { sm: 'block', md: 'none'}
+        }}
+      >
+        <Tabs
+          value={tabValue}
+          onChange={handleTabChange}
+          aria-label="color tabs"
+          variant="fullWidth"
+          centered
+        >
+          <Tab label={t('Palette')} {...tabA11yProps('typography-color', 0)} />
+          <Tab label={t('Custom')} {...tabA11yProps('typography-color', 1)} />
+        </Tabs>
+        <Divider />
+        <TabPanel name="typography-color" value={tabValue} index={0}>
+          {palettePicker}
+        </TabPanel>
+        <TabPanel name="typography-color" value={tabValue} index={1}>
+          {hexColorPicker}
+        </TabPanel>
+      </Box>
+      <Box sx={{ display: { sm: 'none', md: 'block' }}}>
+        <Divider />
+        <Box sx={{ p: 4, pb: 0}}>
+          <Typography variant="subtitle2">{t('Palette')}</Typography>
+        </Box>
+        {palettePicker}
+        <Divider />
+        <Box sx={{ p: 4, pb: 0 }}>
+          <Typography variant="subtitle2">{t('Custom')}</Typography>
+        </Box>
+        {hexColorPicker}
+      </Box>
+    </>
   )
 }
