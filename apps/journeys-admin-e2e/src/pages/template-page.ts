@@ -228,7 +228,7 @@ export class TemplatePage {
             'div[data-testid="pagination-bullets"] svg[data-testid*="bullet"]'
           )
           .nth(slide)
-      ).toHaveAttribute('data-testid', 'bullet-active')
+      ).toHaveAttribute('data-testid', 'bullet-adjacent')
     }
 
     await newPage.close()
