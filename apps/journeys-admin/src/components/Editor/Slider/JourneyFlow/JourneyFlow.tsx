@@ -126,31 +126,14 @@ export function JourneyFlow(): ReactElement {
     notifyOnNetworkStatusChange: true,
     variables: { journeyIds: journey?.id != null ? [journey.id] : undefined },
     onCompleted: (data) => {
-      if (steps == null || journey == null) return
-      const positions: PositionMap = {}
       if (
         data.blocks.some(
           (block) =>
             block.__typename === 'StepBlock' &&
             (block.x == null || block.y == null)
         )
-      ) {
-        // some steps have no x or y coordinates
+      )
         void allBlockPositionUpdate(true)
-      } else {
-        data.blocks.forEach((block) => {
-          if (
-            block.__typename === 'StepBlock' &&
-            block.x != null &&
-            block.y != null
-          ) {
-            positions[block.id] = { x: block.x, y: block.y }
-          }
-        })
-      }
-      const { nodes, edges } = transformSteps(steps ?? [], positions)
-      setEdges(edges)
-      setNodes(nodes)
     }
   })
 
