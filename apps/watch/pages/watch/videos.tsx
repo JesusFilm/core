@@ -3,6 +3,7 @@ import algoliasearch from 'algoliasearch'
 import type { UiState } from 'instantsearch.js'
 import type { RouterProps } from 'instantsearch.js/es/middlewares'
 import type { GetStaticProps } from 'next'
+import { useRouter } from 'next/compat/router'
 import singletonRouter from 'next/router'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import type { ReactElement } from 'react'
@@ -73,16 +74,32 @@ const nextRouter: RouterProps = {
   }
 }
 
-function VideosPage({ initialApolloState }: VideosPageProps): ReactElement {
+interface FilterParams {
+  query: string | null
+  languageId: string | null
+  subtitleId: string | null
+}
+
+function extractQueryParams(url: string): FilterParams {
+  const params = new URLSearchParams(url.split('?')[1])
+  const query = params.get('query')
+  const languageId = params.get('menu[languageId]')
+  const subtitleId = params.get('menu[subtitles]')
+  return { query, languageId, subtitleId }
+}
+
+function VideosPage({ initialApolloState, serverState }: VideosPageProps): ReactElement {
   const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
+  const router = useRouter()
+  const decodedUrl = decodeURIComponent(router?.asPath ?? '')
+  const { query, languageId, subtitleId } = extractQueryParams(decodedUrl)
 
   const client = useApolloClient({
     initialState: initialApolloState
   })
 
   return (
-    // Don't pass in server state because it will be stale if any state set by url
-    <InstantSearchSSRProvider>
+    <InstantSearchSSRProvider {...(query == null && languageId == null && subtitleId == null ? serverState : undefined)}>
       <ApolloProvider client={client}>
         <InstantSearch
           insights
