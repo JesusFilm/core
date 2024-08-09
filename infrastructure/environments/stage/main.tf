@@ -94,12 +94,10 @@ module "api-analytics" {
 }
 
 module "api-journeys" {
-  source                = "../../../apps/api-journeys/infrastructure"
-  ecs_config            = local.internal_ecs_config
-  env                   = "stage"
-  doppler_token         = data.aws_ssm_parameter.doppler_api_journeys_stage_token.value
-  subnet_group_name     = module.stage.vpc.db_subnet_group_name
-  vpc_security_group_id = module.stage.private_rds_security_group_id
+  source        = "../../../apps/api-journeys/infrastructure"
+  ecs_config    = local.internal_ecs_config
+  env           = "stage"
+  doppler_token = data.aws_ssm_parameter.doppler_api_journeys_stage_token.value
   alb = {
     arn      = module.stage.internal_alb.arn
     dns_name = module.stage.internal_alb.dns_name
@@ -107,12 +105,10 @@ module "api-journeys" {
 }
 
 module "api-languages" {
-  source                = "../../../apps/api-languages/infrastructure"
-  ecs_config            = local.internal_ecs_config
-  env                   = "stage"
-  doppler_token         = data.aws_ssm_parameter.doppler_api_languages_stage_token.value
-  subnet_group_name     = module.stage.vpc.db_subnet_group_name
-  vpc_security_group_id = module.stage.private_rds_security_group_id
+  source        = "../../../apps/api-languages/infrastructure"
+  ecs_config    = local.internal_ecs_config
+  env           = "stage"
+  doppler_token = data.aws_ssm_parameter.doppler_api_languages_stage_token.value
   alb = {
     arn      = module.stage.internal_alb.arn
     dns_name = module.stage.internal_alb.dns_name
@@ -120,12 +116,10 @@ module "api-languages" {
 }
 
 module "api-tags" {
-  source                = "../../../apps/api-tags/infrastructure"
-  ecs_config            = local.internal_ecs_config
-  env                   = "stage"
-  doppler_token         = data.aws_ssm_parameter.doppler_api_tags_stage_token.value
-  subnet_group_name     = module.stage.vpc.db_subnet_group_name
-  vpc_security_group_id = module.stage.private_rds_security_group_id
+  source        = "../../../apps/api-tags/infrastructure"
+  ecs_config    = local.internal_ecs_config
+  env           = "stage"
+  doppler_token = data.aws_ssm_parameter.doppler_api_tags_stage_token.value
   alb = {
     arn      = module.stage.internal_alb.arn
     dns_name = module.stage.internal_alb.dns_name
@@ -133,12 +127,10 @@ module "api-tags" {
 }
 
 module "api-users" {
-  source                = "../../../apps/api-users/infrastructure"
-  ecs_config            = local.internal_ecs_config
-  env                   = "stage"
-  doppler_token         = data.aws_ssm_parameter.doppler_api_users_stage_token.value
-  subnet_group_name     = module.stage.vpc.db_subnet_group_name
-  vpc_security_group_id = module.stage.private_rds_security_group_id
+  source        = "../../../apps/api-users/infrastructure"
+  ecs_config    = local.internal_ecs_config
+  env           = "stage"
+  doppler_token = data.aws_ssm_parameter.doppler_api_users_stage_token.value
   alb = {
     arn      = module.stage.internal_alb.arn
     dns_name = module.stage.internal_alb.dns_name
@@ -146,12 +138,10 @@ module "api-users" {
 }
 
 module "api-videos" {
-  source                = "../../../apps/api-videos/infrastructure"
-  ecs_config            = local.internal_ecs_config
-  env                   = "stage"
-  doppler_token         = data.aws_ssm_parameter.doppler_api_videos_stage_token.value
-  subnet_group_name     = module.stage.vpc.db_subnet_group_name
-  vpc_security_group_id = module.stage.private_rds_security_group_id
+  source        = "../../../apps/api-videos/infrastructure"
+  ecs_config    = local.internal_ecs_config
+  env           = "stage"
+  doppler_token = data.aws_ssm_parameter.doppler_api_videos_stage_token.value
   alb = {
     arn      = module.stage.internal_alb.arn
     dns_name = module.stage.internal_alb.dns_name
@@ -159,12 +149,10 @@ module "api-videos" {
 }
 
 module "api-media" {
-  source                = "../../../apps/api-media/infrastructure"
-  ecs_config            = local.internal_ecs_config
-  env                   = "stage"
-  doppler_token         = data.aws_ssm_parameter.doppler_api_media_stage_token.value
-  subnet_group_name     = module.stage.vpc.db_subnet_group_name
-  vpc_security_group_id = module.stage.private_rds_security_group_id
+  source        = "../../../apps/api-media/infrastructure"
+  ecs_config    = local.internal_ecs_config
+  env           = "stage"
+  doppler_token = data.aws_ssm_parameter.doppler_api_media_stage_token.value
   alb = {
     arn      = module.stage.internal_alb.arn
     dns_name = module.stage.internal_alb.dns_name
@@ -172,12 +160,10 @@ module "api-media" {
 }
 
 module "api-nexus" {
-  source                = "../../../apps/api-nexus/infrastructure"
-  ecs_config            = local.internal_ecs_config
-  env                   = "stage"
-  doppler_token         = data.aws_ssm_parameter.doppler_api_nexus_stage_token.value
-  subnet_group_name     = module.stage.vpc.db_subnet_group_name
-  vpc_security_group_id = module.stage.private_rds_security_group_id
+  source        = "../../../apps/api-nexus/infrastructure"
+  ecs_config    = local.internal_ecs_config
+  env           = "stage"
+  doppler_token = data.aws_ssm_parameter.doppler_api_nexus_stage_token.value
   alb = {
     arn      = module.stage.internal_alb.arn
     dns_name = module.stage.internal_alb.dns_name
