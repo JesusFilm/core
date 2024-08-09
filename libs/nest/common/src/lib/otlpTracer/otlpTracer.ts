@@ -12,10 +12,9 @@ import {
   SpanNames,
   createOpenTelemetryWrapper
 } from '@pothos/tracing-opentelemetry'
+import { PrismaInstrumentation } from '@prisma/instrumentation'
 import { ASTNode, print } from 'graphql'
 import { Plugin } from 'graphql-yoga'
-
-import { PrismaInstrumentation } from '@prisma/instrumentation'
 
 export default function otlpTracer(serviceName: string): {
   provider: NodeTracerProvider
