@@ -1,13 +1,9 @@
 import { useMutation } from '@apollo/client'
-import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import FormControl from '@mui/material/FormControl'
 import MenuItem from '@mui/material/MenuItem'
-import Popover from '@mui/material/Popover'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import sortBy from 'lodash/sortBy'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useRef, useState } from 'react'
@@ -18,6 +14,7 @@ import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
 import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActiveTeamId'
+import { NotificationPopover } from '../../NotificationPopover'
 import { TeamAvatars } from '../TeamAvatars'
 
 interface TeamSelectProps {
@@ -28,6 +25,7 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
   const { query, activeTeam, setActiveTeam } = useTeam()
   const { t } = useTranslation('apps-journeys-admin')
   const anchorRef = useRef(null)
+  const currentRef = anchorRef.current
   const [open, setOpen] = useState(onboarding ?? false)
 
   const [updateLastActiveTeamId, { client }] =
@@ -133,50 +131,16 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
           </Select>
         </FormControl>
       </Stack>
-      <Popover
+      <NotificationPopover
+        title={t('More journeys here')}
+        description={t(
+          'Journeys are grouped by teams. You can switch between teams by using this dropdown.'
+        )}
         open={open}
-        anchorEl={anchorRef.current}
-        anchorOrigin={{
-          vertical: 35,
-          horizontal: 'left'
-        }}
-        slotProps={{
-          paper: {
-            sx: {
-              maxWidth: { xs: 'calc(100% - 30px)', sm: 300 },
-              mt: 4,
-              position: 'relative',
-              overflow: 'visible',
-              '&::before': {
-                backgroundColor: 'white',
-                content: '""',
-                display: 'block',
-                position: 'absolute',
-                width: 12,
-                height: 12,
-                top: -6,
-                transform: 'rotate(45deg)',
-                left: { xs: 20, sm: 10 },
-                zIndex: 1
-              }
-            }
-          }
-        }}
-      >
-        <Stack spacing={2} p={4}>
-          <Typography variant="h6" gutterBottom>
-            {t('More journeys here')}
-          </Typography>
-          <Typography>
-            {t(
-              'Journeys are grouped by teams. You can switch between teams by using this dropdown.'
-            )}
-          </Typography>
-          <Box textAlign="right">
-            <Button onClick={() => setOpen(false)}>{t('Dismiss')}</Button>
-          </Box>
-        </Stack>
-      </Popover>
+        handleClose={() => setOpen(false)}
+        currentRef={currentRef}
+        pointerPosition="3%"
+      />
     </>
   )
 }

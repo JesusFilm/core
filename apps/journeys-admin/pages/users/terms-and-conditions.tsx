@@ -1,4 +1,9 @@
-import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
+import {
+  AuthAction,
+  useUser,
+  withUser,
+  withUserTokenSSR
+} from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
@@ -11,6 +16,7 @@ import { useHandleNewAccountRedirect } from '../../src/libs/useRedirectNewAccoun
 function TermsAndConditionsPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const title = t('Terms and Conditions')
+  const user = useUser()
 
   useHandleNewAccountRedirect()
 
@@ -20,6 +26,7 @@ function TermsAndConditionsPage(): ReactElement {
       <OnboardingPageWrapper
         title={title}
         emailSubject={t('A question about the terms and conditions form')}
+        user={user}
       >
         <TermsAndConditions />
       </OnboardingPageWrapper>
