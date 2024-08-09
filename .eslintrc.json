@@ -3,7 +3,7 @@
   "ignorePatterns": ["**/*"],
   "plugins": ["@nx", "import"],
   "settings": {
-    "import/internal-regex": "^(@core|.prisma)"
+    "import/internal-regex": "^(@core|\\.prisma)"
   },
   "rules": {
     "import/no-absolute-path": "error",
