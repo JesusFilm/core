@@ -72,8 +72,8 @@ export function StepBlockNodeAnalytics({
   const timeOnPage = stepStats?.timeOnPage ?? 0
 
   const totalVisitors = analytics?.totalVisitors ?? 0
-  const EXIT_RATE_THRESHOLD = 50
-  const hideExitRate = totalVisitors < EXIT_RATE_THRESHOLD
+  const VISITOR_THRESHOLD = 50
+  const hideStats = totalVisitors < VISITOR_THRESHOLD
 
   return (
     <StatsOverlay
@@ -89,16 +89,20 @@ export function StepBlockNodeAnalytics({
       <AnalyticsDataPoint
         Icon={TrendDown1}
         tooltipTitle={
-          hideExitRate
-            ? t('Need more data to accurately show the exit rate')
-            : t('Exit rate')
+          hideStats
+            ? t('Exit Rate: Needs more data')
+            : t('Approximate Exit rate')
         }
-        value={hideExitRate ? '~' : getPercentage(visitorsExitAtStep, visitors)}
+        value={hideStats ? '~' : getPercentage(visitorsExitAtStep, visitors)}
       />
       <AnalyticsDataPoint
         Icon={Clock1}
-        tooltipTitle={t('Visit duration')}
-        value={formatTime(timeOnPage)}
+        tooltipTitle={
+          hideStats
+            ? t('Visit Duration: Needs more data')
+            : t('Approximate Visit duration')
+        }
+        value={hideStats ? '~' : formatTime(timeOnPage)}
       />
     </StatsOverlay>
   )

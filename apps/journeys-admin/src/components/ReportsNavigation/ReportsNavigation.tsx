@@ -11,13 +11,11 @@ import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 interface ReportsNavigationProps {
   destination: 'journey' | 'visitor'
   journeyId?: string
-  helpScoutGap?: boolean
 }
 
 export function ReportsNavigation({
   destination,
-  journeyId,
-  helpScoutGap = false
+  journeyId
 }: ReportsNavigationProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
@@ -44,9 +42,6 @@ export function ReportsNavigation({
       alignItems="center"
       justifyContent="flex-end"
       flexGrow={1}
-      sx={{
-        mr: helpScoutGap ? { md: 8 } : undefined
-      }}
       data-testid="JourneysAdminReportsNavigation"
     >
       <NextLink href={href} passHref legacyBehavior>

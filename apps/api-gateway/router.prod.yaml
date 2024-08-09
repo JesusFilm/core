@@ -44,6 +44,9 @@ telemetry:
       mode: spec_compliant
   exporters:
     logging:
+      common:
+        resource:
+          service.name: api-gateway
       stdout:
         enabled: true
       experimental_when_header:

@@ -33,10 +33,9 @@ export interface GetJourneyAnalytics_journeyStepsActions {
    */
   property: string;
   /**
-   * The number of events (pageviews + custom events). When filtering by a goal,
-   *  this metric corresponds to "Total Conversions" in the dashboard.
+   * The number of unique visitors.
    */
-  events: number | null;
+  visitors: number | null;
 }
 
 export interface GetJourneyAnalytics_journeyReferrer {
@@ -73,10 +72,9 @@ export interface GetJourneyAnalytics_journeyActionsSums {
    */
   property: string;
   /**
-   * The number of events (pageviews + custom events). When filtering by a goal,
-   *  this metric corresponds to "Total Conversions" in the dashboard.
+   * The number of unique visitors.
    */
-  events: number | null;
+  visitors: number | null;
 }
 
 export interface GetJourneyAnalytics_journeyAggregateVisitors_visitors {

@@ -36,7 +36,6 @@ jobs:
       ECS_CLUSTER: jfp-ecs-cluster-${{ inputs.env }}
       ECS_SERVICE: ${{ inputs.name}}-${{ inputs.env }}-service
       ECR_REPOSITORY: jfp-${{ inputs.name }}-${{ inputs.env }}
-      ECR_SEED_REPOSITORY: jfp-${{ inputs.name }}-seed-${{ inputs.env }}
       IMAGE_TAG: ${{ github.sha }}
     runs-on: ubuntu-latest
     strategy:
@@ -137,24 +136,3 @@ jobs:
         if: contains(steps.affected-apps.outputs.apps, inputs.name) && contains(inputs.branch, 'main')
         run: |
           rover subgraph publish API-GATEWAY-0zuda@current --name ${{ inputs.name }} --routing-url ${{ inputs.endpoint_url }} --schema apps/${{ inputs.name }}/schema.graphql
-
-      - name: Get affected app seed
-        run: echo "dbs=$(git diff --name-only HEAD~1 HEAD | grep 'apps/${{ inputs.name }}/db/seed.ts')" >> $GITHUB_OUTPUT
-        id: affected-dbs
-
-      - name: Build, tag, and push the image to Amazon ECR
-        if: contains(steps.affected-dbs.outputs.dbs, inputs.name)
-        id: build-image-ecs-seed
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr-ecs.outputs.registry }}
-        run: |
-          # Build a docker container and push it to ECR 
-          docker build -t $ECR_REGISTRY/$ECR_SEED_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_SEED_REPOSITORY:latest . -f apps/${{ inputs.name }}/db/Dockerfile
-          echo "Pushing image to ECR..."
-          docker push -a $ECR_REGISTRY/$ECR_SEED_REPOSITORY
-          echo "image=$ECR_REGISTRY/$ECR_SEED_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
-
-      - name: Seed Database
-        if: contains(steps.affected-dbs.outputs.dbs, inputs.name)
-        run: |
-          aws ecs run-task --task-definition $ECR_SEED_REPOSITORY --cluster $ECS_CLUSTER --launch-type FARGATE --network-configuration "${{ secrets.AWS_NETWORK_CONFIG }}"
