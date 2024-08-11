@@ -3,21 +3,12 @@ import { render, screen, waitFor } from '@testing-library/react'
 import type { HitsRenderState } from 'instantsearch.js/es/connectors/hits/connectHits'
 import type { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import type { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
-import { useHits, useMenu, useSearchBox } from 'react-instantsearch'
+import { InstantSearchApi, useHits, useInstantSearch, useMenu, useSearchBox } from 'react-instantsearch'
 
 import type { CoreVideo } from '../../libs/algolia/useAlgoliaVideos'
 import { useAlgoliaVideos } from '../../libs/algolia/useAlgoliaVideos'
 
 import { VideosPage } from './VideosPage'
-
-jest.mock('react-instantsearch')
-
-jest.mock('next/router', () => ({
-  __esModule: true,
-  useRouter: jest.fn(() => ({
-    push: jest.fn()
-  }))
-}))
 
 jest.mock('react-instantsearch')
 jest.mock('../../libs/algolia/useAlgoliaVideos')
@@ -30,6 +21,7 @@ const mockUseSearchBox = useSearchBox as jest.MockedFunction<
   typeof useSearchBox
 >
 const mockUseMenu = useMenu as jest.MockedFunction<typeof useMenu>
+const mockUseInstantSearch = useInstantSearch as jest.MockedFunction<typeof useInstantSearch>
 
 describe('VideosPage', () => {
   const transformedVideos = [
@@ -84,6 +76,10 @@ describe('VideosPage', () => {
       items: [],
       refine: jest.fn()
     } as unknown as RefinementListRenderState)
+
+    mockUseInstantSearch.mockReturnValue({
+      refresh: jest.fn()
+    } as unknown as InstantSearchApi)
   })
 
   it('should render the languages filter', async () => {
