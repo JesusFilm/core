@@ -12,7 +12,11 @@ import {
   STEP_NODE_CARD_WIDTH
 } from '../nodes/StepBlockNode/libs/sizes'
 
-export function NewStepButton(): ReactElement {
+interface NewStepButtonProps {
+  disabled?: boolean
+}
+
+export function NewStepButton({ disabled }: NewStepButtonProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const createStep = useCreateStep()
@@ -38,6 +42,7 @@ export function NewStepButton(): ReactElement {
       icon={<Plus3Icon />}
       onClick={handleClick}
       ButtonProps={{
+        disabled,
         sx: {
           backgroundColor: 'background.paper',
           ':hover': {

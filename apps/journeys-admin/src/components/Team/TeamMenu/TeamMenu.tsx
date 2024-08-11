@@ -8,7 +8,7 @@ import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
-import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
+import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'

@@ -1,9 +1,9 @@
 import { useTheme } from '@mui/material/styles'
 import { useRouter } from 'next/router'
 import Script from 'next/script'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect } from 'react'
 
-import { FormObject } from '@core/journeys/ui/setBeaconPageViewed'
+import { FormObject } from '@core/journeys/ui/beaconHooks'
 
 import {
   BEACON_ICON_DISPLAY,
@@ -17,20 +17,24 @@ import {
   MOBILE_CONTAINER_HEIGHT,
   MOBILE_CONTAINER_MAX_HEIGHT,
   MOBILE_CONTAINER_WIDTH
-} from './beaconProperties'
+} from './constants'
 
 interface BeaconInitProps {
+  loaded: boolean
+  setLoaded: (loaded: boolean) => void
   userInfo?: FormObject
 }
 
-export function BeaconInit({ userInfo }: BeaconInitProps): ReactElement {
+export function BeaconInit({
+  loaded,
+  setLoaded,
+  userInfo
+}: BeaconInitProps): ReactElement {
   const { breakpoints, zIndex } = useTheme()
   const router = useRouter()
 
-  const [hasLoaded, setHasLoaded] = useState(false)
-
   useEffect(() => {
-    if (hasLoaded && window.Beacon != null) {
+    if (loaded && window.Beacon != null) {
       window.Beacon('on', 'open', () => {
         window.Beacon?.('prefill', {
           name: userInfo?.name ?? '',
@@ -41,12 +45,13 @@ export function BeaconInit({ userInfo }: BeaconInitProps): ReactElement {
     // close the beacon when the url changes
     const handleRouteChange = (): void => {
       window.Beacon?.('close')
+      window.Beacon?.('navigate', '/')
     }
     router.events.on('routeChangeComplete', handleRouteChange)
     return () => {
       router.events.off('routeChangeComplete', handleRouteChange)
     }
-  }, [hasLoaded, router, userInfo])
+  }, [loaded, router, userInfo])
 
   return (
     <>
@@ -57,7 +62,7 @@ export function BeaconInit({ userInfo }: BeaconInitProps): ReactElement {
         id="init"
         className="init"
         strategy="lazyOnload"
-        onReady={() => setHasLoaded(true)}
+        onReady={() => setLoaded(true)}
       >
         {`
         window.Beacon('init', '4f0abc47-b29c-454a-b618-39b34fd116b8');
