@@ -4,8 +4,9 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
 
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
@@ -51,6 +52,14 @@ describe('Toolbar', () => {
 
     variant: 'admin'
   }
+
+  beforeEach(() => {
+    window.Beacon = jest.fn()
+  })
+
+  afterEach(() => {
+    jest.resetAllMocks()
+  })
 
   it('should render NextSteps logo on Toolbar', () => {
     render(toolbar(defaultJourney))
@@ -127,6 +136,38 @@ describe('Toolbar', () => {
     expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
     fireEvent.click(screen.getByTestId('ToolbarSocialImage'))
     expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
+  })
+
+  it('should open analytics popover', () => {
+    const initialState = {
+      showAnalytics: true
+    } as unknown as EditorState
+
+    render(
+      <FlagsProvider flags={{ editorAnalytics: true }}>
+        <MockedProvider>
+          <SnackbarProvider>
+            <JourneyProvider
+              value={{
+                journey: defaultJourney.journey,
+                variant: 'admin'
+              }}
+            >
+              <EditorProvider initialState={initialState}>
+                <TestEditorState />
+                <Toolbar />
+                <Slider />
+              </EditorProvider>
+            </JourneyProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      </FlagsProvider>
+    )
+
+    expect(screen.getByText('New Feature Feedback')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Feedback' }))
+    expect(window.Beacon).toHaveBeenCalledWith('open')
+    expect(screen.queryByText('New Feature Feedback')).not.toBeInTheDocument()
   })
 
   function toolbar(journey): ReactElement {

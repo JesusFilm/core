@@ -53,4 +53,16 @@ describe('NewStepButton', () => {
 
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
+
+  it('should be disabled', () => {
+    render(
+      <MockedProvider>
+        <ReactFlowProvider>
+          <NewStepButton disabled />
+        </ReactFlowProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByRole('button', { name: 'Add Step' })).toBeDisabled()
+  })
 })
