@@ -1,10 +1,12 @@
+import { Button } from '@mui/base/Button'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { useRouter } from 'next/compat/router'
 import { useTranslation } from 'next-i18next'
-import type { ReactElement } from 'react'
-import { useConfigure } from 'react-instantsearch'
+import { type ReactElement, useEffect } from 'react'
+import { Index, useConfigure, useInstantSearch } from 'react-instantsearch'
 
 import { SearchBar } from '@core/journeys/ui/SearchBar'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
@@ -16,8 +18,34 @@ import { AlgoliaVideoGrid } from '../VideoGrid/AlgoliaVideoGrid/AlgoliaVideoGrid
 import { HomeHero } from './HomeHero'
 import { SeeAllVideos } from './SeeAllVideos'
 
+interface FilterParams {
+  query: string | null
+  languageId: string | null
+  subtitleId: string | null
+}
+
+function extractQueryParams(url: string): FilterParams {
+  const params = new URLSearchParams(url.split('?')[1])
+  const query = params.get('query')
+  const languageId = params.get('menu[languageId]')
+  const subtitleId = params.get('menu[subtitles]')
+  return { query, languageId, subtitleId }
+}
+
 export function WatchHomePage(): ReactElement {
+  const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
+
   const { t } = useTranslation('apps-watch')
+
+  const router = useRouter()
+  const decodedUrl = decodeURIComponent(router?.asPath ?? '')
+  const { query, languageId, subtitleId } = extractQueryParams(decodedUrl)
+  const hasQueryParams = !(query == null && languageId == null && subtitleId == null)
+
+  const { refresh } = useInstantSearch()
+  useEffect(() => {
+    if (hasQueryParams) refresh()
+  }, [])
 
   useConfigure({
     ruleContexts: ['home_page'],
@@ -43,7 +71,9 @@ export function WatchHomePage(): ReactElement {
             <Box sx={{ pb: 10 }}>
               <SearchBar />
             </Box>
-            <AlgoliaVideoGrid variant="contained" />
+            <Index indexName={indexName}>
+              <AlgoliaVideoGrid variant="contained" />
+            </Index>
             <SeeAllVideos />
             <Box
               sx={{

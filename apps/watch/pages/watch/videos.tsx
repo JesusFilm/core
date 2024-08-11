@@ -74,39 +74,18 @@ const nextRouter: RouterProps = {
   }
 }
 
-interface FilterParams {
-  query: string | null
-  languageId: string | null
-  subtitleId: string | null
-}
-
-function extractQueryParams(url: string): FilterParams {
-  const params = new URLSearchParams(url.split('?')[1])
-  const query = params.get('query')
-  const languageId = params.get('menu[languageId]')
-  const subtitleId = params.get('menu[subtitles]')
-  return { query, languageId, subtitleId }
-}
-
 function VideosPage({
   initialApolloState,
   serverState
 }: VideosPageProps): ReactElement {
   const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
-  const router = useRouter()
-  const decodedUrl = decodeURIComponent(router?.asPath ?? '')
-  const { query, languageId, subtitleId } = extractQueryParams(decodedUrl)
 
   const client = useApolloClient({
     initialState: initialApolloState
   })
 
   return (
-    <InstantSearchSSRProvider
-      {...(query == null && languageId == null && subtitleId == null
-        ? serverState
-        : undefined)}
-    >
+    <InstantSearchSSRProvider {...serverState}>
       <ApolloProvider client={client}>
         <InstantSearch
           insights
