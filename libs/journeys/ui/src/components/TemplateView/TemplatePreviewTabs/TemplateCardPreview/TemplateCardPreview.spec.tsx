@@ -15,7 +15,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 describe('TemplateCardPreview', () => {
   it('renders correct number of cards', async () => {
-    (useMediaQuery as unknown as jest.Mock).mockReturnValue(false)
+    ;(useMediaQuery as unknown as jest.Mock).mockReturnValue(false)
     const steps = [
       { id: '1', children: [{ __typename: 'CardBlock' }] },
       { id: '2', children: [{ __typename: 'CardBlock' }] },
@@ -68,7 +68,7 @@ describe('TemplateCardPreview', () => {
   })
 
   it('renders correct number of cards on small breakpoints', async () => {
-    (useMediaQuery as unknown as jest.Mock).mockReturnValue(true)
+    ;(useMediaQuery as unknown as jest.Mock).mockReturnValue(true)
     const steps = [
       { id: '1', children: [{ __typename: 'CardBlock' }] },
       { id: '2', children: [{ __typename: 'CardBlock' }] },
