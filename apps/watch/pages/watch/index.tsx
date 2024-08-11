@@ -68,8 +68,8 @@ function HomePage({ serverState }: HomePageProps): ReactElement {
     <InstantSearchSSRProvider {...serverState}>
       <InstantSearch
         insights
-        searchClient={searchClient}
         indexName={indexName}
+        searchClient={searchClient}
         future={{ preserveSharedStateOnUnmount: true }}
         stalledSearchDelay={500}
         routing={nextRouter}
