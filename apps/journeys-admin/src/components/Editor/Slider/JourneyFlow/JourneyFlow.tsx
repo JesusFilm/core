@@ -131,21 +131,11 @@ export function JourneyFlow(): ReactElement {
           : undefined
     },
     skip: router?.query.journeyId == null,
-    onCompleted: (data) => {
-      if (
-        data.blocks.some(
-          (block) =>
-            block.__typename === 'StepBlock' &&
-            (block.x == null || block.y == null)
-        )
-      )
-        void allBlockPositionUpdate(true)
-    }
   })
 
-  function blockPositionUpdate(
+  const blockPositionUpdate = useCallback((
     input: Array<{ id: string; x: number; y: number }>
-  ): void {
+  ): void => {
     void stepBlockPositionUpdate({
       variables: {
         input
@@ -157,9 +147,9 @@ export function JourneyFlow(): ReactElement {
         }))
       }
     })
-  }
+  }, [stepBlockPositionUpdate])
 
-  async function allBlockPositionUpdate(onload = false): Promise<void> {
+  const allBlockPositionUpdate = useCallback(async (onload = false): Promise<void> => {
     if (steps == null || data == null) return
 
     const input = Object.entries(arrangeSteps(steps)).map(([id, position]) => ({
@@ -194,10 +184,10 @@ export function JourneyFlow(): ReactElement {
         }
       })
     }
-  }
+  }, [data, dispatch, steps, add, blockPositionUpdate])
 
   useEffect(() => {
-    if (data?.blocks == null) return
+    if (data?.blocks == null || steps == null) return
     const positions: PositionMap =
       data.blocks.reduce((acc, block) => {
         if (
@@ -211,21 +201,24 @@ export function JourneyFlow(): ReactElement {
       }, {}) ?? {}
 
     const validSteps =
-      steps?.every((step) => {
+      steps.every((step) => {
         return (
           positions[step.id] != null &&
           positions[step.id].x != null &&
           positions[step.id].y != null
         )
-      }) ?? false
+      }) 
 
-    if (!validSteps) return
+    if (!validSteps) {
+      void allBlockPositionUpdate(true)
+      return
+    }
 
     const { nodes, edges } = transformSteps(steps ?? [], positions)
 
     setEdges(edges)
     setNodes(nodes)
-  }, [steps, data, theme, setEdges, setNodes])
+  }, [steps, data, theme, setEdges, setNodes, allBlockPositionUpdate])
 
   const onConnect = useCallback<OnConnect>(() => {
     // reset the start node on connections
