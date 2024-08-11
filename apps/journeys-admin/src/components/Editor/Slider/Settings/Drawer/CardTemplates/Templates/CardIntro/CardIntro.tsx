@@ -540,7 +540,6 @@ export function CardIntro(): ReactElement {
         src={cardIntroImage}
         alt="Card Intro Template"
         draggable={false}
-        style={{ backgroundColor: 'red' }}
       />
     </ButtonBase>
   )
