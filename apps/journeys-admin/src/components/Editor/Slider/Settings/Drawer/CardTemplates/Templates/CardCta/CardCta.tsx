@@ -766,7 +766,6 @@ export function CardCta(): ReactElement {
         src={cardCtaImage}
         alt="Card CTA Template"
         draggable={false}
-        style={{ backgroundColor: 'red' }}
       />
     </ButtonBase>
   )
