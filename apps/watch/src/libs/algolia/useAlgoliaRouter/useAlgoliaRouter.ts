@@ -1,6 +1,6 @@
-import { useRouter } from "next/compat/router"
-import { useEffect } from "react"
-import { useInstantSearch } from "react-instantsearch"
+import { useRouter } from 'next/compat/router'
+import { useEffect } from 'react'
+import { useInstantSearch } from 'react-instantsearch'
 
 interface FilterParams {
   query: string | null
@@ -20,12 +20,16 @@ export function useAlgoliaRouter(): FilterParams {
   const router = useRouter()
   const decodedUrl = decodeURIComponent(router?.asPath ?? '')
   const { query, languageId, subtitleId } = extractQueryParams(decodedUrl)
-  const hasQueryParams = !(query == null && languageId == null && subtitleId == null)
+  const hasQueryParams = !(
+    query == null &&
+    languageId == null &&
+    subtitleId == null
+  )
 
   const { refresh } = useInstantSearch()
   useEffect(() => {
     if (hasQueryParams) refresh()
   }, [])
 
-  return {query, languageId, subtitleId}
+  return { query, languageId, subtitleId }
 }
