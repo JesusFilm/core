@@ -46,7 +46,7 @@ test('Filters', async ({ page }) => {
     .fill('telu')
   await page.getByRole('option', { name: 'Telugu తెలుగు' }).click()
 
-  // Choose subtittles language
+  // Choose subtitles language
   await page
     .getByTestId('FilterList')
     .locator('div')
@@ -68,7 +68,7 @@ test('Filters', async ({ page }) => {
   await page.waitForLoadState('networkidle')
   await page.press('body', 'Tab')
 
-  await expect(page).toHaveURL('/watch/videos?languages=5848&subtitles=529')
+  await expect(page).toHaveURL('/watch/videos?configure%5BruleContexts%5D%5B0%5D=all_videos_page&menu%5BlanguageId%5D=5848&menu%5Bsubtitles%5D=529')
 
   // const filtersList = page.getByTestId('FilterList')
   // Take screenshot
