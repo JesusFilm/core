@@ -417,18 +417,20 @@ describe('CardBlock', () => {
     expect(queryAllByText('How did we get here?')[0]).toBeInTheDocument()
   })
 
-  it('should render contained cover with video cover', () => {
+  it('should render contained cover with video cover regardless of fullscreen true', () => {
     const { queryByTestId, queryAllByText } = render(
       <MockedProvider>
         <Card
           {...{ ...block, children: [...block.children, videoBlock] }}
           coverBlockId="videoBlockId"
+          fullscreen
         />
       </MockedProvider>
     )
     const standaloneVideoBlock = queryByTestId(`JourneysVideo-${videoBlock.id}`)
 
     expect(queryByTestId('CardContainedCover')).toBeInTheDocument()
+    expect(queryByTestId('CardExpandedImageCover')).not.toBeInTheDocument()
     expect(queryByTestId('video-poster-image')).toHaveAccessibleName(
       'card video image'
     )
