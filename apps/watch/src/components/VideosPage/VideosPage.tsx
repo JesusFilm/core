@@ -18,7 +18,6 @@ import { FilterList } from './FilterList'
 import { VideosHero } from './Hero'
 import { VideosSubHero } from './SubHero'
 
-
 interface VideosPageProps {
   index?: boolean
 }

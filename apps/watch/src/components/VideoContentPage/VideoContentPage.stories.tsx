@@ -12,7 +12,6 @@ import { videos } from '../Videos/__generated__/testData'
 
 import { VideoContentPage } from '.'
 
-
 const VideoContentPageStory: Meta<typeof VideoContentPage> = {
   ...watchConfig,
   component: VideoContentPage,
