@@ -396,7 +396,6 @@ export function CardQuote(): ReactElement {
         src={cardQuoteImage}
         alt="Card Quote Template"
         draggable={false}
-        style={{ backgroundColor: 'red' }}
       />
     </ButtonBase>
   )
