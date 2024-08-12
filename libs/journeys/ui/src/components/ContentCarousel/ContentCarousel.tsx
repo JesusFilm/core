@@ -38,6 +38,7 @@ interface ContentCarouselProps<T> {
   cardSpacing?: ComponentProps<typeof Stack>['spacing']
   slidesOffsetBefore?: number
   priority?: boolean
+  content?: string
 }
 
 export function ContentCarousel<T>({
@@ -48,7 +49,8 @@ export function ContentCarousel<T>({
   loading = false,
   cardSpacing,
   slidesOffsetBefore,
-  priority
+  priority,
+  content
 }: ContentCarouselProps<T>): ReactElement {
   const [swiper, setSwiper] = useState<SwiperClass>()
   const [hovered, setHovered] = useState(false)
@@ -71,7 +73,9 @@ export function ContentCarousel<T>({
   return (
     <Box
       sx={{ position: 'relative' }}
-      data-testid={`${kebabCase(heading)}-template-gallery-carousel`}
+      data-testid={`${kebabCase(heading)}${
+        content != null ? content : '-template-gallery'
+      }-carousel`}
       onMouseOver={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
