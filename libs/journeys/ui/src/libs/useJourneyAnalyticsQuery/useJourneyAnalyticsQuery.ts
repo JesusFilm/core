@@ -6,12 +6,11 @@ import {
   useQuery
 } from '@apollo/client'
 import { useState } from 'react'
-
 import { Edge, Node } from 'reactflow'
+
 import {
   GetJourneyAnalytics,
-  GetJourneyAnalyticsVariables,
-  GetJourneyAnalytics_journeyReferrer as JourneyReferrer
+  GetJourneyAnalyticsVariables
 } from './__generated__/GetJourneyAnalytics'
 import { transformJourneyAnalytics } from './transformJourneyAnalytics'
 
@@ -51,7 +50,7 @@ export const GET_JOURNEY_ANALYTICS = gql`
       }
     ) {
       property
-      events
+      visitors
     }
     journeyReferrer: journeysPlausibleStatsBreakdown(
       id: $id
@@ -93,7 +92,7 @@ export const GET_JOURNEY_ANALYTICS = gql`
       }
     ) {
       property
-      events
+      visitors
     }
     journeyAggregateVisitors: journeysPlausibleStatsAggregate(
       id: $id

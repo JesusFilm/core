@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
-import { useCommand } from '../../../../../../libs/journeys/ui/src/libs/CommandProvider'
+import { useCommand } from '@core/journeys/ui/CommandProvider'
 
 interface HotkeysProps {
   document?: Document
@@ -9,8 +9,16 @@ interface HotkeysProps {
 
 export function Hotkeys({ document }: HotkeysProps): ReactElement {
   const { undo, redo } = useCommand()
-  useHotkeys('mod+z', undo, { preventDefault: true, document })
-  useHotkeys('mod+shift+z', redo, { preventDefault: true, document })
+  useHotkeys('mod+z', undo, {
+    document,
+    enableOnFormTags: true,
+    preventDefault: true
+  })
+  useHotkeys('mod+shift+z', redo, {
+    document,
+    enableOnFormTags: true,
+    preventDefault: true
+  })
 
   return <></>
 }

@@ -1,5 +1,4 @@
-import { time } from 'console'
-
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { expect } from '@playwright/test'
 import dayjs from 'dayjs'
 import { Page } from 'playwright-core'
@@ -8,7 +7,6 @@ import testData from '../utils/testData.json'
 
 let randomNumber = ''
 const thirtySecondsTimeout = 30000
-const fifteenSecondsTimeout = 30000
 export class TeamsPage {
   readonly page: Page
   constructor(page: Page) {
@@ -23,6 +21,7 @@ export class TeamsPage {
   memberEmail = ''
 
   async createNewTeamAndVerifyCreatedTeam() {
+    await this.clickDismissIfDialogueComesUp()
     await this.clickThreeDotOfTeams()
     await this.clickThreeDotOptions('New Team')
     await this.enterTeamName()
@@ -63,12 +62,16 @@ export class TeamsPage {
     await this.verifyMemberAdded()
   }
 
+  async clickDismissIfDialogueComesUp() {
+    // First time user journey - Dismiss the "More journeys here" dialogue
+    const selector = 'div.MuiStack-root button:has-text("Dismiss")'
+    if (await this.page.isVisible(selector)) {
+      await this.page.click(selector)
+    }
+  }
+
   async clickThreeDotOfTeams() {
-    await this.page
-      .locator(
-        'div[data-testid="TeamSelect"] ~ div  button svg[data-testid="MoreIcon"]'
-      )
-      .click()
+    await this.page.getByTestId('MainPanelHeader').locator('button').click()
   }
 
   async clickThreeDotOptions(options) {

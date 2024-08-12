@@ -1,10 +1,10 @@
+import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, screen } from '@testing-library/react'
 
 import {
   ActiveCanvasDetailsDrawer,
   ActiveContent,
-  ActiveFab,
   ActiveSlide,
   EditorProvider,
   EditorState
@@ -31,9 +31,11 @@ describe('SocialPreview', () => {
 
   it('should render Message Post and Fab for viewports larger than mobile', () => {
     render(
-      <ThemeProvider>
-        <SocialPreview />
-      </ThemeProvider>
+      <MockedProvider>
+        <ThemeProvider>
+          <SocialPreview />
+        </ThemeProvider>
+      </MockedProvider>
     )
 
     expect(screen.getByText('Social App View')).toBeInTheDocument()
@@ -44,9 +46,11 @@ describe('SocialPreview', () => {
     mockUseMediaQuery.mockImplementation(() => false)
 
     render(
-      <ThemeProvider>
-        <SocialPreview />
-      </ThemeProvider>
+      <MockedProvider>
+        <ThemeProvider>
+          <SocialPreview />
+        </ThemeProvider>
+      </MockedProvider>
     )
 
     expect(screen.getByText('Social App View')).toBeInTheDocument()
@@ -55,19 +59,20 @@ describe('SocialPreview', () => {
 
   it('should dispatch active slide action on click', () => {
     const state: EditorState = {
-      activeFab: ActiveFab.Add,
       activeSlide: ActiveSlide.JourneyFlow,
       activeContent: ActiveContent.Social,
       activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.AddBlock
     }
 
     render(
-      <EditorProvider initialState={state}>
-        <ThemeProvider>
-          <TestEditorState />
-          <SocialPreview />
-        </ThemeProvider>
-      </EditorProvider>
+      <MockedProvider>
+        <EditorProvider initialState={state}>
+          <ThemeProvider>
+            <TestEditorState />
+            <SocialPreview />
+          </ThemeProvider>
+        </EditorProvider>
+      </MockedProvider>
     )
 
     expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()

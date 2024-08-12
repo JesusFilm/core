@@ -1,14 +1,13 @@
-import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardMedia from '@mui/material/CardMedia'
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { alpha } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import isEmpty from 'lodash/isEmpty'
 import Image from 'next/image'
-import { ReactElement } from 'react'
-import { OnConnect } from 'reactflow'
+import type { ReactElement } from 'react'
+import type { OnConnect } from 'reactflow'
 
 import {
   ActiveContent,
@@ -19,10 +18,10 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import MessageCircle from '@core/shared/ui/icons/MessageCircle'
 import Share from '@core/shared/ui/icons/Share'
 import ThumbsUp from '@core/shared/ui/icons/ThumbsUp'
-import UserProfile2Icon from '@core/shared/ui/icons/UserProfile2'
+import UserProfileCircle from '@core/shared/ui/icons/UserProfileCircle'
 
 import { useUpdateEdge } from '../../libs/useUpdateEdge'
-import { BaseNode } from '../BaseNode'
+import { BaseNode, HandleVariant } from '../BaseNode'
 
 export function SocialPreviewNode(): ReactElement {
   const { journey } = useJourney()
@@ -69,8 +68,10 @@ export function SocialPreviewNode(): ReactElement {
     <BaseNode
       id="SocialPreview"
       selected={activeContent === ActiveContent.Social}
-      sourceHandle="show"
-      targetHandle="show"
+      sourceHandle={HandleVariant.Shown}
+      targetHandle={
+        showAnalytics === true ? HandleVariant.Shown : HandleVariant.Hidden
+      }
       onSourceConnect={handleSourceConnect}
       isSourceConnected
       positionTargetHandle={false}
@@ -89,10 +90,18 @@ export function SocialPreviewNode(): ReactElement {
                 selected === true
                   ? theme.palette.primary.main
                   : selected === 'descendant'
-                    ? theme.palette.divider
-                    : 'transparent'
+                  ? theme.palette.divider
+                  : 'transparent'
               }`,
-            outlineOffset: '5px'
+            outlineOffset: '5px',
+            ...(showAnalytics === true && {
+              backgroundColor: 'transparent',
+              outline: (theme) =>
+                `2px solid ${alpha(theme.palette.secondary.dark, 0.1)}`,
+              outlineOffset: 0,
+              opacity: 0.7,
+              boxShadow: 'none'
+            })
           }}
           onClick={() => handleClick()}
         >
@@ -101,31 +110,40 @@ export function SocialPreviewNode(): ReactElement {
             height="30px"
             justifyContent="space-between"
             alignItems="center"
+            spacing={1}
           >
-            <Avatar
+            <UserProfileCircle
               sx={{
-                height: 15,
-                width: 15,
-                bgcolor: 'background.default',
-                color: 'background.paper',
-                mr: 1.5
+                fontSize: 14,
+                color: (theme) =>
+                  showAnalytics === true
+                    ? alpha(theme.palette.secondary.dark, 0.1)
+                    : 'background.default'
               }}
-            >
-              <UserProfile2Icon sx={{ height: '15px' }} />
-            </Avatar>
+            />
             <Box flexGrow={1}>
               <Box
                 width={45}
                 height={9}
-                bgcolor="background.default"
-                borderRadius="4.5px"
+                borderRadius={2}
+                sx={{
+                  backgroundColor: (theme) =>
+                    showAnalytics === true
+                      ? alpha(theme.palette.secondary.dark, 0.1)
+                      : 'background.default'
+                }}
               />
             </Box>
             <Box
               width={9}
               height={9}
-              bgcolor="background.default"
-              borderRadius="4.5px"
+              borderRadius={2}
+              sx={{
+                backgroundColor: (theme) =>
+                  showAnalytics === true
+                    ? alpha(theme.palette.secondary.dark, 0.1)
+                    : 'background.default'
+              }}
             />
           </Stack>
           <CardMedia
@@ -155,7 +173,7 @@ export function SocialPreviewNode(): ReactElement {
                 width={118.5}
                 height={90}
                 style={{
-                  borderRadius: 1,
+                  borderRadius: 1.5,
                   maxWidth: '100%',
                   objectFit: 'cover'
                 }}
@@ -177,8 +195,13 @@ export function SocialPreviewNode(): ReactElement {
                   data-testid="SocialPreviewTitleEmpty"
                   width={118.5}
                   height={9}
-                  bgcolor="background.default"
-                  borderRadius={1}
+                  borderRadius={2}
+                  sx={{
+                    backgroundColor: (theme) =>
+                      showAnalytics === true
+                        ? alpha(theme.palette.secondary.dark, 0.1)
+                        : 'background.default'
+                  }}
                 />
               ) : (
                 <Typography
@@ -197,8 +220,13 @@ export function SocialPreviewNode(): ReactElement {
                   data-testid="SocialPreviewDescriptionEmpty"
                   width={118.5}
                   height={9}
-                  bgcolor="background.default"
-                  borderRadius={1}
+                  sx={{
+                    backgroundColor: (theme) =>
+                      showAnalytics === true
+                        ? alpha(theme.palette.secondary.dark, 0.1)
+                        : 'background.default'
+                  }}
+                  borderRadius={2}
                 />
               ) : (
                 <Typography
@@ -217,9 +245,33 @@ export function SocialPreviewNode(): ReactElement {
               justifyContent="space-around"
               color="background.default"
             >
-              <ThumbsUp sx={{ fontSize: 9 }} />
-              <MessageCircle sx={{ fontSize: 9 }} />
-              <Share sx={{ fontSize: 9 }} />
+              <ThumbsUp
+                sx={{
+                  fontSize: 9,
+                  color: (theme) =>
+                    showAnalytics === true
+                      ? alpha(theme.palette.secondary.dark, 0.1)
+                      : 'background.default'
+                }}
+              />
+              <MessageCircle
+                sx={{
+                  fontSize: 9,
+                  color: (theme) =>
+                    showAnalytics === true
+                      ? alpha(theme.palette.secondary.dark, 0.1)
+                      : 'background.default'
+                }}
+              />
+              <Share
+                sx={{
+                  fontSize: 9,
+                  color: (theme) =>
+                    showAnalytics === true
+                      ? alpha(theme.palette.secondary.dark, 0.1)
+                      : 'background.default'
+                }}
+              />
             </Stack>
           </Stack>
         </Card>

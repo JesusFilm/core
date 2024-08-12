@@ -1,11 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 
-import {
-  ActiveContent,
-  ActiveFab,
-  EditorProvider
-} from '@core/journeys/ui/EditorProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import {
   BlockFields_ButtonBlock as ButtonBlock,
@@ -128,7 +124,6 @@ describe('StepBlockNodeCard', () => {
 
     const initialState = {
       selectedStep: step,
-      activeFab: ActiveFab.Edit,
       selectedAttributeId: 'selectedAttributeId'
     }
 
@@ -144,7 +139,6 @@ describe('StepBlockNodeCard', () => {
 
     expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
     expect(screen.getByText('selectedBlock: step.id')).toBeInTheDocument()
-    expect(screen.getByText('activeFab: Add')).toBeInTheDocument()
     expect(
       screen.getByText('selectedAttributeId: step.id-next-block')
     ).toBeInTheDocument()
@@ -166,7 +160,6 @@ describe('StepBlockNodeCard', () => {
 
     const initialState = {
       selectedStep: step,
-      activeFab: ActiveFab.Edit,
       selectedAttributeId: 'selectedAttributeId',
       showAnalytics: true
     }

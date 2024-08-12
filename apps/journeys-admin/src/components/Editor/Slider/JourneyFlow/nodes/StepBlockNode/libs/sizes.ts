@@ -7,7 +7,7 @@ export const STEP_NODE_WIDTH = 216
 
 // the offset required to make the start edge flat
 export const STEP_NODE_OFFSET = -8
-export const STEP_NODE_DUPLICATE_OFFSET = 40
+export const STEP_NODE_DUPLICATE_OFFSET = 225
 export const NODE_EXTRA_DETECTION_WIDTH = 30
 
 export const LINK_NODE_WIDTH = 224

@@ -1,170 +1,278 @@
-import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+
+import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/BlockFields'
+import {
+  ListUnsplashCollectionPhotos,
+  ListUnsplashCollectionPhotosVariables
+} from '../../../../../../../../__generated__/ListUnsplashCollectionPhotos'
+import {
+  SearchUnsplashPhotos_searchUnsplashPhotos_results as Result,
+  SearchUnsplashPhotos,
+  SearchUnsplashPhotosVariables
+} from '../../../../../../../../__generated__/SearchUnsplashPhotos'
+import {
+  TriggerUnsplashDownload,
+  TriggerUnsplashDownloadVariables
+} from '../../../../../../../../__generated__/TriggerUnsplashDownload'
+import { ThemeProvider } from '../../../../../../ThemeProvider'
 
 import {
   LIST_UNSPLASH_COLLECTION_PHOTOS,
   SEARCH_UNSPLASH_PHOTOS
 } from './UnsplashGallery'
+import { TRIGGER_UNSPLASH_DOWNLOAD } from './UnsplashList/UnsplashList'
 
 import { UnsplashGallery } from '.'
 
 describe('UnsplashGallery', () => {
-  const unsplashImage = {
-    id: 1,
+  const item: Result = {
+    id: '1',
+    alt_description: 'white dome building during daytime',
+    blur_hash: 'LEA,%vRjE1ay.AV@WAj@tnoef5ju',
     width: 6240,
     height: 4160,
-    alt_description: 'white dome building during daytime',
     urls: {
-      small:
-        'https://images.unsplash.com/photo-1618777618311-92f986a6519d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=Mnw0MDIyMzR8MHwxfGNvbGxlY3Rpb258MXw0OTI0NTU2fHx8fHwyfHwxNjc0Nzc0Mjk4&ixlib=rb-4.0.3&q=80&w=400'
+      raw: 'https://images.unsplash.com/photo-1?ixid=1',
+      regular: 'https://images.unsplash.com/photo-1?ixid=1&q=80&w=1080',
+      __typename: 'UnsplashPhotoUrls'
     },
     links: {
-      download_location:
-        'https://api.unsplash.com/collections/4924556/photos?client_id=fpXMSrVxk3ByFvwCqpoQgcIa6P5hX4xqdkSbmfjBBHY'
+      download_location: 'https://api.unsplash.com/photos/1/download?ixid=1',
+      __typename: 'UnsplashPhotoLinks'
     },
     user: {
       first_name: 'Levi Meir',
       last_name: 'Clancy',
-      username: 'levimeirclancy'
+      username: 'levimeirclancy',
+      __typename: 'UnsplashUser'
     },
-    color: '#262626'
+    __typename: 'UnsplashPhoto'
+  }
+
+  const listUnsplashCollectionPhotosMock: MockedResponse<
+    ListUnsplashCollectionPhotos,
+    ListUnsplashCollectionPhotosVariables
+  > = {
+    request: {
+      query: LIST_UNSPLASH_COLLECTION_PHOTOS,
+      variables: {
+        collectionId: '4924556',
+        page: 1,
+        perPage: 20
+      }
+    },
+    result: {
+      data: {
+        listUnsplashCollectionPhotos: [item]
+      }
+    }
+  }
+
+  const searchUnsplashPhotosMock: MockedResponse<
+    SearchUnsplashPhotos,
+    SearchUnsplashPhotosVariables
+  > = {
+    request: {
+      query: SEARCH_UNSPLASH_PHOTOS,
+      variables: {
+        query: 'Jesus',
+        page: 1,
+        perPage: 20
+      }
+    },
+    result: {
+      data: {
+        searchUnsplashPhotos: {
+          results: [item, { ...item, id: '2' }],
+          __typename: 'UnsplashQueryResponse'
+        }
+      }
+    }
+  }
+
+  const triggerUnsplashDownloadMock: MockedResponse<
+    TriggerUnsplashDownload,
+    TriggerUnsplashDownloadVariables
+  > = {
+    request: {
+      query: TRIGGER_UNSPLASH_DOWNLOAD,
+      variables: {
+        url: 'https://api.unsplash.com/photos/1/download?ixid=1'
+      }
+    },
+    result: {
+      data: {
+        triggerUnsplashDownload: true
+      }
+    }
   }
 
   it('should return a collection of images from unsplash', async () => {
-    const { getByRole, getByAltText } = render(
+    const handleChange = jest.fn()
+    render(
       <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: LIST_UNSPLASH_COLLECTION_PHOTOS,
-              variables: {
-                collectionId: '4924556',
-                page: 1,
-                perPage: 20
-              }
-            },
-            result: {
-              data: {
-                listUnsplashCollectionPhotos: [unsplashImage]
-              }
-            }
-          }
-        ]}
+        mocks={[listUnsplashCollectionPhotosMock, triggerUnsplashDownloadMock]}
       >
-        <UnsplashGallery onChange={jest.fn()} />
+        <UnsplashGallery selectedBlock={null} onChange={handleChange} />
       </MockedProvider>
     )
-    await waitFor(() => expect(getByRole('list')).toBeInTheDocument())
-    expect(
-      getByAltText('white dome building during daytime')
-    ).toBeInTheDocument()
+    await waitFor(() =>
+      expect(
+        screen.getByAltText('white dome building during daytime')
+      ).toBeInTheDocument()
+    )
+    fireEvent.click(screen.getByAltText('white dome building during daytime'))
+    expect(handleChange).toHaveBeenCalledWith({
+      alt: 'white dome building during daytime',
+      blurhash: 'LEA,%vRjE1ay.AV@WAj@tnoef5ju',
+      height: 720,
+      src: 'https://images.unsplash.com/photo-1?ixid=1&q=80&w=1080',
+      width: 1080
+    })
+  })
+
+  it('should highlight selected block image', async () => {
+    render(
+      <MockedProvider mocks={[listUnsplashCollectionPhotosMock]}>
+        <ThemeProvider>
+          <UnsplashGallery
+            selectedBlock={{ src: item.urls.regular } as unknown as ImageBlock}
+            onChange={jest.fn()}
+          />
+        </ThemeProvider>
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(screen.getByTestId('image-1')).toHaveStyle(
+        'outline-color: #C52D3A'
+      )
+    )
   })
 
   it('should search images from unsplash', async () => {
-    const { getByRole, getAllByAltText } = render(
+    const result = jest.fn().mockReturnValue(searchUnsplashPhotosMock.result)
+    render(
       <MockedProvider
         mocks={[
+          listUnsplashCollectionPhotosMock,
           {
-            request: {
-              query: LIST_UNSPLASH_COLLECTION_PHOTOS,
-              variables: {
-                collectionId: '4924556',
-                page: 1,
-                perPage: 20
-              }
-            },
-            result: {
-              data: {
-                listUnsplashCollectionPhotos: [unsplashImage]
-              }
-            }
-          },
-          {
-            request: {
-              query: SEARCH_UNSPLASH_PHOTOS,
-              variables: {
-                query: 'Jesus',
-                page: 1,
-                perPage: 20
-              }
-            },
-            result: {
-              data: {
-                searchUnsplashPhotos: {
-                  results: [unsplashImage, unsplashImage]
-                }
-              }
-            }
+            ...searchUnsplashPhotosMock,
+            result
           }
         ]}
       >
         <UnsplashGallery onChange={jest.fn()} />
       </MockedProvider>
     )
-    await waitFor(() => expect(getByRole('list')).toBeInTheDocument())
-    const textbox = getByRole('textbox', { name: 'UnsplashSearch' })
-    fireEvent.submit(textbox, { target: { value: 'Jesus' } })
-    await waitFor(() => expect(getByRole('list')).toBeInTheDocument())
-    expect(
-      getAllByAltText('white dome building during daytime')[0]
-    ).toBeInTheDocument()
+    fireEvent.change(screen.getByRole('textbox', { name: 'UnsplashSearch' }), {
+      target: { value: 'Jesus' }
+    })
+    await waitFor(() =>
+      expect(screen.getByTestId('image-2')).toBeInTheDocument()
+    )
+    expect(result).toHaveBeenCalled()
   })
 
   it('should update search field once chip is selected', async () => {
-    const { getByRole, getAllByAltText } = render(
+    const result = jest
+      .fn()
+      .mockReturnValue(listUnsplashCollectionPhotosMock.result)
+    render(
       <MockedProvider
         mocks={[
+          listUnsplashCollectionPhotosMock,
+          searchUnsplashPhotosMock,
           {
+            ...listUnsplashCollectionPhotosMock,
             request: {
-              query: LIST_UNSPLASH_COLLECTION_PHOTOS,
+              ...listUnsplashCollectionPhotosMock.request,
               variables: {
-                collectionId: '4924556',
-                page: 1,
-                perPage: 20
+                ...listUnsplashCollectionPhotosMock.request.variables,
+                collectionId: 'uOF0tIcPnUA'
               }
             },
-            result: {
-              data: {
-                listUnsplashCollectionPhotos: [unsplashImage]
-              }
-            }
-          },
-          {
-            request: {
-              query: SEARCH_UNSPLASH_PHOTOS,
-              variables: {
-                query: 'Jesus',
-                page: 1,
-                perPage: 20
-              }
-            },
-            result: {
-              data: {
-                searchUnsplashPhotos: {
-                  results: [unsplashImage, unsplashImage]
-                }
-              }
-            }
+            result
           }
         ]}
       >
         <UnsplashGallery onChange={jest.fn()} />
       </MockedProvider>
     )
-    await waitFor(() => expect(getByRole('list')).toBeInTheDocument())
-    const textbox = getByRole('textbox', { name: 'UnsplashSearch' })
-    fireEvent.change(textbox, { target: { value: 'Jesus' } })
-    fireEvent.submit(textbox, { target: { value: 'Jesus' } })
-    await waitFor(() => expect(getByRole('list')).toBeInTheDocument())
+    fireEvent.change(screen.getByRole('textbox', { name: 'UnsplashSearch' }), {
+      target: { value: 'Jesus' }
+    })
     await waitFor(() =>
-      expect(
-        getAllByAltText('white dome building during daytime')[0]
-      ).toBeInTheDocument()
+      expect(screen.getByTestId('image-2')).toBeInTheDocument()
     )
-    const chip = getByRole('button', { name: 'Church' })
-    fireEvent.click(chip)
-    expect(getByRole('textbox', { name: 'UnsplashSearch' })).toHaveValue(
-      'Church'
+    fireEvent.click(screen.getByRole('button', { name: 'Church' }))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(screen.getByRole('textbox', { name: 'UnsplashSearch' })).toHaveValue(
+      ''
     )
+  })
+
+  it('should fetch more images from unsplash', async () => {
+    const result = jest
+      .fn()
+      .mockReturnValue(listUnsplashCollectionPhotosMock.result)
+    render(
+      <MockedProvider
+        mocks={[
+          listUnsplashCollectionPhotosMock,
+          {
+            ...listUnsplashCollectionPhotosMock,
+            request: {
+              ...listUnsplashCollectionPhotosMock.request,
+              variables: {
+                ...listUnsplashCollectionPhotosMock.request.variables,
+                page: 2
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <UnsplashGallery onChange={jest.fn()} />
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(screen.getByTestId('image-1')).toBeInTheDocument()
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Load More' }))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
+  it('should fetch more images from unsplash search', async () => {
+    const result = jest.fn().mockReturnValue(searchUnsplashPhotosMock.result)
+    render(
+      <MockedProvider
+        mocks={[
+          listUnsplashCollectionPhotosMock,
+          searchUnsplashPhotosMock,
+          {
+            ...searchUnsplashPhotosMock,
+            request: {
+              ...searchUnsplashPhotosMock.request,
+              variables: {
+                ...searchUnsplashPhotosMock.request.variables,
+                page: 2
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <UnsplashGallery onChange={jest.fn()} />
+      </MockedProvider>
+    )
+    fireEvent.change(screen.getByRole('textbox', { name: 'UnsplashSearch' }), {
+      target: { value: 'Jesus' }
+    })
+    await waitFor(() =>
+      expect(screen.getByTestId('image-2')).toBeInTheDocument()
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Load More' }))
+    await waitFor(() => expect(result).toHaveBeenCalled())
   })
 })

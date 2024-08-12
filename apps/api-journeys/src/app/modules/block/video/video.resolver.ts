@@ -6,8 +6,8 @@ import omit from 'lodash/omit'
 import fetch from 'node-fetch'
 import { object, string } from 'yup'
 
-import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 import { Block, VideoBlockSource } from '.prisma/api-journeys-client'
+import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 
 import {
   VideoBlock,
@@ -193,7 +193,8 @@ export class VideoBlockResolver {
         where: {
           parentBlockId: input.parentBlockId,
           typename: 'VideoBlock',
-          id: { not: block.id }
+          id: { not: block.id },
+          deletedAt: null
         }
       })
       if (existingVideoOnParent != null)

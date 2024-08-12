@@ -2,9 +2,9 @@ import Button from '@mui/material/Button'
 import Link from '@mui/material/Link'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next'
 import dynamic from 'next/dynamic'
 import NextLink from 'next/link'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, Suspense } from 'react'
 
 import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
@@ -51,6 +51,7 @@ export function OnboardingPanel(): ReactElement {
         <NextLink href="/templates" passHref legacyBehavior>
           <Button
             variant="outlined"
+            size="small"
             startIcon={<Grid1Icon />}
             sx={{ width: 'max-content', alignSelf: 'center' }}
           >

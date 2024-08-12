@@ -10,14 +10,14 @@ import { ReactElement, useEffect } from 'react'
 import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { useBlocks } from '@core/journeys/ui/block'
 import {
   STEP_NEXT_EVENT_CREATE,
   STEP_PREVIOUS_EVENT_CREATE
 } from '@core/journeys/ui/Card/Card'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
-import { useBlocks } from '@core/journeys/ui/block'
 import { getStepHeading } from '@core/journeys/ui/getStepHeading'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import {
   JourneyPlausibleEvents,
   keyify
@@ -25,6 +25,10 @@ import {
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
 
+import {
+  StepNextEventCreateInput,
+  StepPreviousEventCreateInput
+} from '../../../../__generated__/globalTypes'
 import { StepFields } from '../../../../__generated__/StepFields'
 import {
   StepNextEventCreate,
@@ -34,10 +38,6 @@ import {
   StepPreviousEventCreate,
   StepPreviousEventCreateVariables
 } from '../../../../__generated__/StepPreviousEventCreate'
-import {
-  StepNextEventCreateInput,
-  StepPreviousEventCreateInput
-} from '../../../../__generated__/globalTypes'
 
 const LeftNavigationContainer = styled(Box)`
   /* @noflip */
@@ -107,6 +107,7 @@ export function NavigationButton({
   // libs/journeys/ui/src/components/Card/Card.tsx
   // journeys/src/components/Conductor/NavigationButton/NavigationButton.tsx
   // journeys/src/components/Conductor/SwipeNavigation/SwipeNavigation.tsx
+  // journeys/src/components/Conductor/HotkeyNavigation/HotkeyNavigation.tsx
   function handleNextNavigationEventCreate(): void {
     const id = uuidv4()
     const stepName = getStepHeading(
@@ -137,6 +138,7 @@ export function NavigationButton({
     })
     if (journey != null)
       plausible('navigateNextStep', {
+        u: `${window.location.origin}/${journey.id}/${input.blockId}`,
         props: {
           ...input,
           key: keyify({
@@ -169,6 +171,7 @@ export function NavigationButton({
   // libs/journeys/ui/src/components/Card/Card.tsx
   // journeys/src/components/Conductor/NavigationButton/NavigationButton.tsx
   // journeys/src/components/Conductor/SwipeNavigation/SwipeNavigation.tsx
+  // journeys/src/components/Conductor/HotkeyNavigation/HotkeyNavigation.tsx
   function handlePreviousNavigationEventCreate(): void {
     const id = uuidv4()
     const stepName = getStepHeading(
@@ -201,6 +204,7 @@ export function NavigationButton({
     })
     if (journey != null)
       plausible('navigatePreviousStep', {
+        u: `${window.location.origin}/${journey.id}/${input.blockId}`,
         props: {
           ...input,
           key: keyify({

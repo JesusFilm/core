@@ -6,9 +6,9 @@ import Stack from '@mui/material/Stack'
 import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
 import { GetServerSideProps } from 'next'
-import { withUser, withUserTokenSSR } from 'next-firebase-auth'
-import { useTranslation } from 'next-i18next'
 import NextLink from 'next/link'
+import { useUser, withUser, withUserTokenSSR } from 'next-firebase-auth'
+import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
@@ -55,6 +55,7 @@ function EmailPreferencesPage({
   journeysEmailPreferenceData,
   updatePrefs
 }: EmailPreferencesPageProps): ReactElement {
+  const user = useUser()
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('apps-journeys-admin')
   const [updateJourneysEmailPreference, { loading }] =
@@ -85,7 +86,7 @@ function EmailPreferencesPage({
             }
           }
         }).then(() => {
-          enqueueSnackbar(t(`Email Preferences Updated.`), {
+          enqueueSnackbar(t('Email Preferences Updated.'), {
             variant: 'success',
             preventDuplicate: false
           })
@@ -99,7 +100,10 @@ function EmailPreferencesPage({
     }
 
   return (
-    <OnboardingPageWrapper emailSubject="a question about email preferences">
+    <OnboardingPageWrapper
+      emailSubject="a question about email preferences"
+      user={user}
+    >
       <Stack
         sx={{
           maxWidth: '400px'

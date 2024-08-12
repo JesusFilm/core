@@ -1,9 +1,8 @@
 import { gql, useMutation } from '@apollo/client'
-import Box from '@mui/material/Box'
 import ButtonBase from '@mui/material/ButtonBase'
-import { useTranslation } from 'next-i18next'
 import Image from 'next/image'
-import { ReactElement } from 'react'
+import { useTranslation } from 'next-i18next'
+import type { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import { CARD_FIELDS } from '@core/journeys/ui/Card/cardFields'
@@ -13,7 +12,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { TEXT_RESPONSE_FIELDS } from '@core/journeys/ui/TextResponse/textResponseFields'
 import { TYPOGRAPHY_FIELDS } from '@core/journeys/ui/Typography/typographyFields'
 
-import {
+import type {
   CardFormCreate,
   CardFormCreateVariables
 } from '../../../../../../../../../__generated__/CardFormCreate'
@@ -161,16 +160,15 @@ export function CardForm(): ReactElement {
   }
 
   return (
-    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-      <ButtonBase sx={{ borderRadius: 5 }} onClick={handleClick}>
-        <Image
-          width={128}
-          height={195}
-          src={cardFormImage}
-          alt="Card Form Template"
-          draggable={false}
-        />
-      </ButtonBase>
-    </Box>
+    <ButtonBase sx={{ borderRadius: 5 }} onClick={handleClick}>
+      <Image
+        width={128}
+        height={195}
+        layout="responsive"
+        src={cardFormImage}
+        alt="Card Form Template"
+        draggable={false}
+      />
+    </ButtonBase>
   )
 }

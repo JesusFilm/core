@@ -1,14 +1,16 @@
+import get from 'lodash/get'
 import { Edge } from 'reactflow'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { TreeBlock } from '@core/journeys/ui/block'
+import { useCommand } from '@core/journeys/ui/CommandProvider'
+import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import { searchBlocks } from '@core/journeys/ui/searchBlocks'
 
-import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'
-import { useBlockOrderUpdateMutation } from '../../../../../../libs/useBlockOrderUpdateMutation'
-import { useNavigateToBlockActionUpdateMutation } from '../../../../../../libs/useNavigateToBlockActionUpdateMutation'
+import {
+  getNewParentOrder,
+  useBlockOrderUpdateMutation
+} from '../../../../../../libs/useBlockOrderUpdateMutation'
 import { useStepBlockNextBlockUpdateMutation } from '../../../../../../libs/useStepBlockNextBlockUpdateMutation'
+import { useActionCommand } from '../../../../utils/useActionCommand'
 import { RawEdgeSource, convertToEdgeSource } from '../convertToEdgeSource'
 import { useDeleteEdge } from '../useDeleteEdge'
 
@@ -18,24 +20,23 @@ type RawEdgeSourceAndTarget = RawEdgeSource & { target?: string | null } & {
 
 export function useUpdateEdge(): (
   rawEdgeSource: RawEdgeSourceAndTarget
-) => Promise<void> {
-  const { journey } = useJourney()
+) => void {
   const {
     state: { steps },
     dispatch
   } = useEditor()
 
   const [blockOrderUpdate] = useBlockOrderUpdateMutation()
-  const [navigateToBlockActionUpdate] = useNavigateToBlockActionUpdateMutation()
+  const { addAction } = useActionCommand()
   const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
   const deleteEdge = useDeleteEdge()
+  const { add } = useCommand()
 
-  async function updateEdge({
+  return function updateEdge({
     target,
     ...rawEdgeSource
-  }: RawEdgeSourceAndTarget): Promise<void> {
-    if (journey == null || target == null) return
-    let selectedStep: TreeBlock<StepBlock> | undefined
+  }: RawEdgeSourceAndTarget): void {
+    if (target == null) return
     const edgeSource = convertToEdgeSource(rawEdgeSource)
     if (
       rawEdgeSource.oldEdge != null &&
@@ -48,73 +49,108 @@ export function useUpdateEdge(): (
 
     switch (edgeSource.sourceType) {
       case 'socialPreview': {
-        const { data } = await blockOrderUpdate({
-          variables: {
-            id: target,
-            journeyId: journey.id,
-            parentOrder: 0
+        const step = steps?.find((step) => step.id === target)
+
+        if (step == null) return
+
+        add({
+          parameters: {
+            execute: {
+              selectedStepId: step.id as string | undefined,
+              parentOrder: 0
+            },
+            undo: {
+              selectedStepId: steps?.[0]?.id,
+              parentOrder: (step.parentOrder ?? 0) + 1
+            }
           },
-          optimisticResponse: {
-            blockOrderUpdate: [
-              {
-                id: target,
-                __typename: 'StepBlock',
-                parentOrder: 0
+          execute({ selectedStepId, parentOrder }) {
+            dispatch({
+              type: 'SetEditorFocusAction',
+              selectedStepId,
+              activeSlide: ActiveSlide.JourneyFlow
+            })
+            void blockOrderUpdate({
+              variables: {
+                id: step.id,
+                parentOrder
+              },
+              optimisticResponse: {
+                blockOrderUpdate: getNewParentOrder(
+                  steps ?? [],
+                  step,
+                  parentOrder
+                )
               }
-            ]
+            })
           }
         })
-        if (data != null) {
-          const stepId = data.blockOrderUpdate[0].id
-          selectedStep = steps?.find((step) => step.id === stepId)
-        }
         break
       }
       case 'step': {
-        const { data } = await stepBlockNextBlockUpdate({
-          variables: {
-            id: edgeSource.stepId,
-            journeyId: journey.id,
-            input: {
-              nextBlockId: target
+        const step = steps?.find((step) => step.id === edgeSource.stepId)
+
+        if (step == null) return
+
+        add({
+          parameters: {
+            execute: { nextBlockId: target, selectedStepId: target },
+            undo: {
+              nextBlockId: step.nextBlockId,
+              selectedStepId: step.nextBlockId ?? step.id
             }
           },
-          optimisticResponse: {
-            stepBlockUpdate: {
-              id: edgeSource.stepId,
-              __typename: 'StepBlock',
-              nextBlockId: target
-            }
+          execute({ nextBlockId, selectedStepId }) {
+            dispatch({
+              type: 'SetEditorFocusAction',
+              selectedStepId,
+              activeSlide: ActiveSlide.JourneyFlow
+            })
+            void stepBlockNextBlockUpdate({
+              variables: {
+                id: step.id,
+                nextBlockId
+              },
+              optimisticResponse: {
+                stepBlockUpdate: {
+                  id: step.id,
+                  __typename: 'StepBlock',
+                  nextBlockId
+                }
+              }
+            })
           }
         })
-        if (data != null) {
-          selectedStep = steps?.find((step) => step.id === target)
-        }
         break
       }
       case 'action': {
         const step = steps?.find((step) => step.id === edgeSource.stepId)
-        const block = searchBlocks(
-          step != null ? [step] : [],
-          edgeSource.blockId
-        )
-        if (block != null) {
-          const data = await navigateToBlockActionUpdate(block, target)
-          if (data != null) {
-            selectedStep = steps?.find((step) => step.id === target)
+        if (step == null) return
+
+        const block = searchBlocks([step], edgeSource.blockId)
+        if (block == null) break
+
+        addAction({
+          blockId: block.id,
+          blockTypename: block.__typename,
+          action: {
+            __typename: 'NavigateToBlockAction',
+            gtmEventName: null,
+            parentBlockId: block.id,
+            blockId: target
+          },
+          editorFocus: {
+            selectedStepId: target,
+            activeSlide: ActiveSlide.JourneyFlow
+          },
+          undoAction: get(block, 'action'),
+          undoEditorFocus: {
+            selectedStepId: get(block, 'action.blockId') ?? step.id,
+            activeSlide: ActiveSlide.JourneyFlow
           }
-        }
+        })
         break
       }
     }
-
-    if (selectedStep != null) {
-      dispatch({
-        type: 'SetSelectedStepAction',
-        selectedStep
-      })
-    }
   }
-
-  return updateEdge
 }

@@ -2,16 +2,12 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { usePlausible } from 'next-plausible'
 import { SnackbarProvider } from 'notistack'
 
-import { keyify } from '@core/journeys/ui/plausibleHelpers'
+import { TreeBlock, blockHistoryVar } from '../../../../libs/block'
 import { JourneyProvider } from '../../../../libs/JourneyProvider'
 import { JourneyFields as Journey } from '../../../../libs/JourneyProvider/__generated__/JourneyFields'
-import {
-  TreeBlock,
-  blockHistoryVar,
-  treeBlocksVar
-} from '../../../../libs/block'
-
+import { keyify } from '../../../../libs/plausibleHelpers'
 import { StepFields } from '../../../Step/__generated__/StepFields'
+
 import { ShareButton } from './ShareButton'
 
 jest.mock('@mui/material/useMediaQuery', () => ({

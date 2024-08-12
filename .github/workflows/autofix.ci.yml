@@ -1,0 +1,83 @@
+name: autofix.ci
+on:
+  workflow_call:
+  push:
+    branches: [main, feature/*]
+  pull_request:
+    branches: [main, feature/*]
+  merge_group:
+    branches: [main]
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20]
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Fetch other branches
+        if: ${{ github.event_name == 'pull_request' }}
+        run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - name: Cache Node Modules
+        id: cache-node-modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: node-modules-${{ matrix.node-version }}-
+      - name: NPM Install
+        run: npm install --silent
+      - name: generate prisma imports
+        uses: mansagroup/nrwl-nx-action@v3
+        with:
+          targets: prisma-generate
+          all: true
+          parallel: 1
+        env:
+          DISABLE_ERD: true
+      - name: NPM apollo and graphql for codegen
+        run: npm i -g apollo graphql @apollo/rover@0.22.0
+      - name: Codegen
+        uses: mansagroup/nrwl-nx-action@v3
+        with:
+          targets: codegen
+          all: true
+      - name: Run Prettier
+        run: npm run prettier:fix
+      - name: Run ESLint
+        uses: mansagroup/nrwl-nx-action@v3
+        with:
+          targets: lint
+          args: --fix
+      - name: type-check, extract-translations, subgraph-check
+        uses: mansagroup/nrwl-nx-action@v3
+        with:
+          targets: type-check,extract-translations,subgraph-check
+        env:
+          APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
+      - name: lint commit messages
+        run: npx commitlint --from 9a45682 # earliest good commit to main
+      - name: lint branch name
+        if: ${{ github.event_name == 'pull_request' }}
+        run: npx validate-branch-name -t $GITHUB_HEAD_REF
+      - uses: autofix-ci/action@ff86a557419858bb967097bfc916833f5647fa8c
+        with:
+          commit-message: 'fix: lint issues'

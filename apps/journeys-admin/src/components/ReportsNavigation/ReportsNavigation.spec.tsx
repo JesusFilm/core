@@ -1,85 +1,70 @@
-import { render } from '@testing-library/react'
-
-import { JourneysReportType } from '../../../__generated__/globalTypes'
+/* eslint-disable jest/no-identical-title */
+import { render, screen } from '@testing-library/react'
 
 import { ReportsNavigation } from './ReportsNavigation'
 
 describe('ReportsNavigation', () => {
-  it('should should select journeys', () => {
-    const { getByRole } = render(<ReportsNavigation selected="journeys" />)
-    expect(getByRole('link', { name: 'Journeys' })).toHaveAttribute(
-      'aria-selected',
-      'true'
-    )
-    expect(getByRole('link', { name: 'Visitors' })).toHaveAttribute(
-      'aria-selected',
-      'false'
-    )
+  it('should navigate to visitors report for desktop', () => {
+    render(<ReportsNavigation destination="visitor" journeyId="journeyId" />)
+    expect(
+      screen.getAllByRole('link', { name: 'Visitors' })[0]
+    ).toHaveAttribute('href', '/journeys/journeyId/reports/visitors')
+    expect(screen.getAllByTestId('UsersProfiles2Icon')).toHaveLength(2)
   })
 
-  it('should should select visitors', () => {
-    const { getByRole } = render(<ReportsNavigation selected="visitors" />)
-    expect(getByRole('link', { name: 'Visitors' })).toHaveAttribute(
-      'aria-selected',
-      'true'
-    )
-    expect(getByRole('link', { name: 'Journeys' })).toHaveAttribute(
-      'aria-selected',
-      'false'
-    )
+  it('should show all visitors if journeyId is null for desktop', () => {
+    render(<ReportsNavigation destination="visitor" />)
+    expect(
+      screen.getAllByRole('link', { name: 'Visitors' })[0]
+    ).toHaveAttribute('href', '/reports/visitors')
+    expect(screen.getAllByTestId('UsersProfiles2Icon')).toHaveLength(2)
   })
 
-  it('should navigate to single journey report', () => {
-    const { getByRole } = render(
-      <ReportsNavigation
-        reportType={JourneysReportType.singleFull}
-        journeyId="test"
-        selected="visitors"
-      />
-    )
-    expect(getByRole('link', { name: 'Journeys' })).toHaveAttribute(
-      'href',
-      '/journeys/test/reports'
-    )
+  it('should navigate to visitors report for mobile', () => {
+    render(<ReportsNavigation destination="visitor" journeyId="journeyId" />)
+    expect(
+      screen.getAllByRole('link', { name: 'Visitors' })[1]
+    ).toHaveAttribute('href', '/journeys/journeyId/reports/visitors')
+    expect(screen.getAllByTestId('UsersProfiles2Icon')).toHaveLength(2)
   })
 
-  it('should navigate to single visitor report', () => {
-    const { getByRole } = render(
-      <ReportsNavigation
-        reportType={JourneysReportType.singleFull}
-        journeyId="test"
-        selected="visitors"
-      />
-    )
-    expect(getByRole('link', { name: 'Visitors' })).toHaveAttribute(
-      'href',
-      '/journeys/test/reports/visitors'
-    )
+  it('should show all visitors if journeyId is null for mobile', () => {
+    render(<ReportsNavigation destination="visitor" />)
+    expect(
+      screen.getAllByRole('link', { name: 'Visitors' })[0]
+    ).toHaveAttribute('href', '/reports/visitors')
+    expect(screen.getAllByTestId('UsersProfiles2Icon')).toHaveLength(2)
   })
 
-  it('should navigate to multiple journeys report', () => {
-    const { getByRole } = render(
-      <ReportsNavigation
-        reportType={JourneysReportType.multipleFull}
-        selected="visitors"
-      />
-    )
-    expect(getByRole('link', { name: 'Journeys' })).toHaveAttribute(
-      'href',
-      '/reports/journeys'
-    )
+  it('should navigate to visitors report for desktop', () => {
+    render(<ReportsNavigation destination="journey" journeyId="journeyId" />)
+    expect(
+      screen.getAllByRole('link', { name: 'Journeys' })[0]
+    ).toHaveAttribute('href', '/journeys/journeyId/reports')
+    expect(screen.getAllByTestId('BarGroup3Icon')).toHaveLength(2)
   })
 
-  it('should navigate to multiple visitors report', () => {
-    const { getByRole } = render(
-      <ReportsNavigation
-        reportType={JourneysReportType.multipleFull}
-        selected="visitors"
-      />
-    )
-    expect(getByRole('link', { name: 'Visitors' })).toHaveAttribute(
-      'href',
-      '/reports/visitors'
-    )
+  it('should show all visitors if journeyId is null for desktop', () => {
+    render(<ReportsNavigation destination="journey" />)
+    expect(
+      screen.getAllByRole('link', { name: 'Journeys' })[0]
+    ).toHaveAttribute('href', '/reports/journeys')
+    expect(screen.getAllByTestId('BarGroup3Icon')).toHaveLength(2)
+  })
+
+  it('should navigate to visitors report for mobile', () => {
+    render(<ReportsNavigation destination="journey" journeyId="journeyId" />)
+    expect(
+      screen.getAllByRole('link', { name: 'Journeys' })[1]
+    ).toHaveAttribute('href', '/journeys/journeyId/reports')
+    expect(screen.getAllByTestId('BarGroup3Icon')).toHaveLength(2)
+  })
+
+  it('should show all visitors if journeyId is null for mobile', () => {
+    render(<ReportsNavigation destination="journey" />)
+    expect(
+      screen.getAllByRole('link', { name: 'Journeys' })[0]
+    ).toHaveAttribute('href', '/reports/journeys')
+    expect(screen.getAllByTestId('BarGroup3Icon')).toHaveLength(2)
   })
 })

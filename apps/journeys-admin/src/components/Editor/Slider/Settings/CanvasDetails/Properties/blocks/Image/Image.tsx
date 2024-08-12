@@ -1,10 +1,10 @@
 import Box from '@mui/material/Box'
-import { useTranslation } from 'next-i18next'
 import dynamic from 'next/dynamic'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect } from 'react'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import Image3Icon from '@core/shared/ui/icons/Image3'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../__generated__/BlockFields'

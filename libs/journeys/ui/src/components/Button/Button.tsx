@@ -1,9 +1,9 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import MuiButton from '@mui/material/Button'
+import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { usePlausible } from 'next-plausible'
-import { useRouter } from 'next/router'
 import { MouseEvent, ReactElement, useMemo } from 'react'
 import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
@@ -14,11 +14,11 @@ import {
   ButtonVariant,
   ChatOpenEventCreateInput
 } from '../../../__generated__/globalTypes'
-import { useJourney } from '../../libs/JourneyProvider'
 import { handleAction } from '../../libs/action'
 import type { TreeBlock } from '../../libs/block'
 import { useBlocks } from '../../libs/block'
 import { getStepHeading } from '../../libs/getStepHeading'
+import { useJourney } from '../../libs/JourneyProvider'
 import { JourneyPlausibleEvents } from '../../libs/plausibleHelpers'
 import { keyify } from '../../libs/plausibleHelpers/plausibleHelpers'
 import { Icon } from '../Icon'
@@ -122,6 +122,7 @@ export function Button({
       })
       if (journey != null) {
         plausible('buttonClick', {
+          u: `${window.location.origin}/${journey.id}/${input.stepId}`,
           props: {
             ...input,
             key: keyify({
@@ -158,6 +159,7 @@ export function Button({
       })
       if (journey != null)
         plausible('chatButtonClick', {
+          u: `${window.location.origin}/${journey.id}/${input.stepId}`,
           props: {
             ...input,
             key: keyify({
@@ -225,10 +227,10 @@ export function Button({
           size === 'large'
             ? 6
             : size === 'medium'
-              ? 5
-              : size === 'small'
-                ? 4
-                : 5
+            ? 5
+            : size === 'small'
+            ? 4
+            : 5
       }}
       data-testid={`JourneysButton-${blockId}`}
     >
@@ -253,7 +255,13 @@ export function Button({
             : undefined
         }
       >
-        {editableLabel ?? label}
+        <span>
+          {editableLabel != null
+            ? editableLabel
+            : label !== ''
+            ? label
+            : t('Submit')}
+        </span>
       </MuiButton>
     </Box>
   )

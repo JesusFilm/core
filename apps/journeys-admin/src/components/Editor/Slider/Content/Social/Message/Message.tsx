@@ -1,13 +1,15 @@
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { SxProps } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import Box from '@mui/system/Box'
 import isEmpty from 'lodash/isEmpty'
-import { useTranslation } from 'next-i18next'
 import Image from 'next/image'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, ReactNode, useEffect, useRef, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
+import { useCustomDomainsQuery } from '../../../../../../libs/useCustomDomainsQuery'
 
 interface MessageBubbleProps {
   height?: number
@@ -77,6 +79,10 @@ export function MessageBubble({
 }
 export function Message(): ReactElement {
   const { journey } = useJourney()
+  const { hostname } = useCustomDomainsQuery({
+    variables: { teamId: journey?.team?.id ?? '' },
+    skip: journey?.team?.id == null
+  })
   const { t } = useTranslation('apps-journeys-admin')
   return (
     <Box maxWidth={256} data-testid="SocialPreviewMessage">
@@ -167,7 +173,14 @@ export function Message(): ReactElement {
                     mt={2}
                     color="#C52D3A"
                   >
-                    https://your.nextstep.is/{journey.slug}
+                    {journey?.slug != null
+                      ? `${
+                          hostname != null
+                            ? `https://${hostname}`
+                            : process.env.NEXT_PUBLIC_JOURNEYS_URL ??
+                              'https://your.nextstep.is'
+                        }/${journey.slug}`
+                      : undefined}
                   </Typography>
                 </Box>
               </Stack>

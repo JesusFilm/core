@@ -2,11 +2,11 @@ import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import MuiDrawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
+import { type Theme, alpha } from '@mui/material/styles'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
-import { Theme, alpha } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { ReactElement, ReactNode } from 'react'
+import type { ReactElement, ReactNode } from 'react'
 
 import X2Icon from '@core/shared/ui/icons/X2'
 
@@ -23,7 +23,7 @@ function DrawerTitle({ title, onClose }: DrawerTitleProps): ReactElement {
       <AppBar position="static" color="default">
         <Box
           sx={{
-            display: { xs: 'flex', sm: 'none' },
+            display: { xs: 'flex', md: 'none' },
             alignItems: 'center',
             justifyContent: 'center',
             pt: 2,
@@ -42,10 +42,10 @@ function DrawerTitle({ title, onClose }: DrawerTitleProps): ReactElement {
         </Box>
         <Toolbar
           sx={{
-            minHeight: { xs: 64, sm: 48 },
-            maxHeight: { xs: 64, sm: 48 },
-            pl: { sm: 4 },
-            pr: { xs: 4.5, sm: 5 },
+            minHeight: { xs: 64, md: 48 },
+            maxHeight: { xs: 64, md: 48 },
+            pl: { md: 4 },
+            pr: { xs: 4.5, md: 5 },
             backgroundColor: (theme) =>
               alpha(theme.palette.background.default, 0.5)
           }}
@@ -87,7 +87,7 @@ export function Drawer({
   open,
   onClose
 }: DrawerProps): ReactElement {
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
+  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
 
   return (
     <MuiDrawer
@@ -106,9 +106,9 @@ export function Drawer({
           borderBottomLeftRadius: 0,
           borderBottomRightRadius: 0,
           width: smUp ? DRAWER_WIDTH : 'auto',
-          left: { xs: 0, sm: 'auto' },
-          top: { xs: 0, sm: 20 },
-          right: { xs: 0, sm: 20 },
+          left: { xs: 0, md: 'auto' },
+          top: { xs: 0, md: 20 },
+          right: { xs: 0, md: 20 },
           bottom: 0,
           height: 'calc(100% - 20px)'
         }
@@ -118,7 +118,7 @@ export function Drawer({
       <Box
         data-testid="SettingsDrawerContent"
         className="swiper-no-swiping"
-        sx={{ flexGrow: 1, overflow: 'auto', mb: { sm: 4 } }}
+        sx={{ flexGrow: 1, overflow: 'auto', mb: { md: 4 } }}
       >
         {children}
       </Box>

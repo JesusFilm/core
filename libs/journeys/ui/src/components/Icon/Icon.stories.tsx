@@ -65,8 +65,8 @@ const VariantTemplate: VariantStory = {
                 variant === IconName.ArrowBackRounded
                   ? 'ArrowLeftRounded'
                   : variant === IconName.ArrowForwardRounded
-                    ? 'ArrowRightRounded'
-                    : variant
+                  ? 'ArrowRightRounded'
+                  : variant
               }`}</Typography>
             </Grid>
           ))}

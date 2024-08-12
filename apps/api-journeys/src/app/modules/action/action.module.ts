@@ -8,6 +8,7 @@ import { PrismaService } from '../../lib/prisma.service'
 import { BlockService } from '../block/block.service'
 
 import { ActionResolver } from './action.resolver'
+import { ActionService } from './action.service'
 import { EmailActionResolver } from './emailAction/emailAction.resolver'
 import { LinkActionResolver } from './linkAction/linkAction.resolver'
 import { NavigateToBlockActionResolver } from './navigateToBlockAction/navigateToBlockAction.resolver'
@@ -15,13 +16,15 @@ import { NavigateToBlockActionResolver } from './navigateToBlockAction/navigateT
 @Module({
   imports: [CaslAuthModule.register(AppCaslFactory)],
   providers: [
+    ActionService,
     ActionResolver,
     BlockService,
     DateTimeScalar,
     PrismaService,
-    LinkActionResolver,
     EmailActionResolver,
+    LinkActionResolver,
     NavigateToBlockActionResolver
-  ]
+  ],
+  exports: [ActionService]
 })
 export class ActionModule {}

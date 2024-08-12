@@ -1,16 +1,19 @@
 interface Action {
   parentBlockId: ID!
+  parentBlock: Block!
   gtmEventName: String
 }
 
 type NavigateToBlockAction implements Action {
   parentBlockId: ID!
+  parentBlock: Block!
   gtmEventName: String
   blockId: String!
 }
 
 type LinkAction implements Action {
   parentBlockId: ID!
+  parentBlock: Block!
   gtmEventName: String
   url: String!
   target: String
@@ -18,6 +21,7 @@ type LinkAction implements Action {
 
 type EmailAction implements Action {
   parentBlockId: ID!
+  parentBlock: Block!
   gtmEventName: String
   email: String!
 }
@@ -38,21 +42,45 @@ input EmailActionInput {
   email: String!
 }
 
+input BlockUpdateActionInput {
+  gtmEventName: String
+  email: String
+  url: String
+  target: String
+  blockId: String
+}
+
 extend type Mutation {
-  blockDeleteAction(id: ID!, journeyId: ID!): Block!
+  blockDeleteAction(
+    id: ID!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
+  ): Block!
   blockUpdateNavigateToBlockAction(
     id: ID!
-    journeyId: ID!
     input: NavigateToBlockActionInput!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
   ): NavigateToBlockAction!
   blockUpdateLinkAction(
     id: ID!
-    journeyId: ID!
     input: LinkActionInput!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
   ): LinkAction!
   blockUpdateEmailAction(
     id: ID!
-    journeyId: ID!
     input: EmailActionInput!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
   ): EmailAction!
+  blockUpdateAction(id: ID!, input: BlockUpdateActionInput): Action!
 }

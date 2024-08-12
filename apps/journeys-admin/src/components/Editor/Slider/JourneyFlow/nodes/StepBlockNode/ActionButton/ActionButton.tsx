@@ -1,14 +1,15 @@
 import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
 import { alpha } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+
 import { BlockFields as Block } from '../../../../../../../../__generated__/BlockFields'
 import { useUpdateEdge } from '../../../libs/useUpdateEdge'
-import { BaseNode } from '../../BaseNode'
+import { BaseNode, HandleVariant } from '../../BaseNode'
 import { ACTION_BUTTON_HEIGHT } from '../libs/sizes'
 
 interface BlockUIProperties {
@@ -79,7 +80,9 @@ export function ActionButton({
   return (
     <BaseNode
       id={block.id}
-      sourceHandle={showAnalytics === true ? 'disabled' : 'show'}
+      sourceHandle={
+        showAnalytics === true ? HandleVariant.Disabled : HandleVariant.Shown
+      }
       onSourceConnect={updateEdge}
       selected={selected}
       isSourceConnected={isSourceConnected}

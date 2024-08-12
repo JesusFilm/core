@@ -7,13 +7,13 @@ import { NodeProps } from 'reactflow'
 import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
 import { filterActionBlocks } from '@core/journeys/ui/filterActionBlocks'
 
-import { BaseNode } from '../BaseNode'
+import { BaseNode, HandleVariant } from '../BaseNode'
 
 import { ActionButton } from './ActionButton'
+import { STEP_NODE_WIDTH } from './libs/sizes'
 import { StepBlockNodeAnalytics } from './StepBlockNodeAnalytics'
 import { StepBlockNodeCard } from './StepBlockNodeCard'
 import { StepBlockNodeMenu } from './StepBlockNodeMenu'
-import { STEP_NODE_WIDTH } from './libs/sizes'
 
 export function StepBlockNode({
   id,
@@ -67,7 +67,11 @@ export function StepBlockNode({
       >
         <BaseNode
           id={step.id}
-          targetHandle={showAnalytics === true ? 'disabled' : 'show'}
+          targetHandle={
+            showAnalytics === true
+              ? HandleVariant.Disabled
+              : HandleVariant.Shown
+          }
           selected={isSelected}
           isSourceConnected={step.nextBlockId != null}
           dragging={dragging}

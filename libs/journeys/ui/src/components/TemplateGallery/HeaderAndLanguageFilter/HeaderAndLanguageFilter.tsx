@@ -4,8 +4,8 @@ import NoSsr from '@mui/material/NoSsr'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { Trans, useTranslation } from 'next-i18next'
 import { useRouter } from 'next/router'
+import { Trans, useTranslation } from 'next-i18next'
 import {
   ComponentProps,
   ReactElement,
@@ -15,14 +15,14 @@ import {
   useState
 } from 'react'
 
-import { LanguageOption } from '@core/shared/ui/MultipleLanguageAutocomplete'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
+import { LanguageOption } from '@core/shared/ui/MultipleLanguageAutocomplete'
 
-import { setBeaconPageViewed } from '../../../libs/setBeaconPageViewed'
+import { setBeaconPageViewed } from '../../../libs/beaconHooks'
 import { useLanguagesQuery } from '../../../libs/useLanguagesQuery'
 
-import { LanguagesFilterPopper } from './LanguagesFilterPopper/LanguagesFilterPopper'
 import { convertLanguagesToOptions } from './convertLanguagesToOptions'
+import { LanguagesFilterPopper } from './LanguagesFilterPopper/LanguagesFilterPopper'
 
 interface LocalTypographyProps extends ComponentProps<typeof Typography> {}
 
@@ -89,6 +89,7 @@ function LocalButton({
         >
           {loading === true ? (
             <Skeleton
+              data-testid="local-language-loading-desktop"
               sx={{ width: { xs: 145, md: 274 }, height: { xs: 30, md: 36 } }}
             />
           ) : (
@@ -117,6 +118,7 @@ function LocalButton({
         >
           {loading === true ? (
             <Skeleton
+              data-testid="local-language-loading-mobile"
               sx={{ width: { xs: 145, md: 274 }, height: { xs: 30, md: 36 } }}
             />
           ) : (
@@ -149,7 +151,7 @@ function LocalButton({
 }
 
 interface LanguageFilterProps {
-  selectedLanguageIds: string[]
+  selectedLanguageIds?: string[]
   onChange: (values: string[]) => void
 }
 
@@ -198,7 +200,7 @@ export function HeaderAndLanguageFilter({
   })
 
   const languageOptions = convertLanguagesToOptions(
-    data?.languages.filter(({ id }) => selectedLanguageIds.includes(id))
+    data?.languages.filter(({ id }) => selectedLanguageIds?.includes(id))
   )
 
   const languageNames = languageOptions.map(
@@ -215,7 +217,7 @@ export function HeaderAndLanguageFilter({
     sx: { flex: 0 }
   }
   const localButtonProps: LocalButtonProps = {
-    loading,
+    loading: loading || selectedLanguageIds == null,
     onClick: () => {
       const param = 'template-language'
       void router.push({ query: { ...router.query, param } }, undefined, {

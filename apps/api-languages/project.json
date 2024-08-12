@@ -33,18 +33,8 @@
       }
     },
     "lint": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npx @biomejs/biome check --diagnostic-level=warn",
-        "cwd": "apps/api-languages"
-      }
-    },
-    "lint:fix": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npx @biomejs/biome check --write",
-        "cwd": "apps/api-languages"
-      }
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
     },
     "test": {
       "executor": "@nx/jest:jest",
@@ -97,12 +87,6 @@
         ]
       }
     },
-    "prisma-seed": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": ["npm run ts-node apps/api-languages/db/seed.ts"]
-      }
-    },
     "prisma-studio": {
       "executor": "nx:run-commands",
       "options": {
@@ -123,6 +107,12 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "codecov -f coverage/apps/api-languages/cobertura-coverage.xml -F apps.api-languages"
+      }
+    },
+    "ingest": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apps/api-languages/src/bigquery/console.ts"
       }
     }
   },

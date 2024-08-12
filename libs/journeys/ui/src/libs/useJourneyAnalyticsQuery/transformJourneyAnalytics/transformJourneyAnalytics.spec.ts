@@ -1,4 +1,5 @@
 import { GetJourneyAnalytics } from '../__generated__/GetJourneyAnalytics'
+
 import { transformJourneyAnalytics } from './transformJourneyAnalytics'
 
 describe('transformJourneyAnalytics', () => {
@@ -7,19 +8,19 @@ describe('transformJourneyAnalytics', () => {
       journeySteps: [
         {
           __typename: 'PlausibleStatsResponse',
-          property: 'journeyId/step1.id',
+          property: '/journeyId/step1.id',
           visitors: 10,
           timeOnPage: 10
         },
         {
           __typename: 'PlausibleStatsResponse',
-          property: 'journeyId/step2.id',
+          property: '/journeyId/step2.id',
           visitors: 5,
           timeOnPage: 3
         },
         {
           __typename: 'PlausibleStatsResponse',
-          property: 'journeyId/step3.id',
+          property: '/journeyId/step3.id',
           visitors: 2,
           timeOnPage: 1
         }
@@ -29,43 +30,43 @@ describe('transformJourneyAnalytics', () => {
           __typename: 'PlausibleStatsResponse',
           property:
             '{"stepId":"step1.id","event":"pageview","blockId":"step1.id","target":""}',
-          events: 5
+          visitors: 5
         },
         {
           __typename: 'PlausibleStatsResponse',
           property:
             '{"stepId":"step1.id","event":"navigateNextStep","blockId":"step1.id","target":"step2,id"}',
-          events: 5
+          visitors: 5
         },
         {
           __typename: 'PlausibleStatsResponse',
           property:
             '{"stepId":"step2.id","event":"navigatePreviousStep","blockId":"step2.id","target":"step1.id"}',
-          events: 5
+          visitors: 5
         },
         {
           __typename: 'PlausibleStatsResponse',
           property:
             '{"stepId":"step1.id","event":"buttonClick","blockId":"button1.id","target":"step2.id"}',
-          events: 5
+          visitors: 5
         },
         {
           __typename: 'PlausibleStatsResponse',
           property:
             '{"stepId":"step1.id","event":"radioQuestionSubmit","blockId":"radioOption1.id","target":"link:https://google.com"}',
-          events: 5
+          visitors: 5
         },
         {
           __typename: 'PlausibleStatsResponse',
           property:
-            '{"stepId":"step1.id","event":"signUpSubmit","blockId":"signUp1.id","target":"link:https://bible.com"}',
-          events: 5
+            '{"stepId":"step1.id","event":"signupSubmit","blockId":"signUp1.id","target":"link:https://bible.com"}',
+          visitors: 5
         },
         {
           __typename: 'PlausibleStatsResponse',
           property:
             '{"stepId":"step1.id","event":"chatButtonClick","blockId":"step1.id","target":"link:https://m.me/test"}',
-          events: 5
+          visitors: 5
         }
       ],
       journeyReferrer: [
@@ -88,17 +89,17 @@ describe('transformJourneyAnalytics', () => {
       journeyVisitorsPageExits: [
         {
           __typename: 'PlausibleStatsResponse',
-          property: 'journeyId/step1.id',
+          property: '/journeyId/step1.id',
           visitors: 5
         },
         {
           __typename: 'PlausibleStatsResponse',
-          property: 'journeyId/step2.id',
+          property: '/journeyId/step2.id',
           visitors: 3
         },
         {
           __typename: 'PlausibleStatsResponse',
-          property: 'journeyId/step3.id',
+          property: '/journeyId/step3.id',
           visitors: 2
         }
       ],
@@ -107,43 +108,43 @@ describe('transformJourneyAnalytics', () => {
           __typename: 'PlausibleStatsResponse',
           property:
             '{"stepId":"step1.id","event":"pageview","blockId":"step1.id","target":""}',
-          events: 5
+          visitors: 5
         },
         {
           __typename: 'PlausibleStatsResponse',
           property:
             '{"stepId":"step1.id","event":"navigateNextStep","blockId":"step1.id","target":""}',
-          events: 5
+          visitors: 5
         },
         {
           __typename: 'PlausibleStatsResponse',
           property:
             '{"stepId":"step2.id","event":"navigatePreviousStep","blockId":"step2.id","target":""}',
-          events: 5
+          visitors: 5
         },
         {
           __typename: 'PlausibleStatsResponse',
           property:
             '{"stepId":"step1.id","event":"buttonClick","blockId":"button1.id","target":"s"}',
-          events: 5
+          visitors: 5
         },
         {
           __typename: 'PlausibleStatsResponse',
           property:
             '{"stepId":"step1.id","event":"radioQuestionSubmit","blockId":"radioOption1.id","target":""}',
-          events: 5
+          visitors: 5
         },
         {
           __typename: 'PlausibleStatsResponse',
           property:
-            '{"stepId":"step1.id","event":"signUpSubmit","blockId":"signUp1.id","target":""}',
-          events: 5
+            '{"stepId":"step1.id","event":"signupSubmit","blockId":"signUp1.id","target":""}',
+          visitors: 5
         },
         {
           __typename: 'PlausibleStatsResponse',
           property:
             '{"stepId":"step1.id","event":"chatButtonClick","blockId":"step1.id","target":""}',
-          events: 5
+          visitors: 5
         }
       ],
       journeyAggregateVisitors: {
@@ -257,7 +258,7 @@ describe('transformJourneyAnalytics', () => {
               ['navigateNextStep', 5],
               ['buttonClick', 5],
               ['radioQuestionSubmit', 5],
-              ['signUpSubmit', 5],
+              ['signupSubmit', 5],
               ['chatButtonClick', 5]
             ]),
             total: 25

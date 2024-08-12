@@ -3,11 +3,13 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
+import { StepBlockPositionUpdateInput } from "./globalTypes";
+
 // ====================================================
 // GraphQL mutation operation: StepBlockPositionUpdate
 // ====================================================
 
-export interface StepBlockPositionUpdate_stepBlockUpdate {
+export interface StepBlockPositionUpdate_stepBlockPositionUpdate {
   __typename: "StepBlock";
   id: string;
   /**
@@ -23,12 +25,9 @@ export interface StepBlockPositionUpdate_stepBlockUpdate {
 }
 
 export interface StepBlockPositionUpdate {
-  stepBlockUpdate: StepBlockPositionUpdate_stepBlockUpdate;
+  stepBlockPositionUpdate: StepBlockPositionUpdate_stepBlockPositionUpdate[];
 }
 
 export interface StepBlockPositionUpdateVariables {
-  id: string;
-  journeyId: string;
-  x: number;
-  y: number;
+  input: StepBlockPositionUpdateInput[];
 }

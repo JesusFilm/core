@@ -2,22 +2,21 @@ import Box from '@mui/material/Box'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, SyntheticEvent, useState } from 'react'
 import { object, string } from 'yup'
 
-import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
-import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
+import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
 import Grid1Icon from '@core/shared/ui/icons/Grid1'
 import Image3Icon from '@core/shared/ui/icons/Image3'
 import StarsIcon from '@core/shared/ui/icons/Stars'
+import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../__generated__/BlockFields'
+import { ImageBlockUpdateInput } from '../../../../../../../__generated__/globalTypes'
 import { ImageBlockHeader } from '../ImageBlockHeader'
-
-import { UnsplashAuthor } from './UnsplashGallery'
 
 const UnsplashGallery = dynamic(
   async () =>
@@ -44,7 +43,7 @@ const AIGallery = dynamic(
 )
 
 interface ImageBlockEditorProps {
-  onChange: (imageBlock: ImageBlock) => Promise<void>
+  onChange: (input: ImageBlockUpdateInput) => Promise<void>
   onDelete?: () => Promise<void>
   selectedBlock: ImageBlock | null
   loading?: boolean
@@ -63,7 +62,6 @@ export function ImageBlockEditor({
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const [tabValue, setTabValue] = useState(0)
-  const [unsplashAuthor, setUnsplashAuthor] = useState<UnsplashAuthor>()
   const [uploading, setUploading] = useState<boolean>()
 
   const TabParams = { 0: 'unsplash-image', 1: 'custom-image', 2: 'ai-image' }
@@ -87,50 +85,23 @@ export function ImageBlockEditor({
     if (route != null) setRoute(route)
   }
 
-  const srcSchema = object().shape({
-    src: string().url(t('Please enter a valid url')).required(t('Required'))
-  })
+  const srcSchema = object().shape({ src: string().url().required() })
 
   const handleSrcChange = async (
-    src: string,
-    prompt?: string,
-    blurhash?: string,
-    width = 0,
-    height = 0
+    input: ImageBlockUpdateInput
   ): Promise<void> => {
-    if (!(await srcSchema.isValid({ src })) || src === selectedBlock?.src)
+    if (input.src === selectedBlock?.src || !(await srcSchema.isValid(input)))
       return
 
-    const block = {
-      ...selectedBlock,
-      src,
-      blurhash:
-        selectedBlock?.blurhash !== blurhash
-          ? undefined
-          : selectedBlock?.blurhash,
+    const block: ImageBlockUpdateInput = {
+      ...input,
+      // per Vlad 26/1/22, we are hardcoding the image alt for now
       alt:
-        prompt != null
-          ? `Prompt: ${prompt}`
-          : src.replace(/(.*\/)*/, '').replace(/\?.*/, '') // per Vlad 26/1/22, we are hardcoding the image alt for now
+        input.alt != null
+          ? input.alt
+          : input.src?.replace(/(.*\/)*/, '').replace(/\?.*/, '')
     }
-    if ((blurhash?.length ?? 0) > 0) {
-      block.blurhash = blurhash
-      block.width = width
-      block.height = height
-    }
-
-    await onChange(block as ImageBlock)
-  }
-
-  const handleUnsplashChange = async (
-    src: string,
-    unsplashAuthor: { fullname: string; username: string },
-    blurHash?: string,
-    width?: number,
-    height?: number
-  ): Promise<void> => {
-    await handleSrcChange(src, undefined, blurHash, width, height)
-    setUnsplashAuthor(unsplashAuthor)
+    await onChange(block)
   }
 
   return (
@@ -155,7 +126,6 @@ export function ImageBlockEditor({
             loading={uploading != null ? uploading : loading}
             showAdd={showAdd}
             error={error}
-            unsplashAuthor={unsplashAuthor}
           />
         </Box>
         <Box
@@ -210,7 +180,10 @@ export function ImageBlockEditor({
           sx={{ flexGrow: 1, overflow: 'auto' }}
         >
           {tabValue === 0 && (
-            <UnsplashGallery onChange={handleUnsplashChange} />
+            <UnsplashGallery
+              onChange={handleSrcChange}
+              selectedBlock={selectedBlock}
+            />
           )}
         </TabPanel>
         <TabPanel

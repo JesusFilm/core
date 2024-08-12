@@ -1,8 +1,9 @@
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { WrapperProps } from '@core/journeys/ui/BlockRenderer'
-import { ActiveFab, useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { Typography } from '@core/journeys/ui/Typography'
 
 import { ButtonFields } from '../../../../../../../__generated__/ButtonFields'
 import { RadioOptionFields } from '../../../../../../../__generated__/RadioOptionFields'
@@ -10,9 +11,6 @@ import { RadioQuestionFields } from '../../../../../../../__generated__/RadioQue
 import { SignUpFields } from '../../../../../../../__generated__/SignUpFields'
 import { TextResponseFields } from '../../../../../../../__generated__/TextResponseFields'
 import { TypographyFields } from '../../../../../../../__generated__/TypographyFields'
-import { blockDeleteUpdate } from '../../../../../../libs/blockDeleteUpdate'
-import { useBlockDeleteMutation } from '../../../../../../libs/useBlockDeleteMutation'
-import getSelected from '../QuickControls/DeleteBlock/utils/getSelected'
 
 import { ButtonEdit } from './ButtonEdit'
 import { RadioOptionEdit } from './RadioOptionEdit'
@@ -34,61 +32,42 @@ export function InlineEditWrapper({
   block,
   children
 }: InlineEditWrapperProps): ReactElement {
-  const [blockDelete] = useBlockDeleteMutation()
-
+  const { t } = useTranslation('apps-journeys-admin')
   const {
-    state: { selectedBlock, activeFab, selectedStep, steps },
-    dispatch
+    state: { selectedBlock }
   } = useEditor()
-  const { journey } = useJourney()
 
   const showEditable =
-    (activeFab === ActiveFab.Save && selectedBlock?.id === block.id) ||
+    selectedBlock?.id === block.id ||
     (block.__typename === 'RadioQuestionBlock' &&
       selectedBlock?.parentBlockId === block.id)
 
-  // TODO: Refactor out delete block logic
-  const handleDeleteBlock = async (): Promise<void> => {
-    if (selectedBlock == null || journey == null || steps == null) return
+  let component = children
 
-    const deletedBlockParentOrder = selectedBlock.parentOrder
-    const deletedBlockType = selectedBlock.__typename
-    const stepsBeforeDelete = steps
-    const stepBeforeDelete = selectedStep
-
-    await blockDelete(selectedBlock, {
-      update(cache, { data }) {
-        if (data?.blockDelete != null && deletedBlockParentOrder != null) {
-          const selected = getSelected({
-            parentOrder: deletedBlockParentOrder,
-            siblings: data.blockDelete,
-            type: deletedBlockType,
-            steps: stepsBeforeDelete,
-            selectedStep: stepBeforeDelete
-          })
-          selected != null && dispatch(selected)
-        }
-        blockDeleteUpdate(block, data?.blockDelete, cache, journey.id)
-      }
-    }).then(() => {
-      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
-    })
+  switch (block.__typename) {
+    case 'TypographyBlock':
+      component = showEditable ? (
+        <TypographyEdit {...block} />
+      ) : (
+        <Typography {...block} placeholderText={t('Add your text here...')} />
+      )
+      break
+    case 'ButtonBlock':
+      if (showEditable) component = <ButtonEdit {...block} />
+      break
+    case 'RadioOptionBlock':
+      if (showEditable) component = <RadioOptionEdit {...block} />
+      break
+    case 'RadioQuestionBlock':
+      if (showEditable)
+        component = (
+          <RadioQuestionEdit {...block} wrappers={children.props.wrappers} />
+        )
+      break
+    case 'SignUpBlock':
+      if (showEditable) component = <SignUpEdit {...block} />
+      break
   }
 
-  const EditComponent =
-    block.__typename === 'TypographyBlock' ? (
-      <TypographyEdit {...block} deleteSelf={handleDeleteBlock} />
-    ) : block.__typename === 'ButtonBlock' ? (
-      <ButtonEdit {...block} />
-    ) : block.__typename === 'RadioOptionBlock' ? (
-      <RadioOptionEdit {...block} />
-    ) : block.__typename === 'RadioQuestionBlock' ? (
-      <RadioQuestionEdit {...block} wrappers={children.props.wrappers} />
-    ) : block.__typename === 'SignUpBlock' ? (
-      <SignUpEdit {...block} />
-    ) : (
-      children
-    )
-
-  return showEditable ? EditComponent : children
+  return component
 }

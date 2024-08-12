@@ -1,3 +1,5 @@
+import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
 import {
   AuthAction,
   useUser,
@@ -8,6 +10,7 @@ import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 
+import { HelpScoutBeacon } from '../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { ReportsNavigation } from '../../src/components/ReportsNavigation'
 import { VisitorsList } from '../../src/components/VisitorsList'
@@ -20,8 +23,36 @@ function ReportsVisitorsPage(): ReactElement {
   return (
     <>
       <NextSeo title={t('Visitors Analytics')} />
-      <PageWrapper title={t('Visitors Analytics')} user={user}>
-        <ReportsNavigation selected="visitors" />
+      <PageWrapper
+        title={t('Visitors Analytics')}
+        user={user}
+        mainHeaderChildren={
+          <Stack
+            direction="row"
+            justifyContent="flex-end"
+            flexGrow={1}
+            alignItems="center"
+            gap={3}
+          >
+            <ReportsNavigation destination="journey" />
+            <Box
+              sx={{
+                display: {
+                  xs: 'none',
+                  md: 'flex'
+                }
+              }}
+            >
+              <HelpScoutBeacon
+                userInfo={{
+                  name: user?.displayName ?? '',
+                  email: user?.email ?? ''
+                }}
+              />
+            </Box>
+          </Stack>
+        }
+      >
         <VisitorsList />
       </PageWrapper>
     </>

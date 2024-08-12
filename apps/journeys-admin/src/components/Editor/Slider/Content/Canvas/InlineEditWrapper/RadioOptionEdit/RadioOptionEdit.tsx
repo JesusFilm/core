@@ -1,23 +1,26 @@
 import { gql, useMutation } from '@apollo/client'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
+import { v4 as uuidv4 } from 'uuid'
 
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { RadioOption } from '@core/journeys/ui/RadioOption'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { useCommand } from '@core/journeys/ui/CommandProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { RadioOption } from '@core/journeys/ui/RadioOption'
 
-import { RadioOptionBlockUpdateContent } from '../../../../../../../../__generated__/RadioOptionBlockUpdateContent'
+import {
+  RadioOptionBlockUpdateContent,
+  RadioOptionBlockUpdateContentVariables
+} from '../../../../../../../../__generated__/RadioOptionBlockUpdateContent'
 import { RadioOptionFields } from '../../../../../../../../__generated__/RadioOptionFields'
 import { InlineEditInput } from '../InlineEditInput'
-import { useOnClickOutside } from '../useOnClickOutside'
 
 export const RADIO_OPTION_BLOCK_UPDATE_CONTENT = gql`
   mutation RadioOptionBlockUpdateContent(
     $id: ID!
-    $journeyId: ID!
     $input: RadioOptionBlockUpdateInput!
   ) {
-    radioOptionBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+    radioOptionBlockUpdate(id: $id, input: $input) {
       id
       label
     }
@@ -31,58 +34,121 @@ export function RadioOptionEdit({
   ...radioOptionProps
 }: RadioOptionEditProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [radioOptionBlockUpdate] = useMutation<RadioOptionBlockUpdateContent>(
-    RADIO_OPTION_BLOCK_UPDATE_CONTENT
-  )
-  const { journey } = useJourney()
-  const [value, setValue] = useState(
-    label === 'Option 1' || label === 'Option 2' ? '' : label
-  )
+  const [radioOptionBlockUpdate] = useMutation<
+    RadioOptionBlockUpdateContent,
+    RadioOptionBlockUpdateContentVariables
+  >(RADIO_OPTION_BLOCK_UPDATE_CONTENT)
 
-  async function handleSaveBlock(): Promise<void> {
-    const currentLabel = value.trim().replace(/\n/g, '')
-    if (journey == null || label === currentLabel) return
+  const [value, setValue] = useState(label)
+  const [commandInput, setCommandInput] = useState({ id: uuidv4(), value })
+  const [selection, setSelection] = useState({ start: 0, end: value.length })
 
-    await radioOptionBlockUpdate({
-      variables: {
-        id,
-        journeyId: journey.id,
-        input: { label: currentLabel }
-      },
-      optimisticResponse: {
-        radioOptionBlockUpdate: {
-          id,
-          __typename: 'RadioOptionBlock',
-          label: currentLabel
+  const {
+    add,
+    state: { undo }
+  } = useCommand()
+  const {
+    state: { selectedBlock, selectedStep },
+    dispatch
+  } = useEditor()
+
+  useEffect(() => {
+    if (undo == null || undo.id === commandInput.id) return
+    resetCommandInput()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [undo?.id])
+
+  useEffect(() => {
+    setValue(label)
+  }, [label])
+
+  function resetCommandInput(): void {
+    setCommandInput({ id: uuidv4(), value })
+  }
+
+  function handleSubmit(value: string): void {
+    add({
+      id: commandInput.id,
+      parameters: {
+        execute: {
+          label: value,
+          context: {},
+          runDispatch: false
+        },
+        undo: {
+          label: commandInput.value,
+          context: { debounceTimeout: 1 },
+          runDispatch: true
+        },
+        redo: {
+          label: value,
+          context: { debounceTimeout: 1 },
+          runDispatch: true
         }
+      },
+      execute({ label, context, runDispatch }) {
+        if (runDispatch)
+          dispatch({
+            type: 'SetEditorFocusAction',
+            selectedBlock,
+            selectedStep
+          })
+        void radioOptionBlockUpdate({
+          variables: {
+            id,
+            input: { label }
+          },
+          optimisticResponse: {
+            radioOptionBlockUpdate: {
+              id,
+              __typename: 'RadioOptionBlock',
+              label
+            }
+          },
+          context: {
+            debounceKey: `RadioOptionBlock:${id}`,
+            ...context
+          }
+        })
       }
     })
   }
-  const inputRef = useOnClickOutside(async () => await handleSaveBlock())
-
-  const input = (
-    <InlineEditInput
-      name={`edit-${id}`}
-      ref={inputRef}
-      fullWidth
-      multiline
-      autoFocus
-      onBlur={handleSaveBlock}
-      value={value}
-      placeholder={t('Type your text here...')}
-      onChange={(e) => {
-        setValue(e.currentTarget.value)
-      }}
-      onClick={(e) => e.stopPropagation()}
-    />
-  )
 
   return (
     <RadioOption
       {...radioOptionProps}
       id={id}
       label={label}
-      editableLabel={input}
+      editableLabel={
+        <InlineEditInput
+          name="radioOptionLabel"
+          fullWidth
+          multiline
+          inputRef={(ref) => {
+            if (ref != null) ref.focus()
+          }}
+          autoFocus
+          onFocus={(e) => {
+            const target = e.currentTarget as HTMLInputElement
+            target.setSelectionRange(selection.start, selection.end)
+            resetCommandInput()
+          }}
+          value={value}
+          placeholder={t('Add your text here...')}
+          onSelect={(e) => {
+            const input = e.target as HTMLInputElement
+            setSelection({
+              start: input.selectionStart ?? 0,
+              end: input.selectionEnd ?? value.length
+            })
+          }}
+          onChange={(e) => {
+            setValue(e.currentTarget.value)
+            handleSubmit(e.target.value)
+          }}
+          onClick={(e) => e.stopPropagation()}
+        />
+      }
     />
   )
 }

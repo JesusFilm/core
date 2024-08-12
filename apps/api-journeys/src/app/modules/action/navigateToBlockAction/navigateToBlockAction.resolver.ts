@@ -2,24 +2,22 @@ import { subject } from '@casl/ability'
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
-import omit from 'lodash/omit'
 
-import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 import { Action } from '.prisma/api-journeys-client'
+import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 
 import { NavigateToBlockActionInput } from '../../../__generated__/graphql'
 import { AppAbility, Action as CaslAction } from '../../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../../lib/casl/caslGuard'
 import { PrismaService } from '../../../lib/prisma.service'
-import { BlockService } from '../../block/block.service'
-import { ACTION_UPDATE_RESET } from '../actionUpdateReset'
+import { ActionService } from '../action.service'
 import { canBlockHaveAction } from '../canBlockHaveAction'
 
 @Resolver('NavigateToBlockAction')
 export class NavigateToBlockActionResolver {
   constructor(
-    private readonly blockService: BlockService,
-    private readonly prismaService: PrismaService
+    private readonly prismaService: PrismaService,
+    private readonly actionService: ActionService
   ) {}
 
   @Mutation()
@@ -58,28 +56,10 @@ export class NavigateToBlockActionResolver {
       )
     }
 
-    const stepBlock = await this.blockService.findParentStepBlock(
-      block.parentBlockId as string
+    return await this.actionService.navigateToBlockActionUpdate(
+      id,
+      block,
+      input
     )
-    if (stepBlock != null && stepBlock.id === input.blockId)
-      throw new GraphQLError('blockId cannot be the parent step block id', {
-        extensions: { code: 'BAD_USER_INPUT' }
-      })
-
-    const inputWithBlockConnection = {
-      ...omit(input, 'blockId'),
-      block: { connect: { id: input.blockId } }
-    }
-    return await this.prismaService.action.upsert({
-      where: { parentBlockId: id },
-      create: {
-        ...inputWithBlockConnection,
-        parentBlock: { connect: { id: block.id } }
-      },
-      update: {
-        ...ACTION_UPDATE_RESET,
-        ...inputWithBlockConnection
-      }
-    })
   }
 }

@@ -1,13 +1,13 @@
 import { fireEvent, render, screen } from '@testing-library/react'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/compat/router'
 
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
+
 import { HeaderTabButtons } from './HeaderTabButtons'
 
-jest.mock('next/router', () => ({
+jest.mock('next/compat/router', () => ({
   __esModule: true,
   useRouter() {
     return {
@@ -83,7 +83,7 @@ describe('HeaderTabButtons', () => {
         </ThemeProvider>
       )
       const router = useRouter()
-      expect(router.pathname).toBe('/watch')
+      expect(router?.pathname).toBe('/watch')
 
       const videosButton = screen.getByTestId('VideosButton')
       expect(videosButton).toHaveStyle('border-color: #EF3340')
@@ -180,7 +180,7 @@ describe('HeaderTabButtons', () => {
         </FlagsProvider>
       )
       const router = useRouter()
-      expect(router.pathname).toBe('/watch')
+      expect(router?.pathname).toBe('/watch')
 
       const button = screen.getByTestId('DropDownButton')
       expect(button).toHaveTextContent('Videos')
@@ -193,7 +193,7 @@ describe('HeaderTabButtons', () => {
         </FlagsProvider>
       )
       const router = useRouter()
-      expect(router.pathname).toBe('/watch')
+      expect(router?.pathname).toBe('/watch')
 
       const button = screen.getByTestId('DropDownButton')
       fireEvent.click(button)

@@ -3,22 +3,23 @@ import capitalize from 'lodash/capitalize'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect } from 'react'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'
 import LinkIcon from '@core/shared/ui/icons/Link'
 import SpaceHorizontalIcon from '@core/shared/ui/icons/SpaceHorizontal'
 import TransformIcon from '@core/shared/ui/icons/Transform'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/BlockFields'
-import { IconFields } from '../../../../../../../../../__generated__/IconFields'
 import {
   ButtonColor,
   ButtonSize,
   ButtonVariant
 } from '../../../../../../../../../__generated__/globalTypes'
+import { IconFields } from '../../../../../../../../../__generated__/IconFields'
 import { Accordion } from '../../Accordion'
-import { Action, actions } from '../../controls/Action/Action'
+import { Action } from '../../controls/Action'
+import { getAction } from '../../controls/Action/utils/actions'
 import { ColorDisplayIcon } from '../../controls/ColorDisplayIcon'
 import { Icon, icons } from '../../controls/Icon'
 
@@ -47,7 +48,7 @@ export function Button({
     (block) => block.id === endIconId
   ) as TreeBlock<IconFields>
 
-  const selectedAction = actions.find((act) => act.value === action?.__typename)
+  const selectedAction = getAction(t, action?.__typename)
 
   useEffect(() => {
     dispatch({
@@ -62,7 +63,7 @@ export function Button({
         id={`${id}-button-action`}
         icon={<LinkIcon />}
         name={t('Action')}
-        value={selectedAction?.label ?? 'None'}
+        value={selectedAction.label}
       >
         <Action />
       </Accordion>

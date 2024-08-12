@@ -8,9 +8,9 @@ import { A11y, FreeMode, Mousewheel } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { SwiperOptions } from 'swiper/types'
 
-import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
 import { TreeBlock } from '../../../../libs/block'
 import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../libs/useJourneyQuery/__generated__/GetJourney'
+
 import { TemplateVideoPlayerProps } from './TemplateVideoPlayer/TemplateVideoPlayer'
 
 interface TemplateVideoPreviewProps {

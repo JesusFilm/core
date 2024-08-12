@@ -2,20 +2,20 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { usePlausible } from 'next-plausible'
 
-import { keyify } from '@core/journeys/ui/plausibleHelpers'
 import {
   JourneyStatus,
   MessagePlatform,
   ThemeMode,
   ThemeName
 } from '../../../../__generated__/globalTypes'
+import { TreeBlock, blockHistoryVar } from '../../../libs/block'
+import { BlockFields_StepBlock as StepBlock } from '../../../libs/block/__generated__/BlockFields'
 import { JourneyProvider } from '../../../libs/JourneyProvider'
 import {
   JourneyFields_chatButtons as ChatButton,
   JourneyFields as Journey
 } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
-import { TreeBlock, blockHistoryVar } from '../../../libs/block'
-import { BlockFields_StepBlock as StepBlock } from '../../../libs/block/__generated__/BlockFields'
+import { keyify } from '../../../libs/plausibleHelpers'
 
 import { CHAT_BUTTON_EVENT_CREATE, ChatButtons } from './ChatButtons'
 
@@ -119,8 +119,23 @@ describe('ChatButtons', () => {
     }
   ]
 
+  const originalLocation = window.location
+  const mockOrigin = 'https://example.com'
+
+  beforeAll(() => {
+    Object.defineProperty(window, 'location', {
+      value: {
+        origin: mockOrigin
+      }
+    })
+  })
+
   beforeEach(() => {
     jest.clearAllMocks()
+  })
+
+  afterAll(() => {
+    Object.defineProperty(window, 'location', originalLocation)
   })
 
   it('renders chat buttons', () => {
@@ -157,6 +172,7 @@ describe('ChatButtons', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(window.open).toHaveBeenCalledWith(chatButtons[0].link, '_blank')
     expect(mockPlausible).toHaveBeenCalledWith('footerChatButtonClick', {
+      u: `${mockOrigin}/journeyId/step`,
       props: {
         id: '1',
         blockId: 'step',

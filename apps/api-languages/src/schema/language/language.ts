@@ -1,7 +1,6 @@
 import { Prisma } from '.prisma/api-languages-client'
 
 import { prisma } from '../../lib/prisma'
-
 import { builder } from '../builder'
 
 enum LanguageIdType {
@@ -23,6 +22,7 @@ export const AudioPreview = builder.prismaObject('AudioPreview', {
   fields: (t) => ({
     language: t.relation('language'),
     value: t.exposeString('value'),
+    duration: t.exposeInt('duration'),
     size: t.exposeInt('size')
   })
 })
@@ -49,7 +49,10 @@ export const Language = builder.prismaObject('Language', {
       resolve: async (query, language, { languageId, primary }) => {
         const where: Prisma.LanguageNameWhereInput = {
           parentLanguageId: language.id,
-          OR: languageId == null && primary == null ? undefined : []
+          OR:
+            languageId == null && primary == null
+              ? [{ languageId: '529' }, { primary: true }]
+              : []
         }
         if (languageId != null) where.OR?.push({ languageId })
         if (primary != null) where.OR?.push({ primary })
@@ -61,8 +64,8 @@ export const Language = builder.prismaObject('Language', {
         })
       }
     }),
-    countries: t.relation('countries'),
-    audioPreview: t.relation('audioPreview')
+    countryLanguages: t.relation('countryLanguages'),
+    audioPreview: t.relation('audioPreview', { nullable: true })
   })
 })
 
@@ -85,11 +88,11 @@ builder.queryFields((t) => ({
     },
     resolve: async (query, _parent, { id, idType }) =>
       idType === LanguageIdType.bcp47
-        ? prisma.language.findFirst({
+        ? await prisma.language.findFirst({
             ...query,
             where: { bcp47: id }
           })
-        : prisma.language.findUnique({
+        : await prisma.language.findUnique({
             ...query,
             where: { id }
           })
@@ -103,7 +106,9 @@ builder.queryFields((t) => ({
       where: t.arg({ type: LanguagesFilter, required: false })
     },
     resolve: async (query, _parent, { offset, limit, where }) => {
-      const filter: Prisma.LanguageWhereInput = {}
+      const filter: Prisma.LanguageWhereInput = {
+        hasVideos: true
+      }
       if (where?.ids != null) filter.id = { in: where?.ids }
       return await prisma.language.findMany({
         ...query,

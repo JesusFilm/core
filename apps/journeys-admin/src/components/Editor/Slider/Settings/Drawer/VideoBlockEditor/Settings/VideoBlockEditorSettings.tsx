@@ -123,10 +123,7 @@ export function VideoBlockEditorSettings({
           <Typography
             variant="subtitle2"
             sx={{
-              color:
-                selectedBlock == null || selectedBlock.parentOrder == null
-                  ? 'action.disabled'
-                  : undefined
+              color: selectedBlock == null ? 'action.disabled' : undefined
             }}
           >
             {t('Timing')}
@@ -184,8 +181,6 @@ export function VideoBlockEditorSettings({
               variant="subtitle2"
               sx={{
                 color:
-                  selectedBlock == null ||
-                  selectedBlock.parentOrder == null ||
                   selectedBlock?.source === VideoBlockSource.youTube
                     ? 'action.disabled'
                     : undefined
@@ -321,7 +316,7 @@ export function VideoBlockEditorSettings({
               }}
             />
           </Stack>
-          {values.autoplay === true && values.muted === false && (
+          {values.autoplay && !values.muted && (
             <Stack direction="row" alignItems="center" color="text.secondary">
               <InformationCircleContainedIcon sx={{ mr: 4 }} />
               <Typography variant="caption">

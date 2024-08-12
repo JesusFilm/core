@@ -1,6 +1,8 @@
-import { simpleComponentConfig } from '@core/shared/ui/storybook'
 import type { Meta, StoryObj } from '@storybook/react'
 import type { ComponentPropsWithoutRef } from 'react'
+
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
+
 import { BaseReferrer } from '.'
 
 const Demo: Meta<typeof BaseReferrer> = {

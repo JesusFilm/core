@@ -1,3 +1,5 @@
+import Stack from '@mui/material/Stack'
+import { useRouter } from 'next/router'
 import {
   AuthAction,
   useUser,
@@ -6,7 +8,6 @@ import {
 } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import { useRouter } from 'next/router'
 import { ReactElement, useEffect } from 'react'
 
 import { useUserRoleQuery } from '@core/journeys/ui/useUserRoleQuery'
@@ -16,6 +17,7 @@ import {
   GetAdminJourneysVariables
 } from '../../__generated__/GetAdminJourneys'
 import { JourneyStatus, Role } from '../../__generated__/globalTypes'
+import { HelpScoutBeacon } from '../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { TemplateList } from '../../src/components/TemplateList'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
@@ -39,7 +41,30 @@ function PublisherIndexPage(): ReactElement {
   return (
     <>
       <NextSeo title={t('Templates Admin')} />
-      <PageWrapper title={t('Templates Admin')} user={user}>
+      <PageWrapper
+        title={t('Templates Admin')}
+        user={user}
+        mainHeaderChildren={
+          <Stack
+            direction="row"
+            justifyContent="flex-end"
+            flexGrow={1}
+            sx={{
+              display: {
+                xs: 'none',
+                md: 'flex'
+              }
+            }}
+          >
+            <HelpScoutBeacon
+              userInfo={{
+                name: user?.displayName ?? '',
+                email: user?.email ?? ''
+              }}
+            />
+          </Stack>
+        }
+      >
         <TemplateList />
       </PageWrapper>
     </>

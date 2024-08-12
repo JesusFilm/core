@@ -6,15 +6,15 @@ import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
 import {
-  STEP_NEXT_EVENT_CREATE,
-  STEP_PREVIOUS_EVENT_CREATE
-} from '@core/journeys/ui/Card/Card'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import {
   TreeBlock,
   blockHistoryVar,
   treeBlocksVar
 } from '@core/journeys/ui/block'
+import {
+  STEP_NEXT_EVENT_CREATE,
+  STEP_PREVIOUS_EVENT_CREATE
+} from '@core/journeys/ui/Card/Card'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { keyify } from '@core/journeys/ui/plausibleHelpers'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
@@ -55,6 +55,21 @@ describe('SwipeNavigation', () => {
   mockUuidv4.mockReturnValue('uuid')
   const swipeLeft = -100
   const swipeRight = 100
+
+  const originalLocation = window.location
+  const mockOrigin = 'https://example.com'
+
+  beforeAll(() => {
+    Object.defineProperty(window, 'location', {
+      value: {
+        origin: mockOrigin
+      }
+    })
+  })
+
+  afterAll(() => {
+    Object.defineProperty(window, 'location', originalLocation)
+  })
 
   const step1: TreeBlock<StepBlock> = {
     id: 'step1.id',
@@ -444,6 +459,7 @@ describe('SwipeNavigation', () => {
       expect(mockStepNextEventCreate.result).toHaveBeenCalled()
     )
     expect(mockPlausible).toHaveBeenCalledWith('navigateNextStep', {
+      u: `${mockOrigin}/journey.id/step1.id`,
       props: {
         id: 'uuid',
         blockId: 'step1.id',
@@ -494,6 +510,7 @@ describe('SwipeNavigation', () => {
       expect(mockStepPreviousEventCreate.result).toHaveBeenCalled()
     )
     expect(mockPlausible).toHaveBeenCalledWith('navigatePreviousStep', {
+      u: `${mockOrigin}/journey.id/step2.id`,
       props: {
         id: 'uuid',
         blockId: 'step2.id',

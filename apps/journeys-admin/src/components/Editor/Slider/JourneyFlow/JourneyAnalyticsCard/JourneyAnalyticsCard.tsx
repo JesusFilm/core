@@ -1,8 +1,10 @@
-import { useEditor } from '@core/journeys/ui/EditorProvider'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
+
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+
 import { JourneyAnalyticsCardStat } from './JourneyAnalyticsCardStat'
 
 export function JourneyAnalyticsCard(): ReactElement {
@@ -27,11 +29,11 @@ export function JourneyAnalyticsCard(): ReactElement {
         count={analytics?.totalVisitors}
       />
       <JourneyAnalyticsCardStat
-        label={t('Chats Started')}
+        label={t('Chats')}
         count={analytics?.chatsStarted}
       />
       <JourneyAnalyticsCardStat
-        label={t('Sites Visited')}
+        label={t('Site Visits')}
         count={analytics?.linksVisited}
       />
     </Stack>

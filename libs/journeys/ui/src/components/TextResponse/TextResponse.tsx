@@ -6,15 +6,15 @@ import { Form, Formik } from 'formik'
 import noop from 'lodash/noop'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
-import { useEditor } from '../../libs/EditorProvider'
-import { useJourney } from '../../libs/JourneyProvider'
 import { useBlocks } from '../../libs/block'
 import type { TreeBlock } from '../../libs/block'
+import { useEditor } from '../../libs/EditorProvider'
 import { getStepHeading } from '../../libs/getStepHeading'
+import { useJourney } from '../../libs/JourneyProvider'
 import { TextField } from '../TextField'
 
 import { TextResponseFields } from './__generated__/TextResponseFields'
@@ -47,6 +47,8 @@ export const TextResponse = ({
   minRows
 }: TextResponseProps): ReactElement => {
   const { t } = useTranslation('libs-journeys-ui')
+
+  const [value, setValue] = useState('')
 
   const { variant } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
@@ -109,14 +111,14 @@ export const TextResponse = ({
 
   return (
     <Box sx={{ mb: 4 }} data-testid="JourneysTextResponse">
-      <Formik initialValues={initialValues} onSubmit={noop}>
+      <Formik initialValues={initialValues} onSubmit={noop} enableReinitialize>
         {({ values, handleChange, handleBlur }) => (
           <Form data-testid={`textResponse-${blockId}`}>
             <Stack>
               <TextField
                 id="textResponse-field"
                 name="response"
-                label={label}
+                label={label === '' ? 'Your answer here' : label}
                 value={values.response}
                 helperText={hint != null ? hint : ''}
                 multiline
@@ -124,9 +126,12 @@ export const TextResponse = ({
                 minRows={minRows ?? 3}
                 onClick={(e) => e.stopPropagation()}
                 onChange={handleChange}
-                onBlurCapture={(e) => {
+                onBlurCapture={async (e) => {
                   handleBlur(e)
-                  void onSubmitHandler(values)
+                  if (values.response !== value) {
+                    setValue(values.response)
+                    await onSubmitHandler(values)
+                  }
                 }}
                 inputProps={{
                   maxLength: 1000,

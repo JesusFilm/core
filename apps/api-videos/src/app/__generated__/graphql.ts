@@ -42,14 +42,30 @@ export class VideosFilter {
     subtitleLanguageIds?: Nullable<string[]>;
 }
 
-export class LanguageWithSlug {
-    __typename?: 'LanguageWithSlug';
-    language?: Nullable<Language>;
-    slug?: Nullable<string>;
+export class BibleBook {
+    __typename?: 'BibleBook';
+    name?: Translation[];
+    osisId: string;
+    alternateName?: Nullable<string>;
+    paratextAbbreviation: string;
+    isNewTestament: boolean;
+    order: number;
+}
+
+export class BibleCitation {
+    __typename?: 'BibleCitation';
+    osisId: string;
+    bibleBook: BibleBook;
+    chapterStart: number;
+    chapterEnd?: Nullable<number>;
+    verseStart: number;
+    verseEnd?: Nullable<number>;
 }
 
 export class Video {
     __typename?: 'Video';
+    bibleCitations: BibleCitation[];
+    keywords?: Keyword[];
     id: string;
     label: VideoLabel;
     primaryLanguageId: string;
@@ -66,7 +82,30 @@ export class Video {
     children: Video[];
     childrenCount: number;
     variantLanguagesWithSlug: LanguageWithSlug[];
+    subtitles?: VideoSubtitle[];
     variant?: Nullable<VideoVariant>;
+}
+
+export class Keyword {
+    __typename?: 'Keyword';
+    id: string;
+    value: string;
+    language: Language;
+}
+
+export class LanguageWithSlug {
+    __typename?: 'LanguageWithSlug';
+    language?: Nullable<Language>;
+    slug?: Nullable<string>;
+}
+
+export class VideoSubtitle {
+    __typename?: 'VideoSubtitle';
+    id: string;
+    languageId: string;
+    edition: string;
+    vttSrc?: Nullable<string>;
+    srtSrc?: Nullable<string>;
 }
 
 export abstract class IQuery {

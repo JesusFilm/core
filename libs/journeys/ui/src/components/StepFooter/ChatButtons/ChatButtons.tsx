@@ -11,13 +11,13 @@ import {
   ChatOpenEventCreateInput,
   MessagePlatform
 } from '../../../../__generated__/globalTypes'
+import { useBlocks } from '../../../libs/block'
 import { useJourney } from '../../../libs/JourneyProvider'
 import { JourneyFields_chatButtons as ChatButton } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
-import { useBlocks } from '../../../libs/block'
+import { MessageChatIcon } from '../../../libs/MessageChatIcon'
 import { JourneyPlausibleEvents, keyify } from '../../../libs/plausibleHelpers'
 import { getJourneyRTL } from '../../../libs/rtl'
 
-import { MessageChatIcon } from '../../../libs/MessageChatIcon'
 import {
   ChatButtonEventCreate,
   ChatButtonEventCreateVariables
@@ -80,6 +80,7 @@ export function ChatButtons(): ReactElement {
       })
       if (journey != null)
         plausible('footerChatButtonClick', {
+          u: `${window.location.origin}/${journey.id}/${input.stepId}`,
           props: {
             ...input,
             key: keyify({

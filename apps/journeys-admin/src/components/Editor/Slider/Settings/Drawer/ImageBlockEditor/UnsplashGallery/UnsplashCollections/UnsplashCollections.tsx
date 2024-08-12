@@ -9,7 +9,8 @@ import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
 
 interface UnsplashCollectionsProps {
-  onClick: (collectionId: string, query: string) => void
+  selectedCollectionId?: string
+  onClick: (collectionId: string) => void
 }
 
 interface Collection {
@@ -18,6 +19,7 @@ interface Collection {
 }
 
 export function UnsplashCollections({
+  selectedCollectionId,
   onClick
 }: UnsplashCollectionsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -97,8 +99,8 @@ export function UnsplashCollections({
               variant === 'Left'
                 ? 'linear-gradient(to left, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%)'
                 : variant === 'Right'
-                  ? 'linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%)'
-                  : 'transparent'
+                ? 'linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%)'
+                : 'transparent'
           }}
         />
         <IconButton
@@ -153,15 +155,16 @@ export function UnsplashCollections({
         {collections.map((collection) => (
           <Chip
             key={collection.collectionId}
-            onClick={() => onClick(collection.collectionId, collection.label)}
+            onClick={() => onClick(collection.collectionId)}
             label={<Typography variant="body2">{collection.label}</Typography>}
+            variant="outlined"
+            color={
+              selectedCollectionId === collection.collectionId
+                ? 'primary'
+                : 'default'
+            }
             sx={{
-              mr: 2,
-              bgcolor: 'background.paper',
-              border: (theme) => `1px solid ${theme.palette.divider}`,
-              '&:hover': {
-                bgcolor: 'background.default'
-              }
+              mr: 2
             }}
           />
         ))}

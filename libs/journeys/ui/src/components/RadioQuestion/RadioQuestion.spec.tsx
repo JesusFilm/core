@@ -3,12 +3,12 @@ import { fireEvent, render, waitFor, within } from '@testing-library/react'
 import { usePlausible } from 'next-plausible'
 import TagManager from 'react-gtm-module'
 
-import { keyify } from '@core/journeys/ui/plausibleHelpers'
-import { JourneyProvider } from '../../libs/JourneyProvider'
-import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
 import type { TreeBlock } from '../../libs/block'
 import { blockHistoryVar, treeBlocksVar } from '../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
+import { JourneyProvider } from '../../libs/JourneyProvider'
+import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
+import { keyify } from '../../libs/plausibleHelpers'
 
 import { RadioQuestionFields } from './__generated__/RadioQuestionFields'
 
@@ -85,6 +85,21 @@ const journey = {
 } as unknown as Journey
 
 describe('RadioQuestion', () => {
+  const originalLocation = window.location
+  const mockOrigin = 'https://example.com'
+
+  beforeAll(() => {
+    Object.defineProperty(window, 'location', {
+      value: {
+        origin: mockOrigin
+      }
+    })
+  })
+
+  afterAll(() => {
+    Object.defineProperty(window, 'location', originalLocation)
+  })
+
   it('should display the correct options', () => {
     const { getByText } = render(
       <MockedProvider mocks={[]} addTypename={false}>
@@ -264,6 +279,7 @@ describe('RadioQuestion', () => {
       })
     )
   })
+
   it('should add radio submission to plausible', async () => {
     blockHistoryVar([activeBlock])
     treeBlocksVar([activeBlock])
@@ -306,6 +322,7 @@ describe('RadioQuestion', () => {
     fireEvent.click(buttons[0])
     await waitFor(() =>
       expect(mockPlausible).toHaveBeenCalledWith('radioQuestionSubmit', {
+        u: `${mockOrigin}/journey.id/step.id`,
         props: {
           id: 'uuid',
           blockId: 'RadioQuestion1',

@@ -1,9 +1,8 @@
 import { gql, useMutation } from '@apollo/client'
-import Box from '@mui/material/Box'
 import ButtonBase from '@mui/material/ButtonBase'
-import { useTranslation } from 'next-i18next'
 import Image from 'next/image'
-import { ReactElement } from 'react'
+import { useTranslation } from 'next-i18next'
+import type { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import { BUTTON_FIELDS } from '@core/journeys/ui/Button/buttonFields'
@@ -14,7 +13,7 @@ import { IMAGE_FIELDS } from '@core/journeys/ui/Image/imageFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { TYPOGRAPHY_FIELDS } from '@core/journeys/ui/Typography/typographyFields'
 
-import {
+import type {
   CardCtaCreate,
   CardCtaCreateVariables
 } from '../../../../../../../../../__generated__/CardCtaCreate'
@@ -317,16 +316,15 @@ export function CardCta(): ReactElement {
   }
 
   return (
-    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-      <ButtonBase sx={{ borderRadius: 5 }} onClick={handleClick}>
-        <Image
-          width={128}
-          height={195}
-          src={cardCtaImage}
-          alt="Card CTA Template"
-          draggable={false}
-        />
-      </ButtonBase>
-    </Box>
+    <ButtonBase sx={{ borderRadius: 5 }} onClick={handleClick}>
+      <Image
+        width={128}
+        height={195}
+        layout="responsive"
+        src={cardCtaImage}
+        alt="Card CTA Template"
+        draggable={false}
+      />
+    </ButtonBase>
   )
 }

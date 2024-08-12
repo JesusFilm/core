@@ -1,0 +1,12 @@
+type BibleCitation {
+  osisId: String!
+  bibleBook: BibleBook!
+  chapterStart: Int!
+  chapterEnd: Int
+  verseStart: Int!
+  verseEnd: Int
+}
+
+extend type Video {
+  bibleCitations: [BibleCitation!]!
+}

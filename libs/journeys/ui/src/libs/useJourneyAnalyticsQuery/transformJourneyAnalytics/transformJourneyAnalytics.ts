@@ -18,7 +18,7 @@ const ACTION_EVENTS: Array<keyof JourneyPlausibleEvents> = [
   'navigateNextStep',
   'buttonClick',
   'textResponseSubmit',
-  'signUpSubmit',
+  'signupSubmit',
   'radioQuestionSubmit',
   'videoComplete',
   'chatButtonClick',
@@ -117,7 +117,7 @@ export function transformJourneyAnalytics(
 }
 
 function getStepId(property: string, journeyId: string): string {
-  return replace(property, `${journeyId}/`, '')
+  return replace(property, `/${journeyId}/`, '')
 }
 
 function getJourneyEvents(
@@ -128,7 +128,7 @@ function getJourneyEvents(
     if (action.property === '(none)') return
     journeyEvents.push({
       ...reverseKeyify(action.property),
-      events: action.events ?? 0
+      events: action.visitors ?? 0
     })
   })
 
@@ -160,7 +160,10 @@ function getLinkClicks(journeyEvents: PlausibleEvent[]): {
   journeyEvents.forEach((plausibleEvent) => {
     const { event, target, events } = plausibleEvent
     if (target != null && target.includes('link')) {
-      if (messagePlatforms.find(({ url }) => target.includes(url))) {
+      const isChatLink = messagePlatforms.find(({ url }) =>
+        target.includes(url)
+      )
+      if (isChatLink != null || event === 'footerChatButtonClick') {
         chatsStarted += events
       } else {
         linksVisited += events

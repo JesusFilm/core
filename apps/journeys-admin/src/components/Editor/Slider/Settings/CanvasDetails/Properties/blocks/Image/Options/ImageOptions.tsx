@@ -1,101 +1,88 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
-import { useSnackbar } from 'notistack'
+import pick from 'lodash/pick'
 import { ReactElement } from 'react'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { useCommand } from '@core/journeys/ui/CommandProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { IMAGE_FIELDS } from '@core/journeys/ui/Image/imageFields'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../../__generated__/BlockFields'
-import { ImageBlockUpdate } from '../../../../../../../../../../__generated__/ImageBlockUpdate'
+import { ImageBlockUpdateInput } from '../../../../../../../../../../__generated__/globalTypes'
+import {
+  ImageBlockUpdate,
+  ImageBlockUpdateVariables
+} from '../../../../../../../../../../__generated__/ImageBlockUpdate'
 import { ImageSource } from '../../../../../Drawer/ImageSource'
 
 export const IMAGE_BLOCK_UPDATE = gql`
-  mutation ImageBlockUpdate(
-    $id: ID!
-    $journeyId: ID!
-    $input: ImageBlockUpdateInput!
-  ) {
-    imageBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+  ${IMAGE_FIELDS}
+  mutation ImageBlockUpdate($id: ID!, $input: ImageBlockUpdateInput!) {
+    imageBlockUpdate(id: $id, input: $input) {
       id
-      src
-      alt
-      width
-      height
-      parentOrder
-      blurhash
+      ...ImageFields
     }
   }
 `
 
 export function ImageOptions(): ReactElement {
+  const [imageBlockUpdate] = useMutation<
+    ImageBlockUpdate,
+    ImageBlockUpdateVariables
+  >(IMAGE_BLOCK_UPDATE)
   const {
-    state: { selectedBlock }
+    state: { selectedBlock, selectedStep },
+    dispatch
   } = useEditor()
-  const { journey } = useJourney()
-  const { enqueueSnackbar } = useSnackbar()
-  const [imageBlockUpdate, { loading, error }] =
-    useMutation<ImageBlockUpdate>(IMAGE_BLOCK_UPDATE)
+  const { add } = useCommand()
 
   const imageBlock = selectedBlock as TreeBlock<ImageBlock>
 
-  const handleImageDelete = async (): Promise<void> => {
-    if (journey == null) return
-
-    try {
-      await imageBlockUpdate({
-        variables: {
-          id: imageBlock.id,
-          journeyId: journey.id,
-          input: {
-            src: null,
-            alt: ''
-          }
-        }
-      })
-    } catch (e) {
-      if (e instanceof Error) {
-        enqueueSnackbar(e.message, {
-          variant: 'error',
-          preventDuplicate: true
-        })
-      }
-    }
+  async function deleteImageBlock(): Promise<void> {
+    await updateImageBlock({ src: null, alt: '' })
   }
 
-  const updateImageBlock = async (block: ImageBlock): Promise<void> => {
-    if (journey == null) return
+  function updateImageBlock(input: ImageBlockUpdateInput): void {
+    const block: ImageBlock = {
+      ...imageBlock,
+      ...input,
+      alt: input.alt ?? imageBlock.alt,
+      blurhash: input.blurhash ?? imageBlock.blurhash,
+      height: input.height ?? imageBlock.height,
+      width: input.width ?? imageBlock.width
+    }
 
-    try {
-      await imageBlockUpdate({
-        variables: {
-          id: imageBlock.id,
-          journeyId: journey.id,
-          input: {
-            src: block.src,
-            alt: block.alt
+    add({
+      parameters: {
+        execute: block,
+        undo: imageBlock
+      },
+      execute(block) {
+        dispatch({
+          type: 'SetEditorFocusAction',
+          selectedBlock,
+          selectedStep
+        })
+        void imageBlockUpdate({
+          variables: {
+            id: imageBlock.id,
+            input: pick(block, Object.keys(input))
+          },
+          optimisticResponse: {
+            imageBlockUpdate: block
           }
-        }
-      })
-    } catch (e) {
-      if (e instanceof Error) {
-        enqueueSnackbar(e.message, {
-          variant: 'error',
-          preventDuplicate: true
         })
       }
-    }
+    })
   }
 
   return (
     <Box sx={{ px: 4, pb: 4 }}>
       <ImageSource
         selectedBlock={imageBlock}
-        onChange={updateImageBlock}
-        onDelete={handleImageDelete}
-        loading={loading}
-        error={error != null}
+        onChange={async (input) => updateImageBlock(input)}
+        onDelete={deleteImageBlock}
       />
     </Box>
   )

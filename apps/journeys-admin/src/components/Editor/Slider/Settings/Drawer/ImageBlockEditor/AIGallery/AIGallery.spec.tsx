@@ -1,14 +1,33 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
-import { CreateAiImage } from '../../../../../../../../__generated__/CreateAiImage'
+import {
+  CreateAiImage,
+  CreateAiImageVariables
+} from '../../../../../../../../__generated__/CreateAiImage'
 import { SegmindModel } from '../../../../../../../../__generated__/globalTypes'
 
-import { AIGallery, CREATE_AI_IMAGE } from './AIGallery'
+import { CREATE_AI_IMAGE } from './AIGallery'
+
+import { AIGallery } from '.'
 
 describe('AIGallery', () => {
-  const getAIImage: MockedResponse<CreateAiImage> = {
+  let originalEnv
+
+  beforeEach(() => {
+    originalEnv = process.env
+    process.env = {
+      ...originalEnv,
+      NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY: 'cloudflare-key'
+    }
+  })
+
+  afterEach(() => {
+    process.env = originalEnv
+  })
+
+  const getAIImage: MockedResponse<CreateAiImage, CreateAiImageVariables> = {
     request: {
       query: CREATE_AI_IMAGE,
       variables: {
@@ -16,91 +35,79 @@ describe('AIGallery', () => {
         model: SegmindModel.sdxl1__0_txt2img
       }
     },
-    result: jest.fn(() => ({
+    result: {
       data: {
         createImageBySegmindPrompt: {
           __typename: 'CloudflareImage',
           id: 'imageId'
         }
       }
-    }))
+    }
   }
-
-  afterEach(() => jest.clearAllMocks())
 
   it('should submit prompt successfully', async () => {
     const onChange = jest.fn()
-    const { getByRole } = render(
+    render(
       <MockedProvider mocks={[getAIImage]}>
         <SnackbarProvider>
           <AIGallery onChange={onChange} />
         </SnackbarProvider>
       </MockedProvider>
     )
-
-    const promptBox = getByRole('textbox', { name: 'Prompt' })
-    const promptSubmitButton = getByRole('button', { name: 'Prompt' })
-    await fireEvent.click(promptBox)
-    await fireEvent.change(promptBox, {
+    fireEvent.change(screen.getByRole('textbox', { name: 'Prompt' }), {
       target: { value: 'an image of the New Jerusalem' }
     })
-    await fireEvent.click(promptSubmitButton)
+    fireEvent.click(screen.getByRole('button', { name: 'Prompt' }))
     await waitFor(() => {
-      expect(getAIImage.result).toHaveBeenCalled()
+      expect(onChange).toHaveBeenCalledWith({
+        alt: 'Prompt: an image of the New Jerusalem',
+        src: 'https://imagedelivery.net/cloudflare-key/imageId/public'
+      })
     })
   })
 
   it('should show try again snackbar if results returns null', async () => {
     const emptyResultMock = {
       ...getAIImage,
-      result: jest.fn(() => ({
+      result: {
         data: {
           createImageBySegmindPrompt: {
             __typename: 'CloudflareImage',
             id: null
           }
         }
-      }))
+      }
     }
-    const { getByRole, getByText } = render(
+    render(
       <MockedProvider mocks={[emptyResultMock]}>
         <SnackbarProvider>
           <AIGallery onChange={jest.fn()} />
         </SnackbarProvider>
       </MockedProvider>
     )
-
-    const promptBox = getByRole('textbox', { name: 'Prompt' })
-    const promptSubmitButton = getByRole('button', { name: 'Prompt' })
-    await fireEvent.click(promptBox)
-    await fireEvent.change(promptBox, {
+    fireEvent.change(screen.getByRole('textbox', { name: 'Prompt' }), {
       target: { value: 'an image of the New Jerusalem' }
     })
-    await fireEvent.click(promptSubmitButton)
+    fireEvent.click(screen.getByRole('button', { name: 'Prompt' }))
     await waitFor(() => {
-      expect(emptyResultMock.result).toHaveBeenCalled()
       expect(
-        getByText('Something went wrong, please try again!')
+        screen.getByText('Something went wrong, please try again!')
       ).toBeInTheDocument()
     })
   })
 
   it('should show error snackbar on request failure', async () => {
-    const { getByRole } = render(
+    render(
       <MockedProvider mocks={[]}>
         <SnackbarProvider>
           <AIGallery onChange={jest.fn()} />
         </SnackbarProvider>
       </MockedProvider>
     )
-
-    const promptBox = getByRole('textbox', { name: 'Prompt' })
-    const promptSubmitButton = getByRole('button', { name: 'Prompt' })
-    await fireEvent.click(promptBox)
-    await fireEvent.change(promptBox, {
+    fireEvent.change(screen.getByRole('textbox', { name: 'Prompt' }), {
       target: { value: 'an image of the New Jerusalem' }
     })
-    await fireEvent.click(promptSubmitButton)
-    await waitFor(() => expect(getByRole('alert')).toBeInTheDocument())
+    fireEvent.click(screen.getByRole('button', { name: 'Prompt' }))
+    await waitFor(() => expect(screen.getByRole('alert')).toBeInTheDocument())
   })
 })

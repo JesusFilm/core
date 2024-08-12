@@ -1,5 +1,5 @@
-import Grid from '@mui/material/Grid'
-import { ReactElement } from 'react'
+import Box from '@mui/material/Box'
+import type { ReactElement } from 'react'
 
 import { CardCta } from './Templates/CardCta'
 import { CardForm } from './Templates/CardForm'
@@ -10,25 +10,27 @@ import { CardVideo } from './Templates/CardVideo'
 
 export function CardTemplates(): ReactElement {
   return (
-    <Grid data-testid="CardTemplates" container spacing={5} sx={{ p: 5 }}>
-      <Grid item xs={6}>
-        <CardVideo />
-      </Grid>
-      <Grid item xs={6}>
-        <CardIntro />
-      </Grid>
-      <Grid item xs={6}>
-        <CardPoll />
-      </Grid>
-      <Grid item xs={6}>
-        <CardForm />
-      </Grid>
-      <Grid item xs={6}>
-        <CardQuote />
-      </Grid>
-      <Grid item xs={6}>
-        <CardCta />
-      </Grid>
-    </Grid>
+    <Box
+      data-testid="CardTemplates"
+      sx={{
+        p: 5,
+        display: 'grid',
+        gridTemplateColumns: {
+          xs: 'repeat(auto-fill, 128px)',
+          sm: 'repeat(3, minmax(128px, 160px))',
+          md: 'repeat(2, 128px)'
+        },
+        justifyContent: 'center',
+        gap: 5,
+        width: '100%'
+      }}
+    >
+      <CardVideo />
+      <CardIntro />
+      <CardPoll />
+      <CardForm />
+      <CardQuote />
+      <CardCta />
+    </Box>
   )
 }

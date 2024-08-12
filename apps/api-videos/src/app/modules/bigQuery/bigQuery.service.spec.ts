@@ -43,14 +43,16 @@ describe('bigQueryService', () => {
         ])
 
       for await (const row of service.getRowsFromTable(
-        'mockDataSetname.mockTableName'
+        'mockDataSetname.mockTableName',
+        undefined,
+        true
       )) {
         expect(row).toEqual({
           mockKey: 'mockValue1'
         })
       }
       expect(getQueryResults).toHaveBeenCalledWith({
-        maxResults: 500,
+        maxResults: 5000,
         pageToken: undefined
       })
     })
@@ -79,7 +81,9 @@ describe('bigQueryService', () => {
 
       const rows: RowMetadata[] = []
       for await (const row of service.getRowsFromTable(
-        'mockDataSetname.mockTableName'
+        'mockDataSetname.mockTableName',
+        undefined,
+        true
       )) {
         rows.push(row)
       }
@@ -91,13 +95,26 @@ describe('bigQueryService', () => {
       ])
 
       expect(getQueryResults).toHaveBeenNthCalledWith(1, {
-        maxResults: 500,
+        maxResults: 5000,
         pageToken: undefined
       })
       expect(getQueryResults).toHaveBeenNthCalledWith(2, {
-        maxResults: 500,
+        maxResults: 5000,
         pageToken: 'mockPageToken'
       })
+    })
+  })
+
+  describe('getCurrentTimeStamp', () => {
+    it('should return current timestamp', async () => {
+      const query = jest
+        .fn()
+        .mockResolvedValueOnce([[{ f0_: { value: 'mock' } }]])
+      jest.spyOn(BigQuery.prototype, 'query').mockImplementation(query)
+
+      const result = await service.getCurrentTimeStamp()
+      expect(result).toBe('mock')
+      expect(query).toHaveBeenCalledWith('SELECT CURRENT_TIMESTAMP()')
     })
   })
 })

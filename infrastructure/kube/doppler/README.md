@@ -8,4 +8,4 @@ kubectl create secret generic doppler-token-secret \
   --from-literal=serviceToken=dp.st.dev.XXXX
 ```
 
-apply the correct cluster 
+apply the correct cluster

@@ -1,17 +1,41 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
+import { TreeBlock } from '@core/journeys/ui/block'
 import { ActiveSlide, EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { journey } from '@core/journeys/ui/TemplateView/TemplateFooter/data'
 
+import {
+  ButtonColor,
+  ButtonSize,
+  ButtonVariant
+} from '../../../../../../../../../../__generated__/globalTypes'
 import { TestEditorState } from '../../../../../../../../../libs/TestEditorState'
 import { steps } from '../data'
 
 import { NavigateToBlockAction } from './NavigateToBlockAction'
 
 describe('NavigateToBlockAction', () => {
-  const selectedBlock = steps[1].children[0].children[3]
+  const selectedBlock: TreeBlock = {
+    __typename: 'ButtonBlock',
+    id: 'button2.id',
+    parentBlockId: 'card1.id',
+    parentOrder: 4,
+    label: 'Contact Us',
+    buttonVariant: ButtonVariant.contained,
+    buttonColor: ButtonColor.primary,
+    size: ButtonSize.large,
+    startIconId: null,
+    endIconId: null,
+    action: {
+      parentBlockId: 'button2.id',
+      __typename: 'NavigateToBlockAction',
+      gtmEventName: 'gtmEventName',
+      blockId: 'block0.id'
+    },
+    children: []
+  }
 
   it("should show 'back to map' button", () => {
     const { getByRole } = render(

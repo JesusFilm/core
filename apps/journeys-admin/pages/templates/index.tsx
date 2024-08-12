@@ -1,9 +1,10 @@
 import { useQuery } from '@apollo/client'
+import Box from '@mui/material/Box'
 import { GetStaticProps } from 'next'
+import { useRouter } from 'next/router'
 import { useUser, withUser } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import { useRouter } from 'next/router'
 import { ReactElement, useEffect } from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
@@ -12,7 +13,6 @@ import { GET_JOURNEYS } from '@core/journeys/ui/useJourneysQuery'
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 import { GET_TAGS } from '@core/journeys/ui/useTagsQuery'
 
-import { Box } from '@mui/material'
 import {
   GetJourneys,
   GetJourneysVariables
@@ -23,6 +23,7 @@ import {
 } from '../../__generated__/GetLanguages'
 import { GetMe } from '../../__generated__/GetMe'
 import { GetTags } from '../../__generated__/GetTags'
+import { HelpScoutBeacon } from '../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { GET_ME } from '../../src/components/PageWrapper/NavigationDrawer/UserNavigation'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
@@ -41,6 +42,8 @@ function TemplateIndexPage(): ReactElement {
     void query.refetch()
   }, [user.id, query])
 
+  const userSignedIn = user?.id != null
+
   return (
     <>
       <NextSeo title={t('Journey Templates')} />
@@ -49,10 +52,25 @@ function TemplateIndexPage(): ReactElement {
         user={user}
         mainBodyPadding={false}
         showMainHeader={false}
-        showAppHeader={user?.id != null}
-        showNavBar={user?.id != null}
+        showAppHeader={userSignedIn}
+        showNavBar={userSignedIn}
         background="background.paper"
       >
+        <Box
+          sx={{
+            position: 'absolute',
+            right: 16,
+            top: 8,
+            display: { xs: userSignedIn ? 'none' : 'block', md: 'block' }
+          }}
+        >
+          <HelpScoutBeacon
+            userInfo={{
+              name: user?.displayName ?? '',
+              email: user?.email ?? ''
+            }}
+          />
+        </Box>
         <Box
           sx={{
             maxWidth: { md: '90vw' },

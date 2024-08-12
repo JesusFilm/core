@@ -17,6 +17,60 @@ enum CacheControlScope {
   PRIVATE
 }
 
+type BibleBook {
+  name(languageId: ID, primary: Boolean): [Translation!]!
+  osisId: String!
+  alternateName: String
+  paratextAbbreviation: String!
+  isNewTestament: Boolean!
+  order: Int!
+}
+
+type BibleCitation {
+  osisId: String!
+  bibleBook: BibleBook!
+  chapterStart: Int!
+  chapterEnd: Int
+  verseStart: Int!
+  verseEnd: Int
+}
+
+type Video
+  @key(fields: "id primaryLanguageId")
+  @cacheControl(maxAge: 86400)
+{
+  bibleCitations: [BibleCitation!]!
+  keywords(languageId: ID): [Keyword!]!
+  id: ID!
+  label: VideoLabel!
+  primaryLanguageId: ID!
+  title(languageId: ID, primary: Boolean): [Translation!]!
+  snippet(languageId: ID, primary: Boolean): [Translation!]!
+  description(languageId: ID, primary: Boolean): [Translation!]!
+  studyQuestions(languageId: ID, primary: Boolean): [Translation!]!
+  image: String
+  imageAlt(languageId: ID, primary: Boolean): [Translation!]!
+  variantLanguages: [Language!]!
+  variantLanguagesCount: Int!
+
+  """slug is a permanent link to the video."""
+  slug: String!
+  noIndex: Boolean
+  children: [Video!]!
+
+  """the number value of the amount of children on a video"""
+  childrenCount: Int!
+  variantLanguagesWithSlug: [LanguageWithSlug!]!
+  subtitles(languageId: ID, primary: Boolean, edition: String): [VideoSubtitle!]!
+  variant(languageId: ID): VideoVariant
+}
+
+type Keyword {
+  id: ID!
+  value: String!
+  language: Language!
+}
+
 extend type Language
   @key(fields: "id")
 {
@@ -44,31 +98,12 @@ type LanguageWithSlug {
   slug: String
 }
 
-type Video
-  @key(fields: "id primaryLanguageId")
-  @cacheControl(maxAge: 86400)
-{
-  id: ID!
-  label: VideoLabel!
-  primaryLanguageId: ID!
-  title(languageId: ID, primary: Boolean): [Translation!]!
-  snippet(languageId: ID, primary: Boolean): [Translation!]!
-  description(languageId: ID, primary: Boolean): [Translation!]!
-  studyQuestions(languageId: ID, primary: Boolean): [Translation!]!
-  image: String
-  imageAlt(languageId: ID, primary: Boolean): [Translation!]!
-  variantLanguages: [Language!]!
-  variantLanguagesCount: Int!
-
-  """slug is a permanent link to the video."""
-  slug: String!
-  noIndex: Boolean
-  children: [Video!]!
-
-  """the number value of the amount of children on a video"""
-  childrenCount: Int!
-  variantLanguagesWithSlug: [LanguageWithSlug!]!
-  variant(languageId: ID): VideoVariant
+type VideoSubtitle {
+  id: String!
+  languageId: String!
+  edition: String!
+  vttSrc: String
+  srtSrc: String
 }
 
 input VideosFilter {

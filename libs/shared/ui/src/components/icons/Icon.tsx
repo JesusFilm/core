@@ -83,6 +83,8 @@ import FileShred from './FileShred'
 import Filter from './Filter'
 import Flame from './Flame'
 import FlexAlignBottom1 from './FlexAlignBottom1'
+import FlipLeft from './FlipLeft'
+import FlipRight from './FlipRight'
 import FolderDown1 from './FolderDown1'
 import FolderUp1 from './FolderUp1'
 import Globe from './Globe'
@@ -142,6 +144,7 @@ import Minimise1 from './Minimise1'
 import Minimise2 from './Minimise2'
 import MinusCircleContained from './MinusCircleContained'
 import More from './More'
+import PackagePlus from './PackagePlus'
 import Palette from './Palette'
 import Passport from './Passport'
 import Pause1 from './Pause1'
@@ -289,6 +292,8 @@ export type IconName =
   | 'Filter'
   | 'Flame'
   | 'FlexAlignBottom1'
+  | 'FlipLeft'
+  | 'FlipRight'
   | 'FolderDown1'
   | 'FolderUp1'
   | 'Globe'
@@ -348,6 +353,7 @@ export type IconName =
   | 'Minimise2'
   | 'MinusCircleContained'
   | 'More'
+  | 'PackagePlus'
   | 'Palette'
   | 'Passport'
   | 'Pause1'
@@ -499,6 +505,8 @@ const iconComponents: IconComponents = {
   Filter,
   Flame,
   FlexAlignBottom1,
+  FlipLeft,
+  FlipRight,
   FolderDown1,
   FolderUp1,
   Globe,
@@ -558,6 +566,7 @@ const iconComponents: IconComponents = {
   MediaStrip1,
   MinusCircleContained,
   More,
+  PackagePlus,
   Palette,
   Passport,
   Pause1,

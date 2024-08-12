@@ -1,12 +1,12 @@
 import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJourney'
@@ -47,7 +47,7 @@ describe('Toolbar Menu', () => {
         nextBlockId: null,
         children: []
       }
-      const { getByRole, getByTestId } = render(
+      render(
         <SnackbarProvider>
           <MockedProvider>
             <JourneyProvider
@@ -66,15 +66,23 @@ describe('Toolbar Menu', () => {
           </MockedProvider>
         </SnackbarProvider>
       )
-      fireEvent.click(getByRole('button'))
+      fireEvent.click(screen.getByRole('button'))
       expect(
-        getByRole('menuitem', { name: 'Manage Access' })
+        screen.getByRole('menuitem', { name: 'Manage Access' })
       ).toBeInTheDocument()
-      expect(getByRole('menuitem', { name: 'Title' })).toBeInTheDocument()
-      expect(getByRole('menuitem', { name: 'Description' })).toBeInTheDocument()
-      expect(getByRole('menuitem', { name: 'Language' })).toBeInTheDocument()
-      expect(getByTestId('menu-divider')).toBeInTheDocument()
-      expect(getByRole('menuitem', { name: 'Copy Link' })).toBeInTheDocument()
+      expect(
+        screen.getByRole('menuitem', { name: 'Title' })
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('menuitem', { name: 'Description' })
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('menuitem', { name: 'Language' })
+      ).toBeInTheDocument()
+      expect(screen.getByTestId('menu-divider')).toBeInTheDocument()
+      expect(
+        screen.getByRole('menuitem', { name: 'Copy Link' })
+      ).toBeInTheDocument()
     })
 
     it('should render journey menu items for publishers', async () => {
@@ -87,7 +95,7 @@ describe('Toolbar Menu', () => {
         nextBlockId: null,
         children: []
       }
-      const { getByRole, getByTestId } = render(
+      render(
         <SnackbarProvider>
           <MockedProvider
             mocks={[
@@ -123,22 +131,28 @@ describe('Toolbar Menu', () => {
           </MockedProvider>
         </SnackbarProvider>
       )
-      fireEvent.click(getByRole('button'))
+      fireEvent.click(screen.getByRole('button'))
       expect(
-        getByRole('menuitem', { name: 'Manage Access' })
+        screen.getByRole('menuitem', { name: 'Manage Access' })
       ).toBeInTheDocument()
-      expect(getByRole('menuitem', { name: 'Title' })).toBeInTheDocument()
+      expect(
+        screen.getByRole('menuitem', { name: 'Title' })
+      ).toBeInTheDocument()
       await waitFor(() => {
         expect(
-          getByRole('menuitem', { name: 'Description' })
+          screen.getByRole('menuitem', { name: 'Description' })
         ).toBeInTheDocument()
       })
       expect(
-        getByRole('menuitem', { name: 'Create Template' })
+        screen.getByRole('menuitem', { name: 'Create Template' })
       ).toBeInTheDocument()
-      expect(getByTestId('menu-divider')).toBeInTheDocument()
-      expect(getByRole('menuitem', { name: 'Language' })).toBeInTheDocument()
-      expect(getByRole('menuitem', { name: 'Copy Link' })).toBeInTheDocument()
+      expect(screen.getByTestId('menu-divider')).toBeInTheDocument()
+      expect(
+        screen.getByRole('menuitem', { name: 'Language' })
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('menuitem', { name: 'Copy Link' })
+      ).toBeInTheDocument()
     })
 
     it('should render template menu items', async () => {
@@ -151,7 +165,7 @@ describe('Toolbar Menu', () => {
         nextBlockId: null,
         children: []
       }
-      const { getByRole } = render(
+      render(
         <SnackbarProvider>
           <MockedProvider>
             <JourneyProvider
@@ -171,9 +185,9 @@ describe('Toolbar Menu', () => {
           </MockedProvider>
         </SnackbarProvider>
       )
-      fireEvent.click(getByRole('button'))
+      fireEvent.click(screen.getByRole('button'))
       expect(
-        getByRole('menuitem', { name: 'Template Settings' })
+        screen.getByRole('menuitem', { name: 'Template Settings' })
       ).toBeInTheDocument()
     })
 
@@ -186,7 +200,7 @@ describe('Toolbar Menu', () => {
         }
       } as unknown as NextRouter)
 
-      const { getByRole } = render(
+      render(
         <SnackbarProvider>
           <MockedProvider>
             <JourneyProvider
@@ -205,13 +219,15 @@ describe('Toolbar Menu', () => {
           </MockedProvider>
         </SnackbarProvider>
       )
-      const menu = getByRole('button')
+      const menu = screen.getByRole('button')
       fireEvent.click(menu)
-      fireEvent.click(getByRole('menuitem', { name: 'Title' }))
+      fireEvent.click(screen.getByRole('menuitem', { name: 'Title' }))
       await waitFor(() =>
-        expect(getByRole('dialog', { name: 'Edit Title' })).toBeInTheDocument()
+        expect(
+          screen.getByRole('dialog', { name: 'Edit Title' })
+        ).toBeInTheDocument()
       )
-      fireEvent.click(getByRole('button', { name: 'Cancel' }))
+      fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
       expect(menu).not.toHaveAttribute('aria-expanded')
 
       await waitFor(() => {
@@ -234,7 +250,7 @@ describe('Toolbar Menu', () => {
         }
       } as unknown as NextRouter)
 
-      const { getByRole } = render(
+      render(
         <SnackbarProvider>
           <MockedProvider>
             <JourneyProvider
@@ -253,15 +269,15 @@ describe('Toolbar Menu', () => {
           </MockedProvider>
         </SnackbarProvider>
       )
-      const menu = getByRole('button')
+      const menu = screen.getByRole('button')
       fireEvent.click(menu)
-      fireEvent.click(getByRole('menuitem', { name: 'Description' }))
+      fireEvent.click(screen.getByRole('menuitem', { name: 'Description' }))
       await waitFor(() =>
         expect(
-          getByRole('dialog', { name: 'Edit Description' })
+          screen.getByRole('dialog', { name: 'Edit Description' })
         ).toBeInTheDocument()
       )
-      fireEvent.click(getByRole('button', { name: 'Cancel' }))
+      fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
       expect(menu).not.toHaveAttribute('aria-expanded')
 
       await waitFor(() => {
@@ -282,6 +298,13 @@ describe('Toolbar Menu', () => {
     )
 
     it('should render mobile menu items', () => {
+      mockedUseRouter.mockReturnValue({
+        events: {
+          on: jest.fn(),
+          off: jest.fn()
+        }
+      } as unknown as NextRouter)
+
       const selectedBlock: TreeBlock<StepBlock> = {
         __typename: 'StepBlock',
         id: 'stepId',
@@ -291,7 +314,7 @@ describe('Toolbar Menu', () => {
         nextBlockId: null,
         children: []
       }
-      const { getByRole, getByTestId } = render(
+      render(
         <SnackbarProvider>
           <MockedProvider>
             <JourneyProvider
@@ -310,19 +333,36 @@ describe('Toolbar Menu', () => {
           </MockedProvider>
         </SnackbarProvider>
       )
-      fireEvent.click(getByRole('button'))
-      expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
+      fireEvent.click(screen.getByRole('button'))
       expect(
-        getByRole('menuitem', { name: 'Manage Access' })
+        screen.getByRole('menuitem', { name: 'Preview' })
       ).toBeInTheDocument()
-      expect(getByRole('menuitem', { name: 'Title' })).toBeInTheDocument()
-      expect(getByRole('menuitem', { name: 'Description' })).toBeInTheDocument()
-      expect(getByRole('menuitem', { name: 'Language' })).toBeInTheDocument()
-      expect(getByRole('menuitem', { name: 'Analytics' })).toBeInTheDocument()
-      expect(getByRole('menuitem', { name: 'Strategy' })).toBeInTheDocument()
-      expect(getByRole('menuitem', { name: 'Share' })).toBeInTheDocument()
-      expect(getByTestId('menu-divider')).toBeInTheDocument()
-      expect(getByRole('menuitem', { name: 'Copy Link' })).toBeInTheDocument()
+      expect(
+        screen.getByRole('menuitem', { name: 'Manage Access' })
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('menuitem', { name: 'Title' })
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('menuitem', { name: 'Description' })
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('menuitem', { name: 'Language' })
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('menuitem', { name: 'Analytics' })
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('menuitem', { name: 'Strategy' })
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('menuitem', { name: 'Share' })
+      ).toBeInTheDocument()
+      expect(screen.getByTestId('menu-divider')).toBeInTheDocument()
+      expect(
+        screen.getByRole('menuitem', { name: 'Copy Link' })
+      ).toBeInTheDocument()
+      expect(screen.getByRole('menuitem', { name: 'Help' })).toBeInTheDocument()
     })
   })
 })

@@ -23,6 +23,14 @@ type LanguageWithSlug {
   slug: String
 }
 
+type VideoSubtitle {
+  id: String!
+  languageId: String!
+  edition: String!
+  vttSrc: String
+  srtSrc: String
+}
+
 type Video @key(fields: "id primaryLanguageId") @cacheControl(maxAge: 86400) {
   id: ID!
   label: VideoLabel!
@@ -46,6 +54,11 @@ type Video @key(fields: "id primaryLanguageId") @cacheControl(maxAge: 86400) {
   """
   childrenCount: Int!
   variantLanguagesWithSlug: [LanguageWithSlug!]!
+  subtitles(
+    languageId: ID
+    primary: Boolean
+    edition: String
+  ): [VideoSubtitle!]!
 }
 
 input VideosFilter {

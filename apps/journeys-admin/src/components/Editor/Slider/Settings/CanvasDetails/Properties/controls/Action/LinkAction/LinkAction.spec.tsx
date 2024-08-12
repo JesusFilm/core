@@ -1,14 +1,20 @@
-import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
+import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { GetJourney_journey as Journey } from '../../../../../../../../../../__generated__/GetJourney'
-import { steps } from '../data'
+import {
+  ButtonColor,
+  ButtonSize,
+  ButtonVariant
+} from '../../../../../../../../../../__generated__/globalTypes'
+import { BLOCK_ACTION_LINK_UPDATE } from '../../../../../../../../../libs/useBlockActionLinkUpdateMutation'
+import { blockActionLinkUpdateMock } from '../../../../../../../../../libs/useBlockActionLinkUpdateMutation/useBlockActionLinkUpdateMutation.mock'
+import { blockActionNavigateToBlockUpdateMock } from '../../../../../../../../../libs/useBlockActionNavigateToBlockUpdateMutation/useBlockActionNavigateToBlockUpdateMutation.mock'
+import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 
-import { LINK_ACTION_UPDATE, LinkAction } from './LinkAction'
+import { LinkAction } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -16,156 +22,95 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 }))
 
 describe('LinkAction', () => {
-  const selectedBlock = steps[1].children[0].children[3]
-  const result = jest.fn(() => ({
-    data: {
-      blockUpdateLinkAction: {
-        parentBlockId: selectedBlock.id,
-        gtmEventName: 'gtmEventName',
-        url: 'https://github.com'
-      }
-    }
-  }))
-
-  const mocks = [
-    {
-      request: {
-        query: LINK_ACTION_UPDATE,
-        variables: {
-          id: selectedBlock.id,
-          journeyId: 'journeyId',
-          input: {
-            url: 'https://github.com'
-          }
-        }
-      },
-      result
-    }
-  ]
+  const selectedBlock: TreeBlock = {
+    __typename: 'ButtonBlock',
+    id: 'button2.id',
+    parentBlockId: 'card1.id',
+    parentOrder: 4,
+    label: 'Contact Us',
+    buttonVariant: ButtonVariant.contained,
+    buttonColor: ButtonColor.primary,
+    size: ButtonSize.large,
+    startIconId: null,
+    endIconId: null,
+    action: {
+      parentBlockId: 'button2.id',
+      __typename: 'LinkAction',
+      gtmEventName: 'gtmEventName',
+      url: 'https://www.google.com'
+    },
+    children: []
+  }
 
   it('displays the action url', async () => {
-    const { getByDisplayValue } = render(
+    render(
       <MockedProvider>
         <EditorProvider initialState={{ selectedBlock }}>
           <LinkAction />
         </EditorProvider>
       </MockedProvider>
     )
-    expect(getByDisplayValue('https://www.google.com')).toBeInTheDocument()
+    expect(
+      screen.getByDisplayValue('https://www.google.com')
+    ).toBeInTheDocument()
   })
 
   it('updates action url', async () => {
-    const cache = new InMemoryCache()
-    cache.restore({
-      'Journey:journeyId': {
-        blocks: [{ __ref: 'ButtonBlock:button1.id' }],
-        id: 'journeyId',
-        __typename: 'Journey'
-      },
-      'ButtonBlock:button1.id': {
-        ...selectedBlock
-      }
-    })
-
-    const { getByRole } = render(
-      <MockedProvider mocks={mocks} cache={cache}>
-        <JourneyProvider
-          value={{
-            journey: { id: 'journeyId' } as unknown as Journey,
-            variant: 'admin'
-          }}
-        >
-          <EditorProvider initialState={{ selectedBlock }}>
-            <LinkAction />
-          </EditorProvider>
-        </JourneyProvider>
+    const result = jest.fn().mockReturnValue(blockActionLinkUpdateMock.result)
+    render(
+      <MockedProvider mocks={[{ ...blockActionLinkUpdateMock, result }]}>
+        <EditorProvider initialState={{ selectedBlock }}>
+          <LinkAction />
+        </EditorProvider>
       </MockedProvider>
     )
-    fireEvent.change(getByRole('textbox'), {
+    fireEvent.change(screen.getByRole('textbox'), {
       target: { value: 'https://github.com' }
     })
-    fireEvent.blur(getByRole('textbox'))
+    fireEvent.blur(screen.getByRole('textbox'))
     await waitFor(() => expect(result).toHaveBeenCalled())
-
-    expect(cache.extract()['ButtonBlock:button1.id']?.action).toEqual({
-      parentBlockId: 'button1.id',
-      gtmEventName: 'gtmEventName',
-      url: 'https://github.com'
-    })
   })
 
   it('is a required field', async () => {
-    const { getByText, getByRole } = render(
+    render(
       <MockedProvider>
         <EditorProvider>
           <LinkAction />
         </EditorProvider>
       </MockedProvider>
     )
-    fireEvent.change(getByRole('textbox', { name: 'Paste URL here...' }), {
-      target: { value: '' }
-    })
-    fireEvent.blur(getByRole('textbox', { name: 'Paste URL here...' }))
-    await waitFor(() => expect(getByText('Required')).toBeInTheDocument())
+    fireEvent.change(
+      screen.getByRole('textbox', { name: 'Paste URL here...' }),
+      {
+        target: { value: '' }
+      }
+    )
+    fireEvent.blur(screen.getByRole('textbox', { name: 'Paste URL here...' }))
+    await waitFor(() =>
+      expect(screen.getByText('Required')).toBeInTheDocument()
+    )
   })
 
   it('accepts links without protocol as a URL', async () => {
-    const cache = new InMemoryCache()
-    cache.restore({
-      'Journey:journeyId': {
-        blocks: [{ __ref: 'ButtonBlock:button1.id' }],
-        id: 'journeyId',
-        __typename: 'Journey'
-      },
-      'ButtonBlock:button1.id': {
-        ...selectedBlock
-      }
-    })
-
-    const { queryByText, getByRole } = render(
-      <MockedProvider mocks={mocks} cache={cache}>
-        <JourneyProvider
-          value={{
-            journey: { id: 'journeyId' } as unknown as Journey,
-            variant: 'admin'
-          }}
-        >
-          <EditorProvider initialState={{ selectedBlock }}>
-            <LinkAction />
-          </EditorProvider>
-        </JourneyProvider>
+    const result = jest.fn().mockReturnValue(blockActionLinkUpdateMock.result)
+    render(
+      <MockedProvider mocks={[{ ...blockActionLinkUpdateMock, result }]}>
+        <EditorProvider initialState={{ selectedBlock }}>
+          <LinkAction />
+        </EditorProvider>
       </MockedProvider>
     )
-    fireEvent.change(getByRole('textbox'), {
+    fireEvent.change(screen.getByRole('textbox'), {
       target: { value: 'github.com' }
     })
-    fireEvent.blur(getByRole('textbox'))
+    fireEvent.blur(screen.getByRole('textbox'))
     await waitFor(() =>
-      expect(queryByText('Invalid URL')).not.toBeInTheDocument()
+      expect(screen.queryByText('Invalid URL')).not.toBeInTheDocument()
     )
     await waitFor(() => expect(result).toHaveBeenCalled())
-    await waitFor(() =>
-      expect(cache.extract()['ButtonBlock:button1.id']?.action).toEqual({
-        parentBlockId: 'button1.id',
-        gtmEventName: 'gtmEventName',
-        url: 'https://github.com'
-      })
-    )
   })
 
   it('accepts deep links as a URL', async () => {
-    const cache = new InMemoryCache()
-    cache.restore({
-      'Journey:journeyId': {
-        blocks: [{ __ref: 'ButtonBlock:button1.id' }],
-        id: 'journeyId',
-        __typename: 'Journey'
-      },
-      'ButtonBlock:button1.id': {
-        ...selectedBlock
-      }
-    })
-
     const result = jest.fn(() => ({
       data: {
         blockUpdateLinkAction: {
@@ -176,15 +121,14 @@ describe('LinkAction', () => {
       }
     }))
 
-    const { queryByText, getByRole } = render(
+    render(
       <MockedProvider
         mocks={[
           {
             request: {
-              query: LINK_ACTION_UPDATE,
+              query: BLOCK_ACTION_LINK_UPDATE,
               variables: {
                 id: selectedBlock.id,
-                journeyId: 'journeyId',
                 input: {
                   url: 'viber://'
                 }
@@ -193,95 +137,96 @@ describe('LinkAction', () => {
             result
           }
         ]}
-        cache={cache}
       >
-        <JourneyProvider
-          value={{
-            journey: { id: 'journeyId' } as unknown as Journey,
-            variant: 'admin'
-          }}
-        >
-          <EditorProvider initialState={{ selectedBlock }}>
-            <LinkAction />
-          </EditorProvider>
-        </JourneyProvider>
+        <EditorProvider initialState={{ selectedBlock }}>
+          <LinkAction />
+        </EditorProvider>
       </MockedProvider>
     )
-    fireEvent.change(getByRole('textbox'), {
+    fireEvent.change(screen.getByRole('textbox'), {
       target: { value: 'viber://' }
     })
-    fireEvent.blur(getByRole('textbox'))
+    fireEvent.blur(screen.getByRole('textbox'))
     await waitFor(() =>
-      expect(queryByText('Invalid URL')).not.toBeInTheDocument()
+      expect(screen.queryByText('Invalid URL')).not.toBeInTheDocument()
     )
     await waitFor(() => expect(result).toHaveBeenCalled())
-    await waitFor(() =>
-      expect(cache.extract()['ButtonBlock:button1.id']?.action).toEqual({
-        parentBlockId: 'button1.id',
-        gtmEventName: 'gtmEventName',
-        url: 'viber://'
-      })
-    )
   })
 
   it('rejects mailto links as a URL', async () => {
-    const { getByText, getByRole } = render(
-      <MockedProvider mocks={mocks}>
+    render(
+      <MockedProvider mocks={[blockActionLinkUpdateMock]}>
         <EditorProvider>
           <LinkAction />
         </EditorProvider>
       </MockedProvider>
     )
-    fireEvent.change(getByRole('textbox'), {
+    fireEvent.change(screen.getByRole('textbox'), {
       target: { value: 'mailto:test@test.com' }
     })
-    fireEvent.blur(getByRole('textbox'))
-    await waitFor(() => expect(getByText('Invalid URL')).toBeInTheDocument())
+    fireEvent.blur(screen.getByRole('textbox'))
+    await waitFor(() =>
+      expect(screen.getByText('Invalid URL')).toBeInTheDocument()
+    )
   })
 
   it('should submit when enter is pressed', async () => {
-    const cache = new InMemoryCache()
-    cache.restore({
-      'Journey:journeyId': {
-        blocks: [{ __ref: 'ButtonBlock:button1.id' }],
-        id: 'journeyId',
-        __typename: 'Journey'
-      },
-      'ButtonBlock:button1.id': {
-        ...selectedBlock
-      }
-    })
-
-    const { getByRole, queryByText } = render(
-      <MockedProvider mocks={mocks} cache={cache}>
-        <JourneyProvider
-          value={{
-            journey: { id: 'journeyId' } as unknown as Journey,
-            variant: 'admin'
-          }}
-        >
-          <EditorProvider initialState={{ selectedBlock }}>
-            <LinkAction />
-          </EditorProvider>
-        </JourneyProvider>
+    const result = jest.fn().mockReturnValue(blockActionLinkUpdateMock.result)
+    render(
+      <MockedProvider mocks={[{ ...blockActionLinkUpdateMock, result }]}>
+        <EditorProvider initialState={{ selectedBlock }}>
+          <LinkAction />
+        </EditorProvider>
       </MockedProvider>
     )
-    fireEvent.change(getByRole('textbox'), {
+    fireEvent.change(screen.getByRole('textbox'), {
       target: { value: 'https://github.com' }
     })
-    fireEvent.submit(getByRole('textbox'), {
+    fireEvent.submit(screen.getByRole('textbox'), {
       target: { value: 'https://github.com' }
     })
     await waitFor(() =>
-      expect(queryByText('Invalid URL')).not.toBeInTheDocument()
+      expect(screen.queryByText('Invalid URL')).not.toBeInTheDocument()
     )
     await waitFor(() => expect(result).toHaveBeenCalled())
-    await waitFor(() =>
-      expect(cache.extract()['ButtonBlock:button1.id']?.action).toEqual({
-        parentBlockId: 'button1.id',
-        gtmEventName: 'gtmEventName',
-        url: 'https://github.com'
-      })
+  })
+
+  it('should handle undo', async () => {
+    const result = jest
+      .fn()
+      .mockReturnValue(blockActionNavigateToBlockUpdateMock.result)
+    render(
+      <MockedProvider
+        mocks={[
+          blockActionLinkUpdateMock,
+          { ...blockActionNavigateToBlockUpdateMock, result }
+        ]}
+      >
+        <EditorProvider
+          initialState={{
+            selectedBlock: {
+              ...selectedBlock,
+              action: {
+                parentBlockId: 'button2.id',
+                __typename: 'NavigateToBlockAction',
+                gtmEventName: 'gtmEventName',
+                blockId: 'step2.id'
+              }
+            }
+          }}
+        >
+          <LinkAction />
+          <CommandUndoItem variant="button" />
+        </EditorProvider>
+      </MockedProvider>
     )
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'https://github.com' }
+    })
+    fireEvent.blur(screen.getByRole('textbox'))
+    const undo = screen.getByRole('button', { name: 'Undo' })
+    await waitFor(() => expect(undo).not.toBeDisabled())
+    fireEvent.click(undo)
+    await waitFor(() => expect(result).toHaveBeenCalled())
   })
 })

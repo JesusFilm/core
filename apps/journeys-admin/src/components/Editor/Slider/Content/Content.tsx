@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box'
-import { ReactElement } from 'react'
+import type { ReactElement } from 'react'
 import { CSSTransition, TransitionGroup } from 'react-transition-group'
 
 import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
@@ -61,6 +61,7 @@ export function Content(): ReactElement {
             right: 0,
             bottom: 0,
             left: 0,
+            userSelect: 'none',
             display: 'flex',
             justifyContent: 'space-between',
             transition: (theme) =>

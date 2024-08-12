@@ -5,8 +5,8 @@ import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { ApolloLoadingProvider } from '../../../../../../../../test/ApolloLoadingProvider'
 
-import { GET_VIDEOS } from './VideoFromLocal'
 import { videos } from './data'
+import { GET_VIDEOS } from './VideoFromLocal'
 
 import { VideoFromLocal } from '.'
 

@@ -12,7 +12,6 @@ concurrency:
   cancel-in-progress: true
 jobs:
   visual-test:
-    if: contains(github.event.pull_request.labels.*.name, 'chromatic') || github.event_name == 'merge_group'
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -42,28 +41,29 @@ jobs:
       - name: Build Stories
         id: build-storybook
         run: nx affected --target=build-storybook shared-storybook --webpack-stats-json
-      - name: Check for frontend changes
-        id: check_files
-        uses: andstor/file-existence-action@v3
-        with:
-          files: 'dist/storybook/shared-storybook'
-        #👇 Adds Chromatic as a step in the workflow
-      - name: Run VR tests
-        if: ${{ steps.check_files.outputs.files_exists == 'true' }}
-        uses: chromaui/action@v1
-        # Options required for Chromatic's GitHub Action
-        # https://www.chromatic.com/docs/github-actions#available-options
-        # https://github.com/chromaui/chromatic-cli/blob/main/action.yml
-        with:
-          #👇 Chromatic projectToken, see https://storybook.js.org/tutorials/intro-to-storybook/react/en/deploy/ to obtain it
-          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          storybookBuildDir: 'dist/storybook/shared-storybook'
-          exitOnceUploaded: 'true'
-          autoAcceptChanges: 'main'
-          onlyChanged: 'true'
-          skip: '@(dependabot/**|00-00-CI-chore-update-translations)'
-          untraced: '@(package*.json|.storybook/**)'
-          traceChanged: 'expanded'
-          # dryRun: 'true'
-          # debug: 'true'
+      # ADD CHROMATIC BACK DURING A COOLDOWN
+      # - name: Check for frontend changes
+      #   id: check_files
+      #   uses: andstor/file-existence-action@v3
+      #   with:
+      #     files: 'dist/storybook/shared-storybook'
+      #👇 Adds Chromatic as a step in the workflow
+      # - name: Run VR tests
+      #   if: ${{ steps.check_files.outputs.files_exists == 'true' }}
+      #   uses: chromaui/action@v1
+      #   # Options required for Chromatic's GitHub Action
+      #   # https://www.chromatic.com/docs/github-actions#available-options
+      #   # https://github.com/chromaui/chromatic-cli/blob/main/action.yml
+      #   with:
+      #     #👇 Chromatic projectToken, see https://storybook.js.org/tutorials/intro-to-storybook/react/en/deploy/ to obtain it
+      #     projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+      #     token: ${{ secrets.GITHUB_TOKEN }}
+      #     storybookBuildDir: 'dist/storybook/shared-storybook'
+      #     exitOnceUploaded: 'true'
+      #     autoAcceptChanges: 'main'
+      #     onlyChanged: 'true'
+      #     skip: '@(dependabot/**|00-00-CI-chore-update-translations)'
+      #     untraced: '@(package*.json|.storybook/**)'
+      #     traceChanged: 'expanded'
+      # dryRun: 'true'
+      # debug: 'true'
