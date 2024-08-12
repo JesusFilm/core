@@ -2,7 +2,6 @@ import InsertPhotoRoundedIcon from '@mui/icons-material/InsertPhotoRounded'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import Stack from '@mui/material/Stack'
-import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import NextLink from 'next/link'
@@ -26,7 +25,6 @@ export function StrategyCard({
   item,
   priority = true
 }: StrategyCardProps): ReactElement {
-  const theme = useTheme()
   const { hits, sendEvent } = useHits()
   const hit = hits.filter((hit) => hit.objectID === item?.id)
 
@@ -97,15 +95,7 @@ export function StrategyCard({
                 src={item?.imageUrl}
                 alt={item?.title ?? ''}
                 fill
-                sizes={`(max-width: ${
-                  theme.breakpoints.values.md - 0.5
-                }px) 130px, (max-width: ${
-                  theme.breakpoints.values.xl - 0.5
-                }px) 180px, 280px`}
-                style={{
-                  maxHeight: '160px',
-                  objectFit: 'cover'
-                }}
+                objectFit="cover"
               />
             ) : (
               <InsertPhotoRoundedIcon className="MuiImageBackground-root" />

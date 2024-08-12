@@ -13,13 +13,7 @@ import { HeaderAndLanguageFilter } from './HeaderAndLanguageFilter'
 import { TagCarousels } from './TagCarousels'
 import { TagsFilter } from './TagsFilter'
 
-interface TemplateGalleryProps {
-  hideOverflow?: boolean
-}
-
-export function TemplateGallery({
-  hideOverflow
-}: TemplateGalleryProps): ReactElement {
+export function TemplateGallery(): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const router = useRouter()
 
@@ -68,7 +62,6 @@ export function TemplateGallery({
       <Container
         maxWidth={false}
         sx={{
-          overflow: hideOverflow === true ? 'hidden' : 'none',
           px: { xs: 0 },
           py: { xs: 6, sm: 9 }
         }}
