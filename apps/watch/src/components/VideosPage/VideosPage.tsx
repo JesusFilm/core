@@ -42,7 +42,11 @@ export function VideosPage({ index = false }: VideosPageProps): ReactElement {
   const router = useRouter()
   const decodedUrl = decodeURIComponent(router?.asPath ?? '')
   const { query, languageId, subtitleId } = extractQueryParams(decodedUrl)
-  const hasQueryParams = !(query == null && languageId == null && subtitleId == null)
+  const hasQueryParams = !(
+    query == null &&
+    languageId == null &&
+    subtitleId == null
+  )
 
   const { refresh } = useInstantSearch()
   useEffect(() => {

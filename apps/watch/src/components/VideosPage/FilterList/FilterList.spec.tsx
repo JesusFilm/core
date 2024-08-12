@@ -24,7 +24,9 @@ const mockUseSearchBox = useSearchBox as jest.MockedFunction<
   typeof useSearchBox
 >
 const mockUseMenu = useMenu as jest.MockedFunction<typeof useMenu>
-const mockUseAlgoliaRouter = useAlgoliaRouter as jest.MockedFunction<typeof useAlgoliaRouter>
+const mockUseAlgoliaRouter = useAlgoliaRouter as jest.MockedFunction<
+  typeof useAlgoliaRouter
+>
 
 describe('FilterList', () => {
   const push = jest.fn()
