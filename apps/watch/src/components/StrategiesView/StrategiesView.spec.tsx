@@ -3,9 +3,9 @@ import { HitsRenderState } from 'instantsearch.js/es/connectors/hits/connectHits
 import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
 import { useHits, useSearchBox } from 'react-instantsearch'
 
+import { StrategiesView } from './StrategiesView'
 import { strategyItems } from './StrategySections/StrategySection/data'
 
-import { StrategiesView } from './StrategiesView'
 
 jest.mock('react-instantsearch')
 
