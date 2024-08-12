@@ -3,27 +3,35 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
+import { Theme } from '@mui/material/styles'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
-import { ReactElement, useState } from 'react'
-// eslint-disable-next-line no-restricted-imports
-import { useTranslation } from 'react-i18next'
+import { User } from 'next-firebase-auth'
+import { useTranslation } from 'next-i18next'
+import { ReactElement, useEffect, useRef, useState } from 'react'
 
+import {
+  openBeacon,
+  setBeaconPageViewed,
+  setBeaconRoute
+} from '@core/journeys/ui/beaconHooks'
 import {
   ActiveContent,
   ActiveSlide,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import ThumbsUpIcon from '@core/shared/ui/icons/ThumbsUp'
 
 import logo from '../../../../public/taskbar-icon.svg'
+import { HelpScoutBeacon } from '../../HelpScoutBeacon'
+import { NotificationPopover } from '../../NotificationPopover'
 import { EDIT_TOOLBAR_HEIGHT } from '../constants'
 
 import { Items } from './Items'
@@ -39,13 +47,36 @@ const TitleDescriptionDialog = dynamic(
   { ssr: false }
 )
 
-export function Toolbar(): ReactElement {
+interface ToolbarProps {
+  user?: User
+}
+
+export function Toolbar({ user }: ToolbarProps): ReactElement {
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
+  const {
+    state: { showAnalytics },
+    dispatch
+  } = useEditor()
+  const { commands, editorAnalytics } = useFlags()
+  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
+
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
-  const { dispatch } = useEditor()
-  const { commands } = useFlags()
+
+  const helpScoutRef = useRef(null)
+  const menuRef = useRef(null)
+  useEffect(() => {
+    if (showAnalytics === true) {
+      setBeaconRoute('/ask/')
+      if (smUp) {
+        setAnchorEl(helpScoutRef.current)
+      } else {
+        setAnchorEl(menuRef.current)
+      }
+    }
+  }, [showAnalytics, smUp, setAnchorEl])
 
   function setRoute(param: string): void {
     void router.push({ query: { ...router.query, param } }, undefined, {
@@ -237,7 +268,40 @@ export function Toolbar(): ReactElement {
           <Items />
         </>
       )}
-      <Menu />
+      <Box ref={menuRef}>
+        <Menu user={user} />
+      </Box>
+      <Box
+        ref={helpScoutRef}
+        sx={{
+          display: { xs: 'none', sm: 'block' }
+        }}
+      >
+        <HelpScoutBeacon
+          userInfo={{
+            name: user?.displayName ?? '',
+            email: user?.email ?? ''
+          }}
+        />
+      </Box>
+      {editorAnalytics && (
+        <NotificationPopover
+          title={t('New Feature Feedback')}
+          description={t(
+            'We are collecting feedback on the new analytics feature. Please take a moment to share your thoughts.'
+          )}
+          open={Boolean(anchorEl)}
+          currentRef={anchorEl}
+          pointerPosition={smUp ? '92%' : '94%'}
+          handleClose={() => setAnchorEl(null)}
+          popoverAction={{
+            label: t('Feedback'),
+            handleClick: () => {
+              openBeacon()
+            }
+          }}
+        />
+      )}
     </Stack>
   )
 }
