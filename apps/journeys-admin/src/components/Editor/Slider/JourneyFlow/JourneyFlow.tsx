@@ -130,61 +130,67 @@ export function JourneyFlow(): ReactElement {
           ? [router.query.journeyId.toString()]
           : undefined
     },
-    skip: router?.query.journeyId == null,
+    skip: router?.query.journeyId == null
   })
 
-  const blockPositionUpdate = useCallback((
-    input: Array<{ id: string; x: number; y: number }>
-  ): void => {
-    void stepBlockPositionUpdate({
-      variables: {
-        input
-      },
-      optimisticResponse: {
-        stepBlockPositionUpdate: input.map((step) => ({
-          ...step,
-          __typename: 'StepBlock'
-        }))
-      }
-    })
-  }, [stepBlockPositionUpdate])
-
-  const allBlockPositionUpdate = useCallback(async (onload = false): Promise<void> => {
-    if (steps == null || data == null) return
-
-    const input = Object.entries(arrangeSteps(steps)).map(([id, position]) => ({
-      id,
-      ...position
-    }))
-
-    if (onload) {
-      blockPositionUpdate(input)
-    } else {
-      add({
-        parameters: {
-          execute: {
-            input
-          },
-          undo: {
-            input: (
-              data.blocks as GetStepBlocksWithPosition_blocks_StepBlock[]
-            ).map((step) => ({
-              id: step.id,
-              x: step.x,
-              y: step.y
-            }))
-          }
+  const blockPositionUpdate = useCallback(
+    (input: Array<{ id: string; x: number; y: number }>): void => {
+      void stepBlockPositionUpdate({
+        variables: {
+          input
         },
-        execute({ input }) {
-          dispatch({
-            type: 'SetEditorFocusAction',
-            activeSlide: ActiveSlide.JourneyFlow
-          })
-          blockPositionUpdate(input)
+        optimisticResponse: {
+          stepBlockPositionUpdate: input.map((step) => ({
+            ...step,
+            __typename: 'StepBlock'
+          }))
         }
       })
-    }
-  }, [data, dispatch, steps, add, blockPositionUpdate])
+    },
+    [stepBlockPositionUpdate]
+  )
+
+  const allBlockPositionUpdate = useCallback(
+    async (onload = false): Promise<void> => {
+      if (steps == null || data == null) return
+
+      const input = Object.entries(arrangeSteps(steps)).map(
+        ([id, position]) => ({
+          id,
+          ...position
+        })
+      )
+
+      if (onload) {
+        blockPositionUpdate(input)
+      } else {
+        add({
+          parameters: {
+            execute: {
+              input
+            },
+            undo: {
+              input: (
+                data.blocks as GetStepBlocksWithPosition_blocks_StepBlock[]
+              ).map((step) => ({
+                id: step.id,
+                x: step.x,
+                y: step.y
+              }))
+            }
+          },
+          execute({ input }) {
+            dispatch({
+              type: 'SetEditorFocusAction',
+              activeSlide: ActiveSlide.JourneyFlow
+            })
+            blockPositionUpdate(input)
+          }
+        })
+      }
+    },
+    [data, dispatch, steps, add, blockPositionUpdate]
+  )
 
   useEffect(() => {
     if (data?.blocks == null || steps == null) return
@@ -200,14 +206,13 @@ export function JourneyFlow(): ReactElement {
         return acc
       }, {}) ?? {}
 
-    const validSteps =
-      steps.every((step) => {
-        return (
-          positions[step.id] != null &&
-          positions[step.id].x != null &&
-          positions[step.id].y != null
-        )
-      }) 
+    const validSteps = steps.every((step) => {
+      return (
+        positions[step.id] != null &&
+        positions[step.id].x != null &&
+        positions[step.id].y != null
+      )
+    })
 
     if (!validSteps) {
       void allBlockPositionUpdate(true)
