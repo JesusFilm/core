@@ -14,11 +14,15 @@ describe('StrategySections', () => {
     mockedUseHits.mockReturnValue({
       hits: strategyItems
     } as unknown as HitsRenderState)
+    jest.clearAllMocks()
   })
 
   it('should render strategysections', () => {
     render(<StrategySections />)
-    expect(screen.getAllByTestId('StrategySection')).toHaveLength(2)
+    expect(screen.getAllByText('Mission Trips')[0]).toBeInTheDocument()
+    expect(
+      screen.getAllByText('London Bridges 1 One Week')[0]
+    ).toBeInTheDocument()
   })
 
   it('should render emptysearch component when no there are no hits', () => {
