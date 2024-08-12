@@ -4,11 +4,13 @@ import type { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search
 import { type NextRouter, useRouter } from 'next/router'
 import { useMenu, useSearchBox } from 'react-instantsearch'
 
+import { useAlgoliaRouter } from '../../../libs/algolia/useAlgoliaRouter/useAlgoliaRouter'
 import { languages } from '../data'
 
 import { FilterList } from './FilterList'
 
 jest.mock('react-instantsearch')
+jest.mock('../../../libs/algolia/useAlgoliaRouter/useAlgoliaRouter')
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -22,6 +24,7 @@ const mockUseSearchBox = useSearchBox as jest.MockedFunction<
   typeof useSearchBox
 >
 const mockUseMenu = useMenu as jest.MockedFunction<typeof useMenu>
+const mockUseAlgoliaRouter = useAlgoliaRouter as jest.MockedFunction<typeof useAlgoliaRouter>
 
 describe('FilterList', () => {
   const push = jest.fn()
@@ -35,7 +38,11 @@ describe('FilterList', () => {
       push
     } as unknown as NextRouter)
 
-    jest.clearAllMocks()
+    mockUseAlgoliaRouter.mockReturnValue({
+      query: null,
+      languageId: null,
+      subtitleId: null
+    })
   })
 
   describe('Language Filter', () => {

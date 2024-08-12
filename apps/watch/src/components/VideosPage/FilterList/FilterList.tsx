@@ -6,7 +6,6 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Formik } from 'formik'
 import noop from 'lodash/noop'
-import { useRouter } from 'next/compat/router'
 import { useTranslation } from 'next-i18next'
 import { type ChangeEvent, type ReactElement, useEffect, useMemo } from 'react'
 import { useMenu, useSearchBox } from 'react-instantsearch'
@@ -15,6 +14,7 @@ import type { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
 
 import type { GetLanguages } from '../../../../__generated__/GetLanguages'
+import { useAlgoliaRouter } from '../../../libs/algolia/useAlgoliaRouter/useAlgoliaRouter'
 
 import { LanguagesFilter } from './LanguagesFilter'
 
@@ -74,20 +74,6 @@ const subtitleLanguageIds = [
   '184528'
 ]
 
-interface FilterParams {
-  query: string | null
-  languageId: string | null
-  subtitleId: string | null
-}
-
-function extractQueryParams(url: string): FilterParams {
-  const params = new URLSearchParams(url.split('?')[1])
-  const query = params.get('query')
-  const languageId = params.get('menu[languageId]')
-  const subtitleId = params.get('menu[subtitles]')
-  return { query, languageId, subtitleId }
-}
-
 interface FilterListProps {
   languagesData?: GetLanguages
   languagesLoading: boolean
@@ -99,10 +85,7 @@ export function FilterList({
 }: FilterListProps): ReactElement {
   const { t } = useTranslation()
 
-  const router = useRouter()
-  const decodedUrl = decodeURIComponent(router?.asPath ?? '')
-  const { query, languageId, subtitleId } = extractQueryParams(decodedUrl)
-
+  const { query, languageId, subtitleId } = useAlgoliaRouter()
   const { refine: refineSearch } = useSearchBox()
   const { refine: refineLanguages } = useMenu({
     attribute: 'languageId'
