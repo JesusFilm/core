@@ -6,7 +6,6 @@ import { useHits, useSearchBox } from 'react-instantsearch'
 import { StrategiesView } from './StrategiesView'
 import { strategyItems } from './StrategySections/StrategySection/data'
 
-
 jest.mock('react-instantsearch')
 
 const mockUseSearchBox = useSearchBox as jest.MockedFunction<
