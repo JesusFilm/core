@@ -86,7 +86,7 @@ function JourneyEditPage({ status }): ReactElement {
   )
 
   return (
-    <InstantSearch searchClient={searchClient}>
+    <InstantSearch searchClient={searchClient} stalledSearchDelay={500}>
       <NextSeo
         title={
           status === 'noAccess'

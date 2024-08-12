@@ -25,17 +25,16 @@ export function VideoFromLocal({
 }: VideoFromLocalProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
+  useConfigure({
+    ruleContexts: ['home_page'],
+    filters: 'languageId:529',
+    hitsPerPage: 5
+  })
+
   const [searchQuery, setSearchQuery] = useState<string>('')
 
   const { status } = useInstantSearch()
   const { hits, showMore, isLastPage } = useInfiniteHits({})
-
-  async function handleFetchMore(): Promise<void> {
-    return await new Promise<void>((resolve) => {
-      showMore()
-      resolve()
-    })
-  }
 
   function transformItems(items): VideoListProps['videos'] {
     return items.map((videoVariant) => ({
@@ -50,11 +49,12 @@ export function VideoFromLocal({
 
   const transformedHits = transformItems(hits)
 
-  useConfigure({
-    ruleContexts: ['home_page'],
-    filters: 'languageId:529',
-    hitsPerPage: 5
-  })
+  async function handleFetchMore(): Promise<void> {
+    return await new Promise<void>((resolve) => {
+      showMore()
+      resolve()
+    })
+  }
 
   return (
     <>
