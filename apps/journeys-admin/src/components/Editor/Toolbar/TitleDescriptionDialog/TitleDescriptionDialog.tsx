@@ -1,16 +1,18 @@
 import { ApolloError } from '@apollo/client'
 import TextField from '@mui/material/TextField'
-import Typography from '@mui/material/Typography'
-import { Form, Formik, FormikValues } from 'formik'
+import { Form, Formik, type FormikValues } from 'formik'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { ReactElement } from 'react'
+import type { ReactElement } from 'react'
 import { object, string } from 'yup'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
 
 import { useJourneyUpdateMutation } from '../../../../libs/useJourneyUpdateMutation'
+import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete/LanguageAutocomplete'
+import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery/useLanguagesQuery'
+
 
 interface TitleDialogProps {
   open: boolean
@@ -29,16 +31,19 @@ export function TitleDescriptionDialog({
     title: string().required(t('Required'))
   })
 
+    const { data, loading } = useLanguagesQuery({ languageId: '529' })
+
   const handleUpdateTitleDescription = async (
     values: FormikValues
   ): Promise<void> => {
     if (journey == null) return
 
+    
     try {
       await journeyUpdate({
         variables: {
           id: journey.id,
-          input: { title: values.title, description: values.description }
+          input: { title: values.title, description: values.description, languageId: values.language.id}
         },
         optimisticResponse: {
           journeyUpdate: {
@@ -98,11 +103,10 @@ export function TitleDescriptionDialog({
           onSubmit={handleUpdateTitleDescription}
           validationSchema={titleSchema}
         >
-          {({ values, errors, handleChange, handleSubmit, resetForm }) => (
+          {({ values, errors, handleChange, handleSubmit, resetForm, setFieldValue }) => (
             <Dialog
               open={open}
               onClose={handleClose(resetForm)}
-              dialogTitle={{ title: t('Title: ') }}
               dialogAction={{
                 onSubmit: handleSubmit,
                 closeLabel: t('Cancel')
@@ -113,31 +117,39 @@ export function TitleDescriptionDialog({
                 <TextField
                   id="title"
                   name="title"
-                  hiddenLabel
+                  variant="filled"
+                  label={t('Title')}
                   fullWidth
                   value={values.title}
-                  variant="filled"
                   error={Boolean(errors.title)}
                   onKeyDown={(e) => e.stopPropagation()}
                   onChange={handleChange}
                   helperText={errors.title as string}
+                  sx={{ mt: 2, marginBottom: 8 }}
+
                 />
-                <Typography
-                  variant="subtitle1"
-                  style={{ paddingTop: 20, paddingBottom: 16 }}
-                >
-                  {t('Description: ')}
-                </Typography>
+
                 <TextField
                   id="description"
+                   label={t('Description')}
                   name="description"
-                  hiddenLabel
                   fullWidth
                   value={values.description}
                   multiline
                   variant="filled"
                   rows={2}
                   onChange={handleChange}
+                  helperText={t('Only you and other editors can see this')}
+                  sx={{paddingBottom: 4}}
+                />
+
+                <LanguageAutocomplete
+                  onChange={async (value) =>
+                    await setFieldValue('language', value)
+                  }
+                  value={values.language}
+                  languages={data?.languages}
+                  loading={loading}
                 />
               </Form>
             </Dialog>

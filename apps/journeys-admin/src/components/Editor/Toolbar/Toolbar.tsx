@@ -3,7 +3,7 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
-import { Theme } from '@mui/material/styles'
+import type { Theme } from '@mui/material/styles'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
@@ -11,9 +11,10 @@ import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
-import { User } from 'next-firebase-auth'
+import type { User } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect, useRef, useState } from 'react'
+import { type ReactElement, useEffect, useRef, useState } from 'react'
+import Globe1Icon from '@core/shared/ui/icons/Globe1'
 
 import {
   openBeacon,
@@ -229,7 +230,8 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
                     whiteSpace: 'nowrap',
                     textOverflow: 'ellipsis',
                     borderRadius: '8px',
-                    flexShrink: 1
+                    flexShrink: 1,
+                     fontWeight: 'normal',
                   }}
                 >
                   <Typography
@@ -243,19 +245,24 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
                   >
                     {journey.title}
                   </Typography>
+                    <Box sx={{display: 'flex',alignItems: 'center'}}>
+                  <Globe1Icon sx={{fontSize: 13, alignItems: 'center', mr: 1}}/>
+                  <Typography variant='caption'> {journey.language.name.find(({ primary }) => primary)?.value} •</Typography>
+
                   <Typography
                     variant="caption"
                     sx={{
-                      maxWidth: 'auto',
                       overflow: 'hidden',
                       whiteSpace: 'nowrap',
                       textOverflow: 'ellipsis',
                       flexShrink: 1,
-                      fontWeight: 'normal'
+                      ml: 1,
+                      color: 'secondary.light'
                     }}
                   >
                     {journey.description}
                   </Typography>
+                  </Box>
                 </Button>
               </Tooltip>
             </Box>
