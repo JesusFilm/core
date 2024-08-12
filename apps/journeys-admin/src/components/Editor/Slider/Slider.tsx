@@ -107,7 +107,8 @@ export function Slider(): ReactElement {
 
   useEffect(() => {
     if (swiperRef.current != null) {
-      swiperRef.current.swiper.allowTouchMove = showAnalytics === false || showAnalytics == null
+      swiperRef.current.swiper.allowTouchMove =
+        showAnalytics === false || showAnalytics == null
       swiperRef.current.swiper.setGrabCursor()
     }
   }, [showAnalytics])
