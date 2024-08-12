@@ -68,6 +68,8 @@ export function VideoCard({
   active,
   imageSx
 }: VideoCardProps): ReactElement {
+  const { t } = useTranslation('apps-watch')
+
   const { label, color, childCountLabel } = getLabelDetails(
     video?.label,
     video?.childrenCount ?? 0
@@ -77,7 +79,11 @@ export function VideoCard({
   const { hits, sendEvent } = useAlgoliaVideos()
   const hit = hits.filter((hit) => hit.videoId === video?.id)
 
-  const { t } = useTranslation('apps-watch')
+  const handleClick = (event): void => {
+    event.stopPropagation()
+    sendEvent('click', hit, 'Video Clicked')
+  }
+
   return (
     <NextLink href={href} passHref legacyBehavior>
       <Link
@@ -87,10 +93,7 @@ export function VideoCard({
         sx={{ pointerEvents: video != null ? 'auto' : 'none' }}
         aria-label="VideoCard"
         data-testid={video != null ? `VideoCard-${video.id}` : 'VideoCard'}
-        onClick={(event) => {
-          event.stopPropagation()
-          sendEvent('click', hit, 'Video Clicked')
-        }}
+        onClick={handleClick}
       >
         <Stack spacing={3}>
           <ImageButton
