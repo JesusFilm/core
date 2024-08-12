@@ -7,12 +7,11 @@ import type { ReactElement } from 'react'
 import { object, string } from 'yup'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery/useLanguagesQuery'
 import { Dialog } from '@core/shared/ui/Dialog'
+import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete/LanguageAutocomplete'
 
 import { useJourneyUpdateMutation } from '../../../../libs/useJourneyUpdateMutation'
-import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete/LanguageAutocomplete'
-import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery/useLanguagesQuery'
-
 
 interface TitleDialogProps {
   open: boolean
@@ -31,19 +30,22 @@ export function TitleDescriptionDialog({
     title: string().required(t('Required'))
   })
 
-    const { data, loading } = useLanguagesQuery({ languageId: '529' })
+  const { data, loading } = useLanguagesQuery({ languageId: '529' })
 
   const handleUpdateTitleDescription = async (
     values: FormikValues
   ): Promise<void> => {
     if (journey == null) return
 
-    
     try {
       await journeyUpdate({
         variables: {
           id: journey.id,
-          input: { title: values.title, description: values.description, languageId: values.language.id}
+          input: {
+            title: values.title,
+            description: values.description,
+            languageId: values.language.id
+          }
         },
         optimisticResponse: {
           journeyUpdate: {
@@ -103,7 +105,14 @@ export function TitleDescriptionDialog({
           onSubmit={handleUpdateTitleDescription}
           validationSchema={titleSchema}
         >
-          {({ values, errors, handleChange, handleSubmit, resetForm, setFieldValue }) => (
+          {({
+            values,
+            errors,
+            handleChange,
+            handleSubmit,
+            resetForm,
+            setFieldValue
+          }) => (
             <Dialog
               open={open}
               onClose={handleClose(resetForm)}
@@ -126,12 +135,11 @@ export function TitleDescriptionDialog({
                   onChange={handleChange}
                   helperText={errors.title as string}
                   sx={{ mt: 2, marginBottom: 8 }}
-
                 />
 
                 <TextField
                   id="description"
-                   label={t('Description')}
+                  label={t('Description')}
                   name="description"
                   fullWidth
                   value={values.description}
@@ -140,7 +148,7 @@ export function TitleDescriptionDialog({
                   rows={2}
                   onChange={handleChange}
                   helperText={t('Only you and other editors can see this')}
-                  sx={{paddingBottom: 4}}
+                  sx={{ paddingBottom: 4 }}
                 />
 
                 <LanguageAutocomplete

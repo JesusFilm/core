@@ -14,7 +14,7 @@ import { useRouter } from 'next/router'
 import type { User } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { type ReactElement, useEffect, useRef, useState } from 'react'
-import Globe1Icon from '@core/shared/ui/icons/Globe1'
+
 
 import {
   openBeacon,
@@ -28,6 +28,7 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
+import Globe1Icon from '@core/shared/ui/icons/Globe1'
 import ThumbsUpIcon from '@core/shared/ui/icons/ThumbsUp'
 
 import logo from '../../../../public/taskbar-icon.svg'
@@ -231,7 +232,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
                     textOverflow: 'ellipsis',
                     borderRadius: '8px',
                     flexShrink: 1,
-                     fontWeight: 'normal',
+                    fontWeight: 'normal'
                   }}
                 >
                   <Typography
@@ -245,23 +246,32 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
                   >
                     {journey.title}
                   </Typography>
-                    <Box sx={{display: 'flex',alignItems: 'center'}}>
-                  <Globe1Icon sx={{fontSize: 13, alignItems: 'center', mr: 1}}/>
-                  <Typography variant='caption'> {journey.language.name.find(({ primary }) => primary)?.value} •</Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <Globe1Icon
+                      sx={{ fontSize: 13, alignItems: 'center', mr: 1 }}
+                    />
+                    <Typography variant="caption">
+                      {' '}
+                      {
+                        journey.language.name.find(({ primary }) => primary)
+                          ?.value
+                      }{' '}
+                      •
+                    </Typography>
 
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      overflow: 'hidden',
-                      whiteSpace: 'nowrap',
-                      textOverflow: 'ellipsis',
-                      flexShrink: 1,
-                      ml: 1,
-                      color: 'secondary.light'
-                    }}
-                  >
-                    {journey.description}
-                  </Typography>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        overflow: 'hidden',
+                        whiteSpace: 'nowrap',
+                        textOverflow: 'ellipsis',
+                        flexShrink: 1,
+                        ml: 1,
+                        color: 'secondary.light'
+                      }}
+                    >
+                      {journey.description}
+                    </Typography>
                   </Box>
                 </Button>
               </Tooltip>
