@@ -1,6 +1,7 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import { v4 as uuidv4 } from 'uuid'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -38,8 +39,10 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 jest.mock('uuid', () => ({
   __esModule: true,
-  v4: jest.fn().mockReturnValue('videoBlockId')
+  v4: jest.fn()
 }))
+
+const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
 describe('CardVideo', () => {
   const card: TreeBlock = {
@@ -193,6 +196,8 @@ describe('CardVideo', () => {
   }
 
   it('updates card content and updates local cache', async () => {
+    mockUuidv4.mockReturnValueOnce('videoBlockId')
+
     const cache = new InMemoryCache()
     cache.restore({
       'Journey:journeyId': {
@@ -224,6 +229,8 @@ describe('CardVideo', () => {
   })
 
   it('should undo card video', async () => {
+    mockUuidv4.mockReturnValueOnce('videoBlockId')
+
     const result = jest.fn().mockResolvedValue(cardVideoCreateMock.result)
     const result2 = jest.fn().mockResolvedValue(cardVideoDeleteMock.result)
 
@@ -255,6 +262,8 @@ describe('CardVideo', () => {
   })
 
   it('should redo card video', async () => {
+    mockUuidv4.mockReturnValueOnce('videoBlockId')
+
     const result = jest.fn().mockResolvedValue(cardVideoCreateMock.result)
     const result2 = jest.fn().mockResolvedValue(cardVideoDeleteMock.result)
     const result3 = jest.fn().mockResolvedValue(cardVideoRestoreMock.result)
