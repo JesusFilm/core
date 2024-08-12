@@ -15,7 +15,6 @@ import type { User } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { type ReactElement, useEffect, useRef, useState } from 'react'
 
-
 import {
   openBeacon,
   setBeaconPageViewed,
