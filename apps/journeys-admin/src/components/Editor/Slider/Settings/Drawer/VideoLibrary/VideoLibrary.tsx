@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, SyntheticEvent, useEffect, useState } from 'react'
+import { Index } from 'react-instantsearch'
 
 import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -55,6 +56,7 @@ export function VideoLibrary({
   selectedBlock,
   onSelect: handleSelect
 }: VideoLibraryProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [openVideoDetails, setOpenVideoDetails] = useState(
     selectedBlock?.videoId != null && open
   )
@@ -100,7 +102,7 @@ export function VideoLibrary({
     setOpenVideoDetails(false)
     if (closeParent === true) onClose?.()
   }
-  const { t } = useTranslation('apps-journeys-admin')
+
   return (
     <>
       <Drawer title={t('Video Library')} open={open} onClose={onClose}>
@@ -156,7 +158,9 @@ export function VideoLibrary({
             index={0}
             sx={{ flexGrow: 1, overflow: 'auto' }}
           >
-            <VideoFromLocal onSelect={onSelect} />
+            <Index indexName={process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''}>
+              <VideoFromLocal onSelect={onSelect} />
+            </Index>
           </TabPanel>
           <TabPanel
             name="video-from-youtube"

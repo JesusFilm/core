@@ -4,11 +4,13 @@ import TextField from '@mui/material/TextField'
 import debounce from 'lodash/debounce'
 import { useTranslation } from 'next-i18next'
 import { ChangeEvent, ReactElement, useEffect, useMemo, useState } from 'react'
+import { useSearchBox } from 'react-instantsearch'
 
 import LinkIcon from '@core/shared/ui/icons/Link'
 import Search1Icon from '@core/shared/ui/icons/Search1'
 
 interface VideoSearchProps {
+  variant: 'internal' | 'youtube'
   label?: string
   value?: string
   onChange: (value: string) => void
@@ -19,17 +21,22 @@ export function VideoSearch({
   label,
   value,
   onChange,
-  icon
+  icon,
+  variant
 }: VideoSearchProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+
+  const { refine } = useSearchBox()
+
   const handleChange = useMemo(() => debounce(onChange, 500), [onChange])
   const [search, setSearch] = useState(value ?? '')
 
-  function onSearchChange(
+  function handleSearchChange(
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ): void {
     setSearch(e.target.value)
-    handleChange(e.target.value)
+    if (variant === 'internal') refine(e.target.value)
+    if (variant === 'youtube') handleChange(e.target.value)
   }
 
   useEffect(() => {
@@ -51,7 +58,7 @@ export function VideoSearch({
         variant="filled"
         fullWidth
         value={search}
-        onChange={onSearchChange}
+        onChange={handleSearchChange}
         inputProps={{
           'data-testid': 'VideoSearch',
           'aria-label': 'Search'
