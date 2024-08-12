@@ -10,7 +10,7 @@ import { SearchBar } from '@core/journeys/ui/SearchBar'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
-import { useAlgoliaRouter } from '../../libs/algolia/useAlgoliaRouter/useAlgoliaRouter'
+import { useAlgoliaRouter } from '../../libs/algolia/useAlgoliaRouter'
 import { PageWrapper } from '../PageWrapper'
 import { AlgoliaVideoGrid } from '../VideoGrid/AlgoliaVideoGrid/AlgoliaVideoGrid'
 

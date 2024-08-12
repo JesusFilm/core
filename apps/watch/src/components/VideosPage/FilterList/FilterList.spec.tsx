@@ -1,10 +1,9 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import type { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import type { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
-import { type NextRouter, useRouter } from 'next/router'
 import { useMenu, useSearchBox } from 'react-instantsearch'
 
-import { useAlgoliaRouter } from '../../../libs/algolia/useAlgoliaRouter/useAlgoliaRouter'
+import { useAlgoliaRouter } from '../../../libs/algolia/useAlgoliaRouter'
 import { languages } from '../data'
 
 import { FilterList } from './FilterList'
@@ -12,14 +11,6 @@ import { FilterList } from './FilterList'
 jest.mock('react-instantsearch')
 jest.mock('../../../libs/algolia/useAlgoliaRouter/useAlgoliaRouter')
 
-jest.mock('next/router', () => ({
-  __esModule: true,
-  useRouter: jest.fn(() => ({
-    push: jest.fn()
-  }))
-}))
-
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 const mockUseSearchBox = useSearchBox as jest.MockedFunction<
   typeof useSearchBox
 >
@@ -29,16 +20,10 @@ const mockUseAlgoliaRouter = useAlgoliaRouter as jest.MockedFunction<
 >
 
 describe('FilterList', () => {
-  const push = jest.fn()
-
   beforeEach(() => {
     mockUseSearchBox.mockReturnValue({
       refine: jest.fn()
     } as unknown as SearchBoxRenderState)
-
-    mockUseRouter.mockReturnValue({
-      push
-    } as unknown as NextRouter)
 
     mockUseAlgoliaRouter.mockReturnValue({
       query: null,
