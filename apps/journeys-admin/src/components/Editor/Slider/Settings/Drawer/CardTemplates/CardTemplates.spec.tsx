@@ -28,7 +28,7 @@ const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
 describe('CardTemplates', () => {
   it('changes content of card to match template', async () => {
-    mockUuidv4.mockReturnValue('videoId')
+    mockUuidv4.mockReturnValueOnce('videoId')
     const card: TreeBlock = {
       id: 'cardId',
       __typename: 'CardBlock',
