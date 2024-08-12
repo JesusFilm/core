@@ -27,7 +27,7 @@ function JourneysPage(): ReactElement {
               themeMode={ThemeMode.light}
               nested
             >
-              <TemplateGallery hideOverflow />
+              <TemplateGallery />
             </ThemeProvider>
           </Stack>
         </Container>
