@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography'
 import { Formik } from 'formik'
 import noop from 'lodash/noop'
 import { useTranslation } from 'next-i18next'
-import { type ChangeEvent, type ReactElement, useEffect, useMemo } from 'react'
+import { type ChangeEvent, type ReactElement, useMemo } from 'react'
 import { useMenu, useSearchBox } from 'react-instantsearch'
 
 import type { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
