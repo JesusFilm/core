@@ -20,11 +20,8 @@ export function useAlgoliaRouter(): FilterParams {
   const router = useRouter()
   const decodedUrl = decodeURIComponent(router?.asPath ?? '')
   const { query, languageId, subtitleId } = extractQueryParams(decodedUrl)
-  const hasQueryParams = (
-    query != null ||
-    languageId != null ||
-    subtitleId != null
-  )
+  const hasQueryParams =
+    query != null || languageId != null || subtitleId != null
 
   const { refine: refineLanguages } = useMenu({
     attribute: 'languageId'
@@ -33,7 +30,7 @@ export function useAlgoliaRouter(): FilterParams {
 
   useEffect(() => {
     if (hasQueryParams) {
-      if(languageId == null){
+      if (languageId == null) {
         refineLanguages('529')
       } else {
         // Data from the server will be stale unless we refresh after setting language
