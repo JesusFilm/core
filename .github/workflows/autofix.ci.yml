@@ -43,6 +43,13 @@ jobs:
           path: node_modules
           key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
           restore-keys: node-modules-${{ matrix.node-version }}-
+      - name: Setup ESlint and TS Cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            .cache/eslint
+            .cache/tsc
+          key: ${{ runner.os }}-node-${{ hashFiles('**/.eslintrc.json', '**/tsconfig.json') }}
       - name: NPM Install
         run: npm install --silent
       - name: generate prisma imports
