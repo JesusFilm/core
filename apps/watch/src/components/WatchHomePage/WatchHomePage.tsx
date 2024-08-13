@@ -24,8 +24,7 @@ export function WatchHomePage(): ReactElement {
 
   useAlgoliaRouter()
   useConfigure({
-    ruleContexts: ['home_page'],
-    filters: 'languageId:529'
+    ruleContexts: ['home_page']
   })
 
   return (

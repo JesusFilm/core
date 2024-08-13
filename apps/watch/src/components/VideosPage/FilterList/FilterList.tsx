@@ -94,12 +94,6 @@ export function FilterList({
     attribute: 'subtitles'
   })
 
-  useEffect(() => {
-    if (languageId == null) {
-      refineLanguages('529')
-    }
-  }, [languageId, refineLanguages])
-
   const subtitleLanguages = languagesData?.languages.filter((language) =>
     subtitleLanguageIds.includes(language.id)
   )

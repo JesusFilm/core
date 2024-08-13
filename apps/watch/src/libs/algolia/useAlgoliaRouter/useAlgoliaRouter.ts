@@ -1,6 +1,6 @@
 import { useRouter } from 'next/compat/router'
 import { useEffect } from 'react'
-import { useInstantSearch } from 'react-instantsearch'
+import { useInstantSearch, useMenu } from 'react-instantsearch'
 
 interface FilterParams {
   query: string | null
@@ -20,15 +20,31 @@ export function useAlgoliaRouter(): FilterParams {
   const router = useRouter()
   const decodedUrl = decodeURIComponent(router?.asPath ?? '')
   const { query, languageId, subtitleId } = extractQueryParams(decodedUrl)
-  const hasQueryParams = !(
-    query == null &&
-    languageId == null &&
-    subtitleId == null
+  const hasQueryParams = (
+    query != null ||
+    languageId != null ||
+    subtitleId != null
   )
 
+  const { refine: refineLanguages } = useMenu({
+    attribute: 'languageId'
+  })
   const { refresh } = useInstantSearch()
+
   useEffect(() => {
-    if (hasQueryParams) refresh()
+    if (hasQueryParams) {
+      if(languageId == null){
+        refineLanguages('529')
+      } else {
+        // Data from the server will be stale unless we refresh after setting language
+        refresh()
+      }
+    } else {
+      // Refine doesn't take affect immediately
+      setTimeout(() => {
+        refineLanguages('529')
+      })
+    }
   }, [])
 
   return { query, languageId, subtitleId }

@@ -10,7 +10,6 @@ import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 import { ThemeMode } from '@core/shared/ui/themes'
 
 import type { GetLanguages } from '../../../__generated__/GetLanguages'
-import { useAlgoliaRouter } from '../../libs/algolia/useAlgoliaRouter'
 import { PageWrapper } from '../PageWrapper'
 import { AlgoliaVideoGrid } from '../VideoGrid/AlgoliaVideoGrid/AlgoliaVideoGrid'
 
@@ -24,8 +23,6 @@ interface VideosPageProps {
 
 export function VideosPage({ index = false }: VideosPageProps): ReactElement {
   const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
-
-  useAlgoliaRouter()
 
   const { data: languagesData, loading: languagesLoading } =
     useQuery<GetLanguages>(GET_LANGUAGES, {
