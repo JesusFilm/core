@@ -15,6 +15,8 @@ import { JOURNEY_SETTINGS_UPDATE } from '../../../../libs/useJourneyUpdateMutati
 import { journey } from '../../../JourneyList/ActiveJourneyList/ActivePriorityList/ActiveJourneyListData'
 
 import { TitleDescriptionDialog } from '.'
+import { GET_LANGUAGES, useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery/useLanguagesQuery'
+import type { GetLanguages, GetLanguagesVariables } from '../../../../../__generated__/GetLanguages'
 
 const onClose = jest.fn()
 
@@ -51,9 +53,33 @@ function getJourneySettingsUpdateMock(
   }
 }
 
+   const mockLanguagesQuery: MockedResponse<GetLanguages, GetLanguagesVariables> = {
+      request: {
+        query: GET_LANGUAGES,
+        variables: { languageId: '529' }
+      },
+      result: {
+        data: {
+          languages: [
+            {
+              __typename: 'Language',
+              id: 'languageId',
+              name: [
+                {
+                  __typename: 'LanguageName',
+                  value: 'english',
+                  primary: true
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+
 describe('TitleDescriptionDialog', () => {
   it('should not set journey title on close', async () => {
-    const mock = getJourneySettingsUpdateMock('New Journey', 'Description')
+    const mock = getJourneySettingsUpdateMock('New Journey', 'Description', '529')
     render(
       <MockedProvider mocks={[{ ...mock }]}>
         <SnackbarProvider>
@@ -86,15 +112,18 @@ describe('TitleDescriptionDialog', () => {
         }
       }
     }))
+    
     const mock = getJourneySettingsUpdateMock(
       'Changed Title',
       'Changed Description',
       '529'
     )
 
-    
+ 
+
+ 
     render(
-      <MockedProvider mocks={[{ ...mock, result }]}>
+  <MockedProvider mocks={[{...mock, result},  mockLanguagesQuery]}>
         <SnackbarProvider>
           <JourneyProvider
             value={{
@@ -116,10 +145,6 @@ describe('TitleDescriptionDialog', () => {
       target: { value: 'Changed Description' }
     })
 
-    fireEvent.change(screen.getAllByRole('textbox')[2], {
-      target: { value: 'English' }
-    })
-
     fireEvent.click(screen.getByRole('button', { name: 'Save' }))
 
 
@@ -131,7 +156,8 @@ describe('TitleDescriptionDialog', () => {
   it('shows notistack error alert when title fails to update', async () => {
     const mock = getJourneySettingsUpdateMock(
       'Changed Title',
-      'Changed Description'
+      'Changed Description',
+      '529'
     )
     render(
       <MockedProvider mocks={[{ ...mock }]}>
@@ -154,7 +180,7 @@ describe('TitleDescriptionDialog', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Save' }))
     await waitFor(() =>
       expect(
-        screen.getByText("Cannot read properties of undefined (reading 'id')")
+        screen.getByText("Field update failed. Reload the page or try again.")
       ).toBeInTheDocument()
     )
   })
@@ -170,7 +196,8 @@ describe('TitleDescriptionDialog', () => {
     }))
     const mock = getJourneySettingsUpdateMock(
       'Changed Title',
-      'Changed Description'
+      'Changed Description',
+      '529'
     )
     render(
       <MockedProvider mocks={[{ ...mock }]}>

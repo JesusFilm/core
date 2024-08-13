@@ -112,7 +112,8 @@ export function TitleDescriptionDialog({
         <Formik
           initialValues={{
             title: journey.title,
-            description: journey.description
+            description: journey.description,
+            language: { id : journey.language.id}
           }}
           onSubmit={handleUpdateTitleDescription}
           validationSchema={titleSchema}
