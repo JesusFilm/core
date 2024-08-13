@@ -9,7 +9,7 @@
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/api-users",
-        "main": "apps/api-users/src/main.ts",
+        "main": "apps/api-users/src/index.ts",
         "tsConfig": "apps/api-users/tsconfig.app.json",
         "assets": [
           "apps/api-users/src/assets",
@@ -33,13 +33,7 @@
           "generatePackageJson": true,
           "optimization": true,
           "extractLicenses": true,
-          "inspect": false,
-          "fileReplacements": [
-            {
-              "replace": "apps/api-users/src/environments/environment.ts",
-              "with": "apps/api-users/src/environments/environment.prod.ts"
-            }
-          ]
+          "inspect": false
         }
       }
     },

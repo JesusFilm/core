@@ -1,14 +1,10 @@
 import { createYoga, useReadinessCheck } from 'graphql-yoga'
 
-import { User, getUserFromAuthToken } from '@core/yoga/firebaseClient'
+import { getUserFromAuthToken } from '@core/yoga/firebaseClient'
 
 import { prisma } from './lib/prisma'
 import { schema } from './schema'
-
-export interface Context {
-  currentUser: User | null
-  token?: string
-}
+import { Context } from './schema/builder'
 
 export const yoga = createYoga({
   schema,

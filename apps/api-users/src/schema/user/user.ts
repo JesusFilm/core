@@ -1,6 +1,8 @@
 import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 
+import { findOrFetchUser } from './findOrFetchUser'
+
 export function validateIpV4(s: string | null): boolean {
   if (s == null) return true // localhost
 
@@ -18,6 +20,13 @@ export function isValidInterOp(token: string, address: string): boolean {
   return token === process.env.INTEROP_TOKEN && validIp
 }
 
+export function isCurrentUser(
+  currentUserId: string,
+  contextUserId: string
+): boolean {
+  return currentUserId === contextUserId
+}
+
 const CreateVerificationRequestInput = builder.inputType(
   'CreateVerificationRequestInput',
   {
@@ -33,7 +42,7 @@ const MeInput = builder.inputType('MeInput', {
   })
 })
 
-export const User = builder.prismaObject('Language', {
+export const User = builder.prismaObject('User', {
   fields: (t) => ({
     id: t.exposeID('id'),
     firstName: t.exposeString('firstName'),
@@ -58,7 +67,7 @@ builder.queryFields((t) => ({
     args: {
       id: t.arg.id({ required: true })
     },
-    resolve: async (query, _parent, { id }) =>
+    resolve: async (query, _parent, { id }, ctx) =>
       await prisma.user.findUnique({
         ...query,
         where: { id }
@@ -70,7 +79,7 @@ builder.queryFields((t) => ({
     args: {
       email: t.arg.string({ required: true })
     },
-    resolve: async (query, _parent, { email }) => {
+    resolve: async (query, _parent, { email }, ctx) => {
       return await prisma.user.findUnique({
         ...query,
         where: { email }
@@ -86,16 +95,14 @@ builder.queryFields((t) => ({
         required: false
       })
     },
-    resolve: async (query, _parent, { input }) => {
+    authScopes: {
+      isAuthenticated: true
+    },
+    resolve: async (query, _parent, { input }, ctx) => {
       if (input?.redirect != null) {
         return { redirect: input.redirect }
       }
-      return await prisma.user.findOrFetchUser({
-        ...query,
-        include: {
-          userRole: true
-        }
-      })
+      return await findOrFetchUser(ctx.currentUser?.id, input?.redirect)
     }
   })
 }))
