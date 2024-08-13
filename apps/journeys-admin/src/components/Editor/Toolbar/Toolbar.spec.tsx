@@ -2,13 +2,13 @@ import { MockedProvider } from '@apollo/client/testing'
 import Slider from '@mui/material/Slider'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
-import { ReactElement } from 'react'
+import type { ReactElement } from 'react'
 
-import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
+import { EditorProvider, type EditorState } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
-import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
+import type { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { TestEditorState } from '../../../libs/TestEditorState'
 
@@ -26,7 +26,20 @@ describe('Toolbar', () => {
       title: 'My Awesome Journey Title',
       description: 'My Awesome Journey Description',
       primaryImageBlock: null,
-      status: JourneyStatus.draft
+      status: JourneyStatus.draft,
+      language: 
+          {
+            __typename: 'Language',
+            id: '529',
+            name: [
+              {
+                value: 'English',
+                primary: true,
+                __typename: 'LanguageName'
+              }
+            ]
+          },
+        
     } as unknown as Journey,
     variant: 'admin'
   }
@@ -46,6 +59,18 @@ describe('Toolbar', () => {
         height: 1080,
         blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
       },
+      language: 
+          {
+            __typename: 'Language',
+            id: '529',
+            name: [
+              {
+                value: 'English',
+                primary: true,
+                __typename: 'LanguageName'
+              }
+            ]
+          },
       status: JourneyStatus.draft,
       variant: 'admin'
     } as unknown as Journey,
