@@ -6,7 +6,6 @@ import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { transformer } from '@core/journeys/ui/transformer'
-import { useFlags } from '@core/shared/ui/FlagsProvider'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
@@ -42,7 +41,6 @@ export function Editor({
     selectedStepId != null && steps != null
       ? steps.find(({ id }) => id === selectedStepId)
       : undefined
-  const { commands } = useFlags()
 
   return (
     <JourneyProvider value={{ journey, variant: 'admin' }}>
@@ -54,7 +52,7 @@ export function Editor({
         }}
       >
         <HotkeysProvider>
-          {commands && <Hotkeys />}
+          <Hotkeys />
           <Toolbar user={user} />
           <Slider />
           <Fab variant="mobile" />
