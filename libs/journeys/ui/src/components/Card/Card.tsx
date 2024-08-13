@@ -293,7 +293,6 @@ export function Card({
       }
     }
   }
-
   return (
     <Paper
       data-testid={`JourneysCard-${id}`}
@@ -311,7 +310,7 @@ export function Card({
       elevation={3}
       onClick={handleNavigation}
     >
-      {coverBlock != null && !fullscreen ? (
+      {(coverBlock != null && !fullscreen) || videoBlock != null ? (
         <ContainedCover
           backgroundColor={cardColor}
           backgroundBlur={blurUrl}
