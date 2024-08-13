@@ -252,7 +252,8 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
                     <Typography variant="caption">
                       {' '}
                       {
-                        journey.language.name?.find(({ primary }) => primary)?.value
+                        journey.language.name?.find(({ primary }) => primary)
+                          ?.value
                       }{' '}
                       •
                     </Typography>

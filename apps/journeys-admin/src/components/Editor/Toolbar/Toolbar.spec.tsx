@@ -4,7 +4,10 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import type { ReactElement } from 'react'
 
-import { EditorProvider, type EditorState } from '@core/journeys/ui/EditorProvider'
+import {
+  EditorProvider,
+  type EditorState
+} from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
@@ -27,19 +30,17 @@ describe('Toolbar', () => {
       description: 'My Awesome Journey Description',
       primaryImageBlock: null,
       status: JourneyStatus.draft,
-      language: 
+      language: {
+        __typename: 'Language',
+        id: '529',
+        name: [
           {
-            __typename: 'Language',
-            id: '529',
-            name: [
-              {
-                value: 'English',
-                primary: true,
-                __typename: 'LanguageName'
-              }
-            ]
-          },
-        
+            value: 'English',
+            primary: true,
+            __typename: 'LanguageName'
+          }
+        ]
+      }
     } as unknown as Journey,
     variant: 'admin'
   }
@@ -59,18 +60,17 @@ describe('Toolbar', () => {
         height: 1080,
         blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
       },
-      language: 
+      language: {
+        __typename: 'Language',
+        id: '529',
+        name: [
           {
-            __typename: 'Language',
-            id: '529',
-            name: [
-              {
-                value: 'English',
-                primary: true,
-                __typename: 'LanguageName'
-              }
-            ]
-          },
+            value: 'English',
+            primary: true,
+            __typename: 'LanguageName'
+          }
+        ]
+      },
       status: JourneyStatus.draft,
       variant: 'admin'
     } as unknown as Journey,
