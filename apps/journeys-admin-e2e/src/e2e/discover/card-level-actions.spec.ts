@@ -1,9 +1,10 @@
+/* eslint-disable playwright/expect-expect */
 import { test } from '@playwright/test'
+
 import { CardLevelActionPage } from '../../pages/card-level-actions'
 import { JourneyPage } from '../../pages/journey-page'
 import { LandingPage } from '../../pages/landing-page'
 import { LoginPage } from '../../pages/login-page'
-
 import { Register } from '../../pages/register-Page'
 
 let userEmail = ''
@@ -39,10 +40,10 @@ test.describe('verify card level actions', () => {
     await cardLevelActionPage.clickOnJourneyCard() // clicking on the journey card
   })
 
-  //Text - create, update & delete
+  // Text - create, update & delete
   test.fixme('Text - create, update & delete', async ({ page }) => {
     const cardLevelActionPage = new CardLevelActionPage(page)
-    await cardLevelActionPage.clickAddBlockBtn() //clicking on add block button
+    await cardLevelActionPage.clickAddBlockBtn() // clicking on add block button
     await cardLevelActionPage.clickBtnInAddBlockDrawer('Text') // clicking on text button in add block drawer
     await cardLevelActionPage.enterTextInJourneysTypographyField() // typing text on journeys typography field
     await cardLevelActionPage.clickDoneBtn() // clicking on done button
@@ -62,10 +63,10 @@ test.describe('verify card level actions', () => {
     await cardLevelActionPage.verifyAddedTextDeletedFromJourneyCard() // verifying the added text is deleted from the card
   })
 
-  //Image - create, update & delete
+  // Image - create, update & delete
   test.fixme('Image - create, update & delete', async ({ page }) => {
     const cardLevelActionPage = new CardLevelActionPage(page)
-    await cardLevelActionPage.clickAddBlockBtn() //clicking on add block button
+    await cardLevelActionPage.clickAddBlockBtn() // clicking on add block button
     await cardLevelActionPage.clickBtnInAddBlockDrawer('Image') // clicking on image button in add block drawer
     await cardLevelActionPage.clickSelectImageBtn() // clicking on select image buttom in image properties drawer
     await cardLevelActionPage.clickImageSelectionTab('Custom') // clicking on custom tab in image drawer tab list
@@ -81,15 +82,15 @@ test.describe('verify card level actions', () => {
     await cardLevelActionPage.verifyImageIsDeleted() // verifying the image is deleted from the image drawer
   })
 
-  //Video - create, update & delete
-  //Issue 3 : In video properties drawer after uploaded a video in upload tab, unable to update that video
-  //Issue 4 : the 'video details' page shows again and again.
+  // Video - create, update & delete
+  // Issue 3 : In video properties drawer after uploaded a video in upload tab, unable to update that video
+  // Issue 4 : the 'video details' page shows again and again.
   test.fixme('Video - create, update & delete', async ({ page }) => {
     const cardLevelActionPage = new CardLevelActionPage(page)
     await cardLevelActionPage.deleteAllAddedCardProperties() // deleting all the added properties in the card
     await cardLevelActionPage.clickOnVideoJourneyCard() // clicking on the journey card
     await cardLevelActionPage.clickOnVideoJourneyCard() // clicking on the journey card
-    await cardLevelActionPage.clickAddBlockBtn() //clicking on add block button
+    await cardLevelActionPage.clickAddBlockBtn() // clicking on add block button
     await cardLevelActionPage.clickBtnInAddBlockDrawer('Video') // clicking on video button in add block drawer
     await cardLevelActionPage.clickSelectVideoBtn() // clicking on select video  buttom in video properties drawer
     await cardLevelActionPage.selectVideoTab('Upload') // clicking on upload tab in video Libarary tab list
@@ -102,12 +103,12 @@ test.describe('verify card level actions', () => {
     await cardLevelActionPage.selectVideoFromLibraryTabOfVideoLibararyPage() // selecting a video from the Library tab's videos
     await cardLevelActionPage.clickSelectBtnAfrerSelectingVideo() // clicking the select button after selecting the video from Library tab
     await cardLevelActionPage.verifyUploadVideoInJourney('updated') // below the video source property, verify selected video is updated
-    await cardLevelActionPage.clickVideoEditPenIcon() //clicking on pen icon for delete the video
+    await cardLevelActionPage.clickVideoEditPenIcon() // clicking on pen icon for delete the video
     await cardLevelActionPage.clickVideoDeleteIconInDrawer() // clicking the delete icon beside the change video button in the video details page
     await cardLevelActionPage.verifyVideoDeletedFromDrawer() // verifying video deleted from the video source property
   })
 
-  //Poll - create, update & delete
+  // Poll - create, update & delete
   test('Poll - create, update & delete', async ({ page }) => {
     const cardLevelActionPage = new CardLevelActionPage(page)
     await cardLevelActionPage.clickAddBlockBtn() // clicking on add block button
@@ -123,7 +124,7 @@ test.describe('verify card level actions', () => {
     await cardLevelActionPage.verifyPollOptionsDeletedFromCard() // verifying the poll section is deleted from the card
   })
 
-  //Feedback- create, update & delete
+  // Feedback- create, update & delete
   test.fixme('Feedback - create, update & delete', async ({ page }) => {
     const cardLevelActionPage = new CardLevelActionPage(page)
     await cardLevelActionPage.clickAddBlockBtn() // clicking on add block button
@@ -136,7 +137,7 @@ test.describe('verify card level actions', () => {
     await cardLevelActionPage.verifyLabelUpdatedIncard() // verifying the added label is updated in the card
     await cardLevelActionPage.verifyHintUpdatedInCard() // verifying the added hint is updated in the card
     await cardLevelActionPage.selectWholeFeedBackSection() // selecting the whole feedback section
-    await cardLevelActionPage.clickFeedBackPropertiesDropDown('Action') //clicking the action property dropdown in the feedback properties drawer
+    await cardLevelActionPage.clickFeedBackPropertiesDropDown('Action') // clicking the action property dropdown in the feedback properties drawer
     await cardLevelActionPage.clickActionOfFeedBackProperties() // selecting the email option in the 'navigate to' dropdown
     await cardLevelActionPage.selectEmailOptionInPrepertiesOptions() // below the action property, entering email address in the email field
     await cardLevelActionPage.clickFeedBackPropertiesDropDown('Button Icon') // /clicking the 'button icon' property dropdown in the feedback properties drawer
@@ -147,7 +148,7 @@ test.describe('verify card level actions', () => {
     await cardLevelActionPage.verifyFeedBackDeletedFromCard() // verifying the feedback section is deleted from the card
   })
 
-  //Subscribe - create, update & delete
+  // Subscribe - create, update & delete
   test('Subscribe - create, update & delete', async ({ page }) => {
     const cardLevelActionPage = new CardLevelActionPage(page)
     await cardLevelActionPage.clickAddBlockBtn() // clicking on add block button
@@ -157,13 +158,13 @@ test.describe('verify card level actions', () => {
     await cardLevelActionPage.selectEmailOptionInPrepertiesOptions() // selecting the 'Selected card' option in 'navigate to' options and below the selecting the card for navigation
     await cardLevelActionPage.clickSubscribePropertiesDropDown('Button Icon') // clicking the 'button icon' property dropdown in the subscribe properties drawer
     await cardLevelActionPage.selectIconForProperties() // seleting an icon for the subscribe button section
-    await cardLevelActionPage.verifySelecetdIconInCardBelowSubscribe() //veriying the Selected icon is updated in the subscribe section of the card
+    await cardLevelActionPage.verifySelecetdIconInCardBelowSubscribe() // veriying the Selected icon is updated in the subscribe section of the card
     await cardLevelActionPage.selectWholeSubscribeSectionInCard() // selecting the whole subscribe section
     await cardLevelActionPage.clickDeleteBtnInToolTipBar() // clicking delete button in the tooltip bar
     await cardLevelActionPage.verifySubscribeDeletedFromCard() //  verifying the subscribe section is deleted from the card
   })
 
-  //Footer properties - Hosted By & Chat Widget
+  // Footer properties - Hosted By & Chat Widget
   test('Footer properties - create, update & delete', async ({ page }) => {
     const cardLevelActionPage = new CardLevelActionPage(page)
     await cardLevelActionPage.selectWholeFooterSectionInCard() // selecting the whole Fotter section

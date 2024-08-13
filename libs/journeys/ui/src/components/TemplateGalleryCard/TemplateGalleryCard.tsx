@@ -3,15 +3,15 @@ import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { useTheme } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import { intlFormat, isThisYear, parseISO } from 'date-fns'
-import { useTranslation } from 'next-i18next'
 import Image from 'next/image'
 import NextLink from 'next/link'
+import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import { useRouter } from 'next/router'
 import {
   getAlgoliaJourneyLanguage,
   getJourneyLanguage,

@@ -1,12 +1,14 @@
-import { ContentCarousel } from '@core/shared/ui/ContentCarousel'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
-import Typography from '@mui/material/Typography'
 import { useTheme } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import { Hit } from 'instantsearch.js'
 import { ReactElement, useEffect } from 'react'
 import { useHits } from 'react-instantsearch'
 import { SwiperOptions } from 'swiper/types'
+
+import { ContentCarousel } from '@core/journeys/ui/ContentCarousel'
+
 import { StrategyCard } from '../StrategyCard'
 
 interface StrategyCardItem {

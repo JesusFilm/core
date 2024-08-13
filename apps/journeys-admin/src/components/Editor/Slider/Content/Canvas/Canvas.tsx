@@ -4,6 +4,7 @@ import { useRouter } from 'next/router'
 import { type ReactElement, useEffect, useRef, useState } from 'react'
 import { CSSTransition, TransitionGroup } from 'react-transition-group'
 
+import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import {
   ActiveCanvasDetailsDrawer,
@@ -11,17 +12,17 @@ import {
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 import { FramePortal } from '@core/journeys/ui/FramePortal'
+import { getStepTheme } from '@core/journeys/ui/getStepTheme'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { StepFooter } from '@core/journeys/ui/StepFooter'
 import { VideoWrapper } from '@core/journeys/ui/VideoWrapper'
-import { getStepTheme } from '@core/journeys/ui/getStepTheme'
-import { getJourneyRTL } from '@core/journeys/ui/rtl'
-import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeName } from '@core/shared/ui/themes'
 
 import { Hotkeys } from '../../../Hotkeys'
+
 import { CanvasFooter } from './CanvasFooter'
 import { CardWrapper } from './CardWrapper'
 import { FormWrapper } from './FormWrapper'
@@ -67,7 +68,6 @@ export function Canvas(): ReactElement {
   }, [])
 
   function handleFooterClick(): void {
-    if (showAnalytics === true) return
     dispatch({
       type: 'SetActiveCanvasDetailsDrawerAction',
       activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer
@@ -180,6 +180,7 @@ export function Canvas(): ReactElement {
                   scale < 0.65 ? '20px' : '0px'
                 }) ${calculateScaledMargin(CARD_WIDTH, scale)}`,
                 borderRadius: 6,
+                pointerEvents: showAnalytics === true ? 'none' : 'auto',
                 transition: (theme) =>
                   theme.transitions.create('border-color', {
                     duration: 200,

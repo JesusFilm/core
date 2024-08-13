@@ -10,9 +10,9 @@ import {
   useRef
 } from 'react'
 
-import { CommandProvider } from '../CommandProvider'
 import type { TreeBlock } from '../block'
 import { BlockFields_StepBlock as StepBlock } from '../block/__generated__/BlockFields'
+import { CommandProvider } from '../CommandProvider'
 import { searchBlocks } from '../searchBlocks'
 import { type JourneyAnalytics } from '../useJourneyAnalyticsQuery'
 
@@ -179,6 +179,7 @@ export type EditorAction =
   | SetShowAnalyticsAction
   | SetAnalyticsAction
   | SetEditorFocusAction
+  | SetSelectedStepByIdAction
 
 export const reducer = (
   state: EditorState,
@@ -198,7 +199,7 @@ export const reducer = (
     case 'SetActiveSlideAction':
       return {
         ...state,
-        activeSlide: action.activeSlide
+        activeSlide: state.showAnalytics === true ? 0 : action.activeSlide
       }
     case 'SetSelectedAttributeIdAction':
       return {
@@ -240,23 +241,28 @@ export const reducer = (
         ...state,
         selectedStepId: action.selectedStep?.id,
         selectedStep: action.selectedStep,
+        selectedBlockId: action.selectedStep?.id,
         selectedBlock: action.selectedStep,
         activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
         activeContent: ActiveContent.Canvas
       }
-    case 'SetSelectedStepByIdAction':
+    case 'SetSelectedStepByIdAction': {
+      const selectedStep =
+        action.selectedStepId != null
+          ? (searchBlocks(state.steps ?? [], action.selectedStepId, {
+              filter: 'searchStepsOnly'
+            }) as TreeBlock<StepBlock>)
+          : undefined
       return {
         ...state,
         selectedStepId: action.selectedStepId,
-        selectedStep:
-          action.selectedStepId != null
-            ? (searchBlocks(state.steps ?? [], action.selectedStepId, {
-                filter: 'searchStepsOnly'
-              }) as TreeBlock<StepBlock>)
-            : undefined,
+        selectedStep,
+        selectedBlockId: action.selectedStepId,
+        selectedBlock: selectedStep,
         activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
         activeContent: ActiveContent.Canvas
       }
+    }
     case 'SetStepsAction':
       return {
         ...state,
@@ -266,8 +272,8 @@ export const reducer = (
             ? action.steps.find(({ id }) => id === state.selectedStepId)
             : action.steps[0],
         selectedBlock:
-          state.selectedBlock != null
-            ? searchBlocks(action.steps, state.selectedBlock.id)
+          state.selectedBlockId != null
+            ? searchBlocks(action.steps, state.selectedBlockId)
             : action.steps[0]
       }
     case 'SetShowAnalyticsAction':
@@ -402,7 +408,34 @@ export function EditorProvider({
           selectedBlock: initialState.selectedBlock
         })
     }
-  }, [initialState?.selectedStep, initialState?.selectedBlock])
+
+    if (initialState?.activeCanvasDetailsDrawer != null) {
+      dispatch({
+        type: 'SetActiveCanvasDetailsDrawerAction',
+        activeCanvasDetailsDrawer: initialState.activeCanvasDetailsDrawer
+      })
+    }
+
+    if (initialState?.activeContent != null) {
+      dispatch({
+        type: 'SetActiveContentAction',
+        activeContent: initialState.activeContent
+      })
+    }
+
+    if (initialState?.activeSlide != null) {
+      dispatch({
+        type: 'SetActiveSlideAction',
+        activeSlide: initialState.activeSlide
+      })
+    }
+  }, [
+    initialState?.selectedStep,
+    initialState?.selectedBlock,
+    initialState?.activeCanvasDetailsDrawer,
+    initialState?.activeContent,
+    initialState?.activeSlide
+  ])
 
   return (
     <EditorContext.Provider value={{ state, dispatch }}>

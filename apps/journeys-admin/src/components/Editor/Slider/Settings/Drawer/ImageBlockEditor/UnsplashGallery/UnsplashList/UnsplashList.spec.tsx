@@ -8,6 +8,7 @@ import {
   TriggerUnsplashDownloadVariables
 } from '../../../../../../../../../__generated__/TriggerUnsplashDownload'
 import { ThemeProvider } from '../../../../../../../ThemeProvider'
+
 import { TRIGGER_UNSPLASH_DOWNLOAD, UnsplashList } from './UnsplashList'
 
 describe('UnsplashList', () => {

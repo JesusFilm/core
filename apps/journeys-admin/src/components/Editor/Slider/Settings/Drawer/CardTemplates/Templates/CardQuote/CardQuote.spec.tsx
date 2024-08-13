@@ -2,19 +2,19 @@ import { InMemoryCache } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
+import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { TreeBlock } from '@core/journeys/ui/block'
 
 import {
   CardQuoteCreate,
   CardQuoteCreateVariables
 } from '../../../../../../../../../__generated__/CardQuoteCreate'
-import { JourneyFields as Journey } from '../../../../../../../../../__generated__/JourneyFields'
 import {
   TypographyColor,
   TypographyVariant
 } from '../../../../../../../../../__generated__/globalTypes'
+import { JourneyFields as Journey } from '../../../../../../../../../__generated__/JourneyFields'
 
 import { CARD_QUOTE_CREATE } from './CardQuote'
 

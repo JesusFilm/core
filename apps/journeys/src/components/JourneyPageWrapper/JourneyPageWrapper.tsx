@@ -1,10 +1,10 @@
+import PlausibleProvider from 'next-plausible'
 import { ReactElement, ReactNode } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
-import PlausibleProvider from 'next-plausible'
-
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
+
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 
 interface JourneyPageWrapperProps {

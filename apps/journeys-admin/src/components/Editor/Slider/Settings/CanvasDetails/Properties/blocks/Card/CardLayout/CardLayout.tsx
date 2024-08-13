@@ -1,15 +1,11 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
-import Divider from '@mui/material/Divider'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next'
 import Image from 'next/image'
 import { ReactElement } from 'react'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
-import FlexAlignBottom1Icon from '@core/shared/ui/icons/FlexAlignBottom1'
+import { useCommand } from '@core/journeys/ui/CommandProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import {
@@ -18,15 +14,11 @@ import {
 } from '../../../../../../../../../../__generated__/CardBlockLayoutUpdate'
 import { HorizontalSelect } from '../../../../../../../../HorizontalSelect'
 
-import { useCommand } from '@core/journeys/ui/CommandProvider'
 import cardLayoutContained from './assets/card-layout-contained.svg'
 import cardLayoutExpanded from './assets/card-layout-expanded.svg'
 
 export const CARD_BLOCK_LAYOUT_UPDATE = gql`
-  mutation CardBlockLayoutUpdate(
-    $id: ID!
-    $input: CardBlockUpdateInput!
-  ) {
+  mutation CardBlockLayoutUpdate($id: ID!, $input: CardBlockUpdateInput!) {
     cardBlockUpdate(id: $id, input: $input) {
       id
       fullscreen
@@ -35,7 +27,6 @@ export const CARD_BLOCK_LAYOUT_UPDATE = gql`
 `
 
 export function CardLayout(): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
   const {
     state: { selectedBlock, selectedStep },
     dispatch
@@ -54,9 +45,10 @@ export function CardLayout(): ReactElement {
         )
   ) as TreeBlock<CardBlock> | undefined
 
-  async function handleLayoutChange(fullscreen: boolean): Promise<void> {
+  function handleLayoutChange(fullscreen: boolean): void {
     if (cardBlock == null) return
-    await add({
+
+    add({
       parameters: {
         execute: {
           fullscreen
@@ -65,12 +57,12 @@ export function CardLayout(): ReactElement {
           fullscreen: !fullscreen
         }
       },
-      execute: async ({ fullscreen }) => {
+      execute({ fullscreen }) {
         dispatch({
           type: 'SetEditorFocusAction',
-          selectedStep: selectedStep
+          selectedStep
         })
-        await cardBlockUpdate({
+        void cardBlockUpdate({
           variables: {
             id: cardBlock.id,
             input: {
@@ -91,36 +83,18 @@ export function CardLayout(): ReactElement {
 
   return (
     <>
-      <Box sx={{ p: 4, display: { xs: 'flex', sm: 'none' } }}>
-        <Stack spacing={3} direction="row">
-          <Box
-            sx={{
-              backgroundColor: '#EFEFEF',
-              width: 58,
-              height: 58,
-              borderRadius: 2,
-              paddingTop: 3,
-              textAlign: 'center'
-            }}
-          >
-            <FlexAlignBottom1Icon fontSize="large" />
-          </Box>
-          <Stack direction="column" justifyContent="center">
-            <Typography variant="subtitle2">
-              {cardBlock?.fullscreen ?? false ? t('Expanded') : t('Contained')}
-            </Typography>
-            <Typography variant="caption">{t('Card Layout')}</Typography>
-          </Stack>
-        </Stack>
-      </Box>
-      <Divider sx={{ mb: 4, display: { xs: 'flex', sm: 'none' } }} />
       <Box>
         <HorizontalSelect
-          onChange={async (val) => await handleLayoutChange(val === 'true')}
+          onChange={(val) => handleLayoutChange(val === 'true')}
           id={cardBlock?.fullscreen.toString()}
           sx={{ px: 4, pb: 4, pt: 1 }}
         >
-          <Box sx={{ display: 'flex' }} id="true" key="true" data-testid="true">
+          <Box
+            sx={{ display: 'flex' }}
+            id="true"
+            key="true"
+            data-testid={cardBlock?.fullscreen === true ? 'selected' : 'true'}
+          >
             <Image
               src={cardLayoutExpanded}
               alt="Expanded"
@@ -136,7 +110,7 @@ export function CardLayout(): ReactElement {
             sx={{ display: 'flex' }}
             id="false"
             key="false"
-            data-testid="false"
+            data-testid={cardBlock?.fullscreen !== true ? 'selected' : 'false'}
           >
             <Image
               src={cardLayoutContained}

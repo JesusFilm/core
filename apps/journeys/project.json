@@ -120,18 +120,8 @@
       }
     },
     "lint": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npx @biomejs/biome check --diagnostic-level=warn",
-        "cwd": "apps/journeys"
-      }
-    },
-    "lint:fix": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npx @biomejs/biome check --write",
-        "cwd": "apps/journeys"
-      }
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
     },
     "type-check": {
       "executor": "nx:run-commands",

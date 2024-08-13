@@ -4,6 +4,7 @@ import { GraphQLResolveInfo, Kind } from 'graphql'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
 import {
+  Keyword,
   Prisma,
   Video,
   VideoDescription,
@@ -98,6 +99,12 @@ describe('VideoResolver', () => {
     primary: true,
     vttSrc: 'vttSrc',
     srtSrc: 'srtSrc'
+  }
+
+  const keyword: Keyword = {
+    id: '1',
+    value: 'keyword',
+    languageId: '529'
   }
 
   beforeEach(async () => {
@@ -607,6 +614,7 @@ describe('VideoResolver', () => {
         orderBy: { primary: 'desc' }
       })
     })
+
     it('returns all subtitles', async () => {
       expect(await resolver.subtitles(video)).toEqual([
         {
@@ -633,6 +641,18 @@ describe('VideoResolver', () => {
           videoId: video.id
         },
         orderBy: { primary: 'desc' }
+      })
+    })
+  })
+
+  describe('keywords', () => {
+    it('returns keywords', async () => {
+      prismaService.keyword.findMany.mockResolvedValueOnce([keyword])
+      expect(await resolver.keywords(video)).toEqual([keyword])
+      expect(prismaService.keyword.findMany).toHaveBeenCalledWith({
+        where: {
+          videos: { some: { id: video.id } }
+        }
       })
     })
   })

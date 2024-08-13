@@ -127,6 +127,11 @@ type Mutation {
     """
     parentOrder: Int
 
+    """
+    idMap is used to set custom ids for the duplicated block and it's descendants.
+    """
+    idMap: [BlockDuplicateIdMap!]
+
     """drop this parameter after merging teams"""
     journeyId: ID
 
@@ -218,6 +223,7 @@ type Mutation {
     """drop this parameter after merging teams"""
     journeyId: ID
   ): StepBlock!
+  stepBlockPositionUpdate(input: [StepBlockPositionUpdateInput!]!): [StepBlock!]!
   textResponseBlockCreate(input: TextResponseBlockCreateInput!): TextResponseBlock!
   textResponseBlockUpdate(
     id: ID!
@@ -382,6 +388,11 @@ type Journey
 input BlocksFilter {
   journeyIds: [ID!]
   typenames: [String!]
+}
+
+input BlockDuplicateIdMap {
+  oldId: ID!
+  newId: ID!
 }
 
 type Query {
@@ -922,6 +933,12 @@ input StepBlockUpdateInput {
   y is used to position the block vertically in the journey flow diagram on
   the editor.
   """
+  y: Int
+}
+
+input StepBlockPositionUpdateInput {
+  id: ID!
+  x: Int
   y: Int
 }
 

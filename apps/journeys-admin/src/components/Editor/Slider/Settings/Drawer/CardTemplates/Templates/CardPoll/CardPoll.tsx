@@ -1,7 +1,7 @@
 import { gql, useMutation } from '@apollo/client'
 import ButtonBase from '@mui/material/ButtonBase'
-import { useTranslation } from 'next-i18next'
 import Image from 'next/image'
+import { useTranslation } from 'next-i18next'
 import type { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 

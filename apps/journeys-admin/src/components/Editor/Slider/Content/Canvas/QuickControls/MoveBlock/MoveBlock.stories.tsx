@@ -2,8 +2,8 @@ import { MockedProvider } from '@apollo/client/testing'
 import Stack from '@mui/material/Stack'
 import { Meta, StoryObj } from '@storybook/react'
 
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { MoveBlock } from '.'

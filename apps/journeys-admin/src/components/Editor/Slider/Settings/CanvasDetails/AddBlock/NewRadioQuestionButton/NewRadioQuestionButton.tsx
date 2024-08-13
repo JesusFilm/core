@@ -3,15 +3,21 @@ import { useTranslation } from 'next-i18next'
 import type { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { RADIO_OPTION_FIELDS } from '@core/journeys/ui/RadioOption/radioOptionFields'
 import { RADIO_QUESTION_FIELDS } from '@core/journeys/ui/RadioQuestion/radioQuestionFields'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import CheckContainedIcon from '@core/shared/ui/icons/CheckContained'
 
-import type { BlockFields_CardBlock as CardBlock } from '../../../../../../../../__generated__/BlockFields'
+import type {
+  BlockFields_CardBlock as CardBlock,
+  BlockFields_RadioOptionBlock as RadioOptionBlock,
+  BlockFields_RadioQuestionBlock as RadioQuestionBlock
+} from '../../../../../../../../__generated__/BlockFields'
 import type { RadioQuestionBlockCreate } from '../../../../../../../../__generated__/RadioQuestionBlockCreate'
+import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
+import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
 import { Button } from '../Button'
 
 export const RADIO_QUESTION_BLOCK_CREATE = gql`
@@ -49,84 +55,76 @@ export function NewRadioQuestionButton(): ReactElement {
     useMutation<RadioQuestionBlockCreate>(RADIO_QUESTION_BLOCK_CREATE)
   const { journey } = useJourney()
   const {
-    state: { selectedStep },
-    dispatch
+    state: { selectedStep }
   } = useEditor()
+  const { addBlock } = useBlockCreateCommand()
 
-  const handleClick = async (): Promise<void> => {
-    const id = uuidv4()
+  function handleClick(): void {
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
 
-    if (card != null && journey != null) {
-      const { data } = await radioQuestionBlockCreate({
-        variables: {
-          input: {
-            journeyId: journey.id,
-            id,
-            parentBlockId: card.id
+    if (card == null || journey == null) return
+
+    const radioQuestionBlock: RadioQuestionBlock = {
+      id: uuidv4(),
+      parentBlockId: card.id,
+      parentOrder: card.children.length ?? 0,
+      __typename: 'RadioQuestionBlock'
+    }
+    const radioOptionBlock1: RadioOptionBlock = {
+      id: uuidv4(),
+      parentBlockId: radioQuestionBlock.id,
+      parentOrder: 0,
+      label: t('Option 1'),
+      action: null,
+      __typename: 'RadioOptionBlock'
+    }
+    const radioOptionBlock2: RadioOptionBlock = {
+      id: uuidv4(),
+      parentBlockId: radioQuestionBlock.id,
+      parentOrder: 1,
+      label: t('Option 2'),
+      action: null,
+      __typename: 'RadioOptionBlock'
+    }
+
+    addBlock({
+      block: radioQuestionBlock,
+      execute() {
+        void radioQuestionBlockCreate({
+          variables: {
+            input: {
+              journeyId: journey.id,
+              id: radioQuestionBlock.id,
+              parentBlockId: radioQuestionBlock.parentBlockId
+            },
+            radioOptionBlockCreateInput1: {
+              id: radioOptionBlock1.id,
+              journeyId: journey.id,
+              parentBlockId: radioQuestionBlock.id,
+              label: radioOptionBlock1.label
+            },
+            radioOptionBlockCreateInput2: {
+              id: radioOptionBlock2.id,
+              journeyId: journey.id,
+              parentBlockId: radioQuestionBlock.id,
+              label: radioOptionBlock2.label
+            }
           },
-          radioOptionBlockCreateInput1: {
-            journeyId: journey.id,
-            parentBlockId: id,
-            label: t('Option 1')
+          optimisticResponse: {
+            radioQuestionBlockCreate: radioQuestionBlock,
+            radioOption1: radioOptionBlock1,
+            radioOption2: radioOptionBlock2
           },
-          radioOptionBlockCreateInput2: {
-            journeyId: journey.id,
-            parentBlockId: id,
-            label: t('Option 2')
+          update(cache, { data }) {
+            blockCreateUpdate(cache, journey.id, data?.radioQuestionBlockCreate)
+            blockCreateUpdate(cache, journey.id, data?.radioOption1)
+            blockCreateUpdate(cache, journey.id, data?.radioOption2)
           }
-        },
-        update(cache, { data }) {
-          if (data?.radioQuestionBlockCreate != null) {
-            cache.modify({
-              id: cache.identify({ __typename: 'Journey', id: journey.id }),
-              fields: {
-                blocks(existingBlockRefs = []) {
-                  const newBlockRef = cache.writeFragment({
-                    data: data.radioQuestionBlockCreate,
-                    fragment: gql`
-                      fragment NewBlock on Block {
-                        id
-                      }
-                    `
-                  })
-                  const newRadioOption1BlockRef = cache.writeFragment({
-                    data: data.radioOption1,
-                    fragment: gql`
-                      fragment NewBlock on Block {
-                        id
-                      }
-                    `
-                  })
-                  const newRadioOption2BlockRef = cache.writeFragment({
-                    data: data.radioOption2,
-                    fragment: gql`
-                      fragment NewBlock on Block {
-                        id
-                      }
-                    `
-                  })
-                  return [
-                    ...existingBlockRefs,
-                    newBlockRef,
-                    newRadioOption1BlockRef,
-                    newRadioOption2BlockRef
-                  ]
-                }
-              }
-            })
-          }
-        }
-      })
-      if (data?.radioQuestionBlockCreate != null) {
-        dispatch({
-          type: 'SetSelectedBlockByIdAction',
-          selectedBlockId: data.radioQuestionBlockCreate.id
         })
       }
-    }
+    })
   }
 
   return (

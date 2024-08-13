@@ -5,9 +5,9 @@ import ListItemText from '@mui/material/ListItemText'
 import MuiMenu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import compact from 'lodash/compact'
-import { useTranslation } from 'next-i18next'
+import { useRouter } from 'next/compat/router'
 import NextLink from 'next/link'
-import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { MouseEvent, ReactElement, useState } from 'react'
 
 import { useFlags } from '@core/shared/ui/FlagsProvider'
@@ -49,8 +49,8 @@ export function HeaderTabButtons(): ReactElement {
   }
 
   const buttonLabel =
-    headerItems.find((link) => router.pathname?.startsWith(link.href))?.label ??
-    ''
+    headerItems.find((link) => router?.pathname?.startsWith(link.href))
+      ?.label ?? ''
 
   return headerItems.length > 1 ? (
     <>
@@ -76,9 +76,10 @@ export function HeaderTabButtons(): ReactElement {
                 textAlign: 'center',
                 borderRadius: '40px !important',
                 border: '2px solid',
-                borderColor: router.pathname?.startsWith(href)
-                  ? (theme) => theme.palette.primary.main
-                  : 'transparent'
+                borderColor:
+                  router?.pathname?.startsWith(href) ?? false
+                    ? (theme) => theme.palette.primary.main
+                    : 'transparent'
               }}
               startIcon={icon}
             >
@@ -135,7 +136,7 @@ export function HeaderTabButtons(): ReactElement {
           <NextLink href={href} passHref legacyBehavior key={label}>
             <MenuItem
               onClick={handleCloseMenu}
-              selected={router.pathname?.startsWith(href)}
+              selected={router?.pathname?.startsWith(href)}
             >
               <ListItemIcon>{icon}</ListItemIcon>
               <ListItemText>{t(label)}</ListItemText>

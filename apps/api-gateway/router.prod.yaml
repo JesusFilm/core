@@ -43,9 +43,17 @@ telemetry:
     spans:
       mode: spec_compliant
   exporters:
-     logging:
-       stdout:
-         enabled: true 
-experimental_batching:
-  enabled: true
-  mode: batch_http_link
+    logging:
+      common:
+        resource:
+          service.name: api-gateway
+      stdout:
+        enabled: true
+      experimental_when_header:
+        - name: origin
+          match: .*
+          headers: true
+          body: true
+    tracing:
+      datadog:
+        enabled: true

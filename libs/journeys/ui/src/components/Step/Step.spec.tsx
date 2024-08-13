@@ -4,22 +4,20 @@ import { usePlausible } from 'next-plausible'
 import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
-import { keyify } from '@core/journeys/ui/plausibleHelpers'
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
-import { JourneyProvider } from '../../libs/JourneyProvider'
-import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
 import type { TreeBlock } from '../../libs/block'
 import { blockHistoryVar, treeBlocksVar } from '../../libs/block'
+import { JourneyProvider } from '../../libs/JourneyProvider'
+import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
+import { keyify } from '../../libs/plausibleHelpers'
 
-import { STEP_VIEW_EVENT_CREATE } from './Step'
 import { StepFields } from './__generated__/StepFields'
 import { StepViewEventCreate } from './__generated__/StepViewEventCreate'
-
-import { Step } from '.'
+import { STEP_VIEW_EVENT_CREATE, Step } from './Step'
 
 jest.mock('uuid', () => ({
   __esModule: true,
@@ -147,6 +145,7 @@ const block: TreeBlock<StepFields> = {
 describe('Step', () => {
   const originalLocation = window.location
   const mockOrigin = 'https://example.com'
+
   beforeAll(() => {
     Object.defineProperty(window, 'location', {
       value: {
@@ -289,7 +288,7 @@ describe('Step', () => {
     const { baseElement } = render(
       <MockedProvider mocks={[mockStepViewEventCreate]}>
         <JourneyProvider value={{ journey }}>
-          {/* biome-ignore lint/correctness/noChildrenProp: <explanation> */}
+          {/* eslint-disable-next-line react/no-children-prop */}
           <Step {...block} children={[]} />
         </JourneyProvider>
       </MockedProvider>

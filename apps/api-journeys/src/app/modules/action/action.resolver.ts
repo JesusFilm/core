@@ -5,15 +5,17 @@ import { GraphQLError } from 'graphql'
 import get from 'lodash/get'
 import { z } from 'zod'
 
+import { Action, Block } from '.prisma/api-journeys-client'
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
+
 import { BlockUpdateActionInput } from '../../__generated__/graphql'
 import { AppAbility, Action as CaslAction } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'
+
 import { ActionService } from './action.service'
 import { canBlockHaveAction } from './canBlockHaveAction'
-import { Action, Block } from '.prisma/api-journeys-client'
 
 const linkActionInputSchema = z.object({
   gtmEventName: z.string().nullable(),

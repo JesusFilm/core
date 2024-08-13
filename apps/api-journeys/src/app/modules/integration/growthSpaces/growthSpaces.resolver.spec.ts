@@ -1,8 +1,11 @@
-import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 import { CacheModule } from '@nestjs/cache-manager'
 import { Test, TestingModule } from '@nestjs/testing'
 import axios, { AxiosError, AxiosResponse } from 'axios'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+
+import { Integration, Prisma, Team } from '.prisma/api-journeys-client'
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+
 import { IntegrationGrowthSpacesCreateInput } from '../../../../__generated__/graphql'
 import {
   IntegrationGrowthSpacesRoute,
@@ -10,9 +13,9 @@ import {
 } from '../../../__generated__/graphql'
 import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
 import { PrismaService } from '../../../lib/prisma.service'
+
 import { IntegrationGrowthSpacesResolver } from './growthSpaces.resolver'
 import { IntegrationGrowthSpacesService } from './growthSpaces.service'
-import { Integration, Prisma, Team } from '.prisma/api-journeys-client'
 
 jest.mock('axios', () => {
   const originalModule = jest.requireActual('axios')
@@ -82,15 +85,14 @@ describe('IntegrationGrowthSpaceResolver', () => {
     ability = await new AppCaslFactory().createAbility({ id: 'userId' })
     jest
       .spyOn(prismaService, '$transaction')
-      .mockImplementation((callback) => callback(prismaService))
+      .mockImplementation(async (callback) => await callback(prismaService))
 
     mockAxiosGet = jest.fn()
     mockAxiosPost = jest.fn()
-    mockAxios.create = jest
-      .fn()
-      .mockImplementation(
-        async () => await { get: mockAxiosGet, post: mockAxiosPost }
-      )
+    mockAxios.create = jest.fn().mockImplementation(async () => ({
+      get: mockAxiosGet,
+      post: mockAxiosPost
+    }))
     process.env = { ...OLD_ENV }
   })
 
@@ -105,6 +107,7 @@ describe('IntegrationGrowthSpaceResolver', () => {
       accessSecret: 'accessSecret',
       teamId: 'teamId'
     }
+
     it('should create a growth spaces integration', async () => {
       process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET =
         'dontbefooledbythiscryptokeyitisactuallyfake='

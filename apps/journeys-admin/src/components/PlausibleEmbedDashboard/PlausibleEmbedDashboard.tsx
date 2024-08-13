@@ -1,13 +1,16 @@
 import { useQuery } from '@apollo/client'
-import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
 import Box from '@mui/material/Box'
 import Fade from '@mui/material/Fade'
-import Typography from '@mui/material/Typography'
 import { styled } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
+// eslint-disable-next-line import/no-named-as-default
 import gql from 'graphql-tag'
-import { useTranslation } from 'next-i18next'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { type ReactElement, useCallback, useRef, useState } from 'react'
+
+import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
+
 import type {
   GetAdminJourneyWithPlausibleToken,
   GetAdminJourneyWithPlausibleTokenVariables
@@ -110,7 +113,9 @@ export function PlausibleEmbedDashboard({
           <StyledIFrame
             data-testid="PlausibleEmbedDashboard"
             plausible-embed
-            src={`${host ?? ''}/share/api-journeys-journey-${journeyId}?auth=${data?.journey.plausibleToken}&embed=true&theme=light&background=transparent`}
+            src={`${host ?? ''}/share/api-journeys-journey-${journeyId}?auth=${
+              data?.journey.plausibleToken
+            }&embed=true&theme=light&background=transparent`}
             loading="lazy"
             onLoad={() => {
               setTimeout(() => {

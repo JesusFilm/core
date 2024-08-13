@@ -3,15 +3,14 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
 
+import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { TreeBlock } from '@core/journeys/ui/block'
 
 import {
   CardCtaCreate,
   CardCtaCreateVariables
 } from '../../../../../../../../../__generated__/CardCtaCreate'
-import { JourneyFields as Journey } from '../../../../../../../../../__generated__/JourneyFields'
 import {
   ButtonColor,
   ButtonSize,
@@ -19,6 +18,7 @@ import {
   IconName,
   TypographyVariant
 } from '../../../../../../../../../__generated__/globalTypes'
+import { JourneyFields as Journey } from '../../../../../../../../../__generated__/JourneyFields'
 
 import { CARD_CTA_CREATE } from './CardCta'
 

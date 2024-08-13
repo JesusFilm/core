@@ -6,11 +6,11 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { SwiperOptions } from 'swiper/types'
 
-import { ContentCarousel } from '@core/shared/ui/ContentCarousel'
 import {
   AlgoliaJourney,
   useAlgoliaJourneys
 } from '../../libs/algolia/useAlgoliaJourneys'
+import { ContentCarousel } from '../ContentCarousel'
 import { EmptySearch } from '../EmptySearch'
 import { TemplateGalleryCard } from '../TemplateGalleryCard'
 

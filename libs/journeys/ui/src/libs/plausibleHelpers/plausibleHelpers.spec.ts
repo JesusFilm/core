@@ -1,7 +1,9 @@
-import { generateActionTargetKey, keyify, reverseKeyify } from '.'
 import { ActionFields as Action } from '../action/__generated__/ActionFields'
 import { BlockFields_ButtonBlock_action as ButtonBlockAction } from '../block/__generated__/BlockFields'
+
 import { getTargetEventKey } from './plausibleHelpers'
+
+import { generateActionTargetKey, keyify, reverseKeyify } from '.'
 
 describe('PlausibleHelpers', () => {
   describe('generateActionTargetKey', () => {

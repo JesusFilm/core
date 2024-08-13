@@ -1,12 +1,13 @@
-import Search1Icon from '@core/shared/ui/icons/Search1'
 import Box from '@mui/material/Box'
 import InputAdornment from '@mui/material/InputAdornment'
-import TextField from '@mui/material/TextField'
 import { styled } from '@mui/material/styles'
+import TextField from '@mui/material/TextField'
 import { SearchBoxConnectorParams } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 import { useSearchBox } from 'react-instantsearch'
+
+import Search1Icon from '@core/shared/ui/icons/Search1'
 
 /* Styles below used to fake a gradient border because the 
 css attributes border-radius and border-image-source are not compatible */
@@ -33,7 +34,7 @@ export function SearchBar(props: SearchBoxConnectorParams): ReactElement {
   const { query, refine } = useSearchBox(props)
   const [inputValue, setInputValue] = useState(query)
 
-  function setQuery(newQuery: string) {
+  function setQuery(newQuery: string): void {
     setInputValue(newQuery)
     refine(newQuery)
   }

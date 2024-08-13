@@ -49,18 +49,8 @@
       }
     },
     "lint": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npx @biomejs/biome check --diagnostic-level=warn",
-        "cwd": "apps/docs"
-      }
-    },
-    "lint:fix": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npx @biomejs/biome check --write",
-        "cwd": "apps/docs"
-      }
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
     },
     "fetch-secrets": {
       "executor": "nx:run-commands",

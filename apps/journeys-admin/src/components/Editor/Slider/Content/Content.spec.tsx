@@ -1,8 +1,8 @@
+import { MockedProvider } from '@apollo/client/testing'
 import { render, screen } from '@testing-library/react'
 
 import { ActiveContent, EditorProvider } from '@core/journeys/ui/EditorProvider'
 
-import { MockedProvider } from '@apollo/client/testing'
 import { Content } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({

@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
 import { useSearchBox } from 'react-instantsearch'
+
 import '../../../test/i18n'
 import { SearchBar } from './SearchBar'
 
@@ -10,11 +11,11 @@ const mockUseSearchBox = useSearchBox as jest.MockedFunction<
   typeof useSearchBox
 >
 
-function mockSearchBox() {
+function mockSearchBox(): jest.Mock {
   const refine = jest.fn()
   mockUseSearchBox.mockReturnValue({
     query: 'Hello World!',
-    refine: refine
+    refine
   } as unknown as SearchBoxRenderState)
   return refine
 }

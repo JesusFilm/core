@@ -41,7 +41,7 @@ export function VideoBlockEditor({
         <Source selectedBlock={selectedBlock} onChange={onChange} />
       </Box>
       {videoBlock?.videoId != null && (
-        <Box>
+        <Box pb={4}>
           <VideoBlockEditorSettings
             selectedBlock={selectedBlock}
             posterBlock={posterBlock}

@@ -1,10 +1,10 @@
 import { MockedResponse } from '@apollo/client/testing'
 
+import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
 import {
   StepAndCardBlockCreate,
   StepAndCardBlockCreateVariables
 } from '../../../__generated__/StepAndCardBlockCreate'
-import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
 
 import { STEP_AND_CARD_BLOCK_CREATE } from './useStepAndCardBlockCreateMutation'
 

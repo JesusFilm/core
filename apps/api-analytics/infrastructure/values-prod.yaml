@@ -49,8 +49,8 @@ clickhouse:
         enabled: true
         storageClassName: clickhouse-gp3
         accessModes:
-        - "ReadWriteOnce"
-        storage: "500Gi"
+          - 'ReadWriteOnce'
+        storage: '500Gi'
 
 # -- Plausible uses and SMTP server to send transactional emails e.g. account activation, password reset, weekly reports, etc.
 smtp:

@@ -1,1 +1,1 @@
-export { useCreateStep } from './useCreateStep'
+export { useCreateStep, type CreateStepInput } from './useCreateStep'

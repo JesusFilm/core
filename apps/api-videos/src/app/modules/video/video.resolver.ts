@@ -16,6 +16,7 @@ import isEmpty from 'lodash/isEmpty'
 
 import {
   BibleCitation,
+  Keyword,
   Prisma,
   Video,
   VideoDescription,
@@ -383,6 +384,16 @@ export class VideoResolver {
     return await this.prismaService.videoSubtitle.findMany({
       where,
       orderBy: { primary: 'desc' }
+    })
+  }
+
+  @ResolveField('keywords')
+  async keywords(
+    @Parent() video,
+    @Args('languageId') languageId?: string
+  ): Promise<Keyword[]> {
+    return await this.prismaService.keyword.findMany({
+      where: { videos: { some: { id: video.id } }, languageId }
     })
   }
 }

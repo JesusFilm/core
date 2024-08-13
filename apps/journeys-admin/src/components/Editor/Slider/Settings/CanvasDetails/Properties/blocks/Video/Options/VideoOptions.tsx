@@ -1,26 +1,22 @@
 import { gql, useMutation } from '@apollo/client'
 import { ReactElement } from 'react'
 
+import { TreeBlock } from '@core/journeys/ui/block'
+import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { VIDEO_FIELDS } from '@core/journeys/ui/Video/videoFields'
 
-import { useCommand } from '@core/journeys/ui/CommandProvider'
-import { TreeBlock } from '@core/journeys/ui/block'
-
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../../../__generated__/BlockFields'
+import { VideoBlockUpdateInput } from '../../../../../../../../../../__generated__/globalTypes'
 import {
   VideoBlockUpdate,
   VideoBlockUpdateVariables
 } from '../../../../../../../../../../__generated__/VideoBlockUpdate'
-import { VideoBlockUpdateInput } from '../../../../../../../../../../__generated__/globalTypes'
 import { VideoBlockEditor } from '../../../../../Drawer/VideoBlockEditor'
 
 export const VIDEO_BLOCK_UPDATE = gql`
   ${VIDEO_FIELDS}
-  mutation VideoBlockUpdate(
-    $id: ID!
-    $input: VideoBlockUpdateInput!
-  ) {
+  mutation VideoBlockUpdate($id: ID!, $input: VideoBlockUpdateInput!) {
     videoBlockUpdate(id: $id, input: $input) {
       ...VideoFields
     }
@@ -40,7 +36,7 @@ export function VideoOptions(): ReactElement {
 
   const selectedBlock = stateSelectedBlock as TreeBlock<VideoBlock> | undefined
 
-  async function handleChange(input: VideoBlockUpdateInput): Promise<void> {
+  function handleChange(input: VideoBlockUpdateInput): void {
     if (selectedBlock == null) return
 
     const inverseInput: VideoBlockUpdateInput = {}
@@ -64,7 +60,7 @@ export function VideoOptions(): ReactElement {
     if (input.objectFit !== undefined)
       inverseInput.objectFit = selectedBlock.objectFit
 
-    await add({
+    add({
       parameters: {
         execute: {
           input
@@ -73,13 +69,13 @@ export function VideoOptions(): ReactElement {
           input: inverseInput
         }
       },
-      async execute({ input }) {
+      execute({ input }) {
         dispatch({
           type: 'SetEditorFocusAction',
           selectedStep,
           selectedBlock
         })
-        await videoBlockUpdate({
+        void videoBlockUpdate({
           variables: {
             id: selectedBlock.id,
             input
@@ -97,7 +93,10 @@ export function VideoOptions(): ReactElement {
   }
 
   return selectedBlock?.__typename === 'VideoBlock' ? (
-    <VideoBlockEditor selectedBlock={selectedBlock} onChange={handleChange} />
+    <VideoBlockEditor
+      selectedBlock={selectedBlock}
+      onChange={async (input) => handleChange(input)}
+    />
   ) : (
     <></>
   )

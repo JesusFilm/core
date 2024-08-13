@@ -277,6 +277,11 @@ export class BlocksFilter {
     typenames?: Nullable<string[]>;
 }
 
+export class BlockDuplicateIdMap {
+    oldId: string;
+    newId: string;
+}
+
 export class ButtonBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
@@ -407,6 +412,12 @@ export class StepBlockCreateInput {
 export class StepBlockUpdateInput {
     nextBlockId?: Nullable<string>;
     locked?: Nullable<boolean>;
+    x?: Nullable<number>;
+    y?: Nullable<number>;
+}
+
+export class StepBlockPositionUpdateInput {
+    id: string;
     x?: Nullable<number>;
     y?: Nullable<number>;
 }
@@ -874,7 +885,7 @@ export abstract class IMutation {
 
     abstract blockDelete(id: string, journeyId?: Nullable<string>, parentBlockId?: Nullable<string>): Block[] | Promise<Block[]>;
 
-    abstract blockDuplicate(id: string, parentOrder?: Nullable<number>, journeyId?: Nullable<string>, x?: Nullable<number>, y?: Nullable<number>): Block[] | Promise<Block[]>;
+    abstract blockDuplicate(id: string, parentOrder?: Nullable<number>, idMap?: Nullable<BlockDuplicateIdMap[]>, journeyId?: Nullable<string>, x?: Nullable<number>, y?: Nullable<number>): Block[] | Promise<Block[]>;
 
     abstract blockOrderUpdate(id: string, parentOrder: number, journeyId?: Nullable<string>): Block[] | Promise<Block[]>;
 
@@ -915,6 +926,8 @@ export abstract class IMutation {
     abstract stepBlockCreate(input: StepBlockCreateInput): StepBlock | Promise<StepBlock>;
 
     abstract stepBlockUpdate(id: string, input: StepBlockUpdateInput, journeyId?: Nullable<string>): StepBlock | Promise<StepBlock>;
+
+    abstract stepBlockPositionUpdate(input: StepBlockPositionUpdateInput[]): StepBlock[] | Promise<StepBlock[]>;
 
     abstract textResponseBlockCreate(input: TextResponseBlockCreateInput): TextResponseBlock | Promise<TextResponseBlock>;
 

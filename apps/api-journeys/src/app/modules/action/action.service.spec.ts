@@ -1,11 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+
+import { Block, Journey } from '.prisma/api-journeys-client'
+
 import { UserTeamRole } from '../../__generated__/graphql'
 import {} from '../../lib/casl/caslFactory'
 import { PrismaService } from '../../lib/prisma.service'
 import { BlockService } from '../block/block.service'
+
 import { ActionService } from './action.service'
-import { Block, Journey } from '.prisma/api-journeys-client'
+
 describe('ActionService', () => {
   const journey = {
     team: { userTeams: [{ userId: 'userId', role: UserTeamRole.manager }] }

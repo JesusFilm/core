@@ -1,4 +1,6 @@
 import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import { useRouter } from 'next/router'
 import {
   AuthAction,
   useUser,
@@ -7,7 +9,6 @@ import {
 } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import { useRouter } from 'next/router'
 import { ReactElement, useEffect } from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
@@ -17,11 +18,12 @@ import {
   GetAdminJourneys,
   GetAdminJourneysVariables
 } from '../__generated__/GetAdminJourneys'
+import { JourneyStatus } from '../__generated__/globalTypes'
 import {
   UpdateLastActiveTeamId,
   UpdateLastActiveTeamIdVariables
 } from '../__generated__/UpdateLastActiveTeamId'
-import { JourneyStatus } from '../__generated__/globalTypes'
+import { HelpScoutBeacon } from '../src/components/HelpScoutBeacon'
 import { JourneyList } from '../src/components/JourneyList'
 import { OnboardingPanel } from '../src/components/OnboardingPanel'
 import { PageWrapper } from '../src/components/PageWrapper'
@@ -39,9 +41,9 @@ function IndexPage(): ReactElement {
   // MA - ensure team is refetched if user is not loaded before provider
   useEffect(() => {
     if (activeTeam == null) {
-      refetch()
+      void refetch()
     }
-  }, [user.id, query, activeTeam])
+  }, [user.id, query, activeTeam, refetch])
 
   return (
     <>
@@ -62,7 +64,19 @@ function IndexPage(): ReactElement {
           </Stack>
         }
         sidePanelChildren={<OnboardingPanel />}
-        sidePanelTitle={t('Create a New Journey')}
+        sidePanelTitle={
+          <>
+            <Typography variant="subtitle1">
+              {t('Create a New Journey')}
+            </Typography>
+            <HelpScoutBeacon
+              userInfo={{
+                name: user?.displayName ?? '',
+                email: user?.email ?? ''
+              }}
+            />
+          </>
+        }
       >
         <JourneyList user={user} />
       </PageWrapper>

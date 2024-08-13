@@ -1,104 +1,148 @@
-import { useCommand } from '@core/journeys/ui/CommandProvider'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useApolloClient } from '@apollo/client'
+
 import { TreeBlock } from '@core/journeys/ui/block'
-import { useState } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useCommand } from '@core/journeys/ui/CommandProvider'
+import {
+  ActiveContent,
+  ActiveSlide,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
+import { BlockFields_CardBlock as CardBlock } from '../../../../../__generated__/BlockFields'
 import { blockDeleteUpdate } from '../../../../libs/blockDeleteUpdate'
 import { useBlockDeleteMutation } from '../../../../libs/useBlockDeleteMutation'
 import { useBlockRestoreMutation } from '../../../../libs/useBlockRestoreMutation'
-import getSelected from '../../Slider/Content/Canvas/QuickControls/DeleteBlock/utils/getSelected'
+
 import { setBlockRestoreEditorState } from './setBlockRestoreEditorState'
 
-export function useBlockDeleteCommand() {
-  const [loading, setLoading] = useState(false)
-  const { t } = useTranslation('apps-journeys-admin')
+export function useBlockDeleteCommand(): {
+  addBlockDelete: (currentBlock: TreeBlock) => void
+} {
   const { add } = useCommand()
   const {
-    state: { selectedBlock, selectedStep, steps },
+    state: { selectedStep, steps },
     dispatch
   } = useEditor()
   const { journey } = useJourney()
   const [blockDelete] = useBlockDeleteMutation()
-
   const [blockRestore] = useBlockRestoreMutation()
 
-  async function addBlockDelete(currentBlock: TreeBlock): Promise<void> {
+  function flatten(children: TreeBlock[]): TreeBlock[] {
+    return children?.reduce<TreeBlock[]>((result, item) => {
+      result.push(item)
+      result.push(...flatten(item.children))
+      return result
+    }, [])
+  }
+  const client = useApolloClient()
+
+  function addBlockDelete(currentBlock: TreeBlock): void {
     if (
       journey == null ||
       steps == null ||
       selectedStep == null ||
       currentBlock?.id == null
-    ) {
+    )
       return
-    }
 
     const deletedBlockParentOrder = currentBlock.parentOrder
-    const deletedBlockType = currentBlock.__typename
-    const stepsBeforeDelete = steps
-    const stepBeforeDelete = selectedStep
-    try {
-      setLoading(true)
-      await add({
-        parameters: {
-          execute: {
-            currentBlock: currentBlock,
-            stepBeforeDelete: stepBeforeDelete,
-            deletedBlockParentOrder,
-            deletedBlockType,
-            stepsBeforeDelete: stepsBeforeDelete,
-            journeyId: journey.id
-          },
-          undo: {
-            currentBlock: currentBlock,
-            stepBeforeDelete: stepBeforeDelete
-          }
-        },
-        async execute({
-          currentBlock,
-          stepBeforeDelete,
-          deletedBlockParentOrder,
-          deletedBlockType,
-          stepsBeforeDelete,
-          journeyId
-        }) {
-          setBlockRestoreEditorState(currentBlock, stepBeforeDelete, dispatch)
-          await blockDelete(currentBlock, {
-            update(cache, { data }) {
-              if (
-                data?.blockDelete != null &&
-                deletedBlockParentOrder != null &&
-                (currentBlock == null || currentBlock?.id === selectedBlock?.id)
-              ) {
-                const selected = getSelected({
-                  parentOrder: deletedBlockParentOrder,
-                  siblings: data.blockDelete,
-                  type: deletedBlockType,
-                  steps: stepsBeforeDelete,
-                  selectedStep: stepBeforeDelete
-                })
-                selected != null && dispatch(selected)
-              }
-              blockDeleteUpdate(
-                currentBlock,
-                data?.blockDelete,
-                cache,
-                journeyId
-              )
-            }
-          })
-        },
-        async undo({ currentBlock, stepBeforeDelete }) {
-          await blockRestore({
-            variables: { id: currentBlock.id }
-          })
-          setBlockRestoreEditorState(currentBlock, stepBeforeDelete, dispatch)
-        }
+    const card = selectedStep?.children?.find(
+      (block) => block.__typename === 'CardBlock'
+    ) as TreeBlock<CardBlock> | undefined
+    const cachedStepWithXandY =
+      client.cache.extract()[`StepBlock:${selectedStep.id}`]
+    const stepSiblingsBeforeDelete = steps.filter(
+      (block) => block.id !== currentBlock.id
+    )
+    const stepSiblingsAfterDelete = stepSiblingsBeforeDelete.map(
+      (block, index) => ({
+        ...block,
+        parentOrder: block.parentOrder != null ? index : null
       })
-    } finally {
-      setLoading(false)
-    }
+    )
+    const canvasSiblingsBeforeDelete =
+      card?.children.filter((block) => block.id !== currentBlock.id) ?? []
+    const canvasSiblingsAfterDelete = canvasSiblingsBeforeDelete.map(
+      (block, index) => ({
+        ...block,
+        parentOrder: block.parentOrder != null ? index : null
+      })
+    )
+    add({
+      parameters: {
+        execute: {},
+        undo: {}
+      },
+      execute() {
+        const nextSelectedStep =
+          stepSiblingsAfterDelete.find(
+            ({ parentOrder }) => parentOrder === deletedBlockParentOrder
+          ) ??
+          stepSiblingsAfterDelete.find(({ parentOrder }) => {
+            return deletedBlockParentOrder != null
+              ? parentOrder === deletedBlockParentOrder - 1
+              : null
+          })
+        currentBlock.__typename === 'StepBlock'
+          ? dispatch({
+              type: 'SetEditorFocusAction',
+              selectedStep: nextSelectedStep,
+              selectedBlock: nextSelectedStep,
+              activeSlide: ActiveSlide.JourneyFlow,
+              activeContent: ActiveContent.Canvas
+            })
+          : dispatch({
+              type: 'SetEditorFocusAction',
+              selectedBlock:
+                deletedBlockParentOrder != null
+                  ? canvasSiblingsAfterDelete.find(
+                      ({ parentOrder }) =>
+                        parentOrder === deletedBlockParentOrder - 1
+                    )
+                  : undefined,
+              selectedStep,
+              activeContent: ActiveContent.Canvas,
+              activeSlide: ActiveSlide.Content
+            })
+
+        void blockDelete(currentBlock, {
+          optimisticResponse: { blockDelete: canvasSiblingsAfterDelete },
+          update(cache, { data }) {
+            blockDeleteUpdate(
+              currentBlock,
+              data?.blockDelete,
+              cache,
+              journey.id
+            )
+          }
+        })
+      },
+      undo() {
+        const flattenedChildren = flatten(currentBlock?.children)
+        setBlockRestoreEditorState(currentBlock, selectedStep, dispatch)
+        void blockRestore({
+          variables: { id: currentBlock.id },
+          optimisticResponse:
+            currentBlock.__typename === 'StepBlock'
+              ? {
+                  blockRestore: [
+                    { ...currentBlock, ...cachedStepWithXandY },
+                    ...flattenedChildren,
+                    ...stepSiblingsBeforeDelete
+                  ]
+                }
+              : {
+                  blockRestore: [
+                    currentBlock,
+                    ...flattenedChildren,
+                    ...canvasSiblingsBeforeDelete
+                  ]
+                }
+        })
+      }
+    })
   }
 
-  return { addBlockDelete, loading }
+  return { addBlockDelete }
 }

@@ -15,9 +15,7 @@ export const blockActionNavigateToBlockUpdateMock: MockedResponse<
     query: BLOCK_ACTION_NAVIGATE_TO_BLOCK_UPDATE,
     variables: {
       id: 'button2.id',
-      input: {
-        blockId: 'step2.id'
-      }
+      blockId: 'step2.id'
     }
   },
   result: {

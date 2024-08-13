@@ -4,6 +4,8 @@ import { ReactElement, useState } from 'react'
 
 import { IMAGE_FIELDS } from '@core/journeys/ui/Image/imageFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
+import { ImageBlockUpdateInput } from '../../../../../../../__generated__/globalTypes'
 import {
   JourneyImageBlockAssociationUpdate,
   JourneyImageBlockAssociationUpdateVariables
@@ -22,7 +24,6 @@ import {
 } from '../../../../../../../__generated__/JourneyImageBlockUpdate'
 import { blockDeleteUpdate } from '../../../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
 
-import { ImageBlockUpdateInput } from '../../../../../../../__generated__/globalTypes'
 import { Large } from './Large'
 import { Small } from './Small'
 

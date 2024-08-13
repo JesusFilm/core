@@ -1,11 +1,12 @@
 import { BullModule, getQueueToken } from '@nestjs/bullmq'
 import { Test, TestingModule } from '@nestjs/testing'
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { setupServer } from 'msw/node'
 
-import { PrismaService } from '../../lib/prisma.service'
 import { Journey, Team } from '.prisma/api-journeys-client'
 
-import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+import { PrismaService } from '../../lib/prisma.service'
+
 import {
   getRealTimeVisitors,
   getRealTimeVisitorsResponse,
@@ -154,6 +155,7 @@ describe('PlausibleService', () => {
     beforeEach(() => {
       server.use(siteCreate)
     })
+
     it('should create a site', async () => {
       expect(await service.createSite('site-name')).toEqual(
         siteCreateResponse.data.siteCreate

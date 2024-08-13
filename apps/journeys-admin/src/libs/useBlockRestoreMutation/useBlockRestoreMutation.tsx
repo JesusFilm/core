@@ -8,8 +8,8 @@ import {
 } from '@apollo/client'
 import compact from 'lodash/compact'
 
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { BLOCK_FIELDS } from '@core/journeys/ui/block/blockFields'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields } from '../../../__generated__/BlockFields'
 import {
@@ -18,26 +18,29 @@ import {
 } from '../../../__generated__/BlockRestore'
 
 export const BLOCK_RESTORE = gql`
-${BLOCK_FIELDS}
-mutation BlockRestore($id: ID!) {
-  blockRestore(id: $id) {
-    id
-    ...BlockFields
-    ... on StepBlock {
+  ${BLOCK_FIELDS}
+  mutation BlockRestore($id: ID!) {
+    blockRestore(id: $id) {
       id
-      x
-      y
+      ...BlockFields
+      ... on StepBlock {
+        id
+        x
+        y
+      }
     }
   }
-}`
+`
 
 export function blockRestoreUpdate(
   selectedBlock: { id: string } | undefined,
-  response: { id: string; __typename: BlockFields['__typename'] }[] | undefined,
-  // biome-ignore lint/suspicious/noExplicitAny: update function gives this type
+  response:
+    | Array<{ id: string; __typename: BlockFields['__typename'] }>
+    | undefined,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   cache: ApolloCache<any>,
   journeyId: string | undefined
-) {
+): void {
   if (response != null) {
     const selected = response.find((block) => selectedBlock?.id === block.id)
     const cacheOptions = {
@@ -54,10 +57,10 @@ export function blockRestoreUpdate(
             return cache.writeFragment({
               data: block,
               fragment: gql`
-                    fragment RestoredBlock on Block {
-                      id
-                    }
-                  `
+                fragment RestoredBlock on Block {
+                  id
+                }
+              `
             })
           })
           return [...existingBlockRefs, ...compact(newBlockRef)]
@@ -87,7 +90,7 @@ export function useBlockRestoreMutation(
   return useMutation<BlockRestore, BlockRestoreVariables>(BLOCK_RESTORE, {
     update(cache, { data }, { variables }) {
       blockRestoreUpdate(
-        variables?.id ? { id: variables.id } : undefined,
+        variables?.id != null ? { id: variables.id } : undefined,
         data?.blockRestore,
         cache,
         journey?.id

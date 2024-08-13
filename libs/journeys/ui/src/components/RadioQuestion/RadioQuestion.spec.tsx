@@ -3,12 +3,12 @@ import { fireEvent, render, waitFor, within } from '@testing-library/react'
 import { usePlausible } from 'next-plausible'
 import TagManager from 'react-gtm-module'
 
-import { keyify } from '@core/journeys/ui/plausibleHelpers'
-import { JourneyProvider } from '../../libs/JourneyProvider'
-import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
 import type { TreeBlock } from '../../libs/block'
 import { blockHistoryVar, treeBlocksVar } from '../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
+import { JourneyProvider } from '../../libs/JourneyProvider'
+import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
+import { keyify } from '../../libs/plausibleHelpers'
 
 import { RadioQuestionFields } from './__generated__/RadioQuestionFields'
 
@@ -87,6 +87,7 @@ const journey = {
 describe('RadioQuestion', () => {
   const originalLocation = window.location
   const mockOrigin = 'https://example.com'
+
   beforeAll(() => {
     Object.defineProperty(window, 'location', {
       value: {
@@ -278,6 +279,7 @@ describe('RadioQuestion', () => {
       })
     )
   })
+
   it('should add radio submission to plausible', async () => {
     blockHistoryVar([activeBlock])
     treeBlocksVar([activeBlock])

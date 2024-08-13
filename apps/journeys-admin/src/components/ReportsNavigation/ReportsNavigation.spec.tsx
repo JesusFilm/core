@@ -1,3 +1,4 @@
+/* eslint-disable jest/no-identical-title */
 import { render, screen } from '@testing-library/react'
 
 import { ReportsNavigation } from './ReportsNavigation'

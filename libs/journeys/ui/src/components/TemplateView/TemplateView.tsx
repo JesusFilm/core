@@ -2,18 +2,19 @@ import Container from '@mui/material/Container'
 import Paper from '@mui/material/Paper'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { useTheme } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import { User } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 import { SwiperOptions } from 'swiper/types'
 
-import { ContentCarousel } from '@core/shared/ui/ContentCarousel'
+import { ContentCarousel } from '@core/journeys/ui/ContentCarousel'
 import { Role } from '../../../__generated__/globalTypes'
 import { useJourney } from '../../libs/JourneyProvider'
 import { useJourneysQuery } from '../../libs/useJourneysQuery'
 import { useUserRoleQuery } from '../../libs/useUserRoleQuery'
+import { ContentCarousel } from '../ContentCarousel'
 import { StrategySection } from '../StrategySection'
 import { TemplateGalleryCard } from '../TemplateGalleryCard'
 
@@ -43,7 +44,8 @@ export function TemplateView({
       where: {
         template: true,
         orderByRecent: true,
-        tagIds
+        tagIds,
+        limit: 10
       }
     }
   })
@@ -96,7 +98,7 @@ export function TemplateView({
       <Container
         maxWidth={false}
         sx={{
-          overflow: hideOverflow ? 'hidden' : 'none',
+          overflow: hideOverflow === true ? 'hidden' : 'none',
           mx: { xs: 0 },
           px: { xs: 0 },
           py: { xs: 6, sm: 9 }

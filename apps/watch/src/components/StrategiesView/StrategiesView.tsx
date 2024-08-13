@@ -1,21 +1,24 @@
-import { SearchBar } from '@core/journeys/ui/SearchBar'
-import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import { ReactElement } from 'react'
-import { ResourceHeading } from '../ResourceHeading'
-import { StrategySections } from '../StrategySections'
+
+import { ResourceHeading } from '@core/journeys/ui/ResourceHeading'
+import { SearchBar } from '@core/journeys/ui/SearchBar'
+
+import { PageWrapper } from '../PageWrapper'
+
+import { StrategySections } from './StrategySections'
 
 export function StrategiesView(): ReactElement {
   return (
-    <Box sx={{ backgroundColor: 'background.default' }}>
-      <Container maxWidth="xxl">
-        <Stack sx={{ p: 4, gap: 4 }}>
+    <PageWrapper>
+      <Container maxWidth="xxl" sx={{ px: { xs: 0 }, py: { xs: 6, sm: 9 } }}>
+        <Stack sx={{ p: 0, gap: 10 }}>
           <ResourceHeading heading="Resource" />
           <SearchBar />
-          <StrategySections index />
+          <StrategySections includeIndex />
         </Stack>
       </Container>
-    </Box>
+    </PageWrapper>
   )
 }

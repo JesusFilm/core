@@ -3,8 +3,6 @@ import reject from 'lodash/reject'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 
-import { GetJourney_journey_blocks as Block } from '../../../__generated__/GetJourney'
-
 interface BlockIdentifier {
   __typename: TreeBlock['__typename']
   id: string
@@ -16,16 +14,14 @@ const getNestedChildRefs = (
   results: string[] = []
 ): string[] => {
   results.push(`${block.__typename}:${block.id}`)
-  ;(block as TreeBlock<Block>).children?.forEach((child) => {
-    results = getNestedChildRefs(child, results)
-  })
+  block.children?.forEach((child) => getNestedChildRefs(child, results))
   return results
 }
 
 export const blockDeleteUpdate = (
   selectedBlock: BlockIdentifier,
-  response: (BlockIdentifier & { parentOrder?: number | null })[] | undefined,
-  // biome-ignore lint/suspicious/noExplicitAny: update function gives this type
+  response: Array<BlockIdentifier & { parentOrder: number | null }> | undefined,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   cache: ApolloCache<any>,
   journeyId: string
 ): void => {
@@ -38,7 +34,7 @@ export const blockDeleteUpdate = (
         }),
         fields: {
           parentOrder() {
-            return block.parentOrder ?? null
+            return block.parentOrder
           }
         }
       })

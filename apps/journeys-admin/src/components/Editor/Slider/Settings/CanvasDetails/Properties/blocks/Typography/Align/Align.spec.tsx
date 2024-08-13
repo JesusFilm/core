@@ -1,14 +1,16 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
-import { Align } from '.'
 import { BlockFields_TypographyBlock as TypographyBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import { TypographyAlign } from '../../../../../../../../../../__generated__/globalTypes'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
+
 import { TYPOGRAPHY_BLOCK_UPDATE_ALIGN } from './Align'
+
+import { Align } from '.'
 
 describe('Typography align selector', () => {
   it('should show typography align properties', () => {

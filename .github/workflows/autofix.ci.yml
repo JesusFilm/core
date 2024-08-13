@@ -60,12 +60,13 @@ jobs:
         with:
           targets: codegen
           all: true
-      - name: Setup Biome
-        uses: biomejs/setup-biome@v2
+      - name: Run Prettier
+        run: npm run prettier:fix
+      - name: Run ESLint
+        uses: mansagroup/nrwl-nx-action@v3
         with:
-          version: latest
-      - name: Run Biome
-        run: biome check --write .
+          targets: lint
+          args: --fix
       - name: type-check, extract-translations, subgraph-check
         uses: mansagroup/nrwl-nx-action@v3
         with:

@@ -8,10 +8,12 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
+
 import {
   BlockRestore,
   BlockRestoreVariables
 } from '../../../__generated__/BlockRestore'
+
 import {
   BLOCK_RESTORE,
   useBlockRestoreMutation

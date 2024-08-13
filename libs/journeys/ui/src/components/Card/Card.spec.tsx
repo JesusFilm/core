@@ -9,8 +9,6 @@ import {
   ThemeName,
   VideoBlockSource
 } from '../../../__generated__/globalTypes'
-import { JourneyProvider } from '../../libs/JourneyProvider'
-import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
 import {
   type TreeBlock,
   blockHistoryVar,
@@ -21,15 +19,17 @@ import {
   BlockFields_StepBlock as StepBlock
 } from '../../libs/block/__generated__/BlockFields'
 import { blurImage } from '../../libs/blurImage'
+import { JourneyProvider } from '../../libs/JourneyProvider'
+import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
+import { keyify } from '../../libs/plausibleHelpers/plausibleHelpers'
 import { ImageFields } from '../Image/__generated__/ImageFields'
-import { STEP_VIEW_EVENT_CREATE } from '../Step/Step'
 import { StepViewEventCreate } from '../Step/__generated__/StepViewEventCreate'
+import { STEP_VIEW_EVENT_CREATE } from '../Step/Step'
 import { VideoFields } from '../Video/__generated__/VideoFields'
 
-import { keyify } from '../../libs/plausibleHelpers/plausibleHelpers'
-import { STEP_NEXT_EVENT_CREATE, STEP_PREVIOUS_EVENT_CREATE } from './Card'
 import { StepNextEventCreate } from './__generated__/StepNextEventCreate'
 import { StepPreviousEventCreate } from './__generated__/StepPreviousEventCreate'
+import { STEP_NEXT_EVENT_CREATE, STEP_PREVIOUS_EVENT_CREATE } from './Card'
 
 import { Card } from '.'
 
@@ -71,6 +71,7 @@ describe('CardBlock', () => {
 
   const originalLocation = window.location
   const mockOrigin = 'https://example.com'
+
   beforeAll(() => {
     Object.defineProperty(window, 'location', {
       value: {
@@ -416,18 +417,20 @@ describe('CardBlock', () => {
     expect(queryAllByText('How did we get here?')[0]).toBeInTheDocument()
   })
 
-  it('should render contained cover with video cover', () => {
+  it('should render contained cover with video cover regardless of fullscreen true', () => {
     const { queryByTestId, queryAllByText } = render(
       <MockedProvider>
         <Card
           {...{ ...block, children: [...block.children, videoBlock] }}
           coverBlockId="videoBlockId"
+          fullscreen
         />
       </MockedProvider>
     )
     const standaloneVideoBlock = queryByTestId(`JourneysVideo-${videoBlock.id}`)
 
     expect(queryByTestId('CardContainedCover')).toBeInTheDocument()
+    expect(queryByTestId('CardExpandedImageCover')).not.toBeInTheDocument()
     expect(queryByTestId('video-poster-image')).toHaveAccessibleName(
       'card video image'
     )
