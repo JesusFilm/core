@@ -50,6 +50,7 @@ jobs:
             .cache/eslint
             .cache/tsc
           key: ${{ runner.os }}-node-${{ hashFiles('**/.eslintrc.json', '**/tsconfig.json') }}
+          restore-keys: ${{ runner.os }}-node-
       - name: NPM Install
         run: npm install --silent
       - name: generate prisma imports
