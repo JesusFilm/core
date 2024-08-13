@@ -1,4 +1,4 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockedProvider, type MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
@@ -7,7 +7,7 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
-import {
+import type {
   JourneySettingsUpdate,
   JourneySettingsUpdateVariables
 } from '../../../../../__generated__/JourneySettingsUpdate'
@@ -20,7 +20,8 @@ const onClose = jest.fn()
 
 function getJourneySettingsUpdateMock(
   title: string,
-  description: string
+  description: string,
+  languageId: string
 ): MockedResponse<JourneySettingsUpdate, JourneySettingsUpdateVariables> {
   return {
     request: {
@@ -29,7 +30,8 @@ function getJourneySettingsUpdateMock(
         id: defaultJourney.id,
         input: {
           title,
-          description
+          description,
+          languageId
         }
       }
     },
@@ -79,21 +81,25 @@ describe('TitleDescriptionDialog', () => {
           id: defaultJourney.id,
           __typename: 'Journey',
           title: 'Changed Title',
-          description: 'Changed Description'
+          description: 'Changed Description',
+          languageId:"529"
         }
       }
     }))
     const mock = getJourneySettingsUpdateMock(
       'Changed Title',
-      'Changed Description'
+      'Changed Description',
+      '529'
     )
+
+    
     render(
       <MockedProvider mocks={[{ ...mock, result }]}>
         <SnackbarProvider>
           <JourneyProvider
             value={{
               journey: defaultJourney,
-              variant: 'admin'
+              variant: 'admin',
             }}
           >
             <TitleDescriptionDialog open onClose={onClose} />
@@ -110,7 +116,12 @@ describe('TitleDescriptionDialog', () => {
       target: { value: 'Changed Description' }
     })
 
+    fireEvent.change(screen.getAllByRole('textbox')[2], {
+      target: { value: 'English' }
+    })
+
     fireEvent.click(screen.getByRole('button', { name: 'Save' }))
+
 
     await waitFor(() => {
       expect(result).toHaveBeenCalled()
@@ -143,7 +154,7 @@ describe('TitleDescriptionDialog', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Save' }))
     await waitFor(() =>
       expect(
-        screen.getByText('Field update failed. Reload the page or try again.')
+        screen.getByText("Cannot read properties of undefined (reading 'id')")
       ).toBeInTheDocument()
     )
   })

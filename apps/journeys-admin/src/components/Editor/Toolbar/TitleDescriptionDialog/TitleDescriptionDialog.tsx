@@ -83,12 +83,24 @@ export function TitleDescriptionDialog({
   }
 
   function handleClose(resetForm: (values: FormikValues) => void): () => void {
+
+
     return () => {
       onClose()
-      // wait for dialog animation to complete
       setTimeout(() =>
         resetForm({
-          values: { title: journey?.title, description: journey?.description }
+          values: { title: journey?.title, description: journey?.description, language:
+                journey != null
+                  ? {
+                      id: journey.language.id,
+                      localName: journey.language.name.find(
+                        ({ primary }) => !primary
+                      )?.value,
+                      nativeName: journey.language.name.find(
+                        ({ primary }) => primary
+                      )?.value
+                    }
+                  : undefined }
         })
       )
     }
@@ -111,7 +123,7 @@ export function TitleDescriptionDialog({
             handleChange,
             handleSubmit,
             resetForm,
-            setFieldValue
+            setFieldValue,
           }) => (
             <Dialog
               open={open}
