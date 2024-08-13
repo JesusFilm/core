@@ -40,10 +40,8 @@ export function useAlgoliaRouter(): FilterParams {
         refresh()
       }
     } else {
-      // Refine doesn't take affect immediately
-      setTimeout(() => {
-        refineLanguages('529')
-      })
+      // Refine doesn't take affect if called immediately
+      setTimeout(() => refineLanguages('529'))
     }
   }, [])
 
