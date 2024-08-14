@@ -2685,6 +2685,7 @@ type TypographyBlock implements Block
   content: String!
   variant: TypographyVariant
   color: TypographyColor
+  customColor: String
   align: TypographyAlign
 }
 
@@ -2697,6 +2698,7 @@ input TypographyBlockCreateInput
   content: String!
   variant: TypographyVariant
   color: TypographyColor
+  customColor: String
   align: TypographyAlign
 }
 
@@ -2707,6 +2709,7 @@ input TypographyBlockUpdateInput
   content: String
   variant: TypographyVariant
   color: TypographyColor
+  customColor: String
   align: TypographyAlign
 }
 

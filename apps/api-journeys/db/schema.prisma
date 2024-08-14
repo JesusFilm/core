@@ -436,6 +436,7 @@ model Block {
   label                   String?
   variant                 String?
   color                   String?
+  customColor             String?
   size                    String?
   startIconId             String?
   endIconId               String?
