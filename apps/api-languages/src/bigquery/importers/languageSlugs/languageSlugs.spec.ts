@@ -1,6 +1,6 @@
 import { prismaMock } from '../../../../test/prismaMock'
 
-import { importLanguageSlugs } from './languageSlug'
+import { importLanguageSlugs } from './languageSlugs'
 
 const englishWithSlug = {
   id: '529',

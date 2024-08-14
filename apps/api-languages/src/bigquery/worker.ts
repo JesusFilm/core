@@ -6,7 +6,7 @@ import { importCountryLanguages } from './importers/countryLanguages/countryLang
 import { importCountryNames } from './importers/countryNames/countryNames'
 import { importLanguageNames } from './importers/languageNames/languageNames'
 import { importLanguages } from './importers/languages/languages'
-import { importLanguageSlugs } from './importers/languageSlug/languageSlug'
+import { importLanguageSlugs } from './importers/languageSlugs/languageSlugs'
 import { bullConnection, queueName } from './queue'
 
 export const jobName = 'import-languages'
