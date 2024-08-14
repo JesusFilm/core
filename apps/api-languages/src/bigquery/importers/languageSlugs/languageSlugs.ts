@@ -1,6 +1,7 @@
 import { languageSlugs } from '../../../__generated__/languageSlugs'
 import { prisma } from '../../../lib/prisma'
 import { slugify } from '../../../lib/slugify'
+import { convertToSlug } from '../../../lib/slugify/slugify'
 
 export async function importLanguageSlugs(): Promise<void> {
   const emptyExistingSlugs = await prisma.language.findFirst({
@@ -13,15 +14,19 @@ export async function importLanguageSlugs(): Promise<void> {
   if (emptyExistingSlugs == null) {
     console.log('importing AEM language slugs')
     for (const key of Object.keys(languageSlugs)) {
-      const slug = languageSlugs[key]
-      await prisma.language.update({
-        where: {
-          id: key
-        },
-        data: {
-          slug
-        }
-      })
+      try {
+        const slug = languageSlugs[key]
+        await prisma.language.update({
+          where: {
+            id: key
+          },
+          data: {
+            slug
+          }
+        })
+      } catch (error) {
+        console.error(`Error updating slug for language ${key}`)
+      }
     }
     console.log('finished importing AEM language slugs')
   } else {
@@ -68,20 +73,28 @@ export async function importLanguageSlugs(): Promise<void> {
       (languageName) => languageName.parentLanguageId === language.id
     )
     if (languageName == null) continue
-    const slug = slugify(language.id, languageName.value, existingSlugs)
+    const slug = slugify(
+      language.id,
+      convertToSlug(languageName.value),
+      existingSlugs
+    )
     newLanguageSlugs[language.id] = slug
     existingSlugs[language.id] = slug
   }
 
   for (const languageId of Object.keys(newLanguageSlugs)) {
-    await prisma.language.update({
-      where: {
-        id: languageId
-      },
-      data: {
-        slug: newLanguageSlugs[languageId]
-      }
-    })
+    try {
+      await prisma.language.update({
+        where: {
+          id: languageId
+        },
+        data: {
+          slug: newLanguageSlugs[languageId]
+        }
+      })
+    } catch (error) {
+      console.error(`Error updating slug for language ${languageId}`)
+    }
   }
 
   console.log('finished generating new language slugs')
