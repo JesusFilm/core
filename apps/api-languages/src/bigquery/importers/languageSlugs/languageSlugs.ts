@@ -14,15 +14,19 @@ export async function importLanguageSlugs(): Promise<void> {
   if (emptyExistingSlugs == null) {
     console.log('importing AEM language slugs')
     for (const key of Object.keys(languageSlugs)) {
-      const slug = languageSlugs[key]
-      await prisma.language.update({
-        where: {
-          id: key
-        },
-        data: {
-          slug
-        }
-      })
+      try {
+        const slug = languageSlugs[key]
+        await prisma.language.update({
+          where: {
+            id: key
+          },
+          data: {
+            slug
+          }
+        })
+      } catch (error) {
+        console.error(`Error updating slug for language ${key}`)
+      }
     }
     console.log('finished importing AEM language slugs')
   } else {
@@ -79,14 +83,18 @@ export async function importLanguageSlugs(): Promise<void> {
   }
 
   for (const languageId of Object.keys(newLanguageSlugs)) {
-    await prisma.language.update({
-      where: {
-        id: languageId
-      },
-      data: {
-        slug: newLanguageSlugs[languageId]
-      }
-    })
+    try {
+      await prisma.language.update({
+        where: {
+          id: languageId
+        },
+        data: {
+          slug: newLanguageSlugs[languageId]
+        }
+      })
+    } catch (error) {
+      console.error(`Error updating slug for language ${languageId}`)
+    }
   }
 
   console.log('finished generating new language slugs')
