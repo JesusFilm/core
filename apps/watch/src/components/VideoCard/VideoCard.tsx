@@ -4,7 +4,7 @@ import ButtonBase from '@mui/material/ButtonBase'
 import Link from '@mui/material/Link'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
-import { SxProps, styled } from '@mui/material/styles'
+import { type SxProps, styled, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import NextLink from 'next/link'
@@ -67,13 +67,15 @@ export function VideoCard({
   active,
   imageSx
 }: VideoCardProps): ReactElement {
+  const { t } = useTranslation('apps-watch')
+  const theme = useTheme()
+
   const { label, color, childCountLabel } = getLabelDetails(
     video?.label,
     video?.childrenCount ?? 0
   )
   const href = getSlug(containerSlug, video?.label, video?.variant?.slug)
 
-  const { t } = useTranslation('apps-watch')
   return (
     <NextLink href={href} passHref legacyBehavior>
       <Link
@@ -116,7 +118,11 @@ export function VideoCard({
                   src={video.image}
                   alt={video.title[0].value}
                   fill
-                  sizes="100vw"
+                  sizes={`(max-width: ${
+                    theme.breakpoints.values.md - 0.5
+                  }) 100vw, (max-width: ${
+                    theme.breakpoints.values.xl - 0.5
+                  }) 33vw, 20vw`}
                   style={{
                     objectFit: 'cover',
                     objectPosition: 'left top'
