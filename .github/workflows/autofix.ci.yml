@@ -43,12 +43,10 @@ jobs:
           path: node_modules
           key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
           restore-keys: node-modules-${{ matrix.node-version }}-
-      - name: Setup ESlint and TS Cache
+      - name: Setup Cache
         uses: actions/cache@v3
         with:
-          path: |
-            .cache/eslint
-            .cache/tsc
+          path: .cache
           key: lint-cache-${{ matrix.node-version }}-${{ hashFiles('**/.eslintrc.json', '**/tsconfig.json') }}
           restore-keys: lint-cache-${{ matrix.node-version }}-
       - name: NPM Install
