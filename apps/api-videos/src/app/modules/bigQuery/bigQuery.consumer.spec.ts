@@ -7,6 +7,7 @@ import { ImporterBibleBookNamesService } from '../importer/importerBibleBookName
 import { ImporterBibleBooksService } from '../importer/importerBibleBooks/importerBibleBooks.service'
 import { ImporterBibleCitationsService } from '../importer/importerBibleCitations/importerBibleCitations.service'
 import { ImporterKeywordsService } from '../importer/importerKeywords/importerKeywords.service'
+import { ImporterLanguageSlugsService } from '../importer/importerLanguageSlugs/importerLanguageSlugs.service'
 import { ImporterVideoDescriptionService } from '../importer/importerVideoDescriptions/importerVideoDescriptions.service'
 import { ImporterVideoImageAltService } from '../importer/importerVideoImageAlt/importerVideoImageAlt.service'
 import { ImporterVideosService } from '../importer/importerVideos/importerVideos.service'
@@ -95,6 +96,10 @@ describe('BigQueryConsumer', () => {
         {
           provide: ImporterKeywordsService,
           useValue: mockDeep<ImporterKeywordsService>()
+        },
+        {
+          provide: ImporterLanguageSlugsService,
+          useValue: mockDeep<ImporterLanguageSlugsService>()
         }
       ]
     }).compile()
