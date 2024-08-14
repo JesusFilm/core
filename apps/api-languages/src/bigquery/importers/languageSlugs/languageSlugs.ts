@@ -1,6 +1,7 @@
 import { languageSlugs } from '../../../__generated__/languageSlugs'
 import { prisma } from '../../../lib/prisma'
 import { slugify } from '../../../lib/slugify'
+import { convertToSlug } from '../../../lib/slugify/slugify'
 
 export async function importLanguageSlugs(): Promise<void> {
   const emptyExistingSlugs = await prisma.language.findFirst({
@@ -68,7 +69,11 @@ export async function importLanguageSlugs(): Promise<void> {
       (languageName) => languageName.parentLanguageId === language.id
     )
     if (languageName == null) continue
-    const slug = slugify(language.id, languageName.value, existingSlugs)
+    const slug = slugify(
+      language.id,
+      convertToSlug(languageName.value),
+      existingSlugs
+    )
     newLanguageSlugs[language.id] = slug
     existingSlugs[language.id] = slug
   }
