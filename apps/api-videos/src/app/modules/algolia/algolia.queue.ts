@@ -37,6 +37,11 @@ export class AlgoliaQueue implements OnModuleInit {
 
     // Schedule a new instance
     this.logger.log('Scheduling new Algolia sync job')
-    await this.algoliaQueue.add(name, {})
+    await this.algoliaQueue.add(
+      name,
+      {}
+      // add back after algolia stage index update
+      // { repeat: { pattern: '0 0 0 * * *' } }
+    )
   }
 }

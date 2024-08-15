@@ -7,15 +7,19 @@ import { Translation } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 
 const ENGLISH_LANGUAGE_ID = '529'
-const SPANISH_LANGUAGE_ID = '21046'
+const SPANISH_CASTILIAN_LANGUAGE_ID = '21046'
+const SPANISH_LATIN_AMERICAN_LANGUAGE_ID = '21028'
+const CHINESE_TRADITIONAL_LANGUAGE_ID = '21753'
 const CHINESE_SIMPLIFIED_LANGUAGE_ID = '21754'
+const CHINESE_MANDARIN_LANGUAGE_ID = '20615'
+const CHINESE_CANTONESE_LANGUAGE_ID = '20601'
 
-const apollo = new ApolloClient({
+export const apollo = new ApolloClient({
   uri: process.env.GATEWAY_URL,
   cache: new InMemoryCache()
 })
 
-const GET_LANGUAGES = graphql(`
+export const GET_LANGUAGES = graphql(`
   query getLanguages {
     languages {
       id
@@ -103,8 +107,12 @@ export class AlgoliaService {
                   languageId: {
                     in: [
                       ENGLISH_LANGUAGE_ID,
-                      SPANISH_LANGUAGE_ID,
-                      CHINESE_SIMPLIFIED_LANGUAGE_ID
+                      SPANISH_CASTILIAN_LANGUAGE_ID,
+                      SPANISH_LATIN_AMERICAN_LANGUAGE_ID,
+                      CHINESE_TRADITIONAL_LANGUAGE_ID,
+                      CHINESE_SIMPLIFIED_LANGUAGE_ID,
+                      CHINESE_MANDARIN_LANGUAGE_ID,
+                      CHINESE_CANTONESE_LANGUAGE_ID
                     ]
                   }
                 }

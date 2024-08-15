@@ -1,4 +1,3 @@
-import { ApolloClient, ApolloQueryResult } from '@apollo/client'
 import { Test, TestingModule } from '@nestjs/testing'
 import algoliasearch from 'algoliasearch'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
@@ -8,7 +7,7 @@ import { VideoVariant } from '.prisma/api-videos-client'
 
 import { PrismaService } from '../../lib/prisma.service'
 
-import { AlgoliaService } from './algolia.service'
+import { AlgoliaService, GET_LANGUAGES, apollo } from './algolia.service'
 
 const saveObjectsSpy = jest
   .fn()
@@ -16,6 +15,42 @@ const saveObjectsSpy = jest
 
 const initIndexSpy = jest.fn().mockReturnValue({
   saveObjects: saveObjectsSpy
+})
+
+jest.mock('@apollo/client', () => {
+  const originalModule = jest.requireActual('@apollo/client')
+  return {
+    ...originalModule,
+    __esModule: true,
+    ApolloClient: jest.fn().mockImplementation(() => ({
+      query: jest.fn().mockResolvedValue({
+        data: {
+          languages: [
+            {
+              id: '21754',
+              name: [
+                {
+                  value: 'Chinese, Simplified',
+                  primary: false,
+                  language: {
+                    id: '529'
+                  }
+                },
+                {
+                  value: '简体中文',
+                  primary: true,
+                  language: {
+                    id: '21754'
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      })
+    })),
+    InMemoryCache: jest.fn()
+  }
 })
 
 jest.mock('algoliasearch', () => {
@@ -33,31 +68,8 @@ const mockAlgoliaSearch = algoliasearch as jest.MockedFunction<
 describe('AlgoliaService', () => {
   let service: AlgoliaService
   let prismaService: DeepMockProxy<PrismaService>
-  let mockApollo
 
   const originalEnv = clone(process.env)
-
-  const languages = [
-    {
-      id: '21754',
-      name: [
-        {
-          value: 'Chinese, Simplified',
-          primary: false,
-          language: {
-            id: '529'
-          }
-        },
-        {
-          value: '简体中文',
-          primary: true,
-          language: {
-            id: '21754'
-          }
-        }
-      ]
-    }
-  ]
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -75,17 +87,6 @@ describe('AlgoliaService', () => {
       PrismaService
     ) as DeepMockProxy<PrismaService>
     process.env = originalEnv
-
-    mockApollo = jest
-      .spyOn(ApolloClient.prototype, 'query')
-      .mockImplementationOnce(
-        async () =>
-          await Promise.resolve({
-            data: {
-              languages
-            }
-          } as unknown as ApolloQueryResult<unknown>)
-      )
   })
 
   afterEach(() => {
@@ -129,7 +130,7 @@ describe('AlgoliaService', () => {
         .mockResolvedValueOnce([])
 
       await service.syncVideosToAlgolia()
-      expect(mockApollo).toHaveBeenCalled()
+      expect(apollo.query).toHaveBeenCalledWith({ query: GET_LANGUAGES })
       expect(prismaService.videoVariant.findMany).toHaveBeenCalledWith({
         take: 1000,
         skip: 0,
@@ -148,8 +149,12 @@ describe('AlgoliaService', () => {
           languageId: {
             in: [
               '529', // English
-              '21046', // Spanish
-              '21754' // Chinese Simplified
+              '21046', // Spanish, Castilian
+              '21028', // Spanish, Latin American
+              '21753', // Chinese, Traditional
+              '21754', // Chinese, Simplified
+              '20615', // Chinese, Mandarin
+              '20601' // Chinese, Cantonese
             ]
           }
         }
