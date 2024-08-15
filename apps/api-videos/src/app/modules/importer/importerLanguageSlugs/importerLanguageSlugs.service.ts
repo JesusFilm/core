@@ -1,14 +1,15 @@
-import { ApolloClient, InMemoryCache, gql } from '@apollo/client'
+import { ApolloClient, InMemoryCache } from '@apollo/client'
 import { Injectable } from '@nestjs/common'
+import { graphql } from 'gql.tada'
 
-export const GET_LANGUAGE_SLUGS = gql`
+export const GET_LANGUAGE_SLUGS = graphql(`
   query GetLanguageSlugs {
     languages {
       id
       slug
     }
   }
-`
+`)
 
 export const apollo = new ApolloClient({
   uri: process.env.GATEWAY_URL,
