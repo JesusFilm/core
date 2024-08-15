@@ -13,10 +13,7 @@ export const GET_LANGUAGE_SLUGS = graphql(`
 
 export const apollo = new ApolloClient({
   uri: process.env.GATEWAY_URL,
-  cache: new InMemoryCache(),
-  headers: {
-    'interop-token': process.env.INTEROP_TOKEN ?? ''
-  }
+  cache: new InMemoryCache()
 })
 
 @Injectable()
