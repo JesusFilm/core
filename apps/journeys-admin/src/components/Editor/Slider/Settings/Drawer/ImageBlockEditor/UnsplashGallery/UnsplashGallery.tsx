@@ -1,16 +1,20 @@
-import { gql, useMutation, useQuery } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 import LoadingButton from '@mui/lab/LoadingButton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useState } from 'react'
 
+import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/BlockFields'
+import { ImageBlockUpdateInput } from '../../../../../../../../__generated__/globalTypes'
 import {
-  ListUnsplashCollectionPhotos_listUnsplashCollectionPhotos as CollectionPhotos,
-  ListUnsplashCollectionPhotos
+  ListUnsplashCollectionPhotos,
+  ListUnsplashCollectionPhotosVariables
 } from '../../../../../../../../__generated__/ListUnsplashCollectionPhotos'
-import { SearchUnsplashPhotos } from '../../../../../../../../__generated__/SearchUnsplashPhotos'
-import { TriggerUnsplashDownload } from '../../../../../../../../__generated__/TriggerUnsplashDownload'
+import {
+  SearchUnsplashPhotos,
+  SearchUnsplashPhotosVariables
+} from '../../../../../../../../__generated__/SearchUnsplashPhotos'
 
 import { UnsplashCollections } from './UnsplashCollections'
 import { UnsplashList } from './UnsplashList'
@@ -35,7 +39,7 @@ export const LIST_UNSPLASH_COLLECTION_PHOTOS = gql`
       width
       height
       urls {
-        small
+        raw
         regular
       }
       links {
@@ -60,7 +64,7 @@ export const SEARCH_UNSPLASH_PHOTOS = gql`
         width
         height
         urls {
-          small
+          raw
           regular
         }
         links {
@@ -76,154 +80,116 @@ export const SEARCH_UNSPLASH_PHOTOS = gql`
   }
 `
 
-export const TRIGGER_UNSPLASH_DOWNLOAD = gql`
-  mutation TriggerUnsplashDownload($url: String!) {
-    triggerUnsplashDownload(url: $url)
-  }
-`
-
 export interface UnsplashAuthor {
   fullname: string
   username: string
+  src: string
 }
 
 interface UnsplashGalleryProps {
-  onChange: (
-    src: string,
-    unsplashAuthor: UnsplashAuthor,
-    blurhash?: string,
-    width?: number,
-    height?: number
-  ) => void
+  selectedBlock?: ImageBlock | null
+  onChange: (input: ImageBlockUpdateInput) => void
 }
 
+const PER_PAGE = 20
+
 export function UnsplashGallery({
+  selectedBlock,
   onChange
 }: UnsplashGalleryProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [query, setQuery] = useState<string>()
-  const [page, setPage] = useState(1)
+  const [query, setQuery] = useState('')
   const [collectionId, setCollectionId] = useState(DEFAULT_COLLECTION_ID)
-
-  useEffect(() => {
-    setPage(1)
-  }, [collectionId])
-
-  const [triggerUnsplashDownload] = useMutation<TriggerUnsplashDownload>(
-    TRIGGER_UNSPLASH_DOWNLOAD
-  )
 
   const {
     data: collectionData,
     loading: loadingCollection,
-    refetch: refetchCollection,
     fetchMore: fetchMoreCollection
-  } = useQuery<ListUnsplashCollectionPhotos>(LIST_UNSPLASH_COLLECTION_PHOTOS, {
-    skip: query != null,
+  } = useQuery<
+    ListUnsplashCollectionPhotos,
+    ListUnsplashCollectionPhotosVariables
+  >(LIST_UNSPLASH_COLLECTION_PHOTOS, {
+    skip: query !== '',
     notifyOnNetworkStatusChange: true,
-    variables: { collectionId, page, perPage: 20 }
+    variables: { collectionId, page: 1, perPage: PER_PAGE }
   })
 
   const {
     data: searchData,
     loading: loadingSearch,
-    refetch: refetchSearch,
     fetchMore: fetchMoreSearch
-  } = useQuery<SearchUnsplashPhotos>(SEARCH_UNSPLASH_PHOTOS, {
-    skip: query == null,
-    notifyOnNetworkStatusChange: true,
-    variables: { query, page, perPage: 20 }
-  })
+  } = useQuery<SearchUnsplashPhotos, SearchUnsplashPhotosVariables>(
+    SEARCH_UNSPLASH_PHOTOS,
+    {
+      skip: query === '',
+      notifyOnNetworkStatusChange: true,
+      variables: { query, page: 1, perPage: PER_PAGE }
+    }
+  )
 
-  async function handleChange(
-    src: string,
-    unsplashAuthor: UnsplashAuthor,
-    downloadLocation: string,
-    blurhash?: string,
-    width?: number,
-    height?: number
-  ): Promise<void> {
-    onChange(src, unsplashAuthor, blurhash, width, height)
-    await triggerUnsplashDownload({ variables: { url: downloadLocation } })
-  }
+  const loading = query === '' ? loadingCollection : loadingSearch
+  const gallery =
+    query === ''
+      ? collectionData?.listUnsplashCollectionPhotos ?? []
+      : searchData?.searchUnsplashPhotos.results ?? []
 
   async function handleSubmit(query: string): Promise<void> {
-    setPage(1)
-    const variables = { page: 1, perPage: 20 }
-    if (query == null) {
-      await refetchCollection({ collectionId, ...variables })
-    } else {
-      await refetchSearch({ query, ...variables })
-    }
     setQuery(query)
   }
 
   async function handleFetchMore(): Promise<void> {
-    const newPage = page + 1
-    const variables = { page: newPage, perPage: 20 }
-    if (query == null) {
+    if (query === '') {
       await fetchMoreCollection({
-        variables: { collectionId, ...variables },
-        updateQuery: (prevResult, { fetchMoreResult }) => {
-          // bandage fix, prev result initially returns null for page 1
-          if (prevResult.listUnsplashCollectionPhotos == null && page === 1) {
-            return {
-              listUnsplashCollectionPhotos: [
-                ...(collectionData?.listUnsplashCollectionPhotos as CollectionPhotos[]),
-                ...fetchMoreResult.listUnsplashCollectionPhotos
-              ]
-            }
-          } else {
-            return {
-              listUnsplashCollectionPhotos: [
-                ...fetchMoreResult.listUnsplashCollectionPhotos
-              ]
-            }
-          }
+        variables: {
+          page: Math.ceil(
+            (collectionData?.listUnsplashCollectionPhotos.length ?? 0) /
+              PER_PAGE +
+              1
+          )
         }
       })
     } else {
       await fetchMoreSearch({
-        variables: { query, ...variables }
+        variables: {
+          page: Math.ceil(
+            (searchData?.searchUnsplashPhotos.results.length ?? 0) / PER_PAGE +
+              1
+          )
+        }
       })
     }
-    setPage(newPage)
   }
 
-  function handleCollectionChange(id: string, query: string): void {
+  function handleCollectionChange(id: string): void {
     setCollectionId(id)
-    setQuery(query)
+    setQuery('')
   }
 
   return (
     <Stack sx={{ p: 6 }} data-testid="UnsplashGallery">
       <UnsplashSearch value={query} handleSubmit={handleSubmit} />
-      <UnsplashCollections onClick={handleCollectionChange} />
+      <UnsplashCollections
+        selectedCollectionId={query === '' ? collectionId : undefined}
+        onClick={handleCollectionChange}
+      />
       <Stack sx={{ pt: 4, pb: 1 }}>
         <Typography variant="overline" color="primary">
           {t('Unsplash')}
         </Typography>
         <Typography variant="h6">{t('Featured Images')}</Typography>
       </Stack>
-      {query == null && collectionData != null && (
-        <UnsplashList
-          gallery={collectionData.listUnsplashCollectionPhotos}
-          onChange={handleChange}
-        />
-      )}
-      {query != null && searchData != null && (
-        <UnsplashList
-          gallery={searchData.searchUnsplashPhotos.results}
-          onChange={handleChange}
-        />
-      )}
+      <UnsplashList
+        selectedBlock={selectedBlock}
+        gallery={gallery}
+        onChange={onChange}
+      />
       <LoadingButton
         variant="outlined"
-        disabled={loadingCollection || loadingSearch}
+        disabled={loading}
         onClick={handleFetchMore}
         size="medium"
       >
-        {loadingCollection || loadingSearch ? t('Loading...') : t('Load More')}
+        {loading ? t('Loading...') : t('Load More')}
       </LoadingButton>
     </Stack>
   )

@@ -2,18 +2,17 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { type NextRouter, useRouter } from 'next/router'
 
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import type { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
-import {
-  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
-  TeamProvider
-} from '@core/journeys/ui/TeamProvider'
-
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
 } from '../../../../__generated__/globalTypes'
+import { JourneyProvider } from '../../../libs/JourneyProvider'
+import type { JourneyFields as Journey } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
+import {
+  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
+  TeamProvider
+} from '../../TeamProvider'
 
 import { CreateJourneyButton } from './CreateJourneyButton'
 
@@ -45,7 +44,7 @@ const journey: Journey = {
     iso3: 'eng',
     name: [
       {
-        __typename: 'Translation',
+        __typename: 'LanguageName',
         value: 'English',
         primary: true
       }
@@ -103,7 +102,7 @@ const createJourneyButton = (
   </MockedProvider>
 )
 
-function defineWindowWithPath(path: string) {
+function defineWindowWithPath(path: string): void {
   Object.defineProperty(window, 'location', {
     configurable: true,
     enumerable: true,

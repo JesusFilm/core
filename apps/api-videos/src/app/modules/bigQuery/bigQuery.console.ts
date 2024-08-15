@@ -14,7 +14,18 @@ export async function main(): Promise<void> {
       await myQueue.removeRepeatableByKey(job.key)
     }
   }
-  await myQueue.add(name, {})
+  await myQueue.add(
+    name,
+    {},
+    {
+      removeOnComplete: {
+        age: 3600 // keep up to 1 hour
+      },
+      removeOnFail: {
+        age: 24 * 3600 // keep up to 24 hours
+      }
+    }
+  )
   process.exit(0)
 }
 

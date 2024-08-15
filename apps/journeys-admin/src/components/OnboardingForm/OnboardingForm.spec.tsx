@@ -8,8 +8,8 @@ import {
   FormValidate
 } from '@formium/types'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { User } from 'next-firebase-auth'
 import { NextRouter, useRouter } from 'next/router'
+import { User } from 'next-firebase-auth'
 
 import {
   JOURNEY_PROFILE_ONBOARDING_FORM_COMPLETE,

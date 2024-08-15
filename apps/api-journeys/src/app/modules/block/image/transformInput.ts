@@ -26,20 +26,17 @@ export async function transformInput<T extends ImageBlockUpdateInput>(
   try {
     const response = await fetch(input.src)
     const buffer = await response.buffer()
-    const { data: pixels, info: metadata } = await sharp(buffer)
+    const image = sharp(buffer)
+    const metadata = await image.metadata()
+    transformedInput.width = metadata.width ?? 0
+    transformedInput.height = metadata.height ?? 0
+    const { data, info } = await image
       .raw()
       .ensureAlpha()
+      .resize(32, 32, { fit: 'inside' })
       .toBuffer({ resolveWithObject: true })
-    transformedInput.width = metadata.width
-    transformedInput.height = metadata.height
-    const data = new Uint8ClampedArray(pixels)
-    transformedInput.blurhash = encode(
-      data,
-      transformedInput.width,
-      transformedInput.height,
-      4,
-      4
-    )
+    const pixels = new Uint8ClampedArray(data)
+    transformedInput.blurhash = encode(pixels, info.width, info.height, 4, 4)
   } catch (ex) {
     if (ex instanceof Error) {
       throw new GraphQLError(ex.message, {

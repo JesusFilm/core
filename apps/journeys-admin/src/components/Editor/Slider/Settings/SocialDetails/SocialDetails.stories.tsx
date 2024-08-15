@@ -2,9 +2,9 @@ import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../__generated__/BlockFields'
@@ -45,7 +45,7 @@ const journey: Journey = {
     iso3: 'eng',
     name: [
       {
-        __typename: 'Translation',
+        __typename: 'LanguageName',
         value: 'English',
         primary: true
       }

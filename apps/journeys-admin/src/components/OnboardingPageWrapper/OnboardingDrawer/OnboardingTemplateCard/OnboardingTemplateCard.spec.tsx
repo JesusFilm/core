@@ -5,12 +5,12 @@ import { GET_JOURNEY } from '@core/journeys/ui/useJourneyQuery'
 
 import type { GetJourneys_journeys as Journey } from '../../../../../__generated__/GetJourneys'
 import {
+  IdType,
   JourneyStatus,
   ThemeMode,
   ThemeName
 } from '../../../../../__generated__/globalTypes'
 
-import { IdType } from 'libs/journeys/ui/__generated__/globalTypes'
 import { OnboardingTemplateCard } from './OnboardingTemplateCard'
 
 describe('OnboardingTemplateCard', () => {
@@ -26,7 +26,7 @@ describe('OnboardingTemplateCard', () => {
       id: '529',
       name: [
         {
-          __typename: 'Translation',
+          __typename: 'LanguageName',
           value: 'English',
           primary: true
         }

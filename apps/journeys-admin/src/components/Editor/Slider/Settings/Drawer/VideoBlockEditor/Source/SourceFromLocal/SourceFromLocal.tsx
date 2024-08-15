@@ -1,5 +1,6 @@
 import { gql, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
+import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
@@ -71,7 +72,7 @@ export function SourceFromLocal({
 
   return (
     <>
-      <Box>
+      <Box sx={{ ml: 2, mr: 4 }}>
         <ImageBlockThumbnail
           selectedBlock={{
             src: selectedBlock?.video?.image ?? '',
@@ -88,6 +89,7 @@ export function SourceFromLocal({
             whiteSpace: 'nowrap',
             overflow: 'hidden'
           }}
+          color="text.secondary"
         >
           {selectedBlock?.video?.title?.[0]?.value}
         </Typography>
@@ -98,12 +100,15 @@ export function SourceFromLocal({
             whiteSpace: 'nowrap',
             overflow: 'hidden'
           }}
+          color="text.secondary"
         >
           {language}
           &nbsp;
         </Typography>
       </Box>
-      <Edit2Icon color="primary" />
+      <IconButton disabled sx={{ mr: 2 }}>
+        <Edit2Icon color="primary" />
+      </IconButton>
     </>
   )
 }

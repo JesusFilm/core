@@ -18,6 +18,7 @@ interface Context {
   /** activeTeam is null if loaded and set intentionally */
   activeTeam: Team | null | undefined
   setActiveTeam: (team: Team | null) => void
+  refetch: () => Promise<void>
 }
 
 const TeamContext = createContext<Context>({} as unknown as Context)
@@ -63,21 +64,26 @@ export function TeamProvider({ children }: TeamProviderProps): ReactElement {
   const [activeTeamId, setActiveTeamId] = useState<string | null | undefined>(
     undefined
   )
+
+  function updateActiveTeam(data: GetLastActiveTeamIdAndTeams): void {
+    if (activeTeam != null || data.teams == null) return
+    TagManager.dataLayer({
+      dataLayer: {
+        event: 'get_teams',
+        teams: data.teams.length
+      }
+    })
+    const lastActiveTeam = data.teams.find(
+      (team) => team.id === data.getJourneyProfile?.lastActiveTeamId
+    )
+    setActiveTeam(lastActiveTeam ?? null)
+  }
+
   const query = useQuery<GetLastActiveTeamIdAndTeams>(
     GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
     {
       onCompleted: (data) => {
-        if (activeTeam != null || data.teams == null) return
-        TagManager.dataLayer({
-          dataLayer: {
-            event: 'get_teams',
-            teams: data.teams.length
-          }
-        })
-        const lastActiveTeam = data.teams.find(
-          (team) => team.id === data.getJourneyProfile?.lastActiveTeamId
-        )
-        setActiveTeam(lastActiveTeam ?? null)
+        updateActiveTeam(data)
       }
     }
   )
@@ -89,12 +95,21 @@ export function TeamProvider({ children }: TeamProviderProps): ReactElement {
       setActiveTeamId(team.id)
     }
   }
+
   const activeTeam =
     activeTeamId != null
       ? query.data?.teams.find((team) => team.id === activeTeamId) ?? null
       : activeTeamId
+
+  // query.refetch() does not rerun onCompleted
+  // https://github.com/apollographql/apollo-client/issues/11151
+  async function refetch(): Promise<void> {
+    const { data } = await query.refetch()
+    updateActiveTeam(data)
+  }
+
   return (
-    <TeamContext.Provider value={{ query, activeTeam, setActiveTeam }}>
+    <TeamContext.Provider value={{ query, activeTeam, setActiveTeam, refetch }}>
       {children}
     </TeamContext.Provider>
   )

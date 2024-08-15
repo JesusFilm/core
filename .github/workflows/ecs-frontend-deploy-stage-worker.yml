@@ -49,6 +49,8 @@ on:
         required: true
       DOPPLER_GITHUB_SERVICE_TOKEN:
         required: true
+      DATADOG_API_KEY:
+        required: true
 
 jobs:
   build-and-deploy:
@@ -124,6 +126,14 @@ jobs:
           targets: fetch-secrets, extract-translations, build
           projects: ${{ inputs.name }}
           args: --c=production
+      - name: upload sourcemaps to datadog
+        uses: mansagroup/nrwl-nx-action@v3
+        env:
+          GIT_COMMIT_SHA: ${{ github.sha }}
+          DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
+        with:
+          targets: upload-sourcemaps
+          projects: ${{ inputs.name }}
 
       # ECS Deployment
       - name: Configure ECS AWS credentials

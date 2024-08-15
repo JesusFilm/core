@@ -9,8 +9,8 @@ import { JourneyFields_tags as Tag } from '../../../libs/JourneyProvider/__gener
 import { useTagsQuery } from '../../../libs/useTagsQuery'
 import { ParentTagIcon } from '../../ParentTagIcon'
 
-import { TagItem } from './TagItem'
 import { getSortedTags } from './getSortedTags'
+import { TagItem } from './TagItem'
 
 interface TemplateTagsProps {
   tags?: Tag[]

@@ -2,11 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
-import {
-  ActiveContent,
-  ActiveFab,
-  EditorState
-} from '@core/journeys/ui/EditorProvider'
+import { ActiveContent, EditorState } from '@core/journeys/ui/EditorProvider'
 import {
   ActiveCanvasDetailsDrawer,
   ActiveSlide,
@@ -22,7 +18,6 @@ import { StrategyItem } from '.'
 describe('StrategyItem', () => {
   it('should navigate to goals and close menu on click', async () => {
     const state: EditorState = {
-      activeFab: ActiveFab.Add,
       activeSlide: ActiveSlide.JourneyFlow,
       activeContent: ActiveContent.Canvas,
       activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties

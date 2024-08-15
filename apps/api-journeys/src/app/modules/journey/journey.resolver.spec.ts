@@ -4,8 +4,6 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import omit from 'lodash/omit'
 import { v4 as uuidv4 } from 'uuid'
 
-import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
-import { getPowerBiEmbed } from '@core/nest/powerBi/getPowerBiEmbed'
 import {
   Action,
   Block,
@@ -22,6 +20,8 @@ import {
   UserJourneyRole,
   UserTeamRole
 } from '.prisma/api-journeys-client'
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+import { getPowerBiEmbed } from '@core/nest/powerBi/getPowerBiEmbed'
 
 import {
   IdType,
@@ -32,7 +32,7 @@ import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
 import { PrismaService } from '../../lib/prisma.service'
 import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../../lib/prismaErrors'
 import { BlockResolver } from '../block/block.resolver'
-import { BlockService } from '../block/block.service'
+import { BlockService, BlockWithAction } from '../block/block.service'
 import { UserRoleResolver } from '../userRole/userRole.resolver'
 import { UserRoleService } from '../userRole/userRole.service'
 
@@ -102,7 +102,8 @@ describe('JourneyResolver', () => {
   const block = {
     id: 'blockId',
     typename: 'ImageBlock',
-    journeyId: 'journeyId'
+    journeyId: 'journeyId',
+    parentBlockId: null
   } as unknown as Block
   const accessibleJourneys: Prisma.JourneyWhereInput = { OR: [{}] }
 
@@ -1268,6 +1269,7 @@ describe('JourneyResolver', () => {
         'journeyId',
         null,
         duplicateStepIds,
+        undefined,
         'duplicateJourneyId',
         duplicateStepIds
       )
@@ -1378,6 +1380,7 @@ describe('JourneyResolver', () => {
         'journeyId',
         null,
         duplicateStepIds,
+        undefined,
         'duplicateJourneyId',
         duplicateStepIds
       )
@@ -1446,6 +1449,7 @@ describe('JourneyResolver', () => {
         'journeyId',
         null,
         duplicateStepIds,
+        undefined,
         'duplicateJourneyId',
         duplicateStepIds
       )
@@ -1814,6 +1818,9 @@ describe('JourneyResolver', () => {
   describe('blocks', () => {
     it('returns blocks', async () => {
       prismaService.block.findMany.mockResolvedValueOnce([block])
+      blockService.removeDescendantsOfDeletedBlocks.mockResolvedValueOnce([
+        block as BlockWithAction
+      ])
       expect(await resolver.blocks(journey)).toEqual([
         { ...block, __typename: 'ImageBlock', typename: undefined }
       ])
@@ -1825,7 +1832,8 @@ describe('JourneyResolver', () => {
           parentOrder: 'asc'
         },
         where: {
-          journeyId: 'journeyId'
+          journeyId: 'journeyId',
+          deletedAt: null
         }
       })
     })
@@ -1836,6 +1844,9 @@ describe('JourneyResolver', () => {
         primaryImageBlockId: 'primaryImageBlockId'
       }
       prismaService.block.findMany.mockResolvedValueOnce([block])
+      blockService.removeDescendantsOfDeletedBlocks.mockResolvedValueOnce([
+        block as BlockWithAction
+      ])
       expect(await resolver.blocks(journeyWithPrimaryImageBlock)).toEqual([
         { ...block, __typename: 'ImageBlock', typename: undefined }
       ])
@@ -1848,7 +1859,8 @@ describe('JourneyResolver', () => {
         },
         where: {
           journeyId: 'journeyId',
-          id: { notIn: ['primaryImageBlockId'] }
+          id: { notIn: ['primaryImageBlockId'] },
+          deletedAt: null
         }
       })
     })
@@ -1859,6 +1871,9 @@ describe('JourneyResolver', () => {
         creatorImageBlockId: 'creatorImageBlockId'
       }
       prismaService.block.findMany.mockResolvedValueOnce([block])
+      blockService.removeDescendantsOfDeletedBlocks.mockResolvedValueOnce([
+        block as BlockWithAction
+      ])
       expect(await resolver.blocks(journeyWithPrimaryImageBlock)).toEqual([
         { ...block, __typename: 'ImageBlock', typename: undefined }
       ])
@@ -1871,7 +1886,8 @@ describe('JourneyResolver', () => {
         },
         where: {
           journeyId: 'journeyId',
-          id: { notIn: ['creatorImageBlockId'] }
+          id: { notIn: ['creatorImageBlockId'] },
+          deletedAt: null
         }
       })
     })
@@ -1883,6 +1899,9 @@ describe('JourneyResolver', () => {
         creatorImageBlockId: 'creatorImageBlockId'
       }
       prismaService.block.findMany.mockResolvedValueOnce([block])
+      blockService.removeDescendantsOfDeletedBlocks.mockResolvedValueOnce([
+        block as BlockWithAction
+      ])
       expect(await resolver.blocks(journeyWithPrimaryImageBlock)).toEqual([
         { ...block, __typename: 'ImageBlock', typename: undefined }
       ])
@@ -1895,7 +1914,8 @@ describe('JourneyResolver', () => {
         },
         where: {
           journeyId: 'journeyId',
-          id: { notIn: ['primaryImageBlockId', 'creatorImageBlockId'] }
+          id: { notIn: ['primaryImageBlockId', 'creatorImageBlockId'] },
+          deletedAt: null
         }
       })
     })
@@ -2180,9 +2200,9 @@ describe('JourneyResolver', () => {
         ...journey,
         plausibleToken: 'plausibleToken'
       }
-      expect(await resolver.plausibleToken(ability, journeyWithToken)).toBe(
-        null
-      )
+      expect(
+        await resolver.plausibleToken(ability, journeyWithToken)
+      ).toBeNull()
     })
   })
 })

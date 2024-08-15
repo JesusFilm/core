@@ -4,7 +4,7 @@ import { ReactElement, useMemo } from 'react'
 import { SwiperOptions } from 'swiper/types'
 
 import { useTagsQuery } from '../../../libs/useTagsQuery'
-import { TemplateGalleryCarousel } from '../TemplateGalleryCarousel'
+import { ContentCarousel } from '../../ContentCarousel'
 
 import { CollectionButton } from './CollectionButton'
 import { FeltNeedsButton } from './FeltNeedsButton'
@@ -59,7 +59,7 @@ export function TagCarousels({
       gap={7}
       sx={{ mb: { xs: 10, md: 16 }, height: { xs: 219, md: 234 } }}
     >
-      <TemplateGalleryCarousel
+      <ContentCarousel
         items={feltNeedsTags}
         renderItem={(itemProps) => (
           <FeltNeedsButton {...itemProps} onClick={handleChange} />
@@ -70,6 +70,7 @@ export function TagCarousels({
           xs: 5,
           md: 5
         }}
+        content="felt-needs"
       />
       <Stack direction="row" gap={10} sx={{ ml: -2 }}>
         {loading

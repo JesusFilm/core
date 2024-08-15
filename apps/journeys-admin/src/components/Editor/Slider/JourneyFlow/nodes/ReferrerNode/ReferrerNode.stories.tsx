@@ -1,11 +1,13 @@
 import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
-import { Meta, StoryObj } from '@storybook/react'
-import { ComponentPropsWithoutRef } from 'react'
+import type { Meta, StoryObj } from '@storybook/react'
+import type { ComponentPropsWithoutRef } from 'react'
 import { Background, ReactFlow } from 'reactflow'
 
-import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
-
+import {
+  EditorProvider,
+  type EditorState
+} from '@core/journeys/ui/EditorProvider'
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { ReferrerNode } from '.'
@@ -72,7 +74,7 @@ export const Other = {
     ...defaultFlowProps,
     nodes: [
       {
-        id: 'Other sources',
+        id: 'other sources',
         type: 'Referrer',
         position: { x: 100, y: 0 },
         data: {

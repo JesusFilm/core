@@ -1,11 +1,15 @@
 import { MockedProvider } from '@apollo/client/testing'
+import { render, screen, waitFor } from '@testing-library/react'
+
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyAnalytics } from '@core/journeys/ui/useJourneyAnalyticsQuery/useJourneyAnalyticsQuery.mock'
-import { render, screen, waitFor } from '@testing-library/react'
-import { AnalyticsOverlaySwitch } from '.'
+
 import { GetJourney_journey } from '../../../../../../__generated__/GetJourney'
+
 import { earliestStatsCollected } from './AnalyticsOverlaySwitch'
+
+import { AnalyticsOverlaySwitch } from '.'
 
 const mockCurrentDate = '2024-06-02'
 
@@ -14,6 +18,7 @@ describe('AnalyticsOverlaySwitch', () => {
     jest.useFakeTimers()
     jest.setSystemTime(new Date('2024-06-02'))
   })
+
   afterAll(() => {
     jest.useRealTimers()
   })

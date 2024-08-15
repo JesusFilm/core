@@ -4,13 +4,13 @@ import { usePlausible } from 'next-plausible'
 import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
+import { blockHistoryVar, treeBlocksVar } from '@core/journeys/ui/block'
+import { showNavigationVar } from '@core/journeys/ui/block/block'
 import {
   STEP_NEXT_EVENT_CREATE,
   STEP_PREVIOUS_EVENT_CREATE
 } from '@core/journeys/ui/Card/Card'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { blockHistoryVar, treeBlocksVar } from '@core/journeys/ui/block'
-import { showNavigationVar } from '@core/journeys/ui/block/block'
 import { keyify } from '@core/journeys/ui/plausibleHelpers'
 
 import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
@@ -78,6 +78,21 @@ const journey = {
 
 describe('NavigationButton', () => {
   mockUuidv4.mockReturnValue('uuid')
+
+  const originalLocation = window.location
+  const mockOrigin = 'https://example.com'
+
+  beforeAll(() => {
+    Object.defineProperty(window, 'location', {
+      value: {
+        origin: mockOrigin
+      }
+    })
+  })
+
+  afterAll(() => {
+    Object.defineProperty(window, 'location', originalLocation)
+  })
 
   const stepNextResult = jest.fn(() => ({
     data: {
@@ -185,6 +200,7 @@ describe('NavigationButton', () => {
     await waitFor(() => expect(stepNextResult).toHaveBeenCalled())
 
     expect(mockPlausible).toHaveBeenCalledWith('navigateNextStep', {
+      u: `${mockOrigin}/journey.id/step1.id`,
       props: {
         id: 'uuid',
         blockId: 'step1.id',
@@ -234,6 +250,7 @@ describe('NavigationButton', () => {
     await waitFor(() => expect(stepPreviousResult).toHaveBeenCalled())
 
     expect(mockPlausible).toHaveBeenCalledWith('navigatePreviousStep', {
+      u: `${mockOrigin}/journey.id/step2.id`,
       props: {
         id: 'uuid',
         blockId: 'step2.id',

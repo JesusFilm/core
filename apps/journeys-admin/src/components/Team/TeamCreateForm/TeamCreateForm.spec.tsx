@@ -4,6 +4,7 @@ import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { Form } from 'formik'
+import { User } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
 
@@ -14,6 +15,7 @@ import {
 } from '@core/journeys/ui/TeamProvider'
 import { GetLastActiveTeamIdAndTeams } from '@core/journeys/ui/TeamProvider/__generated__/GetLastActiveTeamIdAndTeams'
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
+
 import { TeamCreate } from '../../../../__generated__/TeamCreate'
 import { TEAM_CREATE } from '../../../libs/useTeamCreateMutation/useTeamCreateMutation'
 
@@ -134,6 +136,7 @@ describe('TeamCreateForm', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
+    expect(getByRole('textbox')).toHaveValue('')
     fireEvent.change(getByRole('textbox'), { target: { value: 'Team Title' } })
     fireEvent.click(getByRole('button', { name: 'Create' }))
     await waitFor(() =>
@@ -160,6 +163,53 @@ describe('TeamCreateForm', () => {
       { __ref: 'Team:teamId' }
     ])
     expect(getByText('Team Title created.')).toBeInTheDocument()
+  })
+
+  it('fills textbox when on onboarding', async () => {
+    const user: User = {
+      id: null,
+      email: null,
+      emailVerified: false,
+      phoneNumber: null,
+      displayName: 'User Name',
+      photoURL: null,
+      claims: {},
+      tenantId: null,
+      getIdToken: async (forceRefresh?: boolean) => null,
+      clientInitialized: false,
+      firebaseUser: null,
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      signOut: async () => {},
+      serialize: (a?: { includeToken?: boolean }) => JSON.stringify({})
+    }
+
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[teamCreateMock, getTeamsMock, updateLastActiveTeamIdMock]}
+      >
+        <SnackbarProvider>
+          <TeamProvider>
+            <TeamCreateForm onboarding user={user}>
+              {({ values, errors, handleChange, handleSubmit }) => (
+                <Form>
+                  <TextField
+                    id="title"
+                    name="title"
+                    value={values.title}
+                    error={Boolean(errors.title)}
+                    onChange={handleChange}
+                    helperText={errors.title}
+                  />
+                  <Button onClick={() => handleSubmit()}>Create</Button>
+                </Form>
+              )}
+            </TeamCreateForm>
+            <TestComponent />
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    expect(getByRole('textbox')).toHaveValue('User Name & Team')
   })
 
   it('validates form', async () => {

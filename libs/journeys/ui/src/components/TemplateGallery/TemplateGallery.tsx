@@ -3,8 +3,8 @@ import Grid from '@mui/material/Grid'
 import Paper from '@mui/material/Paper'
 import castArray from 'lodash/castArray'
 import difference from 'lodash/difference'
-import { useTranslation } from 'next-i18next'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { TemplateSections } from '../TemplateSections'
@@ -13,16 +13,14 @@ import { HeaderAndLanguageFilter } from './HeaderAndLanguageFilter'
 import { TagCarousels } from './TagCarousels'
 import { TagsFilter } from './TagsFilter'
 
-interface TemplateGalleryProps {
-  hideOverflow?: boolean
-}
-
-export function TemplateGallery({
-  hideOverflow
-}: TemplateGalleryProps): ReactElement {
+export function TemplateGallery(): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const router = useRouter()
-  const selectedLanguageIds = castArray(router.query.languageIds ?? [])
+
+  const selectedLanguageIds = router.isReady
+    ? castArray(router.query.languageIds ?? ['529'])
+    : undefined
+
   const selectedTagIds = castArray(router.query.tagIds ?? [])
 
   function handleTagIdsChange(
@@ -64,7 +62,6 @@ export function TemplateGallery({
       <Container
         maxWidth={false}
         sx={{
-          overflow: hideOverflow ? 'hidden' : 'none',
           px: { xs: 0 },
           py: { xs: 6, sm: 9 }
         }}
@@ -131,7 +128,9 @@ export function TemplateGallery({
         <TemplateSections
           tagIds={selectedTagIds.length > 0 ? selectedTagIds : undefined}
           languageIds={
-            selectedLanguageIds.length > 0 ? selectedLanguageIds : undefined
+            selectedLanguageIds != null && selectedLanguageIds.length > 0
+              ? selectedLanguageIds
+              : undefined
           }
         />
       </Container>

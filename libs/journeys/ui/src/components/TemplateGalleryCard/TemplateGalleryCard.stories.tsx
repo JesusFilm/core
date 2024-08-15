@@ -35,7 +35,7 @@ const journey = {
     id: '529',
     name: [
       {
-        __typename: 'Translation',
+        __typename: 'LanguageName',
         value: 'English',
         primary: true
       }
@@ -106,7 +106,7 @@ export const Complete = {
         id: '529',
         name: [
           {
-            __typename: 'Translation',
+            __typename: 'LanguageName',
             value: 'Kalagan, Tagalu Kalua',
             primary: true
           }

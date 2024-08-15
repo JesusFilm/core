@@ -1,8 +1,8 @@
 import Accordion from '@mui/material/Accordion'
 import { ReactElement, useState } from 'react'
 
-import { JourneyFields_chatButtons as ChatButton } from '../../../../../../../../../__generated__/JourneyFields'
 import { MessagePlatform } from '../../../../../../../../../__generated__/globalTypes'
+import { JourneyFields_chatButtons as ChatButton } from '../../../../../../../../../__generated__/JourneyFields'
 
 import { Details } from './Details'
 import { Summary } from './Summary'

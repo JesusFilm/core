@@ -78,6 +78,10 @@ export enum IdType {
   slug = "slug",
 }
 
+export enum IntegrationType {
+  growthSpaces = "growthSpaces",
+}
+
 export enum JourneyStatus {
   archived = "archived",
   deleted = "deleted",
@@ -249,6 +253,19 @@ export enum VisitorStatus {
   warning = "warning",
 }
 
+export interface BlockDuplicateIdMap {
+  oldId: string;
+  newId: string;
+}
+
+export interface BlockUpdateActionInput {
+  gtmEventName?: string | null;
+  email?: string | null;
+  url?: string | null;
+  target?: string | null;
+  blockId?: string | null;
+}
+
 export interface ButtonBlockCreateInput {
   id?: string | null;
   journeyId: string;
@@ -291,6 +308,7 @@ export interface CardBlockCreateInput {
 
 export interface CardBlockUpdateInput {
   parentBlockId?: string | null;
+  coverBlockId?: string | null;
   backgroundColor?: string | null;
   fullscreen?: boolean | null;
   themeMode?: ThemeMode | null;
@@ -371,12 +389,6 @@ export interface IconBlockCreateInput {
   size?: IconSize | null;
 }
 
-export interface IconBlockUpdateInput {
-  name?: IconName | null;
-  color?: IconColor | null;
-  size?: IconSize | null;
-}
-
 export interface ImageBlockCreateInput {
   id?: string | null;
   parentBlockId?: string | null;
@@ -396,6 +408,17 @@ export interface ImageBlockUpdateInput {
   blurhash?: string | null;
   width?: number | null;
   height?: number | null;
+}
+
+export interface IntegrationGrowthSpacesCreateInput {
+  accessId: string;
+  accessSecret: string;
+  teamId: string;
+}
+
+export interface IntegrationGrowthSpacesUpdateInput {
+  accessId: string;
+  accessSecret: string;
 }
 
 export interface JourneyCollectionCreateInput {
@@ -487,11 +510,6 @@ export interface MeInput {
   redirect?: string | null;
 }
 
-export interface NavigateToBlockActionInput {
-  gtmEventName?: string | null;
-  blockId: string;
-}
-
 export interface RadioOptionBlockCreateInput {
   id?: string | null;
   journeyId: string;
@@ -545,6 +563,12 @@ export interface StepBlockCreateInput {
   journeyId: string;
   nextBlockId?: string | null;
   locked?: boolean | null;
+  x?: number | null;
+  y?: number | null;
+}
+
+export interface StepBlockPositionUpdateInput {
+  id: string;
   x?: number | null;
   y?: number | null;
 }

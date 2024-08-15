@@ -1,10 +1,26 @@
+import Box from '@mui/material/Box'
+import { SxProps } from '@mui/material/styles'
+import { ReactElement } from 'react'
+
 import ChevronDown from '@core/shared/ui/icons/ChevronDown'
 import { FacebookIcon } from '@core/shared/ui/icons/FacebookIcon'
 import LinkAngled from '@core/shared/ui/icons/LinkAngled'
-import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
 
-export function BaseReferrer({ property, visitors }) {
+import { ReferrerValue } from '../ReferrerValue'
+
+const iconStyles = { fontSize: '18px' }
+
+interface BaseReferrerProps {
+  property: string
+  visitors: number | null
+  style?: SxProps
+}
+
+export function BaseReferrer({
+  property,
+  visitors,
+  style
+}: BaseReferrerProps): ReactElement {
   let Icon
 
   switch (property) {
@@ -12,33 +28,45 @@ export function BaseReferrer({ property, visitors }) {
       Icon = <FacebookIcon />
       break
     case 'Direct / None':
-      Icon = <LinkAngled fontSize="small" />
+      Icon = <LinkAngled sx={iconStyles} />
       break
-    case 'Other sources':
-      Icon = <ChevronDown />
+    case 'other sources':
+      Icon = <ChevronDown sx={iconStyles} />
       break
     default:
-      Icon = <LinkAngled fontSize="small" />
+      Icon = <LinkAngled sx={iconStyles} />
   }
 
   return (
     <Box
       sx={{
         display: 'flex',
-        justifyContent: 'space-between',
+        alignItems: 'center',
         gap: 2,
-        padding: '3px 6px',
+        padding: '8px 12px',
         ':hover': {
           cursor: 'default'
-        }
+        },
+        ...style
       }}
       data-testid="BaseReferrer"
     >
-      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-        {Icon}
-        <Typography variant="body2">{property}</Typography>
+      {Icon}
+      <Box
+        sx={{
+          flex: 1,
+          display: 'grid',
+          gridTemplateColumns: 'auto 1fr',
+          alignItems: 'inherit',
+          gap: 2
+        }}
+      >
+        <ReferrerValue
+          tooltipTitle={property}
+          property={property}
+          visitors={visitors}
+        />
       </Box>
-      <Typography variant="body2">{visitors}</Typography>
     </Box>
   )
 }

@@ -2,13 +2,13 @@ import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
 import {
   ActiveCanvasDetailsDrawer,
   EditorProvider,
   EditorState
 } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../__generated__/BlockFields'
@@ -627,7 +627,7 @@ const Template: Story = {
                 iso3: 'eng',
                 name: [
                   {
-                    __typename: 'Translation',
+                    __typename: 'LanguageName',
                     value: 'English',
                     primary: true
                   }
@@ -696,7 +696,7 @@ export const RTL = {
         bcp47: 'ar',
         name: [
           {
-            __typename: 'Translation',
+            __typename: 'LanguageName',
             value: 'Arabic',
             primary: true
           }

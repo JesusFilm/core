@@ -10,7 +10,7 @@ import { JourneysFilter, ThemeName, ThemeMode, JourneyStatus, UserJourneyRole } 
 // ====================================================
 
 export interface GetJourneys_journeys_language_name {
-  __typename: "Translation";
+  __typename: "LanguageName";
   value: string;
   primary: boolean;
 }

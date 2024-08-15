@@ -17,6 +17,13 @@ Visual testing is a required GitHub Action check. This means you won’t be able
 
 Used by UX to review our storybook components.
 
+# UI Change Requests
+
+You don't have to wait for Design's approval before pushing it in.
+If the change looks right to you, push in the change and let Design know that the change has been made.
+They will let you know if there is something wrong and create another ticket for it or ask for the change to be reverted.
+If however, you still want another pair of eyes on it before pushing, feel free to bring in QA into it.
+
 ## UI Tests
 
 Used by devs to update the component snapshots in our unified chromatic snapshot library.

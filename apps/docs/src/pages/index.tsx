@@ -2,7 +2,8 @@ import Link from '@docusaurus/Link'
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext'
 import Layout from '@theme/Layout'
 import clsx from 'clsx'
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
+// eslint-disable-next-line no-restricted-imports
 import { useTranslation } from 'react-i18next'
 
 import { FeatureList } from '../components/FeatureList'
@@ -25,6 +26,7 @@ function HomepageHeader(): ReactElement {
             to="/docs/welcome"
           >
             {t('Welcome - 5min ')}
+            {/* eslint-disable-next-line i18next/no-literal-string */}
             <span role="img" aria-label="time emoji">
               ⏱️
             </span>

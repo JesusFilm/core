@@ -19,7 +19,7 @@ export const yoga = createYoga({
       ...initContextCache(),
       currentUser: await getUserFromApiKey(apiKey),
       apiKey
-    } as Context
+    } satisfies Context
   },
   plugins: [
     authZEnvelopPlugin({ rules }),

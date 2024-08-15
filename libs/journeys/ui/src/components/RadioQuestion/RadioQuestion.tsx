@@ -9,10 +9,10 @@ import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
 import { RadioQuestionSubmissionEventCreateInput } from '../../../__generated__/globalTypes'
-import { useJourney } from '../../libs/JourneyProvider'
 import type { TreeBlock } from '../../libs/block'
 import { isActiveBlockOrDescendant, useBlocks } from '../../libs/block'
 import { getStepHeading } from '../../libs/getStepHeading'
+import { useJourney } from '../../libs/JourneyProvider'
 import { JourneyPlausibleEvents, keyify } from '../../libs/plausibleHelpers'
 // eslint-disable-next-line import/no-cycle
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
@@ -99,6 +99,7 @@ export function RadioQuestion({
       ) as TreeBlock<RadioOptionFields> | undefined
       if (journey != null && radioOptionBlock != null) {
         plausible('radioQuestionSubmit', {
+          u: `${window.location.origin}/${journey.id}/${input.stepId}`,
           props: {
             ...input,
             key: keyify({

@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 import { Action, Block, Journey } from '.prisma/api-journeys-client'
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 
 import { UserTeamRole } from '../../__generated__/graphql'
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
@@ -11,6 +11,7 @@ import { BlockService } from '../block/block.service'
 import { UserRoleService } from '../userRole/userRole.service'
 
 import { ActionResolver } from './action.resolver'
+import { ActionService } from './action.service'
 
 describe('ActionResolver', () => {
   let resolver: ActionResolver,
@@ -71,6 +72,7 @@ describe('ActionResolver', () => {
       providers: [
         ActionResolver,
         BlockService,
+        ActionService,
         UserRoleService,
         {
           provide: PrismaService,
@@ -98,6 +100,25 @@ describe('ActionResolver', () => {
       expect(resolver.__resolveType(navigateToBlockAction)).toBe(
         'NavigateToBlockAction'
       )
+    })
+  })
+
+  describe('parentBlock', () => {
+    it('returns parentBlock', async () => {
+      const action = {
+        ...emailAction,
+        parentBlock: block
+      }
+      expect(await resolver.parentBlock(action)).toBe(block)
+    })
+
+    it('returns block', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(block)
+      const action = {
+        ...emailAction,
+        parentBlockId: block.id
+      }
+      expect(await resolver.parentBlock(action)).toBe(block)
     })
   })
 
@@ -134,6 +155,173 @@ describe('ActionResolver', () => {
       await expect(
         resolver.blockDeleteAction(ability, block.id)
       ).rejects.toThrow('user is not allowed to update block')
+    })
+  })
+
+  describe('blockUpdateAction', () => {
+    it('updates a navigatge to block action', async () => {
+      const input = {
+        gtmEventName: null,
+        email: null,
+        url: undefined,
+        target: null,
+        blockId: 'blockId'
+      }
+      prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
+      await resolver.blockUpdateAction(ability, blockWithUserTeam.id, input)
+
+      expect(prismaService.action.upsert).toHaveBeenCalledWith({
+        create: {
+          block: { connect: { id: 'blockId' } },
+          gtmEventName: null,
+          parentBlock: { connect: { id: '1' } }
+        },
+        include: { parentBlock: { include: { action: true } } },
+        update: {
+          block: { connect: { id: 'blockId' } },
+          email: null,
+          gtmEventName: null,
+          journey: { disconnect: true },
+          target: null,
+          url: null
+        },
+        where: { parentBlockId: '1' }
+      })
+    })
+
+    it('updates an link action', async () => {
+      const input = {
+        gtmEventName: null,
+        email: null,
+        url: 'www.runscape.com',
+        target: null,
+        blockId: undefined
+      }
+      prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
+      await resolver.blockUpdateAction(ability, blockWithUserTeam.id, input)
+
+      expect(prismaService.action.upsert).toHaveBeenCalledWith({
+        create: {
+          gtmEventName: null,
+          parentBlock: { connect: { id: '1' } },
+          target: null,
+          url: 'www.runscape.com'
+        },
+        include: { parentBlock: { include: { action: true } } },
+        update: {
+          block: { disconnect: true },
+          email: null,
+          gtmEventName: null,
+          journey: { disconnect: true },
+          target: null,
+          url: 'www.runscape.com'
+        },
+        where: { parentBlockId: '1' }
+      })
+    })
+
+    it('updates an email action', async () => {
+      const input = {
+        gtmEventName: null,
+        email: 'example@example.co.nz',
+        url: undefined,
+        target: null,
+        blockId: undefined
+      }
+      prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
+      await resolver.blockUpdateAction(ability, blockWithUserTeam.id, input)
+
+      expect(prismaService.action.upsert).toHaveBeenCalledWith({
+        create: {
+          email: 'example@example.co.nz',
+          gtmEventName: null,
+          parentBlock: { connect: { id: '1' } }
+        },
+        include: { parentBlock: { include: { action: true } } },
+        update: {
+          block: { disconnect: true },
+          email: 'example@example.co.nz',
+          gtmEventName: null,
+          journey: { disconnect: true },
+          target: null,
+          url: null
+        },
+        where: { parentBlockId: '1' }
+      })
+    })
+
+    it('throws an error if inputs for more than one action update are given', async () => {
+      const input = {
+        gtmEventName: null,
+        email: 'example@example.co.nz',
+        url: 'www.letmeUpdateTheURLaswell.com',
+        target: null,
+        blockId: undefined
+      }
+      prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
+      await expect(
+        resolver.blockUpdateAction(ability, blockWithUserTeam.id, input)
+      ).rejects.toThrow('invalid combination of inputs provided')
+    })
+
+    it('throws an error if no valid inputs are given', async () => {
+      const input = {
+        gtmEventName: null,
+        email: null,
+        url: undefined,
+        target: null,
+        blockId: undefined
+      }
+      prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
+      await expect(
+        resolver.blockUpdateAction(ability, blockWithUserTeam.id, input)
+      ).rejects.toThrow('no valid inputs provided')
+    })
+
+    it('throws an error if no block is found', async () => {
+      const input = {
+        gtmEventName: null,
+        email: 'example@example.com',
+        url: undefined,
+        target: null,
+        blockId: undefined
+      }
+      prismaService.block.findUnique.mockResolvedValueOnce(null)
+      await expect(
+        resolver.blockUpdateAction(ability, blockWithUserTeam.id, input)
+      ).rejects.toThrow('block not found')
+    })
+
+    it('throws an error if user is not allowed to update block', async () => {
+      const input = {
+        gtmEventName: null,
+        email: 'example@example.com',
+        url: undefined,
+        target: null,
+        blockId: undefined
+      }
+      prismaService.block.findUnique.mockResolvedValueOnce(block)
+      await expect(
+        resolver.blockUpdateAction(ability, blockWithUserTeam.id, input)
+      ).rejects.toThrow('user is not allowed to update block')
+    })
+
+    it('throws an error if block does not support actions', async () => {
+      const wrongBlock = {
+        ...blockWithUserTeam,
+        typename: 'ImageBlock'
+      }
+      const input = {
+        gtmEventName: null,
+        email: 'example@example.com',
+        url: undefined,
+        target: null,
+        blockId: undefined
+      }
+      prismaService.block.findUnique.mockResolvedValueOnce(wrongBlock)
+      await expect(
+        resolver.blockUpdateAction(ability, blockWithUserTeam.id, input)
+      ).rejects.toThrow('This block does not support actions')
     })
   })
 })

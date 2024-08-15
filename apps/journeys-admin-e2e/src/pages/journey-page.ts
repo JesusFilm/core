@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { expect } from '@playwright/test'
 import dayjs from 'dayjs'
 import { Page } from 'playwright-core'
@@ -779,6 +780,7 @@ export class JourneyPage {
     list: string[],
     expectedSortedList: string[]
   ) {
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     list.map((str) => str.toLowerCase()).sort(Intl.Collator().compare)
     expect(list.join().trim() === expectedSortedList.join().trim()).toBeTruthy()
   }
@@ -957,6 +959,7 @@ export class JourneyPage {
     for (let slide = 1; slide < slidesCount; slide++) {
       await newPage
         .locator('button[data-testid="ConductorNavigationButtonNext"]')
+        // eslint-disable-next-line playwright/no-force-option
         .hover({ force: true })
       await newPage
         .locator('button[data-testid="ConductorNavigationButtonNext"]')

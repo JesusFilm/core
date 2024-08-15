@@ -1,11 +1,11 @@
 import { fireEvent, render } from '@testing-library/react'
 import { ReactElement } from 'react'
 
-import { VideoContentFields } from '../../../__generated__/VideoContentFields'
 import {
   VideoLabel,
   VideoVariantDownloadQuality
 } from '../../../__generated__/globalTypes'
+import { VideoContentFields } from '../../../__generated__/VideoContentFields'
 import { videos } from '../../components/Videos/__generated__/testData'
 
 import { VideoProvider, useVideo } from './VideoContext'
@@ -55,7 +55,7 @@ const chapter1: VideoContentFields = {
     language: {
       __typename: 'Language',
       id: '529',
-      name: [{ __typename: 'Translation', value: 'English', primary: true }]
+      name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
     },
     slug: 'the-beginning/english',
     subtitleCount: 1

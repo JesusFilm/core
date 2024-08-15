@@ -25,17 +25,20 @@ enum ThemeName {
 
 interface Action {
   parentBlockId: ID!
+  parentBlock: Block!
   gtmEventName: String
 }
 
 type NavigateToBlockAction implements Action {
   parentBlockId: ID!
+  parentBlock: Block!
   gtmEventName: String
   blockId: String!
 }
 
 type LinkAction implements Action {
   parentBlockId: ID!
+  parentBlock: Block!
   gtmEventName: String
   url: String!
   target: String
@@ -43,6 +46,7 @@ type LinkAction implements Action {
 
 type EmailAction implements Action {
   parentBlockId: ID!
+  parentBlock: Block!
   gtmEventName: String
   email: String!
 }
@@ -63,11 +67,43 @@ input EmailActionInput {
   email: String!
 }
 
+input BlockUpdateActionInput {
+  gtmEventName: String
+  email: String
+  url: String
+  target: String
+  blockId: String
+}
+
 type Mutation {
-  blockDeleteAction(id: ID!, journeyId: ID!): Block!
-  blockUpdateNavigateToBlockAction(id: ID!, journeyId: ID!, input: NavigateToBlockActionInput!): NavigateToBlockAction!
-  blockUpdateLinkAction(id: ID!, journeyId: ID!, input: LinkActionInput!): LinkAction!
-  blockUpdateEmailAction(id: ID!, journeyId: ID!, input: EmailActionInput!): EmailAction!
+  blockDeleteAction(
+    id: ID!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): Block!
+  blockUpdateNavigateToBlockAction(
+    id: ID!
+    input: NavigateToBlockActionInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): NavigateToBlockAction!
+  blockUpdateLinkAction(
+    id: ID!
+    input: LinkActionInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): LinkAction!
+  blockUpdateEmailAction(
+    id: ID!
+    input: EmailActionInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): EmailAction!
+  blockUpdateAction(id: ID!, input: BlockUpdateActionInput): Action!
 
   """blockDelete returns the updated sibling blocks on successful delete"""
   blockDelete(
@@ -91,6 +127,11 @@ type Mutation {
     """
     parentOrder: Int
 
+    """
+    idMap is used to set custom ids for the duplicated block and it's descendants.
+    """
+    idMap: [BlockDuplicateIdMap!]
+
     """drop this parameter after merging teams"""
     journeyId: ID
 
@@ -113,6 +154,9 @@ type Mutation {
     """drop this parameter after merging teams"""
     journeyId: ID
   ): [Block!]!
+
+  """blockRestore is used for redo/undo"""
+  blockRestore(id: ID!): [Block!]!
   buttonBlockCreate(input: ButtonBlockCreateInput!): ButtonBlock!
   buttonBlockUpdate(
     id: ID!
@@ -179,6 +223,7 @@ type Mutation {
     """drop this parameter after merging teams"""
     journeyId: ID
   ): StepBlock!
+  stepBlockPositionUpdate(input: [StepBlockPositionUpdateInput!]!): [StepBlock!]!
   textResponseBlockCreate(input: TextResponseBlockCreateInput!): TextResponseBlock!
   textResponseBlockUpdate(
     id: ID!
@@ -343,6 +388,11 @@ type Journey
 input BlocksFilter {
   journeyIds: [ID!]
   typenames: [String!]
+}
+
+input BlockDuplicateIdMap {
+  oldId: ID!
+  newId: ID!
 }
 
 type Query {
@@ -551,6 +601,7 @@ input CardBlockCreateInput {
 
 input CardBlockUpdateInput {
   parentBlockId: ID
+  coverBlockId: ID
   backgroundColor: String
   fullscreen: Boolean
   themeMode: ThemeMode
@@ -882,6 +933,12 @@ input StepBlockUpdateInput {
   y is used to position the block vertically in the journey flow diagram on
   the editor.
   """
+  y: Int
+}
+
+input StepBlockPositionUpdateInput {
+  id: ID!
+  x: Int
   y: Int
 }
 

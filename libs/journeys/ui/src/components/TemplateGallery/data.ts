@@ -33,7 +33,7 @@ const defaultTemplate: Journey = {
     id: '529',
     name: [
       {
-        __typename: 'Translation',
+        __typename: 'LanguageName',
         value: 'English',
         primary: true
       }
@@ -307,7 +307,7 @@ export const getLanguagesMock: MockedResponse<GetLanguages> = {
             {
               value: 'English',
               primary: true,
-              __typename: 'Translation'
+              __typename: 'LanguageName'
             }
           ]
         },
@@ -318,12 +318,12 @@ export const getLanguagesMock: MockedResponse<GetLanguages> = {
             {
               value: 'Français',
               primary: true,
-              __typename: 'Translation'
+              __typename: 'LanguageName'
             },
             {
               value: 'French',
               primary: false,
-              __typename: 'Translation'
+              __typename: 'LanguageName'
             }
           ]
         },
@@ -334,12 +334,12 @@ export const getLanguagesMock: MockedResponse<GetLanguages> = {
             {
               value: 'Deutsch',
               primary: true,
-              __typename: 'Translation'
+              __typename: 'LanguageName'
             },
             {
               value: 'German, Standard',
               primary: false,
-              __typename: 'Translation'
+              __typename: 'LanguageName'
             }
           ]
         }

@@ -1,10 +1,25 @@
-import { GetJourneyAnalytics_journeyReferrer as JourneyReferrer } from '@core/journeys/ui/useJourneyAnalyticsQuery/__generated__/GetJourneyAnalytics'
-import { Edge, Node } from 'reactflow'
+import type { Edge, Node } from 'reactflow'
+
+import type { GetJourneyAnalytics_journeyReferrer as JourneyReferrer } from '../__generated__/GetJourneyAnalytics'
+
+interface OtherSource {
+  property: 'other sources'
+  referrers: JourneyReferrer[]
+}
 
 const SOCIAL_PREVIEW_CARD_HEIGHT = 168
-const START_OF_SOCIAL_PREVIEW = -60
+const START_OF_SOCIAL_PREVIEW = -46
+const REFERRER_NODE_HEIGHT = 38
 
-function sortReferrers(a: JourneyReferrer, b: JourneyReferrer) {
+const THREE_NODE_Y_POSITIONS = [
+  START_OF_SOCIAL_PREVIEW,
+  START_OF_SOCIAL_PREVIEW +
+    SOCIAL_PREVIEW_CARD_HEIGHT / 2 -
+    REFERRER_NODE_HEIGHT / 2,
+  START_OF_SOCIAL_PREVIEW + SOCIAL_PREVIEW_CARD_HEIGHT - REFERRER_NODE_HEIGHT
+]
+
+function sortReferrers(a: JourneyReferrer, b: JourneyReferrer): number {
   if (a.visitors === null) {
     return 1
   }
@@ -16,30 +31,33 @@ function sortReferrers(a: JourneyReferrer, b: JourneyReferrer) {
   return b.visitors - a.visitors
 }
 
-export function transformReferrers(referrers?: JourneyReferrer[]) {
+export function transformReferrers(referrers?: JourneyReferrer[]): {
+  nodes: Node[]
+  edges: Edge[]
+} {
   const nodes: Node[] = []
   const edges: Edge[] = []
 
   if (referrers == null || referrers.length === 0) return { nodes, edges }
 
-  const sortedReferrers = [...referrers].sort(sortReferrers)
+  const sortedReferrers: Array<JourneyReferrer | OtherSource> = [
+    ...referrers
+  ].sort(sortReferrers)
 
-  if (referrers.length > 3) {
-    const topReferrers = sortedReferrers.slice(0, 2)
-    const otherReferrers = sortedReferrers.slice(2, referrers.length)
-
-    function getYPos(idx: number) {
-      return (
-        START_OF_SOCIAL_PREVIEW + ((idx + 1) / 4) * SOCIAL_PREVIEW_CARD_HEIGHT
-      )
+  if (sortedReferrers.length >= 3) {
+    if (sortedReferrers.length > 3) {
+      sortedReferrers.splice(2, Number.POSITIVE_INFINITY, {
+        property: 'other sources',
+        referrers: sortedReferrers.slice(2) as JourneyReferrer[]
+      })
     }
 
-    topReferrers.forEach((referrer, idx) => {
+    sortedReferrers.forEach((referrer, idx) => {
       nodes.push({
         id: referrer.property,
         type: 'Referrer',
         data: referrer,
-        position: { x: -600, y: getYPos(idx) },
+        position: { x: -600, y: THREE_NODE_Y_POSITIONS[idx] },
         draggable: false
       })
 
@@ -51,26 +69,12 @@ export function transformReferrers(referrers?: JourneyReferrer[]) {
         updatable: false
       })
     })
-
-    nodes.push({
-      id: 'Other sources',
-      type: 'Referrer',
-      data: { property: 'Other sources', referrers: otherReferrers },
-      position: { x: -600, y: getYPos(2) },
-      draggable: false
-    })
-
-    edges.push({
-      id: 'Other sources->SocialPreview',
-      source: 'Other sources',
-      target: 'SocialPreview',
-      type: 'Referrer',
-      updatable: false
-    })
   } else {
     sortedReferrers.forEach((referrer, idx) => {
       const yPos =
-        -60 + ((idx + 1) / (referrers.length + 1)) * SOCIAL_PREVIEW_CARD_HEIGHT
+        START_OF_SOCIAL_PREVIEW +
+        ((idx + 1) / (referrers.length + 1)) * SOCIAL_PREVIEW_CARD_HEIGHT -
+        REFERRER_NODE_HEIGHT / 2
 
       nodes.push({
         id: referrer.property,

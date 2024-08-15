@@ -4,7 +4,7 @@ const PUBLIC_FILE_REGEX = /\.(.*)$/
 
 // update the fingerprint when updating cookies logic
 // update LanguageSwitcher fingerprint as well
-export const COOKIE_FINGERPRINT = '00003'
+export const COOKIE_FINGERPRINT = '00004'
 
 const DEFAULT_LOCALE = 'en'
 
@@ -13,6 +13,7 @@ const SUPPORTED_LOCALES = [
   'es', // Spanish
   'fr', // French
   'id', // Indonesian
+  'th', // Thai
   'ja', // Japanese
   'ru', // Russian
   'tr', // Turkish
@@ -58,8 +59,8 @@ function getSupportedLocale(input?: string): string {
   return isSupported(input)
     ? input
     : isSupported(languageCode)
-      ? languageCode
-      : 'en'
+    ? languageCode
+    : 'en'
 }
 
 function getBrowserLanguage(req: NextRequest): string {

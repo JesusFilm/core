@@ -5,7 +5,6 @@ import { ComponentProps } from 'react'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import {
-  getJourneysMock,
   getJourneysWithoutLanguageIdsMock,
   getLanguagesMock,
   getTagsMock

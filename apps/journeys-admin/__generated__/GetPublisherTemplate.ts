@@ -3,14 +3,14 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName, IconSize, IconColor, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, MessagePlatform } from "./globalTypes";
+import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, MessagePlatform } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetPublisherTemplate
 // ====================================================
 
 export interface GetPublisherTemplate_publisherTemplate_language_name {
-  __typename: "Translation";
+  __typename: "LanguageName";
   value: string;
   primary: boolean;
 }
@@ -255,6 +255,9 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock
   label: string;
   hint: string | null;
   minRows: number | null;
+  type: TextResponseType | null;
+  routeId: string | null;
+  integrationId: string | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_TypographyBlock {
@@ -280,7 +283,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_variantLanguages_name {
-  __typename: "Translation";
+  __typename: "LanguageName";
   value: string;
   primary: boolean;
 }

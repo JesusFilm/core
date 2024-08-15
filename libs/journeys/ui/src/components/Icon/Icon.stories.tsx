@@ -65,8 +65,8 @@ const VariantTemplate: VariantStory = {
                 variant === IconName.ArrowBackRounded
                   ? 'ArrowLeftRounded'
                   : variant === IconName.ArrowForwardRounded
-                    ? 'ArrowRightRounded'
-                    : variant
+                  ? 'ArrowRightRounded'
+                  : variant
               }`}</Typography>
             </Grid>
           ))}
@@ -111,7 +111,7 @@ export const Variant = {
       iso3: 'eng',
       name: [
         {
-          __typename: 'Translation',
+          __typename: 'LanguageName',
           value: 'English',
           primary: true
         }
@@ -213,7 +213,7 @@ export const RTL = {
       iso3: 'arb',
       name: [
         {
-          __typename: 'Translation',
+          __typename: 'LanguageName',
           value: 'Arabic',
           primary: false
         }

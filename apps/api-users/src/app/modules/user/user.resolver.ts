@@ -9,12 +9,12 @@ import {
 } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 
+import { User } from '.prisma/api-users-client'
 import { impersonateUser } from '@core/nest/common/firebaseClient'
 import { CurrentIPAddress } from '@core/nest/decorators/CurrentIPAddress'
 import { CurrentUser } from '@core/nest/decorators/CurrentUser'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
-import { User } from '.prisma/api-users-client'
 
 import {
   CreateVerificationRequestInput,

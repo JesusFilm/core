@@ -1,6 +1,7 @@
 import createCache from '@emotion/cache'
 import { CacheProvider } from '@emotion/react'
 import { styled } from '@mui/material/styles'
+import isFunction from 'lodash/isFunction'
 import {
   ComponentProps,
   ReactElement,
@@ -24,9 +25,7 @@ interface ContentProps {
 
 function Content({ children, document }: ContentProps): ReactElement {
   const cache = useMemo(() => {
-    document.head.innerHTML =
-      window.document.head.innerHTML +
-      '<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Open+Sans&family=El+Messiri:wght@400;600;700&display=swap" rel="stylesheet" />, '
+    document.head.innerHTML = `${window.document.head.innerHTML}<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Open+Sans&family=El+Messiri:wght@400;600;700&display=swap" rel="stylesheet" />`
 
     return createCache({
       key: 'iframe',
@@ -47,8 +46,9 @@ const StyledFrame = styled('iframe')(() => ({
   border: 0
 }))
 
-interface FrameProps extends ComponentProps<typeof StyledFrame> {
-  children: ReactNode
+interface FrameProps
+  extends Omit<ComponentProps<typeof StyledFrame>, 'children'> {
+  children: ((props: { document: Document }) => ReactNode) | ReactNode
 }
 
 export const FramePortal = memo(
@@ -89,7 +89,9 @@ export const FramePortal = memo(
         {iframeLoaded &&
           document != null &&
           createPortal(
-            <Content document={document}>{children}</Content>,
+            <Content document={document}>
+              {isFunction(children) ? children({ document }) : children}
+            </Content>,
             document.body
           )}
       </>

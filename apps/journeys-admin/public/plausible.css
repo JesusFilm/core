@@ -1,0 +1,47 @@
+#stats-react-container
+  > div
+  > div.relative.top-0.sm\:py-3.py-2.z-10
+  > div
+  > div.flex.items-center.w-full
+  > div.relative.inline-block.text-left.mr-2.sm\:mr-4 {
+  display: none;
+}
+
+#stats-react-container > div > div.relative.top-0.sm\:py-3.py-2.z-10 {
+  position: sticky;
+  background: white;
+  border-radius: 4px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.shadow-sm,
+.shadow,
+.shadow-xl {
+  box-shadow: none;
+}
+
+.text-indigo-700,
+.group:hover .group-hover\:text-indigo-700 {
+  color: #c52d3a;
+}
+
+.text-indigo-600 {
+  color: #e43343;
+}
+
+.border-indigo-700 {
+  border-color: #c52d3a;
+}
+
+.active-prop-heading {
+  text-decoration-color: #c52d3a;
+}
+
+body > main > div > div.pt-6 {
+  padding-top: 0 !important;
+}
+
+body > main > div {
+  padding: 0 !important;
+}

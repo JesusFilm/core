@@ -4,7 +4,9 @@ locals {
     "PG_DATABASE_URL_LANGUAGES",
     "ARCLIGHT_API_KEY",
     "ARCLIGHT_V3_URL",
-    "WESS_API_TOKEN"
+    "BIG_QUERY_APPLICATION_JSON",
+    "REDIS_URL",
+    "WESS_API_TOKEN",
   ]
   service_config = {
     name           = "api-languages"

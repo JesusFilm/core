@@ -1,18 +1,17 @@
+import Box from '@mui/material/Box'
+import Container from '@mui/material/Container'
+import Stack from '@mui/system/Stack'
 import { GetStaticProps } from 'next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { ReactElement } from 'react'
 
-import Box from '@mui/material/Box'
-import Container from '@mui/material/Container'
-import i18nConfig from '../../next-i18next.config'
-import { getFlags } from '../../src/libs/getFlags'
-
+import { TemplateGallery } from '@core/journeys/ui/TemplateGallery'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
-import { TemplateGallery } from '@core/journeys/ui/TemplateGallery'
-import { Stack } from '@mui/system'
+import i18nConfig from '../../next-i18next.config'
 import { PageWrapper } from '../../src/components/PageWrapper'
+import { getFlags } from '../../src/libs/getFlags'
 
 function JourneysPage(): ReactElement {
   return (
@@ -28,7 +27,7 @@ function JourneysPage(): ReactElement {
               themeMode={ThemeMode.light}
               nested
             >
-              <TemplateGallery hideOverflow />
+              <TemplateGallery />
             </ThemeProvider>
           </Stack>
         </Container>

@@ -1,19 +1,20 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 import { Action, Block, Journey } from '.prisma/api-journeys-client'
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 
 import { LinkActionInput, UserTeamRole } from '../../../__generated__/graphql'
 import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
 import { PrismaService } from '../../../lib/prisma.service'
-import { ACTION_UPDATE_RESET } from '../actionUpdateReset'
+import { ActionService } from '../action.service'
 
 import { LinkActionResolver } from './linkAction.resolver'
 
 describe('LinkActionResolver', () => {
   let resolver: LinkActionResolver,
     prismaService: DeepMockProxy<PrismaService>,
+    actionService: DeepMockProxy<ActionService>,
     ability: AppAbility
 
   const action: Action = {
@@ -57,6 +58,10 @@ describe('LinkActionResolver', () => {
       providers: [
         LinkActionResolver,
         {
+          provide: ActionService,
+          useValue: mockDeep<ActionService>()
+        },
+        {
           provide: PrismaService,
           useValue: mockDeep<PrismaService>()
         }
@@ -66,6 +71,9 @@ describe('LinkActionResolver', () => {
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
+    actionService = module.get<ActionService>(
+      ActionService
+    ) as DeepMockProxy<ActionService>
     ability = await new AppCaslFactory().createAbility({ id: 'userId' })
   })
 
@@ -83,17 +91,11 @@ describe('LinkActionResolver', () => {
     it('updates link action', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
       await resolver.blockUpdateLinkAction(ability, block.id, input)
-      expect(prismaService.action.upsert).toHaveBeenCalledWith({
-        where: { parentBlockId: block.id },
-        create: {
-          ...input,
-          parentBlock: { connect: { id: block.id } }
-        },
-        update: {
-          ...ACTION_UPDATE_RESET,
-          ...input
-        }
-      })
+      expect(actionService.linkActionUpdate).toHaveBeenCalledWith(
+        '1',
+        blockWithUserTeam,
+        input
+      )
     })
 
     it('throws error if typename is wrong', async () => {

@@ -72,7 +72,7 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
-        name: [{ __typename: 'Translation', value: 'English', primary: true }]
+        name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
       },
       slug: 'jesus/english',
       subtitleCount: 32
@@ -130,7 +130,7 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
-        name: [{ __typename: 'Translation', value: 'English', primary: true }]
+        name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
       },
       slug: 'life-of-jesus-gospel-of-john/english',
       subtitleCount: 0
@@ -197,7 +197,7 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
-        name: [{ __typename: 'Translation', value: 'English', primary: true }]
+        name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
       },
       slug: 'jesus-calms-the-storm/english',
       subtitleCount: 32
@@ -271,7 +271,7 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
-        name: [{ __typename: 'Translation', value: 'English', primary: true }]
+        name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
       },
       slug: 'the-woman-with-the-issue-of-blood/english',
       subtitleCount: 31
@@ -325,7 +325,7 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
-        name: [{ __typename: 'Translation', value: 'English', primary: true }]
+        name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
       },
       slug: 'magdalena/english',
       subtitleCount: 31
@@ -366,7 +366,7 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
-        name: [{ __typename: 'Translation', value: 'English', primary: true }]
+        name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
       },
       slug: 'reflections-of-hope/english',
       subtitleCount: 0
@@ -431,7 +431,7 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
-        name: [{ __typename: 'Translation', value: 'English', primary: true }]
+        name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
       },
       slug: 'day-6-jesus-died-for-me/english',
       subtitleCount: 0
@@ -491,7 +491,7 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
-        name: [{ __typename: 'Translation', value: 'English', primary: true }]
+        name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
       },
       slug: 'book-of-acts/english',
       subtitleCount: 0
@@ -551,7 +551,7 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
-        name: [{ __typename: 'Translation', value: 'English', primary: true }]
+        name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
       },
       slug: 'wedding-in-cana/english',
       subtitleCount: 0
@@ -582,7 +582,7 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
-        name: [{ __typename: 'Translation', value: 'English', primary: true }]
+        name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
       },
       slug: 'lumo/english',
       subtitleCount: 0
@@ -663,7 +663,7 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
-        name: [{ __typename: 'Translation', value: 'English', primary: true }]
+        name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
       },
       slug: 'peter-miraculous-escape-from-prison/english',
       subtitleCount: 0
@@ -708,7 +708,7 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
-        name: [{ __typename: 'Translation', value: 'English', primary: true }]
+        name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
       },
       slug: '8-days-with-jesus-who-is-jesus/english',
       subtitleCount: 0
@@ -782,7 +782,7 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
-        name: [{ __typename: 'Translation', value: 'English', primary: true }]
+        name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
       },
       slug: 'chosen-witness/english',
       subtitleCount: 1
@@ -825,7 +825,7 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
-        name: [{ __typename: 'Translation', value: 'English', primary: true }]
+        name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
       },
       slug: 'lumo-the-gospel-of-luke/english',
       subtitleCount: 0
@@ -912,7 +912,7 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
-        name: [{ __typename: 'Translation', value: 'English', primary: true }]
+        name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
       },
       slug: 'storyclubs-jesus-and-zacchaeus/english',
       subtitleCount: 0
@@ -979,7 +979,7 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
-        name: [{ __typename: 'Translation', value: 'English', primary: true }]
+        name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
       },
       slug: 'birth-of-jesus/english',
       subtitleCount: 32
@@ -1040,7 +1040,7 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
-        name: [{ __typename: 'Translation', value: 'English', primary: true }]
+        name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
       },
       slug: 'fallingplates/english',
       subtitleCount: 7
@@ -1110,7 +1110,7 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
-        name: [{ __typename: 'Translation', value: 'English', primary: true }]
+        name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
       },
       slug: 'paul-and-silas-in-prison/english',
       subtitleCount: 0
@@ -1178,7 +1178,7 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
-        name: [{ __typename: 'Translation', value: 'English', primary: true }]
+        name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
       },
       slug: 'my-last-day/english',
       subtitleCount: 7
@@ -1232,7 +1232,7 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
-        name: [{ __typename: 'Translation', value: 'English', primary: true }]
+        name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
       },
       slug: 'the-beginning/english',
       subtitleCount: 32

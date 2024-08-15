@@ -41,7 +41,7 @@ const LanguageDialogComponent = (): ReactElement => {
                     {
                       value: 'English',
                       primary: true,
-                      __typename: 'Translation'
+                      __typename: 'LanguageName'
                     }
                   ]
                 },
@@ -52,12 +52,12 @@ const LanguageDialogComponent = (): ReactElement => {
                     {
                       value: 'Français',
                       primary: true,
-                      __typename: 'Translation'
+                      __typename: 'LanguageName'
                     },
                     {
                       value: 'French',
                       primary: false,
-                      __typename: 'Translation'
+                      __typename: 'LanguageName'
                     }
                   ]
                 },
@@ -68,12 +68,12 @@ const LanguageDialogComponent = (): ReactElement => {
                     {
                       value: 'Deutsch',
                       primary: true,
-                      __typename: 'Translation'
+                      __typename: 'LanguageName'
                     },
                     {
                       value: 'German, Standard',
                       primary: false,
-                      __typename: 'Translation'
+                      __typename: 'LanguageName'
                     }
                   ]
                 }
@@ -103,12 +103,12 @@ const LanguageDialogComponent = (): ReactElement => {
                     {
                       value: 'Français',
                       primary: true,
-                      __typename: 'Translation'
+                      __typename: 'LanguageName'
                     },
                     {
                       value: 'French',
                       primary: false,
-                      __typename: 'Translation'
+                      __typename: 'LanguageName'
                     }
                   ]
                 }

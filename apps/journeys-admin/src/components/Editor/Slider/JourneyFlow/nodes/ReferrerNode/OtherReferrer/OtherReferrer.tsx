@@ -1,21 +1,23 @@
+import Accordion from '@mui/material/Accordion'
+import AccordionDetails from '@mui/material/AccordionDetails'
+import AccordionSummary from '@mui/material/AccordionSummary'
 import Box from '@mui/material/Box'
-import Divider from '@mui/material/Divider'
-import Popover from '@mui/material/Popover'
 import Stack from '@mui/material/Stack'
+import { useTranslation } from 'next-i18next'
+import { ReactElement } from 'react'
+
+import type { GetJourneyAnalytics_journeyReferrer as JourneyReferrer } from '@core/journeys/ui/useJourneyAnalyticsQuery/__generated__/GetJourneyAnalytics'
+import ChevronDown from '@core/shared/ui/icons/ChevronDown'
+
 import { BaseReferrer } from '../BaseReferrer'
+import { ReferrerValue } from '../ReferrerValue'
 
-import { GetJourneyAnalytics_journeyReferrer as JourneyReferrer } from '@core/journeys/ui/useJourneyAnalyticsQuery/__generated__/GetJourneyAnalytics'
-import { MouseEvent, useState } from 'react'
-
-export function OtherReferrer({ referrers }: { referrers: JourneyReferrer[] }) {
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
-  const open = Boolean(anchorEl)
-  const handlePopoverOpen = (event: MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget)
-  }
-  const handlePopoverClose = () => {
-    setAnchorEl(null)
-  }
+export function OtherReferrer({
+  referrers
+}: {
+  referrers: JourneyReferrer[]
+}): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
 
   const visitorCount = referrers.reduce((acc, referrer) => {
     acc += referrer?.visitors ?? 0
@@ -26,40 +28,59 @@ export function OtherReferrer({ referrers }: { referrers: JourneyReferrer[] }) {
   return (
     <>
       <Box
-        onMouseEnter={handlePopoverOpen}
-        onMouseLeave={handlePopoverClose}
         sx={{
-          width: 160,
+          width: 180,
           backgroundColor: 'background.paper',
-          borderRadius: 50,
+          borderRadius: 4,
           boxShadow: 3
         }}
+        data-testid="OtherReferrer"
       >
-        <BaseReferrer property="Other sources" visitors={visitorCount} />
-      </Box>
-      <Popover
-        id="other-popper"
-        open={open}
-        anchorEl={anchorEl}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-        transformOrigin={{ vertical: -8, horizontal: 'center' }}
-        onClose={handlePopoverClose}
-        disableRestoreFocus
-        slotProps={{
-          paper: {
-            sx: {
-              width: 160
+        <Accordion
+          disableGutters
+          sx={{
+            py: 2,
+            px: 3,
+            borderRadius: 4,
+            '& .MuiAccordionSummary-root': {
+              display: 'flex',
+              gap: 2
             }
-          }
-        }}
-        sx={{ pointerEvents: 'none' }}
-      >
-        <Stack divider={<Divider flexItem />}>
-          {referrers.map((referrer) => (
-            <BaseReferrer key={referrer.property} {...referrer} />
-          ))}
-        </Stack>
-      </Popover>
+          }}
+        >
+          <AccordionSummary
+            expandIcon={<ChevronDown sx={{ fontSize: '18px' }} />}
+            aria-controls="other-referrers"
+            sx={{
+              minHeight: 0,
+              padding: 0,
+              flexDirection: 'row-reverse',
+              '& .MuiAccordionSummary-content': {
+                margin: 0,
+                display: 'grid',
+                gridTemplateColumns: 'auto 1fr'
+              }
+            }}
+          >
+            <ReferrerValue
+              tooltipTitle={t('other sources')}
+              property={t('other sources')}
+              visitors={visitorCount}
+            />
+          </AccordionSummary>
+          <AccordionDetails sx={{ padding: 0 }}>
+            <Stack>
+              {referrers.map((referrer) => (
+                <BaseReferrer
+                  key={referrer.property}
+                  {...referrer}
+                  style={{ padding: 0, mt: 1 }}
+                />
+              ))}
+            </Stack>
+          </AccordionDetails>
+        </Accordion>
+      </Box>
     </>
   )
 }

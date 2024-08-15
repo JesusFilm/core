@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+
 import { BaseReferrer } from '.'
 
 describe('BaseReferrer', () => {
@@ -10,7 +11,7 @@ describe('BaseReferrer', () => {
   })
 
   it('should render with other icon', () => {
-    render(<BaseReferrer property="Other sources" visitors={10} />)
+    render(<BaseReferrer property="other sources" visitors={10} />)
 
     expect(screen.getByTestId('ChevronDownIcon')).toBeInTheDocument()
   })

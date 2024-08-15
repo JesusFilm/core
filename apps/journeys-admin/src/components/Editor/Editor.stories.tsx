@@ -52,7 +52,7 @@ const journey: Journey = {
     iso3: 'eng',
     name: [
       {
-        __typename: 'Translation',
+        __typename: 'LanguageName',
         value: 'English',
         primary: true
       }
@@ -161,7 +161,7 @@ export const RTL = {
         bcp47: 'ar',
         name: [
           {
-            __typename: 'Translation',
+            __typename: 'LanguageName',
             value: 'Arabic',
             primary: true
           }

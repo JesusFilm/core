@@ -44,11 +44,9 @@ const Template: StoryObj<typeof TeamOnboarding> = {
   render: () => {
     return (
       <TeamProvider>
-        <TeamProvider>
-          <SnackbarProvider>
-            <TeamOnboarding />
-          </SnackbarProvider>
-        </TeamProvider>
+        <SnackbarProvider>
+          <TeamOnboarding />
+        </SnackbarProvider>
       </TeamProvider>
     )
   }

@@ -7,8 +7,8 @@ import {
   useMutation
 } from '@apollo/client'
 
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import {
   BlockDelete,
@@ -18,8 +18,8 @@ import { BlockFields } from '../../../__generated__/BlockFields'
 import { blockDeleteUpdate } from '../blockDeleteUpdate'
 
 export const BLOCK_DELETE = gql`
-  mutation BlockDelete($id: ID!, $journeyId: ID!, $parentBlockId: ID) {
-    blockDelete(id: $id, journeyId: $journeyId, parentBlockId: $parentBlockId) {
+  mutation BlockDelete($id: ID!) {
+    blockDelete(id: $id) {
       id
       parentOrder
       ... on StepBlock {
@@ -48,23 +48,17 @@ export function useBlockDeleteMutation(
     block: TreeBlock,
     options: MutationFunctionOptions<BlockDelete, BlockDeleteVariables>
   ): Promise<FetchResult<BlockDelete> | undefined> {
-    try {
-      if (journey == null) return
+    if (journey == null) return
 
-      return await blockDeleteMutation({
-        variables: {
-          id: block.id,
-          journeyId: journey.id,
-          parentBlockId: block.parentBlockId
-        },
-        update(cache, { data }) {
-          blockDeleteUpdate(block, data?.blockDelete, cache, journey.id)
-        },
-        ...options
-      })
-    } catch (e) {
-      return undefined
-    }
+    return await blockDeleteMutation({
+      variables: {
+        id: block.id
+      },
+      update(cache, { data }) {
+        blockDeleteUpdate(block, data?.blockDelete, cache, journey.id)
+      },
+      ...options
+    })
   }
 
   return [wrappedBlockDeleteMutation, result]

@@ -1,14 +1,15 @@
-import { Args, Mutation, Query, ResolveField, Resolver } from '@nestjs/graphql'
-import { IntegrationType } from '../../__generated__/graphql'
-import { PrismaService } from '../../lib/prisma.service'
-
 import { subject } from '@casl/ability'
-import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 import { UseGuards } from '@nestjs/common'
+import { Args, Mutation, Query, ResolveField, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
+
+import { Integration, Prisma } from '.prisma/api-journeys-client'
+import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
+
+import { IntegrationType } from '../../__generated__/graphql'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
-import { Integration, Prisma } from '.prisma/api-journeys-client'
+import { PrismaService } from '../../lib/prisma.service'
 
 @Resolver('Integration')
 export class IntegrationResolver {
@@ -31,7 +32,7 @@ export class IntegrationResolver {
     @CaslAccessible('Integration')
     accessibleIntegrations: Prisma.IntegrationWhereInput
   ): Promise<Integration[]> {
-    return this.prismaService.integration.findMany({
+    return await this.prismaService.integration.findMany({
       where: {
         AND: [accessibleIntegrations, { teamId }]
       }

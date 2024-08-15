@@ -1,7 +1,7 @@
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
-import { useTranslation } from 'next-i18next'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
 import CheckContainedIcon from '@core/shared/ui/icons/CheckContained'

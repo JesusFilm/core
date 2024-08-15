@@ -13,15 +13,14 @@ import {
   GetJourney_journey as Journey
 } from '../../../../../../../__generated__/GetJourney'
 import {
-  StepAndCardBlockCreate,
-  StepAndCardBlockCreateVariables
-} from '../../../../../../../__generated__/StepAndCardBlockCreate'
-
-import {
   JourneyStatus,
   ThemeMode,
   ThemeName
 } from '../../../../../../../__generated__/globalTypes'
+import {
+  StepAndCardBlockCreate,
+  StepAndCardBlockCreateVariables
+} from '../../../../../../../__generated__/StepAndCardBlockCreate'
 import { STEP_AND_CARD_BLOCK_CREATE } from '../../../../../../libs/useStepAndCardBlockCreateMutation/useStepAndCardBlockCreateMutation'
 
 import { SocialPreviewNode } from './SocialPreviewNode'
@@ -109,7 +108,7 @@ const defaultJourney: Journey = {
     iso3: 'eng',
     name: [
       {
-        __typename: 'Translation',
+        __typename: 'LanguageName',
         value: 'English',
         primary: true
       }

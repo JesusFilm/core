@@ -1,8 +1,8 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
-import { STEP_VIEW_EVENT_CREATE } from '@core/journeys/ui/Step/Step'
 import { TreeBlock, useBlocks } from '@core/journeys/ui/block'
+import { STEP_VIEW_EVENT_CREATE } from '@core/journeys/ui/Step/Step'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
 import { StepViewEventCreate } from '../../../../__generated__/StepViewEventCreate'
@@ -102,7 +102,7 @@ describe('DynamicCardList', () => {
 
     const { getByTestId, queryByTestId } = render(
       <MockedProvider mocks={[mockStepViewEventCreate]}>
-        <DynamicCardList />
+        <DynamicCardList blocks={defaultUseBlockMocks.treeBlocks} />
       </MockedProvider>
     )
 
@@ -121,7 +121,7 @@ describe('DynamicCardList', () => {
 
     const { getByTestId } = render(
       <MockedProvider mocks={[mockStepViewEventCreate]}>
-        <DynamicCardList />
+        <DynamicCardList blocks={defaultUseBlockMocks.treeBlocks} />
       </MockedProvider>
     )
 
@@ -138,12 +138,28 @@ describe('DynamicCardList', () => {
 
     render(
       <MockedProvider mocks={[mockStepViewEventCreate]}>
-        <DynamicCardList />
+        <DynamicCardList blocks={defaultUseBlockMocks.treeBlocks} />
       </MockedProvider>
     )
 
     await waitFor(() =>
       expect(mockSetShowHeaderFooter).toHaveBeenCalledWith(true)
     )
+  })
+
+  it('should show first block if useBlocks has not finished running', () => {
+    mockUseBlocks.mockReturnValue({
+      ...defaultUseBlockMocks,
+      treeBlocks: [],
+      blockHistory: []
+    })
+
+    const { getByTestId } = render(
+      <MockedProvider mocks={[]}>
+        <DynamicCardList blocks={defaultUseBlockMocks.treeBlocks} />
+      </MockedProvider>
+    )
+
+    expect(getByTestId('journey-card-step1.id')).toBeVisible()
   })
 })

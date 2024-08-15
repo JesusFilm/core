@@ -1,5 +1,7 @@
-import { decryptSymmetric, encryptSymmetric } from './crypto'
 import { Integration } from '.prisma/api-journeys-client'
+
+import { decryptSymmetric, encryptSymmetric } from './crypto'
+
 describe('crypto', () => {
   const OLD_ENV = process.env
 
@@ -67,7 +69,7 @@ describe('crypto', () => {
         process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET
       )
 
-      expect(res).toEqual('plaintext')
+      expect(res).toBe('plaintext')
     })
 
     it('should throw error if no encryption keys', async () => {

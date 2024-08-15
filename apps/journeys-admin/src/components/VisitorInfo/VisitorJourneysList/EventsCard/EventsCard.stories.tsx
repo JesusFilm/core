@@ -56,7 +56,7 @@ export const Empty = {
             id: 'languageId',
             name: [
               {
-                __typename: 'Translation',
+                __typename: 'LanguageName',
                 value: 'English'
               }
             ]

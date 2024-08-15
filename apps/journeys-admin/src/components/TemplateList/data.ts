@@ -1,12 +1,12 @@
 import { formatISO, startOfYear } from 'date-fns'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../__generated__/GetAdminJourneys'
-import { ImageFields } from '../../../__generated__/ImageFields'
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
+import { ImageFields } from '../../../__generated__/ImageFields'
 
 export const fakeDate = '2021-12-11'
 
@@ -42,7 +42,7 @@ export const defaultTemplate: Journey = {
     id: '529',
     name: [
       {
-        __typename: 'Translation',
+        __typename: 'LanguageName',
         value: 'English',
         primary: true
       }
@@ -93,12 +93,12 @@ export const descriptiveTemplate: Journey = {
     id: '20615',
     name: [
       {
-        __typename: 'Translation',
+        __typename: 'LanguageName',
         value: '普通話',
         primary: true
       },
       {
-        __typename: 'Translation',
+        __typename: 'LanguageName',
         value: 'Chinese, Mandarin',
         primary: false
       }

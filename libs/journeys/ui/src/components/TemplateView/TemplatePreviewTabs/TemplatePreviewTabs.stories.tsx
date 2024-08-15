@@ -9,8 +9,8 @@ import { JourneyProvider } from '../../../libs/JourneyProvider'
 import { JourneyFields as Journey } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
 import { publishedJourney } from '../data'
 
-import { TemplatePreviewTabs } from './TemplatePreviewTabs'
 import { journeyVideoBlocks } from './data'
+import { TemplatePreviewTabs } from './TemplatePreviewTabs'
 
 const TemplatePreviewTabsStory: Meta<typeof TemplatePreviewTabs> = {
   ...simpleComponentConfig,

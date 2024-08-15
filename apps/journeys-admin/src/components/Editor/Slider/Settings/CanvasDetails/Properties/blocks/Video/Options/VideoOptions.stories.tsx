@@ -3,8 +3,8 @@ import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentPropsWithoutRef } from 'react'
 
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../../../__generated__/BlockFields'
@@ -13,9 +13,9 @@ import { VideoBlockSource } from '../../../../../../../../../../__generated__/gl
 import { ThemeProvider } from '../../../../../../../../ThemeProvider'
 import { Drawer } from '../../../../../Drawer'
 import { GET_VIDEO_VARIANT_LANGUAGES } from '../../../../../Drawer/VideoBlockEditor/Source/SourceFromLocal/SourceFromLocal'
+import { videos } from '../../../../../Drawer/VideoLibrary/VideoFromLocal/data'
 import { GET_VIDEO } from '../../../../../Drawer/VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
 import { GET_VIDEOS } from '../../../../../Drawer/VideoLibrary/VideoFromLocal/VideoFromLocal'
-import { videos } from '../../../../../Drawer/VideoLibrary/VideoFromLocal/data'
 
 import { VideoOptions } from './VideoOptions'
 
@@ -77,7 +77,7 @@ const videoLanguages: GetVideoVariantLanguages_video = {
       id: '529',
       name: [
         {
-          __typename: 'Translation',
+          __typename: 'LanguageName',
           value: 'English',
           primary: true
         }

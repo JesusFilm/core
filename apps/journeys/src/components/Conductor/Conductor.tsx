@@ -4,23 +4,25 @@ import Stack from '@mui/material/Stack'
 import { SxProps, useTheme } from '@mui/material/styles'
 import { ReactElement, useEffect } from 'react'
 import TagManager from 'react-gtm-module'
+import { HotkeysProvider } from 'react-hotkeys-hook'
 import { v4 as uuidv4 } from 'uuid'
 
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { StepFooter } from '@core/journeys/ui/StepFooter'
-import { StepHeader } from '@core/journeys/ui/StepHeader'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useBlocks } from '@core/journeys/ui/block'
 import { getStepTheme } from '@core/journeys/ui/getStepTheme'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
+import { StepFooter } from '@core/journeys/ui/StepFooter'
+import { StepHeader } from '@core/journeys/ui/StepHeader'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeName } from '@core/shared/ui/themes'
 
+import { VisitorUpdateInput } from '../../../__generated__/globalTypes'
 import { JourneyViewEventCreate } from '../../../__generated__/JourneyViewEventCreate'
 import { StepFields } from '../../../__generated__/StepFields'
-import { VisitorUpdateInput } from '../../../__generated__/globalTypes'
 
 import { DynamicCardList } from './DynamicCardList'
+import { HotkeyNavigation } from './HotkeyNavigation'
 import { NavigationButton } from './NavigationButton'
 import { SwipeNavigation } from './SwipeNavigation'
 
@@ -60,7 +62,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     JOURNEY_VISITOR_UPDATE
   )
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if ((variant === 'default' || variant === 'embed') && journey != null) {
       const id = uuidv4()
@@ -113,12 +114,13 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
         }
       })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [journey])
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     setTreeBlocks(blocks)
     // multiple re-renders causes block history to be incorrect so do not pass in 'blocks' variable to deps array
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setTreeBlocks])
 
   const mobileNotchStyling: SxProps = {
@@ -142,72 +144,75 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const stepTheme = getStepTheme(activeBlock, journey)
 
   return (
-    <ThemeProvider
-      themeName={ThemeName.journeyUi}
-      themeMode={stepTheme.themeMode}
-      locale={locale}
-      rtl={rtl}
-      nested
-    >
-      <Stack
-        data-testid="Conductor"
-        sx={{
-          justifyContent: 'center',
-          height: '100svh',
-          background: theme.palette.grey[900],
-          overflow: 'hidden'
-        }}
+    <HotkeysProvider>
+      <HotkeyNavigation rtl={rtl} />
+      <ThemeProvider
+        themeName={ThemeName.journeyUi}
+        themeMode={stepTheme.themeMode}
+        locale={locale}
+        rtl={rtl}
+        nested
       >
-        <Box sx={{ height: { xs: '100%', lg: 'unset' } }}>
-          <Stack
-            sx={{
-              maxHeight: {
-                xs: '100svh',
-                // 80px to allow for the gap between card and top/bottom of the viewport
-                lg: 'calc(100svh - 80px)'
-              },
-              height: {
-                xs: 'inherit',
-                // 102px to allow for the gap between card and top/bottom of the viewport
-                lg: 'calc(54.25vw + 102px)'
-              },
-              px: { lg: 6 }
-            }}
-          >
-            <StepHeader
+        <Stack
+          data-testid="Conductor"
+          sx={{
+            justifyContent: 'center',
+            height: '100svh',
+            background: theme.palette.grey[900],
+            overflow: 'hidden'
+          }}
+        >
+          <Box sx={{ height: { xs: '100%', lg: 'unset' } }}>
+            <Stack
               sx={{
-                ...mobileNotchStyling,
-                display: {
-                  xs: showHeaderFooter ? 'flex' : 'none',
-                  lg: 'flex'
-                }
+                maxHeight: {
+                  xs: '100svh',
+                  // 80px to allow for the gap between card and top/bottom of the viewport
+                  lg: 'calc(100svh - 80px)'
+                },
+                height: {
+                  xs: 'inherit',
+                  // 102px to allow for the gap between card and top/bottom of the viewport
+                  lg: 'calc(54.25vw + 102px)'
+                },
+                px: { lg: 6 }
               }}
-            />
-            <ThemeProvider {...stepTheme} locale={locale} rtl={rtl} nested>
-              <SwipeNavigation activeBlock={activeBlock} rtl={rtl}>
-                <DynamicCardList />
-              </SwipeNavigation>
-            </ThemeProvider>
-            <NavigationButton
-              variant={rtl ? 'next' : 'previous'}
-              alignment="left"
-            />
-            <NavigationButton
-              variant={rtl ? 'previous' : 'next'}
-              alignment="right"
-            />
-            <StepFooter
-              sx={{
-                ...mobileNotchStyling,
-                display: {
-                  xs: showHeaderFooter ? 'flex' : 'none',
-                  lg: 'flex'
-                }
-              }}
-            />
-          </Stack>
-        </Box>
-      </Stack>
-    </ThemeProvider>
+            >
+              <StepHeader
+                sx={{
+                  ...mobileNotchStyling,
+                  display: {
+                    xs: showHeaderFooter ? 'flex' : 'none',
+                    lg: 'flex'
+                  }
+                }}
+              />
+              <ThemeProvider {...stepTheme} locale={locale} rtl={rtl} nested>
+                <SwipeNavigation activeBlock={activeBlock} rtl={rtl}>
+                  <DynamicCardList blocks={blocks} />
+                </SwipeNavigation>
+              </ThemeProvider>
+              <NavigationButton
+                variant={rtl ? 'next' : 'previous'}
+                alignment="left"
+              />
+              <NavigationButton
+                variant={rtl ? 'previous' : 'next'}
+                alignment="right"
+              />
+              <StepFooter
+                sx={{
+                  ...mobileNotchStyling,
+                  display: {
+                    xs: showHeaderFooter ? 'flex' : 'none',
+                    lg: 'flex'
+                  }
+                }}
+              />
+            </Stack>
+          </Box>
+        </Stack>
+      </ThemeProvider>
+    </HotkeysProvider>
   )
 }

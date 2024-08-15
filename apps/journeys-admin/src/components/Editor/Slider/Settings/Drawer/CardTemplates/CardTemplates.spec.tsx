@@ -1,12 +1,13 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import { v4 as uuidv4 } from 'uuid'
 
+import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { TreeBlock } from '@core/journeys/ui/block'
 
-import { JourneyFields as Journey } from '../../../../../../../__generated__/JourneyFields'
 import { VideoBlockSource } from '../../../../../../../__generated__/globalTypes'
+import { JourneyFields as Journey } from '../../../../../../../__generated__/JourneyFields'
 import { TestEditorState } from '../../../../../../libs/TestEditorState'
 
 import { CARD_VIDEO_CREATE } from './Templates/CardVideo/CardVideo'
@@ -18,8 +19,16 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: jest.fn()
 }))
 
+jest.mock('uuid', () => ({
+  __esModule: true,
+  v4: jest.fn()
+}))
+
+const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
+
 describe('CardTemplates', () => {
   it('changes content of card to match template', async () => {
+    mockUuidv4.mockReturnValueOnce('videoId')
     const card: TreeBlock = {
       id: 'cardId',
       __typename: 'CardBlock',
@@ -49,6 +58,7 @@ describe('CardTemplates', () => {
               query: CARD_VIDEO_CREATE,
               variables: {
                 videoInput: {
+                  id: 'videoId',
                   journeyId: 'journeyId',
                   parentBlockId: 'cardId',
                   videoId: '1_jf-0-0',

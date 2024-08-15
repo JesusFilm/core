@@ -187,7 +187,7 @@ describe('TemplateSettingsDialog', () => {
                 {
                   value: 'English',
                   primary: true,
-                  __typename: 'Translation'
+                  __typename: 'LanguageName'
                 }
               ]
             },
@@ -198,12 +198,12 @@ describe('TemplateSettingsDialog', () => {
                 {
                   value: 'Français',
                   primary: true,
-                  __typename: 'Translation'
+                  __typename: 'LanguageName'
                 },
                 {
                   value: 'French',
                   primary: false,
-                  __typename: 'Translation'
+                  __typename: 'LanguageName'
                 }
               ]
             },
@@ -214,12 +214,12 @@ describe('TemplateSettingsDialog', () => {
                 {
                   value: 'Deutsch',
                   primary: true,
-                  __typename: 'Translation'
+                  __typename: 'LanguageName'
                 },
                 {
                   value: 'German, Standard',
                   primary: false,
-                  __typename: 'Translation'
+                  __typename: 'LanguageName'
                 }
               ]
             }

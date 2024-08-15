@@ -71,7 +71,7 @@ const journey = {
       {
         value: 'English',
         primary: true,
-        __typename: 'Translation'
+        __typename: 'LanguageName'
       }
     ]
   }

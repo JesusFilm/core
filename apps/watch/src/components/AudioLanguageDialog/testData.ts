@@ -23,7 +23,7 @@ export const getLanguagesSlugMock = {
                 {
                   value: "'Auhelawa",
                   primary: true,
-                  __typename: 'Translation'
+                  __typename: 'LanguageName'
                 }
               ]
             }
@@ -38,12 +38,12 @@ export const getLanguagesSlugMock = {
                 {
                   value: 'A-Hmao',
                   primary: true,
-                  __typename: 'Translation'
+                  __typename: 'LanguageName'
                 },
                 {
                   value: 'A-Hmao',
                   primary: false,
-                  __typename: 'Translation'
+                  __typename: 'LanguageName'
                 }
               ]
             }
@@ -58,12 +58,12 @@ export const getLanguagesSlugMock = {
                 {
                   value: 'Aari',
                   primary: true,
-                  __typename: 'Translation'
+                  __typename: 'LanguageName'
                 },
                 {
                   value: 'Aari',
                   primary: false,
-                  __typename: 'Translation'
+                  __typename: 'LanguageName'
                 }
               ]
             }

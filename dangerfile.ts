@@ -1,4 +1,5 @@
-import { danger, warn, markdown, fail } from 'danger'
+import { readFile } from 'node:fs/promises'
+import { join } from 'node:path'
 import lint from '@commitlint/lint'
 import load from '@commitlint/load'
 import {
@@ -7,16 +8,14 @@ import {
   ParserOptions,
   ParserPreset
 } from '@commitlint/types'
+import { danger, fail, markdown, warn } from 'danger'
 import config from './commitlint.config'
-import { readFile } from 'node:fs/promises'
-import { join } from 'node:path'
-import { diffLines } from 'diff'
 
 export default async () => {
   // merge queues not supported by danger-js
   if (danger.github.pr == null) return
 
-  const isDependabot = danger.github.pr.user.login === 'dependabot[bot]'
+  const isDependabot = danger.github.pr.user.login === 'renovate[bot]'
   // check lockfile updated when package changes
   const packageChanged = danger.git.modified_files.includes('package.json')
   const lockfileChanged =

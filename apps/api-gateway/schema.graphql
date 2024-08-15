@@ -26,7 +26,39 @@ interface Action
   @join__type(graph: JOURNEYS)
 {
   parentBlockId: ID!
+  parentBlock: Block!
   gtmEventName: String
+}
+
+type AudioPreview
+  @join__type(graph: LANGUAGES)
+{
+  language: Language!
+  value: String!
+  duration: Int!
+  size: Int!
+}
+
+type BibleBook
+  @join__type(graph: VIDEOS)
+{
+  name(languageId: ID, primary: Boolean): [Translation!]!
+  osisId: String!
+  alternateName: String
+  paratextAbbreviation: String!
+  isNewTestament: Boolean!
+  order: Int!
+}
+
+type BibleCitation
+  @join__type(graph: VIDEOS)
+{
+  osisId: String!
+  bibleBook: BibleBook!
+  chapterStart: Int!
+  chapterEnd: Int
+  verseStart: Int!
+  verseEnd: Int
 }
 
 interface Block
@@ -38,11 +70,28 @@ interface Block
   parentOrder: Int
 }
 
+input BlockDuplicateIdMap
+  @join__type(graph: JOURNEYS)
+{
+  oldId: ID!
+  newId: ID!
+}
+
 input BlocksFilter
   @join__type(graph: JOURNEYS)
 {
   journeyIds: [ID!]
   typenames: [String!]
+}
+
+input BlockUpdateActionInput
+  @join__type(graph: JOURNEYS)
+{
+  gtmEventName: String
+  email: String
+  url: String
+  target: String
+  blockId: String
 }
 
 type Browser
@@ -184,11 +233,10 @@ enum ButtonVariant
 }
 
 enum CacheControlScope
-  @join__type(graph: LANGUAGES)
   @join__type(graph: VIDEOS)
 {
-  PUBLIC @join__enumValue(graph: LANGUAGES) @join__enumValue(graph: VIDEOS)
-  PRIVATE @join__enumValue(graph: LANGUAGES) @join__enumValue(graph: VIDEOS)
+  PUBLIC @join__enumValue(graph: VIDEOS)
+  PRIVATE @join__enumValue(graph: VIDEOS)
 }
 
 type CardBlock implements Block
@@ -246,6 +294,7 @@ input CardBlockUpdateInput
   @join__type(graph: JOURNEYS)
 {
   parentBlockId: ID
+  coverBlockId: ID
   backgroundColor: String
   fullscreen: Boolean
   themeMode: ThemeMode
@@ -333,18 +382,53 @@ type CloudflareVideo
   readyToStream: Boolean!
 }
 
+type Continent
+  @join__type(graph: LANGUAGES)
+{
+  id: ID!
+  name(languageId: ID, primary: Boolean): [ContinentName!]!
+  countries: [Country!]!
+}
+
+type ContinentName
+  @join__type(graph: LANGUAGES)
+{
+  value: String!
+  primary: Boolean!
+  language: Language!
+}
+
 type Country
   @join__type(graph: LANGUAGES, key: "id")
 {
   id: ID!
-  name(languageId: ID, primary: Boolean): [Translation!]!
   population: Int
-  continent(languageId: ID, primary: Boolean): [Translation!]!
-  languages: [Language!]!
   latitude: Float
   longitude: Float
   flagPngSrc: String
   flagWebpSrc: String
+  languages: [Language!]!
+  name(languageId: ID, primary: Boolean): [CountryName!]!
+  continent: Continent!
+  countryLanguages: [CountryLanguage!]!
+}
+
+type CountryLanguage
+  @join__type(graph: LANGUAGES)
+{
+  id: ID!
+  language: Language!
+  country: Country!
+  speakers: Int!
+  displaySpeakers: Int
+}
+
+type CountryName
+  @join__type(graph: LANGUAGES)
+{
+  value: String!
+  primary: Boolean!
+  language: Language!
 }
 
 input CreateVerificationRequestInput
@@ -446,6 +530,7 @@ type EmailAction implements Action
   @join__type(graph: JOURNEYS)
 {
   parentBlockId: ID!
+  parentBlock: Block!
   gtmEventName: String
   email: String!
 }
@@ -1199,6 +1284,14 @@ enum JourneyVisitorSort
 scalar Json
   @join__type(graph: JOURNEYS)
 
+type Keyword
+  @join__type(graph: VIDEOS)
+{
+  id: ID!
+  value: String!
+  language: Language!
+}
+
 type Language
   @join__type(graph: JOURNEYS, key: "id")
   @join__type(graph: LANGUAGES, key: "id")
@@ -1210,7 +1303,10 @@ type Language
   id: ID!
   bcp47: String @join__field(graph: LANGUAGES)
   iso3: String @join__field(graph: LANGUAGES)
-  name(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: LANGUAGES)
+  slug: String @join__field(graph: LANGUAGES)
+  name(languageId: ID, primary: Boolean): [LanguageName!]! @join__field(graph: LANGUAGES)
+  countryLanguages: [CountryLanguage!]! @join__field(graph: LANGUAGES)
+  audioPreview: AudioPreview @join__field(graph: LANGUAGES)
 }
 
 enum LanguageIdType
@@ -1218,6 +1314,14 @@ enum LanguageIdType
 {
   databaseId @join__enumValue(graph: LANGUAGES)
   bcp47 @join__enumValue(graph: LANGUAGES)
+}
+
+type LanguageName
+  @join__type(graph: LANGUAGES)
+{
+  value: String!
+  primary: Boolean!
+  language: Language!
 }
 
 input LanguagesFilter
@@ -1252,6 +1356,7 @@ type LinkAction implements Action
   @join__type(graph: JOURNEYS)
 {
   parentBlockId: ID!
+  parentBlock: Block!
   gtmEventName: String
   url: String!
   target: String
@@ -1316,10 +1421,34 @@ type Mutation
   @join__type(graph: USERS)
 {
   siteCreate(input: SiteCreateInput!): MutationSiteCreateResult! @join__field(graph: ANALYTICS)
-  blockDeleteAction(id: ID!, journeyId: ID!): Block! @join__field(graph: JOURNEYS)
-  blockUpdateNavigateToBlockAction(id: ID!, journeyId: ID!, input: NavigateToBlockActionInput!): NavigateToBlockAction! @join__field(graph: JOURNEYS)
-  blockUpdateLinkAction(id: ID!, journeyId: ID!, input: LinkActionInput!): LinkAction! @join__field(graph: JOURNEYS)
-  blockUpdateEmailAction(id: ID!, journeyId: ID!, input: EmailActionInput!): EmailAction! @join__field(graph: JOURNEYS)
+  blockDeleteAction(
+    id: ID!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): Block! @join__field(graph: JOURNEYS)
+  blockUpdateNavigateToBlockAction(
+    id: ID!
+    input: NavigateToBlockActionInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): NavigateToBlockAction! @join__field(graph: JOURNEYS)
+  blockUpdateLinkAction(
+    id: ID!
+    input: LinkActionInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): LinkAction! @join__field(graph: JOURNEYS)
+  blockUpdateEmailAction(
+    id: ID!
+    input: EmailActionInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): EmailAction! @join__field(graph: JOURNEYS)
+  blockUpdateAction(id: ID!, input: BlockUpdateActionInput): Action! @join__field(graph: JOURNEYS)
 
   """blockDelete returns the updated sibling blocks on successful delete"""
   blockDelete(
@@ -1343,6 +1472,11 @@ type Mutation
     """
     parentOrder: Int
 
+    """
+    idMap is used to set custom ids for the duplicated block and it's descendants.
+    """
+    idMap: [BlockDuplicateIdMap!]
+
     """drop this parameter after merging teams"""
     journeyId: ID
 
@@ -1365,6 +1499,9 @@ type Mutation
     """drop this parameter after merging teams"""
     journeyId: ID
   ): [Block!]! @join__field(graph: JOURNEYS)
+
+  """blockRestore is used for redo/undo"""
+  blockRestore(id: ID!): [Block!]! @join__field(graph: JOURNEYS)
   buttonBlockCreate(input: ButtonBlockCreateInput!): ButtonBlock! @join__field(graph: JOURNEYS)
   buttonBlockUpdate(
     id: ID!
@@ -1431,6 +1568,7 @@ type Mutation
     """drop this parameter after merging teams"""
     journeyId: ID
   ): StepBlock! @join__field(graph: JOURNEYS)
+  stepBlockPositionUpdate(input: [StepBlockPositionUpdateInput!]!): [StepBlock!]! @join__field(graph: JOURNEYS)
   textResponseBlockCreate(input: TextResponseBlockCreateInput!): TextResponseBlock! @join__field(graph: JOURNEYS)
   textResponseBlockUpdate(
     id: ID!
@@ -1578,6 +1716,7 @@ type NavigateToBlockAction implements Action
   @join__type(graph: JOURNEYS)
 {
   parentBlockId: ID!
+  parentBlock: Block!
   gtmEventName: String
   blockId: String!
 }
@@ -1943,10 +2082,10 @@ type Query
 
   """Get a single visitor"""
   visitor(id: ID!): Visitor! @join__field(graph: JOURNEYS)
-  countries: [Country!]! @join__field(graph: LANGUAGES)
-  country(id: ID!): Country! @join__field(graph: LANGUAGES)
+  language(id: ID!, idType: LanguageIdType = databaseId): Language @join__field(graph: LANGUAGES)
   languages(offset: Int, limit: Int, where: LanguagesFilter): [Language!]! @join__field(graph: LANGUAGES)
-  language(id: ID!, idType: LanguageIdType): Language @join__field(graph: LANGUAGES)
+  country(id: ID!): Country @join__field(graph: LANGUAGES)
+  countries: [Country!]! @join__field(graph: LANGUAGES)
   getMyCloudflareImages: [CloudflareImage] @join__field(graph: MEDIA)
   getMyCloudflareVideos: [CloudflareVideo] @join__field(graph: MEDIA)
   getMyCloudflareVideo(id: ID!): CloudflareVideo @join__field(graph: MEDIA)
@@ -2239,6 +2378,14 @@ input StepBlockCreateInput
   y: Int
 }
 
+input StepBlockPositionUpdateInput
+  @join__type(graph: JOURNEYS)
+{
+  id: ID!
+  x: Int
+  y: Int
+}
+
 input StepBlockUpdateInput
   @join__type(graph: JOURNEYS)
 {
@@ -2510,7 +2657,6 @@ enum ThemeName
 
 type Translation
   @join__type(graph: JOURNEYS)
-  @join__type(graph: LANGUAGES)
   @join__type(graph: MEDIA)
   @join__type(graph: TAGS)
   @join__type(graph: USERS)
@@ -2838,6 +2984,8 @@ type Video
 {
   id: ID!
   primaryLanguageId: ID!
+  bibleCitations: [BibleCitation!]! @join__field(graph: VIDEOS)
+  keywords(languageId: ID): [Keyword!]! @join__field(graph: VIDEOS)
   label: VideoLabel! @join__field(graph: VIDEOS)
   title(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
   snippet(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
@@ -2856,6 +3004,7 @@ type Video
   """the number value of the amount of children on a video"""
   childrenCount: Int! @join__field(graph: VIDEOS)
   variantLanguagesWithSlug: [LanguageWithSlug!]! @join__field(graph: VIDEOS)
+  subtitles(languageId: ID, primary: Boolean, edition: String): [VideoSubtitle!]! @join__field(graph: VIDEOS)
   variant(languageId: ID): VideoVariant @join__field(graph: VIDEOS)
 }
 
@@ -3441,6 +3590,16 @@ input VideoStartEventCreateInput
 
   """source of the video"""
   value: VideoBlockSource
+}
+
+type VideoSubtitle
+  @join__type(graph: VIDEOS)
+{
+  id: String!
+  languageId: String!
+  edition: String!
+  vttSrc: String
+  srtSrc: String
 }
 
 """

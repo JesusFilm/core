@@ -10,12 +10,12 @@ import FormGroup from '@mui/material/FormGroup'
 import Link from '@mui/material/Link'
 import MenuItem from '@mui/material/MenuItem'
 import Stack from '@mui/material/Stack'
+import { useTheme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { useTheme } from '@mui/material/styles'
 import { Form, Formik } from 'formik'
-import { useTranslation } from 'next-i18next'
 import Image from 'next/image'
+import { useTranslation } from 'next-i18next'
 import { ComponentProps, ReactElement, useEffect, useState } from 'react'
 import useDownloader from 'react-use-downloader'
 
@@ -38,7 +38,9 @@ function formatBytes(bytes: number, decimals = 2): string {
 
   const i = Math.floor(Math.log(bytes) / Math.log(k))
 
-  return `${Number.parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
+  return `${Number.parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${
+    sizes[i]
+  }`
 }
 
 export function DownloadDialog({
@@ -54,7 +56,7 @@ export function DownloadDialog({
   const language = variant?.language ?? {
     __typename: 'Language',
     id: '529',
-    name: [{ __typename: 'Translation', value: 'English' }]
+    name: [{ __typename: 'LanguageName', value: 'English' }]
   }
   const time = secondsToTimeFormat(variant?.duration ?? 0)
 
