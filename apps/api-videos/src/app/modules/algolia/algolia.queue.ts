@@ -12,8 +12,13 @@ export class AlgoliaQueue implements OnModuleInit {
     const apiKey = process.env.ALGOLIA_API_KEY ?? ''
     const appId = process.env.ALGOLIA_APPLICATION_ID ?? ''
     const appIndex = process.env.ALGOLIA_INDEX ?? ''
-    const nodeEnv = process.env.DOPPLER_ENV ?? ''
-    if (apiKey === '' || appId === '' || appIndex === '' || nodeEnv !== 'stage')
+    const nodeEnv = process.env.NODE_ENV ?? ''
+    if (
+      apiKey === '' ||
+      appId === '' ||
+      appIndex === '' ||
+      nodeEnv !== 'production'
+    )
       return
 
     const name = 'api-videos-algolia'
