@@ -7,6 +7,7 @@ if (process.env.VERCEL == null || process.env.CI != null) {
   localePath = './locales'
 } else {
   // vercel run time
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   localePath = require('node:path').resolve('./public/locales')
 }
 
@@ -18,6 +19,7 @@ export default getRequestConfig(async ({ locale }: { locale: string }) => {
   if (!locales.includes(locale)) notFound()
 
   return {
+    // eslint-disable-next-line import/dynamic-import-chunkname
     messages: (await import(`${localePath}/${locale}/apps-videos-admin.json`))
       .default
   }
