@@ -55,6 +55,7 @@ type Language
   id: ID!
   bcp47: String
   iso3: String
+  slug: String
   name(languageId: ID, primary: Boolean): [LanguageName!]!
   countryLanguages: [CountryLanguage!]!
   audioPreview: AudioPreview

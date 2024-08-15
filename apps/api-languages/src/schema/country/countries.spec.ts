@@ -29,6 +29,7 @@ const COUNTRIES_QUERY = graphql(`
           id
           iso3
           bcp47
+          slug
         }
       }
       latitude
