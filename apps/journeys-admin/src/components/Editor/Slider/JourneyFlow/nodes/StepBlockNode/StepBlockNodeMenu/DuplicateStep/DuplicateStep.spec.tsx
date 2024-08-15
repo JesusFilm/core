@@ -1,7 +1,7 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
 import { v4 as uuidv4 } from 'uuid'
