@@ -5,12 +5,10 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Formik } from 'formik'
-import noop from 'lodash/noop'
 import { useTranslation } from 'next-i18next'
-import { type ChangeEvent, type ReactElement, useMemo } from 'react'
+import { type ReactElement, useMemo } from 'react'
 import { useMenu, useSearchBox } from 'react-instantsearch'
 
-import ImageXIcon from '@core/shared/ui/icons/ImageX'
 import type { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
 
