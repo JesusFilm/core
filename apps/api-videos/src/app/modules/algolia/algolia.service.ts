@@ -108,6 +108,7 @@ export class AlgoliaService {
       }
 
       const transformedVideos = videoVariants.map((videoVariant) => {
+        console.log('videoVariant', videoVariant.video?.imageAlt)
         return {
           objectID: videoVariant.id,
           videoId: videoVariant.videoId,

@@ -203,7 +203,7 @@ describe('AlgoliaService', () => {
           imageAlt: 'imageAlt',
           label: 'label',
           languageId: '529',
-          languageNameInEnglish: 'English',
+          languageEnglishName: 'English',
           languagePrimaryName: 'English',
           objectID: 'id',
           slug: 'slug',
