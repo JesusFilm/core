@@ -125,7 +125,7 @@ export class AlgoliaService {
           return {
             objectID: videoVariant.id,
             videoId: videoVariant.videoId,
-            titles: videoVariant.video?.title.map((title) => title.value),
+            titles: videoVariant.video?.title.map((title) => title?.value),
             description: videoVariant.video?.description?.map(
               (description) => description?.value
             ),
@@ -139,9 +139,10 @@ export class AlgoliaService {
             slug: videoVariant.slug,
             label: videoVariant.video?.label,
             image: videoVariant.video?.image,
-            imageAlt: videoVariant.video?.imageAlt.find(
-              (alt) => alt.languageId === '529'
-            )?.value,
+            imageAlt:
+              videoVariant.video?.imageAlt.find(
+                (alt) => alt.languageId === '529'
+              )?.value ?? '',
             childrenCount: videoVariant.video?.childIds.length
           }
         })
@@ -149,18 +150,18 @@ export class AlgoliaService {
         const index = client.initIndex(appIndex)
         try {
           await index.saveObjects(transformedVideos).wait()
+          this.logger.log(`synced ${offset} videos to algolia`)
         } catch (error) {
           console.error('Error syncing videos to algolia:', error)
         }
 
         offset += 1000
-        this.logger.log(`synced ${offset} videos to algolia`)
       } catch (error) {
         console.error('Error in video processing loop:', error)
         break
       }
     }
 
-    console.log('synced videos to algolia')
+    console.log('algolia synced finished')
   }
 }
