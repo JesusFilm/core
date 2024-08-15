@@ -31,14 +31,14 @@ const CreateVerificationRequestInput = builder.inputType(
   'CreateVerificationRequestInput',
   {
     fields: (t) => ({
-      redirect: t.string()
+      redirect: t.string({ required: false })
     })
   }
 )
 
 const MeInput = builder.inputType('MeInput', {
   fields: (t) => ({
-    redirect: t.string()
+    redirect: t.string({ required: false })
   })
 })
 
@@ -95,9 +95,9 @@ builder.queryFields((t) => ({
         required: false
       })
     },
-    authScopes: {
-      isAuthenticated: true
-    },
+    // authScopes: {
+    //   isAuthenticated: true
+    // },
     resolve: async (query, _parent, { input }, ctx) => {
       if (input?.redirect != null) {
         return { redirect: input.redirect }

@@ -5,7 +5,7 @@ import FederationPlugin from '@pothos/plugin-federation'
 import PrismaPlugin from '@pothos/plugin-prisma'
 import ScopeAuthPlugin from '@pothos/plugin-scope-auth'
 
-import { Prisma } from '.prisma/api-languages-client'
+import { Prisma } from '.prisma/api-users-client'
 import { User } from '@core/yoga/firebaseClient'
 
 import type PrismaTypes from '../__generated__/pothos-types'
@@ -20,31 +20,31 @@ export interface Context {
 }
 
 export const builder = new SchemaBuilder<{
+  Context: Context
   PrismaTypes: PrismaTypes
   Scalars: {
     ID: { Input: string; Output: number | string }
   }
   AuthScopes: {
     isAuthenticated: boolean
-    isCurrentUser: (id: string) => boolean
-    isSuperAdmin: () => boolean
+    isCurrentUser: string
+    isSuperAdmin: boolean
   }
 }>({
-  plugins: [PrismaPlugin, ScopeAuthPlugin, DirectivesPlugin, FederationPlugin],
-  scopeAuth: {
-    authorizeOnSubscribe: true,
-    authScopes: async (context) => ({
-      isAuthenticated: context.currentUser != null,
-      isCurrentUser: (currentUserId) =>
-        context.currentUser.id === currentUserId,
-      isSuperAdmin: async () => {
-        const user = await prisma.user.findUnique({
-          where: { userId: context.currentUser.id }
-        })
-        return user?.superAdmin ?? false
-      }
-    })
-  },
+  plugins: [ScopeAuthPlugin, PrismaPlugin, DirectivesPlugin, FederationPlugin],
+  authScopes: async (context: Context) => ({
+    isAuthenticated: context.currentUser != null,
+    isCurrentUser: (id) => context.currentUser?.id === id,
+    isSuperAdmin: async () => {
+      const user = await prisma.user.findUnique({
+        where: { userId: context.currentUser?.id }
+      })
+      return user?.superAdmin ?? false
+    },
+    scopeAuthOptions: {
+      authorizeOnSubscribe: true
+    }
+  }),
   prisma: {
     client: prisma,
     dmmf: Prisma.dmmf,

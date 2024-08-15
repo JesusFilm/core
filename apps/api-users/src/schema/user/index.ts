@@ -1,3 +1,3 @@
 import './user'
 
-export { Language } from './user'
+export { User } from './user'

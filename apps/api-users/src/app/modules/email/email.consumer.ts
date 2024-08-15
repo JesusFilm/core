@@ -4,7 +4,7 @@ import { Job } from 'bullmq'
 
 import { EmailService } from '@core/nest/common/email/emailService'
 
-import { EmailVerifyEmail } from '../../emails/templates/EmailVerify/EmailVerify'
+import { EmailVerifyEmail } from '../../../emails/templates/EmailVerify/EmailVerify'
 import { PrismaService } from '../../lib/prisma.service'
 
 export interface VerifyUserJob {

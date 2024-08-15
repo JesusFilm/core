@@ -5,7 +5,7 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
 import { EmailService } from '@core/nest/common/email/emailService'
 
-import EmailVerifyEmail from '../../emails/templates/EmailVerify/EmailVerify'
+import EmailVerifyEmail from '../../../emails/templates/EmailVerify/EmailVerify'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { ApiUsersJob, EmailConsumer } from './email.consumer'
