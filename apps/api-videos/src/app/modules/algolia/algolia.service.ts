@@ -1,12 +1,16 @@
-import { ApolloClient, InMemoryCache, gql } from '@apollo/client'
+import { ApolloClient, InMemoryCache } from '@apollo/client'
 import { Injectable } from '@nestjs/common'
 import algoliasearch from 'algoliasearch'
+import { graphql } from 'gql.tada'
 
-import { GetLanguagesQuery } from '../../../__generated__/graphql'
 import { Translation } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 
-const GET_LANGUAGES = gql`
+const ENGLISH_LANGUAGE_ID = '529'
+const SPANISH_LANGUAGE_ID = '21046'
+const CHINESE_SIMPLIFIED_LANGUAGE_ID = '21754'
+
+const GET_LANGUAGES = graphql(`
   query getLanguages {
     languages {
       id
@@ -19,7 +23,7 @@ const GET_LANGUAGES = gql`
       }
     }
   }
-`
+`)
 
 interface LanguageRecord {
   [key: string]: {
@@ -38,7 +42,7 @@ export class AlgoliaService {
       cache: new InMemoryCache()
     })
 
-    const { data } = await apollo.query<GetLanguagesQuery>({
+    const { data } = await apollo.query({
       query: GET_LANGUAGES
     })
 
@@ -91,9 +95,9 @@ export class AlgoliaService {
             : {
                 languageId: {
                   in: [
-                    '529', // English
-                    '21046', // Spanish
-                    '21754' // Chinese Simplified
+                    ENGLISH_LANGUAGE_ID,
+                    SPANISH_LANGUAGE_ID,
+                    CHINESE_SIMPLIFIED_LANGUAGE_ID
                   ]
                 }
               }
@@ -113,7 +117,7 @@ export class AlgoliaService {
           ).map((description) => description?.value),
           duration: videoVariant.duration,
           languageId: videoVariant.languageId,
-          languageNameInEnglish: languages[videoVariant.languageId]?.english,
+          languageEnglishName: languages[videoVariant.languageId]?.english,
           languagePrimaryName: languages[videoVariant.languageId]?.primary,
           subtitles: videoVariant.subtitle.map(
             (subtitle) => subtitle.languageId
