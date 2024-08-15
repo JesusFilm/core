@@ -1,9 +1,11 @@
 import { InjectQueue } from '@nestjs/bullmq'
-import { Injectable, OnModuleInit } from '@nestjs/common'
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common'
 import { Queue } from 'bullmq'
 
 @Injectable()
 export class AlgoliaQueue implements OnModuleInit {
+  private readonly logger = new Logger(AlgoliaQueue.name)
+
   constructor(
     @InjectQueue('api-videos-algolia') private readonly algoliaQueue: Queue
   ) {}
@@ -24,6 +26,7 @@ export class AlgoliaQueue implements OnModuleInit {
     const name = 'api-videos-algolia'
     const repeatableJobs = await this.algoliaQueue.getRepeatableJobs()
 
+    this.logger.log('Removing old Algolia sync job')
     for (const job of repeatableJobs) {
       if (job.name === name) {
         await this.algoliaQueue.removeRepeatableByKey(job.key)
@@ -31,6 +34,7 @@ export class AlgoliaQueue implements OnModuleInit {
     }
 
     // Schedule a new instance
+    this.logger.log('Scheduling new Algolia sync job')
     await this.algoliaQueue.add(name, {})
   }
 }
