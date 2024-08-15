@@ -10,6 +10,7 @@ import { useTranslation } from 'next-i18next'
 import { type ChangeEvent, type ReactElement, useMemo } from 'react'
 import { useMenu, useSearchBox } from 'react-instantsearch'
 
+import ImageXIcon from '@core/shared/ui/icons/ImageX'
 import type { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
 
@@ -143,16 +144,18 @@ export function FilterList({
       }
     }
 
-  const handleTitleChange =
-    (setFieldValue) => (e: ChangeEvent<HTMLInputElement>) => {
-      const { name, value } = e.target
-      refineSearch(value)
-      setFieldValue(name, value)
-    }
+  const handleTitleChange = (values: typeof initialValues): void => {
+    refineSearch(values.title)
+  }
 
   return (
-    <Formik initialValues={initialValues} onSubmit={noop} enableReinitialize>
-      {({ values, setFieldValue, handleBlur }) => (
+    <Formik
+      initialValues={initialValues}
+      handleSubmit={handleTitleChange}
+      onSubmit={handleTitleChange}
+      enableReinitialize
+    >
+      {({ values, setFieldValue, handleChange, handleBlur }) => (
         <Stack data-testid="FilterList" gap={4}>
           <Stack spacing={2}>
             <Stack direction="row" spacing={2}>
@@ -187,7 +190,8 @@ export function FilterList({
             <TextField
               value={values.title}
               name="title"
-              onChange={handleTitleChange(setFieldValue)}
+              type="search"
+              onChange={handleChange}
               onBlur={handleBlur}
               label="Search Titles"
               variant="outlined"

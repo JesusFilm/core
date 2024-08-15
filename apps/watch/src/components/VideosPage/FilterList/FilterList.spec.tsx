@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { MenuRenderState } from 'instantsearch.js/es/connectors/menu/connectMenu'
 import type { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import type { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
 import { useMenu, useSearchBox } from 'react-instantsearch'
@@ -30,6 +31,10 @@ describe('FilterList', () => {
       languageId: null,
       subtitleId: null
     })
+
+    mockUseMenu.mockReturnValue({
+      refine: jest.fn()
+    } as unknown as MenuRenderState)
   })
 
   describe('Language Filter', () => {
@@ -121,9 +126,12 @@ describe('FilterList', () => {
       render(
         <FilterList languagesData={{ languages }} languagesLoading={false} />
       )
-      fireEvent.change(screen.getByRole('textbox', { name: 'Search Titles' }), {
-        target: { value: 'Jesus' }
-      })
+      fireEvent.change(
+        screen.getByRole('searchbox', { name: 'Search Titles' }),
+        {
+          target: { value: 'Jesus' }
+        }
+      )
       await waitFor(() => expect(refine).toHaveBeenCalled())
     })
   })
