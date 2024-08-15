@@ -49,6 +49,16 @@
         "command": "npm run ts-node apps/api-videos/src/app/modules/bigQuery/bigQuery.console.ts"
       }
     },
+    "export-language-slugs": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npm run ts-node apps/api-videos/src/exportExistingLanguageSlugs.ts",
+          "npx prettier apps/api-languages/src/__generated__/languageSlugs.ts --write"
+        ],
+        "parallel": false
+      }
+    },
     "serve": {
       "executor": "@nx/js:node",
       "options": {
