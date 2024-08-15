@@ -1,5 +1,5 @@
 import { renderHook, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import { ReactNode } from 'react'
 
 import {
