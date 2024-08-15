@@ -6,6 +6,7 @@ import { importCountryLanguages } from './importers/countryLanguages/countryLang
 import { importCountryNames } from './importers/countryNames/countryNames'
 import { importLanguageNames } from './importers/languageNames/languageNames'
 import { importLanguages } from './importers/languages/languages'
+import { importLanguageSlugs } from './importers/languageSlugs/languageSlugs'
 import { bullConnection, queueName } from './queue'
 import { jobFn, jobName } from './worker'
 
@@ -33,6 +34,10 @@ jest.mock('./importers/countryNames/countryNames', () => ({
 
 jest.mock('./importers/languageNames/languageNames', () => ({
   importLanguageNames: jest.fn()
+}))
+
+jest.mock('./importers/languageSlugs/languageSlugs', () => ({
+  importLanguageSlugs: jest.fn()
 }))
 
 describe('bigquery/worker', () => {
@@ -70,6 +75,7 @@ describe('bigquery/worker', () => {
       expect(importCountries).toHaveBeenCalled()
       expect(importCountryNames).toHaveBeenCalledWith(['1'], ['2'])
       expect(importCountryLanguages).toHaveBeenCalledWith(['1'], ['2'])
+      expect(importLanguageSlugs).toHaveBeenCalledWith()
     })
   })
 })
