@@ -39,44 +39,6 @@ describe('AlgoliaService', () => {
 
   const languages = [
     {
-      id: '529',
-      name: [
-        {
-          value: 'English',
-          primary: false,
-          language: {
-            id: '529'
-          }
-        },
-        {
-          value: 'English',
-          primary: true,
-          language: {
-            id: '529'
-          }
-        }
-      ]
-    },
-    {
-      id: '21046',
-      name: [
-        {
-          value: 'Spanish',
-          primary: false,
-          language: {
-            id: '529'
-          }
-        },
-        {
-          value: 'Español',
-          primary: true,
-          language: {
-            id: '21046'
-          }
-        }
-      ]
-    },
-    {
       id: '21754',
       name: [
         {
@@ -141,7 +103,7 @@ describe('AlgoliaService', () => {
       )
     })
 
-    it('should sync videos english to Algolia', async () => {
+    it('should sync videos to Algolia', async () => {
       process.env.ALGOLIA_API_KEY = 'key'
       process.env.ALGOLIA_APPLICATION_ID = 'id'
       process.env.ALGOLIA_INDEX = 'video-variants'
@@ -159,7 +121,7 @@ describe('AlgoliaService', () => {
               childIds: ['childId']
             },
             duration: 100,
-            languageId: '529',
+            languageId: '21754',
             subtitle: [{ languageId: 'subtitle' }],
             slug: 'slug'
           } as unknown as VideoVariant
@@ -202,9 +164,9 @@ describe('AlgoliaService', () => {
           image: 'image',
           imageAlt: 'imageAlt',
           label: 'label',
-          languageId: '529',
-          languageEnglishName: 'English',
-          languagePrimaryName: 'English',
+          languageId: '21754',
+          languageEnglishName: 'Chinese, Simplified',
+          languagePrimaryName: '简体中文',
           objectID: 'id',
           slug: 'slug',
           subtitles: ['subtitle'],

@@ -17,7 +17,7 @@ export class AlgoliaQueue implements OnModuleInit {
       apiKey === '' ||
       appId === '' ||
       appIndex === '' ||
-      nodeEnv !== 'development'
+      nodeEnv !== 'production'
     )
       return
 
@@ -33,12 +33,12 @@ export class AlgoliaQueue implements OnModuleInit {
     // Schedule a new instance
     await this.algoliaQueue.add(
       name,
-      {}
-      // {
-      //   repeat: {
-      //     pattern: '0 0 0 * * *' // Run every day at midnight
-      //   }
-      // }
+      {},
+      {
+        repeat: {
+          pattern: '0 0 0 * * *' // Run every day at midnight
+        }
+      }
     )
   }
 }
