@@ -1,7 +1,7 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import { GraphQLError } from 'graphql'
 import { SnackbarProvider } from 'notistack'
 
