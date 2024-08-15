@@ -4,6 +4,7 @@ import { getMessages } from 'next-intl/server'
 
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
+
 import { ApolloWrapper } from '../../components/apolloWrapper/apolloWrapper'
 
 export default async function LocaleLayout({

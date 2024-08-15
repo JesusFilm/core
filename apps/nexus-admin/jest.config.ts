@@ -1,11 +1,17 @@
-/* eslint-disable */
-export default {
+import type { Config } from 'jest'
+
+const config: Config = {
   displayName: 'nexus-admin',
-  preset: '../../jest.preset.js',
   transform: {
     '^(?!.*\\.(js|jsx|ts|tsx|css|json)$)': '@nx/react/plugins/jest',
     '^.+\\.[tj]sx?$': ['babel-jest', { presets: ['@nx/next/babel'] }]
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
-  coverageDirectory: '../../coverage/apps/nexus-admin'
+  coverageDirectory: '../../coverage/apps/ exus-admin',
+  setupFilesAfterEnv: ['<rootDir>setupTests.tsx'],
+  collectCoverage: true,
+  coverageReporters: ['cobertura'],
+  preset: '../../jest.preset.js'
 }
+
+export default config

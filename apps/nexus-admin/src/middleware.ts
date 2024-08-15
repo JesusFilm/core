@@ -1,5 +1,5 @@
-import createMiddleware from 'next-intl/middleware'
 import { NextRequest, NextResponse } from 'next/server'
+import createMiddleware from 'next-intl/middleware'
 
 import { auth } from './libs/auth/auth'
 
@@ -7,7 +7,9 @@ const locales = ['en']
 
 const testPathnameRegex = (pages: string[], pathName: string): boolean => {
   return RegExp(
-    `^(/(${locales.join('|')}))?(${pages.flatMap((p) => (p === '/' ? ['', '/'] : p)).join('|')})/?$`,
+    `^(/(${locales.join('|')}))?(${pages
+      .flatMap((p) => (p === '/' ? ['', '/'] : p))
+      .join('|')})/?$`,
     'i'
   ).test(pathName)
 }

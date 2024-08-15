@@ -10,9 +10,8 @@ import {
 import { UserCredential, getAuth, signInAnonymously } from 'firebase/auth'
 import { ReactNode } from 'react'
 
-import { firebaseClient } from '../../libs/firebaseClient/firebaseClient'
-
-import { cache } from '../../libs/apolloClient/cache'
+import { cache } from '../../../libs/apolloClient/cache'
+import { firebaseClient } from '../../../libs/firebaseClient/firebaseClient'
 
 const httpLink = createHttpLink({
   uri: process.env.NEXT_PUBLIC_GATEWAY_URL
