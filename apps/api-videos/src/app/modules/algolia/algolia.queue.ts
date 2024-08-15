@@ -20,8 +20,10 @@ export class AlgoliaQueue implements OnModuleInit {
       appId === '' ||
       appIndex === '' ||
       nodeEnv !== 'production'
-    )
+    ) {
+      this.logger.log(`Skipping adding Algolia sync job: ${nodeEnv}`)
       return
+    }
 
     const name = 'api-videos-algolia'
     const repeatableJobs = await this.algoliaQueue.getRepeatableJobs()
