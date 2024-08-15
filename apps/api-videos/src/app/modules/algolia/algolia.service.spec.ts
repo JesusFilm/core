@@ -43,6 +43,14 @@ describe('AlgoliaService', () => {
       name: [
         {
           value: 'English',
+          primary: false,
+          language: {
+            id: '529'
+          }
+        },
+        {
+          value: 'English',
+          primary: true,
           language: {
             id: '529'
           }
@@ -54,8 +62,16 @@ describe('AlgoliaService', () => {
       name: [
         {
           value: 'Spanish',
+          primary: false,
           language: {
             id: '529'
+          }
+        },
+        {
+          value: 'Español',
+          primary: true,
+          language: {
+            id: '21046'
           }
         }
       ]
@@ -65,8 +81,16 @@ describe('AlgoliaService', () => {
       name: [
         {
           value: 'Chinese, Simplified',
+          primary: false,
           language: {
             id: '529'
+          }
+        },
+        {
+          value: '简体中文',
+          primary: true,
+          language: {
+            id: '21754'
           }
         }
       ]
@@ -135,7 +159,7 @@ describe('AlgoliaService', () => {
               childIds: ['childId']
             },
             duration: 100,
-            languageId: 'languageId',
+            languageId: '529',
             subtitle: [{ languageId: 'subtitle' }],
             slug: 'slug'
           } as unknown as VideoVariant
@@ -159,17 +183,11 @@ describe('AlgoliaService', () => {
           subtitle: true
         },
         where: {
-          AND: {
-            OR: [
-              {
-                languageId: '529' // English
-              },
-              {
-                languageId: '21046' // Spanish
-              },
-              {
-                languageId: '21754' // Chinese Simplified
-              }
+          languageId: {
+            in: [
+              '529', // English
+              '21046', // Spanish
+              '21754' // Chinese Simplified
             ]
           }
         }
@@ -184,7 +202,9 @@ describe('AlgoliaService', () => {
           image: 'image',
           imageAlt: 'imageAlt',
           label: 'label',
-          languageId: 'languageId',
+          languageId: '529',
+          languageNameInEnglish: 'English',
+          languagePrimaryName: 'English',
           objectID: 'id',
           slug: 'slug',
           subtitles: ['subtitle'],

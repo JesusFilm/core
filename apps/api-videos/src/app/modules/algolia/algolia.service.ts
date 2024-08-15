@@ -10,8 +10,9 @@ const GET_LANGUAGES = gql`
   query getLanguages {
     languages {
       id
-      name {
+      name(languageId: "529", primary: true) {
         value
+        primary
         language {
           id
         }
@@ -20,11 +21,18 @@ const GET_LANGUAGES = gql`
   }
 `
 
+interface LanguageRecord {
+  [key: string]: {
+    english: string | undefined
+    primary: string | undefined
+  }
+}
+
 @Injectable()
 export class AlgoliaService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getLanguages(): Promise<Record<string, string | undefined>> {
+  async getLanguages(): Promise<LanguageRecord> {
     const apollo = new ApolloClient({
       uri: process.env.GATEWAY_URL,
       cache: new InMemoryCache()
@@ -34,11 +42,13 @@ export class AlgoliaService {
       query: GET_LANGUAGES
     })
 
-    const languagesRecord: Record<string, string | undefined> = {}
+    const languagesRecord: LanguageRecord = {}
     data.languages.forEach((language) => {
-      languagesRecord[language.id] = language.name.find(
-        ({ language }) => language.id === '529'
-      )?.value
+      languagesRecord[language.id] = {
+        english: language.name.find(({ language }) => language.id === '529')
+          ?.value,
+        primary: language.name.find(({ primary }) => primary)?.value
+      }
     })
 
     return languagesRecord
@@ -79,17 +89,11 @@ export class AlgoliaService {
           appIndex === 'video-variants-prd'
             ? undefined
             : {
-                AND: {
-                  OR: [
-                    {
-                      languageId: '529' // English
-                    },
-                    {
-                      languageId: '21046' // Spanish
-                    },
-                    {
-                      languageId: '21754' // Chinese Simplified
-                    }
+                languageId: {
+                  in: [
+                    '529', // English
+                    '21046', // Spanish
+                    '21754' // Chinese Simplified
                   ]
                 }
               }
@@ -109,7 +113,8 @@ export class AlgoliaService {
           ).map((description) => description?.value),
           duration: videoVariant.duration,
           languageId: videoVariant.languageId,
-          languageName: languages[videoVariant.languageId],
+          languageNameInEnglish: languages[videoVariant.languageId]?.english,
+          languagePrimaryName: languages[videoVariant.languageId]?.primary,
           subtitles: videoVariant.subtitle.map(
             (subtitle) => subtitle.languageId
           ),
