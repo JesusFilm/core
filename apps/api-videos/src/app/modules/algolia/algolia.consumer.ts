@@ -12,6 +12,10 @@ export class AlgoliaConsumer extends WorkerHost {
 
   async process(): Promise<void> {
     this.logger.log('Syncing videos to Algolia')
-    await this.algoliaService.syncVideosToAlgolia()
+    try {
+      await this.algoliaService.syncVideosToAlgolia()
+    } catch (error) {
+      this.logger.error('Failed to sync videos to Algolia', error)
+    }
   }
 }

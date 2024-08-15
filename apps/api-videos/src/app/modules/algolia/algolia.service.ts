@@ -10,6 +10,11 @@ const ENGLISH_LANGUAGE_ID = '529'
 const SPANISH_LANGUAGE_ID = '21046'
 const CHINESE_SIMPLIFIED_LANGUAGE_ID = '21754'
 
+const apollo = new ApolloClient({
+  uri: process.env.GATEWAY_URL,
+  cache: new InMemoryCache()
+})
+
 const GET_LANGUAGES = graphql(`
   query getLanguages {
     languages {
@@ -37,11 +42,6 @@ export class AlgoliaService {
   constructor(private readonly prisma: PrismaService) {}
 
   async getLanguages(): Promise<LanguageRecord> {
-    const apollo = new ApolloClient({
-      uri: process.env.GATEWAY_URL,
-      cache: new InMemoryCache()
-    })
-
     const { data } = await apollo.query({
       query: GET_LANGUAGES
     })
