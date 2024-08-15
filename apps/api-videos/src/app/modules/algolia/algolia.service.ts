@@ -1,5 +1,5 @@
 import { ApolloClient, InMemoryCache } from '@apollo/client'
-import { Injectable } from '@nestjs/common'
+import { Injectable, Logger } from '@nestjs/common'
 import algoliasearch from 'algoliasearch'
 import { graphql } from 'gql.tada'
 
@@ -39,23 +39,29 @@ interface LanguageRecord {
 
 @Injectable()
 export class AlgoliaService {
+  private readonly logger = new Logger(AlgoliaService.name)
   constructor(private readonly prisma: PrismaService) {}
 
   async getLanguages(): Promise<LanguageRecord> {
-    const { data } = await apollo.query({
-      query: GET_LANGUAGES
-    })
+    try {
+      const { data } = await apollo.query({
+        query: GET_LANGUAGES
+      })
 
-    const languagesRecord: LanguageRecord = {}
-    data.languages.forEach((language) => {
-      languagesRecord[language.id] = {
-        english: language.name.find(({ language }) => language.id === '529')
-          ?.value,
-        primary: language.name.find(({ primary }) => primary)?.value
-      }
-    })
+      const languagesRecord: LanguageRecord = {}
+      data.languages.forEach((language) => {
+        languagesRecord[language.id] = {
+          english: language.name.find(({ language }) => language.id === '529')
+            ?.value,
+          primary: language.name.find(({ primary }) => primary)?.value
+        }
+      })
 
-    return languagesRecord
+      return languagesRecord
+    } catch (error) {
+      this.logger.error('Error fetching languages:', error)
+      return {}
+    }
   }
 
   async syncVideosToAlgolia(): Promise<void> {
@@ -66,75 +72,85 @@ export class AlgoliaService {
     if (apiKey === '' || appId === '' || appIndex === '')
       throw new Error('algolia environment variables not set')
 
-    console.log('getting languages from gateway')
+    this.logger.log('getting languages from gateway')
     const languages = await this.getLanguages()
 
-    console.log('syncing videos to algolia...')
+    this.logger.log('syncing videos to algolia...')
     const client = algoliasearch(appId, apiKey)
 
     let offset = 0
 
     while (true) {
-      const videoVariants = await this.prisma.videoVariant.findMany({
-        take: 1000,
-        skip: offset,
-        include: {
-          video: {
-            include: {
-              title: true,
-              description: true,
-              imageAlt: true,
-              snippet: true
-            }
-          },
-          subtitle: true
-        },
-        where:
-          appIndex === 'video-variants-prd'
-            ? undefined
-            : {
-                languageId: {
-                  in: [
-                    ENGLISH_LANGUAGE_ID,
-                    SPANISH_LANGUAGE_ID,
-                    CHINESE_SIMPLIFIED_LANGUAGE_ID
-                  ]
-                }
+      try {
+        const videoVariants = await this.prisma.videoVariant.findMany({
+          take: 1000,
+          skip: offset,
+          include: {
+            video: {
+              include: {
+                title: true,
+                description: true,
+                imageAlt: true,
+                snippet: true
               }
-      })
+            },
+            subtitle: true
+          },
+          where:
+            appIndex === 'video-variants-prd'
+              ? undefined
+              : {
+                  languageId: {
+                    in: [
+                      ENGLISH_LANGUAGE_ID,
+                      SPANISH_LANGUAGE_ID,
+                      CHINESE_SIMPLIFIED_LANGUAGE_ID
+                    ]
+                  }
+                }
+        })
 
-      if (videoVariants.length === 0) {
+        if (videoVariants.length === 0) {
+          break
+        }
+
+        const transformedVideos = videoVariants.map((videoVariant) => {
+          return {
+            objectID: videoVariant.id,
+            videoId: videoVariant.videoId,
+            titles: videoVariant.video?.title.map((title) => title.value),
+            description: (
+              videoVariant.video?.description as unknown as Translation[]
+            ).map((description) => description?.value),
+            duration: videoVariant.duration,
+            languageId: videoVariant.languageId,
+            languageEnglishName: languages[videoVariant.languageId]?.english,
+            languagePrimaryName: languages[videoVariant.languageId]?.primary,
+            subtitles: videoVariant.subtitle.map(
+              (subtitle) => subtitle.languageId
+            ),
+            slug: videoVariant.slug,
+            label: videoVariant.video?.label,
+            image: videoVariant.video?.image,
+            imageAlt: (
+              videoVariant.video?.imageAlt as unknown as Translation
+            )[0].value,
+            childrenCount: videoVariant.video?.childIds.length
+          }
+        })
+
+        const index = client.initIndex(appIndex)
+        try {
+          await index.saveObjects(transformedVideos).wait()
+        } catch (error) {
+          console.error('Error syncing videos to algolia:', error)
+        }
+
+        offset += 1000
+      } catch (error) {
+        console.error('Error in video processing loop:', error)
         break
       }
-
-      const transformedVideos = videoVariants.map((videoVariant) => {
-        return {
-          objectID: videoVariant.id,
-          videoId: videoVariant.videoId,
-          titles: videoVariant.video?.title.map((title) => title.value),
-          description: (
-            videoVariant.video?.description as unknown as Translation[]
-          ).map((description) => description?.value),
-          duration: videoVariant.duration,
-          languageId: videoVariant.languageId,
-          languageEnglishName: languages[videoVariant.languageId]?.english,
-          languagePrimaryName: languages[videoVariant.languageId]?.primary,
-          subtitles: videoVariant.subtitle.map(
-            (subtitle) => subtitle.languageId
-          ),
-          slug: videoVariant.slug,
-          label: videoVariant.video?.label,
-          image: videoVariant.video?.image,
-          imageAlt: (videoVariant.video?.imageAlt as unknown as Translation)[0]
-            .value,
-          childrenCount: videoVariant.video?.childIds.length
-        }
-      })
-
-      const index = client.initIndex(appIndex)
-      await index.saveObjects(transformedVideos).wait()
-
-      offset += 1000
     }
 
     console.log('synced videos to algolia')
