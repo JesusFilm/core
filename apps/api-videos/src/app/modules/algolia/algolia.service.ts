@@ -1,12 +1,49 @@
+import { ApolloClient, InMemoryCache, gql } from '@apollo/client'
 import { Injectable } from '@nestjs/common'
 import algoliasearch from 'algoliasearch'
 
+import { GetLanguagesQuery } from '../../../__generated__/graphql'
 import { Translation } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
+
+const GET_LANGUAGES = gql`
+  query getLanguages {
+    languages {
+      id
+      name {
+        value
+        language {
+          id
+        }
+      }
+    }
+  }
+`
 
 @Injectable()
 export class AlgoliaService {
   constructor(private readonly prisma: PrismaService) {}
+
+  async getLanguages(): Promise<Record<string, string | undefined>> {
+    const apollo = new ApolloClient({
+      uri: process.env.GATEWAY_URL,
+      cache: new InMemoryCache()
+    })
+
+    const { data } = await apollo.query<GetLanguagesQuery>({
+      query: GET_LANGUAGES
+    })
+
+    const languagesRecord: Record<string, string | undefined> = {}
+    data.languages.forEach((language) => {
+      languagesRecord[language.id] = language.name.find(
+        ({ language }) => language.id === '529'
+      )?.value
+    })
+
+    return languagesRecord
+  }
+
   async syncVideosToAlgolia(): Promise<void> {
     const apiKey = process.env.ALGOLIA_API_KEY ?? ''
     const appId = process.env.ALGOLIA_APPLICATION_ID ?? ''
@@ -15,8 +52,11 @@ export class AlgoliaService {
     if (apiKey === '' || appId === '' || appIndex === '')
       throw new Error('algolia environment variables not set')
 
-    const client = algoliasearch(appId, apiKey)
+    console.log('getting languages from gateway')
+    const languages = await this.getLanguages()
+
     console.log('syncing videos to algolia...')
+    const client = algoliasearch(appId, apiKey)
 
     let offset = 0
 
@@ -57,6 +97,7 @@ export class AlgoliaService {
           ).map((description) => description?.value),
           duration: videoVariant.duration,
           languageId: videoVariant.languageId,
+          languageName: languages[videoVariant.languageId],
           subtitles: videoVariant.subtitle.map(
             (subtitle) => subtitle.languageId
           ),

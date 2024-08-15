@@ -1,3 +1,4 @@
+import { ApolloClient, ApolloQueryResult } from '@apollo/client'
 import { Test, TestingModule } from '@nestjs/testing'
 import algoliasearch from 'algoliasearch'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
@@ -32,8 +33,34 @@ const mockAlgoliaSearch = algoliasearch as jest.MockedFunction<
 describe('AlgoliaService', () => {
   let service: AlgoliaService
   let prismaService: DeepMockProxy<PrismaService>
+  let mockApollo
 
   const originalEnv = clone(process.env)
+
+  const languages = [
+    {
+      id: '529',
+      name: [
+        {
+          value: 'English',
+          language: {
+            id: '529'
+          }
+        }
+      ]
+    },
+    {
+      id: '529',
+      name: [
+        {
+          value: 'English',
+          language: {
+            id: '529'
+          }
+        }
+      ]
+    }
+  ]
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -51,6 +78,17 @@ describe('AlgoliaService', () => {
       PrismaService
     ) as DeepMockProxy<PrismaService>
     process.env = originalEnv
+
+    mockApollo = jest
+      .spyOn(ApolloClient.prototype, 'query')
+      .mockImplementationOnce(
+        async () =>
+          await Promise.resolve({
+            data: {
+              languages
+            }
+          } as unknown as ApolloQueryResult<unknown>)
+      )
   })
 
   afterEach(() => {
@@ -94,6 +132,7 @@ describe('AlgoliaService', () => {
         .mockResolvedValueOnce([])
 
       await service.syncVideosToAlgolia()
+      expect(mockApollo).toHaveBeenCalled()
       expect(prismaService.videoVariant.findMany).toHaveBeenCalledWith({
         take: 1000,
         skip: 0,
