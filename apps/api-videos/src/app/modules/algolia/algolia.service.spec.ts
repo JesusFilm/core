@@ -50,10 +50,21 @@ describe('AlgoliaService', () => {
       ]
     },
     {
-      id: '529',
+      id: '21046',
       name: [
         {
-          value: 'English',
+          value: 'Spanish',
+          language: {
+            id: '529'
+          }
+        }
+      ]
+    },
+    {
+      id: '21754',
+      name: [
+        {
+          value: 'Chinese, Simplified',
           language: {
             id: '529'
           }
@@ -148,7 +159,19 @@ describe('AlgoliaService', () => {
           subtitle: true
         },
         where: {
-          languageId: '529'
+          AND: {
+            OR: [
+              {
+                languageId: '529' // English
+              },
+              {
+                languageId: '21046' // Spanish
+              },
+              {
+                languageId: '21754' // Chinese Simplified
+              }
+            ]
+          }
         }
       })
       expect(mockAlgoliaSearch).toHaveBeenCalledWith('id', 'key')

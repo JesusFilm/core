@@ -79,7 +79,19 @@ export class AlgoliaService {
           appIndex === 'video-variants-prd'
             ? undefined
             : {
-                languageId: '529'
+                AND: {
+                  OR: [
+                    {
+                      languageId: '529' // English
+                    },
+                    {
+                      languageId: '21046' // Spanish
+                    },
+                    {
+                      languageId: '21754' // Chinese Simplified
+                    }
+                  ]
+                }
               }
       })
 
