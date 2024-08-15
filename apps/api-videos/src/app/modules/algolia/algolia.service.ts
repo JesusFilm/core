@@ -3,7 +3,6 @@ import { Injectable, Logger } from '@nestjs/common'
 import algoliasearch from 'algoliasearch'
 import { graphql } from 'gql.tada'
 
-import { Translation } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 
 const ENGLISH_LANGUAGE_ID = '529'
@@ -127,9 +126,9 @@ export class AlgoliaService {
             objectID: videoVariant.id,
             videoId: videoVariant.videoId,
             titles: videoVariant.video?.title.map((title) => title.value),
-            description: (
-              videoVariant.video?.description as unknown as Translation[]
-            ).map((description) => description?.value),
+            description: videoVariant.video?.description?.map(
+              (description) => description?.value
+            ),
             duration: videoVariant.duration,
             languageId: videoVariant.languageId,
             languageEnglishName: languages[videoVariant.languageId]?.english,
@@ -140,9 +139,9 @@ export class AlgoliaService {
             slug: videoVariant.slug,
             label: videoVariant.video?.label,
             image: videoVariant.video?.image,
-            imageAlt: (
-              videoVariant.video?.imageAlt as unknown as Translation
-            )[0].value,
+            imageAlt: videoVariant.video?.imageAlt.find(
+              (alt) => alt.languageId === '529'
+            )?.value,
             childrenCount: videoVariant.video?.childIds.length
           }
         })
@@ -155,6 +154,7 @@ export class AlgoliaService {
         }
 
         offset += 1000
+        this.logger.log(`synced ${offset} videos to algolia`)
       } catch (error) {
         console.error('Error in video processing loop:', error)
         break

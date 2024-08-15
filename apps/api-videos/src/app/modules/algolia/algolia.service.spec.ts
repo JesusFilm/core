@@ -118,7 +118,7 @@ describe('AlgoliaService', () => {
               description: [{ value: 'description' }],
               label: 'label',
               image: 'image',
-              imageAlt: [{ value: 'imageAlt' }],
+              imageAlt: [{ value: 'imageAlt', languageId: '529' }],
               childIds: ['childId']
             },
             duration: 100,
