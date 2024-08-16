@@ -4,7 +4,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { type ReactElement } from 'react'
-import { Index, useConfigure } from 'react-instantsearch'
+import { Index } from 'react-instantsearch'
 
 import { SearchBar } from '@core/journeys/ui/SearchBar'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
@@ -23,9 +23,6 @@ export function WatchHomePage(): ReactElement {
   const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
 
   useAlgoliaRouter()
-  useConfigure({
-    ruleContexts: ['home_page']
-  })
 
   return (
     <PageWrapper

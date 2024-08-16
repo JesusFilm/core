@@ -8,6 +8,7 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import type { ReactElement } from 'react'
 import { renderToString } from 'react-dom/server'
 import {
+  Configure,
   InstantSearch,
   InstantSearchSSRProvider,
   type InstantSearchServerState,
@@ -96,6 +97,7 @@ function VideosPage({
           stalledSearchDelay={500}
           routing={nextRouter}
         >
+          <Configure ruleContexts={['all_videos_page']} hitsPerPage={40} />
           <Videos index />
         </InstantSearch>
       </ApolloProvider>

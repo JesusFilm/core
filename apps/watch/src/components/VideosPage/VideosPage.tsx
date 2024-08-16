@@ -4,7 +4,7 @@ import Container from '@mui/material/Container'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import { type ReactElement, type ReactNode } from 'react'
-import { Index, useConfigure } from 'react-instantsearch'
+import { Index } from 'react-instantsearch'
 
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 import { ThemeMode } from '@core/shared/ui/themes'
@@ -28,10 +28,6 @@ export function VideosPage({ index = false }: VideosPageProps): ReactElement {
     useQuery<GetLanguages>(GET_LANGUAGES, {
       variables: { languageId: '529' }
     })
-
-  useConfigure({
-    ruleContexts: ['all_videos_page']
-  })
 
   const videosPageSegment: ReactNode = (
     <Stack direction={{ xs: 'column', xl: 'row' }} spacing={{ xs: 4, xl: 8 }}>
