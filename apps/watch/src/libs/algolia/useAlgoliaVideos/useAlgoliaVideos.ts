@@ -66,6 +66,25 @@ export function transformItems(items: AlgoliaVideo[]): CoreVideo[] {
   })) as unknown as CoreVideo[]
 }
 
+export const removeDuplicateVariants = (
+  videos: AlgoliaVideo[]
+): AlgoliaVideo[] => {
+  const videoMap = new Map<string, AlgoliaVideo>()
+
+  videos.forEach((video) => {
+    const existingVideo = videoMap.get(video.videoId)
+
+    if (
+      existingVideo == null ||
+      (video.languageId === '529' && existingVideo.languageId !== '529')
+    ) {
+      videoMap.set(video.videoId, video)
+    }
+  })
+
+  return Array.from(videoMap.values())
+}
+
 export function useAlgoliaVideos(): {
   loading: boolean
   noResults: boolean
@@ -78,7 +97,8 @@ export function useAlgoliaVideos(): {
   const { hits, showMore, isLastPage, sendEvent } =
     useInfiniteHits<AlgoliaVideo>()
 
-  const transformedHits = transformItems(hits)
+  const filteredHits = removeDuplicateVariants(hits)
+  const transformedHits = transformItems(filteredHits)
 
   return {
     loading: status === 'stalled' || status === 'loading',
