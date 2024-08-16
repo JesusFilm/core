@@ -124,13 +124,9 @@ export function FilterList({
 
   const handleLanguageChange =
     (setFieldValue) => async (value?: LanguageOption | undefined) => {
-      if (value?.id !== undefined) {
-        if (value?.id !== languageId) {
-          refineLanguages(value?.id)
-          await setFieldValue('language', value)
-        } else if (languageId === '529') {
-          await setFieldValue('language', value)
-        }
+      if (value?.id !== undefined && value?.id !== languageId) {
+        refineLanguages(value?.id)
+        await setFieldValue('language', value)
       }
     }
 
