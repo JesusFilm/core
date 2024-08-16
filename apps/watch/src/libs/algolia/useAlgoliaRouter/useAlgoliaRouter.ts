@@ -23,22 +23,11 @@ export function useAlgoliaRouter(): FilterParams {
   const hasQueryParams =
     query != null || languageId != null || subtitleId != null
 
-  const { refine: refineLanguages } = useMenu({
-    attribute: 'languageId'
-  })
   const { refresh } = useInstantSearch()
-
   useEffect(() => {
     if (hasQueryParams) {
-      if (languageId == null) {
-        refineLanguages('529')
-      } else {
-        // Data from the server will be stale unless we refresh after setting language
-        refresh()
-      }
-    } else {
-      // Refine doesn't take affect if called immediately
-      setTimeout(() => refineLanguages('529'))
+      // Data from the server will be stale unless we refresh after setting language
+      refresh()
     }
   }, [])
 
