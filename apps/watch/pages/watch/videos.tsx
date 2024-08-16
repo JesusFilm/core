@@ -97,7 +97,7 @@ function VideosPage({
           stalledSearchDelay={500}
           routing={nextRouter}
         >
-          <Configure ruleContexts={['all_videos_page']} hitsPerPage={40} />
+          <Configure ruleContexts={['all_videos_page']} />
           <Videos index />
         </InstantSearch>
       </ApolloProvider>

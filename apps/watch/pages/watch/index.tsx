@@ -77,7 +77,7 @@ function HomePage({ serverState }: HomePageProps): ReactElement {
         stalledSearchDelay={500}
         routing={nextRouter}
       >
-        <Configure ruleContexts={['home_page']} hitsPerPage={40} />
+        <Configure ruleContexts={['home_page']} />
         <VideoHomePage />
       </InstantSearch>
     </InstantSearchSSRProvider>
