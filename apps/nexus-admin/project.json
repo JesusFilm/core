@@ -71,7 +71,7 @@
         "buildTarget": "nexus-admin:_build",
         "dev": true,
         "hostname": "0.0.0.0",
-        "port": 4250
+        "port": 4500
       },
       "configurations": {
         "production": {
