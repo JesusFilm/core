@@ -1,6 +1,6 @@
 import { useRouter } from 'next/compat/router'
 import { useEffect } from 'react'
-import { useInstantSearch, useMenu } from 'react-instantsearch'
+import { useInstantSearch } from 'react-instantsearch'
 
 interface FilterParams {
   query: string | null
@@ -29,6 +29,7 @@ export function useAlgoliaRouter(): FilterParams {
       // Data from the server will be stale unless we refresh after setting language
       refresh()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return { query, languageId, subtitleId }
