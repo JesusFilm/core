@@ -7,7 +7,9 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "strict": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "incremental": true,
+    "tsBuildInfoFile": "../../../.cache/journeys-ui/tsc/.tsbuildinfo"
   },
   "files": [],
   "include": [],
