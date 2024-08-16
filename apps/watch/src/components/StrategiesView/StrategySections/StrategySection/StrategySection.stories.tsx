@@ -1,20 +1,18 @@
-import Box from '@mui/material/Box'
-import { jest } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
+import noop from 'lodash/noop'
 import { ComponentProps } from 'react'
 
 import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
-import { SearchBar } from '@core/journeys/ui/SearchBar'
 
-import { watchConfig } from '../../../libs/storybook'
+import { watchConfig } from '../../../../libs/storybook'
 
 import { StrategySection } from './StrategySection'
-import { getStrategyCardDataHandlers } from './StrategySection.handlers'
+import { getStrategySectionHandlers } from './StrategySection.handlers'
 
 const StrategySectionStory: Meta<typeof StrategySection> = {
   ...watchConfig,
   component: StrategySection,
-  title: 'Watch/StrategySections/StrategySection'
+  title: 'Watch/StrategiesView/StrategySections/StrategySection'
 }
 
 type Story = StoryObj<ComponentProps<typeof StrategySection>>
@@ -22,9 +20,6 @@ type Story = StoryObj<ComponentProps<typeof StrategySection>>
 const Template: Story = {
   render: (args) => (
     <InstantSearchTestWrapper indexName="indexName">
-      <Box sx={{ display: 'none' }}>
-        <SearchBar />
-      </Box>
       <StrategySection {...args} />
     </InstantSearchTestWrapper>
   )
@@ -33,12 +28,12 @@ const Template: Story = {
 export const Default = {
   ...Template,
   args: {
-    handleItemSearch: jest.fn(),
+    handleItemSearch: noop,
     index: 0
   },
   parameters: {
     msw: {
-      handlers: [getStrategyCardDataHandlers]
+      handlers: [getStrategySectionHandlers]
     }
   }
 }

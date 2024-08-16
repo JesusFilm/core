@@ -14,3 +14,4 @@ schema.graphql
 .next/
 .terraform/
 playwright-report/
+!apps/api-languages/src/__generated__/languageSlugs.ts

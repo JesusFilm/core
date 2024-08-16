@@ -20,7 +20,7 @@ describe('StrategySection', () => {
   it('should render strategysection', () => {
     render(<StrategySection index={0} handleItemSearch={jest.fn()} />)
     const items = screen.getAllByTestId('StrategyCard')
-    expect(items).toHaveLength(2)
+    expect(items).toHaveLength(10)
 
     const strategySectionTitle = screen.getByRole('heading', {
       level: 5,
