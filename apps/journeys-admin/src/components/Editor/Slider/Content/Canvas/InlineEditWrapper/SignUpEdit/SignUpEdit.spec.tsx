@@ -1,7 +1,7 @@
 import { ApolloLink } from '@apollo/client'
 import { MockLink, MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import DebounceLink from 'apollo-link-debounce'
 import { SnackbarProvider } from 'notistack'
 
