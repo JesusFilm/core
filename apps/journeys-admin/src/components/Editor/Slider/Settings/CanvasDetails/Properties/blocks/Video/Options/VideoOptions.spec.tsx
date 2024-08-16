@@ -1,11 +1,9 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { ConfigureRenderState } from 'instantsearch.js/es/connectors/configure/connectConfigure'
 import { InfiniteHitsRenderState } from 'instantsearch.js/es/connectors/infinite-hits/connectInfiniteHits'
 import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
 import {
   InstantSearchApi,
-  useConfigure,
   useInfiniteHits,
   useInstantSearch,
   useSearchBox
@@ -32,9 +30,6 @@ const mockUseInstantSearch = useInstantSearch as jest.MockedFunction<
 >
 const mockUseInfiniteHits = useInfiniteHits as jest.MockedFunction<
   typeof useInfiniteHits
->
-const mockUseConfigure = useConfigure as jest.MockedFunction<
-  typeof useConfigure
 >
 
 const video: TreeBlock<VideoBlock> = {
@@ -159,12 +154,6 @@ describe('VideoOptions', () => {
     mockUseInstantSearch.mockReturnValue({
       status: 'idle'
     } as unknown as InstantSearchApi)
-
-    mockUseConfigure.mockReturnValue({
-      ruleContexts: ['home_page'],
-      filters: 'languageId:529',
-      hitsPerPage: 5
-    } as unknown as ConfigureRenderState)
 
     jest.clearAllMocks()
   })

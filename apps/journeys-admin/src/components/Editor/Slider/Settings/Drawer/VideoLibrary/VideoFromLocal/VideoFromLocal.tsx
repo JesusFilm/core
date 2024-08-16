@@ -2,11 +2,7 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
-import {
-  useConfigure,
-  useInfiniteHits,
-  useInstantSearch
-} from 'react-instantsearch'
+import { useInfiniteHits, useInstantSearch } from 'react-instantsearch'
 
 import {
   VideoBlockSource,
@@ -24,12 +20,6 @@ export function VideoFromLocal({
   onSelect
 }: VideoFromLocalProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-
-  useConfigure({
-    ruleContexts: ['home_page'],
-    filters: 'languageId:529',
-    hitsPerPage: 5
-  })
 
   const [searchQuery, setSearchQuery] = useState<string>('')
 
