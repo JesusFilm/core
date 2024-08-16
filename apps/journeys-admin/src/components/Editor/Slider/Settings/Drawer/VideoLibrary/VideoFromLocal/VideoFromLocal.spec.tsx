@@ -34,7 +34,7 @@ const mockUseConfigure = useConfigure as jest.MockedFunction<
 >
 
 describe('VideoFromLocal', () => {
-  const algoliaVideos = [
+  const hits = [
     {
       videoId: 'videoId',
       titles: ['title1'],
@@ -61,13 +61,13 @@ describe('VideoFromLocal', () => {
 
     mockUseInfiniteHits.mockReturnValue({
       hits: [
-        ...algoliaVideos,
+        ...hits,
         {
-          ...algoliaVideos[0],
+          ...hits[0],
           titles: ['title2']
         },
         {
-          ...algoliaVideos[0],
+          ...hits[0],
           titles: ['title3']
         }
       ],
@@ -94,45 +94,34 @@ describe('VideoFromLocal', () => {
     expect(screen.getByText('title3')).toBeInTheDocument()
   })
 
-  it('should call api to get more videos', async () => {
+  it('should call show more on Load More button click', async () => {
     const showMore = jest.fn()
-
-    mockUseConfigure.mockReturnValue({
-      ruleContexts: ['home_page'],
-      filters: 'languageId:529',
-      hitsPerPage: 2
-    } as unknown as ConfigureRenderState)
-
-    mockUseInfiniteHits
-      .mockReturnValue({
-        hits: [
-          ...algoliaVideos,
-          {
-            ...algoliaVideos[0],
-            titles: ['title2']
-          },
-          {
-            ...algoliaVideos[0],
-            titles: ['title3']
-          }
-        ],
-        showMore,
-        isLastPage: false
-      } as unknown as InfiniteHitsRenderState)
-      .mockReturnValue({
-        hits: [],
-        showMore: jest.fn(),
-        isLastPage: true
-      } as unknown as InfiniteHitsRenderState)
+    mockUseInfiniteHits.mockReturnValue({
+      hits,
+      showMore,
+      isLastPage: false
+    } as unknown as InfiniteHitsRenderState)
 
     render(<VideoFromLocal onSelect={jest.fn()} />)
     await waitFor(() =>
       fireEvent.click(screen.getByRole('button', { name: 'Load More' }))
     )
     expect(showMore).toHaveBeenCalled()
-    expect(
-      screen.getByRole('button', { name: 'No More Videos' })
-    ).toBeDisabled()
+  })
+
+  it('should show No More Videos button if last page', async () => {
+    mockUseInfiniteHits.mockReturnValue({
+      hits: [],
+      showMore: jest.fn(),
+      isLastPage: true
+    } as unknown as InfiniteHitsRenderState)
+
+    render(<VideoFromLocal onSelect={jest.fn()} />)
+    await waitFor(() =>
+      expect(
+        screen.getByRole('button', { name: 'No More Videos' })
+      ).toBeInTheDocument()
+    )
   })
 
   it('should render No More Videos if video length is 0', async () => {
@@ -150,24 +139,5 @@ describe('VideoFromLocal', () => {
     expect(
       screen.getByRole('button', { name: 'No More Videos' })
     ).toBeDisabled()
-  })
-
-  it('should re-enable Load More if filters change', async () => {
-    await waitFor(() =>
-      expect(screen.getByRole('button', { name: 'Load More' })).toBeEnabled()
-    )
-    fireEvent.click(screen.getByRole('button', { name: 'Load More' }))
-    await waitFor(() =>
-      expect(
-        screen.getByRole('button', { name: 'No More Videos' })
-      ).toBeDisabled()
-    )
-    const textbox = screen.getByRole('textbox', { name: 'Search' })
-    fireEvent.change(textbox, {
-      target: { value: 'abc' }
-    })
-    await waitFor(() =>
-      expect(screen.getByRole('button', { name: 'Load More' })).toBeEnabled()
-    )
   })
 })

@@ -5,7 +5,6 @@ import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, SyntheticEvent, useEffect, useState } from 'react'
-import { Index } from 'react-instantsearch'
 
 import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -158,9 +157,7 @@ export function VideoLibrary({
             index={0}
             sx={{ flexGrow: 1, overflow: 'auto' }}
           >
-            <Index indexName={process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''}>
-              <VideoFromLocal onSelect={onSelect} />
-            </Index>
+            <VideoFromLocal onSelect={onSelect} />
           </TabPanel>
           <TabPanel
             name="video-from-youtube"
