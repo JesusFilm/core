@@ -1,5 +1,9 @@
 {
   "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "incremental": true,
+    "tsBuildInfoFile": "../../.cache/api-tags/tsc/.tsbuildinfo"
+  },
   "files": [],
   "include": [],
   "references": [
