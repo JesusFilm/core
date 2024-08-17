@@ -6,6 +6,7 @@ import { ImporterBibleBookNamesService } from './importerBibleBookNames/importer
 import { ImporterBibleBooksService } from './importerBibleBooks/importerBibleBooks.service'
 import { ImporterBibleCitationsService } from './importerBibleCitations/importerBibleCitations.service'
 import { ImporterKeywordsService } from './importerKeywords/importerKeywords.service'
+import { ImporterLanguageSlugsService } from './importerLanguageSlugs/importerLanguageSlugs.service'
 import { ImporterVideoDescriptionService } from './importerVideoDescriptions/importerVideoDescriptions.service'
 import { ImporterVideoImageAltService } from './importerVideoImageAlt/importerVideoImageAlt.service'
 import { ImporterVideosService } from './importerVideos/importerVideos.service'
@@ -33,7 +34,8 @@ import { ImporterVideoVariantsService } from './importerVideoVariants/importerVi
     ImporterVideoImageAltService,
     ImporterVideoVariantsService,
     ImporterVideoVariantDownloadsService,
-    ImporterVideoSubtitlesService
+    ImporterVideoSubtitlesService,
+    ImporterLanguageSlugsService
   ],
   exports: [
     ImporterBibleBooksService,
@@ -49,7 +51,8 @@ import { ImporterVideoVariantsService } from './importerVideoVariants/importerVi
     ImporterVideoImageAltService,
     ImporterVideoVariantsService,
     ImporterVideoVariantDownloadsService,
-    ImporterVideoSubtitlesService
+    ImporterVideoSubtitlesService,
+    ImporterLanguageSlugsService
   ]
 })
 export class ImporterModule {}

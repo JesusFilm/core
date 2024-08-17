@@ -9,11 +9,7 @@ import { ImporterService } from '../importer.service'
 
 const videoVariantDownloadsSchema = z
   .object({
-    quality: z
-      .string()
-      .transform<VideoVariantDownloadQuality>(
-        (value) => VideoVariantDownloadQuality[value]
-      ),
+    quality: z.nativeEnum(VideoVariantDownloadQuality),
     size: z.number(),
     uri: z.string(),
     videoVariantId: z.string()
