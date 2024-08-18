@@ -40,6 +40,7 @@ export const Language = builder.prismaObject('Language', {
     id: t.exposeID('id'),
     bcp47: t.exposeString('bcp47', { nullable: true }),
     iso3: t.exposeString('iso3', { nullable: true }),
+    slug: t.exposeString('slug', { nullable: true }),
     name: t.prismaField({
       type: [LanguageName],
       args: {

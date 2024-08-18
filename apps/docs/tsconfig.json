@@ -11,6 +11,8 @@
       "@docusaurus/module-type-aliases",
       "@docusaurus/theme-classic"
     ],
-    "baseUrl": "."
+    "baseUrl": ".",
+    "incremental": true,
+    "tsBuildInfoFile": "../../.cache/docs/tsc/.tsbuildinfo"
   }
 }

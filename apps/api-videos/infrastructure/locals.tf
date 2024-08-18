@@ -8,6 +8,7 @@ locals {
     "ARCLIGHT_V3_URL",
     "BIG_QUERY_APPLICATION_JSON",
     "CROWDIN_API_KEY",
+    "GATEWAY_URL",
     "PG_DATABASE_URL_VIDEOS",
     "REDIS_URL"
   ]
