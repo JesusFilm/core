@@ -8,6 +8,7 @@ import { ImporterBibleBookNamesService } from '../importer/importerBibleBookName
 import { ImporterBibleBooksService } from '../importer/importerBibleBooks/importerBibleBooks.service'
 import { ImporterBibleCitationsService } from '../importer/importerBibleCitations/importerBibleCitations.service'
 import { ImporterKeywordsService } from '../importer/importerKeywords/importerKeywords.service'
+import { ImporterLanguageSlugsService } from '../importer/importerLanguageSlugs/importerLanguageSlugs.service'
 import { ImporterVideoDescriptionService } from '../importer/importerVideoDescriptions/importerVideoDescriptions.service'
 import { ImporterVideoImageAltService } from '../importer/importerVideoImageAlt/importerVideoImageAlt.service'
 import { ImporterVideosService } from '../importer/importerVideos/importerVideos.service'
@@ -50,7 +51,8 @@ export class BigQueryConsumer extends WorkerHost {
     private readonly importerBibleBooksService: ImporterBibleBooksService,
     private readonly importerBibleBookNamesService: ImporterBibleBookNamesService,
     private readonly importerBibleCitationsService: ImporterBibleCitationsService,
-    private readonly importerKeywordsService: ImporterKeywordsService
+    private readonly importerKeywordsService: ImporterKeywordsService,
+    private readonly importerLanguageSlugsService: ImporterLanguageSlugsService
   ) {
     super()
     this.tables = [
@@ -135,6 +137,11 @@ export class BigQueryConsumer extends WorkerHost {
     await this.importerVideosService.getUsedSlugs()
     await this.importerVideoVariantsService.getExistingIds()
     await this.importerBibleBooksService.getExistingIds()
+    await this.importerLanguageSlugsService.getLanguageSlugs()
+
+    if (Object.keys(this.importerLanguageSlugsService.slugs).length === 0) {
+      throw new Error('No language slugs found. Possible api-languages outage')
+    }
 
     // eslint-disable-next-line @typescript-eslint/no-for-in-array
     for (const index in this.tables) {

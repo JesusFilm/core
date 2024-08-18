@@ -5,7 +5,9 @@
     "esModuleInterop": true,
     "allowImportingTsExtensions": true,
     "noEmit": true,
-    "strict": true
+    "strict": true,
+    "incremental": true,
+    "tsBuildInfoFile": "../../.cache/api-analytics/tsc/.tsbuildinfo"
   },
   "files": [],
   "include": [],
