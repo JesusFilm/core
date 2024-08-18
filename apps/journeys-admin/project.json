@@ -123,7 +123,12 @@
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "cache": true,
+        "cacheLocation": ".cache/journeys-admin/eslint",
+        "cacheStrategy": "content"
+      }
     },
     "type-check": {
       "executor": "nx:run-commands",

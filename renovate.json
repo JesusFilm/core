@@ -5,6 +5,5 @@
   "reviewers": ["mikeallisonJS", "tataihono"],
   "assignees": ["mikeallisonJS"],
   "labels": ["effort: 1", "priority: 2day", "type: chore"],
-  "schedule": ["after 10pm and before 5:00am"],
   "prConcurrentLimit": 4
 }

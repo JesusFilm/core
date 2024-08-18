@@ -1044,6 +1044,7 @@ export type Language = {
   id: Scalars['ID']['output'];
   iso3?: Maybe<Scalars['String']['output']>;
   name: Array<LanguageName>;
+  slug?: Maybe<Scalars['String']['output']>;
 };
 
 
