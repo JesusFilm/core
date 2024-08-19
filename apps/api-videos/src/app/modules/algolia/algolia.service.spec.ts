@@ -7,7 +7,7 @@ import { VideoVariant } from '.prisma/api-videos-client'
 
 import { PrismaService } from '../../lib/prisma.service'
 
-import { AlgoliaService } from './algolia.service'
+import { AlgoliaService, GET_LANGUAGES, apollo } from './algolia.service'
 
 const saveObjectsSpy = jest
   .fn()
@@ -15,6 +15,42 @@ const saveObjectsSpy = jest
 
 const initIndexSpy = jest.fn().mockReturnValue({
   saveObjects: saveObjectsSpy
+})
+
+jest.mock('@apollo/client', () => {
+  const originalModule = jest.requireActual('@apollo/client')
+  return {
+    ...originalModule,
+    __esModule: true,
+    ApolloClient: jest.fn().mockImplementation(() => ({
+      query: jest.fn().mockResolvedValue({
+        data: {
+          languages: [
+            {
+              id: '21754',
+              name: [
+                {
+                  value: 'Chinese, Simplified',
+                  primary: false,
+                  language: {
+                    id: '529'
+                  }
+                },
+                {
+                  value: '简体中文',
+                  primary: true,
+                  language: {
+                    id: '21754'
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      })
+    })),
+    InMemoryCache: jest.fn()
+  }
 })
 
 jest.mock('algoliasearch', () => {
@@ -68,7 +104,7 @@ describe('AlgoliaService', () => {
       )
     })
 
-    it('should sync videos english to Algolia', async () => {
+    it('should sync videos to Algolia', async () => {
       process.env.ALGOLIA_API_KEY = 'key'
       process.env.ALGOLIA_APPLICATION_ID = 'id'
       process.env.ALGOLIA_INDEX = 'video-variants'
@@ -82,11 +118,11 @@ describe('AlgoliaService', () => {
               description: [{ value: 'description' }],
               label: 'label',
               image: 'image',
-              imageAlt: [{ value: 'imageAlt' }],
+              imageAlt: [{ value: 'imageAlt', languageId: '529' }],
               childIds: ['childId']
             },
             duration: 100,
-            languageId: 'languageId',
+            languageId: '21754',
             subtitle: [{ languageId: 'subtitle' }],
             slug: 'slug'
           } as unknown as VideoVariant
@@ -94,6 +130,7 @@ describe('AlgoliaService', () => {
         .mockResolvedValueOnce([])
 
       await service.syncVideosToAlgolia()
+      expect(apollo.query).toHaveBeenCalledWith({ query: GET_LANGUAGES })
       expect(prismaService.videoVariant.findMany).toHaveBeenCalledWith({
         take: 1000,
         skip: 0,
@@ -109,7 +146,17 @@ describe('AlgoliaService', () => {
           subtitle: true
         },
         where: {
-          languageId: '529'
+          languageId: {
+            in: [
+              '529', // English
+              '21046', // Spanish, Castilian
+              '21028', // Spanish, Latin American
+              '21753', // Chinese, Traditional
+              '21754', // Chinese, Simplified
+              '20615', // Chinese, Mandarin
+              '20601' // Chinese, Cantonese
+            ]
+          }
         }
       })
       expect(mockAlgoliaSearch).toHaveBeenCalledWith('id', 'key')
@@ -122,7 +169,9 @@ describe('AlgoliaService', () => {
           image: 'image',
           imageAlt: 'imageAlt',
           label: 'label',
-          languageId: 'languageId',
+          languageId: '21754',
+          languageEnglishName: 'Chinese, Simplified',
+          languagePrimaryName: '简体中文',
           objectID: 'id',
           slug: 'slug',
           subtitles: ['subtitle'],
