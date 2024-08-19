@@ -83,24 +83,26 @@ export function TitleDescriptionDialog({
   }
 
   function handleClose(resetForm: (values: FormikValues) => void): () => void {
-
-
     return () => {
       onClose()
       setTimeout(() =>
         resetForm({
-          values: { title: journey?.title, description: journey?.description, language:
-                journey != null
-                  ? {
-                      id: journey.language.id,
-                      localName: journey.language.name.find(
-                        ({ primary }) => !primary
-                      )?.value,
-                      nativeName: journey.language.name.find(
-                        ({ primary }) => primary
-                      )?.value
-                    }
-                  : undefined }
+          values: {
+            title: journey?.title,
+            description: journey?.description,
+            language:
+              journey != null
+                ? {
+                    id: journey.language.id,
+                    localName: journey.language.name.find(
+                      ({ primary }) => !primary
+                    )?.value,
+                    nativeName: journey.language.name.find(
+                      ({ primary }) => primary
+                    )?.value
+                  }
+                : undefined
+          }
         })
       )
     }
@@ -113,7 +115,7 @@ export function TitleDescriptionDialog({
           initialValues={{
             title: journey.title,
             description: journey.description,
-            language: { id : journey.language.id}
+            language: { id: journey.language.id }
           }}
           onSubmit={handleUpdateTitleDescription}
           validationSchema={titleSchema}
@@ -124,7 +126,7 @@ export function TitleDescriptionDialog({
             handleChange,
             handleSubmit,
             resetForm,
-            setFieldValue,
+            setFieldValue
           }) => (
             <Dialog
               open={open}

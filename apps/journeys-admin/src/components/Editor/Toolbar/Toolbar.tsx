@@ -62,7 +62,9 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
   } = useEditor()
   const { editorAnalytics } = useFlags()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
-  const journeyLanguage = journey?.language.name?.find(({ primary }) => primary)?.value
+  const journeyLanguage = journey?.language.name?.find(
+    ({ primary }) => primary
+  )?.value
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -268,13 +270,13 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
                 </Button>
               </Tooltip>
             </Box>
-            {dialogOpen && (  
-            <TitleDescriptionDialog
-              open={dialogOpen}
-              onClose={handleDialogClose}
-            />
+            {dialogOpen && (
+              <TitleDescriptionDialog
+                open={dialogOpen}
+                onClose={handleDialogClose}
+              />
             )}
-            </Stack>
+          </Stack>
           <Items />
         </>
       )}

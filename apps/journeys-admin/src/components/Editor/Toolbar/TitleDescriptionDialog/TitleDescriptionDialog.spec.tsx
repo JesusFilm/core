@@ -6,7 +6,12 @@ import { SnackbarProvider } from 'notistack'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
+import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery/useLanguagesQuery'
 
+import type {
+  GetLanguages,
+  GetLanguagesVariables
+} from '../../../../../__generated__/GetLanguages'
 import type {
   JourneySettingsUpdate,
   JourneySettingsUpdateVariables
@@ -15,8 +20,6 @@ import { JOURNEY_SETTINGS_UPDATE } from '../../../../libs/useJourneyUpdateMutati
 import { journey } from '../../../JourneyList/ActiveJourneyList/ActivePriorityList/ActiveJourneyListData'
 
 import { TitleDescriptionDialog } from '.'
-import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery/useLanguagesQuery'
-import type { GetLanguages, GetLanguagesVariables } from '../../../../../__generated__/GetLanguages'
 
 const onClose = jest.fn()
 
@@ -53,33 +56,38 @@ function getJourneySettingsUpdateMock(
   }
 }
 
-   const mockLanguagesQuery: MockedResponse<GetLanguages, GetLanguagesVariables> = {
-      request: {
-        query: GET_LANGUAGES,
-        variables: { languageId: '529' }
-      },
-      result: {
-        data: {
-          languages: [
-            {
-              __typename: 'Language',
-              id: 'languageId',
-              name: [
-                {
-                  __typename: 'LanguageName',
-                  value: 'english',
-                  primary: true
-                }
-              ]
-            }
-          ]
-        }
+const mockLanguagesQuery: MockedResponse<GetLanguages, GetLanguagesVariables> =
+  {
+    request: {
+      query: GET_LANGUAGES,
+      variables: { languageId: '529' }
+    },
+    result: {
+      data: {
+        languages: [
+          {
+            __typename: 'Language',
+            id: 'languageId',
+            name: [
+              {
+                __typename: 'LanguageName',
+                value: 'english',
+                primary: true
+              }
+            ]
+          }
+        ]
       }
     }
+  }
 
 describe('TitleDescriptionDialog', () => {
   it('should not set journey title on close', async () => {
-    const mock = getJourneySettingsUpdateMock('New Journey', 'Description', '529')
+    const mock = getJourneySettingsUpdateMock(
+      'New Journey',
+      'Description',
+      '529'
+    )
     render(
       <MockedProvider mocks={[{ ...mock }]}>
         <SnackbarProvider>
@@ -108,27 +116,24 @@ describe('TitleDescriptionDialog', () => {
           __typename: 'Journey',
           title: 'Changed Title',
           description: 'Changed Description',
-          languageId:"529"
+          languageId: '529'
         }
       }
     }))
-    
+
     const mock = getJourneySettingsUpdateMock(
       'Changed Title',
       'Changed Description',
       '529'
     )
 
- 
-
- 
     render(
-  <MockedProvider mocks={[{...mock, result},  mockLanguagesQuery]}>
+      <MockedProvider mocks={[{ ...mock, result }, mockLanguagesQuery]}>
         <SnackbarProvider>
           <JourneyProvider
             value={{
               journey: defaultJourney,
-              variant: 'admin',
+              variant: 'admin'
             }}
           >
             <TitleDescriptionDialog open onClose={onClose} />
@@ -146,7 +151,6 @@ describe('TitleDescriptionDialog', () => {
     })
 
     fireEvent.click(screen.getByRole('button', { name: 'Save' }))
-
 
     await waitFor(() => {
       expect(result).toHaveBeenCalled()
@@ -180,7 +184,7 @@ describe('TitleDescriptionDialog', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Save' }))
     await waitFor(() =>
       expect(
-        screen.getByText("Field update failed. Reload the page or try again.")
+        screen.getByText('Field update failed. Reload the page or try again.')
       ).toBeInTheDocument()
     )
   })
