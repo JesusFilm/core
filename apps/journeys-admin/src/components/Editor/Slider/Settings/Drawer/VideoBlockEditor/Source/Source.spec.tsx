@@ -1,16 +1,19 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { InfiniteHitsRenderState } from 'instantsearch.js/es/connectors/infinite-hits/connectInfiniteHits'
+import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
 import { NextRouter, useRouter } from 'next/router'
+import {
+  InstantSearchApi,
+  useInfiniteHits,
+  useInstantSearch,
+  useSearchBox
+} from 'react-instantsearch'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
-import {
-  VideoBlockSource,
-  VideoLabel
-} from '../../../../../../../../__generated__/globalTypes'
-import { videos } from '../../VideoLibrary/VideoFromLocal/data'
+import { VideoBlockSource } from '../../../../../../../../__generated__/globalTypes'
 import { GET_VIDEO } from '../../VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
-import { GET_VIDEOS } from '../../VideoLibrary/VideoFromLocal/VideoFromLocal'
 
 import { Source } from '.'
 
@@ -26,43 +29,30 @@ jest.mock('next/router', () => ({
 
 const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
-const getVideosMock = {
-  request: {
-    query: GET_VIDEOS,
-    variables: {
-      offset: 0,
-      limit: 5,
-      where: {
-        availableVariantLanguageIds: ['529'],
-        title: null,
-        labels: [
-          VideoLabel.episode,
-          VideoLabel.featureFilm,
-          VideoLabel.segment,
-          VideoLabel.shortFilm
-        ]
-      }
-    }
-  },
-  result: {
-    data: {
-      videos
-    }
-  }
-}
+jest.mock('react-instantsearch')
+
+const mockUseSearchBox = useSearchBox as jest.MockedFunction<
+  typeof useSearchBox
+>
+const mockUseInstantSearch = useInstantSearch as jest.MockedFunction<
+  typeof useInstantSearch
+>
+const mockUseInfiniteHits = useInfiniteHits as jest.MockedFunction<
+  typeof useInfiniteHits
+>
 
 const getVideoMock = {
   request: {
     query: GET_VIDEO,
     variables: {
-      id: '2_0-Brand_Video',
+      id: 'videoId',
       languageId: '529'
     }
   },
   result: {
     data: {
       video: {
-        id: '2_0-Brand_Video',
+        id: 'videoId',
         image:
           'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg',
         primaryLanguageId: '529',
@@ -93,6 +83,39 @@ describe('Source', () => {
   const push = jest.fn()
   const on = jest.fn()
 
+  beforeEach(() => {
+    mockUseSearchBox.mockReturnValue({
+      refine: jest.fn()
+    } as unknown as SearchBoxRenderState)
+
+    mockUseInfiniteHits.mockReturnValue({
+      hits: [
+        {
+          videoId: 'videoId',
+          titles: ['title1'],
+          description: ['description'],
+          duration: 10994,
+          languageId: '529',
+          subtitles: [],
+          slug: 'video-slug/english',
+          label: 'featureFilm',
+          image:
+            'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_GOJ-0-0.mobileCinematicHigh.jpg',
+          imageAlt: 'Life of Jesus (Gospel of John)',
+          childrenCount: 49,
+          objectID: '2_529-GOJ-0-0'
+        }
+      ],
+      showMore: jest.fn(),
+      isLastPage: false
+    } as unknown as InfiniteHitsRenderState)
+    mockUseInstantSearch.mockReturnValue({
+      status: 'idle'
+    } as unknown as InstantSearchApi)
+
+    jest.clearAllMocks()
+  })
+
   it('calls onChange when video selected', async () => {
     const onChange = jest.fn()
     const result = jest.fn().mockReturnValue(getVideoMock.result)
@@ -106,7 +129,7 @@ describe('Source', () => {
     } as unknown as NextRouter)
 
     render(
-      <MockedProvider mocks={[getVideosMock, { ...getVideoMock, result }]}>
+      <MockedProvider mocks={[{ ...getVideoMock, result }]}>
         <EditorProvider initialState={{ selectedAttributeId: 'video1.id' }}>
           <Source selectedBlock={null} onChange={onChange} />
         </EditorProvider>
@@ -118,16 +141,13 @@ describe('Source', () => {
       ).toBeInTheDocument()
     )
     fireEvent.click(screen.getByRole('button', { name: 'Select Video' }))
-    await waitFor(() =>
-      expect(screen.getByText('Brand Video')).toBeInTheDocument()
-    )
-    fireEvent.click(screen.getByText('Brand Video'))
+    await waitFor(() => fireEvent.click(screen.getByText('title1')))
     await waitFor(() => expect(result).toHaveBeenCalled())
     fireEvent.click(screen.getByRole('button', { name: 'Select' }))
     await waitFor(() =>
       expect(onChange).toHaveBeenCalledWith({
         duration: 144,
-        videoId: '2_0-Brand_Video',
+        videoId: 'videoId',
         videoVariantLanguageId: '529',
         source: VideoBlockSource.internal,
         startAt: 0,
