@@ -62,6 +62,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
   } = useEditor()
   const { editorAnalytics } = useFlags()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
+  const journeyLanguage = journey?.language.name?.find(({ primary }) => primary)?.value
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -242,17 +243,12 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
                   >
                     {journey.title}
                   </Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <Box sx={{ alignItems: 'center' }}>
                     <Globe1Icon
                       sx={{ fontSize: 13, alignItems: 'center', mr: 1 }}
                     />
                     <Typography variant="caption">
-                      {' '}
-                      {
-                        journey.language.name?.find(({ primary }) => primary)
-                          ?.value
-                      }{' '}
-                      •
+                      {` ${journeyLanguage} • `}
                     </Typography>
 
                     <Typography
@@ -272,12 +268,13 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
                 </Button>
               </Tooltip>
             </Box>
-
+            {dialogOpen && (  
             <TitleDescriptionDialog
               open={dialogOpen}
               onClose={handleDialogClose}
             />
-          </Stack>
+            )}
+            </Stack>
           <Items />
         </>
       )}
