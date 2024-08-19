@@ -53,12 +53,6 @@
         "jestConfig": "apps/api-analytics/jest.config.ts"
       }
     },
-    "codegen": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "graphql-codegen --config apps/api-analytics/codegen.ts"
-      }
-    },
     "generate-graphql": {
       "executor": "nx:run-commands",
       "options": {
