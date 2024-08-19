@@ -1,6 +1,7 @@
 import { Meta, StoryObj } from '@storybook/react'
 import { SWRConfig } from 'swr'
 
+import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import {
@@ -20,9 +21,11 @@ const VideoFromYouTubeStory: Meta<typeof VideoFromYouTube> = {
 
 const Template: StoryObj<typeof VideoFromYouTube> = {
   render: ({ onSelect }) => (
-    <SWRConfig value={{ provider: () => new Map() }}>
-      <VideoFromYouTube onSelect={onSelect} />
-    </SWRConfig>
+    <InstantSearchTestWrapper>
+      <SWRConfig value={{ provider: () => new Map() }}>
+        <VideoFromYouTube onSelect={onSelect} />
+      </SWRConfig>
+    </InstantSearchTestWrapper>
   )
 }
 
