@@ -9,7 +9,7 @@ import { object, string } from 'yup'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery/useLanguagesQuery'
 import { Dialog } from '@core/shared/ui/Dialog'
-import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete/LanguageAutocomplete'
+import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
 import { useJourneyUpdateMutation } from '../../../../libs/useJourneyUpdateMutation'
 
@@ -54,7 +54,7 @@ export function TitleDescriptionDialog({
             title: values.title,
             description: values.description,
             strategySlug: journey.strategySlug,
-            language: journey.language,
+            language: values.language,
             tags: []
           }
         }

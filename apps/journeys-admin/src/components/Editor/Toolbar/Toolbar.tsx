@@ -245,7 +245,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
                   >
                     {journey.title}
                   </Typography>
-                  <Box sx={{ alignItems: 'center' }}>
+                  <Stack sx={{ alignItems: 'center' }}>
                     <Globe1Icon
                       sx={{ fontSize: 13, alignItems: 'center', mr: 1 }}
                     />
@@ -266,7 +266,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
                     >
                       {journey.description}
                     </Typography>
-                  </Box>
+                  </Stack>
                 </Button>
               </Tooltip>
             </Box>
