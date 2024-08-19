@@ -126,7 +126,7 @@
       "outputs": ["{options.outputFile}"],
       "options": {
         "cache": true,
-        "cacheLocation": ".cache/videos-admin/eslint",
+        "cacheLocation": ".cache/journeys-admin/eslint",
         "cacheStrategy": "content"
       }
     },
