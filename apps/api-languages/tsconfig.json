@@ -16,10 +16,12 @@
     "allowImportingTsExtensions": true,
     "noEmit": true,
     "strict": true,
+    "incremental": true,
+    "tsBuildInfoFile": "../../.cache/api-languages/tsc/.tsbuildinfo",
     "plugins": [
       {
         "name": "@0no-co/graphqlsp",
-        "schema": "./schema.graphql",
+        "schema": "../api-gateway/schema.graphql",
         "tadaOutputLocation": "./src/__generated__/graphql-env.d.ts"
       }
     ]

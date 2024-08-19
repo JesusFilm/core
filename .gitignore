@@ -37,6 +37,7 @@ testem.log
 apps/api-gateway/router
 /**/tsconfig.tsbuildinfo
 .history/
+/.cache
 
 # System Files
 .DS_Store

@@ -15,7 +15,8 @@
       {
         "name": "next"
       }
-    ]
+    ],
+    "tsBuildInfoFile": "../../.cache/nexus-admin/tsc/.tsbuildinfo"
   },
   "include": [
     "**/*.ts",
