@@ -1,11 +1,13 @@
 import { CACHE_MANAGER } from '@nestjs/cache-manager'
 import { Inject, Injectable } from '@nestjs/common'
 import { Cache } from 'cache-manager'
+import { graphql } from 'gql.tada'
 
 import { Prisma, Video } from '.prisma/api-videos-client'
 
-import { VideosFilter } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
+
+type VideosFilter = ReturnType<typeof graphql.scalar<'VideosFilter'>>
 
 interface ExtendedVideosFilter extends VideosFilter {
   variantLanguageId?: string
