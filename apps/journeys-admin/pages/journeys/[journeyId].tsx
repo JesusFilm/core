@@ -1,4 +1,5 @@
 import { gql, useQuery } from '@apollo/client'
+import algoliasearch from 'algoliasearch'
 import { useRouter } from 'next/router'
 import {
   AuthAction,
@@ -9,6 +10,7 @@ import {
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
+import { Configure, InstantSearch } from 'react-instantsearch'
 
 import { ActiveContent } from '@core/journeys/ui/EditorProvider'
 import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
@@ -67,6 +69,11 @@ export const USER_JOURNEY_OPEN = gql`
   }
 `
 
+const searchClient = algoliasearch(
+  process.env.NEXT_PUBLIC_ALGOLIA_APP_ID ?? '',
+  process.env.NEXT_PUBLIC_ALGOLIA_API_KEY ?? ''
+)
+
 function JourneyEditPage({ status }): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
@@ -79,7 +86,12 @@ function JourneyEditPage({ status }): ReactElement {
   )
 
   return (
-    <>
+    <InstantSearch
+      searchClient={searchClient}
+      indexName={process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''}
+      stalledSearchDelay={500}
+    >
+      <Configure ruleContexts={['home_page']} hitsPerPage={5} />
       <NextSeo
         title={
           status === 'noAccess'
@@ -102,7 +114,7 @@ function JourneyEditPage({ status }): ReactElement {
           user={user}
         />
       )}
-    </>
+    </InstantSearch>
   )
 }
 

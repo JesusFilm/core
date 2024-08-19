@@ -2,12 +2,12 @@ import { MockedProvider } from '@apollo/client/testing'
 import { expect } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
 import { userEvent, waitFor, within } from '@storybook/testing-library'
-import { ReactElement, useState } from 'react'
+import { ComponentProps, ReactElement, useState } from 'react'
 
+import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
-import { videos } from './VideoFromLocal/data'
-import { GET_VIDEOS } from './VideoFromLocal/VideoFromLocal'
+import { getAlgoliaVideosHandlers } from './VideoLibrary.handlers'
 
 import { VideoLibrary } from '.'
 
@@ -18,126 +18,47 @@ const VideoLibraryStory: Meta<typeof VideoLibrary> = {
   argTypes: { onSelect: { action: 'clicked' } }
 }
 
-const VideoLibraryDefault = ({ onSelect }): ReactElement => {
+const VideoLibraryDefault = ({ onSelect, query }): ReactElement => {
   const [open, setOpen] = useState(true)
 
   return (
-    <MockedProvider
-      mocks={[
-        {
-          request: {
-            query: GET_VIDEOS,
-            variables: {
-              offset: 0,
-              limit: 5,
-              where: {
-                availableVariantLanguageIds: ['529'],
-                title: null
-              }
-            }
-          },
-          result: {
-            data: {
-              videos
-            }
-          }
-        },
-        {
-          request: {
-            query: GET_VIDEOS,
-            variables: {
-              offset: 3,
-              limit: 5,
-              where: {
-                availableVariantLanguageIds: ['529'],
-                title: null
-              }
-            }
-          },
-          result: {
-            data: {
-              videos: []
-            }
-          }
-        },
-        {
-          request: {
-            query: GET_VIDEOS,
-            variables: {
-              offset: 0,
-              limit: 5,
-              where: {
-                availableVariantLanguageIds: ['529'],
-                title: 'Andreas'
-              }
-            }
-          },
-          result: {
-            data: {
-              videos: [
-                {
-                  id: '2_0-AndreasStory',
-                  image:
-                    'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_AndreasStory-0-0.mobileCinematicHigh.jpg',
-                  snippet: [
-                    {
-                      primary: true,
-                      value:
-                        'After living a life full of fighter planes and porsches, Andreas realizes something is missing.'
-                    }
-                  ],
-                  title: [
-                    {
-                      primary: true,
-                      value: "Andreas' Story"
-                    }
-                  ],
-                  variant: {
-                    id: 'variantA',
-                    duration: 186
-                  }
-                }
-              ]
-            }
-          }
-        },
-        {
-          request: {
-            query: GET_VIDEOS,
-            variables: {
-              offset: 1,
-              limit: 5,
-              where: {
-                availableVariantLanguageIds: ['529'],
-                title: 'Andreas'
-              }
-            }
-          },
-          result: {
-            data: {
-              videos: []
-            }
-          }
-        }
-      ]}
-    >
+    <InstantSearchTestWrapper query={query}>
       <VideoLibrary
         open={open}
         onClose={() => setOpen(false)}
         onSelect={onSelect}
       />
-    </MockedProvider>
+    </InstantSearchTestWrapper>
   )
 }
 
-const Template: StoryObj<typeof VideoLibrary> = {
-  render: ({ onSelect }) => <VideoLibraryDefault onSelect={onSelect} />
+const Template: StoryObj<
+  ComponentProps<typeof VideoLibrary> & { query: string }
+> = {
+  render: ({ onSelect, query }) => (
+    <VideoLibraryDefault onSelect={onSelect} query={query} />
+  )
 }
 
-export const Default = { ...Template }
+export const Default = {
+  ...Template,
+  parameters: {
+    msw: {
+      handlers: [getAlgoliaVideosHandlers]
+    }
+  }
+}
 
 export const WithSearch = {
   ...Template,
+  parameters: {
+    msw: {
+      handlers: [getAlgoliaVideosHandlers]
+    }
+  },
+  args: {
+    query: 'Jesus'
+  },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement.parentElement as unknown as HTMLElement)
     await waitFor(
@@ -148,7 +69,7 @@ export const WithSearch = {
     )
     await userEvent.type(
       canvas.getByRole('textbox', { name: 'Search' }),
-      'Andreas'
+      'Jesus'
     )
   }
 }
@@ -157,33 +78,14 @@ const VideoLibraryEmpty = ({ onSelect }): ReactElement => {
   const [open, setOpen] = useState(true)
 
   return (
-    <MockedProvider
-      mocks={[
-        {
-          request: {
-            query: GET_VIDEOS,
-            variables: {
-              offset: 0,
-              limit: 5,
-              where: {
-                availableVariantLanguageIds: ['529'],
-                title: '#FallingPlates'
-              }
-            }
-          },
-          result: {
-            data: {
-              videos: []
-            }
-          }
-        }
-      ]}
-    >
-      <VideoLibrary
-        open={open}
-        onClose={() => setOpen(false)}
-        onSelect={onSelect}
-      />
+    <MockedProvider>
+      <InstantSearchTestWrapper>
+        <VideoLibrary
+          open={open}
+          onClose={() => setOpen(false)}
+          onSelect={onSelect}
+        />
+      </InstantSearchTestWrapper>
     </MockedProvider>
   )
 }
