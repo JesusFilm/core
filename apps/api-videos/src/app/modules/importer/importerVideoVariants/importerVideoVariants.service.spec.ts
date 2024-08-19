@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
 import { PrismaService } from '../../../lib/prisma.service'
+import { ImporterLanguageSlugsService } from '../importerLanguageSlugs/importerLanguageSlugs.service'
 import { ImporterVideosService } from '../importerVideos/importerVideos.service'
 
 import { ImporterVideoVariantsService } from './importerVideoVariants.service'
@@ -9,12 +10,14 @@ import { ImporterVideoVariantsService } from './importerVideoVariants.service'
 describe('ImporterVideoVariantsService', () => {
   let service: ImporterVideoVariantsService,
     prismaService: DeepMockProxy<PrismaService>,
-    videosService: ImporterVideosService
+    videosService: ImporterVideosService,
+    languageSlugsService: ImporterLanguageSlugsService
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ImporterVideoVariantsService,
+        ImporterLanguageSlugsService,
         ImporterVideosService,
         {
           provide: PrismaService,
@@ -30,6 +33,9 @@ describe('ImporterVideoVariantsService', () => {
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
+    languageSlugsService = module.get<ImporterLanguageSlugsService>(
+      ImporterLanguageSlugsService
+    )
 
     prismaService.videoVariant.findMany.mockResolvedValue([])
     await service.getExistingIds()
@@ -38,6 +44,7 @@ describe('ImporterVideoVariantsService', () => {
   describe('import', () => {
     it('should update video variant', async () => {
       videosService.usedSlugs = { videoId: 'Variant-Title' }
+      languageSlugsService.slugs = { '529': 'english' }
 
       await service.import({
         id: 'mockId',
@@ -75,6 +82,7 @@ describe('ImporterVideoVariantsService', () => {
 
     it('should save many video variants', async () => {
       videosService.usedSlugs = { videoId: 'Variant-Title' }
+      languageSlugsService.slugs = { '529': 'english', '3804': 'korean' }
 
       await service.importMany([
         {
