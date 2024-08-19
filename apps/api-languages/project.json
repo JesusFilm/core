@@ -33,17 +33,12 @@
       }
     },
     "lint": {
-      "executor": "nx:run-commands",
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
       "options": {
-        "command": "npx @biomejs/biome check --diagnostic-level=warn",
-        "cwd": "apps/api-languages"
-      }
-    },
-    "lint:fix": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npx @biomejs/biome check --write",
-        "cwd": "apps/api-languages"
+        "cache": true,
+        "cacheLocation": ".cache/api-languages/eslint",
+        "cacheStrategy": "content"
       }
     },
     "test": {
@@ -97,12 +92,6 @@
         ]
       }
     },
-    "prisma-seed": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": ["npm run ts-node apps/api-languages/db/seed.ts"]
-      }
-    },
     "prisma-studio": {
       "executor": "nx:run-commands",
       "options": {
@@ -129,6 +118,12 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "npm run ts-node apps/api-languages/src/bigquery/console.ts"
+      }
+    },
+    "codegen": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "gql.tada generate output --tsconfig apps/api-languages/tsconfig.json"
       }
     }
   },

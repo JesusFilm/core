@@ -3,8 +3,8 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import { type TreeBlock } from '@core/journeys/ui/block'
+import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 
 import {

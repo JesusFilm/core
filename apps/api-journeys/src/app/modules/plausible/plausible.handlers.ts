@@ -1,12 +1,13 @@
 import difference from 'lodash/difference'
 import {
-  http,
   GraphQLQuery,
   GraphQLVariables,
   HttpResponse,
   RequestHandler,
-  graphql
+  graphql,
+  http
 } from 'msw'
+
 import { goals } from './plausible.service'
 
 const journeySiteId = 'api-journeys-journey-journeyId'
@@ -62,7 +63,7 @@ export const siteCreate = graphql.mutation<GraphQLQuery, GraphQLVariables>(
 
 export const getRealTimeVisitorsResponse = 10
 
-export const getRealTimeVisitors = () =>
+export const getRealTimeVisitors = (): RequestHandler =>
   http.get(
     `${process.env.PLAUSIBLE_URL}/api/v1/stats/realtime/visitors`,
     async ({ request }) => {
@@ -92,7 +93,7 @@ export const getStatsAggregateResponse = {
   }
 }
 
-export const getStatsAggregate = () =>
+export const getStatsAggregate = (): RequestHandler =>
   http.get(
     `${process.env.PLAUSIBLE_URL}/api/v1/stats/aggregate`,
     async ({ request }) => {
@@ -126,7 +127,7 @@ export const getStatsBreakdownResponse = {
   ]
 }
 
-export const getStatsBreakdown = () =>
+export const getStatsBreakdown = (): RequestHandler =>
   http.get(
     `${process.env.PLAUSIBLE_URL}/api/v1/stats/breakdown`,
     async ({ request }) => {
@@ -162,7 +163,7 @@ export const getStatsTimeseriesResponse = {
   ]
 }
 
-export const getStatsTimeseries = () =>
+export const getStatsTimeseries = (): RequestHandler =>
   http.get(
     `${process.env.PLAUSIBLE_URL}/api/v1/stats/timeseries`,
     async ({ request }) => {

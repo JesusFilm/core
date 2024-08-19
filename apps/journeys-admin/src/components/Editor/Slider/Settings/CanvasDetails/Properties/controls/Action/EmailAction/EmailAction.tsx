@@ -5,8 +5,8 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { object, string } from 'yup'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import Mail2Icon from '@core/shared/ui/icons/Mail2'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
@@ -33,25 +33,25 @@ export function EmailAction(): ReactElement {
       .email(t('Email must be a valid email'))
   })
 
-  async function handleSubmit(email: string): Promise<void> {
-    if (selectedBlock != null) {
-      const { id, action, __typename } = selectedBlock
-      await addAction({
-        blockId: id,
-        blockTypename: __typename,
-        action: {
-          __typename: 'EmailAction',
-          parentBlockId: id,
-          gtmEventName: '',
-          email
-        },
-        undoAction: action,
-        editorFocus: {
-          selectedStep,
-          selectedBlock
-        }
-      })
-    }
+  function handleSubmit(email: string): void {
+    if (selectedBlock == null) return
+
+    const { id, action, __typename: blockTypename } = selectedBlock
+    addAction({
+      blockId: id,
+      blockTypename,
+      action: {
+        __typename: 'EmailAction',
+        parentBlockId: id,
+        gtmEventName: '',
+        email
+      },
+      undoAction: action,
+      editorFocus: {
+        selectedStep,
+        selectedBlock
+      }
+    })
   }
 
   return (

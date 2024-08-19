@@ -2,13 +2,15 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
-import { AIGallery } from '.'
 import {
   CreateAiImage,
   CreateAiImageVariables
 } from '../../../../../../../../__generated__/CreateAiImage'
 import { SegmindModel } from '../../../../../../../../__generated__/globalTypes'
+
 import { CREATE_AI_IMAGE } from './AIGallery'
+
+import { AIGallery } from '.'
 
 describe('AIGallery', () => {
   let originalEnv

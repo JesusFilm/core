@@ -19,6 +19,5 @@ export interface BlockOrderUpdate {
 
 export interface BlockOrderUpdateVariables {
   id: string;
-  journeyId: string;
   parentOrder: number;
 }

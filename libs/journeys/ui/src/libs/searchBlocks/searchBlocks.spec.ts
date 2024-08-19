@@ -126,6 +126,6 @@ describe('searchBlocks', () => {
     const block = searchBlocks(tree, 'RadioOption1', {
       filter: 'searchStepsOnly'
     })
-    expect(block).toEqual(undefined)
+    expect(block).toBeUndefined()
   })
 })

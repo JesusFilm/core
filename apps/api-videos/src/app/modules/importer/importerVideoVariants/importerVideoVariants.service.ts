@@ -1,12 +1,11 @@
 import { Injectable } from '@nestjs/common'
-
 import { z } from 'zod'
 
 import { Prisma } from '.prisma/api-videos-client'
 
-import { convertToSlug } from '../../../../libs/slugify/slugify'
 import { PrismaService } from '../../../lib/prisma.service'
 import { ImporterService } from '../importer.service'
+import { ImporterLanguageSlugsService } from '../importerLanguageSlugs/importerLanguageSlugs.service'
 import { ImporterVideosService } from '../importerVideos/importerVideos.service'
 
 const videoVariantsSchema = z.object({
@@ -19,7 +18,7 @@ const videoVariantsSchema = z.object({
   languageId: z.number().transform(String),
   videoId: z.string(),
   slug: z.string(),
-  languageName: z.string(),
+  languageName: z.string().nullable(),
   edition: z
     .string()
     .nullable()
@@ -34,7 +33,8 @@ export class ImporterVideoVariantsService extends ImporterService<VideoVariants>
   ids: string[] = []
   constructor(
     private readonly prismaService: PrismaService,
-    private readonly importerVideosService: ImporterVideosService
+    private readonly importerVideosService: ImporterVideosService,
+    private readonly importerLanguageSlugsService: ImporterLanguageSlugsService
   ) {
     super()
   }
@@ -51,18 +51,21 @@ export class ImporterVideoVariantsService extends ImporterService<VideoVariants>
   private transform(
     videoVariant: VideoVariants
   ): Prisma.VideoVariantUncheckedCreateInput | null {
-    if (this.importerVideosService.usedSlugs?.[videoVariant.videoId] == null)
+    if (
+      this.importerVideosService.usedSlugs?.[videoVariant.videoId] == null ||
+      videoVariant.languageName == null
+    )
       return null
-    // throw new Error(
-    //   `video for variant id: ${
-    //     videoVariant.id
-    //   } - does not exist! \n${JSON.stringify(videoVariant, null, 2)}`
-    // )
 
-    const transformedLanguageName = convertToSlug(videoVariant.languageName)
+    const languageSlug =
+      this.importerLanguageSlugsService.slugs[videoVariant.languageId]
+
     const slug = `${
       this.importerVideosService.usedSlugs[videoVariant.videoId]
-    }/${transformedLanguageName}`
+    }/${languageSlug}`
+
+    if (languageSlug == null || slug == null) return null
+
     return {
       id: videoVariant.id,
       hls: videoVariant.hls,
@@ -94,6 +97,6 @@ export class ImporterVideoVariantsService extends ImporterService<VideoVariants>
       data: transformedVideoVariants as Prisma.VideoVariantCreateManyInput[],
       skipDuplicates: true
     })
-    this.ids = [...this.ids, ...videoVariants.map(({ id }) => id)]
+    this.ids = this.ids.concat(videoVariants.map(({ id }) => id))
   }
 }

@@ -22,6 +22,7 @@ test('Chapter', async ({ page }) => {
   console.log('Current URL:', url)
 
   // video tiles aren't loading upon right away and there is no event to say they are loaded. So the only option is to hard wait
+  // eslint-disable-next-line playwright/no-wait-for-timeout
   await page.waitForTimeout(8 * 1000)
   // Note: all video tiles are not fully loading
   // await expect(page).toHaveScreenshot('home-page.png', {
@@ -36,6 +37,7 @@ test('Chapter', async ({ page }) => {
     })
     .click()
 
+  // eslint-disable-next-line playwright/no-wait-for-timeout
   await page.waitForTimeout(8 * 1000)
   // await expect(page).toHaveScreenshot('before-video.png', {
   //   animations: 'disabled',

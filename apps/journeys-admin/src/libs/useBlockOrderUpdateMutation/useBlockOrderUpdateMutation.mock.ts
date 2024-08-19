@@ -15,7 +15,6 @@ export const blockOrderUpdateMock: MockedResponse<
     query: BLOCK_ORDER_UPDATE,
     variables: {
       id: 'blockId',
-      journeyId: 'journeyId',
       parentOrder: 0
     }
   },

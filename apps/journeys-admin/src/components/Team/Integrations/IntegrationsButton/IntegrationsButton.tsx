@@ -1,14 +1,15 @@
-import Plus1Icon from '@core/shared/ui/icons/Plus1'
 import InsertPhotoRoundedIcon from '@mui/icons-material/InsertPhotoRounded'
 import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Image, { StaticImageData } from 'next/image'
-
-import { useTranslation } from 'next-i18next'
 import NextLink from 'next/link'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
+
+import Plus1Icon from '@core/shared/ui/icons/Plus1'
+
 import { IntegrationType } from '../../../../../__generated__/globalTypes'
 import growthSpacesLogo from '../../../../../public/growth-spaces-logo.png'
 

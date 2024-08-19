@@ -19,6 +19,7 @@ import { BibleBookModule } from './modules/bibleBook/bibleBook.module'
 import { BibleCitationModule } from './modules/bibleCitation/bibleCitation.module'
 import { BigQueryModule } from './modules/bigQuery/bigQuery.module'
 import { NestHealthModule } from './modules/health/health.module'
+import { KeywordModule } from './modules/keyword/keyword.module'
 import { VideoModule } from './modules/video/video.module'
 import { VideoVariantModule } from './modules/videoVariant/videoVariant.module'
 
@@ -30,6 +31,7 @@ import { VideoVariantModule } from './modules/videoVariant/videoVariant.module'
     BibleBookModule,
     BibleCitationModule,
     BigQueryModule,
+    KeywordModule,
     VideoModule,
     VideoVariantModule,
     CacheModule.register(),

@@ -7,18 +7,22 @@ import TagManager from 'react-gtm-module'
 import { SwipeEventData, useSwipeable } from 'react-swipeable'
 import { v4 as uuidv4 } from 'uuid'
 
+import { TreeBlock, useBlocks } from '@core/journeys/ui/block'
 import {
   STEP_NEXT_EVENT_CREATE,
   STEP_PREVIOUS_EVENT_CREATE
 } from '@core/journeys/ui/Card/Card'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { TreeBlock, useBlocks } from '@core/journeys/ui/block'
 import { getStepHeading } from '@core/journeys/ui/getStepHeading'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import {
   JourneyPlausibleEvents,
   keyify
 } from '@core/journeys/ui/plausibleHelpers'
 
+import {
+  StepNextEventCreateInput,
+  StepPreviousEventCreateInput
+} from '../../../../__generated__/globalTypes'
 import { StepFields } from '../../../../__generated__/StepFields'
 import {
   StepNextEventCreate,
@@ -28,10 +32,6 @@ import {
   StepPreviousEventCreate,
   StepPreviousEventCreateVariables
 } from '../../../../__generated__/StepPreviousEventCreate'
-import {
-  StepNextEventCreateInput,
-  StepPreviousEventCreateInput
-} from '../../../../__generated__/globalTypes'
 
 interface SwipeNavigationProps {
   activeBlock: TreeBlock<StepFields>

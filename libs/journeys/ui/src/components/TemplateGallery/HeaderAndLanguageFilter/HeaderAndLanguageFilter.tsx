@@ -4,8 +4,8 @@ import NoSsr from '@mui/material/NoSsr'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { Trans, useTranslation } from 'next-i18next'
 import { useRouter } from 'next/router'
+import { Trans, useTranslation } from 'next-i18next'
 import {
   ComponentProps,
   ReactElement,
@@ -15,14 +15,14 @@ import {
   useState
 } from 'react'
 
-import { LanguageOption } from '@core/shared/ui/MultipleLanguageAutocomplete'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
+import { LanguageOption } from '@core/shared/ui/MultipleLanguageAutocomplete'
 
-import { setBeaconPageViewed } from '../../../libs/setBeaconPageViewed'
+import { setBeaconPageViewed } from '../../../libs/beaconHooks'
 import { useLanguagesQuery } from '../../../libs/useLanguagesQuery'
 
-import { LanguagesFilterPopper } from './LanguagesFilterPopper/LanguagesFilterPopper'
 import { convertLanguagesToOptions } from './convertLanguagesToOptions'
+import { LanguagesFilterPopper } from './LanguagesFilterPopper/LanguagesFilterPopper'
 
 interface LocalTypographyProps extends ComponentProps<typeof Typography> {}
 

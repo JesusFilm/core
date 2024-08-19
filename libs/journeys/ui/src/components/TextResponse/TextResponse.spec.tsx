@@ -1,20 +1,20 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
 import TagManager from 'react-gtm-module'
 
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
-import { JourneyProvider } from '../../libs/JourneyProvider'
 import type { TreeBlock } from '../../libs/block'
 import { blockHistoryVar, treeBlocksVar } from '../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
+import { JourneyProvider } from '../../libs/JourneyProvider'
 
+import { TextResponseFields } from './__generated__/TextResponseFields'
 import {
   TEXT_RESPONSE_SUBMISSION_EVENT_CREATE,
   TextResponse
 } from './TextResponse'
-import { TextResponseFields } from './__generated__/TextResponseFields'
 
 jest.mock('react-gtm-module', () => ({
   __esModule: true,
@@ -100,6 +100,34 @@ describe('TextResponse', () => {
     await waitFor(() => {
       expect(responseField).toHaveAttribute('maxlength', '1000')
     })
+  })
+
+  it('should show your answer here if label is empty', async () => {
+    const emptyLabelBlock: TreeBlock<TextResponseFields> = {
+      __typename: 'TextResponseBlock',
+      id: 'textResponse0.id',
+      parentBlockId: '0',
+      parentOrder: 0,
+      label: '',
+      hint: null,
+      minRows: null,
+      integrationId: null,
+      type: null,
+      routeId: null,
+      children: []
+    }
+
+    render(
+      <MockedProvider mocks={[]} addTypename={false}>
+        <JourneyProvider>
+          <SnackbarProvider>
+            <TextResponse {...emptyLabelBlock} uuid={() => 'uuid'} />
+          </SnackbarProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByLabelText('Your answer here')).toBeInTheDocument()
   })
 
   it('should be in a loading state when waiting for response', async () => {

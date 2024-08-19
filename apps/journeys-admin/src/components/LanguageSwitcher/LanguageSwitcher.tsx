@@ -5,8 +5,8 @@ import MenuItem from '@mui/material/MenuItem'
 import Select from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
@@ -54,7 +54,6 @@ export function LanguageSwitcher({
     handleClose()
   }
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     const supportedLanguageCodes = (
       i18n.options as unknown as { locales: string[] }
@@ -78,6 +77,7 @@ export function LanguageSwitcher({
         }
       })
     setLanguages(formattedLanguages)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentLanguageCode])
 
   return (

@@ -1,10 +1,9 @@
 import { ApolloClient, ApolloQueryResult } from '@apollo/client'
-import { MailerService } from '@nestjs-modules/mailer'
 import { Test, TestingModule } from '@nestjs/testing'
+import { MailerService } from '@nestjs-modules/mailer'
 import { Job } from 'bullmq'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { EmailService } from '@core/nest/common/email/emailService'
 import {
   Event,
   JourneyStatus,
@@ -14,6 +13,7 @@ import {
   UserJourneyRole,
   Visitor
 } from '.prisma/api-journeys-client'
+import { EmailService } from '@core/nest/common/email/emailService'
 
 import { UserTeamRole } from '../../../__generated__/graphql'
 import { PrismaService } from '../../../lib/prisma.service'

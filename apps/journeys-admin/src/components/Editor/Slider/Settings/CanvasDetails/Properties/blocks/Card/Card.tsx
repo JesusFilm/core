@@ -1,11 +1,12 @@
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
-import { useTranslation } from 'next-i18next'
 import dynamic from 'next/dynamic'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import FlexAlignBottom1Icon from '@core/shared/ui/icons/FlexAlignBottom1'
 import Image3Icon from '@core/shared/ui/icons/Image3'
@@ -13,7 +14,6 @@ import PaletteIcon from '@core/shared/ui/icons/Palette'
 import VideoOnIcon from '@core/shared/ui/icons/VideoOn'
 import { ThemeMode, ThemeName, getTheme } from '@core/shared/ui/themes'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { Accordion } from '../../Accordion'
 
@@ -76,6 +76,27 @@ export function Card({
   const selectedCardColor =
     backgroundColor ?? cardTheme.palette.background.paper
 
+  let backgroundValue = t('None')
+
+  switch (coverBlock?.__typename) {
+    case 'ImageBlock':
+      if (coverBlock.src != null) {
+        if (coverBlock.src.startsWith('https://images.unsplash.com/')) {
+          backgroundValue = coverBlock.alt
+        } else {
+          backgroundValue = coverBlock.src.substring(
+            coverBlock.src.lastIndexOf('/') + 1,
+            coverBlock.src.length
+          )
+        }
+      }
+      break
+    case 'VideoBlock':
+      backgroundValue =
+        coverBlock.video?.title?.[0]?.value ?? coverBlock.title ?? ''
+      break
+  }
+
   return (
     <Box data-testid="CardProperties">
       <Accordion
@@ -99,43 +120,21 @@ export function Card({
       >
         <BackgroundColor key={selectedStep?.id} />
       </Accordion>
-
-      {coverBlock?.__typename === 'ImageBlock' && coverBlock.src != null && (
-        <Accordion
-          id={`${id}-cover-block`}
-          icon={<Image3Icon />}
-          name={t('Background')}
-          value={coverBlock.src.substring(
-            coverBlock.src.lastIndexOf('/') + 1,
-            coverBlock.src.length
-          )}
-          param="background-image"
-        >
-          <BackgroundMedia />
-        </Accordion>
-      )}
-      {coverBlock?.__typename === 'VideoBlock' && (
-        <Accordion
-          id={`${id}-cover-block`}
-          icon={<VideoOnIcon />}
-          name={t('Background')}
-          value={coverBlock.video?.title?.[0]?.value ?? coverBlock.title ?? ''}
-          param="background-video"
-        >
-          <BackgroundMedia />
-        </Accordion>
-      )}
-      {coverBlock == null && (
-        <Accordion
-          id={`${id}-cover-block`}
-          icon={<Image3Icon />}
-          name={t('Background')}
-          value="None"
-          param="background-video"
-        >
-          <BackgroundMedia />
-        </Accordion>
-      )}
+      <Accordion
+        id={`${id}-cover-block`}
+        icon={
+          coverBlock?.__typename === 'VideoBlock' ? (
+            <VideoOnIcon />
+          ) : (
+            <Image3Icon />
+          )
+        }
+        name={t('Background')}
+        value={backgroundValue}
+        param="background-media"
+      >
+        <BackgroundMedia />
+      </Accordion>
       <Accordion
         icon={<PaletteIcon />}
         id={`${id}-theme-mode`}
@@ -144,8 +143,8 @@ export function Card({
           themeMode == null
             ? t('Default')
             : themeMode === ThemeMode.light
-              ? t('Light')
-              : t('Dark')
+            ? t('Light')
+            : t('Dark')
         }
       >
         <CardStyling />

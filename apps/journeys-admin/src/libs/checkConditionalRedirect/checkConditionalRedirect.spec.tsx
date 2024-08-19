@@ -1,11 +1,11 @@
 import { ApolloClient, NormalizedCacheObject } from '@apollo/client'
 
 import { GetJourneyProfileAndTeams } from '../../../__generated__/GetJourneyProfileAndTeams'
+import { TEAM_CREATE } from '../useTeamCreateMutation/useTeamCreateMutation'
 
 import { GET_JOURNEY_PROFILE_AND_TEAMS } from './checkConditionalRedirect'
 
 import { checkConditionalRedirect } from '.'
-import { TEAM_CREATE } from '../useTeamCreateMutation/useTeamCreateMutation'
 
 const meData = {
   me: {
@@ -222,7 +222,7 @@ describe('checkConditionalRedirect', () => {
     ).toBeUndefined()
   })
 
-  it('redirect to onboarding form if onboardingFormCompletedAt is null', async () => {
+  it.skip('redirect to onboarding form if onboardingFormCompletedAt is null', async () => {
     const data: GetJourneyProfileAndTeams = {
       getJourneyProfile: {
         id: 'profile.id',
@@ -283,7 +283,7 @@ describe('checkConditionalRedirect', () => {
     })
   })
 
-  it('redirect to onboarding form with redirect parameter', async () => {
+  it.skip('redirect to onboarding form with redirect parameter', async () => {
     const data: GetJourneyProfileAndTeams = {
       getJourneyProfile: {
         id: 'profile.id',

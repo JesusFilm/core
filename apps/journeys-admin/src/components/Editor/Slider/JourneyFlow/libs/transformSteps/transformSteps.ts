@@ -33,7 +33,7 @@ export const socialNode = {
   id: 'SocialPreview',
   type: 'SocialPreview',
   data: {},
-  position: { x: -365, y: -46 },
+  position: { x: -240, y: -46 },
   draggable: false
 }
 

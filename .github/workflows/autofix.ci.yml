@@ -43,6 +43,12 @@ jobs:
           path: node_modules
           key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
           restore-keys: node-modules-${{ matrix.node-version }}-
+      - name: Setup Cache
+        uses: actions/cache@v3
+        with:
+          path: .cache
+          key: lint-cache-${{ matrix.node-version }}-${{ hashFiles('**/.eslintrc.json', '**/tsconfig.json') }}
+          restore-keys: lint-cache-${{ matrix.node-version }}-
       - name: NPM Install
         run: npm install --silent
       - name: generate prisma imports
@@ -60,12 +66,13 @@ jobs:
         with:
           targets: codegen
           all: true
-      - name: Setup Biome
-        uses: biomejs/setup-biome@v2
+      - name: Run Prettier
+        run: npm run prettier:fix
+      - name: Run ESLint
+        uses: mansagroup/nrwl-nx-action@v3
         with:
-          version: latest
-      - name: Run Biome
-        run: biome check --write .
+          targets: lint
+          args: --fix
       - name: type-check, extract-translations, subgraph-check
         uses: mansagroup/nrwl-nx-action@v3
         with:

@@ -9,6 +9,7 @@ import { IMAGE_FIELDS } from '@core/journeys/ui/Image/imageFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../../__generated__/BlockFields'
+import { ImageBlockUpdateInput } from '../../../../../../../../../../__generated__/globalTypes'
 import {
   PosterImageBlockCreate,
   PosterImageBlockCreateVariables
@@ -25,7 +26,6 @@ import {
   PosterImageBlockUpdate,
   PosterImageBlockUpdateVariables
 } from '../../../../../../../../../../__generated__/PosterImageBlockUpdate'
-import { ImageBlockUpdateInput } from '../../../../../../../../../../__generated__/globalTypes'
 import { blockDeleteUpdate } from '../../../../../../../../../libs/blockDeleteUpdate'
 import { blockRestoreUpdate } from '../../../../../../../../../libs/useBlockRestoreMutation'
 import { ImageLibrary } from '../../../../ImageLibrary'
@@ -49,22 +49,17 @@ export const POSTER_IMAGE_BLOCK_CREATE = gql`
 
 export const POSTER_IMAGE_BLOCK_UPDATE = gql`
   ${IMAGE_FIELDS}
-  mutation PosterImageBlockUpdate(
-    $id: ID!
-    $input: ImageBlockUpdateInput!
-  ) {
+  mutation PosterImageBlockUpdate($id: ID!, $input: ImageBlockUpdateInput!) {
     imageBlockUpdate(id: $id, input: $input) {
       ...ImageFields
     }
   }
 `
 export const POSTER_IMAGE_BLOCK_DELETE = gql`
-  mutation PosterImageBlockDelete(
-    $id: ID!
-    $parentBlockId: ID!
-  ) {
+  mutation PosterImageBlockDelete($id: ID!, $parentBlockId: ID!) {
     blockDelete(id: $id, parentBlockId: $parentBlockId) {
       id
+      parentOrder
     }
     videoBlockUpdate(id: $parentBlockId, input: { posterBlockId: null }) {
       id
@@ -75,13 +70,10 @@ export const POSTER_IMAGE_BLOCK_DELETE = gql`
 
 export const POSTER_IMAGE_BLOCK_RESTORE = gql`
   ${IMAGE_FIELDS}
-  mutation PosterImageBlockRestore(
-    $id: ID!
-    $videoBlockId: ID!
-  ) {
+  mutation PosterImageBlockRestore($id: ID!, $videoBlockId: ID!) {
     blockRestore(id: $id) {
       id
-      ...on ImageBlock {
+      ... on ImageBlock {
         ...ImageFields
       }
     }
@@ -144,7 +136,7 @@ export function VideoBlockEditorSettingsPosterLibrary({
     onLoad
   ])
 
-  async function createImageBlock(input: ImageBlockUpdateInput): Promise<void> {
+  function createImageBlock(input: ImageBlockUpdateInput): void {
     if (parentBlockId == null || journey == null) return
 
     const block: ImageBlock = {
@@ -159,7 +151,7 @@ export function VideoBlockEditorSettingsPosterLibrary({
       parentOrder: 0
     }
 
-    await add({
+    add({
       parameters: {
         execute: {
           block
@@ -171,8 +163,8 @@ export function VideoBlockEditorSettingsPosterLibrary({
           block
         }
       },
-      async execute({ block }) {
-        await createBlock({
+      execute({ block }) {
+        void createBlock({
           variables: {
             id: block.id,
             parentBlockId,
@@ -198,10 +190,10 @@ export function VideoBlockEditorSettingsPosterLibrary({
                   const newBlockRef = cache.writeFragment({
                     data: data.imageBlockCreate,
                     fragment: gql`
-                        fragment NewBlock on Block {
-                          id
-                        }
-                      `
+                      fragment NewBlock on Block {
+                        id
+                      }
+                    `
                   })
                   return [...existingBlockRefs, newBlockRef]
                 }
@@ -210,8 +202,8 @@ export function VideoBlockEditorSettingsPosterLibrary({
           }
         })
       },
-      async undo({ block }) {
-        await deleteBlock({
+      undo({ block }) {
+        void deleteBlock({
           variables: {
             id: block.id,
             parentBlockId
@@ -229,8 +221,8 @@ export function VideoBlockEditorSettingsPosterLibrary({
           }
         })
       },
-      async redo({ block }) {
-        await restoreBlock({
+      redo({ block }) {
+        void restoreBlock({
           variables: {
             id: block.id,
             videoBlockId: parentBlockId
@@ -251,7 +243,7 @@ export function VideoBlockEditorSettingsPosterLibrary({
     })
   }
 
-  async function updateImageBlock(input: ImageBlockUpdateInput): Promise<void> {
+  function updateImageBlock(input: ImageBlockUpdateInput): void {
     if (selectedBlock == null || journey == null) return
 
     const block: ImageBlock = {
@@ -263,13 +255,13 @@ export function VideoBlockEditorSettingsPosterLibrary({
       width: input.width ?? selectedBlock.width
     }
 
-    await add({
+    add({
       parameters: {
         execute: block,
         undo: selectedBlock
       },
-      async execute(block) {
-        await updateBlock({
+      execute(block) {
+        void updateBlock({
           variables: {
             id: selectedBlock.id,
             input: pick(block, Object.keys(input))
@@ -282,17 +274,17 @@ export function VideoBlockEditorSettingsPosterLibrary({
     })
   }
 
-  async function deleteImageBlock(): Promise<void> {
+  function deleteImageBlock(): void {
     if (selectedBlock == null || parentBlockId == null || journey == null)
       return
 
-    await add({
+    add({
       parameters: {
         execute: { selectedBlock, parentBlockId, journeyId: journey.id },
         undo: { selectedBlock, parentBlockId }
       },
-      async execute({ selectedBlock, parentBlockId, journeyId }) {
-        await deleteBlock({
+      execute({ selectedBlock, parentBlockId, journeyId }) {
+        void deleteBlock({
           variables: {
             id: selectedBlock.id,
             parentBlockId
@@ -315,8 +307,8 @@ export function VideoBlockEditorSettingsPosterLibrary({
           }
         })
       },
-      async undo({ selectedBlock, parentBlockId }) {
-        await restoreBlock({
+      undo({ selectedBlock, parentBlockId }) {
+        void restoreBlock({
           variables: {
             id: selectedBlock.id,
             videoBlockId: parentBlockId
@@ -342,13 +334,13 @@ export function VideoBlockEditorSettingsPosterLibrary({
     })
   }
 
-  async function handleChange(block: ImageBlock): Promise<void> {
-    if (block.src === '') return
+  function handleChange(input: ImageBlockUpdateInput): void {
+    if (input.src === '') return
 
     if (selectedBlock == null) {
-      await createImageBlock(block)
+      createImageBlock(input)
     } else {
-      await updateImageBlock(block)
+      updateImageBlock(input)
     }
   }
 
@@ -358,8 +350,8 @@ export function VideoBlockEditorSettingsPosterLibrary({
         <ImageLibrary
           open={open}
           onClose={onClose}
-          onChange={handleChange}
-          onDelete={deleteImageBlock}
+          onChange={async (input) => handleChange(input)}
+          onDelete={async () => deleteImageBlock()}
           selectedBlock={selectedBlock}
         />
       )}

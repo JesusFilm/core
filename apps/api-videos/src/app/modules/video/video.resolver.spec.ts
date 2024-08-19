@@ -4,6 +4,7 @@ import { GraphQLResolveInfo, Kind } from 'graphql'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
 import {
+  Keyword,
   Prisma,
   Video,
   VideoDescription,
@@ -15,7 +16,6 @@ import {
   VideoVariant
 } from '.prisma/api-videos-client'
 
-import { IdType } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { LanguageWithSlugResolver, VideoResolver } from './video.resolver'
@@ -98,6 +98,12 @@ describe('VideoResolver', () => {
     primary: true,
     vttSrc: 'vttSrc',
     srtSrc: 'srtSrc'
+  }
+
+  const keyword: Keyword = {
+    id: '1',
+    value: 'keyword',
+    languageId: '529'
   }
 
   beforeEach(async () => {
@@ -259,9 +265,7 @@ describe('VideoResolver', () => {
     })
 
     it('should return video with slug as idtype', async () => {
-      expect(await resolver.video(info, 'jesus/english', IdType.slug)).toEqual(
-        video
-      )
+      expect(await resolver.video(info, 'jesus/english', 'slug')).toEqual(video)
       expect(prismaService.video.findFirst).toHaveBeenCalledWith({
         where: {
           variants: { some: { slug: 'jesus/english' } }
@@ -447,7 +451,7 @@ describe('VideoResolver', () => {
   describe('variant', () => {
     const info = {
       variableValues: {
-        idType: IdType.databaseId
+        idType: 'databaseId'
       }
     } as unknown as GraphQLResolveInfo
 
@@ -607,6 +611,7 @@ describe('VideoResolver', () => {
         orderBy: { primary: 'desc' }
       })
     })
+
     it('returns all subtitles', async () => {
       expect(await resolver.subtitles(video)).toEqual([
         {
@@ -633,6 +638,18 @@ describe('VideoResolver', () => {
           videoId: video.id
         },
         orderBy: { primary: 'desc' }
+      })
+    })
+  })
+
+  describe('keywords', () => {
+    it('returns keywords', async () => {
+      prismaService.keyword.findMany.mockResolvedValueOnce([keyword])
+      expect(await resolver.keywords(video)).toEqual([keyword])
+      expect(prismaService.keyword.findMany).toHaveBeenCalledWith({
+        where: {
+          videos: { some: { id: video.id } }
+        }
       })
     })
   })

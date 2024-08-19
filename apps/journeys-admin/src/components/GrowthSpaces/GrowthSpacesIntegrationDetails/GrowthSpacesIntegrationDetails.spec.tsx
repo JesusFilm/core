@@ -1,8 +1,11 @@
+import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
+
 import { getIntegrationMock } from '../../../libs/useIntegrationQuery/useIntegrationQuery.mock'
+
 import {
   GrowthSpacesIntegrationDetails,
   INTEGRATION_GROWTH_SPACES_DELETE,
@@ -181,6 +184,8 @@ describe('GrowthSpacesIntegrationDetails', () => {
 
   describe('Integration Delete', () => {
     it('should remove the integration on remove button click', async () => {
+      const cache = new InMemoryCache()
+
       const push = jest.fn()
       mockedUseRouter.mockReturnValue({
         push,
@@ -195,6 +200,7 @@ describe('GrowthSpacesIntegrationDetails', () => {
       const result = jest.fn(() => ({
         data: {
           integrationDelete: {
+            __typename: 'IntegrationGrowthSpaces',
             id: 'integration.id'
           }
         }
@@ -202,6 +208,7 @@ describe('GrowthSpacesIntegrationDetails', () => {
 
       render(
         <MockedProvider
+          cache={cache}
           mocks={[
             {
               ...getIntegrationMock,
@@ -223,10 +230,16 @@ describe('GrowthSpacesIntegrationDetails', () => {
           </SnackbarProvider>
         </MockedProvider>
       )
-
       await waitFor(() => expect(mockResult).toHaveBeenCalled())
+      expect(
+        cache.extract()['IntegrationGrowthSpaces:integration.id']
+      ).toBeDefined()
+
       fireEvent.click(screen.getByRole('button', { name: 'Remove' }))
       await waitFor(() => expect(result).toHaveBeenCalled())
+      expect(
+        cache.extract()['IntegrationGrowthSpaces:integration.id']
+      ).toBeUndefined()
       expect(
         screen.getByText('Growth Spaces integration deleted')
       ).toBeInTheDocument()

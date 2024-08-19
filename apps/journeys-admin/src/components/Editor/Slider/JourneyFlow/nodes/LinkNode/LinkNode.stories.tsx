@@ -4,8 +4,8 @@ import { Meta, StoryObj } from '@storybook/react'
 import { ComponentPropsWithoutRef } from 'react'
 import { Background, ReactFlow } from 'reactflow'
 
-import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import {

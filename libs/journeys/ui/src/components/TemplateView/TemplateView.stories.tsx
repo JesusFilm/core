@@ -20,10 +20,10 @@ import { GetTags } from '../../libs/useTagsQuery/__generated__/GetTags'
 import { GET_USER_ROLE } from '../../libs/useUserRoleQuery'
 import { GetUserRole } from '../../libs/useUserRoleQuery/__generated__/GetUserRole'
 
+import { defaultJourney, publishedJourney } from './data'
 import { journeyVideoBlocks } from './TemplatePreviewTabs/data'
 import { parentTags, tags } from './TemplateTags/data'
 import { TemplateView } from './TemplateView'
-import { defaultJourney, publishedJourney } from './data'
 
 const TemplateViewStory: Meta<typeof TemplateView> = {
   ...journeysAdminConfig,

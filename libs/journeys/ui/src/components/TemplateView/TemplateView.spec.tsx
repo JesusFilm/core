@@ -8,12 +8,16 @@ import {
   JourneyFields_tags as Tag
 } from '../../libs/JourneyProvider/__generated__/JourneyFields'
 import { GET_JOURNEYS } from '../../libs/useJourneysQuery'
+import {
+  GetJourneys,
+  GetJourneysVariables
+} from '../../libs/useJourneysQuery/__generated__/GetJourneys'
 import { GET_TAGS } from '../../libs/useTagsQuery'
 import { GetTags } from '../../libs/useTagsQuery/__generated__/GetTags'
 
+import { defaultJourney } from './data'
 import { parentTags, tags } from './TemplateTags/data'
 import { TemplateView } from './TemplateView'
-import { defaultJourney } from './data'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -35,7 +39,7 @@ describe('TemplateView', () => {
     ]
   }
 
-  const getJourneyMock = {
+  const getJourneysMock: MockedResponse<GetJourneys, GetJourneysVariables> = {
     request: {
       query: GET_JOURNEYS,
       variables: {
@@ -51,6 +55,7 @@ describe('TemplateView', () => {
         journeys: [
           {
             ...defaultJourney,
+            trashedAt: null,
             id: 'taggedJourney.id',
             tags: [tag]
           }
@@ -66,7 +71,7 @@ describe('TemplateView', () => {
       tags: [tag]
     }
     const { getByText } = render(
-      <MockedProvider mocks={[getJourneyMock]}>
+      <MockedProvider mocks={[getJourneysMock]}>
         <JourneyProvider
           value={{
             journey: journeyWithStrategySlug,
@@ -88,7 +93,7 @@ describe('TemplateView', () => {
       tags: [tag]
     }
     const { queryByText } = render(
-      <MockedProvider mocks={[getJourneyMock]}>
+      <MockedProvider mocks={[getJourneysMock]}>
         <JourneyProvider
           value={{
             journey: journeyWithoutStrategySlug,
@@ -110,7 +115,7 @@ describe('TemplateView', () => {
       tags: [tag]
     }
     const { queryByText } = render(
-      <MockedProvider mocks={[getJourneyMock]}>
+      <MockedProvider mocks={[getJourneysMock]}>
         <JourneyProvider
           value={{
             journey: journeyWithoutStrategySlug,
@@ -145,7 +150,7 @@ describe('TemplateView', () => {
       }
     }
     const { getAllByText, getAllByRole } = render(
-      <MockedProvider mocks={[getJourneyMock]}>
+      <MockedProvider mocks={[getJourneysMock]}>
         <JourneyProvider
           value={{
             journey: journeyWithCreatorDetails,
@@ -189,7 +194,7 @@ describe('TemplateView', () => {
       }
     }
     const { queryAllByText, queryAllByRole } = render(
-      <MockedProvider mocks={[getJourneyMock]}>
+      <MockedProvider mocks={[getJourneysMock]}>
         <JourneyProvider
           value={{
             journey: journeyWithoutCreatorDescription,
@@ -240,7 +245,8 @@ describe('TemplateView', () => {
                 where: {
                   template: true,
                   orderByRecent: true,
-                  tagIds: ['tag.id']
+                  tagIds: ['tag.id'],
+                  limit: 10
                 }
               }
             },
@@ -283,7 +289,7 @@ describe('TemplateView', () => {
       tags: [tag]
     }
     const { getByTestId } = render(
-      <MockedProvider mocks={[getTagsMock, getJourneyMock]}>
+      <MockedProvider mocks={[getTagsMock, getJourneysMock]}>
         <JourneyProvider
           value={{
             journey: journeyWithTags,

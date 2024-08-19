@@ -2,8 +2,8 @@ import Box from '@mui/material/Box'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect } from 'react'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import InformationCircleContained from '@core/shared/ui/icons/InformationCircleContained'
 import LinkIcon from '@core/shared/ui/icons/Link'
 

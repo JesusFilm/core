@@ -68,6 +68,11 @@ export type Block = {
   parentOrder?: Maybe<Scalars['Int']['output']>;
 };
 
+export type BlockDuplicateIdMap = {
+  newId: Scalars['ID']['input'];
+  oldId: Scalars['ID']['input'];
+};
+
 export type BlockUpdateActionInput = {
   blockId?: InputMaybe<Scalars['String']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
@@ -302,9 +307,30 @@ export type CloudflareVideo = {
   userId: Scalars['ID']['output'];
 };
 
+export type Continent = {
+  __typename?: 'Continent';
+  countries: Array<Country>;
+  id: Scalars['ID']['output'];
+  name: Array<ContinentName>;
+};
+
+
+export type ContinentNameArgs = {
+  languageId?: InputMaybe<Scalars['ID']['input']>;
+  primary?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type ContinentName = {
+  __typename?: 'ContinentName';
+  language: Language;
+  primary: Scalars['Boolean']['output'];
+  value: Scalars['String']['output'];
+};
+
 export type Country = {
   __typename?: 'Country';
-  continent: Array<CountryContinent>;
+  continent: Continent;
+  countryLanguages: Array<CountryLanguage>;
   flagPngSrc?: Maybe<Scalars['String']['output']>;
   flagWebpSrc?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
@@ -316,22 +342,18 @@ export type Country = {
 };
 
 
-export type CountryContinentArgs = {
-  languageId?: InputMaybe<Scalars['ID']['input']>;
-  primary?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-
 export type CountryNameArgs = {
   languageId?: InputMaybe<Scalars['ID']['input']>;
   primary?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-export type CountryContinent = {
-  __typename?: 'CountryContinent';
+export type CountryLanguage = {
+  __typename?: 'CountryLanguage';
+  country: Country;
+  displaySpeakers?: Maybe<Scalars['Int']['output']>;
+  id: Scalars['ID']['output'];
   language: Language;
-  primary: Scalars['Boolean']['output'];
-  value: Scalars['String']['output'];
+  speakers: Scalars['Int']['output'];
 };
 
 export type CountryName = {
@@ -1007,14 +1029,22 @@ export enum JourneysReportType {
   SingleSummary = 'singleSummary'
 }
 
+export type Keyword = {
+  __typename?: 'Keyword';
+  id: Scalars['ID']['output'];
+  language: Language;
+  value: Scalars['String']['output'];
+};
+
 export type Language = {
   __typename?: 'Language';
   audioPreview?: Maybe<AudioPreview>;
   bcp47?: Maybe<Scalars['String']['output']>;
-  countries: Array<Country>;
+  countryLanguages: Array<CountryLanguage>;
   id: Scalars['ID']['output'];
   iso3?: Maybe<Scalars['String']['output']>;
   name: Array<LanguageName>;
+  slug?: Maybe<Scalars['String']['output']>;
 };
 
 
@@ -1183,6 +1213,7 @@ export type Mutation = {
   signUpSubmissionEventCreate: SignUpSubmissionEvent;
   siteCreate: MutationSiteCreateResult;
   stepBlockCreate: StepBlock;
+  stepBlockPositionUpdate: Array<StepBlock>;
   stepBlockUpdate: StepBlock;
   stepNextEventCreate: StepNextEvent;
   stepPreviousEventCreate: StepPreviousEvent;
@@ -1244,6 +1275,7 @@ export type MutationBlockDeleteActionArgs = {
 
 export type MutationBlockDuplicateArgs = {
   id: Scalars['ID']['input'];
+  idMap?: InputMaybe<Array<BlockDuplicateIdMap>>;
   journeyId?: InputMaybe<Scalars['ID']['input']>;
   parentOrder?: InputMaybe<Scalars['Int']['input']>;
   x?: InputMaybe<Scalars['Int']['input']>;
@@ -1614,6 +1646,11 @@ export type MutationSiteCreateArgs = {
 
 export type MutationStepBlockCreateArgs = {
   input: StepBlockCreateInput;
+};
+
+
+export type MutationStepBlockPositionUpdateArgs = {
+  input: Array<StepBlockPositionUpdateInput>;
 };
 
 
@@ -2565,6 +2602,12 @@ export type StepBlockCreateInput = {
   y?: InputMaybe<Scalars['Int']['input']>;
 };
 
+export type StepBlockPositionUpdateInput = {
+  id: Scalars['ID']['input'];
+  x?: InputMaybe<Scalars['Int']['input']>;
+  y?: InputMaybe<Scalars['Int']['input']>;
+};
+
 export type StepBlockUpdateInput = {
   locked?: InputMaybe<Scalars['Boolean']['input']>;
   nextBlockId?: InputMaybe<Scalars['ID']['input']>;
@@ -3042,6 +3085,7 @@ export type Video = {
   id: Scalars['ID']['output'];
   image?: Maybe<Scalars['String']['output']>;
   imageAlt: Array<Translation>;
+  keywords: Array<Keyword>;
   label: VideoLabel;
   noIndex?: Maybe<Scalars['Boolean']['output']>;
   primaryLanguageId: Scalars['ID']['output'];
@@ -3067,6 +3111,11 @@ export type VideoDescriptionArgs = {
 export type VideoImageAltArgs = {
   languageId?: InputMaybe<Scalars['ID']['input']>;
   primary?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+export type VideoKeywordsArgs = {
+  languageId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 

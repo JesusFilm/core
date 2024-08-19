@@ -128,7 +128,7 @@ function getJourneyEvents(
     if (action.property === '(none)') return
     journeyEvents.push({
       ...reverseKeyify(action.property),
-      events: action.events ?? 0
+      events: action.visitors ?? 0
     })
   })
 
@@ -163,7 +163,7 @@ function getLinkClicks(journeyEvents: PlausibleEvent[]): {
       const isChatLink = messagePlatforms.find(({ url }) =>
         target.includes(url)
       )
-      if (isChatLink || event === 'footerChatButtonClick') {
+      if (isChatLink != null || event === 'footerChatButtonClick') {
         chatsStarted += events
       } else {
         linksVisited += events

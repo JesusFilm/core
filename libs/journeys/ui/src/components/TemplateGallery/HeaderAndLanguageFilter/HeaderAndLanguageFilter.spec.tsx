@@ -1,12 +1,13 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import noop from 'lodash/noop'
 import { NextRouter, useRouter } from 'next/router'
 
 import { getLanguagesMock } from '../data'
 
 import { HeaderAndLanguageFilter } from '.'
+
 import '../../../../test/i18n'
-import { noop } from 'lodash'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,

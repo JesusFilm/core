@@ -13,8 +13,8 @@ import {
 import { NextImage } from '@core/shared/ui/NextImage'
 
 import { VideoBlockSource } from '../../../../__generated__/globalTypes'
-import { useJourney } from '../../../libs/JourneyProvider'
 import { TreeBlock } from '../../../libs/block'
+import { useJourney } from '../../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../../libs/rtl'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
 import { VideoFields } from '../../Video/__generated__/VideoFields'

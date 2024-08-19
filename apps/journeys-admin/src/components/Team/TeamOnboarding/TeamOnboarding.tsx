@@ -4,8 +4,9 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Form } from 'formik'
-import { useTranslation } from 'next-i18next'
 import { useRouter } from 'next/router'
+import { User } from 'next-firebase-auth'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
@@ -13,7 +14,6 @@ import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplica
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
 import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
 
-import { User } from 'next-firebase-auth'
 import { TeamCreate } from '../../../../__generated__/TeamCreate'
 import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActiveTeamId'
 import { TeamCreateForm } from '../TeamCreateForm'

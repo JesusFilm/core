@@ -1,0 +1,9 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "branchPrefix": "00-00-RB-chore-",
+  "reviewers": ["mikeallisonJS", "tataihono"],
+  "assignees": ["mikeallisonJS"],
+  "labels": ["effort: 1", "priority: 2day", "type: chore"],
+  "prConcurrentLimit": 4
+}

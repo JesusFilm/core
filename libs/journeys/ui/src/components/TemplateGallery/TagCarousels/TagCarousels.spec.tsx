@@ -13,7 +13,7 @@ describe('TagCarousels', () => {
       </MockedProvider>
     )
 
-    const feltNeedsCarousel = getByTestId('-template-gallery-carousel')
+    const feltNeedsCarousel = getByTestId('felt-needs-carousel')
     expect(feltNeedsCarousel).toBeInTheDocument()
     expect(
       within(feltNeedsCarousel).getAllByTestId('felt-needs-button-loading')

@@ -49,10 +49,10 @@ export function HostTitleFieldForm({
                     const newHostRef = cache.writeFragment({
                       data: data.hostCreate,
                       fragment: gql`
-                      fragment NewHost on Host {
-                        id
-                      }
-                    `
+                        fragment NewHost on Host {
+                          id
+                        }
+                      `
                     })
                     return [...existingTeamHosts, newHostRef]
                   }
@@ -76,8 +76,12 @@ export function HostTitleFieldForm({
 
   useEffect(() => {
     async function createHostIfDefault(): Promise<void> {
-      if (journey?.host == null && journey?.team && defaultTitle) {
-        createHost(defaultTitle)
+      if (
+        journey?.host == null &&
+        journey?.team != null &&
+        defaultTitle != null
+      ) {
+        await createHost(defaultTitle)
       }
     }
     void createHostIfDefault()
@@ -94,7 +98,7 @@ export function HostTitleFieldForm({
       const { id, teamId } = journey.host
       await updateHost({ id, teamId, input: { title: value } })
     } else {
-      createHost(value)
+      await createHost(value)
     }
   }
 

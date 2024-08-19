@@ -43,16 +43,20 @@
         }
       }
     },
-    "seed": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npm run ts-node apps/api-videos/db/seed.ts"
-      }
-    },
     "ingest": {
       "executor": "nx:run-commands",
       "options": {
         "command": "npm run ts-node apps/api-videos/src/app/modules/bigQuery/bigQuery.console.ts"
+      }
+    },
+    "export-language-slugs": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npm run ts-node apps/api-videos/src/exportExistingLanguageSlugs.ts",
+          "npx prettier apps/api-languages/src/__generated__/languageSlugs.ts --write"
+        ],
+        "parallel": false
       }
     },
     "serve": {
@@ -69,17 +73,12 @@
       }
     },
     "lint": {
-      "executor": "nx:run-commands",
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
       "options": {
-        "command": "npx @biomejs/biome check --diagnostic-level=warn",
-        "cwd": "apps/api-videos"
-      }
-    },
-    "lint:fix": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npx @biomejs/biome check --write",
-        "cwd": "apps/api-videos"
+        "cache": true,
+        "cacheLocation": ".cache/api-videos/eslint",
+        "cacheStrategy": "content"
       }
     },
     "test": {
@@ -140,17 +139,6 @@
         ]
       }
     },
-    "prisma-seed": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          {
-            "command": "npm run ts-node apps/api-videos/db/seed.ts {args.mode} {args.id}",
-            "forwardAllArgs": false
-          }
-        ]
-      }
-    },
     "prisma-studio": {
       "executor": "nx:run-commands",
       "options": {
@@ -177,6 +165,12 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "codecov -f coverage/apps/api-videos/cobertura-coverage.xml -F apps.api-videos"
+      }
+    },
+    "codegen": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "gql.tada generate output --tsconfig apps/api-videos/tsconfig.json"
       }
     }
   },

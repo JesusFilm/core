@@ -1,15 +1,15 @@
+import { User } from 'next-firebase-auth'
 import { ReactElement } from 'react'
+import { HotkeysProvider } from 'react-hotkeys-hook'
 
+import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { transformer } from '@core/journeys/ui/transformer'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 
-import { useFlags } from '@core/shared/ui/FlagsProvider'
-import { HotkeysProvider } from 'react-hotkeys-hook'
 import { Fab } from './Fab'
 import { Hotkeys } from './Hotkeys'
 import { Slider } from './Slider'
@@ -19,6 +19,7 @@ interface EditorProps {
   journey?: Journey
   selectedStepId?: string
   initialState?: Partial<EditorState>
+  user?: User
 }
 
 /**
@@ -29,7 +30,8 @@ interface EditorProps {
 export function Editor({
   journey,
   selectedStepId,
-  initialState
+  initialState,
+  user
 }: EditorProps): ReactElement {
   const steps =
     journey != null
@@ -39,7 +41,6 @@ export function Editor({
     selectedStepId != null && steps != null
       ? steps.find(({ id }) => id === selectedStepId)
       : undefined
-  const { commands } = useFlags()
 
   return (
     <JourneyProvider value={{ journey, variant: 'admin' }}>
@@ -51,8 +52,8 @@ export function Editor({
         }}
       >
         <HotkeysProvider>
-          {commands && <Hotkeys />}
-          <Toolbar />
+          <Hotkeys />
+          <Toolbar user={user} />
           <Slider />
           <Fab variant="mobile" />
         </HotkeysProvider>

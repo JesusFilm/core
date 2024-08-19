@@ -10,12 +10,14 @@ import {
   Resolver
 } from '@nestjs/graphql'
 import { Cache } from 'cache-manager'
+import { graphql } from 'gql.tada'
 import { FieldNode, GraphQLError, GraphQLResolveInfo, Kind } from 'graphql'
 import compact from 'lodash/compact'
 import isEmpty from 'lodash/isEmpty'
 
 import {
   BibleCitation,
+  Keyword,
   Prisma,
   Video,
   VideoDescription,
@@ -27,12 +29,14 @@ import {
   VideoVariant
 } from '.prisma/api-videos-client'
 
-import { IdType, VideosFilter } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { VideoService } from './video.service'
 
 const ONE_DAY_MS = 86400000
+
+type VideosFilter = ReturnType<typeof graphql.scalar<'VideosFilter'>>
+type IdType = ReturnType<typeof graphql.scalar<'IdType'>>
 
 @Resolver('Video')
 export class VideoResolver {
@@ -66,16 +70,16 @@ export class VideoResolver {
   async video(
     @Info() info: GraphQLResolveInfo,
     @Args('id') id: string,
-    @Args('idType') idType: IdType = IdType.databaseId
+    @Args('idType') idType: IdType = 'databaseId'
   ): Promise<Video> {
     let result: Video | null
     switch (idType) {
-      case IdType.databaseId:
+      case 'databaseId':
         result = await this.prismaService.video.findUnique({
           where: { id }
         })
         break
-      case IdType.slug:
+      case 'slug':
         result = await this.prismaService.video.findFirst({
           where: { variants: { some: { slug: id } } }
         })
@@ -272,7 +276,7 @@ export class VideoResolver {
     ).representations?.[0].primaryLanguageId
 
     if (
-      info.variableValues.idType !== IdType.databaseId &&
+      info.variableValues.idType !== 'databaseId' &&
       !isEmpty(variableValueId) &&
       !isEmpty(requestedLanguage)
     ) {
@@ -383,6 +387,16 @@ export class VideoResolver {
     return await this.prismaService.videoSubtitle.findMany({
       where,
       orderBy: { primary: 'desc' }
+    })
+  }
+
+  @ResolveField('keywords')
+  async keywords(
+    @Parent() video,
+    @Args('languageId') languageId?: string
+  ): Promise<Keyword[]> {
+    return await this.prismaService.keyword.findMany({
+      where: { videos: { some: { id: video.id } }, languageId }
     })
   }
 }

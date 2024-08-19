@@ -3,15 +3,47 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ButtonBlockCreateInput, IconBlockCreateInput, ButtonBlockUpdateInput, IconName, IconSize, IconColor, ButtonVariant, ButtonColor, ButtonSize } from "./globalTypes";
+import { ButtonBlockCreateInput, IconBlockCreateInput, ButtonBlockUpdateInput, ButtonVariant, ButtonColor, ButtonSize, IconName, IconSize, IconColor } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: ButtonBlockCreate
 // ====================================================
 
+export interface ButtonBlockCreate_buttonBlockCreate_action_NavigateToBlockAction {
+  __typename: "NavigateToBlockAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  blockId: string;
+}
+
+export interface ButtonBlockCreate_buttonBlockCreate_action_LinkAction {
+  __typename: "LinkAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  url: string;
+}
+
+export interface ButtonBlockCreate_buttonBlockCreate_action_EmailAction {
+  __typename: "EmailAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  email: string;
+}
+
+export type ButtonBlockCreate_buttonBlockCreate_action = ButtonBlockCreate_buttonBlockCreate_action_NavigateToBlockAction | ButtonBlockCreate_buttonBlockCreate_action_LinkAction | ButtonBlockCreate_buttonBlockCreate_action_EmailAction;
+
 export interface ButtonBlockCreate_buttonBlockCreate {
   __typename: "ButtonBlock";
   id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  label: string;
+  buttonVariant: ButtonVariant | null;
+  buttonColor: ButtonColor | null;
+  size: ButtonSize | null;
+  startIconId: string | null;
+  endIconId: string | null;
+  action: ButtonBlockCreate_buttonBlockCreate_action | null;
 }
 
 export interface ButtonBlockCreate_startIcon {

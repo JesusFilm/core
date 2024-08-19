@@ -1,13 +1,13 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
-import { GetJourney_journey as Journey } from '../../../../../../../../../../__generated__/GetJourney'
 import { ButtonVariant } from '../../../../../../../../../../__generated__/globalTypes'
+import { CommandRedoItem } from '../../../../../../../Toolbar/Items/CommandRedoItem'
+import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 
 import { BUTTON_BLOCK_UPDATE } from './Variant'
 
@@ -19,53 +19,30 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 }))
 
 describe('Button variant selector', () => {
-  it('should show button variant properties', () => {
-    const selectedBlock: TreeBlock<ButtonBlock> = {
-      __typename: 'ButtonBlock',
-      id: 'id',
-      parentBlockId: 'parentBlockId',
-      parentOrder: 0,
-      label: 'test button',
-      buttonVariant: null,
-      buttonColor: null,
-      size: null,
-      startIconId: null,
-      endIconId: null,
-      action: null,
-      children: []
-    }
+  const selectedBlock: TreeBlock<ButtonBlock> = {
+    __typename: 'ButtonBlock',
+    id: 'id',
+    parentBlockId: 'parentBlockId',
+    parentOrder: 0,
+    label: 'test button',
+    buttonVariant: ButtonVariant.contained,
+    buttonColor: null,
+    size: null,
+    startIconId: null,
+    endIconId: null,
+    action: null,
+    children: []
+  }
 
-    const { getByRole } = render(
-      <MockedProvider>
-        <EditorProvider initialState={{ selectedBlock }}>
-          <Variant />
-        </EditorProvider>
-      </MockedProvider>
-    )
-
-    expect(getByRole('button', { name: 'Text' })).toBeInTheDocument()
-    expect(getByRole('button', { name: 'Contained' })).toHaveClass(
-      'Mui-selected'
-    )
-  })
-
-  it('should change the Variant property', async () => {
-    const selectedBlock: TreeBlock<ButtonBlock> = {
-      __typename: 'ButtonBlock',
-      id: 'id',
-      parentBlockId: 'parentBlockId',
-      parentOrder: 0,
-      label: 'test button',
-      buttonVariant: null,
-      buttonColor: null,
-      size: null,
-      startIconId: null,
-      endIconId: null,
-      action: null,
-      children: []
-    }
-
-    const result = jest.fn(() => ({
+  const variantUpdateMock = {
+    request: {
+      query: BUTTON_BLOCK_UPDATE,
+      variables: {
+        id: 'id',
+        variant: ButtonVariant.text
+      }
+    },
+    result: jest.fn(() => ({
       data: {
         buttonBlockUpdate: {
           id: 'id',
@@ -73,41 +50,116 @@ describe('Button variant selector', () => {
         }
       }
     }))
+  }
 
-    const { getByRole } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: BUTTON_BLOCK_UPDATE,
-              variables: {
-                id: 'id',
-                journeyId: 'journeyId',
-                input: {
-                  variant: 'text'
-                }
-              }
-            },
-            result
-          }
-        ]}
-      >
-        <JourneyProvider
-          value={{
-            journey: { id: 'journeyId' } as unknown as Journey,
-            variant: 'admin'
-          }}
-        >
-          <EditorProvider initialState={{ selectedBlock }}>
-            <Variant />
-          </EditorProvider>
-        </JourneyProvider>
+  const variantUpdateMock2 = {
+    request: {
+      query: BUTTON_BLOCK_UPDATE,
+      variables: {
+        id: 'id',
+        variant: ButtonVariant.contained
+      }
+    },
+    result: jest.fn(() => ({
+      data: {
+        buttonBlockUpdate: {
+          id: 'id',
+          variant: ButtonVariant.contained
+        }
+      }
+    }))
+  }
+
+  beforeEach(() => jest.clearAllMocks())
+
+  it('should show button variant properties', () => {
+    render(
+      <MockedProvider>
+        <EditorProvider initialState={{ selectedBlock }}>
+          <Variant />
+        </EditorProvider>
       </MockedProvider>
     )
-    expect(getByRole('button', { name: 'Contained' })).toHaveClass(
+
+    expect(screen.getByRole('button', { name: 'Text' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Contained' })).toHaveClass(
       'Mui-selected'
     )
-    fireEvent.click(getByRole('button', { name: 'Text' }))
-    await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
+  it('should change the Variant property', async () => {
+    render(
+      <MockedProvider mocks={[variantUpdateMock]}>
+        <EditorProvider initialState={{ selectedBlock }}>
+          <Variant />
+        </EditorProvider>
+      </MockedProvider>
+    )
+    expect(screen.getByRole('button', { name: 'Contained' })).toHaveClass(
+      'Mui-selected'
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Text' }))
+    await waitFor(() => expect(variantUpdateMock.result).toHaveBeenCalled())
+  })
+
+  it('should undo the variant change', async () => {
+    render(
+      <MockedProvider mocks={[variantUpdateMock, variantUpdateMock2]}>
+        <EditorProvider initialState={{ selectedBlock }}>
+          <CommandUndoItem variant="button" />
+          <Variant />
+        </EditorProvider>
+      </MockedProvider>
+    )
+    expect(screen.getByRole('button', { name: 'Contained' })).toHaveClass(
+      'Mui-selected'
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Text' }))
+    await waitFor(() => expect(variantUpdateMock.result).toHaveBeenCalled())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(variantUpdateMock2.result).toHaveBeenCalled())
+  })
+
+  it('should redo the undone variant change', async () => {
+    const mockFirstUpdate = {
+      ...variantUpdateMock,
+      maxUsageCount: 2
+    }
+    render(
+      <MockedProvider mocks={[mockFirstUpdate, variantUpdateMock2]}>
+        <EditorProvider initialState={{ selectedBlock }}>
+          <CommandUndoItem variant="button" />
+          <CommandRedoItem variant="button" />
+          <Variant />
+        </EditorProvider>
+      </MockedProvider>
+    )
+    expect(screen.getByRole('button', { name: 'Contained' })).toHaveClass(
+      'Mui-selected'
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Text' }))
+    await waitFor(() => expect(mockFirstUpdate.result).toHaveBeenCalled())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(variantUpdateMock2.result).toHaveBeenCalled())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+    await waitFor(() => expect(mockFirstUpdate.result).toHaveBeenCalled())
+  })
+
+  it('should not call mutation if no selected block', async () => {
+    render(
+      <MockedProvider mocks={[variantUpdateMock]}>
+        <EditorProvider initialState={{}}>
+          <Variant />
+        </EditorProvider>
+      </MockedProvider>
+    )
+    expect(screen.getByRole('button', { name: 'Contained' })).toHaveClass(
+      'Mui-selected'
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Text' }))
+    await waitFor(() => expect(variantUpdateMock.result).not.toHaveBeenCalled())
   })
 })

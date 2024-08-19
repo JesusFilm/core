@@ -4,8 +4,8 @@ import lowerCase from 'lodash/lowerCase'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect } from 'react'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import AlignLeftIcon from '@core/shared/ui/icons/AlignLeft'
 import Type2Icon from '@core/shared/ui/icons/Type2'
 

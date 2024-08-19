@@ -1,11 +1,13 @@
+import useMediaQuery from '@mui/material/useMediaQuery'
+import { render, screen } from '@testing-library/react'
+
 import {
   EditorProvider,
   type EditorState
 } from '@core/journeys/ui/EditorProvider'
-import { render, screen } from '@testing-library/react'
 
-import useMediaQuery from '@mui/material/useMediaQuery'
 import { ThemeProvider } from '../../../../../ThemeProvider'
+
 import { CanvasFooter } from './CanvasFooter'
 
 jest.mock('@mui/material/useMediaQuery', () => ({

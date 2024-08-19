@@ -11,20 +11,19 @@ import {
   StepNextEventCreateInput,
   StepPreviousEventCreateInput
 } from '../../../__generated__/globalTypes'
-import { useJourney } from '../../libs/JourneyProvider'
 import { TreeBlock, useBlocks } from '../../libs/block'
 import { blurImage } from '../../libs/blurImage'
 import { getStepHeading } from '../../libs/getStepHeading'
+import { useJourney } from '../../libs/JourneyProvider'
 import { JourneyPlausibleEvents } from '../../libs/plausibleHelpers'
 import { keyify } from '../../libs/plausibleHelpers/plausibleHelpers'
 import { getJourneyRTL } from '../../libs/rtl'
+// eslint-disable-next-line import/no-cycle
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { ImageFields } from '../Image/__generated__/ImageFields'
 import { StepFields } from '../Step/__generated__/StepFields'
 import { VideoFields } from '../Video/__generated__/VideoFields'
 
-import { ContainedCover } from './ContainedCover'
-import { ExpandedCover } from './ExpandedCover'
 import { CardFields } from './__generated__/CardFields'
 import {
   StepNextEventCreate,
@@ -34,6 +33,8 @@ import {
   StepPreviousEventCreate,
   StepPreviousEventCreateVariables
 } from './__generated__/StepPreviousEventCreate'
+import { ContainedCover } from './ContainedCover'
+import { ExpandedCover } from './ExpandedCover'
 
 export const STEP_NEXT_EVENT_CREATE = gql`
   mutation StepNextEventCreate($input: StepNextEventCreateInput!) {
@@ -292,7 +293,6 @@ export function Card({
       }
     }
   }
-
   return (
     <Paper
       data-testid={`JourneysCard-${id}`}
@@ -310,7 +310,7 @@ export function Card({
       elevation={3}
       onClick={handleNavigation}
     >
-      {coverBlock != null && !fullscreen ? (
+      {(coverBlock != null && !fullscreen) || videoBlock != null ? (
         <ContainedCover
           backgroundColor={cardColor}
           backgroundBlur={blurUrl}

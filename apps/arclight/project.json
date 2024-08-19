@@ -104,17 +104,12 @@
       }
     },
     "lint": {
-      "executor": "nx:run-commands",
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
       "options": {
-        "command": "npx @biomejs/biome check --diagnostic-level=warn",
-        "cwd": "apps/arclight"
-      }
-    },
-    "lint:fix": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npx @biomejs/biome check --write",
-        "cwd": "apps/arclight"
+        "cache": true,
+        "cacheLocation": ".cache/arclight/eslint",
+        "cacheStrategy": "content"
       }
     },
     "type-check": {
@@ -131,6 +126,12 @@
             "command": "DOPPLER_TOKEN=$DOPPLER_ARCLIGHT_TOKEN doppler secrets download --no-file --format=env-no-quotes --project arclight > apps/arclight/.env"
           }
         ]
+      }
+    },
+    "codegen": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "gql.tada generate output --tsconfig apps/arclight/tsconfig.json"
       }
     }
   },

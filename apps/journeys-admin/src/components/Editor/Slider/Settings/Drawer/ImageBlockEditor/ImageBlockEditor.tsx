@@ -2,17 +2,17 @@ import Box from '@mui/material/Box'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, SyntheticEvent, useState } from 'react'
 import { object, string } from 'yup'
 
-import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
-import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
+import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
 import Grid1Icon from '@core/shared/ui/icons/Grid1'
 import Image3Icon from '@core/shared/ui/icons/Image3'
 import StarsIcon from '@core/shared/ui/icons/Stars'
+import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../__generated__/BlockFields'
 import { ImageBlockUpdateInput } from '../../../../../../../__generated__/globalTypes'
@@ -90,10 +90,7 @@ export function ImageBlockEditor({
   const handleSrcChange = async (
     input: ImageBlockUpdateInput
   ): Promise<void> => {
-    if (
-      input.src === selectedBlock?.src ||
-      (await srcSchema.isValid(input)) === false
-    )
+    if (input.src === selectedBlock?.src || !(await srcSchema.isValid(input)))
       return
 
     const block: ImageBlockUpdateInput = {

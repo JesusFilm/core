@@ -3,8 +3,6 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { NavigateToBlockActionInput } from "./globalTypes";
-
 // ====================================================
 // GraphQL mutation operation: BlockActionNavigateToBlockUpdate
 // ====================================================
@@ -22,5 +20,5 @@ export interface BlockActionNavigateToBlockUpdate {
 
 export interface BlockActionNavigateToBlockUpdateVariables {
   id: string;
-  input: NavigateToBlockActionInput;
+  blockId: string;
 }
