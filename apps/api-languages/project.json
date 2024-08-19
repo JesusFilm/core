@@ -119,6 +119,12 @@
       "options": {
         "command": "npm run ts-node apps/api-languages/src/bigquery/console.ts"
       }
+    },
+    "codegen": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "gql.tada generate output --tsconfig apps/api-languages/tsconfig.json"
+      }
     }
   },
   "tags": []
