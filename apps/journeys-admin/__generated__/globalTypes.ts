@@ -224,6 +224,17 @@ export enum VideoBlockSource {
   youTube = "youTube",
 }
 
+export enum VideoLabel {
+  behindTheScenes = "behindTheScenes",
+  collection = "collection",
+  episode = "episode",
+  featureFilm = "featureFilm",
+  segment = "segment",
+  series = "series",
+  shortFilm = "shortFilm",
+  trailer = "trailer",
+}
+
 /**
  * The status of a visitor according to team members interacting with the
  * visitor admin interface. This enum should map to an emoji when displayed
@@ -755,6 +766,14 @@ export interface VideoStartEventCreateInput {
   position?: number | null;
   label?: string | null;
   value?: VideoBlockSource | null;
+}
+
+export interface VideosFilter {
+  availableVariantLanguageIds?: string[] | null;
+  title?: string | null;
+  labels?: VideoLabel[] | null;
+  ids?: string[] | null;
+  subtitleLanguageIds?: string[] | null;
 }
 
 /**

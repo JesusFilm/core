@@ -1,15 +1,7 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { InfiniteHitsRenderState } from 'instantsearch.js/es/connectors/infinite-hits/connectInfiniteHits'
-import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
 import { SnackbarProvider } from 'notistack'
-import {
-  InstantSearchApi,
-  useInfiniteHits,
-  useInstantSearch,
-  useSearchBox
-} from 'react-instantsearch'
 import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -42,13 +34,22 @@ import {
   GetVideo,
   GetVideoVariables
 } from '../../../../../../../../../../../__generated__/GetVideo'
-import { VideoBlockSource } from '../../../../../../../../../../../__generated__/globalTypes'
+import {
+  GetVideos,
+  GetVideosVariables
+} from '../../../../../../../../../../../__generated__/GetVideos'
+import {
+  VideoBlockSource,
+  VideoLabel
+} from '../../../../../../../../../../../__generated__/globalTypes'
 import { COVER_BLOCK_DELETE } from '../../../../../../../../../../libs/useCoverBlockDeleteMutation/useCoverBlockDeleteMutation'
 import { COVER_BLOCK_RESTORE } from '../../../../../../../../../../libs/useCoverBlockRestoreMutation/useCoverBlockRestoreMutation'
 import { ThemeProvider } from '../../../../../../../../../ThemeProvider'
 import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../../Toolbar/Items/CommandUndoItem'
+import { videos } from '../../../../../../Drawer/VideoLibrary/VideoFromLocal/data'
 import { GET_VIDEO } from '../../../../../../Drawer/VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
+import { GET_VIDEOS } from '../../../../../../Drawer/VideoLibrary/VideoFromLocal/VideoFromLocal'
 
 import {
   COVER_VIDEO_BLOCK_CREATE,
@@ -63,18 +64,6 @@ jest.mock('uuid', () => ({
 }))
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
-
-jest.mock('react-instantsearch')
-
-const mockUseSearchBox = useSearchBox as jest.MockedFunction<
-  typeof useSearchBox
->
-const mockUseInstantSearch = useInstantSearch as jest.MockedFunction<
-  typeof useInstantSearch
->
-const mockUseInfiniteHits = useInfiniteHits as jest.MockedFunction<
-  typeof useInfiniteHits
->
 
 const journey = { id: 'journeyId' } as unknown as Journey
 
@@ -131,11 +120,36 @@ const video: TreeBlock<VideoBlock> = {
   children: []
 }
 
+const getVideosMock: MockedResponse<GetVideos, GetVideosVariables> = {
+  request: {
+    query: GET_VIDEOS,
+    variables: {
+      offset: 0,
+      limit: 5,
+      where: {
+        availableVariantLanguageIds: ['529'],
+        title: null,
+        labels: [
+          VideoLabel.episode,
+          VideoLabel.featureFilm,
+          VideoLabel.segment,
+          VideoLabel.shortFilm
+        ]
+      }
+    }
+  },
+  result: {
+    data: {
+      videos
+    }
+  }
+}
+
 const getVideoMock: MockedResponse<GetVideo, GetVideoVariables> = {
   request: {
     query: GET_VIDEO,
     variables: {
-      id: 'videoId',
+      id: '2_0-Brand_Video',
       languageId: '529'
     }
   },
@@ -143,7 +157,7 @@ const getVideoMock: MockedResponse<GetVideo, GetVideoVariables> = {
     data: {
       video: {
         __typename: 'Video',
-        id: 'videoId',
+        id: '2_0-Brand_Video',
         image: null,
         primaryLanguageId: '529',
         title: [
@@ -198,7 +212,7 @@ const coverVideoBlockCreateMock: MockedResponse<
         journeyId: journey.id,
         id: video.id,
         parentBlockId: card.id,
-        videoId: 'videoId',
+        videoId: '2_0-Brand_Video',
         videoVariantLanguageId: '529',
         source: VideoBlockSource.internal,
         startAt: 0,
@@ -275,39 +289,6 @@ const coverBlockRestoreMock: MockedResponse<
 }
 
 describe('BackgroundMediaVideo', () => {
-  beforeEach(() => {
-    mockUseSearchBox.mockReturnValue({
-      refine: jest.fn()
-    } as unknown as SearchBoxRenderState)
-
-    mockUseInfiniteHits.mockReturnValue({
-      hits: [
-        {
-          videoId: 'videoId',
-          titles: ['title1'],
-          description: ['description'],
-          duration: 10994,
-          languageId: '529',
-          subtitles: [],
-          slug: 'video-slug/english',
-          label: 'featureFilm',
-          image:
-            'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_GOJ-0-0.mobileCinematicHigh.jpg',
-          imageAlt: 'Life of Jesus (Gospel of John)',
-          childrenCount: 49,
-          objectID: '2_529-GOJ-0-0'
-        }
-      ],
-      showMore: jest.fn(),
-      isLastPage: false
-    } as unknown as InfiniteHitsRenderState)
-    mockUseInstantSearch.mockReturnValue({
-      status: 'idle'
-    } as unknown as InstantSearchApi)
-
-    jest.clearAllMocks()
-  })
-
   it('creates a new video cover block', async () => {
     mockUuidv4.mockReturnValueOnce(video.id)
     const cache = new InMemoryCache()
@@ -324,6 +305,7 @@ describe('BackgroundMediaVideo', () => {
       <MockedProvider
         cache={cache}
         mocks={[
+          getVideosMock,
           { ...getVideoMock, result: getVideoResult },
           coverVideoBlockCreateMock,
           coverBlockDeleteMock,
@@ -348,7 +330,10 @@ describe('BackgroundMediaVideo', () => {
     await waitFor(() =>
       fireEvent.click(screen.getByRole('button', { name: 'Select Video' }))
     )
-    await waitFor(() => fireEvent.click(screen.getByText('title1')))
+    await waitFor(() =>
+      expect(screen.getByText('Brand Video')).toBeInTheDocument()
+    )
+    fireEvent.click(screen.getByText('Brand Video'))
     await waitFor(() => expect(getVideoResult).toHaveBeenCalled())
     fireEvent.click(screen.getByRole('button', { name: 'Select' }))
     await waitFor(() =>
@@ -401,7 +386,7 @@ describe('BackgroundMediaVideo', () => {
           variables: {
             id: video.id,
             input: {
-              videoId: 'videoId',
+              videoId: '2_0-Brand_Video',
               videoVariantLanguageId: '529',
               duration: 0,
               source: VideoBlockSource.internal,
@@ -426,6 +411,7 @@ describe('BackgroundMediaVideo', () => {
       render(
         <MockedProvider
           mocks={[
+            getVideosMock,
             getVideoMock,
             {
               ...coverVideoBlockUpdateMock,
@@ -479,10 +465,10 @@ describe('BackgroundMediaVideo', () => {
         )
       )
       await waitFor(() =>
-        expect(screen.getByText('title1')).toBeInTheDocument()
+        expect(screen.getByText('Brand_Video')).toBeInTheDocument()
       )
       fireEvent.click(screen.getByRole('button', { name: 'Change Video' }))
-      fireEvent.click(screen.getByText('title1'))
+      fireEvent.click(screen.getByText('Brand Video'))
       fireEvent.click(screen.getAllByRole('button', { name: 'Select' })[0])
       await waitFor(() => expect(updateResult).toHaveBeenCalled())
       fireEvent.click(screen.getByRole('button', { name: 'Undo' }))

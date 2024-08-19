@@ -55,7 +55,6 @@ export function VideoLibrary({
   selectedBlock,
   onSelect: handleSelect
 }: VideoLibraryProps): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
   const [openVideoDetails, setOpenVideoDetails] = useState(
     selectedBlock?.videoId != null && open
   )
@@ -101,7 +100,7 @@ export function VideoLibrary({
     setOpenVideoDetails(false)
     if (closeParent === true) onClose?.()
   }
-
+  const { t } = useTranslation('apps-journeys-admin')
   return (
     <>
       <Drawer title={t('Video Library')} open={open} onClose={onClose}>

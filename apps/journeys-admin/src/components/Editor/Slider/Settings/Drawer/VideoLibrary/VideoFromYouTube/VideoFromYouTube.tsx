@@ -118,7 +118,6 @@ export function VideoFromYouTube({
   return (
     <>
       <VideoSearch
-        variant="youtube"
         value={url}
         onChange={setUrl}
         label={t('Paste any YouTube Link')}

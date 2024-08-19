@@ -13,7 +13,9 @@ import { VideoBlockSource } from '../../../../../../../../../../__generated__/gl
 import { ThemeProvider } from '../../../../../../../../ThemeProvider'
 import { Drawer } from '../../../../../Drawer'
 import { GET_VIDEO_VARIANT_LANGUAGES } from '../../../../../Drawer/VideoBlockEditor/Source/SourceFromLocal/SourceFromLocal'
+import { videos } from '../../../../../Drawer/VideoLibrary/VideoFromLocal/data'
 import { GET_VIDEO } from '../../../../../Drawer/VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
+import { GET_VIDEOS } from '../../../../../Drawer/VideoLibrary/VideoFromLocal/VideoFromLocal'
 
 import { VideoOptions } from './VideoOptions'
 
@@ -92,6 +94,24 @@ const Template: StoryObj<
   render: ({ selectedBlock }) => (
     <MockedProvider
       mocks={[
+        {
+          request: {
+            query: GET_VIDEOS,
+            variables: {
+              offset: 0,
+              limit: 5,
+              where: {
+                availableVariantLanguageIds: ['529'],
+                title: null
+              }
+            }
+          },
+          result: {
+            data: {
+              videos
+            }
+          }
+        },
         {
           request: {
             query: GET_VIDEO,
