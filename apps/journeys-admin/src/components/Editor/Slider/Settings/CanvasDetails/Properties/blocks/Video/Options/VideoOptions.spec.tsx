@@ -1,36 +1,21 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { InfiniteHitsRenderState } from 'instantsearch.js/es/connectors/infinite-hits/connectInfiniteHits'
-import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
-import {
-  InstantSearchApi,
-  useInfiniteHits,
-  useInstantSearch,
-  useSearchBox
-} from 'react-instantsearch'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../../../__generated__/BlockFields'
-import { VideoBlockSource } from '../../../../../../../../../../__generated__/globalTypes'
+import {
+  VideoBlockSource,
+  VideoLabel
+} from '../../../../../../../../../../__generated__/globalTypes'
 import { ThemeProvider } from '../../../../../../../../ThemeProvider'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
+import { videos } from '../../../../../Drawer/VideoLibrary/VideoFromLocal/data'
 import { GET_VIDEO } from '../../../../../Drawer/VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
+import { GET_VIDEOS } from '../../../../../Drawer/VideoLibrary/VideoFromLocal/VideoFromLocal'
 
 import { VIDEO_BLOCK_UPDATE, VideoOptions } from './VideoOptions'
-
-jest.mock('react-instantsearch')
-
-const mockUseSearchBox = useSearchBox as jest.MockedFunction<
-  typeof useSearchBox
->
-const mockUseInstantSearch = useInstantSearch as jest.MockedFunction<
-  typeof useInstantSearch
->
-const mockUseInfiniteHits = useInfiniteHits as jest.MockedFunction<
-  typeof useInfiniteHits
->
 
 const video: TreeBlock<VideoBlock> = {
   id: 'video1.id',
@@ -74,18 +59,43 @@ const video: TreeBlock<VideoBlock> = {
 }
 
 describe('VideoOptions', () => {
+  const getVideosMock = {
+    request: {
+      query: GET_VIDEOS,
+      variables: {
+        offset: 0,
+        limit: 5,
+        where: {
+          availableVariantLanguageIds: ['529'],
+          title: null,
+          labels: [
+            VideoLabel.episode,
+            VideoLabel.featureFilm,
+            VideoLabel.segment,
+            VideoLabel.shortFilm
+          ]
+        }
+      }
+    },
+    result: {
+      data: {
+        videos
+      }
+    }
+  }
+
   const getVideoMock = {
     request: {
       query: GET_VIDEO,
       variables: {
-        id: 'videoId',
+        id: '2_0-Brand_Video',
         languageId: '529'
       }
     },
     result: {
       data: {
         video: {
-          id: 'videoId',
+          id: '2_0-Brand_Video',
           image:
             'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg',
           primaryLanguageId: '529',
@@ -125,39 +135,6 @@ describe('VideoOptions', () => {
     }
   }
 
-  beforeEach(() => {
-    mockUseSearchBox.mockReturnValue({
-      refine: jest.fn()
-    } as unknown as SearchBoxRenderState)
-
-    mockUseInfiniteHits.mockReturnValue({
-      hits: [
-        {
-          videoId: 'videoId',
-          titles: ['title1'],
-          description: ['description'],
-          duration: 10994,
-          languageId: '529',
-          subtitles: [],
-          slug: 'video-slug/english',
-          label: 'featureFilm',
-          image:
-            'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_GOJ-0-0.mobileCinematicHigh.jpg',
-          imageAlt: 'Life of Jesus (Gospel of John)',
-          childrenCount: 49,
-          objectID: '2_529-GOJ-0-0'
-        }
-      ],
-      showMore: jest.fn(),
-      isLastPage: false
-    } as unknown as InfiniteHitsRenderState)
-    mockUseInstantSearch.mockReturnValue({
-      status: 'idle'
-    } as unknown as InstantSearchApi)
-
-    jest.clearAllMocks()
-  })
-
   it('updates video block', async () => {
     const videoBlockResult = jest.fn(() => {
       return {
@@ -170,7 +147,7 @@ describe('VideoOptions', () => {
     const videoBlockUpdateVariables = {
       id: video.id,
       input: {
-        videoId: 'videoId',
+        videoId: '2_0-Brand_Video',
         videoVariantLanguageId: '529',
         source: VideoBlockSource.internal,
         startAt: 0,
@@ -182,7 +159,7 @@ describe('VideoOptions', () => {
       <MockedProvider
         mocks={[
           { ...getVideoMock, result },
-
+          getVideosMock,
           {
             request: {
               query: VIDEO_BLOCK_UPDATE,
@@ -207,7 +184,10 @@ describe('VideoOptions', () => {
     await waitFor(() =>
       fireEvent.click(screen.getByRole('button', { name: 'Select Video' }))
     )
-    await waitFor(() => fireEvent.click(screen.getByText('title1')))
+    await waitFor(() =>
+      expect(screen.getByText('Brand Video')).toBeInTheDocument()
+    )
+    fireEvent.click(screen.getByText('Brand Video'))
     await waitFor(() =>
       expect(result).toHaveBeenCalledWith(getVideoMock.request.variables)
     )
@@ -233,14 +213,14 @@ describe('VideoOptions', () => {
       <MockedProvider
         mocks={[
           { ...getVideoMock, result },
-
+          getVideosMock,
           {
             request: {
               query: VIDEO_BLOCK_UPDATE,
               variables: {
                 id: video.id,
                 input: {
-                  videoId: 'videoId',
+                  videoId: '2_0-Brand_Video',
                   videoVariantLanguageId: '529',
                   source: VideoBlockSource.internal,
                   startAt: 0,
@@ -286,8 +266,10 @@ describe('VideoOptions', () => {
     await waitFor(() =>
       fireEvent.click(screen.getByRole('button', { name: 'Select Video' }))
     )
-    await waitFor(() => expect(screen.getByText('title1')).toBeInTheDocument())
-    fireEvent.click(screen.getByText('title1'))
+    await waitFor(() =>
+      expect(screen.getByText('Brand Video')).toBeInTheDocument()
+    )
+    fireEvent.click(screen.getByText('Brand Video'))
     await waitFor(() =>
       expect(result).toHaveBeenCalledWith(getVideoMock.request.variables)
     )

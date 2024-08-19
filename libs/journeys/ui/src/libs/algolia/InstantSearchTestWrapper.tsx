@@ -5,13 +5,13 @@ import { InstantSearch } from 'react-instantsearch'
 
 interface InstantSearchWrapperProps {
   query?: string
-  indexName?: string
+  indexName: string
   children: ReactNode
 }
 
 export function InstantSearchTestWrapper({
   query = '',
-  indexName = 'indexName',
+  indexName,
   children,
   ...props
 }: InstantSearchWrapperProps): ReactElement {
