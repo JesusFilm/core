@@ -20,7 +20,7 @@ export default getRequestConfig(async ({ locale }: { locale: string }) => {
 
   return {
     // eslint-disable-next-line import/dynamic-import-chunkname
-    messages: (await import(`${localePath}/${locale}/apps-videos-admin.json`))
+    messages: (await import(`${localePath}/${locale}/apps-nexus-admin.json`))
       .default
   }
 })
