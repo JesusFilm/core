@@ -6,22 +6,37 @@ export const authConfig = {
   providers: [
     Credentials({
       credentials: {
-        username: { label: 'Email' },
+        email: { label: 'Email' },
         password: { label: 'Password', type: 'password' }
       },
       async authorize(credentials) {
         try {
           const response = await fetch(
-            `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${process.env.PUBLIC_FIREBASE_API_KEY}`,
-            { method: 'POST', body: JSON.stringify(credentials) }
+            `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${process.env.NEXT_PUBLIC_FIREBASE_API_KEY}`,
+            {
+              method: 'POST',
+              body: JSON.stringify(credentials),
+              headers: { 'Content-Type': 'application/json' }
+            }
           )
-          const json = await response.json()
-          return json.data
+          return await response.json()
         } catch (e) {
           return null
         }
       }
     }),
-    Google
+    Google(
+      process.env.NODE_ENV !== 'production'
+        ? {
+            authorization: {
+              params: {
+                prompt: 'consent',
+                access_type: 'offline',
+                response_type: 'code'
+              }
+            }
+          }
+        : {}
+    )
   ]
 } satisfies NextAuthConfig
