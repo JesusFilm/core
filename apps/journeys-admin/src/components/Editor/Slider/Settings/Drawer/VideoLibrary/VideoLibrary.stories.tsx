@@ -79,7 +79,7 @@ const VideoLibraryEmpty = ({ onSelect }): ReactElement => {
 
   return (
     <MockedProvider>
-      <InstantSearchTestWrapper indexName="index-name">
+      <InstantSearchTestWrapper>
         <VideoLibrary
           open={open}
           onClose={() => setOpen(false)}

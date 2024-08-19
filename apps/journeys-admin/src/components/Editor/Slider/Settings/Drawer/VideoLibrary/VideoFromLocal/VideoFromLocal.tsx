@@ -40,10 +40,7 @@ export function VideoFromLocal({
   const transformedHits = transformItems(hits)
 
   async function handleFetchMore(): Promise<void> {
-    return await new Promise<void>((resolve) => {
-      showMore()
-      resolve()
-    })
+    showMore()
   }
 
   return (

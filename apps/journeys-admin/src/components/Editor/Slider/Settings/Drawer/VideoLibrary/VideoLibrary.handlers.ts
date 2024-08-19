@@ -249,7 +249,7 @@ export const getAlgoliaVideosHandlers = [
 
 export const loadingHandler = [
   http.post('https://algolia-dsn.algolia.net/1/indexes/*', async () => {
-    await delay(1000 * 60 * 60 * 60)
+    await delay('infinite')
     return HttpResponse.json({
       results: [{ hits: [], nbHits: 0, loading: true }]
     })
