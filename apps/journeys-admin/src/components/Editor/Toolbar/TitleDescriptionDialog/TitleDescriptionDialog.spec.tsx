@@ -15,7 +15,7 @@ import { JOURNEY_SETTINGS_UPDATE } from '../../../../libs/useJourneyUpdateMutati
 import { journey } from '../../../JourneyList/ActiveJourneyList/ActivePriorityList/ActiveJourneyListData'
 
 import { TitleDescriptionDialog } from '.'
-import { GET_LANGUAGES, useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery/useLanguagesQuery'
+import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery/useLanguagesQuery'
 import type { GetLanguages, GetLanguagesVariables } from '../../../../../__generated__/GetLanguages'
 
 const onClose = jest.fn()
