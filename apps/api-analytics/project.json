@@ -39,19 +39,18 @@
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "cache": true,
+        "cacheLocation": ".cache/api-analytics/eslint",
+        "cacheStrategy": "content"
+      }
     },
     "test": {
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/apps/api-analytics"],
       "options": {
         "jestConfig": "apps/api-analytics/jest.config.ts"
-      }
-    },
-    "codegen": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "graphql-codegen --config apps/api-analytics/codegen.ts"
       }
     },
     "generate-graphql": {
@@ -108,6 +107,12 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "codecov -f coverage/apps/api-analytics/cobertura-coverage.xml -F apps.api-analytics"
+      }
+    },
+    "codegen": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "gql.tada generate output --tsconfig apps/api-analytics/tsconfig.json"
       }
     }
   },

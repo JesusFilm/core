@@ -1,5 +1,9 @@
 {
   "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "incremental": true,
+    "tsBuildInfoFile": "../../.cache/journeys-e2e/tsc/.tsbuildinfo"
+  },
   "files": [],
   "include": [],
   "references": [
