@@ -2,7 +2,14 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "incremental": true,
-    "tsBuildInfoFile": "../../.cache/api-videos/tsc/.tsbuildinfo"
+    "tsBuildInfoFile": "../../.cache/api-videos/tsc/.tsbuildinfo",
+    "plugins": [
+      {
+        "name": "@0no-co/graphqlsp",
+        "schema": "../api-gateway/schema.graphql",
+        "tadaOutputLocation": "./src/__generated__/graphql-env.d.ts"
+      }
+    ]
   },
   "files": [],
   "include": [],
@@ -13,14 +20,5 @@
     {
       "path": "./tsconfig.spec.json"
     }
-  ],
-  "compilerOptions": {
-    "plugins": [
-      {
-        "name": "@0no-co/graphqlsp",
-        "schema": "../api-gateway/schema.graphql",
-        "tadaOutputLocation": "../api-gateway/__generated__/graphql-env.d.ts"
-      }
-    ]
-  }
+  ]
 }

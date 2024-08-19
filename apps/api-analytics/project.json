@@ -108,6 +108,12 @@
       "options": {
         "command": "codecov -f coverage/apps/api-analytics/cobertura-coverage.xml -F apps.api-analytics"
       }
+    },
+    "codegen": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "gql.tada generate output --tsconfig apps/api-analytics/tsconfig.json"
+      }
     }
   },
   "tags": []

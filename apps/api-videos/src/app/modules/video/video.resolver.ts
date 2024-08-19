@@ -28,7 +28,6 @@ import {
   VideoVariant
 } from '.prisma/api-videos-client'
 
-import { IdType, VideosFilter } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { VideoService } from './video.service'
