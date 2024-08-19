@@ -1,10 +1,24 @@
-import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { render, screen } from '@testing-library/react'
+
+import {
+  EditorProvider,
+  type EditorState
+} from '@core/journeys/ui/EditorProvider'
+
 import { ThemeProvider } from '../../../../../ThemeProvider'
+
 import { CanvasFooter } from './CanvasFooter'
+
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: jest.fn()
+}))
 
 describe('CanvasFooter', () => {
   it('should render fab when not in analytics mode', () => {
+    ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
+
     const initialState = {
       showAnalytics: false
     } as unknown as EditorState

@@ -253,6 +253,19 @@ export enum VisitorStatus {
   warning = "warning",
 }
 
+export interface BlockDuplicateIdMap {
+  oldId: string;
+  newId: string;
+}
+
+export interface BlockUpdateActionInput {
+  gtmEventName?: string | null;
+  email?: string | null;
+  url?: string | null;
+  target?: string | null;
+  blockId?: string | null;
+}
+
 export interface ButtonBlockCreateInput {
   id?: string | null;
   journeyId: string;
@@ -295,6 +308,7 @@ export interface CardBlockCreateInput {
 
 export interface CardBlockUpdateInput {
   parentBlockId?: string | null;
+  coverBlockId?: string | null;
   backgroundColor?: string | null;
   fullscreen?: boolean | null;
   themeMode?: ThemeMode | null;
@@ -370,12 +384,6 @@ export interface IconBlockCreateInput {
   id?: string | null;
   parentBlockId: string;
   journeyId: string;
-  name?: IconName | null;
-  color?: IconColor | null;
-  size?: IconSize | null;
-}
-
-export interface IconBlockUpdateInput {
   name?: IconName | null;
   color?: IconColor | null;
   size?: IconSize | null;
@@ -502,11 +510,6 @@ export interface MeInput {
   redirect?: string | null;
 }
 
-export interface NavigateToBlockActionInput {
-  gtmEventName?: string | null;
-  blockId: string;
-}
-
 export interface RadioOptionBlockCreateInput {
   id?: string | null;
   journeyId: string;
@@ -560,6 +563,12 @@ export interface StepBlockCreateInput {
   journeyId: string;
   nextBlockId?: string | null;
   locked?: boolean | null;
+  x?: number | null;
+  y?: number | null;
+}
+
+export interface StepBlockPositionUpdateInput {
+  id: string;
   x?: number | null;
   y?: number | null;
 }

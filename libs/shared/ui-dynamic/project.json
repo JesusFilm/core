@@ -5,17 +5,12 @@
   "projectType": "library",
   "targets": {
     "lint": {
-      "executor": "nx:run-commands",
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
       "options": {
-        "command": "npx @biomejs/biome check --diagnostic-level=warn",
-        "cwd": "libs/shared/ui-dynamic"
-      }
-    },
-    "lint:fix": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npx @biomejs/biome check --write",
-        "cwd": "libs/shared/ui-dynamic"
+        "cache": true,
+        "cacheLocation": ".cache/shared-ui-dynamic/eslint",
+        "cacheStrategy": "content"
       }
     },
     "type-check": {

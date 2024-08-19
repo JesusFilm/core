@@ -1,11 +1,10 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
 
 import {
   ActiveContent,
-  ActiveFab,
   EditorProvider,
   EditorState
 } from '@core/journeys/ui/EditorProvider'
@@ -26,7 +25,6 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 describe('Footer', () => {
   const state: EditorState = {
     steps: [],
-    activeFab: ActiveFab.Add,
     activeSlide: ActiveSlide.JourneyFlow,
     activeContent: ActiveContent.Canvas,
     activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties

@@ -1,5 +1,6 @@
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
+import { ReactElement } from 'react'
 
 const textStyles = { fontSize: '12px', lineHeight: '20px' }
 
@@ -13,7 +14,7 @@ export function ReferrerValue({
   tooltipTitle,
   property,
   visitors
-}: ReferrerValueProps) {
+}: ReferrerValueProps): ReactElement {
   return (
     <>
       <Tooltip

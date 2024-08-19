@@ -1,9 +1,10 @@
 import { subject } from '@casl/ability'
 import { Test, TestingModule } from '@nestjs/testing'
-import { Action, AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
+
+import { Integration } from '.prisma/api-journeys-client'
 
 import { UserTeamRole } from '../../__generated__/graphql'
-import { Integration } from '.prisma/api-journeys-client'
+import { Action, AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
 
 describe('integrationAcl', () => {
   let factory: AppCaslFactory, ability: AppAbility

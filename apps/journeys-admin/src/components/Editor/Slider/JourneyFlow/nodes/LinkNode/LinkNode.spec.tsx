@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react'
 import { NodeProps, ReactFlowProvider } from 'reactflow'
 
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'
 import { mockReactFlow } from '../../../../../../../test/mockReactFlow'

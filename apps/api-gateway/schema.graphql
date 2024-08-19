@@ -78,11 +78,28 @@ interface Block
   parentOrder: Int
 }
 
+input BlockDuplicateIdMap
+  @join__type(graph: JOURNEYS)
+{
+  oldId: ID!
+  newId: ID!
+}
+
 input BlocksFilter
   @join__type(graph: JOURNEYS)
 {
   journeyIds: [ID!]
   typenames: [String!]
+}
+
+input BlockUpdateActionInput
+  @join__type(graph: JOURNEYS)
+{
+  gtmEventName: String
+  email: String
+  url: String
+  target: String
+  blockId: String
 }
 
 type Browser
@@ -278,6 +295,7 @@ input CardBlockUpdateInput
   @join__type(graph: JOURNEYS)
 {
   parentBlockId: ID
+  coverBlockId: ID
   backgroundColor: String
   fullscreen: Boolean
   themeMode: ThemeMode
@@ -365,6 +383,22 @@ type CloudflareVideo
   readyToStream: Boolean!
 }
 
+type Continent
+  @join__type(graph: LANGUAGES)
+{
+  id: ID!
+  name(languageId: ID, primary: Boolean): [ContinentName!]!
+  countries: [Country!]!
+}
+
+type ContinentName
+  @join__type(graph: LANGUAGES)
+{
+  value: String!
+  primary: Boolean!
+  language: Language!
+}
+
 type Country
   @join__type(graph: LANGUAGES, key: "id")
 {
@@ -376,15 +410,18 @@ type Country
   flagWebpSrc: String
   languages: [Language!]!
   name(languageId: ID, primary: Boolean): [CountryName!]!
-  continent(languageId: ID, primary: Boolean): [CountryContinent!]!
+  continent: Continent!
+  countryLanguages: [CountryLanguage!]!
 }
 
-type CountryContinent
+type CountryLanguage
   @join__type(graph: LANGUAGES)
 {
-  value: String!
-  primary: Boolean!
+  id: ID!
   language: Language!
+  country: Country!
+  speakers: Int!
+  displaySpeakers: Int
 }
 
 type CountryName
@@ -1248,6 +1285,14 @@ enum JourneyVisitorSort
 scalar Json
   @join__type(graph: JOURNEYS)
 
+type Keyword
+  @join__type(graph: VIDEOS)
+{
+  id: ID!
+  value: String!
+  language: Language!
+}
+
 type Language
   @join__type(graph: JOURNEYS, key: "id")
   @join__type(graph: LANGUAGES, key: "id")
@@ -1259,8 +1304,9 @@ type Language
   id: ID!
   bcp47: String @join__field(graph: LANGUAGES)
   iso3: String @join__field(graph: LANGUAGES)
+  slug: String @join__field(graph: LANGUAGES)
   name(languageId: ID, primary: Boolean): [LanguageName!]! @join__field(graph: LANGUAGES)
-  countries: [Country!]! @join__field(graph: LANGUAGES)
+  countryLanguages: [CountryLanguage!]! @join__field(graph: LANGUAGES)
   audioPreview: AudioPreview @join__field(graph: LANGUAGES)
 }
 
@@ -1403,6 +1449,7 @@ type Mutation
     """drop this parameter after merging teams"""
     journeyId: ID
   ): EmailAction! @join__field(graph: JOURNEYS)
+  blockUpdateAction(id: ID!, input: BlockUpdateActionInput): Action! @join__field(graph: JOURNEYS)
 
   """blockDelete returns the updated sibling blocks on successful delete"""
   blockDelete(
@@ -1425,6 +1472,11 @@ type Mutation
     parentOrder defines the position to add the duplicated block. Negative values defines the position from the end of the array. Positions greater than the length of the array or null parentOrder will add duplicate at end of the array.
     """
     parentOrder: Int
+
+    """
+    idMap is used to set custom ids for the duplicated block and it's descendants.
+    """
+    idMap: [BlockDuplicateIdMap!]
 
     """drop this parameter after merging teams"""
     journeyId: ID
@@ -1517,6 +1569,7 @@ type Mutation
     """drop this parameter after merging teams"""
     journeyId: ID
   ): StepBlock! @join__field(graph: JOURNEYS)
+  stepBlockPositionUpdate(input: [StepBlockPositionUpdateInput!]!): [StepBlock!]! @join__field(graph: JOURNEYS)
   textResponseBlockCreate(input: TextResponseBlockCreateInput!): TextResponseBlock! @join__field(graph: JOURNEYS)
   textResponseBlockUpdate(
     id: ID!
@@ -2326,6 +2379,14 @@ input StepBlockCreateInput
   y: Int
 }
 
+input StepBlockPositionUpdateInput
+  @join__type(graph: JOURNEYS)
+{
+  id: ID!
+  x: Int
+  y: Int
+}
+
 input StepBlockUpdateInput
   @join__type(graph: JOURNEYS)
 {
@@ -2923,6 +2984,8 @@ type Video
 {
   id: ID!
   primaryLanguageId: ID!
+  bibleCitations: [BibleCitation!]! @join__field(graph: VIDEOS)
+  keywords(languageId: ID): [Keyword!]! @join__field(graph: VIDEOS)
   label: VideoLabel! @join__field(graph: VIDEOS)
   image: String @join__field(graph: VIDEOS)
   slug: String! @join__field(graph: VIDEOS)

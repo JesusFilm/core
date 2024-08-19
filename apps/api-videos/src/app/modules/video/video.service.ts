@@ -21,8 +21,20 @@ export class VideoService {
   ) {}
 
   public parseFullTextSearch(value: string): string {
-    const re = /(\s|\s+)/g
-    return value.replace(re, ' & ')
+    // Regular expression to match special characters in tsquery
+    const specialChars = /[&|!():/-\s]/g
+
+    const words = value.trim().split(/\s+/)
+
+    const processedWords = words.map((word) => {
+      if (specialChars.test(word)) {
+        return `"${word.replace(specialChars, '\\$&')}"`
+      }
+
+      return word
+    })
+
+    return processedWords.join(' & ')
   }
 
   public videoFilter(filter: VideosFilter = {}): Prisma.VideoWhereInput {

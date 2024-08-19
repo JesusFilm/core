@@ -43,17 +43,12 @@
       }
     },
     "lint": {
-      "executor": "nx:run-commands",
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
       "options": {
-        "command": "npx @biomejs/biome check --diagnostic-level=warn",
-        "cwd": "apps/journeys-admin-e2e"
-      }
-    },
-    "lint:fix": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npx @biomejs/biome check --write",
-        "cwd": "apps/journeys-admin-e2e"
+        "cache": true,
+        "cacheLocation": ".cache/journeys-admin-e2e/eslint",
+        "cacheStrategy": "content"
       }
     }
   }

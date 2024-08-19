@@ -78,7 +78,7 @@ export const JourneySharedNoAccountEmail = ({
             <ActionJourneyView
               journey={journey as unknown as JourneyForEmails}
               url={inviteLink}
-              buttonText="Manage Access"
+              buttonText="Open Journey"
             />
           </ActionCard>
         </BodyWrapper>

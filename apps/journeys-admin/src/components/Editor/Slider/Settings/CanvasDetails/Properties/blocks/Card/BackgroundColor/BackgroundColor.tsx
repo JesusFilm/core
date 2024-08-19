@@ -7,22 +7,26 @@ import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import debounce from 'lodash/debounce'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect, useRef, useState } from 'react'
-import { HexColorPicker } from 'react-colorful'
+import { ReactElement, useState } from 'react'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { useCommand } from '@core/journeys/ui/CommandProvider'
+import {
+  ActiveContent,
+  ActiveSlide,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
-import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
+import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import { ThemeMode, ThemeName, getTheme } from '@core/shared/ui/themes'
 
 import { CardBlockBackgroundColorUpdate } from '../../../../../../../../../../__generated__/CardBlockBackgroundColorUpdate'
 import { CardFields } from '../../../../../../../../../../__generated__/CardFields'
 
+import { DebouncedHexColorPicker } from './DebouncedHexColorPicker'
 import { PaletteColorPicker } from './PaletteColorPicker'
 import { Swatch } from './Swatch'
 
@@ -47,10 +51,9 @@ const palette = [
 export const CARD_BLOCK_BACKGROUND_COLOR_UPDATE = gql`
   mutation CardBlockBackgroundColorUpdate(
     $id: ID!
-    $journeyId: ID!
     $input: CardBlockUpdateInput!
   ) {
-    cardBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+    cardBlockUpdate(id: $id, input: $input) {
       id
       backgroundColor
     }
@@ -58,13 +61,16 @@ export const CARD_BLOCK_BACKGROUND_COLOR_UPDATE = gql`
 `
 
 export function BackgroundColor(): ReactElement {
+  const {
+    state: { selectedBlock, selectedStep },
+    dispatch
+  } = useEditor()
+  const { journey } = useJourney()
+  const { rtl, locale } = getJourneyRTL(journey)
+  const { add } = useCommand()
   const [cardBlockUpdate] = useMutation<CardBlockBackgroundColorUpdate>(
     CARD_BLOCK_BACKGROUND_COLOR_UPDATE
   )
-
-  const {
-    state: { selectedBlock }
-  } = useEditor()
 
   const cardBlock = (
     selectedBlock?.__typename === 'CardBlock'
@@ -74,70 +80,57 @@ export function BackgroundColor(): ReactElement {
         )
   ) as TreeBlock<CardFields> | undefined
 
-  const { journey } = useJourney()
-  const { rtl, locale } = getJourneyRTL(journey)
-
   const cardTheme = getTheme({
     themeName: cardBlock?.themeName ?? journey?.themeName ?? ThemeName.base,
     themeMode: cardBlock?.themeMode ?? journey?.themeMode ?? ThemeMode.dark,
     rtl,
     locale
   })
-
   const [tabValue, setTabValue] = useState(0)
-  const [selectedColor, setSelectedColor] = useState(
+  const selectedColor =
     cardBlock?.backgroundColor ?? cardTheme.palette.background.paper
-  )
 
-  const handleTabChange = (_event, newValue: number): void => {
+  function handleTabChange(_event, newValue: number): void {
     setTabValue(newValue)
   }
 
-  const changeCardColor = async (color: string): Promise<void> => {
-    if (journey == null) return
-
+  async function handleColorChange(color: string): Promise<void> {
     if (cardBlock != null) {
-      await cardBlockUpdate({
-        variables: {
-          id: cardBlock.id,
-          journeyId: journey.id,
-          input: {
-            backgroundColor: color === 'null' ? null : color
+      await add({
+        parameters: {
+          execute: {
+            color: color.toUpperCase()
+          },
+          undo: {
+            color: selectedColor
           }
         },
-        update(cache, { data }) {
-          if (data?.cardBlockUpdate != null) {
-            cache.modify({
-              id: cache.identify({
-                __typename: 'CardBlock',
-                id: cardBlock.id
-              }),
-              fields: {
-                backgroundColor: () => data.cardBlockUpdate.backgroundColor
+        execute: async ({ color }) => {
+          dispatch({
+            type: 'SetEditorFocusAction',
+            activeSlide: ActiveSlide.Content,
+            selectedStep,
+            activeContent: ActiveContent.Canvas
+          })
+          await cardBlockUpdate({
+            variables: {
+              id: cardBlock.id,
+              input: {
+                backgroundColor: color === 'null' ? null : color
               }
-            })
-          }
+            },
+            optimisticResponse: {
+              cardBlockUpdate: {
+                id: cardBlock.id,
+                __typename: 'CardBlock',
+                backgroundColor: color === 'null' ? null : color
+              }
+            }
+          })
         }
       })
     }
   }
-
-  const handleColorChange = async (color: string): Promise<void> => {
-    void debouncedColorChange(color.toUpperCase())
-  }
-
-  const debouncedColorChange = useRef(
-    debounce(async (color: string) => {
-      void changeCardColor(color)
-      setSelectedColor(color)
-    }, 100)
-  ).current
-
-  useEffect(() => {
-    return () => {
-      debouncedColorChange.cancel()
-    }
-  }, [debouncedColorChange])
 
   const palettePicker = (
     <PaletteColorPicker
@@ -151,7 +144,7 @@ export function BackgroundColor(): ReactElement {
   // TODO: Test onChange in E2E
   const hexColorPicker = (
     <Box sx={{ p: 4 }}>
-      <HexColorPicker
+      <DebouncedHexColorPicker
         data-testid="bgColorPicker"
         color={selectedColor}
         onChange={handleColorChange}

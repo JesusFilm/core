@@ -17,15 +17,21 @@ const mockFetch = fetch as jest.MockedFunction<typeof fetch>
 jest.mock('sharp', () => () => ({
   raw: () => ({
     ensureAlpha: () => ({
-      toBuffer: () => ({
-        data: new Uint8ClampedArray([]),
-        info: {
-          width: 640,
-          height: 425
-        }
+      resize: () => ({
+        toBuffer: () => ({
+          data: new Uint8ClampedArray([]),
+          info: {
+            width: 32,
+            height: 32
+          }
+        })
       })
     })
-  })
+  }),
+  metadata: jest.fn(() => ({
+    width: 640,
+    height: 425
+  }))
 }))
 
 jest.mock('blurhash', () => {

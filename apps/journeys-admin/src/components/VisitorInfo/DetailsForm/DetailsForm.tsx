@@ -1,3 +1,4 @@
+/* eslint-disable i18next/no-literal-string */
 import { gql, useMutation, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
@@ -18,11 +19,11 @@ import { ReactElement } from 'react'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
 
 import { GetVisitorForForm } from '../../../../__generated__/GetVisitorForForm'
-import { VisitorUpdate } from '../../../../__generated__/VisitorUpdate'
 import {
   MessagePlatform,
   VisitorStatus
 } from '../../../../__generated__/globalTypes'
+import { VisitorUpdate } from '../../../../__generated__/VisitorUpdate'
 import { messagePlatformToLabel } from '../VisitorJourneysList/utils'
 
 import { ChatButton } from './ChatButton'

@@ -86,7 +86,6 @@ export class BigQueryService {
 
   async getCurrentTimeStamp(): Promise<string> {
     const [result] = await this.client.query('SELECT CURRENT_TIMESTAMP()')
-    console.log('result', result)
     return result[0].f0_.value
   }
 }

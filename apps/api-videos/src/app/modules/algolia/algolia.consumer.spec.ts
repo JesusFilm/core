@@ -1,5 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { Job } from 'bullmq'
 
 import { PrismaService } from '../../lib/prisma.service'
 
@@ -23,7 +22,7 @@ describe('AlgoliaConsumer', () => {
     it('should call syncVideosToAlgolia', async () => {
       algoliaService.syncVideosToAlgolia = jest.fn()
 
-      await consumer.process({} as unknown as Job)
+      await consumer.process()
 
       expect(algoliaService.syncVideosToAlgolia).toHaveBeenCalled()
     })

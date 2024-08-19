@@ -1,13 +1,14 @@
-import { useTeam } from '@core/journeys/ui/TeamProvider'
-import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
 import Box from '@mui/material/Box'
 import Breadcrumbs from '@mui/material/Breadcrumbs'
 import Typography from '@mui/material/Typography'
-import { get, isArray } from 'lodash'
+import get from 'lodash/get'
+import isArray from 'lodash/isArray'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
-import { string } from 'prop-types'
 import { ReactElement } from 'react'
+
+import { useTeam } from '@core/journeys/ui/TeamProvider'
+import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
 
 interface BreadcrumbItem {
   label: string
@@ -30,13 +31,13 @@ export function BreadcrumbNavigation(): ReactElement {
       const dynamicLabel = isArray(queryValue)
         ? queryValue.join(', ')
         : queryValue
-      return dynamicLabel || segment
+      return dynamicLabel ?? segment
     }
     return formatLabel(segment)
   }
 
-  function processBreadcrumbItems() {
-    if (activeTeam == null) return
+  function processBreadcrumbItems(): BreadcrumbItem[] {
+    if (activeTeam == null) return []
     return asPath
       .split('/')
       .filter(Boolean)
@@ -64,7 +65,7 @@ export function BreadcrumbNavigation(): ReactElement {
         const isLastItem = index === breadcrumbItems.length - 1
         return (
           <Box key={index}>
-            {item.path && !isLastItem ? (
+            {item.path != null && !isLastItem ? (
               <NextLink href={item.path} passHref legacyBehavior>
                 <Typography
                   variant="h4"

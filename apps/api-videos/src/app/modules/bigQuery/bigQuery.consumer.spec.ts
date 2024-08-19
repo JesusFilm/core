@@ -3,13 +3,22 @@ import { Job } from 'bullmq'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
 import { PrismaService } from '../../lib/prisma.service'
+import { ImporterBibleBookNamesService } from '../importer/importerBibleBookNames/importerBibleBookNames.service'
 import { ImporterBibleBooksService } from '../importer/importerBibleBooks/importerBibleBooks.service'
 import { ImporterBibleCitationsService } from '../importer/importerBibleCitations/importerBibleCitations.service'
-import { ImporterVideoSubtitlesService } from '../importer/importerVideoSubtitle/importerVideoSubtitle.service'
-import { ImporterVideoVariantsService } from '../importer/importerVideoVariants/importerVideoVariants.service'
+import { ImporterKeywordsService } from '../importer/importerKeywords/importerKeywords.service'
+import { ImporterLanguageSlugsService } from '../importer/importerLanguageSlugs/importerLanguageSlugs.service'
+import { ImporterVideoDescriptionService } from '../importer/importerVideoDescriptions/importerVideoDescriptions.service'
+import { ImporterVideoImageAltService } from '../importer/importerVideoImageAlt/importerVideoImageAlt.service'
 import { ImporterVideosService } from '../importer/importerVideos/importerVideos.service'
+import { ImporterVideosChildrenService } from '../importer/importerVideosChildren/importerVideosChildren.service'
+import { ImporterVideoSnippetsService } from '../importer/importerVideoSnippets/importerVideoSnippets.service'
+import { ImporterVideoStudyQuestionsService } from '../importer/importerVideoStudyQuestions/importerVideoStudyQuestions.service'
+import { ImporterVideoSubtitlesService } from '../importer/importerVideoSubtitle/importerVideoSubtitle.service'
+import { ImporterVideoTitleService } from '../importer/importerVideoTitles/importerVideoTitle.service'
+import { ImporterVideoVariantDownloadsService } from '../importer/importerVideoVariantDownloads/importerVideoVariantDownloads.service'
+import { ImporterVideoVariantsService } from '../importer/importerVideoVariants/importerVideoVariants.service'
 
-import { ImporterBibleBookNamesService } from '../importer/importerBibleBookNames/importerBibleBookNames.service'
 import { BigQueryConsumer } from './bigQuery.consumer'
 import { BigQueryService } from './bigQuery.service'
 
@@ -33,6 +42,30 @@ describe('BigQueryConsumer', () => {
           useValue: mockDeep<ImporterVideosService>()
         },
         {
+          provide: ImporterVideoTitleService,
+          useValue: mockDeep<ImporterVideoTitleService>()
+        },
+        {
+          provide: ImporterVideoDescriptionService,
+          useValue: mockDeep<ImporterVideoDescriptionService>()
+        },
+        {
+          provide: ImporterVideoStudyQuestionsService,
+          useValue: mockDeep<ImporterVideoStudyQuestionsService>()
+        },
+        {
+          provide: ImporterVideoSnippetsService,
+          useValue: mockDeep<ImporterVideoSnippetsService>()
+        },
+        {
+          provide: ImporterVideoImageAltService,
+          useValue: mockDeep<ImporterVideoImageAltService>()
+        },
+        {
+          provide: ImporterVideoVariantDownloadsService,
+          useValue: mockDeep<ImporterVideoVariantDownloadsService>()
+        },
+        {
           provide: ImporterVideoSubtitlesService,
           useValue: mockDeep<ImporterVideoSubtitlesService>()
         },
@@ -45,6 +78,10 @@ describe('BigQueryConsumer', () => {
           useValue: mockDeep<PrismaService>()
         },
         {
+          provide: ImporterVideosChildrenService,
+          useValue: mockDeep<ImporterVideosChildrenService>()
+        },
+        {
           provide: ImporterBibleBooksService,
           useValue: mockDeep<ImporterBibleBooksService>()
         },
@@ -55,6 +92,14 @@ describe('BigQueryConsumer', () => {
         {
           provide: ImporterBibleBookNamesService,
           useValue: mockDeep<ImporterBibleBookNamesService>()
+        },
+        {
+          provide: ImporterKeywordsService,
+          useValue: mockDeep<ImporterKeywordsService>()
+        },
+        {
+          provide: ImporterLanguageSlugsService,
+          useValue: mockDeep<ImporterLanguageSlugsService>()
         }
       ]
     }).compile()
@@ -99,18 +144,18 @@ describe('BigQueryConsumer', () => {
       videosService.import.mockResolvedValue()
       await consumer.process({ name: 'mockjob' } as unknown as Job)
       expect(bigQueryService.getRowsFromTable).toHaveBeenCalled()
+      expect(videosService.import).toHaveBeenCalledWith(data[0])
+      expect(videosService.import).toHaveBeenCalledWith(data[1])
       expect(prisma.importTimes.upsert).toHaveBeenCalledWith({
         create: {
           lastImport: 'mockCurrentTime',
-          modelName:
-            'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariantSubtitles_arclight_data'
+          modelName: 'jfp-data-warehouse.jfp_mmdb_prod.core_video_arclight_data'
         },
         update: {
           lastImport: 'mockCurrentTime'
         },
         where: {
-          modelName:
-            'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariantSubtitles_arclight_data'
+          modelName: 'jfp-data-warehouse.jfp_mmdb_prod.core_video_arclight_data'
         }
       })
     })

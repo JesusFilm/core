@@ -1,22 +1,16 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_TypographyBlock as TypographyBlock } from '../../../../../../../../../../__generated__/BlockFields'
-import { GetJourney_journey as Journey } from '../../../../../../../../../../__generated__/GetJourney'
 import { TypographyAlign } from '../../../../../../../../../../__generated__/globalTypes'
+import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 
 import { TYPOGRAPHY_BLOCK_UPDATE_ALIGN } from './Align'
 
 import { Align } from '.'
-
-jest.mock('@mui/material/useMediaQuery', () => ({
-  __esModule: true,
-  default: () => true
-}))
 
 describe('Typography align selector', () => {
   it('should show typography align properties', () => {
@@ -59,7 +53,6 @@ describe('Typography align selector', () => {
       data: {
         typographyBlockUpdate: {
           id: 'id',
-          journeyId: 'journeyId',
           align: TypographyAlign.right
         }
       }
@@ -72,7 +65,6 @@ describe('Typography align selector', () => {
               query: TYPOGRAPHY_BLOCK_UPDATE_ALIGN,
               variables: {
                 id: 'id',
-                journeyId: 'journeyId',
                 input: {
                   align: TypographyAlign.right
                 }
@@ -82,21 +74,83 @@ describe('Typography align selector', () => {
           }
         ]}
       >
-        <JourneyProvider
-          value={{
-            journey: { id: 'journeyId' } as unknown as Journey,
-            variant: 'admin'
-          }}
-        >
-          <EditorProvider initialState={{ selectedBlock }}>
-            <Align />
-          </EditorProvider>
-        </JourneyProvider>
+        <EditorProvider initialState={{ selectedBlock }}>
+          <Align />
+        </EditorProvider>
       </MockedProvider>
     )
 
     expect(getByRole('button', { name: 'Center' })).toHaveClass('Mui-selected')
     fireEvent.click(getByRole('button', { name: 'Right' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
+  it('should undo the property change', async () => {
+    const selectedBlock: TreeBlock<TypographyBlock> = {
+      __typename: 'TypographyBlock',
+      id: 'id',
+      parentBlockId: 'parentBlockId',
+      parentOrder: 0,
+      align: TypographyAlign.center,
+      color: null,
+      content: '',
+      variant: null,
+      children: []
+    }
+    const result1 = jest.fn(() => ({
+      data: {
+        typographyBlockUpdate: {
+          id: 'id',
+          align: TypographyAlign.right
+        }
+      }
+    }))
+    const result2 = jest.fn(() => ({
+      data: {
+        typographyBlockUpdate: {
+          id: 'id',
+          align: TypographyAlign.center
+        }
+      }
+    }))
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: TYPOGRAPHY_BLOCK_UPDATE_ALIGN,
+              variables: {
+                id: 'id',
+                input: {
+                  align: TypographyAlign.right
+                }
+              }
+            },
+            result: result1
+          },
+          {
+            request: {
+              query: TYPOGRAPHY_BLOCK_UPDATE_ALIGN,
+              variables: {
+                id: 'id',
+                input: {
+                  align: TypographyAlign.center
+                }
+              }
+            },
+            result: result2
+          }
+        ]}
+      >
+        <EditorProvider initialState={{ selectedBlock }}>
+          <CommandUndoItem variant="button" />
+          <Align />
+        </EditorProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Right' }))
+    await waitFor(() => expect(result1).toHaveBeenCalled())
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(result2).toHaveBeenCalled())
   })
 })

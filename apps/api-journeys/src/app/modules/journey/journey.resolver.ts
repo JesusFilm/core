@@ -17,13 +17,6 @@ import omit from 'lodash/omit'
 import slugify from 'slugify'
 import { v4 as uuidv4 } from 'uuid'
 
-import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
-import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
-import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
-import {
-  PowerBiEmbed,
-  getPowerBiEmbed
-} from '@core/nest/powerBi/getPowerBiEmbed'
 import {
   Block,
   Action as BlockAction,
@@ -36,6 +29,13 @@ import {
   UserJourney,
   UserJourneyRole
 } from '.prisma/api-journeys-client'
+import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
+import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
+import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
+import {
+  PowerBiEmbed,
+  getPowerBiEmbed
+} from '@core/nest/powerBi/getPowerBiEmbed'
 
 import {
   IdType,
@@ -458,7 +458,7 @@ export class JourneyResolver {
     const duplicateJourneyId = uuidv4()
 
     const originalBlocks = await this.prismaService.block.findMany({
-      where: { journeyId: journey.id, typename: 'StepBlock' },
+      where: { journeyId: journey.id, typename: 'StepBlock', deletedAt: null },
       orderBy: { parentOrder: 'asc' },
       include: { action: true }
     })
@@ -471,6 +471,7 @@ export class JourneyResolver {
       id,
       null,
       duplicateStepIds,
+      undefined,
       duplicateJourneyId,
       duplicateStepIds
     )
@@ -514,8 +515,8 @@ export class JourneyResolver {
       duplicateNumber === 0
         ? ''
         : duplicateNumber === 1
-          ? ' copy'
-          : ` copy ${duplicateNumber}`
+        ? ' copy'
+        : ` copy ${duplicateNumber}`
     }`.trimEnd()
 
     let slug = slugify(duplicateTitle, {
@@ -641,7 +642,7 @@ export class JourneyResolver {
         })
         await this.plausibleQueue.add('create-team-site', {
           __typename: 'plausibleCreateTeamSite',
-          teamId: teamId
+          teamId
         })
         return duplicateJourney
       } catch (err) {

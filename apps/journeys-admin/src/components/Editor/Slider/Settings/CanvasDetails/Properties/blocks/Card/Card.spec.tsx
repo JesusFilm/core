@@ -1,9 +1,9 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../__generated__/BlockFields'
 import {
@@ -29,19 +29,27 @@ describe('Card', () => {
       fullscreen: false,
       children: []
     }
-    const { getByRole } = render(
+    render(
       <MockedProvider>
         <SnackbarProvider>
-          <Card {...card} />
+          <EditorProvider initialState={{ selectedBlock: card }}>
+            <Card {...card} />
+          </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
 
-    expect(getByRole('button', { name: 'Color #FEFEFE' })).toBeInTheDocument()
-    expect(getByRole('button', { name: 'Background None' })).toBeInTheDocument()
-    expect(getByRole('button', { name: 'Style Light' })).toBeInTheDocument()
     expect(
-      getByRole('button', { name: 'Layout Contained' })
+      screen.getByRole('button', { name: 'Color #FEFEFE' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Background None' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Style Light' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Layout Contained' })
     ).toBeInTheDocument()
   })
 
@@ -60,59 +68,71 @@ describe('Card', () => {
     }
 
     it('shows background color from prop', () => {
-      const { getByRole } = render(
+      render(
         <MockedProvider>
           <SnackbarProvider>
-            <Card {...card} backgroundColor="#00FFCC" />
+            <EditorProvider initialState={{ selectedBlock: card }}>
+              <Card {...card} backgroundColor="#00FFCC" />
+            </EditorProvider>
           </SnackbarProvider>
         </MockedProvider>
       )
 
-      expect(getByRole('button', { name: 'Color #00FFCC' })).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: 'Color #00FFCC' })
+      ).toBeInTheDocument()
     })
 
     it('shows background color from card theme', () => {
-      const { getByRole } = render(
+      render(
         <MockedProvider>
           <SnackbarProvider>
-            <Card
-              {...card}
-              themeName={ThemeName.base}
-              themeMode={ThemeMode.light}
-            />
+            <EditorProvider initialState={{ selectedBlock: card }}>
+              <Card
+                {...card}
+                themeName={ThemeName.base}
+                themeMode={ThemeMode.light}
+              />
+            </EditorProvider>
           </SnackbarProvider>
         </MockedProvider>
       )
 
-      expect(getByRole('button', { name: 'Color #FEFEFE' })).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: 'Color #FEFEFE' })
+      ).toBeInTheDocument()
     })
 
     it('shows background color from journey theme', () => {
-      const { getByRole } = render(
+      render(
         <MockedProvider>
           <SnackbarProvider>
-            <Card {...card} />
+            <EditorProvider initialState={{ selectedBlock: card }}>
+              <Card {...card} />
+            </EditorProvider>
           </SnackbarProvider>
         </MockedProvider>
       )
 
-      expect(getByRole('button', { name: 'Color #30313D' })).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: 'Color #30313D' })
+      ).toBeInTheDocument()
     })
 
     it('opens background color accordion', () => {
-      const { getByText } = render(
+      render(
         <MockedProvider>
           <SnackbarProvider>
-            <EditorProvider>
+            <EditorProvider initialState={{ selectedBlock: card }}>
               <Card {...card} backgroundColor="#00FFCC" />
               <TestEditorState />
             </EditorProvider>
           </SnackbarProvider>
         </MockedProvider>
       )
-      fireEvent.click(getByText('#00FFCC'))
+      fireEvent.click(screen.getByText('#00FFCC'))
       expect(
-        getByText('selectedAttributeId: card1.id-background-color')
+        screen.getByText('selectedAttributeId: card1.id-background-color')
       ).toBeInTheDocument()
     })
   })
@@ -144,20 +164,24 @@ describe('Card', () => {
           }
         ]
       }
-      const { getByText, getByTestId } = render(
+      render(
         <MockedProvider>
           <SnackbarProvider>
-            <Card {...card} />
+            <EditorProvider initialState={{ selectedBlock: card }}>
+              <Card {...card} />
+            </EditorProvider>
           </SnackbarProvider>
         </MockedProvider>
       )
 
-      const coverBlockAccordion = getByTestId('Accordion-card1.id-cover-block')
+      const coverBlockAccordion = screen.getByTestId(
+        'Accordion-card1.id-cover-block'
+      )
       const coverBlockAccordionIcon = coverBlockAccordion.querySelector(
         '[data-testid="Image3Icon"]'
       )
       expect(coverBlockAccordionIcon).toBeInTheDocument()
-      expect(getByText('07iLnvN.jpg')).toBeInTheDocument()
+      expect(screen.getByText('07iLnvN.jpg')).toBeInTheDocument()
     })
 
     it('shows coverBlock when video', () => {
@@ -214,19 +238,23 @@ describe('Card', () => {
           }
         ]
       }
-      const { getByText, getByTestId } = render(
+      render(
         <MockedProvider>
           <SnackbarProvider>
-            <Card {...card} />
+            <EditorProvider initialState={{ selectedBlock: card }}>
+              <Card {...card} />
+            </EditorProvider>
           </SnackbarProvider>
         </MockedProvider>
       )
-      const coverBlockAccordion = getByTestId('Accordion-card1.id-cover-block')
+      const coverBlockAccordion = screen.getByTestId(
+        'Accordion-card1.id-cover-block'
+      )
       const coverBlockAccordionIcon = coverBlockAccordion.querySelector(
         '[data-testid="VideoOnIcon"]'
       )
       expect(coverBlockAccordionIcon).toBeInTheDocument()
-      expect(getByText('FallingPlates')).toBeInTheDocument()
+      expect(screen.getByText('FallingPlates')).toBeInTheDocument()
     })
 
     it('shows background media drawer', () => {
@@ -283,19 +311,19 @@ describe('Card', () => {
           }
         ]
       }
-      const { getByText } = render(
+      render(
         <MockedProvider>
-          <EditorProvider initialState={{ selectedBlock: card }}>
-            <SnackbarProvider>
+          <SnackbarProvider>
+            <EditorProvider initialState={{ selectedBlock: card }}>
               <Card {...card} />
               <TestEditorState />
-            </SnackbarProvider>
-          </EditorProvider>
+            </EditorProvider>
+          </SnackbarProvider>
         </MockedProvider>
       )
-      fireEvent.click(getByText('FallingPlates'))
+      fireEvent.click(screen.getAllByText('FallingPlates')[0])
       expect(
-        getByText('selectedAttributeId: card1.id-cover-block')
+        screen.getByText('selectedAttributeId: card1.id-cover-block')
       ).toBeInTheDocument()
     })
   })
@@ -314,14 +342,16 @@ describe('Card', () => {
         fullscreen: false,
         children: []
       }
-      const { getByText } = render(
+      render(
         <MockedProvider>
           <SnackbarProvider>
-            <Card {...card} />
+            <EditorProvider initialState={{ selectedBlock: card }}>
+              <Card {...card} />
+            </EditorProvider>
           </SnackbarProvider>
         </MockedProvider>
       )
-      expect(getByText('Light')).toBeInTheDocument()
+      expect(screen.getByText('Light')).toBeInTheDocument()
     })
 
     it('shows Dark when theme mode is dark', () => {
@@ -337,14 +367,16 @@ describe('Card', () => {
         fullscreen: false,
         children: []
       }
-      const { getByText } = render(
+      render(
         <MockedProvider>
           <SnackbarProvider>
-            <Card {...card} />
+            <EditorProvider initialState={{ selectedBlock: card }}>
+              <Card {...card} />
+            </EditorProvider>
           </SnackbarProvider>
         </MockedProvider>
       )
-      expect(getByText('Dark')).toBeInTheDocument()
+      expect(screen.getByText('Dark')).toBeInTheDocument()
     })
 
     it('open card styling accordion', () => {
@@ -360,19 +392,19 @@ describe('Card', () => {
         fullscreen: false,
         children: []
       }
-      const { getByText } = render(
+      render(
         <MockedProvider>
           <SnackbarProvider>
-            <EditorProvider>
+            <EditorProvider initialState={{ selectedBlock: card }}>
               <Card {...card} />
               <TestEditorState />
             </EditorProvider>
           </SnackbarProvider>
         </MockedProvider>
       )
-      fireEvent.click(getByText('Light'))
+      fireEvent.click(screen.getByText('Light'))
       expect(
-        getByText('selectedAttributeId: card1.id-theme-mode')
+        screen.getByText('selectedAttributeId: card1.id-theme-mode')
       ).toBeInTheDocument()
     })
   })
@@ -391,14 +423,16 @@ describe('Card', () => {
         fullscreen: true,
         children: []
       }
-      const { getByText } = render(
+      render(
         <MockedProvider>
           <SnackbarProvider>
-            <Card {...card} />
+            <EditorProvider initialState={{ selectedBlock: card }}>
+              <Card {...card} />
+            </EditorProvider>
           </SnackbarProvider>
         </MockedProvider>
       )
-      expect(getByText('Expanded')).toBeInTheDocument()
+      expect(screen.getByText('Expanded')).toBeInTheDocument()
     })
 
     it('opens card layout accordion when clicked', () => {
@@ -414,19 +448,19 @@ describe('Card', () => {
         fullscreen: false,
         children: []
       }
-      const { getByText } = render(
+      render(
         <MockedProvider>
           <SnackbarProvider>
-            <EditorProvider>
+            <EditorProvider initialState={{ selectedBlock: card }}>
               <Card {...card} />
               <TestEditorState />
             </EditorProvider>
           </SnackbarProvider>
         </MockedProvider>
       )
-      fireEvent.click(getByText('Layout'))
+      fireEvent.click(screen.getByText('Layout'))
       expect(
-        getByText('selectedAttributeId: card1.id-layout')
+        screen.getByText('selectedAttributeId: card1.id-layout')
       ).toBeInTheDocument()
     })
   })

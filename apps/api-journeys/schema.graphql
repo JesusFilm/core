@@ -67,6 +67,14 @@ input EmailActionInput {
   email: String!
 }
 
+input BlockUpdateActionInput {
+  gtmEventName: String
+  email: String
+  url: String
+  target: String
+  blockId: String
+}
+
 type Mutation {
   blockDeleteAction(
     id: ID!
@@ -95,6 +103,7 @@ type Mutation {
     """drop this parameter after merging teams"""
     journeyId: ID
   ): EmailAction!
+  blockUpdateAction(id: ID!, input: BlockUpdateActionInput): Action!
 
   """blockDelete returns the updated sibling blocks on successful delete"""
   blockDelete(
@@ -117,6 +126,11 @@ type Mutation {
     parentOrder defines the position to add the duplicated block. Negative values defines the position from the end of the array. Positions greater than the length of the array or null parentOrder will add duplicate at end of the array.
     """
     parentOrder: Int
+
+    """
+    idMap is used to set custom ids for the duplicated block and it's descendants.
+    """
+    idMap: [BlockDuplicateIdMap!]
 
     """drop this parameter after merging teams"""
     journeyId: ID
@@ -209,6 +223,7 @@ type Mutation {
     """drop this parameter after merging teams"""
     journeyId: ID
   ): StepBlock!
+  stepBlockPositionUpdate(input: [StepBlockPositionUpdateInput!]!): [StepBlock!]!
   textResponseBlockCreate(input: TextResponseBlockCreateInput!): TextResponseBlock!
   textResponseBlockUpdate(
     id: ID!
@@ -373,6 +388,11 @@ type Journey
 input BlocksFilter {
   journeyIds: [ID!]
   typenames: [String!]
+}
+
+input BlockDuplicateIdMap {
+  oldId: ID!
+  newId: ID!
 }
 
 type Query {
@@ -581,6 +601,7 @@ input CardBlockCreateInput {
 
 input CardBlockUpdateInput {
   parentBlockId: ID
+  coverBlockId: ID
   backgroundColor: String
   fullscreen: Boolean
   themeMode: ThemeMode
@@ -912,6 +933,12 @@ input StepBlockUpdateInput {
   y is used to position the block vertically in the journey flow diagram on
   the editor.
   """
+  y: Int
+}
+
+input StepBlockPositionUpdateInput {
+  id: ID!
+  x: Int
   y: Int
 }
 

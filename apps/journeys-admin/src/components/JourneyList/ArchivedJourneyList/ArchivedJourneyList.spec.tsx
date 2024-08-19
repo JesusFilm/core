@@ -10,8 +10,8 @@ import {
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import { ThemeProvider } from '../../ThemeProvider'
-import { SortOrder } from '../JourneySort'
 import { defaultJourney, oldJourney } from '../journeyListData'
+import { SortOrder } from '../JourneySort'
 
 import {
   RESTORE_ARCHIVED_JOURNEYS,

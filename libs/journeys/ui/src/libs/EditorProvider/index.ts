@@ -3,11 +3,12 @@ export {
   EditorProvider,
   ActiveCanvasDetailsDrawer,
   ActiveContent,
-  ActiveFab,
   ActiveSlide
 } from './EditorProvider'
 export type {
   EditorState,
   SetSelectedStepAction,
-  SetSelectedBlockByIdAction
+  SetSelectedBlockByIdAction,
+  SetEditorFocusAction,
+  EditorAction
 } from './EditorProvider'

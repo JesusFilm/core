@@ -4,12 +4,14 @@ import { GraphQLResolveInfo, Kind } from 'graphql'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
 import {
+  Keyword,
   Prisma,
   Video,
   VideoDescription,
   VideoImageAlt,
   VideoSnippet,
   VideoStudyQuestion,
+  VideoSubtitle,
   VideoTitle,
   VideoVariant
 } from '.prisma/api-videos-client'
@@ -89,6 +91,22 @@ describe('VideoResolver', () => {
     videoId: '20615'
   }
 
+  const videoSubtitle: VideoSubtitle = {
+    id: 'subtitleId',
+    edition: 'base',
+    videoId: 'video.id',
+    languageId: '529',
+    primary: true,
+    vttSrc: 'vttSrc',
+    srtSrc: 'srtSrc'
+  }
+
+  const keyword: Keyword = {
+    id: '1',
+    value: 'keyword',
+    languageId: '529'
+  }
+
   beforeEach(async () => {
     const videoService = {
       provide: VideoService,
@@ -127,6 +145,10 @@ describe('VideoResolver', () => {
     prismaService.videoVariant.findUnique.mockResolvedValue(videoVariant[0])
     prismaService.videoVariant.findMany.mockResolvedValue(videoVariant)
     prismaService.video.count.mockResolvedValue(1)
+    prismaService.videoSubtitle.findMany.mockResolvedValue([
+      videoSubtitle,
+      videoSubtitle
+    ])
   })
 
   describe('videos', () => {
@@ -523,6 +545,114 @@ describe('VideoResolver', () => {
       expect(prismaService.videoVariant.findMany).toHaveBeenCalledWith({
         where: { videoId: video.id },
         select: { languageId: true }
+      })
+    })
+  })
+
+  describe('bibleCitations', () => {
+    it('returns bible citations', async () => {
+      prismaService.bibleCitation.findMany.mockResolvedValueOnce([
+        {
+          id: 'bibleCitationId',
+          videoId: 'videoId',
+          order: 1,
+          osisId: 'Gen',
+          bibleBookId: 'bibleBookId',
+          chapterStart: 1,
+          chapterEnd: null,
+          verseStart: 1,
+          verseEnd: null
+        }
+      ])
+      expect(await resolver.bibleCitations(video)).toEqual([
+        {
+          id: 'bibleCitationId',
+          videoId: 'videoId',
+          order: 1,
+          osisId: 'Gen',
+          chapterStart: 1,
+          chapterEnd: null,
+          verseStart: 1,
+          verseEnd: null,
+          bibleBookId: 'bibleBookId'
+        }
+      ])
+      expect(prismaService.bibleCitation.findMany).toHaveBeenCalledWith({
+        where: { videoId: video.id },
+        orderBy: { order: 'asc' }
+      })
+    })
+  })
+
+  describe('subtitles', () => {
+    it('returns subtitles', async () => {
+      expect(await resolver.subtitles(video, '529', true, 'base')).toEqual([
+        {
+          id: 'subtitleId',
+          videoId: 'video.id',
+          languageId: '529',
+          primary: true,
+          edition: 'base',
+          vttSrc: 'vttSrc',
+          srtSrc: 'srtSrc'
+        },
+        {
+          id: 'subtitleId',
+          videoId: 'video.id',
+          languageId: '529',
+          edition: 'base',
+          primary: true,
+          vttSrc: 'vttSrc',
+          srtSrc: 'srtSrc'
+        }
+      ])
+      expect(prismaService.videoSubtitle.findMany).toHaveBeenCalledWith({
+        where: {
+          videoId: video.id,
+          OR: [{ languageId: '529' }, { primary: true }, { edition: 'base' }]
+        },
+        orderBy: { primary: 'desc' }
+      })
+    })
+
+    it('returns all subtitles', async () => {
+      expect(await resolver.subtitles(video)).toEqual([
+        {
+          id: 'subtitleId',
+          videoId: 'video.id',
+          languageId: '529',
+          primary: true,
+          edition: 'base',
+          vttSrc: 'vttSrc',
+          srtSrc: 'srtSrc'
+        },
+        {
+          id: 'subtitleId',
+          videoId: 'video.id',
+          languageId: '529',
+          edition: 'base',
+          primary: true,
+          vttSrc: 'vttSrc',
+          srtSrc: 'srtSrc'
+        }
+      ])
+      expect(prismaService.videoSubtitle.findMany).toHaveBeenCalledWith({
+        where: {
+          videoId: video.id
+        },
+        orderBy: { primary: 'desc' }
+      })
+    })
+  })
+
+  describe('keywords', () => {
+    it('returns keywords', async () => {
+      prismaService.keyword.findMany.mockResolvedValueOnce([keyword])
+      expect(await resolver.keywords(video)).toEqual([keyword])
+      expect(prismaService.keyword.findMany).toHaveBeenCalledWith({
+        where: {
+          videos: { some: { id: video.id } }
+        }
       })
     })
   })

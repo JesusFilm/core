@@ -1,4 +1,4 @@
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import Stack from '@mui/material/Stack'
 import {
   AuthAction,
   useUser,
@@ -7,8 +7,11 @@ import {
 } from 'next-firebase-auth'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
+// eslint-disable-next-line no-restricted-imports
 import { useTranslation } from 'react-i18next'
+
 import { GrowthSpacesCreateIntegration } from '../../../../../src/components/GrowthSpaces'
+import { HelpScoutBeacon } from '../../../../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../../../../src/components/PageWrapper'
 import { initAndAuthApp } from '../../../../../src/libs/initAndAuthApp'
 
@@ -19,7 +22,33 @@ function GrowthSpacesConfigPage(): ReactElement {
   return (
     <>
       <NextSeo title={t('Growth Spaces')} />
-      <PageWrapper title={t('Growth Spaces')} user={user} backHrefHistory>
+      <PageWrapper
+        title={t('Growth Spaces')}
+        user={user}
+        backHrefHistory
+        mainHeaderChildren={
+          <Stack
+            direction="row"
+            justifyContent="flex-end"
+            flexGrow={1}
+            alignItems="center"
+            gap={3}
+            sx={{
+              display: {
+                xs: 'none',
+                md: 'flex'
+              }
+            }}
+          >
+            <HelpScoutBeacon
+              userInfo={{
+                name: user?.displayName ?? '',
+                email: user?.email ?? ''
+              }}
+            />
+          </Stack>
+        }
+      >
         <GrowthSpacesCreateIntegration />
       </PageWrapper>
     </>

@@ -33,17 +33,12 @@
       }
     },
     "lint": {
-      "executor": "nx:run-commands",
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
       "options": {
-        "command": "npx @biomejs/biome check --diagnostic-level=warn",
-        "cwd": "apps/api-languages"
-      }
-    },
-    "lint:fix": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npx @biomejs/biome check --write",
-        "cwd": "apps/api-languages"
+        "cache": true,
+        "cacheLocation": ".cache/api-languages/eslint",
+        "cacheStrategy": "content"
       }
     },
     "test": {
@@ -95,12 +90,6 @@
         "commands": [
           "npx prisma migrate reset --schema apps/api-languages/db/schema.prisma --force"
         ]
-      }
-    },
-    "prisma-seed": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": ["npm run ts-node apps/api-languages/db/seed.ts"]
       }
     },
     "prisma-studio": {

@@ -7,9 +7,18 @@ import { ImporterService } from '../importer/importer.service'
 import { ImporterBibleBookNamesService } from '../importer/importerBibleBookNames/importerBibleBookNames.service'
 import { ImporterBibleBooksService } from '../importer/importerBibleBooks/importerBibleBooks.service'
 import { ImporterBibleCitationsService } from '../importer/importerBibleCitations/importerBibleCitations.service'
-import { ImporterVideoSubtitlesService } from '../importer/importerVideoSubtitle/importerVideoSubtitle.service'
-import { ImporterVideoVariantsService } from '../importer/importerVideoVariants/importerVideoVariants.service'
+import { ImporterKeywordsService } from '../importer/importerKeywords/importerKeywords.service'
+import { ImporterLanguageSlugsService } from '../importer/importerLanguageSlugs/importerLanguageSlugs.service'
+import { ImporterVideoDescriptionService } from '../importer/importerVideoDescriptions/importerVideoDescriptions.service'
+import { ImporterVideoImageAltService } from '../importer/importerVideoImageAlt/importerVideoImageAlt.service'
 import { ImporterVideosService } from '../importer/importerVideos/importerVideos.service'
+import { ImporterVideosChildrenService } from '../importer/importerVideosChildren/importerVideosChildren.service'
+import { ImporterVideoSnippetsService } from '../importer/importerVideoSnippets/importerVideoSnippets.service'
+import { ImporterVideoStudyQuestionsService } from '../importer/importerVideoStudyQuestions/importerVideoStudyQuestions.service'
+import { ImporterVideoSubtitlesService } from '../importer/importerVideoSubtitle/importerVideoSubtitle.service'
+import { ImporterVideoTitleService } from '../importer/importerVideoTitles/importerVideoTitle.service'
+import { ImporterVideoVariantDownloadsService } from '../importer/importerVideoVariantDownloads/importerVideoVariantDownloads.service'
+import { ImporterVideoVariantsService } from '../importer/importerVideoVariants/importerVideoVariants.service'
 
 import { BigQueryService } from './bigQuery.service'
 
@@ -30,14 +39,69 @@ export class BigQueryConsumer extends WorkerHost {
     private readonly prismaService: PrismaService,
     private readonly bigQueryService: BigQueryService,
     private readonly importerVideosService: ImporterVideosService,
+    private readonly importerVideoTitleService: ImporterVideoTitleService,
+    private readonly importerVideoDescriptionService: ImporterVideoDescriptionService,
+    private readonly importerVideoStudyQuestionsService: ImporterVideoStudyQuestionsService,
+    private readonly importerVideoSnippetsService: ImporterVideoSnippetsService,
     private readonly importerVideoVariantsService: ImporterVideoVariantsService,
+    private readonly importerVideoImageAltService: ImporterVideoImageAltService,
+    private readonly importerVideoVariantsDownloadService: ImporterVideoVariantDownloadsService,
     private readonly importerVideoSubtitleService: ImporterVideoSubtitlesService,
+    private readonly importerVideosChildrenService: ImporterVideosChildrenService,
     private readonly importerBibleBooksService: ImporterBibleBooksService,
     private readonly importerBibleBookNamesService: ImporterBibleBookNamesService,
-    private readonly importerBibleCitationsService: ImporterBibleCitationsService
+    private readonly importerBibleCitationsService: ImporterBibleCitationsService,
+    private readonly importerKeywordsService: ImporterKeywordsService,
+    private readonly importerLanguageSlugsService: ImporterLanguageSlugsService
   ) {
     super()
     this.tables = [
+      {
+        table: 'jfp-data-warehouse.jfp_mmdb_prod.core_video_arclight_data',
+        service: this.importerVideosService,
+        hasUpdatedAt: true
+      },
+      {
+        table: 'jfp-data-warehouse.jfp_mmdb_prod.core_videoTitle_arclight_data',
+        service: this.importerVideoTitleService,
+        hasUpdatedAt: true
+      },
+      {
+        table:
+          'jfp-data-warehouse.jfp_mmdb_prod.core_videoDescription_arclight_data',
+        service: this.importerVideoDescriptionService,
+        hasUpdatedAt: true
+      },
+      {
+        table:
+          'jfp-data-warehouse.jfp_mmdb_prod.core_videoStudyQuestions_arclight_data',
+        service: this.importerVideoStudyQuestionsService,
+        hasUpdatedAt: true
+      },
+      {
+        table:
+          'jfp-data-warehouse.jfp_mmdb_prod.core_videoSnippet_arclight_data',
+        service: this.importerVideoSnippetsService,
+        hasUpdatedAt: true
+      },
+      {
+        table:
+          'jfp-data-warehouse.jfp_mmdb_prod.core_videoImageAlt_arclight_data',
+        service: this.importerVideoImageAltService,
+        hasUpdatedAt: true
+      },
+      {
+        table:
+          'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariant_arclight_data',
+        service: this.importerVideoVariantsService,
+        hasUpdatedAt: true
+      },
+      {
+        table:
+          'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariantDownload_arclight_data',
+        service: this.importerVideoVariantsDownloadService,
+        hasUpdatedAt: true
+      },
       {
         table:
           'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariantSubtitles_arclight_data',
@@ -60,6 +124,11 @@ export class BigQueryConsumer extends WorkerHost {
           'jfp-data-warehouse.jfp_mmdb_prod.core_videoBibleCitation_arclight_data',
         service: this.importerBibleCitationsService,
         hasUpdatedAt: true
+      },
+      {
+        table: 'jfp-data-warehouse.jfp_mmdb_prod.core_keywords_arclight_data',
+        service: this.importerKeywordsService,
+        hasUpdatedAt: true
       }
     ]
   }
@@ -68,7 +137,13 @@ export class BigQueryConsumer extends WorkerHost {
     await this.importerVideosService.getUsedSlugs()
     await this.importerVideoVariantsService.getExistingIds()
     await this.importerBibleBooksService.getExistingIds()
+    await this.importerLanguageSlugsService.getLanguageSlugs()
 
+    if (Object.keys(this.importerLanguageSlugsService.slugs).length === 0) {
+      throw new Error('No language slugs found. Possible api-languages outage')
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-for-in-array
     for (const index in this.tables) {
       try {
         const {
@@ -84,11 +159,14 @@ export class BigQueryConsumer extends WorkerHost {
       }
     }
 
+    await this.importerVideosChildrenService.process()
+
     // cleanup for future runs
     this.importerVideosService.usedSlugs = undefined
     this.importerVideosService.ids = []
     this.importerVideoVariantsService.ids = []
     this.importerBibleBooksService.ids = []
+    this.importerVideoVariantsDownloadService.videoVariantIds = []
   }
 
   async processTable(

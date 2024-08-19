@@ -57,17 +57,12 @@
       }
     },
     "lint": {
-      "executor": "nx:run-commands",
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
       "options": {
-        "command": "npx @biomejs/biome check  --diagnostic-level=warn",
-        "cwd": "apps/api-tags"
-      }
-    },
-    "lint:fix": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npx @biomejs/biome check --write",
-        "cwd": "apps/api-tags"
+        "cache": true,
+        "cacheLocation": ".cache/api-tags/eslint",
+        "cacheStrategy": "content"
       }
     },
     "test": {

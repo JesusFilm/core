@@ -6,8 +6,9 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { GetJourney_journey as Journey } from '../../../../../../../../../__generated__/GetJourney'
+import { BLOCK_ACTION_DELETE } from '../../../../../../../../libs/useBlockActionDeleteMutation/useBlockActionDeleteMutation'
 
-import { ACTION_DELETE, Action } from './Action'
+import { Action } from './Action'
 import { steps } from './data'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -82,10 +83,9 @@ describe('Action', () => {
         mocks={[
           {
             request: {
-              query: ACTION_DELETE,
+              query: BLOCK_ACTION_DELETE,
               variables: {
-                id: selectedBlock?.id,
-                journeyId: 'journeyId'
+                id: selectedBlock?.id
               }
             },
             result

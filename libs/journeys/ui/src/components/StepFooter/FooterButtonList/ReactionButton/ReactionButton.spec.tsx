@@ -1,16 +1,13 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { usePlausible } from 'next-plausible'
 
-import { keyify } from '@core/journeys/ui/plausibleHelpers'
-import { ReactionButton } from '.'
+import { TreeBlock, blockHistoryVar } from '../../../../libs/block'
 import { JourneyProvider } from '../../../../libs/JourneyProvider'
 import { JourneyFields as Journey } from '../../../../libs/JourneyProvider/__generated__/JourneyFields'
-import {
-  TreeBlock,
-  blockHistoryVar,
-  treeBlocksVar
-} from '../../../../libs/block'
+import { keyify } from '../../../../libs/plausibleHelpers'
 import { StepFields } from '../../../Step/__generated__/StepFields'
+
+import { ReactionButton } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -30,6 +27,7 @@ const journey = {
   id: 'journey.id'
 } as unknown as Journey
 
+// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
 const block = {
   id: 'block.id'
 } as TreeBlock<StepFields>

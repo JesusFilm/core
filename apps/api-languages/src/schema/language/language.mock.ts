@@ -9,6 +9,8 @@ export const language = {
   id: '20615',
   bcp47: 'zh',
   iso3: 'zh',
+  slug: 'mandarin-china',
+  hasVideos: true,
   createdAt: new Date('2021-01-01T00:00:00.000Z'),
   updatedAt: new Date('2021-01-01T00:00:00.000Z')
 }

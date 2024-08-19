@@ -1,5 +1,5 @@
 import { renderHook, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import { ReactNode } from 'react'
 
 import {
@@ -14,6 +14,7 @@ describe('Hotkeys', () => {
   it('should undo command when mod+z is pressed', async () => {
     const command0: Command = {
       parameters: { execute: { arg1: 'execute' }, undo: { arg1: 'undo' } },
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
       execute: () => {},
       undo: jest.fn()
     }
@@ -29,8 +30,8 @@ describe('Hotkeys', () => {
       wrapper
     })
 
-    result.current.add(command0)
-    await waitFor(() => expect(result.current.state.undo).not.toBeUndefined())
+    await result.current.add(command0)
+    await waitFor(() => expect(result.current.state.undo).toBeDefined())
     await userEvent.keyboard('{Meta>}Z{/Meta}')
     expect(command0.undo).toHaveBeenCalledWith({ arg1: 'undo' })
   })
@@ -38,7 +39,9 @@ describe('Hotkeys', () => {
   it('should redo command when mod+shift+z is pressed', async () => {
     const command0: Command = {
       parameters: { execute: { arg1: 'execute' }, undo: { arg1: 'undo' } },
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
       execute: () => {},
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
       undo: () => {},
       redo: jest.fn()
     }
@@ -55,8 +58,8 @@ describe('Hotkeys', () => {
     })
 
     await result.current.add(command0)
-    await waitFor(() => expect(result.current.state.undo).not.toBeUndefined())
-    result.current.undo()
+    await waitFor(() => expect(result.current.state.undo).toBeDefined())
+    await result.current.undo()
     await userEvent.keyboard('{Meta>}{Shift>}Z{/Shift}{/Meta}')
     expect(command0.redo).toHaveBeenCalledWith({ arg1: 'execute' })
   })

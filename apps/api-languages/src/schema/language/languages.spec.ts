@@ -4,8 +4,8 @@ import omit from 'lodash/omit'
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { cache } from '../../yoga'
-import { language } from './language.mock'
-import { languageName } from './language.mock'
+
+import { language, languageName } from './language.mock'
 
 const LANGUAGES_QUERY = graphql(`
   query Languages($languageId: ID, $primary: Boolean) {
@@ -13,6 +13,7 @@ const LANGUAGES_QUERY = graphql(`
       id
       bcp47
       iso3
+      slug
       name(languageId: $languageId, primary: $primary) {
         value
         primary
@@ -24,8 +25,8 @@ const LANGUAGES_QUERY = graphql(`
 describe('language', () => {
   const client = getClient()
 
-  afterEach(() => {
-    cache.invalidate([{ typename: 'Language' }])
+  afterEach(async () => {
+    await cache.invalidate([{ typename: 'Language' }])
   })
 
   it('should query language with defaults', async () => {
@@ -35,18 +36,21 @@ describe('language', () => {
       document: LANGUAGES_QUERY
     })
     expect(prismaMock.language.findMany).toHaveBeenCalledWith({
-      where: {}
+      where: {
+        hasVideos: true
+      }
     })
     expect(prismaMock.languageName.findMany).toHaveBeenCalledWith({
       where: {
-        parentLanguageId: '20615'
+        parentLanguageId: '20615',
+        OR: [{ languageId: '529' }, { primary: true }]
       },
       include: { language: true },
       orderBy: { primary: 'desc' }
     })
     expect(data).toHaveProperty('data.languages', [
       {
-        ...omit(language, ['createdAt', 'updatedAt']),
+        ...omit(language, ['createdAt', 'updatedAt', 'hasVideos']),
         name: languageName.map((languageName) =>
           omit(languageName, ['id', 'languageId', 'parentLanguageId'])
         )
@@ -65,7 +69,9 @@ describe('language', () => {
       }
     })
     expect(prismaMock.language.findMany).toHaveBeenCalledWith({
-      where: {}
+      where: {
+        hasVideos: true
+      }
     })
     expect(prismaMock.languageName.findMany).toHaveBeenCalledWith({
       where: {
@@ -77,7 +83,7 @@ describe('language', () => {
     })
     expect(data).toHaveProperty('data.languages', [
       {
-        ...omit(language, ['createdAt', 'updatedAt']),
+        ...omit(language, ['createdAt', 'updatedAt', 'hasVideos']),
         name: languageName.map((languageName) =>
           omit(languageName, ['id', 'languageId', 'parentLanguageId'])
         )

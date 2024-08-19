@@ -10,9 +10,9 @@ import {
   useRef
 } from 'react'
 
-import { CommandProvider } from '../CommandProvider'
 import type { TreeBlock } from '../block'
 import { BlockFields_StepBlock as StepBlock } from '../block/__generated__/BlockFields'
+import { CommandProvider } from '../CommandProvider'
 import { searchBlocks } from '../searchBlocks'
 import { type JourneyAnalytics } from '../useJourneyAnalyticsQuery'
 
@@ -20,11 +20,6 @@ export enum ActiveContent {
   Canvas = 'canvas',
   Social = 'social',
   Goals = 'goals'
-}
-export enum ActiveFab {
-  Add = 0,
-  Edit = 1,
-  Save = 2
 }
 export enum ActiveSlide {
   JourneyFlow = 0,
@@ -48,13 +43,6 @@ export interface EditorState {
    * other).
    */
   activeContent: ActiveContent
-  /**
-   * activeFab indicates which Fab to display. If the user is currently editing
-   * a text field this should be set to “Save”. If the user based on the
-   * selected block can edit a text field the field should be set to “Edit”.
-   * Otherwise this should be set to “Add”.
-   */
-  activeFab: ActiveFab
   /**
    * activeSlide indicates which slide is primarily in view of the user.
    * Note that Settings should only be set as active when on a mobile device.
@@ -81,6 +69,12 @@ export interface EditorState {
    */
   selectedBlock?: TreeBlock
   /**
+   * selectedBlockId indicates which block is currently selected on the Canvas
+   * and the JourneyFlow. It also indicates which attributes should be
+   * displayed in relation to the SelectedBlock.
+   */
+  selectedBlockId?: string
+  /**
    * selectedGoalUrl indicates which Goal to show on GoalDetails for editing.
    * If SelectedGoalUrl is unset then the information about goals will be shown.
    */
@@ -90,15 +84,19 @@ export interface EditorState {
    * the JourneyFlow.
    */
   selectedStep?: TreeBlock<StepBlock>
+  /**
+   * selectedStepId indicates which step is currently displayed by the Canvas
+   * and the JourneyFlow. However, this can be used to selected the step before
+   * it is added to the steps array i.e in creation mutations. This is important as running a dispatch
+   * action to set the selected step before it is added to the steps array will
+   * not work.
+   */
+  selectedStepId?: string
   steps?: Array<TreeBlock<StepBlock>>
 }
 interface SetActiveContentAction {
   type: 'SetActiveContentAction'
   activeContent: ActiveContent
-}
-interface SetActiveFabAction {
-  type: 'SetActiveFabAction'
-  activeFab: ActiveFab
 }
 interface SetActiveSlideAction {
   type: 'SetActiveSlideAction'
@@ -119,6 +117,10 @@ interface SetSelectedBlockOnlyAction {
 export interface SetSelectedBlockByIdAction {
   type: 'SetSelectedBlockByIdAction'
   selectedBlockId?: string
+}
+export interface SetSelectedStepByIdAction {
+  type: 'SetSelectedStepByIdAction'
+  selectedStepId?: string
 }
 interface SetActiveCanvasDetailsDrawerAction {
   type: 'SetActiveCanvasDetailsDrawerAction'
@@ -144,10 +146,27 @@ interface SetAnalyticsAction {
   type: 'SetAnalyticsAction'
   analytics?: JourneyAnalytics
 }
-type EditorAction =
+
+/**
+ * SetEditorFocusAction is a special action that allows setting multiple state
+ * properties at once. This is primarily used to set the UI position of the
+ * editor.
+ */
+export interface SetEditorFocusAction {
+  type: 'SetEditorFocusAction'
+  activeCanvasDetailsDrawer?: ActiveCanvasDetailsDrawer
+  activeContent?: ActiveContent
+  activeSlide?: ActiveSlide
+  selectedAttributeId?: string
+  selectedBlock?: TreeBlock
+  selectedBlockId?: string
+  selectedGoalUrl?: string
+  selectedStep?: TreeBlock<StepBlock>
+  selectedStepId?: string
+}
+export type EditorAction =
   | SetActiveCanvasDetailsDrawerAction
   | SetActiveContentAction
-  | SetActiveFabAction
   | SetActiveSlideAction
   | SetSelectedAttributeIdAction
   | SetSelectedBlockAction
@@ -155,9 +174,12 @@ type EditorAction =
   | SetSelectedBlockByIdAction
   | SetSelectedGoalUrlAction
   | SetSelectedStepAction
+  | SetSelectedStepByIdAction
   | SetStepsAction
   | SetShowAnalyticsAction
   | SetAnalyticsAction
+  | SetEditorFocusAction
+  | SetSelectedStepByIdAction
 
 export const reducer = (
   state: EditorState,
@@ -174,32 +196,34 @@ export const reducer = (
         ...state,
         activeContent: action.activeContent
       }
-    case 'SetActiveFabAction':
-      return {
-        ...state,
-        activeFab: action.activeFab
-      }
     case 'SetActiveSlideAction':
       return {
         ...state,
-        activeContent: state.activeContent,
-        activeSlide: action.activeSlide
+        activeSlide: state.showAnalytics === true ? 0 : action.activeSlide
       }
     case 'SetSelectedAttributeIdAction':
-      return { ...state, selectedAttributeId: action.selectedAttributeId }
+      return {
+        ...state,
+        selectedAttributeId: action.selectedAttributeId
+      }
     case 'SetSelectedBlockAction':
       return {
         ...state,
+        selectedBlockId: action.selectedBlock?.id,
         selectedBlock: action.selectedBlock,
         activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
         activeContent: ActiveContent.Canvas,
         activeSlide: ActiveSlide.Content
       }
     case 'SetSelectedBlockOnlyAction':
-      return { ...state, selectedBlock: action.selectedBlock }
+      return {
+        ...state,
+        selectedBlock: action.selectedBlock
+      }
     case 'SetSelectedBlockByIdAction':
       return {
         ...state,
+        selectedBlockId: action.selectedBlockId,
         selectedBlock:
           action.selectedBlockId != null
             ? searchBlocks(state.steps ?? [], action.selectedBlockId)
@@ -215,22 +239,41 @@ export const reducer = (
     case 'SetSelectedStepAction':
       return {
         ...state,
+        selectedStepId: action.selectedStep?.id,
         selectedStep: action.selectedStep,
+        selectedBlockId: action.selectedStep?.id,
         selectedBlock: action.selectedStep,
         activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
         activeContent: ActiveContent.Canvas
       }
+    case 'SetSelectedStepByIdAction': {
+      const selectedStep =
+        action.selectedStepId != null
+          ? (searchBlocks(state.steps ?? [], action.selectedStepId, {
+              filter: 'searchStepsOnly'
+            }) as TreeBlock<StepBlock>)
+          : undefined
+      return {
+        ...state,
+        selectedStepId: action.selectedStepId,
+        selectedStep,
+        selectedBlockId: action.selectedStepId,
+        selectedBlock: selectedStep,
+        activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+        activeContent: ActiveContent.Canvas
+      }
+    }
     case 'SetStepsAction':
       return {
         ...state,
         steps: action.steps,
         selectedStep:
-          state.selectedStep != null
-            ? action.steps.find(({ id }) => id === state.selectedStep?.id)
+          state.selectedStepId != null
+            ? action.steps.find(({ id }) => id === state.selectedStepId)
             : action.steps[0],
         selectedBlock:
-          state.selectedBlock != null
-            ? searchBlocks(action.steps, state.selectedBlock.id)
+          state.selectedBlockId != null
+            ? searchBlocks(action.steps, state.selectedBlockId)
             : action.steps[0]
       }
     case 'SetShowAnalyticsAction':
@@ -238,11 +281,70 @@ export const reducer = (
         ...state,
         showAnalytics: action.showAnalytics
       }
-    case 'SetAnalyticsAction': {
+    case 'SetAnalyticsAction':
       return {
         ...state,
         analytics: action.analytics
       }
+    case 'SetEditorFocusAction': {
+      let stateCopy = { ...state }
+      const {
+        activeCanvasDetailsDrawer,
+        activeContent,
+        activeSlide,
+        selectedAttributeId,
+        selectedGoalUrl,
+        selectedBlock,
+        selectedBlockId,
+        selectedStep,
+        selectedStepId
+      } = action
+      if (selectedStep != null)
+        stateCopy = reducer(stateCopy, {
+          type: 'SetSelectedStepAction',
+          selectedStep
+        })
+      if (selectedStepId != null)
+        stateCopy = reducer(stateCopy, {
+          type: 'SetSelectedStepByIdAction',
+          selectedStepId
+        })
+      if (selectedBlock != null)
+        stateCopy = reducer(stateCopy, {
+          type: 'SetSelectedBlockAction',
+          selectedBlock
+        })
+      if (selectedBlockId != null)
+        stateCopy = reducer(stateCopy, {
+          type: 'SetSelectedBlockByIdAction',
+          selectedBlockId
+        })
+      if (activeSlide != null)
+        stateCopy = reducer(stateCopy, {
+          type: 'SetActiveSlideAction',
+          activeSlide
+        })
+      if (activeContent != null)
+        stateCopy = reducer(stateCopy, {
+          type: 'SetActiveContentAction',
+          activeContent
+        })
+      if (activeCanvasDetailsDrawer != null)
+        stateCopy = reducer(stateCopy, {
+          type: 'SetActiveCanvasDetailsDrawerAction',
+          activeCanvasDetailsDrawer
+        })
+      if (selectedAttributeId != null)
+        stateCopy = reducer(stateCopy, {
+          type: 'SetSelectedAttributeIdAction',
+          selectedAttributeId
+        })
+      if (selectedGoalUrl != null)
+        stateCopy = reducer(stateCopy, {
+          type: 'SetSelectedGoalUrlAction',
+          selectedGoalUrl
+        })
+      return stateCopy
     }
   }
 }
@@ -254,7 +356,6 @@ export const EditorContext = createContext<{
   state: {
     steps: [],
     activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
-    activeFab: ActiveFab.Add,
     activeSlide: ActiveSlide.JourneyFlow,
     activeContent: ActiveContent.Canvas
   },
@@ -280,7 +381,6 @@ export function EditorProvider({
     selectedStep: initialState?.steps?.[0],
     selectedBlock: initialState?.steps?.[0],
     activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
-    activeFab: ActiveFab.Add,
     activeSlide: ActiveSlide.JourneyFlow,
     activeContent: ActiveContent.Canvas,
     ...initialState
@@ -308,7 +408,34 @@ export function EditorProvider({
           selectedBlock: initialState.selectedBlock
         })
     }
-  }, [initialState?.selectedStep, initialState?.selectedBlock])
+
+    if (initialState?.activeCanvasDetailsDrawer != null) {
+      dispatch({
+        type: 'SetActiveCanvasDetailsDrawerAction',
+        activeCanvasDetailsDrawer: initialState.activeCanvasDetailsDrawer
+      })
+    }
+
+    if (initialState?.activeContent != null) {
+      dispatch({
+        type: 'SetActiveContentAction',
+        activeContent: initialState.activeContent
+      })
+    }
+
+    if (initialState?.activeSlide != null) {
+      dispatch({
+        type: 'SetActiveSlideAction',
+        activeSlide: initialState.activeSlide
+      })
+    }
+  }, [
+    initialState?.selectedStep,
+    initialState?.selectedBlock,
+    initialState?.activeCanvasDetailsDrawer,
+    initialState?.activeContent,
+    initialState?.activeSlide
+  ])
 
   return (
     <EditorContext.Provider value={{ state, dispatch }}>

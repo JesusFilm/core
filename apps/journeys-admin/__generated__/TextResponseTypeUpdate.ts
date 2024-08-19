@@ -13,6 +13,7 @@ export interface TextResponseTypeUpdate_textResponseBlockUpdate {
   __typename: "TextResponseBlock";
   id: string;
   type: TextResponseType | null;
+  label: string;
   integrationId: string | null;
   routeId: string | null;
 }
@@ -23,6 +24,5 @@ export interface TextResponseTypeUpdate {
 
 export interface TextResponseTypeUpdateVariables {
   id: string;
-  journeyId: string;
   input: TextResponseBlockUpdateInput;
 }

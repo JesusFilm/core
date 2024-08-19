@@ -2,11 +2,11 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render, screen } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
+import { TreeBlock } from '@core/journeys/ui/block'
 import {
   ActiveCanvasDetailsDrawer,
   EditorProvider
 } from '@core/journeys/ui/EditorProvider'
-import { TreeBlock } from '@core/journeys/ui/block'
 
 import {
   BlockFields_ButtonBlock as ButtonBlock,

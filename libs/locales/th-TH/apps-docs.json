@@ -1,10 +1,10 @@
 {
-  "Deploy Quickly": "Deploy Quickly",
-  "Our Continuous Integration & Continuous Delivery pipeline lets you deliver code changes more frequently and reliably.": "Our Continuous Integration & Continuous Delivery pipeline lets you deliver code changes more frequently and reliably.",
-  "Common Environment": "Common Environment",
-  "We run on Docker. This means every developer shares the same environment that closely mimics production making collaboration simple.": "We run on Docker. This means every developer shares the same environment that closely mimics production making collaboration simple.",
-  "Powered by Typescript": "Powered by Typescript",
-  "TypeScript is a strongly typed programming language that builds on JavaScript, giving you better tooling at any scale.": "TypeScript is a strongly typed programming language that builds on JavaScript, giving you better tooling at any scale.",
-  "Core Development Kit Documentation": "Core Development Kit Documentation",
-  "Welcome - 5min ": "Welcome - 5min "
+  "Deploy Quickly": "Implement Quickly",
+  "Our Continuous Integration & Continuous Delivery pipeline lets you deliver code changes more frequently and reliably.": "ท่องไปท่องมา พร้อมต่อ ๆ",
+  "Common Environment": "สภาพแวดล้อมทั่วไป",
+  "We run on Docker. This means every developer shares the same environment that closely mimics production making collaboration simple.": "เราทำงานบน Docker ซึ่งหมาดให้นักพัฒนาทุกคนใช้สภาพแวดล้อมเดียวกันที่เข้ากับการผลิตในลักษณะที่ใกล้เคียง ทำให้การทำงานร่วมกันง่ายขึ้น",
+  "Powered by Typescript": "ขับเคลื่อนด้วย Typescript",
+  "TypeScript is a strongly typed programming language that builds on JavaScript, giving you better tooling at any scale.": "TypeScript เป็นภาษาโปรแกรมที่มีชนิดแข็งซึ่งเขียนขึ้นบน JavaScript ให้คุณมีเครื่องมือที่ดีขึ้นทุกขนาด",
+  "Core Development Kit Documentation": "คู่มือพื้นฐานสำหรับการพัฒนาเอกสาร",
+  "Welcome - 5min ": "ยินดีต้อนรับ - 5 นาที"
 }

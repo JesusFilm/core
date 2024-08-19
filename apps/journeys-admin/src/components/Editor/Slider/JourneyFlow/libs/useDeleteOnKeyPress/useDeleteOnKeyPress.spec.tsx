@@ -1,13 +1,16 @@
 import { MutationResult } from '@apollo/client'
+import { MockedProvider } from '@apollo/client/testing'
 import { act, renderHook, waitFor } from '@testing-library/react'
 import { Edge, OnSelectionChangeParams, useKeyPress } from 'reactflow'
 
+import { TreeBlock } from '@core/journeys/ui/block'
 import {
   ActiveSlide,
   EditorProvider,
   EditorState
 } from '@core/journeys/ui/EditorProvider'
-import { TreeBlock } from '@core/journeys/ui/block'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
 import { BlockDelete } from '../../../../../../../__generated__/BlockDelete'
 import { StepFields as StepBlock } from '../../../../../../../__generated__/StepFields'
@@ -39,6 +42,7 @@ jest.mock('../../../../../../libs/useBlockDeleteMutation', () => {
     useBlockDeleteMutation: jest.fn()
   }
 })
+
 const mockUseBlockDeleteMutation =
   useBlockDeleteMutation as jest.MockedFunction<typeof useBlockDeleteMutation>
 
@@ -69,7 +73,9 @@ describe('useDeleteOnKeyPress', () => {
 
     const { result } = renderHook(() => useDeleteOnKeyPress(), {
       wrapper: ({ children }) => (
-        <EditorProvider initialState={initialState}>{children}</EditorProvider>
+        <EditorProvider initialState={initialState}>
+          <MockedProvider>{children}</MockedProvider>
+        </EditorProvider>
       )
     })
 
@@ -87,13 +93,18 @@ describe('useDeleteOnKeyPress', () => {
     } as unknown as TreeBlock<StepBlock>
     const initialState = {
       selectedBlock: stepBlock,
-      activeSlide: ActiveSlide.JourneyFlow
+      activeSlide: ActiveSlide.JourneyFlow,
+      steps: [stepBlock]
     } as unknown as EditorState
 
     mockUseKeyPress.mockReturnValueOnce(true)
     renderHook(() => useDeleteOnKeyPress(), {
       wrapper: ({ children }) => (
-        <EditorProvider initialState={initialState}>{children}</EditorProvider>
+        <JourneyProvider value={{ journey: defaultJourney }}>
+          <EditorProvider initialState={initialState}>
+            <MockedProvider>{children}</MockedProvider>
+          </EditorProvider>
+        </JourneyProvider>
       )
     })
     await waitFor(async () => expect(deleteBlock).toHaveBeenCalled())

@@ -1,14 +1,13 @@
 import { graphql } from 'gql.tada'
 import omit from 'lodash/omit'
 
+import { Language } from '.prisma/api-languages-client'
+
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { cache } from '../../yoga'
-import { language } from './language.mock'
-import { languageName } from './language.mock'
 
-import { audioPreview } from './language.mock'
-import { Language } from '.prisma/api-languages-client'
+import { audioPreview, language, languageName } from './language.mock'
 
 const LANGUAGE_QUERY = graphql(`
   query Language($languageId: ID, $primary: Boolean) {
@@ -16,6 +15,7 @@ const LANGUAGE_QUERY = graphql(`
       id
       bcp47
       iso3
+      slug
       name(languageId: $languageId, primary: $primary) {
         value
         primary
@@ -35,8 +35,8 @@ const LANGUAGE_QUERY = graphql(`
 describe('language', () => {
   const client = getClient()
 
-  afterEach(() => {
-    cache.invalidate([{ typename: 'Language' }])
+  afterEach(async () => {
+    await cache.invalidate([{ typename: 'Language' }])
   })
 
   it('should query language with defaults', async () => {
@@ -65,13 +65,14 @@ describe('language', () => {
     })
     expect(prismaMock.languageName.findMany).toHaveBeenCalledWith({
       where: {
-        parentLanguageId: '20615'
+        parentLanguageId: '20615',
+        OR: [{ languageId: '529' }, { primary: true }]
       },
       include: { language: true },
       orderBy: { primary: 'desc' }
     })
     expect(data).toHaveProperty('data.language', {
-      ...omit(language, ['createdAt', 'updatedAt']),
+      ...omit(language, ['createdAt', 'updatedAt', 'hasVideos']),
       name: languageName.map((languageName) =>
         omit(languageName, ['id', 'languageId', 'parentLanguageId'])
       ),
@@ -119,7 +120,7 @@ describe('language', () => {
       orderBy: { primary: 'desc' }
     })
     expect(data).toHaveProperty('data.language', {
-      ...omit(language, ['createdAt', 'updatedAt']),
+      ...omit(language, ['createdAt', 'updatedAt', 'hasVideos']),
       name: languageName.map((languageName) =>
         omit(languageName, ['id', 'languageId', 'parentLanguageId'])
       ),

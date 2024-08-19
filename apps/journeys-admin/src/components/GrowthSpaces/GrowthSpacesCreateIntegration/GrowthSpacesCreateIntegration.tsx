@@ -1,15 +1,32 @@
-import { ApolloError, gql, useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import { useRouter } from 'next/router'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
+// eslint-disable-next-line no-restricted-imports
 import { useTranslation } from 'react-i18next'
-import { IntegrationGrowthSpacesCreate } from '../../../../__generated__/IntegrationGrowthSpacesCreate'
+
+import {
+  IntegrationGrowthSpacesCreate,
+  IntegrationGrowthSpacesCreateVariables
+} from '../../../../__generated__/IntegrationGrowthSpacesCreate'
 import { GrowthSpacesSettings } from '../GrowthSpacesSettings'
 
 export const INTEGRATION_GROWTH_SPACES_CREATE = gql`
-  mutation IntegrationGrowthSpacesCreate($input: IntegrationGrowthSpacesCreateInput!) {
+  mutation IntegrationGrowthSpacesCreate(
+    $input: IntegrationGrowthSpacesCreateInput!
+  ) {
     integrationGrowthSpacesCreate(input: $input) {
       id
+      team {
+        id
+      }
+      type
+      accessId
+      accessSecretPart
+      routes {
+        id
+        name
+      }
     }
   }
 `
@@ -21,13 +38,23 @@ export function GrowthSpacesCreateIntegration(): ReactElement {
   const teamId = router.query.teamId
   const [accessId, setAccessId] = useState<string | undefined>()
   const [accessSecret, setAccessSecret] = useState<string | undefined>()
+  const [loading, setLoading] = useState<boolean>(false)
 
-  const [integrationGrowthSpacesCreate, { loading }] =
-    useMutation<IntegrationGrowthSpacesCreate>(INTEGRATION_GROWTH_SPACES_CREATE)
+  const [integrationGrowthSpacesCreate] = useMutation<
+    IntegrationGrowthSpacesCreate,
+    IntegrationGrowthSpacesCreateVariables
+  >(INTEGRATION_GROWTH_SPACES_CREATE)
 
   async function handleClick(): Promise<void> {
-    if (teamId == null) return
+    if (
+      teamId == null ||
+      accessId == null ||
+      accessSecret == null ||
+      typeof teamId !== 'string'
+    )
+      return
     try {
+      setLoading(true)
       const { data } = await integrationGrowthSpacesCreate({
         variables: {
           input: {
@@ -35,17 +62,33 @@ export function GrowthSpacesCreateIntegration(): ReactElement {
             accessSecret,
             teamId
           }
+        },
+        update(cache, { data }) {
+          if (data == null) return
+          cache.modify({
+            fields: {
+              integrations: (existingRefs = []) => {
+                const newIntegration = cache.writeFragment({
+                  data: data.integrationGrowthSpacesCreate,
+                  fragment: gql`
+                    fragment Integration on IntegrationGrowthSpaces {
+                      id
+                    }
+                  `
+                })
+                return [...existingRefs, newIntegration]
+              }
+            }
+          })
         }
       })
 
       if (data?.integrationGrowthSpacesCreate?.id != null) {
+        await router.push(`/teams/${teamId}/integrations`)
         enqueueSnackbar(t('Growth Spaces settings saved'), {
           variant: 'success',
           preventDuplicate: true
         })
-        await router.push(
-          `/teams/${teamId}/integrations/${data.integrationGrowthSpacesCreate.id}`
-        )
       } else {
         enqueueSnackbar(
           t('Growth Spaces settings failed. Reload the page or try again.'),
@@ -62,6 +105,8 @@ export function GrowthSpacesCreateIntegration(): ReactElement {
           preventDuplicate: true
         })
       }
+    } finally {
+      setLoading(false)
     }
   }
 

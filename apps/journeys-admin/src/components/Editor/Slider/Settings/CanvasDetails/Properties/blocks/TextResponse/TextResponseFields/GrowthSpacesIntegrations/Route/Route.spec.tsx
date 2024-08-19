@@ -1,18 +1,26 @@
+import { FetchResult } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
+import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
 } from '@core/journeys/ui/TeamProvider'
-import { TreeBlock } from '@core/journeys/ui/block'
+
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../../__generated__/BlockFields'
-import { GetJourney_journey as Journey } from '../../../../../../../../../../../../__generated__/GetJourney'
+import { GetIntegration } from '../../../../../../../../../../../../__generated__/GetIntegration'
 import { GetLastActiveTeamIdAndTeams } from '../../../../../../../../../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { TextResponseType } from '../../../../../../../../../../../../__generated__/globalTypes'
+import {
+  TextResponseRouteUpdate,
+  TextResponseRouteUpdateVariables
+} from '../../../../../../../../../../../../__generated__/TextResponseRouteUpdate'
 import { getIntegrationMock } from '../../../../../../../../../../../libs/useIntegrationQuery/useIntegrationQuery.mock'
+import { CommandRedoItem } from '../../../../../../../../../Toolbar/Items/CommandRedoItem'
+import { CommandUndoItem } from '../../../../../../../../../Toolbar/Items/CommandUndoItem'
+
 import { Route, TEXT_RESPONSE_ROUTE_UPDATE } from './Route'
 
 const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
@@ -40,7 +48,7 @@ const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
   }
 }
 
-describe('Integrations', () => {
+describe('Route', () => {
   const selectedBlock: TreeBlock<TextResponseBlock> = {
     __typename: 'TextResponseBlock',
     id: 'textResponse0.id',
@@ -55,8 +63,20 @@ describe('Integrations', () => {
     children: []
   }
 
-  it('should change integrationId of text response', async () => {
-    const result = jest.fn(() => ({
+  const routeUpdateMock: MockedResponse<
+    TextResponseRouteUpdate,
+    TextResponseRouteUpdateVariables
+  > = {
+    request: {
+      query: TEXT_RESPONSE_ROUTE_UPDATE,
+      variables: {
+        id: selectedBlock.id,
+        input: {
+          routeId: 'route.id'
+        }
+      }
+    },
+    result: jest.fn(() => ({
       data: {
         textResponseBlockUpdate: {
           id: selectedBlock.id,
@@ -65,71 +85,163 @@ describe('Integrations', () => {
         }
       }
     }))
+  }
+
+  const routeUpdateMock2: MockedResponse<
+    TextResponseRouteUpdate,
+    TextResponseRouteUpdateVariables
+  > = {
+    request: {
+      query: TEXT_RESPONSE_ROUTE_UPDATE,
+      variables: {
+        id: selectedBlock.id,
+        input: {
+          routeId: null
+        }
+      }
+    },
+    result: jest.fn(() => ({
+      data: {
+        textResponseBlockUpdate: {
+          id: selectedBlock.id,
+          __typename: 'TextResponseBlock',
+          routeId: null
+        }
+      }
+    }))
+  }
+
+  it('should change routeId of text response', async () => {
+    const result = jest.fn(() => getIntegrationMock.result)
+    render(
+      <MockedProvider
+        mocks={[
+          getTeamsMock,
+          {
+            ...getIntegrationMock,
+            result: result as FetchResult<GetIntegration>
+          },
+          routeUpdateMock
+        ]}
+      >
+        <EditorProvider initialState={{ selectedBlock }}>
+          <TeamProvider>
+            <Route />
+          </TeamProvider>
+        </EditorProvider>
+      </MockedProvider>
+    )
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    fireEvent.mouseDown(screen.getByRole('button'))
+    await waitFor(() =>
+      fireEvent.click(screen.getByRole('option', { name: 'My First Email' }))
+    )
+    expect(routeUpdateMock.result).toHaveBeenCalled()
+  })
+
+  it('should not render route select if integrationId is not set', async () => {
+    const result = jest.fn(() => getIntegrationMock.result)
+    render(
+      <MockedProvider
+        mocks={[
+          getTeamsMock,
+          {
+            ...getIntegrationMock,
+            result: result as FetchResult<GetIntegration>
+          }
+        ]}
+      >
+        <EditorProvider
+          initialState={{
+            selectedBlock: { ...selectedBlock, integrationId: null }
+          }}
+        >
+          <TeamProvider>
+            <Route />
+          </TeamProvider>
+        </EditorProvider>
+      </MockedProvider>
+    )
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(screen.queryByText('Route')).not.toBeInTheDocument()
+  })
+
+  it('should undo change to routeId', async () => {
+    const result = jest.fn(() => getIntegrationMock.result)
+    render(
+      <MockedProvider
+        mocks={[
+          getTeamsMock,
+
+          {
+            ...getIntegrationMock,
+            result: result as FetchResult<GetIntegration>
+          },
+          routeUpdateMock,
+          routeUpdateMock2
+        ]}
+      >
+        <EditorProvider initialState={{ selectedBlock }}>
+          <TeamProvider>
+            <Route />
+            <CommandUndoItem variant="button" />
+          </TeamProvider>
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    fireEvent.mouseDown(screen.getAllByRole('button')[0])
+    await waitFor(() =>
+      fireEvent.click(screen.getByRole('option', { name: 'My First Email' }))
+    )
+    await waitFor(() => expect(routeUpdateMock.result).toHaveBeenCalled())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(routeUpdateMock2.result).toHaveBeenCalled())
+  })
+
+  it('should redo the change to routeId that was undone', async () => {
+    const result = jest.fn(() => getIntegrationMock.result)
+    const mockFirstUpdate = {
+      ...routeUpdateMock,
+      maxUsageCount: 2
+    }
 
     render(
       <MockedProvider
         mocks={[
           getTeamsMock,
-          getIntegrationMock,
+
           {
-            request: {
-              query: TEXT_RESPONSE_ROUTE_UPDATE,
-              variables: {
-                id: selectedBlock.id,
-                journeyId: 'journey.id',
-                input: {
-                  routeId: 'route.id'
-                }
-              }
-            },
-            result
-          }
+            ...getIntegrationMock,
+            result: result as FetchResult<GetIntegration>
+          },
+          mockFirstUpdate,
+          routeUpdateMock2
         ]}
       >
-        <JourneyProvider
-          value={{
-            journey: { id: 'journey.id' } as unknown as Journey,
-            variant: 'admin'
-          }}
-        >
-          <EditorProvider initialState={{ selectedBlock }}>
-            <TeamProvider>
-              <Route />
-            </TeamProvider>
-          </EditorProvider>
-        </JourneyProvider>
+        <EditorProvider initialState={{ selectedBlock }}>
+          <TeamProvider>
+            <Route />
+            <CommandUndoItem variant="button" />
+            <CommandRedoItem variant="button" />
+          </TeamProvider>
+        </EditorProvider>
       </MockedProvider>
     )
 
-    expect(screen.getByText('Route')).toBeInTheDocument()
-    fireEvent.mouseDown(screen.getByRole('button'))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    fireEvent.mouseDown(screen.getAllByRole('button')[0])
     await waitFor(() =>
-      fireEvent.click(screen.getByRole('option', { name: 'route.name' }))
+      fireEvent.click(screen.getByRole('option', { name: 'My First Email' }))
     )
-    expect(result).toHaveBeenCalled()
-  })
+    await waitFor(() => expect(mockFirstUpdate.result).toHaveBeenCalled())
 
-  it('should not render route select if integrationId is not set', () => {
-    render(
-      <MockedProvider mocks={[getTeamsMock]}>
-        <JourneyProvider
-          value={{
-            journey: { id: 'journey.id' } as unknown as Journey,
-            variant: 'admin'
-          }}
-        >
-          <EditorProvider
-            initialState={{
-              selectedBlock: { ...selectedBlock, integrationId: null }
-            }}
-          >
-            <TeamProvider>
-              <Route />
-            </TeamProvider>
-          </EditorProvider>
-        </JourneyProvider>
-      </MockedProvider>
-    )
-    expect(screen.queryByText('Route')).not.toBeInTheDocument
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(routeUpdateMock2.result).toHaveBeenCalled())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+    await waitFor(() => expect(mockFirstUpdate.result).toHaveBeenCalled())
   })
 })

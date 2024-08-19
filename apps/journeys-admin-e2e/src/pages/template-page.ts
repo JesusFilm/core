@@ -1,3 +1,5 @@
+/* eslint-disable playwright/no-force-option */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { expect } from '@playwright/test'
 import { Page } from 'playwright-core'
 
@@ -118,6 +120,7 @@ export class TemplatePage {
       this.page.locator('div[data-testid="TemplateGallery"]')
     ).toBeVisible({ timeout: sixtySecondsTimeout })
   }
+
   async selectExistingTemplate() {
     this.selecetdTemplated = await this.page
       .locator('div[aria-label="templateGalleryCard"] h6')
@@ -128,11 +131,13 @@ export class TemplatePage {
       .first()
       .click()
   }
+
   async verifySelectedTemplatePage() {
     await expect(
       this.page.locator('div[data-testid="JourneysAdminTemplateViewHeader"] h1')
     ).toHaveText(this.selecetdTemplated, { timeout: sixtySecondsTimeout })
   }
+
   async clickUseThisTemplateButton() {
     await this.page
       .locator(
@@ -141,6 +146,7 @@ export class TemplatePage {
       .first()
       .click()
   }
+
   async selectTeamInAddJourneyToTeamPopup() {
     await this.page
       .locator(
@@ -161,6 +167,7 @@ export class TemplatePage {
       .first()
       .click()
   }
+
   async clickAddBtnInPopup() {
     await this.page
       .locator(
@@ -170,6 +177,7 @@ export class TemplatePage {
       .locator('div[data-testid="dialog-action"] button', { hasText: 'Add' })
       .click()
   }
+
   async verifySelectedTemplateInCustomJourneyPage() {
     await expect(
       this.page.locator('div[data-testid="Toolbar"] h6', {
@@ -177,6 +185,7 @@ export class TemplatePage {
       })
     ).toBeVisible({ timeout: sixtySecondsTimeout })
   }
+
   async clickPreviewBtnInJourneyTemplatePage() {
     await this.page
       .locator(
@@ -185,6 +194,7 @@ export class TemplatePage {
       .first()
       .click()
   }
+
   async verifyPreviewTemplateInJourneyTemplate() {
     const [newPage] = await Promise.all([
       this.context.waitForEvent('page'),
@@ -199,7 +209,7 @@ export class TemplatePage {
       )
       .count()
     await expect(
-      await newPage
+      newPage
         .locator(
           'div[data-testid="pagination-bullets"] svg[data-testid*="bullet"]'
         )
@@ -223,9 +233,11 @@ export class TemplatePage {
 
     await newPage.close()
   }
+
   async setBrowserContext(context) {
     this.context = context
   }
+
   async clickEditInJourneyTemplatePage() {
     await this.page
       .locator(
@@ -234,6 +246,7 @@ export class TemplatePage {
       .first()
       .click()
   }
+
   async verifyTemplateIsEdited(editedText) {
     const [newPage] = await Promise.all([
       this.context.waitForEvent('page'),
@@ -254,6 +267,7 @@ export class TemplatePage {
       if (new Date() > addedSevenMinsTime) {
         break
       }
+      // eslint-disable-next-line playwright/no-conditional-expect, playwright/missing-playwright-await
       await expect(
         newPage.locator(
           '//div[@data-testid="CardOverlayContentContainer"]//*[@data-testid="JourneysTypography"]',
@@ -263,6 +277,7 @@ export class TemplatePage {
         .toHaveCount(1, { timeout: 5000 })
         .catch(() => console.log(''))
       if (
+        // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
         await newPage
           .locator(
             '//div[@data-testid="CardOverlayContentContainer"]//*[@data-testid="JourneysTypography"]',
@@ -283,6 +298,7 @@ export class TemplatePage {
       )
     ).toHaveCount(1)
   }
+
   async clickDropDownOpenIconForFilters(filterOption: string) {
     await this.page
       .locator(
@@ -292,6 +308,7 @@ export class TemplatePage {
       .locator('button[aria-label="Open"]')
       .click()
   }
+
   async selectCheckBoxesForTopicDropDown(option: string) {
     this.selectedFilterOption = await this.page
       .locator('div[data-popper-placement="bottom"] ul[role="listbox"] li ul', {
@@ -308,6 +325,7 @@ export class TemplatePage {
       .first()
       .click()
   }
+
   async clickDropDownCloseIconForFilters(filterOption: string) {
     await this.page
       .locator(
@@ -317,6 +335,7 @@ export class TemplatePage {
       .locator('button[aria-label="Close"]')
       .click()
   }
+
   async verifyTheTemplateOfSelectedFilterOption() {
     await expect(
       this.page.locator(
@@ -334,9 +353,11 @@ export class TemplatePage {
         .count()
     ).toBeGreaterThanOrEqual(1)
   }
+
   async filterClearIcon() {
     await this.page.locator('button[aria-label="Clear"]').click()
   }
+
   async hoverTheTopicFilterField() {
     await this.page
       .locator('div[class*="MuiGrid-item"]', {
@@ -344,6 +365,7 @@ export class TemplatePage {
       })
       .hover()
   }
+
   async selectCheckBoxForFilters() {
     this.selectedFilterOption = await this.page
       .locator(

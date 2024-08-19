@@ -12,12 +12,12 @@ import { ImageBlockCreateInput } from "./globalTypes";
 export interface PosterImageBlockCreate_imageBlockCreate {
   __typename: "ImageBlock";
   id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
   src: string | null;
   alt: string;
-  parentBlockId: string | null;
   width: number;
   height: number;
-  parentOrder: number | null;
   /**
    * blurhash is a compact representation of a placeholder for an image.
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
@@ -25,10 +25,24 @@ export interface PosterImageBlockCreate_imageBlockCreate {
   blurhash: string;
 }
 
+export interface PosterImageBlockCreate_videoBlockUpdate {
+  __typename: "VideoBlock";
+  id: string;
+  /**
+   * posterBlockId is present if a child block should be used as a poster.
+   * This child block should not be rendered normally, instead it should be used
+   * as the video poster. PosterBlock should be of type ImageBlock.
+   */
+  posterBlockId: string | null;
+}
+
 export interface PosterImageBlockCreate {
   imageBlockCreate: PosterImageBlockCreate_imageBlockCreate;
+  videoBlockUpdate: PosterImageBlockCreate_videoBlockUpdate;
 }
 
 export interface PosterImageBlockCreateVariables {
+  id: string;
+  parentBlockId: string;
   input: ImageBlockCreateInput;
 }

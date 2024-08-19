@@ -1,4 +1,5 @@
 import { Breakpoint } from '@mui/material/styles'
+// eslint-disable-next-line no-restricted-imports
 import createBreakpoints, {
   BreakpointsOptions
 } from '@mui/system/createTheme/createBreakpoints'

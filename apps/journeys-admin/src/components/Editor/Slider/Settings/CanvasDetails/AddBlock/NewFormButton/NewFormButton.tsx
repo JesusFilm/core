@@ -3,12 +3,15 @@ import { useTranslation } from 'next-i18next'
 import type { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
-import { ActiveFab, useEditor } from '@core/journeys/ui/EditorProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { FORM_FIELDS } from '@core/journeys/ui/Form/formFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import File5Icon from '@core/shared/ui/icons/File5'
 
+import { BlockFields_FormBlock as FormBlock } from '../../../../../../../../__generated__/BlockFields'
 import type { FormBlockCreate } from '../../../../../../../../__generated__/FormBlockCreate'
+import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
+import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
 import { Button } from '../Button'
 
 export const FORM_BLOCK_CREATE = gql`
@@ -26,58 +29,45 @@ export function NewFormButton(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const {
-    state: { selectedStep },
-    dispatch
+    state: { selectedStep }
   } = useEditor()
+  const { addBlock } = useBlockCreateCommand()
 
-  async function handleClick(): Promise<void> {
-    const id = uuidv4()
-
+  function handleClick(): void {
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
     )
 
-    if (card != null && journey != null) {
-      const { data } = await formBlockCreate({
-        variables: {
-          input: {
-            id,
-            journeyId: journey.id,
-            parentBlockId: card.id
+    if (card == null || journey == null) return
+
+    const formBlock: FormBlock = {
+      id: uuidv4(),
+      parentBlockId: card.id,
+      parentOrder: card.children.length ?? 0,
+      form: null,
+      action: null,
+      __typename: 'FormBlock'
+    }
+    addBlock({
+      block: formBlock,
+      execute() {
+        void formBlockCreate({
+          variables: {
+            input: {
+              id: formBlock.id,
+              journeyId: journey.id,
+              parentBlockId: formBlock.parentBlockId
+            }
+          },
+          optimisticResponse: {
+            formBlockCreate: formBlock
+          },
+          update(cache, { data }) {
+            blockCreateUpdate(cache, journey?.id, data?.formBlockCreate)
           }
-        },
-        update(cache, { data }) {
-          if (data?.formBlockCreate != null) {
-            cache.modify({
-              id: cache.identify({ __typename: 'Journey', id: journey.id }),
-              fields: {
-                blocks(existingBlocksRefs = []) {
-                  const newBlockRef = cache.writeFragment({
-                    data: data.formBlockCreate,
-                    fragment: gql`
-                      fragment NewBlock on Block {
-                        id
-                      }
-                    `
-                  })
-                  return [...existingBlocksRefs, newBlockRef]
-                }
-              }
-            })
-          }
-        }
-      })
-      if (data?.formBlockCreate != null) {
-        dispatch({
-          type: 'SetSelectedBlockByIdAction',
-          selectedBlockId: data.formBlockCreate.id
-        })
-        dispatch({
-          type: 'SetActiveFabAction',
-          activeFab: ActiveFab.Save
         })
       }
-    }
+    })
   }
 
   return (

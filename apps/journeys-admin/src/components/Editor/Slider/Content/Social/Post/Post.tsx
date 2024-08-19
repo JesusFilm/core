@@ -5,8 +5,8 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/system/Box'
 import isEmpty from 'lodash/isEmpty'
-import { useTranslation } from 'next-i18next'
 import Image from 'next/image'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -105,6 +105,7 @@ export function Post(): ReactElement {
                   alt={journey.primaryImageBlock.alt ?? ''}
                   width={208}
                   height={158}
+                  draggable="false"
                   style={{
                     borderRadius: '5px',
                     maxWidth: '100%',

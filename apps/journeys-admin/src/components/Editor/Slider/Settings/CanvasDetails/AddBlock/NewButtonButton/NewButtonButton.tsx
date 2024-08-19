@@ -3,20 +3,25 @@ import { useTranslation } from 'next-i18next'
 import type { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { BUTTON_FIELDS } from '@core/journeys/ui/Button/buttonFields'
-import { ActiveFab, useEditor } from '@core/journeys/ui/EditorProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { ICON_FIELDS } from '@core/journeys/ui/Icon/iconFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import Cursor6Icon from '@core/shared/ui/icons/Cursor6'
 
-import type { BlockFields_CardBlock as CardBlock } from '../../../../../../../../__generated__/BlockFields'
-import type { ButtonBlockCreate } from '../../../../../../../../__generated__/ButtonBlockCreate'
+import {
+  BlockFields_ButtonBlock as ButtonBlock,
+  BlockFields_CardBlock as CardBlock
+} from '../../../../../../../../__generated__/BlockFields'
+import { ButtonBlockCreate } from '../../../../../../../../__generated__/ButtonBlockCreate'
 import {
   ButtonColor,
   ButtonSize,
   ButtonVariant
 } from '../../../../../../../../__generated__/globalTypes'
+import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
+import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand/useBlockCreateCommand'
 import { Button } from '../Button'
 
 export const BUTTON_BLOCK_CREATE = gql`
@@ -31,7 +36,7 @@ export const BUTTON_BLOCK_CREATE = gql`
     $updateInput: ButtonBlockUpdateInput!
   ) {
     buttonBlockCreate(input: $input) {
-      id
+      ...ButtonFields
     }
     startIcon: iconBlockCreate(input: $iconBlockCreateInput1) {
       ...IconFields
@@ -51,101 +56,93 @@ export function NewButtonButton(): ReactElement {
     useMutation<ButtonBlockCreate>(BUTTON_BLOCK_CREATE)
   const { journey } = useJourney()
   const {
-    state: { selectedStep },
-    dispatch
+    state: { selectedStep }
   } = useEditor()
+  const { addBlock } = useBlockCreateCommand()
 
-  const handleClick = async (): Promise<void> => {
-    const id = uuidv4()
-    const startId = uuidv4()
-    const endId = uuidv4()
+  function handleClick(): void {
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
-    if (card != null && journey != null) {
-      const { data } = await buttonBlockCreate({
-        variables: {
-          input: {
-            id,
+
+    if (card == null || journey == null) return
+    const button: ButtonBlock = {
+      id: uuidv4(),
+      __typename: 'ButtonBlock',
+      parentBlockId: card.id,
+      label: '',
+      buttonVariant: ButtonVariant.contained,
+      buttonColor: ButtonColor.primary,
+      size: ButtonSize.medium,
+      parentOrder: card.children.length ?? 0,
+      startIconId: uuidv4(),
+      endIconId: uuidv4(),
+      action: null
+    }
+
+    addBlock({
+      block: button,
+      execute() {
+        void buttonBlockCreate({
+          variables: {
+            input: {
+              id: button.id,
+              journeyId: journey.id,
+              parentBlockId: button.parentBlockId,
+              label: '',
+              variant: button.buttonVariant,
+              color: button.buttonColor,
+              size: button.size
+            },
+            iconBlockCreateInput1: {
+              id: button.startIconId,
+              journeyId: journey.id,
+              parentBlockId: button.id,
+              name: null
+            },
+            iconBlockCreateInput2: {
+              id: button.endIconId,
+              journeyId: journey.id,
+              parentBlockId: button.id,
+              name: null
+            },
+            id: button.id,
             journeyId: journey.id,
-            parentBlockId: card.id,
-            label: '',
-            variant: ButtonVariant.contained,
-            color: ButtonColor.primary,
-            size: ButtonSize.medium
+            updateInput: {
+              startIconId: button.startIconId,
+              endIconId: button.endIconId
+            }
           },
-          iconBlockCreateInput1: {
-            id: startId,
-            journeyId: journey.id,
-            parentBlockId: id,
-            name: null
+          optimisticResponse: {
+            buttonBlockCreate: button,
+            startIcon: {
+              id: button.startIconId as string,
+              parentBlockId: button.id,
+              parentOrder: null,
+              iconName: null,
+              iconSize: null,
+              iconColor: null,
+              __typename: 'IconBlock'
+            },
+            endIcon: {
+              id: button.endIconId as string,
+              parentBlockId: button.id,
+              parentOrder: null,
+              iconName: null,
+              iconSize: null,
+              iconColor: null,
+              __typename: 'IconBlock'
+            },
+            buttonBlockUpdate: button
           },
-          iconBlockCreateInput2: {
-            id: endId,
-            journeyId: journey.id,
-            parentBlockId: id,
-            name: null
-          },
-          id,
-          journeyId: journey.id,
-          updateInput: {
-            startIconId: startId,
-            endIconId: endId
+          update(cache, { data }) {
+            blockCreateUpdate(cache, journey.id, data?.startIcon)
+            blockCreateUpdate(cache, journey.id, data?.endIcon)
+            blockCreateUpdate(cache, journey.id, data?.buttonBlockUpdate)
           }
-        },
-        update(cache, { data }) {
-          if (data?.buttonBlockUpdate != null) {
-            cache.modify({
-              id: cache.identify({ __typename: 'Journey', id: journey.id }),
-              fields: {
-                blocks(existingBlockRefs = []) {
-                  const newStartIconBlockRef = cache.writeFragment({
-                    data: data.startIcon,
-                    fragment: gql`
-                      fragment NewBlock on Block {
-                        id
-                      }
-                    `
-                  })
-                  const newEndIconBlockRef = cache.writeFragment({
-                    data: data.endIcon,
-                    fragment: gql`
-                      fragment NewBlock on Block {
-                        id
-                      }
-                    `
-                  })
-                  const newBlockRef = cache.writeFragment({
-                    data: data.buttonBlockUpdate,
-                    fragment: gql`
-                      fragment NewBlock on Block {
-                        id
-                      }
-                    `
-                  })
-                  return [
-                    ...existingBlockRefs,
-                    newBlockRef,
-                    newStartIconBlockRef,
-                    newEndIconBlockRef
-                  ]
-                }
-              }
-            })
-          }
-        }
-      })
-      if (data?.buttonBlockUpdate != null) {
-        dispatch({
-          type: 'SetSelectedBlockByIdAction',
-          selectedBlockId: data.buttonBlockCreate.id
-        })
-        dispatch({
-          type: 'SetActiveFabAction',
-          activeFab: ActiveFab.Save
         })
       }
-    }
+    })
   }
 
   return (

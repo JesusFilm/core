@@ -1,9 +1,9 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
+import { Theme } from '@mui/material/styles'
 import TableCell from '@mui/material/TableCell'
 import TableRow from '@mui/material/TableRow'
 import Typography from '@mui/material/Typography'
-import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Trans, useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
@@ -18,7 +18,7 @@ import type { Goal } from '../../Goals'
 interface GoalsListItemProp {
   goal: Goal
   variant?: 'minimal'
-  onClose?(): void
+  onClose?: () => void
 }
 
 export function GoalsListItem({

@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+
 import { ConfigField } from './ConfigField'
 
 describe('ConfigField', () => {
@@ -6,8 +7,8 @@ describe('ConfigField', () => {
     const handleChange = jest.fn()
     render(
       <ConfigField
-        label={'Access Key'}
-        value={'accessKey'}
+        label="Access Key"
+        value="accessKey"
         onChange={handleChange}
       />
     )
@@ -21,7 +22,7 @@ describe('ConfigField', () => {
 
   it('should show error message when value is empty', async () => {
     const onSubmit = jest.fn()
-    render(<ConfigField label={'Access Key'} value={''} onChange={onSubmit} />)
+    render(<ConfigField label="Access Key" value="" onChange={onSubmit} />)
     const input = screen.getByDisplayValue('')
     fireEvent.submit(input)
     await waitFor(() =>
@@ -31,11 +32,7 @@ describe('ConfigField', () => {
 
   it('should show the value on text field click', async () => {
     render(
-      <ConfigField
-        label={'Access Key'}
-        value={'accessKey'}
-        onChange={jest.fn()}
-      />
+      <ConfigField label="Access Key" value="accessKey" onChange={jest.fn()} />
     )
     const input = screen.getByDisplayValue('accessKey')
     fireEvent.click(input)
@@ -45,11 +42,7 @@ describe('ConfigField', () => {
 
   it('should toggle value visibility upon clicking eye icon', () => {
     render(
-      <ConfigField
-        label={'Access Key'}
-        value={'accessKey'}
-        onChange={jest.fn()}
-      />
+      <ConfigField label="Access Key" value="accessKey" onChange={jest.fn()} />
     )
     const input = screen.getByDisplayValue('accessKey')
     expect(input).toHaveAttribute('type', 'password')
@@ -60,7 +53,7 @@ describe('ConfigField', () => {
   })
 
   it('should show add missing value text on hover', () => {
-    render(<ConfigField label={'Access Key'} onChange={jest.fn()} />)
+    render(<ConfigField label="Access Key" onChange={jest.fn()} />)
     const input = screen.getByDisplayValue('')
     fireEvent.mouseEnter(input)
     expect(screen.getByText('Add missing value')).toBeInTheDocument()
@@ -70,11 +63,7 @@ describe('ConfigField', () => {
 
   it('should show reveal secret text on hover', () => {
     render(
-      <ConfigField
-        label={'Access Key'}
-        value={'accessKey'}
-        onChange={jest.fn()}
-      />
+      <ConfigField label="Access Key" value="accessKey" onChange={jest.fn()} />
     )
     const input = screen.getByDisplayValue('accessKey')
     fireEvent.mouseEnter(input)

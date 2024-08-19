@@ -1,18 +1,17 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
 import {
   ActiveCanvasDetailsDrawer,
   ActiveContent,
-  ActiveFab,
   ActiveSlide,
   EditorProvider,
   EditorState
 } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
@@ -62,7 +61,6 @@ describe('Canvas', () => {
   const initialState: EditorState = {
     steps: [step0, step1],
     selectedStep: step0,
-    activeFab: ActiveFab.Add,
     activeSlide: ActiveSlide.JourneyFlow,
     activeContent: ActiveContent.Canvas,
     activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
@@ -135,7 +133,6 @@ describe('Canvas', () => {
     )
     fireEvent.click(getByTestId('CanvasContainer'))
     expect(getByText('selectedBlock: step0.id')).toBeInTheDocument()
-    expect(getByText(`activeFab: Add`)).toBeInTheDocument()
     expect(
       getByText('selectedAttributeId: step0.id-next-block')
     ).toBeInTheDocument()
@@ -266,7 +263,6 @@ describe('Canvas', () => {
     })
     fireEvent.click(getByTestId('stepFooter'))
     expect(getByText('selectedBlock: step0.id')).toBeInTheDocument()
-    expect(getByText('activeFab: Add')).toBeInTheDocument()
     expect(getByText('selectedAttributeId: hosted-by')).toBeInTheDocument()
     expect(
       getByText(

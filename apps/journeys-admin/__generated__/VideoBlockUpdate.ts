@@ -149,6 +149,5 @@ export interface VideoBlockUpdate {
 
 export interface VideoBlockUpdateVariables {
   id: string;
-  journeyId: string;
   input: VideoBlockUpdateInput;
 }

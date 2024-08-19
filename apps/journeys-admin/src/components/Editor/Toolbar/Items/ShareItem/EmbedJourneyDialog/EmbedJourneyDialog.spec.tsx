@@ -1,3 +1,4 @@
+import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
@@ -13,9 +14,11 @@ describe('embedJourneyDialog', () => {
 
   it('closes the modal on cancel click', () => {
     const { getByRole } = render(
-      <SnackbarProvider>
-        <EmbedJourneyDialog open onClose={onClose} />
-      </SnackbarProvider>
+      <MockedProvider>
+        <SnackbarProvider>
+          <EmbedJourneyDialog open onClose={onClose} />
+        </SnackbarProvider>
+      </MockedProvider>
     )
     fireEvent.click(getByRole('button', { name: 'Cancel' }))
     expect(onClose).toHaveBeenCalled()
@@ -23,9 +26,11 @@ describe('embedJourneyDialog', () => {
 
   it('should have the terms and conditions link', () => {
     const { getByText } = render(
-      <SnackbarProvider>
-        <EmbedJourneyDialog open onClose={onClose} />
-      </SnackbarProvider>
+      <MockedProvider>
+        <SnackbarProvider>
+          <EmbedJourneyDialog open onClose={onClose} />
+        </SnackbarProvider>
+      </MockedProvider>
     )
     expect(getByText('Terms of agreement').closest('a')).toHaveAttribute(
       'href',
@@ -57,9 +62,11 @@ describe('embedJourneyDialog', () => {
     it('should copy the embed code from the modal', async () => {
       const embedCode = `<iframe src="${process.env.NEXT_PUBLIC_JOURNEYS_URL}/embed/undefined" style="border: 0; width: 360px; height: 640px;" allow="fullscreen; autoplay" allowfullscreen></iframe>`
       const { getByText, getByRole } = render(
-        <SnackbarProvider>
-          <EmbedJourneyDialog open onClose={onClose} />
-        </SnackbarProvider>
+        <MockedProvider>
+          <SnackbarProvider>
+            <EmbedJourneyDialog open onClose={onClose} />
+          </SnackbarProvider>
+        </MockedProvider>
       )
       expect(getByRole('textbox')).toHaveValue(embedCode)
       fireEvent.click(getByRole('button', { name: 'Copy Code' }))

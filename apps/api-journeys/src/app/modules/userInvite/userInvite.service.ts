@@ -2,8 +2,8 @@ import { InjectQueue } from '@nestjs/bullmq'
 import { Injectable } from '@nestjs/common'
 import { Queue } from 'bullmq'
 
-import { User } from '@core/nest/common/firebaseClient'
 import { Prisma } from '.prisma/api-journeys-client'
+import { User } from '@core/nest/common/firebaseClient'
 
 import { JourneyEditInviteJob } from '../email/email.consumer'
 
