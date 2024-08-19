@@ -1,6 +1,6 @@
 'use client'
 
-import { createHttpLink } from '@apollo/client'
+import { NormalizedCacheObject, createHttpLink } from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
 import {
   ApolloNextAppProvider,
@@ -35,7 +35,7 @@ const authLink = setContext(async (_, { headers }) => {
 })
 
 // have a function to create a client for you
-function makeClient(): NextSSRApolloClient<NextSSRInMemoryCache> {
+function makeClient(): NextSSRApolloClient<NormalizedCacheObject> {
   return new NextSSRApolloClient({
     cache: new NextSSRInMemoryCache(cache),
     link: typeof window === 'undefined' ? httpLink : authLink.concat(httpLink),
