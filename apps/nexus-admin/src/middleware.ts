@@ -31,7 +31,6 @@ export default async function middleware(
     return NextResponse.redirect(signinUrl, { status: 301 })
   }
 
-  console.log(req.nextUrl.pathname)
   if (req.nextUrl.pathname.startsWith('/api/')) return NextResponse.next()
 
   const intlResponse = intlMiddleware(req)
@@ -52,15 +51,5 @@ export default async function middleware(
     status: 301
   })
 }
-
-// import { NextRequest } from 'next/server'
-// import NextAuth from 'next-auth'
-
-// import { authConfig } from './auth.config'
-
-// const { auth } = NextAuth(authConfig)
-// export default auth(async function middleware(req: NextRequest) {
-//   // Your custom middleware logic goes here
-// })
 
 export const config = { matcher: ['/((?!_next.*\\..*).*)'] }
