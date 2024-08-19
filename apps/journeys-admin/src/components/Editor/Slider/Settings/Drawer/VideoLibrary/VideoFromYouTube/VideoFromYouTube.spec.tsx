@@ -105,8 +105,8 @@ describe('VideoFromYouTube', () => {
         screen.getByRole('button', { name: 'No More Videos' })
       ).toBeDisabled()
     )
-    const textbox = screen.getByRole('textbox', { name: 'Search' })
-    fireEvent.change(textbox, {
+    const searchBox = screen.getByRole('searchbox', { name: 'Search' })
+    fireEvent.change(searchBox, {
       target: { value: 'https://www.youtube.com/watch?v=jQaeIJOA6J0' }
     })
     await waitFor(() =>
@@ -123,8 +123,8 @@ describe('VideoFromYouTube', () => {
         </SWRConfig>
       </MockedProvider>
     )
-    const textbox = screen.getByRole('textbox', { name: 'Search' })
-    fireEvent.change(textbox, {
+    const searchBox = screen.getByRole('searchbox', { name: 'Search' })
+    fireEvent.change(searchBox, {
       target: { value: 'https://www.youtube.com/watch?v=ak06MSETeo4' }
     })
     await waitFor(() => {

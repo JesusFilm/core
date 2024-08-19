@@ -137,8 +137,8 @@ describe('VideoLibrary', () => {
           <VideoLibrary open />
         </MockedProvider>
       )
-      const textBox = screen.getByRole('textbox')
-      fireEvent.change(textBox, {
+      const searchBox = screen.getByRole('searchbox')
+      fireEvent.change(searchBox, {
         target: { value: 'Andreas' }
       })
       await waitFor(() =>
