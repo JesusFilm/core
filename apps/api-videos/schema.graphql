@@ -2,6 +2,7 @@ extend schema
   @link(url: "https://specs.apollo.dev/federation/v2.7", import: ["@extends", "@external", "@key", "@shareable"])
 
 type BibleBook {
+  id: ID!
   name(languageId: ID, primary: Boolean): [BibleBookName!]!
   osisId: String!
   alternateName: String
@@ -17,12 +18,14 @@ type BibleBookName {
 }
 
 type BibleCitation {
+  id: ID!
   osisId: String!
   bibleBook: BibleBook!
   chapterStart: Int!
   chapterEnd: Int
   verseStart: Int!
   verseEnd: Int
+  video: Video!
 }
 
 enum IdType {
@@ -49,8 +52,12 @@ type LanguageWithSlug {
 }
 
 type Query {
+  bibleBooks: [BibleBook!]!
+  bibleCitations: [BibleCitation!]!
+  keywords: [Keyword!]!
   video(id: ID!, idType: IdType = databaseId): Video!
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
+  videoVariants: [VideoVariant!]!
 }
 
 type Video
@@ -146,6 +153,7 @@ type VideoVariant {
 }
 
 type VideoVariantDownload {
+  id: ID!
   quality: VideoVariantDownloadQuality!
   size: Float!
   url: String!
@@ -157,6 +165,7 @@ enum VideoVariantDownloadQuality {
 }
 
 type VideoVariantSubtitle {
+  id: ID!
   value: String!
   primary: Boolean!
   language: Language!

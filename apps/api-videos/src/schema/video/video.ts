@@ -1,66 +1,14 @@
 import compact from 'lodash/compact'
 import isEmpty from 'lodash/isEmpty'
 
-import {
-  Prisma,
-  VideoLabel as PrismaVideoLabel
-} from '.prisma/api-videos-client'
-
 import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 import { Language, LanguageWithSlug } from '../language'
 
-import { parseFullTextSearch } from './lib/parseFullTextSearch'
-
-enum IdType {
-  databaseId = 'databaseId',
-  slug = 'slug'
-}
-
-builder.enumType(IdType, { name: 'IdType' })
-const VideoLabel = builder.enumType(PrismaVideoLabel, { name: 'VideoLabel' })
-
-const VideosFilter = builder.inputType('VideosFilter', {
-  fields: (t) => ({
-    availableVariantLanguageIds: t.idList(),
-    title: t.string(),
-    labels: t.field({ type: [VideoLabel] }),
-    ids: t.idList(),
-    subtitleLanguageIds: t.idList()
-  })
-})
-
-function videosFilter({
-  title,
-  availableVariantLanguageIds,
-  labels,
-  ids,
-  subtitleLanguageIds
-}: typeof VideosFilter.$inferInput): Prisma.VideoWhereInput {
-  return {
-    title:
-      title != null
-        ? { some: { value: { search: parseFullTextSearch(title) } } }
-        : undefined,
-    variants:
-      availableVariantLanguageIds != null || subtitleLanguageIds != null
-        ? {
-            some: {
-              subtitle:
-                subtitleLanguageIds != null
-                  ? { some: { languageId: { in: subtitleLanguageIds } } }
-                  : undefined,
-              languageId:
-                availableVariantLanguageIds != null
-                  ? { in: availableVariantLanguageIds }
-                  : undefined
-            }
-          }
-        : undefined,
-    label: labels != null ? { in: labels } : undefined,
-    id: ids != null ? { in: ids } : undefined
-  }
-}
+import { IdType, IdTypeShape } from './enums/idType'
+import { VideoLabel } from './enums/videoLabel'
+import { VideosFilter } from './inputs/videosFilter'
+import { videosFilter } from './lib/videosFilter'
 
 const Video = builder.prismaObject('Video', {
   shareable: true,
@@ -235,7 +183,7 @@ const Video = builder.prismaObject('Video', {
         ).representations?.[0].primaryLanguageId
 
         if (
-          info.variableValues.idType !== IdType.databaseId &&
+          info.variableValues.idType !== IdTypeShape.databaseId &&
           !isEmpty(variableValueId) &&
           !isEmpty(requestedLanguage)
         ) {
@@ -278,11 +226,11 @@ builder.queryFields((t) => ({
       id: t.arg.id({ required: true }),
       idType: t.arg({
         type: IdType,
-        defaultValue: IdType.databaseId
+        defaultValue: IdTypeShape.databaseId
       })
     },
     resolve: async (query, _parent, { id, idType }) =>
-      idType === IdType.slug
+      idType === IdTypeShape.slug
         ? await prisma.video.findFirstOrThrow({
             ...query,
             where: { slug: id }

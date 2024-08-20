@@ -15,6 +15,7 @@ const VideoVariantDownloadQuality = builder.enumType(
 
 builder.prismaObject('VideoVariantDownload', {
   fields: (t) => ({
+    id: t.exposeID('id'),
     quality: t.field({
       type: VideoVariantDownloadQuality,
       resolve: ({ quality }) => quality
@@ -26,6 +27,7 @@ builder.prismaObject('VideoVariantDownload', {
 
 builder.prismaObject('VideoVariantSubtitle', {
   fields: (t) => ({
+    id: t.exposeID('id'),
     value: t.exposeString('value'),
     primary: t.exposeBoolean('primary'),
     language: t.field({
@@ -70,3 +72,13 @@ builder.prismaObject('VideoVariant', {
     })
   })
 })
+
+builder.queryFields((t) => ({
+  videoVariants: t.prismaField({
+    type: ['VideoVariant'],
+    resolve: async (query) =>
+      await prisma.videoVariant.findMany({
+        ...query
+      })
+  })
+}))

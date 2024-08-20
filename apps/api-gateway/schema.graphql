@@ -42,12 +42,13 @@ type AudioPreview
 type BibleBook
   @join__type(graph: VIDEOS)
 {
+  id: ID!
+  name(languageId: ID, primary: Boolean): [BibleBookName!]!
   osisId: String!
   alternateName: String
   paratextAbbreviation: String!
   isNewTestament: Boolean!
   order: Int!
-  name(languageId: ID, primary: Boolean): [BibleBookName!]!
 }
 
 type BibleBookName
@@ -61,12 +62,14 @@ type BibleBookName
 type BibleCitation
   @join__type(graph: VIDEOS)
 {
+  id: ID!
   osisId: String!
   bibleBook: BibleBook!
   chapterStart: Int!
   chapterEnd: Int
   verseStart: Int!
   verseEnd: Int
+  video: Video!
 }
 
 interface Block
@@ -400,7 +403,7 @@ type ContinentName
 }
 
 type Country
-  @join__type(graph: LANGUAGES, key: "id")
+  @join__type(graph: LANGUAGES)
 {
   id: ID!
   population: Int
@@ -1299,7 +1302,7 @@ type Language
   @join__type(graph: MEDIA, key: "id")
   @join__type(graph: TAGS, key: "id")
   @join__type(graph: USERS, key: "id")
-  @join__type(graph: VIDEOS, key: "id", extension: true, resolvable: false)
+  @join__type(graph: VIDEOS, key: "id", extension: true)
 {
   id: ID!
   bcp47: String @join__field(graph: LANGUAGES)
@@ -2096,8 +2099,11 @@ type Query
   me(input: MeInput): User @join__field(graph: USERS)
   user(id: ID!): User @join__field(graph: USERS)
   userByEmail(email: String!): User @join__field(graph: USERS)
-  video(id: ID!, idType: IdType = databaseId): Video @join__field(graph: VIDEOS)
-  videos(offset: Int, limit: Int, where: VideosFilter): [Video!]! @join__field(graph: VIDEOS)
+  bibleBooks: [BibleBook!]! @join__field(graph: VIDEOS)
+  bibleCitations: [BibleCitation!]! @join__field(graph: VIDEOS)
+  keywords: [Keyword!]! @join__field(graph: VIDEOS)
+  video(id: ID!, idType: IdType = databaseId): Video! @join__field(graph: VIDEOS)
+  videos(where: VideosFilter, offset: Int, limit: Int): [Video!]! @join__field(graph: VIDEOS)
 }
 
 type RadioOptionBlock implements Block
@@ -2987,21 +2993,25 @@ type Video
   bibleCitations: [BibleCitation!]! @join__field(graph: VIDEOS)
   keywords(languageId: ID): [Keyword!]! @join__field(graph: VIDEOS)
   label: VideoLabel! @join__field(graph: VIDEOS)
-  image: String @join__field(graph: VIDEOS)
-  slug: String! @join__field(graph: VIDEOS)
-  noIndex: Boolean @join__field(graph: VIDEOS)
-  children: [Video!]! @join__field(graph: VIDEOS)
-  bibleCitation: [BibleCitation!] @join__field(graph: VIDEOS)
-  childrenCount: Int! @join__field(graph: VIDEOS)
   title(languageId: ID, primary: Boolean): [VideoTitle!]! @join__field(graph: VIDEOS)
   snippet(languageId: ID, primary: Boolean): [VideoSnippet!]! @join__field(graph: VIDEOS)
   description(languageId: ID, primary: Boolean): [VideoDescription!]! @join__field(graph: VIDEOS)
   studyQuestions(languageId: ID, primary: Boolean): [VideoStudyQuestion!]! @join__field(graph: VIDEOS)
+  image: String @join__field(graph: VIDEOS)
   imageAlt(languageId: ID, primary: Boolean): [VideoImageAlt!]! @join__field(graph: VIDEOS)
-  variant(languageId: ID): VideoVariant @join__field(graph: VIDEOS)
   variantLanguages: [Language!]! @join__field(graph: VIDEOS)
   variantLanguagesCount: Int! @join__field(graph: VIDEOS)
+
+  """slug is a permanent link to the video."""
+  slug: String! @join__field(graph: VIDEOS)
+  noIndex: Boolean @join__field(graph: VIDEOS)
+  children: [Video!]! @join__field(graph: VIDEOS)
+
+  """the number value of the amount of children on a video"""
+  childrenCount: Int! @join__field(graph: VIDEOS)
   variantLanguagesWithSlug: [LanguageWithSlug!]! @join__field(graph: VIDEOS)
+  subtitles(languageId: ID, primary: Boolean, edition: String): [VideoSubtitle!]! @join__field(graph: VIDEOS)
+  variant(languageId: ID): VideoVariant @join__field(graph: VIDEOS)
 }
 
 type VideoBlock implements Block
@@ -3620,6 +3630,16 @@ type VideoStudyQuestion
   language: Language!
 }
 
+type VideoSubtitle
+  @join__type(graph: VIDEOS)
+{
+  id: ID!
+  languageId: ID!
+  edition: String!
+  vttSrc: String
+  srtSrc: String
+}
+
 type VideoTitle
   @join__type(graph: VIDEOS)
 {
@@ -3655,11 +3675,13 @@ type VideoVariant
   id: ID!
   hls: String
   downloads: [VideoVariantDownload!]!
-  slug: String!
   duration: Int!
   language: Language!
   subtitle(languageId: ID, primary: Boolean): [VideoVariantSubtitle!]!
   subtitleCount: Int!
+
+  """slug is a permanent link to the video variant."""
+  slug: String!
 }
 
 type VideoVariantDownload

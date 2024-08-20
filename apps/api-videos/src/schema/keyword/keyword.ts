@@ -1,3 +1,4 @@
+import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 import { Language } from '../language'
 
@@ -11,3 +12,10 @@ builder.prismaObject('Keyword', {
     })
   })
 })
+
+builder.queryFields((t) => ({
+  keywords: t.prismaField({
+    type: ['Keyword'],
+    resolve: async (query) => await prisma.keyword.findMany({ ...query })
+  })
+}))

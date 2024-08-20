@@ -1,5 +1,6 @@
 import compact from 'lodash/compact'
 
+import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 import { Language } from '../language'
 
@@ -16,6 +17,7 @@ builder.prismaObject('BibleBookName', {
 
 builder.prismaObject('BibleBook', {
   fields: (t) => ({
+    id: t.exposeID('id'),
     name: t.relation('name', {
       args: {
         languageId: t.arg.id({ required: false }),
@@ -38,3 +40,14 @@ builder.prismaObject('BibleBook', {
     order: t.exposeInt('order')
   })
 })
+
+builder.queryFields((t) => ({
+  bibleBooks: t.prismaField({
+    type: ['BibleBook'],
+    resolve: async (query) =>
+      await prisma.bibleBook.findMany({
+        ...query,
+        orderBy: { order: 'asc' }
+      })
+  })
+}))
