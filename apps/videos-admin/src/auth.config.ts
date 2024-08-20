@@ -38,5 +38,9 @@ export const authConfig = {
           }
         : {}
     )
-  ]
+  ],
+  theme: {
+    colorScheme: 'light' // "auto" | "dark" | "light"
+  },
+  secret: process.env.NEXT_PUBLIC_AUTH_CONFIG_SECRET
 } satisfies NextAuthConfig
