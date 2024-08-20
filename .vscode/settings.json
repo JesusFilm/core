@@ -96,6 +96,5 @@
   "prettier.prettierPath": "./node_modules/prettier",
   "remote.localPortHost": "allInterfaces",
   "typescript.tsdk": "node_modules/typescript/lib",
-  "typescript.enablePromptUseWorkspaceTsdk": true,
-  "editor.formatOnSave": true
+  "typescript.enablePromptUseWorkspaceTsdk": true
 }
