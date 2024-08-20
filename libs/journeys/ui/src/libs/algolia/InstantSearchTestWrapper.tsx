@@ -1,17 +1,17 @@
 import algoliasearch from 'algoliasearch'
-import { UiState } from 'instantsearch.js'
-import { ReactElement, ReactNode } from 'react'
+import type { UiState } from 'instantsearch.js'
+import type { ReactElement, ReactNode } from 'react'
 import { InstantSearch } from 'react-instantsearch'
 
 interface InstantSearchWrapperProps {
   query?: string
-  indexName: string
+  indexName?: string
   children: ReactNode
 }
 
 export function InstantSearchTestWrapper({
   query = '',
-  indexName,
+  indexName = 'indexName',
   children,
   ...props
 }: InstantSearchWrapperProps): ReactElement {

@@ -8,7 +8,7 @@ import compact from 'lodash/compact'
 import { useRouter } from 'next/compat/router'
 import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
-import { MouseEvent, ReactElement, useState } from 'react'
+import { type MouseEvent, type ReactElement, useState } from 'react'
 
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import Calendar2Icon from '@core/shared/ui/icons/Calendar2'
