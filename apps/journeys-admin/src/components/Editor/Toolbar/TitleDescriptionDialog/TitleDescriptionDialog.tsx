@@ -1,4 +1,4 @@
-import { ApolloError } from '@apollo/client'
+import { ApolloError, Reference, gql } from '@apollo/client'
 import TextField from '@mui/material/TextField'
 import { Form, Formik, type FormikValues } from 'formik'
 import { useTranslation } from 'next-i18next'
@@ -32,13 +32,12 @@ export function TitleDescriptionDialog({
 
   const { data, loading } = useLanguagesQuery({ languageId: '529' })
 
-  const handleUpdateTitleDescription = async (
+  function handleUpdateTitleDescription  (
     values: FormikValues
-  ): Promise<void> => {
+  ): void  {
     if (journey == null) return
-
     try {
-      await journeyUpdate({
+      void journeyUpdate({
         variables: {
           id: journey.id,
           input: {
@@ -49,13 +48,19 @@ export function TitleDescriptionDialog({
         },
         optimisticResponse: {
           journeyUpdate: {
+            ...journey,
             id: journey.id,
             __typename: 'Journey',
             title: values.title,
             description: values.description,
             strategySlug: journey.strategySlug,
-            language: values.language,
-            tags: []
+ language: {
+   id: values.language.id,
+   __typename: "Language",
+   bcp47: null,
+   iso3: null,
+   name: []
+ }
           }
         }
       })
