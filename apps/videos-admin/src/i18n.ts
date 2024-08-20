@@ -7,6 +7,7 @@ if (process.env.VERCEL == null || process.env.CI != null) {
   localePath = './locales'
 } else {
   // vercel run time
+  console.log('vercel cwd', process.cwd())
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   localePath = require('node:path').resolve('./public/locales')
 }
