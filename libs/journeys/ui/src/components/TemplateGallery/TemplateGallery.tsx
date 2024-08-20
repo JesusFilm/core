@@ -1,16 +1,18 @@
 import Container from '@mui/material/Container'
 import Paper from '@mui/material/Paper'
+import Stack from '@mui/material/Stack'
 import { ReactElement } from 'react'
-
-import { TemplateSections } from '../TemplateSections'
-
 import { Index } from 'react-instantsearch'
-import { SearchBar } from '../SearchBar'
-import { TagCarousels } from './TagCarousels'
 
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
-import Stack from '@mui/material/Stack'
+
+import { SearchBar } from '../SearchBar'
+import { TemplateSections } from '../TemplateSections'
+
+
+import { TagCarousels } from './TagCarousels'
+
 
 interface TemplateGalleryProps {
   hideOverflow?: boolean
@@ -20,7 +22,14 @@ interface TemplateGalleryProps {
 function TemplateGalleryContent() {
   return (
     <Stack spacing={10}>
-      <SearchBar />
+      {/* TODO: Remove temporary theme fix for styling journeys admin components */}
+      <ThemeProvider
+        themeName={ThemeName.website}
+        themeMode={ThemeMode.light}
+        nested
+      >
+        <SearchBar />
+      </ThemeProvider>
 
       {/* TODO: Remove temporary theme fix for styling journeys admin components */}
       <ThemeProvider
@@ -51,7 +60,6 @@ export function TemplateGallery({
         maxWidth={false}
         disableGutters
         sx={{
-          overflow: hideOverflow ? 'hidden' : 'none',
           px: { xs: 0 },
           py: { xs: 6, sm: 9 }
         }}

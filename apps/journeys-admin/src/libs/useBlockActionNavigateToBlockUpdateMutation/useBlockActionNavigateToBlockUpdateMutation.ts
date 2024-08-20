@@ -14,14 +14,8 @@ import {
 import { BlockFields } from '../../../__generated__/BlockFields'
 
 export const BLOCK_ACTION_NAVIGATE_TO_BLOCK_UPDATE = gql`
-  mutation BlockActionNavigateToBlockUpdate(
-    $id: ID!
-    $input: NavigateToBlockActionInput!
-  ) {
-    blockUpdateNavigateToBlockAction(
-      id: $id
-      input: $input
-    ) {
+  mutation BlockActionNavigateToBlockUpdate($id: ID!, $blockId: String!) {
+    blockUpdateNavigateToBlockAction(id: $id, input: { blockId: $blockId }) {
       parentBlockId
       gtmEventName
       blockId
@@ -62,7 +56,7 @@ export function useBlockActionNavigateToBlockUpdateMutation(
       ...options,
       variables: {
         id: block.id,
-        input: { blockId: targetBlockId }
+        blockId: targetBlockId
       },
       optimisticResponse: {
         blockUpdateNavigateToBlockAction: {

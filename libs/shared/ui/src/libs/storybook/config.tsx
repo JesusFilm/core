@@ -1,6 +1,5 @@
 import { Decorator } from '@storybook/react'
 import { SnackbarProvider } from 'notistack'
-
 import { ThemeProvider } from '../../components/ThemeProvider'
 import { sharedUiConfig } from '../sharedUiConfig'
 import { ThemeMode, ThemeName } from '../themes'

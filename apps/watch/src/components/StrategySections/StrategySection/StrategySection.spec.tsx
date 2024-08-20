@@ -6,16 +6,17 @@ import { strategyItems } from './data'
 
 jest.mock('react-instantsearch')
 
+const mockedUseHits = useHits as jest.MockedFunction<typeof useHits>
+
 describe('StrategySection', () => {
   beforeEach(() => {
-    const useHitsMocked = jest.mocked(useHits)
-    useHitsMocked.mockReturnValue({
+    mockedUseHits.mockReturnValue({
       hits: strategyItems
     } as unknown as HitsRenderState)
   })
 
   it('should render strategysection', () => {
-    render(<StrategySection />)
+    render(<StrategySection index={0} handleItemSearch={jest.fn()} />)
     const items = screen.getAllByTestId('StrategyCard')
     expect(items).toHaveLength(2)
 
@@ -30,5 +31,24 @@ describe('StrategySection', () => {
         name: 'London Bridges 1 One Week'
       })
     ).toBeInTheDocument()
+  })
+
+  it('should call handleitemsearch', () => {
+    const handleItemSearchMock = jest.fn()
+    render(
+      <StrategySection index={0} handleItemSearch={handleItemSearchMock} />
+    )
+
+    expect(handleItemSearchMock).toHaveBeenCalled()
+  })
+
+  it('should not render strategysection if no hits', () => {
+    mockedUseHits.mockReturnValue({
+      hits: []
+    } as unknown as HitsRenderState)
+
+    render(<StrategySection index={0} handleItemSearch={jest.fn()} />)
+
+    expect(screen.queryByTestId('StrategySection')).not.toBeInTheDocument()
   })
 })

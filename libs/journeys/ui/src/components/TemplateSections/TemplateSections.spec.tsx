@@ -4,16 +4,19 @@ import '../../../test/i18n'
 import { TemplateSections } from './TemplateSections'
 
 import { useAlgoliaJourneys } from '../../libs/algolia/useAlgoliaJourneys'
-import { transformedAlgoliaJourneys as journeys } from '../../libs/algolia/useAlgoliaJourneys/data'
+import { algoliaJourneys } from '../../libs/algolia/useAlgoliaJourneys/useAlgoliaJourneys.mock'
 
 jest.mock('react-instantsearch')
-jest.mock('../../libs/algolia/useAlgoliaJourneys/useAlgoliaJourneys')
+jest.mock('../../libs/algolia/useAlgoliaJourneys')
+
+const mockUseAlgoliaJourneys = useAlgoliaJourneys as jest.MockedFunction<
+  typeof useAlgoliaJourneys
+>
 
 describe('TemplateSections', () => {
   beforeEach(() => {
-    const useAlgoliaJourneysMocked = jest.mocked(useAlgoliaJourneys)
-    useAlgoliaJourneysMocked.mockReturnValue({
-      hits: journeys,
+    mockUseAlgoliaJourneys.mockReturnValue({
+      hits: algoliaJourneys,
       loading: false,
       refinements: []
     })
@@ -40,9 +43,8 @@ describe('TemplateSections', () => {
     })
 
     it('should render tag carousels if more than 5 journeys in a category', async () => {
-      const useAlgoliaJourneysMocked = jest.mocked(useAlgoliaJourneys)
-      useAlgoliaJourneysMocked.mockReturnValue({
-        hits: journeys.concat(journeys),
+      mockUseAlgoliaJourneys.mockReturnValue({
+        hits: algoliaJourneys.concat(algoliaJourneys),
         loading: false,
         refinements: []
       })
@@ -61,9 +63,8 @@ describe('TemplateSections', () => {
 
   describe('Relevant Templates', () => {
     beforeEach(() => {
-      const useAlgoliaJourneysMocked = jest.mocked(useAlgoliaJourneys)
-      useAlgoliaJourneysMocked.mockReturnValue({
-        hits: journeys,
+      mockUseAlgoliaJourneys.mockReturnValue({
+        hits: algoliaJourneys,
         loading: false,
         refinements: ['Acceptance', 'Depression']
       })
@@ -82,9 +83,8 @@ describe('TemplateSections', () => {
 
   describe('Tag Templates', () => {
     beforeEach(() => {
-      const useAlgoliaJourneysMocked = jest.mocked(useAlgoliaJourneys)
-      useAlgoliaJourneysMocked.mockReturnValue({
-        hits: journeys,
+      mockUseAlgoliaJourneys.mockReturnValue({
+        hits: algoliaJourneys,
         loading: false,
         refinements: ['Addiction', 'Acceptance']
       })
@@ -107,8 +107,7 @@ describe('TemplateSections', () => {
 
   describe('Empty', () => {
     beforeEach(() => {
-      const useAlgoliaJourneysMocked = jest.mocked(useAlgoliaJourneys)
-      useAlgoliaJourneysMocked.mockReturnValue({
+      mockUseAlgoliaJourneys.mockReturnValue({
         hits: [],
         loading: false,
         refinements: []
@@ -119,13 +118,11 @@ describe('TemplateSections', () => {
       render(<TemplateSections />)
       expect(
         screen.getByRole('heading', {
-          name: 'No template fully matches your search criteria.'
+          name: 'Sorry, no results'
         })
       ).toBeInTheDocument()
       expect(
-        screen.getByText(
-          "Try using fewer filters or look below for templates related to the categories you've selected to search"
-        )
+        screen.getByText('Try removing or changing something from your request')
       ).toBeInTheDocument()
     })
 

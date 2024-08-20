@@ -6,10 +6,10 @@ export type ActionValue =
   | 'LinkAction'
   | 'EmailAction'
 
-export function actions(t: TFunction): {
+export function actions(t: TFunction): Array<{
   value: ActionValue
   label: string
-}[] {
+}> {
   return [
     {
       value: 'None',

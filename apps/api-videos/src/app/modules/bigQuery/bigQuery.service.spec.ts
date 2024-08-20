@@ -104,6 +104,7 @@ describe('bigQueryService', () => {
       })
     })
   })
+
   describe('getCurrentTimeStamp', () => {
     it('should return current timestamp', async () => {
       const query = jest
@@ -112,7 +113,7 @@ describe('bigQueryService', () => {
       jest.spyOn(BigQuery.prototype, 'query').mockImplementation(query)
 
       const result = await service.getCurrentTimeStamp()
-      expect(result).toEqual('mock')
+      expect(result).toBe('mock')
       expect(query).toHaveBeenCalledWith('SELECT CURRENT_TIMESTAMP()')
     })
   })

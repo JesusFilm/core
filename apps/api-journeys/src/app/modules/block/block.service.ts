@@ -2,10 +2,12 @@ import { Injectable } from '@nestjs/common'
 import omit from 'lodash/omit'
 import { v4 as uuidv4 } from 'uuid'
 
+import { Action, Block, Prisma } from '.prisma/api-journeys-client'
 import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
 import { ToPostgresql } from '@core/nest/decorators/ToPostgresql'
+
+import { BlockDuplicateIdMap } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
-import { Action, Block, Prisma } from '.prisma/api-journeys-client'
 
 export const OMITTED_BLOCK_FIELDS = ['__typename', 'journeyId', 'isCover']
 
@@ -115,13 +117,17 @@ export class BlockService {
   async duplicateBlock(
     block: BlockWithAction,
     parentOrder?: number,
+    idMap?: BlockDuplicateIdMap[],
     x?: number,
     y?: number
   ): Promise<BlockWithAction[]> {
+    const duplicateBlockId = idMap?.find((map) => block.id === map.oldId)?.newId
     const blockAndChildrenData = await this.getDuplicateBlockAndChildren(
       block.id,
       block.journeyId,
-      block.parentBlockId ?? null
+      block.parentBlockId ?? null,
+      duplicateBlockId,
+      idMap
     )
     await this.saveAll(
       blockAndChildrenData.map((block) => ({
@@ -153,7 +159,7 @@ export class BlockService {
             coverBlockId: newBlock.coverBlockId ?? undefined,
             nextBlockId: newBlock.nextBlockId ?? undefined,
             action:
-              !isActionEmpty && newBlock.action
+              !isActionEmpty && newBlock.action != null
                 ? { create: newBlock.action }
                 : undefined
           }
@@ -204,6 +210,7 @@ export class BlockService {
     parentBlockId: string | null,
     // Use to custom set children blockIds
     duplicateIds: Map<string, string>,
+    idMap?: BlockDuplicateIdMap[],
     // Below 2 only used when duplicating journeys
     duplicateJourneyId?: string,
     duplicateStepIds?: Map<string, string>
@@ -215,6 +222,7 @@ export class BlockService {
           journeyId,
           parentBlockId,
           duplicateIds.get(block.id),
+          idMap,
           duplicateJourneyId,
           duplicateStepIds
         )
@@ -230,6 +238,7 @@ export class BlockService {
     journeyId: string,
     parentBlockId: string | null,
     duplicateId?: string,
+    idMap?: BlockDuplicateIdMap[],
     // Below 2 only used when duplicating journeys
     duplicateJourneyId?: string,
     duplicateStepIds?: Map<string, string>
@@ -251,7 +260,10 @@ export class BlockService {
     })
     const childIds = new Map<string, string>()
     children.forEach((block) => {
-      childIds.set(block.id, uuidv4())
+      const duplicatedChildId = idMap?.find(
+        (map) => map.oldId === block.id
+      )?.newId
+      childIds.set(block.id, duplicatedChildId ?? uuidv4())
     })
     const updatedBlockProps: Partial<BlockWithAction> = {}
     Object.keys(block).forEach((key) => {
@@ -293,6 +305,7 @@ export class BlockService {
       journeyId,
       duplicateBlockId,
       childIds,
+      idMap,
       duplicateJourneyId,
       duplicateStepIds
     )
@@ -373,17 +386,18 @@ export class BlockService {
       )
     )
   }
+
   async getDescendants(
     parentBlockId: string,
     blocks: Block[],
     result: Block[] = []
   ): Promise<Block[]> {
-    blocks.forEach((childBlock) => {
+    for (const childBlock of blocks) {
       if (childBlock.parentBlockId === parentBlockId) {
         result.push(childBlock)
-        this.getDescendants(childBlock.id, blocks, result)
+        await this.getDescendants(childBlock.id, blocks, result)
       }
-    })
+    }
 
     return result
   }

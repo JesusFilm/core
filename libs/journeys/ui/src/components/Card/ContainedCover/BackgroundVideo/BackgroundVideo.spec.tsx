@@ -1,4 +1,5 @@
 import { render } from '@testing-library/react'
+// eslint-disable-next-line import/no-namespace
 import * as videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 

@@ -1,15 +1,17 @@
-import ChevronDown from '@core/shared/ui/icons/ChevronDown'
-import Globe1Icon from '@core/shared/ui/icons/Globe1'
-import Search1Icon from '@core/shared/ui/icons/Search1'
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import InputAdornment from '@mui/material/InputAdornment'
+import { styled } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { styled } from '@mui/material/styles'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 import { useSearchBox } from 'react-instantsearch'
+
+import ChevronDown from '@core/shared/ui/icons/ChevronDown'
+import Globe1Icon from '@core/shared/ui/icons/Globe1'
+import Search1Icon from '@core/shared/ui/icons/Search1'
+
 
 /* Styles below used to fake a gradient border because the 
 css attributes border-radius and border-image-source are not compatible */
@@ -43,7 +45,7 @@ export function SearchBar({
   const [inputValue, setInputValue] = useState(query)
   const [languageButtonVisable] = useState(showLanguageButton)
 
-  function setQuery(newQuery: string) {
+  function setQuery(newQuery: string): void {
     setInputValue(newQuery)
     refine(newQuery)
   }
@@ -62,6 +64,7 @@ export function SearchBar({
         placeholder={t('Search by topic, occasion, or audience ...')}
         fullWidth
         type="search"
+        autoComplete="off"
         value={inputValue}
         onChange={(event) => {
           setQuery(event.currentTarget.value)
@@ -105,7 +108,7 @@ export function SearchBar({
                     px: 2
                   }}
                 >
-                  English
+                  {t('English')}
                 </Typography>
                 <ChevronDown />
               </Box>

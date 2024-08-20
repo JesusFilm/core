@@ -1,7 +1,7 @@
 import { defaultTemplate as coreJourney } from '../../../components/TemplateGallery/data'
 import { abbreviateLanguageName } from '../../abbreviateLanguageName'
 import { GetJourneys_journeys as Journey } from '../../useJourneysQuery/__generated__/GetJourneys'
-import { transformedAlgoliaJourneys as algoliaJourneys } from '../useAlgoliaJourneys/data'
+import { algoliaJourneys } from '../useAlgoliaJourneys/useAlgoliaJourneys.mock'
 import {
   getAlgoliaJourneyLanguage,
   getJourneyLanguage,

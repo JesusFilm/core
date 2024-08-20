@@ -1,6 +1,6 @@
+import { render, screen } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 
-import { render, screen } from '@testing-library/react'
 import { Integrations } from './Integrations'
 
 jest.mock('next/router', () => ({

@@ -13,8 +13,8 @@ import {
   updateProfile
 } from 'firebase/auth'
 import { Form, Formik } from 'formik'
-import { useTranslation } from 'next-i18next'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import React, { ReactElement } from 'react'
 import { InferType, object, string } from 'yup'
 

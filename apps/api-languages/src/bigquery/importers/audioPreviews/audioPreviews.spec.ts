@@ -1,8 +1,9 @@
-import { importAudioPreview, importMany, importOne } from './audioPreviews'
+import { AudioPreview } from '.prisma/api-languages-client'
 
 import { prismaMock } from '../../../../test/prismaMock'
 import { parse, parseMany, processTable } from '../../importer'
-import { AudioPreview } from '.prisma/api-languages-client'
+
+import { importAudioPreview, importMany, importOne } from './audioPreviews'
 
 const audioPreview = {
   value: 'abc.mp3',
@@ -70,6 +71,7 @@ describe('bigquery/importers/audioPreviews', () => {
         update: audioPreview
       })
     })
+
     it('should throw error if language not found', async () => {
       await importAudioPreview([])
       await expect(
@@ -80,7 +82,7 @@ describe('bigquery/importers/audioPreviews', () => {
           value: 'abc.mp3',
           updatedAt: { value: '2021-01-01T00:00:00.000Z' }
         })
-      ).rejects.toThrowError()
+      ).rejects.toThrow()
     })
   })
 
@@ -110,6 +112,7 @@ describe('bigquery/importers/audioPreviews', () => {
         skipDuplicates: true
       })
     })
+
     it('should throw error if some rows do not match schema', async () => {
       prismaMock.audioPreview.createMany.mockImplementation()
       await importAudioPreview(['20615'])
@@ -137,7 +140,7 @@ describe('bigquery/importers/audioPreviews', () => {
             updatedAt: { value: '2021-01-01T00:00:00.000Z' }
           }
         ])
-      ).rejects.toThrowError()
+      ).rejects.toThrow()
     })
   })
 })

@@ -1,12 +1,14 @@
-import { ContentCarousel } from '@core/shared/ui/ContentCarousel'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
-import Typography from '@mui/material/Typography'
 import { useTheme } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import { Hit } from 'instantsearch.js'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 import { useHits } from 'react-instantsearch'
 import { SwiperOptions } from 'swiper/types'
+
+import { ContentCarousel } from '@core/journeys/ui/ContentCarousel'
+
 import { StrategyCard } from '../StrategyCard'
 
 interface StrategyCardItem {
@@ -27,12 +29,24 @@ function transformAlgoliaStrategies(hits: Hit[]): StrategyCardItem[] {
   }))
 }
 
-export function StrategySection(): ReactElement {
+interface StrategySectionProps {
+  handleItemSearch: (index: number, value: boolean) => void
+  index: number
+}
+
+export function StrategySection({
+  handleItemSearch,
+  index
+}: StrategySectionProps): ReactElement {
   const { breakpoints } = useTheme()
 
   const { hits } = useHits()
 
   const items = transformAlgoliaStrategies(hits)
+
+  useEffect(() => {
+    handleItemSearch(index, items.length > 0)
+  }, [items])
 
   const label = (hits[0]?.post_type_label as string) ?? ''
 
@@ -64,16 +78,22 @@ export function StrategySection(): ReactElement {
   }
 
   return (
-    <Box data-testid="StrategySection">
-      <Typography variant="h5">{label}</Typography>
-      <Container maxWidth={false} sx={{ overflow: 'hidden' }}>
-        <ContentCarousel
-          items={items}
-          renderItem={(itemProps) => <StrategyCard {...itemProps} />}
-          breakpoints={swiperBreakpoints}
-          slidesOffsetBefore={-32}
-        />
-      </Container>
-    </Box>
+    <>
+      {items.length > 0 ? (
+        <Box data-testid="StrategySection">
+          <Typography variant="h5">{label}</Typography>
+          <Container maxWidth={false} sx={{ overflow: 'hidden' }}>
+            <ContentCarousel
+              items={items}
+              renderItem={(itemProps) => <StrategyCard {...itemProps} />}
+              breakpoints={swiperBreakpoints}
+              slidesOffsetBefore={-32}
+            />
+          </Container>
+        </Box>
+      ) : (
+        <></>
+      )}
+    </>
   )
 }

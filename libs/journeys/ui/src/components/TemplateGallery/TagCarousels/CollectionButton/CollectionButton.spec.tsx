@@ -18,10 +18,13 @@ const tag = {
 
 jest.mock('react-instantsearch')
 
+const mockUseRefinementList = useRefinementList as jest.MockedFunction<
+  typeof useRefinementList
+>
+
 function mockRefinementList() {
   const onClick = jest.fn()
-  const useRefinementListMocked = jest.mocked(useRefinementList)
-  useRefinementListMocked.mockReturnValue({
+  mockUseRefinementList.mockReturnValue({
     refine: onClick
   } as unknown as RefinementListRenderState)
   return onClick
@@ -29,7 +32,6 @@ function mockRefinementList() {
 
 describe('CollectionButton', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
     mockRefinementList()
   })
 

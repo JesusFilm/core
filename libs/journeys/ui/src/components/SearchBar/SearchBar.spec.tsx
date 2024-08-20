@@ -1,24 +1,28 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
 import { useSearchBox } from 'react-instantsearch'
+
 import '../../../test/i18n'
 import { SearchBar } from './SearchBar'
 
 jest.mock('react-instantsearch')
 
-function mockUseSearchBox() {
+const mockUseSearchBox = useSearchBox as jest.MockedFunction<
+  typeof useSearchBox
+>
+
+function mockSearchBox(): jest.Mock {
   const refine = jest.fn()
-  const useSearchBoxMocked = jest.mocked(useSearchBox)
-  useSearchBoxMocked.mockReturnValue({
+  mockUseSearchBox.mockReturnValue({
     query: 'Hello World!',
-    refine: refine
+    refine
   } as unknown as SearchBoxRenderState)
   return refine
 }
 
 describe('SearchBar', () => {
   beforeEach(() => {
-    mockUseSearchBox()
+    mockSearchBox()
   })
 
   it('should render input field', async () => {
@@ -41,7 +45,7 @@ describe('SearchBar', () => {
   })
 
   it('should refine when text typed', async () => {
-    const refine = mockUseSearchBox()
+    const refine = mockSearchBox()
     render(<SearchBar />)
     const input = screen.getByDisplayValue('Hello World!')
     fireEvent.change(input, { target: { value: 'Hello' } })

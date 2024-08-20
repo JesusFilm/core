@@ -8,10 +8,12 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
+
 import {
   BlockRestore,
   BlockRestoreVariables
 } from '../../../__generated__/BlockRestore'
+
 import {
   BLOCK_RESTORE,
   useBlockRestoreMutation
@@ -26,7 +28,7 @@ describe('useBlockRestoreMutation', () => {
     request: {
       query: BLOCK_RESTORE,
       variables: {
-        blockRestoreId: stepBlock.id
+        id: stepBlock.id
       }
     },
     result: jest.fn(() => ({
@@ -58,7 +60,7 @@ describe('useBlockRestoreMutation', () => {
       await waitFor(async () => {
         await result.current[0]({
           variables: {
-            blockRestoreId: stepBlock.id
+            id: stepBlock.id
           }
         })
         expect(useBlockRestoreMutationMock.result).toHaveBeenCalled()

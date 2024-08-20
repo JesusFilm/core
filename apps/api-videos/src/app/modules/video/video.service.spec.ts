@@ -55,6 +55,19 @@ describe('VideoService', () => {
       })
     })
 
+    it('should search with title and escape special characters', () => {
+      expect(
+        service.videoFilter({
+          title: 'a-bc 1:23'
+        })
+      ).toEqual({
+        id: undefined,
+        label: undefined,
+        title: { some: { value: { search: '"a\\-bc" & "1\\:23"' } } },
+        variants: undefined
+      })
+    })
+
     it('should filter with availableVariantLanguageIds', () => {
       expect(
         service.videoFilter({

@@ -3,14 +3,15 @@ import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Query, ResolveField, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 
-import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 import { Block, Prisma } from '.prisma/api-journeys-client'
+import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 
-import { BlocksFilter } from '../../__generated__/graphql'
+import { BlockDuplicateIdMap, BlocksFilter } from '../../__generated__/graphql'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'
-import { BlockService } from './block.service'
+
+import { BlockService, BlockWithAction } from './block.service'
 
 @Resolver('Block')
 export class BlockResolver {
@@ -60,6 +61,7 @@ export class BlockResolver {
     @CaslAbility() ability: AppAbility,
     @Args('id') id: string,
     @Args('parentOrder') parentOrder?: number,
+    @Args('idMap') idMap?: BlockDuplicateIdMap[],
     @Args('x') x?: number,
     @Args('y') y?: number
   ): Promise<Block[]> {
@@ -84,7 +86,13 @@ export class BlockResolver {
       throw new GraphQLError('user is not allowed to update block', {
         extensions: { code: 'FORBIDDEN' }
       })
-    return await this.blockService.duplicateBlock(block, parentOrder, x, y)
+    return await this.blockService.duplicateBlock(
+      block,
+      parentOrder,
+      idMap,
+      x,
+      y
+    )
   }
 
   @Mutation()
@@ -216,25 +224,29 @@ export class BlockResolver {
           action: true
         }
       })
-      if (updatedBlock.parentOrder != null)
-        await this.blockService.reorderBlock(
+      let siblings: BlockWithAction[] = [updatedBlock]
+      if (updatedBlock?.parentOrder != null)
+        siblings = await this.blockService.reorderBlock(
           updatedBlock,
           updatedBlock.parentOrder,
           tx
         )
+
       const blocks = await tx.block.findMany({
         where: {
           journeyId: updatedBlock.journeyId,
           deletedAt: null,
           NOT: { id: updatedBlock.id }
-        }
+        },
+        include: { action: true }
       })
 
       const children: Block[] = await this.blockService.getDescendants(
         updatedBlock.id,
         blocks
       )
-      return [updatedBlock, ...children]
+
+      return [...siblings, ...children]
     })
   }
 }

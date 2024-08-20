@@ -1,16 +1,17 @@
+import Box from '@mui/material/Box'
+import Container from '@mui/material/Container'
+import Stack from '@mui/system/Stack'
 import { GetStaticProps } from 'next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { ReactElement } from 'react'
 
-import Box from '@mui/material/Box'
-import Container from '@mui/material/Container'
-import i18nConfig from '../../next-i18next.config'
-import { getFlags } from '../../src/libs/getFlags'
-
-import { PageWrapper } from '../../src/components/PageWrapper'
-
 import { TemplateGallery } from '@core/journeys/ui/TemplateGallery'
-import Stack from '@mui/material/Stack'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
+
+import i18nConfig from '../../next-i18next.config'
+import { PageWrapper } from '../../src/components/PageWrapper'
+import { getFlags } from '../../src/libs/getFlags'
 
 function JourneysPage(): ReactElement {
   return (
@@ -21,10 +22,13 @@ function JourneysPage(): ReactElement {
       >
         <Container maxWidth="xxl">
           <Stack gap={10}>
-            <TemplateGallery
-              algoliaIndex="api-journeys-journeys-dev"
-              hideOverflow
-            />
+            <ThemeProvider
+              themeName={ThemeName.journeysAdmin}
+              themeMode={ThemeMode.light}
+              nested
+            >
+              <TemplateGallery />
+            </ThemeProvider>
           </Stack>
         </Container>
       </Box>

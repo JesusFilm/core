@@ -1,3 +1,4 @@
+import noop from 'lodash/noop'
 import {
   Dispatch,
   ReactElement,
@@ -12,6 +13,13 @@ export interface Command<
   RedoParameters = ExecuteParameters,
   UndoParameters = ExecuteParameters
 > {
+  /**
+   * Unique identifier for the command. If successive commands have the same id,
+   * they will be treated as the same command and only the most recent will be
+   * kept. If not provided, the command will be treated as unique. Only the most
+   * recent command is compared.
+   */
+  id?: string
   /**
    * Parameters for the command. Will be passed to execute, redo, and undo
    * functions.
@@ -92,10 +100,22 @@ export const reducer = (
 ): CommandState => {
   switch (action.type) {
     case 'AddCommandAction': {
-      const commands = [
-        ...state.commands.slice(0, state.commandIndex),
-        action.command
-      ]
+      let commands
+      if (
+        action.command.id != null &&
+        state.commands[state.commandIndex - 1]?.id === action.command.id
+      ) {
+        commands = [
+          ...state.commands.slice(0, state.commandIndex - 1),
+          action.command
+        ]
+      } else {
+        commands = [
+          ...state.commands.slice(0, state.commandIndex),
+          action.command
+        ]
+      }
+
       if (commands.length > MAX_UNDO_COMMANDS) {
         return {
           ...state,
@@ -107,7 +127,7 @@ export const reducer = (
       }
       return {
         ...state,
-        commands: commands,
+        commands,
         commandIndex: commands.length,
         undo: action.command,
         redo: undefined
@@ -143,15 +163,15 @@ interface CommandContextType {
    * Execute a command and add it to the command stack.
    * @param command Command to add
    */
-  add: <E = unknown, R = E, U = E>(command: Command<E, R, U>) => Promise<void>
+  add: <E = unknown, R = E, U = E>(command: Command<E, R, U>) => void
   /**
    * Undo the last command.
    */
-  undo: () => Promise<void>
+  undo: () => void
   /**
    * Redo the last undone command.
    */
-  redo: () => Promise<void>
+  redo: () => void
 }
 
 export const CommandContext = createContext<CommandContextType>({
@@ -160,9 +180,9 @@ export const CommandContext = createContext<CommandContextType>({
     commands: []
   },
   dispatch: () => null,
-  add: () => Promise.resolve(),
-  undo: () => Promise.resolve(),
-  redo: () => Promise.resolve()
+  add: noop,
+  undo: noop,
+  redo: noop
 })
 
 interface CommandProviderProps {
@@ -180,32 +200,32 @@ export function CommandProvider({
     ...initialState
   })
 
-  async function undo() {
+  function undo(): void {
     if (state.undo == null) return
     dispatch({ type: 'UndoCallbackAction' })
     if (state.undo.undo != null) {
-      await state.undo.undo(state.undo.parameters?.undo)
+      state.undo.undo(state.undo.parameters?.undo)
     } else {
-      await state.undo.execute(state.undo.parameters?.undo)
+      state.undo.execute(state.undo.parameters?.undo)
     }
   }
 
-  async function redo() {
+  function redo(): void {
     if (state.redo == null) return
     dispatch({ type: 'RedoCallbackAction' })
     if (state.redo.redo != null) {
-      await state.redo.redo(
+      state.redo.redo(
         state.redo.parameters?.redo ?? state.redo.parameters.execute
       )
     } else {
-      await state.redo.execute(
+      state.redo.execute(
         state.redo.parameters?.redo ?? state.redo.parameters.execute
       )
     }
   }
 
-  async function add<E = unknown, R = E, U = E>(command: Command<E, R, U>) {
-    await command.execute(command.parameters.execute)
+  function add<E = unknown, R = E, U = E>(command: Command<E, R, U>): void {
+    command.execute(command.parameters.execute)
     dispatch({ type: 'AddCommandAction', command: command as Command })
   }
 

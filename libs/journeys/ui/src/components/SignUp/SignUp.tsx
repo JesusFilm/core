@@ -3,9 +3,9 @@ import LoadingButton from '@mui/lab/LoadingButton'
 import Box from '@mui/material/Box'
 import { SxProps } from '@mui/system/styleFunctionSx'
 import { Form, Formik } from 'formik'
+import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { usePlausible } from 'next-plausible'
-import { useRouter } from 'next/router'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 import TagManager from 'react-gtm-module'
@@ -13,12 +13,12 @@ import { v4 as uuidv4 } from 'uuid'
 import { object, string } from 'yup'
 
 import { SignUpSubmissionEventCreateInput } from '../../../__generated__/globalTypes'
-import { useEditor } from '../../libs/EditorProvider'
-import { useJourney } from '../../libs/JourneyProvider'
 import { handleAction } from '../../libs/action'
 import { useBlocks } from '../../libs/block'
 import type { TreeBlock } from '../../libs/block'
+import { useEditor } from '../../libs/EditorProvider'
 import { getStepHeading } from '../../libs/getStepHeading'
+import { useJourney } from '../../libs/JourneyProvider'
 import { JourneyPlausibleEvents, keyify } from '../../libs/plausibleHelpers'
 import { Icon } from '../Icon'
 import { IconFields } from '../Icon/__generated__/IconFields'
@@ -210,6 +210,7 @@ export const SignUp = ({
             />
             <LoadingButton
               type="submit"
+              data-testid="submit"
               variant="contained"
               loading={loading}
               size="large"
@@ -222,7 +223,13 @@ export const SignUp = ({
                 mb: 0
               }}
             >
-              <span>{editableSubmitLabel ?? submitLabel ?? t('Submit')}</span>
+              <span>
+                {editableSubmitLabel != null
+                  ? editableSubmitLabel
+                  : submitLabel != null && submitLabel !== ''
+                  ? submitLabel
+                  : t('Submit')}
+              </span>
             </LoadingButton>
           </Form>
         )}

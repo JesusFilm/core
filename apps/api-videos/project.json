@@ -43,12 +43,6 @@
         }
       }
     },
-    "seed": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npm run ts-node apps/api-videos/db/seed.ts"
-      }
-    },
     "ingest": {
       "executor": "nx:run-commands",
       "options": {
@@ -69,18 +63,8 @@
       }
     },
     "lint": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npx @biomejs/biome check --diagnostic-level=warn",
-        "cwd": "apps/api-videos"
-      }
-    },
-    "lint:fix": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npx @biomejs/biome check --write",
-        "cwd": "apps/api-videos"
-      }
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
     },
     "test": {
       "executor": "@nx/jest:jest",
@@ -137,17 +121,6 @@
       "options": {
         "commands": [
           "npx prisma migrate reset --schema apps/api-videos/db/schema.prisma --force"
-        ]
-      }
-    },
-    "prisma-seed": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          {
-            "command": "npm run ts-node apps/api-videos/db/seed.ts {args.mode} {args.id}",
-            "forwardAllArgs": false
-          }
         ]
       }
     },

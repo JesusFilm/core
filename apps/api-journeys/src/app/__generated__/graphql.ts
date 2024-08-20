@@ -264,9 +264,22 @@ export class EmailActionInput {
     email: string;
 }
 
+export class BlockUpdateActionInput {
+    gtmEventName?: Nullable<string>;
+    email?: Nullable<string>;
+    url?: Nullable<string>;
+    target?: Nullable<string>;
+    blockId?: Nullable<string>;
+}
+
 export class BlocksFilter {
     journeyIds?: Nullable<string[]>;
     typenames?: Nullable<string[]>;
+}
+
+export class BlockDuplicateIdMap {
+    oldId: string;
+    newId: string;
 }
 
 export class ButtonBlockCreateInput {
@@ -301,6 +314,7 @@ export class CardBlockCreateInput {
 
 export class CardBlockUpdateInput {
     parentBlockId?: Nullable<string>;
+    coverBlockId?: Nullable<string>;
     backgroundColor?: Nullable<string>;
     fullscreen?: Nullable<boolean>;
     themeMode?: Nullable<ThemeMode>;
@@ -398,6 +412,12 @@ export class StepBlockCreateInput {
 export class StepBlockUpdateInput {
     nextBlockId?: Nullable<string>;
     locked?: Nullable<boolean>;
+    x?: Nullable<number>;
+    y?: Nullable<number>;
+}
+
+export class StepBlockPositionUpdateInput {
+    id: string;
     x?: Nullable<number>;
     y?: Nullable<number>;
 }
@@ -861,9 +881,11 @@ export abstract class IMutation {
 
     abstract blockUpdateEmailAction(id: string, input: EmailActionInput, journeyId?: Nullable<string>): EmailAction | Promise<EmailAction>;
 
+    abstract blockUpdateAction(id: string, input?: Nullable<BlockUpdateActionInput>): Action | Promise<Action>;
+
     abstract blockDelete(id: string, journeyId?: Nullable<string>, parentBlockId?: Nullable<string>): Block[] | Promise<Block[]>;
 
-    abstract blockDuplicate(id: string, parentOrder?: Nullable<number>, journeyId?: Nullable<string>, x?: Nullable<number>, y?: Nullable<number>): Block[] | Promise<Block[]>;
+    abstract blockDuplicate(id: string, parentOrder?: Nullable<number>, idMap?: Nullable<BlockDuplicateIdMap[]>, journeyId?: Nullable<string>, x?: Nullable<number>, y?: Nullable<number>): Block[] | Promise<Block[]>;
 
     abstract blockOrderUpdate(id: string, parentOrder: number, journeyId?: Nullable<string>): Block[] | Promise<Block[]>;
 
@@ -904,6 +926,8 @@ export abstract class IMutation {
     abstract stepBlockCreate(input: StepBlockCreateInput): StepBlock | Promise<StepBlock>;
 
     abstract stepBlockUpdate(id: string, input: StepBlockUpdateInput, journeyId?: Nullable<string>): StepBlock | Promise<StepBlock>;
+
+    abstract stepBlockPositionUpdate(input: StepBlockPositionUpdateInput[]): StepBlock[] | Promise<StepBlock[]>;
 
     abstract textResponseBlockCreate(input: TextResponseBlockCreateInput): TextResponseBlock | Promise<TextResponseBlock>;
 

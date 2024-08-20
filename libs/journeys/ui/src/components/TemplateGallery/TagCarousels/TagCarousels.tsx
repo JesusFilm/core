@@ -3,8 +3,8 @@ import { useTheme } from '@mui/material/styles'
 import { ReactElement, useMemo } from 'react'
 import { SwiperOptions } from 'swiper/types'
 
-import { ContentCarousel } from '@core/shared/ui/ContentCarousel'
 import { useTagsQuery } from '../../../libs/useTagsQuery'
+import { ContentCarousel } from '../../ContentCarousel'
 
 import { CollectionButton } from './CollectionButton'
 import { FeltNeedsButton } from './FeltNeedsButton'
@@ -62,6 +62,7 @@ export function TagCarousels(): ReactElement {
           xs: 5,
           md: 5
         }}
+        content="felt-needs"
       />
       <Stack direction="row" gap={10} sx={{ ml: -2 }}>
         {loading

@@ -150,7 +150,7 @@ describe('blockDeleteUpdate', () => {
     }
 
     const step2 = {
-      __typename: 'StepBlock',
+      __typename: 'StepBlock' as const,
       id: 'step2.id',
       locked: false,
       nextBlockId: null,

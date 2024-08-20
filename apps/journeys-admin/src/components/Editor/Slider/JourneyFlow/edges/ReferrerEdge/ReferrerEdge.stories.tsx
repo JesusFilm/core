@@ -1,12 +1,14 @@
-import { Meta, StoryObj } from '@storybook/react'
-import { ReferrerEdge } from './ReferrerEdge'
-
 import { MockedProvider } from '@apollo/client/testing'
+import Box from '@mui/material/Box'
+import { Meta, StoryObj } from '@storybook/react'
+import { ComponentPropsWithoutRef } from 'react'
+// eslint-disable-next-line import/no-named-as-default
+import ReactFlow, { Background, Position } from 'reactflow'
+
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
-import { Box } from '@mui/material'
-import { ComponentPropsWithoutRef } from 'react'
-import ReactFlow, { Background, Position } from 'reactflow'
+
+import { ReferrerEdge } from './ReferrerEdge'
 
 const Demo: Meta<typeof ReferrerEdge> = {
   ...simpleComponentConfig,

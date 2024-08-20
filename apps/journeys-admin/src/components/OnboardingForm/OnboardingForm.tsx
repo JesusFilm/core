@@ -1,17 +1,17 @@
 import { gql, useMutation } from '@apollo/client'
 import { Form } from '@formium/client'
 import Stack from '@mui/material/Stack'
+import { useRouter } from 'next/router'
 import { User } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
-import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 
 import { FormiumForm } from '@core/shared/ui/FormiumForm'
-import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
-import { JourneyProfileOnboardingFormComplete } from '../../../__generated__/JourneyProfileOnboardingFormComplete'
 import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
+import { JourneyProfileOnboardingFormComplete } from '../../../__generated__/JourneyProfileOnboardingFormComplete'
 
 export const JOURNEY_PROFILE_ONBOARDING_FORM_COMPLETE = gql`
   mutation JourneyProfileOnboardingFormComplete {

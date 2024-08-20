@@ -1,6 +1,8 @@
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
+import Stack from '@mui/system/Stack'
 import { GetStaticPaths, GetStaticProps } from 'next'
+import { useRouter } from 'next/router'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
@@ -24,9 +26,7 @@ import { GetTags } from '@core/journeys/ui/useTagsQuery/__generated__/GetTags'
 import { GET_TAGS } from '@core/journeys/ui/useTagsQuery/useTagsQuery'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
-import { Stack } from '@mui/system'
-import { useRouter } from 'next/router'
-import { useTranslation } from 'react-i18next'
+
 import { IdType } from '../../__generated__/globalTypes'
 import i18nConfig from '../../next-i18next.config'
 import { PageWrapper } from '../../src/components/PageWrapper'
@@ -35,7 +35,6 @@ import { getFlags } from '../../src/libs/getFlags'
 import { LanguageProvider } from '../../src/libs/languageContext/LanguageContext'
 
 export default function JourneyDetailsPage(): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const { data } = useJourneyQuery({
     id: router.query.journeyId as string,

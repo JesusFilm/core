@@ -1,10 +1,12 @@
 import { render, screen, waitFor } from '@testing-library/react'
-
 import userEvent from '@testing-library/user-event'
 import { NextRouter, useRouter } from 'next/router'
+
+import { algoliaJourneys } from '../../libs/algolia/useAlgoliaJourneys/useAlgoliaJourneys.mock'
+
 import { TemplateGalleryCard } from '.'
+
 import '../../../test/i18n'
-import { transformedAlgoliaJourneys as algoliaJourneys } from '../../libs/algolia/useAlgoliaJourneys/data'
 
 jest.mock('next/router', () => ({
   __esModule: true,

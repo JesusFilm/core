@@ -2,15 +2,14 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
+import { TreeBlock } from '@core/journeys/ui/block'
 import {
   ActiveCanvasDetailsDrawer,
   ActiveContent,
-  ActiveFab,
   ActiveSlide,
   EditorProvider,
   EditorState
 } from '@core/journeys/ui/EditorProvider'
-import { TreeBlock } from '@core/journeys/ui/block'
 
 import { BlockFields_FormBlock as FormBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import { GetFormBlock } from '../../../../../../../../../../__generated__/GetFormBlock'
@@ -29,7 +28,6 @@ const block: TreeBlock<FormBlock> = {
 
 const state: EditorState = {
   selectedBlock: block,
-  activeFab: ActiveFab.Add,
   activeSlide: ActiveSlide.Drawer,
   activeContent: ActiveContent.Canvas,
   activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties

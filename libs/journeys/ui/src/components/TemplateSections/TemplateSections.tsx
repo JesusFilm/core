@@ -1,6 +1,4 @@
-import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { useTheme } from '@mui/material/styles'
 import map from 'lodash/map'
 import take from 'lodash/take'
@@ -8,11 +6,12 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { SwiperOptions } from 'swiper/types'
 
-import { ContentCarousel } from '@core/shared/ui/ContentCarousel'
 import {
   AlgoliaJourney,
   useAlgoliaJourneys
 } from '../../libs/algolia/useAlgoliaJourneys'
+import { ContentCarousel } from '../ContentCarousel'
+import { EmptySearch } from '../EmptySearch'
 import { TemplateGalleryCard } from '../TemplateGalleryCard'
 
 interface Contents {
@@ -89,26 +88,7 @@ export function TemplateSections(): ReactElement {
     <Stack spacing={8} data-testid="JourneysAdminTemplateSections">
       {!loading &&
         algoliaCollection != null &&
-        algoliaCollection.length === 0 && (
-          <Paper
-            elevation={0}
-            variant="outlined"
-            sx={{
-              borderRadius: 4,
-              width: '100%',
-              padding: 8
-            }}
-          >
-            <Typography variant="h6">
-              {t('No template fully matches your search criteria.')}
-            </Typography>
-            <Typography variant="body1" sx={{ mt: 2 }}>
-              {t(
-                "Try using fewer filters or look below for templates related to the categories you've selected to search"
-              )}
-            </Typography>
-          </Paper>
-        )}
+        algoliaCollection.length === 0 && <EmptySearch />}
       {refinements.length !== 1 &&
         (loading ||
           (algoliaCollection != null && algoliaCollection.length > 0 && (

@@ -60,7 +60,6 @@ export function VideosPage({ videos }: VideoProps): ReactElement {
     void handleSearch(filter, 0)
   }
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     const { title, availableVariantLanguageIds, subtitleLanguageIds } = filter
     if (checkFilterApplied(filter)) {
@@ -73,6 +72,7 @@ export function VideosPage({ videos }: VideoProps): ReactElement {
         0
       )
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (

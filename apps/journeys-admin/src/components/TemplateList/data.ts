@@ -1,12 +1,12 @@
 import { formatISO, startOfYear } from 'date-fns'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../__generated__/GetAdminJourneys'
-import { ImageFields } from '../../../__generated__/ImageFields'
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
+import { ImageFields } from '../../../__generated__/ImageFields'
 
 export const fakeDate = '2021-12-11'
 

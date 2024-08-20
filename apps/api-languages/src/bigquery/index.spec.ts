@@ -22,20 +22,24 @@ describe('bigquery', () => {
   })
 
   it('should import queue', () => {
+    // eslint-disable-next-line import/dynamic-import-chunkname
     expect(import('./queue')).toBeDefined()
   })
 
   it('should import worker', () => {
+    // eslint-disable-next-line import/dynamic-import-chunkname
     expect(import('./worker')).toBeDefined()
   })
 
   it('should not import queue in development', () => {
+    // eslint-disable-next-line import/dynamic-import-chunkname
     import('./index')
     expect(importLanguagesQueue.add).not.toHaveBeenCalled()
   })
 
   it.skip('should create a cron job in production', () => {
     process.env.NODE_ENV = 'production'
+    // eslint-disable-next-line import/dynamic-import-chunkname
     import('./index')
     expect(importLanguagesQueue.add).toHaveBeenCalledWith(
       jobName,

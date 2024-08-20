@@ -3,7 +3,6 @@ export {
   EditorProvider,
   ActiveCanvasDetailsDrawer,
   ActiveContent,
-  ActiveFab,
   ActiveSlide
 } from './EditorProvider'
 export type {

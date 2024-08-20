@@ -7,12 +7,12 @@ import { StepIconProps } from '@mui/material/StepIcon'
 import StepLabel from '@mui/material/StepLabel'
 import Stepper from '@mui/material/Stepper'
 import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next'
+import compact from 'lodash/compact'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, ReactNode } from 'react'
 
 import Circle from '@core/shared/ui/icons/Circle'
-import compact from 'lodash/compact'
 
 type Variant = 'mobile' | 'desktop'
 interface OnboardingStepperProps {
@@ -51,7 +51,7 @@ export function OnboardingStepper({
 
   const activeStep = getActiveStep()
   const quick =
-    router.query?.redirect?.toString().match(/\/templates\/[\w\-]+\/quick/) !=
+    router.query?.redirect?.toString().match(/\/templates\/[\w-]+\/quick/) !=
     null
 
   const steps = compact([

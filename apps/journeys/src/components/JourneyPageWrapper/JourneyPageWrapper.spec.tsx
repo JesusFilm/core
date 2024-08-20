@@ -1,6 +1,8 @@
 import { render, screen } from '@testing-library/react'
+
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
+
 import { JourneyPageWrapper } from './JourneyPageWrapper'
 
 describe('JourneyPageWrapper', () => {

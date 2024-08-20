@@ -7,8 +7,8 @@ import { ReactElement } from 'react'
 import { object, string } from 'yup'
 
 import { getLinkActionGoal } from '@core/journeys/ui/Button/utils/getLinkActionGoal'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getGoalDetails } from '@core/journeys/ui/getGoalDetails'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { ActionFields_LinkAction as LinkAction } from '../../../../../../../__generated__/ActionFields'
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/BlockFields'
@@ -76,6 +76,7 @@ export function ActionEditor({
     if (journey == null) return
     // checks if url has a protocol
     const url = /^\w+:\/\//.test(src) ? src : `https://${src}`
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     blocks.map(async (block) => {
       await linkActionUpdate({
         variables: {

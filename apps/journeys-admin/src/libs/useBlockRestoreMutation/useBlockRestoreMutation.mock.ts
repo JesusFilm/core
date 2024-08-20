@@ -1,5 +1,7 @@
 import { MockedResponse } from '@apollo/client/testing'
+
 import { TreeBlock } from '@core/journeys/ui/block'
+
 import {
   BlockFields_CardBlock as CardBlock,
   BlockFields_StepBlock as StepBlock,
@@ -15,6 +17,7 @@ import {
   TypographyColor,
   TypographyVariant
 } from '../../../__generated__/globalTypes'
+
 import { BLOCK_RESTORE } from './useBlockRestoreMutation'
 
 export const stepBlock = {
@@ -55,7 +58,7 @@ export const useBlockRestoreMutationMock: MockedResponse<
   request: {
     query: BLOCK_RESTORE,
     variables: {
-      blockRestoreId: 'blockId'
+      id: 'blockId'
     }
   },
   result: jest.fn(() => ({
@@ -110,11 +113,14 @@ const selectedStep: TreeBlock<StepBlock> = {
   ]
 }
 
-export const restoreStepMock: MockedResponse<BlockRestore> = {
+export const restoreStepMock: MockedResponse<
+  BlockRestore,
+  BlockRestoreVariables
+> = {
   request: {
     query: BLOCK_RESTORE,
     variables: {
-      blockRestoreId: selectedStep.id
+      id: selectedStep.id
     }
   },
   result: {

@@ -9,8 +9,6 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 
-import { Fab } from '../../../Fab'
-
 import { Message } from './Message/Message'
 import { Post } from './Post/Post'
 
@@ -76,11 +74,6 @@ export function SocialPreview(): ReactElement {
               }}
             >
               <Message />
-            </Stack>
-          </Stack>
-          <Stack width="100%" direction="row-reverse">
-            <Stack maxWidth={102} sx={{ mr: 4 }}>
-              <Fab />
             </Stack>
           </Stack>
         </Stack>

@@ -4,25 +4,24 @@ import { useRouter } from 'next/router'
 import { type ReactElement, useEffect, useRef, useState } from 'react'
 import { CSSTransition, TransitionGroup } from 'react-transition-group'
 
+import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import {
   ActiveCanvasDetailsDrawer,
-  ActiveFab,
   ActiveSlide,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 import { FramePortal } from '@core/journeys/ui/FramePortal'
+import { getStepTheme } from '@core/journeys/ui/getStepTheme'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { StepFooter } from '@core/journeys/ui/StepFooter'
 import { VideoWrapper } from '@core/journeys/ui/VideoWrapper'
-import { getStepTheme } from '@core/journeys/ui/getStepTheme'
-import { getJourneyRTL } from '@core/journeys/ui/rtl'
-import { setBeaconPageViewed } from '@core/journeys/ui/setBeaconPageViewed'
-import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeName } from '@core/shared/ui/themes'
 
 import { Hotkeys } from '../../../Hotkeys'
+
 import { CanvasFooter } from './CanvasFooter'
 import { CardWrapper } from './CardWrapper'
 import { FormWrapper } from './FormWrapper'
@@ -54,7 +53,6 @@ export function Canvas(): ReactElement {
   const { journey } = useJourney()
   const { rtl, locale } = getJourneyRTL(journey)
   const router = useRouter()
-  const { commands } = useFlags()
 
   const initialScale =
     typeof window !== 'undefined' && window.innerWidth <= 600 ? 0 : 1
@@ -68,7 +66,6 @@ export function Canvas(): ReactElement {
   }, [])
 
   function handleFooterClick(): void {
-    if (showAnalytics === true) return
     dispatch({
       type: 'SetActiveCanvasDetailsDrawerAction',
       activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer
@@ -76,10 +73,6 @@ export function Canvas(): ReactElement {
     dispatch({
       type: 'SetActiveSlideAction',
       activeSlide: ActiveSlide.Content
-    })
-    dispatch({
-      type: 'SetActiveFabAction',
-      activeFab: ActiveFab.Add
     })
     dispatch({
       type: 'SetSelectedAttributeIdAction',
@@ -118,7 +111,6 @@ export function Canvas(): ReactElement {
       type: 'SetSelectedBlockAction',
       selectedBlock: selectedStep
     })
-    dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
     dispatch({
       type: 'SetSelectedAttributeIdAction',
       selectedAttributeId: `${selectedStep?.id ?? ''}-next-block`
@@ -157,6 +149,7 @@ export function Canvas(): ReactElement {
       {selectedStep != null && theme != null && (
         <Stack
           direction="column"
+          className="CanvasStack"
           alignItems={{ xs: 'center', md: 'flex-end' }}
           gap={1.5}
           sx={{
@@ -166,7 +159,6 @@ export function Canvas(): ReactElement {
             px: { xs: 3, md: 0 },
             justifyContent: 'center'
           }}
-          data-testid="stack here"
         >
           <Box
             sx={{
@@ -186,6 +178,7 @@ export function Canvas(): ReactElement {
                   scale < 0.65 ? '20px' : '0px'
                 }) ${calculateScaledMargin(CARD_WIDTH, scale)}`,
                 borderRadius: 6,
+                pointerEvents: showAnalytics === true ? 'none' : 'auto',
                 transition: (theme) =>
                   theme.transitions.create('border-color', {
                     duration: 200,
@@ -207,7 +200,7 @@ export function Canvas(): ReactElement {
               >
                 {({ document }) => (
                   <ThemeProvider {...theme} rtl={rtl} locale={locale}>
-                    {commands && <Hotkeys document={document} />}
+                    <Hotkeys document={document} />
                     <TransitionGroup
                       component={Box}
                       sx={{

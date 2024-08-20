@@ -3,19 +3,22 @@ import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 
-import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 import { Action } from '.prisma/api-journeys-client'
+import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 
 import { LinkActionInput } from '../../../__generated__/graphql'
 import { AppAbility, Action as CaslAction } from '../../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../../lib/casl/caslGuard'
 import { PrismaService } from '../../../lib/prisma.service'
-import { ACTION_UPDATE_RESET } from '../actionUpdateReset'
+import { ActionService } from '../action.service'
 import { canBlockHaveAction } from '../canBlockHaveAction'
 
 @Resolver('LinkAction')
 export class LinkActionResolver {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly actionService: ActionService
+  ) {}
 
   @ResolveField('url')
   url(@Parent() action: Action): string {
@@ -56,17 +59,6 @@ export class LinkActionResolver {
         extensions: { code: 'BAD_USER_INPUT' }
       })
     }
-    return await this.prismaService.action.upsert({
-      where: { parentBlockId: id },
-      create: {
-        ...input,
-        parentBlock: { connect: { id: block.id } }
-      },
-      update: {
-        ...ACTION_UPDATE_RESET,
-        ...input
-      },
-      include: { parentBlock: { include: { action: true } } }
-    })
+    return await this.actionService.linkActionUpdate(id, block, input)
   }
 }
