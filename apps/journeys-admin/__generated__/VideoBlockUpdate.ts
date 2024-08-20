@@ -21,7 +21,7 @@ export interface VideoBlockUpdate_videoBlockUpdate_video_variant {
 }
 
 export interface VideoBlockUpdate_videoBlockUpdate_video_variantLanguages_name {
-  __typename: "Translation";
+  __typename: "LanguageName";
   value: string;
   primary: boolean;
 }
@@ -149,6 +149,5 @@ export interface VideoBlockUpdate {
 
 export interface VideoBlockUpdateVariables {
   id: string;
-  journeyId: string;
   input: VideoBlockUpdateInput;
 }

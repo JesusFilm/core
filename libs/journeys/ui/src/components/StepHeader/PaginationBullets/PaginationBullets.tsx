@@ -82,8 +82,8 @@ export function PaginationBullets(): ReactElement {
                 activeIndex === i
                   ? 'active'
                   : activeIndex + 1 === i || activeIndex - 1 === i
-                    ? 'adjacent'
-                    : 'default'
+                  ? 'adjacent'
+                  : 'default'
               }
               left={initial + distanceFromInitial - moveDistance}
             />

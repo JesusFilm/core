@@ -1,3 +1,4 @@
+import { MockedProvider } from '@apollo/client/testing'
 import { render, screen } from '@testing-library/react'
 
 import { ActiveContent, EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -12,9 +13,11 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 describe('Content', () => {
   it('should render social preview', () => {
     render(
-      <EditorProvider initialState={{ activeContent: ActiveContent.Social }}>
-        <Content />
-      </EditorProvider>
+      <MockedProvider>
+        <EditorProvider initialState={{ activeContent: ActiveContent.Social }}>
+          <Content />
+        </EditorProvider>
+      </MockedProvider>
     )
 
     expect(screen.getByTestId('SocialPreview')).toBeInTheDocument()
@@ -22,9 +25,11 @@ describe('Content', () => {
 
   it('should render goals', () => {
     render(
-      <EditorProvider initialState={{ activeContent: ActiveContent.Goals }}>
-        <Content />
-      </EditorProvider>
+      <MockedProvider>
+        <EditorProvider initialState={{ activeContent: ActiveContent.Goals }}>
+          <Content />
+        </EditorProvider>
+      </MockedProvider>
     )
 
     expect(screen.getByTestId('Goals')).toBeInTheDocument()
@@ -32,9 +37,11 @@ describe('Content', () => {
 
   it('should render canvas', () => {
     render(
-      <EditorProvider initialState={{ activeContent: ActiveContent.Canvas }}>
-        <Content />
-      </EditorProvider>
+      <MockedProvider>
+        <EditorProvider initialState={{ activeContent: ActiveContent.Canvas }}>
+          <Content />
+        </EditorProvider>
+      </MockedProvider>
     )
 
     expect(screen.getByTestId('EditorCanvas')).toBeInTheDocument()

@@ -1,12 +1,12 @@
 import { subject } from '@casl/ability'
 import { UseGuards } from '@nestjs/common'
 import { Args, Info, Query, Resolver } from '@nestjs/graphql'
-import { GraphQLError } from 'graphql'
+import { GraphQLError, GraphQLResolveInfo, Kind, SelectionNode } from 'graphql'
 import pull from 'lodash/pull'
 import snakeCase from 'lodash/snakeCase'
 
-import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 import { Journey, Prisma } from '.prisma/api-journeys-client'
+import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 
 import {
   IdType,
@@ -50,7 +50,7 @@ export class PlausibleResolver {
     @CaslAbility() ability: AppAbility,
     @Args('id') id: string,
     @Args('idType') idType: IdType = IdType.slug,
-    @Info() info,
+    @Info() info: GraphQLResolveInfo,
     @Args('where') where: PlausibleStatsAggregateFilter
   ): Promise<PlausibleStatsAggregateResponse> {
     const journey = await this.loadJourney(ability, id, idType)
@@ -69,7 +69,7 @@ export class PlausibleResolver {
     @CaslAbility() ability: AppAbility,
     @Args('id') id: string,
     @Args('idType') idType: IdType = IdType.slug,
-    @Info() info,
+    @Info() info: GraphQLResolveInfo,
     @Args('where') where: PlausibleStatsBreakdownFilter
   ): Promise<PlausibleStatsResponse[]> {
     const journey = await this.loadJourney(ability, id, idType)
@@ -88,7 +88,7 @@ export class PlausibleResolver {
     @CaslAbility() ability: AppAbility,
     @Args('id') id: string,
     @Args('idType') idType: IdType = IdType.slug,
-    @Info() info,
+    @Info() info: GraphQLResolveInfo,
     @Args('where') where: PlausibleStatsTimeseriesFilter
   ): Promise<PlausibleStatsResponse[]> {
     const journey = await this.loadJourney(ability, id, idType)
@@ -101,16 +101,35 @@ export class PlausibleResolver {
     return result
   }
 
-  private getMetrics(info): string {
+  private getMetrics(info: GraphQLResolveInfo): string {
     const metrics = pull(
-      info.fieldNodes[0].selectionSet.selections.map((item) =>
-        snakeCase(item.name.value as string)
-      ) as string[],
+      this.getFieldNames(
+        info,
+        info.fieldNodes[0].selectionSet?.selections ?? []
+      ),
       'property',
-      'typename',
-      'plausible_journey_referrer_fields'
+      'typename'
     ).join(',')
     return metrics === '' ? 'visitors' : metrics
+  }
+
+  private getFieldNames(
+    info: GraphQLResolveInfo,
+    selections: readonly SelectionNode[]
+  ): string[] {
+    return selections.flatMap((item) => {
+      switch (item.kind) {
+        case Kind.FIELD:
+          return snakeCase(item.name.value)
+        case Kind.FRAGMENT_SPREAD:
+          return this.getFieldNames(
+            info,
+            info.fragments[item.name.value].selectionSet.selections
+          )
+        default:
+          return ''
+      }
+    })
   }
 
   private async loadJourney(

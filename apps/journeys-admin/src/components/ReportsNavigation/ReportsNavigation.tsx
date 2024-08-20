@@ -1,50 +1,79 @@
+import Chip from '@mui/material/Chip'
+import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
+import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import type { ReactElement, ReactNode } from 'react'
 
-import { JourneysReportType } from '../../../__generated__/globalTypes'
-
-import { NavigationButton } from './NavigationButton'
+import BarGroup3Icon from '@core/shared/ui/icons/BarGroup3'
+import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
 interface ReportsNavigationProps {
-  reportType?: JourneysReportType
+  destination: 'journey' | 'visitor'
   journeyId?: string
-  selected: 'journeys' | 'visitors'
 }
 
 export function ReportsNavigation({
-  reportType,
-  journeyId,
-  selected
+  destination,
+  journeyId
 }: ReportsNavigationProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+
+  let href: string
+  let icon: ReactNode
+  if (destination === 'journey') {
+    icon = <BarGroup3Icon />
+    href =
+      journeyId !== undefined
+        ? `/journeys/${journeyId}/reports`
+        : '/reports/journeys'
+  } else {
+    icon = <UsersProfiles2Icon />
+    href =
+      journeyId !== undefined
+        ? `/journeys/${journeyId}/reports/visitors`
+        : '/reports/visitors'
+  }
+  const label = destination === 'journey' ? t('Journeys') : t('Visitors')
+
   return (
     <Stack
       direction="row"
-      spacing={4}
-      sx={{ pb: 8 }}
+      alignItems="center"
+      justifyContent="flex-end"
+      flexGrow={1}
       data-testid="JourneysAdminReportsNavigation"
     >
-      <NavigationButton
-        selected={selected === 'journeys'}
-        value={t('Journeys')}
-        link={
-          reportType === JourneysReportType.singleFull &&
-          journeyId !== undefined
-            ? `/journeys/${journeyId}/reports`
-            : '/reports/journeys'
-        }
-      />
-      <NavigationButton
-        selected={selected === 'visitors'}
-        value={t('Visitors')}
-        link={
-          reportType === JourneysReportType.singleFull &&
-          journeyId !== undefined
-            ? `/journeys/${journeyId}/reports/visitors`
-            : '/reports/visitors'
-        }
-      />
+      <NextLink href={href} passHref legacyBehavior>
+        <Chip
+          icon={icon}
+          label={label}
+          component="a"
+          variant="outlined"
+          clickable
+          sx={{
+            display: {
+              xs: 'none',
+              md: 'flex'
+            }
+          }}
+        />
+      </NextLink>
+      <NextLink href={href} passHref legacyBehavior>
+        <IconButton
+          aria-label={label}
+          href={href}
+          target="_blank"
+          sx={{
+            display: {
+              xs: 'flex',
+              md: 'none'
+            }
+          }}
+        >
+          {icon}
+        </IconButton>
+      </NextLink>
     </Stack>
   )
 }

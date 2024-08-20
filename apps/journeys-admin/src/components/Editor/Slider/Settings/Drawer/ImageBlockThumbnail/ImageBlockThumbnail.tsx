@@ -3,7 +3,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 import SvgIcon from '@mui/material/SvgIcon'
 import { ReactElement } from 'react'
 
-import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
+import Image3Icon from '@core/shared/ui/icons/Image3'
 import ImageXIcon from '@core/shared/ui/icons/ImageX'
 
 interface ImageBlockThumbnailProps {
@@ -16,9 +16,12 @@ interface ImageBlockThumbnailProps {
 export function ImageBlockThumbnail({
   selectedBlock,
   loading,
-  Icon = GridEmptyIcon,
+  Icon = Image3Icon,
   error
 }: ImageBlockThumbnailProps): ReactElement {
+  const isUnsplash =
+    selectedBlock?.src?.match(/^https:\/\/images\.unsplash\.com/) ?? false
+
   return (
     <Box
       sx={{
@@ -41,7 +44,24 @@ export function ImageBlockThumbnail({
       ) : selectedBlock?.src != null ? (
         <Box
           component="img"
-          src={selectedBlock.src}
+          srcSet={
+            // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+            isUnsplash
+              ? `${selectedBlock.src
+                  .replace('w=1080', 'w=55&h=55&auto=format&dpr=2')
+                  .replace('fit=max', 'fit=crop')
+                  .replace('crop=entropy&', '')} 2x`
+              : undefined
+          }
+          src={
+            // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+            isUnsplash
+              ? selectedBlock.src
+                  .replace('w=1080', 'w=55&h=55&auto=format')
+                  .replace('fit=max', 'fit=crop')
+                  .replace('crop=entropy&', '')
+              : selectedBlock.src
+          }
           alt={selectedBlock.alt}
           sx={{
             width: 55,

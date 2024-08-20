@@ -2,11 +2,11 @@ import { jest } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../__generated__/BlockFields'
-import { journeysAdminConfig } from '../../../../../../../../libs/storybook'
 import { Drawer } from '../../../../Drawer'
 
 import { TextResponse } from './TextResponse'
@@ -34,6 +34,9 @@ const block: TreeBlock<TextResponseBlock> = {
   label: '',
   hint: null,
   minRows: null,
+  integrationId: null,
+  type: null,
+  routeId: null,
   children: []
 }
 

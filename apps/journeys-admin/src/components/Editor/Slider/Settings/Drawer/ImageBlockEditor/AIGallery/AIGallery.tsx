@@ -4,8 +4,12 @@ import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
+import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/BlockFields'
 import { CreateAiImage } from '../../../../../../../../__generated__/CreateAiImage'
-import { SegmindModel } from '../../../../../../../../__generated__/globalTypes'
+import {
+  ImageBlockUpdateInput,
+  SegmindModel
+} from '../../../../../../../../__generated__/globalTypes'
 
 import { AIPrompt } from './AIPrompt'
 
@@ -18,15 +22,17 @@ export const CREATE_AI_IMAGE = gql`
 `
 
 interface AIGalleryProps {
-  onChange: (src: string) => void
+  onChange: (input: ImageBlockUpdateInput) => void
   setUploading?: (uploading?: boolean) => void
   loading?: boolean
+  selectedBlock?: ImageBlock | null
 }
 
 export function AIGallery({
   onChange,
   setUploading,
-  loading
+  loading,
+  selectedBlock
 }: AIGalleryProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
@@ -46,7 +52,7 @@ export function AIGallery({
         const src = `https://imagedelivery.net/${
           process.env.NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY ?? ''
         }/${data?.createImageBySegmindPrompt?.id}/public`
-        await onChange(src)
+        await onChange({ src, alt: `Prompt: ${prompt}` })
       } else {
         enqueueSnackbar(t('Something went wrong, please try again!'), {
           variant: 'error',
@@ -66,7 +72,11 @@ export function AIGallery({
 
   return (
     <Box data-testid="AIGallery">
-      <AIPrompt handleSubmit={handleSubmit} loading={loading} />
+      <AIPrompt
+        handleSubmit={handleSubmit}
+        loading={loading}
+        selectedBlock={selectedBlock}
+      />
     </Box>
   )
 }

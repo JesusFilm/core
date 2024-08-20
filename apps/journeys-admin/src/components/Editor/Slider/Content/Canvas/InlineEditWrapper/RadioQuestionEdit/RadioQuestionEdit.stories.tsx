@@ -1,20 +1,20 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 
-import { ActiveFab, EditorProvider } from '@core/journeys/ui/EditorProvider'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
-import { RadioQuestionFields } from '../../../../../../../../__generated__/RadioQuestionFields'
-import { TypographyFields } from '../../../../../../../../__generated__/TypographyFields'
 import {
   ThemeMode,
   ThemeName,
   TypographyVariant
 } from '../../../../../../../../__generated__/globalTypes'
-import { simpleComponentConfig } from '../../../../../../../libs/storybook'
+import { RadioQuestionFields } from '../../../../../../../../__generated__/RadioQuestionFields'
+import { TypographyFields } from '../../../../../../../../__generated__/TypographyFields'
 import { Canvas } from '../../Canvas'
 
 const RadioQuestionEditStory: Meta<typeof Canvas> = {
@@ -139,8 +139,7 @@ const Template: StoryObj<typeof Canvas> = {
           <EditorProvider
             initialState={{
               ...args,
-              steps,
-              activeFab: ActiveFab.Save
+              steps
             }}
           >
             <Canvas />

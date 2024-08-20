@@ -2,11 +2,11 @@ import { ApolloProvider } from '@apollo/client'
 import type { EmotionCache } from '@emotion/cache'
 import { CacheProvider } from '@emotion/react'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
-import { SSRConfig, appWithTranslation, useTranslation } from 'next-i18next'
-import { DefaultSeo } from 'next-seo'
 import { AppProps as NextJsAppProps } from 'next/app'
 import Head from 'next/head'
 import Script from 'next/script'
+import { SSRConfig, appWithTranslation, useTranslation } from 'next-i18next'
+import { DefaultSeo } from 'next-seo'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement, useEffect } from 'react'
 import TagManager from 'react-gtm-module'
@@ -92,7 +92,9 @@ function JourneysApp({
                 site: 'datadoghq.com',
                 service: 'journeys',
                 env: '${process.env.NEXT_PUBLIC_VERCEL_ENV ?? ''}',
-                version: '${process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA ?? ''}',
+                version: '${
+                  process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA ?? ''
+                }',
                 sampleRate: 50,
                 sessionReplaySampleRate: 10,
                 trackInteractions: true,

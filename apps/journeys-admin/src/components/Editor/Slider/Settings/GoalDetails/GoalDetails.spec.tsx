@@ -1,17 +1,16 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 
+import { TreeBlock } from '@core/journeys/ui/block'
 import {
   ActiveCanvasDetailsDrawer,
   ActiveContent,
-  ActiveFab,
   ActiveSlide,
   EditorProvider,
   EditorState
 } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { TreeBlock } from '@core/journeys/ui/block'
 
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import { StepFields } from '../../../../../../__generated__/StepFields'
@@ -26,7 +25,6 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 describe('GoalDetails', () => {
   const state: EditorState = {
-    activeFab: ActiveFab.Add,
     activeSlide: ActiveSlide.JourneyFlow,
     activeContent: ActiveContent.Goals,
     activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties

@@ -9,8 +9,10 @@ import ChevronRightRounded from '@mui/icons-material/ChevronRightRounded'
 import ContactSupportRounded from '@mui/icons-material/ContactSupportRounded'
 import FormatQuoteRounded from '@mui/icons-material/FormatQuoteRounded'
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
+import Launch from '@mui/icons-material/Launch'
 import LiveTvRounded from '@mui/icons-material/LiveTvRounded'
 import LockOpenRounded from '@mui/icons-material/LockOpenRounded'
+import MailOutline from '@mui/icons-material/MailOutline'
 import MenuBookRounded from '@mui/icons-material/MenuBookRounded'
 import PlayArrowRounded from '@mui/icons-material/PlayArrowRounded'
 import RadioButtonUncheckedRounded from '@mui/icons-material/RadioButtonUncheckedRounded'
@@ -26,17 +28,20 @@ import { init, t } from 'i18next'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { useCommand } from '@core/journeys/ui/CommandProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/BlockFields'
-import { IconBlockNameUpdate } from '../../../../../../../../../__generated__/IconBlockNameUpdate'
-import { IconFields } from '../../../../../../../../../__generated__/IconFields'
 import {
   IconColor,
   IconName
 } from '../../../../../../../../../__generated__/globalTypes'
+import {
+  IconBlockNameUpdate,
+  IconBlockNameUpdateVariables
+} from '../../../../../../../../../__generated__/IconBlockNameUpdate'
+import { IconFields } from '../../../../../../../../../__generated__/IconFields'
 
 import { Color } from './Color'
 
@@ -128,16 +133,22 @@ export const icons = [
     value: IconName.TranslateRounded,
     label: t('Translate'),
     display: <TranslateRounded />
+  },
+  {
+    value: IconName.Launch,
+    label: t('Launch'),
+    display: <Launch />
+  },
+  {
+    value: IconName.MailOutline,
+    label: t('Mail'),
+    display: <MailOutline />
   }
 ]
 
 export const ICON_BLOCK_NAME_UPDATE = gql`
-  mutation IconBlockNameUpdate(
-    $id: ID!
-    $journeyId: ID!
-    $input: IconBlockUpdateInput!
-  ) {
-    iconBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+  mutation IconBlockNameUpdate($id: ID!, $name: IconName) {
+    iconBlockUpdate(id: $id, input: { name: $name }) {
       id
       name
     }
@@ -148,11 +159,12 @@ type IconParentBlock<T = TreeBlock<ButtonBlock>> = T
 interface IconProps extends Pick<TreeBlock<IconFields>, 'id'> {}
 
 export function Icon({ id }: IconProps): ReactElement {
-  const [iconBlockNameUpdate] = useMutation<IconBlockNameUpdate>(
-    ICON_BLOCK_NAME_UPDATE
-  )
-  const { journey } = useJourney()
-  const { state } = useEditor()
+  const [iconBlockNameUpdate] = useMutation<
+    IconBlockNameUpdate,
+    IconBlockNameUpdateVariables
+  >(ICON_BLOCK_NAME_UPDATE)
+  const { state, dispatch } = useEditor()
+  const { add } = useCommand()
   const selectedBlock = state.selectedBlock as IconParentBlock
 
   // Get updated iconBlock, passing via props doesn't update as selectedBlock doesn't change
@@ -161,33 +173,42 @@ export function Icon({ id }: IconProps): ReactElement {
   ) as TreeBlock<IconFields>
   const iconName = iconBlock?.iconName ?? ''
 
-  async function iconUpdate(name: IconName | null): Promise<void> {
-    if (journey == null) return
-
-    await iconBlockNameUpdate({
-      variables: {
-        id,
-        journeyId: journey.id,
-        input: {
-          name
-        }
+  function iconUpdate(name: IconName | null): void {
+    add({
+      parameters: {
+        execute: { name },
+        undo: { name: iconName === '' ? null : iconName }
       },
-      optimisticResponse: {
-        iconBlockUpdate: {
-          __typename: 'IconBlock',
-          id,
-          name
-        }
+      execute({ name }) {
+        dispatch({
+          type: 'SetEditorFocusAction',
+          selectedBlock,
+          selectedStep: state.selectedStep
+        })
+
+        void iconBlockNameUpdate({
+          variables: {
+            id,
+            name
+          },
+          optimisticResponse: {
+            iconBlockUpdate: {
+              __typename: 'IconBlock',
+              id,
+              name
+            }
+          }
+        })
       }
     })
   }
 
-  async function handleChange(event: SelectChangeEvent): Promise<void> {
+  function handleChange(event: SelectChangeEvent): void {
     const newName = event.target.value as IconName
     if (event.target.value === '') {
-      await iconUpdate(null)
+      iconUpdate(null)
     } else if (newName !== iconName) {
-      await iconUpdate(newName)
+      iconUpdate(newName)
     }
   }
 

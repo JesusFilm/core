@@ -18,13 +18,7 @@ variable "security_groups" {
   type = list(string)
 }
 
-variable "listeners" {
-  type = map(object({
-    listener_port     = number
-    listener_protocol = string
-  }))
-  default = {}
-}
+
 
 variable "redirects" {
   type = map(object({
@@ -42,16 +36,4 @@ variable "forwards" {
     listener_protocol = string
   }))
   default = {}
-}
-variable "listener_port" {
-  type = number
-}
-
-variable "listener_protocol" {
-  type = string
-}
-
-variable "certificate_arn" {
-  type    = string
-  default = null
 }

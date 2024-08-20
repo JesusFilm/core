@@ -2,7 +2,7 @@ import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 import { ReactElement, useState } from 'react'
 
-import { journeysAdminConfig } from '../../libs/storybook'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { HorizontalSelect } from '.'
 

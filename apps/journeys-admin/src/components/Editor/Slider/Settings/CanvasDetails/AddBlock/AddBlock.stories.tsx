@@ -1,8 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import type { ComponentProps } from 'react'
 
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import type { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'
 import {
@@ -10,7 +11,6 @@ import {
   TypographyColor,
   TypographyVariant
 } from '../../../../../../../__generated__/globalTypes'
-import { journeysAdminConfig } from '../../../../../../libs/storybook'
 
 import { AddBlock } from './AddBlock'
 

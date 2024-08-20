@@ -4,10 +4,9 @@ import { screen, userEvent } from '@storybook/testing-library'
 import { ReactElement, useState } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-
-import { journeysAdminConfig } from '../../../../../../libs/storybook'
-import { GET_LANGUAGES } from '../../../../../../libs/useLanguagesQuery'
-import { defaultJourney } from '../../../../data'
+import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
+import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { JOURNEY_LANGUAGE_UPDATE } from './LanguageDialog'
 
@@ -42,7 +41,7 @@ const LanguageDialogComponent = (): ReactElement => {
                     {
                       value: 'English',
                       primary: true,
-                      __typename: 'Translation'
+                      __typename: 'LanguageName'
                     }
                   ]
                 },
@@ -53,12 +52,12 @@ const LanguageDialogComponent = (): ReactElement => {
                     {
                       value: 'Français',
                       primary: true,
-                      __typename: 'Translation'
+                      __typename: 'LanguageName'
                     },
                     {
                       value: 'French',
                       primary: false,
-                      __typename: 'Translation'
+                      __typename: 'LanguageName'
                     }
                   ]
                 },
@@ -69,12 +68,12 @@ const LanguageDialogComponent = (): ReactElement => {
                     {
                       value: 'Deutsch',
                       primary: true,
-                      __typename: 'Translation'
+                      __typename: 'LanguageName'
                     },
                     {
                       value: 'German, Standard',
                       primary: false,
-                      __typename: 'Translation'
+                      __typename: 'LanguageName'
                     }
                   ]
                 }
@@ -104,12 +103,12 @@ const LanguageDialogComponent = (): ReactElement => {
                     {
                       value: 'Français',
                       primary: true,
-                      __typename: 'Translation'
+                      __typename: 'LanguageName'
                     },
                     {
                       value: 'French',
                       primary: false,
-                      __typename: 'Translation'
+                      __typename: 'LanguageName'
                     }
                   ]
                 }

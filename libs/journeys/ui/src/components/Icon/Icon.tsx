@@ -7,8 +7,10 @@ import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded'
 import ChevronRightRounded from '@mui/icons-material/ChevronRightRounded'
 import ContactSupportRounded from '@mui/icons-material/ContactSupportRounded'
 import FormatQuoteRounded from '@mui/icons-material/FormatQuoteRounded'
+import Launch from '@mui/icons-material/Launch'
 import LiveTvRounded from '@mui/icons-material/LiveTvRounded'
 import LockOpenRounded from '@mui/icons-material/LockOpenRounded'
+import MailOutline from '@mui/icons-material/MailOutline'
 import MenuBookRounded from '@mui/icons-material/MenuBookRounded'
 import PlayArrowRounded from '@mui/icons-material/PlayArrowRounded'
 import RadioButtonUncheckedRounded from '@mui/icons-material/RadioButtonUncheckedRounded'
@@ -18,9 +20,9 @@ import TranslateRounded from '@mui/icons-material/TranslateRounded'
 import { ReactElement, createElement } from 'react'
 
 import { IconName } from '../../../__generated__/globalTypes'
-import { useJourney } from '../../libs/JourneyProvider'
 import type { TreeBlock } from '../../libs/block'
 import { BlockFields_IconBlock as IconBlock } from '../../libs/block/__generated__/BlockFields'
+import { useJourney } from '../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../libs/rtl'
 
 export function Icon({
@@ -35,12 +37,12 @@ export function Icon({
     iconSize === 'sm'
       ? '16px'
       : iconSize === 'md'
-        ? '20px'
-        : iconSize === 'lg'
-          ? '28px'
-          : iconSize === 'xl'
-            ? '48px'
-            : 'inherit'
+      ? '20px'
+      : iconSize === 'lg'
+      ? '28px'
+      : iconSize === 'xl'
+      ? '48px'
+      : 'inherit'
 
   const icons = {
     CheckCircleRounded,
@@ -59,7 +61,9 @@ export function Icon({
     BeenhereRounded,
     SendRounded,
     SubscriptionsRounded,
-    ContactSupportRounded
+    ContactSupportRounded,
+    Launch,
+    MailOutline
   }
 
   const iconRTL =

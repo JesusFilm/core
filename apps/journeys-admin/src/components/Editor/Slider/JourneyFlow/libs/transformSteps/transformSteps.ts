@@ -4,9 +4,9 @@ import { Edge, MarkerType, Node } from 'reactflow'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { filterActionBlocks } from '@core/journeys/ui/filterActionBlocks'
+import { adminLight } from '@core/shared/ui/themes/journeysAdmin/theme'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'
-import { adminLight } from '../../../../../ThemeProvider/admin/theme'
 import {
   ACTION_BUTTON_HEIGHT,
   LINK_NODE_HEIGHT_GAP,
@@ -33,7 +33,7 @@ export const socialNode = {
   id: 'SocialPreview',
   type: 'SocialPreview',
   data: {},
-  position: { x: -365, y: -46 },
+  position: { x: -240, y: -46 },
   draggable: false
 }
 

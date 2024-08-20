@@ -38,7 +38,7 @@ jobs:
       - id: set-matrix
         name: set matrix app to affected array
         run: |
-          echo "matrix=$(npx ts-node tools/scripts/affected-apps.ts --withTarget deploy --projects apps/* --exclude api-*)" >> $GITHUB_OUTPUT
+          echo "matrix=$(npx ts-node tools/scripts/deploy-apps.ts --projects apps/* --exclude api-*)" >> $GITHUB_OUTPUT
           cat $GITHUB_OUTPUT
   deploy-preview:
     name: Deploy Preview and Test
@@ -108,9 +108,13 @@ jobs:
           WATCH_VERCEL_PROJECT_ID: ${{ secrets.WATCH_VERCEL_PROJECT_ID }}
           NEXT_PUBLIC_VERCEL_ENV: preview
           NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA: ${{ github.sha }}
-          DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
         # use run-namy to avoid case where deploy command doesn't exist for a project
         run: npx nx run-many --target=deploy --projects=${{ matrix.app }}
+      - name: upload sourcemaps to datadog
+        env:
+          GIT_COMMIT_SHA: ${{ github.sha }}
+          DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
+        run: npx nx run-many --target=upload-sourcemaps --projects=${{ matrix.app }}
       - name: vercel set alias
         if: ${{ github.event_name == 'pull_request' }}
         env:
@@ -256,9 +260,13 @@ jobs:
           WATCH_VERCEL_PROJECT_ID: ${{ secrets.WATCH_VERCEL_PROJECT_ID }}
           NEXT_PUBLIC_VERCEL_ENV: production
           NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA: ${{ github.sha }}
-          DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
         # use run-namy to avoid case where deploy command doesn't exist for a project
         run: npx nx run-many --target=deploy --projects=${{ matrix.app }} --prod
+      - name: upload sourcemaps to datadog
+        env:
+          GIT_COMMIT_SHA: ${{ github.sha }}
+          DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
+        run: npx nx run-many --target=upload-sourcemaps --projects=${{ matrix.app }}
       - name: Generate GitHub comment
         id: deployment-url
         env:

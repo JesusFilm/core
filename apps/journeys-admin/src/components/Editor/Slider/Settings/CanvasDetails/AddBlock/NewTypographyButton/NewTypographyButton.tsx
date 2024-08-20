@@ -1,15 +1,22 @@
 import { gql, useMutation } from '@apollo/client'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
+import { v4 as uuidv4 } from 'uuid'
 
-import { ActiveFab, useEditor } from '@core/journeys/ui/EditorProvider'
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { TYPOGRAPHY_FIELDS } from '@core/journeys/ui/Typography/typographyFields'
-import type { TreeBlock } from '@core/journeys/ui/block'
 import Type3Icon from '@core/shared/ui/icons/Type3'
 
-import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../__generated__/BlockFields'
+import {
+  BlockFields_CardBlock as CardBlock,
+  BlockFields_TypographyBlock as TypographyBlock
+} from '../../../../../../../../__generated__/BlockFields'
+import { TypographyVariant } from '../../../../../../../../__generated__/globalTypes'
 import { TypographyBlockCreate } from '../../../../../../../../__generated__/TypographyBlockCreate'
+import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
+import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
 import { Button } from '../Button'
 
 export const TYPOGRAPHY_BLOCK_CREATE = gql`
@@ -25,64 +32,58 @@ export const TYPOGRAPHY_BLOCK_CREATE = gql`
 
 export function NewTypographyButton(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [typographyBlockCreate] = useMutation<TypographyBlockCreate>(
-    TYPOGRAPHY_BLOCK_CREATE
-  )
+  const [typographyBlockCreate, { loading }] =
+    useMutation<TypographyBlockCreate>(TYPOGRAPHY_BLOCK_CREATE)
   const { journey } = useJourney()
   const {
-    state: { selectedStep },
-    dispatch
+    state: { selectedStep }
   } = useEditor()
+  const { addBlock } = useBlockCreateCommand()
 
-  const handleClick = async (): Promise<void> => {
+  function handleClick(): void {
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
-    const checkTypography = card?.children.map((block) =>
-      block.children.find((child) => child.__typename === 'TypographyBlock')
+    const checkTypography = card?.children.find(
+      (block) =>
+        block.__typename === 'TypographyBlock' && block.parentOrder != null
     )
-    if (card != null && checkTypography !== undefined && journey != null) {
-      const { data } = await typographyBlockCreate({
-        variables: {
-          input: {
-            journeyId: journey.id,
-            parentBlockId: card.id,
-            content: '',
-            variant: checkTypography.length > 0 ? 'body2' : 'h1'
+    if (card == null || journey == null) return
+    const typographyBlock: TreeBlock<TypographyBlock> = {
+      id: uuidv4(),
+      parentBlockId: card.id,
+      parentOrder: card.children.length ?? 0,
+      align: null,
+      color: null,
+      content: '',
+      variant:
+        checkTypography != null
+          ? TypographyVariant.body2
+          : TypographyVariant.h1,
+      __typename: 'TypographyBlock',
+      children: []
+    }
+
+    addBlock({
+      block: typographyBlock,
+      execute() {
+        void typographyBlockCreate({
+          variables: {
+            input: {
+              id: typographyBlock.id,
+              journeyId: journey.id,
+              parentBlockId: typographyBlock.parentBlockId,
+              content: typographyBlock.content,
+              variant: typographyBlock.variant
+            }
+          },
+          optimisticResponse: { typographyBlockCreate: typographyBlock },
+          update(cache, { data }) {
+            blockCreateUpdate(cache, journey?.id, data?.typographyBlockCreate)
           }
-        },
-        update(cache, { data }) {
-          if (data?.typographyBlockCreate != null) {
-            cache.modify({
-              id: cache.identify({ __typename: 'Journey', id: journey.id }),
-              fields: {
-                blocks(existingBlockRefs = []) {
-                  const newBlockRef = cache.writeFragment({
-                    data: data.typographyBlockCreate,
-                    fragment: gql`
-                      fragment NewBlock on Block {
-                        id
-                      }
-                    `
-                  })
-                  return [...existingBlockRefs, newBlockRef]
-                }
-              }
-            })
-          }
-        }
-      })
-      if (data?.typographyBlockCreate != null) {
-        dispatch({
-          type: 'SetSelectedBlockByIdAction',
-          selectedBlockId: data.typographyBlockCreate.id
-        })
-        dispatch({
-          type: 'SetActiveFabAction',
-          activeFab: ActiveFab.Save
         })
       }
-    }
+    })
   }
 
   return (
@@ -91,6 +92,7 @@ export function NewTypographyButton(): ReactElement {
       value={t('Text')}
       onClick={handleClick}
       testId="NewTypographyButton"
+      disabled={loading}
     />
   )
 }

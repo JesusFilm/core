@@ -3,21 +3,21 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
+import { useTheme } from '@mui/material/styles'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { useTheme } from '@mui/material/styles'
-import { useTranslation } from 'next-i18next'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ComponentProps, ReactElement, SyntheticEvent, useState } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
-import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import FacebookLogo from '@core/shared/ui/icons/FacebookLogo'
 import TwitterLogo from '@core/shared/ui/icons/TwitterLogo'
+import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
 import { useVideo } from '../../libs/videoContext'
 
@@ -43,15 +43,15 @@ export function ShareDialog({
     description != null && description.length > 0
       ? description[0].value
       : snippet != null && snippet.length > 0
-        ? snippet[0].value
-        : ''
+      ? snippet[0].value
+      : ''
 
   const shareLink =
     router?.query != null
       ? `${
           process.env.NEXT_PUBLIC_WATCH_URL ??
           'https://watch-jesusfilm.vercel.app'
-        }/watch/${Object.values(router?.query).join('/')}`.trim()
+        }/${Object.values(router?.query).join('/')}`.trim()
       : ''
 
   const handleShareLinkClick = async (): Promise<void> => {

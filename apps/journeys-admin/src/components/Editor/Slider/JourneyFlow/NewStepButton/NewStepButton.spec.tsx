@@ -3,10 +3,11 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ReactFlowProvider } from 'reactflow'
 import { v4 as uuidv4 } from 'uuid'
 
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
 import { stepAndCardBlockCreateMock } from '../../../../../libs/useStepAndCardBlockCreateMutation/useStepAndCardBlockCreateMutation.mock'
-import { defaultJourney } from '../../../data'
 
 import { NewStepButton } from '.'
 
@@ -39,9 +40,11 @@ describe('NewStepButton', () => {
     render(
       <MockedProvider mocks={[{ ...stepAndCardBlockCreateMock, result }]}>
         <JourneyProvider value={{ journey: defaultJourney }}>
-          <ReactFlowProvider>
-            <NewStepButton />
-          </ReactFlowProvider>
+          <EditorProvider>
+            <ReactFlowProvider>
+              <NewStepButton />
+            </ReactFlowProvider>
+          </EditorProvider>
         </JourneyProvider>
       </MockedProvider>
     )
@@ -49,5 +52,17 @@ describe('NewStepButton', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Add Step' }))
 
     await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
+  it('should be disabled', () => {
+    render(
+      <MockedProvider>
+        <ReactFlowProvider>
+          <NewStepButton disabled />
+        </ReactFlowProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByRole('button', { name: 'Add Step' })).toBeDisabled()
   })
 })

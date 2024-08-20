@@ -1,4 +1,6 @@
 import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import { useRouter } from 'next/router'
 import {
   AuthAction,
   useUser,
@@ -7,25 +9,26 @@ import {
 } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import { useRouter } from 'next/router'
 import { ReactElement, useEffect } from 'react'
+
+import { useTeam } from '@core/journeys/ui/TeamProvider'
+import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
 
 import {
   GetAdminJourneys,
   GetAdminJourneysVariables
 } from '../__generated__/GetAdminJourneys'
+import { JourneyStatus } from '../__generated__/globalTypes'
 import {
   UpdateLastActiveTeamId,
   UpdateLastActiveTeamIdVariables
 } from '../__generated__/UpdateLastActiveTeamId'
-import { JourneyStatus } from '../__generated__/globalTypes'
+import { HelpScoutBeacon } from '../src/components/HelpScoutBeacon'
 import { JourneyList } from '../src/components/JourneyList'
 import { OnboardingPanel } from '../src/components/OnboardingPanel'
 import { PageWrapper } from '../src/components/PageWrapper'
 import { TeamMenu } from '../src/components/Team/TeamMenu'
-import { useTeam } from '../src/components/Team/TeamProvider'
 import { TeamSelect } from '../src/components/Team/TeamSelect'
-import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../src/components/Team/TeamSelect/TeamSelect'
 import { initAndAuthApp } from '../src/libs/initAndAuthApp'
 import { GET_ADMIN_JOURNEYS } from '../src/libs/useAdminJourneysQuery/useAdminJourneysQuery'
 
@@ -33,12 +36,14 @@ function IndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const user = useUser()
   const router = useRouter()
-  const { query } = useTeam()
+  const { query, activeTeam, refetch } = useTeam()
 
   // MA - ensure team is refetched if user is not loaded before provider
   useEffect(() => {
-    void query.refetch()
-  }, [user.id, query])
+    if (activeTeam == null) {
+      void refetch()
+    }
+  }, [user.id, query, activeTeam, refetch])
 
   return (
     <>
@@ -59,7 +64,19 @@ function IndexPage(): ReactElement {
           </Stack>
         }
         sidePanelChildren={<OnboardingPanel />}
-        sidePanelTitle={t('Create a New Journey')}
+        sidePanelTitle={
+          <>
+            <Typography variant="subtitle1">
+              {t('Create a New Journey')}
+            </Typography>
+            <HelpScoutBeacon
+              userInfo={{
+                name: user?.displayName ?? '',
+                email: user?.email ?? ''
+              }}
+            />
+          </>
+        }
       >
         <JourneyList user={user} />
       </PageWrapper>

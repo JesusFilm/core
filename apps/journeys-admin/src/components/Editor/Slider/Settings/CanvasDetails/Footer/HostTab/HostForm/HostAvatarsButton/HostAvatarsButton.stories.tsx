@@ -4,8 +4,7 @@ import { screen, userEvent } from '@storybook/testing-library'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
-
-import { simpleComponentConfig } from '../../../../../../../../../libs/storybook'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { HostAvatarsButton } from './HostAvatarsButton'
 

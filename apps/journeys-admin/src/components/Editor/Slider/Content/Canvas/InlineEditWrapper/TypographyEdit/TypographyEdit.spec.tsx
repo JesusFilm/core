@@ -1,6 +1,8 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { ApolloLink } from '@apollo/client'
+import { MockLink, MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
+import DebounceLink from 'apollo-link-debounce'
 import { ComponentProps } from 'react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -8,6 +10,8 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
 import { TypographyVariant } from '../../../../../../../../__generated__/globalTypes'
+import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
+import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
 import { TYPOGRAPHY_BLOCK_UPDATE_CONTENT, TypographyEdit } from '.'
 
@@ -17,7 +21,6 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 }))
 
 describe('TypographyEdit', () => {
-  const onDelete = jest.fn()
   const props: ComponentProps<typeof TypographyEdit> = {
     __typename: 'TypographyBlock',
     parentBlockId: 'card.id',
@@ -27,9 +30,52 @@ describe('TypographyEdit', () => {
     content: 'test content',
     align: null,
     color: null,
-    children: [],
-    deleteSelf: onDelete
+    children: []
   }
+
+  const mockUpdateSuccess1 = {
+    request: {
+      query: TYPOGRAPHY_BLOCK_UPDATE_CONTENT,
+      variables: {
+        id: 'typography.id',
+        content: 'test'
+      }
+    },
+    result: jest.fn(() => ({
+      data: {
+        typographyBlockUpdate: [
+          {
+            __typename: 'TypographyBlock',
+            id: 'typography.id',
+            content: 'test'
+          }
+        ]
+      }
+    }))
+  }
+
+  const mockUpdateSuccess2 = {
+    request: {
+      query: TYPOGRAPHY_BLOCK_UPDATE_CONTENT,
+      variables: {
+        id: 'typography.id',
+        content: 'test content'
+      }
+    },
+    result: jest.fn(() => ({
+      data: {
+        typographyBlockUpdate: [
+          {
+            __typename: 'TypographyBlock',
+            id: 'typography.id',
+            content: 'test content'
+          }
+        ]
+      }
+    }))
+  }
+
+  beforeEach(() => jest.clearAllMocks())
 
   it('selects the input on click', () => {
     render(
@@ -43,143 +89,9 @@ describe('TypographyEdit', () => {
     expect(input).toHaveAttribute('placeholder', 'Add your text here...')
   })
 
-  it('saves the text content on outside click', async () => {
-    const result = jest.fn(() => ({
-      data: {
-        typographyBlockUpdate: [
-          {
-            __typename: 'TypographyBlock',
-            id: 'typography.id',
-            content: 'updated content'
-          }
-        ]
-      }
-    }))
-
-    const { getByRole } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: TYPOGRAPHY_BLOCK_UPDATE_CONTENT,
-              variables: {
-                id: 'typography.id',
-                journeyId: 'journeyId',
-                input: {
-                  content: 'updated content'
-                }
-              }
-            },
-            result
-          }
-        ]}
-      >
-        <JourneyProvider
-          value={{
-            journey: { id: 'journeyId' } as unknown as Journey,
-            variant: 'admin'
-          }}
-        >
-          <EditorProvider>
-            <h1 className="EditorCanvas">Other content</h1>
-            <iframe>
-              <TypographyEdit {...props} />
-            </iframe>
-          </EditorProvider>
-        </JourneyProvider>
-      </MockedProvider>
-    )
-
-    const input = getByRole('textbox')
-    fireEvent.click(input)
-    fireEvent.change(input, { target: { value: '    updated content    ' } })
-    fireEvent.click(getByRole('heading', { level: 1 }))
-    await waitFor(() => expect(result).toHaveBeenCalled())
-  })
-
-  it('should save the text content on blur', async () => {
-    const result = jest.fn(() => ({
-      data: {
-        typographyBlockUpdate: [
-          {
-            __typename: 'TypographyBlock',
-            id: 'typography.id',
-            content: 'updated content'
-          }
-        ]
-      }
-    }))
-
-    const { getByText } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: TYPOGRAPHY_BLOCK_UPDATE_CONTENT,
-              variables: {
-                id: 'typography.id',
-                journeyId: 'journeyId',
-                input: {
-                  content: 'updated content'
-                }
-              }
-            },
-            result
-          }
-        ]}
-      >
-        <JourneyProvider
-          value={{
-            journey: { id: 'journeyId' } as unknown as Journey,
-            variant: 'admin'
-          }}
-        >
-          <EditorProvider>
-            <TypographyEdit {...props} />
-          </EditorProvider>
-        </JourneyProvider>
-      </MockedProvider>
-    )
-
-    fireEvent.click(getByText('test content'))
-    fireEvent.change(getByText('test content'), {
-      target: { value: '    updated content    ' }
-    })
-    fireEvent.blur(getByText('updated content'))
-    await waitFor(() => expect(result).toHaveBeenCalled())
-  })
-
   it('should not call updateContent if the content is not changed', async () => {
-    const result = jest.fn(() => ({
-      data: {
-        typographyBlockUpdate: [
-          {
-            __typename: 'TypographyBlock',
-            id: 'typography.id',
-            content: 'test content'
-          }
-        ]
-      }
-    }))
-
     const { getByText } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: TYPOGRAPHY_BLOCK_UPDATE_CONTENT,
-              variables: {
-                id: 'typography.id',
-                journeyId: 'journeyId',
-                input: {
-                  content: 'test content'
-                }
-              }
-            },
-            result
-          }
-        ]}
-      >
+      <MockedProvider mocks={[mockUpdateSuccess1]}>
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
@@ -198,62 +110,14 @@ describe('TypographyEdit', () => {
       target: { value: 'test content' }
     })
     fireEvent.blur(getByText('test content'))
-    await waitFor(() => expect(result).not.toHaveBeenCalled())
-  })
-
-  it('calls onDelete when text content deleted', async () => {
-    const { getByRole } = render(
-      <MockedProvider>
-        <JourneyProvider
-          value={{
-            journey: { id: 'journeyId' } as unknown as Journey,
-            variant: 'admin'
-          }}
-        >
-          <h1 className="EditorCanvas">Other content</h1>
-          <TypographyEdit {...props} />
-        </JourneyProvider>
-      </MockedProvider>
+    await waitFor(() =>
+      expect(mockUpdateSuccess1.result).not.toHaveBeenCalled()
     )
-    const input = getByRole('textbox')
-
-    fireEvent.click(input)
-    fireEvent.change(input, { target: { value: '' } })
-    fireEvent.click(getByRole('heading', { level: 1 }))
-
-    expect(onDelete).toHaveBeenCalled()
   })
 
   it('persists selection state on outside click', async () => {
-    const result = jest.fn(() => ({
-      data: {
-        typographyBlockUpdate: [
-          {
-            __typename: 'TypographyBlock',
-            id: 'typography.id',
-            content: 'updated content'
-          }
-        ]
-      }
-    }))
     render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: TYPOGRAPHY_BLOCK_UPDATE_CONTENT,
-              variables: {
-                id: 'typography.id',
-                journeyId: 'journeyId',
-                input: {
-                  content: 'new'
-                }
-              }
-            },
-            result
-          }
-        ]}
-      >
+      <MockedProvider mocks={[mockUpdateSuccess1]}>
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
@@ -274,9 +138,65 @@ describe('TypographyEdit', () => {
     expect(input).toHaveValue('')
 
     // Cursor remains at end of input after outside click
-    await userEvent.type(input, 'new')
+    await userEvent.type(input, 'test')
     await userEvent.click(screen.getByRole('heading', { level: 1 }))
     await userEvent.type(input, '{backspace}')
-    expect(input).toHaveValue('ne')
+    expect(input).toHaveValue('tes')
+  })
+
+  it('should undo the typography content change', async () => {
+    const link = ApolloLink.from([
+      new DebounceLink(500),
+      new MockLink([mockUpdateSuccess1, mockUpdateSuccess2])
+    ])
+
+    render(
+      <MockedProvider link={link}>
+        <EditorProvider>
+          <CommandUndoItem variant="button" />
+          <TypographyEdit {...props} />
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    const input = screen.getByRole('textbox')
+    await userEvent.type(input, 'test', { skipClick: true })
+    await waitFor(() => expect(mockUpdateSuccess1.result).toHaveBeenCalled())
+    expect(input).toHaveTextContent('test')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(mockUpdateSuccess2.result).toHaveBeenCalled())
+  })
+
+  it('should redo the typography content change', async () => {
+    const firstUpdateMock = {
+      ...mockUpdateSuccess1,
+      maxUsageCount: 2
+    }
+
+    const link = ApolloLink.from([
+      new DebounceLink(500),
+      new MockLink([mockUpdateSuccess1, mockUpdateSuccess2])
+    ])
+
+    render(
+      <MockedProvider link={link}>
+        <EditorProvider>
+          <CommandUndoItem variant="button" />
+          <CommandRedoItem variant="button" />
+          <TypographyEdit {...props} />
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    const input = screen.getByRole('textbox')
+    await userEvent.type(input, 'test', { skipClick: true })
+    await waitFor(() => expect(firstUpdateMock.result).toHaveBeenCalled())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(mockUpdateSuccess2.result).toHaveBeenCalled())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+    await waitFor(() => expect(firstUpdateMock.result).toHaveBeenCalled())
   })
 })

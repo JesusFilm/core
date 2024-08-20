@@ -1,3 +1,5 @@
+import Typography from '@mui/material/Typography'
+import { useRouter } from 'next/router'
 import {
   AuthAction,
   useUser,
@@ -6,9 +8,9 @@ import {
 } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 
+import { HelpScoutBeacon } from '../../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../../src/components/PageWrapper'
 import { VisitorInfo } from '../../../src/components/VisitorInfo'
 import { DetailsForm } from '../../../src/components/VisitorInfo/DetailsForm'
@@ -20,17 +22,28 @@ function SingleVisitorReportsPage(): ReactElement {
   const user = useUser()
 
   const id = router.query.visitorId as string
+  const journeyId = router.query.journeyId
 
   return (
     <>
       <NextSeo title={t('Visitor Info')} />
       <PageWrapper
         title={t("Visitor's Activity")}
-        backHref="/reports/visitors"
+        backHref={`/journeys/${journeyId as string}/reports/visitors`}
         user={user}
         sidePanelChildren={<DetailsForm id={id} />}
-        sidePanelTitle={t('Visitor Details')}
-        backHrefHistory
+        sidePanelTitle={
+          <>
+            <Typography variant="subtitle1">{t('Visitor Details')}</Typography>
+            <HelpScoutBeacon
+              userInfo={{
+                name: user?.displayName ?? '',
+                email: user?.email ?? ''
+              }}
+            />
+          </>
+        }
+        backHrefHistory={journeyId != null ? undefined : true}
       >
         <VisitorInfo id={id} />
       </PageWrapper>

@@ -3,6 +3,12 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import {
+  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
+  TeamProvider
+} from '@core/journeys/ui/TeamProvider'
+import { GetLastActiveTeamIdAndTeams } from '@core/journeys/ui/TeamProvider/__generated__/GetLastActiveTeamIdAndTeams'
+
+import {
   CreateJourneyCollection,
   CreateJourneyCollectionVariables
 } from '../../../../../__generated__/CreateJourneyCollection'
@@ -15,21 +21,16 @@ import {
   GetAdminJourneysVariables
 } from '../../../../../__generated__/GetAdminJourneys'
 import { GetCustomDomains_customDomains as CustomDomain } from '../../../../../__generated__/GetCustomDomains'
-import { GetLastActiveTeamIdAndTeams } from '../../../../../__generated__/GetLastActiveTeamIdAndTeams'
+import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 import {
   UpdateJourneyCollection,
   UpdateJourneyCollectionVariables
 } from '../../../../../__generated__/UpdateJourneyCollection'
-import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 import { GET_ADMIN_JOURNEYS } from '../../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import {
   defaultJourney,
   publishedJourney
 } from '../../../JourneyList/journeyListData'
-import {
-  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
-  TeamProvider
-} from '../../TeamProvider'
 
 import {
   CREATE_JOURNEY_COLLECTION,

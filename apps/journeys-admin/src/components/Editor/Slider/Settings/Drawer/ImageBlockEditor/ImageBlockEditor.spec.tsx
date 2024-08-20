@@ -1,9 +1,14 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../__generated__/BlockFields'
+
+import {
+  listUnsplashCollectionPhotosMock,
+  triggerUnsplashDownloadMock
+} from './UnsplashGallery/data'
 
 import { ImageBlockEditor } from '.'
 
@@ -28,17 +33,17 @@ describe('ImageBlockEditor', () => {
   }
 
   it('should render the ImageBlockEditor', () => {
-    const { getByText, getByRole } = render(
+    render(
       <SnackbarProvider>
         <MockedProvider>
           <ImageBlockEditor onChange={jest.fn()} selectedBlock={imageBlock} />
         </MockedProvider>
       </SnackbarProvider>
     )
-    expect(getByText('Selected Image')).toBeInTheDocument()
-    expect(getByRole('tab', { name: 'Gallery' })).toBeInTheDocument()
-    expect(getByRole('tab', { name: 'Custom' })).toBeInTheDocument()
-    expect(getByRole('tab', { name: 'AI' })).toBeInTheDocument()
+    expect(screen.getByText('Selected Image')).toBeInTheDocument()
+    expect(screen.getByRole('tab', { name: 'Gallery' })).toBeInTheDocument()
+    expect(screen.getByRole('tab', { name: 'Custom' })).toBeInTheDocument()
+    expect(screen.getByRole('tab', { name: 'AI' })).toBeInTheDocument()
   })
 
   it('should switch tabs', async () => {
@@ -53,16 +58,18 @@ describe('ImageBlockEditor', () => {
       }
     } as unknown as NextRouter)
 
-    const { getByText, getByRole } = render(
+    render(
       <SnackbarProvider>
         <MockedProvider>
           <ImageBlockEditor onChange={jest.fn()} selectedBlock={imageBlock} />
         </MockedProvider>
       </SnackbarProvider>
     )
-    expect(getByRole('tab', { name: 'Gallery' })).toBeInTheDocument()
-    await waitFor(() => expect(getByText('Unsplash')).toBeInTheDocument())
-    fireEvent.click(getByRole('tab', { name: 'Custom' }))
+    expect(screen.getByRole('tab', { name: 'Gallery' })).toBeInTheDocument()
+    await waitFor(() =>
+      expect(screen.getByText('Unsplash')).toBeInTheDocument()
+    )
+    fireEvent.click(screen.getByRole('tab', { name: 'Custom' }))
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
         {
@@ -73,10 +80,10 @@ describe('ImageBlockEditor', () => {
       )
     })
 
-    expect(getByText('Add image by URL')).toBeInTheDocument()
-    await fireEvent.click(getByRole('tab', { name: 'AI' }))
+    expect(screen.getByText('Add image by URL')).toBeInTheDocument()
+    await fireEvent.click(screen.getByRole('tab', { name: 'AI' }))
     await waitFor(() =>
-      expect(getByRole('button', { name: 'Prompt' })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Prompt' })).toBeInTheDocument()
     )
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
@@ -88,7 +95,7 @@ describe('ImageBlockEditor', () => {
       )
     })
 
-    fireEvent.click(getByRole('tab', { name: 'Gallery' }))
+    fireEvent.click(screen.getByRole('tab', { name: 'Gallery' }))
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
         {
@@ -98,5 +105,36 @@ describe('ImageBlockEditor', () => {
         { shallow: true }
       )
     })
+  })
+
+  it('should render the UnsplashGallery', async () => {
+    const handleChange = jest.fn()
+    render(
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={[
+            listUnsplashCollectionPhotosMock,
+            triggerUnsplashDownloadMock
+          ]}
+        >
+          <ImageBlockEditor onChange={handleChange} selectedBlock={null} />
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    await waitFor(() =>
+      expect(screen.getByTestId('image-dLAN46E5wVw')).toBeInTheDocument()
+    )
+    fireEvent.click(
+      screen.getByRole('button', { name: 'white dome building during daytime' })
+    )
+    await waitFor(() =>
+      expect(handleChange).toHaveBeenCalledWith({
+        alt: 'white dome building during daytime',
+        blurhash: 'LEA,%vRjE1ay.AV@WAj@tnoef5ju',
+        height: 720,
+        src: 'https://images.unsplash.com/photo-1618777618311-92f986a6519d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0MDYwNDN8MHwxfGNvbGxlY3Rpb258MXw0OTI0NTU2fHx8fHwyfHwxNzIxODUyNzc0fA&ixlib=rb-4.0.3&q=80&w=1080',
+        width: 1080
+      })
+    )
   })
 })

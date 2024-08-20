@@ -1,25 +1,24 @@
 import { GetStaticPaths, GetStaticProps } from 'next'
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
-import PlausibleProvider from 'next-plausible'
-import { NextSeo } from 'next-seo'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { transformer } from '@core/journeys/ui/transformer'
-import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+import { GET_JOURNEY } from '@core/journeys/ui/useJourneyQuery'
 
 import {
   GetJourney,
   GetJourneyVariables,
   GetJourney_journey as Journey
 } from '../../__generated__/GetJourney'
+import { IdType } from '../../__generated__/globalTypes'
 import i18nConfig from '../../next-i18next.config'
 import { Conductor } from '../../src/components/Conductor'
+import { JourneyPageWrapper } from '../../src/components/JourneyPageWrapper'
 import { createApolloClient } from '../../src/libs/apolloClient'
-import { GET_JOURNEY } from '../home/[journeySlug]'
 
 interface HostJourneyPageProps {
   host: string
@@ -40,15 +39,7 @@ function HostJourneyPage({
     void router.push('/embed/[journeySlug]', `/embed/${journey.slug}`)
   }
   return (
-    <PlausibleProvider
-      enabled
-      trackLocalhost
-      manualPageviews
-      customDomain="/plausible"
-      domain={`api-journeys-journey-${journey.id}${
-        journey.team?.id != null ? `,api-journeys-team-${journey.team.id}` : ''
-      }`}
-    >
+    <>
       <Head>
         <link
           rel="alternate"
@@ -85,19 +76,12 @@ function HostJourneyPage({
               : []
         }}
       />
-      <JourneyProvider value={{ journey }}>
-        <ThemeProvider
-          themeName={journey.themeName}
-          themeMode={journey.themeMode}
-          rtl={rtl}
-          locale={locale}
-        >
-          {journey.blocks != null && (
-            <Conductor blocks={transformer(journey.blocks)} />
-          )}
-        </ThemeProvider>
-      </JourneyProvider>
-    </PlausibleProvider>
+      <JourneyPageWrapper journey={journey} rtl={rtl} locale={locale}>
+        {journey.blocks != null && (
+          <Conductor blocks={transformer(journey.blocks)} />
+        )}
+      </JourneyPageWrapper>
+    </>
   )
 }
 
@@ -110,6 +94,7 @@ export const getStaticProps: GetStaticProps<HostJourneyPageProps> = async (
       query: GET_JOURNEY,
       variables: {
         id: context.params?.journeySlug?.toString() ?? '',
+        idType: IdType.slug,
         options: {
           hostname: context.params?.hostname?.toString() ?? ''
         }

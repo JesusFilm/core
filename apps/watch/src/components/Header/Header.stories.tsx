@@ -1,6 +1,8 @@
-import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
+
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+import { ThemeMode } from '@core/shared/ui/themes'
 
 import { watchConfig } from '../../libs/storybook'
 
@@ -15,19 +17,39 @@ const HeaderStory: Meta<typeof Header> = {
   }
 }
 
+const trueHeaderItemsFlags = {
+  strategies: true,
+  journeys: true,
+  calendar: true,
+  products: true
+}
+
 const Template: StoryObj<typeof Header> = {
+  render: () => <Header themeMode={ThemeMode.light} />
+}
+
+const WithFlagsTemplate: StoryObj<typeof Header> = {
   render: () => (
-    <Box
-      sx={{
-        backgroundColor: '#26262E'
-      }}
-    >
-      <Header />
-    </Box>
+    <FlagsProvider flags={{ ...trueHeaderItemsFlags }}>
+      <Header themeMode={ThemeMode.light} />
+    </FlagsProvider>
   )
 }
 
-export const Default = { ...Template }
+export const Default = {
+  ...Template
+}
+
+export const WithAllButtons = {
+  ...WithFlagsTemplate,
+  parameters: {
+    nextjs: {
+      router: {
+        pathname: '/watch'
+      }
+    }
+  }
+}
 
 export const OpenPanel = {
   ...Template,

@@ -3,8 +3,8 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { GraphQLError } from 'graphql'
 import { SnackbarProvider } from 'notistack'
 
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_FormBlock as FormBlock } from '../../../../../../../../../../../__generated__/BlockFields'
 

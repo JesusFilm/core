@@ -3,6 +3,9 @@ import { Meta, StoryObj } from '@storybook/react'
 import { User } from 'next-firebase-auth'
 import { ComponentProps, ReactElement, useState } from 'react'
 
+import { GET_USER_ROLE } from '@core/journeys/ui/useUserRoleQuery'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
+
 import {
   GetAdminJourneys,
   GetAdminJourneysVariables,
@@ -16,9 +19,7 @@ import {
   UserJourneyRole
 } from '../../../../__generated__/globalTypes'
 import { cache } from '../../../libs/apolloClient/cache'
-import { journeysAdminConfig } from '../../../libs/storybook'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
-import { GET_USER_ROLE } from '../../../libs/useUserRoleQuery/useUserRoleQuery'
 
 import { GET_ME } from './UserNavigation'
 

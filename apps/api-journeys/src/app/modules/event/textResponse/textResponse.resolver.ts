@@ -3,21 +3,25 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
 
+import { Prisma } from '.prisma/api-journeys-client'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 
 import {
   TextResponseSubmissionEvent,
-  TextResponseSubmissionEventCreateInput
+  TextResponseSubmissionEventCreateInput,
+  TextResponseType
 } from '../../../__generated__/graphql'
 import { PrismaService } from '../../../lib/prisma.service'
+import { IntegrationGrowthSpacesService } from '../../integration/growthSpaces/growthSpaces.service'
 import { EventService } from '../event.service'
 
 @Resolver('TextResponseSubmissionEvent')
 export class TextResponseSubmissionEventResolver {
   constructor(
     private readonly eventService: EventService,
-    private readonly prismaService: PrismaService
+    private readonly prismaService: PrismaService,
+    private readonly integrationGrowthSpacesService: IntegrationGrowthSpacesService
   ) {}
 
   @Mutation()
@@ -26,14 +30,24 @@ export class TextResponseSubmissionEventResolver {
     @CurrentUserId() userId: string,
     @Args('input') input: TextResponseSubmissionEventCreateInput
   ): Promise<TextResponseSubmissionEvent> {
-    const { visitor, journeyVisitor, journeyId } =
+    const { visitor, journeyVisitor, journeyId, block } =
       await this.eventService.validateBlockEvent(
         userId,
         input.blockId,
         input.stepId
       )
+    const visitorDataUpdate: Prisma.VisitorUpdateInput = {
+      lastTextResponse: input.value
+    }
 
-    const [textResponseSubmissionEvent] = await Promise.all([
+    if (block.type === TextResponseType.name)
+      visitorDataUpdate.name = input.value
+
+    if (block.type === TextResponseType.email) {
+      visitorDataUpdate.email = input.value
+    }
+
+    const [textResponseSubmissionEvent, updatedVisitor] = await Promise.all([
       this.eventService.save({
         ...input,
         id: input.id ?? undefined,
@@ -45,9 +59,7 @@ export class TextResponseSubmissionEventResolver {
       }),
       this.prismaService.visitor.update({
         where: { id: visitor.id },
-        data: {
-          lastTextResponse: input.value
-        }
+        data: visitorDataUpdate
       }),
       this.prismaService.journeyVisitor.update({
         where: {
@@ -62,6 +74,19 @@ export class TextResponseSubmissionEventResolver {
         }
       })
     ])
+
+    if (
+      block.routeId != null &&
+      block.integrationId != null &&
+      updatedVisitor?.email != null &&
+      updatedVisitor?.name != null
+    )
+      await this.integrationGrowthSpacesService.addSubscriber(
+        journeyId,
+        block,
+        updatedVisitor.name,
+        updatedVisitor.email
+      )
 
     await this.eventService.sendEventsEmail(journeyId, visitor.id)
 

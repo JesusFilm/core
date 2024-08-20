@@ -6,8 +6,7 @@ import noop from 'lodash/noop'
 import { object, string } from 'yup'
 
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
-
-import { simpleComponentConfig } from '../../libs/storybook'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { TextFieldForm } from './TextFieldForm'
 

@@ -1,8 +1,8 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
-import { User } from 'next-firebase-auth'
 import { useRouter } from 'next/router'
+import { User } from 'next-firebase-auth'
 import { ReactElement, ReactNode, useState } from 'react'
 import { use100vh } from 'react-div-100vh'
 
@@ -36,6 +36,7 @@ interface PageWrapperProps {
   customSidePanel?: ReactNode
   user?: User
   initialState?: Partial<PageState>
+  background?: string
 }
 
 export function PageWrapper({
@@ -53,7 +54,8 @@ export function PageWrapper({
   sidePanelChildren,
   customSidePanel,
   user,
-  initialState
+  initialState,
+  background
 }: PageWrapperProps): ReactElement {
   const [open, setOpen] = useState<boolean>(false)
   const theme = useTheme()
@@ -86,7 +88,7 @@ export function PageWrapper({
             flexGrow={1}
             direction={{ xs: 'column', md: 'row' }}
             sx={{
-              backgroundColor: 'background.default',
+              backgroundColor: background ?? 'background.default',
               width: {
                 xs: '100vw',
                 md: showNavBar ? `calc(100vw - ${navbar.width})` : '100vw'
@@ -98,7 +100,9 @@ export function PageWrapper({
               }
             }}
           >
-            {showAppHeader && <AppHeader onClick={() => setOpen(!open)} />}
+            {showAppHeader && (
+              <AppHeader onClick={() => setOpen(!open)} user={user} />
+            )}
 
             <Stack
               component="main"

@@ -11,14 +11,15 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "incremental": true,
+    "tsBuildInfoFile": "../../.cache/arclight/tsc/.tsbuildinfo",
     "plugins": [
       {
         "name": "next"
       },
       {
         "name": "@0no-co/graphqlsp",
-        "schema": "../../apps/api-gateway/schema.graphql",
-        "tadaOutputLocation": "./__generated__/graphql-env.d.ts"
+        "schema": "../api-gateway/schema.graphql",
+        "tadaOutputLocation": "./src/__generated__/graphql-env.d.ts"
       }
     ],
     "types": ["jest", "node"]

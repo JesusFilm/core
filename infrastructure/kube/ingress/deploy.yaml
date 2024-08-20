@@ -321,6 +321,7 @@ subjects:
 apiVersion: v1
 data:
   allow-snippet-annotations: 'false'
+  use-forwarded-headers: 'true'
 kind: ConfigMap
 metadata:
   labels:

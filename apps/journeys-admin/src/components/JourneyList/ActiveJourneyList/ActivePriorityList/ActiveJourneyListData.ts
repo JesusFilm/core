@@ -64,7 +64,7 @@ export const defaultJourney: Journey = {
     id: '529',
     name: [
       {
-        __typename: 'Translation',
+        __typename: 'LanguageName',
         value: 'English',
         primary: true
       }

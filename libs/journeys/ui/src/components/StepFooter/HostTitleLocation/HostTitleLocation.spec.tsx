@@ -26,7 +26,7 @@ describe('HostTitleLocation', () => {
       iso3: 'eng',
       name: [
         {
-          __typename: 'Translation' as const,
+          __typename: 'LanguageName' as const,
           value: 'English',
           primary: true
         }
@@ -65,7 +65,7 @@ describe('HostTitleLocation', () => {
     iso3: 'arb',
     name: [
       {
-        __typename: 'Translation' as const,
+        __typename: 'LanguageName' as const,
         value: 'Arabic',
         primary: false
       }

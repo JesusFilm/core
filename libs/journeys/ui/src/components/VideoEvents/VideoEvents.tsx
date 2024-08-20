@@ -15,11 +15,11 @@ import {
   VideoProgressEventCreateInput,
   VideoStartEventCreateInput
 } from '../../../__generated__/globalTypes'
-import { useJourney } from '../../libs/JourneyProvider'
 import { useBlocks } from '../../libs/block'
+import { useJourney } from '../../libs/JourneyProvider'
 import { JourneyPlausibleEvents, keyify } from '../../libs/plausibleHelpers'
-
 import { VideoTriggerFields_triggerAction } from '../VideoTrigger/__generated__/VideoTriggerFields'
+
 import {
   VideoCollapseEventCreate,
   VideoCollapseEventCreateVariables
@@ -193,6 +193,7 @@ export function VideoEvents({
             blockId: input.blockId
           })
           plausible('videoPlay', {
+            u: `${window.location.origin}/${journey.id}/${input.stepId}`,
             props: {
               ...input,
               key,
@@ -252,6 +253,7 @@ export function VideoEvents({
           blockId: input.blockId
         })
         plausible('videoPause', {
+          u: `${window.location.origin}/${journey.id}/${input.stepId}`,
           props: {
             ...input,
             key,
@@ -311,6 +313,7 @@ export function VideoEvents({
             blockId: input.blockId
           })
           plausible('videoExpand', {
+            u: `${window.location.origin}/${journey.id}/${input.stepId}`,
             props: {
               ...input,
               key,
@@ -370,6 +373,7 @@ export function VideoEvents({
             blockId: input.blockId
           })
           plausible('videoCollapse', {
+            u: `${window.location.origin}/${journey.id}/${input.stepId}`,
             props: {
               ...input,
               key,
@@ -429,6 +433,7 @@ export function VideoEvents({
             blockId: input.blockId
           })
           plausible('videoStart', {
+            u: `${window.location.origin}/${journey.id}/${input.stepId}`,
             props: {
               ...input,
               key,
@@ -491,6 +496,7 @@ export function VideoEvents({
             blockId: input.blockId
           })
           plausible('videoProgress25', {
+            u: `${window.location.origin}/${journey.id}/${input.stepId}`,
             props: {
               ...input,
               key,
@@ -554,6 +560,7 @@ export function VideoEvents({
             blockId: input.blockId
           })
           plausible('videoProgress50', {
+            u: `${window.location.origin}/${journey.id}/${input.stepId}`,
             props: {
               ...input,
               key,
@@ -617,6 +624,7 @@ export function VideoEvents({
             blockId: input.blockId
           })
           plausible('videoProgress75', {
+            u: `${window.location.origin}/${journey.id}/${input.stepId}`,
             props: {
               ...input,
               key,
@@ -676,6 +684,7 @@ export function VideoEvents({
         })
         if (journey != null)
           plausible('videoComplete', {
+            u: `${window.location.origin}/${journey.id}/${input.stepId}`,
             props: {
               ...input,
               key: keyify({
@@ -716,7 +725,8 @@ export function VideoEvents({
     stepId,
     source,
     journey,
-    plausible
+    plausible,
+    action
   ])
 
   return <></>

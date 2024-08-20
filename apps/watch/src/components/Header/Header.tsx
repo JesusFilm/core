@@ -8,6 +8,7 @@ import Grid from '@mui/material/Grid'
 import IconButton from '@mui/material/IconButton'
 import SwipeableDrawer from '@mui/material/SwipeableDrawer'
 import Toolbar from '@mui/material/Toolbar'
+import useScrollTrigger from '@mui/material/useScrollTrigger'
 import Image from 'next/image'
 import NextLink from 'next/link'
 import { MouseEventHandler, ReactElement, forwardRef, useState } from 'react'
@@ -15,10 +16,9 @@ import { MouseEventHandler, ReactElement, forwardRef, useState } from 'react'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
-import useScrollTrigger from '@mui/material/useScrollTrigger'
+import minimalLogo from './assets/minimal-logo.png'
 import { HeaderMenuPanel } from './HeaderMenuPanel'
 import { HeaderTabButtons } from './HeaderTabButtons'
-import minimalLogo from './assets/minimal-logo.png'
 
 interface LocalAppBarProps extends AppBarProps {
   showDivider?: boolean
@@ -155,7 +155,6 @@ export function Header({
   }
 
   const appBarStyles = lightTheme ? lightStyles : darkStyles
-
   const trigger = useScrollTrigger({ disableHysteresis: true })
   return (
     <>
@@ -181,7 +180,18 @@ export function Header({
             sx={{
               background: 'transparent',
               boxShadow: 'none',
-              ...appBarStyles
+              '&::before': {
+                // content must have empty space https://developer.mozilla.org/en-US/docs/Web/CSS/::before#syntax
+                content: "' '",
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                bottom: 0,
+                right: 0,
+                opacity: trigger ? 1 : 0,
+                ...appBarStyles,
+                transition: 'opacity 0.3s ease'
+              }
             }}
             data-testid="Header"
             position="fixed"

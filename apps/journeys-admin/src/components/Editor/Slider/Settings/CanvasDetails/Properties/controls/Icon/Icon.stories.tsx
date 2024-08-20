@@ -1,8 +1,9 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/BlockFields'
 import {
@@ -10,7 +11,6 @@ import {
   IconName,
   IconSize
 } from '../../../../../../../../../__generated__/globalTypes'
-import { simpleComponentConfig } from '../../../../../../../../libs/storybook'
 
 import { Icon } from '.'
 

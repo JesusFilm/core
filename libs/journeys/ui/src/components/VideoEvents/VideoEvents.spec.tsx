@@ -5,14 +5,14 @@ import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 import videojs from 'video.js'
 
-import { keyify } from '@core/journeys/ui/plausibleHelpers'
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 
 import { VideoBlockSource } from '../../../__generated__/globalTypes'
-import { JourneyProvider } from '../../libs/JourneyProvider'
-import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
 import { TreeBlock, blockHistoryVar } from '../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
+import { JourneyProvider } from '../../libs/JourneyProvider'
+import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
+import { keyify } from '../../libs/plausibleHelpers'
 import { VideoTriggerFields_triggerAction } from '../VideoTrigger/__generated__/VideoTriggerFields'
 
 import {
@@ -57,6 +57,16 @@ const mockUsePlausible = usePlausible as jest.MockedFunction<
 
 describe('VideoEvents', () => {
   let props: VideoEventsProps
+  const originalLocation = window.location
+  const mockOrigin = 'https://example.com'
+
+  beforeAll(() => {
+    Object.defineProperty(window, 'location', {
+      value: {
+        origin: mockOrigin
+      }
+    })
+  })
 
   beforeEach(() => {
     const video = document.createElement('video')
@@ -88,6 +98,10 @@ describe('VideoEvents', () => {
 
   afterEach(() => {
     cleanup()
+  })
+
+  afterAll(() => {
+    Object.defineProperty(window, 'location', originalLocation)
   })
 
   const activeBlock: TreeBlock<StepBlock> = {
@@ -155,6 +169,7 @@ describe('VideoEvents', () => {
 
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('videoStart', {
+      u: `${mockOrigin}/journey.id/step.id`,
       props: {
         id: 'uuid',
         blockId: props.blockId,
@@ -265,6 +280,7 @@ describe('VideoEvents', () => {
     })
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('videoPlay', {
+      u: `${mockOrigin}/journey.id/step.id`,
       props: {
         id: 'uuid',
         blockId: props.blockId,
@@ -374,6 +390,7 @@ describe('VideoEvents', () => {
     })
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('videoPause', {
+      u: `${mockOrigin}/journey.id/step.id`,
       props: {
         id: 'uuid',
         blockId: props.blockId,
@@ -483,6 +500,7 @@ describe('VideoEvents', () => {
     })
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('videoExpand', {
+      u: `${mockOrigin}/journey.id/step.id`,
       props: {
         id: 'uuid',
         blockId: props.blockId,
@@ -612,6 +630,7 @@ describe('VideoEvents', () => {
     })
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('videoCollapse', {
+      u: `${mockOrigin}/journey.id/step.id`,
       props: {
         id: 'uuid',
         blockId: props.blockId,
@@ -836,6 +855,7 @@ describe('VideoEvents', () => {
     })
     await waitFor(() => expect(resultStart).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('videoStart', {
+      u: `${mockOrigin}/journey.id/step.id`,
       props: {
         id: 'uuid',
         blockId: props.blockId,
@@ -862,6 +882,7 @@ describe('VideoEvents', () => {
     })
     await waitFor(() => expect(resultOne).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('videoProgress25', {
+      u: `${mockOrigin}/journey.id/step.id`,
       props: {
         id: 'uuid',
         blockId: props.blockId,
@@ -889,6 +910,7 @@ describe('VideoEvents', () => {
     })
     await waitFor(() => expect(resultTwo).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('videoProgress50', {
+      u: `${mockOrigin}/journey.id/step.id`,
       props: {
         id: 'uuid',
         blockId: props.blockId,
@@ -916,6 +938,7 @@ describe('VideoEvents', () => {
     })
     await waitFor(() => expect(resultThree).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('videoProgress75', {
+      u: `${mockOrigin}/journey.id/step.id`,
       props: {
         id: 'uuid',
         blockId: props.blockId,

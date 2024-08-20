@@ -1,9 +1,12 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 
-import { ActiveSlide, EditorProvider } from '@core/journeys/ui/EditorProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import {
+  ActiveCanvasDetailsDrawer,
+  EditorProvider
+} from '@core/journeys/ui/EditorProvider'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'
@@ -17,7 +20,7 @@ import { ThemeProvider } from '../../../../../ThemeProvider'
 
 import { AddBlock } from '.'
 
-describe('AddNewBlock', () => {
+describe('AddBlock', () => {
   const selectedStep: TreeBlock<StepBlock> = {
     __typename: 'StepBlock',
     id: 'stepId',
@@ -116,12 +119,15 @@ describe('AddNewBlock', () => {
     expect(newVideoButton).toBeDisabled()
   })
 
-  it('should return to journey map when close icon is clicked', async () => {
+  it('should return to card properties when close button is clicked', async () => {
     render(
       <MockedProvider>
         <ThemeProvider>
           <EditorProvider
-            initialState={{ selectedStep, activeSlide: ActiveSlide.Content }}
+            initialState={{
+              selectedStep,
+              activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.AddBlock
+            }}
           >
             <TestEditorState />
             <AddBlock />
@@ -129,15 +135,12 @@ describe('AddNewBlock', () => {
         </ThemeProvider>
       </MockedProvider>
     )
+    expect(screen.getByText('activeCanvasDetailsDrawer: 2')).toBeInTheDocument()
 
-    expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
-    await waitFor(() =>
-      expect(screen.getByTestId('X2Icon')).toBeInTheDocument()
-    )
-    await waitFor(
-      async () => await userEvent.click(screen.getByTestId('X2Icon'))
-    )
+    const closeButton = screen.getByTestId('X2Icon')
+    expect(closeButton).toBeInTheDocument()
+    await waitFor(async () => await userEvent.click(closeButton))
 
-    expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
+    expect(screen.getByText('activeCanvasDetailsDrawer: 0')).toBeInTheDocument()
   })
 })

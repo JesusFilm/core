@@ -5,6 +5,7 @@ import {
   ApolloFederationDriverConfig
 } from '@nestjs/apollo'
 import { BullModule } from '@nestjs/bullmq'
+import { CacheModule } from '@nestjs/cache-manager'
 import { Module } from '@nestjs/common'
 import { GraphQLModule } from '@nestjs/graphql'
 import { DatadogTraceModule } from 'nestjs-ddtrace'
@@ -17,12 +18,13 @@ import { EmailModule } from './modules/email/email.module'
 import { EventModule } from './modules/event/event.module'
 import { NestHealthModule } from './modules/health/health.module'
 import { HostModule } from './modules/host/host.module'
+import { IntegrationModule } from './modules/integration/integration.module'
 import { JourneyModule } from './modules/journey/journey.module'
 import { JourneyCollectionModule } from './modules/journeyCollection/journeyCollection.module'
 import { JourneyNotificationModule } from './modules/journeyNotification/journeyNotification.module'
 import { JourneyProfileModule } from './modules/journeyProfile/journeyProfile.module'
-import { JourneyVisitorModule } from './modules/journeyVisitor/journeyVisitor.module'
 import { JourneysEmailPreferenceModule } from './modules/journeysEmailPreference/journeysEmailPreference.module'
+import { JourneyVisitorModule } from './modules/journeyVisitor/journeyVisitor.module'
 import { MailChimpModule } from './modules/mailChimp/mailChimp.module'
 import { PlausibleModule } from './modules/plausible/plausible.module'
 import { TeamModule } from './modules/team/team.module'
@@ -41,6 +43,7 @@ import { VisitorModule } from './modules/visitor/visitor.module'
     EmailModule,
     EventModule,
     HostModule,
+    IntegrationModule,
     JourneyCollectionModule,
     JourneysEmailPreferenceModule,
     JourneyModule,
@@ -57,6 +60,7 @@ import { VisitorModule } from './modules/visitor/visitor.module'
     UserTeamModule,
     UserTeamInviteModule,
     VisitorModule,
+    CacheModule.register(),
     BullModule.forRoot({
       connection: {
         host: process.env.REDIS_URL ?? 'redis',

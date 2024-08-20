@@ -1,9 +1,11 @@
 import { gql, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
+import Fade from '@mui/material/Fade'
 import { useTheme } from '@mui/material/styles'
+import { useRouter } from 'next/compat/router'
 import {
-  MouseEvent,
-  ReactElement,
+  type MouseEvent,
+  type ReactElement,
   useCallback,
   useEffect,
   useMemo,
@@ -14,41 +16,54 @@ import {
   Background,
   ControlButton,
   Controls,
-  NodeDragHandler,
-  OnConnect,
-  OnConnectEnd,
-  OnConnectStart,
-  OnConnectStartParams,
-  OnEdgeUpdateFunc,
+  type Edge,
+  type Node,
+  type NodeDragHandler,
+  type OnConnect,
+  type OnConnectEnd,
+  type OnConnectStart,
+  type OnConnectStartParams,
+  type OnEdgeUpdateFunc,
   Panel,
   ReactFlow,
-  ReactFlowInstance,
-  ReactFlowProps,
+  type ReactFlowInstance,
+  type ReactFlowProps,
   updateEdge as reactFlowUpdateEdge,
   useEdgesState,
   useNodesState
 } from 'reactflow'
 
+import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { isActionBlock } from '@core/journeys/ui/isActionBlock'
+import { searchBlocks } from '@core/journeys/ui/searchBlocks'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import ArrowRefresh6Icon from '@core/shared/ui/icons/ArrowRefresh6'
 
-import {
+import type {
   GetStepBlocksWithPosition,
-  GetStepBlocksWithPositionVariables
+  GetStepBlocksWithPositionVariables,
+  GetStepBlocksWithPosition_blocks_StepBlock
 } from '../../../../../__generated__/GetStepBlocksWithPosition'
 import { useStepBlockPositionUpdateMutation } from '../../../../libs/useStepBlockPositionUpdateMutation'
 
-import { NewStepButton } from './NewStepButton'
+import { AnalyticsOverlaySwitch } from './AnalyticsOverlaySwitch'
 import { CustomEdge } from './edges/CustomEdge'
+import { ReferrerEdge } from './edges/ReferrerEdge'
 import { StartEdge } from './edges/StartEdge'
-import { PositionMap, arrangeSteps } from './libs/arrangeSteps'
+import { JourneyAnalyticsCard } from './JourneyAnalyticsCard'
+import { type PositionMap, arrangeSteps } from './libs/arrangeSteps'
+import { convertToEdgeSource } from './libs/convertToEdgeSource'
 import { transformSteps } from './libs/transformSteps'
-import { useCreateStep } from './libs/useCreateStep'
+import { useCreateStepFromAction } from './libs/useCreateStepFromAction'
+import { useCreateStepFromSocialPreview } from './libs/useCreateStepFromSocialPreview'
+import { useCreateStepFromStep } from './libs/useCreateStepFromStep'
 import { useDeleteEdge } from './libs/useDeleteEdge'
 import { useDeleteOnKeyPress } from './libs/useDeleteOnKeyPress'
 import { useUpdateEdge } from './libs/useUpdateEdge'
+import { NewStepButton } from './NewStepButton'
 import { LinkNode } from './nodes/LinkNode'
+import { ReferrerNode } from './nodes/ReferrerNode'
 import { SocialPreviewNode } from './nodes/SocialPreviewNode'
 import { StepBlockNode } from './nodes/StepBlockNode'
 import { STEP_NODE_CARD_HEIGHT } from './nodes/StepBlockNode/libs/sizes'
@@ -58,6 +73,12 @@ import 'reactflow/dist/style.css'
 // some styles can only be updated through css after render
 const additionalEdgeStyles = {
   '.react-flow__edgeupdater.react-flow__edgeupdater-target': { r: 15 }
+}
+
+const analyticEdgeStyles = {
+  '.react-flow__edge, .react-flow__edge-interaction': {
+    'pointer-events': 'none'
+  }
 }
 
 export const GET_STEP_BLOCKS_WITH_POSITION = gql`
@@ -73,10 +94,12 @@ export const GET_STEP_BLOCKS_WITH_POSITION = gql`
 `
 
 export function JourneyFlow(): ReactElement {
-  const { journey } = useJourney()
+  const router = useRouter()
+  const { editorAnalytics } = useFlags()
   const theme = useTheme()
   const {
-    state: { steps, activeSlide }
+    state: { steps, activeSlide, showAnalytics, analytics },
+    dispatch
   } = useEditor()
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance | null>(null)
@@ -84,74 +107,93 @@ export function JourneyFlow(): ReactElement {
   const edgeUpdateSuccessful = useRef<boolean | null>(null)
   const [nodes, setNodes, onNodesChange] = useNodesState([])
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
+  const [referrerNodes, setReferrerNodes] = useNodesState([])
+  const [referrerEdges, setReferrerEdges] = useEdgesState([])
 
-  const createStep = useCreateStep()
+  const createStepFromStep = useCreateStepFromStep()
+  const createStepFromAction = useCreateStepFromAction()
+  const createStepFromSocialPreview = useCreateStepFromSocialPreview()
   const updateEdge = useUpdateEdge()
   const deleteEdge = useDeleteEdge()
   const { onSelectionChange } = useDeleteOnKeyPress()
   const [stepBlockPositionUpdate] = useStepBlockPositionUpdateMutation()
+  const { add } = useCommand()
 
-  async function blockPositionsUpdate(): Promise<void> {
-    if (journey == null || steps == null) return
-    const positions = arrangeSteps(steps)
-
-    Object.entries(positions).forEach(([id, position]) => {
-      void stepBlockPositionUpdate({
-        variables: {
-          id,
-          journeyId: journey.id,
-          x: position.x,
-          y: position.y
-        },
-        optimisticResponse: {
-          stepBlockUpdate: {
-            id,
-            __typename: 'StepBlock',
-            x: position.x,
-            y: position.y
-          }
-        }
-      })
-    })
-  }
-
-  const { data, refetch } = useQuery<
+  const { data, loading } = useQuery<
     GetStepBlocksWithPosition,
     GetStepBlocksWithPositionVariables
   >(GET_STEP_BLOCKS_WITH_POSITION, {
     notifyOnNetworkStatusChange: true,
-    variables: { journeyIds: journey?.id != null ? [journey.id] : undefined },
-    onCompleted: (data) => {
-      if (steps == null || journey == null) return
-      const positions: PositionMap = {}
-      if (
-        data.blocks.some(
-          (block) =>
-            block.__typename === 'StepBlock' &&
-            (block.x == null || block.y == null)
-        )
-      ) {
-        // some steps have no x or y coordinates
-        void blockPositionsUpdate()
+    variables: {
+      journeyIds:
+        router?.query.journeyId != null
+          ? [router.query.journeyId.toString()]
+          : undefined
+    },
+    skip: router?.query.journeyId == null
+  })
+
+  const blockPositionUpdate = useCallback(
+    (input: Array<{ id: string; x: number; y: number }>): void => {
+      void stepBlockPositionUpdate({
+        variables: {
+          input
+        },
+        optimisticResponse: {
+          stepBlockPositionUpdate: input.map((step) => ({
+            ...step,
+            __typename: 'StepBlock'
+          }))
+        }
+      })
+    },
+    [stepBlockPositionUpdate]
+  )
+
+  const allBlockPositionUpdate = useCallback(
+    async (onload = false): Promise<void> => {
+      if (steps == null || data == null) return
+
+      const input = Object.entries(arrangeSteps(steps)).map(
+        ([id, position]) => ({
+          id,
+          ...position
+        })
+      )
+
+      if (onload) {
+        blockPositionUpdate(input)
       } else {
-        data.blocks.forEach((block) => {
-          if (
-            block.__typename === 'StepBlock' &&
-            block.x != null &&
-            block.y != null
-          ) {
-            positions[block.id] = { x: block.x, y: block.y }
+        add({
+          parameters: {
+            execute: {
+              input
+            },
+            undo: {
+              input: (
+                data.blocks as GetStepBlocksWithPosition_blocks_StepBlock[]
+              ).map((step) => ({
+                id: step.id,
+                x: step.x,
+                y: step.y
+              }))
+            }
+          },
+          execute({ input }) {
+            dispatch({
+              type: 'SetEditorFocusAction',
+              activeSlide: ActiveSlide.JourneyFlow
+            })
+            blockPositionUpdate(input)
           }
         })
       }
-      const { nodes, edges } = transformSteps(steps ?? [], positions)
-      setEdges(edges)
-      setNodes(nodes)
-    }
-  })
+    },
+    [data, dispatch, steps, add, blockPositionUpdate]
+  )
 
   useEffect(() => {
-    if (data?.blocks == null) return
+    if (data?.blocks == null || steps == null) return
     const positions: PositionMap =
       data.blocks.reduce((acc, block) => {
         if (
@@ -164,21 +206,24 @@ export function JourneyFlow(): ReactElement {
         return acc
       }, {}) ?? {}
 
-    const validSteps =
-      steps?.every((step) => {
-        return (
-          positions[step.id] != null &&
-          positions[step.id].x != null &&
-          positions[step.id].y != null
-        )
-      }) ?? false
+    const validSteps = steps.every((step) => {
+      return (
+        positions[step.id] != null &&
+        positions[step.id].x != null &&
+        positions[step.id].y != null
+      )
+    })
 
-    if (!validSteps) return
+    if (!validSteps) {
+      void allBlockPositionUpdate(true)
+      return
+    }
 
     const { nodes, edges } = transformSteps(steps ?? [], positions)
+
     setEdges(edges)
     setNodes(nodes)
-  }, [steps, data, theme, setEdges, setNodes, refetch])
+  }, [steps, data, theme, setEdges, setNodes, allBlockPositionUpdate])
 
   const onConnect = useCallback<OnConnect>(() => {
     // reset the start node on connections
@@ -188,7 +233,7 @@ export function JourneyFlow(): ReactElement {
     connectingParams.current = params
   }, [])
   const onConnectEnd = useCallback<OnConnectEnd>(
-    async (event) => {
+    (event) => {
       if (
         reactFlowInstance == null ||
         connectingParams.current == null ||
@@ -199,39 +244,109 @@ export function JourneyFlow(): ReactElement {
       )
         return
 
-      const targetIsPane = (event.target as Element)?.classList.contains(
+      let eventTarget = event.target
+      let xPos = (event as unknown as MouseEvent).clientX
+      let yPos = (event as unknown as MouseEvent).clientY
+
+      if (!(event instanceof MouseEvent)) {
+        const touchEvent = event.changedTouches[0]
+
+        eventTarget = document.elementFromPoint(
+          touchEvent.clientX,
+          touchEvent.clientY
+        )
+        xPos = touchEvent.clientX
+        yPos = touchEvent.clientY
+      }
+
+      const targetIsPane = (eventTarget as Element)?.classList.contains(
         'react-flow__pane'
       )
+
       if (targetIsPane) {
         const { x, y } = reactFlowInstance.screenToFlowPosition({
-          x: (event as unknown as MouseEvent).clientX,
-          y: (event as unknown as MouseEvent).clientY
+          x: xPos,
+          y: yPos
         })
 
-        void createStep({
-          x: Math.trunc(x),
-          y: Math.trunc(y) - STEP_NODE_CARD_HEIGHT / 2,
+        const edgeSource = convertToEdgeSource({
           source: connectingParams.current.nodeId,
           sourceHandle: connectingParams.current.handleId
         })
+
+        const sourceStep =
+          edgeSource.sourceType === 'step' || edgeSource.sourceType === 'action'
+            ? steps?.find((step) => step.id === edgeSource.stepId)
+            : null
+
+        const sourceBlock =
+          edgeSource.sourceType === 'action'
+            ? searchBlocks(
+                sourceStep != null ? [sourceStep] : [],
+                edgeSource.blockId
+              )
+            : null
+
+        const input = {
+          x: Math.trunc(x),
+          y: Math.trunc(y) - STEP_NODE_CARD_HEIGHT / 2,
+          sourceStep
+        }
+
+        switch (edgeSource.sourceType) {
+          case 'step':
+            createStepFromStep(input)
+            break
+          case 'socialPreview':
+            createStepFromSocialPreview(input)
+            break
+          case 'action': {
+            if (!isActionBlock(sourceBlock)) break
+            createStepFromAction({ ...input, sourceBlock })
+            break
+          }
+        }
       }
     },
-    [reactFlowInstance, connectingParams, createStep]
+    [
+      reactFlowInstance,
+      steps,
+      createStepFromStep,
+      createStepFromSocialPreview,
+      createStepFromAction
+    ]
   )
-  const onNodeDragStop: NodeDragHandler = async (
-    _event,
-    node
-  ): Promise<void> => {
-    if (journey == null || node.type !== 'StepBlock') return
+  const onNodeDragStop: NodeDragHandler = (_event, node): void => {
+    if (node.type !== 'StepBlock') return
+
+    const step = data?.blocks.find(
+      (step) => step.__typename === 'StepBlock' && step.id === node.id
+    )
+    if (step == null || step.__typename !== 'StepBlock') return
 
     const x = Math.trunc(node.position.x)
     const y = Math.trunc(node.position.y)
-    await stepBlockPositionUpdate({
-      variables: {
-        id: node.id,
-        journeyId: journey.id,
-        x,
-        y
+    add({
+      parameters: {
+        execute: {
+          x,
+          y
+        },
+        undo: {
+          x: step.x,
+          y: step.y
+        },
+        redo: {
+          x,
+          y
+        }
+      },
+      execute({ x, y }) {
+        dispatch({
+          type: 'SetEditorFocusAction',
+          activeSlide: ActiveSlide.JourneyFlow
+        })
+        blockPositionUpdate([{ id: node.id, x, y }])
       }
     })
   }
@@ -269,7 +384,8 @@ export function JourneyFlow(): ReactElement {
     () => ({
       StepBlock: StepBlockNode,
       SocialPreview: SocialPreviewNode,
-      Link: LinkNode
+      Link: LinkNode,
+      Referrer: ReferrerNode
     }),
     []
   )
@@ -277,30 +393,54 @@ export function JourneyFlow(): ReactElement {
   const edgeTypes = useMemo(
     () => ({
       Custom: CustomEdge,
-      Start: StartEdge
+      Start: StartEdge,
+      Referrer: ReferrerEdge
     }),
     []
   )
+
+  const hideReferrers =
+    <T extends Node | Edge>(hidden: boolean) =>
+    (nodeOrEdge: T) => {
+      nodeOrEdge.hidden = hidden
+
+      return nodeOrEdge
+    }
+
+  useEffect(() => {
+    if (analytics?.referrers != null) {
+      const { nodes, edges } = analytics.referrers
+
+      setReferrerEdges(edges)
+      setReferrerNodes(nodes)
+    }
+  }, [analytics?.referrers, setReferrerEdges, setReferrerNodes])
+
+  useEffect(() => {
+    setReferrerNodes((nds) => nds.map(hideReferrers(showAnalytics === false)))
+    setReferrerEdges((eds) => eds.map(hideReferrers(showAnalytics === false)))
+  }, [setReferrerEdges, setReferrerNodes, showAnalytics])
 
   return (
     <Box
       sx={{
         width: '100%',
         height: '100%',
-        ...additionalEdgeStyles
+        ...additionalEdgeStyles,
+        ...(showAnalytics === true && analyticEdgeStyles)
       }}
       data-testid="JourneyFlow"
     >
       <ReactFlow
-        nodes={nodes}
-        edges={edges}
+        nodes={[...referrerNodes, ...nodes]}
+        edges={[...referrerEdges, ...edges]}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         onConnectEnd={onConnectEnd}
         onConnectStart={onConnectStart}
         onNodeDragStop={onNodeDragStop}
-        onEdgeUpdate={onEdgeUpdate}
+        onEdgeUpdate={showAnalytics === true ? undefined : onEdgeUpdate}
         onEdgeUpdateStart={onEdgeUpdateStart}
         onEdgeUpdateEnd={onEdgeUpdateEnd}
         onSelectionChange={onSelectionChange}
@@ -320,16 +460,44 @@ export function JourneyFlow(): ReactElement {
         {activeSlide === ActiveSlide.JourneyFlow && (
           <>
             <Panel position="top-right">
-              <NewStepButton />
+              {showAnalytics !== true && (
+                <NewStepButton disabled={steps == null || loading} />
+              )}
             </Panel>
+            {editorAnalytics && (
+              <Panel position="top-left">
+                <>
+                  <AnalyticsOverlaySwitch />
+                  <Fade in={showAnalytics} unmountOnExit>
+                    <Box>
+                      <JourneyAnalyticsCard />
+                    </Box>
+                  </Fade>
+                </>
+              </Panel>
+            )}
             <Controls showInteractive={false}>
-              <ControlButton onClick={blockPositionsUpdate}>
+              <ControlButton
+                onClick={async () => await allBlockPositionUpdate()}
+              >
                 <ArrowRefresh6Icon />
               </ControlButton>
             </Controls>
           </>
         )}
-        <Background color="#aaa" gap={16} />
+        <Background
+          color="#aaa"
+          gap={16}
+          style={
+            showAnalytics === true
+              ? {
+                  backgroundColor: '#DEE8EF'
+                }
+              : {
+                  backgroundColor: '#EFEFEF'
+                }
+          }
+        />
       </ReactFlow>
     </Box>
   )

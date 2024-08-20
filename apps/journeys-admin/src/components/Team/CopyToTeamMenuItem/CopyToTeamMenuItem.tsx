@@ -1,14 +1,14 @@
-import { useTranslation } from 'next-i18next'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
+import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
+import { CopyToTeamDialog } from '@core/journeys/ui/CopyToTeamDialog'
+import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import CopyToIcon from '@core/shared/ui/icons/CopyTo'
 
-import { setBeaconPageViewed } from '../../../libs/setBeaconPageViewed'
-import { useJourneyDuplicateMutation } from '../../../libs/useJourneyDuplicateMutation'
 import { MenuItem } from '../../MenuItem'
-import { CopyToTeamDialog } from '../CopyToTeamDialog'
 
 interface DuplicateJourneyMenuItemProps {
   id?: string

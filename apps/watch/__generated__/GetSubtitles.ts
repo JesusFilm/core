@@ -8,7 +8,7 @@
 // ====================================================
 
 export interface GetSubtitles_video_variant_subtitle_language_name {
-  __typename: "Translation";
+  __typename: "LanguageName";
   value: string;
   primary: boolean;
 }

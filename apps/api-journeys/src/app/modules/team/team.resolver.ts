@@ -13,17 +13,18 @@ import { GraphQLError } from 'graphql'
 import filter from 'lodash/filter'
 
 import {
+  CustomDomain,
+  Integration,
+  Prisma,
+  Team,
+  UserTeam
+} from '.prisma/api-journeys-client'
+import {
   CaslAbility,
   CaslAccessible,
   CaslPolicy
 } from '@core/nest/common/CaslAuthModule'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
-import {
-  CustomDomain,
-  Prisma,
-  Team,
-  UserTeam
-} from '.prisma/api-journeys-client'
 
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
@@ -124,6 +125,19 @@ export class TeamResolver {
     return await this.prismaService.customDomain.findMany({
       where: { teamId: parent.id }
     })
+  }
+
+  @ResolveField()
+  async integrations(@Parent() parent: Team): Promise<Integration[]> {
+    const integrations = await this.prismaService.team
+      .findUnique({
+        where: { id: parent.id }
+      })
+      .integrations({
+        where: { teamId: parent.id }
+      })
+
+    return integrations != null ? integrations : []
   }
 
   @ResolveReference()

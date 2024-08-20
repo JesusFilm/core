@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 import {
   CustomDomain,
   Prisma,
@@ -9,6 +8,7 @@ import {
   UserTeam,
   UserTeamRole
 } from '.prisma/api-journeys-client'
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
 import { PrismaService } from '../../lib/prisma.service'
@@ -221,6 +221,31 @@ describe('TeamResolver', () => {
           customDomains: [{ id: 'id' }]
         })
       ).toEqual([{ id: 'id' }])
+    })
+  })
+
+  describe('integrations', () => {
+    it('Should return integrations of team', async () => {
+      const teamWithIntegrations = {
+        ...team,
+        integrations: {
+          id: 'integrationId',
+          teamId: 'teamId',
+          type: 'growthSpaces'
+        }
+      }
+
+      const integrations = jest
+        .fn()
+        .mockResolvedValue(teamWithIntegrations.integrations)
+
+      prismaService.team.findUnique.mockReturnValue({
+        ...teamWithIntegrations,
+        integrations
+      } as unknown as Prisma.Prisma__TeamClient<Team>)
+      await expect(
+        resolver.integrations(teamWithIntegrations)
+      ).resolves.toEqual(teamWithIntegrations.integrations)
     })
   })
 

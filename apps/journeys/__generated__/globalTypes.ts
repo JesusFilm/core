@@ -53,8 +53,10 @@ export enum IconName {
   ChevronRightRounded = "ChevronRightRounded",
   ContactSupportRounded = "ContactSupportRounded",
   FormatQuoteRounded = "FormatQuoteRounded",
+  Launch = "Launch",
   LiveTvRounded = "LiveTvRounded",
   LockOpenRounded = "LockOpenRounded",
+  MailOutline = "MailOutline",
   MenuBookRounded = "MenuBookRounded",
   PlayArrowRounded = "PlayArrowRounded",
   RadioButtonUncheckedRounded = "RadioButtonUncheckedRounded",
@@ -71,6 +73,11 @@ export enum IconSize {
   xl = "xl",
 }
 
+export enum IdType {
+  databaseId = "databaseId",
+  slug = "slug",
+}
+
 export enum JourneyStatus {
   archived = "archived",
   deleted = "deleted",
@@ -80,10 +87,32 @@ export enum JourneyStatus {
 }
 
 export enum MessagePlatform {
+  checkBroken = "checkBroken",
+  checkContained = "checkContained",
   custom = "custom",
   facebook = "facebook",
+  globe2 = "globe2",
+  globe3 = "globe3",
+  helpCircleContained = "helpCircleContained",
+  helpSquareContained = "helpSquareContained",
+  home3 = "home3",
+  home4 = "home4",
   instagram = "instagram",
   line = "line",
+  linkExternal = "linkExternal",
+  mail1 = "mail1",
+  menu1 = "menu1",
+  messageChat2 = "messageChat2",
+  messageCircle = "messageCircle",
+  messageNotifyCircle = "messageNotifyCircle",
+  messageNotifySquare = "messageNotifySquare",
+  messageSquare = "messageSquare",
+  messageText1 = "messageText1",
+  messageText2 = "messageText2",
+  send1 = "send1",
+  send2 = "send2",
+  settings = "settings",
+  shieldCheck = "shieldCheck",
   skype = "skype",
   snapchat = "snapchat",
   telegram = "telegram",
@@ -91,6 +120,25 @@ export enum MessagePlatform {
   viber = "viber",
   vk = "vk",
   whatsApp = "whatsApp",
+}
+
+export enum Role {
+  publisher = "publisher",
+}
+
+export enum Service {
+  apiJourneys = "apiJourneys",
+  apiLanguages = "apiLanguages",
+  apiMedia = "apiMedia",
+  apiTags = "apiTags",
+  apiUsers = "apiUsers",
+  apiVideos = "apiVideos",
+}
+
+export enum TextResponseType {
+  email = "email",
+  freeForm = "freeForm",
+  name = "name",
 }
 
 export enum ThemeMode {
@@ -182,6 +230,11 @@ export interface ChatOpenEventCreateInput {
   value?: MessagePlatform | null;
 }
 
+export interface JourneyProfileUpdateInput {
+  lastActiveTeamId?: string | null;
+  journeyFlowBackButtonClicked?: boolean | null;
+}
+
 export interface JourneyViewEventCreateInput {
   id?: string | null;
   journeyId: string;
@@ -189,10 +242,24 @@ export interface JourneyViewEventCreateInput {
   value?: string | null;
 }
 
+export interface JourneysFilter {
+  featured?: boolean | null;
+  template?: boolean | null;
+  ids?: string[] | null;
+  tagIds?: string[] | null;
+  languageIds?: string[] | null;
+  limit?: number | null;
+  orderByRecent?: boolean | null;
+}
+
 export interface JourneysQueryOptions {
   hostname?: string | null;
   embedded?: boolean | null;
   journeyCollection?: boolean | null;
+}
+
+export interface LanguagesFilter {
+  ids?: string[] | null;
 }
 
 export interface RadioQuestionSubmissionEventCreateInput {

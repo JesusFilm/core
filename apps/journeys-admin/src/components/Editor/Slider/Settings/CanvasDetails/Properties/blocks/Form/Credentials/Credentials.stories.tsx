@@ -1,15 +1,15 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { BlockFields_FormBlock as FormBlock } from '@core/journeys/ui/block/__generated__/BlockFields'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import {
   GetFormBlock,
   GetFormBlockVariables
 } from '../../../../../../../../../../__generated__/GetFormBlock'
-import { simpleComponentConfig } from '../../../../../../../../../libs/storybook'
 
 import { GET_FORM_BLOCK } from './Credentials'
 

@@ -10,6 +10,8 @@ import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
+import { useTeam } from '@core/journeys/ui/TeamProvider'
+
 import {
   CreateJourneyCollection,
   CreateJourneyCollectionVariables
@@ -22,13 +24,12 @@ import {
   GetCustomDomains_customDomains as CustomDomain,
   GetCustomDomains_customDomains_journeyCollection_journeys as Journey
 } from '../../../../../__generated__/GetCustomDomains'
+import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 import {
   UpdateJourneyCollection,
   UpdateJourneyCollectionVariables
 } from '../../../../../__generated__/UpdateJourneyCollection'
-import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 import { useAdminJourneysQuery } from '../../../../libs/useAdminJourneysQuery'
-import { useTeam } from '../../TeamProvider'
 import { CustomDomainDialogTitle } from '../CustomDomainDialogTitle'
 
 interface DefaultJourneyFormProps {

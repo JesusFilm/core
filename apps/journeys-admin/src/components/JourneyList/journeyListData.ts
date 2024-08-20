@@ -68,7 +68,7 @@ export const defaultJourney: Journey = {
     id: '529',
     name: [
       {
-        __typename: 'Translation',
+        __typename: 'LanguageName',
         value: 'English',
         primary: true
       }
@@ -117,12 +117,12 @@ export const descriptiveJourney: Journey = {
     id: '20615',
     name: [
       {
-        __typename: 'Translation',
+        __typename: 'LanguageName',
         value: '普通話',
         primary: true
       },
       {
-        __typename: 'Translation',
+        __typename: 'LanguageName',
         value: 'Chinese, Mandarin',
         primary: false
       }

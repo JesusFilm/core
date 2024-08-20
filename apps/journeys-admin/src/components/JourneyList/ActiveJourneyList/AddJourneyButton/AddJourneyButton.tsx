@@ -1,12 +1,12 @@
 import Button from '@mui/material/Button'
-import { useTranslation } from 'next-i18next'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
+import { useTeam } from '@core/journeys/ui/TeamProvider'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 import { useJourneyCreateMutation } from '../../../../libs/useJourneyCreateMutation'
-import { useTeam } from '../../../Team/TeamProvider'
 
 export function AddJourneyButton(): ReactElement {
   const { createJourney } = useJourneyCreateMutation()

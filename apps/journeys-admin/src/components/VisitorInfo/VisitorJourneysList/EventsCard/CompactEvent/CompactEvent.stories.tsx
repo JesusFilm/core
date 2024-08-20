@@ -1,7 +1,7 @@
 import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
 
-import { simpleComponentConfig } from '../../../../../libs/storybook'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { CompactEvent } from '.'
 

@@ -1,10 +1,13 @@
 import Box from '@mui/material/Box'
 import { ReactElement } from 'react'
 
-import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
+import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
+import { CardWrapper } from '@core/journeys/ui/CardWrapper'
+import { FramePortal } from '@core/journeys/ui/FramePortal'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
+import { VideoWrapper } from '@core/journeys/ui/VideoWrapper'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../../../../__generated__/BlockFields'
@@ -13,9 +16,6 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../../../../../__generated__/globalTypes'
-import { CardWrapper } from '../../../../../../../../../CardPreview/CardList/CardWrapper'
-import { FramePortal } from '../../../../../../../../../FramePortal'
-import { VideoWrapper } from '../../../../../../../Content/Canvas/VideoWrapper'
 
 interface CardItemProps {
   step: TreeBlock<StepBlock>

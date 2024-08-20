@@ -1,19 +1,18 @@
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
-import Stack from '@mui/material/Stack'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { ReactElement, useEffect, useState } from 'react'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../__generated__/BlockFields'
 import {
   VideoBlockSource,
   VideoBlockUpdateInput
 } from '../../../../../../../../__generated__/globalTypes'
-import { setBeaconPageViewed } from '../../../../../../../libs/setBeaconPageViewed'
 
 const VideoLibrary = dynamic(
   async () =>
@@ -107,11 +106,25 @@ export function Source({ selectedBlock, onChange }: SourceProps): ReactElement {
 
   return (
     <>
-      <Card variant="outlined" sx={{ borderRadius: 2 }}>
-        <CardActionArea onClick={handleClick}>
-          <Stack direction="row" alignItems="center" spacing={3} sx={{ p: 2 }}>
-            <SourceContent selectedBlock={selectedBlock} />
-          </Stack>
+      <Card
+        variant="outlined"
+        sx={{
+          height: 73,
+          borderRadius: 2
+        }}
+        data-testid="VideoSource"
+      >
+        <CardActionArea
+          data-testid="card click area"
+          onClick={handleClick}
+          sx={{
+            height: '100%',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            display: 'flex'
+          }}
+        >
+          <SourceContent selectedBlock={selectedBlock} />
         </CardActionArea>
       </Card>
       {open != null && (

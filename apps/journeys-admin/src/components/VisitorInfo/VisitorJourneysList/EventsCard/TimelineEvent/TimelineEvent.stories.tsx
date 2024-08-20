@@ -5,7 +5,8 @@ import { Meta, StoryObj } from '@storybook/react'
 import { ReactElement } from 'react'
 import '../../../../../../test/i18n'
 
-import { journeysAdminConfig } from '../../../../../libs/storybook'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
+
 import { TimelineItem } from '../../utils'
 import {
   buttonClickLinkEvent,

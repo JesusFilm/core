@@ -2,10 +2,10 @@ import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
 
-import { simpleComponentConfig } from '../../../../../../../libs/storybook'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
+import { listUnsplashCollectionPhotosMock } from './data'
 import { UnsplashGallery } from './UnsplashGallery'
-import { listUnsplashCollectionMock } from './data'
 
 const UnsplashGalleryStory: Meta<typeof UnsplashGallery> = {
   ...simpleComponentConfig,
@@ -16,8 +16,8 @@ const UnsplashGalleryStory: Meta<typeof UnsplashGallery> = {
 
 const Template: StoryObj<typeof UnsplashGallery> = {
   render: () => (
-    <MockedProvider mocks={[listUnsplashCollectionMock]}>
-      <UnsplashGallery onChange={noop} />
+    <MockedProvider mocks={[listUnsplashCollectionPhotosMock]}>
+      <UnsplashGallery selectedBlock={null} onChange={noop} />
     </MockedProvider>
   )
 }

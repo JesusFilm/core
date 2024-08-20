@@ -42,7 +42,7 @@ export interface GetVideoContent_content_variant_downloads {
 }
 
 export interface GetVideoContent_content_variant_language_name {
-  __typename: "Translation";
+  __typename: "LanguageName";
   value: string;
   primary: boolean;
 }

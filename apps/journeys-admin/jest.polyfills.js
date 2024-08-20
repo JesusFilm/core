@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 // jest.polyfills.js
 /**
  * @note The block below contains polyfills for Node.js globals
@@ -17,6 +18,7 @@ Object.defineProperties(globalThis, {
 })
 
 const { Blob, File } = require('node:buffer')
+
 const { fetch, Headers, FormData, Request, Response } = require('undici')
 
 Object.defineProperties(globalThis, {

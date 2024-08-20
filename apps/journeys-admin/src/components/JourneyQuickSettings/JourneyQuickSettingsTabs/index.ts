@@ -1,0 +1,1 @@
+export { JourneyQuickSettingsTabs } from './JourneyQuickSettingsTabs'

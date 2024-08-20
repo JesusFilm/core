@@ -42,6 +42,15 @@ clickhouse:
     # https://hub.docker.com/r/clickhouse/clickhouse-server/tags
     image: clickhouse/clickhouse-server
     imageVersion: '24.3.3.102-alpine'
+    persistentVolumeClaim:
+      enabled: true
+      ## Clickhouse data volume
+      dataPersistentVolume:
+        enabled: true
+        storageClassName: clickhouse-gp3
+        accessModes:
+          - 'ReadWriteOnce'
+        storage: '500Gi'
 
 # -- Plausible uses and SMTP server to send transactional emails e.g. account activation, password reset, weekly reports, etc.
 smtp:

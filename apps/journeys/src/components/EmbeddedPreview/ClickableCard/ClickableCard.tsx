@@ -8,17 +8,19 @@ interface ClickableCardProps {
   children: ReactNode
   onClick?: () => void
   fullscreen?: boolean
+  disableFullscreen?: boolean
 }
 
 export function ClickableCard({
   children,
   onClick,
-  fullscreen
+  fullscreen,
+  disableFullscreen
 }: ClickableCardProps): ReactElement {
   return (
     <>
       <NoSsr>
-        {!isIPhone() && (
+        {!isIPhone() && disableFullscreen !== true && (
           <Box
             data-testid="clickable-card-embed"
             onClick={onClick}

@@ -4,15 +4,15 @@ import { jest } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { BlockFields_FormBlock as FormBlock } from '../../../../../../../../../__generated__/BlockFields'
 import {
   GetFormBlock,
   GetFormBlockVariables
 } from '../../../../../../../../../__generated__/GetFormBlock'
-import { simpleComponentConfig } from '../../../../../../../../libs/storybook'
 import { Drawer } from '../../../../Drawer'
 
 import { GET_FORM_BLOCK } from './Credentials/Credentials'

@@ -1,6 +1,7 @@
+import Fade from '@mui/material/Fade'
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { alpha } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { NodeProps } from 'reactflow'
@@ -10,19 +11,20 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { filterActionBlocks } from '@core/journeys/ui/filterActionBlocks'
 import { getGoalDetails } from '@core/journeys/ui/getGoalDetails'
 
-import { BaseNode } from '../BaseNode'
+import { BaseNode, HandleVariant } from '../BaseNode'
 import { LINK_NODE_HEIGHT, LINK_NODE_WIDTH } from '../StepBlockNode/libs/sizes'
+
+import { LinkNodeAnalytics } from './LinkNodeAnalytics'
 
 export function LinkNode({ id }: NodeProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const {
-    state: { steps }
+    state: { steps, showAnalytics }
   } = useEditor()
   const strippedNodeId = id.replace('LinkNode-', '')
 
   const matchedActionBlock = steps
-    ?.map((step) => filterActionBlocks(step))
-    .flat()
+    ?.flatMap((step) => filterActionBlocks(step))
     .find(({ id }) => id === strippedNodeId)
 
   function getActionDetail(matchedActionBlock): string {
@@ -40,7 +42,7 @@ export function LinkNode({ id }: NodeProps): ReactElement {
   const { label, icon } = getGoalDetails(getLinkActionGoal(actionDetail), t)
 
   return (
-    <BaseNode id={id} targetHandle="disabled">
+    <BaseNode id={id} targetHandle={HandleVariant.Disabled}>
       <Stack
         gap={2}
         alignItems="center"
@@ -53,9 +55,17 @@ export function LinkNode({ id }: NodeProps): ReactElement {
           borderRadius: 2,
           border: (theme) =>
             `2px solid ${alpha(theme.palette.secondary.dark, 0.1)}`,
-          transition: (theme) => theme.transitions.create('opacity')
+          transition: (theme) => theme.transitions.create('opacity'),
+          ':hover': {
+            cursor: 'grab'
+          }
         }}
       >
+        <Fade in={showAnalytics}>
+          <div>
+            <LinkNodeAnalytics actionBlock={matchedActionBlock} />
+          </div>
+        </Fade>
         {icon}
         <Stack
           sx={{ width: '85%' }}

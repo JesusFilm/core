@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 
 import {
   Host,
+  Integration,
   Journey,
   JourneyNotification,
   JourneyVisitor,
@@ -38,6 +39,22 @@ describe('AppCaslFactory', () => {
               userTeams: [{ userId: user.id, role: UserTeamRole.manager }]
             }
           } as unknown as Host)
+        )
+      ).toBe(true)
+    })
+  })
+
+  describe('Integration', () => {
+    it('allow manage when user is team manager', () => {
+      expect(
+        ability.can(
+          Action.Manage,
+          subject('Integration', {
+            id: 'integrationId',
+            team: {
+              userTeams: [{ userId: user.id, role: UserTeamRole.manager }]
+            }
+          } as unknown as Integration)
         )
       ).toBe(true)
     })

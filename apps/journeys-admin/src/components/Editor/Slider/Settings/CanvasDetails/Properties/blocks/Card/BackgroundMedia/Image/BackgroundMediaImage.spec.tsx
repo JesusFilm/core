@@ -1,37 +1,65 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+import { v4 as uuidv4 } from 'uuid'
 
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { CommandProvider } from '@core/journeys/ui/CommandProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import {
   BlockFields_CardBlock as CardBlock,
-  BlockFields_ImageBlock as ImageBlock,
-  BlockFields_VideoBlock as VideoBlock
+  BlockFields_ImageBlock as ImageBlock
 } from '../../../../../../../../../../../__generated__/BlockFields'
+import {
+  CoverBlockDelete,
+  CoverBlockDeleteVariables
+} from '../../../../../../../../../../../__generated__/CoverBlockDelete'
+import {
+  CoverBlockRestore,
+  CoverBlockRestoreVariables
+} from '../../../../../../../../../../../__generated__/CoverBlockRestore'
+import {
+  CoverImageBlockCreate,
+  CoverImageBlockCreateVariables
+} from '../../../../../../../../../../../__generated__/CoverImageBlockCreate'
+import {
+  CoverImageBlockUpdate,
+  CoverImageBlockUpdateVariables
+} from '../../../../../../../../../../../__generated__/CoverImageBlockUpdate'
 import { GetJourney_journey as Journey } from '../../../../../../../../../../../__generated__/GetJourney'
 import {
   JourneyStatus,
   ThemeMode,
-  ThemeName,
-  VideoBlockSource
+  ThemeName
 } from '../../../../../../../../../../../__generated__/globalTypes'
+import { COVER_BLOCK_DELETE } from '../../../../../../../../../../libs/useCoverBlockDeleteMutation/useCoverBlockDeleteMutation'
+import { COVER_BLOCK_RESTORE } from '../../../../../../../../../../libs/useCoverBlockRestoreMutation/useCoverBlockRestoreMutation'
+import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRedoItem'
+import { CommandUndoItem } from '../../../../../../../../Toolbar/Items/CommandUndoItem'
 import { createCloudflareUploadByUrlMock } from '../../../../../../Drawer/ImageBlockEditor/CustomImage/CustomUrl/data'
+import { listUnsplashCollectionPhotosMock } from '../../../../../../Drawer/ImageBlockEditor/UnsplashGallery/data'
 
 import {
-  BLOCK_DELETE_FOR_BACKGROUND_IMAGE,
-  BackgroundMediaImage,
-  CARD_BLOCK_COVER_IMAGE_BLOCK_CREATE,
-  CARD_BLOCK_COVER_IMAGE_BLOCK_UPDATE
+  COVER_IMAGE_BLOCK_CREATE,
+  COVER_IMAGE_BLOCK_UPDATE
 } from './BackgroundMediaImage'
+
+import { BackgroundMediaImage } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: jest.fn()
 }))
+
+jest.mock('uuid', () => ({
+  __esModule: true,
+  v4: jest.fn()
+}))
+
+const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
 const journey: Journey = {
   __typename: 'Journey',
@@ -49,7 +77,7 @@ const journey: Journey = {
     iso3: 'eng',
     name: [
       {
-        __typename: 'Translation',
+        __typename: 'LanguageName',
         value: 'English',
         primary: true
       }
@@ -99,53 +127,11 @@ const image: TreeBlock<ImageBlock> = {
   children: []
 }
 
-const video: TreeBlock<VideoBlock> = {
-  id: 'video1.id',
-  __typename: 'VideoBlock',
-  parentBlockId: 'card1.id',
-  parentOrder: 0,
-  startAt: 0,
-  endAt: null,
-  muted: false,
-  autoplay: true,
-  fullsize: true,
-  action: null,
-  videoId: '2_0-FallingPlates',
-  videoVariantLanguageId: '529',
-  source: VideoBlockSource.internal,
-  title: null,
-  description: null,
-  duration: null,
-  image: null,
-  objectFit: null,
-  video: {
-    __typename: 'Video',
-    id: '2_0-FallingPlates',
-    title: [
-      {
-        __typename: 'Translation',
-        value: 'FallingPlates'
-      }
-    ],
-    image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
-    variant: {
-      __typename: 'VideoVariant',
-      id: '2_0-FallingPlates-529',
-      hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-    },
-    variantLanguages: []
-  },
-  posterBlockId: null,
-  children: []
-}
-
 describe('BackgroundMediaImage', () => {
-  beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
-
   let originalEnv
 
   beforeEach(() => {
+    ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
     originalEnv = process.env
     process.env = {
       ...originalEnv,
@@ -157,93 +143,26 @@ describe('BackgroundMediaImage', () => {
     process.env = originalEnv
   })
 
-  it('creates a new image cover block', async () => {
-    const cache = new InMemoryCache()
-    cache.restore({
-      ['Journey:' + journey.id]: {
-        blocks: [{ __ref: `CardBlock:${card.id}` }],
-        id: journey.id,
-        __typename: 'Journey'
-      },
-      [`CardBlock:${card.id}`]: { ...card }
-    })
-    const imageBlockResult = jest.fn(() => ({
-      data: {
-        imageBlockCreate: image
+  const coverImageBlockCreateMock: MockedResponse<
+    CoverImageBlockCreate,
+    CoverImageBlockCreateVariables
+  > = {
+    request: {
+      query: COVER_IMAGE_BLOCK_CREATE,
+      variables: {
+        id: image.id,
+        cardBlockId: card.id,
+        input: {
+          journeyId: journey.id,
+          id: image.id,
+          parentBlockId: card.id,
+          src: 'https://imagedelivery.net/cloudflare-key/uploadId/public',
+          alt: 'public',
+          isCover: true
+        }
       }
-    }))
-    const { getByRole } = render(
-      <MockedProvider
-        cache={cache}
-        mocks={[
-          createCloudflareUploadByUrlMock,
-          {
-            request: {
-              query: CARD_BLOCK_COVER_IMAGE_BLOCK_CREATE,
-              variables: {
-                input: {
-                  journeyId: journey.id,
-                  parentBlockId: card.id,
-                  src: image.src,
-                  alt: image.alt,
-                  isCover: true
-                }
-              }
-            },
-            result: imageBlockResult
-          }
-        ]}
-      >
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
-          <SnackbarProvider>
-            <BackgroundMediaImage cardBlock={card} />
-          </SnackbarProvider>
-        </JourneyProvider>
-      </MockedProvider>
-    )
-    fireEvent.click(getByRole('button', { name: 'Select Image' }))
-    await waitFor(() => fireEvent.click(getByRole('tab', { name: 'Custom' })))
-    fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
-    const textBox = await getByRole('textbox')
-    fireEvent.change(textBox, {
-      target: { value: 'https://example.com/image.jpg' }
-    })
-    fireEvent.blur(textBox)
-    await waitFor(() => expect(imageBlockResult).toHaveBeenCalled())
-    expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
-      { __ref: `CardBlock:${card.id}` },
-      { __ref: `ImageBlock:${image.id}` }
-    ])
-    expect(cache.extract()[`CardBlock:${card.id}`]?.coverBlockId).toEqual(
-      image.id
-    )
-  })
-
-  it('replaces a video cover block', async () => {
-    const videoCard: TreeBlock<CardBlock> = {
-      ...card,
-      coverBlockId: video.id,
-      children: [video]
-    }
-    const cache = new InMemoryCache()
-    cache.restore({
-      ['Journey:' + journey.id]: {
-        blocks: [
-          { __ref: `CardBlock:${card.id}` },
-          { __ref: `VideoBlock:${video.id}` }
-        ],
-        id: journey.id,
-        __typename: 'Journey'
-      },
-      [`CardBlock:${card.id}`]: { ...card, coverBlockId: video.id }
-    })
-    const videoBlockDeleteResult = jest.fn(() => ({
-      data: {
-        blockDelete: []
-      }
-    }))
-
-    const imageBlockResult = jest.fn(() => ({
+    },
+    result: {
       data: {
         imageBlockCreate: {
           id: image.id,
@@ -255,64 +174,135 @@ describe('BackgroundMediaImage', () => {
           height: image.height,
           parentOrder: image.parentOrder,
           blurhash: image.blurhash
+        },
+        cardBlockUpdate: {
+          id: card.id,
+          coverBlockId: image.id,
+          __typename: 'CardBlock'
         }
       }
-    }))
-    const { getByRole } = render(
+    }
+  }
+
+  const coverBlockDeleteMock: MockedResponse<
+    CoverBlockDelete,
+    CoverBlockDeleteVariables
+  > = {
+    request: {
+      query: COVER_BLOCK_DELETE,
+      variables: {
+        id: image.id,
+        cardBlockId: card.id
+      }
+    },
+    result: {
+      data: {
+        blockDelete: [
+          {
+            id: image.id,
+            __typename: 'ImageBlock',
+            parentOrder: null
+          }
+        ],
+        cardBlockUpdate: {
+          id: card.id,
+          coverBlockId: null,
+          __typename: 'CardBlock'
+        }
+      }
+    }
+  }
+
+  const coverBlockRestoreMock: MockedResponse<
+    CoverBlockRestore,
+    CoverBlockRestoreVariables
+  > = {
+    request: {
+      query: COVER_BLOCK_RESTORE,
+      variables: {
+        id: image.id,
+        cardBlockId: card.id
+      }
+    },
+    result: {
+      data: {
+        blockRestore: [image],
+        cardBlockUpdate: {
+          id: card.id,
+          coverBlockId: image.id,
+          __typename: 'CardBlock'
+        }
+      }
+    }
+  }
+
+  it('creates a new image cover block', async () => {
+    mockUuidv4.mockReturnValueOnce(image.id)
+    const cache = new InMemoryCache()
+    cache.restore({
+      [`Journey:${journey.id}`]: {
+        blocks: [{ __ref: `CardBlock:${card.id}` }],
+        id: journey.id,
+        __typename: 'Journey'
+      },
+      [`CardBlock:${card.id}`]: { ...card }
+    })
+    render(
       <MockedProvider
         cache={cache}
         mocks={[
           createCloudflareUploadByUrlMock,
-          {
-            request: {
-              query: BLOCK_DELETE_FOR_BACKGROUND_IMAGE,
-              variables: {
-                id: video.id,
-                parentBlockId: card.parentBlockId,
-                journeyId: journey.id
-              }
-            },
-            result: videoBlockDeleteResult
-          },
-          {
-            request: {
-              query: CARD_BLOCK_COVER_IMAGE_BLOCK_CREATE,
-              variables: {
-                input: {
-                  journeyId: journey.id,
-                  parentBlockId: card.id,
-                  src: image.src,
-                  alt: image.alt,
-                  isCover: true
-                }
-              }
-            },
-            result: imageBlockResult
-          }
+          coverImageBlockCreateMock,
+          coverBlockDeleteMock,
+          coverBlockRestoreMock
         ]}
       >
         <JourneyProvider value={{ journey, variant: 'admin' }}>
           <SnackbarProvider>
-            <BackgroundMediaImage cardBlock={videoCard} />
+            <CommandProvider>
+              <BackgroundMediaImage cardBlock={card} />
+              <CommandUndoItem variant="button" />
+              <CommandRedoItem variant="button" />
+            </CommandProvider>
           </SnackbarProvider>
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByRole('button', { name: 'Select Image' }))
-    await waitFor(() => fireEvent.click(getByRole('tab', { name: 'Custom' })))
-    fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
-    const textBox = await getByRole('textbox')
+    fireEvent.click(screen.getByRole('button', { name: 'Select Image' }))
+    await waitFor(() =>
+      fireEvent.click(screen.getByRole('tab', { name: 'Custom' }))
+    )
+    await waitFor(() =>
+      fireEvent.click(screen.getByRole('button', { name: 'Add image by URL' }))
+    )
+    const textBox = await screen.getByRole('textbox')
     fireEvent.change(textBox, {
       target: { value: 'https://example.com/image.jpg' }
     })
     fireEvent.blur(textBox)
-
-    await waitFor(() => expect(videoBlockDeleteResult).toHaveBeenCalled())
-    await waitFor(() => expect(imageBlockResult).toHaveBeenCalled())
-    expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
-      { __ref: `CardBlock:${card.id}` },
-      { __ref: `ImageBlock:${image.id}` }
-    ])
+    await waitFor(() =>
+      expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
+        { __ref: `CardBlock:${card.id}` },
+        { __ref: `ImageBlock:${image.id}` }
+      ])
+    )
+    expect(cache.extract()[`CardBlock:${card.id}`]?.coverBlockId).toEqual(
+      image.id
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() =>
+      expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
+        { __ref: `CardBlock:${card.id}` }
+      ])
+    )
+    expect(cache.extract()[`CardBlock:${card.id}`]?.coverBlockId).toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+    await waitFor(() =>
+      expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
+        { __ref: `CardBlock:${card.id}` },
+        { __ref: `ImageBlock:${image.id}` }
+      ])
+    )
     expect(cache.extract()[`CardBlock:${card.id}`]?.coverBlockId).toEqual(
       image.id
     )
@@ -325,115 +315,123 @@ describe('BackgroundMediaImage', () => {
       children: [
         {
           ...image,
-          src: 'https://example.com/image2.jpg',
-          alt: 'https://example.com/image2.jpg'
+          src: 'https://example.com/old.jpg',
+          alt: 'prior-alt'
         }
       ]
     }
 
     it('updates image cover block', async () => {
-      const cache = new InMemoryCache()
-      cache.restore({
-        ['Journey:' + journey.id]: {
-          blocks: [
-            { __ref: `CardBlock:${card.id}` },
-            { __ref: `ImageBlock:${image.id}` }
-          ],
-          id: journey.id,
-          __typename: 'Journey'
+      const response: CoverImageBlockUpdate = {
+        imageBlockUpdate: {
+          id: image.id,
+          src: image.src,
+          alt: image.alt,
+          __typename: 'ImageBlock',
+          parentBlockId: card.id,
+          width: image.width,
+          height: image.height,
+          parentOrder: image.parentOrder,
+          blurhash: image.blurhash
         }
-      })
-      const imageBlockResult = jest.fn(() => ({
-        data: {
-          imageBlockUpdate: {
+      }
+      const coverImageBlockUpdateMock: MockedResponse<
+        CoverImageBlockUpdate,
+        CoverImageBlockUpdateVariables
+      > = {
+        request: {
+          query: COVER_IMAGE_BLOCK_UPDATE,
+          variables: {
             id: image.id,
-            src: image.src,
-            alt: image.alt,
-            __typename: 'ImageBlock',
-            parentBlockId: card.id,
-            parentOrder: image.parentOrder
+            input: {
+              src: image.src,
+              alt: image.alt
+            }
           }
+        },
+        result: {
+          data: response
         }
+      }
+      const updateResult = jest.fn(() => ({
+        data: response
       }))
-      const { getByRole } = render(
+      const undoResult = jest.fn(() => ({
+        data: response
+      }))
+      const redoResult = jest.fn(() => ({
+        data: response
+      }))
+      render(
         <MockedProvider
-          cache={cache}
           mocks={[
+            listUnsplashCollectionPhotosMock,
             createCloudflareUploadByUrlMock,
             {
+              ...coverImageBlockUpdateMock,
+              result: updateResult
+            },
+            {
+              ...coverImageBlockUpdateMock,
               request: {
-                query: CARD_BLOCK_COVER_IMAGE_BLOCK_UPDATE,
+                ...coverImageBlockUpdateMock.request,
                 variables: {
-                  id: image.id,
-                  journeyId: journey.id,
+                  ...coverImageBlockUpdateMock.request.variables,
                   input: {
-                    src: image.src,
-                    alt: image.alt,
-                    blurhash: undefined,
-                    width: 1920,
-                    height: 1080
+                    ...coverImageBlockUpdateMock.request.variables?.input,
+                    src: 'https://example.com/old.jpg',
+                    alt: 'prior-alt'
                   }
                 }
               },
-              result: imageBlockResult
+              result: undoResult
+            },
+            {
+              ...coverImageBlockUpdateMock,
+              result: redoResult
             }
           ]}
         >
           <JourneyProvider value={{ journey, variant: 'admin' }}>
             <SnackbarProvider>
-              <BackgroundMediaImage cardBlock={existingCoverBlock} />
+              <CommandProvider>
+                <BackgroundMediaImage cardBlock={existingCoverBlock} />
+                <CommandUndoItem variant="button" />
+                <CommandRedoItem variant="button" />
+              </CommandProvider>
             </SnackbarProvider>
           </JourneyProvider>
         </MockedProvider>
       )
       fireEvent.click(
-        getByRole('button', {
-          name: 'https://example.com/image2.jpg Selected Image 1920 x 1080 pixels'
+        screen.getByRole('button', {
+          name: 'prior-alt Selected Image 1920 x 1080 pixels'
         })
       )
-      fireEvent.click(getByRole('tab', { name: 'Custom' }))
-      fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
-      const textBox = await getByRole('textbox')
+      await waitFor(() =>
+        fireEvent.click(screen.getByRole('tab', { name: 'Custom' }))
+      )
+      await waitFor(() =>
+        fireEvent.click(
+          screen.getByRole('button', { name: 'Add image by URL' })
+        )
+      )
+      const textBox = await screen.getByRole('textbox')
       fireEvent.change(textBox, {
         target: { value: 'https://example.com/image.jpg' }
       })
       fireEvent.blur(textBox)
-      await waitFor(() => expect(imageBlockResult).toHaveBeenCalled())
-      expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
-        { __ref: `CardBlock:${card.id}` },
-        { __ref: `ImageBlock:${image.id}` }
-      ])
-    })
-
-    it('shows loading icon', async () => {
-      const { getByRole } = render(
-        <MockedProvider mocks={[createCloudflareUploadByUrlMock]}>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <SnackbarProvider>
-              <BackgroundMediaImage cardBlock={existingCoverBlock} />
-            </SnackbarProvider>
-          </JourneyProvider>
-        </MockedProvider>
-      )
-      fireEvent.click(
-        getByRole('button', {
-          name: 'https://example.com/image2.jpg Selected Image 1920 x 1080 pixels'
-        })
-      )
-      fireEvent.click(getByRole('tab', { name: 'Custom' }))
-      fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
-      const textbox = getByRole('textbox')
-      fireEvent.change(textbox, {
-        target: { value: 'https://example.com/image.jpg' }
-      })
-      fireEvent.blur(textbox)
-      await waitFor(() => expect(getByRole('progressbar')).toBeInTheDocument())
+      await waitFor(() => expect(updateResult).toHaveBeenCalled())
+      fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+      await waitFor(() => expect(undoResult).toHaveBeenCalled())
+      fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+      await waitFor(() => expect(redoResult).toHaveBeenCalled())
     })
 
     it('deletes an image block', async () => {
       const cache = new InMemoryCache()
       cache.restore({
-        ['Journey:' + journey.id]: {
+        [`Journey:${journey.id}`]: {
           blocks: [
             { __ref: `CardBlock:${card.id}` },
             { __ref: `ImageBlock:${image.id}` }
@@ -441,49 +439,55 @@ describe('BackgroundMediaImage', () => {
           id: journey.id,
           __typename: 'Journey'
         },
-        ['ImageBlock:' + image.id]: { ...image }
+        [`ImageBlock:${image.id}`]: { ...image }
       })
-      const blockDeleteResult = jest.fn(() => ({
-        data: {
-          blockDelete: []
-        }
-      }))
-      const { getByRole, getByTestId } = render(
+      render(
         <MockedProvider
           cache={cache}
           mocks={[
-            {
-              request: {
-                query: BLOCK_DELETE_FOR_BACKGROUND_IMAGE,
-                variables: {
-                  id: image.id,
-                  parentBlockId: card.parentBlockId,
-                  journeyId: journey.id
-                }
-              },
-              result: blockDeleteResult
-            }
+            coverBlockDeleteMock,
+            coverBlockRestoreMock,
+            coverBlockDeleteMock
           ]}
         >
           <JourneyProvider value={{ journey, variant: 'admin' }}>
             <SnackbarProvider>
-              <BackgroundMediaImage cardBlock={existingCoverBlock} />
+              <CommandProvider>
+                <BackgroundMediaImage cardBlock={existingCoverBlock} />
+                <CommandUndoItem variant="button" />
+                <CommandRedoItem variant="button" />
+              </CommandProvider>
             </SnackbarProvider>
           </JourneyProvider>
         </MockedProvider>
       )
       fireEvent.click(
-        getByRole('button', {
-          name: 'https://example.com/image2.jpg Selected Image 1920 x 1080 pixels'
+        screen.getByRole('button', {
+          name: 'prior-alt Selected Image 1920 x 1080 pixels'
         })
       )
-      const button = await getByTestId('imageBlockHeaderDelete')
-      fireEvent.click(button)
-      await waitFor(() => expect(blockDeleteResult).toHaveBeenCalled())
-      expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
-        { __ref: `CardBlock:${card.id}` }
-      ])
-      expect(cache.extract()['ImageBlock:' + image.id]).toBeUndefined()
+      await waitFor(() =>
+        expect(screen.getByTestId('imageBlockHeaderDelete')).toBeInTheDocument()
+      )
+      fireEvent.click(screen.getByTestId('imageBlockHeaderDelete'))
+      await waitFor(() =>
+        expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
+          { __ref: `CardBlock:${card.id}` }
+        ])
+      )
+      fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+      await waitFor(() =>
+        expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
+          { __ref: `CardBlock:${card.id}` },
+          { __ref: `ImageBlock:${image.id}` }
+        ])
+      )
+      fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+      await waitFor(() =>
+        expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
+          { __ref: `CardBlock:${card.id}` }
+        ])
+      )
     })
   })
 })

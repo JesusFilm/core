@@ -1,9 +1,15 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import { GraphQLError } from 'graphql'
 import { SnackbarProvider } from 'notistack'
+
+import {
+  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
+  TeamProvider
+} from '@core/journeys/ui/TeamProvider'
+import { GetLastActiveTeamIdAndTeams } from '@core/journeys/ui/TeamProvider/__generated__/GetLastActiveTeamIdAndTeams'
 
 import { CheckCustomDomain } from '../../../../../__generated__/CheckCustomDomain'
 import {
@@ -15,11 +21,6 @@ import {
   DeleteCustomDomainVariables
 } from '../../../../../__generated__/DeleteCustomDomain'
 import { GetCustomDomains_customDomains as CustomDomain } from '../../../../../__generated__/GetCustomDomains'
-import { GetLastActiveTeamIdAndTeams } from '../../../../../__generated__/GetLastActiveTeamIdAndTeams'
-import {
-  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
-  TeamProvider
-} from '../../TeamProvider'
 
 import {
   CREATE_CUSTOM_DOMAIN,

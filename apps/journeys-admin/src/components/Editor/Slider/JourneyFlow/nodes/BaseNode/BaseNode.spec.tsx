@@ -4,7 +4,7 @@ import { ReactFlowProvider } from 'reactflow'
 
 import { mockReactFlow } from '../../../../../../../test/mockReactFlow'
 
-import { BaseNode } from './BaseNode'
+import { BaseNode, HandleVariant } from './BaseNode'
 
 describe('BaseNode', () => {
   beforeEach(() => {
@@ -27,45 +27,97 @@ describe('BaseNode', () => {
     render(
       <ReactFlowProvider>
         <MockedProvider>
-          <BaseNode targetHandle="show" />
+          <BaseNode targetHandle={HandleVariant.Shown} />
         </MockedProvider>
       </ReactFlowProvider>
     )
 
-    expect(screen.getByTestId('BaseNodeLeftHandle')).toBeInTheDocument()
+    const handle = screen.getByTestId('BaseNodeLeftHandle-shown')
+
+    expect(handle).toBeInTheDocument()
+    expect(handle).toBeVisible()
   })
 
   it('should render disabled target handle', () => {
     render(
       <ReactFlowProvider>
         <MockedProvider>
-          <BaseNode targetHandle="disabled" />
+          <BaseNode targetHandle={HandleVariant.Disabled} />
         </MockedProvider>
       </ReactFlowProvider>
     )
 
-    expect(
-      screen.getByTestId('BaseNodeLeftHandle-disabled')
-    ).toBeInTheDocument()
+    const handle = screen.getByTestId('BaseNodeLeftHandle-disabled')
+
+    expect(handle).toBeInTheDocument()
+    expect(handle).toBeVisible()
+  })
+
+  it('should render hiddent target handle', () => {
+    render(
+      <ReactFlowProvider>
+        <MockedProvider>
+          <BaseNode targetHandle={HandleVariant.Hidden} />
+        </MockedProvider>
+      </ReactFlowProvider>
+    )
+
+    const handle = screen.getByTestId('BaseNodeLeftHandle-hidden')
+
+    expect(handle).toBeInTheDocument()
+    expect(handle).not.toBeVisible()
   })
 
   it('should render source handle', async () => {
     render(
       <ReactFlowProvider>
         <MockedProvider>
-          <BaseNode sourceHandle="show" />
+          <BaseNode sourceHandle={HandleVariant.Shown} />
         </MockedProvider>
       </ReactFlowProvider>
     )
 
-    expect(screen.getByTestId('BaseNodeRightHandle')).toBeInTheDocument()
+    const handle = screen.getByTestId('BaseNodeRightHandle-shown')
+
+    expect(handle).toBeInTheDocument()
+    expect(handle).toBeVisible()
+  })
+
+  it('should render disabled source handle', () => {
+    render(
+      <ReactFlowProvider>
+        <MockedProvider>
+          <BaseNode sourceHandle={HandleVariant.Disabled} />
+        </MockedProvider>
+      </ReactFlowProvider>
+    )
+
+    const handle = screen.getByTestId('BaseNodeRightHandle-disabled')
+
+    expect(handle).toBeInTheDocument()
+    expect(handle).toBeVisible()
+  })
+
+  it('should render hidden source handle', () => {
+    render(
+      <ReactFlowProvider>
+        <MockedProvider>
+          <BaseNode sourceHandle={HandleVariant.Hidden} />
+        </MockedProvider>
+      </ReactFlowProvider>
+    )
+
+    const handle = screen.getByTestId('BaseNodeRightHandle-hidden')
+
+    expect(handle).toBeInTheDocument()
+    expect(handle).not.toBeVisible()
   })
 
   it('should render arrow icon', () => {
     render(
       <ReactFlowProvider>
         <MockedProvider>
-          <BaseNode sourceHandle="show" />
+          <BaseNode sourceHandle={HandleVariant.Shown} />
         </MockedProvider>
       </ReactFlowProvider>
     )

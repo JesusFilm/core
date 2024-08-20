@@ -1,16 +1,17 @@
+import { graphql } from 'gql.tada'
+
 import { Prisma } from '.prisma/api-analytics-client'
 
 import { getAuthenticatedClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { fixedDate } from '../../../test/timers'
-import { gql } from '../../__generated__/gql'
 
 jest.mock('short-unique-id', () => ({
   __esModule: true,
   default: jest.fn().mockImplementation(() => ({ rnd: () => 'test-slug' }))
 }))
 
-const SITE_CREATE_MUTATION = gql(`
+const SITE_CREATE_MUTATION = graphql(`
   mutation SiteCreate($input: SiteCreateInput!) {
     siteCreate(input: $input) {
       ... on Error {
@@ -273,6 +274,101 @@ describe('siteCreateMutation', () => {
         siteCreate: {
           __typename: 'Error',
           message: 'domain already exists'
+        }
+      }
+    })
+  })
+
+  it('should return the existing site if a user creates a site with a existing domain', async () => {
+    const site = {
+      id: 'siteId',
+      domain: 'https://test-site.com',
+      site_memberships: [
+        {
+          id: 'membershipId',
+          role: 'owner'
+        }
+      ],
+      goals: [
+        {
+          id: 'goalId',
+          event_name: 'test-goal'
+        }
+      ],
+      shared_links: [
+        {
+          id: 'sharedLinkId',
+          name: 'api-analytics',
+          slug: 'test-slug'
+        }
+      ]
+    }
+    prismaMock.sites.create.mockRejectedValue(
+      new Prisma.PrismaClientKnownRequestError(
+        'Unique constraint failed on the fields: (`domain`)',
+        {
+          code: 'P2002',
+          clientVersion: 'prismaVersion'
+        }
+      )
+    )
+    prismaMock.sites.findUnique.mockResolvedValue(site)
+
+    const data = await client({
+      document: SITE_CREATE_MUTATION,
+      variables: {
+        input: {
+          domain: 'https://test-site.com',
+          goals: ['test-goal']
+        }
+      }
+    })
+
+    expect(prismaMock.sites.findUnique).toHaveBeenCalledWith({
+      include: {
+        goals: true,
+        shared_links: true,
+        site_memberships: {
+          where: {
+            role: 'owner',
+            user_id: 1
+          }
+        }
+      },
+      where: {
+        domain: 'https://test-site.com'
+      }
+    })
+
+    expect(data).toEqual({
+      data: {
+        siteCreate: {
+          data: {
+            __typename: 'Site',
+            domain: 'https://test-site.com',
+            goals: [
+              {
+                __typename: 'SiteGoal',
+                id: 'goalId',
+                eventName: 'test-goal'
+              }
+            ],
+            id: 'siteId',
+            memberships: [
+              {
+                __typename: 'SiteMembership',
+                id: 'membershipId',
+                role: 'owner'
+              }
+            ],
+            sharedLinks: [
+              {
+                __typename: 'SiteSharedLink',
+                id: 'sharedLinkId',
+                slug: 'test-slug'
+              }
+            ]
+          }
         }
       }
     })

@@ -9,5 +9,21 @@
     {
       "path": "./tsconfig.spec.json"
     }
-  ]
+  ],
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "strict": true,
+    "incremental": true,
+    "tsBuildInfoFile": "../../.cache/api-languages/tsc/.tsbuildinfo",
+    "plugins": [
+      {
+        "name": "@0no-co/graphqlsp",
+        "schema": "../api-gateway/schema.graphql",
+        "tadaOutputLocation": "./src/__generated__/graphql-env.d.ts"
+      }
+    ]
+  }
 }

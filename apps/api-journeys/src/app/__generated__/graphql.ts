@@ -72,7 +72,9 @@ export enum IconName {
     BeenhereRounded = "BeenhereRounded",
     SendRounded = "SendRounded",
     SubscriptionsRounded = "SubscriptionsRounded",
-    ContactSupportRounded = "ContactSupportRounded"
+    ContactSupportRounded = "ContactSupportRounded",
+    Launch = "Launch",
+    MailOutline = "MailOutline"
 }
 
 export enum IconColor {
@@ -90,6 +92,12 @@ export enum IconSize {
     lg = "lg",
     xl = "xl",
     inherit = "inherit"
+}
+
+export enum TextResponseType {
+    freeForm = "freeForm",
+    name = "name",
+    email = "email"
 }
 
 export enum TypographyVariant {
@@ -148,7 +156,33 @@ export enum MessagePlatform {
     skype = "skype",
     line = "line",
     tikTok = "tikTok",
-    custom = "custom"
+    custom = "custom",
+    globe2 = "globe2",
+    globe3 = "globe3",
+    messageText1 = "messageText1",
+    messageText2 = "messageText2",
+    send1 = "send1",
+    send2 = "send2",
+    messageChat2 = "messageChat2",
+    messageCircle = "messageCircle",
+    messageNotifyCircle = "messageNotifyCircle",
+    messageNotifySquare = "messageNotifySquare",
+    messageSquare = "messageSquare",
+    mail1 = "mail1",
+    linkExternal = "linkExternal",
+    home3 = "home3",
+    home4 = "home4",
+    helpCircleContained = "helpCircleContained",
+    helpSquareContained = "helpSquareContained",
+    shieldCheck = "shieldCheck",
+    menu1 = "menu1",
+    checkBroken = "checkBroken",
+    checkContained = "checkContained",
+    settings = "settings"
+}
+
+export enum IntegrationType {
+    growthSpaces = "growthSpaces"
 }
 
 export enum IdType {
@@ -230,9 +264,22 @@ export class EmailActionInput {
     email: string;
 }
 
+export class BlockUpdateActionInput {
+    gtmEventName?: Nullable<string>;
+    email?: Nullable<string>;
+    url?: Nullable<string>;
+    target?: Nullable<string>;
+    blockId?: Nullable<string>;
+}
+
 export class BlocksFilter {
     journeyIds?: Nullable<string[]>;
     typenames?: Nullable<string[]>;
+}
+
+export class BlockDuplicateIdMap {
+    oldId: string;
+    newId: string;
 }
 
 export class ButtonBlockCreateInput {
@@ -267,6 +314,7 @@ export class CardBlockCreateInput {
 
 export class CardBlockUpdateInput {
     parentBlockId?: Nullable<string>;
+    coverBlockId?: Nullable<string>;
     backgroundColor?: Nullable<string>;
     fullscreen?: Nullable<boolean>;
     themeMode?: Nullable<ThemeMode>;
@@ -368,6 +416,12 @@ export class StepBlockUpdateInput {
     y?: Nullable<number>;
 }
 
+export class StepBlockPositionUpdateInput {
+    id: string;
+    x?: Nullable<number>;
+    y?: Nullable<number>;
+}
+
 export class TextResponseBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
@@ -380,6 +434,9 @@ export class TextResponseBlockUpdateInput {
     label?: Nullable<string>;
     hint?: Nullable<string>;
     minRows?: Nullable<number>;
+    routeId?: Nullable<string>;
+    type?: Nullable<TextResponseType>;
+    integrationId?: Nullable<string>;
 }
 
 export class TypographyBlockCreateInput {
@@ -605,6 +662,17 @@ export class HostCreateInput {
     src2?: Nullable<string>;
 }
 
+export class IntegrationGrowthSpacesCreateInput {
+    accessId: string;
+    accessSecret: string;
+    teamId: string;
+}
+
+export class IntegrationGrowthSpacesUpdateInput {
+    accessId: string;
+    accessSecret: string;
+}
+
 export class JourneysFilter {
     featured?: Nullable<boolean>;
     template?: Nullable<boolean>;
@@ -752,6 +820,7 @@ export class VisitorUpdateInput {
 
 export interface Action {
     parentBlockId: string;
+    parentBlock: Block;
     gtmEventName?: Nullable<string>;
 }
 
@@ -770,9 +839,16 @@ export interface Event {
     value?: Nullable<string>;
 }
 
+export interface Integration {
+    id: string;
+    team: Team;
+    type: IntegrationType;
+}
+
 export class NavigateToBlockAction implements Action {
     __typename?: 'NavigateToBlockAction';
     parentBlockId: string;
+    parentBlock: Block;
     gtmEventName?: Nullable<string>;
     blockId: string;
 }
@@ -780,6 +856,7 @@ export class NavigateToBlockAction implements Action {
 export class LinkAction implements Action {
     __typename?: 'LinkAction';
     parentBlockId: string;
+    parentBlock: Block;
     gtmEventName?: Nullable<string>;
     url: string;
     target?: Nullable<string>;
@@ -788,6 +865,7 @@ export class LinkAction implements Action {
 export class EmailAction implements Action {
     __typename?: 'EmailAction';
     parentBlockId: string;
+    parentBlock: Block;
     gtmEventName?: Nullable<string>;
     email: string;
 }
@@ -795,19 +873,23 @@ export class EmailAction implements Action {
 export abstract class IMutation {
     __typename?: 'IMutation';
 
-    abstract blockDeleteAction(id: string, journeyId: string): Block | Promise<Block>;
+    abstract blockDeleteAction(id: string, journeyId?: Nullable<string>): Block | Promise<Block>;
 
-    abstract blockUpdateNavigateToBlockAction(id: string, journeyId: string, input: NavigateToBlockActionInput): NavigateToBlockAction | Promise<NavigateToBlockAction>;
+    abstract blockUpdateNavigateToBlockAction(id: string, input: NavigateToBlockActionInput, journeyId?: Nullable<string>): NavigateToBlockAction | Promise<NavigateToBlockAction>;
 
-    abstract blockUpdateLinkAction(id: string, journeyId: string, input: LinkActionInput): LinkAction | Promise<LinkAction>;
+    abstract blockUpdateLinkAction(id: string, input: LinkActionInput, journeyId?: Nullable<string>): LinkAction | Promise<LinkAction>;
 
-    abstract blockUpdateEmailAction(id: string, journeyId: string, input: EmailActionInput): EmailAction | Promise<EmailAction>;
+    abstract blockUpdateEmailAction(id: string, input: EmailActionInput, journeyId?: Nullable<string>): EmailAction | Promise<EmailAction>;
+
+    abstract blockUpdateAction(id: string, input?: Nullable<BlockUpdateActionInput>): Action | Promise<Action>;
 
     abstract blockDelete(id: string, journeyId?: Nullable<string>, parentBlockId?: Nullable<string>): Block[] | Promise<Block[]>;
 
-    abstract blockDuplicate(id: string, parentOrder?: Nullable<number>, journeyId?: Nullable<string>, x?: Nullable<number>, y?: Nullable<number>): Block[] | Promise<Block[]>;
+    abstract blockDuplicate(id: string, parentOrder?: Nullable<number>, idMap?: Nullable<BlockDuplicateIdMap[]>, journeyId?: Nullable<string>, x?: Nullable<number>, y?: Nullable<number>): Block[] | Promise<Block[]>;
 
     abstract blockOrderUpdate(id: string, parentOrder: number, journeyId?: Nullable<string>): Block[] | Promise<Block[]>;
+
+    abstract blockRestore(id: string): Block[] | Promise<Block[]>;
 
     abstract buttonBlockCreate(input: ButtonBlockCreateInput): ButtonBlock | Promise<ButtonBlock>;
 
@@ -844,6 +926,8 @@ export abstract class IMutation {
     abstract stepBlockCreate(input: StepBlockCreateInput): StepBlock | Promise<StepBlock>;
 
     abstract stepBlockUpdate(id: string, input: StepBlockUpdateInput, journeyId?: Nullable<string>): StepBlock | Promise<StepBlock>;
+
+    abstract stepBlockPositionUpdate(input: StepBlockPositionUpdateInput[]): StepBlock[] | Promise<StepBlock[]>;
 
     abstract textResponseBlockCreate(input: TextResponseBlockCreateInput): TextResponseBlock | Promise<TextResponseBlock>;
 
@@ -908,6 +992,12 @@ export abstract class IMutation {
     abstract hostUpdate(id: string, teamId: string, input?: Nullable<HostUpdateInput>): Host | Promise<Host>;
 
     abstract hostDelete(id: string, teamId: string): Host | Promise<Host>;
+
+    abstract integrationGrowthSpacesCreate(input: IntegrationGrowthSpacesCreateInput): IntegrationGrowthSpaces | Promise<IntegrationGrowthSpaces>;
+
+    abstract integrationGrowthSpacesUpdate(id: string, input: IntegrationGrowthSpacesUpdateInput): IntegrationGrowthSpaces | Promise<IntegrationGrowthSpaces>;
+
+    abstract integrationDelete(id: string): Integration | Promise<Integration>;
 
     abstract journeyCreate(input: JourneyCreateInput, teamId: string): Journey | Promise<Journey>;
 
@@ -1027,6 +1117,8 @@ export abstract class IQuery {
     abstract customDomains(teamId: string): CustomDomain[] | Promise<CustomDomain[]>;
 
     abstract hosts(teamId: string): Host[] | Promise<Host[]>;
+
+    abstract integrations(teamId: string): Integration[] | Promise<Integration[]>;
 
     abstract adminJourneys(status?: Nullable<JourneyStatus[]>, template?: Nullable<boolean>, teamId?: Nullable<string>, useLastActiveTeamId?: Nullable<boolean>): Journey[] | Promise<Journey[]>;
 
@@ -1229,6 +1321,9 @@ export class TextResponseBlock implements Block {
     label: string;
     hint?: Nullable<string>;
     minRows?: Nullable<number>;
+    type?: Nullable<TextResponseType>;
+    routeId?: Nullable<string>;
+    integrationId?: Nullable<string>;
 }
 
 export class TypographyBlock implements Block {
@@ -1491,6 +1586,22 @@ export class Host {
     src2?: Nullable<string>;
 }
 
+export class IntegrationGrowthSpaces implements Integration {
+    __typename?: 'IntegrationGrowthSpaces';
+    id: string;
+    team: Team;
+    type: IntegrationType;
+    accessId: string;
+    accessSecretPart: string;
+    routes: IntegrationGrowthSpacesRoute[];
+}
+
+export class IntegrationGrowthSpacesRoute {
+    __typename?: 'IntegrationGrowthSpacesRoute';
+    id: string;
+    name: string;
+}
+
 export class PowerBiEmbed {
     __typename?: 'PowerBiEmbed';
     reportId: string;
@@ -1632,6 +1743,7 @@ export class Team {
     updatedAt: DateTime;
     userTeams: UserTeam[];
     customDomains: CustomDomain[];
+    integrations: Integration[];
 }
 
 export class UserInvite {

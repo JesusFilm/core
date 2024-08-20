@@ -1,25 +1,23 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
-import { Form, Formik } from 'formik'
-import noop from 'lodash/noop'
 import { useTranslation } from 'next-i18next'
-import { FocusEvent, ReactElement } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
+import { v4 as uuidv4 } from 'uuid'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { useCommand } from '@core/journeys/ui/CommandProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
-import { TextResponseHintUpdate } from '../../../../../../../../../../../__generated__/TextResponseHintUpdate'
+import {
+  TextResponseHintUpdate,
+  TextResponseHintUpdateVariables
+} from '../../../../../../../../../../../__generated__/TextResponseHintUpdate'
 
 export const TEXT_RESPONSE_HINT_UPDATE = gql`
-  mutation TextResponseHintUpdate(
-    $id: ID!
-    $journeyId: ID!
-    $input: TextResponseBlockUpdateInput!
-  ) {
-    textResponseBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+  mutation TextResponseHintUpdate($id: ID!, $hint: String!) {
+    textResponseBlockUpdate(id: $id, input: { hint: $hint }) {
       id
       hint
     }
@@ -28,77 +26,102 @@ export const TEXT_RESPONSE_HINT_UPDATE = gql`
 
 export function Hint(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [textResponseHintUpdate] = useMutation<TextResponseHintUpdate>(
-    TEXT_RESPONSE_HINT_UPDATE
-  )
-  const { journey } = useJourney()
-  const { state } = useEditor()
+  const [textResponseHintUpdate] = useMutation<
+    TextResponseHintUpdate,
+    TextResponseHintUpdateVariables
+  >(TEXT_RESPONSE_HINT_UPDATE)
+  const { state, dispatch } = useEditor()
+  const {
+    add,
+    state: { undo }
+  } = useCommand()
   const selectedBlock = state.selectedBlock as
     | TreeBlock<TextResponseBlock>
     | undefined
+  const [value, setValue] = useState(selectedBlock?.hint ?? '')
+  const [commandInput, setCommandInput] = useState({ id: uuidv4(), value })
 
-  async function handleSubmit(e: FocusEvent): Promise<void> {
-    if (journey == null || selectedBlock == null) return
-    const target = e.target as HTMLInputElement
-    await textResponseHintUpdate({
-      variables: {
-        id: selectedBlock?.id,
-        journeyId: journey.id,
-        input: {
-          hint: target.value
+  useEffect(() => {
+    if (undo == null || undo.id === commandInput.id) return
+    resetCommandInput()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [undo?.id])
+
+  useEffect(() => {
+    setValue(selectedBlock?.hint ?? '')
+  }, [selectedBlock?.hint])
+
+  function resetCommandInput(): void {
+    setCommandInput({ id: uuidv4(), value })
+  }
+
+  function handleSubmit(value: string): void {
+    if (selectedBlock == null) return
+    add({
+      id: commandInput.id,
+      parameters: {
+        execute: {
+          hint: value,
+          context: {},
+          runDispatch: false
+        },
+        undo: {
+          hint: commandInput.value,
+          context: { debounceTimeout: 1 },
+          runDispatch: true
+        },
+        redo: {
+          hint: value,
+          context: { debounceTimeout: 1 },
+          runDispatch: true
         }
       },
-      optimisticResponse: {
-        textResponseBlockUpdate: {
-          id: selectedBlock?.id,
-          __typename: 'TextResponseBlock',
-          hint: target.value
-        }
+      execute({ hint, context, runDispatch }) {
+        if (runDispatch)
+          dispatch({
+            type: 'SetEditorFocusAction',
+            selectedBlock,
+            selectedStep: state.selectedStep,
+            selectedAttributeId: state.selectedAttributeId
+          })
+
+        void textResponseHintUpdate({
+          variables: {
+            id: selectedBlock.id,
+            hint
+          },
+          optimisticResponse: {
+            textResponseBlockUpdate: {
+              id: selectedBlock.id,
+              hint,
+              __typename: 'TextResponseBlock'
+            }
+          },
+          context: {
+            debounceKey: `TextResponseBlock:${selectedBlock.id}`,
+            ...context
+          }
+        })
       }
     })
   }
 
-  const initialValues =
-    selectedBlock != null
-      ? {
-          textResponseHint: selectedBlock.hint ?? ''
-        }
-      : null
-
   return (
     <Box sx={{ p: 4, pt: 0 }} data-testid="Hint">
-      {initialValues != null ? (
-        <Formik initialValues={initialValues} onSubmit={noop}>
-          {({ values, errors, handleChange, handleBlur }) => (
-            <Form>
-              <TextField
-                id="textResponseHint"
-                name="textResponseHint"
-                variant="filled"
-                label={t('Hint')}
-                fullWidth
-                value={values.textResponseHint}
-                inputProps={{ maxLength: 250 }}
-                onChange={handleChange}
-                onBlur={(e) => {
-                  handleBlur(e)
-                  if (errors.textResponseHint == null) void handleSubmit(e)
-                }}
-              />
-            </Form>
-          )}
-        </Formik>
-      ) : (
-        <TextField
-          variant="filled"
-          label={t('Hint')}
-          fullWidth
-          disabled
-          sx={{
-            pb: 4
-          }}
-        />
-      )}
+      <TextField
+        id="hint"
+        name="hint"
+        variant="filled"
+        label={t('Hint')}
+        fullWidth
+        inputProps={{ maxLength: 250 }}
+        value={value}
+        onFocus={resetCommandInput}
+        onChange={(e) => {
+          setValue(e.target.value)
+          handleSubmit(e.target.value)
+        }}
+      />
     </Box>
   )
 }

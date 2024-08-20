@@ -33,7 +33,7 @@ describe('transformVisitorEvents', () => {
         id: 'languageId',
         name: [
           {
-            __typename: 'Translation',
+            __typename: 'LanguageName',
             value: 'Hobbitish'
           }
         ]
@@ -68,7 +68,7 @@ describe('transformVisitorEvents', () => {
         id: 'languageId',
         name: [
           {
-            __typename: 'Translation',
+            __typename: 'LanguageName',
             value: 'Hobbitish'
           }
         ]
@@ -108,7 +108,7 @@ describe('transformVisitorEvents', () => {
           name: [
             {
               value: 'Hobbitish',
-              __typename: 'Translation'
+              __typename: 'LanguageName'
             }
           ]
         }
@@ -152,7 +152,7 @@ describe('transformVisitorEvents', () => {
           name: [
             {
               value: 'Hobbitish',
-              __typename: 'Translation'
+              __typename: 'LanguageName'
             }
           ]
         }

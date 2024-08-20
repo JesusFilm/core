@@ -1,9 +1,9 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
+import { Theme } from '@mui/material/styles'
 import TableCell from '@mui/material/TableCell'
 import TableRow from '@mui/material/TableRow'
 import Typography from '@mui/material/Typography'
-import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Trans, useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
@@ -17,10 +17,14 @@ import type { Goal } from '../../Goals'
 
 interface GoalsListItemProp {
   goal: Goal
+  variant?: 'minimal'
+  onClose?: () => void
 }
 
 export function GoalsListItem({
-  goal: { count, url, goalType }
+  goal: { count, url, goalType },
+  variant,
+  onClose
 }: GoalsListItemProp): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const {
@@ -48,6 +52,7 @@ export function GoalsListItem({
         activeSlide: ActiveSlide.Drawer
       })
     }
+    onClose?.()
   }
 
   return (
@@ -67,27 +72,33 @@ export function GoalsListItem({
             '&:hover': {
               backgroundColor: 'rgba(255, 255, 255, 0.6)'
             }
+          },
+          '&:first-child > .MuiTableCell-root': {
+            pt: variant === 'minimal' ? 0 : 4
           }
         }}
       >
-        <TableCell
-          width={0}
-          align="center"
-          sx={{
-            display: { xs: 'none', sm: 'table-cell' },
-            pr: 2,
-            pl: 5
-          }}
-        >
-          {icon}
-        </TableCell>
+        {variant !== 'minimal' ? (
+          <TableCell
+            width={0}
+            align="center"
+            sx={{
+              display: { xs: 'none', sm: 'table-cell' },
+              pr: 2,
+              pl: 5
+            }}
+          >
+            {icon}
+          </TableCell>
+        ) : null}
         <TableCell
           sx={{
             maxWidth: 0,
             width: '100%',
             whiteSpace: 'nowrap',
             overflow: 'hidden',
-            textOverflow: 'ellipsis'
+            textOverflow: 'ellipsis',
+            px: variant === 'minimal' ? 0 : 4
           }}
         >
           <Typography
@@ -110,44 +121,65 @@ export function GoalsListItem({
               color: selected ? 'primary.main' : 'secondary.light'
             }}
           >
-            <Box sx={{ display: { xs: 'block', sm: 'none' } }}>{icon}</Box>
+            <Box
+              sx={{
+                display: {
+                  xs: 'block',
+                  sm: variant !== 'minimal' ? 'none' : 'block'
+                }
+              }}
+            >
+              {icon}
+            </Box>
             <Typography variant="subtitle2" color="secondary.light">
               {label}
             </Typography>
           </Stack>
           <Typography variant="body2" color="secondary.light">
-            <Trans t={t} count={count}>
-              Appears on <strong>{count}</strong> card
-            </Trans>
+            <Trans
+              t={t}
+              count={count}
+              i18nKey="Appears on <0>{{count}}</0> card"
+              components={[<strong key={0} />]}
+            />
           </Typography>
         </TableCell>
-        <TableCell
-          align="center"
-          width={100}
-          sx={{
-            display: { xs: 'none', sm: 'table-cell' }
-          }}
-        >
-          <Trans t={t} count={count}>
-            <Typography variant="subtitle2">{count}</Typography>
-            <Typography variant="body2">card</Typography>
-          </Trans>
-        </TableCell>
-        <TableCell
-          width={40}
-          sx={{
-            display: { xs: 'none', sm: 'table-cell' },
-            pl: 0,
-            pr: 5
-          }}
-        >
-          <Edit2Icon
-            sx={{
-              transition: (theme) => theme.transitions.create('color'),
-              color: selected ? 'primary.main' : 'background.default'
-            }}
-          />
-        </TableCell>
+        {variant !== 'minimal' ? (
+          <>
+            <TableCell
+              align="center"
+              width={100}
+              sx={{
+                display: { xs: 'none', sm: 'table-cell' }
+              }}
+            >
+              <Trans
+                t={t}
+                count={count}
+                i18nKey="<0>{{count}}</0><1>card</1>"
+                components={[
+                  <Typography variant="subtitle2" key={0} />,
+                  <Typography variant="body2" key={1} />
+                ]}
+              />
+            </TableCell>
+            <TableCell
+              width={40}
+              sx={{
+                display: { xs: 'none', sm: 'table-cell' },
+                pl: 0,
+                pr: 5
+              }}
+            >
+              <Edit2Icon
+                sx={{
+                  transition: (theme) => theme.transitions.create('color'),
+                  color: selected ? 'primary.main' : 'background.default'
+                }}
+              />
+            </TableCell>
+          </>
+        ) : null}
       </TableRow>
     </>
   )

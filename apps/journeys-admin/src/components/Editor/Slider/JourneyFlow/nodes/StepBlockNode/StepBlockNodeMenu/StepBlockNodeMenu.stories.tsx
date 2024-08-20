@@ -5,9 +5,9 @@ import { screen, userEvent } from '@storybook/testing-library'
 import { ComponentProps } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../__generated__/BlockFields'
-import { simpleComponentConfig } from '../../../../../../../libs/storybook'
 import { ThemeProvider } from '../../../../../../ThemeProvider'
 
 import { StepBlockNodeMenu } from './StepBlockNodeMenu'

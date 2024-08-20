@@ -5,23 +5,23 @@ import Fade from '@mui/material/Fade'
 import Grid from '@mui/material/Grid'
 import Link from '@mui/material/Link'
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { styled } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import { GetStaticProps } from 'next'
+import Image from 'next/image'
+import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { NextSeo } from 'next-seo'
-import Image from 'next/image'
-import NextLink from 'next/link'
 import { ReactElement } from 'react'
 
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 import {
-  GetJourneys,
-  GetJourneysVariables,
-  GetJourneys_journeys as Journey
-} from '../../__generated__/GetJourneys'
+  GetJourneysSummary,
+  GetJourneysSummaryVariables,
+  GetJourneysSummary_journeys as Journey
+} from '../../__generated__/GetJourneysSummary'
 import { ThemeMode, ThemeName } from '../../__generated__/globalTypes'
 import i18nConfig from '../../next-i18next.config'
 import logo from '../../public/logo.svg'
@@ -143,7 +143,7 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
 }
 
 export const GET_JOURNEYS = gql`
-  query GetJourneys($featured: Boolean, $options: JourneysQueryOptions) {
+  query GetJourneysSummary($featured: Boolean, $options: JourneysQueryOptions) {
     journeys(
       where: { featured: $featured, template: false }
       options: $options
@@ -159,7 +159,10 @@ export const getStaticProps: GetStaticProps<JourneysPageProps> = async (
   context
 ) => {
   const apolloClient = createApolloClient()
-  const { data } = await apolloClient.query<GetJourneys, GetJourneysVariables>({
+  const { data } = await apolloClient.query<
+    GetJourneysSummary,
+    GetJourneysSummaryVariables
+  >({
     query: GET_JOURNEYS,
     variables: {
       featured: true

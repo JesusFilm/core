@@ -1,5 +1,7 @@
 import { ReactElement, ReactNode, useEffect, useMemo } from 'react'
 
+import { useTeam } from '@core/journeys/ui/TeamProvider'
+
 import {
   GetUserTeamsAndInvites,
   GetUserTeamsAndInvites_userTeams as UserTeam
@@ -7,7 +9,6 @@ import {
 import { UserTeamRole } from '../../../../../__generated__/globalTypes'
 import { useCurrentUserLazyQuery } from '../../../../libs/useCurrentUserLazyQuery'
 import { useUserTeamsAndInvitesLazyQuery } from '../../../../libs/useUserTeamsAndInvitesLazyQuery'
-import { useTeam } from '../../TeamProvider'
 import { UserTeamInviteForm } from '../../UserTeamInviteForm'
 import { UserTeamInviteList } from '../UserTeamInviteList'
 import { UserTeamList } from '../UserTeamList'

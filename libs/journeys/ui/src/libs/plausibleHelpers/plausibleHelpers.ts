@@ -15,10 +15,16 @@ import {
   VideoProgressEventCreateInput,
   VideoStartEventCreateInput
 } from '../../../__generated__/globalTypes'
-import { ActionFields as Action } from '../action/__generated__/ActionFields'
+import {
+  BlockFields_ButtonBlock_action,
+  BlockFields_FormBlock_action,
+  BlockFields_RadioOptionBlock_action,
+  BlockFields_SignUpBlock_action,
+  BlockFields_VideoBlock_action
+} from '../block/__generated__/BlockFields'
 
 interface Props {
-  // biome-ignore lint/suspicious/noExplicitAny: any is needed for plausible events
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [K: string]: any
   blockId: string
   /**
@@ -109,4 +115,18 @@ export function reverseKeyify(key: string): {
   target?: string
 } {
   return JSON.parse(key)
+}
+
+type Action =
+  | BlockFields_ButtonBlock_action
+  | BlockFields_RadioOptionBlock_action
+  | BlockFields_SignUpBlock_action
+  | BlockFields_FormBlock_action
+  | BlockFields_VideoBlock_action
+
+export function getTargetEventKey(action?: Action | null): string {
+  if (action == null) return ''
+
+  const target = generateActionTargetKey(action)
+  return `${action.parentBlockId}->${target}`
 }

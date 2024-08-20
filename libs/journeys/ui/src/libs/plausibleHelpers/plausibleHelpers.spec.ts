@@ -1,5 +1,9 @@
-import { generateActionTargetKey, keyify, reverseKeyify } from '.'
 import { ActionFields as Action } from '../action/__generated__/ActionFields'
+import { BlockFields_ButtonBlock_action as ButtonBlockAction } from '../block/__generated__/BlockFields'
+
+import { getTargetEventKey } from './plausibleHelpers'
+
+import { generateActionTargetKey, keyify, reverseKeyify } from '.'
 
 describe('PlausibleHelpers', () => {
   describe('generateActionTargetKey', () => {
@@ -81,6 +85,28 @@ describe('PlausibleHelpers', () => {
         blockId: 'blockId',
         target: 'target'
       })
+    })
+  })
+
+  describe('getTargetEventKey', () => {
+    it('should return target for link action', () => {
+      const action = {
+        __typename: 'LinkAction',
+        parentBlockId: 'block1.id',
+        url: 'https://youtube.com'
+      } as unknown as ButtonBlockAction
+
+      expect(getTargetEventKey(action)).toBe(
+        'block1.id->link:https://youtube.com'
+      )
+    })
+
+    it('should return empty string for null or undefined actions', () => {
+      const nullAction = null
+      const undefinedAction = undefined
+
+      expect(getTargetEventKey(nullAction)).toBe('')
+      expect(getTargetEventKey(undefinedAction)).toBe('')
     })
   })
 })

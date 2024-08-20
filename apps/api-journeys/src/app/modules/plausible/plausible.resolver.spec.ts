@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { GraphQLResolveInfo, Kind } from 'graphql'
 import { DeepMockProxy } from 'jest-mock-extended'
 
-import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 import {
   Journey,
   JourneyStatus,
@@ -9,6 +9,7 @@ import {
   ThemeName,
   UserTeamRole
 } from '.prisma/api-journeys-client'
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 
 import {
   IdType,
@@ -170,7 +171,7 @@ describe('PlausibleResolver', () => {
   })
 
   describe('journeysPlausibleStatsAggregate', () => {
-    it('should return aggregate stats', async () => {
+    it('should return aggregate stats for field', async () => {
       prismaService.journey.findUnique.mockResolvedValue(journeyWithUserTeam)
       const mockAggregateValue: PlausibleStatsAggregateValue = {
         __typename: 'PlausibleStatsAggregateValue',
@@ -195,13 +196,140 @@ describe('PlausibleResolver', () => {
             selectionSet: {
               selections: [
                 {
-                  name: { value: '' }
+                  kind: Kind.FIELD,
+                  name: { value: 'events' }
+                },
+                {
+                  kind: Kind.FIELD,
+                  name: { value: 'property' }
+                },
+                {
+                  kind: Kind.FIELD,
+                  name: { value: '__typename' }
                 }
               ]
             }
           }
         ]
+      } as unknown as GraphQLResolveInfo
+      const where: PlausibleStatsAggregateFilter = {}
+
+      const actual = await resolver.journeysPlausibleStatsAggregate(
+        ability,
+        'id',
+        IdType.slug,
+        info,
+        where
+      )
+
+      expect(plausibleService.getStatsAggregate).toHaveBeenCalledWith(
+        journey.id,
+        'journey',
+        {
+          metrics: 'events'
+        }
+      )
+      expect(actual).toEqual(result)
+    })
+
+    it('should return aggregate stats for fragment spread', async () => {
+      prismaService.journey.findUnique.mockResolvedValue(journeyWithUserTeam)
+      const mockAggregateValue: PlausibleStatsAggregateValue = {
+        __typename: 'PlausibleStatsAggregateValue',
+        value: 5
       }
+      const result: PlausibleStatsAggregateResponse = {
+        __typename: 'PlausibleStatsAggregateResponse',
+        visitors: mockAggregateValue,
+        visits: mockAggregateValue,
+        pageviews: mockAggregateValue,
+        viewsPerVisit: mockAggregateValue,
+        bounceRate: mockAggregateValue,
+        visitDuration: mockAggregateValue,
+        events: mockAggregateValue,
+        conversionRate: mockAggregateValue,
+        timeOnPage: mockAggregateValue
+      }
+      plausibleService.getStatsAggregate.mockResolvedValue(result)
+      const info = {
+        fieldNodes: [
+          {
+            selectionSet: {
+              selections: [
+                {
+                  kind: Kind.FRAGMENT_SPREAD,
+                  name: { value: 'fragmentSpread' }
+                }
+              ]
+            }
+          }
+        ],
+        fragments: {
+          fragmentSpread: {
+            selectionSet: {
+              selections: [
+                {
+                  kind: Kind.FIELD,
+                  name: { value: 'visits' }
+                }
+              ]
+            }
+          }
+        }
+      } as unknown as GraphQLResolveInfo
+      const where: PlausibleStatsAggregateFilter = {}
+
+      const actual = await resolver.journeysPlausibleStatsAggregate(
+        ability,
+        'id',
+        IdType.slug,
+        info,
+        where
+      )
+
+      expect(plausibleService.getStatsAggregate).toHaveBeenCalledWith(
+        journey.id,
+        'journey',
+        {
+          metrics: 'visits'
+        }
+      )
+      expect(actual).toEqual(result)
+    })
+
+    it('should return aggregate stats for inline fragment', async () => {
+      prismaService.journey.findUnique.mockResolvedValue(journeyWithUserTeam)
+      const mockAggregateValue: PlausibleStatsAggregateValue = {
+        __typename: 'PlausibleStatsAggregateValue',
+        value: 5
+      }
+      const result: PlausibleStatsAggregateResponse = {
+        __typename: 'PlausibleStatsAggregateResponse',
+        visitors: mockAggregateValue,
+        visits: mockAggregateValue,
+        pageviews: mockAggregateValue,
+        viewsPerVisit: mockAggregateValue,
+        bounceRate: mockAggregateValue,
+        visitDuration: mockAggregateValue,
+        events: mockAggregateValue,
+        conversionRate: mockAggregateValue,
+        timeOnPage: mockAggregateValue
+      }
+      plausibleService.getStatsAggregate.mockResolvedValue(result)
+      const info = {
+        fieldNodes: [
+          {
+            selectionSet: {
+              selections: [
+                {
+                  kind: Kind.INLINE_FRAGMENT,
+                  name: { value: 'inlineFragment' }
+                }
+              ]
+            }
+          }
+        ]
+      } as unknown as GraphQLResolveInfo
       const where: PlausibleStatsAggregateFilter = {}
 
       const actual = await resolver.journeysPlausibleStatsAggregate(
@@ -248,13 +376,14 @@ describe('PlausibleResolver', () => {
             selectionSet: {
               selections: [
                 {
+                  kind: Kind.FIELD,
                   name: { value: 'events' }
                 }
               ]
             }
           }
         ]
-      }
+      } as unknown as GraphQLResolveInfo
       const where: PlausibleStatsBreakdownFilter = {
         property: 'property'
       }
@@ -304,13 +433,14 @@ describe('PlausibleResolver', () => {
             selectionSet: {
               selections: [
                 {
-                  name: { value: '' }
+                  kind: Kind.FIELD,
+                  name: { value: 'property' }
                 }
               ]
             }
           }
         ]
-      }
+      } as unknown as GraphQLResolveInfo
       const where: PlausibleStatsTimeseriesFilter = {}
 
       const actual = await resolver.journeysPlausibleStatsTimeseries(

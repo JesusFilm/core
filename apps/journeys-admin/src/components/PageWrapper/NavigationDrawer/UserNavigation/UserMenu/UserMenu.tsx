@@ -7,19 +7,19 @@ import Menu from '@mui/material/Menu'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import compact from 'lodash/compact'
+import { useRouter } from 'next/router'
 import { User } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
-import { useRouter } from 'next/router'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
+import { useTeam } from '@core/journeys/ui/TeamProvider'
 import Logout2Icon from '@core/shared/ui/icons/Logout2'
 import Mail1 from '@core/shared/ui/icons/Mail1'
 
 import { GetMe_me as ApiUser } from '../../../../../../__generated__/GetMe'
 import { LanguageSwitcher } from '../../../../LanguageSwitcher'
 import { MenuItem } from '../../../../MenuItem'
-import { useTeam } from '../../../../Team/TeamProvider'
 
 export interface UserMenuProps {
   apiUser: ApiUser

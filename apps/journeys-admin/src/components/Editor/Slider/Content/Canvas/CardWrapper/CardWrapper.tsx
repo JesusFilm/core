@@ -2,10 +2,9 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Trans, useTranslation } from 'next-i18next'
-import { MouseEvent, ReactElement } from 'react'
+import type { MouseEvent, ReactElement } from 'react'
 
 import type { WrapperProps } from '@core/journeys/ui/BlockRenderer'
 import { Card } from '@core/journeys/ui/Card'
@@ -13,7 +12,8 @@ import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 export function CardWrapper({ block, children }: WrapperProps): ReactElement {
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
+  // overriding base theme to match default mui breakpoint
+  const lgUp = useMediaQuery('@media (min-width: 900px)')
   const { t } = useTranslation('apps-journeys-admin')
   const {
     state: { selectedStep },
@@ -67,7 +67,7 @@ export function CardWrapper({ block, children }: WrapperProps): ReactElement {
             {...{ ...block, children: blocks }}
             wrappers={children.props.wrappers}
           />
-          {blocks.length === 0 && !smUp && (
+          {blocks.length === 0 && !lgUp && (
             <Stack
               sx={{
                 position: 'absolute',

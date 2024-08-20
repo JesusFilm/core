@@ -1,15 +1,12 @@
 variable "ecs_config" {
   type = object({
-    vpc_id       = string
-    is_public    = bool
-    subnets      = list(string)
-    alb_dns_name = string
-    zone_id      = string
-    alb_listener = object({
-      alb_arn         = string
-      port            = number
-      protocol        = string
-      certificate_arn = string
+    vpc_id    = string
+    is_public = bool
+    subnets   = list(string)
+    zone_id   = string
+    alb = object({
+      arn      = string
+      dns_name = string
     })
     alb_target_group = object({
       port              = number
@@ -34,5 +31,13 @@ variable "env" {
 }
 
 variable "doppler_token" {
+  type = string
+}
+
+variable "alb_listener_arn" {
+  type = string
+}
+
+variable "alb_dns_name" {
   type = string
 }

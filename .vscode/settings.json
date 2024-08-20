@@ -1,14 +1,14 @@
 {
   "files.eol": "\n",
-  "editor.defaultFormatter": "biomejs.biome",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
   "[javascript]": {
-    "editor.defaultFormatter": "biomejs.biome"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[typescript]": {
-    "editor.defaultFormatter": "biomejs.biome"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[graphql]": {
-    "editor.defaultFormatter": "biomejs.biome"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[terraform]": {
     "editor.defaultFormatter": "hashicorp.terraform",
@@ -82,9 +82,9 @@
     }
   ],
   "editor.codeActionsOnSave": {
-    "quickfix.biome": "explicit",
-    "source.organizeImports.biome": "explicit"
+    "source.fixAll.eslint": "always"
   },
+  "eslint.validate": ["javascript", "typescript"],
   "yaml.schemas": {
     "./apps/api-gateway/routerSchema.json": [
       "apps/api-gateway/router.yaml",
@@ -93,6 +93,7 @@
   },
   "typescript.preferences.importModuleSpecifier": "project-relative",
   "javascript.preferences.importModuleSpecifier": "project-relative",
+  "prettier.prettierPath": "./node_modules/prettier",
   "remote.localPortHost": "allInterfaces",
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,

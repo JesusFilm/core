@@ -27,12 +27,26 @@ export function Item({
   switch (variant) {
     case 'icon-button':
       return (
-        <Tooltip title={label} arrow>
+        <Tooltip
+          title={label}
+          arrow
+          PopperProps={{
+            modifiers: [
+              {
+                name: 'offset',
+                options: {
+                  offset: [0, 0.5]
+                }
+              }
+            ]
+          }}
+        >
           <IconButton
             component={href != null ? 'a' : 'button'}
             target={href != null ? '_blank' : undefined}
             href={href}
             onClick={onClick}
+            {...ButtonProps}
           >
             {icon}
           </IconButton>

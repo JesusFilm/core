@@ -2,9 +2,9 @@ import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps, ReactElement, useState } from 'react'
 
 import { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { GetVideo_video_variantLanguages as Language } from '../../../../../../../../__generated__/GetVideo'
-import { simpleComponentConfig } from '../../../../../../../libs/storybook'
 
 import { VideoLanguage } from '.'
 
@@ -26,7 +26,7 @@ const languages: Language[] = [
       {
         value: 'English',
         primary: true,
-        __typename: 'Translation'
+        __typename: 'LanguageName'
       }
     ]
   },
@@ -37,12 +37,12 @@ const languages: Language[] = [
       {
         value: 'Français',
         primary: true,
-        __typename: 'Translation'
+        __typename: 'LanguageName'
       },
       {
         value: 'French',
         primary: false,
-        __typename: 'Translation'
+        __typename: 'LanguageName'
       }
     ]
   },
@@ -53,12 +53,12 @@ const languages: Language[] = [
       {
         value: 'Deutsch',
         primary: true,
-        __typename: 'Translation'
+        __typename: 'LanguageName'
       },
       {
         value: 'German, Standard',
         primary: false,
-        __typename: 'Translation'
+        __typename: 'LanguageName'
       }
     ]
   }

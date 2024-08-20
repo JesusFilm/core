@@ -25,17 +25,20 @@ enum ThemeName {
 
 interface Action {
   parentBlockId: ID!
+  parentBlock: Block!
   gtmEventName: String
 }
 
 type NavigateToBlockAction implements Action {
   parentBlockId: ID!
+  parentBlock: Block!
   gtmEventName: String
   blockId: String!
 }
 
 type LinkAction implements Action {
   parentBlockId: ID!
+  parentBlock: Block!
   gtmEventName: String
   url: String!
   target: String
@@ -43,6 +46,7 @@ type LinkAction implements Action {
 
 type EmailAction implements Action {
   parentBlockId: ID!
+  parentBlock: Block!
   gtmEventName: String
   email: String!
 }
@@ -63,11 +67,43 @@ input EmailActionInput {
   email: String!
 }
 
+input BlockUpdateActionInput {
+  gtmEventName: String
+  email: String
+  url: String
+  target: String
+  blockId: String
+}
+
 type Mutation {
-  blockDeleteAction(id: ID!, journeyId: ID!): Block!
-  blockUpdateNavigateToBlockAction(id: ID!, journeyId: ID!, input: NavigateToBlockActionInput!): NavigateToBlockAction!
-  blockUpdateLinkAction(id: ID!, journeyId: ID!, input: LinkActionInput!): LinkAction!
-  blockUpdateEmailAction(id: ID!, journeyId: ID!, input: EmailActionInput!): EmailAction!
+  blockDeleteAction(
+    id: ID!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): Block!
+  blockUpdateNavigateToBlockAction(
+    id: ID!
+    input: NavigateToBlockActionInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): NavigateToBlockAction!
+  blockUpdateLinkAction(
+    id: ID!
+    input: LinkActionInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): LinkAction!
+  blockUpdateEmailAction(
+    id: ID!
+    input: EmailActionInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): EmailAction!
+  blockUpdateAction(id: ID!, input: BlockUpdateActionInput): Action!
 
   """blockDelete returns the updated sibling blocks on successful delete"""
   blockDelete(
@@ -91,6 +127,11 @@ type Mutation {
     """
     parentOrder: Int
 
+    """
+    idMap is used to set custom ids for the duplicated block and it's descendants.
+    """
+    idMap: [BlockDuplicateIdMap!]
+
     """drop this parameter after merging teams"""
     journeyId: ID
 
@@ -113,6 +154,9 @@ type Mutation {
     """drop this parameter after merging teams"""
     journeyId: ID
   ): [Block!]!
+
+  """blockRestore is used for redo/undo"""
+  blockRestore(id: ID!): [Block!]!
   buttonBlockCreate(input: ButtonBlockCreateInput!): ButtonBlock!
   buttonBlockUpdate(
     id: ID!
@@ -179,6 +223,7 @@ type Mutation {
     """drop this parameter after merging teams"""
     journeyId: ID
   ): StepBlock!
+  stepBlockPositionUpdate(input: [StepBlockPositionUpdateInput!]!): [StepBlock!]!
   textResponseBlockCreate(input: TextResponseBlockCreateInput!): TextResponseBlock!
   textResponseBlockUpdate(
     id: ID!
@@ -229,6 +274,9 @@ type Mutation {
   hostCreate(teamId: ID!, input: HostCreateInput!): Host!
   hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host!
   hostDelete(id: ID!, teamId: ID!): Host!
+  integrationGrowthSpacesCreate(input: IntegrationGrowthSpacesCreateInput!): IntegrationGrowthSpaces!
+  integrationGrowthSpacesUpdate(id: ID!, input: IntegrationGrowthSpacesUpdateInput!): IntegrationGrowthSpaces!
+  integrationDelete(id: ID!): Integration!
   journeyCreate(input: JourneyCreateInput!, teamId: ID!): Journey!
   journeyDuplicate(id: ID!, teamId: ID!): Journey!
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
@@ -342,6 +390,11 @@ input BlocksFilter {
   typenames: [String!]
 }
 
+input BlockDuplicateIdMap {
+  oldId: ID!
+  newId: ID!
+}
+
 type Query {
   _entities(representations: [_Any!]!): [_Entity]!
   _service: _Service!
@@ -353,6 +406,7 @@ extend type Query {
   customDomain(id: ID!): CustomDomain!
   customDomains(teamId: ID!): [CustomDomain!]!
   hosts(teamId: ID!): [Host!]!
+  integrations(teamId: ID!): [Integration!]!
 
   """
   returns all journeys that match the provided filters
@@ -547,6 +601,7 @@ input CardBlockCreateInput {
 
 input CardBlockUpdateInput {
   parentBlockId: ID
+  coverBlockId: ID
   backgroundColor: String
   fullscreen: Boolean
   themeMode: ThemeMode
@@ -655,6 +710,8 @@ enum IconName {
   SendRounded
   SubscriptionsRounded
   ContactSupportRounded
+  Launch
+  MailOutline
 }
 
 enum IconColor {
@@ -879,6 +936,12 @@ input StepBlockUpdateInput {
   y: Int
 }
 
+input StepBlockPositionUpdateInput {
+  id: ID!
+  x: Int
+  y: Int
+}
+
 type TextResponseBlock implements Block {
   id: ID!
   journeyId: ID!
@@ -887,6 +950,15 @@ type TextResponseBlock implements Block {
   label: String!
   hint: String
   minRows: Int
+  type: TextResponseType
+  routeId: String
+  integrationId: String
+}
+
+enum TextResponseType {
+  freeForm
+  name
+  email
 }
 
 input TextResponseBlockCreateInput {
@@ -901,6 +973,9 @@ input TextResponseBlockUpdateInput {
   label: String
   hint: String
   minRows: Int
+  routeId: String
+  type: TextResponseType
+  integrationId: String
 }
 
 enum TypographyVariant {
@@ -1336,6 +1411,28 @@ enum MessagePlatform {
   line
   tikTok
   custom
+  globe2
+  globe3
+  messageText1
+  messageText2
+  send1
+  send2
+  messageChat2
+  messageCircle
+  messageNotifyCircle
+  messageNotifySquare
+  messageSquare
+  mail1
+  linkExternal
+  home3
+  home4
+  helpCircleContained
+  helpSquareContained
+  shieldCheck
+  menu1
+  checkBroken
+  checkContained
+  settings
 }
 
 input ChatOpenEventCreateInput {
@@ -1957,6 +2054,41 @@ input HostCreateInput {
   src2: String
 }
 
+type IntegrationGrowthSpaces implements Integration {
+  id: ID!
+  team: Team!
+  type: IntegrationType!
+  accessId: String!
+  accessSecretPart: String!
+  routes: [IntegrationGrowthSpacesRoute!]!
+}
+
+input IntegrationGrowthSpacesCreateInput {
+  accessId: String!
+  accessSecret: String!
+  teamId: String!
+}
+
+input IntegrationGrowthSpacesUpdateInput {
+  accessId: String!
+  accessSecret: String!
+}
+
+type IntegrationGrowthSpacesRoute {
+  id: String!
+  name: String!
+}
+
+enum IntegrationType {
+  growthSpaces
+}
+
+interface Integration {
+  id: ID!
+  team: Team!
+  type: IntegrationType!
+}
+
 extend type Tag
   @key(fields: "id")
 {
@@ -2476,6 +2608,7 @@ type Team
   updatedAt: DateTime!
   userTeams: [UserTeam!]!
   customDomains: [CustomDomain!]!
+  integrations: [Integration!]!
 }
 
 input TeamCreateInput {

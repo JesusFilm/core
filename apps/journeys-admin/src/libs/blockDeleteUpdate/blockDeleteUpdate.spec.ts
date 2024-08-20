@@ -86,7 +86,7 @@ const journey: Journey = {
     iso3: 'eng',
     name: [
       {
-        __typename: 'Translation',
+        __typename: 'LanguageName',
         value: 'English',
         primary: true
       }
@@ -150,7 +150,7 @@ describe('blockDeleteUpdate', () => {
     }
 
     const step2 = {
-      __typename: 'StepBlock',
+      __typename: 'StepBlock' as const,
       id: 'step2.id',
       locked: false,
       nextBlockId: null,

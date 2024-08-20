@@ -1,12 +1,13 @@
 import { AbilityBuilder, PureAbility } from '@casl/ability'
 import { Injectable } from '@nestjs/common'
 
-import { CaslFactory } from '@core/nest/common/CaslAuthModule'
 import { Role } from '.prisma/api-journeys-client'
+import { CaslFactory } from '@core/nest/common/CaslAuthModule'
 
 import { blockAcl } from '../../../modules/block/block.acl'
 import { customDomainAcl } from '../../../modules/customDomain/customDomain.acl'
 import { hostAcl } from '../../../modules/host/host.acl'
+import { integrationAcl } from '../../../modules/integration/integration.acl'
 import { journeyAcl } from '../../../modules/journey/journey.acl'
 import { JourneyCollectionAcl } from '../../../modules/journeyCollection/journeyCollection.acl'
 import { journeyNotificationAcl } from '../../../modules/journeyNotification/journeyNotification.acl'
@@ -54,6 +55,7 @@ export class AppCaslFactory extends CaslFactory<Role> {
       blockAcl,
       customDomainAcl,
       hostAcl,
+      integrationAcl,
       journeyAcl,
       JourneyCollectionAcl,
       journeyNotificationAcl,

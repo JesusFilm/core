@@ -2,12 +2,13 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { Theme } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect } from 'react'
 
+import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { Dialog } from '@core/shared/ui/Dialog/Dialog'
 import ComputerIcon from '@core/shared/ui/icons/Computer'
 import Globe2Icon from '@core/shared/ui/icons/Globe2'
@@ -16,11 +17,10 @@ import Lightning2Icon from '@core/shared/ui/icons/Lightning2'
 import LinkExternalIcon from '@core/shared/ui/icons/LinkExternal'
 
 import { useCustomDomainsQuery } from '../../../libs/useCustomDomainsQuery'
-import { useTeam } from '../TeamProvider'
 
 import { CustomDomainDialogTitle } from './CustomDomainDialogTitle'
-import { DNSConfigSection } from './DNSConfigSection'
 import { DefaultJourneyForm } from './DefaultJourneyForm'
+import { DNSConfigSection } from './DNSConfigSection'
 import { DomainNameForm } from './DomainNameForm'
 
 interface CustomDomainDialogProps {

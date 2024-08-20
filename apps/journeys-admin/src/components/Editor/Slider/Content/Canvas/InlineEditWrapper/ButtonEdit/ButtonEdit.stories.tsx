@@ -1,9 +1,10 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 
-import { ActiveFab, EditorProvider } from '@core/journeys/ui/EditorProvider'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../__generated__/BlockFields'
 import { ButtonFields } from '../../../../../../../../__generated__/ButtonFields'
@@ -15,7 +16,6 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../../__generated__/globalTypes'
-import { simpleComponentConfig } from '../../../../../../../libs/storybook'
 import { Canvas } from '../../Canvas'
 
 const ButtonEditStory: Meta<typeof Canvas> = {
@@ -149,7 +149,7 @@ const Template: StoryObj<typeof Canvas> = {
                 iso3: 'eng',
                 name: [
                   {
-                    __typename: 'Translation',
+                    __typename: 'LanguageName',
                     value: 'English',
                     primary: true
                   }
@@ -162,8 +162,7 @@ const Template: StoryObj<typeof Canvas> = {
           <EditorProvider
             initialState={{
               ...args,
-              steps,
-              activeFab: ActiveFab.Save
+              steps
             }}
           >
             <Canvas />

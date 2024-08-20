@@ -56,6 +56,7 @@ import CopyLeft from './CopyLeft'
 import CopyRight from './CopyRight'
 import CopyTo from './CopyTo'
 import Crop1 from './Crop1'
+import Cursor4 from './Cursor4'
 import Cursor6 from './Cursor6'
 import CursorPointer from './CursorPointer'
 import Dash from './Dash'
@@ -82,6 +83,8 @@ import FileShred from './FileShred'
 import Filter from './Filter'
 import Flame from './Flame'
 import FlexAlignBottom1 from './FlexAlignBottom1'
+import FlipLeft from './FlipLeft'
+import FlipRight from './FlipRight'
 import FolderDown1 from './FolderDown1'
 import FolderUp1 from './FolderUp1'
 import Globe from './Globe'
@@ -94,6 +97,7 @@ import Hash1 from './Hash1'
 import Hash2 from './Hash2'
 import HelpCircleContained from './HelpCircleContained'
 import HelpSquareContained from './HelpSquareContained'
+import Home3 from './Home3'
 import Home4 from './Home4'
 import Image3 from './Image3'
 import ImageX from './ImageX'
@@ -128,13 +132,19 @@ import Maximise2 from './Maximise2'
 import MediaStrip1 from './MediaStrip1'
 import Menu1 from './Menu1'
 import MessageChat1 from './MessageChat1'
+import MessageChat2 from './MessageChat2'
 import MessageCircle from './MessageCircle'
+import MessageNotifyCircle from './MessageNotifyCircle'
+import MessageNotifySquare from './MessageNotifySquare'
+import MessageSquare from './MessageSquare'
 import MessageText1 from './MessageText1'
+import MessageText2 from './MessageText2'
 import MessageTyping from './MessageTyping'
 import Minimise1 from './Minimise1'
 import Minimise2 from './Minimise2'
 import MinusCircleContained from './MinusCircleContained'
 import More from './More'
+import PackagePlus from './PackagePlus'
 import Palette from './Palette'
 import Passport from './Passport'
 import Pause1 from './Pause1'
@@ -150,6 +160,7 @@ import Presentation1 from './Presentation1'
 import Search1 from './Search1'
 import Search2 from './Search2'
 import Send1 from './Send1'
+import Send2 from './Send2'
 import Settings from './Settings'
 import Share from './Share'
 import ShieldCheck from './ShieldCheck'
@@ -174,6 +185,7 @@ import ThumbsUp from './ThumbsUp'
 import Tiktok from './Tiktok'
 import Transform from './Transform'
 import Trash2 from './Trash2'
+import TrendDown1 from './TrendDown1'
 import TwitterLogo from './TwitterLogo'
 import Type2 from './Type2'
 import Type3 from './Type3'
@@ -253,6 +265,7 @@ export type IconName =
   | 'CopyRight'
   | 'CopyTo'
   | 'Crop1'
+  | 'Cursor4'
   | 'Cursor6'
   | 'CursorPointer'
   | 'Dash'
@@ -279,6 +292,8 @@ export type IconName =
   | 'Filter'
   | 'Flame'
   | 'FlexAlignBottom1'
+  | 'FlipLeft'
+  | 'FlipRight'
   | 'FolderDown1'
   | 'FolderUp1'
   | 'Globe'
@@ -291,6 +306,7 @@ export type IconName =
   | 'Hash2'
   | 'HelpCircleContained'
   | 'HelpSquareContained'
+  | 'Home3'
   | 'Home4'
   | 'Image3'
   | 'ImageX'
@@ -325,13 +341,19 @@ export type IconName =
   | 'MediaStrip1'
   | 'Menu1'
   | 'MessageChat1'
+  | 'MessageChat2'
   | 'MessageCircle'
+  | 'MessageNotifyCircle'
+  | 'MessageNotifySquare'
+  | 'MessageSquare'
   | 'MessageText1'
+  | 'MessageText2'
   | 'MessageTyping'
   | 'Minimise1'
   | 'Minimise2'
   | 'MinusCircleContained'
   | 'More'
+  | 'PackagePlus'
   | 'Palette'
   | 'Passport'
   | 'Pause1'
@@ -347,6 +369,7 @@ export type IconName =
   | 'Search1'
   | 'Search2'
   | 'Send1'
+  | 'Send2'
   | 'Settings'
   | 'Share'
   | 'ShieldCheck'
@@ -371,6 +394,7 @@ export type IconName =
   | 'ThumbsUp'
   | 'Tiktok'
   | 'Transform'
+  | 'TrendDown1'
   | 'TwitterLogo'
   | 'Type2'
   | 'Type3'
@@ -454,6 +478,7 @@ const iconComponents: IconComponents = {
   CopyRight,
   CopyTo,
   Crop1,
+  Cursor4,
   Cursor6,
   CursorPointer,
   Dash,
@@ -480,6 +505,8 @@ const iconComponents: IconComponents = {
   Filter,
   Flame,
   FlexAlignBottom1,
+  FlipLeft,
+  FlipRight,
   FolderDown1,
   FolderUp1,
   Globe,
@@ -492,6 +519,7 @@ const iconComponents: IconComponents = {
   Hash2,
   HelpCircleContained,
   HelpSquareContained,
+  Home3,
   Home4,
   Image3,
   ImageX,
@@ -525,14 +553,20 @@ const iconComponents: IconComponents = {
   Maximise2,
   Menu1,
   MessageChat1,
+  MessageChat2,
   MessageCircle,
+  MessageNotifyCircle,
+  MessageNotifySquare,
+  MessageSquare,
   MessageText1,
+  MessageText2,
   MessageTyping,
   Minimise1,
   Minimise2,
   MediaStrip1,
   MinusCircleContained,
   More,
+  PackagePlus,
   Palette,
   Passport,
   Pause1,
@@ -548,6 +582,7 @@ const iconComponents: IconComponents = {
   Search1,
   Search2,
   Send1,
+  Send2,
   Settings,
   Share,
   ShieldCheck,
@@ -572,6 +607,7 @@ const iconComponents: IconComponents = {
   ThumbsUp,
   Tiktok,
   Transform,
+  TrendDown1,
   TwitterLogo,
   Type2,
   Type3,

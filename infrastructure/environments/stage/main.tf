@@ -42,18 +42,15 @@ locals {
     security_group_id       = module.stage.ecs.public_ecs_security_group_id
     task_execution_role_arn = data.aws_iam_role.ecs_task_execution_role.arn
     cluster                 = module.stage.ecs.ecs_cluster
-    alb_dns_name            = module.stage.public_alb.dns_name
     zone_id                 = module.route53_stage_central_jesusfilm_org.zone_id
+    alb = {
+      arn      = module.stage.public_alb.arn
+      dns_name = module.stage.public_alb.dns_name
+    }
     alb_target_group = merge(local.alb_target_group, {
       health_check_path = "/health"
       health_check_port = "8088"
     })
-    alb_listener = {
-      alb_arn         = module.stage.public_alb.arn
-      port            = 443
-      protocol        = "HTTPS"
-      certificate_arn = data.aws_acm_certificate.acm_central_jesusfilm_org.arn
-    }
   }
 
   internal_ecs_config = {
@@ -65,19 +62,22 @@ locals {
     cluster                 = module.stage.ecs.ecs_cluster
     alb_dns_name            = module.stage.internal_alb.dns_name
     zone_id                 = module.stage.route53_private_zone_id
-    alb_target_group        = local.alb_target_group
-    alb_listener = {
-      alb_arn  = module.stage.internal_alb.arn
-      protocol = "HTTP"
+    alb = {
+      arn      = module.stage.internal_alb.arn
+      dns_name = module.stage.internal_alb.dns_name
     }
+    alb_listener     = module.stage.internal_alb.alb_listener
+    alb_target_group = local.alb_target_group
   }
 }
 
 module "api-gateway-stage" {
-  source        = "../../../apps/api-gateway/infrastructure"
-  ecs_config    = local.public_ecs_config
-  env           = "stage"
-  doppler_token = data.aws_ssm_parameter.doppler_api_gateway_stage_token.value
+  source           = "../../../apps/api-gateway/infrastructure"
+  ecs_config       = local.public_ecs_config
+  env              = "stage"
+  doppler_token    = data.aws_ssm_parameter.doppler_api_gateway_stage_token.value
+  alb_listener_arn = module.stage.public_alb.alb_listener.arn
+  alb_dns_name     = module.stage.public_alb.dns_name
 }
 
 module "api-analytics" {
@@ -87,69 +87,88 @@ module "api-analytics" {
   doppler_token         = data.aws_ssm_parameter.doppler_api_analytics_stage_token.value
   subnet_group_name     = module.stage.vpc.db_subnet_group_name
   vpc_security_group_id = module.stage.private_rds_security_group_id
+  alb = {
+    arn      = module.stage.internal_alb.arn
+    dns_name = module.stage.internal_alb.dns_name
+  }
 }
 
 module "api-journeys" {
-  source                = "../../../apps/api-journeys/infrastructure"
-  ecs_config            = local.internal_ecs_config
-  env                   = "stage"
-  doppler_token         = data.aws_ssm_parameter.doppler_api_journeys_stage_token.value
-  subnet_group_name     = module.stage.vpc.db_subnet_group_name
-  vpc_security_group_id = module.stage.private_rds_security_group_id
+  source        = "../../../apps/api-journeys/infrastructure"
+  ecs_config    = local.internal_ecs_config
+  env           = "stage"
+  doppler_token = data.aws_ssm_parameter.doppler_api_journeys_stage_token.value
+  alb = {
+    arn      = module.stage.internal_alb.arn
+    dns_name = module.stage.internal_alb.dns_name
+  }
 }
 
 module "api-languages" {
-  source                = "../../../apps/api-languages/infrastructure"
-  ecs_config            = local.internal_ecs_config
-  env                   = "stage"
-  doppler_token         = data.aws_ssm_parameter.doppler_api_languages_stage_token.value
-  subnet_group_name     = module.stage.vpc.db_subnet_group_name
-  vpc_security_group_id = module.stage.private_rds_security_group_id
+  source        = "../../../apps/api-languages/infrastructure"
+  ecs_config    = local.internal_ecs_config
+  env           = "stage"
+  doppler_token = data.aws_ssm_parameter.doppler_api_languages_stage_token.value
+  alb = {
+    arn      = module.stage.internal_alb.arn
+    dns_name = module.stage.internal_alb.dns_name
+  }
 }
 
 module "api-tags" {
-  source                = "../../../apps/api-tags/infrastructure"
-  ecs_config            = local.internal_ecs_config
-  env                   = "stage"
-  doppler_token         = data.aws_ssm_parameter.doppler_api_tags_stage_token.value
-  subnet_group_name     = module.stage.vpc.db_subnet_group_name
-  vpc_security_group_id = module.stage.private_rds_security_group_id
+  source        = "../../../apps/api-tags/infrastructure"
+  ecs_config    = local.internal_ecs_config
+  env           = "stage"
+  doppler_token = data.aws_ssm_parameter.doppler_api_tags_stage_token.value
+  alb = {
+    arn      = module.stage.internal_alb.arn
+    dns_name = module.stage.internal_alb.dns_name
+  }
 }
 
 module "api-users" {
-  source                = "../../../apps/api-users/infrastructure"
-  ecs_config            = local.internal_ecs_config
-  env                   = "stage"
-  doppler_token         = data.aws_ssm_parameter.doppler_api_users_stage_token.value
-  subnet_group_name     = module.stage.vpc.db_subnet_group_name
-  vpc_security_group_id = module.stage.private_rds_security_group_id
+  source        = "../../../apps/api-users/infrastructure"
+  ecs_config    = local.internal_ecs_config
+  env           = "stage"
+  doppler_token = data.aws_ssm_parameter.doppler_api_users_stage_token.value
+  alb = {
+    arn      = module.stage.internal_alb.arn
+    dns_name = module.stage.internal_alb.dns_name
+  }
 }
 
 module "api-videos" {
-  source                = "../../../apps/api-videos/infrastructure"
-  ecs_config            = local.internal_ecs_config
-  env                   = "stage"
-  doppler_token         = data.aws_ssm_parameter.doppler_api_videos_stage_token.value
-  subnet_group_name     = module.stage.vpc.db_subnet_group_name
-  vpc_security_group_id = module.stage.private_rds_security_group_id
+  source        = "../../../apps/api-videos/infrastructure"
+  ecs_config    = local.internal_ecs_config
+  env           = "stage"
+  doppler_token = data.aws_ssm_parameter.doppler_api_videos_stage_token.value
+  alb = {
+    arn      = module.stage.internal_alb.arn
+    dns_name = module.stage.internal_alb.dns_name
+  }
 }
 
 module "api-media" {
-  source                = "../../../apps/api-media/infrastructure"
-  ecs_config            = local.internal_ecs_config
-  env                   = "stage"
-  doppler_token         = data.aws_ssm_parameter.doppler_api_media_stage_token.value
-  subnet_group_name     = module.stage.vpc.db_subnet_group_name
-  vpc_security_group_id = module.stage.private_rds_security_group_id
+  source        = "../../../apps/api-media/infrastructure"
+  ecs_config    = local.internal_ecs_config
+  env           = "stage"
+  doppler_token = data.aws_ssm_parameter.doppler_api_media_stage_token.value
+  alb = {
+    arn      = module.stage.internal_alb.arn
+    dns_name = module.stage.internal_alb.dns_name
+  }
 }
 
 module "api-nexus" {
-  source                = "../../../apps/api-nexus/infrastructure"
-  ecs_config            = local.internal_ecs_config
-  env                   = "stage"
-  doppler_token         = data.aws_ssm_parameter.doppler_api_nexus_stage_token.value
-  subnet_group_name     = module.stage.vpc.db_subnet_group_name
-  vpc_security_group_id = module.stage.private_rds_security_group_id
+  source        = "../../../apps/api-nexus/infrastructure"
+  ecs_config    = local.internal_ecs_config
+  env           = "stage"
+  doppler_token = data.aws_ssm_parameter.doppler_api_nexus_stage_token.value
+  alb = {
+    arn      = module.stage.internal_alb.arn
+    dns_name = module.stage.internal_alb.dns_name
+  }
+
 }
 
 module "bastion" {
@@ -179,39 +198,11 @@ module "datadog_aurora" {
   subnet_id          = module.stage.vpc.public_subnets[0]
   security_group_ids = [module.stage.private_rds_security_group_id]
   rds_instances = [{
-    host             = module.api-journeys.database.aws_rds_cluster.endpoint
-    port             = module.api-journeys.database.aws_rds_cluster.port
-    username         = module.api-journeys.database.aws_rds_cluster.master_username
-    password         = module.api-journeys.database.random_password.result
-    db_instance_name = module.api-journeys.database.aws_rds_cluster.id
-    },
-    {
-      host             = module.api-tags.database.aws_rds_cluster.endpoint
-      port             = module.api-tags.database.aws_rds_cluster.port
-      username         = module.api-tags.database.aws_rds_cluster.master_username
-      password         = module.api-tags.database.random_password.result
-      db_instance_name = module.api-tags.database.aws_rds_cluster.id
-    },
-    {
-      host             = module.api-users.database.aws_rds_cluster.endpoint
-      port             = module.api-users.database.aws_rds_cluster.port
-      username         = module.api-users.database.aws_rds_cluster.master_username
-      password         = module.api-users.database.random_password.result
-      db_instance_name = module.api-users.database.aws_rds_cluster.id
-    },
-    {
-      host             = module.api-media.database.aws_rds_cluster.endpoint
-      port             = module.api-media.database.aws_rds_cluster.port
-      username         = module.api-media.database.aws_rds_cluster.master_username
-      password         = module.api-media.database.random_password.result
-      db_instance_name = module.api-media.database.aws_rds_cluster.id
-    },
-    {
-      host             = module.api-languages.database.aws_rds_cluster.endpoint
-      port             = module.api-languages.database.aws_rds_cluster.port
-      username         = module.api-languages.database.aws_rds_cluster.master_username
-      password         = module.api-languages.database.random_password.result
-      db_instance_name = module.api-languages.database.aws_rds_cluster.id
+    host             = module.postgresql.aws_rds_cluster.endpoint
+    port             = module.postgresql.aws_rds_cluster.port
+    username         = module.postgresql.aws_rds_cluster.master_username
+    password         = module.postgresql.random_password.result
+    db_instance_name = module.postgresql.aws_rds_cluster.id
   }]
 }
 
@@ -232,13 +223,12 @@ module "journeys-admin" {
       health_check_path = "/api/health"
       health_check_port = "3000"
     })
-    alb_listener = merge(local.public_ecs_config.alb_listener, {
-      dns_name        = "admin-stage.nextstep.is"
-      certificate_arn = data.aws_acm_certificate.acm_nextstep_is.arn
-    })
   })
-  env           = "stage"
-  doppler_token = data.aws_ssm_parameter.doppler_journeys_admin_stage_token.value
+  env              = "stage"
+  doppler_token    = data.aws_ssm_parameter.doppler_journeys_admin_stage_token.value
+  alb_listener_arn = module.stage.public_alb.alb_listener.arn
+  alb_dns_name     = module.stage.public_alb.dns_name
+  host_name        = "admin-stage.nextstep.is"
 }
 
 module "postgresql" {

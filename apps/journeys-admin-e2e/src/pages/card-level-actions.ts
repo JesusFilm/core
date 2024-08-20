@@ -1,8 +1,14 @@
+/* eslint-disable playwright/no-force-option */
+/* eslint-disable playwright/no-conditional-expect */
+/* eslint-disable playwright/no-wait-for-timeout */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { expect } from '@playwright/test'
 import dayjs from 'dayjs'
 import { Page } from 'playwright-core'
 
 import testData from '../utils/testData.json'
+
+const sixtySecondsTimeout = 60000
 
 export class CardLevelActionPage {
   readonly page: Page
@@ -11,6 +17,7 @@ export class CardLevelActionPage {
   renameJourmeyName: string
   journeyCardFrame =
     'div[data-testid="EditorCanvas"] div[data-testid="CanvasContainer"] iframe'
+
   uploadedImgSrc
   seletedVideo
   pollRename: string
@@ -32,10 +39,24 @@ export class CardLevelActionPage {
       .click()
   }
 
+  async clickOnVideoJourneyCard() {
+    await this.page
+      .frameLocator(this.journeyCardFrame)
+      .first()
+      .locator(
+        'div[data-testid="CardOverlayImageContainer"] img[data-testid="background-image"]'
+      )
+      .first()
+      .click({ timeout: sixtySecondsTimeout, force: true })
+  }
+
   async clickAddBlockBtn() {
+    await expect(
+      this.page.locator('button[data-testid="Fab"]', { hasText: 'Add Block' })
+    ).toHaveCount(1, { timeout: sixtySecondsTimeout })
     await this.page
       .locator('button[data-testid="Fab"]', { hasText: 'Add Block' })
-      .click()
+      .click({ timeout: sixtySecondsTimeout })
   }
 
   async clickBtnInAddBlockDrawer(buttonName: string) {
@@ -137,10 +158,15 @@ export class CardLevelActionPage {
   }
 
   async clickDeleteBtnInToolTipBar() {
+    await expect(
+      this.page
+        .frameLocator(this.journeyCardFrame)
+        .locator('div[role="tooltip"] button[id="delete-block-actions"]')
+    ).toHaveCount(1, { timeout: sixtySecondsTimeout })
     await this.page
       .frameLocator(this.journeyCardFrame)
       .locator('div[role="tooltip"] button[id="delete-block-actions"]')
-      .click()
+      .click({ timeout: sixtySecondsTimeout, delay: 2000 })
   }
 
   async verifyAddedTextDeletedFromJourneyCard() {
@@ -151,13 +177,13 @@ export class CardLevelActionPage {
           'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"]',
           { hasText: this.renameJourmeyName }
         )
-    ).toBeHidden({ timeout: 10000 })
+    ).toBeHidden({ timeout: sixtySecondsTimeout })
   }
 
   async waitUntilJourneyCardLoaded() {
     await expect(
       this.page.locator('div[data-testid="StrategyItem"] button')
-    ).toBeVisible({ timeout: 30000 })
+    ).toBeVisible({ timeout: sixtySecondsTimeout })
   }
 
   async clickSelectImageBtn() {
@@ -185,7 +211,7 @@ export class CardLevelActionPage {
       this.page.locator(
         'div[data-testid="ImageBlockHeader"] div[data-testid="ImageBlockThumbnail"] span[role="progressbar"]'
       )
-    ).toBeHidden({ timeout: 30000 })
+    ).toBeHidden({ timeout: sixtySecondsTimeout })
   }
 
   async getImageSrc() {
@@ -211,7 +237,9 @@ export class CardLevelActionPage {
       this.page.locator(
         'div[data-testid="ImageSource"] + div div[data-testid="ImageBlockThumbnail"] img'
       )
-    ).not.toHaveAttribute('src', this.uploadedImgSrc, { timeout: 30000 })
+    ).not.toHaveAttribute('src', this.uploadedImgSrc as string, {
+      timeout: sixtySecondsTimeout
+    })
   }
 
   async verifyImgUploadedSuccessMsg() {
@@ -231,7 +259,7 @@ export class CardLevelActionPage {
       this.page.locator(
         'div[data-testid="ImageBlockHeader"] div[data-testid="ImageBlockThumbnail"] span[role="progressbar"]'
       )
-    ).toBeHidden({ timeout: 30000 })
+    ).toBeHidden({ timeout: sixtySecondsTimeout })
   }
 
   async clickImgDeleteBtn() {
@@ -247,7 +275,7 @@ export class CardLevelActionPage {
       this.page.locator(
         'div[data-testid="ImageSource"] + div div[data-testid="ImageBlockThumbnail"] img'
       )
-    ).toBeHidden({ timeout: 30000 })
+    ).toBeHidden({ timeout: sixtySecondsTimeout })
   }
 
   async clickSelectVideoBtn() {
@@ -270,12 +298,12 @@ export class CardLevelActionPage {
       this.page.locator(
         'div[data-testid="VideoFromCloudflare"] span[role="progressbar"]'
       )
-    ).toBeVisible({ timeout: 60000 })
+    ).toBeVisible({ timeout: sixtySecondsTimeout })
     await expect(
       this.page.locator(
         'div[data-testid="VideoFromCloudflare"] span[role="progressbar"]'
       )
-    ).toBeHidden({ timeout: 60000 })
+    ).toBeHidden({ timeout: sixtySecondsTimeout })
   }
 
   async verifyUploadVideoInJourney(uplodedType: string) {
@@ -287,7 +315,7 @@ export class CardLevelActionPage {
       this.page.locator(
         'div[data-testid="VideoBlockEditor"] div[data-testid="ImageBlockThumbnail"] img[alt]'
       )
-    ).toHaveAttribute('alt', videoName)
+    ).toHaveAttribute('alt', videoName as string)
   }
 
   async clickVideoEditPenIcon() {
@@ -306,7 +334,7 @@ export class CardLevelActionPage {
           { hasText: 'Video Details' }
         )
         .last()
-    ).toBeVisible({ timeout: 30000 })
+    ).toBeVisible({ timeout: sixtySecondsTimeout })
     await this.page
       .locator(
         'div[data-testid="SettingsDrawer"] + div[data-testid="SettingsDrawer"] div[class*="css-hhubed"] +button[aria-label="close-image-library"]'
@@ -346,7 +374,7 @@ export class CardLevelActionPage {
       this.page.locator(
         'div[data-testid="VideoBlockEditor"] svg[data-testid="Edit2Icon"]'
       )
-    ).toBeHidden({ timeout: 30000 })
+    ).toBeHidden({ timeout: sixtySecondsTimeout })
   }
 
   async clickleftSideArrawIcon() {
@@ -356,12 +384,12 @@ export class CardLevelActionPage {
   }
 
   async hoverOnExistingCard() {
-    await this.page.locator('div[data-testid="Step block"]').first().hover()
+    await this.page.locator('div[data-testid="StepBlock"]').first().hover()
   }
 
   async getjourneyCardCount() {
     this.journeyCardSize = await this.page
-      .locator('div[data-testid="Step block"]')
+      .locator('div[data-testid="StepBlock"]')
       .count()
   }
 
@@ -371,14 +399,14 @@ export class CardLevelActionPage {
 
   async clickDuplicateCard() {
     await this.page
-      .locator('li[data-testid="JourneysAdminMenuItemDuplicate-Card"]')
+      .locator('li[data-testid="JourneysAdminMenuItemDuplicateStep"]')
       .click()
   }
 
   async clickDeleteCard() {
     await this.page
       .locator(
-        'li[data-testid="JourneysAdminMenuItemDuplicate-Card"] + li[data-testid="JourneysAdminMenuItem"]'
+        'li[data-testid="JourneysAdminMenuItemDuplicateStep"] + li[data-testid="JourneysAdminMenuItem"]'
       )
       .click()
   }
@@ -399,7 +427,27 @@ export class CardLevelActionPage {
           'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"]'
         )
         .last()
-        .click({ force: true, delay: 1500 })
+        // eslint-disable-next-line playwright/no-force-option
+        .dblclick({ force: true, delay: 1500 })
+      // eslint-disable-next-line playwright/missing-playwright-await
+      await expect(
+        this.page
+          .frameLocator(this.journeyCardFrame)
+          .locator('div[role="tooltip"] button[id="delete-block-actions"]')
+          .first()
+      )
+        .toBeVisible()
+        .catch(async () => {
+          await this.page
+            .frameLocator(this.journeyCardFrame)
+            .first()
+            .locator(
+              'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"]'
+            )
+            .last()
+            .dblclick()
+        })
+
       await this.clickDeleteBtnInToolTipBar()
       await this.verifyToastMessage()
     }
@@ -407,10 +455,10 @@ export class CardLevelActionPage {
 
   async verifyToastMessage() {
     await expect(this.page.locator('#notistack-snackbar')).toBeVisible({
-      timeout: 300000
+      timeout: sixtySecondsTimeout
     })
     await expect(this.page.locator('#notistack-snackbar')).toBeHidden({
-      timeout: 300000
+      timeout: sixtySecondsTimeout
     })
   }
 
@@ -538,7 +586,7 @@ export class CardLevelActionPage {
         'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOption"]'
       )
       .nth(pollOption - 1)
-      .locator('textarea[placeholder="Type your text here..."]')
+      .locator('textarea[placeholder="Add your text here..."]')
       .fill(this.pollRename)
   }
 
@@ -554,10 +602,12 @@ export class CardLevelActionPage {
   }
 
   async selectWholePollOptions() {
+    // await this.page.frameLocator(this.journeyCardFrame).locator('div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid*="JourneysRadioQuestion"] button').first().click()
     await this.page
       .frameLocator(this.journeyCardFrame)
       .locator(
-        'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid*="JourneysRadioQuestion"]'
+        'div[data-testid*="JourneysRadioQuestion"] div[role="group"] div:not([data-testid*="SelectableWrapper"])',
+        { hasText: 'Add New Option' }
       )
       .click()
   }
@@ -759,10 +809,27 @@ export class CardLevelActionPage {
   async selectWholeFooterSectionInCard() {
     await this.page
       .frameLocator(this.journeyCardFrame)
+      .first()
       .locator(
-        'div[data-testid="CardWrapper"] + div[data-testid="JourneysStepFooter"]'
+        'div[data-testid="CardWrapper"] + div[data-testid="JourneysStepFooter"] > div'
       )
       .click({ delay: 3000 })
+    // eslint-disable-next-line playwright/missing-playwright-await
+    await expect(
+      this.page.locator(
+        'div[aria-labelledby*="hostedBy-tab"] div[data-testid="JourneysAdminContainedIconButton"] button'
+      )
+    )
+      .toBeVisible()
+      .catch(async () => {
+        await this.page
+          .frameLocator(this.journeyCardFrame)
+          .first()
+          .locator(
+            'div[data-testid="CardWrapper"] + div[data-testid="JourneysStepFooter"] > div'
+          )
+          .dblclick({ force: true })
+      })
   }
 
   async clicSelectHostBtn() {
@@ -790,7 +857,7 @@ export class CardLevelActionPage {
       .locator('input#hostLocation')
       .click({ delay: 3000, force: true })
     await expect(this.page.locator('input#hostLocation')).toBeEnabled({
-      timeout: 30000
+      timeout: sixtySecondsTimeout
     })
     await this.page.locator('input#hostLocation').click({ delay: 3000 })
     await this.page
@@ -866,15 +933,13 @@ export class CardLevelActionPage {
   }
 
   async verifyCardDeletedInCustomJournetPage() {
-    await expect(
-      this.page.locator('div[data-testid="Step block"]')
-    ).toBeHidden()
+    await expect(this.page.locator('div[data-testid="StepBlock"]')).toBeHidden()
   }
 
   async verifyCardDuplicated() {
-    await expect(
-      this.page.locator('div[data-testid="Step block"]')
-    ).toHaveCount(this.journeyCardSize + 1)
+    await expect(this.page.locator('div[data-testid="StepBlock"]')).toHaveCount(
+      this.journeyCardSize + 1
+    )
   }
 
   async getJourneyName() {
@@ -915,7 +980,7 @@ export class CardLevelActionPage {
         .first()
         .locator(typographyPath)
         .first()
-        .click({ timeout: 15000, delay: 1000 })
+        .click({ timeout: sixtySecondsTimeout, delay: 1000 })
       for (let clickRetry = 0; clickRetry < 5; clickRetry++) {
         if (
           await this.page
@@ -932,7 +997,7 @@ export class CardLevelActionPage {
             .first()
             .locator(typographyPath)
             .first()
-            .click({ timeout: 15000, delay: 1000 })
+            .click({ timeout: sixtySecondsTimeout, delay: 1000 })
         }
       }
       await this.page
@@ -967,5 +1032,31 @@ export class CardLevelActionPage {
         )
         .click({ delay: 3000 })
     } catch (err) {}
+  }
+
+  async deleteAllThePollOptions() {
+    const pollOptionCount = await this.page
+      .frameLocator(this.journeyCardFrame)
+      .locator(
+        'div[data-testid*="JourneysRadioQuestion"] div[role="group"] [data-testid*="SelectableWrapper"]'
+      )
+      .count()
+    for (let poll = 0; poll < pollOptionCount; poll++) {
+      await this.page
+        .frameLocator(this.journeyCardFrame)
+        .locator(
+          'div[data-testid*="JourneysRadioQuestion"] div[role="group"] [data-testid*="SelectableWrapper"]'
+        )
+        .last()
+        .click()
+      await this.page
+        .frameLocator(this.journeyCardFrame)
+        .locator(
+          'div[data-testid*="JourneysRadioQuestion"] div[role="group"] [data-testid*="SelectableWrapper"]'
+        )
+        .last()
+        .click({ delay: 2000 })
+      await this.clickDeleteBtnInToolTipBar()
+    }
   }
 }

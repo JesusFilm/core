@@ -1,8 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
@@ -55,7 +55,7 @@ describe('LocalDetails', () => {
                 {
                   value: 'English',
                   primary: true,
-                  __typename: 'Translation'
+                  __typename: 'LanguageName'
                 }
               ]
             }
@@ -132,7 +132,7 @@ describe('LocalDetails', () => {
                 {
                   value: 'Algerian',
                   primary: true,
-                  __typename: 'Translation'
+                  __typename: 'LanguageName'
                 }
               ]
             }
