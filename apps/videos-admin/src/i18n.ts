@@ -14,10 +14,8 @@ if (process.env.VERCEL == null || process.env.CI != null) {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   localePath = require('node:path').resolve('./public/locales')
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  fs.readdir(require('node:path') as string, (_err, files) => {
-    files.forEach((file) => {
-      console.log(file)
-    })
+  fs.readdirSync(localePath as string).forEach((file) => {
+    console.log(file)
   })
 }
 
