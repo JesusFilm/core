@@ -1,6 +1,6 @@
 import { builder } from '../builder'
 
-const BibleCitation = builder.prismaObject('BibleCitation', {
+builder.prismaObject('BibleCitation', {
   fields: (t) => ({
     osisId: t.exposeString('osisId'),
     bibleBook: t.relation('bibleBook'),
