@@ -11,6 +11,8 @@ import { useSearchBox } from 'react-instantsearch'
 import Search1Icon from '@core/shared/ui/icons/Search1'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
 
+import { useLanguagesContinentsQuery } from '../../libs/useLanguagesContinentsQuery'
+
 /* Styles below used to fake a gradient border because the 
 css attributes border-radius and border-image-source are not compatible */
 const StyledTextField = styled(TextField)(({ theme }) => ({
@@ -34,6 +36,9 @@ export function SearchBar(props: SearchBoxConnectorParams): ReactElement {
   const { t } = useTranslation('apps-watch')
 
   const { query, refine } = useSearchBox(props)
+
+  const { data } = useLanguagesContinentsQuery()
+  console.log('data', data)
 
   const initialValues = {
     title: query
