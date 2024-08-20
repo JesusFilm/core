@@ -8,6 +8,7 @@ import { useTranslation } from 'next-i18next'
 import { type ReactElement } from 'react'
 import { useSearchBox } from 'react-instantsearch'
 
+import { AlgoliaLanguageDropdown } from '@core/journeys/ui/SearchBar/AlgoliaLanguageDropdown'
 import Search1Icon from '@core/shared/ui/icons/Search1'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
 
@@ -44,44 +45,47 @@ export function SearchBar(props: SearchBoxConnectorParams): ReactElement {
   }
 
   return (
-    <Box
-      sx={{
-        borderRadius: 3,
-        background:
-          'linear-gradient(90deg, #0C79B3 0%, #0FDABC 51%, #E72DBB 100%)',
-        p: 1
-      }}
-      data-testid="SearchBar"
-    >
-      <Formik
-        initialValues={initialValues}
-        onSubmit={handleSubmit}
-        enableReinitialize
+    <>
+      <Box
+        sx={{
+          borderRadius: 3,
+          background:
+            'linear-gradient(90deg, #0C79B3 0%, #0FDABC 51%, #E72DBB 100%)',
+          p: 1
+        }}
+        data-testid="SearchBar"
       >
-        {({ values, handleChange, handleBlur }) => (
-          <>
-            <StyledTextField
-              value={values.title}
-              name="title"
-              type="search"
-              placeholder={t('Search by topic, occasion, or audience ...')}
-              fullWidth
-              autoComplete="off"
-              onChange={handleChange}
-              onBlur={handleBlur}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Search1Icon />
-                  </InputAdornment>
-                )
-              }}
-              {...props}
-            />
-            <SubmitListener />
-          </>
-        )}
-      </Formik>
-    </Box>
+        <Formik
+          initialValues={initialValues}
+          onSubmit={handleSubmit}
+          enableReinitialize
+        >
+          {({ values, handleChange, handleBlur }) => (
+            <>
+              <StyledTextField
+                value={values.title}
+                name="title"
+                type="search"
+                placeholder={t('Search by topic, occasion, or audience ...')}
+                fullWidth
+                autoComplete="off"
+                onChange={handleChange}
+                onBlur={handleBlur}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Search1Icon />
+                    </InputAdornment>
+                  )
+                }}
+                {...props}
+              />
+              <SubmitListener />
+            </>
+          )}
+        </Formik>
+      </Box>
+      <AlgoliaLanguageDropdown />
+    </>
   )
 }
