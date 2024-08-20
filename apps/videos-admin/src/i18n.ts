@@ -1,3 +1,5 @@
+import fs from 'fs'
+
 import { notFound } from 'next/navigation'
 import { getRequestConfig } from 'next-intl/server'
 
@@ -8,8 +10,15 @@ if (process.env.VERCEL == null || process.env.CI != null) {
 } else {
   // vercel run time
   console.log('vercel cwd', process.cwd())
+
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   localePath = require('node:path').resolve('./public/locales')
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  fs.readdir(require('node:path') as string, (_err, files) => {
+    files.forEach((file) => {
+      console.log(file)
+    })
+  })
 }
 
 // Can be imported from a shared config
