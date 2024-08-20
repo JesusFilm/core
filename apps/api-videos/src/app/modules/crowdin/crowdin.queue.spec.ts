@@ -64,7 +64,7 @@ describe('CrowdinQueue', () => {
         {},
         {
           repeat: {
-            pattern: '0 */12 * * *'
+            pattern: '0 0 2 * * *'
           }
         }
       )
