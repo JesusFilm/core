@@ -61,4 +61,15 @@ describe('SearchBar', () => {
     fireEvent.change(input, { target: { value: 'Jes' } })
     await waitFor(() => expect(refine).toHaveBeenCalledTimes(1))
   })
+  
+  it('should have language icon', async () => {
+    render(<SearchBar showLanguageButton />)
+    const searchIcon = screen.getByTestId('Globe1Icon')
+    expect(searchIcon).toBeInTheDocument()
+  })
+
+  it('should render language', async () => {
+    render(<SearchBar showLanguageButton />)
+    expect(screen.getByText('Language')).toBeInTheDocument()
+  })
 })
