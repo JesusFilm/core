@@ -72,6 +72,7 @@ export class ImporterVideoVariantsService extends ImporterService<VideoVariants>
       duration: videoVariant.duration,
       languageId: videoVariant.languageId,
       videoId: videoVariant.videoId,
+      edition: videoVariant.edition,
       slug
     }
   }
