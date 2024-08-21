@@ -1,13 +1,16 @@
 import Box from '@mui/material/Box'
+import Divider from '@mui/material/Divider'
 import InputAdornment from '@mui/material/InputAdornment'
 import { styled } from '@mui/material/styles'
-import TextField from '@mui/material/TextField'
+import TextField, { TextFieldProps } from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
 import { Formik } from 'formik'
-import type { SearchBoxConnectorParams } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
 import { useTranslation } from 'next-i18next'
-import { type ReactElement } from 'react'
+import { type ReactElement, useState } from 'react'
 import { useSearchBox } from 'react-instantsearch'
 
+import ChevronDown from '@core/shared/ui/icons/ChevronDown'
+import Globe1Icon from '@core/shared/ui/icons/Globe1'
 import Search1Icon from '@core/shared/ui/icons/Search1'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
 
@@ -30,10 +33,61 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
   }
 }))
 
-export function SearchBar(props: SearchBoxConnectorParams): ReactElement {
+function LanguageButton(): ReactElement {
   const { t } = useTranslation('apps-watch')
 
-  const { query, refine } = useSearchBox(props)
+  return (
+    <Box
+      component="button"
+      data-testid="LanguageSelect"
+      onClick={() => {
+        console.log('EndAdornment clicked')
+      }}
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        cursor: 'pointer',
+        border: 'none',
+        backgroundColor: 'background.default',
+        color: 'text.secondary'
+      }}
+    >
+      <Divider
+        orientation="vertical"
+        flexItem
+        sx={{
+          height: 35,
+          alignSelf: 'center',
+          marginRight: 6
+        }}
+        variant="middle"
+      />
+      <Globe1Icon />
+      <Typography
+        sx={{
+          px: 2
+        }}
+      >
+        {t('Language')}
+      </Typography>
+      <ChevronDown />
+    </Box>
+  )
+}
+
+interface SearchBarProps {
+  showLanguageButton?: boolean
+  props?: TextFieldProps
+}
+
+export function SearchBar({
+  showLanguageButton = false,
+  props
+}: SearchBarProps): ReactElement {
+  const { t } = useTranslation('apps-watch')
+
+  const { query, refine } = useSearchBox()
+  const [languageButtonVisable] = useState(showLanguageButton)
 
   const initialValues = {
     title: query
@@ -74,6 +128,13 @@ export function SearchBar(props: SearchBoxConnectorParams): ReactElement {
                   <InputAdornment position="start">
                     <Search1Icon />
                   </InputAdornment>
+                ),
+                endAdornment: languageButtonVisable ? (
+                  <InputAdornment position="end">
+                    <LanguageButton />
+                  </InputAdornment>
+                ) : (
+                  <></>
                 )
               }}
               {...props}
