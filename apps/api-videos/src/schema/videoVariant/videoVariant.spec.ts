@@ -128,7 +128,7 @@ describe('videoVariant', () => {
     })
 
     it('should query videoVariants without default values', async () => {
-      prismaMock.videoVariant.findMany.mockResolvedValueOnce([
+      prismaMock.videoVariant.findMany.mockClear().mockResolvedValueOnce([
         {
           id: 'videoVariantId',
           hls: null,

@@ -91,12 +91,14 @@ type Video
 }
 
 type VideoDescription {
+  id: ID!
   value: String!
   primary: Boolean!
   language: Language!
 }
 
 type VideoImageAlt {
+  id: ID!
   value: String!
   primary: Boolean!
   language: Language!
@@ -114,12 +116,14 @@ enum VideoLabel {
 }
 
 type VideoSnippet {
+  id: ID!
   value: String!
   primary: Boolean!
   language: Language!
 }
 
 type VideoStudyQuestion {
+  id: ID!
   value: String!
   primary: Boolean!
   language: Language!
@@ -128,12 +132,14 @@ type VideoStudyQuestion {
 type VideoSubtitle {
   id: ID!
   languageId: ID!
+  primary: Boolean!
   edition: String!
   vttSrc: String
   srtSrc: String
 }
 
 type VideoTitle {
+  id: ID!
   value: String!
   primary: Boolean!
   language: Language!
