@@ -72,4 +72,19 @@ describe('SearchBar', () => {
     render(<SearchBar showLanguageButton />)
     expect(screen.getByText('Language')).toBeInTheDocument()
   })
+
+  it('should open popper when language button clicked', async () => {
+    render(<SearchBar showLanguageButton />)
+    expect(screen.getByText('Language')).toBeInTheDocument()
+    fireEvent.click(screen.getByText('Language'))
+    expect(screen.getByTestId('SearchLangaugeFilter')).toBeInTheDocument()
+  })
+
+  it('should close popper after it was opened', async () => {
+    render(<SearchBar showLanguageButton />)
+    fireEvent.click(screen.getByText('Language'))
+    expect(screen.getByTestId('SearchLangaugeFilter')).toBeInTheDocument()
+    fireEvent.click(screen.getByText('Language'))
+    expect(screen.queryAllByTestId('SearchLangaugeFilter')).toHaveLength(0)
+  })
 })

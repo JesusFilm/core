@@ -41,7 +41,7 @@ export function WatchHomePage(): ReactElement {
         >
           <Container maxWidth="xxl" sx={{ paddingY: '4rem' }}>
             <Box sx={{ pb: 10 }}>
-              <SearchBar />
+              <SearchBar showLanguageButton />
             </Box>
             <Index indexName={indexName}>
               <AlgoliaVideoGrid variant="contained" />
