@@ -11,6 +11,7 @@ import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import { useAlgoliaRouter } from '../../libs/algolia/useAlgoliaRouter'
+import { useSortLanguageContinents } from '../../libs/algolia/useSortLanguageContinents'
 import { PageWrapper } from '../PageWrapper'
 import { AlgoliaVideoGrid } from '../VideoGrid/AlgoliaVideoGrid/AlgoliaVideoGrid'
 
@@ -23,6 +24,8 @@ export function WatchHomePage(): ReactElement {
   const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
 
   useAlgoliaRouter()
+
+  useSortLanguageContinents()
 
   return (
     <PageWrapper
