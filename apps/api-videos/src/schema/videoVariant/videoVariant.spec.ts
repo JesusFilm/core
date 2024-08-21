@@ -13,10 +13,6 @@ import { cache } from '../../yoga'
 describe('videoVariant', () => {
   const client = getClient()
 
-  afterEach(async () => {
-    await cache.invalidate([{ typename: 'videoVariant' }])
-  })
-
   describe('videoVariants', () => {
     const VIDEO_VARIANTS_QUERY = graphql(`
       query videoVariants($languageId: ID, $primary: Boolean) {
@@ -128,7 +124,7 @@ describe('videoVariant', () => {
     })
 
     it('should query videoVariants without default values', async () => {
-      prismaMock.videoVariant.findMany.mockClear().mockResolvedValueOnce([
+      prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         {
           id: 'videoVariantId',
           hls: null,

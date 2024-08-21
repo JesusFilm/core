@@ -2,14 +2,9 @@ import { graphql } from 'gql.tada'
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
-import { cache } from '../../yoga'
 
 describe('Keyword', () => {
   const client = getClient()
-
-  afterEach(async () => {
-    await cache.invalidate([{ typename: 'Keyword' }])
-  })
 
   describe('keywords', () => {
     const KEYWORDS_QUERY = graphql(`

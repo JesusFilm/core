@@ -15,14 +15,9 @@ import {
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
-import { cache } from '../../yoga'
 
 describe('video', () => {
   const client = getClient()
-
-  afterEach(async () => {
-    await cache.invalidate([{ typename: 'video' }])
-  })
 
   describe('videos', () => {
     const VIDEOS_QUERY = graphql(`
@@ -642,13 +637,13 @@ describe('video', () => {
       const data = await client({
         document: VIDEO_QUERY,
         variables: {
-          id: 'videoId',
+          id: 'slug',
           idType: 'slug'
         }
       })
       expect(prismaMock.video.findFirstOrThrow).toHaveBeenCalledWith({
         where: {
-          slug: 'videoId'
+          variants: { some: { slug: 'slug' } }
         }
       })
       expect(data).toHaveProperty('data.video', { id: 'videoId' })

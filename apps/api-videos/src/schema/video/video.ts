@@ -229,16 +229,17 @@ builder.queryFields((t) => ({
         defaultValue: IdTypeShape.databaseId
       })
     },
-    resolve: async (query, _parent, { id, idType }) =>
-      idType === IdTypeShape.slug
+    resolve: async (query, _parent, { id, idType }) => {
+      return idType === IdTypeShape.slug
         ? await prisma.video.findFirstOrThrow({
             ...query,
-            where: { slug: id }
+            where: { variants: { some: { slug: id } } }
           })
         : await prisma.video.findUniqueOrThrow({
             ...query,
             where: { id }
           })
+    }
   }),
   videos: t.prismaField({
     type: ['Video'],

@@ -4,14 +4,9 @@ import { BibleBook, BibleBookName } from '.prisma/api-videos-client'
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
-import { cache } from '../../yoga'
 
 describe('BibleBook', () => {
   const client = getClient()
-
-  afterEach(async () => {
-    await cache.invalidate([{ typename: 'BibleBook' }])
-  })
 
   describe('bibleBooks', () => {
     const BIBLE_BOOKS_QUERY = graphql(`
