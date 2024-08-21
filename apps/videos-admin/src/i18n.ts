@@ -15,9 +15,11 @@ if (process.env.VERCEL == null || process.env.CI != null) {
   localePath = require('node:path').resolve('./public/locales')
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const currentPath = require('node:path').resolve('.')
-  fs.readdirSync(currentPath as string).forEach((file) => {
-    console.log(file)
-  })
+  const files = fs
+    .readdirSync(currentPath as string, { withFileTypes: true })
+    .filter((item) => !item.isDirectory())
+    .map((item) => item.name)
+  console.log('files', files)
 }
 
 // Can be imported from a shared config
