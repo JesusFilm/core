@@ -33,6 +33,48 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
   }
 }))
 
+function LanguageButton(): ReactElement {
+  const { t } = useTranslation('apps-watch')
+
+  return (
+    <Box
+      component="button"
+      data-testid="LanguageSelect"
+      onClick={() => {
+        console.log('EndAdornment clicked')
+      }}
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        cursor: 'pointer',
+        border: 'none',
+        backgroundColor: 'background.default',
+        color: 'text.secondary'
+      }}
+    >
+      <Divider
+        orientation="vertical"
+        flexItem
+        sx={{
+          height: 35,
+          alignSelf: 'center',
+          marginRight: 6
+        }}
+        variant="middle"
+      />
+      <Globe1Icon />
+      <Typography
+        sx={{
+          px: 2
+        }}
+      >
+        {t('Language')}
+      </Typography>
+      <ChevronDown />
+    </Box>
+  )
+}
+
 interface SearchBarProps {
   showLanguageButton?: boolean
   props?: TextFieldProps
@@ -89,41 +131,7 @@ export function SearchBar({
                 ),
                 endAdornment: languageButtonVisable ? (
                   <InputAdornment position="end">
-                    <Box
-                      component="button"
-                      data-testid="LanguageSelect"
-                      onClick={() => {
-                        console.log('EndAdornment clicked')
-                      }}
-                      sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        cursor: 'pointer',
-                        border: 'none',
-                        backgroundColor: 'background.default',
-                        color: 'text.secondary'
-                      }}
-                    >
-                      <Divider
-                        orientation="vertical"
-                        flexItem
-                        sx={{
-                          height: 35,
-                          alignSelf: 'center',
-                          marginRight: 6
-                        }}
-                        variant="middle"
-                      />
-                      <Globe1Icon />
-                      <Typography
-                        sx={{
-                          px: 2
-                        }}
-                      >
-                        {t('Language')}
-                      </Typography>
-                      <ChevronDown />
-                    </Box>
+                    <LanguageButton/>
                   </InputAdornment>
                 ) : (
                   <></>
