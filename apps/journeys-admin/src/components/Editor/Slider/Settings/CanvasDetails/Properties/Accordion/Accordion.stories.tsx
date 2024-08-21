@@ -30,4 +30,21 @@ export const Default: StoryObj<typeof Accordion> = {
   }
 }
 
+export const StaticVariant: StoryObj<typeof Accordion> = {
+  render: () => {
+    return (
+      <EditorProvider>
+        <Accordion
+          id="custom-id"
+          icon={<PaletteIcon />}
+          labelVariant="static"
+          name="Label"
+        >
+          test
+        </Accordion>
+      </EditorProvider>
+    )
+  }
+}
+
 export default AttributeStory
