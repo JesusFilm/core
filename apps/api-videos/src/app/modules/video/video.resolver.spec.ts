@@ -16,7 +16,6 @@ import {
   VideoVariant
 } from '.prisma/api-videos-client'
 
-import { IdType } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { LanguageWithSlugResolver, VideoResolver } from './video.resolver'
@@ -266,9 +265,7 @@ describe('VideoResolver', () => {
     })
 
     it('should return video with slug as idtype', async () => {
-      expect(await resolver.video(info, 'jesus/english', IdType.slug)).toEqual(
-        video
-      )
+      expect(await resolver.video(info, 'jesus/english', 'slug')).toEqual(video)
       expect(prismaService.video.findFirst).toHaveBeenCalledWith({
         where: {
           variants: { some: { slug: 'jesus/english' } }
@@ -454,7 +451,7 @@ describe('VideoResolver', () => {
   describe('variant', () => {
     const info = {
       variableValues: {
-        idType: IdType.databaseId
+        idType: 'databaseId'
       }
     } as unknown as GraphQLResolveInfo
 

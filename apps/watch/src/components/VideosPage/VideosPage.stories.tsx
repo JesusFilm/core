@@ -1,10 +1,15 @@
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
+import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
+
 import { watchConfig } from '../../libs/storybook'
-import { videos } from '../Videos/__generated__/testData'
 
 import { VideosPage } from './VideosPage'
+import {
+  emptyResultsHandler,
+  getAlgoliaVideosHandlers
+} from './VideosPage.handlers'
 
 const VideosStory: Meta<typeof VideosPage> = {
   ...watchConfig,
@@ -15,13 +20,29 @@ const VideosStory: Meta<typeof VideosPage> = {
 const Template: StoryObj<
   ComponentProps<typeof VideosPage> & { limit: number }
 > = {
-  render: () => {
-    return <VideosPage videos={videos} />
-  }
+  render: () => (
+    <InstantSearchTestWrapper>
+      <VideosPage />
+    </InstantSearchTestWrapper>
+  )
 }
 
 export const Default = {
-  ...Template
+  ...Template,
+  parameters: {
+    msw: {
+      handlers: [getAlgoliaVideosHandlers]
+    }
+  }
+}
+
+export const NoResultsFound = {
+  ...Template,
+  parameters: {
+    msw: {
+      handlers: [emptyResultsHandler]
+    }
+  }
 }
 
 export default VideosStory

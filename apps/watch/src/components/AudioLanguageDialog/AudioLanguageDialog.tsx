@@ -54,7 +54,6 @@ export function AudioLanguageDialog({
     const selectedLanguageSlug = data?.video?.variantLanguagesWithSlug?.find(
       (languages) => languages.language?.id === value.id
     )?.slug
-    console.log(selectedLanguageSlug)
     if (selectedLanguageSlug != null) {
       void router.push(
         `/watch${
