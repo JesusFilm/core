@@ -1,4 +1,4 @@
-import { NormalizedCacheObject, gql } from '@apollo/client'
+import { gql } from '@apollo/client'
 import algoliasearch from 'algoliasearch'
 import type { UiState } from 'instantsearch.js'
 import type { RouterProps } from 'instantsearch.js/es/middlewares'
