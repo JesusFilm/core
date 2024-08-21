@@ -108,6 +108,12 @@
         ]
       }
     },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx tsc -b apps/api-languages/tsconfig.json"
+      }
+    },
     "codecov": {
       "executor": "nx:run-commands",
       "options": {
