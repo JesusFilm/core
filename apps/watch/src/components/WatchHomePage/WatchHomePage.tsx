@@ -25,7 +25,16 @@ export function WatchHomePage(): ReactElement {
 
   useAlgoliaRouter()
 
-  useSortLanguageContinents()
+  const data = useSortLanguageContinents()
+  console.log(
+    'data',
+    data.Europe.length +
+      data.Asia.length +
+      data.Africa.length +
+      data.Oceania.length +
+      data['North America'].length +
+      data['South America'].length
+  )
 
   return (
     <PageWrapper
