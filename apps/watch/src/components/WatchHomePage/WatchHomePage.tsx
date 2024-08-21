@@ -3,8 +3,8 @@ import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { type ReactElement } from 'react'
-import { Index } from 'react-instantsearch'
+import { type ReactElement, useState } from 'react'
+import { Index, RefinementList, useRefinementList } from 'react-instantsearch'
 
 import { SearchBar } from '@core/journeys/ui/SearchBar'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
@@ -21,6 +21,11 @@ export function WatchHomePage(): ReactElement {
   const { t } = useTranslation('apps-watch')
 
   const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
+  const [ showLanguageDropdown, setShowLanguageDropdown ] = useState(false)
+
+  const { items } = useRefinementList({
+    attribute: 'languageEnglishName'
+  })
 
   useAlgoliaRouter()
 
@@ -41,8 +46,113 @@ export function WatchHomePage(): ReactElement {
         >
           <Container maxWidth="xxl" sx={{ paddingY: '4rem' }}>
             <Box sx={{ pb: 10 }}>
-              <SearchBar />
+              <SearchBar handleLanguageClick={() => setShowLanguageDropdown(!showLanguageDropdown)} />
             </Box>
+
+            {items.length === 0 ? (
+              <Box sx={{ pb: 10 }} color='red'>
+                No langauges available based on your search!
+                If we don't like this - maybe we conditionally render our own selection of langauges - but they won't do anything when clicked if there are already no results to further refine? 
+                When there are no results algolia has a few settings for softening the search to make sure there will be some hits & facets showing.
+              </Box>
+            ) : (
+              <Stack direction="row" marginBottom={10} color='white' display={showLanguageDropdown ? 'none' : 'hidden'}>
+                <Box
+                  sx={{
+                    border: 1,
+                    p: 1,
+                    bgcolor: 'background.default'
+                  }}
+                >
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    component="li"
+                    sx={{ px: 4, py: 2 }}
+                  >
+                    <Typography variant="subtitle1" color='red'>Africa</Typography>
+                  </Stack>
+                  <RefinementList attribute="languageEnglishName" />
+                </Box>
+  
+                <Box
+                  sx={{
+                    border: 1,
+                    p: 1,
+                    bgcolor: 'background.default'
+                  }}
+                >
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    component="li"
+                    sx={{ px: 4, py: 2 }}
+                  >
+                    <Typography variant="subtitle1" color='red'>Europe</Typography>
+                  </Stack>
+                  <RefinementList attribute="languageEnglishName" limit={190} />
+                  Max 190 langauges here
+                </Box>
+  
+                <Box
+                  sx={{
+                    border: 1,
+                    p: 1,
+                    bgcolor: 'background.default'
+                  }}
+                >
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    component="li"
+                    sx={{ px: 4, py: 2 }}
+                  >
+                    <Typography variant="subtitle1" color='red'>Americas</Typography>
+                  </Stack>
+                  <RefinementList attribute="languageEnglishName" limit={200} />
+                  Max 200 langauges here
+                </Box>
+  
+                <Box
+                  sx={{
+                    border: 1,
+                    p: 1,
+                    bgcolor: 'background.default'
+                  }}
+                >
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    component="li"
+                    sx={{ px: 4, py: 2 }}
+                  >
+                    <Typography variant="subtitle1" color='red'>Asia</Typography>
+                  </Stack>
+                  <RefinementList attribute="languageEnglishName" limit={200} />
+                  Max 200 langauges here
+                </Box>
+  
+                <Box
+                  sx={{
+                    border: 1,
+                    p: 1,
+                    bgcolor: 'background.default'
+                  }}
+                >
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    component="li"
+                    sx={{ px: 4, py: 2 }}
+                  >
+                    <Typography variant="subtitle1" color='red'>Middle East</Typography>
+                  </Stack>
+                  <RefinementList attribute="languageEnglishName" limit={200} />
+                  Max 200 langauges here
+                </Box>
+              </Stack>
+            )}
+
             <Index indexName={indexName}>
               <AlgoliaVideoGrid variant="contained" />
             </Index>

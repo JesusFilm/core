@@ -71,7 +71,7 @@ function HomePage({ serverState }: HomePageProps): ReactElement {
     <InstantSearchSSRProvider {...serverState}>
       <InstantSearch
         insights
-        indexName={indexName}
+        indexName="video-variants-prd"
         searchClient={searchClient}
         future={{ preserveSharedStateOnUnmount: true }}
         stalledSearchDelay={500}
