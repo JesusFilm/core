@@ -30,7 +30,7 @@ export const Default: StoryObj<typeof Accordion> = {
   }
 }
 
-export const StaticVariant: StoryObj<typeof Accordion> = {
+export const StaticLabel: StoryObj<typeof Accordion> = {
   render: () => {
     return (
       <EditorProvider>
