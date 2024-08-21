@@ -72,4 +72,18 @@ export const Language = {
   }
 }
 
+export const Language = {
+  ...Template,
+  args: {
+    showLanguageButton: true
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    const canvas = within(canvasElement)
+    await waitFor(async () => {
+      await expect(screen.getByTestId('LanguageSelect')).toBeInTheDocument()
+    })
+    await userEvent.click(canvas.getByTestId('LanguageSelect'))
+  }
+}
+
 export default SearchBarStory

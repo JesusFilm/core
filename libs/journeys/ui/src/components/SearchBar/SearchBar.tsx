@@ -37,6 +37,52 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
   }
 }))
 
+interface LangaugeButtonProps {
+  onClick: () => void
+}
+
+function LanguageButton({
+  onClick
+}: LangaugeButtonProps): ReactElement {
+  const { t } = useTranslation('apps-watch')
+
+  return (
+    <Box
+      component="button"
+      data-testid="LanguageSelect"
+      onClick={onClick}
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        cursor: 'pointer',
+        border: 'none',
+        backgroundColor: 'background.default',
+        color: 'text.secondary'
+      }}
+    >
+      <Divider
+        orientation="vertical"
+        flexItem
+        sx={{
+          height: 35,
+          alignSelf: 'center',
+          marginRight: 6
+        }}
+        variant="middle"
+      />
+      <Globe1Icon />
+      <Typography
+        sx={{
+          px: 2
+        }}
+      >
+        {t('Language')}
+      </Typography>
+      <ChevronDown />
+    </Box>
+  )
+}
+
 interface SearchBarProps {
   showLanguageButton?: boolean
   props?: TextFieldProps
@@ -50,6 +96,7 @@ export function SearchBar({
 
   const { query, refine } = useSearchBox()
   const [languageButtonVisable] = useState(showLanguageButton)
+  const refinements = useRefinementList({attribute: 'languageEnglishName'})
 
   const initialValues = {
     title: query
@@ -103,65 +150,29 @@ export function SearchBar({
                     <InputAdornment position="start">
                       <Search1Icon />
                     </InputAdornment>
-                ),
-                endAdornment: languageButtonVisable ? (
-                  <InputAdornment position="end">
-                    <Box
-                      component="button"
-                      data-testid="LanguageSelect"
-                      onClick={handleClick}
-                      sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        cursor: 'pointer',
-                        border: 'none',
-                        backgroundColor: 'background.default',
-                        color: 'text.secondary'
-                      }}
-                    >
-                      <Divider
-                        orientation="vertical"
-                        flexItem
-                        sx={{
-                          height: 35,
-                          alignSelf: 'center',
-                          marginRight: 6
-                        }}
-                        variant="middle"
-                      />
-                      <Globe1Icon />
-                      <Typography
-                        sx={{
-                          px: 2
-                        }}
-                      >
-                        {t('Language')}
-                      </Typography>
-                      <ChevronDown />
-                    </Box>
-                  </InputAdornment>
-                ) : (
-                  <></>
+                  ),
+                  endAdornment: languageButtonVisable ? (
+                    <InputAdornment position="end">
+                      <LanguageButton onClick={handleClick} />
+                    </InputAdornment>
+                  ) : (
+                    <></>
                   )
                 }}
                 {...props}
               />
               <SubmitListener />
             </>
-          )}
+        )}
         </Formik>
       </Box>
       <Popper id={id} open={open} anchorEl={anchorEl} placement='bottom-end' sx={{width: anchorEl?.clientWidth}} data-testid='SearchLangaugeFilter'>
         <Box sx={{ p: 8, bgcolor: 'background.paper', mt: 3 }} borderRadius={3} boxShadow='0px 4px 4px 0px #00000040'>
           <Box color='text.primary'>
-            <RefinementGroup title='Languages' refinement={useRefinementList({attribute: 'languageEnglishName'})}/>
+            <RefinementGroup title='Languages' refinement={refinements}/>
           </Box>
         </Box>
       </Popper>
-      {/* Force refinements to be re-fetched befor popper opened */}
-      <Box sx={{ display: 'none' }}>
-        <RefinementGroup title='Languages' refinement={useRefinementList({attribute: 'languageEnglishName'})}/>
-      </Box>
     </Box>
   )
 }

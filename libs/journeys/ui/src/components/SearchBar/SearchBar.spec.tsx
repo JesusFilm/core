@@ -1,28 +1,37 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import type { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
-import { useSearchBox } from 'react-instantsearch'
+import { useRefinementList, useSearchBox } from 'react-instantsearch'
 
 import '../../../test/i18n'
+import { languageRefinements } from './data'
 import { SearchBar } from './SearchBar'
 
+
 jest.mock('react-instantsearch')
+
+const mockUseRefinementList = useRefinementList as jest.MockedFunction<
+  typeof useRefinementList
+>
 
 const mockUseSearchBox = useSearchBox as jest.MockedFunction<
   typeof useSearchBox
 >
 
-function mockSearchBox(): jest.Mock {
+describe('SearchBar', () => {
   const refine = jest.fn()
-  mockUseSearchBox.mockReturnValue({
+  const useRefinementList = {
+    items: languageRefinements,
+    refine
+  } as unknown as RefinementListRenderState
+  const useSearchBox = {
     query: 'Hello World!',
     refine
-  } as unknown as SearchBoxRenderState)
-  return refine
-}
+  } as unknown as SearchBoxRenderState
 
-describe('SearchBar', () => {
   beforeEach(() => {
-    mockSearchBox()
+    mockUseRefinementList.mockReturnValue(useRefinementList)
+    mockUseSearchBox.mockReturnValue(useSearchBox)
   })
 
   it('should render input field', async () => {
@@ -45,7 +54,6 @@ describe('SearchBar', () => {
   })
 
   it('should refine when text typed', async () => {
-    const refine = mockSearchBox()
     render(<SearchBar />)
     const input = screen.getByDisplayValue('Hello World!')
     fireEvent.change(input, { target: { value: 'Testing' } })
@@ -53,7 +61,6 @@ describe('SearchBar', () => {
   })
 
   it('should refine once when further keystrokes', async () => {
-    const refine = mockSearchBox()
     render(<SearchBar />)
     const input = screen.getByDisplayValue('Hello World!')
     fireEvent.change(input, { target: { value: 'J' } })
