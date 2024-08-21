@@ -1,27 +1,5 @@
-// import fs from 'fs'
-// import path from 'path'
-
 import { notFound } from 'next/navigation'
 import { getRequestConfig } from 'next-intl/server'
-
-// let localePath
-// if (process.env.VERCEL == null || process.env.CI != null) {
-//   // not vercel or vercel build time
-//   localePath = './locales'
-// } else {
-//   // vercel run time
-//   console.log('vercel cwd', process.cwd())
-
-//   // eslint-disable-next-line @typescript-eslint/no-var-requires
-//   localePath = require('node:path').resolve('./public/locales')
-//   // eslint-disable-next-line @typescript-eslint/no-var-requires
-//   const currentPath = require('node:path').resolve('..')
-//   const files = fs
-//     .readdirSync(currentPath as string, { withFileTypes: true })
-//     // .filter((item) => !item.isDirectory())
-//     .map((item) => item.name)
-//   console.log('files', files)
-// }
 
 // Can be imported from a shared config
 const locales = ['en']
