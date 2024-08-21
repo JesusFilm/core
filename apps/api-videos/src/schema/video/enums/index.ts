@@ -1,2 +1,1 @@
-import './idType'
 import './videoLabel'

@@ -3,9 +3,9 @@ import isEmpty from 'lodash/isEmpty'
 
 import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
+import { IdType, IdTypeShape } from '../enums/idType'
 import { Language, LanguageWithSlug } from '../language'
 
-import { IdType, IdTypeShape } from './enums/idType'
 import { VideoLabel } from './enums/videoLabel'
 import { VideosFilter } from './inputs/videosFilter'
 import { videosFilter } from './lib/videosFilter'

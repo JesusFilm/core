@@ -53,7 +53,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npm run ts-node apps/api-videos/src/exportExistingLanguageSlugs.ts",
+          "npm run ts-node apps/api-videos/src/lib/exportExistingLanguageSlugs.ts",
           "npx prettier apps/api-languages/src/__generated__/languageSlugs.ts --write"
         ],
         "parallel": false
