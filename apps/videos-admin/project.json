@@ -8,16 +8,13 @@
     "build": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": [
-          "cp -r libs/locales apps/videos-admin/public",
-          "nx _build videos-admin"
-        ],
+        "commands": ["nx _build videos-admin"],
         "parallel": false
       },
       "configurations": {
         "production": {
           "commands": [
-            "cp -r libs/locales apps/videos-admin/public",
+            "cp -r libs/locales apps/videos-admin",
             "CI=true nx _build videos-admin --prod"
           ]
         }
