@@ -14,7 +14,7 @@ if (process.env.VERCEL == null || process.env.CI != null) {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   localePath = require('node:path').resolve('./public/locales')
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const currentPath = require('node:path').resolve('.')
+  const currentPath = require('node:path').resolve('..')
   const files = fs
     .readdirSync(currentPath as string, { withFileTypes: true })
     // .filter((item) => !item.isDirectory())
