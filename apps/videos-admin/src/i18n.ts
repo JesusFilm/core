@@ -17,7 +17,7 @@ if (process.env.VERCEL == null || process.env.CI != null) {
   const currentPath = require('node:path').resolve('.')
   const files = fs
     .readdirSync(currentPath as string, { withFileTypes: true })
-    .filter((item) => !item.isDirectory())
+    // .filter((item) => !item.isDirectory())
     .map((item) => item.name)
   console.log('files', files)
 }
