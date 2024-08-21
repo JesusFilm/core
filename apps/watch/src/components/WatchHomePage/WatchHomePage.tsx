@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -22,6 +23,7 @@ export function WatchHomePage(): ReactElement {
 
   const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
   const [ showLanguageDropdown, setShowLanguageDropdown ] = useState(false)
+  const [ languageFacetMax, setLanguageFacetMax ] = useState(10)
 
   const { items } = useRefinementList({
     attribute: 'languageEnglishName'
@@ -56,101 +58,108 @@ export function WatchHomePage(): ReactElement {
                 When there are no results algolia has a few settings for softening the search to make sure there will be some hits & facets showing.
               </Box>
             ) : (
-              <Stack direction="row" marginBottom={10} color='white' display={showLanguageDropdown ? 'none' : 'hidden'}>
-                <Box
+              <Box border='white 2px solid' sx={{mb: 8}} display={showLanguageDropdown ? 'none' : 'hidden'}>
+                <Stack direction="row" marginBottom={10} color='white' >
+                  <Box
                   sx={{
-                    border: 1,
                     p: 1,
                     bgcolor: 'background.default'
                   }}
                 >
-                  <Stack
+                    <Stack
                     direction="row"
                     alignItems="center"
                     component="li"
                     sx={{ px: 4, py: 2 }}
                   >
-                    <Typography variant="subtitle1" color='red'>Africa</Typography>
-                  </Stack>
-                  <RefinementList attribute="languageEnglishName" />
-                </Box>
+                      <Typography variant="subtitle1" color='red'>Africa</Typography>
+                    </Stack>
+                    <RefinementList attribute="languageEnglishName" limit={languageFacetMax} />
+                  </Box>
   
-                <Box
+                  <Box
                   sx={{
-                    border: 1,
                     p: 1,
                     bgcolor: 'background.default'
                   }}
                 >
-                  <Stack
+                    <Stack
                     direction="row"
                     alignItems="center"
                     component="li"
                     sx={{ px: 4, py: 2 }}
                   >
-                    <Typography variant="subtitle1" color='red'>Europe</Typography>
-                  </Stack>
-                  <RefinementList attribute="languageEnglishName" limit={190} />
-                  Max 190 langauges here
-                </Box>
+                      <Typography variant="subtitle1" color='red'>Europe</Typography>
+                    </Stack>
+                    <RefinementList attribute="languageEnglishName" limit={languageFacetMax} />
+                    Max {languageFacetMax} langauges here
+                  </Box>
   
-                <Box
+                  <Box
                   sx={{
-                    border: 1,
                     p: 1,
                     bgcolor: 'background.default'
                   }}
                 >
-                  <Stack
+                    <Stack
                     direction="row"
                     alignItems="center"
                     component="li"
                     sx={{ px: 4, py: 2 }}
                   >
-                    <Typography variant="subtitle1" color='red'>Americas</Typography>
-                  </Stack>
-                  <RefinementList attribute="languageEnglishName" limit={200} />
-                  Max 200 langauges here
-                </Box>
+                      <Typography variant="subtitle1" color='red'>Americas</Typography>
+                    </Stack>
+                    <RefinementList attribute="languageEnglishName" limit={languageFacetMax} />
+                    Max {languageFacetMax} langauges here
+                  </Box>
   
-                <Box
+                  <Box
                   sx={{
-                    border: 1,
                     p: 1,
                     bgcolor: 'background.default'
                   }}
                 >
-                  <Stack
+                    <Stack
                     direction="row"
                     alignItems="center"
                     component="li"
                     sx={{ px: 4, py: 2 }}
                   >
-                    <Typography variant="subtitle1" color='red'>Asia</Typography>
-                  </Stack>
-                  <RefinementList attribute="languageEnglishName" limit={200} />
-                  Max 200 langauges here
-                </Box>
+                      <Typography variant="subtitle1" color='red'>Asia</Typography>
+                    </Stack>
+                    <RefinementList attribute="languageEnglishName" limit={languageFacetMax} />
+                    Max {languageFacetMax} langauges here
+                  </Box>
   
-                <Box
+                  <Box
                   sx={{
-                    border: 1,
                     p: 1,
                     bgcolor: 'background.default'
                   }}
                 >
-                  <Stack
+                    <Stack
                     direction="row"
                     alignItems="center"
                     component="li"
                     sx={{ px: 4, py: 2 }}
                   >
-                    <Typography variant="subtitle1" color='red'>Middle East</Typography>
+                      <Typography variant="subtitle1" color='red'>Middle East</Typography>
+                    </Stack>
+                    <RefinementList attribute="languageEnglishName" limit={languageFacetMax} />
+                    Max {languageFacetMax} langauges here
+                  </Box>
+                </Stack>
+                {languageFacetMax < 200 && (
+                  <Stack alignContent='center'>
+                    <Button sx={{mx: 'auto'}} onClick={() => setLanguageFacetMax(200)}>See All</Button>
                   </Stack>
-                  <RefinementList attribute="languageEnglishName" limit={200} />
-                  Max 200 langauges here
-                </Box>
-              </Stack>
+                )}
+                {languageFacetMax === 200 && (
+                  <Stack alignContent='center'>
+                    <Button sx={{mx: 'auto'}} onClick={() => setLanguageFacetMax(20)}>See Less</Button>
+                  </Stack>
+                )}
+              </Box>
             )}
 
             <Index indexName={indexName}>
