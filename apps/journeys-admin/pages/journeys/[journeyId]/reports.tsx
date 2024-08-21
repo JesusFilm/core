@@ -32,7 +32,7 @@ function JourneyReportsPage({ flags }): ReactElement {
 
   const ref = useRef(null)
   const currentRef = ref.current
-  const [open, setOpen] = useState(true)
+  const [open, setOpen] = useState(false)
 
   const journeyId = router.query.journeyId as string
 
