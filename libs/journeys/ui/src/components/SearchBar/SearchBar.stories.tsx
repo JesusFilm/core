@@ -1,6 +1,6 @@
 import { expect } from '@storybook/jest'
 import type { Meta, StoryObj } from '@storybook/react'
-import { screen, userEvent, waitFor } from '@storybook/testing-library'
+import { screen, userEvent, waitFor, within } from '@storybook/testing-library'
 import type { ComponentProps } from 'react'
 
 import { watchConfig } from '@core/shared/ui/storybook'
@@ -19,7 +19,7 @@ const Template: StoryObj<ComponentProps<typeof SearchBar> & { query: string }> =
   {
     render: (args) => (
       <InstantSearchTestWrapper query={args.query}>
-        <SearchBar />
+        <SearchBar showLanguageButton={args.showLanguageButton} />
       </InstantSearchTestWrapper>
     )
   }
@@ -39,6 +39,20 @@ export const Search = {
   ...Template,
   args: {
     query: 'Easter'
+  }
+}
+
+export const Language = {
+  ...Template,
+  args: {
+    showLanguageButton: true
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    const canvas = within(canvasElement)
+    await waitFor(async () => {
+      await expect(screen.getByTestId('LanguageSelect')).toBeInTheDocument()
+    })
+    await userEvent.click(canvas.getByTestId('LanguageSelect'))
   }
 }
 
