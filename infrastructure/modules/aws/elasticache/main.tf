@@ -8,7 +8,7 @@ resource "aws_elasticache_replication_group" "default" {
   replication_group_id = var.cluster_id
   description          = "Managed by Terraform"
   subnet_group_name    = aws_elasticache_subnet_group.default.name
-  node_type            = "cache.t2.small"
+  node_type            = "cache.t2.medium"
   num_cache_clusters   = 1
   port                 = 6379
   security_group_ids   = [aws_security_group.redis.id]

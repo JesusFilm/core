@@ -3,11 +3,17 @@ import findIndex from 'lodash/findIndex'
 import { Edge, MarkerType, Node } from 'reactflow'
 
 import { TreeBlock } from '@core/journeys/ui/block'
+import { filterActionBlocks } from '@core/journeys/ui/filterActionBlocks'
+import { adminLight } from '@core/shared/ui/themes/journeysAdmin/theme'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'
-import { adminLight } from '../../../../../ThemeProvider/admin/theme'
+import {
+  ACTION_BUTTON_HEIGHT,
+  LINK_NODE_HEIGHT_GAP,
+  LINK_NODE_WIDTH_GAP_LEFT,
+  STEP_NODE_CARD_HEIGHT
+} from '../../nodes/StepBlockNode/libs/sizes'
 import { PositionMap } from '../arrangeSteps'
-import { filterActionBlocks } from '../filterActionBlocks'
 
 export const MARKER_END_DEFAULT_COLOR = rgbToHex(
   lighten(adminLight.palette.secondary.main, 0.8)
@@ -27,7 +33,7 @@ export const socialNode = {
   id: 'SocialPreview',
   type: 'SocialPreview',
   data: {},
-  position: { x: -365, y: -46 },
+  position: { x: -240, y: -46 },
   draggable: false
 }
 
@@ -85,7 +91,10 @@ export function transformSteps(
 
   function processActionBlock(
     block: TreeBlock,
-    step: TreeBlock<StepBlock>
+    step: TreeBlock<StepBlock>,
+    priorAction: boolean,
+    actionCount: number,
+    blockIndex: number
   ): void {
     if (!('action' in block) || block.action == null) return
 
@@ -101,12 +110,54 @@ export function transformSteps(
         ...defaultEdgeProps
       })
     }
+
+    if (
+      block.action.__typename === 'LinkAction' ||
+      block.action.__typename === 'EmailAction'
+    ) {
+      edges.push({
+        id: `${block.id}->LinkNode-${block.id}`,
+        source: step.id,
+        sourceHandle: block.id,
+        target: `LinkNode-${block.id}`,
+        ...defaultEdgeProps
+      })
+
+      const position = {
+        x: LINK_NODE_WIDTH_GAP_LEFT,
+        y:
+          STEP_NODE_CARD_HEIGHT +
+          ACTION_BUTTON_HEIGHT * (blockIndex + 1) +
+          (priorAction ? LINK_NODE_HEIGHT_GAP * actionCount : 0)
+      }
+
+      nodes.push({
+        id: `LinkNode-${block.id}`,
+        type: 'Link',
+        data: {},
+        position,
+        parentNode: step.id,
+        draggable: false
+      })
+    }
   }
 
   steps.forEach((step) => {
     connectStepToNextBlock(step, steps)
     const actionBlocks = filterActionBlocks(step)
-    actionBlocks.forEach((block) => processActionBlock(block, step))
+
+    actionBlocks.reduce((actionCount, block, blockIndex) => {
+      const isLinkOrEmail =
+        block.action?.__typename === 'LinkAction' ||
+        block.action?.__typename === 'EmailAction'
+
+      const priorAction = actionCount > 0
+      const actionIndex = isLinkOrEmail ? actionCount : 0
+
+      processActionBlock(block, step, priorAction, actionIndex, blockIndex)
+      return isLinkOrEmail ? actionCount + 1 : actionCount
+    }, 0)
+
     nodes.push({
       id: step.id,
       type: 'StepBlock',

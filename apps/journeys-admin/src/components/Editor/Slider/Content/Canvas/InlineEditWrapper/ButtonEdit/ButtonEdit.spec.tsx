@@ -1,13 +1,16 @@
-import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { ApolloLink } from '@apollo/client'
+import { MockLink, MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
+import DebounceLink from 'apollo-link-debounce'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { ButtonFields } from '../../../../../../../../__generated__/ButtonFields'
-import { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
 import { ButtonVariant } from '../../../../../../../../__generated__/globalTypes'
+import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
+import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
 import { BUTTON_BLOCK_UPDATE_CONTENT, ButtonEdit } from '.'
 
@@ -20,7 +23,7 @@ describe('ButtonEdit', () => {
   const props: TreeBlock<ButtonFields> = {
     __typename: 'ButtonBlock',
     id: 'button.id',
-    label: 'test label',
+    label: 'label',
     parentBlockId: 'card',
     parentOrder: 0,
     buttonVariant: ButtonVariant.contained,
@@ -32,171 +35,153 @@ describe('ButtonEdit', () => {
     children: []
   }
 
+  const mockLabelUpdate1 = {
+    request: {
+      query: BUTTON_BLOCK_UPDATE_CONTENT,
+      variables: {
+        id: 'button.id',
+        label: 'label update'
+      }
+    },
+    result: jest.fn(() => ({
+      data: {
+        buttonBlockUpdate: [
+          {
+            __typename: 'ButtonBlock',
+            id: 'button.id',
+            label: 'label update'
+          }
+        ]
+      }
+    }))
+  }
+
+  const mockLabelUpdate2 = {
+    request: {
+      query: BUTTON_BLOCK_UPDATE_CONTENT,
+      variables: {
+        id: 'button.id',
+        label: 'label'
+      }
+    },
+    result: jest.fn(() => ({
+      data: {
+        buttonBlockUpdate: [
+          {
+            __typename: 'ButtonBlock',
+            id: 'button.id',
+            label: 'label'
+          }
+        ]
+      }
+    }))
+  }
+
+  beforeEach(() => jest.clearAllMocks())
+
   it('selects the input on click', () => {
-    const { getByRole } = render(
+    render(
       <MockedProvider>
         <ButtonEdit {...props} />
       </MockedProvider>
     )
-    const input = getByRole('textbox')
+    const input = screen.getByRole('textbox')
     fireEvent.click(input)
     expect(input).toHaveFocus()
-    expect(input).toHaveAttribute('placeholder', 'Edit text...')
   })
 
-  it('saves the button label on onBlur', async () => {
-    const result = jest.fn(() => ({
-      data: {
-        buttonBlockUpdate: [
-          {
-            __typename: 'ButtonBlock',
-            id: 'button.id',
-            label: 'updated label'
-          }
-        ]
-      }
-    }))
+  it('should submit if the label has changed', async () => {
+    const link = ApolloLink.from([
+      new DebounceLink(500),
+      new MockLink([mockLabelUpdate1])
+    ])
 
-    const { getByRole } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: BUTTON_BLOCK_UPDATE_CONTENT,
-              variables: {
-                id: 'button.id',
-                journeyId: 'journeyId',
-                input: {
-                  label: 'updated label'
-                }
-              }
-            },
-            result
-          }
-        ]}
-      >
-        <JourneyProvider
-          value={{
-            journey: { id: 'journeyId' } as unknown as Journey,
-            variant: 'admin'
-          }}
-        >
-          <EditorProvider>
-            <ButtonEdit {...props} />
-          </EditorProvider>
-        </JourneyProvider>
+    render(
+      <MockedProvider link={link}>
+        <EditorProvider>
+          <ButtonEdit {...props} />
+        </EditorProvider>
+      </MockedProvider>
+    )
+    const input = screen.getByRole('textbox', { name: '' })
+    await userEvent.type(input, ' update')
+    await waitFor(() => expect(mockLabelUpdate1.result).toHaveBeenCalled())
+  })
+
+  it('should undo the label change', async () => {
+    const link = ApolloLink.from([
+      new DebounceLink(500),
+      new MockLink([mockLabelUpdate1, mockLabelUpdate2])
+    ])
+
+    render(
+      <MockedProvider link={link}>
+        <EditorProvider>
+          <CommandUndoItem variant="button" />
+          <ButtonEdit {...props} />
+        </EditorProvider>
       </MockedProvider>
     )
 
-    const input = getByRole('textbox')
-    fireEvent.click(input)
-    fireEvent.change(input, { target: { value: '    updated label    ' } })
-    fireEvent.blur(input)
-    await waitFor(() => expect(result).toHaveBeenCalled())
+    const input = screen.getByRole('textbox', { name: '' })
+    await userEvent.type(input, ' update')
+    await waitFor(() => expect(mockLabelUpdate1.result).toHaveBeenCalled())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(mockLabelUpdate2.result).toHaveBeenCalled())
   })
 
-  it('should not save if the button label hasnt changed', async () => {
-    const result = jest.fn(() => ({
-      data: {
-        buttonBlockUpdate: [
-          {
-            __typename: 'ButtonBlock',
-            id: 'button.id',
-            label: 'test label'
-          }
-        ]
-      }
-    }))
+  it('should redo the undone label change', async () => {
+    const redoLabelMock = {
+      ...mockLabelUpdate1
+    }
 
-    const { getByRole } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: BUTTON_BLOCK_UPDATE_CONTENT,
-              variables: {
-                id: 'button.id',
-                journeyId: 'journeyId',
-                input: {
-                  label: 'test label'
-                }
-              }
-            },
-            result
-          }
-        ]}
-      >
-        <JourneyProvider
-          value={{
-            journey: { id: 'journeyId' } as unknown as Journey,
-            variant: 'admin'
-          }}
-        >
-          <EditorProvider>
-            <ButtonEdit {...props} />
-          </EditorProvider>
-        </JourneyProvider>
+    const link = ApolloLink.from([
+      new DebounceLink(500),
+      new MockLink([mockLabelUpdate1, mockLabelUpdate2, redoLabelMock])
+    ])
+
+    render(
+      <MockedProvider link={link}>
+        <EditorProvider>
+          <CommandUndoItem variant="button" />
+          <CommandRedoItem variant="button" />
+          <ButtonEdit {...props} />
+        </EditorProvider>
       </MockedProvider>
     )
 
-    const input = getByRole('textbox', { name: '' })
-    fireEvent.click(input)
-    fireEvent.change(input, { target: { value: 'test label' } })
-    fireEvent.blur(input)
-    await waitFor(() => expect(result).not.toHaveBeenCalled())
+    const input = screen.getByRole('textbox', { name: '' })
+    await userEvent.type(input, ' update')
+    await waitFor(() => expect(mockLabelUpdate1.result).toHaveBeenCalled())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(mockLabelUpdate2.result).toHaveBeenCalled())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+    await waitFor(() => expect(redoLabelMock.result).toHaveBeenCalled())
   })
 
-  it('saves the button label on outside click', async () => {
-    const result = jest.fn(() => ({
-      data: {
-        buttonBlockUpdate: [
-          {
-            __typename: 'ButtonBlock',
-            id: 'button.id',
-            label: 'updated label'
-          }
-        ]
-      }
-    }))
+  it('should not submit if the current value is the same', async () => {
+    const link = ApolloLink.from([
+      new DebounceLink(500),
+      new MockLink([mockLabelUpdate2])
+    ])
 
-    const { getByRole } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: BUTTON_BLOCK_UPDATE_CONTENT,
-              variables: {
-                id: 'button.id',
-                journeyId: 'journeyId',
-                input: {
-                  label: 'updated label'
-                }
-              }
-            },
-            result
-          }
-        ]}
-      >
-        <JourneyProvider
-          value={{
-            journey: { id: 'journeyId' } as unknown as Journey,
-            variant: 'admin'
-          }}
-        >
-          <EditorProvider>
-            <h1 className="EditorCanvas">Other content</h1>
-            <iframe>
-              <ButtonEdit {...props} />
-            </iframe>
-          </EditorProvider>
-        </JourneyProvider>
+    render(
+      <MockedProvider link={link}>
+        <EditorProvider>
+          <ButtonEdit {...props} />
+        </EditorProvider>
       </MockedProvider>
     )
 
-    const input = getByRole('textbox')
-    fireEvent.click(input)
-    fireEvent.change(input, { target: { value: '    updated label    ' } })
-    fireEvent.click(getByRole('heading', { level: 1 }))
-    await waitFor(() => expect(result).toHaveBeenCalled())
+    const input = screen.getByRole('textbox', { name: '' })
+    await userEvent.type(input, 'label', {
+      initialSelectionStart: 0,
+      initialSelectionEnd: 5
+    })
+
+    await waitFor(() => expect(mockLabelUpdate2.result).not.toHaveBeenCalled())
   })
 })

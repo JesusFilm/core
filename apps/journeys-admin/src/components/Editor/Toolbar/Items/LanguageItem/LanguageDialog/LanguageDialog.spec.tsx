@@ -3,9 +3,8 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-
-import { GET_LANGUAGES } from '../../../../../../libs/useLanguagesQuery/useLanguagesQuery'
-import { defaultJourney } from '../../../../data'
+import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
+import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 
 import { JOURNEY_LANGUAGE_UPDATE } from './LanguageDialog'
 
@@ -31,7 +30,7 @@ describe('JourneyView/Menu/LanguageDialog', () => {
               {
                 value: 'English',
                 primary: true,
-                __typename: 'Translation'
+                __typename: 'LanguageName'
               }
             ]
           },
@@ -42,12 +41,12 @@ describe('JourneyView/Menu/LanguageDialog', () => {
               {
                 value: 'Français',
                 primary: true,
-                __typename: 'Translation'
+                __typename: 'LanguageName'
               },
               {
                 value: 'French',
                 primary: false,
-                __typename: 'Translation'
+                __typename: 'LanguageName'
               }
             ]
           },
@@ -58,12 +57,12 @@ describe('JourneyView/Menu/LanguageDialog', () => {
               {
                 value: 'Deutsch',
                 primary: true,
-                __typename: 'Translation'
+                __typename: 'LanguageName'
               },
               {
                 value: 'German, Standard',
                 primary: false,
-                __typename: 'Translation'
+                __typename: 'LanguageName'
               }
             ]
           }
@@ -112,12 +111,12 @@ describe('JourneyView/Menu/LanguageDialog', () => {
               {
                 value: 'Français',
                 primary: true,
-                __typename: 'Translation'
+                __typename: 'LanguageName'
               },
               {
                 value: 'French',
                 primary: false,
-                __typename: 'Translation'
+                __typename: 'LanguageName'
               }
             ]
           }

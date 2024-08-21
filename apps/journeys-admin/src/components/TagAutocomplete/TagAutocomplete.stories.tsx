@@ -1,7 +1,7 @@
 import { jest } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
 
-import { simpleComponentConfig } from '../../libs/storybook'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { TagAutocomplete } from './TagAutocomplete'
 

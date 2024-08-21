@@ -1,4 +1,5 @@
 import { render } from '@testing-library/react'
+import { NextRouter, useRouter } from 'next/router'
 
 import {
   GetJourneyVisitors_visitors_edges_node_visitor as Visitor,
@@ -8,7 +9,20 @@ import { VisitorStatus } from '../../../../__generated__/globalTypes'
 
 import { VisitorCard } from '.'
 
+jest.mock('next/router', () => ({
+  __esModule: true,
+  useRouter: jest.fn()
+}))
+
+const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+
 describe('VisitorCard', () => {
+  beforeEach(() => {
+    mockUseRouter.mockReturnValue({
+      query: { redirect: null }
+    } as unknown as NextRouter)
+  })
+
   const visitorNode: VisitorNode = {
     __typename: 'JourneyVisitor',
     visitorId: 'visitor.id-012345678901',
@@ -40,6 +54,21 @@ describe('VisitorCard', () => {
     expect(getByRole('link')).toHaveAttribute(
       'href',
       '/reports/visitors/visitor.id-012345678901'
+    )
+  })
+
+  it('should pass journey id in query params if available', () => {
+    mockUseRouter.mockReturnValue({
+      query: { journeyId: 'journeyId' }
+    } as unknown as NextRouter)
+
+    const { getByRole, getAllByText } = render(
+      <VisitorCard visitorNode={visitorNode} loading={false} />
+    )
+    expect(getAllByText('FirstName LastName')).toHaveLength(3)
+    expect(getByRole('link')).toHaveAttribute(
+      'href',
+      '/reports/visitors/visitor.id-012345678901?journeyId=journeyId'
     )
   })
 

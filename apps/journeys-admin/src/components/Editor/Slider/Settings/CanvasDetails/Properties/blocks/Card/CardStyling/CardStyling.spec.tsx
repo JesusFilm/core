@@ -1,6 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -16,6 +16,7 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../../../../__generated__/globalTypes'
+import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 
 import { CARD_BLOCK_THEME_MODE_UPDATE, CardStyling } from './CardStyling'
 
@@ -53,7 +54,7 @@ const journey: Journey = {
     iso3: 'eng',
     name: [
       {
-        __typename: 'Translation',
+        __typename: 'LanguageName',
         value: 'English',
         primary: true
       }
@@ -79,7 +80,7 @@ const journey: Journey = {
 
 describe('CardStyling', () => {
   it('shows default', () => {
-    const { getByText } = render(
+    render(
       <MockedProvider>
         <JourneyProvider value={{ journey, variant: 'admin' }}>
           <EditorProvider initialState={{ selectedBlock: initialBlock }}>
@@ -88,7 +89,7 @@ describe('CardStyling', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    expect(getByText('Default')).toBeInTheDocument()
+    expect(screen.queryByTestId('selected')).not.toBeInTheDocument()
   })
 
   it('shows dark', async () => {
@@ -104,7 +105,7 @@ describe('CardStyling', () => {
       fullscreen: false,
       children: []
     }
-    const { getByText } = render(
+    render(
       <MockedProvider>
         <JourneyProvider value={{ journey, variant: 'admin' }}>
           <EditorProvider initialState={{ selectedBlock: card }}>
@@ -113,7 +114,10 @@ describe('CardStyling', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    expect(getByText('Dark')).toBeInTheDocument()
+    expect(screen.getByTestId('selected').children[0]).toHaveAttribute(
+      'alt',
+      'Dark'
+    )
   })
 
   it('works in a step block', () => {
@@ -138,7 +142,7 @@ describe('CardStyling', () => {
       parentOrder: 0,
       children: [card]
     }
-    const { getByText } = render(
+    render(
       <MockedProvider>
         <JourneyProvider value={{ journey, variant: 'admin' }}>
           <EditorProvider initialState={{ selectedBlock: step }}>
@@ -147,7 +151,10 @@ describe('CardStyling', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    expect(getByText('Dark')).toBeInTheDocument()
+    expect(screen.getByTestId('selected').children[0]).toHaveAttribute(
+      'alt',
+      'Dark'
+    )
   })
 
   it('shows light', () => {
@@ -163,7 +170,7 @@ describe('CardStyling', () => {
       fullscreen: false,
       children: []
     }
-    const { getByText } = render(
+    render(
       <MockedProvider>
         <JourneyProvider value={{ journey, variant: 'admin' }}>
           <EditorProvider initialState={{ selectedBlock: card }}>
@@ -172,7 +179,10 @@ describe('CardStyling', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    expect(getByText('Light')).toBeInTheDocument()
+    expect(screen.getByTestId('selected').children[0]).toHaveAttribute(
+      'alt',
+      'Light'
+    )
   })
 
   it('should check if the mutation gets called', async () => {
@@ -195,7 +205,7 @@ describe('CardStyling', () => {
       }
     }))
 
-    const { getByTestId } = render(
+    render(
       <MockedProvider
         cache={cache}
         mocks={[
@@ -204,7 +214,6 @@ describe('CardStyling', () => {
               query: CARD_BLOCK_THEME_MODE_UPDATE,
               variables: {
                 id: 'card1.id',
-                journeyId: 'journeyId',
                 input: {
                   themeMode: ThemeMode.dark,
                   themeName: ThemeName.base
@@ -222,7 +231,74 @@ describe('CardStyling', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('Dark'))
+    fireEvent.click(screen.getByTestId('Dark'))
     await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
+  it('should undo a styling change', async () => {
+    const cache = new InMemoryCache()
+    cache.restore({
+      'Journey:journeyId': {
+        blocks: [{ __ref: 'CardBlock:card1.id' }],
+        id: 'journeyId',
+        __typename: 'Journey'
+      }
+    })
+    const result = jest.fn(() => ({
+      data: {
+        cardBlockUpdate: {
+          id: 'card1.id',
+          themeMode: ThemeMode.dark,
+          themeName: ThemeName.base,
+          __typename: 'CardBlock'
+        }
+      }
+    }))
+
+    render(
+      <MockedProvider
+        cache={cache}
+        mocks={[
+          {
+            request: {
+              query: CARD_BLOCK_THEME_MODE_UPDATE,
+              variables: {
+                id: 'card1.id',
+                input: {
+                  themeMode: ThemeMode.dark,
+                  themeName: ThemeName.base
+                }
+              }
+            },
+            result
+          },
+          {
+            request: {
+              query: CARD_BLOCK_THEME_MODE_UPDATE,
+              variables: {
+                id: 'card1.id',
+                input: { themeMode: 'light', themeName: 'base' }
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <EditorProvider
+            initialState={{
+              selectedBlock: { ...initialBlock, themeMode: ThemeMode.light }
+            }}
+          >
+            <CardStyling />
+            <CommandUndoItem variant="button" />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(screen.getByTestId('Dark'))
+    await waitFor(() => expect(result).toHaveBeenCalledTimes(1))
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(result).toHaveBeenCalledTimes(2))
   })
 })

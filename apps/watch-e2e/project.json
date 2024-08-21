@@ -39,6 +39,15 @@
       "options": {
         "command": "npx tsc -b apps/watch-e2e/tsconfig.json"
       }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "cache": true,
+        "cacheLocation": ".cache/watch-e2e/eslint",
+        "cacheStrategy": "content"
+      }
     }
   },
   "tags": [],

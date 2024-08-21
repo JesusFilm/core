@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { mockDeep } from 'jest-mock-extended'
 
 import { VideoBlockSource } from '../../../__generated__/graphql'
+import { PrismaService } from '../../../lib/prisma.service'
 import { EventService } from '../event.service'
 
 import {
@@ -18,7 +20,8 @@ describe('VideoResolver', () => {
     provide: EventService,
     useFactory: () => ({
       save: jest.fn((event) => event),
-      validateBlockEvent: jest.fn(() => response)
+      validateBlockEvent: jest.fn(() => response),
+      resetEventsEmailDelay: jest.fn()
     })
   }
 
@@ -42,7 +45,14 @@ describe('VideoResolver', () => {
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
-        providers: [VideoStartEventResolver, eventService]
+        providers: [
+          VideoStartEventResolver,
+          eventService,
+          {
+            provide: PrismaService,
+            useValue: mockDeep<PrismaService>()
+          }
+        ]
       }).compile()
       resolver = module.get<VideoStartEventResolver>(VideoStartEventResolver)
     })
@@ -67,7 +77,14 @@ describe('VideoResolver', () => {
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
-        providers: [VideoPlayEventResolver, eventService]
+        providers: [
+          VideoPlayEventResolver,
+          eventService,
+          {
+            provide: PrismaService,
+            useValue: mockDeep<PrismaService>()
+          }
+        ]
       }).compile()
       resolver = module.get<VideoPlayEventResolver>(VideoPlayEventResolver)
     })

@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
 import { ComponentProps, ReactElement } from 'react'
 
 import { GetJourneyWithPermissions_journey_userJourneys as UserJourney } from '../../../../../__generated__/GetJourneyWithPermissions'
@@ -23,7 +24,8 @@ const owner: UserJourney = {
     lastName: 'ownerLastName',
     email: 'owner@email.com',
     imageUrl: 'imageSrc'
-  }
+  },
+  journeyNotification: null
 }
 
 const editor: UserJourney = {
@@ -37,7 +39,8 @@ const editor: UserJourney = {
     lastName: 'editorLastName',
     email: 'editor@email.com',
     imageUrl: null
-  }
+  },
+  journeyNotification: null
 }
 
 const editor2: UserJourney = {
@@ -51,7 +54,8 @@ const editor2: UserJourney = {
     lastName: 'editorLastName',
     email: 'editor2@email.com',
     imageUrl: null
-  }
+  },
+  journeyNotification: null
 }
 
 const userRequest: UserJourney = {
@@ -65,7 +69,8 @@ const userRequest: UserJourney = {
     lastName: 'requestLastName',
     email: 'request@email.com',
     imageUrl: null
-  }
+  },
+  journeyNotification: null
 }
 
 const userInvite: UserInvite = {
@@ -93,11 +98,13 @@ const UserListItemComponent = ({
 describe('UserListItem', () => {
   it('should display user avatar', () => {
     const { getByRole } = render(
-      <UserListItemComponent
-        listItem={owner}
-        currentUser={owner}
-        journeyId="journeyId"
-      />
+      <SnackbarProvider>
+        <UserListItemComponent
+          listItem={owner}
+          currentUser={owner}
+          journeyId="journeyId"
+        />
+      </SnackbarProvider>
     )
 
     expect(getByRole('img').getAttribute('alt')).toBe(
@@ -111,11 +118,13 @@ describe('UserListItem', () => {
   describe('owner permissions', () => {
     it('should not allow owners to edit their own access', () => {
       const { getByRole } = render(
-        <UserListItemComponent
-          listItem={owner}
-          currentUser={owner}
-          journeyId="journeyId"
-        />
+        <SnackbarProvider>
+          <UserListItemComponent
+            listItem={owner}
+            currentUser={owner}
+            journeyId="journeyId"
+          />
+        </SnackbarProvider>
       )
 
       expect(getByRole('button', { name: 'Owner' })).toBeDisabled()
@@ -123,11 +132,13 @@ describe('UserListItem', () => {
 
     it('should enable all access actions to owners on editors', () => {
       const { getByRole, getAllByRole } = render(
-        <UserListItemComponent
-          listItem={editor}
-          currentUser={owner}
-          journeyId="journeyId"
-        />
+        <SnackbarProvider>
+          <UserListItemComponent
+            listItem={editor}
+            currentUser={owner}
+            journeyId="journeyId"
+          />
+        </SnackbarProvider>
       )
 
       expect(getByRole('button', { name: 'Editor' })).not.toBeDisabled()
@@ -141,11 +152,13 @@ describe('UserListItem', () => {
 
     it('should enable all access actions to owners on requested invites', () => {
       const { getByRole, getAllByRole } = render(
-        <UserListItemComponent
-          listItem={userRequest}
-          currentUser={owner}
-          journeyId="journeyId"
-        />
+        <SnackbarProvider>
+          <UserListItemComponent
+            listItem={userRequest}
+            currentUser={owner}
+            journeyId="journeyId"
+          />
+        </SnackbarProvider>
       )
 
       expect(getByRole('button', { name: 'Manage' })).not.toBeDisabled()
@@ -178,11 +191,13 @@ describe('UserListItem', () => {
   describe('editor permissions', () => {
     it('should block editors from editing owners access', () => {
       const { getByRole } = render(
-        <UserListItemComponent
-          listItem={owner}
-          currentUser={editor}
-          journeyId="journeyId"
-        />
+        <SnackbarProvider>
+          <UserListItemComponent
+            listItem={owner}
+            currentUser={editor}
+            journeyId="journeyId"
+          />
+        </SnackbarProvider>
       )
 
       expect(getByRole('button', { name: 'Owner' })).toBeDisabled()
@@ -190,11 +205,13 @@ describe('UserListItem', () => {
 
     it('should block editors from editing other editors access', () => {
       const { getByRole } = render(
-        <UserListItemComponent
-          listItem={editor2}
-          currentUser={editor}
-          journeyId="journeyId"
-        />
+        <SnackbarProvider>
+          <UserListItemComponent
+            listItem={editor2}
+            currentUser={editor}
+            journeyId="journeyId"
+          />
+        </SnackbarProvider>
       )
 
       expect(getByRole('button', { name: 'Editor' })).toBeDisabled()
@@ -202,11 +219,13 @@ describe('UserListItem', () => {
 
     it('should not allow editors to remove their own access', () => {
       const { getByRole } = render(
-        <UserListItemComponent
-          listItem={editor}
-          currentUser={editor}
-          journeyId="journeyId"
-        />
+        <SnackbarProvider>
+          <UserListItemComponent
+            listItem={editor}
+            currentUser={editor}
+            journeyId="journeyId"
+          />
+        </SnackbarProvider>
       )
 
       expect(getByRole('button', { name: 'Editor' })).toBeDisabled()
@@ -214,11 +233,13 @@ describe('UserListItem', () => {
 
     it('should allow editors to edit access on requested users', () => {
       const { getByRole, getAllByRole } = render(
-        <UserListItemComponent
-          listItem={userRequest}
-          currentUser={editor}
-          journeyId="journeyId"
-        />
+        <SnackbarProvider>
+          <UserListItemComponent
+            listItem={userRequest}
+            currentUser={editor}
+            journeyId="journeyId"
+          />
+        </SnackbarProvider>
       )
 
       expect(getByRole('button', { name: 'Manage' })).not.toBeDisabled()
@@ -250,11 +271,13 @@ describe('UserListItem', () => {
 
   it('should block all other roles from editing users access by default', () => {
     const { getByRole } = render(
-      <UserListItemComponent
-        listItem={userRequest}
-        currentUser={userRequest}
-        journeyId="journeyId"
-      />
+      <SnackbarProvider>
+        <UserListItemComponent
+          listItem={userRequest}
+          currentUser={userRequest}
+          journeyId="journeyId"
+        />
+      </SnackbarProvider>
     )
 
     expect(getByRole('button', { name: 'Manage' })).toBeDisabled()
@@ -297,11 +320,13 @@ describe('UserListItem', () => {
             }
           ]}
         >
-          <UserListItem
-            listItem={editor}
-            currentUser={owner}
-            journeyId="journeyId"
-          />
+          <SnackbarProvider>
+            <UserListItem
+              listItem={editor}
+              currentUser={owner}
+              journeyId="journeyId"
+            />
+          </SnackbarProvider>
         </MockedProvider>
       )
       fireEvent.click(getByRole('button', { name: 'Editor' }))
@@ -335,11 +360,13 @@ describe('UserListItem', () => {
             }
           ]}
         >
-          <UserListItem
-            listItem={userRequest}
-            currentUser={owner}
-            journeyId="journeyId"
-          />
+          <SnackbarProvider>
+            <UserListItem
+              listItem={userRequest}
+              currentUser={owner}
+              journeyId="journeyId"
+            />
+          </SnackbarProvider>
         </MockedProvider>
       )
 

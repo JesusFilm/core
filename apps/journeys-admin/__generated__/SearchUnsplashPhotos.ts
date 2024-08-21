@@ -9,7 +9,7 @@
 
 export interface SearchUnsplashPhotos_searchUnsplashPhotos_results_urls {
   __typename: "UnsplashPhotoUrls";
-  small: string;
+  raw: string;
   regular: string;
 }
 

@@ -5,9 +5,10 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
+import { ParentTagIcon } from '@core/journeys/ui/ParentTagIcon'
+import { useTagsQuery } from '@core/journeys/ui/useTagsQuery'
+
 import { GetTags_tags as Tags } from '../../../../../../../../__generated__/GetTags'
-import { useTagsQuery } from '../../../../../../../libs/useTagsQuery'
-import { ParentTagIcon } from '../../../../../../ParentTagIcon'
 import {
   AutocompleteOption,
   TagAutocomplete

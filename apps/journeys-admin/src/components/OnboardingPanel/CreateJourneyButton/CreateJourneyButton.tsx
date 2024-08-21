@@ -2,12 +2,12 @@ import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
+import { useTeam } from '@core/journeys/ui/TeamProvider'
 import FilePlus1Icon from '@core/shared/ui/icons/FilePlus1'
 
 import { useJourneyCreateMutation } from '../../../libs/useJourneyCreateMutation'
 import { ContainedIconButton } from '../../ContainedIconButton'
 import { SidePanelContainer } from '../../PageWrapper/SidePanelContainer'
-import { useTeam } from '../../Team/TeamProvider'
 
 export function CreateJourneyButton(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')

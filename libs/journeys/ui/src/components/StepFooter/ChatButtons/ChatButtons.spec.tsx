@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import { usePlausible } from 'next-plausible'
 
 import {
   JourneyStatus,
@@ -14,8 +15,18 @@ import {
   JourneyFields_chatButtons as ChatButton,
   JourneyFields as Journey
 } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
+import { keyify } from '../../../libs/plausibleHelpers'
 
 import { CHAT_BUTTON_EVENT_CREATE, ChatButtons } from './ChatButtons'
+
+jest.mock('next-plausible', () => ({
+  __esModule: true,
+  usePlausible: jest.fn()
+}))
+
+const mockUsePlausible = usePlausible as jest.MockedFunction<
+  typeof usePlausible
+>
 
 describe('ChatButtons', () => {
   const chatButtons: ChatButton[] = [
@@ -59,7 +70,7 @@ describe('ChatButtons', () => {
       iso3: 'eng',
       name: [
         {
-          __typename: 'Translation',
+          __typename: 'LanguageName',
           value: 'English',
           primary: true
         }
@@ -98,7 +109,6 @@ describe('ChatButtons', () => {
         query: CHAT_BUTTON_EVENT_CREATE,
         variables: {
           input: {
-            id: chatButtons[0]?.id,
             blockId: stepBlock?.id,
             stepId: stepBlock?.id,
             value: chatButtons[0].platform
@@ -109,8 +119,23 @@ describe('ChatButtons', () => {
     }
   ]
 
+  const originalLocation = window.location
+  const mockOrigin = 'https://example.com'
+
+  beforeAll(() => {
+    Object.defineProperty(window, 'location', {
+      value: {
+        origin: mockOrigin
+      }
+    })
+  })
+
   beforeEach(() => {
     jest.clearAllMocks()
+  })
+
+  afterAll(() => {
+    Object.defineProperty(window, 'location', originalLocation)
   })
 
   it('renders chat buttons', () => {
@@ -131,6 +156,8 @@ describe('ChatButtons', () => {
   it('handles button click and sends a mutation', async () => {
     window.open = jest.fn()
     blockHistoryVar([stepBlock])
+    const mockPlausible = jest.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
 
     const { getAllByRole } = render(
       <MockedProvider mocks={mocks}>
@@ -144,6 +171,26 @@ describe('ChatButtons', () => {
     fireEvent.click(buttons[0])
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(window.open).toHaveBeenCalledWith(chatButtons[0].link, '_blank')
+    expect(mockPlausible).toHaveBeenCalledWith('footerChatButtonClick', {
+      u: `${mockOrigin}/journeyId/step`,
+      props: {
+        id: '1',
+        blockId: 'step',
+        stepId: 'step',
+        value: 'facebook',
+        key: keyify({
+          stepId: 'step',
+          event: 'footerChatButtonClick',
+          blockId: 'step',
+          target: 'link:https://m.me/:facebook'
+        }),
+        simpleKey: keyify({
+          stepId: 'step',
+          event: 'footerChatButtonClick',
+          blockId: 'step'
+        })
+      }
+    })
   })
 
   it('does not open a new window or send a mutation for admin user', async () => {

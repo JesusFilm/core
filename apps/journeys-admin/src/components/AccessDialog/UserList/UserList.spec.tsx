@@ -1,4 +1,6 @@
+import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
 
 import { GetJourneyWithPermissions_journey_userJourneys as UserJourney } from '../../../../__generated__/GetJourneyWithPermissions'
 import { GetUserInvites_userInvites as UserInvite } from '../../../../__generated__/GetUserInvites'
@@ -18,7 +20,8 @@ describe('UserList', () => {
       lastName: 'lastName1',
       email: 'name1@email.com',
       imageUrl: null
-    }
+    },
+    journeyNotification: null
   }
 
   const userJourney2: UserJourney = {
@@ -32,7 +35,8 @@ describe('UserList', () => {
       lastName: 'lastName2',
       email: 'name2@email.com',
       imageUrl: null
-    }
+    },
+    journeyNotification: null
   }
 
   const userInvite: UserInvite = {
@@ -45,63 +49,77 @@ describe('UserList', () => {
   }
 
   it('should display title and list of users', () => {
-    const { getByRole, getAllByRole } = render(
-      <UserList
-        title="Users with Access"
-        users={[userJourney1, userJourney2]}
-        invites={[userInvite]}
-        currentUser={userJourney1}
-        journeyId="journey.id"
-      />
+    const { getByText } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <UserList
+            title="Users with Access"
+            users={[userJourney1, userJourney2]}
+            invites={[userInvite]}
+            currentUser={userJourney1}
+            journeyId="journey.id"
+          />
+        </SnackbarProvider>
+      </MockedProvider>
     )
-    expect(
-      getByRole('heading', { name: 'Users with Access' })
-    ).toBeInTheDocument()
-    expect(getAllByRole('listitem')).toHaveLength(3)
-    expect(getAllByRole('listitem')[0]).toHaveTextContent(
-      'firstName2 lastName2'
-    )
-    expect(getAllByRole('listitem')[1]).toHaveTextContent(
-      'firstName1 lastName1'
-    )
-    expect(getAllByRole('listitem')[2]).toHaveTextContent('invite@email.com')
+    expect(getByText('Users with Access')).toBeInTheDocument()
+    expect(getByText('firstName2 lastName2')).toBeInTheDocument()
+    expect(getByText('firstName1 lastName1')).toBeInTheDocument()
+    expect(getByText('invite@email.com')).toBeInTheDocument()
   })
 
   it('should hide invites that have been removed', async () => {
-    const { getByRole, getAllByRole } = render(
-      <UserList
-        title="Users with Access"
-        users={[userJourney1]}
-        invites={[{ ...userInvite, removedAt: 'dateTime' }]}
-        currentUser={userJourney1}
-        journeyId="journey.id"
-      />
+    const { getByText, queryByText } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <UserList
+            title="Users with Access"
+            users={[userJourney1]}
+            invites={[{ ...userInvite, removedAt: 'dateTime' }]}
+            currentUser={userJourney1}
+            journeyId="journey.id"
+          />
+        </SnackbarProvider>
+      </MockedProvider>
     )
-    expect(
-      getByRole('heading', { name: 'Users with Access' })
-    ).toBeInTheDocument()
-    expect(getAllByRole('listitem')).toHaveLength(1)
-    expect(getAllByRole('listitem')[0]).toHaveTextContent(
-      'firstName1 lastName1'
-    )
+    expect(getByText('Users with Access')).toBeInTheDocument()
+    expect(getByText('firstName1 lastName1')).toBeInTheDocument()
+    expect(queryByText('invite@email.com')).not.toBeInTheDocument()
   })
 
   it('should hide invites that have been accepted', async () => {
-    const { getByRole, getAllByRole } = render(
-      <UserList
-        title="Users with Access"
-        users={[userJourney1]}
-        invites={[{ ...userInvite, acceptedAt: 'dateTime' }]}
-        currentUser={userJourney1}
-        journeyId="journey.id"
-      />
+    const { queryByText, getByText } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <UserList
+            title="Users with Access"
+            users={[userJourney1]}
+            invites={[{ ...userInvite, acceptedAt: 'dateTime' }]}
+            currentUser={userJourney1}
+            journeyId="journey.id"
+          />
+        </SnackbarProvider>
+      </MockedProvider>
     )
-    expect(
-      getByRole('heading', { name: 'Users with Access' })
-    ).toBeInTheDocument()
-    expect(getAllByRole('listitem')).toHaveLength(1)
-    expect(getAllByRole('listitem')[0]).toHaveTextContent(
-      'firstName1 lastName1'
+    expect(getByText('Users with Access')).toBeInTheDocument()
+    expect(getByText('firstName1 lastName1')).toBeInTheDocument()
+    expect(queryByText('invite@email.com')).not.toBeInTheDocument()
+  })
+
+  it('should not allow update of email notifications of users that is not current user', async () => {
+    const { getByRole } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <UserList
+            title="Users with Access"
+            users={[userJourney2]}
+            invites={[{ ...userInvite, acceptedAt: 'dateTime' }]}
+            currentUser={userJourney1}
+            journeyId="journey.id"
+          />
+        </SnackbarProvider>
+      </MockedProvider>
     )
+    expect(getByRole('checkbox')).toBeDisabled()
   })
 })

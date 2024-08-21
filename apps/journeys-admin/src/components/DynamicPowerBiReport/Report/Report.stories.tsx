@@ -3,9 +3,10 @@ import { Meta, StoryObj } from '@storybook/react'
 import fetch from 'node-fetch'
 import { ComponentProps } from 'react'
 
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
+
 import { JourneysReportType } from '../../../../__generated__/globalTypes'
 import { ApolloLoadingProvider } from '../../../../test/ApolloLoadingProvider'
-import { journeysAdminConfig } from '../../../libs/storybook'
 
 import { GET_ADMIN_JOURNEYS_REPORT } from './Report'
 

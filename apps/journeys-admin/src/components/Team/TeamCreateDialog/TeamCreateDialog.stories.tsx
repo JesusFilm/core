@@ -4,10 +4,11 @@ import { screen, userEvent } from '@storybook/testing-library'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement, useState } from 'react'
 
+import { TeamProvider } from '@core/journeys/ui/TeamProvider'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
+
 import { TeamCreate } from '../../../../__generated__/TeamCreate'
-import { journeysAdminConfig } from '../../../libs/storybook'
 import { TEAM_CREATE } from '../../../libs/useTeamCreateMutation/useTeamCreateMutation'
-import { TeamProvider } from '../TeamProvider'
 
 import { TeamCreateDialog } from '.'
 

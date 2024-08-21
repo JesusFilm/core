@@ -3,12 +3,17 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
 
-import { TreeBlock } from '@core/journeys/ui/block'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../__generated__/BlockFields'
-import { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
+import type { BlockFields_StepBlock as StepBlock } from '../../../../../../../../__generated__/BlockFields'
+import type { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
+import { TextResponseType } from '../../../../../../../../__generated__/globalTypes'
+import { deleteBlockMock as deleteBlock } from '../../../../../../../libs/useBlockDeleteMutation/useBlockDeleteMutation.mock'
+import { useBlockRestoreMutationMock as blockRestore } from '../../../../../../../libs/useBlockRestoreMutation/useBlockRestoreMutation.mock'
+import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
+import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
 import { TEXT_RESPONSE_BLOCK_CREATE } from './NewTextResponseButton'
 
@@ -34,19 +39,7 @@ describe('NewTextResponseButton', () => {
         id: 'textResponseBlock.id',
         journeyId: 'journey.id',
         parentBlockId: 'card.id',
-        submitLabel: 'Submit',
         label: 'Your answer here'
-      },
-      iconBlockCreateInput: {
-        id: 'icon.id',
-        journeyId: 'journey.id',
-        parentBlockId: 'textResponseBlock.id',
-        name: null
-      },
-      id: 'textResponseBlock.id',
-      journeyId: 'journey.id',
-      updateInput: {
-        submitIconId: 'icon.id'
       }
     }
   }
@@ -59,38 +52,8 @@ describe('NewTextResponseButton', () => {
         parentBlockId: 'card.id',
         parentOrder: 0,
         label: 'Your answer here',
-        submitLabel: 'Submit',
         hint: null,
-        minRows: null,
-        submitIconId: null,
-        action: null
-      },
-      submitIcon: {
-        __typename: 'IconBlock',
-        id: 'icon.id',
-        journeyId: 'journey.id',
-        parentBlockId: 'textResponseBlock.id',
-        parentOrder: null,
-        iconName: null,
-        iconColor: null,
-        iconSize: null
-      },
-      textResponseBlockUpdate: {
-        __typename: 'TextResponseBlock',
-        id: 'textResponseBlock.id',
-        parentBlockId: 'card.id',
-        parentOrder: null,
-        journeyId: 'journey.id',
-        submitIconId: 'icon.id',
-        submitLabel: 'Submit',
-        label: 'Your answer here',
-        hint: null,
-        minRows: null,
-        action: {
-          __typename: 'NavigateToBlockAction',
-          gtmEventName: 'gtmEventName',
-          blockId: 'def'
-        }
+        minRows: null
       }
     }
   }))
@@ -118,9 +81,10 @@ describe('NewTextResponseButton', () => {
     ]
   }
 
+  beforeEach(() => jest.clearAllMocks())
+
   it('should create a new TextResponseBlock', async () => {
     mockUuidv4.mockReturnValueOnce('textResponseBlock.id')
-    mockUuidv4.mockReturnValueOnce('icon.id')
 
     const { getByRole } = render(
       <MockedProvider
@@ -148,9 +112,122 @@ describe('NewTextResponseButton', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
+  it('should undo when undo clicked', async () => {
+    mockUuidv4.mockReturnValueOnce('textResponseBlock.id')
+    const deleteResult = jest.fn().mockResolvedValue({
+      ...deleteBlock.result,
+      type: TextResponseType.freeForm
+    })
+    const deleteBlockMock = {
+      ...deleteBlock,
+      request: {
+        ...deleteBlock.request,
+        variables: {
+          id: 'textResponseBlock.id'
+        }
+      },
+      result: deleteResult
+    }
+
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request,
+            result
+          },
+          {
+            ...deleteBlockMock,
+            result: deleteResult
+          }
+        ]}
+      >
+        <JourneyProvider
+          value={{
+            journey: { id: 'journey.id' } as unknown as Journey,
+            variant: 'admin'
+          }}
+        >
+          <EditorProvider initialState={{ selectedStep }}>
+            <CommandUndoItem variant="button" />
+            <NewTextResponseButton />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('button', { name: 'Text Input' }))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    fireEvent.click(getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(deleteResult).toHaveBeenCalled())
+  })
+
+  it('should redo when redo clicked', async () => {
+    mockUuidv4.mockReturnValueOnce('textResponseBlock.id')
+    const deleteResult = jest.fn().mockResolvedValue({ ...deleteBlock.result })
+    const deleteBlockMock = {
+      ...deleteBlock,
+      request: {
+        ...deleteBlock.request,
+        variables: {
+          id: 'textResponseBlock.id'
+        }
+      },
+      result: deleteResult
+    }
+
+    const restoreResult = jest
+      .fn()
+      .mockResolvedValue({ ...blockRestore.result })
+
+    const blockRestoreMock = {
+      ...blockRestore,
+      request: {
+        ...blockRestore.request,
+        variables: { id: 'textResponseBlock.id' }
+      },
+      result: restoreResult
+    }
+
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request,
+            result
+          },
+          {
+            ...deleteBlockMock,
+            result: deleteResult
+          },
+          { ...blockRestoreMock, result: restoreResult }
+        ]}
+      >
+        <JourneyProvider
+          value={{
+            journey: { id: 'journey.id' } as unknown as Journey,
+            variant: 'admin'
+          }}
+        >
+          <EditorProvider initialState={{ selectedStep }}>
+            <CommandRedoItem variant="button" />
+            <CommandUndoItem variant="button" />
+            <NewTextResponseButton />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('button', { name: 'Text Input' }))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    fireEvent.click(getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(deleteResult).toHaveBeenCalled())
+    fireEvent.click(getByRole('button', { name: 'Redo' }))
+    await waitFor(() => expect(restoreResult).toHaveBeenCalled())
+  })
+
   it('should update cache', async () => {
     mockUuidv4.mockReturnValueOnce('textResponseBlock.id')
-    mockUuidv4.mockReturnValueOnce('icon.id')
 
     const cache = new InMemoryCache()
     cache.restore({
@@ -185,11 +262,30 @@ describe('NewTextResponseButton', () => {
     )
 
     fireEvent.click(getByRole('button'))
+    await waitFor(() => expect(result).toHaveBeenCalled())
     await waitFor(() =>
       expect(cache.extract()['Journey:journey.id']?.blocks).toEqual([
-        { __ref: 'TextResponseBlock:textResponseBlock.id' },
-        { __ref: 'IconBlock:icon.id' }
+        { __ref: 'TextResponseBlock:textResponseBlock.id' }
       ])
     )
+  })
+
+  it('should disable when loading', async () => {
+    const { getByRole } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            variant: 'admin'
+          }}
+        >
+          <EditorProvider initialState={{ selectedStep }}>
+            <NewTextResponseButton />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('button'))
+    expect(getByRole('button')).toBeDisabled()
   })
 })

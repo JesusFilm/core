@@ -1,11 +1,10 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
 import TagManager from 'react-gtm-module'
 
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
-import { handleAction } from '../../libs/action'
 import type { TreeBlock } from '../../libs/block'
 import { blockHistoryVar, treeBlocksVar } from '../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
@@ -16,15 +15,6 @@ import {
   TEXT_RESPONSE_SUBMISSION_EVENT_CREATE,
   TextResponse
 } from './TextResponse'
-
-jest.mock('../../libs/action', () => {
-  const originalModule = jest.requireActual('../../libs/action')
-  return {
-    __esModule: true,
-    ...originalModule,
-    handleAction: jest.fn()
-  }
-})
 
 jest.mock('react-gtm-module', () => ({
   __esModule: true,
@@ -37,14 +27,6 @@ const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
   typeof TagManager.dataLayer
 >
 
-jest.mock('next/router', () => ({
-  useRouter() {
-    return {
-      push: () => null
-    }
-  }
-}))
-
 const block: TreeBlock<TextResponseFields> = {
   __typename: 'TextResponseBlock',
   id: 'textResponse0.id',
@@ -53,14 +35,9 @@ const block: TreeBlock<TextResponseFields> = {
   label: 'Your answer here',
   hint: null,
   minRows: null,
-  submitIconId: null,
-  submitLabel: null,
-  action: {
-    __typename: 'LinkAction',
-    parentBlockId: 'textResponse0.id',
-    gtmEventName: 'textResponse',
-    url: '#'
-  },
+  integrationId: null,
+  type: null,
+  routeId: null,
   children: []
 }
 
@@ -125,30 +102,32 @@ describe('TextResponse', () => {
     })
   })
 
-  it('should redirect when form submit suceeds', async () => {
-    const { getByLabelText, getByRole } = render(
-      <TextResponseMock mocks={[submissionSuccess]} />
+  it('should show your answer here if label is empty', async () => {
+    const emptyLabelBlock: TreeBlock<TextResponseFields> = {
+      __typename: 'TextResponseBlock',
+      id: 'textResponse0.id',
+      parentBlockId: '0',
+      parentOrder: 0,
+      label: '',
+      hint: null,
+      minRows: null,
+      integrationId: null,
+      type: null,
+      routeId: null,
+      children: []
+    }
+
+    render(
+      <MockedProvider mocks={[]} addTypename={false}>
+        <JourneyProvider>
+          <SnackbarProvider>
+            <TextResponse {...emptyLabelBlock} uuid={() => 'uuid'} />
+          </SnackbarProvider>
+        </JourneyProvider>
+      </MockedProvider>
     )
 
-    const responseField = getByLabelText('Your answer here')
-    const submit = getByRole('button')
-
-    fireEvent.change(responseField, { target: { value: 'My response' } })
-    fireEvent.click(submit)
-
-    await waitFor(() => {
-      expect(handleAction).toHaveBeenCalledWith(
-        {
-          push: expect.any(Function)
-        },
-        {
-          __typename: 'LinkAction',
-          parentBlockId: 'textResponse0.id',
-          gtmEventName: 'textResponse',
-          url: '#'
-        }
-      )
-    })
+    expect(screen.getByLabelText('Your answer here')).toBeInTheDocument()
   })
 
   it('should be in a loading state when waiting for response', async () => {
@@ -158,15 +137,15 @@ describe('TextResponse', () => {
       </ApolloLoadingProvider>
     )
     const responseField = getByLabelText('Your answer here')
-    const submit = getByRole('button')
+    const textField = getByRole('textbox')
 
     fireEvent.change(responseField, { target: { value: 'My response' } })
 
-    expect(submit).not.toHaveClass('MuiLoadingButton-loading')
+    expect(textField).not.toBeDisabled()
 
-    fireEvent.click(submit)
+    fireEvent.blur(textField)
 
-    await waitFor(() => expect(submit).toHaveClass('MuiLoadingButton-loading'))
+    await waitFor(() => expect(textField).toBeDisabled())
   })
 
   it('should not create submission event if input is empty', async () => {
@@ -182,18 +161,17 @@ describe('TextResponse', () => {
     )
 
     const responseField = getByLabelText('Your answer here')
-    const submit = getByRole('button')
+    const textField = getByRole('textbox')
 
     fireEvent.change(responseField, { target: { value: ' ' } })
-    fireEvent.click(submit)
+    fireEvent.blur(textField)
 
     await waitFor(() => {
       expect(result).not.toHaveBeenCalled()
-      expect(handleAction).toHaveBeenCalled()
     })
   })
 
-  it('should create submission event on click', async () => {
+  it('should create submission event on blur', async () => {
     blockHistoryVar([activeBlock])
     treeBlocksVar([activeBlock])
 
@@ -210,13 +188,37 @@ describe('TextResponse', () => {
     )
 
     const responseField = getByLabelText('Your answer here')
-    const submit = getByRole('button')
+    const textField = getByRole('textbox')
 
     fireEvent.change(responseField, { target: { value: 'My response' } })
-    fireEvent.click(submit)
+    fireEvent.blur(textField)
 
     await waitFor(() => {
       expect(result).toHaveBeenCalled()
+    })
+  })
+
+  it('should not create a submission event if the values dont change', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        textResponseSubmissionEventCreate: {
+          id: 'uuid'
+        }
+      }
+    }))
+
+    const { getByLabelText, getByRole } = render(
+      <TextResponseMock mocks={[{ ...submissionSuccess, result }]} />
+    )
+
+    const responseField = getByLabelText('Your answer here')
+    const textField = getByRole('textbox')
+
+    fireEvent.change(responseField, { target: { value: 'Your answer here' } })
+    fireEvent.blur(textField)
+
+    await waitFor(() => {
+      expect(result).not.toHaveBeenCalled()
     })
   })
 
@@ -229,10 +231,10 @@ describe('TextResponse', () => {
     )
 
     const responseField = getByLabelText('Your answer here')
-    const submit = getByRole('button')
+    const textField = getByRole('textbox')
 
     fireEvent.change(responseField, { target: { value: 'My response' } })
-    fireEvent.click(submit)
+    fireEvent.blur(textField)
 
     await waitFor(() => {
       expect(mockedDataLayer).toHaveBeenCalledWith({
@@ -256,10 +258,10 @@ describe('TextResponse', () => {
       <TextResponseMock mocks={[submissionError]} />
     )
     const responseField = getByLabelText('Your answer here')
-    const submit = getByRole('button')
+    const textField = getByRole('textbox')
 
     fireEvent.change(responseField, { target: { value: 'My response' } })
-    fireEvent.click(submit)
+    fireEvent.blur(textField)
 
     expect(
       await waitFor(() =>

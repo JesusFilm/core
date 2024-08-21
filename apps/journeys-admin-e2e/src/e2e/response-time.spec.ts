@@ -1,4 +1,3 @@
-/* eslint-disable playwright/expect-expect */
 import { expect, test } from '@playwright/test'
 
 import { LandingPage } from '../pages/landing-page'

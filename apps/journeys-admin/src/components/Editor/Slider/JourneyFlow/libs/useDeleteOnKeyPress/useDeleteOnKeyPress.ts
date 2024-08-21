@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Edge, OnSelectionChangeFunc, useKeyPress } from 'reactflow'
 
+import { TreeBlock } from '@core/journeys/ui/block'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields } from '../../../../../../../__generated__/BlockFields'
-import { useBlockDeleteMutation } from '../../../../../../libs/useBlockDeleteMutation'
+import { useBlockDeleteCommand } from '../../../../utils/useBlockDeleteCommand'
 import { useDeleteEdge } from '../useDeleteEdge'
 
 const isEdge = (element: Edge | BlockFields): element is Edge =>
@@ -14,11 +15,11 @@ export function useDeleteOnKeyPress(): {
   onSelectionChange: OnSelectionChangeFunc
 } {
   const {
-    state: { selectedBlock, activeSlide }
+    state: { selectedBlock, activeSlide, showAnalytics }
   } = useEditor()
+
   const deleteEdge = useDeleteEdge()
-  const [blockDelete] = useBlockDeleteMutation()
-  const [selected, setSelected] = useState<Edge | BlockFields | undefined>()
+  const [selected, setSelected] = useState<Edge | TreeBlock | undefined>()
 
   // Set selected node or edge using selectedBlock and reactflow OnSelectionChange
   const onSelectionChange: OnSelectionChangeFunc = ({ edges }) => {
@@ -38,29 +39,28 @@ export function useDeleteOnKeyPress(): {
   }, [selectedBlock])
 
   const deleteEvent = useKeyPress(['Delete', 'Backspace'])
+  const { addBlockDelete } = useBlockDeleteCommand()
 
-  useEffect(
-    function handleDeleteEvent() {
-      if (
-        deleteEvent &&
-        selected != null &&
-        activeSlide === ActiveSlide.JourneyFlow
-      ) {
-        if (isEdge(selected)) {
-          void deleteEdge({
-            source: selected.source,
-            sourceHandle: selected.sourceHandle
-          })
-        } else {
-          void blockDelete(selected)
-        }
-
-        setSelected(undefined)
+  useEffect(() => {
+    if (
+      deleteEvent &&
+      selected != null &&
+      activeSlide === ActiveSlide.JourneyFlow &&
+      showAnalytics !== true
+    ) {
+      if (isEdge(selected)) {
+        void deleteEdge({
+          source: selected.source,
+          sourceHandle: selected.sourceHandle
+        })
+      } else {
+        if (selected != null) addBlockDelete(selected)
       }
-    },
+
+      setSelected(undefined)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [deleteEvent]
-  )
+  }, [deleteEvent])
 
   return { onSelectionChange }
 }

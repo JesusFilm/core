@@ -2,28 +2,26 @@ import { gql, useMutation } from '@apollo/client'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
+import { usePlausible } from 'next-plausible'
 import { ReactElement } from 'react'
 
-import Facebook from '@core/shared/ui/icons/Facebook'
-import Instagram from '@core/shared/ui/icons/Instagram'
-import Line from '@core/shared/ui/icons/Line'
-import MessageTyping from '@core/shared/ui/icons/MessageTyping'
 import Plus2 from '@core/shared/ui/icons/Plus2'
-import Skype from '@core/shared/ui/icons/Skype'
-import Snapchat from '@core/shared/ui/icons/Snapchat'
-import Telegram from '@core/shared/ui/icons/Telegram'
-import Tiktok from '@core/shared/ui/icons/Tiktok'
-import Viber from '@core/shared/ui/icons/Viber'
-import Vk from '@core/shared/ui/icons/Vk'
-import WhatsApp from '@core/shared/ui/icons/WhatsApp'
 
-import { MessagePlatform } from '../../../../__generated__/globalTypes'
+import {
+  ChatOpenEventCreateInput,
+  MessagePlatform
+} from '../../../../__generated__/globalTypes'
 import { useBlocks } from '../../../libs/block'
 import { useJourney } from '../../../libs/JourneyProvider'
 import { JourneyFields_chatButtons as ChatButton } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
+import { MessageChatIcon } from '../../../libs/MessageChatIcon'
+import { JourneyPlausibleEvents, keyify } from '../../../libs/plausibleHelpers'
 import { getJourneyRTL } from '../../../libs/rtl'
 
-import { ChatButtonEventCreate } from './__generated__/ChatButtonEventCreate'
+import {
+  ChatButtonEventCreate,
+  ChatButtonEventCreateVariables
+} from './__generated__/ChatButtonEventCreate'
 
 export const CHAT_BUTTON_EVENT_CREATE = gql`
   mutation ChatButtonEventCreate($input: ChatOpenEventCreateInput!) {
@@ -33,12 +31,8 @@ export const CHAT_BUTTON_EVENT_CREATE = gql`
   }
 `
 
-interface ChatIconProps {
-  platform: MessagePlatform
-  index: number
-}
-
 export function ChatButtons(): ReactElement {
+  const plausible = usePlausible<JourneyPlausibleEvents>()
   const { variant, journey } = useJourney()
   const { blockHistory } = useBlocks()
   const activeBlock = blockHistory[blockHistory.length - 1]
@@ -46,9 +40,10 @@ export function ChatButtons(): ReactElement {
   const { rtl } = getJourneyRTL(journey)
   const chatButtons = journey?.chatButtons
 
-  const [chatButtonEventCreate] = useMutation<ChatButtonEventCreate>(
-    CHAT_BUTTON_EVENT_CREATE
-  )
+  const [chatButtonEventCreate] = useMutation<
+    ChatButtonEventCreate,
+    ChatButtonEventCreateVariables
+  >(CHAT_BUTTON_EVENT_CREATE)
 
   const getColor = (
     primary: boolean,
@@ -68,36 +63,40 @@ export function ChatButtons(): ReactElement {
       chatButton.link != null
     ) {
       window.open(chatButton.link, '_blank')
+      const input: ChatOpenEventCreateInput = {
+        id: chatButton?.id,
+        blockId: activeBlock?.id,
+        stepId: activeBlock?.id,
+        value: chatButton?.platform
+      }
       void chatButtonEventCreate({
         variables: {
           input: {
-            id: chatButton?.id,
             blockId: activeBlock?.id,
             stepId: activeBlock?.id,
             value: chatButton?.platform
           }
         }
       })
+      if (journey != null)
+        plausible('footerChatButtonClick', {
+          u: `${window.location.origin}/${journey.id}/${input.stepId}`,
+          props: {
+            ...input,
+            key: keyify({
+              stepId: input.stepId ?? '',
+              event: 'footerChatButtonClick',
+              blockId: input.blockId,
+              target: `link:${chatButton.link}:${chatButton.platform}`
+            }),
+            simpleKey: keyify({
+              stepId: input.stepId ?? '',
+              event: 'footerChatButtonClick',
+              blockId: input.blockId
+            })
+          }
+        })
     }
-  }
-
-  const ChatIcon = ({ platform, index }: ChatIconProps): ReactElement => {
-    const platformComponents = {
-      facebook: Facebook,
-      telegram: Telegram,
-      whatsApp: WhatsApp,
-      instagram: Instagram,
-      viber: Viber,
-      vk: Vk,
-      snapchat: Snapchat,
-      skype: Skype,
-      line: Line,
-      tikTok: Tiktok,
-      custom: MessageTyping
-    }
-
-    const IconComponent = platformComponents[platform]
-    return <IconComponent sx={{ color: getColor(index === 0, 'main') }} />
   }
 
   return (
@@ -119,9 +118,9 @@ export function ChatButtons(): ReactElement {
             }
           }}
         >
-          <ChatIcon
+          <MessageChatIcon
             platform={chatButton.platform ?? MessagePlatform.custom}
-            index={index}
+            sx={{ color: getColor(index === 0, 'main') }}
           />
         </IconButton>
       ))}

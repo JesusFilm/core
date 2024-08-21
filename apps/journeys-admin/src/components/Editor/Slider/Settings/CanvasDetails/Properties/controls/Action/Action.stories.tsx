@@ -5,6 +5,7 @@ import { screen, userEvent } from '@storybook/testing-library'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { GetJourney_journey as Journey } from '../../../../../../../../../__generated__/GetJourney'
 import {
@@ -12,7 +13,6 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../../../__generated__/globalTypes'
-import { journeysAdminConfig } from '../../../../../../../../libs/storybook'
 
 import { Action } from './Action'
 import { steps } from './data'
@@ -40,7 +40,7 @@ const journey: Journey = {
     iso3: 'eng',
     name: [
       {
-        __typename: 'Translation',
+        __typename: 'LanguageName',
         value: 'English',
         primary: true
       }

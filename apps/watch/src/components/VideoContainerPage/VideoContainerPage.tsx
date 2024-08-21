@@ -1,8 +1,9 @@
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
-import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
+
+import { ThemeMode } from '@core/shared/ui/themes'
 
 import { useVideoChildren } from '../../libs/useVideoChildren'
 import { useVideo } from '../../libs/videoContext'
@@ -17,9 +18,7 @@ import { ContainerHero } from './ContainerHero'
 export function VideoContainerPage(): ReactElement {
   const { snippet, slug, variant } = useVideo()
   const { loading, children } = useVideoChildren(variant?.slug)
-  const router = useRouter()
   const [shareDialog, setShareDialog] = useState<boolean>(false)
-  const routeArray: string[] = []
   const realChildren = children.filter((video) => video.variant !== null)
   function handleOpenDialog(): void {
     setShareDialog(true)
@@ -29,16 +28,12 @@ export function VideoContainerPage(): ReactElement {
     setShareDialog(false)
   }
 
-  if (router != null) {
-    Object.values(router?.query).forEach((value) => {
-      if (typeof value === 'string') {
-        routeArray.push(value)
-      }
-    })
-  }
-
   return (
-    <PageWrapper hero={<ContainerHero openDialog={handleOpenDialog} />}>
+    <PageWrapper
+      hero={<ContainerHero openDialog={handleOpenDialog} />}
+      headerThemeMode={ThemeMode.dark}
+      hideHeaderSpacer
+    >
       <Container maxWidth="xxl" data-testid="VideoContainerPage">
         <Stack
           spacing={{ xs: 4, md: 11 }}
@@ -52,7 +47,7 @@ export function VideoContainerPage(): ReactElement {
           <ShareDialog open={shareDialog} onClose={handleCloseDialog} />
           <Box>
             {loading ? (
-              <VideoGrid loading variant="expanded" />
+              <VideoGrid variant="expanded" />
             ) : (
               <VideoGrid
                 containerSlug={slug}

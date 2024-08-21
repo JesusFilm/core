@@ -5,14 +5,16 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
 
-import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
-import { TeamCreate } from '../../../../__generated__/TeamCreate'
-import { TEAM_CREATE } from '../../../libs/useTeamCreateMutation/useTeamCreateMutation'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider,
   useTeam
-} from '../TeamProvider'
+} from '@core/journeys/ui/TeamProvider'
+import { GetLastActiveTeamIdAndTeams } from '@core/journeys/ui/TeamProvider/__generated__/GetLastActiveTeamIdAndTeams'
+import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
+
+import { TeamCreate } from '../../../../__generated__/TeamCreate'
+import { TEAM_CREATE } from '../../../libs/useTeamCreateMutation/useTeamCreateMutation'
 
 import { TeamCreateDialog } from '.'
 
@@ -81,6 +83,23 @@ describe('TeamCreateDialog', () => {
       }
     }
   }
+  const updateLastActiveTeamIdMock = {
+    request: {
+      query: UPDATE_LAST_ACTIVE_TEAM_ID,
+      variables: {
+        input: {
+          lastActiveTeamId: 'teamId'
+        }
+      }
+    },
+    result: {
+      data: {
+        journeyProfileUpdate: {
+          id: 'teamId'
+        }
+      }
+    }
+  }
   function TestComponent(): ReactElement {
     const { activeTeam } = useTeam()
 
@@ -98,7 +117,10 @@ describe('TeamCreateDialog', () => {
       }
     })
     const { getByRole, getByTestId, getByText, getAllByRole } = render(
-      <MockedProvider mocks={[teamCreateMock, getTeamsMock]} cache={cache}>
+      <MockedProvider
+        mocks={[teamCreateMock, getTeamsMock, updateLastActiveTeamIdMock]}
+        cache={cache}
+      >
         <SnackbarProvider>
           <TeamProvider>
             <TeamCreateDialog

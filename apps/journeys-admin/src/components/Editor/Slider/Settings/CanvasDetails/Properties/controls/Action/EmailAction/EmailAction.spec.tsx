@@ -1,14 +1,17 @@
-import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
+import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { GetJourney_journey as Journey } from '../../../../../../../../../../__generated__/GetJourney'
-import { steps } from '../data'
-
-import { EMAIL_ACTION_UPDATE } from './EmailAction'
+import {
+  ButtonColor,
+  ButtonSize,
+  ButtonVariant
+} from '../../../../../../../../../../__generated__/globalTypes'
+import { blockActionEmailUpdateMock } from '../../../../../../../../../libs/useBlockActionEmailUpdateMutation/useBlockActionEmailUpdateMutation.mock'
+import { blockActionNavigateToBlockUpdateMock } from '../../../../../../../../../libs/useBlockActionNavigateToBlockUpdateMutation/useBlockActionNavigateToBlockUpdateMutation.mock'
+import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 
 import { EmailAction } from '.'
 
@@ -18,101 +21,77 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 }))
 
 describe('EmailAction', () => {
-  const selectedBlock = steps[1].children[0].children[4]
-  const result = jest.fn(() => ({
-    data: {
-      blockUpdateEmailAction: {
-        parentBlockId: selectedBlock.id,
-        gtmEventName: 'gtmEventName',
-        email: 'edmondwashere@gmail.com'
-      }
-    }
-  }))
+  const selectedBlock: TreeBlock = {
+    __typename: 'ButtonBlock',
+    id: 'button2.id',
+    parentBlockId: 'card1.id',
+    parentOrder: 4,
+    label: 'Contact Us',
+    buttonVariant: ButtonVariant.contained,
+    buttonColor: ButtonColor.primary,
+    size: ButtonSize.large,
+    startIconId: null,
+    endIconId: null,
+    action: {
+      parentBlockId: 'button2.id',
+      __typename: 'EmailAction',
+      gtmEventName: 'gtmEventName',
+      email: 'imissedmondshen@gmail.com'
+    },
+    children: []
+  }
 
   it('displays the action email', async () => {
-    const { getByDisplayValue } = render(
+    render(
       <MockedProvider>
         <EditorProvider initialState={{ selectedBlock }}>
           <EmailAction />
         </EditorProvider>
       </MockedProvider>
     )
-    expect(getByDisplayValue('imissedmondshen@gmail.com')).toBeInTheDocument()
+    expect(
+      screen.getByDisplayValue('imissedmondshen@gmail.com')
+    ).toBeInTheDocument()
   })
 
   it('updates action email', async () => {
-    const cache = new InMemoryCache()
-    cache.restore({
-      'Journey:journeyId': {
-        blocks: [{ __ref: 'ButtonBlock:button2.id' }],
-        id: 'journeyId',
-        __typename: 'Journey'
-      },
-      'ButtonBlock:button2.id': {
-        ...selectedBlock
-      }
-    })
-
-    const mocks = [
-      {
-        request: {
-          query: EMAIL_ACTION_UPDATE,
-          variables: {
-            id: selectedBlock.id,
-            journeyId: 'journeyId',
-            input: {
-              email: 'edmondwashere@gmail.com'
-            }
-          }
-        },
-        result
-      }
-    ]
-
-    const { getByRole } = render(
-      <MockedProvider mocks={mocks} cache={cache}>
-        <JourneyProvider
-          value={{
-            journey: { id: 'journeyId' } as unknown as Journey,
-            variant: 'admin'
-          }}
-        >
-          <EditorProvider initialState={{ selectedBlock }}>
-            <EmailAction />
-          </EditorProvider>
-        </JourneyProvider>
+    const result = jest.fn().mockReturnValue(blockActionEmailUpdateMock.result)
+    render(
+      <MockedProvider mocks={[{ ...blockActionEmailUpdateMock, result }]}>
+        <EditorProvider initialState={{ selectedBlock }}>
+          <EmailAction />
+        </EditorProvider>
       </MockedProvider>
     )
-    fireEvent.change(getByRole('textbox'), {
+    fireEvent.change(screen.getByRole('textbox'), {
       target: { value: 'edmondwashere@gmail.com' }
     })
-    fireEvent.submit(getByRole('textbox'))
+    fireEvent.submit(screen.getByRole('textbox'))
     await waitFor(() => expect(result).toHaveBeenCalled())
-
-    expect(cache.extract()['ButtonBlock:button2.id']?.action).toEqual({
-      parentBlockId: 'button2.id',
-      gtmEventName: 'gtmEventName',
-      email: 'edmondwashere@gmail.com'
-    })
   })
 
   it('is a required field', async () => {
-    const { getByText, getByRole } = render(
+    render(
       <MockedProvider>
         <EditorProvider>
           <EmailAction />
         </EditorProvider>
       </MockedProvider>
     )
-    fireEvent.change(getByRole('textbox', { name: 'Paste Email here...' }), {
-      target: { value: '' }
-    })
-    fireEvent.blur(getByRole('textbox', { name: 'Paste Email here...' }))
-    await waitFor(() => expect(getByText('Invalid Email')).toBeInTheDocument())
+    fireEvent.change(
+      screen.getByRole('textbox', { name: 'Paste Email here...' }),
+      {
+        target: { value: '' }
+      }
+    )
+    fireEvent.blur(screen.getByRole('textbox', { name: 'Paste Email here...' }))
+    await waitFor(() =>
+      expect(screen.getByText('Invalid Email')).toBeInTheDocument()
+    )
   })
 
   it('should validate on incorrect email format', async () => {
-    const { getByText, getByRole } = render(
+    render(
       <MockedProvider>
         <EditorProvider>
           <EmailAction />
@@ -120,12 +99,53 @@ describe('EmailAction', () => {
       </MockedProvider>
     )
 
-    fireEvent.change(getByRole('textbox'), {
+    fireEvent.change(screen.getByRole('textbox'), {
       target: { value: 'edmondshen-atgmail.com' }
     })
-    fireEvent.blur(getByRole('textbox'))
+    fireEvent.blur(screen.getByRole('textbox'))
     await waitFor(() =>
-      expect(getByText('Email must be a valid email')).toBeInTheDocument()
+      expect(
+        screen.getByText('Email must be a valid email')
+      ).toBeInTheDocument()
     )
+  })
+
+  it('should handle undo', async () => {
+    const result = jest
+      .fn()
+      .mockReturnValue(blockActionNavigateToBlockUpdateMock.result)
+    render(
+      <MockedProvider
+        mocks={[
+          blockActionEmailUpdateMock,
+          { ...blockActionNavigateToBlockUpdateMock, result }
+        ]}
+      >
+        <EditorProvider
+          initialState={{
+            selectedBlock: {
+              ...selectedBlock,
+              action: {
+                parentBlockId: 'button2.id',
+                __typename: 'NavigateToBlockAction',
+                gtmEventName: 'gtmEventName',
+                blockId: 'step2.id'
+              }
+            }
+          }}
+        >
+          <EmailAction />
+          <CommandUndoItem variant="button" />
+        </EditorProvider>
+      </MockedProvider>
+    )
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'edmondwashere@gmail.com' }
+    })
+    fireEvent.blur(screen.getByRole('textbox'))
+    const undo = screen.getByRole('button', { name: 'Undo' })
+    await waitFor(() => expect(undo).not.toBeDisabled())
+    fireEvent.click(undo)
+    await waitFor(() => expect(result).toHaveBeenCalled())
   })
 })

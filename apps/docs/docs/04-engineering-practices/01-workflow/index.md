@@ -193,7 +193,7 @@ This check runs [Danger JS](https://danger.systems/js/) giving us the chance to 
 
 ### Lint
 
-This check runs `codegen`, `lint`, `type-check`, and `extract-translations` commands on all affected projects. On top of that we also run [prettier](https://prettier.io/), [commitlint](https://commitlint.js.org/#/), and [validate-branch-name](https://www.npmjs.com/package/validate-branch-name). Finally we run a [script](https://github.com/JesusFilm/core/blob/main/tools/scripts/check-git-status.sh) ensure that no files changed when the previous commands have been run.
+This check runs `codegen`, `lint`, `type-check`, and `extract-translations` commands on all affected projects. On top of that we also run [commitlint](https://commitlint.js.org/#/), and [validate-branch-name](https://www.npmjs.com/package/validate-branch-name). Finally we run a [script](https://github.com/JesusFilm/core/blob/main/tools/scripts/check-git-status.sh) ensure that no files changed when the previous commands have been run.
 
 ### Build
 

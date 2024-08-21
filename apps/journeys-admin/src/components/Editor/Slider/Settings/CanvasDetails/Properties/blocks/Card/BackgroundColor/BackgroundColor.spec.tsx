@@ -1,5 +1,5 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -7,13 +7,19 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../../__generated__/BlockFields'
+import {
+  CardBlockBackgroundColorUpdate,
+  CardBlockBackgroundColorUpdateVariables
+} from '../../../../../../../../../../__generated__/CardBlockBackgroundColorUpdate'
 import { GetJourney_journey as Journey } from '../../../../../../../../../../__generated__/GetJourney'
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
 } from '../../../../../../../../../../__generated__/globalTypes'
+import { TestEditorState } from '../../../../../../../../../libs/TestEditorState'
 import { ThemeProvider } from '../../../../../../../../ThemeProvider'
+import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 
 import {
   BackgroundColor,
@@ -41,7 +47,7 @@ const journey: Journey = {
     iso3: 'eng',
     name: [
       {
-        __typename: 'Translation',
+        __typename: 'LanguageName',
         value: 'English',
         primary: true
       }
@@ -77,6 +83,25 @@ describe('BackgroundColor', () => {
     themeName: null,
     fullscreen: false,
     children: []
+  }
+
+  const cardBlockBackgroundColorUpdateMock: MockedResponse<
+    CardBlockBackgroundColorUpdate,
+    CardBlockBackgroundColorUpdateVariables
+  > = {
+    request: {
+      query: CARD_BLOCK_BACKGROUND_COLOR_UPDATE,
+      variables: { id: 'card1.id', input: { backgroundColor: '#B0BEC5' } }
+    },
+    result: {
+      data: {
+        cardBlockUpdate: {
+          __typename: 'CardBlock',
+          id: 'card1.id',
+          backgroundColor: '#B0BEC5'
+        }
+      }
+    }
   }
 
   it('shows the selected card color', () => {
@@ -133,10 +158,7 @@ describe('BackgroundColor', () => {
               query: CARD_BLOCK_BACKGROUND_COLOR_UPDATE,
               variables: {
                 id: 'card1.id',
-                journeyId: 'journeyId',
-                input: {
-                  backgroundColor: '#B0BEC5'
-                }
+                input: { backgroundColor: '#B0BEC5' }
               }
             },
             result
@@ -154,5 +176,78 @@ describe('BackgroundColor', () => {
     )
     fireEvent.click(getAllByTestId('Swatch-#B0BEC5')[0])
     await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
+  it('undoes any color changes via palette picker', async () => {
+    const cache = new InMemoryCache()
+    cache.restore({
+      'Journey:journeyId': {
+        blocks: [{ __ref: 'CardBlock:card1.id' }],
+        id: 'journeyId',
+        __typename: 'Journey'
+      }
+    })
+    const cardBlockBackgroundColorUpdateMockResult = jest.fn(() => ({
+      ...cardBlockBackgroundColorUpdateMock.result
+    }))
+
+    const cardBlockBackgroundColorUpdateUndoMock: MockedResponse<
+      CardBlockBackgroundColorUpdate,
+      CardBlockBackgroundColorUpdateVariables
+    > = {
+      request: {
+        query: CARD_BLOCK_BACKGROUND_COLOR_UPDATE,
+        variables: { id: 'card1.id', input: { backgroundColor: '#FEFEFE' } }
+      },
+      result: {
+        data: {
+          cardBlockUpdate: {
+            __typename: 'CardBlock',
+            id: 'card1.id',
+            backgroundColor: '#B0BEC5'
+          }
+        }
+      }
+    }
+
+    const cardBlockBackgroundColorUpdateUndoMockResult = jest.fn(() => ({
+      ...cardBlockBackgroundColorUpdateUndoMock.result
+    }))
+
+    const { getAllByTestId, getByRole, getByText } = render(
+      <MockedProvider
+        cache={cache}
+        mocks={[
+          {
+            ...cardBlockBackgroundColorUpdateMock,
+            result: cardBlockBackgroundColorUpdateMockResult
+          },
+          {
+            ...cardBlockBackgroundColorUpdateUndoMock,
+            result: cardBlockBackgroundColorUpdateUndoMockResult
+          }
+        ]}
+      >
+        <ThemeProvider>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <EditorProvider initialState={{ selectedBlock: card }}>
+              <BackgroundColor />
+              <CommandUndoItem variant="button" />
+              <TestEditorState />
+            </EditorProvider>
+          </JourneyProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getAllByTestId('Swatch-#B0BEC5')[0])
+    await waitFor(() =>
+      expect(cardBlockBackgroundColorUpdateMockResult).toHaveBeenCalled()
+    )
+    fireEvent.click(getByRole('button', { name: 'Undo' }))
+    await waitFor(() =>
+      expect(cardBlockBackgroundColorUpdateUndoMockResult).toHaveBeenCalled()
+    )
+    expect(getByText('activeContent: canvas')).toBeInTheDocument()
+    expect(getByText('activeSlide: 1')).toBeInTheDocument()
   })
 })

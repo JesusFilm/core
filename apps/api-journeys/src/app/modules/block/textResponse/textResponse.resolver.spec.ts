@@ -6,7 +6,8 @@ import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 
 import {
   TextResponseBlockCreateInput,
-  TextResponseBlockUpdateInput
+  TextResponseBlockUpdateInput,
+  TextResponseType
 } from '../../../__generated__/graphql'
 import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
 import { PrismaService } from '../../../lib/prisma.service'
@@ -40,15 +41,15 @@ describe('TextResponseBlockResolver', () => {
     id: 'blockId',
     journeyId: 'journeyId',
     parentBlockId: 'parentBlockId',
-    label: 'Your answer here...',
-    submitLabel: 'Submit'
+    label: 'Your answer here...'
   }
   const blockUpdateInput: TextResponseBlockUpdateInput = {
     parentBlockId: 'parentBlockId',
     label: 'Your answer',
     hint: 'Enter your answer above',
-    submitIconId: 'icon1',
-    submitLabel: 'Next'
+    routeId: 'routeId',
+    integrationId: 'integrationId',
+    type: TextResponseType.email
   }
   const blockService = {
     provide: BlockService,
@@ -98,11 +99,9 @@ describe('TextResponseBlockResolver', () => {
           parentBlock: { connect: { id: 'parentBlockId' } },
           parentOrder: 2,
           typename: 'TextResponseBlock',
-          label: 'Your answer here...',
-          submitLabel: 'Submit'
+          label: 'Your answer here...'
         },
         include: {
-          action: true,
           journey: {
             include: {
               team: { include: { userTeams: true } },
@@ -137,23 +136,25 @@ describe('TextResponseBlockResolver', () => {
 
     it('updates a TextResponseBlock', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
-      await resolver.textResponseBlockUpdate(
-        ability,
-        'blockId',
-        blockUpdateInput
-      )
+      await resolver.textResponseBlockUpdate(ability, 'blockId', {
+        ...blockUpdateInput,
+        routeId: 'routeId',
+        integrationId: 'integrationId',
+        type: TextResponseType.email
+      })
       expect(service.update).toHaveBeenCalledWith('blockId', blockUpdateInput)
     })
 
-    it('throws error if submitIconId does not exist', async () => {
-      mockValidate.mockResolvedValueOnce(false)
-
+    it('throws error if trying to set routeId with no associated interationId', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
       await expect(
         resolver.textResponseBlockUpdate(ability, 'blockId', {
           ...blockUpdateInput,
-          submitIconId: 'wrong!'
+          integrationId: null
         })
-      ).rejects.toThrow('Submit icon does not exist')
+      ).rejects.toThrow(
+        'route is being set but it is not associated to an integration'
+      )
     })
 
     it('throws error if not found', async () => {

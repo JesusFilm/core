@@ -1,4 +1,5 @@
 import { TreeBlock } from '@core/journeys/ui/block'
+import { isActionBlock } from '@core/journeys/ui/isActionBlock'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
 import {
@@ -11,6 +12,7 @@ import { VideoFields_video_variantLanguages } from '../../../../../../../../../_
 import { getBackgroundImage } from '../getBackgroundImage'
 import { getCardHeadings } from '../getCardHeadings'
 import { getPriorityBlock } from '../getPriorityBlock'
+import { getPriorityImage } from '../getPriorityImage'
 
 interface CardMetadata {
   title?: string
@@ -18,6 +20,8 @@ interface CardMetadata {
   description?: string
   priorityBlock?: TreeBlock
   bgImage?: string
+  hasMultipleActions?: boolean
+  priorityImage?: string | null
 }
 
 function getVideoVariantLanguage(
@@ -55,17 +59,24 @@ export function getCardMetadata(
   card: TreeBlock<CardBlock> | undefined
 ): CardMetadata {
   if (card == null) return {}
-
   const priorityBlock = getPriorityBlock(card)
+
+  const hasMultipleActions =
+    card.children
+      .flatMap((block) =>
+        block.__typename === 'RadioQuestionBlock' ? block.children : block
+      )
+      .filter((child) => card.coverBlockId !== child.id && isActionBlock(child))
+      .length > 1
 
   if (priorityBlock?.__typename === 'VideoBlock') {
     const title =
       priorityBlock.video?.title?.[0]?.value ?? priorityBlock.title ?? undefined
     const subtitle =
       priorityBlock.startAt !== null && priorityBlock.endAt !== null
-        ? secondsToTimeFormat(priorityBlock.startAt, { trimZeroes: true }) +
-          '-' +
-          secondsToTimeFormat(priorityBlock.endAt, { trimZeroes: true })
+        ? `${secondsToTimeFormat(priorityBlock.startAt, {
+            trimZeroes: true
+          })}-${secondsToTimeFormat(priorityBlock.endAt, { trimZeroes: true })}`
         : undefined
 
     const description = getVideoDescription(priorityBlock)
@@ -88,11 +99,36 @@ export function getCardMetadata(
       priorityBlock.image ??
       undefined
 
-    return { description, title, subtitle, priorityBlock, bgImage }
-  } else {
-    const [title, subtitle] = getCardHeadings(card.children)
-    const bgImage = getBackgroundImage(card)
+    return {
+      description,
+      title,
+      subtitle,
+      priorityBlock,
+      bgImage,
+      hasMultipleActions
+    }
+  }
 
-    return { title, subtitle, priorityBlock, bgImage }
+  let imageTitle
+  let imageSubititle
+
+  if (priorityBlock?.__typename === 'ImageBlock') {
+    const width = priorityBlock.width
+    const height = priorityBlock.height
+    imageTitle = 'Image'
+    imageSubititle = `${width} x ${height} pixels`
+  }
+
+  const [title, subtitle] = getCardHeadings(card.children)
+  const bgImage = getBackgroundImage(card)
+  const priorityImage = getPriorityImage(card.children)
+
+  return {
+    title: imageTitle ?? title,
+    subtitle: imageSubititle ?? subtitle,
+    priorityBlock,
+    bgImage,
+    hasMultipleActions,
+    priorityImage
   }
 }

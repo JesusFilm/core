@@ -3,17 +3,12 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, ReactNode } from 'react'
+import { ReactElement } from 'react'
 import { object, string } from 'yup'
 
-import {
-  GoalType,
-  getLinkActionGoal
-} from '@core/journeys/ui/Button/utils/getLinkActionGoal'
+import { getLinkActionGoal } from '@core/journeys/ui/Button/utils/getLinkActionGoal'
+import { getGoalDetails } from '@core/journeys/ui/getGoalDetails'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import BibleIcon from '@core/shared/ui/icons/Bible'
-import LinkAngledIcon from '@core/shared/ui/icons/LinkAngled'
-import MessageChat1Icon from '@core/shared/ui/icons/MessageChat1'
 
 import { ActionFields_LinkAction as LinkAction } from '../../../../../../../__generated__/ActionFields'
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../__generated__/BlockFields'
@@ -109,23 +104,8 @@ export function ActionEditor({
     setSelectedAction?.(url)
   }
 
-  let label: string
-  let icon: ReactNode
   const goalType = getLinkActionGoal(url)
-  switch (goalType) {
-    case GoalType.Chat:
-      icon = <MessageChat1Icon sx={{ color: 'secondary.light' }} />
-      label = t('Start a Conversation')
-      break
-    case GoalType.Bible:
-      icon = <BibleIcon sx={{ color: 'secondary.light' }} />
-      label = t('Link to Bible')
-      break
-    default:
-      icon = <LinkAngledIcon sx={{ color: 'secondary.light' }} />
-      label = t('Visit a Website')
-      break
-  }
+  const { label, icon } = getGoalDetails(goalType, t)
 
   return (
     <Box sx={{ pt: 6 }} data-testid="ActionEditor">

@@ -44,7 +44,6 @@ export class TextResponseBlockResolver {
           parentOrder
         },
         include: {
-          action: true,
           journey: {
             include: {
               team: { include: { userTeams: true } },
@@ -68,21 +67,9 @@ export class TextResponseBlockResolver {
     @Args('id') id: string,
     @Args('input') input: TextResponseBlockUpdateInput
   ): Promise<Block> {
-    if (input.submitIconId != null) {
-      const submitIcon = await this.blockService.validateBlock(
-        input.submitIconId,
-        id
-      )
-      if (!submitIcon) {
-        throw new GraphQLError('Submit icon does not exist', {
-          extensions: { code: 'NOT_FOUND' }
-        })
-      }
-    }
     const block = await this.prismaService.block.findUnique({
       where: { id },
       include: {
-        action: true,
         journey: {
           include: {
             team: { include: { userTeams: true } },
@@ -99,6 +86,19 @@ export class TextResponseBlockResolver {
       throw new GraphQLError('user is not allowed to update block', {
         extensions: { code: 'FORBIDDEN' }
       })
+
+    if (
+      input.routeId != null &&
+      block.integrationId == null &&
+      input.integrationId == null
+    )
+      throw new GraphQLError(
+        'route is being set but it is not associated to an integration',
+        {
+          extensions: { code: 'BAD_USER_INPUT' }
+        }
+      )
+
     return await this.blockService.update(id, input)
   }
 }

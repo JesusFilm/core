@@ -10,3 +10,8 @@ schema.graphql
 .docusaurus/
 .storybook/static/mockServiceWorker.js
 /.nx/cache
+/.nx/workspace-data
+.next/
+.terraform/
+playwright-report/
+!apps/api-languages/src/__generated__/languageSlugs.ts

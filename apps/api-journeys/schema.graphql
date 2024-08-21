@@ -25,17 +25,20 @@ enum ThemeName {
 
 interface Action {
   parentBlockId: ID!
+  parentBlock: Block!
   gtmEventName: String
 }
 
 type NavigateToBlockAction implements Action {
   parentBlockId: ID!
+  parentBlock: Block!
   gtmEventName: String
   blockId: String!
 }
 
 type LinkAction implements Action {
   parentBlockId: ID!
+  parentBlock: Block!
   gtmEventName: String
   url: String!
   target: String
@@ -43,6 +46,7 @@ type LinkAction implements Action {
 
 type EmailAction implements Action {
   parentBlockId: ID!
+  parentBlock: Block!
   gtmEventName: String
   email: String!
 }
@@ -63,11 +67,43 @@ input EmailActionInput {
   email: String!
 }
 
-extend type Mutation {
-  blockDeleteAction(id: ID!, journeyId: ID!): Block!
-  blockUpdateNavigateToBlockAction(id: ID!, journeyId: ID!, input: NavigateToBlockActionInput!): NavigateToBlockAction!
-  blockUpdateLinkAction(id: ID!, journeyId: ID!, input: LinkActionInput!): LinkAction!
-  blockUpdateEmailAction(id: ID!, journeyId: ID!, input: EmailActionInput!): EmailAction!
+input BlockUpdateActionInput {
+  gtmEventName: String
+  email: String
+  url: String
+  target: String
+  blockId: String
+}
+
+type Mutation {
+  blockDeleteAction(
+    id: ID!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): Block!
+  blockUpdateNavigateToBlockAction(
+    id: ID!
+    input: NavigateToBlockActionInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): NavigateToBlockAction!
+  blockUpdateLinkAction(
+    id: ID!
+    input: LinkActionInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): LinkAction!
+  blockUpdateEmailAction(
+    id: ID!
+    input: EmailActionInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): EmailAction!
+  blockUpdateAction(id: ID!, input: BlockUpdateActionInput): Action!
 
   """blockDelete returns the updated sibling blocks on successful delete"""
   blockDelete(
@@ -91,6 +127,11 @@ extend type Mutation {
     """
     parentOrder: Int
 
+    """
+    idMap is used to set custom ids for the duplicated block and it's descendants.
+    """
+    idMap: [BlockDuplicateIdMap!]
+
     """drop this parameter after merging teams"""
     journeyId: ID
 
@@ -113,6 +154,9 @@ extend type Mutation {
     """drop this parameter after merging teams"""
     journeyId: ID
   ): [Block!]!
+
+  """blockRestore is used for redo/undo"""
+  blockRestore(id: ID!): [Block!]!
   buttonBlockCreate(input: ButtonBlockCreateInput!): ButtonBlock!
   buttonBlockUpdate(
     id: ID!
@@ -179,6 +223,7 @@ extend type Mutation {
     """drop this parameter after merging teams"""
     journeyId: ID
   ): StepBlock!
+  stepBlockPositionUpdate(input: [StepBlockPositionUpdateInput!]!): [StepBlock!]!
   textResponseBlockCreate(input: TextResponseBlockCreateInput!): TextResponseBlock!
   textResponseBlockUpdate(
     id: ID!
@@ -229,6 +274,9 @@ extend type Mutation {
   hostCreate(teamId: ID!, input: HostCreateInput!): Host!
   hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host!
   hostDelete(id: ID!, teamId: ID!): Host!
+  integrationGrowthSpacesCreate(input: IntegrationGrowthSpacesCreateInput!): IntegrationGrowthSpaces!
+  integrationGrowthSpacesUpdate(id: ID!, input: IntegrationGrowthSpacesUpdateInput!): IntegrationGrowthSpaces!
+  integrationDelete(id: ID!): Integration!
   journeyCreate(input: JourneyCreateInput!, teamId: ID!): Journey!
   journeyDuplicate(id: ID!, teamId: ID!): Journey!
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
@@ -256,6 +304,7 @@ extend type Mutation {
   journeyCollectionCreate(input: JourneyCollectionCreateInput!): JourneyCollection!
   journeyCollectionUpdate(id: ID!, input: JourneyCollectionUpdateInput!): JourneyCollection!
   journeyCollectionDelete(id: ID!): JourneyCollection!
+  journeyNotificationUpdate(input: JourneyNotificationUpdateInput!): JourneyNotification!
   journeyProfileCreate: JourneyProfile!
   journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile!
   journeyProfileOnboardingFormComplete: JourneyProfile!
@@ -330,12 +379,20 @@ type Journey
   strategySlug: String
   tags: [Tag!]!
   journeyCollections: [JourneyCollection!]!
+
+  """used in a plausible share link to embed report"""
+  plausibleToken: String
   userJourneys: [UserJourney!]
 }
 
 input BlocksFilter {
   journeyIds: [ID!]
   typenames: [String!]
+}
+
+input BlockDuplicateIdMap {
+  oldId: ID!
+  newId: ID!
 }
 
 type Query {
@@ -349,6 +406,7 @@ extend type Query {
   customDomain(id: ID!): CustomDomain!
   customDomains(teamId: ID!): [CustomDomain!]!
   hosts(teamId: ID!): [Host!]!
+  integrations(teamId: ID!): [Integration!]!
 
   """
   returns all journeys that match the provided filters
@@ -390,6 +448,35 @@ extend type Query {
   """Get a JourneyVisitor count by JourneyVisitorFilter"""
   journeyVisitorCount(filter: JourneyVisitorFilter!): Int!
   journeysEmailPreference(email: String!): JourneysEmailPreference
+  journeysPlausibleStatsRealtimeVisitors(id: ID!, idType: IdType): Int!
+  journeysPlausibleStatsAggregate(where: PlausibleStatsAggregateFilter!, id: ID!, idType: IdType): PlausibleStatsAggregateResponse!
+
+  """
+  This endpoint allows you to break down your stats by some property.
+  If you are familiar with SQL family databases, this endpoint corresponds to
+  running `GROUP BY` on a certain property in your stats, then ordering by the
+  count.
+  Check out the [properties](https://plausible.io/docs/stats-api#properties)
+  section for a reference of all the properties you can use in this query.
+  This endpoint can be used to fetch data for `Top sources`, `Top pages`,
+  `Top countries` and similar reports.
+  Currently, it is only possible to break down on one property at a time.
+  Using a list of properties with one query is not supported. So if you want
+  a breakdown by both `event:page` and `visit:source` for example, you would
+  have to make multiple queries (break down on one property and filter on
+  another) and then manually/programmatically group the results together in one
+  report. This also applies for breaking down by time periods. To get a daily
+  breakdown for every page, you would have to break down on `event:page` and
+  make multiple queries for each date.
+  """
+  journeysPlausibleStatsBreakdown(where: PlausibleStatsBreakdownFilter!, id: ID!, idType: IdType): [PlausibleStatsResponse!]!
+
+  """
+  This endpoint provides timeseries data over a certain time period.
+  If you are familiar with the Plausible dashboard, this endpoint
+  corresponds to the main visitor graph.
+  """
+  journeysPlausibleStatsTimeseries(where: PlausibleStatsTimeseriesFilter!, id: ID!, idType: IdType): [PlausibleStatsResponse!]!
   teams: [Team!]!
   team(id: ID!): Team!
   userInvites(journeyId: ID!): [UserInvite!]
@@ -514,6 +601,7 @@ input CardBlockCreateInput {
 
 input CardBlockUpdateInput {
   parentBlockId: ID
+  coverBlockId: ID
   backgroundColor: String
   fullscreen: Boolean
   themeMode: ThemeMode
@@ -622,6 +710,8 @@ enum IconName {
   SendRounded
   SubscriptionsRounded
   ContactSupportRounded
+  Launch
+  MailOutline
 }
 
 enum IconColor {
@@ -846,6 +936,12 @@ input StepBlockUpdateInput {
   y: Int
 }
 
+input StepBlockPositionUpdateInput {
+  id: ID!
+  x: Int
+  y: Int
+}
+
 type TextResponseBlock implements Block {
   id: ID!
   journeyId: ID!
@@ -854,9 +950,15 @@ type TextResponseBlock implements Block {
   label: String!
   hint: String
   minRows: Int
-  action: Action
-  submitIconId: ID
-  submitLabel: String
+  type: TextResponseType
+  routeId: String
+  integrationId: String
+}
+
+enum TextResponseType {
+  freeForm
+  name
+  email
 }
 
 input TextResponseBlockCreateInput {
@@ -864,7 +966,6 @@ input TextResponseBlockCreateInput {
   journeyId: ID!
   parentBlockId: ID!
   label: String!
-  submitLabel: String!
 }
 
 input TextResponseBlockUpdateInput {
@@ -872,8 +973,9 @@ input TextResponseBlockUpdateInput {
   label: String
   hint: String
   minRows: Int
-  submitIconId: ID
-  submitLabel: String
+  routeId: String
+  type: TextResponseType
+  integrationId: String
 }
 
 enum TypographyVariant {
@@ -1309,6 +1411,28 @@ enum MessagePlatform {
   line
   tikTok
   custom
+  globe2
+  globe3
+  messageText1
+  messageText2
+  send1
+  send2
+  messageChat2
+  messageCircle
+  messageNotifyCircle
+  messageNotifySquare
+  messageSquare
+  mail1
+  linkExternal
+  home3
+  home4
+  helpCircleContained
+  helpSquareContained
+  shieldCheck
+  menu1
+  checkBroken
+  checkContained
+  settings
 }
 
 input ChatOpenEventCreateInput {
@@ -1595,6 +1719,9 @@ type TextResponseSubmissionEvent implements Event {
 
   """response from the TextResponseBlock form"""
   value: String
+
+  """the id of the block this event originates from"""
+  blockId: String
 }
 
 input VideoStartEventCreateInput {
@@ -1927,6 +2054,41 @@ input HostCreateInput {
   src2: String
 }
 
+type IntegrationGrowthSpaces implements Integration {
+  id: ID!
+  team: Team!
+  type: IntegrationType!
+  accessId: String!
+  accessSecretPart: String!
+  routes: [IntegrationGrowthSpacesRoute!]!
+}
+
+input IntegrationGrowthSpacesCreateInput {
+  accessId: String!
+  accessSecret: String!
+  teamId: String!
+}
+
+input IntegrationGrowthSpacesUpdateInput {
+  accessId: String!
+  accessSecret: String!
+}
+
+type IntegrationGrowthSpacesRoute {
+  id: String!
+  name: String!
+}
+
+enum IntegrationType {
+  growthSpaces
+}
+
+interface Integration {
+  id: ID!
+  team: Team!
+  type: IntegrationType!
+}
+
 extend type Tag
   @key(fields: "id")
 {
@@ -2039,6 +2201,7 @@ type UserJourney
   @key(fields: "id")
 {
   journey: Journey
+  journeyNotification: JourneyNotification
   id: ID!
   userId: ID!
   journeyId: ID!
@@ -2071,6 +2234,31 @@ input JourneyCollectionCreateInput {
 input JourneyCollectionUpdateInput {
   title: String
   journeyIds: [String!]
+}
+
+type JourneyNotification {
+  id: ID!
+  userId: ID!
+  journeyId: ID!
+  userTeamId: ID
+  userJourneyId: ID
+  visitorInteractionEmail: Boolean!
+}
+
+type UserTeam
+  @key(fields: "id")
+{
+  journeyNotification(journeyId: ID!): JourneyNotification
+  id: ID!
+  user: User!
+  role: UserTeamRole!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+input JourneyNotificationUpdateInput {
+  journeyId: ID!
+  visitorInteractionEmail: Boolean!
 }
 
 type JourneyProfile
@@ -2215,6 +2403,201 @@ input JourneysEmailPreferenceUpdateInput {
   value: Boolean!
 }
 
+type PlausibleStatsAggregateValue {
+  value: Float!
+  change: Int
+}
+
+type PlausibleStatsAggregateResponse {
+  """The number of unique visitors."""
+  visitors: PlausibleStatsAggregateValue
+
+  """The number of visits/sessions."""
+  visits: PlausibleStatsAggregateValue
+
+  """The number of pageview events."""
+  pageviews: PlausibleStatsAggregateValue
+
+  """
+  The number of pageviews divided by the number of visits.
+  Returns a floating point number. Currently only supported in Aggregate and
+  Timeseries endpoints.
+  """
+  viewsPerVisit: PlausibleStatsAggregateValue
+
+  """Bounce rate percentage."""
+  bounceRate: PlausibleStatsAggregateValue
+
+  """Visit duration in seconds."""
+  visitDuration: PlausibleStatsAggregateValue
+
+  """
+  The number of events (pageviews + custom events). When filtering by a goal,
+   this metric corresponds to "Total Conversions" in the dashboard.
+  """
+  events: PlausibleStatsAggregateValue
+
+  """
+  The percentage of visitors who completed the goal. Requires an `event:goal`
+  filter or `event:goal` property in the breakdown endpoint
+  """
+  conversionRate: PlausibleStatsAggregateValue
+
+  """
+  The average time users spend on viewing a single page. Requires an
+  `event:page` filter or `event:page` property in the breakdown endpoint.
+  """
+  timeOnPage: PlausibleStatsAggregateValue
+}
+
+input PlausibleStatsAggregateFilter {
+  """
+  See [time periods](https://plausible.io/docs/stats-api#time-periods).
+  If not specified, it will default to 30d.
+  """
+  period: String
+
+  """
+  date in the standard ISO-8601 format (YYYY-MM-DD).
+  When using a custom range, the date parameter expects two ISO-8601 formatted
+  dates joined with a comma e.g `2021-01-01,2021-01-31`. Stats will be returned
+  for the whole date range inclusive of the start and end dates.
+  """
+  date: String
+
+  """
+  See [filtering](https://plausible.io/docs/stats-api#filtering)
+  section for more details.
+  """
+  filters: String
+
+  """
+  Off by default. You can specify `previous_period` to calculate the percent
+  difference with the previous period for each metric. The previous period
+  will be of the exact same length as specified in the period parameter.
+  """
+  interval: String
+}
+
+input PlausibleStatsBreakdownFilter {
+  """
+  Which [property](https://plausible.io/docs/stats-api#properties)
+  to break down the stats by.
+  """
+  property: String!
+
+  """
+  See [time periods](https://plausible.io/docs/stats-api#time-periods).
+  If not specified, it will default to 30d.
+  """
+  period: String
+
+  """
+  date in the standard ISO-8601 format (YYYY-MM-DD).
+  When using a custom range, the date parameter expects two ISO-8601 formatted
+  dates joined with a comma e.g `2021-01-01,2021-01-31`. Stats will be returned
+  for the whole date range inclusive of the start and end dates.
+  """
+  date: String
+
+  """
+  Limit the number of results. Maximum value is 1000. Defaults to 100.
+  If you want to get more than 1000 results, you can make multiple requests
+  and paginate the results by specifying the page parameter (e.g. make the
+  same request with page=1, then page=2, etc)
+  """
+  limit: Int
+
+  """
+  Number of the page, used to paginate results.
+  Importantly, the page numbers start from 1 not 0.
+  """
+  page: Int
+
+  """
+  See [filtering](https://plausible.io/docs/stats-api#filtering)
+  section for more details.
+  """
+  filters: String
+}
+
+type PlausibleStatsResponse {
+  """
+  On breakdown queries, this is the property that was broken down by.
+  On aggregate queries, this is the date the stats are for.
+  """
+  property: String!
+
+  """The number of unique visitors."""
+  visitors: Int
+
+  """The number of visits/sessions."""
+  visits: Int
+
+  """The number of pageview events."""
+  pageviews: Int
+
+  """
+  The number of pageviews divided by the number of visits.
+  Returns a floating point number. Currently only supported in Aggregate and
+  Timeseries endpoints.
+  """
+  viewsPerVisit: Float
+
+  """Bounce rate percentage."""
+  bounceRate: Int
+
+  """Visit duration in seconds."""
+  visitDuration: Int
+
+  """
+  The number of events (pageviews + custom events). When filtering by a goal,
+   this metric corresponds to "Total Conversions" in the dashboard.
+  """
+  events: Int
+
+  """
+  The percentage of visitors who completed the goal. Requires an `event:goal`
+  filter or `event:goal` property in the breakdown endpoint
+  """
+  conversionRate: Int
+
+  """
+  The average time users spend on viewing a single page. Requires an
+  `event:page` filter or `event:page` property in the breakdown endpoint.
+  """
+  timeOnPage: Float
+}
+
+input PlausibleStatsTimeseriesFilter {
+  """
+  See [time periods](https://plausible.io/docs/stats-api#time-periods).
+  If not specified, it will default to 30d.
+  """
+  period: String
+
+  """
+  date in the standard ISO-8601 format (YYYY-MM-DD).
+  When using a custom range, the date parameter expects two ISO-8601 formatted
+  dates joined with a comma e.g `2021-01-01,2021-01-31`. Stats will be returned
+  for the whole date range inclusive of the start and end dates.
+  """
+  date: String
+
+  """
+  See [filtering](https://plausible.io/docs/stats-api#filtering)
+  section for more details.
+  """
+  filters: String
+
+  """
+  Choose your reporting interval. Valid options are date (always) and month
+  (when specified period is longer than one calendar month). Defaults to month
+  for 6mo and 12mo, otherwise falls back to date.
+  """
+  interval: String
+}
+
 type Team
   @key(fields: "id")
 {
@@ -2225,6 +2608,7 @@ type Team
   updatedAt: DateTime!
   userTeams: [UserTeam!]!
   customDomains: [CustomDomain!]!
+  integrations: [Integration!]!
 }
 
 input TeamCreateInput {
@@ -2283,16 +2667,6 @@ enum Role {
 enum UserTeamRole {
   manager
   member
-}
-
-type UserTeam
-  @key(fields: "id")
-{
-  id: ID!
-  user: User!
-  role: UserTeamRole!
-  createdAt: DateTime!
-  updatedAt: DateTime!
 }
 
 input UserTeamUpdateInput {

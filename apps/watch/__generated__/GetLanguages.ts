@@ -3,12 +3,14 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
+import { LanguagesFilter } from "./globalTypes";
+
 // ====================================================
 // GraphQL query operation: GetLanguages
 // ====================================================
 
 export interface GetLanguages_languages_name {
-  __typename: "Translation";
+  __typename: "LanguageName";
   value: string;
   primary: boolean;
 }
@@ -25,4 +27,5 @@ export interface GetLanguages {
 
 export interface GetLanguagesVariables {
   languageId?: string | null;
+  where?: LanguagesFilter | null;
 }

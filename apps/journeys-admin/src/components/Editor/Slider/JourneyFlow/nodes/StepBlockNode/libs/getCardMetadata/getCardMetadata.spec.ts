@@ -1,8 +1,10 @@
 import { TreeBlock } from '@core/journeys/ui/block'
 
 import {
+  BlockFields_ButtonBlock as ButtonBlock,
   BlockFields_CardBlock as CardBlock,
   BlockFields_ImageBlock as ImageBlock,
+  BlockFields_RadioQuestionBlock as RadioQuestionBlock,
   BlockFields_TypographyBlock as TypographyBlock,
   BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../../../__generated__/BlockFields'
@@ -13,7 +15,7 @@ import {
 
 import { getCardMetadata } from '.'
 
-const typography1: TreeBlock<TypographyBlock> = {
+const typography: TreeBlock<TypographyBlock> = {
   __typename: 'TypographyBlock',
   id: 'typography1.id',
   parentBlockId: 'card1.id',
@@ -25,15 +27,18 @@ const typography1: TreeBlock<TypographyBlock> = {
   children: []
 }
 
-const typography2: TreeBlock<TypographyBlock> = {
-  __typename: 'TypographyBlock',
-  id: 'typography2.id',
+const button1: TreeBlock<ButtonBlock> = {
+  __typename: 'ButtonBlock',
+  id: 'button1.id',
   parentBlockId: 'card1.id',
   parentOrder: 2,
-  align: null,
-  color: null,
-  content: 'subtitle content',
-  variant: TypographyVariant.body1,
+  label: 'button',
+  buttonVariant: null,
+  buttonColor: null,
+  size: null,
+  startIconId: null,
+  endIconId: null,
+  action: null,
   children: []
 }
 
@@ -91,7 +96,7 @@ const video: TreeBlock<VideoBlock> = {
         id: '529',
         name: [
           {
-            __typename: 'Translation',
+            __typename: 'LanguageName',
             value: 'English',
             primary: true
           }
@@ -101,6 +106,33 @@ const video: TreeBlock<VideoBlock> = {
   },
   posterBlockId: null,
   children: []
+}
+
+const radioQuestionBlock: TreeBlock<RadioQuestionBlock> = {
+  __typename: 'RadioQuestionBlock',
+  id: 'RadioQuestion1',
+  parentBlockId: 'parent.id',
+  parentOrder: 3,
+  children: [
+    {
+      __typename: 'RadioOptionBlock',
+      id: 'RadioOption1',
+      label: 'Option 1',
+      parentBlockId: 'RadioQuestion1',
+      parentOrder: 0,
+      action: null,
+      children: []
+    },
+    {
+      __typename: 'RadioOptionBlock',
+      id: 'RadioOption2',
+      label: 'Option 2',
+      parentBlockId: 'RadioQuestion1',
+      parentOrder: 1,
+      action: null,
+      children: []
+    }
+  ]
 }
 
 const card: TreeBlock<CardBlock> = {
@@ -113,7 +145,7 @@ const card: TreeBlock<CardBlock> = {
   themeMode: null,
   themeName: null,
   fullscreen: false,
-  children: [image, typography1, typography2]
+  children: [image, typography, button1, radioQuestionBlock]
 }
 
 describe('getCardMetadata', () => {
@@ -121,16 +153,18 @@ describe('getCardMetadata', () => {
     const cardMetadata = getCardMetadata(card)
     expect(cardMetadata).toEqual({
       title: 'title content',
-      subtitle: 'subtitle content',
+      subtitle: undefined,
       bgImage: 'https://imagedelivery.net/cloudflare-key/uploadId/public',
-      priorityBlock: typography1
+      priorityImage: 'https://imagedelivery.net/cloudflare-key/uploadId/public',
+      priorityBlock: button1,
+      hasMultipleActions: true
     })
   })
 
   it('should return card metadata from internal videoblock', () => {
     const videoCard = {
       ...card,
-      children: [video, image, typography1, typography2]
+      children: [video, image, typography]
     }
     const cardMetadata = getCardMetadata(videoCard)
     expect(cardMetadata).toEqual({
@@ -139,7 +173,25 @@ describe('getCardMetadata', () => {
       subtitle: '0:00-3:20',
       bgImage:
         'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
-      priorityBlock: video
+      priorityBlock: video,
+      hasMultipleActions: false
+    })
+  })
+
+  it('should have image title and subtitle in metadata when image is only child on card', () => {
+    const imageCard = {
+      ...card,
+      coverBlockId: null,
+      children: [image]
+    }
+    const cardMetadata = getCardMetadata(imageCard)
+    expect(cardMetadata).toEqual({
+      title: 'Image',
+      subtitle: `${image.width} x ${image.height} pixels`,
+      bgImage: undefined,
+      priorityImage: image.src,
+      priorityBlock: image,
+      hasMultipleActions: false
     })
   })
 })

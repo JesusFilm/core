@@ -3,17 +3,18 @@ import reduce from 'lodash/reduce'
 import { XYPosition } from 'reactflow'
 
 import { TreeBlock } from '@core/journeys/ui/block'
+import { filterActionBlocks } from '@core/journeys/ui/filterActionBlocks'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'
 import {
   ACTION_BUTTON_HEIGHT,
+  LINK_NODE_WIDTH_GAP_RIGHT,
   STEP_NODE_CARD_HEIGHT,
   STEP_NODE_CARD_WIDTH,
   STEP_NODE_HEIGHT_GAP,
   STEP_NODE_OFFSET,
   STEP_NODE_WIDTH_GAP
 } from '../../nodes/StepBlockNode/libs/sizes'
-import { filterActionBlocks } from '../filterActionBlocks'
 
 export interface PositionMap {
   [id: string]: XYPosition
@@ -72,8 +73,19 @@ export function arrangeSteps(steps: TreeStepBlock[]): PositionMap {
     if (step != null) processSteps([step])
   }
 
-  blocks.forEach((column, index) => {
-    const stepX = index * (STEP_NODE_CARD_WIDTH + STEP_NODE_WIDTH_GAP)
+  const hasActionBlocks = blocks
+    .flat()
+    .some((step) => filterActionBlocks(step).length > 0)
+
+  blocks.reduce((prevActionBlock, column, index) => {
+    const gap = hasActionBlocks
+      ? prevActionBlock
+        ? LINK_NODE_WIDTH_GAP_RIGHT
+        : LINK_NODE_WIDTH_GAP_RIGHT / 2
+      : 0
+
+    const stepX = index * (STEP_NODE_CARD_WIDTH + STEP_NODE_WIDTH_GAP + gap)
+
     reduce<TreeStepBlock, TreeStepBlock | null>(
       column,
       (result, step) => {
@@ -93,7 +105,9 @@ export function arrangeSteps(steps: TreeStepBlock[]): PositionMap {
       },
       null
     )
-  })
+
+    return filterActionBlocks(column[column.length - 1]).length > 0
+  }, false)
 
   return positions
 }

@@ -55,7 +55,7 @@ describe('LocalDetails', () => {
                 {
                   value: 'English',
                   primary: true,
-                  __typename: 'Translation'
+                  __typename: 'LanguageName'
                 }
               ]
             }
@@ -132,7 +132,7 @@ describe('LocalDetails', () => {
                 {
                   value: 'Algerian',
                   primary: true,
-                  __typename: 'Translation'
+                  __typename: 'LanguageName'
                 }
               ]
             }

@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { CREATE_CLOUDFLARE_UPLOAD_BY_URL } from './CustomUrl'
 
@@ -30,7 +30,7 @@ describe('CustomUrl', () => {
       }
     }))
     const onChange = jest.fn()
-    const { getByRole, getByText } = render(
+    render(
       <MockedProvider
         mocks={[
           {
@@ -48,16 +48,16 @@ describe('CustomUrl', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(getByRole('button', { name: 'Add image by URL' }))
-    expect(getByText('Paste URL of image...')).toBeInTheDocument()
-    const textBox = await getByRole('textbox')
+    fireEvent.click(screen.getByRole('button', { name: 'Add image by URL' }))
+    expect(screen.getByText('Paste URL of image...')).toBeInTheDocument()
+    const textBox = await screen.getByRole('textbox')
     fireEvent.change(textBox, {
       target: { value: 'https://example.com/image.jpg' }
     })
     fireEvent.blur(textBox)
     await waitFor(() => expect(result).toHaveBeenCalled())
-    expect(onChange).toHaveBeenCalledWith(
-      'https://imagedelivery.net/cloudflare-key/uploadId/public'
-    )
+    expect(onChange).toHaveBeenCalledWith({
+      src: 'https://imagedelivery.net/cloudflare-key/uploadId/public'
+    })
   })
 })

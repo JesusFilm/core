@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import { usePlausible } from 'next-plausible'
 import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -9,6 +10,10 @@ import {
   STEP_NEXT_EVENT_CREATE,
   STEP_PREVIOUS_EVENT_CREATE
 } from '@core/journeys/ui/Card/Card'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { keyify } from '@core/journeys/ui/plausibleHelpers'
+
+import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 
 import { NavigationButton } from './NavigationButton'
 
@@ -28,6 +33,15 @@ jest.mock('react-gtm-module', () => ({
 
 const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
   typeof TagManager.dataLayer
+>
+
+jest.mock('next-plausible', () => ({
+  __esModule: true,
+  usePlausible: jest.fn()
+}))
+
+const mockUsePlausible = usePlausible as jest.MockedFunction<
+  typeof usePlausible
 >
 
 const step1 = {
@@ -58,8 +72,27 @@ const step3 = {
   children: []
 }
 
+const journey = {
+  id: 'journey.id'
+} as unknown as Journey
+
 describe('NavigationButton', () => {
   mockUuidv4.mockReturnValue('uuid')
+
+  const originalLocation = window.location
+  const mockOrigin = 'https://example.com'
+
+  beforeAll(() => {
+    Object.defineProperty(window, 'location', {
+      value: {
+        origin: mockOrigin
+      }
+    })
+  })
+
+  afterAll(() => {
+    Object.defineProperty(window, 'location', originalLocation)
+  })
 
   const stepNextResult = jest.fn(() => ({
     data: {
@@ -152,16 +185,41 @@ describe('NavigationButton', () => {
   it('should create stepNextEvent', async () => {
     treeBlocksVar([step1, step2, step3])
     blockHistoryVar([step1])
+    const mockPlausible = jest.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
 
     const { getByTestId } = render(
       <MockedProvider mocks={[stepNextEventCreateMock]}>
-        <NavigationButton variant="next" alignment="right" />
+        <JourneyProvider value={{ journey }}>
+          <NavigationButton variant="next" alignment="right" />
+        </JourneyProvider>
       </MockedProvider>
     )
     fireEvent.click(getByTestId('ConductorNavigationButtonNext'))
 
     await waitFor(() => expect(stepNextResult).toHaveBeenCalled())
 
+    expect(mockPlausible).toHaveBeenCalledWith('navigateNextStep', {
+      u: `${mockOrigin}/journey.id/step1.id`,
+      props: {
+        id: 'uuid',
+        blockId: 'step1.id',
+        label: 'Step {{number}}',
+        value: 'Step {{number}}',
+        nextStepId: 'step3.id',
+        key: keyify({
+          stepId: 'step1.id',
+          event: 'navigateNextStep',
+          blockId: 'step1.id',
+          target: 'step3.id'
+        }),
+        simpleKey: keyify({
+          stepId: 'step1.id',
+          event: 'navigateNextStep',
+          blockId: 'step1.id'
+        })
+      }
+    })
     expect(mockedDataLayer).toHaveBeenCalledWith({
       dataLayer: {
         event: 'step_next',
@@ -177,16 +235,41 @@ describe('NavigationButton', () => {
   it('should create stepPreviousEvent', async () => {
     treeBlocksVar([step1, step2, step3])
     blockHistoryVar([step1, step2])
+    const mockPlausible = jest.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
 
     const { getByTestId } = render(
       <MockedProvider mocks={[stepPreviousEventCreateMock]}>
-        <NavigationButton variant="previous" alignment="left" />
+        <JourneyProvider value={{ journey }}>
+          <NavigationButton variant="previous" alignment="left" />
+        </JourneyProvider>
       </MockedProvider>
     )
     fireEvent.click(getByTestId('ConductorNavigationButtonPrevious'))
 
     await waitFor(() => expect(stepPreviousResult).toHaveBeenCalled())
 
+    expect(mockPlausible).toHaveBeenCalledWith('navigatePreviousStep', {
+      u: `${mockOrigin}/journey.id/step2.id`,
+      props: {
+        id: 'uuid',
+        blockId: 'step2.id',
+        label: 'Step {{number}}',
+        value: 'Step {{number}}',
+        previousStepId: 'step1.id',
+        key: keyify({
+          stepId: 'step2.id',
+          event: 'navigatePreviousStep',
+          blockId: 'step2.id',
+          target: 'step1.id'
+        }),
+        simpleKey: keyify({
+          stepId: 'step2.id',
+          event: 'navigatePreviousStep',
+          blockId: 'step2.id'
+        })
+      }
+    })
     expect(mockedDataLayer).toHaveBeenCalledWith({
       dataLayer: {
         event: 'step_prev',

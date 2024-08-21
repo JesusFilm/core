@@ -9,7 +9,7 @@ export interface User {
   firstName: string
   lastName?: string
   email: string
-  imageUrl?: string
+  imageUrl?: string | null
   emailVerified: boolean
 }
 

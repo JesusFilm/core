@@ -1,5 +1,9 @@
-federation_version: 2
+federation_version: =2.7.1
 subgraphs:
+  analytics:
+    routing_url: http://127.0.0.1:4008/graphql
+    schema:
+      file: ../api-analytics/schema.graphql
   journeys:
     routing_url: http://127.0.0.1:4001/graphql
     schema:

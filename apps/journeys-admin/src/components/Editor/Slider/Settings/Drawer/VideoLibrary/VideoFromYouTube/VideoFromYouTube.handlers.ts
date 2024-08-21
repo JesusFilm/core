@@ -1,10 +1,6 @@
-import { rest } from 'msw'
+import { delay, http } from 'msw'
 
-import {
-  YoutubePlaylist,
-  YoutubeVideo,
-  YoutubeVideosData
-} from './VideoFromYouTube'
+import { YoutubePlaylist, YoutubeVideo } from './VideoFromYouTube'
 
 const playlistItem1: YoutubePlaylist = {
   kind: 'youtube#playlistItem',
@@ -73,96 +69,143 @@ const video1: YoutubeVideo = {
   contentDetails: { duration: 'PT6M03S' }
 }
 
-export const getPlaylistItems = rest.get(
+export const getPlaylistItems = http.get(
   'https://www.googleapis.com/youtube/v3/playlistItems',
-  async (_req, res, ctx) => {
-    return await res(
-      ctx.json<YoutubeVideosData>({
+  () => {
+    return new Response(
+      JSON.stringify({
         items: [playlistItem1, playlistItem2, playlistItem3]
-      })
+      }),
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
     )
   }
 )
 
-export const getPlaylistItemsEmpty = rest.get(
+export const getPlaylistItemsEmpty = http.get(
   'https://www.googleapis.com/youtube/v3/playlistItems',
-  async (_req, res, ctx) => {
-    return await res(
-      ctx.json<YoutubeVideosData>({
+  () => {
+    return new Response(
+      JSON.stringify({
         items: []
-      })
+      }),
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
     )
   }
 )
 
-export const getPlaylistItemsWithOffsetAndUrl = rest.get(
+export const getPlaylistItemsWithOffsetAndUrl = http.get(
   'https://www.googleapis.com/youtube/v3/playlistItems',
-  async (req, res, ctx) => {
-    if (
-      req.url.searchParams.get('id') === playlistItem2.contentDetails?.videoId
-    ) {
-      return await res(
-        ctx.json<YoutubeVideosData>({
+  ({ request }) => {
+    console.log(request.url)
+    const url = new URL(request.url)
+    const id = url.searchParams.get('id')
+    const pageToken = url.searchParams.get('pageToken')
+    if (id === playlistItem2.contentDetails?.videoId) {
+      return new Response(
+        JSON.stringify({
           items: [playlistItem2]
-        })
+        }),
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
       )
     }
-    if (req.url.searchParams.get('pageToken') !== 'nextPageToken') {
-      return await res(
-        ctx.json<YoutubeVideosData>({
+    if (pageToken !== 'nextPageToken') {
+      return new Response(
+        JSON.stringify({
           items: [playlistItem1, playlistItem2],
           nextPageToken: 'nextPageToken'
-        })
+        }),
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
       )
     }
-    return await res(
-      ctx.json<YoutubeVideosData>({
+    return new Response(
+      JSON.stringify({
         items: [playlistItem3]
-      })
+      }),
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
     )
   }
 )
 
-export const getPlaylistItemsLoading = rest.get(
+export const getPlaylistItemsLoading = http.get(
   'https://www.googleapis.com/youtube/v3/playlistItems',
-  async (_req, res, ctx) => {
-    return await res(
-      ctx.delay(1000 * 60 * 60 * 60),
-      ctx.json<YoutubeVideosData>({
+  async () => {
+    await delay(1000 * 60 * 60 * 60)
+    return new Response(
+      JSON.stringify({
         items: []
-      })
+      }),
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
     )
   }
 )
 
-export const getVideosWithOffsetAndUrl = rest.get(
+export const getVideosWithOffsetAndUrl = http.get(
   'https://www.googleapis.com/youtube/v3/videos',
-  async (req, res, ctx) => {
-    if (
-      req.url.searchParams.get('id') === playlistItem2.contentDetails?.videoId
-    ) {
-      return await res(
-        ctx.json<YoutubeVideosData>({
+  ({ request }) => {
+    const url = new URL(request.url)
+    const id = url.searchParams.get('id')
+    if (id === playlistItem2.contentDetails?.videoId) {
+      return new Response(
+        JSON.stringify({
           items: [video1]
-        })
+        }),
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
       )
     }
-    return await res(
-      ctx.json<YoutubeVideosData>({
+    return new Response(
+      JSON.stringify({
         items: [video1]
-      })
+      }),
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
     )
   }
 )
 
-export const getVideosLoading = rest.get(
+export const getVideosLoading = http.get(
   'https://www.googleapis.com/youtube/v3/videos',
-  async (_req, res, ctx) => {
-    return await res(
-      ctx.delay(1000 * 60 * 60 * 60),
-      ctx.json<YoutubeVideosData>({
-        items: []
-      })
+  async () => {
+    await delay(1000 * 60 * 60 * 60)
+    return new Response(
+      JSON.stringify({
+        items: [video1]
+      }),
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
     )
   }
 )

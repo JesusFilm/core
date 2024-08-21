@@ -1,24 +1,20 @@
 import { ApolloError, gql, useMutation } from '@apollo/client'
-import LoadingButton from '@mui/lab/LoadingButton'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { SxProps } from '@mui/system/styleFunctionSx'
 import { Form, Formik } from 'formik'
-import { useRouter } from 'next/router'
+import noop from 'lodash/noop'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
-import { handleAction } from '../../libs/action'
 import { useBlocks } from '../../libs/block'
 import type { TreeBlock } from '../../libs/block'
 import { useEditor } from '../../libs/EditorProvider'
 import { getStepHeading } from '../../libs/getStepHeading'
 import { useJourney } from '../../libs/JourneyProvider'
-import { Icon } from '../Icon'
-import { IconFields } from '../Icon/__generated__/IconFields'
 import { TextField } from '../TextField'
 
 import { TextResponseFields } from './__generated__/TextResponseFields'
@@ -48,19 +44,11 @@ export const TextResponse = ({
   uuid = uuidv4,
   label,
   hint,
-  minRows,
-  submitIconId,
-  submitLabel,
-  editableSubmitLabel,
-  action,
-  children,
-  sx
+  minRows
 }: TextResponseProps): ReactElement => {
   const { t } = useTranslation('libs-journeys-ui')
 
-  const submitIcon = children.find((block) => block.id === submitIconId) as
-    | TreeBlock<IconFields>
-    | undefined
+  const [value, setValue] = useState('')
 
   const { variant } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
@@ -72,7 +60,6 @@ export const TextResponse = ({
       ? getStepHeading(activeBlock.id, activeBlock.children, treeBlocks, t)
       : 'None'
 
-  const router = useRouter()
   const [textResponseSubmissionEventCreate, { loading }] =
     useMutation<TextResponseSubmissionEventCreate>(
       TEXT_RESPONSE_SUBMISSION_EVENT_CREATE
@@ -124,30 +111,28 @@ export const TextResponse = ({
 
   return (
     <Box sx={{ mb: 4 }} data-testid="JourneysTextResponse">
-      <Formik
-        initialValues={initialValues}
-        onSubmit={(values) => {
-          if (selectedBlock === undefined) {
-            void onSubmitHandler(values).then(() => {
-              handleAction(router, action)
-            })
-          }
-        }}
-      >
+      <Formik initialValues={initialValues} onSubmit={noop} enableReinitialize>
         {({ values, handleChange, handleBlur }) => (
           <Form data-testid={`textResponse-${blockId}`}>
             <Stack>
               <TextField
                 id="textResponse-field"
                 name="response"
-                label={label}
+                label={label === '' ? 'Your answer here' : label}
                 value={values.response}
-                helperText={hint}
+                helperText={hint != null ? hint : ''}
                 multiline
+                disabled={loading}
                 minRows={minRows ?? 3}
                 onClick={(e) => e.stopPropagation()}
                 onChange={handleChange}
-                onBlur={handleBlur}
+                onBlurCapture={async (e) => {
+                  handleBlur(e)
+                  if (values.response !== value) {
+                    setValue(values.response)
+                    await onSubmitHandler(values)
+                  }
+                }}
                 inputProps={{
                   maxLength: 1000,
                   readOnly: selectedBlock !== undefined,
@@ -155,20 +140,12 @@ export const TextResponse = ({
                     pointerEvents: selectedBlock !== undefined ? 'none' : 'auto'
                   }
                 }}
+                sx={{
+                  '&.MuiTextField-root': {
+                    mb: 0
+                  }
+                }}
               />
-              <LoadingButton
-                type="submit"
-                variant="contained"
-                loading={loading}
-                size="large"
-                startIcon={
-                  submitIcon != null ? <Icon {...submitIcon} /> : undefined
-                }
-                onClick={(e) => e.stopPropagation()}
-                sx={{ ...sx, mb: 0 }}
-              >
-                <span>{editableSubmitLabel ?? submitLabel ?? t('Submit')}</span>
-              </LoadingButton>
             </Stack>
           </Form>
         )}

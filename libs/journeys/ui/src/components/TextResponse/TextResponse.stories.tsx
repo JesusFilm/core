@@ -49,9 +49,9 @@ const textResponseProps: ComponentProps<typeof TextResponse> = {
   label: 'Your answer here',
   hint: null,
   minRows: null,
-  submitIconId: null,
-  submitLabel: null,
-  action: null,
+  integrationId: null,
+  type: null,
+  routeId: null,
   children: []
 }
 
@@ -128,9 +128,8 @@ export const SubmitError = {
     minRows: 1
   },
   play: async () => {
-    const submit = screen.getAllByRole('button')[0]
     await userEvent.type(screen.getAllByRole('textbox')[0], 'Answer')
-    await userEvent.click(submit)
+    await userEvent.click(screen.getAllByText('Some block below')[0])
   }
 }
 

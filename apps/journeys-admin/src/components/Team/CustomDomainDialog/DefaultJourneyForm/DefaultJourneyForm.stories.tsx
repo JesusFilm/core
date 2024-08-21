@@ -1,7 +1,8 @@
 import { Meta, StoryObj } from '@storybook/react'
 
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
+
 import { GetCustomDomains_customDomains as CustomDomain } from '../../../../../__generated__/GetCustomDomains'
-import { journeysAdminConfig } from '../../../../libs/storybook'
 
 import { DefaultJourneyForm } from '.'
 

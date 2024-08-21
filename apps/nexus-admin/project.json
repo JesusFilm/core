@@ -38,8 +38,7 @@
         "commands": [
           "VERCEL_PROJECT_ID=$NEXUS_ADMIN_VERCEL_PROJECT_ID npx vercel pull --environment=preview --token=$VERCEL_TOKEN",
           "npx vercel build",
-          "VERCEL_PROJECT_ID=$NEXUS_ADMIN_VERCEL_PROJECT_ID npx vercel deploy --prebuilt --token=$VERCEL_TOKEN --archive=tgz > apps/nexus-admin/.vercel-url",
-          "npx @datadog/datadog-ci sourcemaps upload dist/apps/nexus-admin/.next/static --service=nexus-admin --release-version=$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA --minified-path-prefix=$(cat apps/nexus-admin/.vercel-url)/_next/static/"
+          "VERCEL_PROJECT_ID=$NEXUS_ADMIN_VERCEL_PROJECT_ID npx vercel deploy --prebuilt --token=$VERCEL_TOKEN --archive=tgz > apps/nexus-admin/.vercel-url"
         ],
         "parallel": false
       },
@@ -48,10 +47,18 @@
           "commands": [
             "VERCEL_PROJECT_ID=$NEXUS_ADMIN_VERCEL_PROJECT_ID npx vercel pull --environment=production --token=$VERCEL_TOKEN",
             "npx vercel build --prod",
-            "VERCEL_PROJECT_ID=$NEXUS_ADMIN_VERCEL_PROJECT_ID npx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --archive=tgz > apps/nexus-admin/.vercel-url",
-            "npx @datadog/datadog-ci sourcemaps upload dist/apps/nexus-admin/.next/static --service=nexus-admin --release-version=$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA --minified-path-prefix=https://admin.nextstep.is/_next/static/"
+            "VERCEL_PROJECT_ID=$NEXUS_ADMIN_VERCEL_PROJECT_ID npx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --archive=tgz > apps/nexus-admin/.vercel-url"
           ]
         }
+      }
+    },
+    "upload-sourcemaps": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npx @datadog/datadog-ci sourcemaps upload dist/apps/nexus-admin/.next/static --service=nexus-admin --release-version=$GIT_COMMIT_SHA --minified-path-prefix=/_next/static/"
+        ],
+        "parallel": false
       }
     },
     "vercel-alias": {
@@ -99,7 +106,12 @@
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "cache": true,
+        "cacheLocation": ".cache/nexus-admin/eslint",
+        "cacheStrategy": "content"
+      }
     },
     "type-check": {
       "executor": "nx:run-commands",

@@ -18,7 +18,7 @@ test('Filters', async ({ page }) => {
   await page.getByTestId('SeeAllVideos').click()
 
   // all tiles aren't loading. Change it to use events when that is implemented in the code
-  // eslint-disable-next-line
+  // eslint-disable-next-line playwright/no-wait-for-timeout
   await page.waitForTimeout(8 * 1000)
 
   // Take screenshot
@@ -46,12 +46,12 @@ test('Filters', async ({ page }) => {
     .fill('telu')
   await page.getByRole('option', { name: 'Telugu తెలుగు' }).click()
 
-  // Choose subtittles language
+  // Choose subtitles language
   await page
     .getByTestId('FilterList')
     .locator('div')
     .filter({
-      hasText: 'SubtitlesSearch LanguagesSearch Languages54 languages'
+      hasText: 'SubtitlesSearch LanguagesSearch Languages53 languages'
     })
     .getByLabel('Open')
     .click()
@@ -59,15 +59,18 @@ test('Filters', async ({ page }) => {
     .getByTestId('FilterList')
     .locator('div')
     .filter({
-      hasText: 'SubtitlesSearch LanguagesSearch Languages54 languages'
+      hasText: 'SubtitlesSearch LanguagesSearch Languages53 languages'
     })
     .getByLabel('Search Languages')
     .fill('eng')
   await page.getByRole('option', { name: 'English' }).click()
+  // eslint-disable-next-line playwright/no-networkidle
   await page.waitForLoadState('networkidle')
   await page.press('body', 'Tab')
 
-  await expect(page).toHaveURL('/watch/videos?languages=5848&subtitles=529')
+  await expect(page).toHaveURL(
+    '/watch/videos?configure%5BruleContexts%5D%5B0%5D=all_videos_page&menu%5BlanguageId%5D=5848&menu%5Bsubtitles%5D=529'
+  )
 
   // const filtersList = page.getByTestId('FilterList')
   // Take screenshot

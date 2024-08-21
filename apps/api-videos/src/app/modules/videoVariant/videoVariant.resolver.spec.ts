@@ -23,7 +23,7 @@ describe('VideoVariantResolver', () => {
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
-    prismaService.videoVariantSubtitle.findMany.mockResolvedValue([])
+    prismaService.videoSubtitle.findMany.mockResolvedValue([])
   })
 
   describe('language', () => {
@@ -36,7 +36,7 @@ describe('VideoVariantResolver', () => {
   })
 
   it('returns subtitle count', async () => {
-    prismaService.videoVariantSubtitle.count.mockResolvedValue(2)
+    prismaService.videoSubtitle.count.mockResolvedValue(2)
     expect(
       await resolver.subtitleCount({
         subtitle: [
@@ -68,15 +68,19 @@ describe('VideoVariantResolver', () => {
       expect(
         await resolver.subtitle(
           {
-            id: 'id'
+            id: 'id',
+            edition: 'edition',
+            videoId: 'videoId'
           },
           undefined,
           true
         )
       ).toEqual([])
-      expect(prismaService.videoVariantSubtitle.findMany).toHaveBeenCalledWith({
+      expect(prismaService.videoSubtitle.findMany).toHaveBeenCalledWith({
         where: {
-          videoVariantId: 'id',
+          videoId: 'videoId',
+          edition: 'edition',
+          vttSrc: { not: null },
           OR: [{ languageId: undefined }, { primary: true }]
         }
       })
@@ -86,15 +90,19 @@ describe('VideoVariantResolver', () => {
       expect(
         await resolver.subtitle(
           {
-            id: 'id'
+            id: 'id',
+            videoId: 'videoId',
+            edition: 'edition'
           },
           'languageId',
           undefined
         )
       ).toEqual([])
-      expect(prismaService.videoVariantSubtitle.findMany).toHaveBeenCalledWith({
+      expect(prismaService.videoSubtitle.findMany).toHaveBeenCalledWith({
         where: {
-          videoVariantId: 'id',
+          videoId: 'videoId',
+          edition: 'edition',
+          vttSrc: { not: null },
           OR: [{ languageId: 'languageId' }, { primary: undefined }]
         }
       })
@@ -104,15 +112,19 @@ describe('VideoVariantResolver', () => {
       expect(
         await resolver.subtitle(
           {
-            id: 'id'
+            id: 'id',
+            videoId: 'videoId',
+            edition: 'edition'
           },
           undefined,
           undefined
         )
       ).toEqual([])
-      expect(prismaService.videoVariantSubtitle.findMany).toHaveBeenCalledWith({
+      expect(prismaService.videoSubtitle.findMany).toHaveBeenCalledWith({
         where: {
-          videoVariantId: 'id'
+          videoId: 'videoId',
+          edition: 'edition',
+          vttSrc: { not: null }
         }
       })
     })

@@ -10,7 +10,7 @@ import { JourneyUpdateInput } from "./globalTypes";
 // ====================================================
 
 export interface JourneyLanguageUpdate_journeyUpdate_language_name {
-  __typename: "Translation";
+  __typename: "LanguageName";
   value: string;
   primary: boolean;
 }

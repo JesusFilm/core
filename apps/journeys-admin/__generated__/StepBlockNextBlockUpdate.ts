@@ -3,8 +3,6 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { StepBlockUpdateInput } from "./globalTypes";
-
 // ====================================================
 // GraphQL mutation operation: StepBlockNextBlockUpdate
 // ====================================================
@@ -25,6 +23,5 @@ export interface StepBlockNextBlockUpdate {
 
 export interface StepBlockNextBlockUpdateVariables {
   id: string;
-  journeyId: string;
-  input: StepBlockUpdateInput;
+  nextBlockId?: string | null;
 }

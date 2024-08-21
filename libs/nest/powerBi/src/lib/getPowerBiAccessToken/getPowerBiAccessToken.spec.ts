@@ -70,7 +70,7 @@ describe('getPowerBiAccessToken', () => {
           'https://analysis.windows.net/powerbi/api',
           'tenantId'
         )
-      ).rejects.toThrowError('error')
+      ).rejects.toThrow('error')
     })
 
     it('should return error response', async () => {
@@ -94,7 +94,7 @@ describe('getPowerBiAccessToken', () => {
           'https://analysis.windows.net/powerbi/api',
           'tenantId'
         )
-      ).rejects.toThrowError('tokenResponse error')
+      ).rejects.toThrow('tokenResponse error')
     })
   })
 })

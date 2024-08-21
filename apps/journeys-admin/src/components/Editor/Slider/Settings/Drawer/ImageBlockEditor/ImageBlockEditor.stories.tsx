@@ -3,11 +3,12 @@ import { expect } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent, waitFor } from '@storybook/testing-library'
 
-import { simpleComponentConfig } from '../../../../../../libs/storybook'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
+
 import { Drawer } from '../Drawer'
 
 import { ImageBlockEditor } from './ImageBlockEditor'
-import { listUnsplashCollectionMock } from './UnsplashGallery/data'
+import { listUnsplashCollectionPhotosMock } from './UnsplashGallery/data'
 
 const ImageBlockEditorStory: Meta<typeof ImageBlockEditor> = {
   ...simpleComponentConfig,
@@ -21,7 +22,7 @@ const ImageBlockEditorStory: Meta<typeof ImageBlockEditor> = {
 
 const Template: StoryObj<typeof ImageBlockEditor> = {
   render: (args) => (
-    <MockedProvider mocks={[listUnsplashCollectionMock]}>
+    <MockedProvider mocks={[listUnsplashCollectionPhotosMock]}>
       <Drawer title="Image">
         <ImageBlockEditor {...args} />
       </Drawer>

@@ -4,10 +4,13 @@ import CardActionArea from '@mui/material/CardActionArea'
 import CardContent from '@mui/material/CardContent'
 import Stack from '@mui/material/Stack'
 import { styled } from '@mui/material/styles'
-import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip'
+import Tooltip, {
+  type TooltipProps,
+  tooltipClasses
+} from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import type { ReactElement } from 'react'
 
 import Plus2sIcon from '@core/shared/ui/icons/Plus2'
 
@@ -27,7 +30,7 @@ const StyledTooltip = styled(({ className, ...props }: TooltipProps) => (
   },
   [`& .${tooltipClasses.arrow}`]: {
     '&:before': {
-      backgroundColor: `#30313C`
+      backgroundColor: '#30313C'
     }
   }
 }))

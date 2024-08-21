@@ -4,6 +4,7 @@ import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent, waitFor } from '@storybook/testing-library'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import {
   BlockFields_CardBlock as CardBlock,
@@ -19,7 +20,6 @@ import {
   ThemeMode,
   VideoBlockSource
 } from '../../../../../../../__generated__/globalTypes'
-import { journeysAdminConfig } from '../../../../../../libs/storybook'
 import { Drawer } from '../Drawer'
 import { videos } from '../VideoLibrary/VideoFromLocal/data'
 import { GET_VIDEOS } from '../VideoLibrary/VideoFromLocal/VideoFromLocal'
@@ -154,7 +154,7 @@ const videoLanguages: GetVideoVariantLanguages_video = {
       id: '529',
       name: [
         {
-          __typename: 'Translation',
+          __typename: 'LanguageName',
           value: 'English',
           primary: true
         }
@@ -253,6 +253,16 @@ export const PosterModal = {
     })
     const settingsTab = await screen.getAllByTestId('posterCreateButton')[0]
     await userEvent.click(settingsTab)
+  }
+}
+
+export const Muted = {
+  ...Template,
+  args: {
+    selectedBlock: {
+      ...videoYouTube,
+      muted: true
+    }
   }
 }
 

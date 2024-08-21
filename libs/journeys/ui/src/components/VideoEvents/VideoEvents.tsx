@@ -1,18 +1,49 @@
 import { gql, useMutation } from '@apollo/client'
+import { usePlausible } from 'next-plausible'
 import { ReactElement, useEffect } from 'react'
 import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 import Player from 'video.js/dist/types/player'
 
-import { VideoBlockSource } from '../../../__generated__/globalTypes'
+import {
+  VideoBlockSource,
+  VideoCollapseEventCreateInput,
+  VideoCompleteEventCreateInput,
+  VideoExpandEventCreateInput,
+  VideoPauseEventCreateInput,
+  VideoPlayEventCreateInput,
+  VideoProgressEventCreateInput,
+  VideoStartEventCreateInput
+} from '../../../__generated__/globalTypes'
 import { useBlocks } from '../../libs/block'
+import { useJourney } from '../../libs/JourneyProvider'
+import { JourneyPlausibleEvents, keyify } from '../../libs/plausibleHelpers'
+import { VideoTriggerFields_triggerAction } from '../VideoTrigger/__generated__/VideoTriggerFields'
 
-import { VideoCollapseEventCreate } from './__generated__/VideoCollapseEventCreate'
-import { VideoCompleteEventCreate } from './__generated__/VideoCompleteEventCreate'
-import { VideoExpandEventCreate } from './__generated__/VideoExpandEventCreate'
-import { VideoPauseEventCreate } from './__generated__/VideoPauseEventCreate'
-import { VideoPlayEventCreate } from './__generated__/VideoPlayEventCreate'
-import { VideoProgressEventCreate } from './__generated__/VideoProgressEventCreate'
+import {
+  VideoCollapseEventCreate,
+  VideoCollapseEventCreateVariables
+} from './__generated__/VideoCollapseEventCreate'
+import {
+  VideoCompleteEventCreate,
+  VideoCompleteEventCreateVariables
+} from './__generated__/VideoCompleteEventCreate'
+import {
+  VideoExpandEventCreate,
+  VideoExpandEventCreateVariables
+} from './__generated__/VideoExpandEventCreate'
+import {
+  VideoPauseEventCreate,
+  VideoPauseEventCreateVariables
+} from './__generated__/VideoPauseEventCreate'
+import {
+  VideoPlayEventCreate,
+  VideoPlayEventCreateVariables
+} from './__generated__/VideoPlayEventCreate'
+import {
+  VideoProgressEventCreate,
+  VideoProgressEventCreateVariables
+} from './__generated__/VideoProgressEventCreate'
 import { VideoStartEventCreate } from './__generated__/VideoStartEventCreate'
 
 export const VIDEO_START_EVENT_CREATE = gql`
@@ -75,6 +106,7 @@ export interface VideoEventsProps {
   videoId: string
   startAt: number | null
   endAt: number | null
+  action: VideoTriggerFields_triggerAction | null
 }
 
 export function VideoEvents({
@@ -84,24 +116,31 @@ export function VideoEvents({
   source,
   videoId,
   startAt,
-  endAt
+  endAt,
+  action
 }: VideoEventsProps): ReactElement {
   const [videoStartEventCreate, { called: calledStart }] =
     useMutation<VideoStartEventCreate>(VIDEO_START_EVENT_CREATE)
-  const [videoPlayEventCreate] = useMutation<VideoPlayEventCreate>(
-    VIDEO_PLAY_EVENT_CREATE
-  )
-  const [videoPauseEventCreate] = useMutation<VideoPauseEventCreate>(
-    VIDEO_PAUSE_EVENT_CREATE
-  )
-  const [videoExpandEventCreate] = useMutation<VideoExpandEventCreate>(
-    VIDEO_EXPAND_EVENT_CREATE
-  )
-  const [videoCollapseEventCreate] = useMutation<VideoCollapseEventCreate>(
-    VIDEO_COLLAPSE_EVENT_CREATE
-  )
+  const [videoPlayEventCreate] = useMutation<
+    VideoPlayEventCreate,
+    VideoPlayEventCreateVariables
+  >(VIDEO_PLAY_EVENT_CREATE)
+  const [videoPauseEventCreate] = useMutation<
+    VideoPauseEventCreate,
+    VideoPauseEventCreateVariables
+  >(VIDEO_PAUSE_EVENT_CREATE)
+  const [videoExpandEventCreate] = useMutation<
+    VideoExpandEventCreate,
+    VideoExpandEventCreateVariables
+  >(VIDEO_EXPAND_EVENT_CREATE)
+  const [videoCollapseEventCreate] = useMutation<
+    VideoCollapseEventCreate,
+    VideoCollapseEventCreateVariables
+  >(VIDEO_COLLAPSE_EVENT_CREATE)
 
+  const plausible = usePlausible<JourneyPlausibleEvents>()
   const { blockHistory } = useBlocks()
+  const { journey } = useJourney()
   const activeBlock = blockHistory[blockHistory.length - 1]
   const stepId = activeBlock?.id
 
@@ -111,14 +150,22 @@ export function VideoEvents({
   const position50 = (end - start) / 2 + start
   const position75 = ((end - start) * 3) / 4 + start
 
-  const [videoProgressEventCreate25, { called: called25 }] =
-    useMutation<VideoProgressEventCreate>(VIDEO_PROGRESS_EVENT_CREATE)
-  const [videoProgressEventCreate50, { called: called50 }] =
-    useMutation<VideoProgressEventCreate>(VIDEO_PROGRESS_EVENT_CREATE)
-  const [videoProgressEventCreate75, { called: called75 }] =
-    useMutation<VideoProgressEventCreate>(VIDEO_PROGRESS_EVENT_CREATE)
-  const [videoCompleteEventCreate, { called: calledComplete }] =
-    useMutation<VideoCompleteEventCreate>(VIDEO_COMPLETE_EVENT_CREATE)
+  const [videoProgressEventCreate25, { called: called25 }] = useMutation<
+    VideoProgressEventCreate,
+    VideoProgressEventCreateVariables
+  >(VIDEO_PROGRESS_EVENT_CREATE)
+  const [videoProgressEventCreate50, { called: called50 }] = useMutation<
+    VideoProgressEventCreate,
+    VideoProgressEventCreateVariables
+  >(VIDEO_PROGRESS_EVENT_CREATE)
+  const [videoProgressEventCreate75, { called: called75 }] = useMutation<
+    VideoProgressEventCreate,
+    VideoProgressEventCreateVariables
+  >(VIDEO_PROGRESS_EVENT_CREATE)
+  const [videoCompleteEventCreate, { called: calledComplete }] = useMutation<
+    VideoCompleteEventCreate,
+    VideoCompleteEventCreateVariables
+  >(VIDEO_COMPLETE_EVENT_CREATE)
 
   // PLAY event
   useEffect(() => {
@@ -126,18 +173,34 @@ export function VideoEvents({
       const id = uuidv4()
       const currentTime = player.currentTime() ?? 0
       if (currentTime >= start) {
+        const input: VideoPlayEventCreateInput = {
+          id,
+          blockId,
+          position: player.currentTime(),
+          stepId,
+          label: videoTitle,
+          value: source
+        }
         void videoPlayEventCreate({
           variables: {
-            input: {
-              id,
-              blockId,
-              position: player.currentTime(),
-              stepId,
-              label: videoTitle,
-              value: source
-            }
+            input
           }
         })
+        if (journey != null) {
+          const key = keyify({
+            stepId: input.stepId ?? '',
+            event: 'videoPlay',
+            blockId: input.blockId
+          })
+          plausible('videoPlay', {
+            u: `${window.location.origin}/${journey.id}/${input.stepId}`,
+            props: {
+              ...input,
+              key,
+              simpleKey: key
+            }
+          })
+        }
         TagManager.dataLayer({
           dataLayer: {
             event: 'video_play',
@@ -160,7 +223,9 @@ export function VideoEvents({
     videoTitle,
     videoId,
     stepId,
-    source
+    source,
+    journey,
+    plausible
   ])
 
   // PAUSE event
@@ -168,18 +233,34 @@ export function VideoEvents({
     function pauseListener(): void {
       const id = uuidv4()
       const currentPosition = player.currentTime()
+      const input: VideoPauseEventCreateInput = {
+        id,
+        blockId,
+        position: currentPosition,
+        stepId,
+        label: videoTitle,
+        value: source
+      }
       void videoPauseEventCreate({
         variables: {
-          input: {
-            id,
-            blockId,
-            position: currentPosition,
-            stepId,
-            label: videoTitle,
-            value: source
-          }
+          input
         }
       })
+      if (journey != null) {
+        const key = keyify({
+          stepId: input.stepId ?? '',
+          event: 'videoPause',
+          blockId: input.blockId
+        })
+        plausible('videoPause', {
+          u: `${window.location.origin}/${journey.id}/${input.stepId}`,
+          props: {
+            ...input,
+            key,
+            simpleKey: key
+          }
+        })
+      }
       TagManager.dataLayer({
         dataLayer: {
           event: 'video_pause',
@@ -201,7 +282,9 @@ export function VideoEvents({
     videoTitle,
     videoId,
     source,
-    stepId
+    stepId,
+    journey,
+    plausible
   ])
 
   // EXPAND event
@@ -210,18 +293,34 @@ export function VideoEvents({
       const id = uuidv4()
       const currentPosition = player.currentTime()
       if (player.isFullscreen() ?? false) {
+        const input: VideoExpandEventCreateInput = {
+          id,
+          blockId,
+          position: currentPosition,
+          stepId,
+          label: videoTitle,
+          value: source
+        }
         void videoExpandEventCreate({
           variables: {
-            input: {
-              id,
-              blockId,
-              position: currentPosition,
-              stepId,
-              label: videoTitle,
-              value: source
-            }
+            input
           }
         })
+        if (journey != null) {
+          const key = keyify({
+            stepId: input.stepId ?? '',
+            event: 'videoExpand',
+            blockId: input.blockId
+          })
+          plausible('videoExpand', {
+            u: `${window.location.origin}/${journey.id}/${input.stepId}`,
+            props: {
+              ...input,
+              key,
+              simpleKey: key
+            }
+          })
+        }
         TagManager.dataLayer({
           dataLayer: {
             event: 'video_expand',
@@ -243,7 +342,9 @@ export function VideoEvents({
     videoTitle,
     videoId,
     stepId,
-    source
+    source,
+    journey,
+    plausible
   ])
 
   // COLLAPSE event
@@ -252,18 +353,34 @@ export function VideoEvents({
       const id = uuidv4()
       const currentPosition = player.currentTime() ?? 0
       if (!(player.isFullscreen() ?? false)) {
+        const input: VideoCollapseEventCreateInput = {
+          id,
+          blockId,
+          position: currentPosition,
+          stepId,
+          label: videoTitle,
+          value: source
+        }
         void videoCollapseEventCreate({
           variables: {
-            input: {
-              id,
-              blockId,
-              position: currentPosition,
-              stepId,
-              label: videoTitle,
-              value: source
-            }
+            input
           }
         })
+        if (journey != null) {
+          const key = keyify({
+            stepId: input.stepId ?? '',
+            event: 'videoCollapse',
+            blockId: input.blockId
+          })
+          plausible('videoCollapse', {
+            u: `${window.location.origin}/${journey.id}/${input.stepId}`,
+            props: {
+              ...input,
+              key,
+              simpleKey: key
+            }
+          })
+        }
         TagManager.dataLayer({
           dataLayer: {
             event: 'video_collapse',
@@ -285,7 +402,9 @@ export function VideoEvents({
     videoTitle,
     videoId,
     stepId,
-    source
+    source,
+    journey,
+    plausible
   ])
 
   // START event
@@ -294,18 +413,34 @@ export function VideoEvents({
       const id = uuidv4()
       const currentPosition = player.currentTime() ?? 0
       if (!calledStart && currentPosition >= start) {
+        const input: VideoStartEventCreateInput = {
+          id,
+          blockId,
+          position: currentPosition,
+          stepId,
+          label: videoTitle,
+          value: source
+        }
         void videoStartEventCreate({
           variables: {
-            input: {
-              id,
-              blockId,
-              position: currentPosition,
-              stepId,
-              label: videoTitle,
-              value: source
-            }
+            input
           }
         })
+        if (journey != null) {
+          const key = keyify({
+            stepId: input.stepId ?? '',
+            event: 'videoStart',
+            blockId: input.blockId
+          })
+          plausible('videoStart', {
+            u: `${window.location.origin}/${journey.id}/${input.stepId}`,
+            props: {
+              ...input,
+              key,
+              simpleKey: key
+            }
+          })
+        }
         TagManager.dataLayer({
           dataLayer: {
             event: 'video_start',
@@ -329,7 +464,9 @@ export function VideoEvents({
     videoTitle,
     videoId,
     stepId,
-    source
+    source,
+    journey,
+    plausible
   ])
 
   // PROGRESS 25% event
@@ -338,19 +475,35 @@ export function VideoEvents({
       const id = uuidv4()
       const currentPosition = player.currentTime() ?? 0
       if (!called25 && currentPosition >= position25) {
+        const input: VideoProgressEventCreateInput = {
+          id,
+          blockId,
+          position: position25,
+          progress: 25,
+          stepId,
+          label: videoTitle,
+          value: source
+        }
         void videoProgressEventCreate25({
           variables: {
-            input: {
-              id,
-              blockId,
-              position: position25,
-              progress: 25,
-              stepId,
-              label: videoTitle,
-              value: source
-            }
+            input
           }
         })
+        if (journey != null) {
+          const key = keyify({
+            stepId: input.stepId ?? '',
+            event: 'videoProgress25',
+            blockId: input.blockId
+          })
+          plausible('videoProgress25', {
+            u: `${window.location.origin}/${journey.id}/${input.stepId}`,
+            props: {
+              ...input,
+              key,
+              simpleKey: key
+            }
+          })
+        }
         TagManager.dataLayer({
           dataLayer: {
             event: 'video_progress',
@@ -375,7 +528,9 @@ export function VideoEvents({
     videoTitle,
     videoId,
     stepId,
-    source
+    source,
+    journey,
+    plausible
   ])
 
   // PROGRESS 50% event
@@ -384,19 +539,35 @@ export function VideoEvents({
       const id = uuidv4()
       const currentPosition = player.currentTime() ?? 0
       if (!called50 && currentPosition >= position50) {
+        const input: VideoProgressEventCreateInput = {
+          id,
+          blockId,
+          position: position50,
+          progress: 50,
+          stepId,
+          label: videoTitle,
+          value: source
+        }
         void videoProgressEventCreate50({
           variables: {
-            input: {
-              id,
-              blockId,
-              position: position50,
-              progress: 50,
-              stepId,
-              label: videoTitle,
-              value: source
-            }
+            input
           }
         })
+        if (journey != null) {
+          const key = keyify({
+            stepId: input.stepId ?? '',
+            event: 'videoProgress50',
+            blockId: input.blockId
+          })
+          plausible('videoProgress50', {
+            u: `${window.location.origin}/${journey.id}/${input.stepId}`,
+            props: {
+              ...input,
+              key,
+              simpleKey: key
+            }
+          })
+        }
         TagManager.dataLayer({
           dataLayer: {
             event: 'video_progress',
@@ -421,7 +592,9 @@ export function VideoEvents({
     videoTitle,
     videoId,
     stepId,
-    source
+    source,
+    journey,
+    plausible
   ])
 
   // PROGRESS 75% event
@@ -430,19 +603,35 @@ export function VideoEvents({
       const id = uuidv4()
       const currentPosition = player.currentTime() ?? 0
       if (!called75 && currentPosition >= position75) {
+        const input: VideoProgressEventCreateInput = {
+          id,
+          blockId,
+          position: position75,
+          progress: 75,
+          stepId,
+          label: videoTitle,
+          value: source
+        }
         void videoProgressEventCreate75({
           variables: {
-            input: {
-              id,
-              blockId,
-              position: position75,
-              progress: 75,
-              stepId,
-              label: videoTitle,
-              value: source
-            }
+            input
           }
         })
+        if (journey != null) {
+          const key = keyify({
+            stepId: input.stepId ?? '',
+            event: 'videoProgress75',
+            blockId: input.blockId
+          })
+          plausible('videoProgress75', {
+            u: `${window.location.origin}/${journey.id}/${input.stepId}`,
+            props: {
+              ...input,
+              key,
+              simpleKey: key
+            }
+          })
+        }
         TagManager.dataLayer({
           dataLayer: {
             event: 'video_progress',
@@ -468,7 +657,9 @@ export function VideoEvents({
     videoTitle,
     videoId,
     stepId,
-    source
+    source,
+    journey,
+    plausible
   ])
 
   // COMPLETE event
@@ -478,18 +669,37 @@ export function VideoEvents({
       // + 2 to current time to prevent race condition between videoComplete and stepView events
       const currentPosition = (player.currentTime() ?? 0) + 2
       if (!calledComplete && currentPosition >= end) {
+        const input: VideoCompleteEventCreateInput = {
+          id,
+          blockId,
+          position: currentPosition,
+          stepId,
+          label: videoTitle,
+          value: source
+        }
         void videoCompleteEventCreate({
           variables: {
-            input: {
-              id,
-              blockId,
-              position: currentPosition,
-              stepId,
-              label: videoTitle,
-              value: source
-            }
+            input
           }
         })
+        if (journey != null)
+          plausible('videoComplete', {
+            u: `${window.location.origin}/${journey.id}/${input.stepId}`,
+            props: {
+              ...input,
+              key: keyify({
+                stepId: input.stepId ?? '',
+                event: 'videoComplete',
+                blockId: input.blockId,
+                target: action
+              }),
+              simpleKey: keyify({
+                stepId: input.stepId ?? '',
+                event: 'videoComplete',
+                blockId: input.blockId
+              })
+            }
+          })
         TagManager.dataLayer({
           dataLayer: {
             event: 'video_complete',
@@ -513,7 +723,10 @@ export function VideoEvents({
     videoTitle,
     videoId,
     stepId,
-    source
+    source,
+    journey,
+    plausible,
+    action
   ])
 
   return <></>

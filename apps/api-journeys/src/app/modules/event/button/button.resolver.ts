@@ -140,6 +140,8 @@ export class ChatOpenEventResolver {
       })
     )
 
+    await this.eventService.sendEventsEmail(journeyId, visitor.id)
+
     const [chatOpenEvent] = await Promise.all(promises)
     return chatOpenEvent as ChatOpenEvent
   }

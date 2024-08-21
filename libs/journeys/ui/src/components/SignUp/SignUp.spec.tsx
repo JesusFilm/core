@@ -1,5 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { usePlausible } from 'next-plausible'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
 import TagManager from 'react-gtm-module'
@@ -10,6 +11,8 @@ import type { TreeBlock } from '../../libs/block'
 import { blockHistoryVar, treeBlocksVar } from '../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
 import { JourneyProvider } from '../../libs/JourneyProvider'
+import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
+import { keyify } from '../../libs/plausibleHelpers'
 
 import { SignUpFields } from './__generated__/SignUpFields'
 import { SIGN_UP_SUBMISSION_EVENT_CREATE, SignUp } from './SignUp'
@@ -42,6 +45,15 @@ jest.mock('next/router', () => ({
   }
 }))
 
+jest.mock('next-plausible', () => ({
+  __esModule: true,
+  usePlausible: jest.fn()
+}))
+
+const mockUsePlausible = usePlausible as jest.MockedFunction<
+  typeof usePlausible
+>
+
 const block: TreeBlock<SignUpFields> = {
   __typename: 'SignUpBlock',
   id: 'signUp0.id',
@@ -68,6 +80,10 @@ const activeBlock: TreeBlock<StepBlock> = {
   children: []
 }
 
+const journey = {
+  id: 'journey.id'
+} as unknown as Journey
+
 interface SignUpMockProps {
   mocks?: Array<MockedResponse<Record<string, unknown>>>
 }
@@ -79,6 +95,21 @@ const SignUpMock = ({ mocks = [] }: SignUpMockProps): ReactElement => (
 )
 
 describe('SignUp', () => {
+  const originalLocation = window.location
+  const mockOrigin = 'https://example.com'
+
+  beforeAll(() => {
+    Object.defineProperty(window, 'location', {
+      value: {
+        origin: mockOrigin
+      }
+    })
+  })
+
+  afterAll(() => {
+    Object.defineProperty(window, 'location', originalLocation)
+  })
+
   it('should validate when fields are empty', async () => {
     const { getByRole, getAllByText } = render(
       <SnackbarProvider>
@@ -212,7 +243,7 @@ describe('SignUp', () => {
   })
 
   it('should be in a loading state when waiting for response', async () => {
-    const { getByRole, getByLabelText } = render(
+    const { getByTestId, getByLabelText } = render(
       <ApolloLoadingProvider>
         <SnackbarProvider>
           <SignUp {...block} uuid={() => 'uuid'} />
@@ -221,7 +252,7 @@ describe('SignUp', () => {
     )
     const name = getByLabelText('Name')
     const email = getByLabelText('Email')
-    const submit = getByRole('button', { name: 'Submit' })
+    const submit = getByTestId('submit')
 
     fireEvent.change(name, { target: { value: 'Anon' } })
     fireEvent.change(email, { target: { value: '123abc@gmail.com' } })
@@ -344,6 +375,79 @@ describe('SignUp', () => {
     })
   })
 
+  it('should add submission event to plausible', async () => {
+    blockHistoryVar([activeBlock])
+    treeBlocksVar([activeBlock])
+    const mockPlausible = jest.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
+
+    const mocks = [
+      {
+        request: {
+          query: SIGN_UP_SUBMISSION_EVENT_CREATE,
+          variables: {
+            input: {
+              id: 'uuid',
+              blockId: 'signUp0.id',
+              stepId: 'step.id',
+              name: 'Anon',
+              email: '123abc@gmail.com'
+            }
+          }
+        },
+        result: {
+          data: {
+            signUpSubmissionEventCreate: {
+              id: 'uuid'
+            }
+          }
+        }
+      }
+    ]
+
+    const { getByLabelText, getByRole } = render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey }}>
+          <SnackbarProvider>
+            <SignUpMock mocks={mocks} />
+          </SnackbarProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const name = getByLabelText('Name')
+    const email = getByLabelText('Email')
+    const submit = getByRole('button')
+
+    fireEvent.change(name, { target: { value: 'Anon' } })
+    fireEvent.change(email, { target: { value: '123abc@gmail.com' } })
+    fireEvent.click(submit)
+
+    await waitFor(() => {
+      expect(mockPlausible).toHaveBeenCalledWith('signupSubmit', {
+        u: `${mockOrigin}/journey.id/step.id`,
+        props: {
+          id: 'uuid',
+          blockId: 'signUp0.id',
+          stepId: 'step.id',
+          name: 'Anon',
+          email: '123abc@gmail.com',
+          key: keyify({
+            stepId: 'step.id',
+            event: 'signupSubmit',
+            blockId: 'signUp0.id',
+            target: block.action
+          }),
+          simpleKey: keyify({
+            stepId: 'step.id',
+            event: 'signupSubmit',
+            blockId: 'signUp0.id'
+          })
+        }
+      })
+    })
+  })
+
   it('should show error when submit fails', async () => {
     blockHistoryVar([activeBlock])
 
@@ -395,5 +499,57 @@ describe('SignUp', () => {
     const email = getAllByRole('textbox')[1]
     fireEvent.click(email)
     expect(email.matches(':focus')).not.toBeTruthy()
+  })
+
+  it('should show default submit text if submit label is empty', () => {
+    const emptyLabelBLockMock = {
+      ...block,
+      submitLabel: ''
+    }
+
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <SignUp {...emptyLabelBLockMock} uuid={() => 'uuid'} />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByTestId('submit')).toHaveTextContent('Submit')
+  })
+
+  it('should show default submit text if submit label is null', () => {
+    const input = <h1>Submit</h1>
+    const emptyLabelBLockMock = {
+      ...block,
+      editableSubmitLabel: input
+    }
+
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <SignUp {...emptyLabelBLockMock} uuid={() => 'uuid'} />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByTestId('submit')).toHaveTextContent('Submit')
+  })
+
+  it('should show submit label text', () => {
+    const emptyLabelBLockMock = {
+      ...block,
+      submitLabel: 'Hello'
+    }
+
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <SignUp {...emptyLabelBLockMock} uuid={() => 'uuid'} />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByTestId('submit')).toHaveTextContent('Hello')
   })
 })

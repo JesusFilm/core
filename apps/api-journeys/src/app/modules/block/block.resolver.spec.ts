@@ -54,7 +54,10 @@ describe('BlockResolver', () => {
     useFactory: () => ({
       duplicateBlock: jest.fn((block, _parentOrder) => [block, block]),
       removeBlockAndChildren: jest.fn(() => []),
-      reorderBlock: jest.fn((block, parentOrder) => [{ ...block, parentOrder }])
+      reorderBlock: jest.fn((block, parentOrder) => [
+        { ...block, parentOrder }
+      ]),
+      getDescendants: jest.fn(() => [])
     })
   }
 
@@ -76,6 +79,9 @@ describe('BlockResolver', () => {
       PrismaService
     ) as DeepMockProxy<PrismaService>
     ability = await new AppCaslFactory().createAbility({ id: 'userId' })
+    prismaService.$transaction.mockImplementation(
+      async (callback) => await callback(prismaService)
+    )
   })
 
   describe('__resolveType', () => {
@@ -123,11 +129,41 @@ describe('BlockResolver', () => {
     it('duplicates the block and its children', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
       expect(
-        await resolver.blockDuplicate(ability, 'blockId', 2, 3, 4)
+        await resolver.blockDuplicate(ability, 'blockId', 2, undefined, 3, 4)
       ).toEqual([blockWithUserTeam, blockWithUserTeam])
       expect(service.duplicateBlock).toHaveBeenCalledWith(
         blockWithUserTeam,
         2,
+        undefined,
+        3,
+        4
+      )
+    })
+
+    it('duplicates the block and its children with custom ids', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
+      expect(
+        await resolver.blockDuplicate(
+          ability,
+          'blockId',
+          2,
+          [
+            { oldId: 'oldButtonId', newId: 'newButtonId' },
+            { oldId: 'oldStartIconId', newId: 'newStartIconId' },
+            { oldId: 'oldEndIconId', newId: 'newEndIconId' }
+          ],
+          3,
+          4
+        )
+      ).toEqual([blockWithUserTeam, blockWithUserTeam])
+      expect(service.duplicateBlock).toHaveBeenCalledWith(
+        blockWithUserTeam,
+        2,
+        [
+          { oldId: 'oldButtonId', newId: 'newButtonId' },
+          { oldId: 'oldStartIconId', newId: 'newStartIconId' },
+          { oldId: 'oldEndIconId', newId: 'newEndIconId' }
+        ],
         3,
         4
       )
@@ -180,7 +216,7 @@ describe('BlockResolver', () => {
         blockWithUserTeam
       )
       expect(prismaService.block.findUnique).toHaveBeenCalledWith({
-        where: { id: 'blockId' },
+        where: { id: 'blockId', deletedAt: null },
         include: {
           action: true,
           journey: {
@@ -216,7 +252,7 @@ describe('BlockResolver', () => {
       expect(await resolver.blocks(accessibleBlocks)).toEqual([block])
       expect(prismaService.block.findMany).toHaveBeenCalledWith({
         where: {
-          AND: [accessibleBlocks, {}]
+          AND: [accessibleBlocks, { deletedAt: null }]
         },
         include: {
           action: true,
@@ -244,7 +280,8 @@ describe('BlockResolver', () => {
             accessibleBlocks,
             {
               journeyId: { in: ['journeyId'] },
-              typename: { in: ['StepBlock'] }
+              typename: { in: ['StepBlock'] },
+              deletedAt: null
             }
           ]
         },
@@ -258,6 +295,71 @@ describe('BlockResolver', () => {
           }
         }
       })
+    })
+  })
+
+  describe('blockRestore', () => {
+    it('should restore block', async () => {
+      prismaService.block.findUnique.mockResolvedValue(blockWithUserTeam)
+      prismaService.block.update.mockResolvedValue(block)
+      prismaService.block.findMany.mockResolvedValue([block, block])
+      await resolver.blockRestore('1', ability)
+      expect(prismaService.block.update).toHaveBeenCalledWith({
+        where: { id: '1' },
+        data: {
+          deletedAt: null
+        },
+        include: {
+          action: true
+        }
+      })
+      expect(service.reorderBlock).toHaveBeenCalledWith(
+        block,
+        block.parentOrder,
+        prismaService
+      )
+      expect(prismaService.block.findMany).toHaveBeenCalledWith({
+        where: {
+          journeyId: block.journeyId,
+          deletedAt: null,
+          NOT: { id: block.id }
+        },
+        include: {
+          action: true
+        }
+      })
+      expect(service.getDescendants).toHaveBeenCalledWith(block.id, [
+        block,
+        block
+      ])
+    })
+
+    it('should throw error if block not found', async () => {
+      await expect(resolver.blockRestore('1', ability)).rejects.toThrow(
+        'block not found'
+      )
+    })
+
+    it('should only return the updated block without its siblings if parent order is null', async () => {
+      const blockWithoutParentOrder = {
+        ...blockWithUserTeam,
+        parentOrder: null
+      }
+
+      prismaService.block.findUnique.mockResolvedValue(blockWithoutParentOrder)
+      prismaService.block.update.mockResolvedValue(blockWithoutParentOrder)
+
+      expect(await resolver.blockRestore('1', ability)).toEqual([
+        blockWithoutParentOrder
+      ])
+    })
+
+    it('should throw error if user does not have the correct permissions', async () => {
+      prismaService.block.findUnique.mockResolvedValue(block)
+      prismaService.block.update.mockResolvedValue(block)
+      await expect(resolver.blockRestore('1', ability)).rejects.toThrow(
+        'user is not allowed to update block'
+      )
     })
   })
 })

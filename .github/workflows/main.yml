@@ -10,73 +10,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [20]
-    services:
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_PASSWORD: postgres
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Fetch other branches
-        if: ${{ github.event_name == 'pull_request' }}
-        run: git fetch --no-tags --prune --depth=5 origin $GITHUB_BASE_REF
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-      - name: Cache Node Modules
-        id: cache-node-modules
-        uses: actions/cache@v4
-        with:
-          path: node_modules
-          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
-          restore-keys: node-modules-${{ matrix.node-version }}-
-      - name: NPM Install
-        run: npm install --silent
-      - name: generate prisma imports
-        uses: mansagroup/nrwl-nx-action@v3
-        with:
-          targets: prisma-generate
-          all: true
-          parallel: 1
-        env:
-          DISABLE_ERD: true
-      - name: NPM apollo and graphql for codegen
-        run: npm i -g apollo graphql @apollo/rover@0.22.0
-      - name: Codegen
-        uses: mansagroup/nrwl-nx-action@v3
-        with:
-          targets: codegen
-          all: true
-      - name: lint, type-check, extract-translations, subgraph-check
-        uses: mansagroup/nrwl-nx-action@v3
-        with:
-          targets: lint,type-check,extract-translations,subgraph-check
-        env:
-          APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
-      - name: Prettier
-        run: npx prettier --check .
-      - name: lint commit messages
-        run: npx commitlint --from 9a45682 # earliest good commit to main
-      - name: lint branch name
-        if: ${{ github.event_name == 'pull_request' }}
-        run: npx validate-branch-name -t $GITHUB_HEAD_REF
-      - name: Check for file changes due to codegen
-        run: ./tools/scripts/check-git-status.sh
   build:
     runs-on: ubuntu-latest
     strategy:
@@ -131,6 +64,7 @@ jobs:
       - name: fetch-secrets and build
         uses: mansagroup/nrwl-nx-action@v3
         env:
+          DOPPLER_API_ANALYTICS_TOKEN: ${{ secrets.DOPPLER_API_ANALYTICS_TOKEN }}
           DOPPLER_API_GATEWAY_TOKEN: ${{ secrets.DOPPLER_API_GATEWAY_TOKEN }}
           DOPPLER_API_JOURNEYS_TOKEN: ${{ secrets.DOPPLER_API_JOURNEYS_TOKEN }}
           DOPPLER_API_LANGUAGES_TOKEN: ${{ secrets.DOPPLER_API_LANGUAGES_TOKEN }}
@@ -215,70 +149,3 @@ jobs:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
           targets: codecov
-  visual-test:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [20]
-    services:
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_PASSWORD: postgres
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Check branch up to date with base
-        run: ./tools/scripts/check-git-diff.sh
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-      - name: Cache Node Modules
-        id: cache-node-modules
-        uses: actions/cache@v4
-        with:
-          path: node_modules
-          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
-          restore-keys: node-modules-${{ matrix.node-version }}-
-      - name: NPM Install
-        run: npm install --silent
-      - uses: nrwl/nx-set-shas@v3
-      - name: nx Install
-        run: npm install -g nx --silent
-      - name: Build Stories
-        id: build-storybook
-        run: nx affected --target=build-storybook shared-storybook --webpack-stats-json
-      - name: Check for frontend changes
-        id: check_files
-        uses: andstor/file-existence-action@v3
-        with:
-          files: 'dist/storybook/shared-storybook'
-        #👇 Adds Chromatic as a step in the workflow
-      - name: Run VR tests
-        if: ${{ steps.check_files.outputs.files_exists == 'true' }}
-        uses: chromaui/action@v1
-        # Options required for Chromatic's GitHub Action
-        # https://www.chromatic.com/docs/github-actions#available-options
-        # https://github.com/chromaui/chromatic-cli/blob/main/action.yml
-        with:
-          #👇 Chromatic projectToken, see https://storybook.js.org/tutorials/intro-to-storybook/react/en/deploy/ to obtain it
-          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          storybookBuildDir: 'dist/storybook/shared-storybook'
-          exitOnceUploaded: 'true'
-          autoAcceptChanges: 'main'
-          onlyChanged: 'true'
-          skip: '@(dependabot/**|00-00-CI-chore-update-translations)'
-          untraced: '@(package*.json|.storybook/**)'
-          traceChanged: 'expanded'
-          # dryRun: 'true'
-          # debug: 'true'

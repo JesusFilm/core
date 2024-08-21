@@ -75,12 +75,28 @@ export async function initAndAuthApp({
   if (token == null) {
     return { apolloClient, flags, redirect: undefined, translations }
   }
+  const i18nStore = translations._nextI18Next?.initialI18nStore as
+    | {
+        [key: string]: { 'apps-journeys-admin': { [key: string]: string } }
+      }
+    | null
+    | undefined
+  let teamName = 'My Team'
+
+  // t("{{ name }}'s Team") leave this comment for extract-translation runner
+  if (i18nStore != null && user != null && user.displayName != null) {
+    teamName =
+      Object.values(i18nStore)[0]['apps-journeys-admin'][
+        "{{ name }}'s Team"
+      ]?.replace('{{ name }}', user.displayName) ?? teamName
+  }
 
   const redirect =
     resolvedUrl != null
       ? await checkConditionalRedirect({
           apolloClient,
-          resolvedUrl
+          resolvedUrl,
+          teamName
         })
       : undefined
 

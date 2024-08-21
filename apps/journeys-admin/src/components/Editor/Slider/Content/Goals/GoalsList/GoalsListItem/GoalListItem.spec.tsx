@@ -4,7 +4,6 @@ import { GoalType } from '@core/journeys/ui/Button/utils/getLinkActionGoal'
 import {
   ActiveCanvasDetailsDrawer,
   ActiveContent,
-  ActiveFab,
   ActiveSlide,
   EditorProvider,
   EditorState
@@ -67,7 +66,6 @@ describe('GoalListItem', () => {
 
   it('should handle click', () => {
     const state: EditorState = {
-      activeFab: ActiveFab.Add,
       activeSlide: ActiveSlide.JourneyFlow,
       activeContent: ActiveContent.Goals,
       activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,

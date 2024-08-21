@@ -1,1 +1,0 @@
-export { setBeaconPageViewed } from './setBeaconPageViewed'

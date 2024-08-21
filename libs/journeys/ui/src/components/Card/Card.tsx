@@ -2,14 +2,21 @@ import { gql, useMutation } from '@apollo/client'
 import Paper from '@mui/material/Paper'
 import { useTheme } from '@mui/material/styles'
 import { useTranslation } from 'next-i18next'
+import { usePlausible } from 'next-plausible'
 import { MouseEvent, ReactElement, useEffect, useMemo } from 'react'
 import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
+import {
+  StepNextEventCreateInput,
+  StepPreviousEventCreateInput
+} from '../../../__generated__/globalTypes'
 import { TreeBlock, useBlocks } from '../../libs/block'
 import { blurImage } from '../../libs/blurImage'
 import { getStepHeading } from '../../libs/getStepHeading'
 import { useJourney } from '../../libs/JourneyProvider'
+import { JourneyPlausibleEvents } from '../../libs/plausibleHelpers'
+import { keyify } from '../../libs/plausibleHelpers/plausibleHelpers'
 import { getJourneyRTL } from '../../libs/rtl'
 // eslint-disable-next-line import/no-cycle
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
@@ -18,8 +25,14 @@ import { StepFields } from '../Step/__generated__/StepFields'
 import { VideoFields } from '../Video/__generated__/VideoFields'
 
 import { CardFields } from './__generated__/CardFields'
-import { StepNextEventCreate } from './__generated__/StepNextEventCreate'
-import { StepPreviousEventCreate } from './__generated__/StepPreviousEventCreate'
+import {
+  StepNextEventCreate,
+  StepNextEventCreateVariables
+} from './__generated__/StepNextEventCreate'
+import {
+  StepPreviousEventCreate,
+  StepPreviousEventCreateVariables
+} from './__generated__/StepPreviousEventCreate'
 import { ContainedCover } from './ContainedCover'
 import { ExpandedCover } from './ExpandedCover'
 
@@ -51,14 +64,17 @@ export function Card({
   fullscreen,
   wrappers
 }: CardProps): ReactElement {
-  const [stepNextEventCreate] = useMutation<StepNextEventCreate>(
-    STEP_NEXT_EVENT_CREATE
-  )
-  const [stepPreviousEventCreate] = useMutation<StepPreviousEventCreate>(
-    STEP_PREVIOUS_EVENT_CREATE
-  )
+  const [stepNextEventCreate] = useMutation<
+    StepNextEventCreate,
+    StepNextEventCreateVariables
+  >(STEP_NEXT_EVENT_CREATE)
+  const [stepPreviousEventCreate] = useMutation<
+    StepPreviousEventCreate,
+    StepPreviousEventCreateVariables
+  >(STEP_PREVIOUS_EVENT_CREATE)
 
   const { t } = useTranslation('journeys-ui')
+  const plausible = usePlausible<JourneyPlausibleEvents>()
   const theme = useTheme()
   const {
     nextActiveBlock,
@@ -122,6 +138,7 @@ export function Card({
   // libs/journeys/ui/src/components/Card/Card.tsx
   // journeys/src/components/Conductor/NavigationButton/NavigationButton.tsx
   // journeys/src/components/Conductor/SwipeNavigation/SwipeNavigation.tsx
+  // journeys/src/components/Conductor/HotkeyNavigation/HotkeyNavigation.tsx
   function handleNextNavigationEventCreate(): void {
     const id = uuidv4()
     const stepName = getStepHeading(
@@ -131,34 +148,53 @@ export function Card({
       t
     )
     const targetBlock = getNextBlock({ id: undefined, activeBlock })
-    const targetStepName =
-      targetBlock != null &&
-      getStepHeading(targetBlock.id, targetBlock.children, treeBlocks, t)
-
-    if (targetBlock != null) {
-      void stepNextEventCreate({
-        variables: {
-          input: {
-            id,
-            blockId: activeBlock.id,
-            label: stepName,
-            value: targetStepName,
-            nextStepId: targetBlock.id
-          }
-        }
-      })
-
-      TagManager.dataLayer({
-        dataLayer: {
-          event: 'step_next',
-          eventId: id,
-          blockId: activeBlock.id,
-          stepName,
-          targetStepId: targetBlock.id,
-          targetStepName
-        }
-      })
+    if (targetBlock == null) return
+    const targetStepName = getStepHeading(
+      targetBlock.id,
+      targetBlock.children,
+      treeBlocks,
+      t
+    )
+    const input: StepNextEventCreateInput = {
+      id,
+      blockId: activeBlock.id,
+      label: stepName,
+      value: targetStepName,
+      nextStepId: targetBlock.id
     }
+    void stepNextEventCreate({
+      variables: {
+        input
+      }
+    })
+    if (journey != null)
+      plausible('navigateNextStep', {
+        u: `${window.location.origin}/${journey.id}/${input.blockId}`,
+        props: {
+          ...input,
+          key: keyify({
+            stepId: input.blockId,
+            event: 'navigateNextStep',
+            blockId: input.blockId,
+            target: input.nextStepId
+          }),
+          simpleKey: keyify({
+            stepId: input.blockId,
+            event: 'navigateNextStep',
+            blockId: input.blockId
+          })
+        }
+      })
+    TagManager.dataLayer({
+      dataLayer: {
+        event: 'step_next',
+        eventId: id,
+        blockId: activeBlock.id,
+        stepName,
+        targetStepId: targetBlock.id,
+        targetStepName
+      }
+    })
   }
   // should always be called with previousActiveBlock()
   // should match with other handlePreviousNavigationEventCreate functions
@@ -166,6 +202,7 @@ export function Card({
   // libs/journeys/ui/src/components/Card/Card.tsx
   // journeys/src/components/Conductor/NavigationButton/NavigationButton.tsx
   // journeys/src/components/Conductor/SwipeNavigation/SwipeNavigation.tsx
+  // journeys/src/components/Conductor/HotkeyNavigation/HotkeyNavigation.tsx
   function handlePreviousNavigationEventCreate(): void {
     const id = uuidv4()
     const stepName = getStepHeading(
@@ -177,34 +214,53 @@ export function Card({
     const targetBlock = blockHistory[
       blockHistory.length - 2
     ] as TreeBlock<StepFields>
-    const targetStepName =
-      targetBlock != null &&
-      getStepHeading(targetBlock.id, targetBlock.children, treeBlocks, t)
-
-    if (targetBlock != null) {
-      void stepPreviousEventCreate({
-        variables: {
-          input: {
-            id,
-            blockId: activeBlock.id,
-            label: stepName,
-            value: targetStepName,
-            previousStepId: targetBlock.id
-          }
-        }
-      })
-
-      TagManager.dataLayer({
-        dataLayer: {
-          event: 'step_prev',
-          eventId: id,
-          blockId: activeBlock.id,
-          stepName,
-          targetStepId: targetBlock.id,
-          targetStepName
-        }
-      })
+    if (targetBlock == null) return
+    const targetStepName = getStepHeading(
+      targetBlock.id,
+      targetBlock.children,
+      treeBlocks,
+      t
+    )
+    const input: StepPreviousEventCreateInput = {
+      id,
+      blockId: activeBlock.id,
+      label: stepName,
+      value: targetStepName,
+      previousStepId: targetBlock.id
     }
+    void stepPreviousEventCreate({
+      variables: {
+        input
+      }
+    })
+    if (journey != null)
+      plausible('navigatePreviousStep', {
+        u: `${window.location.origin}/${journey.id}/${input.blockId}`,
+        props: {
+          ...input,
+          key: keyify({
+            stepId: input.blockId,
+            event: 'navigatePreviousStep',
+            blockId: input.blockId,
+            target: input.previousStepId
+          }),
+          simpleKey: keyify({
+            stepId: input.blockId,
+            event: 'navigatePreviousStep',
+            blockId: input.blockId
+          })
+        }
+      })
+    TagManager.dataLayer({
+      dataLayer: {
+        event: 'step_prev',
+        eventId: id,
+        blockId: activeBlock.id,
+        stepName,
+        targetStepId: targetBlock.id,
+        targetStepName
+      }
+    })
   }
   const handleNavigation = (e: MouseEvent): void => {
     if (variant === 'admin') return
@@ -237,7 +293,6 @@ export function Card({
       }
     }
   }
-
   return (
     <Paper
       data-testid={`JourneysCard-${id}`}
@@ -255,7 +310,7 @@ export function Card({
       elevation={3}
       onClick={handleNavigation}
     >
-      {coverBlock != null && !fullscreen ? (
+      {(coverBlock != null && !fullscreen) || videoBlock != null ? (
         <ContainedCover
           backgroundColor={cardColor}
           backgroundBlur={blurUrl}

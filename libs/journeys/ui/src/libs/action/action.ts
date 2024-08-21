@@ -28,7 +28,7 @@ export function handleAction(
       } else if (action.url === '') {
         break
       } else {
-        void router.push(action.url)
+        void router.push(action.url)?.then(() => window.location.reload())
       }
       break
     case 'EmailAction':

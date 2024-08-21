@@ -1,7 +1,7 @@
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentPropsWithoutRef } from 'react'
 
-import { simpleComponentConfig } from '../../../../../../../libs/storybook'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { StepBlockNodeIcon } from '.'
 
@@ -13,12 +13,21 @@ const StepBlockNodeIconStory: Meta<typeof StepBlockNodeIcon> = {
 }
 
 const Template: StoryObj<ComponentPropsWithoutRef<typeof StepBlockNodeIcon>> = {
-  render: ({ typename }) => {
-    return <StepBlockNodeIcon typename={typename} />
+  render: ({ typename, showMultiIcon }) => {
+    return (
+      <StepBlockNodeIcon typename={typename} showMultiIcon={showMultiIcon} />
+    )
   }
 }
 
 export const Default = {
+  ...Template,
+  args: {
+    typename: 'IconBlock'
+  }
+}
+
+export const Image = {
   ...Template,
   args: {
     typename: 'ImageBlock'
@@ -57,6 +66,21 @@ export const RadioQuestion = {
   ...Template,
   args: {
     typename: 'RadioQuestionBlock'
+  }
+}
+
+export const SignUp = {
+  ...Template,
+  args: {
+    typename: 'SignUpBlock'
+  }
+}
+
+export const Multiple = {
+  ...Template,
+  args: {
+    typename: 'ButtonBlock',
+    showMultiIcon: true
   }
 }
 

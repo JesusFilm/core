@@ -56,7 +56,7 @@ export function AudioLanguageDialog({
     )?.slug
     if (selectedLanguageSlug != null) {
       void router.push(
-        `${
+        `/watch${
           container?.slug != null ? `/${container.slug}/` : '/'
         }${selectedLanguageSlug}`
       )

@@ -1,6 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -16,6 +16,7 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../../../../__generated__/globalTypes'
+import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 
 import { CARD_BLOCK_LAYOUT_UPDATE, CardLayout } from './CardLayout'
 
@@ -40,7 +41,7 @@ const journey: Journey = {
     iso3: 'eng',
     name: [
       {
-        __typename: 'Translation',
+        __typename: 'LanguageName',
         value: 'English',
         primary: true
       }
@@ -78,7 +79,7 @@ describe('CardLayout', () => {
       fullscreen: false,
       children: []
     }
-    const { getByText } = render(
+    render(
       <MockedProvider>
         <JourneyProvider value={{ journey, variant: 'admin' }}>
           <EditorProvider initialState={{ selectedBlock: card }}>
@@ -87,7 +88,10 @@ describe('CardLayout', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    expect(getByText('Contained')).toBeInTheDocument()
+    expect(screen.getByTestId('selected').children[0]).toHaveAttribute(
+      'alt',
+      'Contained'
+    )
   })
 
   it('shows Expanded', () => {
@@ -103,7 +107,7 @@ describe('CardLayout', () => {
       fullscreen: true,
       children: []
     }
-    const { getByText } = render(
+    render(
       <MockedProvider>
         <JourneyProvider value={{ journey, variant: 'admin' }}>
           <EditorProvider initialState={{ selectedBlock: card }}>
@@ -112,7 +116,10 @@ describe('CardLayout', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    expect(getByText('Expanded')).toBeInTheDocument()
+    expect(screen.getByTestId('selected').children[0]).toHaveAttribute(
+      'alt',
+      'Expanded'
+    )
   })
 
   it('works in a step block', () => {
@@ -137,7 +144,7 @@ describe('CardLayout', () => {
       parentOrder: 0,
       children: [card]
     }
-    const { getByText } = render(
+    render(
       <MockedProvider>
         <JourneyProvider value={{ journey, variant: 'admin' }}>
           <EditorProvider initialState={{ selectedBlock: step }}>
@@ -146,7 +153,10 @@ describe('CardLayout', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    expect(getByText('Contained')).toBeInTheDocument()
+    expect(screen.getByTestId('selected').children[0]).toHaveAttribute(
+      'alt',
+      'Contained'
+    )
   })
 
   it('changes to gql selection', async () => {
@@ -175,7 +185,7 @@ describe('CardLayout', () => {
       fullscreen: false,
       children: []
     }
-    const { getByTestId } = render(
+    render(
       <MockedProvider
         cache={cache}
         mocks={[
@@ -184,7 +194,6 @@ describe('CardLayout', () => {
               query: CARD_BLOCK_LAYOUT_UPDATE,
               variables: {
                 id: 'card1.id',
-                journeyId: 'journeyId',
                 input: {
                   fullscreen: true
                 }
@@ -194,14 +203,80 @@ describe('CardLayout', () => {
           }
         ]}
       >
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
-          <EditorProvider initialState={{ selectedBlock: card }}>
-            <CardLayout />
-          </EditorProvider>
-        </JourneyProvider>
+        <EditorProvider initialState={{ selectedBlock: card }}>
+          <CardLayout />
+        </EditorProvider>
       </MockedProvider>
     )
-    fireEvent.click(getByTestId('true'))
+    fireEvent.click(screen.getByTestId('true'))
     await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
+  it('undoes changes to layout', async () => {
+    const cache = new InMemoryCache()
+    cache.restore({
+      'Journey:journeyId': {
+        blocks: [{ __ref: 'CardBlock:card1.id' }],
+        id: 'journeyId',
+        __typename: 'Journey'
+      }
+    })
+    const result = jest.fn(() => ({
+      data: {
+        cardBlockUpdate: { id: 'card1.id', fullscreen: true }
+      }
+    }))
+    const result2 = jest.fn(() => ({
+      data: {
+        cardBlockUpdate: { id: 'card1.id', fullscreen: false }
+      }
+    }))
+    const card: TreeBlock<CardBlock> = {
+      id: 'card1.id',
+      __typename: 'CardBlock',
+      parentBlockId: 'step1.id',
+      parentOrder: 0,
+      coverBlockId: null,
+      backgroundColor: null,
+      themeMode: null,
+      themeName: null,
+      fullscreen: false,
+      children: []
+    }
+    render(
+      <MockedProvider
+        cache={cache}
+        mocks={[
+          {
+            request: {
+              query: CARD_BLOCK_LAYOUT_UPDATE,
+              variables: { id: 'card1.id', input: { fullscreen: true } }
+            },
+            result
+          },
+          {
+            request: {
+              query: CARD_BLOCK_LAYOUT_UPDATE,
+              variables: {
+                id: 'card1.id',
+                input: {
+                  fullscreen: false
+                }
+              }
+            },
+            result: result2
+          }
+        ]}
+      >
+        <EditorProvider initialState={{ selectedBlock: card }}>
+          <CommandUndoItem variant="button" />
+          <CardLayout />
+        </EditorProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(screen.getByTestId('true'))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(result2).toHaveBeenCalled())
   })
 })

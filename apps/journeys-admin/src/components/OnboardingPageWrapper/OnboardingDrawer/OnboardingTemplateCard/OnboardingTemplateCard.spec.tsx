@@ -1,13 +1,15 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 
-import { GetJourneys_journeys as Journey } from '../../../../../__generated__/GetJourneys'
+import { GET_JOURNEY } from '@core/journeys/ui/useJourneyQuery'
+
+import type { GetJourneys_journeys as Journey } from '../../../../../__generated__/GetJourneys'
 import {
+  IdType,
   JourneyStatus,
   ThemeMode,
   ThemeName
 } from '../../../../../__generated__/globalTypes'
-import { GET_JOURNEY } from '../../../../libs/useJourneyQuery/useJourneyQuery'
 
 import { OnboardingTemplateCard } from './OnboardingTemplateCard'
 
@@ -24,7 +26,7 @@ describe('OnboardingTemplateCard', () => {
       id: '529',
       name: [
         {
-          __typename: 'Translation',
+          __typename: 'LanguageName',
           value: 'English',
           primary: true
         }
@@ -57,14 +59,15 @@ describe('OnboardingTemplateCard', () => {
   it('should render OnboardingTemplateCard', async () => {
     const result = jest.fn(() => ({ data: { journey } }))
 
-    const { getByRole, getAllByText } = render(
+    render(
       <MockedProvider
         mocks={[
           {
             request: {
               query: GET_JOURNEY,
               variables: {
-                id: 'template-id'
+                id: 'template-id',
+                idType: IdType.databaseId
               }
             },
             result
@@ -76,12 +79,14 @@ describe('OnboardingTemplateCard', () => {
     )
 
     await waitFor(() => expect(result).toHaveBeenCalled())
-    expect(getAllByText('Journey Template')[0]).toBeInTheDocument()
+    expect(screen.getAllByText('Journey Template')[0]).toBeInTheDocument()
     await waitFor(() =>
-      expect(getByRole('img').attributes.getNamedItem('src')?.value).toBe(
+      expect(
+        screen.getByRole('img').attributes.getNamedItem('src')?.value
+      ).toBe(
         '/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1508363778367-af363f107cbb%3Fixlib%3Drb-1.2.1%26q%3D80%26fm%3Djpg%26crop%3Dentropy%26cs%3Dtinysrgb%26dl%3Dchester-wade-hLP7lVm4KUE-unsplash.jpg%26w%3D1920&w=3840&q=75'
       )
     )
-    expect(getAllByText('A Template Heading')[0]).toBeInTheDocument()
+    expect(screen.getAllByText('A Template Heading')[0]).toBeInTheDocument()
   })
 })

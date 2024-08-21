@@ -1,197 +1,353 @@
 import { gql, useMutation } from '@apollo/client'
-import { useTranslation } from 'next-i18next'
-import { useSnackbar } from 'notistack'
+import pick from 'lodash/pick'
 import { ReactElement } from 'react'
+import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { useCommand } from '@core/journeys/ui/CommandProvider'
+import {
+  ActiveContent,
+  ActiveSlide,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { VIDEO_FIELDS } from '@core/journeys/ui/Video/videoFields'
 
-import {
-  BlockDeleteForBackgroundVideo,
-  BlockDeleteForBackgroundVideoVariables
-} from '../../../../../../../../../../../__generated__/BlockDeleteForBackgroundVideo'
 import {
   BlockFields_CardBlock as CardBlock,
   BlockFields_ImageBlock as ImageBlock,
   BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../../../../../__generated__/BlockFields'
 import {
-  CardBlockVideoBlockCreate,
-  CardBlockVideoBlockCreateVariables
-} from '../../../../../../../../../../../__generated__/CardBlockVideoBlockCreate'
+  CoverVideoBlockCreate,
+  CoverVideoBlockCreateVariables
+} from '../../../../../../../../../../../__generated__/CoverVideoBlockCreate'
 import {
-  CardBlockVideoBlockUpdate,
-  CardBlockVideoBlockUpdateVariables
-} from '../../../../../../../../../../../__generated__/CardBlockVideoBlockUpdate'
-import { VideoBlockUpdateInput } from '../../../../../../../../../../../__generated__/globalTypes'
-import { blockDeleteUpdate } from '../../../../../../../../../../libs/blockDeleteUpdate'
+  CoverVideoBlockUpdate,
+  CoverVideoBlockUpdateVariables
+} from '../../../../../../../../../../../__generated__/CoverVideoBlockUpdate'
+import {
+  VideoBlockSource,
+  VideoBlockUpdateInput
+} from '../../../../../../../../../../../__generated__/globalTypes'
+import { blockDeleteUpdate } from '../../../../../../../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
+import { blockRestoreUpdate } from '../../../../../../../../../../libs/useBlockRestoreMutation'
+import { useCoverBlockDeleteMutation } from '../../../../../../../../../../libs/useCoverBlockDeleteMutation'
+import { useCoverBlockRestoreMutation } from '../../../../../../../../../../libs/useCoverBlockRestoreMutation'
 import { VideoBlockEditor } from '../../../../../../Drawer/VideoBlockEditor'
 
-export const BLOCK_DELETE_FOR_BACKGROUND_VIDEO = gql`
-  mutation BlockDeleteForBackgroundVideo(
-    $id: ID!
-    $journeyId: ID!
-    $parentBlockId: ID
-  ) {
-    blockDelete(id: $id, parentBlockId: $parentBlockId, journeyId: $journeyId) {
-      id
-      parentOrder
-    }
-  }
-`
-
-export const CARD_BLOCK_COVER_VIDEO_BLOCK_CREATE = gql`
+export const COVER_VIDEO_BLOCK_CREATE = gql`
   ${VIDEO_FIELDS}
-  mutation CardBlockVideoBlockCreate($input: VideoBlockCreateInput!) {
+  mutation CoverVideoBlockCreate(
+    $id: ID!
+    $input: VideoBlockCreateInput!
+    $cardBlockId: ID!
+  ) {
     videoBlockCreate(input: $input) {
       ...VideoFields
     }
+    cardBlockUpdate(id: $cardBlockId, input: { coverBlockId: $id }) {
+      id
+      coverBlockId
+    }
   }
 `
 
-export const CARD_BLOCK_COVER_VIDEO_BLOCK_UPDATE = gql`
+export const COVER_VIDEO_BLOCK_UPDATE = gql`
   ${VIDEO_FIELDS}
-  mutation CardBlockVideoBlockUpdate(
-    $id: ID!
-    $journeyId: ID!
-    $input: VideoBlockUpdateInput!
-  ) {
-    videoBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+  mutation CoverVideoBlockUpdate($id: ID!, $input: VideoBlockUpdateInput!) {
+    videoBlockUpdate(id: $id, input: $input) {
       ...VideoFields
     }
   }
 `
 
 interface BackgroundMediaVideoProps {
-  cardBlock: TreeBlock<CardBlock>
+  cardBlock?: TreeBlock<CardBlock>
 }
 
 export function BackgroundMediaVideo({
   cardBlock
 }: BackgroundMediaVideoProps): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
-  const coverBlock =
-    (cardBlock?.children.find(
-      (child) => child.id === cardBlock?.coverBlockId
-    ) as TreeBlock<ImageBlock> | TreeBlock<VideoBlock>) ?? null
-
-  const [videoBlockCreate] = useMutation<
-    CardBlockVideoBlockCreate,
-    CardBlockVideoBlockCreateVariables
-  >(CARD_BLOCK_COVER_VIDEO_BLOCK_CREATE)
-  const [videoBlockUpdate] = useMutation<
-    CardBlockVideoBlockUpdate,
-    CardBlockVideoBlockUpdateVariables
-  >(CARD_BLOCK_COVER_VIDEO_BLOCK_UPDATE)
-  const [videoBlockDelete] = useMutation<
-    BlockDeleteForBackgroundVideo,
-    BlockDeleteForBackgroundVideoVariables
-  >(BLOCK_DELETE_FOR_BACKGROUND_VIDEO)
-
+  const coverBlock = cardBlock?.children.find(
+    (child) => child.id === cardBlock?.coverBlockId
+  ) as TreeBlock<ImageBlock> | TreeBlock<VideoBlock> | undefined
+  const { add } = useCommand()
   const { journey } = useJourney()
-  const { enqueueSnackbar } = useSnackbar()
-  const videoBlock = coverBlock?.__typename === 'VideoBlock' ? coverBlock : null
+  const {
+    state: { selectedStep },
+    dispatch
+  } = useEditor()
 
-  const createVideoBlock = async (
-    input: VideoBlockUpdateInput
-  ): Promise<void> => {
-    if (journey == null) return
+  const [createBlock] = useMutation<
+    CoverVideoBlockCreate,
+    CoverVideoBlockCreateVariables
+  >(COVER_VIDEO_BLOCK_CREATE)
+  const [updateBlock] = useMutation<
+    CoverVideoBlockUpdate,
+    CoverVideoBlockUpdateVariables
+  >(COVER_VIDEO_BLOCK_UPDATE)
+  const [deleteBlock] = useCoverBlockDeleteMutation()
+  const [restoreBlock] = useCoverBlockRestoreMutation()
 
-    await videoBlockCreate({
-      variables: {
-        input: {
-          journeyId: journey.id,
-          parentBlockId: cardBlock.id,
-          isCover: true,
-          ...input
-        }
+  function createVideoBlock(input: VideoBlockUpdateInput): void {
+    if (journey == null || cardBlock == null) return
+
+    const block: VideoBlock = {
+      id: uuidv4(),
+      __typename: 'VideoBlock',
+      parentBlockId: cardBlock.id,
+      parentOrder: null,
+      title: null,
+      description: null,
+      image: null,
+      video: null,
+      action: null,
+      startAt: input.startAt ?? null,
+      endAt: input.endAt ?? null,
+      muted: input.muted ?? null,
+      autoplay: input.autoplay ?? null,
+      duration: input.duration ?? null,
+      videoId: input.videoId ?? null,
+      videoVariantLanguageId: input.videoVariantLanguageId ?? null,
+      source: input.source ?? VideoBlockSource.internal,
+      posterBlockId: input.posterBlockId ?? null,
+      fullsize: input.fullsize ?? null,
+      objectFit: input.objectFit ?? null
+    }
+
+    add({
+      parameters: {
+        execute: {},
+        undo: {}
       },
-      update(cache, { data }) {
-        if (data?.videoBlockCreate != null) {
-          cache.modify({
-            id: cache.identify({ __typename: 'Journey', id: journey.id }),
-            fields: {
-              blocks(existingBlockRefs = []) {
-                const newBlockRef = cache.writeFragment({
-                  id: `VideoBlock:${data.videoBlockCreate.id}`,
-                  data: data.videoBlockCreate,
-                  fragment: gql`
-                    fragment NewBlock on Block {
-                      id
-                    }
-                  `
-                })
-                return [...existingBlockRefs, newBlockRef]
-              }
+      execute() {
+        dispatch({
+          type: 'SetEditorFocusAction',
+          activeSlide: ActiveSlide.Content,
+          selectedStep,
+          activeContent: ActiveContent.Canvas
+        })
+        void createBlock({
+          variables: {
+            id: block.id,
+            cardBlockId: cardBlock.id,
+            input: {
+              journeyId: journey.id,
+              isCover: true,
+              id: block.id,
+              ...input,
+              parentBlockId: cardBlock.id
             }
-          })
-          cache.modify({
-            id: cache.identify({
-              __typename: cardBlock.__typename,
-              id: cardBlock.id
-            }),
-            fields: {
-              coverBlockId: () => data.videoBlockCreate.id
+          },
+          optimisticResponse: {
+            videoBlockCreate: block,
+            cardBlockUpdate: {
+              __typename: 'CardBlock',
+              id: cardBlock.id,
+              coverBlockId: block.id
             }
-          })
-        }
+          },
+          update(cache, { data }) {
+            if (data?.videoBlockCreate != null) {
+              cache.modify({
+                id: cache.identify({ __typename: 'Journey', id: journey.id }),
+                fields: {
+                  blocks(existingBlockRefs = []) {
+                    const newBlockRef = cache.writeFragment({
+                      data: data.videoBlockCreate,
+                      fragment: gql`
+                        fragment NewBlock on Block {
+                          id
+                        }
+                      `
+                    })
+                    return [...existingBlockRefs, newBlockRef]
+                  }
+                }
+              })
+            }
+          }
+        })
+      },
+      undo() {
+        dispatch({
+          type: 'SetEditorFocusAction',
+          activeSlide: ActiveSlide.Content,
+          selectedStep,
+          activeContent: ActiveContent.Canvas
+        })
+        void deleteBlock({
+          variables: {
+            id: block.id,
+            cardBlockId: cardBlock.id
+          },
+          optimisticResponse: {
+            blockDelete: [block],
+            cardBlockUpdate: {
+              id: cardBlock.id,
+              coverBlockId: null,
+              __typename: 'CardBlock'
+            }
+          },
+          update(cache, { data }) {
+            blockDeleteUpdate(block, data?.blockDelete, cache, journey.id)
+          }
+        })
+      },
+      redo() {
+        dispatch({
+          type: 'SetEditorFocusAction',
+          activeSlide: ActiveSlide.Content,
+          selectedStep,
+          activeContent: ActiveContent.Canvas
+        })
+        void restoreBlock({
+          variables: {
+            id: block.id,
+            cardBlockId: cardBlock.id
+          },
+          optimisticResponse: {
+            blockRestore: [block],
+            cardBlockUpdate: {
+              id: cardBlock.id,
+              coverBlockId: block.id,
+              __typename: 'CardBlock'
+            }
+          },
+          update(cache, { data }) {
+            blockRestoreUpdate(block, data?.blockRestore, cache, journey.id)
+          }
+        })
       }
     })
   }
 
-  const updateVideoBlock = async (
-    input: VideoBlockUpdateInput
-  ): Promise<void> => {
-    if (journey == null) return
+  function updateVideoBlock(input: VideoBlockUpdateInput): void {
+    if (
+      journey == null ||
+      coverBlock == null ||
+      coverBlock.__typename === 'ImageBlock'
+    )
+      return
 
-    if (input.videoId === null) {
-      await videoBlockDelete({
-        variables: {
-          id: coverBlock.id,
-          parentBlockId: cardBlock.parentBlockId,
-          journeyId: journey.id
-        },
-        update(cache, { data }) {
-          blockDeleteUpdate(coverBlock, data?.blockDelete, cache, journey.id)
-        }
-      })
-    } else {
-      await videoBlockUpdate({
-        variables: {
-          id: coverBlock.id,
-          journeyId: journey.id,
-          input
-        }
-      })
+    const block: VideoBlock = {
+      ...coverBlock,
+      ...input,
+      source: input.source ?? coverBlock.source
     }
-  }
 
-  const handleChange = async (block: TreeBlock<VideoBlock>): Promise<void> => {
-    try {
-      if (videoBlock == null) {
-        await createVideoBlock(block)
-      } else {
-        await updateVideoBlock(block)
-      }
-      enqueueSnackbar(t('Video Updated'), {
-        variant: 'success',
-        preventDuplicate: true
-      })
-    } catch (e) {
-      if (e instanceof Error) {
-        enqueueSnackbar(e.message, {
-          variant: 'error',
-          preventDuplicate: true
+    add({
+      parameters: {
+        execute: block,
+        undo: coverBlock
+      },
+      execute(block) {
+        dispatch({
+          type: 'SetEditorFocusAction',
+          activeSlide: ActiveSlide.Content,
+          selectedStep,
+          activeContent: ActiveContent.Canvas
+        })
+        void updateBlock({
+          variables: {
+            id: coverBlock.id,
+            input: pick(block, Object.keys(input))
+          },
+          optimisticResponse: {
+            videoBlockUpdate: block
+          }
         })
       }
+    })
+  }
+
+  function deleteVideoBlock(): void {
+    if (
+      journey == null ||
+      coverBlock == null ||
+      coverBlock.__typename === 'ImageBlock' ||
+      cardBlock == null
+    )
+      return
+
+    add({
+      parameters: {
+        execute: {},
+        undo: {}
+      },
+      execute() {
+        dispatch({
+          type: 'SetEditorFocusAction',
+          activeSlide: ActiveSlide.Content,
+          selectedStep,
+          activeContent: ActiveContent.Canvas
+        })
+        void deleteBlock({
+          variables: {
+            id: coverBlock.id,
+            cardBlockId: cardBlock.id
+          },
+          optimisticResponse: {
+            blockDelete: [coverBlock],
+            cardBlockUpdate: {
+              id: cardBlock.id,
+              coverBlockId: null,
+              __typename: 'CardBlock'
+            }
+          },
+          update(cache, { data }) {
+            blockDeleteUpdate(coverBlock, data?.blockDelete, cache, journey.id)
+          }
+        })
+      },
+      undo() {
+        dispatch({
+          type: 'SetEditorFocusAction',
+          activeSlide: ActiveSlide.Content,
+          selectedStep,
+          activeContent: ActiveContent.Canvas
+        })
+        void restoreBlock({
+          variables: {
+            id: coverBlock.id,
+            cardBlockId: cardBlock.id
+          },
+          optimisticResponse: {
+            blockRestore: [coverBlock],
+            cardBlockUpdate: {
+              id: cardBlock.id,
+              coverBlockId: coverBlock.id,
+              __typename: 'CardBlock'
+            }
+          },
+          update(cache, { data }) {
+            blockRestoreUpdate(
+              coverBlock,
+              data?.blockRestore,
+              cache,
+              journey.id
+            )
+          }
+        })
+      }
+    })
+  }
+
+  async function handleChange(input: VideoBlockUpdateInput): Promise<void> {
+    if (input.videoId === null) {
+      await deleteVideoBlock()
+    } else if (coverBlock == null) {
+      await createVideoBlock(input)
+    } else {
+      await updateVideoBlock(input)
     }
   }
 
   return (
     <VideoBlockEditor
       selectedBlock={
-        videoBlock != null ? { ...videoBlock, parentOrder: null } : videoBlock
+        coverBlock?.__typename === 'VideoBlock' ? coverBlock : null
       }
       onChange={handleChange}
     />

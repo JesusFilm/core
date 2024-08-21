@@ -3,7 +3,7 @@ import { MouseEvent, ReactElement, useEffect, useRef, useState } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { WrapperProps } from '@core/journeys/ui/BlockRenderer'
-import { ActiveFab, useEditor } from '@core/journeys/ui/EditorProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 
 import { QuickControls } from '../QuickControls'
 
@@ -39,22 +39,12 @@ export function SelectableWrapper({
     })
   }
 
-  const selectBlock = (block: TreeBlock): void => {
-    dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Edit })
-    updateEditor(block)
-  }
-
-  const editBlock = (): void => {
-    dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Save })
-  }
-
   // TODO: Test dispatch via E2E
   const handleSelectBlock = (e: MouseEvent<HTMLElement>): void => {
     // Allow RadioQuestion select event to be overridden by RadioOption select/edit events (no e.stopPropogation)
     if (block.__typename === 'RadioQuestionBlock') {
       // Directly edit RadioQuestionBlock
       updateEditor(block)
-      editBlock()
     } else if (block.__typename === 'RadioOptionBlock') {
       // this stopPropagation prevents links from being opened in the editor when clicked radioOptions are selected
       e.stopPropagation()
@@ -65,16 +55,15 @@ export function SelectableWrapper({
       if (selectedBlock?.id === block.id) {
         // Must override RadioQuestionBlock selected during event capture
         dispatch({ type: 'SetSelectedBlockAction', selectedBlock: block })
-        editBlock()
       } else if (parentSelected || siblingSelected) {
-        selectBlock(block)
+        updateEditor(block)
       }
     } else {
       e.stopPropagation()
+      // eslint-disable-next-line no-empty
       if (selectedBlock?.id === block.id && isInlineEditable) {
-        editBlock()
       } else {
-        selectBlock(block)
+        updateEditor(block)
       }
     }
   }
@@ -101,43 +90,67 @@ export function SelectableWrapper({
         }
       : {}
 
+  let borderRadius = '4px'
+  switch (block.__typename) {
+    case 'RadioOptionBlock':
+      borderRadius = '8px'
+      break
+    case 'ImageBlock':
+      borderRadius = '16px'
+      break
+    case 'SignUpBlock':
+      borderRadius = '4px 4px 16px 16px'
+      break
+    case 'ButtonBlock':
+      if (block.buttonVariant === 'contained') {
+        if (block.size === 'large') borderRadius = '16px'
+        if (block.size === 'medium') borderRadius = '12px'
+        if (block.size === 'small') borderRadius = '8px'
+      }
+  }
+
   useEffect(() => {
     setOpen(selectedBlock?.id === block.id)
   }, [selectedBlock, block])
 
   return isSelectable ? (
-    <Box
-      ref={selectableRef}
-      data-testid={`SelectableWrapper-${block.id}`}
-      className={
-        block.__typename === 'RadioOptionBlock'
-          ? 'MuiButtonGroup-root MuiButtonGroup-grouped MuiButtonGroup-groupedVertical'
-          : ''
-      }
-      sx={{
-        '&:first-child': {
-          '& > *': { mt: '0px' }
-        },
-        '&:last-child': {
-          '& > *': { mb: '0px' }
-        },
-        borderRadius: block.__typename === 'RadioOptionBlock' ? '8px' : '4px',
-        outline: selectedBlock?.id === block.id ? '2px solid #C52D3A' : 'none',
-        outlineOffset: '5px',
-        zIndex: selectedBlock?.id === block.id ? 1 : 0,
-        ...videoOutlineStyles
-      }}
-      onClickCapture={handleSelectBlock}
-      onClick={blockNonSelectionEvents}
-      onMouseDown={blockNonSelectionEvents}
-    >
-      {children}
+    <>
+      <Box
+        ref={selectableRef}
+        data-testid={`SelectableWrapper-${block.id}`}
+        className={
+          block.__typename === 'RadioOptionBlock'
+            ? 'MuiButtonGroup-root MuiButtonGroup-grouped MuiButtonGroup-groupedVertical'
+            : ''
+        }
+        sx={{
+          '&:first-child': {
+            '& > *': { mt: '0px' }
+          },
+          '&:last-child': {
+            '& > *': { mb: '0px' }
+          },
+          borderRadius,
+          outline: '2px solid ',
+          outlineColor:
+            selectedBlock?.id === block.id ? '#C52D3A' : 'transparent',
+          transition: (theme) => theme.transitions.create('outline-color'),
+          outlineOffset: '5px',
+          zIndex: selectedBlock?.id === block.id ? 1 : 0,
+          ...videoOutlineStyles
+        }}
+        onClickCapture={handleSelectBlock}
+        onClick={blockNonSelectionEvents}
+        onMouseDown={blockNonSelectionEvents}
+      >
+        {children}
+      </Box>
       <QuickControls
         open={open}
         anchorEl={selectableRef.current}
         block={block}
       />
-    </Box>
+    </>
   ) : (
     children
   )

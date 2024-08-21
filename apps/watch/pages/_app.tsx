@@ -1,15 +1,16 @@
-import { ApolloProvider, NormalizedCacheObject } from '@apollo/client'
+import { ApolloProvider, type NormalizedCacheObject } from '@apollo/client'
 import type { EmotionCache } from '@emotion/cache'
 import { CacheProvider } from '@emotion/react'
-import { AppProps as NextJsAppProps } from 'next/app'
+import type { AppProps as NextJsAppProps } from 'next/app'
 import Head from 'next/head'
 import Script from 'next/script'
 import { appWithTranslation } from 'next-i18next'
 import { DefaultSeo } from 'next-seo'
-import { ReactElement, useEffect } from 'react'
+import { type ReactElement, useEffect } from 'react'
 import TagManager from 'react-gtm-module'
 
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
@@ -19,11 +20,13 @@ import { useApolloClient } from '../src/libs/apolloClient'
 import 'swiper/css'
 import 'swiper/css/a11y'
 import 'swiper/css/navigation'
-import '../public/fonts/fonts.css'
+import '../public/watch/assets/fonts/fonts.css'
 
 const clientSideEmotionCache = createEmotionCache({ prepend: false })
 
-type WatchAppProps = NextJsAppProps & {
+type WatchAppProps = NextJsAppProps<{
+  flags?: { [key: string]: boolean }
+}> & {
   emotionCache?: EmotionCache
 }
 
@@ -53,26 +56,27 @@ function WatchApp({
   })
 
   return (
-    <ApolloProvider client={client}>
-      <CacheProvider value={emotionCache}>
-        <DefaultSeo
-          titleTemplate="%s | Jesus Film Project"
-          defaultTitle="Watch | Jesus Film Project"
-          description="Free Gospel Video Streaming Library. Watch, learn and share the gospel in over 2000 languages."
-        />
-        <Head>
-          <meta name="theme-color" content="#000" />
-          <meta
-            name="viewport"
-            content="minimum-scale=1, initial-scale=1, width=device-width"
+    <FlagsProvider flags={pageProps.flags}>
+      <ApolloProvider client={client}>
+        <CacheProvider value={emotionCache}>
+          <DefaultSeo
+            titleTemplate="%s | Jesus Film Project"
+            defaultTitle="Watch | Jesus Film Project"
+            description="Free Gospel Video Streaming Library. Watch, learn and share the gospel in over 2000 languages."
           />
-        </Head>
-        {process.env.NEXT_PUBLIC_DATADOG_APPLICATION_ID != null &&
-          process.env.NEXT_PUBLIC_DATADOG_APPLICATION_ID !== '' &&
-          process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN != null &&
-          process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN !== '' && (
-            <Script id="datadog-rum">
-              {`
+          <Head>
+            <meta name="theme-color" content="#000" />
+            <meta
+              name="viewport"
+              content="minimum-scale=1, initial-scale=1, width=device-width"
+            />
+          </Head>
+          {process.env.NEXT_PUBLIC_DATADOG_APPLICATION_ID != null &&
+            process.env.NEXT_PUBLIC_DATADOG_APPLICATION_ID !== '' &&
+            process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN != null &&
+            process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN !== '' && (
+              <Script id="datadog-rum">
+                {`
              (function(h,o,u,n,d) {
                h=h[d]=h[d]||{q:[],onReady:function(c){h.q.push(c)}}
                d=o.createElement(u);d.async=1;d.src=n
@@ -99,16 +103,17 @@ function WatchApp({
                });
              })
            `}
-            </Script>
-          )}
-        <ThemeProvider
-          themeName={ThemeName.website}
-          themeMode={ThemeMode.light}
-        >
-          <Component {...pageProps} />
-        </ThemeProvider>
-      </CacheProvider>
-    </ApolloProvider>
+              </Script>
+            )}
+          <ThemeProvider
+            themeName={ThemeName.website}
+            themeMode={ThemeMode.light}
+          >
+            <Component {...pageProps} />
+          </ThemeProvider>
+        </CacheProvider>
+      </ApolloProvider>
+    </FlagsProvider>
   )
 }
 

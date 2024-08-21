@@ -2,8 +2,8 @@ import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
-import { journeysAdminConfig } from '../../../../../../libs/storybook'
 import { Drawer } from '../Drawer'
 
 import { CardTemplates } from '.'

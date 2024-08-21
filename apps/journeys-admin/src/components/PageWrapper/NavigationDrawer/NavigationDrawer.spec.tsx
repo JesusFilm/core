@@ -3,6 +3,8 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { User } from 'next-firebase-auth'
 import { Suspense } from 'react'
 
+import { GET_USER_ROLE } from '@core/journeys/ui/useUserRoleQuery'
+
 import {
   GetAdminJourneys,
   GetAdminJourneysVariables,
@@ -16,7 +18,6 @@ import {
   UserJourneyRole
 } from '../../../../__generated__/globalTypes'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
-import { GET_USER_ROLE } from '../../../libs/useUserRoleQuery/useUserRoleQuery'
 
 import { GET_ME } from './UserNavigation'
 

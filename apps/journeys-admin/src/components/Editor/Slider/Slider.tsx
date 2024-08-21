@@ -6,9 +6,9 @@ import { darken, styled, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Zoom from '@mui/material/Zoom'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect, useRef } from 'react'
-import { Swiper, SwiperRef, SwiperSlide } from 'swiper/react'
-import { SwiperOptions } from 'swiper/types'
+import { type ReactElement, useEffect, useRef, useState } from 'react'
+import { Swiper, type SwiperRef, SwiperSlide } from 'swiper/react'
+import type { SwiperOptions } from 'swiper/types'
 
 import {
   ActiveContent,
@@ -18,8 +18,8 @@ import {
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import ChevronUpIcon from '@core/shared/ui/icons/ChevronUp'
 
-import { getJourneyFlowBackButtonClicked } from '../../../../__generated__/getJourneyFlowBackButtonClicked'
-import { UpdateJourneyFlowBackButtonClicked } from '../../../../__generated__/UpdateJourneyFlowBackButtonClicked'
+import type { getJourneyFlowBackButtonClicked } from '../../../../__generated__/getJourneyFlowBackButtonClicked'
+import type { UpdateJourneyFlowBackButtonClicked } from '../../../../__generated__/UpdateJourneyFlowBackButtonClicked'
 import { DRAWER_WIDTH, EDIT_TOOLBAR_HEIGHT } from '../constants'
 
 import { Content } from './Content'
@@ -27,8 +27,10 @@ import { JourneyFlow } from './JourneyFlow'
 import { Settings } from './Settings'
 
 export const UPDATE_JOURNEY_FLOW_BACK_BUTTON_CLICKED = gql`
-  mutation UpdateJourneyFlowBackButtonClicked {
-    journeyProfileUpdate(input: { journeyFlowBackButtonClicked: true }) {
+  mutation UpdateJourneyFlowBackButtonClicked(
+    $input: JourneyProfileUpdateInput!
+  ) {
+    journeyProfileUpdate(input: $input) {
       id
       journeyFlowBackButtonClicked
     }
@@ -52,21 +54,34 @@ const StyledSwiperSlide = styled(SwiperSlide)(({ theme }) => ({
 export function Slider(): ReactElement {
   const { breakpoints } = useTheme()
   const swiperRef = useRef<SwiperRef>(null)
+  const [showBackButtonHelp, setShowBackButtonHelp] = useState<
+    boolean | undefined
+  >(undefined)
   const {
-    state: { activeSlide, activeContent, selectedStep },
+    state: { activeSlide, activeContent, selectedStep, showAnalytics },
     dispatch
   } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
   const [updateBackButtonClick] =
     useMutation<UpdateJourneyFlowBackButtonClicked>(
-      UPDATE_JOURNEY_FLOW_BACK_BUTTON_CLICKED
+      UPDATE_JOURNEY_FLOW_BACK_BUTTON_CLICKED,
+      {
+        variables: {
+          input: {
+            journeyFlowBackButtonClicked: true
+          }
+        }
+      }
     )
-  const { data } = useQuery<getJourneyFlowBackButtonClicked>(
-    GET_JOURNEY_FLOW_BACK_BUTTON_CLICKED
+  useQuery<getJourneyFlowBackButtonClicked>(
+    GET_JOURNEY_FLOW_BACK_BUTTON_CLICKED,
+    {
+      onCompleted: (data) =>
+        setShowBackButtonHelp(
+          data?.getJourneyProfile?.journeyFlowBackButtonClicked !== true
+        )
+    }
   )
-
-  const showBackButtonHelp =
-    data?.getJourneyProfile?.journeyFlowBackButtonClicked !== true
 
   const swiperBreakpoints: SwiperOptions['breakpoints'] = {
     [breakpoints.values.xs]: {
@@ -74,8 +89,10 @@ export function Slider(): ReactElement {
       centeredSlides: true,
       centeredSlidesBounds: true
     },
-    [breakpoints.values.sm]: {
-      direction: 'horizontal'
+    [breakpoints.values.md]: {
+      direction: 'horizontal',
+      centeredSlides: false,
+      centeredSlidesBounds: false
     }
   }
 
@@ -87,6 +104,13 @@ export function Slider(): ReactElement {
       swiperRef.current.swiper.slideTo(activeSlide)
     }
   }, [activeSlide])
+
+  useEffect(() => {
+    if (swiperRef.current != null) {
+      swiperRef.current.swiper.allowTouchMove = showAnalytics !== true
+      swiperRef.current.swiper.setGrabCursor()
+    }
+  }, [showAnalytics])
 
   function resetCanvasFocus(): void {
     if (isSlideChangingTo(ActiveSlide.JourneyFlow)) {
@@ -105,7 +129,7 @@ export function Slider(): ReactElement {
   }
 
   function handlePrev(): void {
-    if (showBackButtonHelp) void updateBackButtonClick()
+    if (showBackButtonHelp === true) void updateBackButtonClick()
 
     if (
       activeSlide === ActiveSlide.Content &&
@@ -154,7 +178,7 @@ export function Slider(): ReactElement {
           cursor: 'pointer',
           display: {
             xs: 'flex',
-            sm: 'none'
+            md: 'none'
           },
           alignItems: 'center',
           justifyContent: 'center',
@@ -189,7 +213,7 @@ export function Slider(): ReactElement {
           cursor: 'pointer',
           display: {
             xs: 'none',
-            sm: 'flex'
+            md: 'flex'
           },
           alignItems: 'center',
           transition: (theme) =>
@@ -213,7 +237,9 @@ export function Slider(): ReactElement {
         >
           <ChevronLeftIcon />
           <Collapse
-            in={showBackButtonHelp && activeSlide === ActiveSlide.Content}
+            in={
+              showBackButtonHelp === true && activeSlide === ActiveSlide.Content
+            }
             orientation="horizontal"
             style={{ transitionDelay: '300ms' }}
           >
@@ -226,26 +252,27 @@ export function Slider(): ReactElement {
       <StyledSwiperSlide
         className="swiper-no-swiping"
         sx={{
-          p: { xs: 0, sm: 4 },
-          width: { xs: '100%', sm: 'calc(100% - 408px)' },
+          p: { xs: 0, md: 4 },
+          width: { xs: '100%', md: 'calc(100% - 408px)' },
           height: {
             xs: `calc(100svh - ${EDIT_TOOLBAR_HEIGHT}px - 50px)`,
-            sm: '100%'
+            md: '100%'
           }
         }}
       >
         <Box
           sx={{
             borderRadius: 4,
-            borderTopLeftRadius: { xs: 0, sm: 16 },
-            borderTopRightRadius: { xs: 0, sm: 16 },
-            border: (theme) => ({ sm: `1px solid ${theme.palette.divider}` }),
+            borderTopLeftRadius: { xs: 0, md: 16 },
+            borderTopRightRadius: { xs: 0, md: 16 },
+            border: (theme) => ({ md: `1px solid ${theme.palette.divider}` }),
             borderBottom: (theme) => ({
               xs: `1px solid ${theme.palette.divider}`
             }),
             backgroundSize: '20px 20px',
             backgroundColor: '#eff2f5',
-            height: '100%'
+            height: '100%',
+            overflow: 'hidden'
           }}
         >
           <JourneyFlow />
@@ -253,15 +280,15 @@ export function Slider(): ReactElement {
       </StyledSwiperSlide>
       <StyledSwiperSlide
         sx={{
-          p: { xs: 0, sm: 4 },
-          width: { xs: '100%', sm: 'calc(100% - 120px - 360px)' },
+          p: { xs: 0, md: 4 },
+          width: { xs: '100%', md: 'calc(100% - 120px - 360px)' },
           height: {
             xs: `calc(100svh - ${EDIT_TOOLBAR_HEIGHT}px - 100px)`,
-            sm: '100%'
+            md: '100%'
           },
           display: 'flex',
-          flexDirection: { xs: 'column', sm: 'row' },
-          justifyContent: { sm: 'space-between' },
+          flexDirection: { xs: 'column', md: 'row' },
+          justifyContent: { md: 'space-between' },
           position: 'relative'
         }}
       >
@@ -270,7 +297,7 @@ export function Slider(): ReactElement {
           sx={{
             display: {
               xs: 'flex',
-              sm: 'none'
+              md: 'none'
             },
             alignItems: 'center',
             justifyContent: 'center',
@@ -292,14 +319,14 @@ export function Slider(): ReactElement {
       </StyledSwiperSlide>
       <StyledSwiperSlide
         sx={{
-          p: { xs: 0, sm: 4 },
+          p: { xs: 0, md: 4 },
           width: (theme) => ({
             xs: '100%',
-            sm: DRAWER_WIDTH + parseInt(theme.spacing(8)) // 328 DRAWER_WIDTH + 16px * 2 (padding L & R)
+            md: DRAWER_WIDTH + Number.parseInt(theme.spacing(8)) // 328 DRAWER_WIDTH + 16px * 2 (padding L & R)
           }),
           height: {
             xs: `calc(100svh - ${EDIT_TOOLBAR_HEIGHT}px - 50px)`,
-            sm: '100%'
+            md: '100%'
           }
         }}
       >

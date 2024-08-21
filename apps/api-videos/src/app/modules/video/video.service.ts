@@ -1,11 +1,13 @@
 import { CACHE_MANAGER } from '@nestjs/cache-manager'
 import { Inject, Injectable } from '@nestjs/common'
 import { Cache } from 'cache-manager'
+import { graphql } from 'gql.tada'
 
 import { Prisma, Video } from '.prisma/api-videos-client'
 
-import { VideosFilter } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
+
+type VideosFilter = ReturnType<typeof graphql.scalar<'VideosFilter'>>
 
 interface ExtendedVideosFilter extends VideosFilter {
   variantLanguageId?: string
@@ -21,8 +23,20 @@ export class VideoService {
   ) {}
 
   public parseFullTextSearch(value: string): string {
-    const re = /(\s|\s+)/g
-    return value.replace(re, ' & ')
+    // Regular expression to match special characters in tsquery
+    const specialChars = /[&|!():/-\s]/g
+
+    const words = value.trim().split(/\s+/)
+
+    const processedWords = words.map((word) => {
+      if (specialChars.test(word)) {
+        return `"${word.replace(specialChars, '\\$&')}"`
+      }
+
+      return word
+    })
+
+    return processedWords.join(' & ')
   }
 
   public videoFilter(filter: VideosFilter = {}): Prisma.VideoWhereInput {

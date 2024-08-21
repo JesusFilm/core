@@ -1,13 +1,15 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
-import { ReactElement } from 'react'
+import { ApolloLink } from '@apollo/client'
+import { MockLink, MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
+import DebounceLink from 'apollo-link-debounce'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
-import { GetJourney_journey as Journey } from '../../../../../../../../../../../__generated__/GetJourney'
+import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRedoItem'
+import { CommandUndoItem } from '../../../../../../../../Toolbar/Items/CommandUndoItem'
 
 import { TEXT_RESPONSE_LABEL_UPDATE } from './Label'
 
@@ -18,143 +20,188 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: () => true
 }))
 
-const block: TreeBlock<TextResponseBlock> = {
-  __typename: 'TextResponseBlock',
-  id: 'textResponse0.id',
-  parentBlockId: '0',
-  parentOrder: 0,
-  label: 'Your answer',
-  hint: null,
-  minRows: null,
-  submitIconId: null,
-  submitLabel: null,
-  action: {
-    __typename: 'LinkAction',
-    parentBlockId: 'textResponse0.id',
-    gtmEventName: 'textResponse',
-    url: '#'
-  },
-  children: []
-}
-
-const pageData: { journey: Journey; variant: 'default' | 'admin' | 'embed' } = {
-  journey: { id: 'journey.id' } as unknown as Journey,
-  variant: 'admin'
-}
-
-interface LabelMockProps {
-  mocks?: Array<MockedResponse<Record<string, unknown>>>
-  initialState?: { selectedBlock: TreeBlock<TextResponseBlock> | undefined }
-}
-
-const LabelMock = ({
-  mocks = [],
-  initialState = { selectedBlock: block }
-}: LabelMockProps): ReactElement => (
-  <MockedProvider mocks={mocks} addTypename={false}>
-    <JourneyProvider value={pageData}>
-      <EditorProvider initialState={initialState}>
-        <Label />
-      </EditorProvider>
-    </JourneyProvider>
-  </MockedProvider>
-)
-
 describe('Edit Label field', () => {
-  it('should display placeholder field if no selectedBlock', () => {
-    const { getByRole } = render(
-      <LabelMock initialState={{ selectedBlock: undefined }} />
-    )
-    const field = getByRole('textbox', { name: 'Label' })
+  const block: TreeBlock<TextResponseBlock> = {
+    __typename: 'TextResponseBlock',
+    id: 'textResponse0.id',
+    parentBlockId: '0',
+    parentOrder: 0,
+    label: 'Your answer here',
+    hint: null,
+    minRows: null,
+    integrationId: null,
+    type: null,
+    routeId: null,
+    children: []
+  }
 
-    expect(field).toBeDisabled()
-  })
-
-  it('should display label value', () => {
-    const { getByRole } = render(<LabelMock />)
-    const field = getByRole('textbox', { name: 'Label' })
-
-    expect(field).toHaveValue('Your answer')
-  })
-
-  it('should not be able to type beyond max character limit', () => {
-    const { getByRole } = render(<LabelMock />)
-    const field = getByRole('textbox', { name: 'Label' })
-
-    expect(field).toHaveAttribute('maxlength', '250')
-  })
-
-  it('should update the label on blur', async () => {
-    const result = jest.fn(() => ({
+  const mockLabelUpdate1 = {
+    request: {
+      query: TEXT_RESPONSE_LABEL_UPDATE,
+      variables: {
+        id: block.id,
+        label: 'Your answer here more'
+      }
+    },
+    result: jest.fn(() => ({
       data: {
         textResponseBlockUpdate: {
           id: block.id,
-          journeyId: pageData.journey.id,
-          label: 'Updated label'
+          label: 'Your answer here more'
         }
       }
     }))
+  }
 
-    const updateSuccess = {
-      request: {
-        query: TEXT_RESPONSE_LABEL_UPDATE,
-        variables: {
-          id: block.id,
-          journeyId: pageData.journey.id,
-          input: {
-            label: 'Updated label'
-          }
-        }
-      },
-      result
-    }
-
-    const { getByRole } = render(<LabelMock mocks={[updateSuccess]} />)
-
-    const field = getByRole('textbox', { name: 'Label' })
-
-    fireEvent.change(field, { target: { value: 'Updated label' } })
-    fireEvent.blur(field)
-
-    await waitFor(() => {
-      expect(result).toHaveBeenCalled()
-    })
-  })
-
-  it('should set the default label on blur if none set', async () => {
-    const result = jest.fn(() => ({
+  const mockLabelUpdate2 = {
+    request: {
+      query: TEXT_RESPONSE_LABEL_UPDATE,
+      variables: {
+        id: block.id,
+        label: 'Your answer here'
+      }
+    },
+    result: jest.fn(() => ({
       data: {
         textResponseBlockUpdate: {
           id: block.id,
-          journeyId: pageData.journey.id,
           label: 'Your answer here'
         }
       }
     }))
+  }
 
-    const updateSuccess = {
-      request: {
-        query: TEXT_RESPONSE_LABEL_UPDATE,
-        variables: {
+  const mockLabelUpdate3 = {
+    request: {
+      query: TEXT_RESPONSE_LABEL_UPDATE,
+      variables: {
+        id: block.id,
+        label: 'Your answer here more'
+      }
+    },
+    result: jest.fn(() => ({
+      data: {
+        textResponseBlockUpdate: {
           id: block.id,
-          journeyId: pageData.journey.id,
-          input: {
-            label: 'Your answer here'
-          }
+          label: 'Your answer here more'
         }
-      },
-      result
-    }
+      }
+    }))
+  }
 
-    const { getByRole } = render(<LabelMock mocks={[updateSuccess]} />)
+  beforeEach(() => jest.clearAllMocks())
 
-    const field = getByRole('textbox', { name: 'Label' })
+  it('should display label value', () => {
+    render(
+      <MockedProvider mocks={[mockLabelUpdate1]} addTypename={false}>
+        <EditorProvider initialState={{ selectedBlock: block }}>
+          <Label />
+        </EditorProvider>
+      </MockedProvider>
+    )
 
-    fireEvent.change(field, { target: { value: '' } })
-    fireEvent.blur(field)
+    const field = screen.getByRole('textbox', { name: 'Label' })
+    expect(field).toHaveValue('Your answer here')
+  })
 
-    await waitFor(() => {
-      expect(result).toHaveBeenCalled()
-    })
+  it('should not be able to type beyond max character limit', () => {
+    render(
+      <MockedProvider mocks={[mockLabelUpdate1]} addTypename={false}>
+        <EditorProvider initialState={{ selectedBlock: block }}>
+          <Label />
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    const field = screen.getByRole('textbox', { name: 'Label' })
+    expect(field).toHaveAttribute('maxlength', '250')
+  })
+
+  it('should change the label', async () => {
+    const link = ApolloLink.from([
+      new DebounceLink(500),
+      new MockLink([mockLabelUpdate1])
+    ])
+
+    render(
+      <MockedProvider link={link} addTypename={false}>
+        <EditorProvider initialState={{ selectedBlock: block }}>
+          <Label />
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    const field = screen.getByRole('textbox', { name: 'Label' })
+    await userEvent.type(field, ' more')
+    await waitFor(() => expect(mockLabelUpdate1.result).toHaveBeenCalled())
+  })
+
+  it('should undo the label change', async () => {
+    const link = ApolloLink.from([
+      new DebounceLink(500),
+      new MockLink([mockLabelUpdate1, mockLabelUpdate2])
+    ])
+
+    render(
+      <MockedProvider link={link} addTypename={false}>
+        <EditorProvider initialState={{ selectedBlock: block }}>
+          <CommandUndoItem variant="button" />
+          <Label />
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    const field = screen.getByRole('textbox', { name: 'Label' })
+    await userEvent.type(field, ' more')
+    await waitFor(() => expect(mockLabelUpdate1.result).toHaveBeenCalled())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(mockLabelUpdate2.result).toHaveBeenCalled())
+  })
+
+  it('should redo the change to label that was undone', async () => {
+    const link = ApolloLink.from([
+      new DebounceLink(500),
+      new MockLink([mockLabelUpdate1, mockLabelUpdate2, mockLabelUpdate3])
+    ])
+
+    render(
+      <MockedProvider link={link} addTypename={false}>
+        <EditorProvider initialState={{ selectedBlock: block }}>
+          <CommandUndoItem variant="button" />
+          <CommandRedoItem variant="button" />
+          <Label />
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    const field = screen.getByRole('textbox', { name: 'Label' })
+    await userEvent.type(field, ' more')
+    await waitFor(() => expect(mockLabelUpdate1.result).toHaveBeenCalled())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(mockLabelUpdate2.result).toHaveBeenCalled())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+    await waitFor(() => expect(mockLabelUpdate3.result).toHaveBeenCalled())
+  })
+
+  it('should not call mutation if not selectedBlock', async () => {
+    const link = ApolloLink.from([
+      new DebounceLink(500),
+      new MockLink([mockLabelUpdate1])
+    ])
+
+    render(
+      <MockedProvider link={link} addTypename={false}>
+        <EditorProvider initialState={{}}>
+          <Label />
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    const field = screen.getByRole('textbox', { name: 'Label' })
+    await userEvent.type(field, ' more')
+    await waitFor(() => expect(mockLabelUpdate1.result).not.toHaveBeenCalled())
   })
 })

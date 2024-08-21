@@ -8,7 +8,6 @@ import {
 } from '@apollo/client'
 
 import { TreeBlock } from '@core/journeys/ui/block'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import {
   BlockActionDelete,
@@ -17,8 +16,8 @@ import {
 import { BlockFields } from '../../../__generated__/BlockFields'
 
 export const BLOCK_ACTION_DELETE = gql`
-  mutation BlockActionDelete($id: ID!, $journeyId: ID!) {
-    blockDeleteAction(id: $id, journeyId: $journeyId) {
+  mutation BlockActionDelete($id: ID!) {
+    blockDeleteAction(id: $id) {
       id
     }
   }
@@ -28,7 +27,7 @@ export function useBlockActionDeleteMutation(
   options?: MutationHookOptions<BlockActionDelete, BlockActionDeleteVariables>
 ): [
   (
-    block: BlockFields,
+    block: Pick<BlockFields, '__typename' | 'id'>,
     options?: MutationFunctionOptions<
       BlockActionDelete,
       BlockActionDeleteVariables
@@ -36,7 +35,6 @@ export function useBlockActionDeleteMutation(
   ) => Promise<FetchResult<BlockActionDelete> | undefined>,
   MutationResult<BlockActionDelete>
 ] {
-  const { journey } = useJourney()
   const [blockActionDeleteMutation, result] = useMutation<
     BlockActionDelete,
     BlockActionDeleteVariables
@@ -49,13 +47,10 @@ export function useBlockActionDeleteMutation(
       BlockActionDeleteVariables
     >
   ): Promise<FetchResult<BlockActionDelete> | undefined> {
-    if (journey == null) return
-
     return await blockActionDeleteMutation({
       ...options,
       variables: {
-        id: block.id,
-        journeyId: journey.id
+        id: block.id
       },
       optimisticResponse: {
         blockDeleteAction: {

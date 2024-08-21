@@ -1,25 +1,24 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
-import { Form, Formik } from 'formik'
-import noop from 'lodash/noop'
+import {} from 'formik'
 import { useTranslation } from 'next-i18next'
-import { FocusEvent, ReactElement } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
+import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
-import { TextResponseLabelUpdate } from '../../../../../../../../../../../__generated__/TextResponseLabelUpdate'
+import {
+  TextResponseLabelUpdate,
+  TextResponseLabelUpdateVariables
+} from '../../../../../../../../../../../__generated__/TextResponseLabelUpdate'
 
 export const TEXT_RESPONSE_LABEL_UPDATE = gql`
-  mutation TextResponseLabelUpdate(
-    $id: ID!
-    $journeyId: ID!
-    $input: TextResponseBlockUpdateInput!
-  ) {
-    textResponseBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+  mutation TextResponseLabelUpdate($id: ID!, $label: String!) {
+    textResponseBlockUpdate(id: $id, input: { label: $label }) {
       id
       label
     }
@@ -28,81 +27,104 @@ export const TEXT_RESPONSE_LABEL_UPDATE = gql`
 
 export function Label(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [textResponseLabelUpdate] = useMutation<TextResponseLabelUpdate>(
-    TEXT_RESPONSE_LABEL_UPDATE
-  )
-  const { journey } = useJourney()
-  const { state } = useEditor()
+  const [textResponseLabelUpdate] = useMutation<
+    TextResponseLabelUpdate,
+    TextResponseLabelUpdateVariables
+  >(TEXT_RESPONSE_LABEL_UPDATE)
+  const { state, dispatch } = useEditor()
+  const {
+    add,
+    state: { undo }
+  } = useCommand()
 
   const selectedBlock = state.selectedBlock as
     | TreeBlock<TextResponseBlock>
     | undefined
+  const [value, setValue] = useState(selectedBlock?.label ?? '')
+  const [commandInput, setCommandInput] = useState({ id: uuidv4(), value })
 
-  async function handleSubmit(e: FocusEvent): Promise<void> {
-    if (journey == null || selectedBlock == null) return
-    const target = e.target as HTMLInputElement
-    await textResponseLabelUpdate({
-      variables: {
-        id: selectedBlock?.id,
-        journeyId: journey.id,
-        input: {
-          label: target.value
+  useEffect(() => {
+    if (undo == null || undo.id === commandInput.id) return
+    resetCommandInput()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [undo?.id])
+
+  useEffect(() => {
+    setValue(selectedBlock?.label ?? '')
+  }, [selectedBlock?.label])
+
+  function resetCommandInput(): void {
+    setCommandInput({ id: uuidv4(), value })
+  }
+
+  function handleSubmit(value: string): void {
+    if (selectedBlock == null) return
+    add({
+      id: commandInput.id,
+      parameters: {
+        execute: {
+          label: value,
+          context: {},
+          runDispatch: false
+        },
+        undo: {
+          label: commandInput.value,
+          context: { debounceTimeout: 1 },
+          runDispatch: true
+        },
+        redo: {
+          label: value,
+          context: { debounceTimeout: 1 },
+          runDispatch: true
         }
       },
-      optimisticResponse: {
-        textResponseBlockUpdate: {
-          id: selectedBlock?.id,
-          __typename: 'TextResponseBlock',
-          label: target.value
-        }
+      execute({ label, context, runDispatch }) {
+        if (runDispatch)
+          dispatch({
+            type: 'SetEditorFocusAction',
+            selectedBlock,
+            selectedStep: state.selectedStep,
+            selectedAttributeId: state.selectedAttributeId
+          })
+
+        void textResponseLabelUpdate({
+          variables: {
+            id: selectedBlock.id,
+            label
+          },
+          optimisticResponse: {
+            textResponseBlockUpdate: {
+              id: selectedBlock.id,
+              label,
+              __typename: 'TextResponseBlock'
+            }
+          },
+          context: {
+            debounceKey: `TextResponseBlock:${selectedBlock.id}`,
+            ...context
+          }
+        })
       }
     })
   }
 
-  const initialValues =
-    selectedBlock != null ? { textResponseLabel: selectedBlock.label } : null
-
   return (
     <Box sx={{ p: 4, pt: 0 }} data-testid="Label">
-      {selectedBlock != null ? (
-        <Formik initialValues={initialValues} onSubmit={noop}>
-          {({ values, errors, handleChange, handleBlur, setValues }) => (
-            <Form>
-              <TextField
-                id="textResponseLabel"
-                name="textResponseLabel"
-                variant="filled"
-                label={t('Label')}
-                fullWidth
-                value={values.textResponseLabel}
-                placeholder={t('Your answer here')}
-                inputProps={{ maxLength: 250 }}
-                onChange={handleChange}
-                onBlur={async (e) => {
-                  handleBlur(e)
-                  if (values.textResponseLabel.trim() === '') {
-                    e.target.value = t('Your answer here')
-                    await setValues({
-                      textResponseLabel: t('Your answer here')
-                    })
-                  }
-                  if (errors.textResponseLabel == null) void handleSubmit(e)
-                }}
-              />
-            </Form>
-          )}
-        </Formik>
-      ) : (
-        <TextField
-          variant="filled"
-          label={t('Label')}
-          fullWidth
-          disabled
-          sx={{
-            pb: 4
-          }}
-        />
-      )}
+      <TextField
+        id="label"
+        name="label"
+        variant="filled"
+        label={t('Label')}
+        placeholder={t('Your answer here')}
+        fullWidth
+        inputProps={{ maxLength: 250 }}
+        value={value}
+        onFocus={resetCommandInput}
+        onChange={(e) => {
+          setValue(e.target.value)
+          handleSubmit(e.target.value)
+        }}
+      />
     </Box>
   )
 }

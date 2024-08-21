@@ -11,5 +11,19 @@
   "teams": {
     "teamName": "Automation TeamName",
     "teamRename": "Renamed Team"
+  },
+  "cardLevelAction": {
+    "uploadVideoName": "SampleVideo",
+    "url": "http://example.com",
+    "pollRename": "Rename for the poll option",
+    "feedBackLabel": "Lorem Ipsum is simply dummy text of the printing",
+    "feedBackHint": "Guess the answer, it's looks like a dummy text",
+    "email": "playwright@example.com",
+    "hostName": "Automation Tester",
+    "location": "USA",
+    "whatsApp": "http://example.com",
+    "descriptionText": "Lorem Ipsum is simply dummy text of the printing",
+    "imgUploadPath": "utils/testResource/Flower.jpg",
+    "videoUploadPath": "utils/testResource/SampleVideo.mp4"
   }
 }

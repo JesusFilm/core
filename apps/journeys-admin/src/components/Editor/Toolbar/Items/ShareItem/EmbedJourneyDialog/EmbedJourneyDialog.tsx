@@ -16,6 +16,8 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
+import { useCustomDomainsQuery } from '../../../../../../libs/useCustomDomainsQuery'
+
 import { EmbedCardPreview } from './EmbedCardPreview'
 
 interface EmbedJourneyDialogProps {
@@ -30,12 +32,18 @@ export function EmbedJourneyDialog({
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
   const { journey } = useJourney()
+  const { hostname } = useCustomDomainsQuery({
+    variables: { teamId: journey?.team?.id ?? '' },
+    skip: journey?.team?.id == null
+  })
 
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   // this should match apps/journeys/pages/api/oembed.ts
   const providerUrl =
-    process.env.NEXT_PUBLIC_JOURNEYS_URL ?? 'https://your.nextstep.is'
+    hostname != null
+      ? `https://${hostname}`
+      : process.env.NEXT_PUBLIC_JOURNEYS_URL ?? 'https://your.nextstep.is'
   const embedUrl = `${providerUrl}/embed/${journey?.slug as string}`
 
   // Self-closing iframe tag breaks embed on WordPress

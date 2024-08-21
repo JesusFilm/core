@@ -1,3 +1,4 @@
+import { BullModule, getQueueToken } from '@nestjs/bullmq'
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import omit from 'lodash/omit'
@@ -31,7 +32,7 @@ import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
 import { PrismaService } from '../../lib/prisma.service'
 import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../../lib/prismaErrors'
 import { BlockResolver } from '../block/block.resolver'
-import { BlockService } from '../block/block.service'
+import { BlockService, BlockWithAction } from '../block/block.service'
 import { UserRoleResolver } from '../userRole/userRole.resolver'
 import { UserRoleService } from '../userRole/userRole.service'
 
@@ -58,7 +59,8 @@ describe('JourneyResolver', () => {
     blockService: DeepMockProxy<BlockService>,
     prismaService: DeepMockProxy<PrismaService>,
     ability: AppAbility,
-    abilityWithPublisher: AppAbility
+    abilityWithPublisher: AppAbility,
+    plausibleQueue: { add: jest.Mock }
 
   const journey: Journey = {
     id: 'journeyId',
@@ -84,7 +86,8 @@ describe('JourneyResolver', () => {
     seoDescription: null,
     template: false,
     hostId: null,
-    strategySlug: null
+    strategySlug: null,
+    plausibleToken: null
   }
   const journeyWithUserTeam = {
     ...journey,
@@ -99,7 +102,8 @@ describe('JourneyResolver', () => {
   const block = {
     id: 'blockId',
     typename: 'ImageBlock',
-    journeyId: 'journeyId'
+    journeyId: 'journeyId',
+    parentBlockId: null
   } as unknown as Block
   const accessibleJourneys: Prisma.JourneyWhereInput = { OR: [{}] }
 
@@ -113,8 +117,15 @@ describe('JourneyResolver', () => {
   })
 
   beforeEach(async () => {
+    plausibleQueue = {
+      add: jest.fn()
+    }
+
     const module: TestingModule = await Test.createTestingModule({
-      imports: [CaslAuthModule.register(AppCaslFactory)],
+      imports: [
+        CaslAuthModule.register(AppCaslFactory),
+        BullModule.registerQueue({ name: 'api-journeys-plausible' })
+      ],
       providers: [
         JourneyResolver,
         {
@@ -129,7 +140,10 @@ describe('JourneyResolver', () => {
           useValue: mockDeep<PrismaService>()
         }
       ]
-    }).compile()
+    })
+      .overrideProvider(getQueueToken('api-journeys-plausible'))
+      .useValue(plausibleQueue)
+      .compile()
     resolver = module.get<JourneyResolver>(JourneyResolver)
     blockService = module.get<BlockService>(
       BlockService
@@ -797,6 +811,14 @@ describe('JourneyResolver', () => {
           'teamId'
         )
       ).toEqual(journeyWithUserTeam)
+      expect(plausibleQueue.add).toHaveBeenCalledWith('create-journey-site', {
+        __typename: 'plausibleCreateJourneySite',
+        journeyId: 'journeyId'
+      })
+      expect(plausibleQueue.add).toHaveBeenCalledWith('create-team-site', {
+        __typename: 'plausibleCreateTeamSite',
+        teamId: 'teamId'
+      })
       expect(prismaService.journey.create).toHaveBeenCalledWith({
         data: {
           id: 'journeyId',
@@ -1112,6 +1134,14 @@ describe('JourneyResolver', () => {
 
     it('duplicates your journey', async () => {
       await resolver.journeyDuplicate(ability, 'journeyId', 'userId', 'teamId')
+      expect(plausibleQueue.add).toHaveBeenCalledWith('create-journey-site', {
+        __typename: 'plausibleCreateJourneySite',
+        journeyId: 'duplicateJourneyId'
+      })
+      expect(plausibleQueue.add).toHaveBeenCalledWith('create-team-site', {
+        __typename: 'plausibleCreateTeamSite',
+        teamId: 'teamId'
+      })
       expect(prismaService.journey.create).toHaveBeenCalledWith({
         data: {
           ...omit(journey, [
@@ -1208,6 +1238,15 @@ describe('JourneyResolver', () => {
         }
       }
 
+      expect(plausibleQueue.add).toHaveBeenCalledWith('create-journey-site', {
+        __typename: 'plausibleCreateJourneySite',
+        journeyId: 'duplicateJourneyId'
+      })
+      expect(plausibleQueue.add).toHaveBeenCalledWith('create-team-site', {
+        __typename: 'plausibleCreateTeamSite',
+        teamId: 'teamId'
+      })
+
       expect(prismaService.journey.create).toHaveBeenNthCalledWith(1, { data })
       expect(prismaService.journey.create).toHaveBeenLastCalledWith({
         data: { ...data, slug: `${journey.title}-duplicateJourneyId` }
@@ -1230,6 +1269,7 @@ describe('JourneyResolver', () => {
         'journeyId',
         null,
         duplicateStepIds,
+        undefined,
         'duplicateJourneyId',
         duplicateStepIds
       )
@@ -1340,6 +1380,7 @@ describe('JourneyResolver', () => {
         'journeyId',
         null,
         duplicateStepIds,
+        undefined,
         'duplicateJourneyId',
         duplicateStepIds
       )
@@ -1408,6 +1449,7 @@ describe('JourneyResolver', () => {
         'journeyId',
         null,
         duplicateStepIds,
+        undefined,
         'duplicateJourneyId',
         duplicateStepIds
       )
@@ -1776,6 +1818,9 @@ describe('JourneyResolver', () => {
   describe('blocks', () => {
     it('returns blocks', async () => {
       prismaService.block.findMany.mockResolvedValueOnce([block])
+      blockService.removeDescendantsOfDeletedBlocks.mockResolvedValueOnce([
+        block as BlockWithAction
+      ])
       expect(await resolver.blocks(journey)).toEqual([
         { ...block, __typename: 'ImageBlock', typename: undefined }
       ])
@@ -1787,7 +1832,8 @@ describe('JourneyResolver', () => {
           parentOrder: 'asc'
         },
         where: {
-          journeyId: 'journeyId'
+          journeyId: 'journeyId',
+          deletedAt: null
         }
       })
     })
@@ -1798,6 +1844,9 @@ describe('JourneyResolver', () => {
         primaryImageBlockId: 'primaryImageBlockId'
       }
       prismaService.block.findMany.mockResolvedValueOnce([block])
+      blockService.removeDescendantsOfDeletedBlocks.mockResolvedValueOnce([
+        block as BlockWithAction
+      ])
       expect(await resolver.blocks(journeyWithPrimaryImageBlock)).toEqual([
         { ...block, __typename: 'ImageBlock', typename: undefined }
       ])
@@ -1810,7 +1859,8 @@ describe('JourneyResolver', () => {
         },
         where: {
           journeyId: 'journeyId',
-          id: { notIn: ['primaryImageBlockId'] }
+          id: { notIn: ['primaryImageBlockId'] },
+          deletedAt: null
         }
       })
     })
@@ -1821,6 +1871,9 @@ describe('JourneyResolver', () => {
         creatorImageBlockId: 'creatorImageBlockId'
       }
       prismaService.block.findMany.mockResolvedValueOnce([block])
+      blockService.removeDescendantsOfDeletedBlocks.mockResolvedValueOnce([
+        block as BlockWithAction
+      ])
       expect(await resolver.blocks(journeyWithPrimaryImageBlock)).toEqual([
         { ...block, __typename: 'ImageBlock', typename: undefined }
       ])
@@ -1833,7 +1886,8 @@ describe('JourneyResolver', () => {
         },
         where: {
           journeyId: 'journeyId',
-          id: { notIn: ['creatorImageBlockId'] }
+          id: { notIn: ['creatorImageBlockId'] },
+          deletedAt: null
         }
       })
     })
@@ -1845,6 +1899,9 @@ describe('JourneyResolver', () => {
         creatorImageBlockId: 'creatorImageBlockId'
       }
       prismaService.block.findMany.mockResolvedValueOnce([block])
+      blockService.removeDescendantsOfDeletedBlocks.mockResolvedValueOnce([
+        block as BlockWithAction
+      ])
       expect(await resolver.blocks(journeyWithPrimaryImageBlock)).toEqual([
         { ...block, __typename: 'ImageBlock', typename: undefined }
       ])
@@ -1857,7 +1914,8 @@ describe('JourneyResolver', () => {
         },
         where: {
           journeyId: 'journeyId',
-          id: { notIn: ['primaryImageBlockId', 'creatorImageBlockId'] }
+          id: { notIn: ['primaryImageBlockId', 'creatorImageBlockId'] },
+          deletedAt: null
         }
       })
     })
@@ -1911,7 +1969,8 @@ describe('JourneyResolver', () => {
         title: 'My Cool Team',
         publicTitle: null,
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
+        plausibleToken: null
       }
       const journeyWithTeam = {
         ...journeyWithUserTeam,
@@ -2122,6 +2181,28 @@ describe('JourneyResolver', () => {
           journeyCollectionJourneys: { some: { journeyId: 'journeyId' } }
         }
       })
+    })
+  })
+
+  describe('plausibleToken', () => {
+    it('returns plausibleToken', async () => {
+      const journeyWithToken = {
+        ...journeyWithUserTeam,
+        plausibleToken: 'plausibleToken'
+      }
+      expect(await resolver.plausibleToken(ability, journeyWithToken)).toBe(
+        'plausibleToken'
+      )
+    })
+
+    it('returns null', async () => {
+      const journeyWithToken = {
+        ...journey,
+        plausibleToken: 'plausibleToken'
+      }
+      expect(
+        await resolver.plausibleToken(ability, journeyWithToken)
+      ).toBeNull()
     })
   })
 })

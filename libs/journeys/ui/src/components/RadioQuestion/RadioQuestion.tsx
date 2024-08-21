@@ -3,20 +3,27 @@ import Box, { BoxProps } from '@mui/material/Box'
 import ButtonGroup from '@mui/material/ButtonGroup'
 import { styled } from '@mui/material/styles'
 import { useTranslation } from 'next-i18next'
+import { usePlausible } from 'next-plausible'
 import { ReactElement, useEffect, useState } from 'react'
 import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
+import { RadioQuestionSubmissionEventCreateInput } from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../libs/block'
 import { isActiveBlockOrDescendant, useBlocks } from '../../libs/block'
 import { getStepHeading } from '../../libs/getStepHeading'
 import { useJourney } from '../../libs/JourneyProvider'
+import { JourneyPlausibleEvents, keyify } from '../../libs/plausibleHelpers'
 // eslint-disable-next-line import/no-cycle
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { RadioOption } from '../RadioOption'
+import { RadioOptionFields } from '../RadioOption/__generated__/RadioOptionFields'
 
 import { RadioQuestionFields } from './__generated__/RadioQuestionFields'
-import { RadioQuestionSubmissionEventCreate } from './__generated__/RadioQuestionSubmissionEventCreate'
+import {
+  RadioQuestionSubmissionEventCreate,
+  RadioQuestionSubmissionEventCreateVariables
+} from './__generated__/RadioQuestionSubmissionEventCreate'
 
 export const RADIO_QUESTION_SUBMISSION_EVENT_CREATE = gql`
   mutation RadioQuestionSubmissionEventCreate(
@@ -45,11 +52,12 @@ export function RadioQuestion({
   wrappers,
   addOption
 }: RadioQuestionProps): ReactElement {
-  const [radioQuestionSubmissionEventCreate] =
-    useMutation<RadioQuestionSubmissionEventCreate>(
-      RADIO_QUESTION_SUBMISSION_EVENT_CREATE
-    )
-  const { variant } = useJourney()
+  const [radioQuestionSubmissionEventCreate] = useMutation<
+    RadioQuestionSubmissionEventCreate,
+    RadioQuestionSubmissionEventCreateVariables
+  >(RADIO_QUESTION_SUBMISSION_EVENT_CREATE)
+  const plausible = usePlausible<JourneyPlausibleEvents>()
+  const { variant, journey } = useJourney()
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const { blockHistory, treeBlocks } = useBlocks()
   const { t } = useTranslation('libs-journeys-ui')
@@ -71,18 +79,43 @@ export function RadioQuestion({
   ): void => {
     if (variant === 'default' || variant === 'embed') {
       const id = uuid()
+      const input: RadioQuestionSubmissionEventCreateInput = {
+        id,
+        blockId,
+        radioOptionBlockId,
+        stepId: activeBlock?.id,
+        label: heading,
+        value: radioOptionLabel
+      }
       void radioQuestionSubmissionEventCreate({
         variables: {
-          input: {
-            id,
-            blockId,
-            radioOptionBlockId,
-            stepId: activeBlock?.id,
-            label: heading,
-            value: radioOptionLabel
-          }
+          input
         }
       })
+      const radioOptionBlock = children.find(
+        (child) =>
+          child.id === radioOptionBlockId &&
+          child.__typename === 'RadioOptionBlock'
+      ) as TreeBlock<RadioOptionFields> | undefined
+      if (journey != null && radioOptionBlock != null) {
+        plausible('radioQuestionSubmit', {
+          u: `${window.location.origin}/${journey.id}/${input.stepId}`,
+          props: {
+            ...input,
+            key: keyify({
+              stepId: input.stepId ?? '',
+              event: 'radioQuestionSubmit',
+              blockId: radioOptionBlock.id,
+              target: radioOptionBlock.action
+            }),
+            simpleKey: keyify({
+              stepId: input.stepId ?? '',
+              event: 'radioQuestionSubmit',
+              blockId: radioOptionBlock.id
+            })
+          }
+        })
+      }
       TagManager.dataLayer({
         dataLayer: {
           event: 'radio_question_submission',

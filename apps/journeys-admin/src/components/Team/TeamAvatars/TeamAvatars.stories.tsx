@@ -1,8 +1,8 @@
 import Stack from '@mui/material/Stack'
 import { Meta, StoryObj } from '@storybook/react'
 
-import { GetLastActiveTeamIdAndTeams_teams_userTeams as UserTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
-import { journeysAdminConfig } from '../../../libs/storybook'
+import { GetLastActiveTeamIdAndTeams_teams_userTeams as UserTeams } from '@core/journeys/ui/TeamProvider/__generated__/GetLastActiveTeamIdAndTeams'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { TeamAvatars } from './TeamAvatars'
 

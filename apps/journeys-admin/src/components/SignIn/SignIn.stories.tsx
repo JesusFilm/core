@@ -4,7 +4,7 @@ import { initializeApp } from 'firebase/app'
 import noop from 'lodash/noop'
 import { ComponentProps, ReactNode } from 'react'
 
-import { journeysAdminConfig } from '../../libs/storybook'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { EmailUsedPage } from './EmailUsedPage'
 import { PasswordPage } from './PasswordPage'

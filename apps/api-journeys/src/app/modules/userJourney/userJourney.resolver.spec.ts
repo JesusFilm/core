@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { Queue } from 'bullmq'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { Journey, UserJourney } from '.prisma/api-journeys-client'
+import { Journey, Prisma, UserJourney } from '.prisma/api-journeys-client'
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 
 import { UserJourneyRole } from '../../__generated__/graphql'
@@ -277,6 +277,41 @@ describe('UserJourneyResolver', () => {
       expect(await resolver.user(userJourney)).toEqual({
         __typename: 'User',
         id: 'userId'
+      })
+    })
+  })
+
+  describe('journeyNotification', () => {
+    it('returns associated journeyNotification', async () => {
+      const userJourneyWithJourneyNotification = {
+        ...userJourney,
+        journeyNotification: {
+          id: 'journeyNotification',
+          userId: 'userId',
+          journeyId: 'journeyId',
+          userTeamId: null,
+          userJourneyId: 'userJourneyId',
+          visitorInteractionEmail: false
+        }
+      }
+
+      const journeyNotification = jest
+        .fn()
+        .mockResolvedValue(
+          userJourneyWithJourneyNotification.journeyNotification
+        )
+
+      prismaService.userJourney.findUnique.mockReturnValue({
+        ...userJourneyWithJourneyNotification,
+        journeyNotification
+      } as unknown as Prisma.Prisma__UserJourneyClient<UserJourney>)
+      expect(await resolver.journeyNotification(userJourney)).toEqual({
+        id: 'journeyNotification',
+        journeyId: 'journeyId',
+        userId: 'userId',
+        userJourneyId: 'userJourneyId',
+        userTeamId: null,
+        visitorInteractionEmail: false
       })
     })
   })

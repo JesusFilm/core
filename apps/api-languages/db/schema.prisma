@@ -18,16 +18,30 @@ datasource db {
   url      = env("PG_DATABASE_URL_LANGUAGES")
 }
 
+generator pothos {
+  provider     = "prisma-pothos-types"
+  clientOutput = ".prisma/api-languages-client"
+  output       = "../src/__generated__/pothos-types.ts"
+}
+
 model Language {
-  id           String         @id
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  bcp47        String?
-  iso3         String?
-  name         LanguageName[] @relation(name: "name")
-  nameLanguage LanguageName[] @relation(name: "nameLanguage")
+  id               String            @id
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  bcp47            String?
+  iso3             String?
+  hasVideos        Boolean           @default(true)
+  slug             String?
+  name             LanguageName[]    @relation(name: "name")
+  nameLanguage     LanguageName[]    @relation(name: "nameLanguage")
+  countries        Country[]
+  countryName      CountryName[]
+  audioPreview     AudioPreview?
+  countryLanguages CountryLanguage[]
+  continentNames   ContinentName[]
 
   @@index(bcp47(type: Hash))
+  @@index(hasVideos)
 }
 
 model LanguageName {
@@ -40,8 +54,87 @@ model LanguageName {
   parent           Language @relation(name: "name", fields: [parentLanguageId], references: [id])
 
   @@unique([parentLanguageId, languageId])
-  @@unique([parentLanguageId, primary])
   @@index(parentLanguageId(type: Hash))
   @@index(primary(type: Hash))
   @@index(languageId(type: Hash))
+}
+
+model Country {
+  id               String            @id
+  name             CountryName[]
+  population       Int?
+  continentId      String?
+  latitude         Float?
+  longitude        Float?
+  flagPngSrc       String?
+  flagWebpSrc      String?
+  languages        Language[]
+  countryLanguages CountryLanguage[]
+  continent        Continent?        @relation(fields: [continentId], references: [id])
+}
+
+model CountryLanguage {
+  id              String   @id @default(uuid())
+  languageId      String
+  countryId       String
+  speakers        Int
+  displaySpeakers Int?
+  language        Language @relation(fields: [languageId], references: [id])
+  country         Country  @relation(fields: [countryId], references: [id])
+
+  @@unique([languageId, countryId])
+  @@index(languageId(type: Hash))
+  @@index(countryId(type: Hash))
+}
+
+model CountryName {
+  id         String   @id @default(uuid())
+  value      String
+  countryId  String
+  languageId String
+  primary    Boolean
+  country    Country  @relation(fields: [countryId], references: [id])
+  language   Language @relation(fields: [languageId], references: [id])
+
+  @@unique([languageId, countryId])
+  @@index(languageId(type: Hash))
+  @@index(primary(type: Hash))
+  @@index(countryId(type: Hash))
+}
+
+model Continent {
+  id        String          @id @default(uuid())
+  name      ContinentName[]
+  countries Country[]
+}
+
+model ContinentName {
+  id          String    @id @default(uuid())
+  value       String
+  continentId String
+  languageId  String
+  primary     Boolean
+  continent   Continent @relation(fields: [continentId], references: [id])
+  language    Language  @relation(fields: [languageId], references: [id])
+
+  @@unique([languageId, continentId])
+  @@index(languageId(type: Hash))
+  @@index(primary(type: Hash))
+  @@index(continentId(type: Hash))
+}
+
+model AudioPreview {
+  languageId String   @id
+  value      String
+  duration   Int
+  size       Int
+  updatedAt  DateTime
+  language   Language @relation(fields: [languageId], references: [id])
+
+  @@index(languageId(type: Hash))
+}
+
+model ImportTimes {
+  modelName  String   @id
+  lastImport DateTime
 }

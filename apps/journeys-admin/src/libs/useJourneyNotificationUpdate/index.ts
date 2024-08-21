@@ -1,0 +1,1 @@
+export { useJourneyNotificationUpdate } from './useJourneyNotificationUpdate'

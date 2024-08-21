@@ -1,6 +1,5 @@
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
-import Link from '@mui/material/Link'
 import Stack from '@mui/material/Stack'
 import SvgIcon from '@mui/material/SvgIcon'
 import Typography from '@mui/material/Typography'
@@ -12,7 +11,6 @@ import Plus2Icon from '@core/shared/ui/icons/Plus2'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../__generated__/BlockFields'
-import type { UnsplashAuthor } from '../ImageBlockEditor/UnsplashGallery'
 import { ImageBlockThumbnail } from '../ImageBlockThumbnail'
 
 interface ImageBlockHeaderProps {
@@ -22,7 +20,6 @@ interface ImageBlockHeaderProps {
   onDelete?: () => void
   loading?: boolean
   error?: boolean
-  unsplashAuthor?: UnsplashAuthor
   Icon?: typeof SvgIcon
 }
 
@@ -33,7 +30,6 @@ export function ImageBlockHeader({
   loading = false,
   selectedBlock,
   error,
-  unsplashAuthor,
   Icon
 }: ImageBlockHeaderProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -78,35 +74,16 @@ export function ImageBlockHeader({
                 ? t('Upload failed')
                 : t('No Image Selected')}
             </Typography>
-            {unsplashAuthor != null &&
-            selectedBlock?.src != null &&
-            !loading ? (
-              <Link
-                href={`https://unsplash.com/@${
-                  unsplashAuthor.username ?? ''
-                }?utm_source=NextSteps&utm_medium=referral`}
-                color="secondary.light"
-                target="_blank"
-                rel="noopener"
-              >
-                <Typography variant="caption">
-                  {unsplashAuthor.fullname}
-                </Typography>
-              </Link>
-            ) : (
-              <Typography
-                variant="caption"
-                display={
-                  selectedBlock?.src != null && !loading ? 'flex' : 'none'
-                }
-                color="text.secondary"
-              >
-                {t('{{ width }} x {{ height }} pixels', {
-                  width: selectedBlock?.width,
-                  height: selectedBlock?.height
-                })}
-              </Typography>
-            )}
+            <Typography
+              variant="caption"
+              display={selectedBlock?.src != null && !loading ? 'flex' : 'none'}
+              color="text.secondary"
+            >
+              {t('{{ width }} x {{ height }} pixels', {
+                width: selectedBlock?.width,
+                height: selectedBlock?.height
+              })}
+            </Typography>
           </Stack>
         )}
       </Stack>

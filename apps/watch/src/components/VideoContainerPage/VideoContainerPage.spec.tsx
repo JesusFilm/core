@@ -1,7 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
+import { useAlgoliaVideos } from '../../libs/algolia/useAlgoliaVideos'
 import { getVideoChildrenMock } from '../../libs/useVideoChildren/getVideoChildrenMock'
 import { VideoProvider } from '../../libs/videoContext'
 import { videos } from '../Videos/__generated__/testData'
@@ -17,7 +18,26 @@ jest.mock('next/router', () => ({
   }
 }))
 
+jest.mock('react-instantsearch')
+jest.mock('../../libs/algolia/useAlgoliaVideos')
+
+const mockedUseAlgoliaVideos = useAlgoliaVideos as jest.MockedFunction<
+  typeof useAlgoliaVideos
+>
+
 describe('VideoContainerPage', () => {
+  beforeEach(() => {
+    mockedUseAlgoliaVideos.mockReturnValue({
+      loading: false,
+      noResults: false,
+      hits: [],
+      showMore: jest.fn(),
+      isLastPage: false,
+      sendEvent: jest.fn()
+    })
+    jest.clearAllMocks()
+  })
+
   it('should render ContainerHero', () => {
     const { getByText } = render(
       <MockedProvider>
@@ -76,5 +96,18 @@ describe('VideoContainerPage', () => {
         getByRole('heading', { name: 'Reflections of Hope' })
       ).toBeInTheDocument()
     )
+  })
+
+  it('should not render header spacer', () => {
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <VideoProvider value={{ content: videos[0] }}>
+            <VideoContainerPage />
+          </VideoProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    expect(screen.queryByTestId('HeaderSpacer')).not.toBeInTheDocument()
   })
 })

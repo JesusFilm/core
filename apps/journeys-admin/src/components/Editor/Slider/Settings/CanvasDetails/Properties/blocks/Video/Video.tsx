@@ -9,7 +9,8 @@ import Play1Icon from '@core/shared/ui/icons/Play1'
 
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { Accordion } from '../../Accordion'
-import { Action, actions } from '../../controls/Action/Action'
+import { Action } from '../../controls/Action'
+import { getAction } from '../../controls/Action/utils/actions'
 
 import { VideoOptions } from './Options/VideoOptions'
 
@@ -19,9 +20,7 @@ export function Video(block: TreeBlock<VideoBlock>): ReactElement {
 
   const { dispatch } = useEditor()
 
-  const selectedAction = actions.find(
-    (act) => act.value === block.action?.__typename
-  )
+  const selectedAction = getAction(t, block.action?.__typename)
 
   useEffect(() => {
     dispatch({
@@ -36,7 +35,7 @@ export function Video(block: TreeBlock<VideoBlock>): ReactElement {
         id={`${id}-video-action`}
         icon={<LinkIcon />}
         name={t('Action')}
-        value={selectedAction?.label ?? 'None'}
+        value={selectedAction.label}
       >
         <Action />
       </Accordion>

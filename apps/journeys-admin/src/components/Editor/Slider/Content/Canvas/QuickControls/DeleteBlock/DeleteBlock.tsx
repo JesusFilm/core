@@ -1,20 +1,15 @@
 import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
-import { ActiveFab, useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 
-import { blockDeleteUpdate } from '../../../../../../../libs/blockDeleteUpdate'
-import { useBlockDeleteMutation } from '../../../../../../../libs/useBlockDeleteMutation'
 import { MenuItem } from '../../../../../../MenuItem'
-
-import getSelected from './utils/getSelected'
+import { useBlockDeleteCommand } from '../../../../../utils/useBlockDeleteCommand'
 
 interface DeleteBlockProps {
   variant: 'button' | 'list-item'
@@ -30,14 +25,12 @@ export function DeleteBlock({
   block
 }: DeleteBlockProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [blockDelete] = useBlockDeleteMutation()
-  const { enqueueSnackbar } = useSnackbar()
-  const { journey } = useJourney()
+
   const {
-    state: { selectedBlock, selectedStep, steps },
-    dispatch
+    state: { selectedBlock }
   } = useEditor()
   const currentBlock = block ?? selectedBlock
+  const { addBlockDelete } = useBlockDeleteCommand()
 
   const blockType = currentBlock?.__typename === 'StepBlock' ? 'Card' : 'Block'
   const [openDialog, setOpenDialog] = useState(false)
@@ -49,47 +42,9 @@ export function DeleteBlock({
 
   const disableAction = currentBlock == null || disabled
 
-  const handleDeleteBlock = async (): Promise<void> => {
-    if (currentBlock == null || journey == null || steps == null) return
-
-    const deletedBlockParentOrder = currentBlock.parentOrder
-    const deletedBlockType = currentBlock.__typename
-    const stepsBeforeDelete = steps
-    const stepBeforeDelete = selectedStep
-
-    await blockDelete(currentBlock, {
-      update(cache, { data }) {
-        if (
-          data?.blockDelete != null &&
-          deletedBlockParentOrder != null &&
-          (block == null || block?.id === selectedBlock?.id)
-        ) {
-          const selected = getSelected({
-            parentOrder: deletedBlockParentOrder,
-            siblings: data.blockDelete,
-            type: deletedBlockType,
-            steps: stepsBeforeDelete,
-            selectedStep: stepBeforeDelete
-          })
-          selected != null && dispatch(selected)
-        }
-        blockDeleteUpdate(currentBlock, data?.blockDelete, cache, journey.id)
-      }
-    }).then(() => {
-      dispatch({ type: 'SetActiveFabAction', activeFab: ActiveFab.Add })
-    })
-
+  function handleDeleteBlock(): void {
+    if (currentBlock != null) addBlockDelete(currentBlock)
     handleCloseDialog()
-
-    deletedBlockType !== 'StepBlock'
-      ? enqueueSnackbar(t('Block Deleted'), {
-          variant: 'success',
-          preventDuplicate: true
-        })
-      : enqueueSnackbar(t('Card Deleted'), {
-          variant: 'success',
-          preventDuplicate: true
-        })
   }
 
   return (

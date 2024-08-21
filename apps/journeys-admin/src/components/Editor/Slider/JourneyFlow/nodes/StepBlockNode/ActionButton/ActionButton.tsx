@@ -1,108 +1,88 @@
 import Box from '@mui/material/Box'
 import { alpha } from '@mui/material/styles'
-import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, ReactNode } from 'react'
+import { ReactElement } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
-import EmailIcon from '@core/shared/ui/icons/Email'
-import LinkIcon from '@core/shared/ui/icons/Link'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 
-import { ActionFields as Action } from '../../../../../../../../__generated__/ActionFields'
 import { BlockFields as Block } from '../../../../../../../../__generated__/BlockFields'
 import { useUpdateEdge } from '../../../libs/useUpdateEdge'
-import { BaseNode } from '../../BaseNode'
+import { BaseNode, HandleVariant } from '../../BaseNode'
 import { ACTION_BUTTON_HEIGHT } from '../libs/sizes'
 
+interface BlockUIProperties {
+  title: string
+  isSourceConnected: boolean
+}
+
 interface ActionButtonProps {
+  stepId: string
   block: TreeBlock<Block>
   selected?: boolean
 }
 
 export function ActionButton({
+  stepId,
   block,
   selected = false
 }: ActionButtonProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const {
+    state: { showAnalytics, analytics }
+  } = useEditor()
   const updateEdge = useUpdateEdge()
 
-  function getIcon(action?: Action | null): ReactNode {
-    switch (action?.__typename) {
-      case 'LinkAction':
-        return (
-          <Tooltip title={action.url} placement="left" arrow>
-            <LinkIcon
-              sx={{ fontSize: 10, position: 'absolute', left: -20, top: 7 }}
-            />
-          </Tooltip>
-        )
-      case 'EmailAction':
-        return (
-          <Tooltip title={action.email} placement="left" arrow>
-            <EmailIcon
-              sx={{ fontSize: 10, position: 'absolute', left: -20, top: 8 }}
-            />
-          </Tooltip>
-        )
+  function getTitle(block, defaultTitle): string {
+    if (block.label != null && block.label !== '') return block.label
+    if (block.__typename === 'VideoBlock')
+      return block.video?.title?.[0]?.value ?? block.title ?? t('Video')
+    return defaultTitle
+  }
+
+  function extractTitleAndConnection(block, defaultTitle): BlockUIProperties {
+    const isSourceConnected =
+      block.action?.__typename === 'NavigateToBlockAction' &&
+      block.action?.blockId != null
+    const title = getTitle(block, defaultTitle)
+
+    return { title, isSourceConnected }
+  }
+
+  function getTitleAndConnection(): BlockUIProperties {
+    switch (block.__typename) {
+      case 'ButtonBlock':
+        return extractTitleAndConnection(block, t('Button'))
+      case 'FormBlock':
+        return extractTitleAndConnection(block, t('Form'))
+      case 'RadioOptionBlock':
+        return extractTitleAndConnection(block, t('Option'))
+      case 'SignUpBlock':
+        return extractTitleAndConnection(block, t('Subscribe'))
+      case 'VideoBlock':
+        return extractTitleAndConnection(block, t('Video'))
+      case 'StepBlock':
+        return extractTitleAndConnection(block, t('Default Next Step →'))
       default:
-        return <></>
+        return { title: '', isSourceConnected: false }
     }
   }
 
-  function hasConnection(block): boolean {
-    return (
-      block.action?.__typename === 'NavigateToBlockAction' &&
-      block.action?.blockId != null
-    )
-  }
+  const { title, isSourceConnected } = getTitleAndConnection()
 
-  let title = ''
-  let icon: ReactNode
-  let isSourceConnected = false
-  switch (block.__typename) {
-    case 'ButtonBlock':
-      title =
-        block.label != null && block.label !== '' ? block.label : t('Button')
-      icon = getIcon(block.action)
-      isSourceConnected = hasConnection(block)
-      break
-    case 'FormBlock':
-      title = t('Form')
-      icon = getIcon(block.action)
-      isSourceConnected = hasConnection(block)
-      break
-    case 'RadioOptionBlock':
-      title =
-        block.label != null && block.label !== '' ? block.label : t('Option')
-      icon = getIcon(block.action)
-      isSourceConnected = hasConnection(block)
-      break
-    case 'SignUpBlock':
-      title = t('Subscribe')
-      icon = getIcon(block.action)
-      isSourceConnected = hasConnection(block)
-      break
-    case 'TextResponseBlock':
-      title = t('Feedback')
-      icon = getIcon(block.action)
-      isSourceConnected = hasConnection(block)
-      break
-    case 'VideoBlock':
-      title = block.video?.title?.[0]?.value ?? block.title ?? t('Video')
-      icon = getIcon(block.action)
-      isSourceConnected = hasConnection(block)
-      break
-    case 'StepBlock':
-      title = t('Default Next Step →')
-      isSourceConnected = block.nextBlockId != null
-      break
-  }
+  const total = analytics?.blockMap.get(block.id) ?? 0
+  const blockEventTotal = analytics?.blockMap.get(block.id) ?? 0
+  let percentage =
+    blockEventTotal / (analytics?.stepMap.get(stepId)?.total ?? 0)
+  if (Number.isNaN(percentage) || !Number.isFinite(percentage)) percentage = 0
 
   return (
     <BaseNode
       id={block.id}
-      isSourceConnectable
+      sourceHandle={
+        showAnalytics === true ? HandleVariant.Disabled : HandleVariant.Shown
+      }
       onSourceConnect={updateEdge}
       selected={selected}
       isSourceConnected={isSourceConnected}
@@ -117,22 +97,79 @@ export function ActionButton({
           borderTop: (theme) =>
             `1px solid ${alpha(theme.palette.secondary.dark, 0.1)}`,
           height: ACTION_BUTTON_HEIGHT,
-          width: '100%'
+          position: 'relative'
         }}
       >
-        {icon}
-        <Typography
-          align="left"
-          noWrap
+        <Box
           sx={{
-            fontWeight: 'bold',
-            fontSize: 10,
-            lineHeight: `${ACTION_BUTTON_HEIGHT - 1}px`
+            opacity: 0.2,
+            width: '100%',
+            height: 'calc(100% - 2px)',
+            position: 'absolute',
+            left: 0,
+            top: 1,
+            display: 'flex'
           }}
-          variant="body2"
         >
-          {title}
-        </Typography>
+          <Box
+            className="stats-overlay__bar"
+            data-testid="AnalyticsOverlayBar"
+            sx={{
+              backgroundColor: 'info.main',
+              position: 'relative',
+              flexBasis: 0,
+              flexShrink: '1px',
+              transition: 'all 300ms ease',
+              flexGrow: showAnalytics === true ? `${percentage}` : 0,
+              borderRadius: '0 4px 4px 0'
+            }}
+          />
+        </Box>
+        <Box
+          sx={{
+            position: 'relative',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            '&:hover': {
+              '& .stats-overlay__event-count': {
+                opacity: showAnalytics === true ? 1 : 0
+              }
+            }
+          }}
+        >
+          <Typography
+            align="left"
+            noWrap
+            sx={{
+              fontWeight: 'bold',
+              fontSize: 10,
+              lineHeight: `${ACTION_BUTTON_HEIGHT - 1}px`
+            }}
+            variant="body2"
+          >
+            {title}
+          </Typography>
+          <Box
+            className="stats-overlay__event-count"
+            data-testid="AnalyticsEventCount"
+            sx={{
+              transition: 'opacity 200ms ease-in-out',
+              borderRadius: 4,
+              backgroundColor: 'background.paper',
+              px: 1,
+              py: 1,
+              opacity: 0
+            }}
+          >
+            <Typography
+              variant="body1"
+              sx={{ fontSize: 12, fontWeight: 600, lineHeight: '14px' }}
+            >
+              {total}
+            </Typography>
+          </Box>
+        </Box>
       </Box>
     </BaseNode>
   )

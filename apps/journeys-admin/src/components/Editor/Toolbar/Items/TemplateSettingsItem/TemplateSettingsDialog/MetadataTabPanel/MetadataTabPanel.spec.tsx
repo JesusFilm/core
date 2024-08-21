@@ -4,8 +4,8 @@ import { FormikContextType, FormikProvider } from 'formik'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
+import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 
-import { GET_LANGUAGES } from '../../../../../../../libs/useLanguagesQuery'
 import { publishedJourney } from '../../../../../../JourneyList/journeyListData'
 import { TemplateSettingsFormValues } from '../useTemplateSettingsForm'
 
@@ -93,7 +93,7 @@ describe('MetadataTabPanel', () => {
                 {
                   value: 'English',
                   primary: true,
-                  __typename: 'Translation'
+                  __typename: 'LanguageName'
                 }
               ]
             },
@@ -104,12 +104,12 @@ describe('MetadataTabPanel', () => {
                 {
                   value: 'Français',
                   primary: true,
-                  __typename: 'Translation'
+                  __typename: 'LanguageName'
                 },
                 {
                   value: 'French',
                   primary: false,
-                  __typename: 'Translation'
+                  __typename: 'LanguageName'
                 }
               ]
             },
@@ -120,12 +120,12 @@ describe('MetadataTabPanel', () => {
                 {
                   value: 'Deutsch',
                   primary: true,
-                  __typename: 'Translation'
+                  __typename: 'LanguageName'
                 },
                 {
                   value: 'German, Standard',
                   primary: false,
-                  __typename: 'Translation'
+                  __typename: 'LanguageName'
                 }
               ]
             }

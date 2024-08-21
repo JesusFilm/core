@@ -3,12 +3,7 @@
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
     "module": "commonjs",
-    "types": [
-      "node",
-      "@nx/react/typings/cssmodule.d.ts",
-      "@nx/react/typings/image.d.ts"
-    ],
-    "emitDecoratorMetadata": true,
+    "types": ["node"],
     "target": "es2021"
   },
   "exclude": ["**/*.spec.ts", "jest.config.ts"],

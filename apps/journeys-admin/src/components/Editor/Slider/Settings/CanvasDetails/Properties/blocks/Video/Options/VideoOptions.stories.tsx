@@ -5,11 +5,11 @@ import { ComponentPropsWithoutRef } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import { GetVideoVariantLanguages_video } from '../../../../../../../../../../__generated__/GetVideoVariantLanguages'
 import { VideoBlockSource } from '../../../../../../../../../../__generated__/globalTypes'
-import { journeysAdminConfig } from '../../../../../../../../../libs/storybook'
 import { ThemeProvider } from '../../../../../../../../ThemeProvider'
 import { Drawer } from '../../../../../Drawer'
 import { GET_VIDEO_VARIANT_LANGUAGES } from '../../../../../Drawer/VideoBlockEditor/Source/SourceFromLocal/SourceFromLocal'
@@ -77,7 +77,7 @@ const videoLanguages: GetVideoVariantLanguages_video = {
       id: '529',
       name: [
         {
-          __typename: 'Translation',
+          __typename: 'LanguageName',
           value: 'English',
           primary: true
         }

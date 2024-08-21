@@ -1,6 +1,7 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import { usePlausible } from 'next-plausible'
 import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -14,8 +15,10 @@ import {
   STEP_PREVIOUS_EVENT_CREATE
 } from '@core/journeys/ui/Card/Card'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { keyify } from '@core/journeys/ui/plausibleHelpers'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/BlockFields'
+import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 import { StepNextEventCreate } from '../../../../__generated__/StepNextEventCreate'
 import { StepPreviousEventCreate } from '../../../../__generated__/StepPreviousEventCreate'
 
@@ -39,10 +42,34 @@ const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
   typeof TagManager.dataLayer
 >
 
+jest.mock('next-plausible', () => ({
+  __esModule: true,
+  usePlausible: jest.fn()
+}))
+
+const mockUsePlausible = usePlausible as jest.MockedFunction<
+  typeof usePlausible
+>
+
 describe('SwipeNavigation', () => {
   mockUuidv4.mockReturnValue('uuid')
   const swipeLeft = -100
   const swipeRight = 100
+
+  const originalLocation = window.location
+  const mockOrigin = 'https://example.com'
+
+  beforeAll(() => {
+    Object.defineProperty(window, 'location', {
+      value: {
+        origin: mockOrigin
+      }
+    })
+  })
+
+  afterAll(() => {
+    Object.defineProperty(window, 'location', originalLocation)
+  })
 
   const step1: TreeBlock<StepBlock> = {
     id: 'step1.id',
@@ -117,6 +144,10 @@ describe('SwipeNavigation', () => {
       }
     }))
   }
+
+  const journey = {
+    id: 'journey.id'
+  } as unknown as Journey
 
   it('should navigate to next card on swipe', () => {
     treeBlocksVar([step1, step2, step3])
@@ -402,12 +433,16 @@ describe('SwipeNavigation', () => {
   it('should create navigateNextEvent', async () => {
     treeBlocksVar([step1, step2, step3])
     blockHistoryVar([step1])
+    const mockPlausible = jest.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
 
     const { getByTestId } = render(
       <MockedProvider mocks={[mockStepNextEventCreate]}>
-        <SwipeNavigation activeBlock={step1} rtl={false}>
-          <Box data-testid="swipe-test-box" />
-        </SwipeNavigation>
+        <JourneyProvider value={{ journey }}>
+          <SwipeNavigation activeBlock={step1} rtl={false}>
+            <Box data-testid="swipe-test-box" />
+          </SwipeNavigation>
+        </JourneyProvider>
       </MockedProvider>
     )
     const swipeElement = getByTestId('swipe-test-box')
@@ -423,17 +458,42 @@ describe('SwipeNavigation', () => {
     await waitFor(() =>
       expect(mockStepNextEventCreate.result).toHaveBeenCalled()
     )
+    expect(mockPlausible).toHaveBeenCalledWith('navigateNextStep', {
+      u: `${mockOrigin}/journey.id/step1.id`,
+      props: {
+        id: 'uuid',
+        blockId: 'step1.id',
+        label: 'Step {{number}}',
+        value: 'Step {{number}}',
+        nextStepId: 'step2.id',
+        key: keyify({
+          stepId: 'step1.id',
+          event: 'navigateNextStep',
+          blockId: 'step1.id',
+          target: 'step2.id'
+        }),
+        simpleKey: keyify({
+          stepId: 'step1.id',
+          event: 'navigateNextStep',
+          blockId: 'step1.id'
+        })
+      }
+    })
   })
 
   it('should create navigatePreviousEvent', async () => {
     treeBlocksVar([step1, step2, step3])
     blockHistoryVar([step1, step2])
+    const mockPlausible = jest.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
 
     const { getByTestId } = render(
       <MockedProvider mocks={[mockStepPreviousEventCreate]}>
-        <SwipeNavigation activeBlock={step2} rtl={false}>
-          <Box data-testid="swipe-test-box" />
-        </SwipeNavigation>
+        <JourneyProvider value={{ journey }}>
+          <SwipeNavigation activeBlock={step2} rtl={false}>
+            <Box data-testid="swipe-test-box" />
+          </SwipeNavigation>
+        </JourneyProvider>
       </MockedProvider>
     )
     const swipeElement = getByTestId('swipe-test-box')
@@ -449,6 +509,27 @@ describe('SwipeNavigation', () => {
     await waitFor(() =>
       expect(mockStepPreviousEventCreate.result).toHaveBeenCalled()
     )
+    expect(mockPlausible).toHaveBeenCalledWith('navigatePreviousStep', {
+      u: `${mockOrigin}/journey.id/step2.id`,
+      props: {
+        id: 'uuid',
+        blockId: 'step2.id',
+        label: 'Step {{number}}',
+        value: 'Step {{number}}',
+        previousStepId: 'step1.id',
+        key: keyify({
+          stepId: 'step2.id',
+          event: 'navigatePreviousStep',
+          blockId: 'step2.id',
+          target: 'step1.id'
+        }),
+        simpleKey: keyify({
+          stepId: 'step2.id',
+          event: 'navigatePreviousStep',
+          blockId: 'step2.id'
+        })
+      }
+    })
   })
 
   it('should add navigateNextEvent to datalayer', async () => {

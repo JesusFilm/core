@@ -4,6 +4,7 @@ import { Meta, StoryObj } from '@storybook/react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import {
   BlockFields_CardBlock as CardBlock,
@@ -18,7 +19,6 @@ import {
   ThemeName,
   VideoBlockSource
 } from '../../../../../../../../../../__generated__/globalTypes'
-import { journeysAdminConfig } from '../../../../../../../../../libs/storybook'
 import { ThemeProvider } from '../../../../../../../../ThemeProvider'
 import { GET_VIDEO_VARIANT_LANGUAGES } from '../../../../../Drawer/VideoBlockEditor/Source/SourceFromLocal/SourceFromLocal'
 
@@ -54,7 +54,7 @@ const journey: Journey = {
     iso3: 'eng',
     name: [
       {
-        __typename: 'Translation',
+        __typename: 'LanguageName',
         value: 'English',
         primary: true
       }
@@ -168,7 +168,7 @@ const videoLanguages: GetVideoVariantLanguages_video = {
       id: '529',
       name: [
         {
-          __typename: 'Translation',
+          __typename: 'LanguageName',
           value: 'English',
           primary: true
         }

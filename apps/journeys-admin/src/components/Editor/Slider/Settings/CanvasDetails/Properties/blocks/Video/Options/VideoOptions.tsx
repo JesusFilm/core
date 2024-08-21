@@ -1,119 +1,102 @@
 import { gql, useMutation } from '@apollo/client'
-import { useTranslation } from 'next-i18next'
-import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
-import type { TreeBlock } from '@core/journeys/ui/block'
+import { TreeBlock } from '@core/journeys/ui/block'
+import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { VIDEO_FIELDS } from '@core/journeys/ui/Video/videoFields'
 
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import { VideoBlockUpdateInput } from '../../../../../../../../../../__generated__/globalTypes'
-import { UpdateVideoBlockNextStep } from '../../../../../../../../../../__generated__/UpdateVideoBlockNextStep'
-import { VideoBlockUpdate } from '../../../../../../../../../../__generated__/VideoBlockUpdate'
+import {
+  VideoBlockUpdate,
+  VideoBlockUpdateVariables
+} from '../../../../../../../../../../__generated__/VideoBlockUpdate'
 import { VideoBlockEditor } from '../../../../../Drawer/VideoBlockEditor'
 
 export const VIDEO_BLOCK_UPDATE = gql`
   ${VIDEO_FIELDS}
-  mutation VideoBlockUpdate(
-    $id: ID!
-    $journeyId: ID!
-    $input: VideoBlockUpdateInput!
-  ) {
-    videoBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+  mutation VideoBlockUpdate($id: ID!, $input: VideoBlockUpdateInput!) {
+    videoBlockUpdate(id: $id, input: $input) {
       ...VideoFields
     }
   }
 `
 
-export const UPDATE_VIDEO_BLOCK_NEXT_STEP = gql`
-  mutation UpdateVideoBlockNextStep(
-    $id: ID!
-    $journeyId: ID!
-    $input: NavigateToBlockActionInput!
-  ) {
-    blockUpdateNavigateToBlockAction(
-      id: $id
-      journeyId: $journeyId
-      input: $input
-    ) {
-      parentBlockId
-      gtmEventName
-      blockId
-    }
-  }
-`
-
 export function VideoOptions(): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
+  const { add } = useCommand()
   const {
-    state: { selectedStep, selectedBlock }
+    state: { selectedStep, selectedBlock: stateSelectedBlock },
+    dispatch
   } = useEditor()
-  const { journey } = useJourney()
-  const { enqueueSnackbar } = useSnackbar()
-  const [videoBlockUpdate] = useMutation<VideoBlockUpdate>(VIDEO_BLOCK_UPDATE)
-  const [updateVideoBlockNextStep] = useMutation<UpdateVideoBlockNextStep>(
-    UPDATE_VIDEO_BLOCK_NEXT_STEP
-  )
+  const [videoBlockUpdate] = useMutation<
+    VideoBlockUpdate,
+    VideoBlockUpdateVariables
+  >(VIDEO_BLOCK_UPDATE)
 
-  const updateDefaultNextStep = async (): Promise<void> => {
-    const nextStepId = selectedStep?.nextBlockId
-    const currentBlock = selectedBlock as TreeBlock<VideoBlock> | undefined
-    if (nextStepId != null && currentBlock != null && journey != null) {
-      await updateVideoBlockNextStep({
-        variables: {
-          id: currentBlock.id,
-          journeyId: journey.id,
-          input: {
-            blockId: nextStepId
-          }
-        },
-        update(cache, { data }) {
-          if (data?.blockUpdateNavigateToBlockAction != null) {
-            cache.modify({
-              id: cache.identify({
-                __typename: 'VideoBlock',
-                id: currentBlock.id
-              }),
-              fields: {
-                action: () => data?.blockUpdateNavigateToBlockAction
-              }
-            })
-          }
-        }
-      })
-    }
-  }
+  const selectedBlock = stateSelectedBlock as TreeBlock<VideoBlock> | undefined
 
-  const handleChange = async (input: VideoBlockUpdateInput): Promise<void> => {
-    if (selectedBlock == null || journey == null) return
+  function handleChange(input: VideoBlockUpdateInput): void {
+    if (selectedBlock == null) return
 
-    try {
-      await videoBlockUpdate({
-        variables: {
-          id: selectedBlock.id,
-          journeyId: journey.id,
+    const inverseInput: VideoBlockUpdateInput = {}
+    if (input.startAt !== undefined)
+      inverseInput.startAt = selectedBlock.startAt
+    if (input.endAt !== undefined) inverseInput.endAt = selectedBlock.endAt
+    if (input.muted !== undefined) inverseInput.muted = selectedBlock.muted
+    if (input.autoplay !== undefined)
+      inverseInput.autoplay = selectedBlock.autoplay
+    if (input.duration !== undefined)
+      inverseInput.duration = selectedBlock.duration
+    if (input.videoId !== undefined)
+      inverseInput.videoId = selectedBlock.videoId
+    if (input.videoVariantLanguageId !== undefined)
+      inverseInput.videoVariantLanguageId = selectedBlock.videoVariantLanguageId
+    if (input.source !== undefined) inverseInput.source = selectedBlock.source
+    if (input.posterBlockId !== undefined)
+      inverseInput.posterBlockId = selectedBlock.posterBlockId
+    if (input.fullsize !== undefined)
+      inverseInput.fullsize = selectedBlock.fullsize
+    if (input.objectFit !== undefined)
+      inverseInput.objectFit = selectedBlock.objectFit
+
+    add({
+      parameters: {
+        execute: {
           input
+        },
+        undo: {
+          input: inverseInput
         }
-      })
-      await updateDefaultNextStep()
-      enqueueSnackbar(t('Video Updated'), {
-        variant: 'success',
-        preventDuplicate: true
-      })
-    } catch (e) {
-      if (e instanceof Error) {
-        enqueueSnackbar(e.message, {
-          variant: 'error',
-          preventDuplicate: true
+      },
+      execute({ input }) {
+        dispatch({
+          type: 'SetEditorFocusAction',
+          selectedStep,
+          selectedBlock
+        })
+        void videoBlockUpdate({
+          variables: {
+            id: selectedBlock.id,
+            input
+          },
+          optimisticResponse: {
+            videoBlockUpdate: {
+              ...selectedBlock,
+              ...input,
+              source: input.source ?? selectedBlock.source
+            }
+          }
         })
       }
-    }
+    })
   }
 
-  return selectedBlock != null && selectedBlock.__typename === 'VideoBlock' ? (
-    <VideoBlockEditor selectedBlock={selectedBlock} onChange={handleChange} />
+  return selectedBlock?.__typename === 'VideoBlock' ? (
+    <VideoBlockEditor
+      selectedBlock={selectedBlock}
+      onChange={async (input) => handleChange(input)}
+    />
   ) : (
     <></>
   )

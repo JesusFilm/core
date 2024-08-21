@@ -2,8 +2,7 @@ import { Meta, StoryObj } from '@storybook/react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import PaletteIcon from '@core/shared/ui/icons/Palette'
-
-import { simpleComponentConfig } from '../../../../../../../libs/storybook'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { Accordion } from '.'
 

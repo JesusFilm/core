@@ -13,7 +13,7 @@ export interface GetVideoVariantLanguages_video_variant {
 }
 
 export interface GetVideoVariantLanguages_video_variantLanguages_name {
-  __typename: "Translation";
+  __typename: "LanguageName";
   value: string;
   primary: boolean;
 }

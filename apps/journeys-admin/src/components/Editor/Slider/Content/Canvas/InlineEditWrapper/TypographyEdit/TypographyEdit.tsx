@@ -1,115 +1,146 @@
 import { gql, useMutation } from '@apollo/client'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
+import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useCommand } from '@core/journeys/ui/CommandProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { Typography } from '@core/journeys/ui/Typography'
-import { hasTouchScreen } from '@core/shared/ui/deviceUtils'
 
-import { TypographyBlockUpdateContent } from '../../../../../../../../__generated__/TypographyBlockUpdateContent'
+import {
+  TypographyBlockUpdateContent,
+  TypographyBlockUpdateContentVariables
+} from '../../../../../../../../__generated__/TypographyBlockUpdateContent'
 import { TypographyFields } from '../../../../../../../../__generated__/TypographyFields'
 import { InlineEditInput } from '../InlineEditInput'
-import { useOnClickOutside } from '../useOnClickOutside'
 
 export const TYPOGRAPHY_BLOCK_UPDATE_CONTENT = gql`
-  mutation TypographyBlockUpdateContent(
-    $id: ID!
-    $journeyId: ID!
-    $input: TypographyBlockUpdateInput!
-  ) {
-    typographyBlockUpdate(id: $id, journeyId: $journeyId, input: $input) {
+  mutation TypographyBlockUpdateContent($id: ID!, $content: String!) {
+    typographyBlockUpdate(id: $id, input: { content: $content }) {
       id
       content
     }
   }
 `
-interface TypographyEditProps extends TreeBlock<TypographyFields> {
-  deleteSelf: () => void
-}
-
 export function TypographyEdit({
   id,
-  variant,
-  align,
-  color,
   content,
-  deleteSelf,
   ...props
-}: TypographyEditProps): ReactElement {
+}: TreeBlock<TypographyFields>): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [typographyBlockUpdate] = useMutation<TypographyBlockUpdateContent>(
-    TYPOGRAPHY_BLOCK_UPDATE_CONTENT
-  )
+  const [typographyBlockUpdate] = useMutation<
+    TypographyBlockUpdateContent,
+    TypographyBlockUpdateContentVariables
+  >(TYPOGRAPHY_BLOCK_UPDATE_CONTENT)
 
-  const { journey } = useJourney()
   const [value, setValue] = useState(content)
+  const [commandInput, setCommandInput] = useState({ id: uuidv4(), value })
   const [selection, setSelection] = useState({ start: 0, end: value.length })
+  const {
+    add,
+    state: { undo }
+  } = useCommand()
+  const {
+    state: { selectedBlock, selectedStep },
+    dispatch
+  } = useEditor()
 
-  async function handleSaveBlock(): Promise<void> {
-    const currentContent = value.trimStart().trimEnd()
+  useEffect(() => {
+    if (undo == null || undo.id === commandInput.id) return
+    resetCommandInput()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [undo?.id])
 
-    if (currentContent === '') {
-      deleteSelf()
-      return
-    }
+  useEffect(() => {
+    setValue(content)
+  }, [content])
 
-    if (journey == null || content === currentContent) return
+  function resetCommandInput(): void {
+    setCommandInput({ id: uuidv4(), value })
+  }
 
-    await typographyBlockUpdate({
-      variables: {
-        id,
-        journeyId: journey.id,
-        input: { content: currentContent }
-      },
-      optimisticResponse: {
-        typographyBlockUpdate: {
-          id,
-          __typename: 'TypographyBlock',
-          content: currentContent
+  function handleSubmit(value: string): void {
+    add({
+      id: commandInput.id,
+      parameters: {
+        execute: {
+          content: value,
+          context: {},
+          runDispatch: false
+        },
+        undo: {
+          content: commandInput.value,
+          context: { debounceTimeout: 1 },
+          runDispatch: true
+        },
+        redo: {
+          content: value,
+          context: { debounceTimeout: 1 },
+          runDispatch: true
         }
+      },
+      execute({ content, context, runDispatch }) {
+        if (runDispatch)
+          dispatch({
+            type: 'SetEditorFocusAction',
+            selectedBlock,
+            selectedStep
+          })
+        void typographyBlockUpdate({
+          variables: {
+            id,
+            content
+          },
+          optimisticResponse: {
+            typographyBlockUpdate: {
+              id,
+              __typename: 'TypographyBlock',
+              content
+            }
+          },
+          context: {
+            debounceKey: `TypographyBlock:${id}`,
+            ...context
+          }
+        })
       }
     })
   }
-
-  const inputRef = useOnClickOutside(async () => {
-    await handleSaveBlock()
-  })
-
-  const input = (
-    <InlineEditInput
-      name={`edit-${id}`}
-      ref={inputRef}
-      multiline
-      fullWidth
-      autoFocus={!hasTouchScreen()}
-      value={value}
-      placeholder={t('Add your text here...')}
-      onSelect={(e) => {
-        const input = e.target as HTMLTextAreaElement
-        setSelection({
-          start: input.selectionStart ?? 0,
-          end: input.selectionEnd ?? value.length
-        })
-      }}
-      onFocus={(e) => {
-        const input = e.target as HTMLTextAreaElement
-        input.setSelectionRange(selection.start, selection.end)
-      }}
-      onBlur={handleSaveBlock}
-      onChange={(e) => setValue(e.target.value)}
-    />
-  )
 
   return (
     <Typography
       {...props}
       id={id}
-      variant={variant}
-      align={align}
-      color={color}
       content={content}
-      editableContent={input}
+      editableContent={
+        <InlineEditInput
+          name="contentLabel"
+          fullWidth
+          multiline
+          inputRef={(ref) => {
+            if (ref != null) ref.focus()
+          }}
+          onFocus={(e) => {
+            const target = e.currentTarget as HTMLInputElement
+            target.setSelectionRange(selection.start, selection.end)
+            resetCommandInput()
+          }}
+          value={value}
+          placeholder={t('Add your text here...')}
+          onSelect={(e) => {
+            const input = e.target as HTMLInputElement
+            setSelection({
+              start: input.selectionStart ?? 0,
+              end: input.selectionEnd ?? value.length
+            })
+          }}
+          onChange={(e) => {
+            setValue(e.target.value)
+            handleSubmit(e.target.value)
+          }}
+        />
+      }
     />
   )
 }

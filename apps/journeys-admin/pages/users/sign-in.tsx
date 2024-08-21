@@ -1,4 +1,9 @@
-import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
+import {
+  AuthAction,
+  useUser,
+  withUser,
+  withUserTokenSSR
+} from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { NextSeo } from 'next-seo'
@@ -9,6 +14,7 @@ import { OnboardingPageWrapper } from '../../src/components/OnboardingPageWrappe
 import { SignIn } from '../../src/components/SignIn'
 
 function SignInPage(): ReactElement {
+  const user = useUser()
   const { t } = useTranslation('apps-journeys-admin')
   return (
     <>
@@ -16,6 +22,7 @@ function SignInPage(): ReactElement {
       <OnboardingPageWrapper
         title={t('Create New Account or Log in')}
         emailSubject={t('A question about sign in')}
+        user={user}
       >
         <SignIn />
       </OnboardingPageWrapper>

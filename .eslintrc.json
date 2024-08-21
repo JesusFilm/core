@@ -49,9 +49,16 @@
     "import/dynamic-import-chunkname": "error",
     "@typescript-eslint/no-empty-function": [
       "error",
-      { "allow": ["decoratedFunctions"] }
+      {
+        "allow": ["decoratedFunctions"]
+      }
     ],
-    "no-multiple-empty-lines": ["error", { "max": 1 }],
+    "no-multiple-empty-lines": [
+      "error",
+      {
+        "max": 1
+      }
+    ],
     "no-restricted-imports": [
       "error",
       {
@@ -65,7 +72,12 @@
         "patterns": ["@mui/*/*/*", "!@mui/material/test-utils/*", "*.mock"]
       }
     ],
-    "sort-imports": ["error", { "ignoreDeclarationSort": true }]
+    "sort-imports": [
+      "error",
+      {
+        "ignoreDeclarationSort": true
+      }
+    ]
   },
   "overrides": [
     {
@@ -125,13 +137,18 @@
         "@typescript-eslint/consistent-indexed-object-style": "off",
         "@typescript-eslint/prefer-nullish-coalescing": "off",
         "@typescript-eslint/prefer-optional-chain": "off",
-        "@typescript-eslint/non-nullable-type-assertion-style": "off"
+        "@typescript-eslint/non-nullable-type-assertion-style": "off",
+        "@typescript-eslint/no-extra-semi": "off",
+        "no-extra-semi": "off"
       }
     },
     {
       "files": ["*.js", "*.jsx"],
       "extends": ["plugin:@nx/javascript", "standard", "prettier"],
-      "rules": {}
+      "rules": {
+        "@typescript-eslint/no-extra-semi": "off",
+        "no-extra-semi": "off"
+      }
     },
     {
       "files": ["*.tsx", "*.jsx"],
@@ -148,7 +165,10 @@
         ],
         "react/jsx-curly-brace-presence": [
           "error",
-          { "props": "never", "children": "never" }
+          {
+            "props": "never",
+            "children": "never"
+          }
         ],
         "react/jsx-boolean-value": "error"
       }

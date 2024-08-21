@@ -4,17 +4,18 @@ import ButtonBase from '@mui/material/ButtonBase'
 import Link from '@mui/material/Link'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
-import { SxProps, styled } from '@mui/material/styles'
+import { type SxProps, styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import type { ReactElement } from 'react'
 
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
 import { VideoLabel } from '../../../__generated__/globalTypes'
-import { VideoChildFields } from '../../../__generated__/VideoChildFields'
+import type { VideoChildFields } from '../../../__generated__/VideoChildFields'
+import { useAlgoliaVideos } from '../../libs/algolia/useAlgoliaVideos'
 import { getLabelDetails } from '../../libs/utils/getLabelDetails/getLabelDetails'
 
 interface VideoCardProps {
@@ -26,7 +27,7 @@ interface VideoCardProps {
   imageSx?: SxProps
 }
 
-const ImageButton = styled(ButtonBase)(({ theme }) => ({
+const ImageButton = styled(ButtonBase)(() => ({
   borderRadius: 8,
   width: '100%',
   position: 'relative'
@@ -52,10 +53,10 @@ export function getSlug(
     label !== undefined &&
     ![VideoLabel.collection, VideoLabel.series].includes(label)
   ) {
-    return `/${containerSlug}.html/${variantSlug ?? ''}.html`
+    return `/watch/${containerSlug}.html/${variantSlug ?? ''}.html`
   } else {
     const [videoId, languageId] = (variantSlug ?? '').split('/')
-    return `/${videoId}.html/${languageId}.html`
+    return `/watch/${videoId}.html/${languageId}.html`
   }
 }
 
@@ -67,13 +68,22 @@ export function VideoCard({
   active,
   imageSx
 }: VideoCardProps): ReactElement {
+  const { t } = useTranslation('apps-watch')
+
   const { label, color, childCountLabel } = getLabelDetails(
     video?.label,
     video?.childrenCount ?? 0
   )
   const href = getSlug(containerSlug, video?.label, video?.variant?.slug)
 
-  const { t } = useTranslation('apps-watch')
+  const { hits, sendEvent } = useAlgoliaVideos()
+  const hit = hits.filter((hit) => hit.videoId === video?.id)
+
+  const handleClick = (event): void => {
+    event.stopPropagation()
+    sendEvent('click', hit, 'Video Clicked')
+  }
+
   return (
     <NextLink href={href} passHref legacyBehavior>
       <Link
@@ -83,6 +93,7 @@ export function VideoCard({
         sx={{ pointerEvents: video != null ? 'auto' : 'none' }}
         aria-label="VideoCard"
         data-testid={video != null ? `VideoCard-${video.id}` : 'VideoCard'}
+        onClick={handleClick}
       >
         <Stack spacing={3}>
           <ImageButton
@@ -114,7 +125,7 @@ export function VideoCard({
               {video?.image != null ? (
                 <Image
                   src={video.image}
-                  alt={video.title[0].value}
+                  alt={video.imageAlt[0].value}
                   fill
                   sizes="100vw"
                   style={{
@@ -283,7 +294,7 @@ export function VideoCard({
                 </Typography>
               )}
               <Typography color="textPrimary" variant="h6" component="h3">
-                {video != null ? (
+                {video?.title != null ? (
                   video?.title[0].value
                 ) : (
                   <Skeleton width="60%" data-testid="VideoTitleSkeleton" />

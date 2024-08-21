@@ -91,13 +91,8 @@ describe('transformSteps', () => {
         ...defaultEdgeProps
       },
       {
+        ...defaultEdgeProps,
         id: 'SocialPreview->step1.id',
-        markerEnd: {
-          color: '#d9d9dc',
-          height: 10,
-          type: 'arrowclosed',
-          width: 10
-        },
         source: 'SocialPreview',
         target: 'step1.id',
         type: 'Start'
@@ -114,7 +109,7 @@ describe('transformSteps', () => {
         draggable: false,
         id: 'SocialPreview',
         position: {
-          x: -365,
+          x: -240,
           y: -46
         },
         type: 'SocialPreview'
@@ -212,13 +207,8 @@ describe('transformSteps', () => {
         ...defaultEdgeProps
       },
       {
+        ...defaultEdgeProps,
         id: 'SocialPreview->step1.id',
-        markerEnd: {
-          color: '#d9d9dc',
-          height: 10,
-          type: 'arrowclosed',
-          width: 10
-        },
         source: 'SocialPreview',
         target: 'step1.id',
         type: 'Start'
@@ -290,13 +280,132 @@ describe('transformSteps', () => {
     expect(edges).toEqual([
       hiddenEdge,
       {
+        ...defaultEdgeProps,
         id: 'SocialPreview->step1.id',
-        markerEnd: {
-          color: '#d9d9dc',
-          height: 10,
-          type: 'arrowclosed',
-          width: 10
-        },
+        source: 'SocialPreview',
+        target: 'step1.id',
+        type: 'Start'
+      }
+    ])
+  })
+
+  it('should handle link and email actions', () => {
+    const steps: Array<TreeBlock<StepBlock>> = [
+      {
+        __typename: 'StepBlock' as const,
+        id: 'step1.id',
+        parentBlockId: null,
+        parentOrder: 0,
+        locked: false,
+        nextBlockId: 'step1.id',
+        children: [
+          {
+            __typename: 'CardBlock',
+            id: 'card1.id',
+            parentBlockId: 'step1.id',
+            parentOrder: 0,
+            backgroundColor: null,
+            coverBlockId: null,
+            themeName: null,
+            themeMode: null,
+            fullscreen: false,
+            children: [
+              {
+                __typename: 'ButtonBlock',
+                id: 'button1.id',
+                parentBlockId: 'card1.id',
+                parentOrder: 0,
+                label: 'link button',
+                buttonVariant: null,
+                buttonColor: null,
+                size: null,
+                startIconId: null,
+                endIconId: null,
+                action: {
+                  __typename: 'LinkAction',
+                  parentBlockId: 'button1.id',
+                  gtmEventName: null,
+                  url: 'https://example.com'
+                },
+                children: []
+              },
+              {
+                __typename: 'ButtonBlock',
+                id: 'button2.id',
+                parentBlockId: 'card1.id',
+                parentOrder: 1,
+                label: 'email button',
+                buttonVariant: null,
+                buttonColor: null,
+                size: null,
+                startIconId: null,
+                endIconId: null,
+                action: {
+                  __typename: 'EmailAction',
+                  parentBlockId: 'button2.id',
+                  gtmEventName: null,
+                  email: 'example@email.com'
+                },
+                children: []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+
+    const positions = {
+      'step1.id': { x: 0, y: 0 }
+    }
+    const { nodes, edges } = transformSteps(steps, positions)
+
+    expect(nodes).toEqual([
+      socialNode,
+      hiddenNode,
+
+      {
+        data: {},
+        draggable: false,
+        id: 'LinkNode-button1.id',
+        parentNode: 'step1.id',
+        position: { x: 300, y: 103 },
+        type: 'Link'
+      },
+      {
+        data: {},
+        draggable: false,
+        id: 'LinkNode-button2.id',
+        parentNode: 'step1.id',
+        position: { x: 300, y: 175 },
+        type: 'Link'
+      },
+      {
+        data: {},
+        id: 'step1.id',
+        position: { x: 0, y: 0 },
+        type: 'StepBlock'
+      }
+    ])
+
+    expect(edges).toEqual([
+      hiddenEdge,
+      {
+        ...defaultEdgeProps,
+        id: 'button1.id->LinkNode-button1.id',
+        source: 'step1.id',
+        sourceHandle: 'button1.id',
+        target: 'LinkNode-button1.id'
+      },
+      {
+        ...defaultEdgeProps,
+        id: 'button2.id->LinkNode-button2.id',
+        source: 'step1.id',
+        sourceHandle: 'button2.id',
+        target: 'LinkNode-button2.id'
+      },
+      {
+        ...defaultEdgeProps,
+        id: 'SocialPreview->step1.id',
         source: 'SocialPreview',
         target: 'step1.id',
         type: 'Start'

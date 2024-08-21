@@ -37,6 +37,7 @@ testem.log
 apps/api-gateway/router
 /**/tsconfig.tsbuildinfo
 .history/
+/.cache
 
 # System Files
 .DS_Store
@@ -76,6 +77,7 @@ terraform.tfstate.backup
 /libs/locales/**/*_old.json
 
 .nx/cache
+.nx/workspace-data
 
 # react-email
 .react-email

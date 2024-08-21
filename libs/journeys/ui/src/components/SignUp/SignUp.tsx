@@ -5,24 +5,30 @@ import { SxProps } from '@mui/system/styleFunctionSx'
 import { Form, Formik } from 'formik'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
+import { usePlausible } from 'next-plausible'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 import { object, string } from 'yup'
 
+import { SignUpSubmissionEventCreateInput } from '../../../__generated__/globalTypes'
 import { handleAction } from '../../libs/action'
 import { useBlocks } from '../../libs/block'
 import type { TreeBlock } from '../../libs/block'
 import { useEditor } from '../../libs/EditorProvider'
 import { getStepHeading } from '../../libs/getStepHeading'
 import { useJourney } from '../../libs/JourneyProvider'
+import { JourneyPlausibleEvents, keyify } from '../../libs/plausibleHelpers'
 import { Icon } from '../Icon'
 import { IconFields } from '../Icon/__generated__/IconFields'
 import { TextField } from '../TextField'
 
 import { SignUpFields } from './__generated__/SignUpFields'
-import { SignUpSubmissionEventCreate } from './__generated__/SignUpSubmissionEventCreate'
+import {
+  SignUpSubmissionEventCreate,
+  SignUpSubmissionEventCreateVariables
+} from './__generated__/SignUpSubmissionEventCreate'
 
 export const SIGN_UP_SUBMISSION_EVENT_CREATE = gql`
   mutation SignUpSubmissionEventCreate(
@@ -62,7 +68,8 @@ export const SignUp = ({
     | TreeBlock<IconFields>
     | undefined
 
-  const { variant } = useJourney()
+  const plausible = usePlausible<JourneyPlausibleEvents>()
+  const { variant, journey } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
   const { blockHistory, treeBlocks } = useBlocks()
   const activeBlock = blockHistory[blockHistory.length - 1]
@@ -73,8 +80,10 @@ export const SignUp = ({
       : 'None'
 
   const router = useRouter()
-  const [signUpSubmissionEventCreate, { loading }] =
-    useMutation<SignUpSubmissionEventCreate>(SIGN_UP_SUBMISSION_EVENT_CREATE)
+  const [signUpSubmissionEventCreate, { loading }] = useMutation<
+    SignUpSubmissionEventCreate,
+    SignUpSubmissionEventCreateVariables
+  >(SIGN_UP_SUBMISSION_EVENT_CREATE)
 
   const initialValues: SignUpFormValues = { name: '', email: '' }
   const signUpSchema = object().shape({
@@ -90,18 +99,38 @@ export const SignUp = ({
   const onSubmitHandler = async (values: SignUpFormValues): Promise<void> => {
     if (variant === 'default' || variant === 'embed') {
       const id = uuid()
+      const input: SignUpSubmissionEventCreateInput = {
+        id,
+        blockId,
+        stepId: activeBlock?.id,
+        name: values.name,
+        email: values.email
+      }
       try {
         await signUpSubmissionEventCreate({
           variables: {
-            input: {
-              id,
-              blockId,
-              stepId: activeBlock?.id,
-              name: values.name,
-              email: values.email
-            }
+            input
           }
         })
+        if (journey != null) {
+          plausible('signupSubmit', {
+            u: `${window.location.origin}/${journey.id}/${input.stepId}`,
+            props: {
+              ...input,
+              key: keyify({
+                stepId: input.stepId ?? '',
+                event: 'signupSubmit',
+                blockId: input.blockId,
+                target: action
+              }),
+              simpleKey: keyify({
+                stepId: input.stepId ?? '',
+                event: 'signupSubmit',
+                blockId: input.blockId
+              })
+            }
+          })
+        }
         TagManager.dataLayer({
           dataLayer: {
             event: 'sign_up_submission',
@@ -181,6 +210,7 @@ export const SignUp = ({
             />
             <LoadingButton
               type="submit"
+              data-testid="submit"
               variant="contained"
               loading={loading}
               size="large"
@@ -193,7 +223,13 @@ export const SignUp = ({
                 mb: 0
               }}
             >
-              <span>{editableSubmitLabel ?? submitLabel ?? t('Submit')}</span>
+              <span>
+                {editableSubmitLabel != null
+                  ? editableSubmitLabel
+                  : submitLabel != null && submitLabel !== ''
+                  ? submitLabel
+                  : t('Submit')}
+              </span>
             </LoadingButton>
           </Form>
         )}

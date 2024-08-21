@@ -19,6 +19,8 @@ on:
         required: true
       JFP_AWS_SECRET_ACCESS_KEY:
         required: true
+      DOPPLER_API_ANALYTICS_TOKEN:
+        required: true
       DOPPLER_API_GATEWAY_TOKEN:
         required: true
       DOPPLER_API_JOURNEYS_TOKEN:
@@ -46,6 +48,8 @@ on:
       DOPPLER_WATCH_ADMIN_TOKEN:
         required: true
       DOPPLER_GITHUB_SERVICE_TOKEN:
+        required: true
+      DATADOG_API_KEY:
         required: true
 
 jobs:
@@ -104,6 +108,7 @@ jobs:
         if: contains(steps.affected-apps.outputs.apps, inputs.name)
         uses: mansagroup/nrwl-nx-action@v3
         env:
+          DOPPLER_API_ANALYTICS_TOKEN: ${{ secrets.DOPPLER_API_ANALYTICS_TOKEN }}
           DOPPLER_API_GATEWAY_TOKEN: ${{ secrets.DOPPLER_API_GATEWAY_TOKEN }}
           DOPPLER_API_JOURNEYS_TOKEN: ${{ secrets.DOPPLER_API_JOURNEYS_TOKEN }}
           DOPPLER_API_LANGUAGES_TOKEN: ${{ secrets.DOPPLER_API_LANGUAGES_TOKEN }}
@@ -122,6 +127,14 @@ jobs:
           targets: fetch-secrets, extract-translations, build
           projects: ${{ inputs.name }}
           args: --c=production
+      - name: upload sourcemaps to datadog
+        uses: mansagroup/nrwl-nx-action@v3
+        env:
+          GIT_COMMIT_SHA: ${{ github.sha }}
+          DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
+        with:
+          targets: upload-sourcemaps
+          projects: ${{ inputs.name }}
 
       # ECS Deployment
       - name: Configure ECS AWS credentials

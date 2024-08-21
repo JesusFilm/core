@@ -1,48 +1,93 @@
-import { fireEvent, render } from '@testing-library/react'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
-import { SearchUnsplashPhotos_searchUnsplashPhotos_results } from '../../../../../../../../../__generated__/SearchUnsplashPhotos'
+import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../__generated__/BlockFields'
+import { SearchUnsplashPhotos_searchUnsplashPhotos_results as Result } from '../../../../../../../../../__generated__/SearchUnsplashPhotos'
+import {
+  TriggerUnsplashDownload,
+  TriggerUnsplashDownloadVariables
+} from '../../../../../../../../../__generated__/TriggerUnsplashDownload'
+import { ThemeProvider } from '../../../../../../../ThemeProvider'
 
-import { UnsplashList } from './UnsplashList'
+import { TRIGGER_UNSPLASH_DOWNLOAD, UnsplashList } from './UnsplashList'
 
 describe('UnsplashList', () => {
-  const unsplashImage = {
-    __typename: 'UnsplashPhoto',
-    id: 1,
-    width: 6240,
-    height: 4160,
+  const item: Result = {
+    id: '1',
     alt_description: 'white dome building during daytime',
+    blur_hash: 'LEA,%vRjE1ay.AV@WAj@tnoef5ju',
+    width: 3096,
+    height: 4242,
     urls: {
-      small:
-        'https://images.unsplash.com/photo-1618777618311-92f986a6519d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=Mnw0MDIyMzR8MHwxfGNvbGxlY3Rpb258MXw0OTI0NTU2fHx8fHwyfHwxNjc0Nzc0Mjk4&ixlib=rb-4.0.3&q=80&w=400'
+      raw: 'https://images.unsplash.com/photo-1?ixid=1',
+      regular: 'https://images.unsplash.com/photo-1?ixid=1&q=80&w=1080',
+      __typename: 'UnsplashPhotoUrls'
     },
     links: {
-      download_location:
-        'https://api.unsplash.com/collections/4924556/photos?client_id=fpXMSrVxk3ByFvwCqpoQgcIa6P5hX4xqdkSbmfjBBHY'
+      download_location: 'https://api.unsplash.com/photos/1/download?ixid=1',
+      __typename: 'UnsplashPhotoLinks'
     },
     user: {
       first_name: 'Levi Meir',
       last_name: 'Clancy',
-      username: 'levimeirclancy'
+      username: 'levimeirclancy',
+      __typename: 'UnsplashUser'
     },
-    color: '#262626'
+    __typename: 'UnsplashPhoto'
   }
 
-  it('should call onChange on image click', () => {
+  const triggerUnsplashDownloadMock: MockedResponse<
+    TriggerUnsplashDownload,
+    TriggerUnsplashDownloadVariables
+  > = {
+    request: {
+      query: TRIGGER_UNSPLASH_DOWNLOAD,
+      variables: {
+        url: 'https://api.unsplash.com/photos/1/download?ixid=1'
+      }
+    },
+    result: {
+      data: {
+        triggerUnsplashDownload: true
+      }
+    }
+  }
+
+  it('should call onChange on image click', async () => {
     const onChange = jest.fn()
-    const { getByAltText, getByRole, getByTestId } = render(
-      <UnsplashList
-        gallery={[
-          unsplashImage as unknown as SearchUnsplashPhotos_searchUnsplashPhotos_results
-        ]}
-        onChange={onChange}
-      />
+    render(
+      <MockedProvider mocks={[triggerUnsplashDownloadMock]}>
+        <ThemeProvider>
+          <UnsplashList gallery={[item]} onChange={onChange} />
+        </ThemeProvider>
+      </MockedProvider>
     )
-    expect(getByRole('list')).toBeInTheDocument()
-    fireEvent.click(getByRole('button'))
-    expect(onChange).toHaveBeenCalled()
-    expect(
-      getByAltText('white dome building during daytime')
-    ).toBeInTheDocument()
-    expect(getByTestId('image-1')).toHaveStyle('border: 2px solid #C52D3A')
+    fireEvent.click(screen.getByRole('button'))
+    expect(onChange).toHaveBeenCalledWith({
+      alt: 'white dome building during daytime',
+      blurhash: 'LEA,%vRjE1ay.AV@WAj@tnoef5ju',
+      height: 1480,
+      src: 'https://images.unsplash.com/photo-1?ixid=1&q=80&w=1080',
+      width: 1080
+    })
+  })
+
+  it('should highlight selected block', async () => {
+    render(
+      <MockedProvider>
+        <ThemeProvider>
+          <UnsplashList
+            selectedBlock={{ src: item.urls.regular } as unknown as ImageBlock}
+            gallery={[item]}
+            onChange={jest.fn()}
+          />
+        </ThemeProvider>
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(screen.getByTestId('image-1')).toHaveStyle(
+        'outline-color: #C52D3A'
+      )
+    )
   })
 })

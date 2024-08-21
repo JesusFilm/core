@@ -19,7 +19,7 @@ Take screenshot (after-video)
 
 test.describe('firefox only', () => {
   // skip the test if mobile as no.of video clips differs based on the device size
-  // eslint-disable-next-line
+  // eslint-disable-next-line playwright/no-skipped-test
   test.skip(({ browserName }) => browserName !== 'firefox', 'firefox only!')
 
   test('Feature film', async ({ page, browser }) => {
@@ -36,7 +36,7 @@ test.describe('firefox only', () => {
       .click()
 
     // video tiles aren't loading upon right away and there is no event to say they are loaded. So the only option is to hard wait
-    //   eslint-disable-next-line
+    // eslint-disable-next-line playwright/no-wait-for-timeout
     await page.waitForTimeout(6 * 1000)
     // await expect(page).toHaveScreenshot('ff-landing-page.png', {
     //   animations: 'disabled',
@@ -51,7 +51,7 @@ test.describe('firefox only', () => {
     await page.getByTestId('NavigateNextIcon').click()
     await page.getByTestId('NavigateBeforeIcon').click()
 
-    //   eslint-disable-next-line
+    // eslint-disable-next-line playwright/no-wait-for-timeout
     await page.waitForTimeout(6 * 1000)
     // await expect(page).toHaveScreenshot('ff-navigated-page.png', {
     //   animations: 'disabled',
@@ -68,7 +68,7 @@ test.describe('firefox only', () => {
       '/watch/jesus.html/blessed-are-those-who-hear-and-obey/english.html'
     )
 
-    //   eslint-disable-next-line
+    // eslint-disable-next-line playwright/no-wait-for-timeout
     await page.waitForTimeout(6 * 1000)
     // await expect(page).toHaveScreenshot('before-video.png', {
     //   animations: 'disabled',
@@ -78,7 +78,7 @@ test.describe('firefox only', () => {
     await page.getByRole('button', { name: 'Play' }).first().click()
 
     // wait for 60 seconds to see if the video is complete. Until there are some events in the code to figure this out
-    // eslint-disable-next-line
+    // eslint-disable-next-line playwright/no-wait-for-timeout
     await page.waitForTimeout(45 * 1000)
 
     // Take screenshot once video is played and test it is same all the times

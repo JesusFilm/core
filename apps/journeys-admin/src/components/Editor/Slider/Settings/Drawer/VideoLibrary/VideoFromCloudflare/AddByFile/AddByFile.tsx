@@ -121,14 +121,14 @@ export function AddByFile({
         // the following if statement is required for testing in jest
         let buffer: ReadStream | File
         if (process.env.NODE_ENV === 'test') {
-          /* eslint-disable @typescript-eslint/no-var-requires */
+          // eslint-disable-next-line @typescript-eslint/no-var-requires
           buffer = require('fs').createReadStream(
+            // eslint-disable-next-line @typescript-eslint/no-var-requires
             require('path').join(
               __dirname,
               (file as unknown as { path: string }).path
             )
           )
-          /* eslint-enable @typescript-eslint/no-var-requires */
         } else {
           buffer = file
         }

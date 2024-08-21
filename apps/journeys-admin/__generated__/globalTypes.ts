@@ -53,8 +53,10 @@ export enum IconName {
   ChevronRightRounded = "ChevronRightRounded",
   ContactSupportRounded = "ContactSupportRounded",
   FormatQuoteRounded = "FormatQuoteRounded",
+  Launch = "Launch",
   LiveTvRounded = "LiveTvRounded",
   LockOpenRounded = "LockOpenRounded",
+  MailOutline = "MailOutline",
   MenuBookRounded = "MenuBookRounded",
   PlayArrowRounded = "PlayArrowRounded",
   RadioButtonUncheckedRounded = "RadioButtonUncheckedRounded",
@@ -69,6 +71,15 @@ export enum IconSize {
   md = "md",
   sm = "sm",
   xl = "xl",
+}
+
+export enum IdType {
+  databaseId = "databaseId",
+  slug = "slug",
+}
+
+export enum IntegrationType {
+  growthSpaces = "growthSpaces",
 }
 
 export enum JourneyStatus {
@@ -93,10 +104,32 @@ export enum JourneysReportType {
 }
 
 export enum MessagePlatform {
+  checkBroken = "checkBroken",
+  checkContained = "checkContained",
   custom = "custom",
   facebook = "facebook",
+  globe2 = "globe2",
+  globe3 = "globe3",
+  helpCircleContained = "helpCircleContained",
+  helpSquareContained = "helpSquareContained",
+  home3 = "home3",
+  home4 = "home4",
   instagram = "instagram",
   line = "line",
+  linkExternal = "linkExternal",
+  mail1 = "mail1",
+  menu1 = "menu1",
+  messageChat2 = "messageChat2",
+  messageCircle = "messageCircle",
+  messageNotifyCircle = "messageNotifyCircle",
+  messageNotifySquare = "messageNotifySquare",
+  messageSquare = "messageSquare",
+  messageText1 = "messageText1",
+  messageText2 = "messageText2",
+  send1 = "send1",
+  send2 = "send2",
+  settings = "settings",
+  shieldCheck = "shieldCheck",
   skype = "skype",
   snapchat = "snapchat",
   telegram = "telegram",
@@ -124,6 +157,12 @@ export enum Service {
   apiTags = "apiTags",
   apiUsers = "apiUsers",
   apiVideos = "apiVideos",
+}
+
+export enum TextResponseType {
+  email = "email",
+  freeForm = "freeForm",
+  name = "name",
 }
 
 export enum ThemeMode {
@@ -214,6 +253,19 @@ export enum VisitorStatus {
   warning = "warning",
 }
 
+export interface BlockDuplicateIdMap {
+  oldId: string;
+  newId: string;
+}
+
+export interface BlockUpdateActionInput {
+  gtmEventName?: string | null;
+  email?: string | null;
+  url?: string | null;
+  target?: string | null;
+  blockId?: string | null;
+}
+
 export interface ButtonBlockCreateInput {
   id?: string | null;
   journeyId: string;
@@ -256,6 +308,7 @@ export interface CardBlockCreateInput {
 
 export interface CardBlockUpdateInput {
   parentBlockId?: string | null;
+  coverBlockId?: string | null;
   backgroundColor?: string | null;
   fullscreen?: boolean | null;
   themeMode?: ThemeMode | null;
@@ -336,12 +389,6 @@ export interface IconBlockCreateInput {
   size?: IconSize | null;
 }
 
-export interface IconBlockUpdateInput {
-  name?: IconName | null;
-  color?: IconColor | null;
-  size?: IconSize | null;
-}
-
 export interface ImageBlockCreateInput {
   id?: string | null;
   parentBlockId?: string | null;
@@ -363,6 +410,17 @@ export interface ImageBlockUpdateInput {
   height?: number | null;
 }
 
+export interface IntegrationGrowthSpacesCreateInput {
+  accessId: string;
+  accessSecret: string;
+  teamId: string;
+}
+
+export interface IntegrationGrowthSpacesUpdateInput {
+  accessId: string;
+  accessSecret: string;
+}
+
 export interface JourneyCollectionCreateInput {
   id?: string | null;
   teamId: string;
@@ -373,6 +431,11 @@ export interface JourneyCollectionCreateInput {
 export interface JourneyCollectionUpdateInput {
   title?: string | null;
   journeyIds?: string[] | null;
+}
+
+export interface JourneyNotificationUpdateInput {
+  journeyId: string;
+  visitorInteractionEmail: boolean;
 }
 
 export interface JourneyProfileUpdateInput {
@@ -427,6 +490,12 @@ export interface JourneysFilter {
   orderByRecent?: boolean | null;
 }
 
+export interface JourneysQueryOptions {
+  hostname?: string | null;
+  embedded?: boolean | null;
+  journeyCollection?: boolean | null;
+}
+
 export interface LanguagesFilter {
   ids?: string[] | null;
 }
@@ -439,11 +508,6 @@ export interface LinkActionInput {
 
 export interface MeInput {
   redirect?: string | null;
-}
-
-export interface NavigateToBlockActionInput {
-  gtmEventName?: string | null;
-  blockId: string;
 }
 
 export interface RadioOptionBlockCreateInput {
@@ -503,6 +567,12 @@ export interface StepBlockCreateInput {
   y?: number | null;
 }
 
+export interface StepBlockPositionUpdateInput {
+  id: string;
+  x?: number | null;
+  y?: number | null;
+}
+
 export interface StepBlockUpdateInput {
   nextBlockId?: string | null;
   locked?: boolean | null;
@@ -547,7 +617,6 @@ export interface TextResponseBlockCreateInput {
   journeyId: string;
   parentBlockId: string;
   label: string;
-  submitLabel: string;
 }
 
 export interface TextResponseBlockUpdateInput {
@@ -555,8 +624,9 @@ export interface TextResponseBlockUpdateInput {
   label?: string | null;
   hint?: string | null;
   minRows?: number | null;
-  submitIconId?: string | null;
-  submitLabel?: string | null;
+  routeId?: string | null;
+  type?: TextResponseType | null;
+  integrationId?: string | null;
 }
 
 export interface TextResponseSubmissionEventCreateInput {

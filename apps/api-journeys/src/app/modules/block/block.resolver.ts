@@ -6,12 +6,12 @@ import { GraphQLError } from 'graphql'
 import { Block, Prisma } from '.prisma/api-journeys-client'
 import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 
-import { BlocksFilter } from '../../__generated__/graphql'
+import { BlockDuplicateIdMap, BlocksFilter } from '../../__generated__/graphql'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'
 
-import { BlockService } from './block.service'
+import { BlockService, BlockWithAction } from './block.service'
 
 @Resolver('Block')
 export class BlockResolver {
@@ -33,7 +33,7 @@ export class BlockResolver {
     @Args('parentOrder') parentOrder: number
   ): Promise<Block[]> {
     const block = await this.prismaService.block.findUnique({
-      where: { id },
+      where: { id, deletedAt: null },
       include: {
         action: true,
         journey: {
@@ -61,11 +61,12 @@ export class BlockResolver {
     @CaslAbility() ability: AppAbility,
     @Args('id') id: string,
     @Args('parentOrder') parentOrder?: number,
+    @Args('idMap') idMap?: BlockDuplicateIdMap[],
     @Args('x') x?: number,
     @Args('y') y?: number
   ): Promise<Block[]> {
     const block = await this.prismaService.block.findUnique({
-      where: { id },
+      where: { id, deletedAt: null },
       include: {
         action: true,
         journey: {
@@ -85,7 +86,13 @@ export class BlockResolver {
       throw new GraphQLError('user is not allowed to update block', {
         extensions: { code: 'FORBIDDEN' }
       })
-    return await this.blockService.duplicateBlock(block, parentOrder, x, y)
+    return await this.blockService.duplicateBlock(
+      block,
+      parentOrder,
+      idMap,
+      x,
+      y
+    )
   }
 
   @Mutation()
@@ -95,7 +102,7 @@ export class BlockResolver {
     @Args('id') id: string
   ): Promise<Block[]> {
     const block = await this.prismaService.block.findUnique({
-      where: { id },
+      where: { id, deletedAt: null },
       include: {
         action: true,
         journey: {
@@ -124,7 +131,7 @@ export class BlockResolver {
     @Args('id') id: string
   ): Promise<Block> {
     const block = await this.prismaService.block.findUnique({
-      where: { id },
+      where: { id, deletedAt: null },
       include: {
         action: true,
         journey: {
@@ -154,7 +161,9 @@ export class BlockResolver {
     @CaslAccessible('Block') accessibleBlocks: Prisma.BlockWhereInput,
     @Args('where') where?: BlocksFilter
   ): Promise<Block[]> {
-    const filter: Prisma.BlockWhereInput = {}
+    const filter: Prisma.BlockWhereInput = {
+      deletedAt: null
+    }
 
     if (where?.typenames != null) filter.typename = { in: where.typenames }
     if (where?.journeyIds != null) filter.journeyId = { in: where.journeyIds }
@@ -174,5 +183,70 @@ export class BlockResolver {
       }
     })
     return blocks
+  }
+
+  @Mutation()
+  @UseGuards(AppCaslGuard)
+  async blockRestore(
+    @Args('id') id: string,
+    @CaslAbility() ability: AppAbility
+  ): Promise<Block[]> {
+    const block = await this.prismaService.block.findUnique({
+      where: { id },
+      include: {
+        action: true,
+        journey: {
+          include: {
+            team: { include: { userTeams: true } },
+            userJourneys: true
+          }
+        }
+      }
+    })
+
+    if (block == null) {
+      throw new GraphQLError('block not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    }
+    if (!ability.can(Action.Update, subject('Journey', block.journey)))
+      throw new GraphQLError('user is not allowed to update block', {
+        extensions: { code: 'FORBIDDEN' }
+      })
+
+    return await this.prismaService.$transaction(async (tx) => {
+      const updatedBlock = await tx.block.update({
+        where: { id },
+        data: {
+          deletedAt: null
+        },
+        include: {
+          action: true
+        }
+      })
+      let siblings: BlockWithAction[] = [updatedBlock]
+      if (updatedBlock?.parentOrder != null)
+        siblings = await this.blockService.reorderBlock(
+          updatedBlock,
+          updatedBlock.parentOrder,
+          tx
+        )
+
+      const blocks = await tx.block.findMany({
+        where: {
+          journeyId: updatedBlock.journeyId,
+          deletedAt: null,
+          NOT: { id: updatedBlock.id }
+        },
+        include: { action: true }
+      })
+
+      const children: Block[] = await this.blockService.getDescendants(
+        updatedBlock.id,
+        blocks
+      )
+
+      return [...siblings, ...children]
+    })
   }
 }

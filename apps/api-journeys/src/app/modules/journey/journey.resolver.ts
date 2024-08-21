@@ -1,4 +1,5 @@
 import { subject } from '@casl/ability'
+import { InjectQueue } from '@nestjs/bullmq'
 import { UseGuards } from '@nestjs/common'
 import {
   Args,
@@ -8,6 +9,7 @@ import {
   ResolveField,
   Resolver
 } from '@nestjs/graphql'
+import { Queue } from 'bullmq'
 import { GraphQLError } from 'graphql'
 import filter from 'lodash/filter'
 import isEmpty from 'lodash/isEmpty'
@@ -50,12 +52,15 @@ import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'
 import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../../lib/prismaErrors'
 import { BlockService } from '../block/block.service'
+import { PlausibleJob } from '../plausible/plausible.consumer'
 
 type BlockWithAction = Block & { action: BlockAction | null }
 
 @Resolver('Journey')
 export class JourneyResolver {
   constructor(
+    @InjectQueue('api-journeys-plausible')
+    private readonly plausibleQueue: Queue<PlausibleJob>,
     private readonly blockService: BlockService,
     private readonly prismaService: PrismaService
   ) {}
@@ -372,6 +377,14 @@ export class JourneyResolver {
           return journey
         })
         retry = false
+        await this.plausibleQueue.add('create-journey-site', {
+          __typename: 'plausibleCreateJourneySite',
+          journeyId: journey.id
+        })
+        await this.plausibleQueue.add('create-team-site', {
+          __typename: 'plausibleCreateTeamSite',
+          teamId: journey.teamId
+        })
         return journey
       } catch (err) {
         if (err.code === ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED) {
@@ -410,7 +423,7 @@ export class JourneyResolver {
         const duplicate = modifier[1]?.trim() ?? ''
         const numbers = duplicate.match(/^\d+$/)
         // If no duplicate number found, it's a unique journey. Return 0
-        return numbers != null ? parseInt(numbers[0]) : 0
+        return numbers != null ? Number.parseInt(numbers[0]) : 0
       }
     })
   }
@@ -445,7 +458,7 @@ export class JourneyResolver {
     const duplicateJourneyId = uuidv4()
 
     const originalBlocks = await this.prismaService.block.findMany({
-      where: { journeyId: journey.id, typename: 'StepBlock' },
+      where: { journeyId: journey.id, typename: 'StepBlock', deletedAt: null },
       orderBy: { parentOrder: 'asc' },
       include: { action: true }
     })
@@ -458,6 +471,7 @@ export class JourneyResolver {
       id,
       null,
       duplicateStepIds,
+      undefined,
       duplicateJourneyId,
       duplicateStepIds
     )
@@ -622,6 +636,14 @@ export class JourneyResolver {
           })
         }
         retry = false
+        await this.plausibleQueue.add('create-journey-site', {
+          __typename: 'plausibleCreateJourneySite',
+          journeyId: duplicateJourneyId
+        })
+        await this.plausibleQueue.add('create-team-site', {
+          __typename: 'plausibleCreateTeamSite',
+          teamId
+        })
         return duplicateJourney
       } catch (err) {
         if (err.code === ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED) {
@@ -887,7 +909,8 @@ export class JourneyResolver {
   @FromPostgresql()
   async blocks(@Parent() journey: Journey): Promise<Block[]> {
     const filter: Prisma.BlockWhereInput = {
-      journeyId: journey.id
+      journeyId: journey.id,
+      deletedAt: null
     }
     const idNotIn: string[] = []
     if (journey.primaryImageBlockId != null) {
@@ -899,11 +922,13 @@ export class JourneyResolver {
     if (idNotIn.length > 0) {
       filter.id = { notIn: idNotIn }
     }
-    return await this.prismaService.block.findMany({
+    const res = await this.prismaService.block.findMany({
       where: filter,
       orderBy: { parentOrder: 'asc' },
       include: { action: true }
     })
+
+    return await this.blockService.removeDescendantsOfDeletedBlocks(res)
   }
 
   @ResolveField()
@@ -974,6 +999,17 @@ export class JourneyResolver {
     return filter(userJourneys, (userJourney) =>
       ability.can(Action.Read, subject('UserJourney', userJourney))
     )
+  }
+
+  @ResolveField('plausibleToken')
+  @UseGuards(AppCaslGuard)
+  async plausibleToken(
+    @CaslAbility() ability: AppAbility,
+    @Parent() journey: Journey
+  ): Promise<string | null> {
+    if (ability.cannot(Action.Manage, subject('Journey', journey))) return null
+
+    return journey.plausibleToken
   }
 
   @ResolveField('language')

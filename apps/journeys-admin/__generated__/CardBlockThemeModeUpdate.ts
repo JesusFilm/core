@@ -30,6 +30,5 @@ export interface CardBlockThemeModeUpdate {
 
 export interface CardBlockThemeModeUpdateVariables {
   id: string;
-  journeyId: string;
   input: CardBlockUpdateInput;
 }

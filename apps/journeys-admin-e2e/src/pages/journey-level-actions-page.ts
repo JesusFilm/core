@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { expect } from '@playwright/test'
 import dayjs from 'dayjs'
 import { Page } from 'playwright-core'
@@ -116,7 +117,7 @@ export class JourneyLevelActions {
 
   async verifyAccessAddedInManageEditors() {
     await expect(
-      this.page.locator('li[data-testid="UserListItem"] p', {
+      this.page.locator('div[data-testid="UserListItem"] p', {
         hasText: this.memberEmail
       })
     ).toBeVisible()
@@ -154,6 +155,7 @@ export class JourneyLevelActions {
     for (let slide = 1; slide < slidesCount; slide++) {
       await newPage
         .locator('button[data-testid="ConductorNavigationButtonNext"]')
+        // eslint-disable-next-line playwright/no-force-option
         .hover({ force: true })
       await newPage
         .locator('button[data-testid="ConductorNavigationButtonNext"]')
@@ -222,7 +224,7 @@ export class JourneyLevelActions {
 
   async verifyCopiedTeamNameUpdatedInTeamSelectDropdown() {
     await expect(this.page.locator('div[aria-haspopup="listbox"]')).toHaveText(
-      this.selectedTeam
+      this.selectedTeam as string
     )
   }
 
@@ -267,7 +269,7 @@ export class JourneyLevelActions {
     const selectedValue = await this.page
       .locator('input[placeholder="Search Language"]')
       .getAttribute('value', { timeout: thirtySecondsTimeout })
-    this.selectedLanguage = selectedValue == language ? 'Malayalam' : language
+    this.selectedLanguage = selectedValue === language ? 'Malayalam' : language
     await this.page.locator('input[placeholder="Search Language"]').click()
     await expect(this.page.locator('span[role="progressbar"]')).toBeHidden({
       timeout: thirtySecondsTimeout
@@ -327,10 +329,17 @@ export class JourneyLevelActions {
   }
 
   async clickHelpBtn() {
-    await expect(this.page.locator('button[aria-label="Help"]')).toBeEnabled({
+    await expect(
+      this.page
+        .getByTestId('side-header')
+        .getByTestId('HelpScoutBeaconIconButton')
+    ).toBeEnabled({
       timeout: thirtySecondsTimeout
     })
-    await this.page.locator('button[aria-label="Help"]').click()
+    await this.page
+      .getByTestId('side-header')
+      .getByTestId('HelpScoutBeaconIconButton')
+      .click()
   }
 
   async verifyHelpWindowOpened() {

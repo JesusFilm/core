@@ -7,6 +7,7 @@ import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { ComponentProps, MouseEvent, ReactElement, useState } from 'react'
 
+import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { CopyTextField } from '@core/shared/ui/CopyTextField'
 import { Dialog } from '@core/shared/ui/Dialog'
@@ -14,7 +15,6 @@ import Code1Icon from '@core/shared/ui/icons/Code1'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import ShareIcon from '@core/shared/ui/icons/Share'
 
-import { setBeaconPageViewed } from '../../../../../libs/setBeaconPageViewed'
 import { useCustomDomainsQuery } from '../../../../../libs/useCustomDomainsQuery'
 import { Item } from '../Item/Item'
 

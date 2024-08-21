@@ -6,11 +6,12 @@ import { Action, Block, Prisma } from '.prisma/api-journeys-client'
 import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
 import { ToPostgresql } from '@core/nest/decorators/ToPostgresql'
 
+import { BlockDuplicateIdMap } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 
 export const OMITTED_BLOCK_FIELDS = ['__typename', 'journeyId', 'isCover']
 
-type BlockWithAction = Block & { action: Action | null }
+export type BlockWithAction = Block & { action: Action | null }
 
 type PrismaTransation = Omit<
   PrismaService,
@@ -48,7 +49,8 @@ export class BlockService {
   async getSiblingsInternal(
     journeyId: string,
     parentBlockId?: string | null,
-    tx: PrismaTransation = this.prismaService
+    tx: PrismaTransation = this.prismaService,
+    where?: Prisma.BlockWhereInput
   ): Promise<BlockWithAction[]> {
     // Only StepBlocks should not have parentBlockId
     return parentBlockId != null
@@ -56,7 +58,9 @@ export class BlockService {
           where: {
             journeyId,
             parentBlockId,
-            parentOrder: { not: null }
+            parentOrder: { not: null },
+            deletedAt: null,
+            ...where
           },
           orderBy: { parentOrder: 'asc' },
           include: { action: true }
@@ -65,7 +69,9 @@ export class BlockService {
           where: {
             journeyId,
             typename: 'StepBlock',
-            parentOrder: { not: null }
+            parentOrder: { not: null },
+            deletedAt: null,
+            ...where
           },
           orderBy: { parentOrder: 'asc' },
           include: { action: true }
@@ -76,16 +82,12 @@ export class BlockService {
     siblings: BlockWithAction[],
     tx: PrismaTransation = this.prismaService
   ): Promise<BlockWithAction[]> {
-    const updatedSiblings = siblings.map((block, index) => ({
-      ...block,
-      parentOrder: index
-    }))
     return await Promise.all(
-      updatedSiblings.map(
-        async (block) =>
+      siblings.map(
+        async (block, parentOrder) =>
           await tx.block.update({
             where: { id: block.id },
-            data: { parentOrder: block.parentOrder },
+            data: { parentOrder },
             include: { action: true }
           })
       )
@@ -95,32 +97,37 @@ export class BlockService {
   @FromPostgresql()
   async reorderBlock(
     block: BlockWithAction,
-    parentOrder: number
+    parentOrder: number,
+    tx: PrismaTransation = this.prismaService
   ): Promise<BlockWithAction[]> {
-    if (block.parentOrder != null) {
-      const siblings = await this.getSiblingsInternal(
-        block.journeyId,
-        block.parentBlockId
-      )
-      siblings.splice(block.parentOrder, 1)
-      siblings.splice(parentOrder, 0, block)
+    if (block.parentOrder == null) return []
 
-      return await this.reorderSiblings(siblings)
-    }
-    return []
+    const siblings = await this.getSiblingsInternal(
+      block.journeyId,
+      block.parentBlockId,
+      tx,
+      { id: { not: block.id } }
+    )
+
+    siblings.splice(parentOrder, 0, block)
+    return await this.reorderSiblings(siblings, tx)
   }
 
   @FromPostgresql()
   async duplicateBlock(
     block: BlockWithAction,
     parentOrder?: number,
+    idMap?: BlockDuplicateIdMap[],
     x?: number,
     y?: number
   ): Promise<BlockWithAction[]> {
+    const duplicateBlockId = idMap?.find((map) => block.id === map.oldId)?.newId
     const blockAndChildrenData = await this.getDuplicateBlockAndChildren(
       block.id,
       block.journeyId,
-      block.parentBlockId ?? null
+      block.parentBlockId ?? null,
+      duplicateBlockId,
+      idMap
     )
     await this.saveAll(
       blockAndChildrenData.map((block) => ({
@@ -145,13 +152,16 @@ export class BlockService {
           newBlock.nextBlockId != null ||
           newBlock.action != null
         ) {
+          const isActionEmpty = Object.keys(newBlock.action ?? {}).length === 0
           const updateBlockData = {
             parentBlockId: newBlock.parentBlockId ?? undefined,
             posterBlockId: newBlock.posterBlockId ?? undefined,
             coverBlockId: newBlock.coverBlockId ?? undefined,
             nextBlockId: newBlock.nextBlockId ?? undefined,
             action:
-              newBlock.action != null ? { create: newBlock.action } : undefined
+              !isActionEmpty && newBlock.action != null
+                ? { create: newBlock.action }
+                : undefined
           }
           if (newBlock.typename === 'StepBlock') {
             return await this.prismaService.block.update({
@@ -200,6 +210,7 @@ export class BlockService {
     parentBlockId: string | null,
     // Use to custom set children blockIds
     duplicateIds: Map<string, string>,
+    idMap?: BlockDuplicateIdMap[],
     // Below 2 only used when duplicating journeys
     duplicateJourneyId?: string,
     duplicateStepIds?: Map<string, string>
@@ -211,6 +222,7 @@ export class BlockService {
           journeyId,
           parentBlockId,
           duplicateIds.get(block.id),
+          idMap,
           duplicateJourneyId,
           duplicateStepIds
         )
@@ -226,12 +238,13 @@ export class BlockService {
     journeyId: string,
     parentBlockId: string | null,
     duplicateId?: string,
+    idMap?: BlockDuplicateIdMap[],
     // Below 2 only used when duplicating journeys
     duplicateJourneyId?: string,
     duplicateStepIds?: Map<string, string>
   ): Promise<BlockWithAction[]> {
     const block = await this.prismaService.block.findUnique({
-      where: { id },
+      where: { id, deletedAt: null },
       include: { action: true }
     })
     if (block == null) {
@@ -241,13 +254,16 @@ export class BlockService {
     const duplicateBlockId = duplicateId ?? uuidv4()
 
     const children = await this.prismaService.block.findMany({
-      where: { parentBlockId: block.id, journeyId },
+      where: { parentBlockId: block.id, journeyId, deletedAt: null },
       include: { action: true },
       orderBy: { parentOrder: 'asc' }
     })
     const childIds = new Map<string, string>()
     children.forEach((block) => {
-      childIds.set(block.id, uuidv4())
+      const duplicatedChildId = idMap?.find(
+        (map) => map.oldId === block.id
+      )?.newId
+      childIds.set(block.id, duplicatedChildId ?? uuidv4())
     })
     const updatedBlockProps: Partial<BlockWithAction> = {}
     Object.keys(block).forEach((key) => {
@@ -289,6 +305,7 @@ export class BlockService {
       journeyId,
       duplicateBlockId,
       childIds,
+      idMap,
       duplicateJourneyId,
       duplicateStepIds
     )
@@ -296,13 +313,32 @@ export class BlockService {
     return [duplicateBlock as BlockWithAction, ...duplicateChildren]
   }
 
+  async removeDescendantsOfDeletedBlocks(
+    blocks: BlockWithAction[]
+  ): Promise<BlockWithAction[]> {
+    let filteredBlocks = blocks
+    let length = filteredBlocks.length
+    do {
+      length = filteredBlocks.length
+      const ids: string[] = filteredBlocks.map(({ id }) => id)
+
+      filteredBlocks = filteredBlocks.filter(
+        (block) =>
+          block.parentBlockId == null || ids.includes(block.parentBlockId)
+      )
+    } while (length !== filteredBlocks.length)
+
+    return filteredBlocks
+  }
+
   @FromPostgresql()
   async removeBlockAndChildren(
     block: Block,
     tx: PrismaTransation = this.prismaService
   ): Promise<BlockWithAction[]> {
-    await tx.block.delete({
-      where: { id: block.id }
+    await tx.block.update({
+      where: { id: block.id },
+      data: { deletedAt: new Date().toISOString() }
     })
 
     const result = await this.reorderSiblings(
@@ -321,7 +357,7 @@ export class BlockService {
     const block =
       id != null
         ? await this.prismaService.block.findUnique({
-            where: { id },
+            where: { id, deletedAt: null },
             include: { action: true }
           })
         : null
@@ -351,6 +387,21 @@ export class BlockService {
     )
   }
 
+  async getDescendants(
+    parentBlockId: string,
+    blocks: Block[],
+    result: Block[] = []
+  ): Promise<Block[]> {
+    for (const childBlock of blocks) {
+      if (childBlock.parentBlockId === parentBlockId) {
+        result.push(childBlock)
+        await this.getDescendants(childBlock.id, blocks, result)
+      }
+    }
+
+    return result
+  }
+
   @ToPostgresql()
   async update<T>(
     id: string,
@@ -373,7 +424,9 @@ export class BlockService {
       where: { id },
       data: omit(input, [
         ...OMITTED_BLOCK_FIELDS,
-        'action'
+        'action',
+        // deletedAt should only be updated using removeBlockAndChildren
+        'deletedAt'
       ]) as Prisma.BlockUpdateInput,
       include: { action: true }
     })) as unknown as T

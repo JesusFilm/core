@@ -3,14 +3,14 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName, IconSize, IconColor, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, MessagePlatform } from "./../../../../__generated__/globalTypes";
+import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, MessagePlatform } from "./../../../../__generated__/globalTypes";
 
 // ====================================================
 // GraphQL fragment: JourneyFields
 // ====================================================
 
 export interface JourneyFields_language_name {
-  __typename: "Translation";
+  __typename: "LanguageName";
   value: string;
   primary: boolean;
 }
@@ -247,29 +247,6 @@ export interface JourneyFields_blocks_StepBlock {
   nextBlockId: string | null;
 }
 
-export interface JourneyFields_blocks_TextResponseBlock_action_NavigateToBlockAction {
-  __typename: "NavigateToBlockAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  blockId: string;
-}
-
-export interface JourneyFields_blocks_TextResponseBlock_action_LinkAction {
-  __typename: "LinkAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  url: string;
-}
-
-export interface JourneyFields_blocks_TextResponseBlock_action_EmailAction {
-  __typename: "EmailAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  email: string;
-}
-
-export type JourneyFields_blocks_TextResponseBlock_action = JourneyFields_blocks_TextResponseBlock_action_NavigateToBlockAction | JourneyFields_blocks_TextResponseBlock_action_LinkAction | JourneyFields_blocks_TextResponseBlock_action_EmailAction;
-
 export interface JourneyFields_blocks_TextResponseBlock {
   __typename: "TextResponseBlock";
   id: string;
@@ -278,9 +255,9 @@ export interface JourneyFields_blocks_TextResponseBlock {
   label: string;
   hint: string | null;
   minRows: number | null;
-  submitLabel: string | null;
-  submitIconId: string | null;
-  action: JourneyFields_blocks_TextResponseBlock_action | null;
+  type: TextResponseType | null;
+  routeId: string | null;
+  integrationId: string | null;
 }
 
 export interface JourneyFields_blocks_TypographyBlock {
@@ -306,7 +283,7 @@ export interface JourneyFields_blocks_VideoBlock_video_variant {
 }
 
 export interface JourneyFields_blocks_VideoBlock_video_variantLanguages_name {
-  __typename: "Translation";
+  __typename: "LanguageName";
   value: string;
   primary: boolean;
 }

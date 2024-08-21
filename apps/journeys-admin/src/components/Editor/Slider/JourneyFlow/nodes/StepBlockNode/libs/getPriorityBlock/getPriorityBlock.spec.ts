@@ -3,6 +3,8 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import {
   BlockFields_ButtonBlock as ButtonBlock,
   BlockFields_CardBlock as CardBlock,
+  BlockFields_FormBlock as FormBlock,
+  BlockFields_IconBlock as IconBlock,
   BlockFields_ImageBlock as ImageBlock,
   BlockFields_RadioQuestionBlock as RadioQuestionBlock,
   BlockFields_SignUpBlock as SignUpBlock,
@@ -82,9 +84,9 @@ const textResponse: TreeBlock<TextResponseBlock> = {
   label: 'Your answer here',
   hint: null,
   minRows: null,
-  submitIconId: null,
-  submitLabel: null,
-  action: null,
+  integrationId: null,
+  type: null,
+  routeId: null,
   children: []
 }
 
@@ -141,11 +143,34 @@ const video: TreeBlock<VideoBlock> = {
   children: []
 }
 
+const icon = {
+  __typename: 'IconBlock',
+  id: 'icon0.id',
+  children: []
+} as unknown as TreeBlock<IconBlock>
+
+const form = {
+  __typename: 'FormBlock',
+  id: 'form0.id',
+  children: []
+} as unknown as TreeBlock<FormBlock>
+
+const blocks = [
+  video,
+  textResponse,
+  form,
+  button,
+  radioQuestion,
+  signUp,
+  typography,
+  image
+]
+
 describe('getPriorityBlock', () => {
   it('should return video block as priority', () => {
     const priorityBlock = getPriorityBlock({
       ...card,
-      children: [textResponse, button, radioQuestion, typography, image, video]
+      children: blocks
     })
     expect(priorityBlock).toEqual(video)
   })
@@ -153,15 +178,24 @@ describe('getPriorityBlock', () => {
   it('should return text response block as priority', () => {
     const priorityBlock = getPriorityBlock({
       ...card,
-      children: [textResponse, button, radioQuestion, typography, image, signUp]
+      children: blocks.slice(1)
     })
     expect(priorityBlock).toEqual(textResponse)
+  })
+
+  it('should return form block as priority', () => {
+    const priorityBlock = getPriorityBlock({
+      ...card,
+      children: blocks.slice(2)
+    })
+
+    expect(priorityBlock).toEqual(form)
   })
 
   it('should return button block as priority', () => {
     const priorityBlock = getPriorityBlock({
       ...card,
-      children: [radioQuestion, typography, image, signUp, button]
+      children: blocks.slice(3)
     })
     expect(priorityBlock).toEqual(button)
   })
@@ -169,24 +203,33 @@ describe('getPriorityBlock', () => {
   it('should return radio question block as priority', () => {
     const priorityBlock = getPriorityBlock({
       ...card,
-      children: [typography, image, signUp, radioQuestion]
+      children: blocks.slice(4)
     })
     expect(priorityBlock).toEqual(radioQuestion)
+  })
+
+  it('should return signup block as priority', () => {
+    const priorityBlock = getPriorityBlock({
+      ...card,
+      children: blocks.slice(5)
+    })
+    expect(priorityBlock).toEqual(signUp)
   })
 
   it('should return typography block as priority', () => {
     const priorityBlock = getPriorityBlock({
       ...card,
-      children: [typography, image, signUp]
+      children: blocks.slice(6)
     })
     expect(priorityBlock).toEqual(typography)
   })
 
-  it('should return any other block block as priority', () => {
+  it('should return default block', () => {
     const priorityBlock = getPriorityBlock({
       ...card,
-      children: [image, signUp]
+      children: [icon]
     })
-    expect(priorityBlock).toEqual(image)
+
+    expect(priorityBlock).toEqual(icon)
   })
 })

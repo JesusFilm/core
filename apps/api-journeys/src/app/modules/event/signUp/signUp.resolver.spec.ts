@@ -32,7 +32,8 @@ describe('SignUpEventResolver', () => {
           default:
             return newVisitorResponse
         }
-      })
+      }),
+      sendEventsEmail: jest.fn()
     })
   }
 

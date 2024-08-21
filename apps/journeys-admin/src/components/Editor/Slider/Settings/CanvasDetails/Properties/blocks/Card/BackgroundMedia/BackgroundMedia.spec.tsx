@@ -1,9 +1,11 @@
-import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { InMemoryCache } from '@apollo/client'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { CommandProvider } from '@core/journeys/ui/CommandProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
@@ -13,14 +15,21 @@ import {
   BlockFields_StepBlock as StepBlock,
   BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../../../../__generated__/BlockFields'
-import { GetJourney_journey as Journey } from '../../../../../../../../../../__generated__/GetJourney'
 import {
-  JourneyStatus,
-  ThemeMode,
-  ThemeName,
-  VideoBlockSource
-} from '../../../../../../../../../../__generated__/globalTypes'
+  CoverBlockDelete,
+  CoverBlockDeleteVariables
+} from '../../../../../../../../../../__generated__/CoverBlockDelete'
+import {
+  CoverBlockRestore,
+  CoverBlockRestoreVariables
+} from '../../../../../../../../../../__generated__/CoverBlockRestore'
+import { GetJourney_journey as Journey } from '../../../../../../../../../../__generated__/GetJourney'
+import { VideoBlockSource } from '../../../../../../../../../../__generated__/globalTypes'
+import { COVER_BLOCK_DELETE } from '../../../../../../../../../libs/useCoverBlockDeleteMutation/useCoverBlockDeleteMutation'
+import { COVER_BLOCK_RESTORE } from '../../../../../../../../../libs/useCoverBlockRestoreMutation/useCoverBlockRestoreMutation'
 import { ThemeProvider } from '../../../../../../../../ThemeProvider'
+import { CommandRedoItem } from '../../../../../../../Toolbar/Items/CommandRedoItem'
+import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 
 import { BackgroundMedia } from './BackgroundMedia'
 
@@ -31,66 +40,192 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 jest.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
+  useRouter: jest.fn(() => ({
+    query: { tab: 'active' },
+    push: jest.fn(),
+    events: {
+      on: jest.fn()
+    }
+  }))
 }))
 
 const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
-const journey: Journey = {
-  __typename: 'Journey',
-  id: 'journeyId',
-  themeName: ThemeName.base,
-  themeMode: ThemeMode.light,
-  strategySlug: null,
-  featuredAt: null,
-  title: 'my journey',
-  slug: 'my-journey',
-  language: {
-    __typename: 'Language',
-    id: '529',
-    bcp47: 'en',
-    iso3: 'eng',
-    name: [
+const journey = { id: 'journeyId' } as unknown as Journey
+
+const card: TreeBlock<CardBlock> = {
+  id: 'card1.id',
+  __typename: 'CardBlock',
+  parentBlockId: 'step1.id',
+  parentOrder: 0,
+  coverBlockId: null,
+  backgroundColor: null,
+  themeMode: null,
+  themeName: null,
+  fullscreen: false,
+  children: []
+}
+const video: TreeBlock<VideoBlock> = {
+  id: 'video1.id',
+  __typename: 'VideoBlock',
+  parentBlockId: 'card1.id',
+  parentOrder: 0,
+  startAt: 0,
+  endAt: null,
+  muted: false,
+  autoplay: true,
+  fullsize: false,
+  action: null,
+  videoId: '2_0-FallingPlates',
+  videoVariantLanguageId: '529',
+  source: VideoBlockSource.internal,
+  title: null,
+  description: null,
+  duration: null,
+  image: null,
+  objectFit: null,
+  video: {
+    __typename: 'Video',
+    id: '2_0-FallingPlates',
+    title: [
       {
         __typename: 'Translation',
-        value: 'English',
-        primary: true
+        value: 'FallingPlates'
       }
-    ]
+    ],
+    image:
+      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
+    variant: {
+      __typename: 'VideoVariant',
+      id: '2_0-FallingPlates-529',
+      hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
+    },
+    variantLanguages: []
   },
-  description: 'my cool journey',
-  status: JourneyStatus.draft,
-  createdAt: '2021-11-19T12:34:56.647Z',
-  publishedAt: null,
-  blocks: [] as TreeBlock[],
-  primaryImageBlock: null,
-  creatorDescription: null,
-  creatorImageBlock: null,
-  userJourneys: [],
-  template: null,
-  seoTitle: null,
-  seoDescription: null,
-  chatButtons: [],
-  host: null,
-  team: null,
-  tags: []
+  posterBlockId: 'poster1.id',
+  children: []
+}
+
+const image: TreeBlock<ImageBlock> = {
+  id: 'image1.id',
+  __typename: 'ImageBlock',
+  parentBlockId: '3',
+  parentOrder: 0,
+  src: 'https://source.unsplash.com/random/1920x1080',
+  alt: 'random image from unsplash',
+  width: 1920,
+  height: 1080,
+  blurhash: '',
+  children: []
+}
+
+const coverVideoBlockDeleteMock: MockedResponse<
+  CoverBlockDelete,
+  CoverBlockDeleteVariables
+> = {
+  request: {
+    query: COVER_BLOCK_DELETE,
+    variables: {
+      id: video.id,
+      cardBlockId: card.id
+    }
+  },
+  result: {
+    data: {
+      blockDelete: [
+        {
+          id: video.id,
+          __typename: 'VideoBlock',
+          parentOrder: null
+        }
+      ],
+      cardBlockUpdate: {
+        id: card.id,
+        coverBlockId: null,
+        __typename: 'CardBlock'
+      }
+    }
+  }
+}
+
+const coverVideoBlockRestoreMock: MockedResponse<
+  CoverBlockRestore,
+  CoverBlockRestoreVariables
+> = {
+  request: {
+    query: COVER_BLOCK_RESTORE,
+    variables: {
+      id: video.id,
+      cardBlockId: card.id
+    }
+  },
+  result: {
+    data: {
+      blockRestore: [video],
+      cardBlockUpdate: {
+        id: card.id,
+        coverBlockId: video.id,
+        __typename: 'CardBlock'
+      }
+    }
+  }
+}
+
+const coverImageBlockDeleteMock: MockedResponse<
+  CoverBlockDelete,
+  CoverBlockDeleteVariables
+> = {
+  request: {
+    query: COVER_BLOCK_DELETE,
+    variables: {
+      id: image.id,
+      cardBlockId: card.id
+    }
+  },
+  result: {
+    data: {
+      blockDelete: [
+        {
+          id: image.id,
+          __typename: 'ImageBlock',
+          parentOrder: null
+        }
+      ],
+      cardBlockUpdate: {
+        id: card.id,
+        coverBlockId: null,
+        __typename: 'CardBlock'
+      }
+    }
+  }
+}
+
+const coverImageBlockRestoreMock: MockedResponse<
+  CoverBlockRestore,
+  CoverBlockRestoreVariables
+> = {
+  request: {
+    query: COVER_BLOCK_RESTORE,
+    variables: {
+      id: image.id,
+      cardBlockId: card.id
+    }
+  },
+  result: {
+    data: {
+      blockRestore: [image],
+      cardBlockUpdate: {
+        id: card.id,
+        coverBlockId: image.id,
+        __typename: 'CardBlock'
+      }
+    }
+  }
 }
 
 describe('BackgroundMedia', () => {
   it('shows Video selected on null cover', () => {
-    const card: TreeBlock<CardBlock> = {
-      id: 'card1.id',
-      __typename: 'CardBlock',
-      parentBlockId: 'step1.id',
-      parentOrder: 0,
-      coverBlockId: null,
-      backgroundColor: null,
-      themeMode: null,
-      themeName: null,
-      fullscreen: false,
-      children: []
-    }
-    const { getByTestId } = render(
+    render(
       <MockedProvider>
         <ThemeProvider>
           <JourneyProvider value={{ journey, variant: 'admin' }}>
@@ -104,70 +239,51 @@ describe('BackgroundMedia', () => {
       </MockedProvider>
     )
     expect(
-      getByTestId('bgvideo-video-tab').attributes.getNamedItem('aria-pressed')
+      screen
+        .getByTestId('bgvideo-video-tab')
+        .attributes.getNamedItem('aria-pressed')
     ).toBeTruthy()
+    fireEvent.click(screen.getByTestId('bgvideo-video-tab'))
   })
 
-  it('shows Video selected', () => {
-    const videoBlock: TreeBlock<VideoBlock> = {
-      id: 'video1.id',
-      __typename: 'VideoBlock',
-      parentBlockId: 'card1.id',
-      parentOrder: 0,
-      startAt: 0,
-      endAt: null,
-      muted: false,
-      autoplay: true,
-      fullsize: false,
-      action: null,
-      videoId: '2_0-FallingPlates',
-      videoVariantLanguageId: '529',
-      source: VideoBlockSource.internal,
-      title: null,
-      description: null,
-      duration: null,
-      image: null,
-      objectFit: null,
-      video: {
-        __typename: 'Video',
-        id: '2_0-FallingPlates',
-        title: [
-          {
-            __typename: 'Translation',
-            value: 'FallingPlates'
-          }
+  it('shows Video selected', async () => {
+    const cache = new InMemoryCache()
+    cache.restore({
+      'Journey:journeyId': {
+        blocks: [
+          { __ref: `CardBlock:${card.id}` },
+          { __ref: `VideoBlock:${video.id}` }
         ],
-        image:
-          'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
-        variant: {
-          __typename: 'VideoVariant',
-          id: '2_0-FallingPlates-529',
-          hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-        },
-        variantLanguages: []
-      },
-      posterBlockId: 'poster1.id',
-      children: []
-    }
-    const card: TreeBlock<CardBlock> = {
-      id: 'card1.id',
-      __typename: 'CardBlock',
-      parentBlockId: 'step1.id',
-      parentOrder: 0,
-      coverBlockId: null,
-      backgroundColor: null,
-      themeMode: null,
-      themeName: null,
-      fullscreen: false,
-      children: [videoBlock]
-    }
-    const { getByTestId } = render(
-      <MockedProvider>
+        id: 'journeyId',
+        __typename: 'Journey'
+      }
+    })
+    render(
+      <MockedProvider
+        cache={cache}
+        mocks={[
+          coverVideoBlockDeleteMock,
+          coverVideoBlockRestoreMock,
+          coverVideoBlockDeleteMock
+        ]}
+      >
         <ThemeProvider>
           <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <EditorProvider initialState={{ selectedBlock: card }}>
+            <EditorProvider
+              initialState={{
+                selectedBlock: {
+                  ...card,
+                  coverBlockId: video.id,
+                  children: [video]
+                }
+              }}
+            >
               <SnackbarProvider>
-                <BackgroundMedia />
+                <CommandProvider>
+                  <BackgroundMedia />
+                  <CommandUndoItem variant="button" />
+                  <CommandRedoItem variant="button" />
+                </CommandProvider>
               </SnackbarProvider>
             </EditorProvider>
           </JourneyProvider>
@@ -175,35 +291,43 @@ describe('BackgroundMedia', () => {
       </MockedProvider>
     )
     expect(
-      getByTestId('bgvideo-video-tab').attributes.getNamedItem('aria-pressed')
+      screen
+        .getByTestId('bgvideo-video-tab')
+        .attributes.getNamedItem('aria-pressed')
     ).toBeTruthy()
+    fireEvent.click(screen.getByTestId('bgvideo-image-tab'))
+    await waitFor(() =>
+      expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
+        { __ref: `CardBlock:${card.id}` }
+      ])
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() =>
+      expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
+        { __ref: `CardBlock:${card.id}` },
+        { __ref: `VideoBlock:${video.id}` }
+      ])
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+    await waitFor(() =>
+      expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
+        { __ref: `CardBlock:${card.id}` }
+      ])
+    )
   })
 
-  it('shows Image selected', () => {
-    const image: TreeBlock<ImageBlock> = {
-      id: 'image1.id',
-      __typename: 'ImageBlock',
-      parentBlockId: '3',
-      parentOrder: 0,
-      src: 'https://source.unsplash.com/random/1920x1080',
-      alt: 'random image from unsplash',
-      width: 1920,
-      height: 1080,
-      blurhash: '',
-      children: []
-    }
-    const card: TreeBlock<CardBlock> = {
-      id: 'card1.id',
-      __typename: 'CardBlock',
-      parentBlockId: 'step1.id',
-      parentOrder: 0,
-      coverBlockId: null,
-      backgroundColor: null,
-      themeMode: ThemeMode.dark,
-      themeName: null,
-      fullscreen: true,
-      children: [image]
-    }
+  it('shows Image selected', async () => {
+    const cache = new InMemoryCache()
+    cache.restore({
+      'Journey:journeyId': {
+        blocks: [
+          { __ref: `CardBlock:${card.id}` },
+          { __ref: `ImageBlock:${image.id}` }
+        ],
+        id: 'journeyId',
+        __typename: 'Journey'
+      }
+    })
     const step: TreeBlock<StepBlock> = {
       id: 'step1.id',
       __typename: 'StepBlock',
@@ -211,15 +335,26 @@ describe('BackgroundMedia', () => {
       locked: false,
       nextBlockId: null,
       parentOrder: 0,
-      children: [card]
+      children: [{ ...card, coverBlockId: image.id, children: [image] }]
     }
-    const { getByTestId } = render(
-      <MockedProvider>
+    render(
+      <MockedProvider
+        cache={cache}
+        mocks={[
+          coverImageBlockDeleteMock,
+          coverImageBlockRestoreMock,
+          coverImageBlockDeleteMock
+        ]}
+      >
         <ThemeProvider>
           <JourneyProvider value={{ journey, variant: 'admin' }}>
             <EditorProvider initialState={{ selectedBlock: step }}>
               <SnackbarProvider>
-                <BackgroundMedia />
+                <CommandProvider>
+                  <BackgroundMedia />
+                  <CommandUndoItem variant="button" />
+                  <CommandRedoItem variant="button" />
+                </CommandProvider>
               </SnackbarProvider>
             </EditorProvider>
           </JourneyProvider>
@@ -227,8 +362,29 @@ describe('BackgroundMedia', () => {
       </MockedProvider>
     )
     expect(
-      getByTestId('bgvideo-image-tab').attributes.getNamedItem('aria-pressed')
+      screen
+        .getByTestId('bgvideo-image-tab')
+        .attributes.getNamedItem('aria-pressed')
     ).toBeTruthy()
+    fireEvent.click(screen.getByTestId('bgvideo-video-tab'))
+    await waitFor(() =>
+      expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
+        { __ref: `CardBlock:${card.id}` }
+      ])
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() =>
+      expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
+        { __ref: `CardBlock:${card.id}` },
+        { __ref: `ImageBlock:${image.id}` }
+      ])
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+    await waitFor(() =>
+      expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
+        { __ref: `CardBlock:${card.id}` }
+      ])
+    )
   })
 
   it('updates the url parameters', async () => {
@@ -243,11 +399,11 @@ describe('BackgroundMedia', () => {
       }
     } as unknown as NextRouter)
 
-    const { getByTestId } = render(
+    render(
       <MockedProvider>
         <ThemeProvider>
           <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <EditorProvider initialState={{ selectedBlock: undefined }}>
+            <EditorProvider initialState={{ selectedBlock: card }}>
               <SnackbarProvider>
                 <BackgroundMedia />
               </SnackbarProvider>
@@ -257,10 +413,11 @@ describe('BackgroundMedia', () => {
       </MockedProvider>
     )
     expect(
-      getByTestId('bgvideo-video-tab').attributes.getNamedItem('aria-pressed')
+      screen
+        .getByTestId('bgvideo-video-tab')
+        .attributes.getNamedItem('aria-pressed')
     ).toBeTruthy()
-
-    fireEvent.click(getByTestId('bgvideo-image-tab'))
+    fireEvent.click(screen.getByTestId('bgvideo-image-tab'))
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
         {
@@ -270,8 +427,7 @@ describe('BackgroundMedia', () => {
         { shallow: true }
       )
     })
-
-    fireEvent.click(getByTestId('bgvideo-video-tab'))
+    fireEvent.click(screen.getByTestId('bgvideo-video-tab'))
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
         {

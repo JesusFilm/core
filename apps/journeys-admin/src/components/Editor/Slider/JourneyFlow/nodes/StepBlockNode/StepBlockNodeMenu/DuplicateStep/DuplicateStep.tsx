@@ -1,21 +1,30 @@
-import { gql, useMutation } from '@apollo/client'
-import last from 'lodash/last'
+import { Reference, gql, useMutation } from '@apollo/client'
+import omit from 'lodash/omit'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
+import { v4 as uuidv4 } from 'uuid'
 
 import { TreeBlock } from '@core/journeys/ui/block'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { BLOCK_FIELDS } from '@core/journeys/ui/block/blockFields'
+import {
+  ActiveContent,
+  ActiveSlide,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { transformer } from '@core/journeys/ui/transformer'
 import CopyLeftIcon from '@core/shared/ui/icons/CopyLeft'
 
+import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../../__generated__/BlockFields'
+import { BlockDuplicateIdMap } from '../../../../../../../../../__generated__/globalTypes'
 import {
-  BlockFields,
-  BlockFields_StepBlock as StepBlock
-} from '../../../../../../../../../__generated__/BlockFields'
-import { StepDuplicate } from '../../../../../../../../../__generated__/StepDuplicate'
+  StepDuplicate_blockDuplicate as StepBlockChildren,
+  StepDuplicate_blockDuplicate_StepBlock as StepBlockWitPos,
+  StepDuplicate,
+  StepDuplicateVariables
+} from '../../../../../../../../../__generated__/StepDuplicate'
 import { MenuItem } from '../../../../../../../MenuItem'
+import { useBlockDuplicateCommand } from '../../../../../../utils/useBlockDuplicateCommand'
 import { STEP_NODE_DUPLICATE_OFFSET } from '../../libs/sizes'
 
 interface DuplicateStepProps {
@@ -27,10 +36,12 @@ interface DuplicateStepProps {
 }
 
 export const STEP_DUPLICATE = gql`
+  ${BLOCK_FIELDS}
   mutation StepDuplicate(
     $id: ID!
     $journeyId: ID!
     $parentOrder: Int
+    $idMap: [BlockDuplicateIdMap!]
     $x: Int
     $y: Int
   ) {
@@ -38,10 +49,17 @@ export const STEP_DUPLICATE = gql`
       id: $id
       journeyId: $journeyId
       parentOrder: $parentOrder
+      idMap: $idMap
       x: $x
       y: $y
     ) {
       id
+      ...BlockFields
+      ... on StepBlock {
+        id
+        x
+        y
+      }
     }
   }
 `
@@ -54,84 +72,136 @@ export function DuplicateStep({
   disabled
 }: DuplicateStepProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { dispatch } = useEditor()
-  const [stepDuplicate] = useMutation<StepDuplicate>(STEP_DUPLICATE)
+  const {
+    dispatch,
+    state: { steps }
+  } = useEditor()
+  const [stepDuplicate] = useMutation<StepDuplicate, StepDuplicateVariables>(
+    STEP_DUPLICATE
+  )
   const { enqueueSnackbar } = useSnackbar()
+
+  function flatten(children: TreeBlock[]): TreeBlock[] {
+    return children?.reduce<TreeBlock[]>((result, item) => {
+      result.push(item)
+      result.push(...flatten(item.children))
+      return result
+    }, [])
+  }
+
   const { journey } = useJourney()
+  const { addBlockDuplicate } = useBlockDuplicateCommand()
 
-  async function handleDuplicateStep(): Promise<void> {
+  function handleDuplicateStep(): void {
     if (journey == null || step == null) return
-    const { data } = await stepDuplicate({
-      variables: {
-        id: step.id,
-        journeyId: journey.id,
-        parentOrder: null,
-        x: xPos != null ? xPos + STEP_NODE_DUPLICATE_OFFSET : null,
-        y: yPos != null ? yPos + STEP_NODE_DUPLICATE_OFFSET : null
-      },
-      update(cache, { data }) {
-        if (data?.blockDuplicate != null) {
-          const lastStep = last(
-            data.blockDuplicate.filter(
-              (block) => block.__typename === 'StepBlock'
-            )
-          )
+    const stepBlock: StepBlockWitPos = {
+      ...omit(step, 'children'),
+      id: uuidv4(),
+      nextBlockId: null,
+      parentOrder: steps?.length ?? 0,
+      x: xPos != null ? xPos + STEP_NODE_DUPLICATE_OFFSET : null,
+      y: yPos != null ? yPos : null
+    }
 
-          cache.modify({
-            id: cache.identify({ __typename: 'Journey', id: journey.id }),
-            fields: {
-              blocks(existingBlockRefs = []) {
-                const duplicatedBlockRef = cache.writeFragment({
-                  data: lastStep,
-                  fragment: gql`
-                    fragment DuplicatedBlock on Block {
-                      id
-                    }
-                  `
-                })
-                return [...existingBlockRefs, duplicatedBlockRef]
-              }
-            }
-          })
-
-          cache.modify({
-            fields: {
-              blocks(existingBlockRefs = []) {
-                const newStepBlockRef = cache.writeFragment({
-                  data: lastStep,
-                  fragment: gql`
-                    fragment NewBlock on Block {
-                      id
-                    }
-                  `
-                })
-                return [...existingBlockRefs, newStepBlockRef]
-              }
-            }
-          })
-        }
+    const idMap: BlockDuplicateIdMap[] = [
+      { oldId: step.id, newId: stepBlock.id }
+    ]
+    const stepSiblings = flatten(step.children)?.map((block) => {
+      const id = uuidv4()
+      idMap.push({ oldId: block.id, newId: id })
+      return {
+        ...block,
+        parentBlockId: idMap.find((map) => map.oldId === block.parentBlockId)
+          ?.newId,
+        id
       }
     })
 
-    if (data?.blockDuplicate != null) {
-      const stepBlocks = transformer(
-        data.blockDuplicate as BlockFields[]
-      ) as Array<TreeBlock<StepBlock>>
-      const steps = stepBlocks.filter(
-        (block) => block.__typename === 'StepBlock'
-      )
-      const duplicatedStep = last(steps)
-
-      dispatch({
-        type: 'SetSelectedStepAction',
-        selectedStep: duplicatedStep
-      })
-      enqueueSnackbar(t('Card Duplicated'), {
-        variant: 'success',
-        preventDuplicate: true
-      })
-      handleClick?.()
-    }
+    addBlockDuplicate({
+      block: stepBlock,
+      execute() {
+        dispatch({
+          type: 'SetEditorFocusAction',
+          selectedStepId: stepBlock.id,
+          selectedBlockId: stepBlock.id,
+          activeSlide: ActiveSlide.JourneyFlow,
+          activeContent: ActiveContent.Canvas
+        })
+        void stepDuplicate({
+          variables: {
+            id: step.id,
+            journeyId: journey.id,
+            parentOrder: stepBlock.parentOrder,
+            idMap,
+            x: stepBlock.x,
+            y: stepBlock.y
+          },
+          optimisticResponse: {
+            blockDuplicate: [
+              stepBlock,
+              ...(stepSiblings as StepBlockChildren[])
+            ]
+          },
+          update(cache, { data }) {
+            if (data?.blockDuplicate == null) return
+            data.blockDuplicate.forEach((block) => {
+              cache.modify({
+                id: cache.identify({ __typename: 'Journey', id: journey.id }),
+                fields: {
+                  blocks(existingBlockRefs: Reference[], { readField }) {
+                    const duplicatedBlockRef = cache.writeFragment({
+                      data: block,
+                      fragment: gql`
+                        fragment DuplicatedBlock on Block {
+                          id
+                        }
+                      `
+                    })
+                    if (
+                      existingBlockRefs?.some(
+                        (ref) => readField('id', ref) === block.id
+                      )
+                    ) {
+                      return existingBlockRefs ?? []
+                    }
+                    return [...existingBlockRefs, duplicatedBlockRef]
+                  }
+                }
+              })
+              cache.modify({
+                fields: {
+                  blocks(existingBlockRefs: Reference[], { readField }) {
+                    const newStepBlockRef = cache.writeFragment({
+                      data: block,
+                      fragment: gql`
+                        fragment NewBlock on Block {
+                          id
+                        }
+                      `
+                    })
+                    if (
+                      existingBlockRefs?.some(
+                        (ref) => readField('id', ref) === block.id
+                      )
+                    ) {
+                      return existingBlockRefs ?? []
+                    }
+                    return [...existingBlockRefs, newStepBlockRef]
+                  }
+                }
+              })
+            })
+          },
+          onCompleted: () => {
+            enqueueSnackbar(t('Card Duplicated'), {
+              variant: 'success',
+              preventDuplicate: true
+            })
+          }
+        })
+        handleClick?.()
+      }
+    })
   }
 
   return (

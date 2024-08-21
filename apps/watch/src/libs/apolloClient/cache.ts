@@ -9,7 +9,26 @@ export const cache = (): InMemoryCache =>
      these relationships, we need to pass a possibleTypes option when
      initializing InMemoryCache.
    */
-    possibleTypes: {},
+    possibleTypes: {
+      Action: ['NavigateToBlockAction', 'LinkAction', 'EmailAction'],
+      Block: [
+        'ButtonBlock',
+        'CardBlock',
+        'FormBlock',
+        'GridContainerBlock',
+        'GridItemBlock',
+        'IconBlock',
+        'ImageBlock',
+        'RadioQuestionBlock',
+        'RadioOptionBlock',
+        'SignUpBlock',
+        'StepBlock',
+        'TextResponseBlock',
+        'TypographyBlock',
+        'VideoBlock',
+        'VideoTriggerBlock'
+      ]
+    },
     typePolicies: {
       Query: {
         fields: {

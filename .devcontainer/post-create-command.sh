@@ -27,21 +27,13 @@ npm install -g apollo graphql
 # install all dependencies
 npm i
 
-# install github action runner
-curl https://raw.githubusercontent.com/nektos/act/master/install.sh | sudo bash
-sudo mv bin/act /usr/bin/
-rm -rf bin
-
 # install router to api gateways
 # when updating router version you'll need to:
 # - update .devcontainer/post-create-command.sh apollo router version (...nix/vX.X.X)
 # - update app/api-gateway/Dockerfile image version (...router/vX.X.X)
 # - inform all developers to rebuild their containers
-curl -sSL https://router.apollo.dev/download/nix/v1.43.1 | sh
+curl -sSL https://router.apollo.dev/download/nix/v1.51.0 | sh
 mv router apps/api-gateway/
 
-# install doppler
-sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl gnupg
-curl -sLf --retry 3 --tlsv1.2 --proto "=https" 'https://packages.doppler.com/public/cli/gpg.DE2A7741A397C129.key' | sudo apt-key add -
-echo "deb https://packages.doppler.com/public/cli/deb/debian any-version main" | sudo tee /etc/apt/sources.list.d/doppler-cli.list
-sudo apt-get update && sudo apt-get install doppler
+# update plausible db
+psql -U postgres -h db -d plausible_db < .devcontainer/plausible.sql

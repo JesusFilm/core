@@ -74,7 +74,7 @@ export function VideoHeading({
             >
               <Stack direction="row" alignItems="center" spacing={2}>
                 <NextLink
-                  href={`/${container.variant?.slug as string}`}
+                  href={`/watch/${container.variant?.slug as string}`}
                   passHref
                   legacyBehavior
                 >
@@ -111,7 +111,7 @@ export function VideoHeading({
                 </Typography>
               </Stack>
               <NextLink
-                href={`/${container.variant?.slug as string}`}
+                href={`/watch/${container.variant?.slug as string}`}
                 passHref
                 legacyBehavior
               >

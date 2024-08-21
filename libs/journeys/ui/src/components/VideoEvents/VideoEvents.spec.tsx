@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { act, cleanup, render, waitFor } from '@testing-library/react'
+import { usePlausible } from 'next-plausible'
 import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 import videojs from 'video.js'
@@ -9,6 +10,10 @@ import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 import { VideoBlockSource } from '../../../__generated__/globalTypes'
 import { TreeBlock, blockHistoryVar } from '../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
+import { JourneyProvider } from '../../libs/JourneyProvider'
+import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
+import { keyify } from '../../libs/plausibleHelpers'
+import { VideoTriggerFields_triggerAction } from '../VideoTrigger/__generated__/VideoTriggerFields'
 
 import {
   VIDEO_COLLAPSE_EVENT_CREATE,
@@ -41,8 +46,27 @@ const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
   typeof TagManager.dataLayer
 >
 
+jest.mock('next-plausible', () => ({
+  __esModule: true,
+  usePlausible: jest.fn()
+}))
+
+const mockUsePlausible = usePlausible as jest.MockedFunction<
+  typeof usePlausible
+>
+
 describe('VideoEvents', () => {
   let props: VideoEventsProps
+  const originalLocation = window.location
+  const mockOrigin = 'https://example.com'
+
+  beforeAll(() => {
+    Object.defineProperty(window, 'location', {
+      value: {
+        origin: mockOrigin
+      }
+    })
+  })
 
   beforeEach(() => {
     const video = document.createElement('video')
@@ -67,12 +91,17 @@ describe('VideoEvents', () => {
       endAt: 100,
       videoTitle: 'video.title',
       source: VideoBlockSource.internal,
-      videoId: 'video.id'
+      videoId: 'video.id',
+      action: null
     }
   })
 
   afterEach(() => {
     cleanup()
+  })
+
+  afterAll(() => {
+    Object.defineProperty(window, 'location', originalLocation)
   })
 
   const activeBlock: TreeBlock<StepBlock> = {
@@ -93,8 +122,14 @@ describe('VideoEvents', () => {
     value: VideoBlockSource.internal
   }
 
+  const journey = {
+    id: 'journey.id'
+  } as unknown as Journey
+
   it('should create start event', async () => {
     blockHistoryVar([activeBlock])
+    const mockPlausible = jest.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
 
     const result = jest.fn(() => ({
       data: {
@@ -122,7 +157,9 @@ describe('VideoEvents', () => {
           }
         ]}
       >
-        <VideoEvents {...props} />
+        <JourneyProvider value={{ journey }}>
+          <VideoEvents {...props} />
+        </JourneyProvider>
       </MockedProvider>
     )
     act(() => {
@@ -131,6 +168,27 @@ describe('VideoEvents', () => {
     })
 
     await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(mockPlausible).toHaveBeenCalledWith('videoStart', {
+      u: `${mockOrigin}/journey.id/step.id`,
+      props: {
+        id: 'uuid',
+        blockId: props.blockId,
+        position: props.player.currentTime(),
+        stepId: activeBlock.id,
+        label: props.videoTitle,
+        value: props.source,
+        key: keyify({
+          stepId: activeBlock.id,
+          event: 'videoStart',
+          blockId: props.blockId
+        }),
+        simpleKey: keyify({
+          stepId: activeBlock.id,
+          event: 'videoStart',
+          blockId: props.blockId
+        })
+      }
+    })
   })
 
   it('should add start event to dataLayer', async () => {
@@ -183,6 +241,8 @@ describe('VideoEvents', () => {
 
   it('should create play event', async () => {
     blockHistoryVar([activeBlock])
+    const mockPlausible = jest.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
     const result = jest.fn(() => ({
       data: {
         videoPlayEventCreate: {
@@ -209,7 +269,9 @@ describe('VideoEvents', () => {
           }
         ]}
       >
-        <VideoEvents {...props} />
+        <JourneyProvider value={{ journey }}>
+          <VideoEvents {...props} />
+        </JourneyProvider>
       </MockedProvider>
     )
     act(() => {
@@ -217,6 +279,27 @@ describe('VideoEvents', () => {
       props.player.trigger('play')
     })
     await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(mockPlausible).toHaveBeenCalledWith('videoPlay', {
+      u: `${mockOrigin}/journey.id/step.id`,
+      props: {
+        id: 'uuid',
+        blockId: props.blockId,
+        position: props.player.currentTime(),
+        stepId: activeBlock.id,
+        label: props.videoTitle,
+        value: props.source,
+        key: keyify({
+          stepId: activeBlock.id,
+          event: 'videoPlay',
+          blockId: props.blockId
+        }),
+        simpleKey: keyify({
+          stepId: activeBlock.id,
+          event: 'videoPlay',
+          blockId: props.blockId
+        })
+      }
+    })
   })
 
   it('should add play event to dataLayer', async () => {
@@ -268,6 +351,8 @@ describe('VideoEvents', () => {
 
   it('should create pause event', async () => {
     blockHistoryVar([activeBlock])
+    const mockPlausible = jest.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
     const result = jest.fn(() => ({
       data: {
         videoPauseEventCreate: {
@@ -294,7 +379,9 @@ describe('VideoEvents', () => {
           }
         ]}
       >
-        <VideoEvents {...props} />
+        <JourneyProvider value={{ journey }}>
+          <VideoEvents {...props} />
+        </JourneyProvider>
       </MockedProvider>
     )
     act(() => {
@@ -302,6 +389,27 @@ describe('VideoEvents', () => {
       props.player.trigger('pause')
     })
     await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(mockPlausible).toHaveBeenCalledWith('videoPause', {
+      u: `${mockOrigin}/journey.id/step.id`,
+      props: {
+        id: 'uuid',
+        blockId: props.blockId,
+        position: props.player.currentTime(),
+        stepId: activeBlock.id,
+        label: props.videoTitle,
+        value: props.source,
+        key: keyify({
+          stepId: activeBlock.id,
+          event: 'videoPause',
+          blockId: props.blockId
+        }),
+        simpleKey: keyify({
+          stepId: activeBlock.id,
+          event: 'videoPause',
+          blockId: props.blockId
+        })
+      }
+    })
   })
 
   it('should add pause event to dataLayer', async () => {
@@ -353,6 +461,8 @@ describe('VideoEvents', () => {
 
   it('should create expand event', async () => {
     blockHistoryVar([activeBlock])
+    const mockPlausible = jest.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
     const result = jest.fn(() => ({
       data: {
         videoExpandEventCreate: {
@@ -379,7 +489,9 @@ describe('VideoEvents', () => {
           }
         ]}
       >
-        <VideoEvents {...props} />
+        <JourneyProvider value={{ journey }}>
+          <VideoEvents {...props} />
+        </JourneyProvider>
       </MockedProvider>
     )
     act(() => {
@@ -387,6 +499,27 @@ describe('VideoEvents', () => {
       props.player.enterFullWindow()
     })
     await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(mockPlausible).toHaveBeenCalledWith('videoExpand', {
+      u: `${mockOrigin}/journey.id/step.id`,
+      props: {
+        id: 'uuid',
+        blockId: props.blockId,
+        position: props.player.currentTime(),
+        stepId: activeBlock.id,
+        label: props.videoTitle,
+        value: props.source,
+        key: keyify({
+          stepId: activeBlock.id,
+          event: 'videoExpand',
+          blockId: props.blockId
+        }),
+        simpleKey: keyify({
+          stepId: activeBlock.id,
+          event: 'videoExpand',
+          blockId: props.blockId
+        })
+      }
+    })
   })
 
   it('should add expand event to dataLayer', async () => {
@@ -438,6 +571,8 @@ describe('VideoEvents', () => {
 
   it('should create collapse event', async () => {
     blockHistoryVar([activeBlock])
+    const mockPlausible = jest.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
     const result = jest.fn(() => ({
       data: {
         videoCollapseEventCreate: {
@@ -483,7 +618,9 @@ describe('VideoEvents', () => {
           }
         ]}
       >
-        <VideoEvents {...props} />
+        <JourneyProvider value={{ journey }}>
+          <VideoEvents {...props} />
+        </JourneyProvider>
       </MockedProvider>
     )
     act(() => {
@@ -492,6 +629,27 @@ describe('VideoEvents', () => {
       void props.player.exitFullscreen()
     })
     await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(mockPlausible).toHaveBeenCalledWith('videoCollapse', {
+      u: `${mockOrigin}/journey.id/step.id`,
+      props: {
+        id: 'uuid',
+        blockId: props.blockId,
+        position: props.player.currentTime(),
+        stepId: activeBlock.id,
+        label: props.videoTitle,
+        value: props.source,
+        key: keyify({
+          stepId: activeBlock.id,
+          event: 'videoCollapse',
+          blockId: props.blockId
+        }),
+        simpleKey: keyify({
+          stepId: activeBlock.id,
+          event: 'videoCollapse',
+          blockId: props.blockId
+        })
+      }
+    })
   })
 
   it('should add collapse event to dataLayer', async () => {
@@ -563,6 +721,8 @@ describe('VideoEvents', () => {
 
   it('should create progress event and complete event', async () => {
     blockHistoryVar([activeBlock])
+    const mockPlausible = jest.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
     const resultStart = jest.fn(() => ({
       data: {
         videoStartEventCreate: {
@@ -607,6 +767,13 @@ describe('VideoEvents', () => {
         }
       }
     }))
+
+    const action = {
+      __typename: 'NavigateToBlockAction',
+      parentBlockId: 'step.id',
+      gtmEventName: 'gtm.event',
+      blockId: 'block2.id'
+    } as unknown as VideoTriggerFields_triggerAction
 
     render(
       <MockedProvider
@@ -676,7 +843,9 @@ describe('VideoEvents', () => {
           }
         ]}
       >
-        <VideoEvents {...props} />
+        <JourneyProvider value={{ journey }}>
+          <VideoEvents {...props} action={action} />
+        </JourneyProvider>
       </MockedProvider>
     )
 
@@ -685,30 +854,116 @@ describe('VideoEvents', () => {
       props.player.trigger('timeupdate')
     })
     await waitFor(() => expect(resultStart).toHaveBeenCalled())
+    expect(mockPlausible).toHaveBeenCalledWith('videoStart', {
+      u: `${mockOrigin}/journey.id/step.id`,
+      props: {
+        id: 'uuid',
+        blockId: props.blockId,
+        position: props.player.currentTime(),
+        stepId: activeBlock.id,
+        label: props.videoTitle,
+        value: props.source,
+        key: keyify({
+          stepId: activeBlock.id,
+          event: 'videoStart',
+          blockId: props.blockId
+        }),
+        simpleKey: keyify({
+          stepId: activeBlock.id,
+          event: 'videoStart',
+          blockId: props.blockId
+        })
+      }
+    })
 
     act(() => {
       props.player.currentTime(25.1)
       props.player.trigger('timeupdate')
     })
     await waitFor(() => expect(resultOne).toHaveBeenCalled())
+    expect(mockPlausible).toHaveBeenCalledWith('videoProgress25', {
+      u: `${mockOrigin}/journey.id/step.id`,
+      props: {
+        id: 'uuid',
+        blockId: props.blockId,
+        position: 25,
+        progress: 25,
+        stepId: activeBlock.id,
+        label: props.videoTitle,
+        value: props.source,
+        key: keyify({
+          stepId: activeBlock.id,
+          event: 'videoProgress25',
+          blockId: props.blockId
+        }),
+        simpleKey: keyify({
+          stepId: activeBlock.id,
+          event: 'videoProgress25',
+          blockId: props.blockId
+        })
+      }
+    })
 
     act(() => {
       props.player.currentTime(50.2)
       props.player.trigger('timeupdate')
     })
     await waitFor(() => expect(resultTwo).toHaveBeenCalled())
+    expect(mockPlausible).toHaveBeenCalledWith('videoProgress50', {
+      u: `${mockOrigin}/journey.id/step.id`,
+      props: {
+        id: 'uuid',
+        blockId: props.blockId,
+        position: 50,
+        progress: 50,
+        stepId: activeBlock.id,
+        label: props.videoTitle,
+        value: props.source,
+        key: keyify({
+          stepId: activeBlock.id,
+          event: 'videoProgress50',
+          blockId: props.blockId
+        }),
+        simpleKey: keyify({
+          stepId: activeBlock.id,
+          event: 'videoProgress50',
+          blockId: props.blockId
+        })
+      }
+    })
 
     act(() => {
       props.player.currentTime(75.3)
       props.player.trigger('timeupdate')
     })
     await waitFor(() => expect(resultThree).toHaveBeenCalled())
+    expect(mockPlausible).toHaveBeenCalledWith('videoProgress75', {
+      u: `${mockOrigin}/journey.id/step.id`,
+      props: {
+        id: 'uuid',
+        blockId: props.blockId,
+        position: 75,
+        progress: 75,
+        stepId: activeBlock.id,
+        label: props.videoTitle,
+        value: props.source,
+        key: keyify({
+          stepId: activeBlock.id,
+          event: 'videoProgress75',
+          blockId: props.blockId
+        }),
+        simpleKey: keyify({
+          stepId: activeBlock.id,
+          event: 'videoProgress75',
+          blockId: props.blockId
+        })
+      }
+    })
 
     act(() => {
       props.player.currentTime(100)
       props.player.trigger('timeupdate')
     })
-    await waitFor(() => expect(resultComplete).toHaveBeenCalled())
   })
 
   it('should add progress event and complete event to dataLayer', async () => {

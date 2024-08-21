@@ -1,6 +1,6 @@
 // code commmented out until all SES requirements for bounce, unsubscribe, GDPR met
 
-import { ApolloClient, InMemoryCache, gql } from '@apollo/client'
+import { ApolloClient, InMemoryCache } from '@apollo/client'
 import { Processor, WorkerHost } from '@nestjs/bullmq'
 import { render } from '@react-email/render'
 import { Job } from 'bullmq'
@@ -9,6 +9,7 @@ import { Prisma } from '.prisma/api-journeys-client'
 import { EmailService } from '@core/nest/common/email/emailService'
 import { User } from '@core/nest/common/firebaseClient'
 
+import { gql } from '../../../__generated__'
 import {
   Team,
   UserJourneyRole,
@@ -90,6 +91,28 @@ export type ApiJourneysJob =
   | TeamInviteAccepted
   | TeamRemoved
 
+const GET_USER = gql(`
+  query GetUser($userId: ID!) {
+    user(id: $userId) {
+      id
+      email
+      firstName
+      imageUrl
+    }
+  }
+`)
+
+const GET_USER_BY_EMAIL = gql(`
+  query GetUserByEmail($email: String!) {
+    userByEmail(email: $email) {
+      id
+      email
+      firstName
+      imageUrl
+    }
+  }
+`)
+
 @Processor('api-journeys-email')
 export class EmailConsumer extends WorkerHost {
   constructor(
@@ -124,18 +147,11 @@ export class EmailConsumer extends WorkerHost {
 
   async teamRemovedEmail(job: Job<TeamRemoved>): Promise<void> {
     const { data } = await apollo.query({
-      query: gql`
-        query User($userId: ID!) {
-          user(id: $userId) {
-            id
-            email
-            firstName
-            imageUrl
-          }
-        }
-      `,
+      query: GET_USER,
       variables: { userId: job.data.userId }
     })
+
+    if (data.user == null) throw new Error('User not found')
 
     // check recipient preferences
     const preferences =
@@ -198,16 +214,7 @@ export class EmailConsumer extends WorkerHost {
       return
 
     const { data } = await apollo.query({
-      query: gql`
-        query UserByEmail($email: String!) {
-          userByEmail(email: $email) {
-            id
-            email
-            firstName
-            imageUrl
-          }
-        }
-      `,
+      query: GET_USER_BY_EMAIL,
       variables: { email: job.data.email }
     })
 
@@ -278,34 +285,27 @@ export class EmailConsumer extends WorkerHost {
     const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/?activeTeam=${
       job.data.team.id
     }`
-    const receipientUserTeams = job.data.team.userTeams.filter(
+    const recipientUserTeams = job.data.team.userTeams.filter(
       (userTeam) => userTeam.role === UserTeamRole.manager
     )
 
-    const receipientEmails = await Promise.all(
-      receipientUserTeams.map(async (userTeam) => {
+    const recipientEmails = await Promise.all(
+      recipientUserTeams.map(async (userTeam) => {
         const { data } = await apollo.query({
-          query: gql`
-            query User($userId: ID!) {
-              user(id: $userId) {
-                id
-                email
-                firstName
-                imageUrl
-              }
-            }
-          `,
+          query: GET_USER,
           variables: { userId: userTeam.userId }
         })
         return data
       })
     )
 
-    if (receipientEmails == null || receipientEmails.length === 0) {
+    if (recipientEmails == null || recipientEmails.length === 0) {
       throw new Error('Team Managers not found')
     }
 
-    for (const recipient of receipientEmails) {
+    for (const recipient of recipientEmails) {
+      if (recipient.user == null) throw new Error('User not found')
+
       // check recipient preferences
       const preferences =
         await this.prismaService.journeysEmailPreference.findFirst({
@@ -361,22 +361,12 @@ export class EmailConsumer extends WorkerHost {
     )?.userId
 
     const { data } = await apollo.query({
-      query: gql`
-        query User($userId: ID!) {
-          user(id: $userId) {
-            id
-            firstName
-            email
-            imageUrl
-          }
-        }
-      `,
+      query: GET_USER,
       variables: { userId: recipientUserId }
     })
 
-    if (data.user == null) {
-      throw new Error('User not found')
-    }
+    if (data.user == null) throw new Error('User not found')
+
     // check recipient preferences
     const preferences =
       await this.prismaService.journeysEmailPreference.findFirst({
@@ -395,7 +385,7 @@ export class EmailConsumer extends WorkerHost {
       JourneyAccessRequestEmail({
         journey: job.data.journey,
         inviteLink: job.data.url,
-        recipient: data,
+        recipient: data.user,
         sender: job.data.sender
       }),
       {
@@ -406,7 +396,7 @@ export class EmailConsumer extends WorkerHost {
       JourneyAccessRequestEmail({
         journey: job.data.journey,
         inviteLink: job.data.url,
-        recipient: data,
+        recipient: data.user,
         sender: job.data.sender
       }),
       {
@@ -426,22 +416,12 @@ export class EmailConsumer extends WorkerHost {
     job: Job<JourneyRequestApproved>
   ): Promise<void> {
     const { data } = await apollo.query({
-      query: gql`
-        query User($userId: ID!) {
-          user(id: $userId) {
-            id
-            email
-            firstName
-            imageUrl
-          }
-        }
-      `,
+      query: GET_USER,
       variables: { userId: job.data.userId }
     })
 
-    if (data.user == null) {
-      throw new Error('User not found')
-    }
+    if (data.user == null) throw new Error('User not found')
+
     // check recipient preferences
     const preferences =
       await this.prismaService.journeysEmailPreference.findFirst({
@@ -503,16 +483,7 @@ export class EmailConsumer extends WorkerHost {
       return
 
     const { data } = await apollo.query({
-      query: gql`
-        query UserByEmail($email: String!) {
-          userByEmail(email: $email) {
-            id
-            email
-            firstName
-            imageUrl
-          }
-        }
-      `,
+      query: GET_USER_BY_EMAIL,
       variables: { email: job.data.email }
     })
 

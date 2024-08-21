@@ -1,3 +1,4 @@
+/* eslint-disable i18next/no-literal-string */
 import { gql, useMutation, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
@@ -118,7 +119,6 @@ export function DetailsForm({ id }: DetailsFormProps): ReactElement {
                         onChange={handleChange}
                         onBlur={handleBlur}
                       >
-                        {/* eslint-disable-next-line i18next/no-literal-string */}
                         <MenuItem value="">⚪️</MenuItem>
                         <MenuItem value={VisitorStatus.star}>⭐</MenuItem>
                         <MenuItem value={VisitorStatus.prohibited}>🚫</MenuItem>

@@ -14,6 +14,11 @@ input BlocksFilter {
   typenames: [String!]
 }
 
+input BlockDuplicateIdMap {
+  oldId: ID!
+  newId: ID!
+}
+
 extend type Query {
   blocks(where: BlocksFilter): [Block!]!
   block(id: ID!): Block!
@@ -44,6 +49,10 @@ extend type Mutation {
     """
     parentOrder: Int
     """
+    idMap is used to set custom ids for the duplicated block and it's descendants.
+    """
+    idMap: [BlockDuplicateIdMap!]
+    """
     drop this parameter after merging teams
     """
     journeyId: ID
@@ -66,4 +75,9 @@ extend type Mutation {
     """
     journeyId: ID
   ): [Block!]!
+
+  """
+  blockRestore is used for redo/undo
+  """
+  blockRestore(id: ID!): [Block!]!
 }

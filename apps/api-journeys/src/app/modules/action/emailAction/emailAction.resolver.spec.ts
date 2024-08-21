@@ -7,13 +7,14 @@ import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 import { EmailActionInput, UserTeamRole } from '../../../__generated__/graphql'
 import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
 import { PrismaService } from '../../../lib/prisma.service'
-import { ACTION_UPDATE_RESET } from '../actionUpdateReset'
+import { ActionService } from '../action.service'
 
 import { EmailActionResolver } from './emailAction.resolver'
 
 describe('EmailActionResolver', () => {
   let resolver: EmailActionResolver,
     prismaService: DeepMockProxy<PrismaService>,
+    actionService: DeepMockProxy<ActionService>,
     ability: AppAbility
 
   const journey = {
@@ -56,6 +57,10 @@ describe('EmailActionResolver', () => {
       providers: [
         EmailActionResolver,
         {
+          provide: ActionService,
+          useValue: mockDeep<ActionService>()
+        },
+        {
           provide: PrismaService,
           useValue: mockDeep<PrismaService>()
         }
@@ -65,6 +70,9 @@ describe('EmailActionResolver', () => {
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
+    actionService = module.get<ActionService>(
+      ActionService
+    ) as DeepMockProxy<ActionService>
     ability = await new AppCaslFactory().createAbility({ id: 'userId' })
   })
 
@@ -72,17 +80,11 @@ describe('EmailActionResolver', () => {
     it('updates email action', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
       await resolver.blockUpdateEmailAction(ability, block.id, input)
-      expect(prismaService.action.upsert).toHaveBeenCalledWith({
-        where: { parentBlockId: block.id },
-        create: {
-          ...input,
-          parentBlock: { connect: { id: block.id } }
-        },
-        update: {
-          ...ACTION_UPDATE_RESET,
-          ...input
-        }
-      })
+      expect(actionService.emailActionUpdate).toHaveBeenCalledWith(
+        '1',
+        blockWithUserTeam,
+        input
+      )
     })
 
     it('throws an error if typename is wrong', async () => {
@@ -94,17 +96,6 @@ describe('EmailActionResolver', () => {
       await expect(
         resolver.blockUpdateEmailAction(ability, wrongBlock.id, input)
       ).rejects.toThrow('This block does not support email actions')
-    })
-
-    it('throws an error if input is not an email address', async () => {
-      const wrongInput = {
-        ...input,
-        email: 'example.com'
-      }
-      prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
-      await expect(
-        resolver.blockUpdateEmailAction(ability, block.id, wrongInput)
-      ).rejects.toThrow('must be a valid email')
     })
 
     it('throws error if not found', async () => {

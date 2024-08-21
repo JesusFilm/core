@@ -27,7 +27,7 @@ export interface GetVideo_video_variant {
 }
 
 export interface GetVideo_video_variantLanguages_name {
-  __typename: "Translation";
+  __typename: "LanguageName";
   value: string;
   primary: boolean;
 }

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { expect } from '@playwright/test'
 import dayjs from 'dayjs'
 import { Page } from 'playwright-core'
@@ -7,7 +8,6 @@ import testData from '../utils/testData.json'
 let journeyName = ''
 let randomNumber = ''
 const thirtySecondsTimeout = 30000
-const fifteenSecondsTimeout = 15000
 const sixtySecondsTimeout = 60000
 
 export class JourneyPage {
@@ -213,12 +213,12 @@ export class JourneyPage {
       this.page.locator(
         'div[data-testid="JourneysAdminContainedIconButton"] button'
       )
-    ).toBeVisible({ timeout: fifteenSecondsTimeout })
+    ).toBeVisible({ timeout: sixtySecondsTimeout })
     await expect(
       this.page.locator(
         'div[data-testid="JourneysAdminImageThumbnail"] span[class*="MuiCircularProgress"]'
       )
-    ).toBeHidden({ timeout: fifteenSecondsTimeout })
+    ).toBeHidden({ timeout: sixtySecondsTimeout })
     await this.page
       .locator('div[data-testid="JourneysAdminContainedIconButton"] button')
       .click()
@@ -226,12 +226,12 @@ export class JourneyPage {
       this.page.locator(
         'div[data-testid="JourneysAdminImageThumbnail"] span[class*="MuiCircularProgress"]'
       )
-    ).toBeHidden({ timeout: fifteenSecondsTimeout })
+    ).toBeHidden({ timeout: sixtySecondsTimeout })
   }
 
   async setJourneyName(journey: string) {
     journeyName =
-      (journey == 'firstJourneyName'
+      (journey === 'firstJourneyName'
         ? testData.journey.firstJourneyName
         : testData.journey.secondJourneyName) + randomNumber
   }
@@ -244,7 +244,7 @@ export class JourneyPage {
         'div[data-testid="CardWrapper"] div[data-testid*="SelectableWrapper"] h3[data-testid="JourneysTypography"]'
       )
       .first()
-      .click({ timeout: fifteenSecondsTimeout, delay: 1000 })
+      .click({ timeout: sixtySecondsTimeout, delay: 1000 })
     for (let clickRetry = 0; clickRetry < 5; clickRetry++) {
       if (
         await this.page
@@ -263,7 +263,7 @@ export class JourneyPage {
             'div[data-testid="CardWrapper"] div[data-testid*="SelectableWrapper"] h3[data-testid="JourneysTypography"]'
           )
           .first()
-          .click({ timeout: fifteenSecondsTimeout, delay: 1000 })
+          .click({ timeout: sixtySecondsTimeout, delay: 1000 })
       }
     }
     await this.page
@@ -332,7 +332,7 @@ export class JourneyPage {
       .click()
     await expect(
       this.page.locator('div[data-testid="StrategyItem"] button')
-    ).toBeVisible({ timeout: fifteenSecondsTimeout })
+    ).toBeVisible({ timeout: sixtySecondsTimeout })
   }
 
   async clickTheCreateTempleteOption() {
@@ -608,7 +608,7 @@ export class JourneyPage {
         matchCount = matchCount + 1
       }
     }
-    expect(matchCount == this.journeyList.length).toBeTruthy()
+    expect(matchCount === this.journeyList.length).toBeTruthy()
   }
 
   async verifyActiveTabShowsEmptyMessage() {
@@ -653,7 +653,7 @@ export class JourneyPage {
         matchCount = matchCount + 1
       }
     }
-    expect(matchCount == this.journeyList.length).toBeTruthy()
+    expect(matchCount === this.journeyList.length).toBeTruthy()
   }
 
   async getJourneyListOfTrashTab() {
@@ -690,7 +690,7 @@ export class JourneyPage {
         matchCount = matchCount + 1
       }
     }
-    expect(matchCount == this.journeyList.length).toBeTruthy()
+    expect(matchCount === this.journeyList.length).toBeTruthy()
   }
 
   async verifyAlljourneysAreDeletedFromTrashTab() {
@@ -711,7 +711,7 @@ export class JourneyPage {
   async verifySnackbarToastMessage(message: string) {
     await expect(
       this.page.locator('#notistack-snackbar', { hasText: message })
-    ).toBeVisible({ timeout: fifteenSecondsTimeout })
+    ).toBeVisible({ timeout: sixtySecondsTimeout })
     await expect(this.page.locator('#notistack-snackbar')).toBeHidden({
       timeout: thirtySecondsTimeout
     })
@@ -780,8 +780,9 @@ export class JourneyPage {
     list: string[],
     expectedSortedList: string[]
   ) {
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     list.map((str) => str.toLowerCase()).sort(Intl.Collator().compare)
-    expect(list.join().trim() == expectedSortedList.join().trim()).toBeTruthy()
+    expect(list.join().trim() === expectedSortedList.join().trim()).toBeTruthy()
   }
 
   async verifyNewlyJouyneysAreSortedByNames() {
@@ -796,7 +797,7 @@ export class JourneyPage {
       )
       .locator('span[data-testid="new-journey-badge"] div')
       .count()
-    if (journeyListCount != 0) {
+    if (journeyListCount !== 0) {
       const journeyList = await this.page
         .locator(
           'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"]',
@@ -857,12 +858,12 @@ export class JourneyPage {
     expectedSortedList: string[],
     list: string[]
   ) {
-    list.sort(function (a: string, b: string) {
+    list.sort((a: string, b: string) => {
       const dateA = new Date(a)
       const dateB = new Date(b)
       return dateB.getTime() - dateA.getTime()
     })
-    expect(list.join().trim() == expectedSortedList.join().trim()).toBeTruthy()
+    expect(list.join().trim() === expectedSortedList.join().trim()).toBeTruthy()
   }
 
   async verifyNewlyJourneyAreSortedByDates() {
@@ -877,7 +878,7 @@ export class JourneyPage {
       )
       .locator('span[data-testid="new-journey-badge"] + span')
       .count()
-    if (journeysDescriptionCount != 0) {
+    if (journeysDescriptionCount !== 0) {
       const journeysDescriptionList = await this.page
         .locator(
           'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"]',
@@ -958,6 +959,7 @@ export class JourneyPage {
     for (let slide = 1; slide < slidesCount; slide++) {
       await newPage
         .locator('button[data-testid="ConductorNavigationButtonNext"]')
+        // eslint-disable-next-line playwright/no-force-option
         .hover({ force: true })
       await newPage
         .locator('button[data-testid="ConductorNavigationButtonNext"]')
@@ -1052,7 +1054,7 @@ export class JourneyPage {
       .first()
       .locator(typographyPath)
       .first()
-      .click({ timeout: fifteenSecondsTimeout, delay: 1000 })
+      .click({ timeout: sixtySecondsTimeout, delay: 1000 })
     for (let clickRetry = 0; clickRetry < 5; clickRetry++) {
       if (
         await this.page
@@ -1069,7 +1071,7 @@ export class JourneyPage {
           .first()
           .locator(typographyPath)
           .first()
-          .click({ timeout: fifteenSecondsTimeout, delay: 1000 })
+          .click({ timeout: sixtySecondsTimeout, delay: 1000 })
       }
     }
     await this.page

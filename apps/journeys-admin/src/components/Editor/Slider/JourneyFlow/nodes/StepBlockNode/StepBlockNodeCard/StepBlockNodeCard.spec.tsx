@@ -1,11 +1,11 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
-import { ActiveFab, EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import {
   BlockFields_ButtonBlock as ButtonBlock,
-  BlockFields_ImageBlock as ImageBlock,
+  BlockFields_IconBlock as IconBlock,
   BlockFields_StepBlock as StepBlock
 } from '../../../../../../../../__generated__/BlockFields'
 import { TestEditorState } from '../../../../../../../libs/TestEditorState'
@@ -48,16 +48,16 @@ describe('StepBlockNodeCard', () => {
     expect(screen.getByTestId('CardIconBackground')).toHaveStyle(`
       background-image: url('bgImage');
     `)
-    expect(screen.getByTestId('GitBranchIcon')).toBeInTheDocument()
+    expect(screen.getByTestId('Cursor6Icon')).toBeInTheDocument()
   })
 
   it('should render default card content', () => {
     const priorityBlock = {
-      __typename: 'ImageBlock'
-    } as unknown as TreeBlock<ImageBlock>
+      __typename: 'IconBlock'
+    } as unknown as TreeBlock<IconBlock>
     mockGetCardMetadata.mockReturnValue({
       title: undefined,
-      subtitle: '',
+      subtitle: undefined,
       description: '',
       priorityBlock,
       bgImage: undefined
@@ -70,7 +70,6 @@ describe('StepBlockNodeCard', () => {
 
     render(<StepBlockNodeCard step={step} selected={false} />)
 
-    expect(screen.getAllByRole('paragraph', { name: '' })).toHaveLength(2)
     expect(
       screen.getByTestId('StepBlockNodeCardTitleSkeleton')
     ).toBeInTheDocument()
@@ -125,7 +124,6 @@ describe('StepBlockNodeCard', () => {
 
     const initialState = {
       selectedStep: step,
-      activeFab: ActiveFab.Edit,
       selectedAttributeId: 'selectedAttributeId'
     }
 
@@ -136,12 +134,45 @@ describe('StepBlockNodeCard', () => {
       </EditorProvider>
     )
 
+    expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
     fireEvent.click(screen.getByTestId('StepBlock'))
 
+    expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
     expect(screen.getByText('selectedBlock: step.id')).toBeInTheDocument()
-    expect(screen.getByText('activeFab: Add')).toBeInTheDocument()
     expect(
       screen.getByText('selectedAttributeId: step.id-next-block')
     ).toBeInTheDocument()
+  })
+
+  it('should block select if in analytics mode', () => {
+    mockGetCardMetadata.mockReturnValue({
+      title: undefined,
+      subtitle: undefined,
+      description: undefined,
+      priorityBlock: undefined,
+      bgImage: undefined
+    })
+    const step = {
+      __typename: 'StepBlock',
+      id: 'step.id',
+      children: []
+    } as unknown as TreeBlock<StepBlock>
+
+    const initialState = {
+      selectedStep: step,
+      selectedAttributeId: 'selectedAttributeId',
+      showAnalytics: true
+    }
+
+    render(
+      <EditorProvider initialState={initialState}>
+        <StepBlockNodeCard step={step} selected={false} />
+        <TestEditorState />
+      </EditorProvider>
+    )
+
+    expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('StepBlock'))
+    expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
   })
 })

@@ -7,6 +7,7 @@ import { StepIconProps } from '@mui/material/StepIcon'
 import StepLabel from '@mui/material/StepLabel'
 import Stepper from '@mui/material/Stepper'
 import Typography from '@mui/material/Typography'
+import compact from 'lodash/compact'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, ReactNode } from 'react'
@@ -49,21 +50,33 @@ export function OnboardingStepper({
   }
 
   const activeStep = getActiveStep()
+  const quick =
+    router.query?.redirect?.toString().match(/\/templates\/[\w-]+\/quick/) !=
+    null
 
-  const steps = [
+  const steps = compact([
     {
       label: t('Create an account')
     },
     {
       label: t('Terms and Conditions')
     },
-    {
-      label: t('User Insights')
-    },
-    {
-      label: t('Create a Team')
-    }
-  ]
+    quick
+      ? undefined
+      : {
+          label: t('User Insights')
+        },
+    quick
+      ? undefined
+      : {
+          label: t('Create Your Workspace')
+        },
+    quick
+      ? {
+          label: t('Express Setup')
+        }
+      : undefined
+  ])
 
   const OnboardingStepperIcon = ({
     active,

@@ -46,10 +46,28 @@ describe('UserTeamListItem', () => {
     }
   ]
 
+  const mockCurrentUserTeam: UserTeam = {
+    __typename: 'UserTeam',
+    id: 'userTeamId',
+    role: UserTeamRole.manager,
+    user: {
+      __typename: 'User',
+      email: 'miguelohara@example.com',
+      firstName: 'Miguel',
+      id: 'userId',
+      imageUrl: 'https://example.com/image.jpg',
+      lastName: "O'Hara"
+    }
+  }
+
   it('should change the team member permissions correctly', async () => {
     const { getByText, getByRole } = render(
       <MockedProvider mocks={mocks}>
-        <UserTeamListItem user={mockUser} disabled={false} />
+        <UserTeamListItem
+          user={mockUser}
+          disabled={false}
+          currentUserTeam={mockCurrentUserTeam}
+        />
       </MockedProvider>
     )
     fireEvent.click(getByRole('button'))

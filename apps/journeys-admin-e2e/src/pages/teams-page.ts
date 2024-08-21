@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { expect } from '@playwright/test'
 import dayjs from 'dayjs'
 import { Page } from 'playwright-core'
@@ -20,6 +21,7 @@ export class TeamsPage {
   memberEmail = ''
 
   async createNewTeamAndVerifyCreatedTeam() {
+    await this.clickDismissIfDialogueComesUp()
     await this.clickThreeDotOfTeams()
     await this.clickThreeDotOptions('New Team')
     await this.enterTeamName()
@@ -60,12 +62,16 @@ export class TeamsPage {
     await this.verifyMemberAdded()
   }
 
+  async clickDismissIfDialogueComesUp() {
+    // First time user journey - Dismiss the "More journeys here" dialogue
+    const selector = 'div.MuiStack-root button:has-text("Dismiss")'
+    if (await this.page.isVisible(selector)) {
+      await this.page.click(selector)
+    }
+  }
+
   async clickThreeDotOfTeams() {
-    await this.page
-      .locator(
-        'div[data-testid="TeamSelect"] ~ div  button svg[data-testid="MoreIcon"]'
-      )
-      .click()
+    await this.page.getByTestId('MainPanelHeader').locator('button').click()
   }
 
   async clickThreeDotOptions(options) {
@@ -133,8 +139,10 @@ export class TeamsPage {
 
   async enterTeamRename() {
     this.renameTeamName = testData.teams.teamRename + randomNumber
-    await this.page.locator('input#title').clear()
-    await this.page.locator('input#title').fill(this.renameTeamName)
+    await this.page.getByLabel('Team Name', { exact: true }).clear()
+    await this.page
+      .getByLabel('Team Name', { exact: true })
+      .fill(this.renameTeamName)
   }
 
   async clickSaveBtn() {
@@ -169,7 +177,7 @@ export class TeamsPage {
 
   async verifyMemberAddedInMemberList() {
     await expect(
-      this.page.locator('li[data-testid*="UserTeamInviteListItem"] p', {
+      this.page.locator('div[data-testid*="UserTeamInviteListItem"] p', {
         hasText: this.memberEmail
       })
     ).toBeVisible()

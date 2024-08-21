@@ -16,10 +16,6 @@ export const ClearAllButton = ({
       color="secondary"
       size="small"
       onClick={handleClearAll}
-      sx={{
-        ml: 5,
-        mb: 1
-      }}
       data-testid="ClearAllButton"
     >
       {t('Clear all')}

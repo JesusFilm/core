@@ -86,7 +86,7 @@ describe('Conductor', () => {
     iso3: 'arb',
     name: [
       {
-        __typename: 'Translation',
+        __typename: 'LanguageName',
         value: 'Arabic',
         primary: false
       }
@@ -126,7 +126,7 @@ describe('Conductor', () => {
       iso3: 'eng',
       name: [
         {
-          __typename: 'Translation',
+          __typename: 'LanguageName',
           value: 'English',
           primary: true
         }

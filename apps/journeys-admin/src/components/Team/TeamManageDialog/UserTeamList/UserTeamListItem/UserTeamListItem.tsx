@@ -2,11 +2,10 @@ import { gql, useMutation } from '@apollo/client'
 import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
-import ListItem from '@mui/material/ListItem'
-import ListItemAvatar from '@mui/material/ListItemAvatar'
-import ListItemText from '@mui/material/ListItemText'
+import Grid from '@mui/material/Grid'
 import Menu from '@mui/material/Menu'
 import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import compact from 'lodash/compact'
 import { useTranslation } from 'next-i18next'
 import { MouseEvent, ReactElement, useMemo, useState } from 'react'
@@ -14,16 +13,20 @@ import { MouseEvent, ReactElement, useMemo, useState } from 'react'
 import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
+import { GetJourneyWithPermissions_journey_team_userTeams as JourneyTeamUserTeam } from '../../../../../../__generated__/GetJourneyWithPermissions'
 import { GetUserTeamsAndInvites_userTeams as UserTeam } from '../../../../../../__generated__/GetUserTeamsAndInvites'
 import { UserTeamRole } from '../../../../../../__generated__/globalTypes'
 import { UserTeamUpdate } from '../../../../../../__generated__/UserTeamUpdate'
+import { NotificationSwitch } from '../../../../AccessDialog/NotificationSwitch'
 import { MenuItem } from '../../../../MenuItem'
 import { UserTeamDeleteMenuItem } from '../../UserTeamDeleteMenuItem'
 
 interface UserTeamListItemProps {
-  user: UserTeam
+  user: JourneyTeamUserTeam | UserTeam
   disabled?: boolean
   variant?: 'readonly' | 'default'
+  journeyId?: string
+  currentUserTeam: JourneyTeamUserTeam | UserTeam | undefined
 }
 
 export const USER_TEAM_UPDATE = gql`
@@ -40,14 +43,16 @@ export const USER_TEAM_UPDATE = gql`
 export function UserTeamListItem({
   user: listItem,
   disabled,
-  variant = 'default'
+  variant = 'default',
+  journeyId,
+  currentUserTeam
 }: UserTeamListItemProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = Boolean(anchorEl)
   const { t } = useTranslation('apps-journeys-admin')
   const [userTeamUpdate] = useMutation<UserTeamUpdate>(USER_TEAM_UPDATE)
 
-  const { id, email, displayName, imageUrl, role } = useMemo(() => {
+  const { id, email, displayName, imageUrl, role, userId } = useMemo(() => {
     return {
       id: listItem.id,
       email: listItem?.user?.email,
@@ -55,6 +60,7 @@ export function UserTeamListItem({
         listItem?.user?.firstName,
         listItem?.user?.lastName
       ]).join(' '),
+      userId: listItem?.user?.id,
       imageUrl: listItem?.user?.imageUrl,
       role: listItem.role
     }
@@ -76,16 +82,52 @@ export function UserTeamListItem({
     setAnchorEl(null)
   }
 
+  const checked =
+    'journeyNotification' in listItem
+      ? listItem?.journeyNotification?.visitorInteractionEmail
+      : false
+
   return (
     <>
-      <ListItem
-        sx={{
-          px: 0,
-          '& > .MuiListItemSecondaryAction-root': {
-            right: 0
-          }
-        }}
-        secondaryAction={
+      <Grid container spacing={1} alignItems="center">
+        <Grid xs={2} sm={1}>
+          <Avatar src={imageUrl ?? undefined} alt={displayName ?? email}>
+            {displayName != null
+              ? displayName.charAt(0)?.toUpperCase()
+              : email.charAt(0).toUpperCase()}
+          </Avatar>
+        </Grid>
+        <Grid xs={journeyId != null ? 5 : 7} sm={journeyId != null ? 7 : 9}>
+          <Stack sx={{ ml: 2 }}>
+            <Typography variant="subtitle2" sx={{ width: '100%' }}>
+              {displayName}
+            </Typography>
+            <Typography
+              variant="body1"
+              sx={{
+                width: { xs: '90%', sm: '90%' },
+                whiteSpace: 'nowrap',
+                overflow: 'clip',
+                textOverflow: 'ellipsis'
+              }}
+            >
+              {email}
+            </Typography>
+          </Stack>
+        </Grid>
+        {journeyId != null && (
+          <Grid xs={2} sm={2}>
+            {journeyId != null && (
+              <NotificationSwitch
+                name={listItem?.user?.firstName}
+                journeyId={journeyId}
+                checked={checked}
+                disabled={currentUserTeam?.user?.id !== userId}
+              />
+            )}
+          </Grid>
+        )}
+        <Grid xs={3} sm={2}>
           <Button
             aria-controls={open ? 'basic-menu' : undefined}
             aria-haspopup="true"
@@ -109,30 +151,8 @@ export function UserTeamListItem({
           >
             {menuLabel}
           </Button>
-        }
-        data-testid={`UserTeamListItem-${listItem.id}`}
-      >
-        <ListItemAvatar>
-          <Avatar src={imageUrl ?? undefined} alt={displayName ?? email}>
-            {displayName != null
-              ? displayName.charAt(0)?.toUpperCase()
-              : email.charAt(0).toUpperCase()}
-          </Avatar>
-        </ListItemAvatar>
-
-        <ListItemText
-          primary={displayName}
-          secondary={email}
-          sx={{
-            '& > .MuiListItemText-secondary': {
-              width: { xs: '90%', sm: '90%' },
-              whiteSpace: 'nowrap',
-              overflow: 'clip',
-              textOverflow: 'ellipsis'
-            }
-          }}
-        />
-      </ListItem>
+        </Grid>
+      </Grid>
 
       <Menu
         anchorEl={anchorEl}

@@ -60,6 +60,33 @@ describe('AccessItem', () => {
     )
   })
 
+  it('should render with access item dialog opened if manageAccess query params in true', async () => {
+    const mockJourney: JourneyFields = {
+      id: 'journeyId',
+      title: 'Some Title'
+    } as unknown as JourneyFields
+    mockedUseRouter.mockReturnValue({
+      query: { manageAccess: 'true' },
+      push,
+      events: {
+        on
+      }
+    } as unknown as NextRouter)
+
+    const { getByTestId, queryByRole } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey: mockJourney }}>
+            <AccessItem variant="menu-item" />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => expect(getByTestId('AccessDialog')).toBeInTheDocument())
+    expect(queryByRole('menuitem')).not.toBeInTheDocument()
+  })
+
   it('should handle helpscout params on click', async () => {
     const { getByText } = render(
       <MockedProvider>

@@ -7,8 +7,10 @@ import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded'
 import ChevronRightRounded from '@mui/icons-material/ChevronRightRounded'
 import ContactSupportRounded from '@mui/icons-material/ContactSupportRounded'
 import FormatQuoteRounded from '@mui/icons-material/FormatQuoteRounded'
+import Launch from '@mui/icons-material/Launch'
 import LiveTvRounded from '@mui/icons-material/LiveTvRounded'
 import LockOpenRounded from '@mui/icons-material/LockOpenRounded'
+import MailOutline from '@mui/icons-material/MailOutline'
 import MenuBookRounded from '@mui/icons-material/MenuBookRounded'
 import PlayArrowRounded from '@mui/icons-material/PlayArrowRounded'
 import RadioButtonUncheckedRounded from '@mui/icons-material/RadioButtonUncheckedRounded'
@@ -59,7 +61,9 @@ export function Icon({
     BeenhereRounded,
     SendRounded,
     SubscriptionsRounded,
-    ContactSupportRounded
+    ContactSupportRounded,
+    Launch,
+    MailOutline
   }
 
   const iconRTL =

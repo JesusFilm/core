@@ -48,9 +48,12 @@ model Video {
   slug              String?              @unique
   noIndex           Boolean?
   childIds          String[] // needed for child sort order
+  subtitles         VideoSubtitle[]
   children          Video[]              @relation("ParentChild")
   parent            Video[]              @relation("ParentChild")
   variants          VideoVariant[]
+  bibleCitation     BibleCitation[]
+  keywords          Keyword[]            @relation("VideoToKeyword")
 
   @@index(label)
   @@index(childIds)
@@ -84,6 +87,7 @@ model VideoVariantDownload {
   videoVariant   VideoVariant?               @relation(fields: [videoVariantId], references: [id], onDelete: Cascade)
 
   @@unique([quality, videoVariantId])
+  @@index(videoVariantId(type: Hash))
 }
 
 model VideoVariant {
@@ -93,35 +97,31 @@ model VideoVariant {
   duration   Int?
   languageId String
   subtitle   VideoVariantSubtitle[]
-  editionId  String?
-  edition    Edition?               @relation(fields: [editionId], references: [id])
+  edition    String                 @default("base")
   slug       String                 @unique
   video      Video?                 @relation(fields: [videoId], references: [id], onDelete: Cascade)
   videoId    String?
 
   @@unique([languageId, videoId])
-  @@index(languageId)
-  @@index(videoId)
+  @@index(languageId(type: Hash))
+  @@index(videoId(type: Hash))
 }
 
-model Edition {
-  id           String         @id
-  Subtitle     Subtitle[]
-  VideoVariant VideoVariant[]
-}
-
-model Subtitle {
+model VideoSubtitle {
   id         String  @id @default(uuid())
-  value      String
+  videoId    String
+  edition    String  @default("base")
+  vttSrc     String?
+  srtSrc     String?
   primary    Boolean
   languageId String
-  editionId  String
+  Video      Video   @relation(fields: [videoId], references: [id])
 
-  edition Edition[]
-
-  @@unique([editionId, languageId])
-  @@index(languageId)
-  @@index(editionId)
+  @@unique([videoId, edition, languageId])
+  @@index(languageId(type: Hash))
+  @@index(edition(type: Hash))
+  @@index(primary(type: Hash))
+  @@index(videoId(type: Hash))
 }
 
 model VideoVariantSubtitle {
@@ -134,8 +134,8 @@ model VideoVariantSubtitle {
   variant VideoVariant @relation(fields: [videoVariantId], references: [id], onDelete: Cascade)
 
   @@unique([videoVariantId, languageId])
-  @@index(languageId)
-  @@index(videoVariantId)
+  @@index(languageId(type: Hash))
+  @@index(videoVariantId(type: Hash))
 }
 
 model VideoSnippet {
@@ -195,4 +195,58 @@ model VideoStudyQuestion {
   @@index(primary(type: Hash))
   @@index(languageId(type: Hash))
   @@index(order)
+}
+
+model ImportTimes {
+  modelName  String   @id
+  lastImport DateTime
+}
+
+model BibleCitation {
+  id           String    @id @default(uuid())
+  bibleBookId  String
+  osisId       String
+  chapterStart Int
+  chapterEnd   Int?
+  verseStart   Int
+  verseEnd     Int?
+  videoId      String
+  order        Int
+  video        Video     @relation(fields: [videoId], references: [id])
+  bibleBook    BibleBook @relation(fields: [bibleBookId], references: [id])
+}
+
+model BibleBook {
+  id                   String          @id @default(uuid())
+  osisId               String
+  name                 BibleBookName[]
+  alternateName        String?
+  paratextAbbreviation String
+  isNewTestament       Boolean
+  order                Int
+  bibleCitation        BibleCitation[]
+}
+
+model BibleBookName {
+  id          String    @id @default(uuid())
+  value       String
+  languageId  String
+  primary     Boolean
+  bibleBookId String
+  bibleBook   BibleBook @relation(fields: [bibleBookId], references: [id])
+
+  @@unique([bibleBookId, languageId])
+  @@index(value(type: Hash))
+  @@index(primary(type: Hash))
+  @@index(languageId(type: Hash))
+}
+
+model Keyword {
+  id         String  @id @default(uuid())
+  value      String
+  languageId String
+  videos     Video[] @relation("VideoToKeyword")
+
+  @@unique([value, languageId])
+  @@index([value(type: Hash)])
 }

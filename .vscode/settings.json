@@ -70,6 +70,15 @@
       "name": "videos",
       "database": "videos",
       "username": "postgres"
+    },
+    {
+      "previewLimit": 50,
+      "server": "db",
+      "port": 5432,
+      "driver": "PostgreSQL",
+      "name": "plausible_db",
+      "database": "plausible_db",
+      "username": "postgres"
     }
   ],
   "editor.codeActionsOnSave": {

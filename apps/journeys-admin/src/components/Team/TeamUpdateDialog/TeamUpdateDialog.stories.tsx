@@ -5,13 +5,14 @@ import { screen, userEvent, waitFor } from '@storybook/testing-library'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement, useState } from 'react'
 
-import { GetLastActiveTeamIdAndTeams } from '../../../../__generated__/GetLastActiveTeamIdAndTeams'
-import { TeamUpdate } from '../../../../__generated__/TeamUpdate'
-import { journeysAdminConfig } from '../../../libs/storybook'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
-} from '../TeamProvider'
+} from '@core/journeys/ui/TeamProvider'
+import { GetLastActiveTeamIdAndTeams } from '@core/journeys/ui/TeamProvider/__generated__/GetLastActiveTeamIdAndTeams'
+import { journeysAdminConfig } from '@core/shared/ui/storybook'
+
+import { TeamUpdate } from '../../../../__generated__/TeamUpdate'
 
 import { TEAM_UPDATE } from './TeamUpdateDialog'
 

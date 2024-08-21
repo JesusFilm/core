@@ -6,6 +6,7 @@ import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 
 import {
   StepBlockCreateInput,
+  StepBlockPositionUpdateInput,
   StepBlockUpdateInput
 } from '../../../__generated__/graphql'
 import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
@@ -168,6 +169,59 @@ describe('StepBlockResolver', () => {
       await expect(
         resolver.stepBlockUpdate(ability, 'blockId', wrongBlockUpdateInput)
       ).rejects.toThrow('nextBlockId cannot be the current step block id')
+    })
+  })
+
+  describe('stepBlockPositionUpdate', () => {
+    beforeEach(() => {
+      prismaService.$transaction.mockImplementation(
+        async (callback) => await callback(prismaService)
+      )
+    })
+
+    const blockPositionUpdateInput: StepBlockPositionUpdateInput = {
+      id: 'blockId',
+      x: 0,
+      y: 0
+    }
+
+    it('updates an array of StepBlock positions', async () => {
+      prismaService.block.findMany.mockResolvedValueOnce([
+        blockWithUserTeam,
+        { ...blockWithUserTeam, id: 'blockId2' }
+      ])
+      await resolver.stepBlockPositionUpdate(ability, [
+        blockPositionUpdateInput,
+        { id: 'blockId2', x: 1, y: 1 }
+      ])
+      expect(prismaService.block.update).toHaveBeenCalledWith({
+        where: { id: 'blockId' },
+        data: {
+          x: 0,
+          y: 0
+        }
+      })
+      expect(prismaService.block.update).toHaveBeenCalledWith({
+        where: { id: 'blockId2' },
+        data: {
+          x: 1,
+          y: 1
+        }
+      })
+    })
+
+    it('throws error if not found', async () => {
+      prismaService.block.findMany.mockResolvedValueOnce([])
+      await expect(
+        resolver.stepBlockPositionUpdate(ability, [blockPositionUpdateInput])
+      ).rejects.toThrow('block not found')
+    })
+
+    it('throws error if not authorized', async () => {
+      prismaService.block.findMany.mockResolvedValueOnce([block])
+      await expect(
+        resolver.stepBlockPositionUpdate(ability, [blockPositionUpdateInput])
+      ).rejects.toThrow('user is not allowed to update block')
     })
   })
 

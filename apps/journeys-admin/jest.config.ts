@@ -14,6 +14,7 @@ const config: Config = {
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   coverageDirectory: '../../coverage/apps/journeys-admin',
+  setupFiles: ['./jest.polyfills.js'],
   setupFilesAfterEnv: ['<rootDir>setupTests.tsx'],
   collectCoverage: true,
   coverageReporters: ['cobertura'],

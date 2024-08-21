@@ -196,6 +196,7 @@ export function Video({
             videoId={eventVideoId}
             startAt={startAt}
             endAt={videoEndTime}
+            action={action}
           />
         )}
 
@@ -207,16 +208,10 @@ export function Video({
               xs: isFillAndNotYoutube() ? hundredVh : '100%',
               sm: '100%'
             }}
-            width={{
-              xs: isFillAndNotYoutube() ? '300%' : '100%',
-              sm: '100%'
-            }}
+            width="100%"
             minHeight="-webkit-fill-available"
             overflow="hidden"
-            marginX={{
-              xs: isFillAndNotYoutube() ? '-100%' : 0,
-              sm: 0
-            }}
+            marginX={0}
             position={isFillAndNotYoutube() ? 'absolute' : 'inherit'}
             data-testid="video-container"
           >
@@ -289,6 +284,7 @@ export function Video({
           {/* Default navigate to next card on video end */}
           {action != null && (
             <VideoTrigger
+              blockId={blockId}
               player={player}
               triggerStart={videoEndTime}
               triggerAction={action}

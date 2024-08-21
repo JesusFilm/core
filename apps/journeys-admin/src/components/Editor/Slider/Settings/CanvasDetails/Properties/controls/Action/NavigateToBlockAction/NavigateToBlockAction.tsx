@@ -40,7 +40,11 @@ export function NavigateToBlockAction(): ReactElement {
   }
   return (
     <>
-      <Typography variant="caption" color="secondary.main" gutterBottom>
+      <Typography
+        variant="caption"
+        color="secondary.main"
+        sx={{ mt: 1, mb: 3 }}
+      >
         {t('Navigate to the selected card (set in the map).')}
       </Typography>
       {currentActionStep == null ? (
@@ -48,6 +52,7 @@ export function NavigateToBlockAction(): ReactElement {
           variant="outlined"
           onClick={handleButtonClick}
           startIcon={<ChevronLeftIcon />}
+          sx={{ height: 56 }}
         >
           {t('back to map')}
         </Button>

@@ -6,9 +6,15 @@ type TextResponseBlock implements Block {
   label: String!
   hint: String
   minRows: Int
-  action: Action
-  submitIconId: ID
-  submitLabel: String
+  type: TextResponseType
+  routeId: String
+  integrationId: String
+}
+
+enum TextResponseType {
+  freeForm
+  name
+  email
 }
 
 input TextResponseBlockCreateInput {
@@ -16,15 +22,15 @@ input TextResponseBlockCreateInput {
   journeyId: ID!
   parentBlockId: ID!
   label: String!
-  submitLabel: String!
 }
 input TextResponseBlockUpdateInput {
   parentBlockId: ID
   label: String
   hint: String
   minRows: Int
-  submitIconId: ID
-  submitLabel: String
+  routeId: String
+  type: TextResponseType
+  integrationId: String
 }
 extend type Mutation {
   textResponseBlockCreate(

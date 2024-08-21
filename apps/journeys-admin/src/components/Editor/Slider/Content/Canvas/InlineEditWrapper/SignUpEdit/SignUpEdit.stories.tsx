@@ -2,8 +2,9 @@ import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { ActiveFab, EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
@@ -12,7 +13,6 @@ import {
   ThemeName
 } from '../../../../../../../../__generated__/globalTypes'
 import { SignUpFields } from '../../../../../../../../__generated__/SignUpFields'
-import { simpleComponentConfig } from '../../../../../../../libs/storybook'
 import { Canvas } from '../../Canvas'
 
 const SignUpEditStory: Meta<typeof Canvas> = {
@@ -95,8 +95,7 @@ const Template: StoryObj<typeof Canvas> = {
           <EditorProvider
             initialState={{
               ...args,
-              steps,
-              activeFab: ActiveFab.Save
+              steps
             }}
           >
             <Canvas />

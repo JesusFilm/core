@@ -5,7 +5,7 @@ import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { Button } from '@core/journeys/ui/Button'
-import { ActiveFab, EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { Image } from '@core/journeys/ui/Image'
 import { RadioQuestion } from '@core/journeys/ui/RadioQuestion'
 import { SignUp } from '@core/journeys/ui/SignUp'
@@ -143,8 +143,7 @@ describe('SelectableWrapper', () => {
             initialState={{
               steps: [
                 step([imageBlock, typographyBlock, buttonBlock, signUpBlock])
-              ],
-              activeFab: ActiveFab.Add
+              ]
             }}
           >
             <SelectableWrapper block={imageBlock}>
@@ -173,25 +172,29 @@ describe('SelectableWrapper', () => {
 
     fireEvent.click(getByRole('img'))
     expect(getByTestId(`SelectableWrapper-${imageBlock.id}`)).toHaveStyle({
-      outline: '2px solid #C52D3A',
-      zIndex: '1'
+      outline: '2px solid',
+      zIndex: '1',
+      outlineColor: '#C52D3A'
     })
     fireEvent.click(getByText('typography content'))
     expect(getByTestId(`SelectableWrapper-${typographyBlock.id}`)).toHaveStyle({
-      outline: '2px solid #C52D3A',
-      zIndex: '1'
+      outline: '2px solid',
+      zIndex: '1',
+      outlineColor: '#C52D3A'
     })
 
     fireEvent.click(getByText('button label'))
     expect(getByTestId(`SelectableWrapper-${buttonBlock.id}`)).toHaveStyle({
-      outline: '2px solid #C52D3A',
-      zIndex: '1'
+      outline: '2px solid',
+      zIndex: '1',
+      outlineColor: '#C52D3A'
     })
     fireEvent.click(getByText('sign up label'))
     await waitFor(() =>
       expect(getByTestId(`SelectableWrapper-${signUpBlock.id}`)).toHaveStyle({
-        outline: '2px solid #C52D3A',
-        zIndex: '1'
+        outline: '2px solid',
+        zIndex: '1',
+        outlineColor: '#C52D3A'
       })
     )
     fireEvent.click(
@@ -200,8 +203,9 @@ describe('SelectableWrapper', () => {
     expect(
       getByTestId(`SelectableWrapper-${radioQuestionBlock.id}`)
     ).toHaveStyle({
-      outline: '2px solid #C52D3A',
-      zIndex: '1'
+      outline: '2px solid',
+      zIndex: '1',
+      outlineColor: '#C52D3A'
     })
 
     expect(push).not.toHaveBeenCalled()
@@ -213,8 +217,7 @@ describe('SelectableWrapper', () => {
         <SnackbarProvider>
           <EditorProvider
             initialState={{
-              steps: [step([radioQuestionBlock])],
-              activeFab: ActiveFab.Add
+              steps: [step([radioQuestionBlock])]
             }}
           >
             <SelectableWrapper block={radioQuestionBlock}>
@@ -232,8 +235,9 @@ describe('SelectableWrapper', () => {
     expect(
       getByTestId(`SelectableWrapper-${radioQuestionBlock.id}`)
     ).toHaveStyle({
-      outline: '2px solid #C52D3A',
-      zIndex: '1'
+      outline: '2px solid',
+      zIndex: '1',
+      outlineColor: '#C52D3A'
     })
   })
 
@@ -244,8 +248,8 @@ describe('SelectableWrapper', () => {
           <EditorProvider
             initialState={{
               selectedBlock: radioQuestionBlock,
-              steps: [step([radioQuestionBlock])],
-              activeFab: ActiveFab.Add
+              selectedBlockId: radioQuestionBlock.id,
+              steps: [step([radioQuestionBlock])]
             }}
           >
             <SelectableWrapper block={radioQuestionBlock}>
@@ -259,10 +263,13 @@ describe('SelectableWrapper', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(getByRole('button', { name: 'Option 1' }))
+    await waitFor(() =>
+      fireEvent.click(getByRole('button', { name: 'Option 1' }))
+    )
     expect(getByTestId(`SelectableWrapper-RadioOption1`)).toHaveStyle({
-      outline: '2px solid #C52D3A',
-      zIndex: '1'
+      outline: '2px solid',
+      zIndex: '1',
+      outlineColor: '#C52D3A'
     })
     expect(push).not.toHaveBeenCalled()
   })
@@ -274,8 +281,8 @@ describe('SelectableWrapper', () => {
           <EditorProvider
             initialState={{
               selectedBlock: radioOption1,
-              steps: [step([radioQuestionBlock])],
-              activeFab: ActiveFab.Add
+              selectedBlockId: radioOption1.id,
+              steps: [step([radioQuestionBlock])]
             }}
           >
             <SelectableWrapper block={radioQuestionBlock}>
@@ -289,10 +296,13 @@ describe('SelectableWrapper', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(getByRole('button', { name: 'Option 1' }))
+    await waitFor(() => {
+      fireEvent.click(getByRole('button', { name: 'Option 1' }))
+    })
     expect(getByTestId(`SelectableWrapper-RadioOption1`)).toHaveStyle({
-      outline: '2px solid #C52D3A',
-      zIndex: '1'
+      outline: '2px solid',
+      zIndex: '1',
+      outlineColor: '#C52D3A'
     })
     expect(push).not.toHaveBeenCalled()
   })

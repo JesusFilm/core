@@ -52,7 +52,6 @@ export function Footer(): ReactElement {
       type: 'SetSelectedAttributeIdAction',
       selectedAttributeId: undefined
     })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch])
 
   return (

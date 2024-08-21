@@ -18,5 +18,4 @@ export interface BlockActionDelete {
 
 export interface BlockActionDeleteVariables {
   id: string;
-  journeyId: string;
 }

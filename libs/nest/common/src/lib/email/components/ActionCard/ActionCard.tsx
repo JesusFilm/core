@@ -17,6 +17,7 @@ interface ActionCardProps {
   bodyText?: string
   recipient?: Omit<User, 'id' | 'emailVerified'>
   children?: ReactNode
+  textAlignment?: string
 }
 
 export function ActionCard({
@@ -25,8 +26,11 @@ export function ActionCard({
   subHeaderText,
   bodyText,
   recipient,
-  children
+  children,
+  textAlignment
 }: ActionCardProps): ReactElement {
+  const textPosition = textAlignment != null ? textAlignment : 'text-center'
+
   return (
     <Section className="mt-[60px] mb-[15px] max-w-[500px] ">
       <Container
@@ -56,7 +60,7 @@ export function ActionCard({
           <Row>
             <th>
               <Text
-                className="font-semibold text-[16px] leading-[28px] mt-[12px] mb-[0px] text-center"
+                className={`font-semibold text-[16px] leading-[28px] mt-[12px] mb-[0px] ${textPosition}`}
                 style={{
                   font: '16px "Open Sans", sans-serif'
                 }}
@@ -67,7 +71,7 @@ export function ActionCard({
               </Text>
               {headerText != null && (
                 <Text
-                  className="font-semibold text-[16px] leading-[24px] mt-[0px] mb-[20px] text-center"
+                  className={`font-semibold text-[16px] leading-[24px] mt-[0px] mb-[20px] text-center ${textPosition}`}
                   style={{
                     font: '16px "Open Sans", sans-serif'
                   }}
@@ -76,12 +80,16 @@ export function ActionCard({
                 </Text>
               )}
               {subHeaderText != null && (
-                <Text className="font-semibold text-[20px] leading-[24px] mt-[0px] mb-[20px] text-center">
+                <Text
+                  className={`font-semibold text-[20px] leading-[24px] mt-[0px] mb-[20px] text-center ${textPosition}`}
+                >
                   {subHeaderText}
                 </Text>
               )}
               {bodyText != null && (
-                <Text className="font-[400] text-[16px] leading-[24px] mt-[0px] mb-[20px] text-center">
+                <Text
+                  className={`font-[400] text-[16px] leading-[24px] mt-[0px] mb-[20px] text-center ${textPosition}`}
+                >
                   {bodyText}
                 </Text>
               )}

@@ -3,32 +3,11 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
+import { TextResponseType } from "./globalTypes";
+
 // ====================================================
 // GraphQL fragment: TextResponseFields
 // ====================================================
-
-export interface TextResponseFields_action_NavigateToBlockAction {
-  __typename: "NavigateToBlockAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  blockId: string;
-}
-
-export interface TextResponseFields_action_LinkAction {
-  __typename: "LinkAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  url: string;
-}
-
-export interface TextResponseFields_action_EmailAction {
-  __typename: "EmailAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  email: string;
-}
-
-export type TextResponseFields_action = TextResponseFields_action_NavigateToBlockAction | TextResponseFields_action_LinkAction | TextResponseFields_action_EmailAction;
 
 export interface TextResponseFields {
   __typename: "TextResponseBlock";
@@ -38,7 +17,7 @@ export interface TextResponseFields {
   label: string;
   hint: string | null;
   minRows: number | null;
-  submitLabel: string | null;
-  submitIconId: string | null;
-  action: TextResponseFields_action | null;
+  type: TextResponseType | null;
+  routeId: string | null;
+  integrationId: string | null;
 }

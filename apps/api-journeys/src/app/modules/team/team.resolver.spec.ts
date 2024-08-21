@@ -224,6 +224,31 @@ describe('TeamResolver', () => {
     })
   })
 
+  describe('integrations', () => {
+    it('Should return integrations of team', async () => {
+      const teamWithIntegrations = {
+        ...team,
+        integrations: {
+          id: 'integrationId',
+          teamId: 'teamId',
+          type: 'growthSpaces'
+        }
+      }
+
+      const integrations = jest
+        .fn()
+        .mockResolvedValue(teamWithIntegrations.integrations)
+
+      prismaService.team.findUnique.mockReturnValue({
+        ...teamWithIntegrations,
+        integrations
+      } as unknown as Prisma.Prisma__TeamClient<Team>)
+      await expect(
+        resolver.integrations(teamWithIntegrations)
+      ).resolves.toEqual(teamWithIntegrations.integrations)
+    })
+  })
+
   describe('resolveReference', () => {
     it('fetches team by id', async () => {
       prismaService.team.findUnique.mockResolvedValue(team)
