@@ -158,6 +158,10 @@ export function SearchBar({
           </Box>
         </Box>
       </Popper>
+      {/* Force refinements to be re-fetched befor popper opened */}
+      <Box sx={{ display: 'none' }}>
+        <LangaugeRefinement />
+      </Box>
     </Box>
   )
 }
