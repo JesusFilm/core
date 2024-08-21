@@ -17,8 +17,8 @@
       "configurations": {
         "production": {
           "commands": [
-            "CI=true nx _build videos-admin --prod",
-            "cp -r libs/locales dist/apps/videos-admin/.next/server"
+            "cp -r libs/locales apps/videos-admin/src",
+            "CI=true nx _build videos-admin --prod"
           ],
           "parallel": false
         }
