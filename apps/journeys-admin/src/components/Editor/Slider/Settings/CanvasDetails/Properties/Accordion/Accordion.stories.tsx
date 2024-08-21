@@ -30,14 +30,13 @@ export const Default: StoryObj<typeof Accordion> = {
   }
 }
 
-export const StaticLabel: StoryObj<typeof Accordion> = {
+export const SingleLabel: StoryObj<typeof Accordion> = {
   render: () => {
     return (
       <EditorProvider>
         <Accordion
           id="custom-id"
           icon={<PaletteIcon />}
-          labelVariant="static"
           name="Label"
         >
           test
