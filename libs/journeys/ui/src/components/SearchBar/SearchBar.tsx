@@ -131,7 +131,7 @@ export function SearchBar({
                 ),
                 endAdornment: languageButtonVisable ? (
                   <InputAdornment position="end">
-                    <LanguageButton/>
+                    <LanguageButton />
                   </InputAdornment>
                 ) : (
                   <></>
