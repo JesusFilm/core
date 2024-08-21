@@ -8,15 +8,19 @@
     "build": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["nx _build videos-admin"],
+        "commands": [
+          "cp -r libs/locales apps/videos-admin/src",
+          "nx _build videos-admin"
+        ],
         "parallel": false
       },
       "configurations": {
         "production": {
           "commands": [
-            "cp -r libs/locales apps/videos-admin",
-            "CI=true nx _build videos-admin --prod"
-          ]
+            "CI=true nx _build videos-admin --prod",
+            "cp -r libs/locales dist/apps/videos-admin/.next/server"
+          ],
+          "parallel": false
         }
       }
     },

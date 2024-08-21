@@ -4,7 +4,10 @@
     "jsx": "preserve",
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
-    "types": ["node", "jest"],
+    "types": [
+      "node",
+      "jest"
+    ],
     "strict": false,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
@@ -32,7 +35,11 @@
     ".next/types/**/*.ts",
     "src/app/[locale]/_apolloWrapper/apolloWrapper.tsx",
     "src/i18n.ts",
-    "src/middleware.ts"
+    "src/middleware.ts",
+    "../../dist/apps/videos-admin/.next/types/**/*.ts"
   ],
-  "exclude": ["node_modules", "jest.config.ts"]
+  "exclude": [
+    "node_modules",
+    "jest.config.ts"
+  ]
 }
