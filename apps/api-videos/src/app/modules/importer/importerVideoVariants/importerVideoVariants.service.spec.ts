@@ -67,7 +67,8 @@ describe('ImporterVideoVariantsService', () => {
           id: 'mockId',
           languageId: '529',
           slug: 'Variant-Title/english',
-          videoId: 'videoId'
+          videoId: 'videoId',
+          edition: 'mockEdition'
         },
         update: {
           duration: 123,
@@ -75,7 +76,8 @@ describe('ImporterVideoVariantsService', () => {
           id: 'mockId',
           languageId: '529',
           slug: 'Variant-Title/english',
-          videoId: 'videoId'
+          videoId: 'videoId',
+          edition: 'mockEdition'
         }
       })
     })
@@ -119,7 +121,8 @@ describe('ImporterVideoVariantsService', () => {
             duration: 123,
             languageId: '529',
             slug: 'Variant-Title/english',
-            videoId: 'videoId'
+            videoId: 'videoId',
+            edition: 'mockEdition'
           },
           {
             id: 'mockId',
@@ -127,7 +130,8 @@ describe('ImporterVideoVariantsService', () => {
             duration: 123,
             languageId: '3804',
             slug: 'Variant-Title/korean',
-            videoId: 'videoId'
+            videoId: 'videoId',
+            edition: 'mockEdition'
           }
         ],
         skipDuplicates: true
