@@ -1303,6 +1303,7 @@ type Language
   id: ID!
   bcp47: String @join__field(graph: LANGUAGES)
   iso3: String @join__field(graph: LANGUAGES)
+  slug: String @join__field(graph: LANGUAGES)
   name(languageId: ID, primary: Boolean): [LanguageName!]! @join__field(graph: LANGUAGES)
   countryLanguages: [CountryLanguage!]! @join__field(graph: LANGUAGES)
   audioPreview: AudioPreview @join__field(graph: LANGUAGES)

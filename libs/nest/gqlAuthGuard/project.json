@@ -6,7 +6,12 @@
   "targets": {
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "cache": true,
+        "cacheLocation": ".cache/nest-gqlAuthGuard/eslint",
+        "cacheStrategy": "content"
+      }
     },
     "test": {
       "executor": "@nx/jest:jest",

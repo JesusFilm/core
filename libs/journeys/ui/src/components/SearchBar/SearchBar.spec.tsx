@@ -1,5 +1,5 @@
-import { fireEvent, render, screen } from '@testing-library/react'
-import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import type { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
 import { useSearchBox } from 'react-instantsearch'
 
 import '../../../test/i18n'
@@ -48,8 +48,18 @@ describe('SearchBar', () => {
     const refine = mockSearchBox()
     render(<SearchBar />)
     const input = screen.getByDisplayValue('Hello World!')
-    fireEvent.change(input, { target: { value: 'Hello' } })
-    expect(refine).toHaveBeenCalled()
+    fireEvent.change(input, { target: { value: 'Testing' } })
+    await waitFor(() => expect(refine).toHaveBeenCalled())
+  })
+
+  it('should refine once when further keystrokes', async () => {
+    const refine = mockSearchBox()
+    render(<SearchBar />)
+    const input = screen.getByDisplayValue('Hello World!')
+    fireEvent.change(input, { target: { value: 'J' } })
+    fireEvent.change(input, { target: { value: 'Je' } })
+    fireEvent.change(input, { target: { value: 'Jes' } })
+    await waitFor(() => expect(refine).toHaveBeenCalledTimes(1))
   })
 
   it('should have language icon', async () => {
@@ -58,8 +68,8 @@ describe('SearchBar', () => {
     expect(searchIcon).toBeInTheDocument()
   })
 
-  it('should render english language by default', async () => {
+  it('should render language', async () => {
     render(<SearchBar showLanguageButton />)
-    expect(screen.getByText('English')).toBeInTheDocument()
+    expect(screen.getByText('Language')).toBeInTheDocument()
   })
 })

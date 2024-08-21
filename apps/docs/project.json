@@ -50,7 +50,12 @@
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "cache": true,
+        "cacheLocation": ".cache/docs/eslint",
+        "cacheStrategy": "content"
+      }
     },
     "fetch-secrets": {
       "executor": "nx:run-commands",

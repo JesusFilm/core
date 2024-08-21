@@ -105,7 +105,12 @@
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "cache": true,
+        "cacheLocation": ".cache/arclight/eslint",
+        "cacheStrategy": "content"
+      }
     },
     "type-check": {
       "executor": "nx:run-commands",
@@ -121,6 +126,12 @@
             "command": "DOPPLER_TOKEN=$DOPPLER_ARCLIGHT_TOKEN doppler secrets download --no-file --format=env-no-quotes --project arclight > apps/arclight/.env"
           }
         ]
+      }
+    },
+    "codegen": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "gql.tada generate output --tsconfig apps/arclight/tsconfig.json"
       }
     }
   },

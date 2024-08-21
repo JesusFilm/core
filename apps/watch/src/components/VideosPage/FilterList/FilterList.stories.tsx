@@ -1,7 +1,9 @@
-import { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react'
+
+import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
 
 import { watchConfig } from '../../../libs/storybook'
-import { languages } from '../testData'
+import { languages } from '../data'
 
 import { FilterList } from './FilterList'
 
@@ -9,21 +11,17 @@ const FilterListStory: Meta<typeof FilterList> = {
   ...watchConfig,
   component: FilterList,
   title: 'Watch/VideosPage/FilterList',
-  argTypes: { onChange: { action: 'onChange' } },
   parameters: {
     theme: 'light'
   }
 }
 
 const Template: StoryObj<typeof FilterList> = {
-  render: ({ onChange }) => {
+  render: () => {
     return (
-      <FilterList
-        filter={{}}
-        onChange={onChange}
-        languagesData={{ languages }}
-        languagesLoading={false}
-      />
+      <InstantSearchTestWrapper>
+        <FilterList languagesData={{ languages }} languagesLoading={false} />
+      </InstantSearchTestWrapper>
     )
   }
 }

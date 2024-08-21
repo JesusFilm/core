@@ -18,7 +18,7 @@ const SearchBarStory: Meta<typeof SearchBar> = {
 const Template: StoryObj<ComponentProps<typeof SearchBar> & { query: string }> =
   {
     render: (args) => (
-      <InstantSearchTestWrapper query={args.query} indexName="indexName">
+      <InstantSearchTestWrapper query={args.query}>
         <SearchBar showLanguageButton={args.showLanguageButton} />
       </InstantSearchTestWrapper>
     )
