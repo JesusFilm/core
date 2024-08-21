@@ -11,24 +11,31 @@ import { ReactElement, ReactNode } from 'react'
 import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 
-interface AccordionProps {
-  id: string
-  icon: ReactElement
+interface StaticLabelProps {
+  labelVariant: 'static'
   name: string
-  value: string
-  testId?: string
-  param?: string
-  children: ReactNode
 }
 
-export function Accordion({
+interface DynamicLabelProps {
+  labelVariant?: 'dynamic'
+  name: string
+  value: string
+}
+
+type AccordionProps = {
+  id: string
+  icon: ReactElement
+  param?: string
+  children: ReactNode
+} & (StaticLabelProps | DynamicLabelProps)
+
+export function Accordion(props: AccordionProps): ReactElement {
+const {
   id,
   icon,
-  name,
-  value,
   param,
-  children
-}: AccordionProps): ReactElement {
+  children,
+} = props
   const router = useRouter()
   const {
     state: { selectedAttributeId },
@@ -75,13 +82,19 @@ export function Accordion({
       >
         <Stack spacing={3} alignItems="center" direction="row">
           {icon}
-          <Box sx={{ maxWidth: 92, overflow: 'hidden' }}>
-            {name != null && (
-              <Typography variant="caption" color="text.secondary" noWrap>
-                {name}
-              </Typography>
+          <Box sx={{ maxWidth: '24ch', overflow: 'hidden' }}>
+            {props.labelVariant === 'static' ? (
+              <Typography variant="subtitle1" noWrap>{props.name}</Typography>
+            ) : (
+              <>
+                {props.name != null && (
+                <Typography variant="caption" color="text.secondary" noWrap>
+                  {props.name}
+                </Typography>
+      )}
+                <Typography noWrap>{props.value !== '' ? props.value : 'None'}</Typography>
+              </>
             )}
-            <Typography noWrap>{value !== '' ? value : 'None'}</Typography>
           </Box>
         </Stack>
       </AccordionSummary>
