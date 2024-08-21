@@ -34,11 +34,7 @@ export const SingleLabel: StoryObj<typeof Accordion> = {
   render: () => {
     return (
       <EditorProvider>
-        <Accordion
-          id="custom-id"
-          icon={<PaletteIcon />}
-          name="Label"
-        >
+        <Accordion id="custom-id" icon={<PaletteIcon />} name="Label">
           test
         </Accordion>
       </EditorProvider>

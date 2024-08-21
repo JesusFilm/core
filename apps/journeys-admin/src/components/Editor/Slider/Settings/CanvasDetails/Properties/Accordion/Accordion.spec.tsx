@@ -36,7 +36,9 @@ describe('accordion', () => {
       screen.queryByText('selectedAttributeId: custom-id')
     ).not.toBeInTheDocument()
     fireEvent.click(screen.getByRole('button'))
-    expect(screen.getByText('selectedAttributeId: custom-id')).toBeInTheDocument()
+    expect(
+      screen.getByText('selectedAttributeId: custom-id')
+    ).toBeInTheDocument()
   })
 
   it('handles params in helpscout', () => {
@@ -66,7 +68,9 @@ describe('accordion', () => {
     )
 
     fireEvent.click(screen.getByRole('button'))
-    expect(screen.getByText('selectedAttributeId: custom-id')).toBeInTheDocument()
+    expect(
+      screen.getByText('selectedAttributeId: custom-id')
+    ).toBeInTheDocument()
     expect(push).toHaveBeenCalledWith(
       {
         query: { param: 'test-params' }
@@ -81,20 +85,21 @@ describe('accordion', () => {
   })
 
   it('should render a single label if value is null', () => {
-    render(<ThemeProvider>
-      <EditorProvider initialState={{}}>
-        <Accordion
+    render(
+      <ThemeProvider>
+        <EditorProvider initialState={{}}>
+          <Accordion
             id="custom-id"
             icon={<>test</>}
             name="name"
             param="test-params"
           >
-          test
-        </Accordion>
-        <TestEditorState />
-      </EditorProvider>
-    </ThemeProvider>
-  )
+            test
+          </Accordion>
+          <TestEditorState />
+        </EditorProvider>
+      </ThemeProvider>
+    )
 
     const summary = screen.getByTestId('AccordionSummary')
 

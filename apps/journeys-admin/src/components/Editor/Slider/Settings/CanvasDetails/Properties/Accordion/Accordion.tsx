@@ -26,7 +26,7 @@ export function Accordion({
   name,
   value,
   param,
-  children,
+  children
 }: AccordionProps): ReactElement {
   const router = useRouter()
   const {
@@ -76,7 +76,9 @@ export function Accordion({
           {icon}
           <Box sx={{ maxWidth: '24ch', overflow: 'hidden' }}>
             {value === undefined ? (
-              <Typography variant="subtitle1" noWrap>{name}</Typography>
+              <Typography variant="subtitle1" noWrap>
+                {name}
+              </Typography>
             ) : (
               <>
                 <Typography variant="caption" color="text.secondary" noWrap>
