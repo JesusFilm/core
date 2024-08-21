@@ -21,7 +21,5 @@ export const GET_LANGUAGES_CONTINENTS = gql`
 `
 
 export function useLanguagesContinentsQuery(): QueryResult<GetLanguagesContinents> {
-  const query = useQuery<GetLanguagesContinents>(GET_LANGUAGES_CONTINENTS)
-
-  return query
+  return useQuery<GetLanguagesContinents>(GET_LANGUAGES_CONTINENTS)
 }
