@@ -8,12 +8,15 @@ import Typography from '@mui/material/Typography'
 import { Formik } from 'formik'
 import { useTranslation } from 'next-i18next'
 import { type ReactElement, useRef, useState } from 'react'
-import { RefinementList, useSearchBox } from 'react-instantsearch'
+import { useSearchBox } from 'react-instantsearch'
 
 import ChevronDown from '@core/shared/ui/icons/ChevronDown'
 import Globe1Icon from '@core/shared/ui/icons/Globe1'
 import Search1Icon from '@core/shared/ui/icons/Search1'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
+
+import { LangaugeRefinement } from '../LanguageRefinement'
+
 
 /* Styles below used to fake a gradient border because the 
 css attributes border-radius and border-image-source are not compatible */
@@ -150,9 +153,8 @@ export function SearchBar({
       </Box>
       <Popper id={id} open={open} anchorEl={anchorEl} placement='bottom-end' sx={{width: anchorEl?.clientWidth}} data-testid='SearchLangaugeFilter'>
         <Box sx={{ p: 8, bgcolor: 'background.paper', mt: 3 }} borderRadius={3} boxShadow='0px 4px 4px 0px #00000040'>
-          <Typography variant="h6" color='primary.main'>{t('Langauges')}</Typography>
           <Box color='text.primary'>
-            <RefinementList attribute='languageEnglishName'/>
+            <LangaugeRefinement/>
           </Box>
         </Box>
       </Popper>

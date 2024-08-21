@@ -8,6 +8,7 @@ import { watchConfig } from '@core/shared/ui/storybook'
 import { InstantSearchTestWrapper } from '../../libs/algolia/InstantSearchTestWrapper'
 
 import { SearchBar } from './SearchBar'
+import { emptyResultsHandler, getLanguageFacetHandlers } from './SearchBar.handlers'
 
 const SearchBarStory: Meta<typeof SearchBar> = {
   ...watchConfig,
@@ -26,6 +27,11 @@ const Template: StoryObj<ComponentProps<typeof SearchBar> & { query: string }> =
 
 export const Default = {
   ...Template,
+  parameters: {
+    msw: {
+      handlers: [emptyResultsHandler]
+    }
+  },
   play: async () => {
     await waitFor(async () => {
       await expect(screen.getByTestId('SearchBar')).toBeInTheDocument()
@@ -39,13 +45,23 @@ export const Search = {
   ...Template,
   args: {
     query: 'Easter'
-  }
+  },
+  parameters: {
+    msw: {
+      handlers: [emptyResultsHandler]
+    }
+  },
 }
 
 export const Language = {
   ...Template,
   args: {
     showLanguageButton: true
+  },
+  parameters: {
+    msw: {
+      handlers: [getLanguageFacetHandlers]
+    }
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     const canvas = within(canvasElement)
