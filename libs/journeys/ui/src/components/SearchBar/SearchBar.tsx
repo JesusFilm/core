@@ -8,14 +8,14 @@ import Typography from '@mui/material/Typography'
 import { Formik } from 'formik'
 import { useTranslation } from 'next-i18next'
 import { type ReactElement, useRef, useState } from 'react'
-import { useSearchBox } from 'react-instantsearch'
+import { useRefinementList, useSearchBox } from 'react-instantsearch'
 
 import ChevronDown from '@core/shared/ui/icons/ChevronDown'
 import Globe1Icon from '@core/shared/ui/icons/Globe1'
 import Search1Icon from '@core/shared/ui/icons/Search1'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
 
-import { LangaugeRefinement } from '../LanguageRefinement'
+import { RefinementGroup } from '../RefinementGroup/RefinementGroup'
 
 
 /* Styles below used to fake a gradient border because the 
@@ -154,13 +154,13 @@ export function SearchBar({
       <Popper id={id} open={open} anchorEl={anchorEl} placement='bottom-end' sx={{width: anchorEl?.clientWidth}} data-testid='SearchLangaugeFilter'>
         <Box sx={{ p: 8, bgcolor: 'background.paper', mt: 3 }} borderRadius={3} boxShadow='0px 4px 4px 0px #00000040'>
           <Box color='text.primary'>
-            <LangaugeRefinement/>
+            <RefinementGroup title='Languages' refinement={useRefinementList({attribute: 'languageEnglishName'})}/>
           </Box>
         </Box>
       </Popper>
       {/* Force refinements to be re-fetched befor popper opened */}
       <Box sx={{ display: 'none' }}>
-        <LangaugeRefinement />
+        <RefinementGroup title='Languages' refinement={useRefinementList({attribute: 'languageEnglishName'})}/>
       </Box>
     </Box>
   )

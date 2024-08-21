@@ -2,9 +2,8 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { RefinementListItem, RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { useRefinementList } from 'react-instantsearch'
 
-import { LangaugeRefinement } from '.'
-
 import '../../../test/i18n'
+import { RefinementGroup } from './RefinementGroup'
 
 jest.mock('react-instantsearch')
 
@@ -64,35 +63,31 @@ const mockUseRefinementList = useRefinementList as jest.MockedFunction<
   typeof useRefinementList
 >
 
-function mockRefinementList(): jest.Mock {
+describe('RefinementGroup', () => {
   const refine = jest.fn()
-  mockUseRefinementList.mockReturnValue({
+  const useRefinementList = {
     items: languageRefinements,
     refine
-  } as unknown as RefinementListRenderState)
-  return refine
-}
+  } as unknown as RefinementListRenderState
 
-describe('LangaugeRefinement', () => {
   beforeEach(() => {
-    mockRefinementList()
+    mockUseRefinementList.mockReturnValue(useRefinementList)
   })
 
   it('should have languages header', () => {
-    render(<LangaugeRefinement/>)
+    render(<RefinementGroup title='Languages' refinement={useRefinementList}/>)
     expect(screen.getByText('Languages')).toBeInTheDocument()
   })
 
   it('should have languages listed', () => {
-    render(<LangaugeRefinement/>)
+    render(<RefinementGroup title='Langauges' refinement={useRefinementList}/>)
     expect(screen.getByText('English')).toBeInTheDocument()
     expect(screen.getByText('Spanish, Latin American')).toBeInTheDocument()
     expect(screen.getByText('Chinese, Mandarin')).toBeInTheDocument()
   })
 
   it('should refine when langauge selected', () => {
-    const refine = mockRefinementList()
-    render(<LangaugeRefinement/>)
+    render(<RefinementGroup title='Langauges' refinement={useRefinementList}/>)
     fireEvent.click(screen.getByText('Cantonese'))
     expect(refine).toHaveBeenCalled()
   })
