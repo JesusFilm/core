@@ -1,16 +1,19 @@
 import mapValues from 'lodash/mapValues'
 
-import { useLanguagesContinentsQuery } from '@core/journeys/ui/useLanguagesContinentsQuery'
+import { GetLanguagesContinents_languages as Languages } from '../../../../__generated__/GetLanguagesContinents'
 
 interface LanguageContinentsRecord {
   [continent: string]: string[]
 }
 
-export function useSortLanguageContinents(): LanguageContinentsRecord {
-  const { data } = useLanguagesContinentsQuery()
-  if (data?.languages == null) return {}
+interface useSortLanguageContinentsProps {
+  languages: Languages[]
+}
 
-  const record: Record<string, Set<string>> = data?.languages.reduce(
+export function useSortLanguageContinents({
+  languages
+}: useSortLanguageContinentsProps): LanguageContinentsRecord {
+  const record: Record<string, Set<string>> = languages.reduce(
     (acc, language) => {
       language.countryLanguages.forEach((countryLanguage) => {
         const continentId = countryLanguage.country.continent.id
