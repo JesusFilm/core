@@ -65,7 +65,7 @@ export const nextRouter: RouterProps = {
 }
 
 function HomePage({ serverState }: HomePageProps): ReactElement {
-  const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
+  // const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
 
   return (
     <InstantSearchSSRProvider {...serverState}>
