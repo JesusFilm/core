@@ -6,6 +6,7 @@ import { graphql } from 'gql.tada'
 import { PrismaService } from '../../lib/prisma.service'
 
 const ENGLISH_LANGUAGE_ID = '529'
+const TULA_LANGUAGE_ID = '9999'
 const SPANISH_CASTILIAN_LANGUAGE_ID = '21046'
 const SPANISH_LATIN_AMERICAN_LANGUAGE_ID = '21028'
 const CHINESE_TRADITIONAL_LANGUAGE_ID = '21753'
@@ -106,6 +107,7 @@ export class AlgoliaService {
                   languageId: {
                     in: [
                       ENGLISH_LANGUAGE_ID,
+                      TULA_LANGUAGE_ID,
                       SPANISH_CASTILIAN_LANGUAGE_ID,
                       SPANISH_LATIN_AMERICAN_LANGUAGE_ID,
                       CHINESE_TRADITIONAL_LANGUAGE_ID,

@@ -149,6 +149,7 @@ describe('AlgoliaService', () => {
           languageId: {
             in: [
               '529', // English
+              '9999', // Tula
               '21046', // Spanish, Castilian
               '21028', // Spanish, Latin American
               '21753', // Chinese, Traditional
