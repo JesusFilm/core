@@ -79,7 +79,7 @@ export function WatchHomePage({ facets }): ReactElement {
     if (normalisedFacetLanguages != null) {
       console.log('looking for facet values that match')
       const langFound = normalisedFacetLanguages.find((lang) =>
-        query.includes(lang.normalisedName)
+        query.toLowerCase().includes(lang.normalisedName)
       )
       console.log(
         'normalisedFacetLanguages ',
