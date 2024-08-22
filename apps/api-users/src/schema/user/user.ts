@@ -3,23 +3,6 @@ import { builder } from '../builder'
 
 import { findOrFetchUser } from './findOrFetchUser'
 
-export function validateIpV4(s: string | null): boolean {
-  if (s == null) return true // localhost
-
-  const match = s.match(/([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})/g)
-  const ip = match?.[0] ?? ''
-  return (
-    ip === '3.13.104.200' || // prod aws nat
-    ip === '18.225.26.131' || // stage aws nat
-    ip === '127.0.0.1' // localhsot
-  )
-}
-
-export function isValidInterOp(token: string, address: string): boolean {
-  const validIp = validateIpV4(address)
-  return token === process.env.INTEROP_TOKEN && validIp
-}
-
 export function isCurrentUser(
   currentUserId: string,
   contextUserId: string
@@ -67,17 +50,24 @@ builder.queryFields((t) => ({
     args: {
       id: t.arg.id({ required: true })
     },
-    resolve: async (query, _parent, { id }, ctx) =>
-      await prisma.user.findUnique({
+    scopeAuthOptions: {
+      isValidInterOp: true
+    },
+    resolve: async (query, _parent, { id }, ctx) => {
+      return await prisma.user.findUnique({
         ...query,
         where: { id }
       })
+    }
   }),
   userByEmail: t.prismaField({
     type: 'User',
     nullable: true,
     args: {
       email: t.arg.string({ required: true })
+    },
+    scopeAuthOptions: {
+      isValidInterOp: true
     },
     resolve: async (query, _parent, { email }, ctx) => {
       return await prisma.user.findUnique({
@@ -95,14 +85,16 @@ builder.queryFields((t) => ({
         required: false
       })
     },
-    // authScopes: {
-    //   isAuthenticated: true
-    // },
+    authScopes: {
+      isAuthenticated: true
+    },
     resolve: async (query, _parent, { input }, ctx) => {
-      if (input?.redirect != null) {
-        return { redirect: input.redirect }
-      }
-      return await findOrFetchUser(ctx.currentUser?.id, input?.redirect)
+      if (ctx.currentUser?.id == null) return null
+      return await findOrFetchUser(
+        query,
+        ctx.currentUser?.id,
+        input?.redirect ?? undefined
+      )
     }
   })
 }))

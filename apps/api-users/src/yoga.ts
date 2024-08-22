@@ -11,14 +11,17 @@ export const yoga = createYoga({
   context: async ({ request }) => {
     const token = request.headers.get('authorization')
     // ?.replace(/^Bearer\s/, '')
-    if (token == null || token === '')
-      return {
-        currentUser: null,
-        token: null
-      }
+    const interopToken = request.headers.get('interop-token')
+    const ipAddress = request.headers.get('x-forwarded-for')
+
     return {
-      currentUser: await getUserFromAuthToken(token),
-      token
+      currentUser:
+        token == null || token === ''
+          ? null
+          : await getUserFromAuthToken(token),
+      token,
+      interopToken,
+      ipAddress
     } satisfies Context
   },
   plugins: [

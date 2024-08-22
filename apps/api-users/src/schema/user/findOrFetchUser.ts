@@ -1,4 +1,4 @@
-import { User } from '.prisma/api-users-client'
+import { Prisma, User } from '.prisma/api-users-client'
 import { auth } from '@core/yoga/firebaseClient'
 
 import { prisma } from '../../lib/prisma'
@@ -6,10 +6,12 @@ import { prisma } from '../../lib/prisma'
 import { verifyUser } from './verifyUser'
 
 export async function findOrFetchUser(
+  query: { select?: Prisma.UserSelect; include?: undefined },
   userId: string,
   redirect: string | undefined = undefined
 ): Promise<User | null> {
   const existingUser = await prisma.user.findUnique({
+    ...query,
     where: {
       userId
     }

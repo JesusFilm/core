@@ -5,7 +5,7 @@ import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { cache } from '../../yoga'
 
-import { language, languageName } from './language.mock'
+import { language, languageName } from './user.mock'
 
 const LANGUAGES_QUERY = graphql(`
   query Languages($languageId: ID, $primary: Boolean) {
