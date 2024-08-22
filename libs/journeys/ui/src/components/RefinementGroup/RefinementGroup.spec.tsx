@@ -6,7 +6,6 @@ import { languageRefinements } from '../SearchBar/data'
 
 import { RefinementGroup } from './RefinementGroup'
 
-
 describe('RefinementGroup', () => {
   const refine = jest.fn()
   const useRefinementList = {
@@ -15,20 +14,35 @@ describe('RefinementGroup', () => {
   } as unknown as RefinementListRenderState
 
   it('should have languages header', () => {
-    render(<RefinementGroup title='Languages' refinement={useRefinementList}/>)
+    render(<RefinementGroup title="Languages" refinement={useRefinementList} />)
     expect(screen.getByText('Languages')).toBeInTheDocument()
   })
 
   it('should have languages listed', () => {
-    render(<RefinementGroup title='Langauges' refinement={useRefinementList}/>)
+    render(<RefinementGroup title="Langauges" refinement={useRefinementList} />)
     expect(screen.getByText('English')).toBeInTheDocument()
     expect(screen.getByText('Spanish, Latin American')).toBeInTheDocument()
     expect(screen.getByText('Chinese, Mandarin')).toBeInTheDocument()
   })
 
   it('should refine when langauge selected', () => {
-    render(<RefinementGroup title='Langauges' refinement={useRefinementList}/>)
+    render(<RefinementGroup title="Langauges" refinement={useRefinementList} />)
     fireEvent.click(screen.getByText('Cantonese'))
     expect(refine).toHaveBeenCalled()
+  })
+
+  it('should display message when no facets are available', () => {
+    const emptyRefinementList = {
+      items: [],
+      refine
+    } as unknown as RefinementListRenderState
+    render(
+      <RefinementGroup title="Langauges" refinement={emptyRefinementList} />
+    )
+    expect(
+      screen.getByText(
+        'Sorry, there are no langauges available for this search. Try a broader search!'
+      )
+    ).toBeInTheDocument()
   })
 })

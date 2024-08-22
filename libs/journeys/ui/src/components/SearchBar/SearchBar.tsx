@@ -15,8 +15,7 @@ import Globe1Icon from '@core/shared/ui/icons/Globe1'
 import Search1Icon from '@core/shared/ui/icons/Search1'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
 
-import { RefinementGroup } from '../RefinementGroup/RefinementGroup'
-
+import { RefinementGroup } from '../RefinementGroup'
 
 /* Styles below used to fake a gradient border because the 
 css attributes border-radius and border-image-source are not compatible */
@@ -41,9 +40,7 @@ interface LangaugeButtonProps {
   onClick: () => void
 }
 
-function LanguageButton({
-  onClick
-}: LangaugeButtonProps): ReactElement {
+function LanguageButton({ onClick }: LangaugeButtonProps): ReactElement {
   const { t } = useTranslation('apps-watch')
 
   return (
@@ -96,7 +93,7 @@ export function SearchBar({
 
   const { query, refine } = useSearchBox()
   const [languageButtonVisable] = useState(showLanguageButton)
-  const refinements = useRefinementList({attribute: 'languageEnglishName'})
+  const refinements = useRefinementList({ attribute: 'languageEnglishName' })
 
   const initialValues = {
     title: query
@@ -107,7 +104,7 @@ export function SearchBar({
   }
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false)
   const popperRef = useRef(null)
 
   const handleClick = (): void => {
@@ -163,13 +160,24 @@ export function SearchBar({
               />
               <SubmitListener />
             </>
-        )}
+          )}
         </Formik>
       </Box>
-      <Popper id={id} open={open} anchorEl={anchorEl} placement='bottom-end' sx={{width: anchorEl?.clientWidth}} data-testid='SearchLangaugeFilter'>
-        <Box sx={{ p: 8, bgcolor: 'background.paper', mt: 3 }} borderRadius={3} boxShadow='0px 4px 4px 0px #00000040'>
-          <Box color='text.primary'>
-            <RefinementGroup title='Languages' refinement={refinements}/>
+      <Popper
+        id={id}
+        open={open}
+        anchorEl={anchorEl}
+        placement="bottom-end"
+        sx={{ width: anchorEl?.clientWidth }}
+        data-testid="SearchLangaugeFilter"
+      >
+        <Box
+          sx={{ p: 8, bgcolor: 'background.paper', mt: 3 }}
+          borderRadius={3}
+          boxShadow="0px 4px 4px 0px #00000040"
+        >
+          <Box color="text.primary">
+            <RefinementGroup title="Languages" refinement={refinements} />
           </Box>
         </Box>
       </Popper>

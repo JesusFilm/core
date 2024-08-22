@@ -20,6 +20,14 @@ export const getLanguageFacetHandlers = [
   })
 ]
 
+export const emptyLanguageFacetHandlers = [
+  http.post('https://algolia-dsn.algolia.net/1/indexes/*', () => {
+    return HttpResponse.json({
+      results: [{ facets: [] }]
+    })
+  })
+]
+
 export const emptyResultsHandler = [
   http.post('https://algolia-dsn.algolia.net/1/indexes/*', () => {
     return HttpResponse.json({

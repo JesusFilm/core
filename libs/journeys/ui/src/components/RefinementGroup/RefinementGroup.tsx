@@ -15,21 +15,38 @@ interface RefinementGroupProps {
 export function RefinementGroup({
   refinement,
   title
-}: RefinementGroupProps
-): ReactElement {
+}: RefinementGroupProps): ReactElement {
   const { t } = useTranslation('apps-watch')
 
   return (
     <Box>
-      <Typography variant="h6" color='primary.main' marginBottom={6}>{t(title)}</Typography>
-      <Box color='text.primary'>
-        <FormGroup>
-          {refinement.items.map((item) => (
-            <FormControlLabel key={item.value} control={
-              <Checkbox checked={item.isRefined} onClick={() => refinement.refine(item.value)} size='small' />
-            } label={item.label} />
-          ))}
-        </FormGroup>
+      <Typography variant="h6" color="primary.main" marginBottom={6}>
+        {t(title)}
+      </Typography>
+      <Box color="text.primary">
+        {refinement.items.length > 0 ? (
+          <FormGroup>
+            {refinement.items.map((item) => (
+              <FormControlLabel
+                key={item.value}
+                control={
+                  <Checkbox
+                    checked={item.isRefined}
+                    onClick={() => refinement.refine(item.value)}
+                    size="small"
+                  />
+                }
+                label={item.label}
+              />
+            ))}
+          </FormGroup>
+        ) : (
+          <Typography>
+            {t(
+              `Sorry, there are no ${title.toLowerCase()} available for this search. Try a broader search!`
+            )}
+          </Typography>
+        )}
       </Box>
     </Box>
   )

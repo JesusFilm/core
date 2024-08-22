@@ -8,7 +8,11 @@ import { watchConfig } from '@core/shared/ui/storybook'
 import { InstantSearchTestWrapper } from '../../libs/algolia/InstantSearchTestWrapper'
 
 import { SearchBar } from './SearchBar'
-import { emptyResultsHandler, getLanguageFacetHandlers } from './SearchBar.handlers'
+import {
+  emptyLanguageFacetHandlers,
+  emptyResultsHandler,
+  getLanguageFacetHandlers
+} from './SearchBar.handlers'
 
 const SearchBarStory: Meta<typeof SearchBar> = {
   ...watchConfig,
@@ -50,7 +54,7 @@ export const Search = {
     msw: {
       handlers: [emptyResultsHandler]
     }
-  },
+  }
 }
 
 export const Language = {
@@ -72,10 +76,15 @@ export const Language = {
   }
 }
 
-export const Language = {
+export const NoLanguages = {
   ...Template,
   args: {
     showLanguageButton: true
+  },
+  parameters: {
+    msw: {
+      handlers: [emptyLanguageFacetHandlers]
+    }
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     const canvas = within(canvasElement)
@@ -83,6 +92,11 @@ export const Language = {
       await expect(screen.getByTestId('LanguageSelect')).toBeInTheDocument()
     })
     await userEvent.click(canvas.getByTestId('LanguageSelect'))
+    expect(
+      screen.getByText(
+        'Sorry, there are no languages available for this search.'
+      )
+    )
   }
 }
 

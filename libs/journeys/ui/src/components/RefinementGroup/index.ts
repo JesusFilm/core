@@ -1,1 +1,1 @@
-export { LangaugeRefinement } from './LangaugeRefinement'
+export { RefinementGroup } from './RefinementGroup'
