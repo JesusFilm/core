@@ -4,12 +4,12 @@ import { ComponentProps } from 'react'
 import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
 
 import { watchConfig } from '../../libs/storybook'
-import {
-  emptyResultsHandler,
-  getStrategyCardDataHandlers
-} from '../StrategySections/StrategySection/StrategySection.handlers'
 
 import { StrategiesView } from './StrategiesView'
+import {
+  emptyResultsHandler,
+  getStrategySectionHandlers
+} from './StrategySections/StrategySection/StrategySection.handlers'
 
 const StrategiesViewStory: Meta<typeof StrategiesView> = {
   ...watchConfig,
@@ -20,8 +20,8 @@ const StrategiesViewStory: Meta<typeof StrategiesView> = {
 type Story = StoryObj<ComponentProps<typeof StrategiesView> & { query: string }>
 
 const Template: Story = {
-  render: (args) => (
-    <InstantSearchTestWrapper indexName="new-index-name" query={args.query}>
+  render: () => (
+    <InstantSearchTestWrapper>
       <StrategiesView />
     </InstantSearchTestWrapper>
   )
@@ -29,12 +29,9 @@ const Template: Story = {
 
 export const Default = {
   ...Template,
-  args: {
-    query: ''
-  },
   parameters: {
     msw: {
-      handlers: [getStrategyCardDataHandlers]
+      handlers: [getStrategySectionHandlers]
     }
   }
 }

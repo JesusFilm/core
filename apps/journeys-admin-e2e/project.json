@@ -44,7 +44,12 @@
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "cache": true,
+        "cacheLocation": ".cache/journeys-admin-e2e/eslint",
+        "cacheStrategy": "content"
+      }
     }
   }
 }

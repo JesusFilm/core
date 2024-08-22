@@ -3,9 +3,9 @@ import { z } from 'zod'
 
 import { Prisma } from '.prisma/api-videos-client'
 
-import { convertToSlug } from '../../../../libs/slugify/slugify'
 import { PrismaService } from '../../../lib/prisma.service'
 import { ImporterService } from '../importer.service'
+import { ImporterLanguageSlugsService } from '../importerLanguageSlugs/importerLanguageSlugs.service'
 import { ImporterVideosService } from '../importerVideos/importerVideos.service'
 
 const videoVariantsSchema = z.object({
@@ -33,7 +33,8 @@ export class ImporterVideoVariantsService extends ImporterService<VideoVariants>
   ids: string[] = []
   constructor(
     private readonly prismaService: PrismaService,
-    private readonly importerVideosService: ImporterVideosService
+    private readonly importerVideosService: ImporterVideosService,
+    private readonly importerLanguageSlugsService: ImporterLanguageSlugsService
   ) {
     super()
   }
@@ -55,22 +56,23 @@ export class ImporterVideoVariantsService extends ImporterService<VideoVariants>
       videoVariant.languageName == null
     )
       return null
-    // throw new Error(
-    //   `video for variant id: ${
-    //     videoVariant.id
-    //   } - does not exist! \n${JSON.stringify(videoVariant, null, 2)}`
-    // )
 
-    const transformedLanguageName = convertToSlug(videoVariant.languageName)
+    const languageSlug =
+      this.importerLanguageSlugsService.slugs[videoVariant.languageId]
+
     const slug = `${
       this.importerVideosService.usedSlugs[videoVariant.videoId]
-    }/${transformedLanguageName}`
+    }/${languageSlug}`
+
+    if (languageSlug == null || slug == null) return null
+
     return {
       id: videoVariant.id,
       hls: videoVariant.hls,
       duration: videoVariant.duration,
       languageId: videoVariant.languageId,
       videoId: videoVariant.videoId,
+      edition: videoVariant.edition,
       slug
     }
   }

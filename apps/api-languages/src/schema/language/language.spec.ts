@@ -15,6 +15,7 @@ const LANGUAGE_QUERY = graphql(`
       id
       bcp47
       iso3
+      slug
       name(languageId: $languageId, primary: $primary) {
         value
         primary

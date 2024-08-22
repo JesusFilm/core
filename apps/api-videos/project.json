@@ -49,6 +49,16 @@
         "command": "npm run ts-node apps/api-videos/src/app/modules/bigQuery/bigQuery.console.ts"
       }
     },
+    "export-language-slugs": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npm run ts-node apps/api-videos/src/exportExistingLanguageSlugs.ts",
+          "npx prettier apps/api-languages/src/__generated__/languageSlugs.ts --write"
+        ],
+        "parallel": false
+      }
+    },
     "serve": {
       "executor": "@nx/js:node",
       "options": {
@@ -64,7 +74,12 @@
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "cache": true,
+        "cacheLocation": ".cache/api-videos/eslint",
+        "cacheStrategy": "content"
+      }
     },
     "test": {
       "executor": "@nx/jest:jest",
@@ -150,6 +165,12 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "codecov -f coverage/apps/api-videos/cobertura-coverage.xml -F apps.api-videos"
+      }
+    },
+    "codegen": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "gql.tada generate output --tsconfig apps/api-videos/tsconfig.json"
       }
     }
   },

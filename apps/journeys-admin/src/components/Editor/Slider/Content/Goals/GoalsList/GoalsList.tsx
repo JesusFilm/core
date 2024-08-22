@@ -42,7 +42,8 @@ export function GoalsList({
       <Stack
         sx={{
           gap: { xs: 4, sm: variant !== 'minimal' ? 12 : 4 },
-          mx: { xs: 0, sm: variant !== 'minimal' ? 8 : 0 }
+          mx: { xs: 0, sm: variant !== 'minimal' ? 8 : 0 },
+          overflow: 'hidden'
         }}
         data-testid="GoalsList"
       >
@@ -89,13 +90,18 @@ export function GoalsList({
           sx={{
             boxShadow: 'none',
             border: variant !== 'minimal' ? '1px solid #DEDFE0' : 0,
-            backgroundColor: 'transparent'
+            backgroundColor: 'transparent',
+            overflowY: 'auto'
           }}
         >
-          <Table>
+          <Table stickyHeader>
             <TableHead
               sx={{
-                borderBottom: variant !== 'minimal' ? '1.5px solid #DEDFE0' : 0
+                '& .MuiTableCell-stickyHeader': {
+                  bgcolor: 'background.paper',
+                  borderBottom: ({ palette }) =>
+                    variant !== 'minimal' ? `1.5px solid ${palette.divider}` : 0
+                }
               }}
             >
               <TableRow sx={{ backgroundColor: 'background.paper' }}>

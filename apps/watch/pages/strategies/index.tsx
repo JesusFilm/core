@@ -19,7 +19,9 @@ import { getFlags } from '../../src/libs/getFlags'
 
 const searchClient = algoliasearch(
   process.env.NEXT_PUBLIC_ALGOLIA_APP_ID ?? '',
-  process.env.NEXT_PUBLIC_ALGOLIA_API_KEY ?? ''
+  process.env.ALGOLIA_SERVER_API_KEY ??
+    process.env.NEXT_PUBLIC_ALGOLIA_API_KEY ??
+    ''
 )
 
 interface StrategiesPageProps {
@@ -27,6 +29,10 @@ interface StrategiesPageProps {
 }
 
 function StrategiesPage({ serverState }: StrategiesPageProps): ReactElement {
+  const baseUrl = (process.env.NEXT_PUBLIC_WATCH_URL ?? '').replace(
+    '/watch',
+    ''
+  )
   return (
     <InstantSearchSSRProvider {...serverState}>
       <InstantSearch
@@ -35,7 +41,7 @@ function StrategiesPage({ serverState }: StrategiesPageProps): ReactElement {
         insights
         routing={{
           router: createInstantSearchRouterNext({
-            serverUrl: 'http://localhost:4300/strategies',
+            serverUrl: `${baseUrl}/strategies`,
             singletonRouter,
             routerOptions: {
               cleanUrlOnDispose: false

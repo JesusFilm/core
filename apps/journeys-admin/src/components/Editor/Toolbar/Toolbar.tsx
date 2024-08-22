@@ -59,7 +59,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
     state: { showAnalytics },
     dispatch
   } = useEditor()
-  const { commands, editorAnalytics } = useFlags()
+  const { editorAnalytics } = useFlags()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
@@ -75,6 +75,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
       } else {
         setAnchorEl(menuRef.current)
       }
+      setAnchorEl(null)
     }
   }, [showAnalytics, smUp, setAnchorEl])
 
@@ -139,12 +140,9 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
       </NextLink>
       {journey != null && (
         <>
-          {commands && (
-            <>
-              <CommandUndoItem variant="icon-button" />
-              <CommandRedoItem variant="icon-button" />
-            </>
-          )}
+          <CommandUndoItem variant="icon-button" />
+          <CommandRedoItem variant="icon-button" />
+
           <Tooltip
             title={t('Social Image')}
             arrow

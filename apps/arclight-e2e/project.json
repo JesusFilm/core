@@ -42,7 +42,12 @@
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "cache": true,
+        "cacheLocation": ".cache/arclight-e2e/eslint",
+        "cacheStrategy": "content"
+      }
     }
   },
   "tags": [],

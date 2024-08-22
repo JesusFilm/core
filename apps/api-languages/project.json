@@ -34,7 +34,12 @@
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "cache": true,
+        "cacheLocation": ".cache/api-languages/eslint",
+        "cacheStrategy": "content"
+      }
     },
     "test": {
       "executor": "@nx/jest:jest",
@@ -113,6 +118,12 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "npm run ts-node apps/api-languages/src/bigquery/console.ts"
+      }
+    },
+    "codegen": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "gql.tada generate output --tsconfig apps/api-languages/tsconfig.json"
       }
     }
   },
