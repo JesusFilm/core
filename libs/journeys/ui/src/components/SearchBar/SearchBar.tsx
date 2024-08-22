@@ -1,18 +1,21 @@
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import InputAdornment from '@mui/material/InputAdornment'
+import Popper from '@mui/material/Popper'
 import { styled } from '@mui/material/styles'
 import TextField, { TextFieldProps } from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Formik } from 'formik'
 import { useTranslation } from 'next-i18next'
-import { type ReactElement, useState } from 'react'
-import { useSearchBox } from 'react-instantsearch'
+import { type ReactElement, useRef, useState } from 'react'
+import { useRefinementList, useSearchBox } from 'react-instantsearch'
 
 import ChevronDown from '@core/shared/ui/icons/ChevronDown'
 import Globe1Icon from '@core/shared/ui/icons/Globe1'
 import Search1Icon from '@core/shared/ui/icons/Search1'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
+
+import { RefinementGroup } from '../RefinementGroup'
 
 /* Styles below used to fake a gradient border because the 
 css attributes border-radius and border-image-source are not compatible */
@@ -33,16 +36,18 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
   }
 }))
 
-function LanguageButton(): ReactElement {
+interface LangaugeButtonProps {
+  onClick: () => void
+}
+
+function LanguageButton({ onClick }: LangaugeButtonProps): ReactElement {
   const { t } = useTranslation('apps-watch')
 
   return (
     <Box
       component="button"
       data-testid="LanguageSelect"
-      onClick={() => {
-        console.log('EndAdornment clicked')
-      }}
+      onClick={onClick}
       sx={{
         display: 'flex',
         alignItems: 'center',
@@ -88,6 +93,7 @@ export function SearchBar({
 
   const { query, refine } = useSearchBox()
   const [languageButtonVisable] = useState(showLanguageButton)
+  const refinements = useRefinementList({ attribute: 'languageEnglishName' })
 
   const initialValues = {
     title: query
@@ -97,52 +103,90 @@ export function SearchBar({
     refine(values.title)
   }
 
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const [open, setOpen] = useState(false)
+  const popperRef = useRef(null)
+
+  function handleClick(): void {
+    setAnchorEl(popperRef.current)
+    setOpen((prevOpen) => !prevOpen)
+  }
+
+  const id = open ? 'simple-popper' : undefined
+
   return (
-    <Box
-      sx={{
-        borderRadius: 3,
-        background:
-          'linear-gradient(90deg, #0C79B3 0%, #0FDABC 51%, #E72DBB 100%)',
-        p: 1
-      }}
-      data-testid="SearchBar"
-    >
-      <Formik
-        initialValues={initialValues}
-        onSubmit={handleSubmit}
-        enableReinitialize
+    <Box>
+      <Box
+        sx={{
+          borderRadius: 3,
+          background:
+            'linear-gradient(90deg, #0C79B3 0%, #0FDABC 51%, #E72DBB 100%)',
+          p: 1
+        }}
+        data-testid="SearchBar"
+        ref={popperRef}
       >
-        {({ values, handleChange, handleBlur }) => (
-          <>
-            <StyledTextField
-              value={values.title}
-              name="title"
-              type="search"
-              placeholder={t('Search by topic, occasion, or audience ...')}
-              fullWidth
-              autoComplete="off"
-              onChange={handleChange}
-              onBlur={handleBlur}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Search1Icon />
-                  </InputAdornment>
-                ),
-                endAdornment: languageButtonVisable ? (
-                  <InputAdornment position="end">
-                    <LanguageButton />
-                  </InputAdornment>
-                ) : (
-                  <></>
-                )
-              }}
-              {...props}
-            />
-            <SubmitListener />
-          </>
-        )}
-      </Formik>
+        <Formik
+          initialValues={initialValues}
+          onSubmit={handleSubmit}
+          enableReinitialize
+        >
+          {({ values, handleChange, handleBlur }) => (
+            <>
+              <StyledTextField
+                value={values.title}
+                name="title"
+                type="search"
+                placeholder={t('Search by topic, occasion, or audience ...')}
+                fullWidth
+                autoComplete="off"
+                onChange={handleChange}
+                onBlur={handleBlur}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Search1Icon />
+                    </InputAdornment>
+                  ),
+                  endAdornment: languageButtonVisable ? (
+                    <InputAdornment position="end">
+                      <LanguageButton onClick={handleClick} />
+                    </InputAdornment>
+                  ) : (
+                    <></>
+                  )
+                }}
+                {...props}
+              />
+              <SubmitListener />
+            </>
+          )}
+        </Formik>
+      </Box>
+      <Popper
+        id={id}
+        open={open}
+        anchorEl={anchorEl}
+        placement="bottom-end"
+        sx={{ width: anchorEl?.clientWidth }}
+        data-testid="SearchLangaugeFilter"
+        modifiers={[
+          {
+            name: 'flip',
+            enabled: false
+          }
+        ]}
+      >
+        <Box
+          sx={{ p: 8, bgcolor: 'background.paper', mt: 3 }}
+          borderRadius={3}
+          boxShadow="0px 4px 4px 0px #00000040"
+        >
+          <Box color="text.primary">
+            <RefinementGroup title="Languages" refinement={refinements} />
+          </Box>
+        </Box>
+      </Popper>
     </Box>
   )
 }

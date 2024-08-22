@@ -8,6 +8,11 @@ import { watchConfig } from '@core/shared/ui/storybook'
 import { InstantSearchTestWrapper } from '../../libs/algolia/InstantSearchTestWrapper'
 
 import { SearchBar } from './SearchBar'
+import {
+  emptyLanguageFacetHandlers,
+  emptyResultsHandler,
+  getLanguageFacetHandlers
+} from './SearchBar.handlers'
 
 const SearchBarStory: Meta<typeof SearchBar> = {
   ...watchConfig,
@@ -26,6 +31,11 @@ const Template: StoryObj<ComponentProps<typeof SearchBar> & { query: string }> =
 
 export const Default = {
   ...Template,
+  parameters: {
+    msw: {
+      handlers: [emptyResultsHandler]
+    }
+  },
   play: async () => {
     await waitFor(async () => {
       await expect(screen.getByTestId('SearchBar')).toBeInTheDocument()
@@ -39,6 +49,11 @@ export const Search = {
   ...Template,
   args: {
     query: 'Easter'
+  },
+  parameters: {
+    msw: {
+      handlers: [emptyResultsHandler]
+    }
   }
 }
 
@@ -47,12 +62,41 @@ export const Language = {
   args: {
     showLanguageButton: true
   },
+  parameters: {
+    msw: {
+      handlers: [getLanguageFacetHandlers]
+    }
+  },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     const canvas = within(canvasElement)
     await waitFor(async () => {
       await expect(screen.getByTestId('LanguageSelect')).toBeInTheDocument()
     })
     await userEvent.click(canvas.getByTestId('LanguageSelect'))
+  }
+}
+
+export const NoLanguages = {
+  ...Template,
+  args: {
+    showLanguageButton: true
+  },
+  parameters: {
+    msw: {
+      handlers: [emptyLanguageFacetHandlers]
+    }
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    const canvas = within(canvasElement)
+    await waitFor(async () => {
+      await expect(screen.getByTestId('LanguageSelect')).toBeInTheDocument()
+    })
+    await userEvent.click(canvas.getByTestId('LanguageSelect'))
+    expect(
+      screen.getByText(
+        'Sorry, there are no languages available for this search.'
+      )
+    )
   }
 }
 
