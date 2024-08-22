@@ -222,13 +222,13 @@ export class TemplatePage {
       await newPage
         .locator('button[data-testid="ConductorNavigationButtonNext"]')
         .click({ force: true })
-        await expect(
-          newPage
-            .locator(
-              'div[data-testid="pagination-bullets"] svg[data-testid*="bullet"]'
-            )
-            .nth(slide)
-        ).toHaveAttribute('data-testid', 'bullet-active', { timeout: 10000 });
+      await expect(
+        newPage
+          .locator(
+            'div[data-testid="pagination-bullets"] svg[data-testid*="bullet"]'
+          )
+          .nth(slide)
+      ).toHaveAttribute('data-testid', 'bullet-active', { timeout: 10000 })
     }
 
     await newPage.close()
