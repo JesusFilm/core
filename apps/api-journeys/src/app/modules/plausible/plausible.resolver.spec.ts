@@ -18,7 +18,8 @@ import {
   PlausibleStatsAggregateValue,
   PlausibleStatsBreakdownFilter,
   PlausibleStatsResponse,
-  PlausibleStatsTimeseriesFilter
+  PlausibleStatsTimeseriesFilter,
+  Variant
 } from '../../__generated__/graphql'
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
 import { PrismaService } from '../../lib/prisma.service'
@@ -57,7 +58,12 @@ describe('PlausibleResolver', () => {
     template: false,
     hostId: null,
     strategySlug: null,
-    plausibleToken: null
+    plausibleToken: null,
+    variant: Variant.journey,
+    shareButton: null,
+    likeButton: null,
+    dislikeButton: null,
+    header: null
   }
 
   const journeyWithUserTeam = {

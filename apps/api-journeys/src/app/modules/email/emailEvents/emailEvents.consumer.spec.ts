@@ -15,7 +15,7 @@ import {
 } from '.prisma/api-journeys-client'
 import { EmailService } from '@core/nest/common/email/emailService'
 
-import { UserTeamRole } from '../../../__generated__/graphql'
+import { UserTeamRole, Variant } from '../../../__generated__/graphql'
 import { PrismaService } from '../../../lib/prisma.service'
 
 import {
@@ -123,7 +123,12 @@ describe('EmailEventsConsumer', () => {
     hostId: null,
     strategySlug: null,
     userJourneys,
-    team
+    team,
+    variant: Variant.journey,
+    shareButton: null,
+    likeButton: null,
+    dislikeButton: null,
+    header: null
   }
 
   const event: Event = {
