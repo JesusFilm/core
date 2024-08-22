@@ -8,7 +8,12 @@ import { Formik } from 'formik'
 import type { SearchBoxConnectorParams } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
 import { useTranslation } from 'next-i18next'
 import { type ReactElement, useState } from 'react'
-import { useInstantSearch, useRefinementList, useSearchBox } from 'react-instantsearch'
+import {
+  CurrentRefinements,
+  useInstantSearch,
+  useRefinementList,
+  useSearchBox
+} from 'react-instantsearch'
 
 import ChevronDown from '@core/shared/ui/icons/ChevronDown'
 import Globe1Icon from '@core/shared/ui/icons/Globe1'
@@ -61,7 +66,7 @@ export function SearchBar({
 
   const { items } = useRefinementList({
     attribute: 'languageEnglishName',
-    limit: 5000,
+    limit: 5000
   })
 
   return (
@@ -94,6 +99,14 @@ export function SearchBar({
                 startAdornment: (
                   <InputAdornment position="start">
                     <Search1Icon />
+                    <Box
+                      color="text.primary"
+                      sx={{
+                        backgroundColor: 'primary.main'
+                      }}
+                    >
+                      <CurrentRefinements />
+                    </Box>
                   </InputAdornment>
                 ),
                 endAdornment: languageButtonVisable ? (
