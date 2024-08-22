@@ -113,10 +113,6 @@ export function WatchHomePage({ facets }): ReactElement {
           data-testid="WatchHomePage"
         >
           <Container maxWidth="xxl" sx={{ paddingY: '4rem' }}>
-            <Box color="text.primary">
-              Try typing any of the following into your search query "english",
-              "spanish", "chinese", "cantonese", "spanish", "chinese", "chinese"
-            </Box>
             <Box sx={{ py: 10 }}>
               <SearchBar
                 handleLanguageClick={() =>
@@ -124,18 +120,27 @@ export function WatchHomePage({ facets }): ReactElement {
                 }
               />
             </Box>
+
             {query !== '' && suggestions !== null && (
-              <Box color="text.primary" sx={{ mb: 8 }}>
-                I see you have typed a language 🧐 {suggestions.suggestion}
-                <Button
-                  onClick={() =>
-                    suggestions.action(suggestions.languageFacet.facetName)
-                  }
-                >
-                  {suggestions.languageFacet.facetName}
-                </Button>
-              </Box>
+              <>
+                <Box color="text.primary" sx={{ mb: 8 }}>
+                  I see you have typed a language 🧐 {suggestions.suggestion}
+                  <Button
+                    onClick={() =>
+                      suggestions.action(suggestions.languageFacet.facetName)
+                    }
+                  >
+                    {suggestions.languageFacet.facetName}
+                  </Button>
+                </Box>
+              </>
             )}
+
+            <Box color="text.primary">
+              Note: these are the only languages supported with automatic
+              suggestions "english", "spanish", "chinese", "cantonese"
+            </Box>
+
             {items.length === 0 ? (
               <Box sx={{ pb: 10 }} color="red">
                 No langauges available based on your search! If we don't like
