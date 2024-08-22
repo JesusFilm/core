@@ -67,6 +67,16 @@ export const nextRouter: RouterProps = {
 function HomePage({ serverState }: HomePageProps): ReactElement {
   // const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
 
+  const facets = searchClient.searchForFacetValues([
+    {
+      indexName: 'video-variants-stg',
+      params: {
+        facetName: 'languageEnglishName',
+        facetQuery: ''
+      }
+    }
+  ])
+
   return (
     <InstantSearchSSRProvider {...serverState}>
       <InstantSearch
@@ -78,7 +88,7 @@ function HomePage({ serverState }: HomePageProps): ReactElement {
         routing={nextRouter}
       >
         <Configure ruleContexts={['home_page']} />
-        <VideoHomePage />
+        <VideoHomePage facets={facets} />
       </InstantSearch>
     </InstantSearchSSRProvider>
   )

@@ -4,8 +4,13 @@ import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { type ReactElement, useState } from 'react'
-import { Index, RefinementList, useRefinementList } from 'react-instantsearch'
+import { type ReactElement, useEffect, useState } from 'react'
+import {
+  Index,
+  RefinementList,
+  useRefinementList,
+  useSearchBox
+} from 'react-instantsearch'
 
 import { SearchBar } from '@core/journeys/ui/SearchBar'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
@@ -18,18 +23,79 @@ import { AlgoliaVideoGrid } from '../VideoGrid/AlgoliaVideoGrid/AlgoliaVideoGrid
 import { HomeHero } from './HomeHero'
 import { SeeAllVideos } from './SeeAllVideos'
 
-export function WatchHomePage(): ReactElement {
+interface Suggestion {
+  suggestion: string
+  languageFacet: {
+    facetName: string
+    normalisedName: string
+  }
+  action: (string) => void
+}
+
+export function WatchHomePage({ facets }): ReactElement {
   const { t } = useTranslation('apps-watch')
 
   const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
-  const [ showLanguageDropdown, setShowLanguageDropdown ] = useState(false)
-  const [ languageFacetMax, setLanguageFacetMax ] = useState(10)
+  const [showLanguageDropdown, setShowLanguageDropdown] = useState(false)
+  const [languageFacetMax, setLanguageFacetMax] = useState(10)
 
-  const { items } = useRefinementList({
+  const { query } = useSearchBox()
+  const { items, refine, searchForItems } = useRefinementList({
     attribute: 'languageEnglishName'
   })
 
   useAlgoliaRouter()
+
+  const [suggestions, setSuggestions] = useState<Suggestion | null>(null)
+  const [normalisedFacetLanguages, setNormalisedFacetLanguages] = useState(null)
+
+  // Function to normalize the language string
+  const normalizeLanguage = (language: string) => {
+    return language.toLowerCase().split(',')[0].trim()
+  }
+
+  // Function to check if a string contains one of the languages
+  const containsLanguage = (input: string, languages: string[]) => {
+    const normalizedInput = normalizeLanguage(input)
+    return languages.some(
+      (language) => normalizedInput === normalizeLanguage(language)
+    )
+  }
+
+  useEffect(() => {
+    facets.then((res) => {
+      const facetLanguages = res[0].facetHits.map((facet) => facet.value)
+      const normalisedFacetLanguages = facetLanguages.map((facet) => {
+        return {
+          facetName: facet,
+          normalisedName: normalizeLanguage(facet)
+        }
+      })
+      setNormalisedFacetLanguages(normalisedFacetLanguages)
+    })
+  }, [facets])
+
+  useEffect(() => {
+    if (normalisedFacetLanguages != null) {
+      console.log('looking for facet values that match')
+      const langFound = normalisedFacetLanguages.find((lang) =>
+        query.includes(lang.normalisedName)
+      )
+      console.log(
+        'normalisedFacetLanguages ',
+        normalisedFacetLanguages.map((x) => x.normalisedName)
+      )
+      if (langFound !== undefined) {
+        setSuggestions({
+          suggestion: 'Would you like to use the language filter? ',
+          languageFacet: langFound,
+          action: (langFound) => refine(langFound)
+        })
+      } else if (suggestions !== null) {
+        setSuggestions(null)
+      }
+    }
+  }, [query])
 
   return (
     <PageWrapper
@@ -47,121 +113,181 @@ export function WatchHomePage(): ReactElement {
           data-testid="WatchHomePage"
         >
           <Container maxWidth="xxl" sx={{ paddingY: '4rem' }}>
-            <Box sx={{ pb: 10 }}>
-              <SearchBar handleLanguageClick={() => setShowLanguageDropdown(!showLanguageDropdown)} />
+            <Box color="text.primary">
+              Try typing any of the following into your search query "english",
+              "spanish", "chinese", "cantonese", "spanish", "chinese", "chinese"
             </Box>
-
+            <Box sx={{ py: 10 }}>
+              <SearchBar
+                handleLanguageClick={() =>
+                  setShowLanguageDropdown(!showLanguageDropdown)
+                }
+              />
+            </Box>
+            {query !== '' && suggestions !== null && (
+              <Box color="text.primary" sx={{ mb: 8 }}>
+                I see you have typed a language 🧐 {suggestions.suggestion}
+                <Button
+                  onClick={() =>
+                    suggestions.action(suggestions.languageFacet.facetName)
+                  }
+                >
+                  {suggestions.languageFacet.facetName}
+                </Button>
+              </Box>
+            )}
             {items.length === 0 ? (
-              <Box sx={{ pb: 10 }} color='red'>
-                No langauges available based on your search!
-                If we don't like this - maybe we conditionally render our own selection of langauges - but they won't do anything when clicked if there are already no results to further refine? 
-                When there are no results algolia has a few settings for softening the search to make sure there will be some hits & facets showing.
+              <Box sx={{ pb: 10 }} color="red">
+                No langauges available based on your search! If we don't like
+                this - maybe we conditionally render our own selection of
+                langauges - but they won't do anything when clicked if there are
+                already no results to further refine? When there are no results
+                algolia has a few settings for softening the search to make sure
+                there will be some hits & facets showing.
               </Box>
             ) : (
-              <Box border='white 2px solid' sx={{mb: 8}} display={showLanguageDropdown ? 'none' : 'hidden'}>
-                <Stack direction="row" marginBottom={10} color='white' >
+              <Box
+                border="white 2px solid"
+                sx={{ mb: 8 }}
+                display={showLanguageDropdown ? 'none' : 'hidden'}
+              >
+                <Stack direction="row" marginBottom={10} color="white">
                   <Box
-                  sx={{
-                    p: 1,
-                    bgcolor: 'background.default'
-                  }}
-                >
-                    <Stack
-                    direction="row"
-                    alignItems="center"
-                    component="li"
-                    sx={{ px: 4, py: 2 }}
+                    sx={{
+                      p: 1,
+                      bgcolor: 'background.default'
+                    }}
                   >
-                      <Typography variant="subtitle1" color='red'>Africa</Typography>
+                    <Stack
+                      direction="row"
+                      alignItems="center"
+                      component="li"
+                      sx={{ px: 4, py: 2 }}
+                    >
+                      <Typography variant="subtitle1" color="red">
+                        Africa
+                      </Typography>
                     </Stack>
-                    <RefinementList attribute="languageEnglishName" limit={languageFacetMax} />
+                    <RefinementList
+                      attribute="languageEnglishName"
+                      limit={languageFacetMax}
+                    />
                   </Box>
-  
+
                   <Box
-                  sx={{
-                    p: 1,
-                    bgcolor: 'background.default'
-                  }}
-                >
-                    <Stack
-                    direction="row"
-                    alignItems="center"
-                    component="li"
-                    sx={{ px: 4, py: 2 }}
+                    sx={{
+                      p: 1,
+                      bgcolor: 'background.default'
+                    }}
                   >
-                      <Typography variant="subtitle1" color='red'>Europe</Typography>
+                    <Stack
+                      direction="row"
+                      alignItems="center"
+                      component="li"
+                      sx={{ px: 4, py: 2 }}
+                    >
+                      <Typography variant="subtitle1" color="red">
+                        Europe
+                      </Typography>
                     </Stack>
-                    <RefinementList attribute="languageEnglishName" limit={languageFacetMax} />
+                    <RefinementList
+                      attribute="languageEnglishName"
+                      limit={languageFacetMax}
+                    />
                     Max {languageFacetMax} langauges here
                   </Box>
-  
+
                   <Box
-                  sx={{
-                    p: 1,
-                    bgcolor: 'background.default'
-                  }}
-                >
-                    <Stack
-                    direction="row"
-                    alignItems="center"
-                    component="li"
-                    sx={{ px: 4, py: 2 }}
+                    sx={{
+                      p: 1,
+                      bgcolor: 'background.default'
+                    }}
                   >
-                      <Typography variant="subtitle1" color='red'>Americas</Typography>
+                    <Stack
+                      direction="row"
+                      alignItems="center"
+                      component="li"
+                      sx={{ px: 4, py: 2 }}
+                    >
+                      <Typography variant="subtitle1" color="red">
+                        Americas
+                      </Typography>
                     </Stack>
-                    <RefinementList attribute="languageEnglishName" limit={languageFacetMax} />
+                    <RefinementList
+                      attribute="languageEnglishName"
+                      limit={languageFacetMax}
+                    />
                     Max {languageFacetMax} langauges here
                   </Box>
-  
+
                   <Box
-                  sx={{
-                    p: 1,
-                    bgcolor: 'background.default'
-                  }}
-                >
-                    <Stack
-                    direction="row"
-                    alignItems="center"
-                    component="li"
-                    sx={{ px: 4, py: 2 }}
+                    sx={{
+                      p: 1,
+                      bgcolor: 'background.default'
+                    }}
                   >
-                      <Typography variant="subtitle1" color='red'>Asia</Typography>
+                    <Stack
+                      direction="row"
+                      alignItems="center"
+                      component="li"
+                      sx={{ px: 4, py: 2 }}
+                    >
+                      <Typography variant="subtitle1" color="red">
+                        Asia
+                      </Typography>
                     </Stack>
-                    <RefinementList attribute="languageEnglishName" limit={languageFacetMax} />
+                    <RefinementList
+                      attribute="languageEnglishName"
+                      limit={languageFacetMax}
+                    />
                     Max {languageFacetMax} langauges here
                   </Box>
-  
+
                   <Box
-                  sx={{
-                    p: 1,
-                    bgcolor: 'background.default'
-                  }}
-                >
-                    <Stack
-                    direction="row"
-                    alignItems="center"
-                    component="li"
-                    sx={{ px: 4, py: 2 }}
+                    sx={{
+                      p: 1,
+                      bgcolor: 'background.default'
+                    }}
                   >
-                      <Typography variant="subtitle1" color='red'>Middle East</Typography>
+                    <Stack
+                      direction="row"
+                      alignItems="center"
+                      component="li"
+                      sx={{ px: 4, py: 2 }}
+                    >
+                      <Typography variant="subtitle1" color="red">
+                        Middle East
+                      </Typography>
                     </Stack>
-                    <RefinementList attribute="languageEnglishName" limit={languageFacetMax} />
+                    <RefinementList
+                      attribute="languageEnglishName"
+                      limit={languageFacetMax}
+                    />
                     Max {languageFacetMax} langauges here
                   </Box>
                 </Stack>
                 {languageFacetMax < 200 && (
-                  <Stack alignContent='center'>
-                    <Button sx={{mx: 'auto'}} onClick={() => setLanguageFacetMax(200)}>See All</Button>
+                  <Stack alignContent="center">
+                    <Button
+                      sx={{ mx: 'auto' }}
+                      onClick={() => setLanguageFacetMax(200)}
+                    >
+                      See All
+                    </Button>
                   </Stack>
                 )}
                 {languageFacetMax === 200 && (
-                  <Stack alignContent='center'>
-                    <Button sx={{mx: 'auto'}} onClick={() => setLanguageFacetMax(20)}>See Less</Button>
+                  <Stack alignContent="center">
+                    <Button
+                      sx={{ mx: 'auto' }}
+                      onClick={() => setLanguageFacetMax(20)}
+                    >
+                      See Less
+                    </Button>
                   </Stack>
                 )}
               </Box>
             )}
-
             <Index indexName={indexName}>
               <AlgoliaVideoGrid variant="contained" />
             </Index>
