@@ -19,14 +19,14 @@ describe('RefinementGroup', () => {
   })
 
   it('should have languages listed', () => {
-    render(<RefinementGroup title="Langauges" refinement={useRefinementList} />)
+    render(<RefinementGroup title="Languages" refinement={useRefinementList} />)
     expect(screen.getByText('English')).toBeInTheDocument()
     expect(screen.getByText('Spanish, Latin American')).toBeInTheDocument()
     expect(screen.getByText('Chinese, Mandarin')).toBeInTheDocument()
   })
 
   it('should refine when langauge selected', () => {
-    render(<RefinementGroup title="Langauges" refinement={useRefinementList} />)
+    render(<RefinementGroup title="Languages" refinement={useRefinementList} />)
     fireEvent.click(screen.getByText('Cantonese'))
     expect(refine).toHaveBeenCalled()
   })
@@ -37,11 +37,11 @@ describe('RefinementGroup', () => {
       refine
     } as unknown as RefinementListRenderState
     render(
-      <RefinementGroup title="Langauges" refinement={emptyRefinementList} />
+      <RefinementGroup title="Languages" refinement={emptyRefinementList} />
     )
     expect(
       screen.getByText(
-        'Sorry, there are no langauges available for this search. Try a broader search!'
+        'Sorry, there are no languages available for this search. Try a broader search!'
       )
     ).toBeInTheDocument()
   })
