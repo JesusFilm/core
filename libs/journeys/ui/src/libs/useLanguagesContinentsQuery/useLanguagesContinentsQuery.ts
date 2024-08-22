@@ -6,7 +6,7 @@ export const GET_LANGUAGES_CONTINENTS = gql`
   query GetLanguagesContinents {
     languages {
       id
-      name {
+      name(languageId: "529") {
         value
       }
       countryLanguages {
