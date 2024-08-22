@@ -1,7 +1,7 @@
 import { expect } from '@storybook/jest'
-import { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent, waitFor } from '@storybook/testing-library'
-import { ComponentProps } from 'react'
+import type { ComponentProps } from 'react'
 
 import { watchConfig } from '@core/shared/ui/storybook'
 
@@ -18,7 +18,7 @@ const SearchBarStory: Meta<typeof SearchBar> = {
 const Template: StoryObj<ComponentProps<typeof SearchBar> & { query: string }> =
   {
     render: (args) => (
-      <InstantSearchTestWrapper query={args.query} indexName="indexName">
+      <InstantSearchTestWrapper query={args.query}>
         <SearchBar />
       </InstantSearchTestWrapper>
     )
