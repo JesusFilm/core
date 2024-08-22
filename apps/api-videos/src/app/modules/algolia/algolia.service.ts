@@ -143,7 +143,8 @@ export class AlgoliaService {
               videoVariant.video?.imageAlt.find(
                 (alt) => alt.languageId === '529'
               )?.value ?? '',
-            childrenCount: videoVariant.video?.childIds.length
+            childrenCount: videoVariant.video?.childIds.length,
+            manualRanking: videoVariant.languageId === '529' ? 0 : 1
           }
         })
 

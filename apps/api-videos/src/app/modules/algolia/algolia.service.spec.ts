@@ -176,7 +176,8 @@ describe('AlgoliaService', () => {
           slug: 'slug',
           subtitles: ['subtitle'],
           titles: ['title'],
-          videoId: 'videoId'
+          videoId: 'videoId',
+          manualRanking: 1
         }
       ])
     })
