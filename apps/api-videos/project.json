@@ -124,7 +124,7 @@
     "ingest": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npm run ts-node apps/api-videos/src/workers/bigQuery/bigQuery.console.ts"
+        "command": "npm run ts-node apps/api-videos/src/workers/bigQuery/console.ts"
       }
     },
     "export-language-slugs": {
