@@ -380,8 +380,18 @@ model Journey {
   journeyVisitors           JourneyVisitor[]
   journeyCollectionJourneys JourneyCollectionJourneys[]
   journeyNotifications      JourneyNotification[]
+  variant                   Variant?                    @default(journey)
+  shareButton               Boolean?                    @default(true)
+  likeButton                Boolean?                    @default(true)
+  dislikeButton             Boolean?                    @default(true)
+  header                    String?
 
   @@index(title)
+}
+
+enum Variant {
+  journey
+  website
 }
 
 enum Role {

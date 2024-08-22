@@ -940,6 +940,11 @@ type Journey
 
   """used in a plausible share link to embed report"""
   plausibleToken: String
+  variant: Variant
+  shareButton: Boolean
+  likeButton: Boolean
+  dislikeButton: Boolean
+  header: String
   userJourneys: [UserJourney!]
 }
 
@@ -1117,6 +1122,11 @@ input JourneyUpdateInput
   hostId: String
   strategySlug: String
   tagIds: [ID!]
+  variant: Variant
+  shareButton: Boolean
+  likeButton: Boolean
+  dislikeButton: Boolean
+  header: String
 }
 
 type JourneyViewEvent implements Event
@@ -2976,6 +2986,13 @@ input UserTeamUpdateInput
   @join__type(graph: JOURNEYS)
 {
   role: UserTeamRole!
+}
+
+enum Variant
+  @join__type(graph: JOURNEYS)
+{
+  journey @join__enumValue(graph: JOURNEYS)
+  website @join__enumValue(graph: JOURNEYS)
 }
 
 type Video

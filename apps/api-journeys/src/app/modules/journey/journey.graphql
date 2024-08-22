@@ -34,6 +34,16 @@ type Journey @key(fields: "id") {
   used in a plausible share link to embed report
   """
   plausibleToken: String
+  variant: Variant
+  shareButton: Boolean
+  likeButton: Boolean
+  dislikeButton: Boolean
+  header: String
+}
+
+enum Variant {
+  journey
+  website
 }
 
 enum IdType {
@@ -163,6 +173,11 @@ input JourneyUpdateInput {
   hostId: String
   strategySlug: String
   tagIds: [ID!]
+  variant: Variant
+  shareButton: Boolean
+  likeButton: Boolean
+  dislikeButton: Boolean
+  header: String
 }
 
 extend type UserJourney {

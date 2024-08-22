@@ -382,6 +382,11 @@ type Journey
 
   """used in a plausible share link to embed report"""
   plausibleToken: String
+  variant: Variant
+  shareButton: Boolean
+  likeButton: Boolean
+  dislikeButton: Boolean
+  header: String
   userJourneys: [UserJourney!]
 }
 
@@ -2095,6 +2100,11 @@ extend type Tag
   id: ID! @external
 }
 
+enum Variant {
+  journey
+  website
+}
+
 enum IdType {
   databaseId
   slug
@@ -2195,6 +2205,11 @@ input JourneyUpdateInput {
   hostId: String
   strategySlug: String
   tagIds: [ID!]
+  variant: Variant
+  shareButton: Boolean
+  likeButton: Boolean
+  dislikeButton: Boolean
+  header: String
 }
 
 type UserJourney
