@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
@@ -23,12 +24,13 @@ import { AlgoliaVideoGrid } from '../VideoGrid/AlgoliaVideoGrid/AlgoliaVideoGrid
 import { HomeHero } from './HomeHero'
 import { SeeAllVideos } from './SeeAllVideos'
 
+interface NormalisedLanguageFacet {
+  facetName: string
+  normalisedName: string
+}
+
 interface Suggestion {
-  suggestion: string
-  languageFacet: {
-    facetName: string
-    normalisedName: string
-  }
+  languageFacet: NormalisedLanguageFacet
   action: (string) => void
 }
 
@@ -40,28 +42,37 @@ export function WatchHomePage({ facets }): ReactElement {
   const [languageFacetMax, setLanguageFacetMax] = useState(10)
 
   const { query } = useSearchBox()
-  const { items, refine, searchForItems } = useRefinementList({
+  const { items, refine } = useRefinementList({
     attribute: 'languageEnglishName'
   })
 
   useAlgoliaRouter()
 
-  const [suggestions, setSuggestions] = useState<Suggestion | null>(null)
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([])
   const [normalisedFacetLanguages, setNormalisedFacetLanguages] = useState(null)
 
   // Function to normalize the language string
-  const normalizeLanguage = (language: string) => {
+  const normalizeLanguage = (language: string): string => {
     return language.toLowerCase().split(',')[0].trim()
   }
 
-  // Function to check if a string contains one of the languages
-  const containsLanguage = (input: string, languages: string[]) => {
-    const normalizedInput = normalizeLanguage(input)
-    return languages.some(
-      (language) => normalizedInput === normalizeLanguage(language)
+  // Function to find and return detected languages in the input string
+  const detectLanguages = (input: string): NormalisedLanguageFacet[] => {
+    // Normalize input by converting to lowercase and splitting by both "and" and ","
+    const normalizedInput = input
+      .toLowerCase()
+      .split(/\s*(?:,|and|\s)\s*/)
+      .map((str) => str.trim())
+
+    // Check for each language in the input
+    const detectedLanguages = normalisedFacetLanguages.filter((language) =>
+      normalizedInput.includes(language.normalisedName)
     )
+
+    return detectedLanguages
   }
 
+  // Get all facets from algolia
   useEffect(() => {
     facets.then((res) => {
       const facetLanguages = res[0].facetHits.map((facet) => facet.value)
@@ -71,29 +82,33 @@ export function WatchHomePage({ facets }): ReactElement {
           normalisedName: normalizeLanguage(facet)
         }
       })
+      console.log('Got facets from algolia: ', normalisedFacetLanguages)
       setNormalisedFacetLanguages(normalisedFacetLanguages)
     })
   }, [facets])
 
+  // Search query string for languages
   useEffect(() => {
     if (normalisedFacetLanguages != null) {
       console.log('looking for facet values that match')
-      const langFound = normalisedFacetLanguages.find((lang) =>
-        query.toLowerCase().includes(lang.normalisedName)
-      )
-      console.log(
-        'normalisedFacetLanguages ',
-        normalisedFacetLanguages.map((x) => x.normalisedName)
-      )
-      if (langFound !== undefined) {
-        setSuggestions({
-          suggestion: 'Would you like to use the language filter? ',
-          languageFacet: langFound,
-          action: (langFound) => refine(langFound)
+      const languagesFound = detectLanguages(query)
+      console.log('found these languages ', languagesFound)
+
+      if (languagesFound.length > 0) {
+        const suggestions = languagesFound.map((langFound) => {
+          return {
+            languageFacet: langFound,
+            action: refine
+          }
         })
-      } else if (suggestions !== null) {
-        setSuggestions(null)
+        console.log('setting these suggestions ', suggestions)
+        setSuggestions(suggestions)
+      } else {
+        console.log('no suggestions found ')
+        setSuggestions([])
       }
+    } else {
+      console.log('No language facets from algolia yet...')
     }
   }, [query])
 
@@ -121,17 +136,21 @@ export function WatchHomePage({ facets }): ReactElement {
               />
             </Box>
 
-            {query !== '' && suggestions !== null && (
+            {query !== '' && suggestions.length > 0 && (
               <>
                 <Box color="text.primary" sx={{ mb: 8 }}>
-                  I see you have typed a language 🧐 {suggestions.suggestion}
-                  <Button
-                    onClick={() =>
-                      suggestions.action(suggestions.languageFacet.facetName)
-                    }
-                  >
-                    {suggestions.languageFacet.facetName}
-                  </Button>
+                  I see you have typed a language 🧐 Would you like to use the
+                  language filter?
+                  {suggestions.map((suggestion) => (
+                    <Button
+                      key={suggestion.languageFacet.facetName}
+                      onClick={() =>
+                        suggestion.action(suggestion.languageFacet.facetName)
+                      }
+                    >
+                      {suggestion.languageFacet.facetName}
+                    </Button>
+                  ))}
                 </Box>
               </>
             )}
