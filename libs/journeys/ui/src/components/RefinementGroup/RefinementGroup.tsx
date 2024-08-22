@@ -21,7 +21,7 @@ export function RefinementGroup({
   return (
     <Box>
       <Typography variant="h6" color="primary.main" marginBottom={6}>
-        {t(title)}
+        {title}
       </Typography>
       <Box color="text.primary">
         {refinement.items.length > 0 ? (
