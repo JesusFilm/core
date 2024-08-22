@@ -60,15 +60,15 @@ describe('FilterList', () => {
         <FilterList languagesData={{ languages }} languagesLoading={false} />
       )
 
-      const langaugesComboboxEl = screen.getAllByRole('combobox', {
+      const LanguagesComboboxEl = screen.getAllByRole('combobox', {
         name: 'Search Languages'
       })[0]
 
-      fireEvent.focus(langaugesComboboxEl)
-      fireEvent.keyDown(langaugesComboboxEl, { key: 'ArrowDown' })
+      fireEvent.focus(LanguagesComboboxEl)
+      fireEvent.keyDown(LanguagesComboboxEl, { key: 'ArrowDown' })
       await waitFor(() => screen.getAllByText('Chinese')[0])
       fireEvent.click(screen.getAllByText('Chinese')[0])
-      expect(langaugesComboboxEl).toHaveValue('Chinese')
+      expect(LanguagesComboboxEl).toHaveValue('Chinese')
       await waitFor(() => expect(refineLanguages).toHaveBeenCalled())
     })
   })
