@@ -91,6 +91,6 @@ describe('SearchBar', () => {
     fireEvent.click(screen.getByText('Language'))
     expect(screen.getByTestId('SearchLangaugeFilter')).toBeInTheDocument()
     fireEvent.click(screen.getByText('Language'))
-    expect(screen.queryAllByTestId('SearchLangaugeFilter')).toHaveLength(0)
+    expect(screen.queryByTestId('SearchLangaugeFilter')).not.toBeInTheDocument()
   })
 })
