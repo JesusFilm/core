@@ -1,22 +1,23 @@
+import Container from '@mui/material/Container'
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter'
-import { NextIntlClientProvider } from 'next-intl'
-import { getMessages } from 'next-intl/server'
+import { NextIntlClientProvider, useMessages } from 'next-intl'
 import { ReactNode } from 'react'
 
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
+import { Nav } from '../../components/server/Nav'
+
 import { ApolloWrapper } from './_apolloWrapper/apolloWrapper'
 
-export default async function LocaleLayout({
+export default function LocaleLayout({
   children,
   params: { locale }
 }: {
   children: React.ReactNode
   params: { locale: string }
-}): Promise<ReactNode> {
-  const messages = await getMessages()
-
+}): ReactNode {
+  const messages = useMessages()
   return (
     <html lang={locale}>
       <body>
@@ -24,10 +25,13 @@ export default async function LocaleLayout({
           <ApolloWrapper>
             <AppRouterCacheProvider>
               <ThemeProvider
-                themeName={ThemeName.website}
+                themeName={ThemeName.journeysAdmin}
                 themeMode={ThemeMode.light}
               >
-                {children}
+                <Container sx={{ my: 10 }}>
+                  <Nav />
+                  {children}
+                </Container>
               </ThemeProvider>
             </AppRouterCacheProvider>
           </ApolloWrapper>

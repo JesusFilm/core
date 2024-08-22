@@ -1,21 +1,14 @@
-import { useTranslations } from 'next-intl'
-import { ReactElement } from 'react'
+import Box from '@mui/material/Box'
+import { ReactElement, Suspense } from 'react'
 
-import { signOut } from '../../auth'
+import { VideoList } from '../../components/client/VideoList'
 
 export default function Index(): ReactElement {
-  const t = useTranslations()
   return (
-    <div>
-      <h1>{t('Nexus Admin')}</h1>
-      <form
-        action={async () => {
-          'use server'
-          await signOut()
-        }}
-      >
-        <button type="submit">{t('Sign Out')}</button>
-      </form>
-    </div>
+    <Box>
+      <Suspense>
+        <VideoList />
+      </Suspense>
+    </Box>
   )
 }

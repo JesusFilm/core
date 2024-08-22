@@ -19,7 +19,9 @@ export const authConfig = {
               headers: { 'Content-Type': 'application/json' }
             }
           )
-          return await response.json()
+          const res = await response.json()
+          if ('error' in res) throw new Error(res.error.reason as string)
+          return res
         } catch (e) {
           return null
         }
