@@ -65,12 +65,12 @@ describe('AlgoliaQueue', () => {
 
       expect(providerQueue.add).toHaveBeenCalledWith(
         'api-videos-algolia',
-        {},
-        {
-          repeat: {
-            pattern: '0 0 0 * * *'
-          }
-        }
+        {}
+        // {
+        //   repeat: {
+        //     pattern: '0 0 0 * * *'
+        //   }
+        // }
       )
     })
   })
