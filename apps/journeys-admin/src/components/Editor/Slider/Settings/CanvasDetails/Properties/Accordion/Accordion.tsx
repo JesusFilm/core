@@ -75,17 +75,17 @@ export function Accordion({
         <Stack spacing={3} alignItems="center" direction="row">
           {icon}
           <Box sx={{ maxWidth: '24ch', overflow: 'hidden' }}>
-            {value === undefined ? (
-              <Typography variant="subtitle1" noWrap>
-                {name}
-              </Typography>
-            ) : (
+            {value != null ? (
               <>
                 <Typography variant="caption" color="text.secondary" noWrap>
                   {name}
                 </Typography>
                 <Typography noWrap>{value !== '' ? value : 'None'}</Typography>
               </>
+            ) : (
+              <Typography variant="subtitle1" noWrap>
+                {name}
+              </Typography>
             )}
           </Box>
         </Stack>
