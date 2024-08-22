@@ -107,7 +107,7 @@ export function SearchBar({
   const [open, setOpen] = useState(false)
   const popperRef = useRef(null)
 
-  const handleClick = (): void => {
+  function handleClick(): void {
     setAnchorEl(popperRef.current)
     setOpen((prevOpen) => !prevOpen)
   }
