@@ -8,6 +8,9 @@ extend type Tag @key(fields: "id") {
 
 type Journey @key(fields: "id") {
   id: ID!
+  """
+  private title for creators
+  """
   title: String!
   language: Language!
   themeMode: ThemeMode!
@@ -22,6 +25,9 @@ type Journey @key(fields: "id") {
   featuredAt: DateTime
   createdAt: DateTime!
   status: JourneyStatus!
+  """
+  title for seo and sharing
+  """
   seoTitle: String
   seoDescription: String
   template: Boolean
@@ -34,16 +40,14 @@ type Journey @key(fields: "id") {
   used in a plausible share link to embed report
   """
   plausibleToken: String
-  variant: Variant
-  shareButton: Boolean
-  likeButton: Boolean
-  dislikeButton: Boolean
-  header: String
-}
-
-enum Variant {
-  journey
-  website
+  website: Boolean
+  showShareButton: Boolean
+  showLikeButton: Boolean
+  showDislikeButton: Boolean
+  """
+  public title for viewers
+  """
+  displayTitle: String
 }
 
 enum IdType {
@@ -173,11 +177,11 @@ input JourneyUpdateInput {
   hostId: String
   strategySlug: String
   tagIds: [ID!]
-  variant: Variant
-  shareButton: Boolean
-  likeButton: Boolean
-  dislikeButton: Boolean
-  header: String
+  website: Boolean
+  showShareButton: Boolean
+  showLikeButton: Boolean
+  showDislikeButton: Boolean
+  displayTitle: String
 }
 
 extend type UserJourney {

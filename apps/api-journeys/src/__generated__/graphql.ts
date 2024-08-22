@@ -736,21 +736,23 @@ export type Journey = {
   creatorImageBlock?: Maybe<ImageBlock>;
   deletedAt?: Maybe<Scalars['DateTime']['output']>;
   description?: Maybe<Scalars['String']['output']>;
-  dislikeButton?: Maybe<Scalars['Boolean']['output']>;
+  /** public title for viewers */
+  displayTitle?: Maybe<Scalars['String']['output']>;
   featuredAt?: Maybe<Scalars['DateTime']['output']>;
-  header?: Maybe<Scalars['String']['output']>;
   host?: Maybe<Host>;
   id: Scalars['ID']['output'];
   journeyCollections: Array<JourneyCollection>;
   language: Language;
-  likeButton?: Maybe<Scalars['Boolean']['output']>;
   /** used in a plausible share link to embed report */
   plausibleToken?: Maybe<Scalars['String']['output']>;
   primaryImageBlock?: Maybe<ImageBlock>;
   publishedAt?: Maybe<Scalars['DateTime']['output']>;
   seoDescription?: Maybe<Scalars['String']['output']>;
+  /** title for seo and sharing */
   seoTitle?: Maybe<Scalars['String']['output']>;
-  shareButton?: Maybe<Scalars['Boolean']['output']>;
+  showDislikeButton?: Maybe<Scalars['Boolean']['output']>;
+  showLikeButton?: Maybe<Scalars['Boolean']['output']>;
+  showShareButton?: Maybe<Scalars['Boolean']['output']>;
   slug: Scalars['String']['output'];
   status: JourneyStatus;
   strategySlug?: Maybe<Scalars['String']['output']>;
@@ -759,10 +761,11 @@ export type Journey = {
   template?: Maybe<Scalars['Boolean']['output']>;
   themeMode: ThemeMode;
   themeName: ThemeName;
+  /** private title for creators */
   title: Scalars['String']['output'];
   trashedAt?: Maybe<Scalars['DateTime']['output']>;
   userJourneys?: Maybe<Array<UserJourney>>;
-  variant?: Maybe<Variant>;
+  website?: Maybe<Scalars['Boolean']['output']>;
 };
 
 export type JourneyCollection = {
@@ -853,22 +856,22 @@ export type JourneyUpdateInput = {
   creatorDescription?: InputMaybe<Scalars['String']['input']>;
   creatorImageBlockId?: InputMaybe<Scalars['ID']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
-  dislikeButton?: InputMaybe<Scalars['Boolean']['input']>;
-  header?: InputMaybe<Scalars['String']['input']>;
+  displayTitle?: InputMaybe<Scalars['String']['input']>;
   hostId?: InputMaybe<Scalars['String']['input']>;
   languageId?: InputMaybe<Scalars['String']['input']>;
-  likeButton?: InputMaybe<Scalars['Boolean']['input']>;
   primaryImageBlockId?: InputMaybe<Scalars['ID']['input']>;
   seoDescription?: InputMaybe<Scalars['String']['input']>;
   seoTitle?: InputMaybe<Scalars['String']['input']>;
-  shareButton?: InputMaybe<Scalars['Boolean']['input']>;
+  showDislikeButton?: InputMaybe<Scalars['Boolean']['input']>;
+  showLikeButton?: InputMaybe<Scalars['Boolean']['input']>;
+  showShareButton?: InputMaybe<Scalars['Boolean']['input']>;
   slug?: InputMaybe<Scalars['String']['input']>;
   strategySlug?: InputMaybe<Scalars['String']['input']>;
   tagIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   themeMode?: InputMaybe<ThemeMode>;
   themeName?: InputMaybe<ThemeName>;
   title?: InputMaybe<Scalars['String']['input']>;
-  variant?: InputMaybe<Variant>;
+  website?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type JourneyViewEvent = Event & {
@@ -3084,11 +3087,6 @@ export enum UserTeamRole {
 export type UserTeamUpdateInput = {
   role: UserTeamRole;
 };
-
-export enum Variant {
-  Journey = 'journey',
-  Website = 'website'
-}
 
 export type Video = {
   __typename?: 'Video';

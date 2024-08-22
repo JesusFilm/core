@@ -212,11 +212,6 @@ export enum UserTeamRole {
   member = "member",
 }
 
-export enum Variant {
-  journey = "journey",
-  website = "website",
-}
-
 export enum VideoBlockObjectFit {
   fill = "fill",
   fit = "fit",
@@ -467,11 +462,11 @@ export interface JourneyUpdateInput {
   hostId?: string | null;
   strategySlug?: string | null;
   tagIds?: string[] | null;
-  variant?: Variant | null;
-  shareButton?: boolean | null;
-  likeButton?: boolean | null;
-  dislikeButton?: boolean | null;
-  header?: string | null;
+  website?: boolean | null;
+  showShareButton?: boolean | null;
+  showLikeButton?: boolean | null;
+  showDislikeButton?: boolean | null;
+  displayTitle?: string | null;
 }
 
 export interface JourneyVisitorFilter {
