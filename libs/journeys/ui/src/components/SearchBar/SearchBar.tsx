@@ -170,6 +170,12 @@ export function SearchBar({
         placement="bottom-end"
         sx={{ width: anchorEl?.clientWidth }}
         data-testid="SearchLangaugeFilter"
+        modifiers={[
+          {
+            name: 'flip',
+            enabled: false
+          }
+        ]}
       >
         <Box
           sx={{ p: 8, bgcolor: 'background.paper', mt: 3 }}
