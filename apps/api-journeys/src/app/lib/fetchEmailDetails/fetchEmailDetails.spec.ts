@@ -12,7 +12,6 @@ import {
   Visitor
 } from '.prisma/api-journeys-client'
 
-import { Variant } from '../../__generated__/graphql'
 import { JourneyWithTeamAndUserJourney } from '../../modules/email/emailEvents/emailEvents.consumer'
 import { PrismaService } from '../prisma.service'
 
@@ -132,11 +131,11 @@ describe('fetchEmailDetails', () => {
     strategySlug: null,
     userJourneys,
     team,
-    variant: Variant.journey,
-    shareButton: null,
-    likeButton: null,
-    dislikeButton: null,
-    header: null
+    website: null,
+    showShareButton: null,
+    showLikeButton: null,
+    showDislikeButton: null,
+    displayTitle: null
   }
 
   const event: Event = {

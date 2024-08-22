@@ -7,8 +7,7 @@ import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 import {
   JourneyStatus,
   ThemeMode,
-  ThemeName,
-  Variant
+  ThemeName
 } from '../../__generated__/graphql'
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
 import { PrismaService } from '../../lib/prisma.service'
@@ -246,11 +245,11 @@ describe('HostResolver', () => {
       creatorDescription: null,
       creatorImageBlockId: null,
       plausibleToken: null,
-      variant: Variant.journey,
-      shareButton: null,
-      likeButton: null,
-      dislikeButton: null,
-      header: null
+      website: null,
+      showShareButton: null,
+      showLikeButton: null,
+      showDislikeButton: null,
+      displayTitle: null
     }
 
     it('deletes an existing host', async () => {

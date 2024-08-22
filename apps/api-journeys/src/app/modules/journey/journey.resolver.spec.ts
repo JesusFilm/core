@@ -26,8 +26,7 @@ import { getPowerBiEmbed } from '@core/nest/powerBi/getPowerBiEmbed'
 import {
   IdType,
   JourneyStatus,
-  JourneysReportType,
-  Variant
+  JourneysReportType
 } from '../../__generated__/graphql'
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
 import { PrismaService } from '../../lib/prisma.service'
@@ -89,11 +88,11 @@ describe('JourneyResolver', () => {
     hostId: null,
     strategySlug: null,
     plausibleToken: null,
-    variant: Variant.journey,
-    shareButton: null,
-    likeButton: null,
-    dislikeButton: null,
-    header: null
+    website: null,
+    showShareButton: null,
+    showLikeButton: null,
+    showDislikeButton: null,
+    displayTitle: null
   }
   const journeyWithUserTeam = {
     ...journey,

@@ -185,11 +185,6 @@ export enum IntegrationType {
     growthSpaces = "growthSpaces"
 }
 
-export enum Variant {
-    journey = "journey",
-    website = "website"
-}
-
 export enum IdType {
     databaseId = "databaseId",
     slug = "slug"
@@ -719,11 +714,11 @@ export class JourneyUpdateInput {
     hostId?: Nullable<string>;
     strategySlug?: Nullable<string>;
     tagIds?: Nullable<string[]>;
-    variant?: Nullable<Variant>;
-    shareButton?: Nullable<boolean>;
-    likeButton?: Nullable<boolean>;
-    dislikeButton?: Nullable<boolean>;
-    header?: Nullable<string>;
+    website?: Nullable<boolean>;
+    showShareButton?: Nullable<boolean>;
+    showLikeButton?: Nullable<boolean>;
+    showDislikeButton?: Nullable<boolean>;
+    displayTitle?: Nullable<string>;
 }
 
 export class JourneyTemplateInput {
@@ -1112,11 +1107,11 @@ export class Journey {
     tags: Tag[];
     journeyCollections: JourneyCollection[];
     plausibleToken?: Nullable<string>;
-    variant?: Nullable<Variant>;
-    shareButton?: Nullable<boolean>;
-    likeButton?: Nullable<boolean>;
-    dislikeButton?: Nullable<boolean>;
-    header?: Nullable<string>;
+    website?: Nullable<boolean>;
+    showShareButton?: Nullable<boolean>;
+    showLikeButton?: Nullable<boolean>;
+    showDislikeButton?: Nullable<boolean>;
+    displayTitle?: Nullable<string>;
     userJourneys?: Nullable<UserJourney[]>;
 }
 

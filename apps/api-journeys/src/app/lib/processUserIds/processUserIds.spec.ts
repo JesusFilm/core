@@ -6,7 +6,6 @@ import {
   UserTeamRole
 } from '.prisma/api-journeys-client'
 
-import { Variant } from '../../__generated__/graphql'
 import { JourneyWithTeamAndUserJourney } from '../../modules/email/emailEvents/emailEvents.consumer'
 import { processUserIds } from '../processUserIds'
 
@@ -103,11 +102,11 @@ describe('processUserIds', () => {
     strategySlug: null,
     userJourneys,
     team,
-    variant: Variant.journey,
-    shareButton: null,
-    likeButton: null,
-    dislikeButton: null,
-    header: null
+    website: null,
+    showShareButton: null,
+    showLikeButton: null,
+    showDislikeButton: null,
+    displayTitle: null
   }
 
   it('should return an array of user IDs when visitor interaction email is true', () => {
