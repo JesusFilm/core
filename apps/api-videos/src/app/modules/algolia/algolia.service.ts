@@ -83,8 +83,17 @@ export class AlgoliaService {
 
     let offset = 0
 
+    // this needs to be converted to get all the languages available for our videos
+    // const distinctRoles = await prisma.user.findMany({
+    //   distinct: [‘role’],
+    //   select: {
+    //     role: true,
+    //   },
+    // })
+
     while (true) {
       try {
+        // languageId should be the current language we are processing
         const videoVariants = await this.prisma.videoVariant.findMany({
           take: 1000,
           skip: offset,
@@ -95,6 +104,13 @@ export class AlgoliaService {
                 description: true,
                 imageAlt: true,
                 snippet: true
+                // children: {
+                //   where: {
+                //     variants: {
+                //       some: languageId
+                //     }
+                //   }
+                // }
               }
             },
             subtitle: true
