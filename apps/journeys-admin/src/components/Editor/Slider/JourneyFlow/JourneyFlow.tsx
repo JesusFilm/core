@@ -193,8 +193,12 @@ export function JourneyFlow(): ReactElement {
   )
 
   useEffect(() => {
-    if (data?.blocks == null || steps == null) return
-    if (data.blocks.length !== steps.length) return
+    if (
+      data?.blocks == null ||
+      steps == null ||
+      data.blocks.length !== steps.length
+    )
+      return
 
     const positions: PositionMap =
       data.blocks.reduce((acc, block) => {
