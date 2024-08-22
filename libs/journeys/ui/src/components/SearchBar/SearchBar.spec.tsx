@@ -7,7 +7,6 @@ import '../../../test/i18n'
 import { languageRefinements } from './data'
 import { SearchBar } from './SearchBar'
 
-
 jest.mock('react-instantsearch')
 
 const mockUseRefinementList = useRefinementList as jest.MockedFunction<
