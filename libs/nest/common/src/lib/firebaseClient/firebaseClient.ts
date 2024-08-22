@@ -21,7 +21,8 @@ export const firebaseClient = initializeApp(
           JSON.parse(process.env.GOOGLE_APPLICATION_JSON) as ServiceAccount
         )
       }
-    : undefined
+    : undefined,
+  'jfm-firebase-admin'
 )
 
 export const auth = getAuth(firebaseClient)

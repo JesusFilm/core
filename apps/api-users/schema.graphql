@@ -9,9 +9,16 @@ input MeInput {
   redirect: String
 }
 
+type Mutation {
+  userImpersonate(email: String!): String!
+  validateEmail(token: String!, email: String!): User!
+  createVerificationRequest(input: CreateVerificationRequestInput): Boolean!
+}
+
 type Query {
   user(id: ID!): User
   userByEmail(email: String!): User
+  me(input: MeInput): User
 }
 
 type User

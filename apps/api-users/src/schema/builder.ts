@@ -16,12 +16,12 @@ interface PrismaUser extends User {
 }
 export interface Context {
   currentUser: PrismaUser | null
-  token?: string
-  interopToken?: string
-  ipAddress?: string
+  token?: string | null
+  interopToken?: string | null
+  ipAddress?: string | null
 }
 
-export function validateIpV4(s: string | null): boolean {
+export function validateIpV4(s?: string | null): boolean {
   if (s == null) return true // localhost
 
   const match = s.match(/([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})/g)
@@ -33,7 +33,11 @@ export function validateIpV4(s: string | null): boolean {
   )
 }
 
-export function isValidInterOp(token: string, address: string): boolean {
+export function isValidInterOp(
+  token?: string | null,
+  address?: string | null
+): boolean {
+  if (token == null) return false
   const validIp = validateIpV4(address)
   return token === process.env.INTEROP_TOKEN && validIp
 }
@@ -48,6 +52,7 @@ export const builder = new SchemaBuilder<{
     isAuthenticated: boolean
     isCurrentUser: string
     isSuperAdmin: boolean
+    isValidInterOp: boolean
   }
 }>({
   plugins: [ScopeAuthPlugin, PrismaPlugin, DirectivesPlugin, FederationPlugin],
@@ -73,3 +78,4 @@ export const builder = new SchemaBuilder<{
 })
 
 builder.queryType({})
+builder.mutationType({})
