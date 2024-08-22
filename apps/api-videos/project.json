@@ -166,6 +166,12 @@
       "options": {
         "command": "codecov -f coverage/apps/api-videos/cobertura-coverage.xml -F apps.api-videos"
       }
+    },
+    "codegen": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "gql.tada generate output --tsconfig apps/api-videos/tsconfig.json"
+      }
     }
   },
   "tags": []

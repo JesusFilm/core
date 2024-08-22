@@ -7,7 +7,14 @@
     "noEmit": true,
     "strict": true,
     "incremental": true,
-    "tsBuildInfoFile": "../../.cache/api-analytics/tsc/.tsbuildinfo"
+    "tsBuildInfoFile": "../../.cache/api-analytics/tsc/.tsbuildinfo",
+    "plugins": [
+      {
+        "name": "@0no-co/graphqlsp",
+        "schema": "../api-gateway/schema.graphql",
+        "tadaOutputLocation": "./src/__generated__/graphql-env.d.ts"
+      }
+    ]
   },
   "files": [],
   "include": [],

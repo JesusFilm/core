@@ -4,7 +4,6 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
 import { Video } from '.prisma/api-videos-client'
 
-import { VideoLabel } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { VideoService } from './video.service'
@@ -89,7 +88,7 @@ describe('VideoService', () => {
     it('should filter by label', () => {
       expect(
         service.videoFilter({
-          labels: [VideoLabel.collection]
+          labels: ['collection']
         })
       ).toEqual({
         id: undefined,
@@ -117,7 +116,7 @@ describe('VideoService', () => {
         service.videoFilter({
           title: 'abc 123',
           availableVariantLanguageIds: ['en'],
-          labels: [VideoLabel.collection],
+          labels: ['collection'],
           ids: ['videoId']
         })
       ).toEqual({
