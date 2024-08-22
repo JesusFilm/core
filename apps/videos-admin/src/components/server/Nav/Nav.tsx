@@ -24,9 +24,9 @@ export async function Nav(): Promise<ReactElement> {
       </Box>
 
       <Stack justifyContent="center" alignItems="center">
-        <Stack>
+        <Box sx={{ m: 5 }}>
           <Typography variant="h4">{t('Nexus Admin')}</Typography>
-        </Stack>
+        </Box>
       </Stack>
     </Stack>
   )

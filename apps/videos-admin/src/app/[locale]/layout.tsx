@@ -28,7 +28,7 @@ export default function LocaleLayout({
                 themeName={ThemeName.journeysAdmin}
                 themeMode={ThemeMode.light}
               >
-                <Container sx={{ my: 10 }}>
+                <Container sx={{ my: 10, maxHeight: '100%' }}>
                   <Nav />
                   {children}
                 </Container>
