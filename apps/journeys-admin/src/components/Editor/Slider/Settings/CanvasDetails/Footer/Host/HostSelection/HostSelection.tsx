@@ -48,8 +48,8 @@ export function HostSelection({
             }}
             actionIcon={<Edit2Icon />}
           />
-      ) : (
-        <ContainedIconButton
+        ) : (
+          <ContainedIconButton
             label={t('Select a Host')}
             disabled={!userInTeam}
             slots={{
@@ -59,7 +59,7 @@ export function HostSelection({
               handleSelection('list')
             }}
           />
-      )}
+        )}
       </Stack>
       {!userInTeam && journey?.team != null && (
         <Stack direction="row" alignItems="center" gap={3}>

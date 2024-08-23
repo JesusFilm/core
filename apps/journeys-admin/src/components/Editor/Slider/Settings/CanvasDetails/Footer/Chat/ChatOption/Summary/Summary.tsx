@@ -6,7 +6,6 @@ import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ChangeEvent, ReactElement } from 'react'
 
-
 import { MessagePlatform } from '../../../../../../../../../../__generated__/globalTypes'
 import { JourneyChatButtonCreate } from '../../../../../../../../../../__generated__/JourneyChatButtonCreate'
 import { JourneyChatButtonRemove } from '../../../../../../../../../../__generated__/JourneyChatButtonRemove'
@@ -49,7 +48,7 @@ export function Summary({
   journeyId,
   currentLink,
   currentPlatform,
-  chatButtonId,
+  chatButtonId
 }: SummaryProps): ReactElement {
   const [journeyChatButtonCreate, { loading: createLoading }] =
     useMutation<JourneyChatButtonCreate>(JOURNEY_CHAT_BUTTON_CREATE)

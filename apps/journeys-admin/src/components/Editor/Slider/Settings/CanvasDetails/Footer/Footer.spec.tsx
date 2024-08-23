@@ -46,8 +46,12 @@ describe('Footer', () => {
     )
 
     expect(screen.getByText('Journey Appearance')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Author details'})).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Chat widget' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Author details' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Chat widget' })
+    ).toBeInTheDocument()
   })
 
   it('should return to journey map when close icon is clicked', async () => {

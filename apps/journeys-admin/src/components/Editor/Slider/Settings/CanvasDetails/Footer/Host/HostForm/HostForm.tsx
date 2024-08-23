@@ -85,10 +85,10 @@ export function HostForm({
   return (
     <Box data-testid="HostForm">
       <Stack
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center"
-          sx={{ px: 4, py: 2 }}
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        sx={{ px: 4, py: 2 }}
       >
         {journey?.host != null ? (
           <Button variant="outlined" size="small" onClick={handleClear}>
