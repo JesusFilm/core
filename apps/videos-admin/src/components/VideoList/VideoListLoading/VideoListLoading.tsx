@@ -8,14 +8,18 @@ import TableContainer from '@mui/material/TableContainer'
 import TableRow from '@mui/material/TableRow'
 import { ReactElement } from 'react'
 
-import { VideoListHead } from '../../../server/VideoListHead'
+import { VideoListHead } from '../../VideoListHead'
 
-export function VideoListFallback(): ReactElement {
+export function VideoListLoading(): ReactElement {
   return (
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 2 }}>
-        <TableContainer>
-          <Table sx={{ minWidth: 750 }} aria-labelledby="videoListFallback">
+        <TableContainer sx={{ height: '80cqh' }}>
+          <Table
+            sx={{ minWidth: 750 }}
+            aria-labelledby="videoListFallback"
+            stickyHeader
+          >
             <VideoListHead />
             <TableBody>
               {Array.from(Array(50)).map((_val, i) => {

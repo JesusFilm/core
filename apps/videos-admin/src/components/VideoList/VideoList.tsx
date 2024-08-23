@@ -34,7 +34,6 @@ const GET_VIDEOS_AND_COUNT = graphql(`
 
 export function VideoList({ header }: { header: ReactNode }): ReactElement {
   const t = useTranslations()
-  const [selected, setSelected] = useState<string[]>([])
   const [page, setPage] = useState<number>(0)
   const videosLimit = 50
 
@@ -43,22 +42,7 @@ export function VideoList({ header }: { header: ReactNode }): ReactElement {
   })
 
   function handleClick(event: React.MouseEvent<unknown>, id: string): void {
-    const selectedIndex = selected.indexOf(id)
-    let newSelected: string[] = []
-
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, id)
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1))
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1))
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1)
-      )
-    }
-    setSelected(newSelected)
+    console.log(`push to [locacle]/[${id}]`)
   }
 
   async function handleChangePage(
@@ -69,11 +53,19 @@ export function VideoList({ header }: { header: ReactNode }): ReactElement {
     await refetch({ limit: 50, offset: newPage * 50 })
   }
 
+  const emptyRows =
+    page > 0 ? Math.max(0, (1 + page) * videosLimit - data.videos.length) : 0
+
   return (
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 2 }}>
-        <TableContainer>
-          <Table sx={{ minWidth: 750 }} aria-labelledby="videosTable">
+        <TableContainer
+          sx={{
+            maxHeight: '80cqh',
+            overflow: emptyRows > 0 ? 'hidden' : 'auto'
+          }}
+        >
+          <Table stickyHeader aria-labelledby="videosTable">
             {header}
             <TableBody>
               {data.videos.map((video) => {
@@ -104,6 +96,15 @@ export function VideoList({ header }: { header: ReactNode }): ReactElement {
                   </TableRow>
                 )
               })}
+              {emptyRows > 0 && (
+                <TableRow
+                  style={{
+                    height: 53 * emptyRows
+                  }}
+                >
+                  <TableCell colSpan={6} />
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </TableContainer>

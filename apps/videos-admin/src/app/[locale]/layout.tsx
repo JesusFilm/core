@@ -6,7 +6,7 @@ import { ReactNode } from 'react'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
-import { Nav } from '../../components/server/Nav'
+import { Nav } from '../../components/Nav'
 
 import { ApolloWrapper } from './_apolloWrapper/apolloWrapper'
 
@@ -28,8 +28,8 @@ export default function LocaleLayout({
                 themeName={ThemeName.journeysAdmin}
                 themeMode={ThemeMode.light}
               >
+                <Nav />
                 <Container sx={{ my: 10, maxHeight: '100%' }}>
-                  <Nav />
                   {children}
                 </Container>
               </ThemeProvider>

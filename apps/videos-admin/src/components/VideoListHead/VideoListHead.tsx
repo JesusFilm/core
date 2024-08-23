@@ -14,17 +14,17 @@ export function VideoListHead(): ReactElement {
       <TableRow>
         <TableCell>
           <TableSortLabel>
-            <Typography variant="subtitle3">{t('id')}</Typography>
+            <Typography variant="subtitle3">{t('ID')}</Typography>
           </TableSortLabel>
         </TableCell>
         <TableCell>
           <TableSortLabel>
-            <Typography variant="subtitle3">{t('title')}</Typography>
+            <Typography variant="subtitle3">{t('Title')}</Typography>
           </TableSortLabel>
         </TableCell>
         <TableCell>
           <TableSortLabel>
-            <Typography variant="subtitle3">{t('description')}</Typography>
+            <Typography variant="subtitle3">{t('Description')}</Typography>
           </TableSortLabel>
         </TableCell>
       </TableRow>
