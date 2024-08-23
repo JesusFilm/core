@@ -2,16 +2,18 @@
 
 import { useSuspenseQuery } from '@apollo/experimental-nextjs-app-support/ssr'
 import Box from '@mui/material/Box'
-import Paper from '@mui/material/Paper'
-import Table from '@mui/material/Table'
-import TableBody from '@mui/material/TableBody'
-import TableCell from '@mui/material/TableCell'
-import TableContainer from '@mui/material/TableContainer'
-import TablePagination from '@mui/material/TablePagination'
-import TableRow from '@mui/material/TableRow'
+import {
+  DataGrid,
+  GridCallbackDetails,
+  GridColDef,
+  GridPaginationModel,
+  GridRowParams,
+  GridRowsProp,
+  MuiEvent
+} from '@mui/x-data-grid'
 import { graphql } from 'gql.tada'
 import { useTranslations } from 'next-intl'
-import { ReactElement, ReactNode, useState } from 'react'
+import { ReactElement, useState } from 'react'
 
 const GET_VIDEOS_AND_COUNT = graphql(`
   query GetVideosAndCount($limit: Int, $offset: Int) {
@@ -32,91 +34,61 @@ const GET_VIDEOS_AND_COUNT = graphql(`
   }
 `)
 
-export function VideoList({ header }: { header: ReactNode }): ReactElement {
-  const t = useTranslations()
-  const [page, setPage] = useState<number>(0)
+export function VideoList(): ReactElement {
   const videosLimit = 50
-
-  const { data, refetch } = useSuspenseQuery(GET_VIDEOS_AND_COUNT, {
-    variables: { limit: videosLimit, offset: 0 }
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
+    pageSize: videosLimit,
+    page: 0
   })
 
-  function handleClick(event: React.MouseEvent<unknown>, id: string): void {
-    console.log(`push to [locacle]/[${id}]`)
+  const t = useTranslations()
+  const { data } = useSuspenseQuery(GET_VIDEOS_AND_COUNT, {
+    variables: {}
+  })
+
+  const rows: GridRowsProp = data.videos.map((video) => {
+    const title = video.title.find(({ primary }) => primary)?.value
+    const description = video.snippet.find(({ primary }) => primary)?.value
+    return {
+      id: video.id,
+      title,
+      description
+    }
+  })
+
+  const columns: GridColDef[] = [
+    { field: 'id', headerName: t('ID'), width: 150 },
+    { field: 'title', headerName: t('Title'), width: 200 },
+    { field: 'description', headerName: t('Description'), width: 500 }
+  ]
+
+  function handleClick(
+    params: GridRowParams,
+    _event: MuiEvent,
+    _details: GridCallbackDetails
+  ): void {
+    console.log(`redirect to: [locale]/[${params.id}]`)
+    console.log(params)
   }
 
   async function handleChangePage(
-    _event: unknown,
-    newPage: number
+    model: GridPaginationModel,
+    _details: GridCallbackDetails
   ): Promise<void> {
-    setPage(newPage)
-    await refetch({ limit: 50, offset: newPage * 50 })
+    setPaginationModel(model)
   }
 
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * videosLimit - data.videos.length) : 0
-
   return (
-    <Box sx={{ width: '100%' }}>
-      <Paper sx={{ width: '100%', mb: 2 }}>
-        <TableContainer
-          sx={{
-            maxHeight: '80cqh',
-            overflow: emptyRows > 0 ? 'hidden' : 'auto'
-          }}
-        >
-          <Table stickyHeader aria-labelledby="videosTable">
-            {header}
-            <TableBody>
-              {data.videos.map((video) => {
-                const description = video.snippet.find(
-                  ({ primary }) => primary
-                )?.value
-
-                const shortenedDescription =
-                  description != null && description.length > 100
-                    ? description.slice(0, 100) + '...'
-                    : description
-
-                return (
-                  <TableRow
-                    hover
-                    onClick={(event) => handleClick(event, video.id)}
-                    tabIndex={-1}
-                    key={video.id}
-                    sx={{ cursor: 'pointer' }}
-                  >
-                    <TableCell>{video.id}</TableCell>
-                    <TableCell>
-                      {video.title.find(({ primary }) => primary)?.value}
-                    </TableCell>
-                    <TableCell>
-                      {shortenedDescription ?? t('no description for video')}
-                    </TableCell>
-                  </TableRow>
-                )
-              })}
-              {emptyRows > 0 && (
-                <TableRow
-                  style={{
-                    height: 53 * emptyRows
-                  }}
-                >
-                  <TableCell colSpan={6} />
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={[-1]}
-          component="div"
-          count={data.videosCount.length}
-          rowsPerPage={videosLimit}
-          page={page}
-          onPageChange={handleChangePage}
-        />
-      </Paper>
+    <Box sx={{ height: '80cqh' }}>
+      <DataGrid
+        rows={rows}
+        columns={columns}
+        pageSizeOptions={[videosLimit]}
+        paginationModel={paginationModel}
+        onPaginationModelChange={handleChangePage}
+        rowCount={data.videosCount.length}
+        onRowClick={handleClick}
+      />
     </Box>
   )
 }

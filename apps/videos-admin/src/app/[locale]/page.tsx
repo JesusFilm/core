@@ -6,7 +6,6 @@ import { ReactElement, Suspense } from 'react'
 
 import { VideoList } from '../../components/VideoList'
 import { VideoListLoading } from '../../components/VideoList/VideoListLoading'
-import { VideoListHead } from '../../components/VideoListHead'
 
 export default function Index(): ReactElement {
   const t = useTranslations()
@@ -19,7 +18,7 @@ export default function Index(): ReactElement {
         </Box>
       </Stack>
       <Suspense fallback={<VideoListLoading />}>
-        <VideoList header={<VideoListHead />} />
+        <VideoList />
       </Suspense>
     </Box>
   )
