@@ -27,8 +27,8 @@ export function HostSelection({
   const { t } = useTranslation('apps-journeys-admin')
   return (
     <Box data-testid="HostSelection">
-      {journey?.host != null ? (
-        <Stack sx={{ p: 4 }}>
+      <Stack sx={{ p: 4, pt: 0 }}>
+        {journey?.host != null ? (
           <ContainedIconButton
             label={journey.host.title}
             description={journey.host.location ?? ''}
@@ -48,10 +48,8 @@ export function HostSelection({
             }}
             actionIcon={<Edit2Icon />}
           />
-        </Stack>
       ) : (
-        <Stack sx={{ p: 4 }}>
-          <ContainedIconButton
+        <ContainedIconButton
             label={t('Select a Host')}
             disabled={!userInTeam}
             slots={{
@@ -61,8 +59,8 @@ export function HostSelection({
               handleSelection('list')
             }}
           />
-        </Stack>
       )}
+      </Stack>
       {!userInTeam && journey?.team != null && (
         <Stack direction="row" alignItems="center" gap={3}>
           <AlertCircleIcon />

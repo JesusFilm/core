@@ -1,12 +1,11 @@
 import { Reference, gql, useMutation } from '@apollo/client'
-import AccordionSummary from '@mui/material/AccordionSummary'
+import Box from '@mui/material/Box'
 import Checkbox from '@mui/material/Checkbox'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ChangeEvent, ReactElement } from 'react'
 
-import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 import { MessagePlatform } from '../../../../../../../../../../__generated__/globalTypes'
 import { JourneyChatButtonCreate } from '../../../../../../../../../../__generated__/JourneyChatButtonCreate'
@@ -41,7 +40,6 @@ interface SummaryProps {
   currentLink: string
   currentPlatform: MessagePlatform
   chatButtonId?: string
-  openAccordion: () => void
 }
 
 export function Summary({
@@ -52,7 +50,6 @@ export function Summary({
   currentLink,
   currentPlatform,
   chatButtonId,
-  openAccordion
 }: SummaryProps): ReactElement {
   const [journeyChatButtonCreate, { loading: createLoading }] =
     useMutation<JourneyChatButtonCreate>(JOURNEY_CHAT_BUTTON_CREATE)
@@ -64,7 +61,6 @@ export function Summary({
   async function handleToggle(
     event: ChangeEvent<HTMLInputElement>
   ): Promise<void> {
-    openAccordion()
     // Restricts mutations from running if loading for spam click protection, must be QA'd
     if (createLoading || removeLoading) return
     if (event.target.checked && !disableSelection) {
@@ -143,11 +139,7 @@ export function Summary({
   }
 
   return (
-    <AccordionSummary
-      expandIcon={<ChevronDownIcon />}
-      sx={{ px: 6, py: 2 }}
-      data-testid="ChatOptionSummary"
-    >
+    <Box sx={{ display: 'flex', px: 6, py: 2 }} data-testid="ChatOptionSummary">
       <Checkbox
         data-testid={`checkbox-${currentPlatform as string}`}
         checked={active}
@@ -157,6 +149,6 @@ export function Summary({
         onChange={handleToggle}
       />
       <Typography sx={{ my: 'auto' }}>{title}</Typography>
-    </AccordionSummary>
+    </Box>
   )
 }
