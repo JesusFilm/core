@@ -132,6 +132,7 @@ describe('algolia/service', () => {
           languageId: {
             in: [
               '529', // English
+              '9999', // Tula
               '21046', // Spanish, Castilian
               '21028', // Spanish, Latin American
               '21753', // Chinese, Traditional
@@ -159,7 +160,8 @@ describe('algolia/service', () => {
           slug: 'slug',
           subtitles: ['subtitle'],
           titles: ['title'],
-          videoId: 'videoId'
+          videoId: 'videoId',
+          manualRanking: 1
         }
       ])
     })

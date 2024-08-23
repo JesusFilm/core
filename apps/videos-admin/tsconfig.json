@@ -1,0 +1,39 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "preserve",
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "types": ["node", "jest"],
+    "strict": false,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      },
+      {
+        "name": "@0no-co/graphqlsp",
+        "schema": "../api-gateway/schema.graphql",
+        "tadaOutputLocation": "./src/__generated__/graphql-env.d.ts"
+      }
+    ],
+    "tsBuildInfoFile": "../../.cache/videos-admin/tsc/.tsbuildinfo"
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.js",
+    "**/*.jsx",
+    "next-env.d.ts",
+    ".next/types/**/*.ts",
+    "src/app/[locale]/_apolloWrapper/apolloWrapper.tsx",
+    "src/i18n.ts",
+    "src/middleware.ts",
+    "../../dist/apps/videos-admin/.next/types/**/*.ts"
+  ],
+  "exclude": ["node_modules", "jest.config.ts"]
+}
