@@ -32,26 +32,27 @@ export function InformationButton(): ReactElement {
   }
   return (
     <>
-      {router.query.noi == null && (
-        <IconButton
-          data-testid="InformationButton"
-          id="more-info"
-          aria-controls="more-info"
-          aria-haspopup="true"
-          aria-expanded={open ? 'true' : 'false'}
-          sx={{ mx: 2, mt: 1 }}
-          onClick={handleClick}
-        >
-          <InfoOutlinedIcon
-            sx={{
-              color: theme.palette.primary.main,
-              [theme.breakpoints.up('lg')]: {
-                color: theme.palette.common.white
-              }
-            }}
-          />
-        </IconButton>
-      )}
+      {variant === 'admin' ||
+        (router.query.noi == null && (
+          <IconButton
+            data-testid="InformationButton"
+            id="more-info"
+            aria-controls="more-info"
+            aria-haspopup="true"
+            aria-expanded={open ? 'true' : 'false'}
+            sx={{ mx: 2, mt: 1 }}
+            onClick={handleClick}
+          >
+            <InfoOutlinedIcon
+              sx={{
+                color: theme.palette.primary.main,
+                [theme.breakpoints.up('lg')]: {
+                  color: theme.palette.common.white
+                }
+              }}
+            />
+          </IconButton>
+        ))}
 
       <Menu
         id="basic-menu"
