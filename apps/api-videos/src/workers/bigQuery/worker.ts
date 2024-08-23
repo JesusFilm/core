@@ -8,7 +8,11 @@ import { importBibleBooks } from './importers/bibleBooks'
 import { importBibleCitations } from './importers/bibleCitations'
 import { importKeywords } from './importers/keywords'
 import { importLanguageSlugs } from './importers/languageSlugs'
+import { importVideoChildren } from './importers/videoChildren'
+import { importVideoDescriptions } from './importers/videoDescriptions'
+import { importVideoImageAlts } from './importers/videoImageAlts'
 import { importVideos } from './importers/videos'
+import { importVideoTitles } from './importers/videoTitles'
 import { jobName, queueName } from './names'
 
 export const jobFn = async (job: Job): Promise<void> => {
@@ -27,6 +31,10 @@ export const jobFn = async (job: Job): Promise<void> => {
     await importBibleBookNames(logger),
     // depends on videos
     await importKeywords(logger),
+    await importVideoTitles(logger),
+    await importVideoDescriptions(logger),
+    await importVideoImageAlts(logger),
+    await importVideoChildren(logger),
     // depends on bibleBooks and videos
     await importBibleCitations(logger)
   ]

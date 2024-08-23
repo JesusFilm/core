@@ -37,7 +37,7 @@ describe('bigquery/importers/bibleBookNames', () => {
         'jfp-data-warehouse.jfp_mmdb_prod.core_bibleBookDescriptors_arclight_data',
         importOne,
         importMany,
-        true,
+        false,
         undefined
       )
     })

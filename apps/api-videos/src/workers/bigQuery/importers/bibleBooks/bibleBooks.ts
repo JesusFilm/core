@@ -40,7 +40,7 @@ export async function importBibleBooks(logger?: Logger): Promise<() => void> {
     'jfp-data-warehouse.jfp_mmdb_prod.core_bibleBooks_arclight_data',
     importOne,
     importMany,
-    true,
+    false,
     logger
   )
 

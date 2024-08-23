@@ -23,7 +23,7 @@ export async function importBibleBookNames(logger?: Logger): Promise<void> {
     'jfp-data-warehouse.jfp_mmdb_prod.core_bibleBookDescriptors_arclight_data',
     importOne,
     importMany,
-    true,
+    false,
     logger
   )
 }

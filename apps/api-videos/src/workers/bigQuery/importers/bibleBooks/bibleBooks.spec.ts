@@ -32,7 +32,7 @@ describe('bigquery/importers/bibleBooks', () => {
         'jfp-data-warehouse.jfp_mmdb_prod.core_bibleBooks_arclight_data',
         importOne,
         importMany,
-        true,
+        false,
         undefined
       )
     })

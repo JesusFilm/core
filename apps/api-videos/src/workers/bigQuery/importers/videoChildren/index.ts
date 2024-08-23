@@ -1,1 +1,1 @@
-export { importLanguageSlugs } from './videoChildren'
+export { importVideoChildren } from './videoChildren'
