@@ -24,7 +24,6 @@ describe('bigquery/importer', () => {
 
   describe('createQueryJob', () => {
     it('should create a query job', async () => {
-      jest.spyOn(client, 'createQueryJob')
       const job = await createQueryJob('table', undefined, false)
       expect(client.createQueryJob).toHaveBeenCalledWith({
         query: 'SELECT * FROM `table` ',
@@ -154,6 +153,12 @@ describe('bigquery/importer', () => {
         lastImport: new Date(),
         modelName: 'table'
       })
+      const mockedCreateQueryJob = client.createQueryJob as unknown as jest.Mock
+      mockedCreateQueryJob.mockResolvedValueOnce([
+        {
+          getQueryResults: async () => [['data1'], { pageToken: null }]
+        }
+      ])
       const importOne = jest.fn()
       const importMany = jest.fn()
       await processTable('table', importOne, importMany, true)
@@ -173,6 +178,12 @@ describe('bigquery/importer', () => {
         lastImport: new Date(),
         modelName: 'table'
       })
+      const mockedCreateQueryJob = client.createQueryJob as unknown as jest.Mock
+      mockedCreateQueryJob.mockResolvedValueOnce([
+        {
+          getQueryResults: async () => [['data1'], { pageToken: null }]
+        }
+      ])
       const importOne = jest.fn()
       const importMany = jest.fn()
       await processTable('table', importOne, importMany, true)

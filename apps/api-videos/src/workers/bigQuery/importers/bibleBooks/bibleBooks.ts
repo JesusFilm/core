@@ -1,6 +1,6 @@
+import omit from 'lodash/omit'
+import { Logger } from 'pino'
 import { z } from 'zod'
-
-import { Prisma } from '.prisma/api-videos-client'
 
 import { prisma } from '../../../../lib/prisma'
 import { parse, parseMany, processTable } from '../../importer'
@@ -18,25 +18,45 @@ const bibleBookSchema = z.object({
 
 type BibleBook = z.infer<typeof bibleBookSchema>
 
-export async function importBibleBook(): Promise<void> {
+let bibleBookIds: string[] = []
+
+export function pushBibleBook(...bibleBooks: Array<{ id: string }>): void {
+  bibleBookIds.push(...bibleBooks.map(({ id }) => id))
+}
+
+export function setBibleBookIds(bibleBooks: Array<{ id: string }>): void {
+  bibleBookIds = []
+  pushBibleBook(...bibleBooks)
+}
+
+export function getBibleBookIds(): string[] {
+  return bibleBookIds
+}
+
+export async function importBibleBooks(logger?: Logger): Promise<() => void> {
+  setBibleBookIds(await prisma.bibleBook.findMany({ select: { id: true } }))
+
   await processTable(
     'jfp-data-warehouse.jfp_mmdb_prod.core_bibleBooks_arclight_data',
     importOne,
     importMany,
-    true
+    true,
+    logger
   )
+
+  return () => setBibleBookIds([])
 }
 
 function trimBibleBook(
   bibleBook: BibleBook
 ): Omit<BibleBook, 'name' | 'languageId'> {
-  const { name, languageId, ...trimmedBibleBook } = bibleBook
-  return trimmedBibleBook
+  return omit(bibleBook, 'name', 'languageId')
 }
 
 export async function importOne(row: unknown): Promise<void> {
-  const trimmedBibleBook = this.trimBibleBook(row)
-  await this.prismaService.bibleBook.upsert({
+  const bibleBook = parse(bibleBookSchema, row)
+  const trimmedBibleBook = trimBibleBook(bibleBook)
+  await prisma.bibleBook.upsert({
     where: { id: bibleBook.id },
     update: {
       ...trimmedBibleBook,
@@ -71,32 +91,38 @@ export async function importOne(row: unknown): Promise<void> {
       }
     }
   })
-  this.ids.push(bibleBook.id)
+  pushBibleBook(bibleBook)
 }
 
 export async function importMany(rows: unknown[]): Promise<void> {
-  const trimmedBibleBooks = bibleBooks.map((bibleBook) =>
-    this.trimBibleBook(bibleBook)
+  const { data: bibleBooks, inValidRowIds } = parseMany(bibleBookSchema, rows)
+
+  if (bibleBooks.length !== rows.length)
+    throw new Error(`some rows do not match schema: ${inValidRowIds.join(',')}`)
+
+  const filteredBibleBooks = bibleBooks.filter(
+    ({ id }) => !bibleBookIds.includes(id)
+  )
+  const trimmedBibleBooks = filteredBibleBooks.map((bibleBook) =>
+    trimBibleBook(bibleBook)
   )
 
-  const bibleBookNames = bibleBooks.map((bibleBook) => ({
+  const bibleBookNames = filteredBibleBooks.map((bibleBook) => ({
     value: bibleBook.name,
     languageId: bibleBook.languageId,
     primary: true,
     bibleBookId: bibleBook.id
   }))
 
-  await this.prismaService.bibleBook.createMany({
-    data: trimmedBibleBooks.filter(({ id }) => !this.ids.includes(id)),
+  await prisma.bibleBook.createMany({
+    data: trimmedBibleBooks.filter(({ id }) => !bibleBookIds.includes(id)),
     skipDuplicates: true
   })
 
-  this.ids = bibleBooks.map(({ id }) => id)
-
-  await this.prismaService.bibleBookName.createMany({
-    data: bibleBookNames.filter(({ bibleBookId }) =>
-      this.ids.includes(bibleBookId)
-    ),
+  await prisma.bibleBookName.createMany({
+    data: bibleBookNames,
     skipDuplicates: true
   })
+
+  pushBibleBook(...filteredBibleBooks)
 }

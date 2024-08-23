@@ -1,0 +1,53 @@
+import { ApolloClient, InMemoryCache } from '@apollo/client'
+import { graphql } from 'gql.tada'
+import { Logger } from 'pino'
+
+export const GET_LANGUAGE_SLUGS = graphql(`
+  query GetLanguageSlugs {
+    languages {
+      id
+      slug
+    }
+  }
+`)
+
+export const apollo = new ApolloClient({
+  uri: process.env.GATEWAY_URL,
+  cache: new InMemoryCache()
+})
+
+let languageSlugs: Record<string, string> = {}
+
+export function pushLanguageSlug(
+  ...languages: Array<{ id: string; slug: string | null }>
+): void {
+  languages.forEach(({ id, slug }) => {
+    if (slug != null) languageSlugs[id] = slug
+  })
+}
+export function setLanguageSlugs(
+  languages: Array<{ id: string; slug: string | null }>
+): void {
+  languageSlugs = {}
+  pushLanguageSlug(...languages)
+}
+
+export function getLanguageSlugs(): Record<string, string> {
+  return languageSlugs
+}
+
+export async function importLanguageSlugs(
+  logger?: Logger
+): Promise<() => void> {
+  logger?.info('fetch language slugs from api-languages started')
+
+  const { data } = await apollo.query({
+    query: GET_LANGUAGE_SLUGS
+  })
+
+  setLanguageSlugs(data.languages)
+
+  logger?.info('fetch language slugs from api-languages finished')
+
+  return () => setLanguageSlugs([])
+}

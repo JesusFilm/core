@@ -9,7 +9,7 @@ jest.mock('./queue', () => ({
       .mockResolvedValue([
         { id: 1, name: 'api-videos-big-query-job', getState: () => 'waiting' }
       ]),
-    add: jest.fn(),
+    add: jest.fn().mockResolvedValue({ id: 2 }),
     remove: jest.fn()
   }
 }))

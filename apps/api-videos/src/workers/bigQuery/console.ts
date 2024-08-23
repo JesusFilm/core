@@ -10,18 +10,19 @@ export async function main(): Promise<void> {
   const jobs = await bigQueryQueue.getJobs()
 
   for (const job of jobs) {
-    if (job.name === jobName && job.id != null) {
+    if (job.name === jobName && job.id != null && !(await job.isDelayed())) {
       const state = await job.getState()
       await bigQueryQueue.remove(job.id)
       console.log(
         chalk.red(`✗`),
         `DEL:`,
-        chalk.bold(`${jobName} (${state})`),
+        chalk.bold(jobName),
         chalk.grey(`from ${queueName} queue`)
       )
+      console.log(chalk.grey(`{ "id": "${job.id}", "state": "${state}" }`))
     }
   }
-  await bigQueryQueue.add(
+  const job = await bigQueryQueue.add(
     jobName,
     {},
     {
@@ -32,8 +33,11 @@ export async function main(): Promise<void> {
   console.log(
     chalk.greenBright('✔'),
     'ADD:',
-    chalk.bold(jobName),
+    chalk.bold(`${jobName}`),
     chalk.grey(`to ${queueName} queue`)
+  )
+  console.log(
+    chalk.grey(`{ "id": "${job.id}", "state": "${await job.getState()}" }`)
   )
   console.log(
     chalk.cyan(

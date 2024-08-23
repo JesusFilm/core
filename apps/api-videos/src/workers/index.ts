@@ -1,2 +1,1 @@
-// import './algolia'
 import './bigQuery'
