@@ -123,7 +123,12 @@ describe('EmailEventsConsumer', () => {
     hostId: null,
     strategySlug: null,
     userJourneys,
-    team
+    team,
+    website: null,
+    showShareButton: null,
+    showLikeButton: null,
+    showDislikeButton: null,
+    displayTitle: null
   }
 
   const event: Event = {

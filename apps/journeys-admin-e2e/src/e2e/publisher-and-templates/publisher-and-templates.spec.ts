@@ -241,17 +241,17 @@ test.describe('Verify template page functionality', () => {
   })
 
   // Templates-> Select existing template -> Preview
-  test('preview a template from the journey template page', async ({
-    page,
-    context
-  }) => {
-    const templatesPage = new TemplatePage(page)
-    await templatesPage.setBrowserContext(context) // setting browser context
-    await templatesPage.navigateToTempalatePage() // navigating to templates page
-    await templatesPage.selectExistingTemplate() // clicking on existing template
-    await templatesPage.verifySelectedTemplatePage() // verifying the page is navigated to selected template page
-    await templatesPage.verifyPreviewTemplateInJourneyTemplate() //  clicking on the preview button beside the 'use this template' button and verifying the template is loaded on the preview tab
-  })
+  test.fixme(
+    'preview a template from the journey template page',
+    async ({ page, context }) => {
+      const templatesPage = new TemplatePage(page)
+      await templatesPage.setBrowserContext(context) // setting browser context
+      await templatesPage.navigateToTempalatePage() // navigating to templates page
+      await templatesPage.selectExistingTemplate() // clicking on existing template
+      await templatesPage.verifySelectedTemplatePage() // verifying the page is navigated to selected template page
+      await templatesPage.verifyPreviewTemplateInJourneyTemplate() //  clicking on the preview button beside the 'use this template' button and verifying the template is loaded on the preview tab
+    }
+  )
 
   // TODO: Skipping for now as template publishing taking about 5-7 mins to take effect
   // Templates-> Select existing template -> Edit

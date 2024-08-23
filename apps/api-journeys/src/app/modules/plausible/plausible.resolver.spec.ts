@@ -57,7 +57,12 @@ describe('PlausibleResolver', () => {
     template: false,
     hostId: null,
     strategySlug: null,
-    plausibleToken: null
+    plausibleToken: null,
+    website: null,
+    showShareButton: null,
+    showLikeButton: null,
+    showDislikeButton: null,
+    displayTitle: null
   }
 
   const journeyWithUserTeam = {
