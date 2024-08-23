@@ -1,5 +1,3 @@
-import { Job } from 'bullmq'
-
 import {
   importBibleBookNames,
   importBibleBooks,
@@ -16,9 +14,9 @@ import {
   importVideoVariantDownloads,
   importVideoVariants,
   importVideos
-} from './importers'
-import { jobName } from './names'
-import { jobFn } from './worker'
+} from '../importers'
+
+import { service } from './service'
 
 jest.mock('./importers', () => ({
   importBibleBookNames: jest.fn(),
@@ -38,19 +36,10 @@ jest.mock('./importers', () => ({
   importVideos: jest.fn()
 }))
 
-describe('bigquery/worker', () => {
-  describe('jobFn', () => {
-    it(`should not call anything if job name is not ${jobName}`, async () => {
-      await jobFn({
-        name: 'some-other-job'
-      } as unknown as Job)
-      expect(importBibleBookNames).not.toHaveBeenCalled()
-    })
-
+describe('bigquery/service', () => {
+  describe('service', () => {
     it('should call importers', async () => {
-      await jobFn({
-        name: jobName
-      } as unknown as Job)
+      await service()
       expect(importBibleBookNames).toHaveBeenCalled()
       expect(importBibleBooks).toHaveBeenCalled()
       expect(importBibleCitations).toHaveBeenCalled()

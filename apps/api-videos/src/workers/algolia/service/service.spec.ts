@@ -2,9 +2,11 @@ import algoliasearch from 'algoliasearch'
 
 import { VideoVariant } from '.prisma/api-videos-client'
 
-import { prismaMock } from '../../../test/prismaMock'
+import { prismaMock } from '../../../../test/prismaMock'
 
-import { GET_LANGUAGES, apollo, exportToAlgolia } from './exporter'
+import { GET_LANGUAGES, apollo } from './service'
+
+import { service } from '.'
 
 const saveObjectsSpy = jest
   .fn()
@@ -62,7 +64,7 @@ const mockAlgoliaSearch = algoliasearch as jest.MockedFunction<
   typeof algoliasearch
 >
 
-describe('algolia/exporter', () => {
+describe('algolia/service', () => {
   let originalEnv
 
   beforeEach(() => {
@@ -78,9 +80,9 @@ describe('algolia/exporter', () => {
     jest.resetAllMocks()
   })
 
-  describe('exportToAlgolia', () => {
+  describe('service', () => {
     it('should throw if no API key', async () => {
-      await expect(exportToAlgolia()).rejects.toThrow(
+      await expect(service()).rejects.toThrow(
         'algolia environment variables not set'
       )
     })
@@ -110,7 +112,7 @@ describe('algolia/exporter', () => {
         ])
         .mockResolvedValueOnce([])
 
-      await exportToAlgolia()
+      await service()
       expect(apollo.query).toHaveBeenCalledWith({ query: GET_LANGUAGES })
       expect(prismaMock.videoVariant.findMany).toHaveBeenCalledWith({
         take: 1000,
@@ -167,7 +169,7 @@ describe('algolia/exporter', () => {
       process.env.ALGOLIA_APPLICATION_ID = 'id'
       process.env.ALGOLIA_INDEX = 'video-variants-prd'
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([])
-      await exportToAlgolia()
+      await service()
       expect(prismaMock.videoVariant.findMany).toHaveBeenCalledWith({
         take: 1000,
         skip: 0,

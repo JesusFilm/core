@@ -3,7 +3,7 @@ import algoliasearch from 'algoliasearch'
 import { graphql } from 'gql.tada'
 import { Logger } from 'pino'
 
-import { prisma } from '../../lib/prisma'
+import { prisma } from '../../../lib/prisma'
 
 const ENGLISH_LANGUAGE_ID = '529'
 const SPANISH_CASTILIAN_LANGUAGE_ID = '21046'
@@ -62,7 +62,7 @@ async function getLanguages(logger?: Logger): Promise<LanguageRecord> {
   }
 }
 
-export async function exportToAlgolia(logger?: Logger): Promise<void> {
+export async function service(logger?: Logger): Promise<void> {
   const apiKey = process.env.ALGOLIA_API_KEY ?? ''
   const appId = process.env.ALGOLIA_APPLICATION_ID ?? ''
   const appIndex = process.env.ALGOLIA_INDEX ?? ''

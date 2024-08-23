@@ -1,7 +1,4 @@
-import { Job, Worker } from 'bullmq'
-
-import { connection } from '../connection'
-import { logger as parentLogger } from '../logger'
+import { Logger } from 'pino'
 
 import {
   importBibleBookNames,
@@ -19,17 +16,9 @@ import {
   importVideoVariantDownloads,
   importVideoVariants,
   importVideos
-} from './importers'
-import { jobName, queueName } from './names'
+} from '../importers'
 
-export async function jobFn(job: Job): Promise<void> {
-  if (job.name !== jobName) return
-
-  const logger = parentLogger.child({
-    queue: queueName,
-    jobId: job.id
-  })
-  logger.info('import started')
+export async function service(logger?: Logger): Promise<void> {
   const cleanup = [
     await importLanguageSlugs(logger),
     await importVideos(logger),
@@ -52,12 +41,4 @@ export async function jobFn(job: Job): Promise<void> {
     await importVideoVariantDownloads(logger)
   ]
   cleanup.forEach((fn) => fn?.())
-  logger.info('import finished')
-}
-
-// avoid running on test environment
-if (process.env.NODE_ENV !== 'test') {
-  // eslint-disable-next-line no-new
-  new Worker(queueName, jobFn, { connection })
-  parentLogger.info({ queue: queueName }, 'waiting for jobs')
 }
