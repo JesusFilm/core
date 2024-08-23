@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
 
@@ -35,7 +35,7 @@ describe('Footer', () => {
   })
 
   it('should display Footer attributes', () => {
-    const { getByText } = render(
+    render(
       <MockedProvider>
         <SnackbarProvider>
           <EditorProvider initialState={state}>
@@ -45,45 +45,9 @@ describe('Footer', () => {
       </MockedProvider>
     )
 
-    expect(getByText('Hosted By')).toBeInTheDocument()
-    expect(getByText('Chat Widget')).toBeInTheDocument()
-  })
-
-  it('should render the components', async () => {
-    const { getByTestId } = render(
-      <MockedProvider>
-        <SnackbarProvider>
-          <EditorProvider initialState={state}>
-            <Footer />
-          </EditorProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-    await waitFor(() => expect(getByTestId('Chat')).toBeInTheDocument())
-    expect(getByTestId('HostTab')).toBeInTheDocument()
-  })
-
-  it('should switch tabs', () => {
-    const { getByRole } = render(
-      <MockedProvider>
-        <SnackbarProvider>
-          <EditorProvider initialState={state}>
-            <TestEditorState />
-            <Footer />
-          </EditorProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    expect(getByRole('tab', { name: 'Hosted By' })).toHaveAttribute(
-      'aria-selected',
-      'true'
-    )
-    fireEvent.click(getByRole('tab', { name: 'Chat Widget' }))
-    expect(getByRole('tab', { name: 'Chat Widget' })).toHaveAttribute(
-      'aria-selected',
-      'true'
-    )
+    expect(screen.getByText('Journey Appearance')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Author details'})).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Chat widget' })).toBeInTheDocument()
   })
 
   it('should return to journey map when close icon is clicked', async () => {
