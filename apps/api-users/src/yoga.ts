@@ -10,7 +10,6 @@ export const yoga = createYoga({
   schema,
   context: async ({ request }) => {
     const token = request.headers.get('authorization')
-    // ?.replace(/^Bearer\s/, '')
     const interopToken = request.headers.get('interop-token')
     const ipAddress = request.headers.get('x-forwarded-for')
 

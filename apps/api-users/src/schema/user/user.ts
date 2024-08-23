@@ -59,12 +59,11 @@ builder.queryFields((t) => ({
     authScopes: {
       isValidInterOp: true
     },
-    resolve: async (query, _parent, { id }, ctx) => {
-      return await prisma.user.findUnique({
+    resolve: async (query, _parent, { id }) =>
+      await prisma.user.findUnique({
         ...query,
         where: { id }
       })
-    }
   }),
   userByEmail: t.prismaField({
     type: 'User',
