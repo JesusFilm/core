@@ -3,7 +3,7 @@ import { languagesContinents } from '@core/journeys/ui/useLanguagesContinentsQue
 import {
   GetLanguagesContinents_languages_countryLanguages as CountryLanguage,
   GetLanguagesContinents_languages as Languages
-} from '../../../../__generated__/GetLanguagesContinents'
+} from '../../../../../../apps/watch/__generated__/GetLanguagesContinents'
 
 import { useSortLanguageContinents } from './useSortLanguageContinents'
 

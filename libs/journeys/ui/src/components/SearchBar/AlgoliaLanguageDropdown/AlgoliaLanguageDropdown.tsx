@@ -1,8 +1,12 @@
 import Box from '@mui/material/Box'
 import ClickAwayListener from '@mui/material/ClickAwayListener'
 import Popper from '@mui/material/Popper'
-import { ReactElement } from 'react'
+import Stack from '@mui/material/Stack'
+import { ReactElement, ReactNode } from 'react'
 import { useRefinementList } from 'react-instantsearch'
+
+import { useLanguagesContinentsQuery } from '../../../libs/useLanguagesContinentsQuery'
+import { useSortLanguageContinents } from '../../../libs/useSortLanguageContinents'
 
 import { RefinementGroup } from './RefinementGroup'
 
@@ -19,7 +23,37 @@ export function AlgoliaLanguageDropdown({
   id,
   anchorEl
 }: AlgoliaLanguageDropdownProps): ReactElement {
-  const refinements = useRefinementList({ attribute: 'languageEnglishName' })
+  const { data } = useLanguagesContinentsQuery()
+  const languages = useSortLanguageContinents({
+    languages: data?.languages ?? []
+  })
+  const refinements = useRefinementList({
+    attribute: 'languageEnglishName',
+    limit: 1000
+  })
+
+  function ContinentRefinements(): ReactNode {
+    return (
+      <>
+        {Object.entries(languages).map(([continent, continentLanguages]) => {
+          const items = refinements.items.filter((item) =>
+            continentLanguages.some((language) => language === item.label)
+          )
+
+          return (
+            <RefinementGroup
+              key={continent}
+              title={continent}
+              refinement={{
+                ...refinements,
+                items
+              }}
+            />
+          )
+        })}
+      </>
+    )
+  }
 
   return (
     <Popper
@@ -38,13 +72,25 @@ export function AlgoliaLanguageDropdown({
     >
       <ClickAwayListener onClickAway={handleClickAway}>
         <Box
-          sx={{ p: 8, bgcolor: 'background.paper', mt: 3 }}
           borderRadius={3}
           boxShadow="0px 4px 4px 0px #00000040"
+          sx={{ p: 8, bgcolor: 'background.paper', mt: 3 }}
         >
-          <Box color="text.primary">
-            <RefinementGroup title="Languages" refinement={refinements} />
-          </Box>
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            color="text.primary"
+            sx={{
+              height: 445,
+              overflowY: 'scroll', // Hide on Firefox https://caniuse.com/?search=scrollbar-width
+              scrollbarWidth: 'none',
+              // Hide on all others https://caniuse.com/?search=webkit-scrollbar
+              '&::-webkit-scrollbar': {
+                display: 'none'
+              }
+            }}
+          >
+            <ContinentRefinements />
+          </Stack>
         </Box>
       </ClickAwayListener>
     </Popper>
