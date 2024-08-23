@@ -52,6 +52,8 @@ export function Canvas(): ReactElement {
     dispatch
   } = useEditor()
   const { journey } = useJourney()
+  let website: boolean | null = null // TODO: replace with journey value
+  website = false
   const { rtl, locale } = getJourneyRTL(journey)
   const router = useRouter()
 
@@ -262,14 +264,16 @@ export function Canvas(): ReactElement {
                               sx={{
                                 outline:
                                   activeCanvasDetailsDrawer ===
-                                  ActiveCanvasDetailsDrawer.Footer
+                                    ActiveCanvasDetailsDrawer.Footer &&
+                                  website === true
                                     ? '2px solid #C52D3A'
                                     : 'none',
                                 outlineOffset: -4,
                                 borderRadius: 5,
-                                cursor: 'pointer'
+                                cursor: 'pointer',
+                                minHeight: '42px'
                               }}
-                              // onFooterClick={handleFooterClick}
+                              onHeaderClick={handleFooterClick}
                             />
                           </ThemeProvider>
                           <BlockRenderer

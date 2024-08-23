@@ -6,10 +6,17 @@ import { InformationButton } from './InformationButton'
 import { PaginationBullets } from './PaginationBullets'
 
 interface StepHeaderProps {
+  onHeaderClick?: () => void
   sx?: SxProps
 }
 
-export function StepHeader({ sx }: StepHeaderProps): ReactElement {
+export function StepHeader({
+  onHeaderClick,
+  sx
+}: StepHeaderProps): ReactElement {
+  let website: boolean | null = null // TODO: replace with journey value
+  website = false
+
   return (
     <Stack
       data-testid="JourneysStepHeader"
@@ -23,9 +30,25 @@ export function StepHeader({ sx }: StepHeaderProps): ReactElement {
         width: { xs: '100%', lg: 'auto' },
         ...sx
       }}
+      onClick={(e) => {
+        if (onHeaderClick != null && website === true) {
+          e.stopPropagation()
+          onHeaderClick()
+        }
+      }}
     >
-      <PaginationBullets />
-      <InformationButton />
+      {website ? (
+        <>
+          {/* Logo */}
+          {/* Title */}
+          {/* Menu */}
+        </>
+      ) : (
+        <>
+          <PaginationBullets />
+          <InformationButton />
+        </>
+      )}
     </Stack>
   )
 }
