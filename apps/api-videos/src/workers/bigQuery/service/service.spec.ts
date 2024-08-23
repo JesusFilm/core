@@ -18,7 +18,7 @@ import {
 
 import { service } from './service'
 
-jest.mock('./importers', () => ({
+jest.mock('../importers', () => ({
   importBibleBookNames: jest.fn(),
   importBibleBooks: jest.fn(),
   importBibleCitations: jest.fn(),

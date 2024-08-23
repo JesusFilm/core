@@ -8,7 +8,6 @@ import {
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
-import { cache } from '../../yoga'
 
 describe('videoVariant', () => {
   const client = getClient()

@@ -22,7 +22,7 @@ describe('bigquery/importers/biblecitations', () => {
     it('should import biblecitations', async () => {
       await importBibleCitations()
       expect(processTable).toHaveBeenCalledWith(
-        'jfp-data-warehouse.jfp_mmdb_prod.core_biblecitations_arclight_data',
+        'jfp-data-warehouse.jfp_mmdb_prod.core_videoBibleCitation_arclight_data',
         importOne,
         importMany,
         true,
