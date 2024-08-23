@@ -1,1 +1,2 @@
+import './algolia'
 import './bigQuery'

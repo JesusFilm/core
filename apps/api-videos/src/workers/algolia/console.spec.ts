@@ -3,11 +3,11 @@ import { jobName } from './names'
 import { queue } from './queue'
 
 jest.mock('./queue', () => ({
-  bigQueryQueue: {
+  queue: {
     getJobs: jest.fn().mockResolvedValue([
       {
         id: 1,
-        name: 'api-videos-big-query-job',
+        name: 'api-videos-algolia-job',
         getState: () => 'waiting',
         isDelayed: () => false
       }
