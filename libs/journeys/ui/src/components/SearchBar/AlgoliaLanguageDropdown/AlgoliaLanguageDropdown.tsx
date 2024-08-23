@@ -80,13 +80,7 @@ export function AlgoliaLanguageDropdown({
             direction={{ xs: 'column', sm: 'row' }}
             color="text.primary"
             sx={{
-              height: 445,
-              overflowY: 'scroll', // Hide on Firefox https://caniuse.com/?search=scrollbar-width
-              scrollbarWidth: 'none',
-              // Hide on all others https://caniuse.com/?search=webkit-scrollbar
-              '&::-webkit-scrollbar': {
-                display: 'none'
-              }
+              height: 445
             }}
           >
             <ContinentRefinements />

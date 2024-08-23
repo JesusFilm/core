@@ -1,3 +1,4 @@
+import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import type { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
@@ -34,12 +35,20 @@ describe('SearchBar', () => {
   })
 
   it('should render input field', async () => {
-    render(<SearchBar />)
+    render(
+      <MockedProvider>
+        <SearchBar />
+      </MockedProvider>
+    )
     expect(screen.getByDisplayValue('Hello World!')).toBeInTheDocument()
   })
 
   it('should have placeholder text', async () => {
-    render(<SearchBar />)
+    render(
+      <MockedProvider>
+        <SearchBar />
+      </MockedProvider>
+    )
     const inputElement = screen.getByPlaceholderText(
       /Search by topic, occasion, or audience .../i
     )
@@ -47,20 +56,32 @@ describe('SearchBar', () => {
   })
 
   it('should have globe icon', async () => {
-    render(<SearchBar />)
+    render(
+      <MockedProvider>
+        <SearchBar />
+      </MockedProvider>
+    )
     const searchIcon = screen.getByTestId('Search1Icon')
     expect(searchIcon).toBeInTheDocument()
   })
 
   it('should refine when text typed', async () => {
-    render(<SearchBar />)
+    render(
+      <MockedProvider>
+        <SearchBar />
+      </MockedProvider>
+    )
     const input = screen.getByDisplayValue('Hello World!')
     fireEvent.change(input, { target: { value: 'Testing' } })
     await waitFor(() => expect(refine).toHaveBeenCalled())
   })
 
   it('should refine once when further keystrokes', async () => {
-    render(<SearchBar />)
+    render(
+      <MockedProvider>
+        <SearchBar />
+      </MockedProvider>
+    )
     const input = screen.getByDisplayValue('Hello World!')
     fireEvent.change(input, { target: { value: 'J' } })
     fireEvent.change(input, { target: { value: 'Je' } })
@@ -69,25 +90,41 @@ describe('SearchBar', () => {
   })
 
   it('should have language icon', async () => {
-    render(<SearchBar showLanguageButton />)
+    render(
+      <MockedProvider>
+        <SearchBar showLanguageButton />
+      </MockedProvider>
+    )
     const searchIcon = screen.getByTestId('Globe1Icon')
     expect(searchIcon).toBeInTheDocument()
   })
 
   it('should render language', async () => {
-    render(<SearchBar showLanguageButton />)
+    render(
+      <MockedProvider>
+        <SearchBar showLanguageButton />
+      </MockedProvider>
+    )
     expect(screen.getByText('Language')).toBeInTheDocument()
   })
 
   it('should open popper when language button clicked', async () => {
-    render(<SearchBar showLanguageButton />)
+    render(
+      <MockedProvider>
+        <SearchBar showLanguageButton />
+      </MockedProvider>
+    )
     expect(screen.getByText('Language')).toBeInTheDocument()
     fireEvent.click(screen.getByText('Language'))
     expect(screen.getByTestId('SearchLangaugeFilter')).toBeInTheDocument()
   })
 
   it('should close popper after it was opened', async () => {
-    render(<SearchBar showLanguageButton />)
+    render(
+      <MockedProvider>
+        <SearchBar showLanguageButton />
+      </MockedProvider>
+    )
     fireEvent.click(screen.getByText('Language'))
     expect(screen.getByTestId('SearchLangaugeFilter')).toBeInTheDocument()
     fireEvent.click(screen.getByText('Language'))

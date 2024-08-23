@@ -1,9 +1,8 @@
-import { languagesContinents } from '@core/journeys/ui/useLanguagesContinentsQuery/data'
-
 import {
   GetLanguagesContinents_languages_countryLanguages as CountryLanguage,
   GetLanguagesContinents_languages as Languages
-} from '../../../../../../apps/watch/__generated__/GetLanguagesContinents'
+} from '../useLanguagesContinentsQuery/__generated__/GetLanguagesContinents'
+import { languagesContinents } from '../useLanguagesContinentsQuery/data'
 
 import { useSortLanguageContinents } from './useSortLanguageContinents'
 
