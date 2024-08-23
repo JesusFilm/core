@@ -7,6 +7,7 @@ export function getClient(
 ): ReturnType<typeof buildHTTPExecutor> {
   return buildHTTPExecutor({
     ...options,
-    fetch: yoga.fetch.bind({})
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    fetch: yoga.fetch
   })
 }
