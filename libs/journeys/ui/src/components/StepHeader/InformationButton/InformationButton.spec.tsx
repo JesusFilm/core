@@ -8,6 +8,7 @@ import {
   ThemeName
 } from '../../../../__generated__/globalTypes'
 import { JourneyProvider } from '../../../libs/JourneyProvider'
+import { JourneyFields as Journey } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
 
 import { InformationButton } from '.'
 
@@ -23,7 +24,7 @@ mockedUseRouter.mockReturnValue({
 } as unknown as NextRouter)
 
 describe('InformationButton', () => {
-  const journey: JourneyFields = {
+  const journey: Journey = {
     __typename: 'Journey',
     id: 'journeyId',
     title: 'my journey',

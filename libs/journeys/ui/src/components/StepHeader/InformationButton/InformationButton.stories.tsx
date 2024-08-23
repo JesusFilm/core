@@ -10,12 +10,12 @@ import {
 } from '../../../../__generated__/globalTypes'
 import { JourneyProvider } from '../../../libs/JourneyProvider'
 import { JourneyFields as Journey } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
-import { simpleComponentConfig } from '../../../libs/journeyUiConfig'
+import { journeyUiConfig } from '../../../libs/journeyUiConfig'
 
 import { InformationButton } from '.'
 
 const Demo: Meta<typeof InformationButton> = {
-  ...simpleComponentConfig,
+  ...journeyUiConfig,
   title: 'Journeys-Ui/StepHeader/InformationButton'
 }
 

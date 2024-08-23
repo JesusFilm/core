@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 
-import { StepHeader } from './StepHeader'
+import { StepHeader } from '.'
 
 describe('StepHeader', () => {
   it('should render', () => {

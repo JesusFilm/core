@@ -9,8 +9,8 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
-import { BlockFields_StepBlock as StepBlock } from '../../../libs/block/__generated__/BlockFields'
 import { TreeBlock, blockHistoryVar, treeBlocksVar } from '../../libs/block'
+import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
 import { journeyUiConfig } from '../../libs/journeyUiConfig'
