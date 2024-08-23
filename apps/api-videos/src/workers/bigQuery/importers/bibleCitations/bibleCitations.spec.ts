@@ -14,12 +14,16 @@ jest.mock('../../importer', () => ({
 }))
 
 jest.mock('../videos', () => ({
-  getVideoIds: jest.fn().mockReturnValue(['video1', 'video2', 'video3'])
+  getVideoIds: jest.fn().mockReturnValue(['mockVideoId'])
 }))
 
-describe('bigquery/importers/biblecitations', () => {
+jest.mock('../bibleBooks', () => ({
+  getBibleBookIds: jest.fn().mockReturnValue(['1'])
+}))
+
+describe('bigquery/importers/bibleCitations', () => {
   describe('importBibleCitations', () => {
-    it('should import biblecitations', async () => {
+    it('should import bibleCitations', async () => {
       await importBibleCitations()
       expect(processTable).toHaveBeenCalledWith(
         'jfp-data-warehouse.jfp_mmdb_prod.core_videoBibleCitation_arclight_data',
@@ -29,56 +33,82 @@ describe('bigquery/importers/biblecitations', () => {
         undefined
       )
     })
-  })
 
-  describe('importOne', () => {
-    it('should import one biblecitation', async () => {
-      prismaMock.bibleCitation.upsert.mockResolvedValue(
-        {} as unknown as BibleCitation
-      )
-      await importOne({
-        value: 'TestBibleCitation',
-        languageId: 529,
-        videoIds: 'video1,video2',
-        datastream_metadata: {
-          uuid: 'mockUuid'
-        }
-      })
-      expect(prismaMock.bibleCitation.upsert).toHaveBeenCalledWith({
-        where: {
-          value_languageId: { value: 'TestBibleCitation', languageId: '529' }
-        },
-        update: {
-          id: 'mockUuid',
-          value: 'TestBibleCitation',
-          languageId: '529',
-          videos: { connect: [{ id: 'video1' }, { id: 'video2' }] }
-        },
-        create: {
-          id: 'mockUuid',
-          value: 'TestBibleCitation',
-          languageId: '529',
-          videos: { connect: [{ id: 'video1' }, { id: 'video2' }] }
-        }
+    describe('importOne', () => {
+      it('should import one biblecitation', async () => {
+        prismaMock.bibleCitation.upsert.mockResolvedValue(
+          {} as unknown as BibleCitation
+        )
+        await importOne({
+          videoId: 'mockVideoId',
+          osisId: 'Gen',
+          bibleBookId: 1,
+          order: 1,
+          chapterStart: 1,
+          chapterEnd: null,
+          verseStart: 1,
+          verseEnd: null,
+          position: 1,
+          datastream_metadata: {
+            uuid: 'mockUuid'
+          }
+        })
+        expect(prismaMock.bibleCitation.upsert).toHaveBeenCalledWith({
+          where: { id: 'mockUuid' },
+          update: {
+            id: 'mockUuid',
+            videoId: 'mockVideoId',
+            osisId: 'Gen',
+            bibleBookId: '1',
+            order: 1,
+            chapterStart: 1,
+            chapterEnd: null,
+            verseStart: 1,
+            verseEnd: null
+          },
+          create: {
+            id: 'mockUuid',
+            videoId: 'mockVideoId',
+            osisId: 'Gen',
+            bibleBookId: '1',
+            order: 1,
+            chapterStart: 1,
+            chapterEnd: null,
+            verseStart: 1,
+            verseEnd: null
+          }
+        })
       })
     })
   })
 
   describe('importMany', () => {
-    it('should import many biblecitations', async () => {
+    it('should import many bibleCitations', async () => {
       await importMany([
         {
-          value: 'TestBibleCitation1',
-          languageId: 529,
-          videoIds: 'video1,video2',
+          videoId: 'mockVideoId',
+          osisId: 'Gen',
+          bibleBookId: 1,
+          order: 1,
+          chapterStart: 1,
+          chapterEnd: null,
+          verseStart: 1,
+          verseEnd: null,
+          position: 1,
           datastream_metadata: {
             uuid: 'mockUuid'
           }
         },
         {
-          value: 'TestBibleCitation2',
-          languageId: 529,
-          videoIds: 'video3',
+          videoId: 'mockVideoId',
+          osisId: 'Gen',
+          bibleBookId: 1,
+          order: 1,
+          chapterStart: 1,
+          chapterEnd: null,
+          verseStart: 1,
+          verseEnd: null,
+          position: 1,
           datastream_metadata: {
             uuid: 'mockUuid1'
           }
@@ -88,32 +118,28 @@ describe('bigquery/importers/biblecitations', () => {
         data: [
           {
             id: 'mockUuid',
-            value: 'TestBibleCitation1',
-            languageId: '529'
+            videoId: 'mockVideoId',
+            osisId: 'Gen',
+            bibleBookId: '1',
+            order: 1,
+            chapterStart: 1,
+            chapterEnd: null,
+            verseStart: 1,
+            verseEnd: null
           },
           {
             id: 'mockUuid1',
-            value: 'TestBibleCitation2',
-            languageId: '529'
+            videoId: 'mockVideoId',
+            osisId: 'Gen',
+            bibleBookId: '1',
+            order: 1,
+            chapterStart: 1,
+            chapterEnd: null,
+            verseStart: 1,
+            verseEnd: null
           }
         ],
         skipDuplicates: true
-      })
-      expect(prismaMock.bibleCitation.update).toHaveBeenCalledWith({
-        where: { id: 'mockUuid' },
-        data: {
-          videos: {
-            connect: [{ id: 'video1' }, { id: 'video2' }]
-          }
-        }
-      })
-      expect(prismaMock.bibleCitation.update).toHaveBeenCalledWith({
-        where: { id: 'mockUuid1' },
-        data: {
-          videos: {
-            connect: [{ id: 'video3' }]
-          }
-        }
       })
     })
 

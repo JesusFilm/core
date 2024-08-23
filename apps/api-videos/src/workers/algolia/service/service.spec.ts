@@ -82,6 +82,9 @@ describe('algolia/service', () => {
 
   describe('service', () => {
     it('should throw if no API key', async () => {
+      process.env.ALGOLIA_API_KEY = undefined
+      process.env.ALGOLIA_APPLICATION_ID = undefined
+      process.env.ALGOLIA_INDEX = undefined
       await expect(service()).rejects.toThrow(
         'algolia environment variables not set'
       )
