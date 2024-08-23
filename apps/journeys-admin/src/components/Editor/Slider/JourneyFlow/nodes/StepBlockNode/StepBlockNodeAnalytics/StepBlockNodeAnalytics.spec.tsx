@@ -57,18 +57,18 @@ describe('StepBlockNodeAnalytics', () => {
     expect(screen.getByText('0')).toBeInTheDocument()
   })
 
-  it('should hide exit rate and duration if total visitors is less than 50', async () => {
+  it('should hide exit rate and duration if total visitors is less than 10', async () => {
     const initialState = {
       analytics: {
         stepsStats: [
           {
             stepId: 'step.id',
-            visitors: 49,
+            visitors: 9,
             visitorsExitAtStep: 20,
             timeOnPage: 20
           }
         ],
-        totalVisitors: 49
+        totalVisitors: 9
       }
     } as unknown as EditorState
 
