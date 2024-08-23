@@ -462,6 +462,11 @@ export interface JourneyUpdateInput {
   hostId?: string | null;
   strategySlug?: string | null;
   tagIds?: string[] | null;
+  website?: boolean | null;
+  showShareButton?: boolean | null;
+  showLikeButton?: boolean | null;
+  showDislikeButton?: boolean | null;
+  displayTitle?: string | null;
 }
 
 export interface JourneyVisitorFilter {
