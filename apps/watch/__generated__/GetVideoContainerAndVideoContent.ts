@@ -60,6 +60,9 @@ export interface GetVideoContainerAndVideoContent_container_variant {
   hls: string | null;
   downloads: GetVideoContainerAndVideoContent_container_variant_downloads[];
   language: GetVideoContainerAndVideoContent_container_variant_language;
+  /**
+   * slug is a permanent link to the video variant.
+   */
   slug: string;
   subtitleCount: number;
 }
@@ -76,7 +79,13 @@ export interface GetVideoContainerAndVideoContent_container {
   title: GetVideoContainerAndVideoContent_container_title[];
   variant: GetVideoContainerAndVideoContent_container_variant | null;
   variantLanguagesCount: number;
+  /**
+   * slug is a permanent link to the video.
+   */
   slug: string;
+  /**
+   * the number value of the amount of children on a video
+   */
   childrenCount: number;
 }
 
@@ -131,6 +140,9 @@ export interface GetVideoContainerAndVideoContent_content_variant {
   hls: string | null;
   downloads: GetVideoContainerAndVideoContent_content_variant_downloads[];
   language: GetVideoContainerAndVideoContent_content_variant_language;
+  /**
+   * slug is a permanent link to the video variant.
+   */
   slug: string;
   subtitleCount: number;
 }
@@ -147,13 +159,19 @@ export interface GetVideoContainerAndVideoContent_content {
   title: GetVideoContainerAndVideoContent_content_title[];
   variant: GetVideoContainerAndVideoContent_content_variant | null;
   variantLanguagesCount: number;
+  /**
+   * slug is a permanent link to the video.
+   */
   slug: string;
+  /**
+   * the number value of the amount of children on a video
+   */
   childrenCount: number;
 }
 
 export interface GetVideoContainerAndVideoContent {
-  container: GetVideoContainerAndVideoContent_container | null;
-  content: GetVideoContainerAndVideoContent_content | null;
+  container: GetVideoContainerAndVideoContent_container;
+  content: GetVideoContainerAndVideoContent_content;
 }
 
 export interface GetVideoContainerAndVideoContentVariables {

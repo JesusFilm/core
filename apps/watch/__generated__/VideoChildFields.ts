@@ -29,6 +29,9 @@ export interface VideoChildFields_variant {
   id: string;
   duration: number;
   hls: string | null;
+  /**
+   * slug is a permanent link to the video variant.
+   */
   slug: string;
 }
 
@@ -40,7 +43,13 @@ export interface VideoChildFields {
   image: string | null;
   imageAlt: VideoChildFields_imageAlt[];
   snippet: VideoChildFields_snippet[];
+  /**
+   * slug is a permanent link to the video.
+   */
   slug: string;
   variant: VideoChildFields_variant | null;
+  /**
+   * the number value of the amount of children on a video
+   */
   childrenCount: number;
 }

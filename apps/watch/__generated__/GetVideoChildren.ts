@@ -29,6 +29,9 @@ export interface GetVideoChildren_video_children_variant {
   id: string;
   duration: number;
   hls: string | null;
+  /**
+   * slug is a permanent link to the video variant.
+   */
   slug: string;
 }
 
@@ -40,8 +43,14 @@ export interface GetVideoChildren_video_children {
   image: string | null;
   imageAlt: GetVideoChildren_video_children_imageAlt[];
   snippet: GetVideoChildren_video_children_snippet[];
+  /**
+   * slug is a permanent link to the video.
+   */
   slug: string;
   variant: GetVideoChildren_video_children_variant | null;
+  /**
+   * the number value of the amount of children on a video
+   */
   childrenCount: number;
 }
 
@@ -52,7 +61,7 @@ export interface GetVideoChildren_video {
 }
 
 export interface GetVideoChildren {
-  video: GetVideoChildren_video | null;
+  video: GetVideoChildren_video;
 }
 
 export interface GetVideoChildrenVariables {

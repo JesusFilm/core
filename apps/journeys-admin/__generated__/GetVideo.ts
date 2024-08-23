@@ -50,7 +50,7 @@ export interface GetVideo_video {
 }
 
 export interface GetVideo {
-  video: GetVideo_video | null;
+  video: GetVideo_video;
 }
 
 export interface GetVideoVariables {

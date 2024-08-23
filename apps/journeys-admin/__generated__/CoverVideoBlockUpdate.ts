@@ -9,7 +9,7 @@ import { VideoBlockUpdateInput, VideoBlockSource, VideoBlockObjectFit } from "./
 // GraphQL mutation operation: CoverVideoBlockUpdate
 // ====================================================
 
-export interface CardBlockVideoBlockUpdate_videoBlockUpdate_video_title {
+export interface CoverVideoBlockUpdate_videoBlockUpdate_video_title {
   __typename: "VideoTitle";
   value: string;
 }

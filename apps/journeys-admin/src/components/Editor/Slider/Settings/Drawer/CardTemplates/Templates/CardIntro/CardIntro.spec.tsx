@@ -244,7 +244,7 @@ describe('CardIntro', () => {
             title: [
               {
                 value: 'JESUS',
-                __typename: 'Translation'
+                __typename: 'VideoTitle'
               }
             ],
             image:

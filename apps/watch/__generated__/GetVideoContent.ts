@@ -60,6 +60,9 @@ export interface GetVideoContent_content_variant {
   hls: string | null;
   downloads: GetVideoContent_content_variant_downloads[];
   language: GetVideoContent_content_variant_language;
+  /**
+   * slug is a permanent link to the video variant.
+   */
   slug: string;
   subtitleCount: number;
 }
@@ -76,12 +79,18 @@ export interface GetVideoContent_content {
   title: GetVideoContent_content_title[];
   variant: GetVideoContent_content_variant | null;
   variantLanguagesCount: number;
+  /**
+   * slug is a permanent link to the video.
+   */
   slug: string;
+  /**
+   * the number value of the amount of children on a video
+   */
   childrenCount: number;
 }
 
 export interface GetVideoContent {
-  content: GetVideoContent_content | null;
+  content: GetVideoContent_content;
 }
 
 export interface GetVideoContentVariables {

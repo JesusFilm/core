@@ -60,6 +60,9 @@ export interface VideoContentFields_variant {
   hls: string | null;
   downloads: VideoContentFields_variant_downloads[];
   language: VideoContentFields_variant_language;
+  /**
+   * slug is a permanent link to the video variant.
+   */
   slug: string;
   subtitleCount: number;
 }
@@ -76,6 +79,12 @@ export interface VideoContentFields {
   title: VideoContentFields_title[];
   variant: VideoContentFields_variant | null;
   variantLanguagesCount: number;
+  /**
+   * slug is a permanent link to the video.
+   */
   slug: string;
+  /**
+   * the number value of the amount of children on a video
+   */
   childrenCount: number;
 }

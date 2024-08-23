@@ -272,7 +272,7 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_TypographyBloc
 }
 
 export interface GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_video_title {
-  __typename: "Translation";
+  __typename: "VideoTitle";
   value: string;
 }
 

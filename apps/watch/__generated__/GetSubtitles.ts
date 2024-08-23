@@ -37,7 +37,7 @@ export interface GetSubtitles_video {
 }
 
 export interface GetSubtitles {
-  video: GetSubtitles_video | null;
+  video: GetSubtitles_video;
 }
 
 export interface GetSubtitlesVariables {

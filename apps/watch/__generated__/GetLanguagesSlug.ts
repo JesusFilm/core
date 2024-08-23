@@ -31,7 +31,7 @@ export interface GetLanguagesSlug_video {
 }
 
 export interface GetLanguagesSlug {
-  video: GetLanguagesSlug_video | null;
+  video: GetLanguagesSlug_video;
 }
 
 export interface GetLanguagesSlugVariables {
