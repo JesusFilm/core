@@ -1,9 +1,6 @@
-import {
-  GET_LANGUAGE_SLUGS,
-  apollo,
-  getLanguageSlugs,
-  importLanguageSlugs
-} from './languageSlugs'
+import { GET_LANGUAGE_SLUGS, apollo } from './languageSlugs'
+
+import { getLanguageSlugs, importLanguageSlugs } from '.'
 
 jest.mock('@apollo/client', () => {
   const originalModule = jest.requireActual('@apollo/client')

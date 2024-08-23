@@ -1,1 +1,1 @@
-export { importLanguageSlugs } from './languageSlugs'
+export { importLanguageSlugs, getLanguageSlugs } from './languageSlugs'

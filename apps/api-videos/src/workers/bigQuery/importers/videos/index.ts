@@ -1,1 +1,1 @@
-export { importVideos, getVideoIds } from './videos'
+export { importVideos, getVideoIds, getVideoSlugs } from './videos'

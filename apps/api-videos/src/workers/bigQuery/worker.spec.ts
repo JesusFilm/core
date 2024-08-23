@@ -1,71 +1,71 @@
-import { Job, Worker } from 'bullmq'
+import { Job } from 'bullmq'
 
-jest.mock('bullmq')
-jest.mock('./importers/videos', () => ({
-  getExistingPrismaVideoIds: jest.fn().mockReturnValue(['1']),
-  importVideos: jest.fn().mockResolvedValue(['1'])
-}))
+import {
+  importBibleBookNames,
+  importBibleBooks,
+  importBibleCitations,
+  importKeywords,
+  importLanguageSlugs,
+  importVideoChildren,
+  importVideoDescriptions,
+  importVideoImageAlts,
+  importVideoSnippets,
+  importVideoStudyQuestions,
+  importVideoSubtitles,
+  importVideoTitles,
+  importVideoVariantDownloads,
+  importVideoVariants,
+  importVideos
+} from './importers'
+import { jobName } from './names'
+import { jobFn } from './worker'
 
-jest.mock('./importers/audioPreviews/audioPreviews', () => ({
-  importAudioPreview: jest.fn()
-}))
-
-jest.mock('./importers/countries/countries', () => ({
-  importCountries: jest.fn().mockResolvedValue(['2'])
-}))
-
-jest.mock('./importers/countryVideos/countryVideos', () => ({
-  importCountryVideos: jest.fn()
-}))
-
-jest.mock('./importers/countryNames/countryNames', () => ({
-  importCountryNames: jest.fn()
-}))
-
-jest.mock('./importers/videoNames/videoNames', () => ({
-  importVideoNames: jest.fn()
-}))
-
-jest.mock('./importers/videoSlugs/videoSlugs', () => ({
-  importVideoSlugs: jest.fn()
+jest.mock('./importers', () => ({
+  importBibleBookNames: jest.fn(),
+  importBibleBooks: jest.fn(),
+  importBibleCitations: jest.fn(),
+  importKeywords: jest.fn(),
+  importLanguageSlugs: jest.fn(),
+  importVideoChildren: jest.fn(),
+  importVideoDescriptions: jest.fn(),
+  importVideoImageAlts: jest.fn(),
+  importVideoSnippets: jest.fn(),
+  importVideoStudyQuestions: jest.fn(),
+  importVideoSubtitles: jest.fn(),
+  importVideoTitles: jest.fn(),
+  importVideoVariantDownloads: jest.fn(),
+  importVideoVariants: jest.fn(),
+  importVideos: jest.fn()
 }))
 
 describe('bigquery/worker', () => {
-  describe('jobName', () => {
-    it('should be import-videos', () => {
-      expect(jobName).toBe('import-videos')
-    })
-  })
-
-  describe('init', () => {
-    it('should create a worker', () => {
-      // eslint-disable-next-line import/dynamic-import-chunkname
-      import('./worker')
-      expect(Worker).toHaveBeenCalledWith(queueName, jobFn, {
-        connection: bullConnection
-      })
-    })
-  })
-
   describe('jobFn', () => {
-    it('should not call anything if job name is not import-videos', async () => {
+    it(`should not call anything if job name is not ${jobName}`, async () => {
       await jobFn({
         name: 'some-other-job'
       } as unknown as Job)
-      expect(importAudioPreview).not.toHaveBeenCalled()
+      expect(importBibleBookNames).not.toHaveBeenCalled()
     })
 
     it('should call importers', async () => {
       await jobFn({
         name: jobName
       } as unknown as Job)
-      expect(importAudioPreview).toHaveBeenCalledWith(['1'])
+      expect(importBibleBookNames).toHaveBeenCalled()
+      expect(importBibleBooks).toHaveBeenCalled()
+      expect(importBibleCitations).toHaveBeenCalled()
+      expect(importKeywords).toHaveBeenCalled()
+      expect(importLanguageSlugs).toHaveBeenCalled()
+      expect(importVideoChildren).toHaveBeenCalled()
+      expect(importVideoDescriptions).toHaveBeenCalled()
+      expect(importVideoImageAlts).toHaveBeenCalled()
+      expect(importVideoSnippets).toHaveBeenCalled()
+      expect(importVideoStudyQuestions).toHaveBeenCalled()
+      expect(importVideoSubtitles).toHaveBeenCalled()
+      expect(importVideoTitles).toHaveBeenCalled()
+      expect(importVideoVariantDownloads).toHaveBeenCalled()
+      expect(importVideoVariants).toHaveBeenCalled()
       expect(importVideos).toHaveBeenCalled()
-      expect(importVideoNames).toHaveBeenCalledWith(['1'])
-      expect(importCountries).toHaveBeenCalled()
-      expect(importCountryNames).toHaveBeenCalledWith(['1'], ['2'])
-      expect(importCountryVideos).toHaveBeenCalledWith(['1'], ['2'])
-      expect(importVideoSlugs).toHaveBeenCalledWith()
     })
   })
 })

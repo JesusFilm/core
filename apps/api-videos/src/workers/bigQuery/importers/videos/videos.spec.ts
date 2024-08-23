@@ -3,15 +3,9 @@ import { Video } from '.prisma/api-videos-client'
 import { prismaMock } from '../../../../../test/prismaMock'
 import { processTable } from '../../importer'
 
-import {
-  getVideoSlugs,
-  importMany,
-  importOne,
-  setVideoIds,
-  setVideoSlugs
-} from './videos'
+import { importMany, importOne, setVideoIds, setVideoSlugs } from './videos'
 
-import { getVideoIds, importVideos } from '.'
+import { getVideoIds, getVideoSlugs, importVideos } from '.'
 
 jest.mock('../../importer', () => ({
   processTable: jest.fn(),
@@ -35,7 +29,7 @@ describe('bigquery/importers/videos', () => {
       expect(getVideoSlugs()).toEqual({})
       const cleanup = await importVideos()
       expect(getVideoIds()).toEqual(['1', '2'])
-      expect(getVideoSlugs()).toEqual({ abc: '1' })
+      expect(getVideoSlugs()).toEqual({ '1': 'abc' })
       cleanup()
       expect(getVideoIds()).toEqual([])
       expect(getVideoSlugs()).toEqual({})

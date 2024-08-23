@@ -1,0 +1,129 @@
+import compact from 'lodash/compact'
+import { Logger } from 'pino'
+import { z } from 'zod'
+
+import { prisma } from '../../../../lib/prisma'
+import { parse, parseMany, processTable } from '../../importer'
+import { getLanguageSlugs } from '../languageSlugs'
+import { getVideoIds, getVideoSlugs } from '../videos'
+
+const videoVariantSchema = z.object({
+  id: z.string(),
+  hls: z.string().nullable(),
+  duration: z
+    .custom()
+    .transform(String)
+    .transform<number>((value: string) => Math.round(Number(value))),
+  languageId: z.number().transform(String),
+  videoId: z.string(),
+  slug: z.string(),
+  languageName: z.string().nullable(),
+  edition: z
+    .string()
+    .nullable()
+    .transform((value) => value ?? 'base')
+})
+
+type VideoVariant = z.infer<typeof videoVariantSchema>
+
+let videoVariantIds: string[] = []
+
+export function pushVideoVariant(
+  ...videoVariants: Array<{ id: string }>
+): void {
+  videoVariantIds.push(...videoVariants.map(({ id }) => id))
+}
+
+export function setVideoVariantIds(videoVariants: Array<{ id: string }>): void {
+  videoVariantIds = []
+  pushVideoVariant(...videoVariants)
+}
+
+export function getVideoVariantIds(): string[] {
+  return videoVariantIds
+}
+
+export async function importVideoVariants(
+  logger?: Logger
+): Promise<() => void> {
+  setVideoVariantIds(
+    await prisma.videoVariant.findMany({ select: { id: true } })
+  )
+
+  await processTable(
+    'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariant_arclight_data',
+    importOne,
+    importMany,
+    true,
+    logger
+  )
+
+  return () => setVideoVariantIds([])
+}
+
+function transform(
+  videoVariant: VideoVariant
+): Omit<VideoVariant, 'languageName'> | null {
+  if (
+    getVideoSlugs()[videoVariant.videoId] == null ||
+    videoVariant.languageName == null
+  )
+    return null
+
+  const languageSlug = getLanguageSlugs()[videoVariant.languageId]
+
+  const videoSlug = getVideoSlugs()[videoVariant.videoId]
+
+  if (languageSlug == null || videoSlug == null) return null
+
+  return {
+    id: videoVariant.id,
+    hls: videoVariant.hls,
+    duration: videoVariant.duration,
+    languageId: videoVariant.languageId,
+    videoId: videoVariant.videoId,
+    edition: videoVariant.edition,
+    slug: `${videoSlug}/${languageSlug}`
+  }
+}
+
+export async function importOne(row: unknown): Promise<void> {
+  const videoVariant = parse(videoVariantSchema, row)
+
+  if (!getVideoIds().includes(videoVariant.videoId))
+    throw new Error(`Video with id ${videoVariant.videoId} not found`)
+
+  const transformedVideoVariant = transform(videoVariant)
+  if (transformedVideoVariant == null) return
+
+  await prisma.videoVariant.upsert({
+    where: {
+      id: videoVariant.id
+    },
+    update: transformedVideoVariant,
+    create: transformedVideoVariant
+  })
+
+  pushVideoVariant(videoVariant)
+}
+
+export async function importMany(rows: unknown[]): Promise<void> {
+  const { data: videoVariants, inValidRowIds } = parseMany(
+    videoVariantSchema,
+    rows
+  )
+
+  if (videoVariants.length !== rows.length)
+    throw new Error(`some rows do not match schema: ${inValidRowIds.join(',')}`)
+
+  const transformedVideoVariants = compact(
+    videoVariants.map((videoVariant) => transform(videoVariant))
+  )
+
+  await prisma.videoVariant.createMany({
+    data: transformedVideoVariants,
+    skipDuplicates: true
+  })
+
+  pushVideoVariant(...transformedVideoVariants)
+}

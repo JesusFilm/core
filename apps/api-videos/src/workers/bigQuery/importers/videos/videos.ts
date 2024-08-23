@@ -58,7 +58,7 @@ export function pushVideoSlug(
   ...videos: Array<{ id: string; slug: string | null }>
 ): void {
   videos.forEach(({ id, slug }) => {
-    if (slug != null) videoSlugs[slug] = id
+    if (slug != null) videoSlugs[id] = slug
   })
 }
 export function setVideoSlugs(
