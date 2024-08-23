@@ -1,21 +1,20 @@
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import InputAdornment from '@mui/material/InputAdornment'
-import Popper from '@mui/material/Popper'
 import { styled } from '@mui/material/styles'
 import TextField, { TextFieldProps } from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Formik } from 'formik'
 import { useTranslation } from 'next-i18next'
 import { type ReactElement, useRef, useState } from 'react'
-import { useRefinementList, useSearchBox } from 'react-instantsearch'
+import { useSearchBox } from 'react-instantsearch'
 
 import ChevronDown from '@core/shared/ui/icons/ChevronDown'
 import Globe1Icon from '@core/shared/ui/icons/Globe1'
 import Search1Icon from '@core/shared/ui/icons/Search1'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
 
-import { RefinementGroup } from '../RefinementGroup'
+import { AlgoliaLanguageDropdown } from './AlgoliaLanguageDropdown'
 
 /* Styles below used to fake a gradient border because the 
 css attributes border-radius and border-image-source are not compatible */
@@ -91,9 +90,11 @@ export function SearchBar({
 }: SearchBarProps): ReactElement {
   const { t } = useTranslation('apps-watch')
 
-  const { query, refine } = useSearchBox()
+  const popperRef = useRef(null)
+  const [open, setOpen] = useState(false)
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [languageButtonVisable] = useState(showLanguageButton)
-  const refinements = useRefinementList({ attribute: 'languageEnglishName' })
+  const { query, refine } = useSearchBox()
 
   const initialValues = {
     title: query
@@ -103,16 +104,10 @@ export function SearchBar({
     refine(values.title)
   }
 
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-  const [open, setOpen] = useState(false)
-  const popperRef = useRef(null)
-
   function handleClick(): void {
     setAnchorEl(popperRef.current)
     setOpen((prevOpen) => !prevOpen)
   }
-
-  const id = open ? 'simple-popper' : undefined
 
   return (
     <Box>
@@ -163,30 +158,12 @@ export function SearchBar({
           )}
         </Formik>
       </Box>
-      <Popper
-        id={id}
+      <AlgoliaLanguageDropdown
         open={open}
+        handleClickAway={() => setOpen(false)}
+        id={open ? 'simple-popper' : undefined}
         anchorEl={anchorEl}
-        placement="bottom-end"
-        sx={{ width: anchorEl?.clientWidth }}
-        data-testid="SearchLangaugeFilter"
-        modifiers={[
-          {
-            name: 'flip',
-            enabled: false
-          }
-        ]}
-      >
-        <Box
-          sx={{ p: 8, bgcolor: 'background.paper', mt: 3 }}
-          borderRadius={3}
-          boxShadow="0px 4px 4px 0px #00000040"
-        >
-          <Box color="text.primary">
-            <RefinementGroup title="Languages" refinement={refinements} />
-          </Box>
-        </Box>
-      </Popper>
+      />
     </Box>
   )
 }
