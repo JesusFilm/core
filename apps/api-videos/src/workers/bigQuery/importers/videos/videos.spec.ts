@@ -29,7 +29,7 @@ describe('bigquery/importers/videos', () => {
       expect(getVideoSlugs()).toEqual({})
       const cleanup = await importVideos()
       expect(getVideoIds()).toEqual(['1', '2'])
-      expect(getVideoSlugs()).toEqual({ '1': 'abc' })
+      expect(getVideoSlugs()).toEqual({ abc: '1' })
       cleanup()
       expect(getVideoIds()).toEqual([])
       expect(getVideoSlugs()).toEqual({})

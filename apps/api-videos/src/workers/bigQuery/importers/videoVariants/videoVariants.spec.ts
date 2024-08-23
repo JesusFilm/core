@@ -17,7 +17,7 @@ jest.mock('../videos', () => ({
   getVideoIds: jest.fn().mockReturnValue(['videoId', 'videoId1']),
   getVideoSlugs: jest
     .fn()
-    .mockReturnValue({ videoId: 'video-slug', videoId1: 'video-slug-1' })
+    .mockReturnValue({ 'video-slug': 'videoId', 'video-slug-1': 'videoId1' })
 }))
 
 jest.mock('../languageSlugs', () => ({

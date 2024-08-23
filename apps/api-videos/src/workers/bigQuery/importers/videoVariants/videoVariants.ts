@@ -62,17 +62,18 @@ export async function importVideoVariants(
 }
 
 function transform(
-  videoVariant: VideoVariant
+  videoVariant: VideoVariant,
+  videoSlugs: { [id: string]: string }
 ): Omit<VideoVariant, 'languageName'> | null {
   if (
-    getVideoSlugs()[videoVariant.videoId] == null ||
+    videoSlugs[videoVariant.videoId] == null ||
     videoVariant.languageName == null
   )
     return null
 
   const languageSlug = getLanguageSlugs()[videoVariant.languageId]
 
-  const videoSlug = getVideoSlugs()[videoVariant.videoId]
+  const videoSlug = videoSlugs[videoVariant.videoId]
 
   if (languageSlug == null || videoSlug == null) return null
 
@@ -87,13 +88,19 @@ function transform(
   }
 }
 
+function invertedVideoSlugs(): { [id: string]: string } {
+  return Object.fromEntries(
+    Object.entries(getVideoSlugs()).map((a) => a.reverse())
+  )
+}
+
 export async function importOne(row: unknown): Promise<void> {
   const videoVariant = parse(videoVariantSchema, row)
 
   if (!getVideoIds().includes(videoVariant.videoId))
     throw new Error(`Video with id ${videoVariant.videoId} not found`)
 
-  const transformedVideoVariant = transform(videoVariant)
+  const transformedVideoVariant = transform(videoVariant, invertedVideoSlugs())
   if (transformedVideoVariant == null) return
 
   await prisma.videoVariant.upsert({
@@ -116,8 +123,9 @@ export async function importMany(rows: unknown[]): Promise<void> {
   if (videoVariants.length !== rows.length)
     throw new Error(`some rows do not match schema: ${inValidRowIds.join(',')}`)
 
+  const videoSlugs = invertedVideoSlugs()
   const transformedVideoVariants = compact(
-    videoVariants.map((videoVariant) => transform(videoVariant))
+    videoVariants.map((videoVariant) => transform(videoVariant, videoSlugs))
   )
 
   await prisma.videoVariant.createMany({
