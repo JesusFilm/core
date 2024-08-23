@@ -14,7 +14,7 @@ const Demo: Meta<typeof HostInfo> = {
   ...journeysAdminConfig,
   component: HostInfo,
   title:
-    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Footer/HostTab/HostInfo'
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Footer/Host/HostInfo'
 }
 
 const Template: StoryObj<ComponentProps<typeof HostInfo>> = {

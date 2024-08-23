@@ -30,7 +30,7 @@ export const GET_ALL_TEAM_HOSTS = gql`
 const HostList = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/Tab/Attributes/blocks/Footer/HostTab/HostList/HostList" */ './HostList'
+      /* webpackChunkName: "Editor/Tab/Attributes/blocks/Footer/Host/HostList/HostList" */ './HostList'
     ).then((mod) => mod.HostList),
   { ssr: false }
 )
@@ -38,7 +38,7 @@ const HostList = dynamic(
 const HostInfo = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/Tab/Attributes/blocks/Footer/HostTab/HostInfo/HostInfo" */ './HostInfo'
+      /* webpackChunkName: "Editor/Tab/Attributes/blocks/Footer/Host/HostInfo/HostInfo" */ './HostInfo'
     ).then((mod) => mod.HostInfo),
   { ssr: false }
 )
@@ -46,12 +46,12 @@ const HostInfo = dynamic(
 const HostForm = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/Tab/Attributes/blocks/Footer/HostTab/HostForm/HostForm" */ './HostForm'
+      /* webpackChunkName: "Editor/Tab/Attributes/blocks/Footer/Host/HostForm/HostForm" */ './HostForm'
     ).then((mod) => mod.HostForm),
   { ssr: false }
 )
 
-export function HostTab(): ReactElement {
+export function Host(): ReactElement {
   const [openHostSelection, setOpenHostSelection] = useState(true)
   const [openHostList, setOpenHostList] = useState(false)
   const [openHostForm, setOpenHostForm] = useState(false)
@@ -118,7 +118,7 @@ export function HostTab(): ReactElement {
   }
 
   return (
-    <Box data-testid="HostTab">
+    <Box data-testid="Host">
       {openHostSelection && (
         <HostSelection
           data={data}

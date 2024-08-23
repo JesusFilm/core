@@ -18,7 +18,7 @@ import { useCurrentUserLazyQuery } from '../../../../../../../libs/useCurrentUse
 import { GET_USER_TEAMS_AND_INVITES } from '../../../../../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
 import { ThemeProvider } from '../../../../../../ThemeProvider'
 
-import { GET_ALL_TEAM_HOSTS, HostTab } from './HostTab'
+import { GET_ALL_TEAM_HOSTS, Host } from './Host'
 
 const user1 = { id: 'userId', email: 'admin@email.com' }
 
@@ -29,7 +29,7 @@ jest.mock('../../../../../../../libs/useCurrentUserLazyQuery', () => ({
 
 const mockUseCurrentUserLazyQuery = useCurrentUserLazyQuery as jest.Mock
 
-describe('HostTab', () => {
+describe('Host', () => {
   beforeEach(() => {
     mockUseCurrentUserLazyQuery.mockReturnValue({
       loadUser: jest.fn(),
@@ -135,7 +135,7 @@ describe('HostTab', () => {
               variant: 'admin'
             }}
           >
-            <HostTab />
+            <Host />
           </JourneyProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -162,7 +162,7 @@ describe('HostTab', () => {
               variant: 'admin'
             }}
           >
-            <HostTab />
+            <Host />
           </JourneyProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -195,7 +195,7 @@ describe('HostTab', () => {
               variant: 'admin'
             }}
           >
-            <HostTab />
+            <Host />
           </JourneyProvider>
         </ThemeProvider>
       </MockedProvider>

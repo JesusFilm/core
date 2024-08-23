@@ -9,11 +9,11 @@ import UserProfileCircleIcon from '@core/shared/ui/icons/UserProfileCircle'
 import { Drawer } from '../../Drawer'
 import { Accordion } from '../Properties/Accordion'
 
-const HostTab = dynamic(
+const Host = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Footer/HostTab/HostTab" */ './HostTab'
-    ).then((mod) => mod.HostTab),
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Footer/Host/Host" */ './Host'
+    ).then((mod) => mod.Host),
   { ssr: false }
 )
 
@@ -50,7 +50,7 @@ export function Footer(): ReactElement {
         icon={<UserProfileCircleIcon />}
         name={t('Author details')}
       >
-        <HostTab />
+        <Host />
       </Accordion>
       <Accordion
         id="chat platforms"
