@@ -6,9 +6,11 @@ import {
   DataGrid,
   GridCallbackDetails,
   GridColDef,
+  GridColumnVisibilityModel,
   GridPaginationModel,
   GridRowParams,
   GridRowsProp,
+  GridToolbar,
   MuiEvent
 } from '@mui/x-data-grid'
 import { graphql } from 'gql.tada'
@@ -16,14 +18,19 @@ import { useTranslations } from 'next-intl'
 import { ReactElement, useState } from 'react'
 
 const GET_VIDEOS_AND_COUNT = graphql(`
-  query GetVideosAndCount($limit: Int, $offset: Int) {
+  query GetVideosAndCount(
+    $limit: Int
+    $offset: Int
+    $showTitle: Boolean!
+    $showSnippet: Boolean!
+  ) {
     videos(limit: $limit, offset: $offset) {
       id
-      title {
+      title @include(if: $showTitle) {
         primary
         value
       }
-      snippet {
+      snippet @include(if: $showSnippet) {
         primary
         value
       }
@@ -40,15 +47,26 @@ export function VideoList(): ReactElement {
     pageSize: videosLimit,
     page: 0
   })
+  const [columnVisibilityModel, setColumnVisibilityModel] =
+    useState<GridColumnVisibilityModel>({
+      id: true,
+      title: true,
+      description: true
+    })
 
   const t = useTranslations()
-  const { data } = useSuspenseQuery(GET_VIDEOS_AND_COUNT, {
-    variables: {}
+  const { data, refetch } = useSuspenseQuery(GET_VIDEOS_AND_COUNT, {
+    variables: {
+      limit: videosLimit,
+      offset: paginationModel.page * videosLimit,
+      showTitle: columnVisibilityModel.title ?? true,
+      showSnippet: columnVisibilityModel.description ?? true
+    }
   })
 
   const rows: GridRowsProp = data.videos.map((video) => {
-    const title = video.title.find(({ primary }) => primary)?.value
-    const description = video.snippet.find(({ primary }) => primary)?.value
+    const title = video?.title?.find(({ primary }) => primary)?.value
+    const description = video?.snippet?.find(({ primary }) => primary)?.value
     return {
       id: video.id,
       title,
@@ -75,6 +93,12 @@ export function VideoList(): ReactElement {
     model: GridPaginationModel,
     _details: GridCallbackDetails
   ): Promise<void> {
+    await refetch({
+      limit: videosLimit,
+      offset: model.page * videosLimit,
+      showTitle: columnVisibilityModel.title ?? true,
+      showSnippet: columnVisibilityModel.description ?? true
+    })
     setPaginationModel(model)
   }
 
@@ -85,9 +109,17 @@ export function VideoList(): ReactElement {
         columns={columns}
         pageSizeOptions={[videosLimit]}
         paginationModel={paginationModel}
+        paginationMode="server"
         onPaginationModelChange={handleChangePage}
         rowCount={data.videosCount.length}
         onRowClick={handleClick}
+        slots={{
+          toolbar: GridToolbar
+        }}
+        columnVisibilityModel={columnVisibilityModel}
+        onColumnVisibilityModelChange={(newModel) =>
+          setColumnVisibilityModel(newModel)
+        }
       />
     </Box>
   )
