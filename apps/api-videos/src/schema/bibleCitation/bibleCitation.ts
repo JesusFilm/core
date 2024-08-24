@@ -10,7 +10,7 @@ builder.prismaObject('BibleCitation', {
     chapterEnd: t.exposeInt('chapterEnd', { nullable: true }),
     verseStart: t.exposeInt('verseStart'),
     verseEnd: t.exposeInt('verseEnd', { nullable: true }),
-    video: t.relation('video'),
+    video: t.relation('video')
   })
 })
 

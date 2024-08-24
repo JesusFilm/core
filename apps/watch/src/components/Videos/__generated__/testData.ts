@@ -213,7 +213,10 @@ export const videos: VideoContentFields[] = [
     image:
       'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_wl604423-0-0.mobileCinematicHigh.jpg',
     imageAlt: [
-      { __typename: 'VideoImageAlt', value: 'The Woman with the Issue of Blood' }
+      {
+        __typename: 'VideoImageAlt',
+        value: 'The Woman with the Issue of Blood'
+      }
     ],
     snippet: [
       {
@@ -522,7 +525,10 @@ export const videos: VideoContentFields[] = [
       }
     ],
     studyQuestions: [
-      { __typename: 'VideoStudyQuestion', value: 'Who was affected by this miracle?' },
+      {
+        __typename: 'VideoStudyQuestion',
+        value: 'Who was affected by this miracle?'
+      },
       {
         __typename: 'VideoStudyQuestion',
         value: 'What does this first miracle tell you about Jesus?'
