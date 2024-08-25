@@ -714,6 +714,11 @@ export class JourneyUpdateInput {
     hostId?: Nullable<string>;
     strategySlug?: Nullable<string>;
     tagIds?: Nullable<string[]>;
+    website?: Nullable<boolean>;
+    showShareButton?: Nullable<boolean>;
+    showLikeButton?: Nullable<boolean>;
+    showDislikeButton?: Nullable<boolean>;
+    displayTitle?: Nullable<string>;
 }
 
 export class JourneyTemplateInput {
@@ -1102,6 +1107,11 @@ export class Journey {
     tags: Tag[];
     journeyCollections: JourneyCollection[];
     plausibleToken?: Nullable<string>;
+    website?: Nullable<boolean>;
+    showShareButton?: Nullable<boolean>;
+    showLikeButton?: Nullable<boolean>;
+    showDislikeButton?: Nullable<boolean>;
+    displayTitle?: Nullable<string>;
     userJourneys?: Nullable<UserJourney[]>;
 }
 

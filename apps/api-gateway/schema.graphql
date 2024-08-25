@@ -915,6 +915,8 @@ type Journey
   creatorImageBlock: ImageBlock
   chatButtons: [ChatButton!]!
   id: ID!
+
+  """private title for creators"""
   title: String!
   language: Language!
   themeMode: ThemeMode!
@@ -929,6 +931,8 @@ type Journey
   featuredAt: DateTime
   createdAt: DateTime!
   status: JourneyStatus!
+
+  """title for seo and sharing"""
   seoTitle: String
   seoDescription: String
   template: Boolean
@@ -940,6 +944,13 @@ type Journey
 
   """used in a plausible share link to embed report"""
   plausibleToken: String
+  website: Boolean
+  showShareButton: Boolean
+  showLikeButton: Boolean
+  showDislikeButton: Boolean
+
+  """public title for viewers"""
+  displayTitle: String
   userJourneys: [UserJourney!]
 }
 
@@ -1117,6 +1128,11 @@ input JourneyUpdateInput
   hostId: String
   strategySlug: String
   tagIds: [ID!]
+  website: Boolean
+  showShareButton: Boolean
+  showLikeButton: Boolean
+  showDislikeButton: Boolean
+  displayTitle: String
 }
 
 type JourneyViewEvent implements Event

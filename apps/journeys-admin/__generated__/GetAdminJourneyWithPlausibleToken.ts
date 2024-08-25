@@ -541,6 +541,9 @@ export interface GetAdminJourneyWithPlausibleToken_journey {
   __typename: "Journey";
   id: string;
   slug: string;
+  /**
+   * private title for creators
+   */
   title: string;
   description: string | null;
   status: JourneyStatus;
@@ -551,6 +554,9 @@ export interface GetAdminJourneyWithPlausibleToken_journey {
   themeName: ThemeName;
   themeMode: ThemeMode;
   strategySlug: string | null;
+  /**
+   * title for seo and sharing
+   */
   seoTitle: string | null;
   seoDescription: string | null;
   template: boolean | null;

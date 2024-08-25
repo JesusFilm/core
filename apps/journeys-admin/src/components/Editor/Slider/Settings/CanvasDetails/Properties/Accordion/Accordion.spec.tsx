@@ -1,4 +1,4 @@
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -22,7 +22,7 @@ describe('accordion', () => {
   beforeEach(() => jest.clearAllMocks())
 
   it('selects accordion', () => {
-    const { getByRole, getByText, queryByText } = render(
+    render(
       <ThemeProvider>
         <EditorProvider initialState={{}}>
           <Accordion id="custom-id" icon={<>test</>} name="name" value="value">
@@ -33,10 +33,12 @@ describe('accordion', () => {
       </ThemeProvider>
     )
     expect(
-      queryByText('selectedAttributeId: custom-id')
+      screen.queryByText('selectedAttributeId: custom-id')
     ).not.toBeInTheDocument()
-    fireEvent.click(getByRole('button'))
-    expect(getByText('selectedAttributeId: custom-id')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button'))
+    expect(
+      screen.getByText('selectedAttributeId: custom-id')
+    ).toBeInTheDocument()
   })
 
   it('handles params in helpscout', () => {
@@ -48,7 +50,7 @@ describe('accordion', () => {
       }
     } as unknown as NextRouter)
 
-    const { getByRole, getByText, queryByText } = render(
+    render(
       <ThemeProvider>
         <EditorProvider initialState={{}}>
           <Accordion
@@ -65,8 +67,10 @@ describe('accordion', () => {
       </ThemeProvider>
     )
 
-    fireEvent.click(getByRole('button'))
-    expect(getByText('selectedAttributeId: custom-id')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button'))
+    expect(
+      screen.getByText('selectedAttributeId: custom-id')
+    ).toBeInTheDocument()
     expect(push).toHaveBeenCalledWith(
       {
         query: { param: 'test-params' }
@@ -74,9 +78,32 @@ describe('accordion', () => {
       undefined,
       { shallow: true }
     )
-    fireEvent.click(getByRole('button'))
+    fireEvent.click(screen.getByRole('button'))
     expect(
-      queryByText('selectedAttributeId: custom-id')
+      screen.queryByText('selectedAttributeId: custom-id')
     ).not.toBeInTheDocument()
+  })
+
+  it('should render a single label if value is null', () => {
+    render(
+      <ThemeProvider>
+        <EditorProvider initialState={{}}>
+          <Accordion
+            id="custom-id"
+            icon={<>test</>}
+            name="name"
+            param="test-params"
+          >
+            test
+          </Accordion>
+          <TestEditorState />
+        </EditorProvider>
+      </ThemeProvider>
+    )
+
+    const summary = screen.getByTestId('AccordionSummary')
+
+    expect(within(summary).getByText('name')).toBeInTheDocument()
+    expect(within(summary).queryAllByRole('heading')).toHaveLength(1)
   })
 })
