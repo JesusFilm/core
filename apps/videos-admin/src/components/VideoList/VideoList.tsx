@@ -7,13 +7,15 @@ import {
   GridCallbackDetails,
   GridColDef,
   GridColumnVisibilityModel,
+  GridFilterModel,
   GridPaginationModel,
   GridRowParams,
   GridRowsProp,
   GridToolbar,
-  MuiEvent
+  MuiEvent,
+  getGridStringOperators
 } from '@mui/x-data-grid'
-import { graphql } from 'gql.tada'
+import { VariablesOf, graphql } from 'gql.tada'
 import { useTranslations } from 'next-intl'
 import { ReactElement, useState } from 'react'
 
@@ -23,8 +25,9 @@ const GET_VIDEOS_AND_COUNT = graphql(`
     $offset: Int
     $showTitle: Boolean!
     $showSnippet: Boolean!
+    $where: VideosFilter
   ) {
-    videos(limit: $limit, offset: $offset) {
+    videos(limit: $limit, offset: $offset, where: $where) {
       id
       title @include(if: $showTitle) {
         primary
@@ -35,11 +38,13 @@ const GET_VIDEOS_AND_COUNT = graphql(`
         value
       }
     }
-    videosCount: videos {
+    videosCount: videos(where: $where) {
       id
     }
   }
 `)
+
+type VideosFilter = VariablesOf<typeof GET_VIDEOS_AND_COUNT>['where']
 
 export function VideoList(): ReactElement {
   const videosLimit = 50
@@ -54,13 +59,20 @@ export function VideoList(): ReactElement {
       description: true
     })
 
+  const [filterModel, setFilterModel] = useState<GridFilterModel>({
+    items: []
+  })
+
+  const [getVideosWhereArgs, setGetVideosWhereArgs] = useState<VideosFilter>({})
+
   const t = useTranslations()
   const { data, refetch } = useSuspenseQuery(GET_VIDEOS_AND_COUNT, {
     variables: {
       limit: videosLimit,
       offset: paginationModel.page * videosLimit,
       showTitle: columnVisibilityModel.title ?? true,
-      showSnippet: columnVisibilityModel.description ?? true
+      showSnippet: columnVisibilityModel.description ?? true,
+      where: getVideosWhereArgs
     }
   })
 
@@ -75,9 +87,28 @@ export function VideoList(): ReactElement {
   })
 
   const columns: GridColDef[] = [
-    { field: 'id', headerName: t('ID'), width: 150 },
-    { field: 'title', headerName: t('Title'), width: 200 },
-    { field: 'description', headerName: t('Description'), width: 500 }
+    {
+      field: 'id',
+      headerName: t('ID'),
+      width: 150,
+      filterOperators: getGridStringOperators().filter(
+        (operator) => operator.value === 'equals'
+      )
+    },
+    {
+      field: 'title',
+      headerName: t('Title'),
+      width: 200,
+      filterOperators: getGridStringOperators().filter(
+        (operator) => operator.value === 'equals'
+      )
+    },
+    {
+      field: 'description',
+      headerName: t('Description'),
+      width: 500,
+      filterable: false
+    }
   ]
 
   function handleClick(
@@ -85,8 +116,8 @@ export function VideoList(): ReactElement {
     _event: MuiEvent,
     _details: GridCallbackDetails
   ): void {
-    console.log(`redirect to: [locale]/[${params.id}]`)
-    console.log(params)
+    // console.log(`redirect to: [locale]/videos/[${params.id}]`)
+    // console.log(params)
   }
 
   async function handleChangePage(
@@ -97,14 +128,38 @@ export function VideoList(): ReactElement {
       limit: videosLimit,
       offset: model.page * videosLimit,
       showTitle: columnVisibilityModel.title ?? true,
-      showSnippet: columnVisibilityModel.description ?? true
+      showSnippet: columnVisibilityModel.description ?? true,
+      where: getVideosWhereArgs
     })
     setPaginationModel(model)
+  }
+
+  function handleFilterModelChange(model: GridFilterModel): void {
+    console.log(model)
+    const where: VideosFilter = {}
+    model.items.forEach((item) => {
+      if (
+        item.field === 'id' &&
+        item.operator === 'equals' &&
+        item.value != null
+      )
+        where.ids = item.value === '' ? null : [item.value]
+
+      if (
+        item.field === 'title' &&
+        item.operator === 'equals' &&
+        item.value != null
+      )
+        where.title = item.value === '' ? null : item.value
+    })
+    setFilterModel(model)
+    setGetVideosWhereArgs(where)
   }
 
   return (
     <Box sx={{ height: '80cqh' }}>
       <DataGrid
+        filterMode="server"
         rows={rows}
         columns={columns}
         pageSizeOptions={[videosLimit]}
@@ -113,13 +168,15 @@ export function VideoList(): ReactElement {
         onPaginationModelChange={handleChangePage}
         rowCount={data.videosCount.length}
         onRowClick={handleClick}
-        slots={{
-          toolbar: GridToolbar
-        }}
+        // slots={{
+        //   toolbar: GridToolbar
+        // }}
         columnVisibilityModel={columnVisibilityModel}
         onColumnVisibilityModelChange={(newModel) =>
           setColumnVisibilityModel(newModel)
         }
+        filterModel={filterModel}
+        onFilterModelChange={handleFilterModelChange}
       />
     </Box>
   )
