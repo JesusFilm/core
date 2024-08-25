@@ -33,7 +33,6 @@ export function RadioOption({
         icon={<LinkIcon />}
         name={t('Action')}
         value={selectedAction.label}
-        testId="RadioOption"
       >
         <Action />
       </Accordion>

@@ -9,6 +9,9 @@
 
 export interface GetCustomDomains_customDomains_journeyCollection_journeys {
   __typename: "Journey";
+  /**
+   * private title for creators
+   */
   title: string;
   id: string;
 }
