@@ -34,7 +34,7 @@ describe('bigquery/importers/videos', () => {
       expect(getVideoIds()).toEqual([])
       expect(getVideoSlugs()).toEqual({})
       expect(processTable).toHaveBeenCalledWith(
-        'jfp-data-warehouse.jfp_mmdb_prod.core_videos_arclight_data',
+        'jfp-data-warehouse.jfp_mmdb_prod.core_video_arclight_data',
         importOne,
         importMany,
         true,

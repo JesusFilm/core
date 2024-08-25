@@ -20,13 +20,8 @@ type BibleBook = z.infer<typeof bibleBookSchema>
 
 let bibleBookIds: string[] = []
 
-export function pushBibleBook(...bibleBooks: Array<{ id: string }>): void {
-  bibleBookIds.push(...bibleBooks.map(({ id }) => id))
-}
-
 export function setBibleBookIds(bibleBooks: Array<{ id: string }>): void {
-  bibleBookIds = []
-  pushBibleBook(...bibleBooks)
+  bibleBookIds = bibleBooks.map(({ id }) => id)
 }
 
 export function getBibleBookIds(): string[] {
@@ -34,8 +29,6 @@ export function getBibleBookIds(): string[] {
 }
 
 export async function importBibleBooks(logger?: Logger): Promise<() => void> {
-  setBibleBookIds(await prisma.bibleBook.findMany({ select: { id: true } }))
-
   await processTable(
     'jfp-data-warehouse.jfp_mmdb_prod.core_bibleBooks_arclight_data',
     importOne,
@@ -43,6 +36,8 @@ export async function importBibleBooks(logger?: Logger): Promise<() => void> {
     false,
     logger
   )
+
+  setBibleBookIds(await prisma.bibleBook.findMany({ select: { id: true } }))
 
   return () => setBibleBookIds([])
 }
@@ -91,7 +86,6 @@ export async function importOne(row: unknown): Promise<void> {
       }
     }
   })
-  pushBibleBook(bibleBook)
 }
 
 export async function importMany(rows: unknown[]): Promise<void> {
@@ -123,6 +117,4 @@ export async function importMany(rows: unknown[]): Promise<void> {
     data: bibleBookNames,
     skipDuplicates: true
   })
-
-  pushBibleBook(...filteredBibleBooks)
 }

@@ -28,15 +28,8 @@ type VideoVariant = z.infer<typeof videoVariantSchema>
 
 let videoVariantIds: string[] = []
 
-export function pushVideoVariant(
-  ...videoVariants: Array<{ id: string }>
-): void {
-  videoVariantIds.push(...videoVariants.map(({ id }) => id))
-}
-
 export function setVideoVariantIds(videoVariants: Array<{ id: string }>): void {
-  videoVariantIds = []
-  pushVideoVariant(...videoVariants)
+  videoVariantIds = videoVariants.map(({ id }) => id)
 }
 
 export function getVideoVariantIds(): string[] {
@@ -46,16 +39,16 @@ export function getVideoVariantIds(): string[] {
 export async function importVideoVariants(
   logger?: Logger
 ): Promise<() => void> {
-  setVideoVariantIds(
-    await prisma.videoVariant.findMany({ select: { id: true } })
-  )
-
   await processTable(
     'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariant_arclight_data',
     importOne,
     importMany,
     true,
     logger
+  )
+
+  setVideoVariantIds(
+    await prisma.videoVariant.findMany({ select: { id: true } })
   )
 
   return () => setVideoVariantIds([])
@@ -110,8 +103,6 @@ export async function importOne(row: unknown): Promise<void> {
     update: transformedVideoVariant,
     create: transformedVideoVariant
   })
-
-  pushVideoVariant(videoVariant)
 }
 
 export async function importMany(rows: unknown[]): Promise<void> {
@@ -132,6 +123,4 @@ export async function importMany(rows: unknown[]): Promise<void> {
     data: transformedVideoVariants,
     skipDuplicates: true
   })
-
-  pushVideoVariant(...transformedVideoVariants)
 }

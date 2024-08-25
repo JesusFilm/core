@@ -39,13 +39,8 @@ type Video = z.infer<typeof videoSchema>
 
 let videoIds: string[] = []
 
-export function pushVideoId(...videos: Array<{ id: string }>): void {
-  videoIds.push(...videos.map(({ id }) => id))
-}
-
 export function setVideoIds(videos: Array<{ id: string }>): void {
-  videoIds = []
-  pushVideoId(...videos)
+  videoIds = videos.map(({ id }) => id)
 }
 
 export function getVideoIds(): string[] {
@@ -54,18 +49,13 @@ export function getVideoIds(): string[] {
 
 let videoSlugs: Record<string, string> = {}
 
-export function pushVideoSlug(
-  ...videos: Array<{ id: string; slug: string | null }>
-): void {
-  videos.forEach(({ id, slug }) => {
-    if (slug != null) videoSlugs[slug] = id
-  })
-}
 export function setVideoSlugs(
   videos: Array<{ id: string; slug: string | null }>
 ): void {
   videoSlugs = {}
-  pushVideoSlug(...videos)
+  videos.forEach(({ id, slug }) => {
+    if (slug != null) videoSlugs[slug] = id
+  })
 }
 
 export function getVideoSlugs(): Record<string, string> {
@@ -73,19 +63,19 @@ export function getVideoSlugs(): Record<string, string> {
 }
 
 export async function importVideos(logger?: Logger): Promise<() => void> {
-  const videos = await prisma.video.findMany({
-    select: { id: true, slug: true }
-  })
-  setVideoIds(videos)
-  setVideoSlugs(videos)
-
   await processTable(
-    'jfp-data-warehouse.jfp_mmdb_prod.core_videos_arclight_data',
+    'jfp-data-warehouse.jfp_mmdb_prod.core_video_arclight_data',
     importOne,
     importMany,
     true,
     logger
   )
+
+  const videos = await prisma.video.findMany({
+    select: { id: true, slug: true }
+  })
+  setVideoIds(videos)
+  setVideoSlugs(videos)
 
   return () => {
     setVideoIds([])
@@ -111,8 +101,6 @@ export async function importOne(row: unknown): Promise<void> {
     update: input,
     create: input
   })
-  pushVideoId(video)
-  pushVideoSlug(video)
 }
 
 export async function importMany(rows: unknown[]): Promise<void> {
@@ -129,7 +117,4 @@ export async function importMany(rows: unknown[]): Promise<void> {
     data: transformedVideos,
     skipDuplicates: true
   })
-
-  pushVideoId(...transformedVideos)
-  pushVideoSlug(...transformedVideos)
 }

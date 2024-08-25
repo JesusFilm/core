@@ -18,18 +18,13 @@ export const apollo = new ApolloClient({
 
 let languageSlugs: Record<string, string> = {}
 
-export function pushLanguageSlug(
-  ...languages: Array<{ id: string; slug: string | null }>
-): void {
-  languages.forEach(({ id, slug }) => {
-    if (slug != null) languageSlugs[id] = slug
-  })
-}
 export function setLanguageSlugs(
   languages: Array<{ id: string; slug: string | null }>
 ): void {
   languageSlugs = {}
-  pushLanguageSlug(...languages)
+  languages.forEach(({ id, slug }) => {
+    if (slug != null) languageSlugs[id] = slug
+  })
 }
 
 export function getLanguageSlugs(): Record<string, string> {

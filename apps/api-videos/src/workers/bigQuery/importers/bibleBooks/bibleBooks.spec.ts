@@ -97,7 +97,6 @@ describe('bigquery/importers/bibleBooks', () => {
           }
         }
       })
-      expect(getBibleBookIds()).toEqual(['1'])
     })
   })
 
@@ -166,7 +165,6 @@ describe('bigquery/importers/bibleBooks', () => {
         ],
         skipDuplicates: true
       })
-      expect(getBibleBookIds()).toEqual(['1', '21'])
     })
 
     it('should throw error if some rows do not match schema', async () => {
