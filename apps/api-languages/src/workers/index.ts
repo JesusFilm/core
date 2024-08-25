@@ -1,1 +1,1 @@
-import './bigquery'
+import './bigQuery'
