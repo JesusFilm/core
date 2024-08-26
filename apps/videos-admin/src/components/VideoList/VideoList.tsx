@@ -73,7 +73,7 @@ export function VideoList(): ReactElement {
       showTitle: columnVisibilityModel.title ?? true,
       showSnippet: columnVisibilityModel.description ?? true,
       where: getVideosWhereArgs
-    }
+    },
     fetchPolicy: 'no-cache'
   })
 
