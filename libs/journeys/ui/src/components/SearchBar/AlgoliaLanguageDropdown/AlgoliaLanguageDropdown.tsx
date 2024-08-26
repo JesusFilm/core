@@ -1,5 +1,4 @@
 import Box from '@mui/material/Box'
-import ClickAwayListener from '@mui/material/ClickAwayListener'
 import Popper from '@mui/material/Popper'
 import Stack from '@mui/material/Stack'
 import { ReactElement, ReactNode } from 'react'
@@ -12,14 +11,12 @@ import { RefinementGroup } from './RefinementGroup'
 
 interface AlgoliaLanguageDropdownProps {
   open: boolean
-  handleClickAway: () => void
   id?: string
   anchorEl?: HTMLElement | null
 }
 
 export function AlgoliaLanguageDropdown({
   open,
-  handleClickAway,
   id,
   anchorEl
 }: AlgoliaLanguageDropdownProps): ReactElement {
@@ -70,23 +67,21 @@ export function AlgoliaLanguageDropdown({
         }
       ]}
     >
-      <ClickAwayListener onClickAway={handleClickAway}>
-        <Box
-          borderRadius={3}
-          boxShadow="0px 4px 4px 0px #00000040"
-          sx={{ p: 8, bgcolor: 'background.paper', mt: 3 }}
+      <Box
+        borderRadius={3}
+        boxShadow="0px 4px 4px 0px #00000040"
+        sx={{ p: 8, bgcolor: 'background.paper', mt: 3 }}
+      >
+        <Stack
+          direction={{ xs: 'column', sm: 'row' }}
+          color="text.primary"
+          sx={{
+            height: 445
+          }}
         >
-          <Stack
-            direction={{ xs: 'column', sm: 'row' }}
-            color="text.primary"
-            sx={{
-              height: 445
-            }}
-          >
-            <ContinentRefinements />
-          </Stack>
-        </Box>
-      </ClickAwayListener>
+          <ContinentRefinements />
+        </Stack>
+      </Box>
     </Popper>
   )
 }

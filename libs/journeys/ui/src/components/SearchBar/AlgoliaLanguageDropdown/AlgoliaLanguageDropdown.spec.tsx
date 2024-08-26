@@ -27,7 +27,7 @@ describe('AlgoliaLanguageDropdown', () => {
   it('should render all the continents with their languages', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <AlgoliaLanguageDropdown open handleClickAway={jest.fn()} />
+        <AlgoliaLanguageDropdown open />
       </MockedProvider>
     )
     await waitFor(() => {
@@ -49,7 +49,7 @@ describe('AlgoliaLanguageDropdown', () => {
 
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <AlgoliaLanguageDropdown open handleClickAway={jest.fn()} />
+        <AlgoliaLanguageDropdown open />
       </MockedProvider>
     )
     await waitFor(() => {

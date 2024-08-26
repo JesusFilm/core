@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import ClickAwayListener from '@mui/material/ClickAwayListener'
 import Divider from '@mui/material/Divider'
 import InputAdornment from '@mui/material/InputAdornment'
 import { styled } from '@mui/material/styles'
@@ -110,60 +111,61 @@ export function SearchBar({
   }
 
   return (
-    <Box>
-      <Box
-        sx={{
-          borderRadius: 3,
-          background:
-            'linear-gradient(90deg, #0C79B3 0%, #0FDABC 51%, #E72DBB 100%)',
-          p: 1
-        }}
-        data-testid="SearchBar"
-        ref={popperRef}
-      >
-        <Formik
-          initialValues={initialValues}
-          onSubmit={handleSubmit}
-          enableReinitialize
+    <ClickAwayListener onClickAway={() => setOpen(false)}>
+      <Box>
+        <Box
+          sx={{
+            borderRadius: 3,
+            background:
+              'linear-gradient(90deg, #0C79B3 0%, #0FDABC 51%, #E72DBB 100%)',
+            p: 1
+          }}
+          data-testid="SearchBar"
+          ref={popperRef}
         >
-          {({ values, handleChange, handleBlur }) => (
-            <>
-              <StyledTextField
-                value={values.title}
-                name="title"
-                type="search"
-                placeholder={t('Search by topic, occasion, or audience ...')}
-                fullWidth
-                autoComplete="off"
-                onChange={handleChange}
-                onBlur={handleBlur}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Search1Icon />
-                    </InputAdornment>
-                  ),
-                  endAdornment: languageButtonVisable ? (
-                    <InputAdornment position="end">
-                      <LanguageButton onClick={handleClick} />
-                    </InputAdornment>
-                  ) : (
-                    <></>
-                  )
-                }}
-                {...props}
-              />
-              <SubmitListener />
-            </>
-          )}
-        </Formik>
+          <Formik
+            initialValues={initialValues}
+            onSubmit={handleSubmit}
+            enableReinitialize
+          >
+            {({ values, handleChange, handleBlur }) => (
+              <>
+                <StyledTextField
+                  value={values.title}
+                  name="title"
+                  type="search"
+                  placeholder={t('Search by topic, occasion, or audience ...')}
+                  fullWidth
+                  autoComplete="off"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Search1Icon />
+                      </InputAdornment>
+                    ),
+                    endAdornment: languageButtonVisable ? (
+                      <InputAdornment position="end">
+                        <LanguageButton onClick={handleClick} />
+                      </InputAdornment>
+                    ) : (
+                      <></>
+                    )
+                  }}
+                  {...props}
+                />
+                <SubmitListener />
+              </>
+            )}
+          </Formik>
+        </Box>
+        <AlgoliaLanguageDropdown
+          open={open}
+          id={open ? 'simple-popper' : undefined}
+          anchorEl={anchorEl}
+        />
       </Box>
-      <AlgoliaLanguageDropdown
-        open={open}
-        handleClickAway={() => setOpen(false)}
-        id={open ? 'simple-popper' : undefined}
-        anchorEl={anchorEl}
-      />
-    </Box>
+    </ClickAwayListener>
   )
 }
