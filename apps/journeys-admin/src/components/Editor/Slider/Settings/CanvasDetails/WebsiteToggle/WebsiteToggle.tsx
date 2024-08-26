@@ -3,10 +3,10 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
+import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { useJourneyUpdateMutation } from '../../../../../../libs/useJourneyUpdateMutation'
-import { useCommand } from '@core/journeys/ui/CommandProvider'
 
 export function WebsiteToggle(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
