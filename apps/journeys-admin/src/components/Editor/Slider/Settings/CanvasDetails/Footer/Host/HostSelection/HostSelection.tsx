@@ -59,10 +59,9 @@ export function HostSelection({
               handleSelection('list')
             }}
           />
-        )}
-      </Stack>
-      {!userInTeam && journey?.team != null && (
-        <Stack direction="row" alignItems="center" gap={3}>
+      )}
+        {!userInTeam && journey?.team != null && (
+        <Stack direction="row" alignItems="center" gap={3} sx={{ mt: 4 }}>
           <AlertCircleIcon />
           <Typography variant="subtitle2">
             {data?.userTeams.length === 0
@@ -73,6 +72,7 @@ export function HostSelection({
           </Typography>
         </Stack>
       )}
+      </Stack>
     </Box>
   )
 }
