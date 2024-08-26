@@ -65,7 +65,12 @@ const defaultJourney: Journey = {
   chatButtons: [],
   host: null,
   team: { __typename: 'Team', id: 'teamId', title: 'My Team', publicTitle: '' },
-  tags: []
+  tags: [],
+  website: null,
+  showShareButton: null,
+  showLikeButton: null,
+  showDislikeButton: null,
+  displayTitle: null
 }
 
 const step1: TreeBlock<StepBlock> = {

@@ -272,7 +272,7 @@ export interface JourneyFields_blocks_TypographyBlock {
 }
 
 export interface JourneyFields_blocks_VideoBlock_video_title {
-  __typename: "Translation";
+  __typename: "VideoTitle";
   value: string;
 }
 
@@ -569,4 +569,12 @@ export interface JourneyFields {
   host: JourneyFields_host | null;
   team: JourneyFields_team | null;
   tags: JourneyFields_tags[];
+  website: boolean | null;
+  showShareButton: boolean | null;
+  showLikeButton: boolean | null;
+  showDislikeButton: boolean | null;
+  /**
+   * public title for viewers
+   */
+  displayTitle: string | null;
 }

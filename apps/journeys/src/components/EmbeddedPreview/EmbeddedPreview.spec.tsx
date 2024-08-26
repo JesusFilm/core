@@ -84,7 +84,12 @@ const journey: Journey = {
   },
   team: null,
   blocks: basic,
-  tags: []
+  tags: [],
+  website: null,
+  showShareButton: null,
+  showLikeButton: null,
+  showDislikeButton: null,
+  displayTitle: null
 }
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>

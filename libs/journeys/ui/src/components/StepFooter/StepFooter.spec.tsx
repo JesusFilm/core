@@ -63,7 +63,12 @@ describe('StepFooter', () => {
       src2: null
     },
     team: null,
-    tags: []
+    tags: [],
+    website: null,
+    showShareButton: null,
+    showLikeButton: null,
+    showDislikeButton: null,
+    displayTitle: null
   }
 
   it('should display host avatar, name and location', () => {

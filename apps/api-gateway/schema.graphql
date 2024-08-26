@@ -42,7 +42,8 @@ type AudioPreview
 type BibleBook
   @join__type(graph: VIDEOS)
 {
-  name(languageId: ID, primary: Boolean): [Translation!]!
+  id: ID!
+  name(languageId: ID, primary: Boolean): [BibleBookName!]!
   osisId: String!
   alternateName: String
   paratextAbbreviation: String!
@@ -50,15 +51,25 @@ type BibleBook
   order: Int!
 }
 
+type BibleBookName
+  @join__type(graph: VIDEOS)
+{
+  value: String!
+  primary: Boolean!
+  language: Language!
+}
+
 type BibleCitation
   @join__type(graph: VIDEOS)
 {
+  id: ID!
   osisId: String!
   bibleBook: BibleBook!
   chapterStart: Int!
   chapterEnd: Int
   verseStart: Int!
   verseEnd: Int
+  video: Video!
 }
 
 interface Block
@@ -232,13 +243,6 @@ enum ButtonVariant
   contained @join__enumValue(graph: JOURNEYS)
 }
 
-enum CacheControlScope
-  @join__type(graph: VIDEOS)
-{
-  PUBLIC @join__enumValue(graph: VIDEOS)
-  PRIVATE @join__enumValue(graph: VIDEOS)
-}
-
 type CardBlock implements Block
   @join__implements(graph: JOURNEYS, interface: "Block")
   @join__type(graph: JOURNEYS)
@@ -399,7 +403,7 @@ type ContinentName
 }
 
 type Country
-  @join__type(graph: LANGUAGES, key: "id")
+  @join__type(graph: LANGUAGES)
 {
   id: ID!
   population: Int
@@ -1314,7 +1318,7 @@ type Language
   @join__type(graph: MEDIA, key: "id")
   @join__type(graph: TAGS, key: "id")
   @join__type(graph: USERS, key: "id")
-  @join__type(graph: VIDEOS, key: "id")
+  @join__type(graph: VIDEOS, key: "id", extension: true)
 {
   id: ID!
   bcp47: String @join__field(graph: LANGUAGES)
@@ -1349,8 +1353,8 @@ input LanguagesFilter
 type LanguageWithSlug
   @join__type(graph: VIDEOS)
 {
-  language: Language
-  slug: String
+  language: Language!
+  slug: String!
 }
 
 scalar link__Import
@@ -2111,8 +2115,11 @@ type Query
   me(input: MeInput): User @join__field(graph: USERS)
   user(id: ID!): User @join__field(graph: USERS)
   userByEmail(email: String!): User @join__field(graph: USERS)
+  bibleBooks: [BibleBook!]! @join__field(graph: VIDEOS)
+  bibleCitations: [BibleCitation!]! @join__field(graph: VIDEOS)
+  keywords: [Keyword!]! @join__field(graph: VIDEOS)
+  video(id: ID!, idType: IdType = databaseId): Video! @join__field(graph: VIDEOS)
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]! @join__field(graph: VIDEOS)
-  video(id: ID!, idType: IdType): Video @join__field(graph: VIDEOS)
 }
 
 type RadioOptionBlock implements Block
@@ -2676,7 +2683,6 @@ type Translation
   @join__type(graph: MEDIA)
   @join__type(graph: TAGS)
   @join__type(graph: USERS)
-  @join__type(graph: VIDEOS)
 {
   value: String!
   language: Language!
@@ -2996,19 +3002,19 @@ input UserTeamUpdateInput
 
 type Video
   @join__type(graph: JOURNEYS, key: "id primaryLanguageId")
-  @join__type(graph: VIDEOS, key: "id primaryLanguageId")
+  @join__type(graph: VIDEOS, key: "id")
 {
   id: ID!
   primaryLanguageId: ID!
   bibleCitations: [BibleCitation!]! @join__field(graph: VIDEOS)
   keywords(languageId: ID): [Keyword!]! @join__field(graph: VIDEOS)
   label: VideoLabel! @join__field(graph: VIDEOS)
-  title(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
-  snippet(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
-  description(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
-  studyQuestions(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
+  title(languageId: ID, primary: Boolean): [VideoTitle!]! @join__field(graph: VIDEOS)
+  snippet(languageId: ID, primary: Boolean): [VideoSnippet!]! @join__field(graph: VIDEOS)
+  description(languageId: ID, primary: Boolean): [VideoDescription!]! @join__field(graph: VIDEOS)
+  studyQuestions(languageId: ID, primary: Boolean): [VideoStudyQuestion!]! @join__field(graph: VIDEOS)
   image: String @join__field(graph: VIDEOS)
-  imageAlt(languageId: ID, primary: Boolean): [Translation!]! @join__field(graph: VIDEOS)
+  imageAlt(languageId: ID, primary: Boolean): [VideoImageAlt!]! @join__field(graph: VIDEOS)
   variantLanguages: [Language!]! @join__field(graph: VIDEOS)
   variantLanguagesCount: Int! @join__field(graph: VIDEOS)
 
@@ -3340,6 +3346,14 @@ input VideoCompleteEventCreateInput
   value: VideoBlockSource
 }
 
+type VideoDescription
+  @join__type(graph: VIDEOS)
+{
+  value: String!
+  primary: Boolean!
+  language: Language!
+}
+
 type VideoExpandEvent implements Event
   @join__implements(graph: JOURNEYS, interface: "Event")
   @join__type(graph: JOURNEYS)
@@ -3385,6 +3399,14 @@ input VideoExpandEventCreateInput
 
   """source of the video"""
   value: VideoBlockSource
+}
+
+type VideoImageAlt
+  @join__type(graph: VIDEOS)
+{
+  value: String!
+  primary: Boolean!
+  language: Language!
 }
 
 enum VideoLabel
@@ -3561,6 +3583,14 @@ input VideosFilter
   subtitleLanguageIds: [ID!]
 }
 
+type VideoSnippet
+  @join__type(graph: VIDEOS)
+{
+  value: String!
+  primary: Boolean!
+  language: Language!
+}
+
 type VideoStartEvent implements Event
   @join__implements(graph: JOURNEYS, interface: "Event")
   @join__type(graph: JOURNEYS)
@@ -3608,14 +3638,30 @@ input VideoStartEventCreateInput
   value: VideoBlockSource
 }
 
+type VideoStudyQuestion
+  @join__type(graph: VIDEOS)
+{
+  value: String!
+  primary: Boolean!
+  language: Language!
+}
+
 type VideoSubtitle
   @join__type(graph: VIDEOS)
 {
-  id: String!
-  languageId: String!
+  id: ID!
+  languageId: ID!
   edition: String!
   vttSrc: String
   srtSrc: String
+}
+
+type VideoTitle
+  @join__type(graph: VIDEOS)
+{
+  value: String!
+  primary: Boolean!
+  language: Language!
 }
 
 """
@@ -3642,12 +3688,12 @@ type VideoTriggerBlock implements Block
 type VideoVariant
   @join__type(graph: VIDEOS)
 {
-  id: String!
+  id: ID!
   hls: String
   downloads: [VideoVariantDownload!]!
   duration: Int!
   language: Language!
-  subtitle(languageId: ID, primary: Boolean): [Translation!]!
+  subtitle(languageId: ID, primary: Boolean): [VideoVariantSubtitle!]!
   subtitleCount: Int!
 
   """slug is a permanent link to the video variant."""
@@ -3667,6 +3713,14 @@ enum VideoVariantDownloadQuality
 {
   low @join__enumValue(graph: VIDEOS)
   high @join__enumValue(graph: VIDEOS)
+}
+
+type VideoVariantSubtitle
+  @join__type(graph: VIDEOS)
+{
+  value: String!
+  primary: Boolean!
+  language: Language!
 }
 
 """A visitor with attributes connected to a team."""
