@@ -78,8 +78,10 @@ interface FilterListProps {
   languagesLoading: boolean
 }
 
-function getHelperText(languages): string | undefined {
-  return languages.length < 1000 ? `${languages.length} languages` : undefined
+function getHelperText(languages): string {
+  return languages.length < 1000
+    ? `${languages.length} languages`
+    : '1000+ languages'
 }
 
 export function FilterList({
