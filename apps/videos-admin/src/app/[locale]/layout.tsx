@@ -8,8 +8,6 @@ import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import { Nav } from '../../components/Nav'
 
-import { ApolloWrapper } from './_apolloWrapper/apolloWrapper'
-
 export default function LocaleLayout({
   children,
   params: { locale }
@@ -22,19 +20,17 @@ export default function LocaleLayout({
     <html lang={locale}>
       <body>
         <NextIntlClientProvider messages={messages}>
-          <ApolloWrapper>
-            <AppRouterCacheProvider>
-              <ThemeProvider
-                themeName={ThemeName.journeysAdmin}
-                themeMode={ThemeMode.light}
-              >
-                <Nav />
-                <Container sx={{ my: 10, maxHeight: '100%' }}>
-                  {children}
-                </Container>
-              </ThemeProvider>
-            </AppRouterCacheProvider>
-          </ApolloWrapper>
+          <AppRouterCacheProvider>
+            <ThemeProvider
+              themeName={ThemeName.journeysAdmin}
+              themeMode={ThemeMode.light}
+            >
+              <Nav />
+              <Container sx={{ my: 10, maxHeight: '100%' }}>
+                {children}
+              </Container>
+            </ThemeProvider>
+          </AppRouterCacheProvider>
         </NextIntlClientProvider>
       </body>
     </html>
