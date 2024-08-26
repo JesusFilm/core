@@ -43,12 +43,11 @@ export function StepHeader({
           {/* Logo */}
           {/* Title */}
           {/* Menu */}
-          <InformationButton />
         </>
       ) : (
         <>
           <PaginationBullets />
-          {variant !== 'admin' && <InformationButton />}
+          <InformationButton />
         </>
       )}
     </Stack>
