@@ -52,8 +52,6 @@ export function Canvas(): ReactElement {
     dispatch
   } = useEditor()
   const { journey } = useJourney()
-  let website: boolean | null = null // TODO: replace with journey value
-  website = false
   const { rtl, locale } = getJourneyRTL(journey)
   const router = useRouter()
 
@@ -265,7 +263,7 @@ export function Canvas(): ReactElement {
                                 outline:
                                   activeCanvasDetailsDrawer ===
                                     ActiveCanvasDetailsDrawer.Footer &&
-                                  website === true
+                                  journey?.website === true
                                     ? '2px solid #C52D3A'
                                     : 'none',
                                 outlineOffset: -4,
