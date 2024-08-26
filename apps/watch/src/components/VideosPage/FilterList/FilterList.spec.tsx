@@ -21,6 +21,16 @@ const mockUseAlgoliaRouter = useAlgoliaRouter as jest.MockedFunction<
 >
 
 describe('FilterList', () => {
+  const languageItems = [
+    {
+      count: 100,
+      isRefined: false,
+      value: '529',
+      label: '529',
+      highlighted: '529'
+    }
+  ]
+
   beforeEach(() => {
     mockUseSearchBox.mockReturnValue({
       refine: jest.fn()
@@ -31,23 +41,9 @@ describe('FilterList', () => {
       languageId: null,
       subtitleId: null
     })
-
-    mockUseMenu.mockReturnValue({
-      refine: jest.fn()
-    } as unknown as MenuRenderState)
   })
 
   describe('Language Filter', () => {
-    const languageItems = [
-      {
-        count: 100,
-        isRefined: false,
-        value: '529',
-        label: '529',
-        highlighted: '529'
-      }
-    ]
-
     it('should refine by language on audio language filter', async () => {
       const refineLanguages = jest.fn()
 
@@ -66,9 +62,9 @@ describe('FilterList', () => {
 
       fireEvent.focus(langaugesComboboxEl)
       fireEvent.keyDown(langaugesComboboxEl, { key: 'ArrowDown' })
-      await waitFor(() => screen.getAllByText('Chinese')[0])
-      fireEvent.click(screen.getAllByText('Chinese')[0])
-      expect(langaugesComboboxEl).toHaveValue('Chinese')
+      await waitFor(() => screen.getAllByText('English')[0])
+      fireEvent.click(screen.getAllByText('English')[0])
+      expect(langaugesComboboxEl).toHaveValue('English')
       await waitFor(() => expect(refineLanguages).toHaveBeenCalled())
     })
   })
@@ -116,6 +112,13 @@ describe('FilterList', () => {
   })
 
   describe('Search Filter', () => {
+    beforeEach(() => {
+      mockUseMenu.mockReturnValue({
+        items: languageItems,
+        refine: jest.fn()
+      } as unknown as MenuRenderState)
+    })
+
     it('should refine by title on title search', async () => {
       const refine = jest.fn()
 

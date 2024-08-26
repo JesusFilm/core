@@ -32,7 +32,7 @@ test('Filters', async ({ page }) => {
     .getByTestId('FilterList')
     .locator('div')
     .filter({
-      hasText: 'LanguagesSearch LanguagesSearch Languages2000+ languages'
+      hasText: 'LanguagesSearch LanguagesSearch Languages8 languages' // there are only 8 languages in algolia stagging
     })
     .getByLabel('Open')
     .click()
@@ -40,7 +40,7 @@ test('Filters', async ({ page }) => {
     .getByTestId('FilterList')
     .locator('div')
     .filter({
-      hasText: 'LanguagesSearch LanguagesSearch Languages2000+ languages'
+      hasText: 'LanguagesSearch LanguagesSearch Languages53 languages' // there are only 53 subtitles in algolia stagging
     })
     .getByLabel('Search Languages')
     .fill('telu')

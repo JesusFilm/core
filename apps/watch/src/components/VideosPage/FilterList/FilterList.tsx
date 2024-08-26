@@ -78,6 +78,10 @@ interface FilterListProps {
   languagesLoading: boolean
 }
 
+function getHelperText(languages): string | undefined {
+  return languages.length < 1000 ? `${languages.length} languages` : undefined
+}
+
 export function FilterList({
   languagesData,
   languagesLoading
@@ -86,20 +90,37 @@ export function FilterList({
 
   const { query, languageId, subtitleId } = useAlgoliaRouter()
   const { refine: refineSearch } = useSearchBox()
-  const { refine: refineLanguages } = useMenu({
-    attribute: 'languageId'
+  const { items: languageItems, refine: refineLanguages } = useMenu({
+    attribute: 'languageId',
+    limit: 5000
   })
-  const { refine: refineSubtitles } = useMenu({
-    attribute: 'subtitles'
+  const { items: subtitleItems, refine: refineSubtitles } = useMenu({
+    attribute: 'subtitles',
+    limit: 5000
   })
-
-  const subtitleLanguages = languagesData?.languages.filter((language) =>
-    subtitleLanguageIds.includes(language.id)
-  )
 
   const languagesMap = useMemo(
     () => new Map(languagesData?.languages.map((lang) => [lang.id, lang])),
     [languagesData]
+  )
+
+  const languages = useMemo(
+    () =>
+      languageItems
+        .map((item) => languagesMap.get(item.value))
+        .filter((lang): lang is NonNullable<typeof lang> => lang !== undefined),
+    [languageItems, languagesMap]
+  )
+
+  const subtitles = useMemo(
+    () =>
+      subtitleItems
+        .map((item) => languagesMap.get(item.value))
+        .filter(
+          (lang): lang is NonNullable<typeof lang> =>
+            lang !== undefined && subtitleLanguageIds.includes(lang.id)
+        ),
+    [subtitleItems, languagesMap]
   )
 
   const languageOptionFromIds = (ids?: string[]): LanguageOption => {
@@ -159,8 +180,9 @@ export function FilterList({
             <LanguagesFilter
               onChange={handleLanguageChange(setFieldValue)}
               value={values.language}
-              languages={languagesData?.languages}
+              languages={languages}
               loading={languagesLoading}
+              helperText={getHelperText(languages)}
             />
           </Stack>
           <Stack spacing={2}>
@@ -171,9 +193,9 @@ export function FilterList({
             <LanguagesFilter
               onChange={handleSubtitleChange(setFieldValue)}
               value={values.subtitleLanguage}
-              languages={subtitleLanguages}
+              languages={subtitles}
               loading={languagesLoading}
-              helperText={`${subtitleLanguages?.length ?? 53} languages`}
+              helperText={getHelperText(subtitles)}
             />
           </Stack>
           <Stack spacing={2}>
