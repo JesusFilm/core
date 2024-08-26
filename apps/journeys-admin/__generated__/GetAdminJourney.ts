@@ -272,7 +272,7 @@ export interface GetAdminJourney_journey_blocks_TypographyBlock {
 }
 
 export interface GetAdminJourney_journey_blocks_VideoBlock_video_title {
-  __typename: "Translation";
+  __typename: "VideoTitle";
   value: string;
 }
 
@@ -569,6 +569,14 @@ export interface GetAdminJourney_journey {
   host: GetAdminJourney_journey_host | null;
   team: GetAdminJourney_journey_team | null;
   tags: GetAdminJourney_journey_tags[];
+  website: boolean | null;
+  showShareButton: boolean | null;
+  showLikeButton: boolean | null;
+  showDislikeButton: boolean | null;
+  /**
+   * public title for viewers
+   */
+  displayTitle: string | null;
 }
 
 export interface GetAdminJourney {
