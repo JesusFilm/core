@@ -1,6 +1,6 @@
 'use client'
 
-import { useSuspenseQuery } from '@apollo/experimental-nextjs-app-support/ssr'
+import { useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import {
   DataGrid,
@@ -66,7 +66,7 @@ export function VideoList(): ReactElement {
   const [getVideosWhereArgs, setGetVideosWhereArgs] = useState<VideosFilter>({})
 
   const t = useTranslations()
-  const { data, refetch } = useSuspenseQuery(GET_VIDEOS_AND_COUNT, {
+  const { data, loading, refetch } = useQuery(GET_VIDEOS_AND_COUNT, {
     variables: {
       limit: videosLimit,
       offset: paginationModel.page * videosLimit,
@@ -77,15 +77,16 @@ export function VideoList(): ReactElement {
     fetchPolicy: 'no-cache'
   })
 
-  const rows: GridRowsProp = data.videos.map((video) => {
-    const title = video?.title?.find(({ primary }) => primary)?.value
-    const description = video?.snippet?.find(({ primary }) => primary)?.value
-    return {
-      id: video.id,
-      title,
-      description
-    }
-  })
+  const rows: GridRowsProp =
+    data?.videos.map((video) => {
+      const title = video?.title?.find(({ primary }) => primary)?.value
+      const description = video?.snippet?.find(({ primary }) => primary)?.value
+      return {
+        id: video.id,
+        title,
+        description
+      }
+    }) ?? []
 
   const columns: GridColDef[] = [
     {
@@ -163,6 +164,7 @@ export function VideoList(): ReactElement {
   return (
     <Box sx={{ height: '80cqh' }}>
       <DataGrid
+        loading={loading}
         filterMode="server"
         rows={rows}
         columns={columns}
@@ -170,7 +172,7 @@ export function VideoList(): ReactElement {
         paginationModel={paginationModel}
         paginationMode="server"
         onPaginationModelChange={handleChangePage}
-        rowCount={data.videosCount.length}
+        rowCount={data?.videosCount.length}
         onRowClick={handleClick}
         slots={{
           toolbar: GridToolbar

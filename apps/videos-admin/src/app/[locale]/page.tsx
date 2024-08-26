@@ -10,6 +10,8 @@ interface IndexProps {
   params: { locale: string }
 }
 
+export const dynamic = 'force-dynamic'
+
 export default function Index({ params }: IndexProps): ReactElement {
   const t = useTranslations()
 
