@@ -74,7 +74,12 @@ describe('InformationButton', () => {
       title: 'Team Title',
       publicTitle: ''
     },
-    tags: []
+    tags: [],
+    website: null,
+    showShareButton: null,
+    showLikeButton: null,
+    showDislikeButton: null,
+    displayTitle: null
   }
 
   it('should have report contact button', () => {

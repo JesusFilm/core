@@ -569,6 +569,14 @@ export interface GetAdminJourneyWithPlausibleToken_journey {
   host: GetAdminJourneyWithPlausibleToken_journey_host | null;
   team: GetAdminJourneyWithPlausibleToken_journey_team | null;
   tags: GetAdminJourneyWithPlausibleToken_journey_tags[];
+  website: boolean | null;
+  showShareButton: boolean | null;
+  showLikeButton: boolean | null;
+  showDislikeButton: boolean | null;
+  /**
+   * public title for viewers
+   */
+  displayTitle: string | null;
   /**
    * used in a plausible share link to embed report
    */
