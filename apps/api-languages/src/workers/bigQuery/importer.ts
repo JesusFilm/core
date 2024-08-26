@@ -82,7 +82,7 @@ async function getQueryResults(
 ): Promise<QueryResults> {
   try {
     const res = await job.getQueryResults({
-      maxResults: 5000,
+      maxResults: 10_000,
       pageToken
     })
     return {
@@ -199,5 +199,9 @@ export async function processTable(
     update: { lastImport: updateTime }
   })
 
-  logger?.info({ errors }, 'table import finished')
+  if (errors.length > 0) {
+    logger?.error({ errors }, 'table import finished with errors')
+  } else {
+    logger?.info('table import finished')
+  }
 }
