@@ -41,7 +41,7 @@ const video: VideoBlock = {
     id: '2_0-FallingPlates',
     title: [
       {
-        __typename: 'Translation',
+        __typename: 'VideoTitle',
         value: 'FallingPlates'
       }
     ],
