@@ -13,7 +13,7 @@ import {
 
 jest.mock('@google-cloud/bigquery')
 
-describe('bigquery/importer', () => {
+describe('bigQuery/importer', () => {
   beforeEach(() => {
     jest.restoreAllMocks()
   })

@@ -142,7 +142,13 @@ export async function processTable(
   hasUpdatedAt: boolean,
   parentLogger?: Logger
 ): Promise<void> {
-  logger = parentLogger?.child({ table: bigQueryTableName.split('.').at(-1) })
+  logger = parentLogger?.child({
+    table: bigQueryTableName
+      .split('.')
+      .at(-1)
+      ?.replace('core_', '')
+      .replace('_arclight_data', '')
+  })
   logger?.info('table import started')
   const errors: BigQueryRowError[] = []
   const importTime = await prisma.importTimes.findUnique({

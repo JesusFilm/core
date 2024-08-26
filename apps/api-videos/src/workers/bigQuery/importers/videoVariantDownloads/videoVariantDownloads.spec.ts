@@ -19,7 +19,7 @@ jest.mock('../videoVariants', () => ({
     .mockReturnValue(['mockVariantId', 'mockVariantId1'])
 }))
 
-describe('bigquery/importers/videoVariantDownloads', () => {
+describe('bigQuery/importers/videoVariantDownloads', () => {
   describe('importVideoVariantDownloads', () => {
     it('should import videoVariantDownloads', async () => {
       await importVideoVariantDownloads()

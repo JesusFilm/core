@@ -123,7 +123,7 @@
     "ingest": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npm run ts-node apps/api-languages/src/workers/bigQuery/console.ts"
+        "command": "npm run ts-node apps/api-languages/src/workers/cli.ts big-query"
       }
     },
     "codegen": {

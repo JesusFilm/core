@@ -1,9 +1,9 @@
+import { Logger } from 'pino'
 import { z } from 'zod'
-
-import { Prisma } from '.prisma/api-languages-client'
 
 import { prisma } from '../../../../lib/prisma'
 import { parse, parseMany, processTable } from '../../importer'
+import { getLanguageIds } from '../languages'
 
 const audioPreviewSchema = z.object({
   languageId: z.number().transform(String),
@@ -13,44 +13,43 @@ const audioPreviewSchema = z.object({
   updatedAt: z.object({ value: z.string() }).transform((value) => value.value)
 })
 
-const bigQueryTableName =
-  'jfp-data-warehouse.jfp_mmdb_prod.core_audioPreview_arclight_data'
-
-let existingLanguageIds: string[]
-
-export async function importAudioPreview(languageIds: string[]): Promise<void> {
-  existingLanguageIds = languageIds
-
-  await processTable(bigQueryTableName, importOne, importMany, true)
+export async function importAudioPreviews(logger?: Logger): Promise<void> {
+  await processTable(
+    'jfp-data-warehouse.jfp_mmdb_prod.core_audioPreview_arclight_data',
+    importOne,
+    importMany,
+    true,
+    logger
+  )
 }
 
 export async function importOne(row: unknown): Promise<void> {
-  const data = parse<Prisma.AudioPreviewUncheckedCreateInput>(
-    audioPreviewSchema,
-    row
-  )
-  if (!existingLanguageIds.includes(data.languageId))
-    throw new Error(`Language with id ${data.languageId} not found`)
+  const audioPreview = parse(audioPreviewSchema, row)
+  if (getLanguageIds().includes(audioPreview.languageId) === false)
+    throw new Error(`Language with id ${audioPreview.languageId} not found`)
 
   await prisma.audioPreview.upsert({
     where: {
-      languageId: data.languageId
+      languageId: audioPreview.languageId
     },
-    update: data,
-    create: data
+    update: audioPreview,
+    create: audioPreview
   })
 }
 
 export async function importMany(rows: unknown[]): Promise<void> {
-  const { data, inValidRowIds } =
-    parseMany<Prisma.AudioPreviewUncheckedCreateInput>(audioPreviewSchema, rows)
+  const { data: audioPreviews, inValidRowIds } = parseMany(
+    audioPreviewSchema,
+    rows
+  )
+
+  if (audioPreviews.length !== rows.length)
+    throw new Error(`some rows do not match schema: ${inValidRowIds.join(',')}`)
+
   await prisma.audioPreview.createMany({
-    data: data.filter(({ languageId }) =>
-      existingLanguageIds.includes(languageId)
+    data: audioPreviews.filter(
+      ({ languageId }) => getLanguageIds().includes(languageId) === true
     ),
     skipDuplicates: true
   })
-  if (data.length !== rows.length) {
-    throw new Error(`some rows do not match schema: ${inValidRowIds.join(',')}`)
-  }
 }

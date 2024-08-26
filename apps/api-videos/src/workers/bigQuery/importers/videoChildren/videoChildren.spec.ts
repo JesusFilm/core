@@ -8,7 +8,7 @@ jest.mock('../videos', () => ({
   getVideoIds: jest.fn().mockReturnValue(['video1', 'video2', 'video3'])
 }))
 
-describe('bigquery/importers/videoChildren', () => {
+describe('bigQuery/importers/videoChildren', () => {
   describe('importVideoChildren', () => {
     it('should turn child ids array into video parent relationship', async () => {
       prismaMock.video.findMany.mockResolvedValue([

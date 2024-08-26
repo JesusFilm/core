@@ -1,69 +1,70 @@
+import { Logger } from 'pino'
 import { z } from 'zod'
-
-import { Prisma } from '.prisma/api-languages-client'
 
 import { prisma } from '../../../../lib/prisma'
 import { parse, parseMany, processTable } from '../../importer'
+import { getLanguageIds } from '../languages'
 
 const languageNameSchema = z
   .object({
     languageId: z.number().transform(String),
     parentLanguageId: z.number().transform(String),
-    value: z.string()
+    value: z.string().nullable()
   })
   .transform((value) => ({
     ...value,
-    primary: value.languageId === value.parentLanguageId
+    primary: value.languageId === value.parentLanguageId,
+    value: value.value === null ? '' : value.value
   }))
 
-const bigQueryTableName =
-  'jfp-data-warehouse.jfp_mmdb_prod.core_languageNames_arclight_data'
-
-let existingLanguageIds: string[]
-
-export async function importLanguageNames(
-  languageIds: string[]
-): Promise<void> {
-  existingLanguageIds = languageIds
-
-  await processTable(bigQueryTableName, importOne, importMany, true)
+export async function importLanguageNames(logger?: Logger): Promise<void> {
+  await processTable(
+    'jfp-data-warehouse.jfp_mmdb_prod.core_languageNames_arclight_data',
+    importOne,
+    importMany,
+    true,
+    logger
+  )
 }
 
 export async function importOne(row: unknown): Promise<void> {
-  const data = parse<Prisma.LanguageNameUncheckedCreateInput>(
-    languageNameSchema,
-    row
-  )
-  if (!existingLanguageIds.includes(data.parentLanguageId))
-    throw new Error(`Language with id ${data.parentLanguageId} not found`)
+  const languageName = parse(languageNameSchema, row)
 
-  if (!existingLanguageIds.includes(data.languageId))
-    throw new Error(`Language with id ${data.languageId} not found`)
+  if (getLanguageIds().includes(languageName.parentLanguageId) === false)
+    throw new Error(
+      `Parent Language with id ${languageName.parentLanguageId} not found`
+    )
+
+  if (getLanguageIds().includes(languageName.languageId) === false)
+    throw new Error(`Language with id ${languageName.languageId} not found`)
 
   await prisma.languageName.upsert({
     where: {
       parentLanguageId_languageId: {
-        languageId: data.languageId,
-        parentLanguageId: data.parentLanguageId
+        languageId: languageName.languageId,
+        parentLanguageId: languageName.parentLanguageId
       }
     },
-    update: data,
-    create: data
+    update: languageName,
+    create: languageName
   })
 }
 
 export async function importMany(rows: unknown[]): Promise<void> {
-  const { data, inValidRowIds } =
-    parseMany<Prisma.LanguageNameUncheckedCreateInput>(languageNameSchema, rows)
+  const { data: languageNames, inValidRowIds } = parseMany(
+    languageNameSchema,
+    rows
+  )
+
+  if (languageNames.length !== rows.length)
+    throw new Error(`some rows do not match schema: ${inValidRowIds.join(',')}`)
+
   await prisma.languageName.createMany({
-    data: data.filter(
+    data: languageNames.filter(
       ({ parentLanguageId, languageId }) =>
-        existingLanguageIds.includes(parentLanguageId) &&
-        existingLanguageIds.includes(languageId)
+        getLanguageIds().includes(parentLanguageId) === true &&
+        getLanguageIds().includes(languageId)
     ),
     skipDuplicates: true
   })
-  if (data.length !== rows.length) {
-    throw new Error(`some rows do not match schema: ${inValidRowIds.join(',')}`)
-  }
 }

@@ -23,7 +23,7 @@ jest.mock('@apollo/client', () => {
   }
 })
 
-describe('bigquery/importers/languageSlugs', () => {
+describe('bigQuery/importers/languageSlugs', () => {
   describe('importLanguageSlugs', () => {
     it('should import language slugs from api-languages', async () => {
       const cleanup = await importLanguageSlugs()

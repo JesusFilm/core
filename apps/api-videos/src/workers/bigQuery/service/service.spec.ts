@@ -36,7 +36,7 @@ jest.mock('../importers', () => ({
   importVideos: jest.fn()
 }))
 
-describe('bigquery/service', () => {
+describe('bigQuery/service', () => {
   describe('service', () => {
     it('should call importers', async () => {
       await service()

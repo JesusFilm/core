@@ -26,7 +26,7 @@ jest.mock('../languageSlugs', () => ({
     .mockReturnValue({ '529': 'english', '3804': 'korean' })
 }))
 
-describe('bigquery/importers/videoVariants', () => {
+describe('bigQuery/importers/videoVariants', () => {
   afterEach(() => {
     setVideoVariantIds([])
   })

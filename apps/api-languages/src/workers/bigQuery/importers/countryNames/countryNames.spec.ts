@@ -1,9 +1,15 @@
-import { CountryName } from '.prisma/api-languages-client'
-
 import { prismaMock } from '../../../../../test/prismaMock'
-import { parse, parseMany, processTable } from '../../importer'
+import { processTable } from '../../importer'
 
-import { importCountryNames, importMany, importOne } from './countryNames'
+import { importMany, importOne } from './countryNames'
+
+import { importCountryNames } from '.'
+
+const bigQueryCountryName = {
+  languageId: 529,
+  shortName: 'AD',
+  value: 'English'
+}
 
 const countryName = {
   countryId: 'AD',
@@ -14,55 +20,35 @@ const countryName = {
 
 jest.mock('../../importer', () => ({
   processTable: jest.fn(),
-  parse: jest.fn().mockReturnValue({
-    value: 'English',
-    languageId: '529',
-    countryId: 'AD',
-    primary: true
-  }),
-  parseMany: jest.fn().mockReturnValue({
-    data: [
-      {
-        value: 'English',
-        languageId: '529',
-        countryId: 'AD',
-        primary: true
-      },
-      {
-        value: 'English',
-        languageId: '529',
-        countryId: 'AD',
-        primary: true
-      }
-    ]
-  })
+  parse: jest.requireActual('../../importer').parse,
+  parseMany: jest.requireActual('../../importer').parseMany
 }))
 
-describe('bigquery/importers/countryNames', () => {
+jest.mock('../languages', () => ({
+  getLanguageIds: jest.fn().mockReturnValue(['529'])
+}))
+
+jest.mock('../countries', () => ({
+  getCountryIds: jest.fn().mockReturnValue(['AD'])
+}))
+
+describe('bigQuery/importers/countryNames', () => {
   describe('importLanguageNames', () => {
     it('should import country names', async () => {
-      await importCountryNames(['529'], ['AD'])
+      await importCountryNames()
       expect(processTable).toHaveBeenCalledWith(
         'jfp-data-warehouse.jfp_mmdb_prod.core_countryNames_arclight_data',
         importOne,
         importMany,
-        true
+        true,
+        undefined
       )
     })
   })
 
   describe('importOne', () => {
     it('should import one country name', async () => {
-      prismaMock.countryName.upsert.mockResolvedValue(
-        {} as unknown as CountryName
-      )
-      await importCountryNames(['529'], ['AD'])
-      await importOne({
-        value: 'English',
-        languageId: '529',
-        countryId: 'AD'
-      })
-      expect(parse).toHaveBeenCalled()
+      await importOne(bigQueryCountryName)
       expect(prismaMock.countryName.upsert).toHaveBeenCalledWith({
         where: {
           languageId_countryId: {
@@ -75,46 +61,42 @@ describe('bigquery/importers/countryNames', () => {
       })
     })
 
+    it('should import when value is null', async () => {
+      await importOne({ ...bigQueryCountryName, value: null })
+      expect(prismaMock.countryName.upsert).toHaveBeenCalledWith({
+        where: {
+          languageId_countryId: {
+            languageId: '529',
+            countryId: 'AD'
+          }
+        },
+        create: { ...countryName, value: '' },
+        update: { ...countryName, value: '' }
+      })
+    })
+
     it('should throw error if language not found', async () => {
-      await importCountryNames([], ['AD'])
       await expect(
         importOne({
-          value: 'English',
-          languageId: '529',
-          countryId: 'Ad'
+          ...bigQueryCountryName,
+          languageId: 789
         })
-      ).rejects.toThrow()
+      ).rejects.toThrow('Language with id 789 not found')
     })
 
     it('should throw error if country not found', async () => {
-      await importCountryNames(['529'], [])
       await expect(
         importOne({
-          value: 'English',
-          languageId: '529',
-          countryId: 'AD'
+          ...bigQueryCountryName,
+          shortName: 'ZZ'
         })
-      ).rejects.toThrow()
+      ).rejects.toThrow('Country with id ZZ not found')
     })
   })
 
   describe('importMany', () => {
     it('should import many country names', async () => {
-      prismaMock.countryName.createMany.mockImplementation()
-      await importCountryNames(['529'], ['AD'])
-      await importMany([
-        {
-          value: 'English',
-          languageId: '529',
-          countryId: 'AD'
-        },
-        {
-          value: 'English',
-          languageId: '529',
-          countryId: 'AD'
-        }
-      ])
-      expect(parseMany).toHaveBeenCalled()
+      await importMany([bigQueryCountryName, bigQueryCountryName])
       expect(prismaMock.countryName.createMany).toHaveBeenCalledWith({
         data: [countryName, countryName],
         skipDuplicates: true
@@ -122,8 +104,6 @@ describe('bigquery/importers/countryNames', () => {
     })
 
     it('should throw error if some rows do not match schema', async () => {
-      prismaMock.countryName.createMany.mockImplementation()
-      await importCountryNames(['529'], ['AD'])
       await expect(
         importMany([
           {
@@ -141,7 +121,9 @@ describe('bigquery/importers/countryNames', () => {
             languageId: '529'
           }
         ])
-      ).rejects.toThrow()
+      ).rejects.toThrow(
+        'some rows do not match schema: unknownId,unknownId,unknownId'
+      )
     })
   })
 })

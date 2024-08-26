@@ -13,7 +13,7 @@ jest.mock('../../importer', () => ({
   parseMany: jest.requireActual('../../importer').parseMany
 }))
 
-describe('bigquery/importers/videos', () => {
+describe('bigQuery/importers/videos', () => {
   afterEach(() => {
     setVideoIds([])
     setVideoSlugs([])

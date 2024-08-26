@@ -1,62 +1,72 @@
-import { Country } from '.prisma/api-languages-client'
+import { Continent, Country } from '.prisma/api-languages-client'
 
 import { prismaMock } from '../../../../../test/prismaMock'
-import { parse, parseMany, processTable } from '../../importer'
+import { processTable } from '../../importer'
 
-import { importCountries, importMany, importOne } from './countries'
+import {
+  getContinentIds,
+  importMany,
+  importOne,
+  setContinentIds,
+  setCountryIds
+} from './countries'
 
-const country = {
+import { getCountryIds, importCountries } from '.'
+
+const bigQueryCountry = {
+  shortName: 'AD',
+  country_population: 20,
+  latitude: 15.1,
+  longitude: 16.2,
+  flagPngSrc: 'flagPngSrc',
+  flagWebpSrc: 'flagWebpSrc',
+  continentName: 'Europe'
+}
+
+const prismaCountry = {
   id: 'AD',
   population: 20,
   latitude: 15.1,
   longitude: 16.2,
   flagPngSrc: 'flagPngSrc',
-  flagWebpSrc: 'flagWebpSrc'
+  flagWebpSrc: 'flagWebpSrc',
+  continentId: 'Europe'
 }
 
 jest.mock('../../importer', () => ({
   processTable: jest.fn(),
-  parse: jest.fn().mockReturnValue({
-    id: 'AD',
-    population: 20,
-    latitude: 15.1,
-    longitude: 16.2,
-    flagPngSrc: 'flagPngSrc',
-    flagWebpSrc: 'flagWebpSrc'
-  }),
-  parseMany: jest.fn().mockReturnValue({
-    data: [
-      {
-        id: 'AD',
-        population: 20,
-        latitude: 15.1,
-        longitude: 16.2,
-        flagPngSrc: 'flagPngSrc',
-        flagWebpSrc: 'flagWebpSrc'
-      },
-      {
-        id: 'AD',
-        population: 20,
-        latitude: 15.1,
-        longitude: 16.2,
-        flagPngSrc: 'flagPngSrc',
-        flagWebpSrc: 'flagWebpSrc'
-      }
-    ]
-  })
+  parse: jest.requireActual('../../importer').parse,
+  parseMany: jest.requireActual('../../importer').parseMany
 }))
 
-describe('bigquery/importers/countries', () => {
+describe('bigQuery/importers/countries', () => {
+  afterEach(() => {
+    setCountryIds([])
+    setContinentIds([])
+  })
+
   describe('importCountries', () => {
     it('should import countries', async () => {
-      prismaMock.country.findMany.mockResolvedValue([])
-      prismaMock.continent.findMany.mockResolvedValue([])
-      await importCountries()
+      prismaMock.country.findMany.mockResolvedValue([
+        { id: 'countryId' } as unknown as Country
+      ])
+      prismaMock.continent.findMany.mockResolvedValue([
+        { id: 'continentId' } as unknown as Continent
+      ])
+      expect(getCountryIds()).toEqual([])
+      expect(getContinentIds()).toEqual([])
+      const cleanup = await importCountries()
+      expect(getCountryIds()).toEqual(['countryId'])
+      expect(getContinentIds()).toEqual(['continentId'])
+      cleanup()
+      expect(getCountryIds()).toEqual([])
+      expect(getContinentIds()).toEqual([])
       expect(processTable).toHaveBeenCalledWith(
         'jfp-data-warehouse.jfp_mmdb_prod.core_countries_arclight_data',
         importOne,
         importMany,
-        true
+        true,
+        undefined
       )
     })
   })
@@ -67,21 +77,13 @@ describe('bigquery/importers/countries', () => {
       prismaMock.country.findMany.mockResolvedValue([])
       prismaMock.continent.findMany.mockResolvedValue([])
       await importCountries()
-      await importOne({
-        shortName: country.id,
-        country_population: country.population,
-        latitude: country.latitude,
-        longitude: country.longitude,
-        flagPngSrc: country.flagPngSrc,
-        flagWebpSrc: country.flagWebpSrc
-      })
-      expect(parse).toHaveBeenCalled()
+      await importOne(bigQueryCountry)
       expect(prismaMock.country.upsert).toHaveBeenCalledWith({
         where: {
-          id: country.id
+          id: prismaCountry.id
         },
-        create: country,
-        update: country
+        create: prismaCountry,
+        update: prismaCountry
       })
     })
   })
@@ -91,28 +93,25 @@ describe('bigquery/importers/countries', () => {
       prismaMock.country.createMany.mockImplementation()
       prismaMock.country.findMany.mockResolvedValue([])
       prismaMock.continent.findMany.mockResolvedValue([])
+      prismaMock.continent.create.mockResolvedValue({
+        id: 'Europe'
+      } as unknown as Continent)
       await importCountries()
-      await importMany([
-        {
-          shortName: country.id,
-          country_population: country.population,
-          latitude: country.latitude,
-          longitude: country.longitude,
-          flagPngSrc: country.flagPngSrc,
-          flagWebpSrc: country.flagWebpSrc
-        },
-        {
-          shortName: country.id,
-          country_population: country.population,
-          latitude: country.latitude,
-          longitude: country.longitude,
-          flagPngSrc: country.flagPngSrc,
-          flagWebpSrc: country.flagWebpSrc
+      await importMany([bigQueryCountry, bigQueryCountry])
+      expect(prismaMock.continent.create).toHaveBeenCalledWith({
+        data: {
+          id: 'Europe',
+          name: {
+            create: {
+              value: 'Europe',
+              languageId: '529',
+              primary: true
+            }
+          }
         }
-      ])
-      expect(parseMany).toHaveBeenCalled()
+      })
       expect(prismaMock.country.createMany).toHaveBeenCalledWith({
-        data: [country, country],
+        data: [prismaCountry, prismaCountry],
         skipDuplicates: true
       })
     })

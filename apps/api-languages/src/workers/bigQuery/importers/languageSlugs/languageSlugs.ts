@@ -1,9 +1,13 @@
+import { Logger } from 'pino'
+
+import { Prisma } from '.prisma/api-languages-client'
+
 import { languageSlugs } from '../../../../__generated__/languageSlugs'
 import { prisma } from '../../../../lib/prisma'
 import { slugify } from '../../../../lib/slugify'
 import { convertToSlug } from '../../../../lib/slugify/slugify'
 
-export async function importLanguageSlugs(): Promise<void> {
+export async function importLanguageSlugs(logger?: Logger): Promise<void> {
   const emptyExistingSlugs = await prisma.language.findFirst({
     where: {
       slug: 'english'
@@ -12,7 +16,7 @@ export async function importLanguageSlugs(): Promise<void> {
 
   // import slugs from AEM
   if (emptyExistingSlugs == null) {
-    console.log('importing AEM language slugs')
+    logger?.info('importing AEM language slugs')
     for (const key of Object.keys(languageSlugs)) {
       try {
         const slug = languageSlugs[key]
@@ -25,12 +29,22 @@ export async function importLanguageSlugs(): Promise<void> {
           }
         })
       } catch (error) {
-        console.error(`Error updating slug for language ${key}`)
+        if (
+          error instanceof Prisma.PrismaClientKnownRequestError &&
+          error.code === 'P2025' // Record to update not found
+        ) {
+          logger?.error(
+            { languageId: key, slug: languageSlugs[key] },
+            'cannot update stored slug for language'
+          )
+        } else {
+          throw error
+        }
       }
     }
-    console.log('finished importing AEM language slugs')
+    logger?.info('finished importing AEM language slugs')
   } else {
-    console.log('no AEM language slugs to import')
+    logger?.info('no AEM language slugs to import')
   }
 
   const emptySlugs = await prisma.language.findMany({
@@ -41,11 +55,11 @@ export async function importLanguageSlugs(): Promise<void> {
   })
 
   if (emptySlugs.length === 0) {
-    console.log('no named empty language slugs to generate')
+    logger?.info('no named empty language slugs to generate')
     return
   }
 
-  console.log('generating new language slugs')
+  logger?.info('generating new language slugs')
 
   const results = await prisma.language.findMany({
     where: {
@@ -93,9 +107,19 @@ export async function importLanguageSlugs(): Promise<void> {
         }
       })
     } catch (error) {
-      console.error(`Error updating slug for language ${languageId}`)
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2025' // Record to update not found
+      ) {
+        logger?.error(
+          { languageId, slug: newLanguageSlugs[languageId] },
+          'cannot update slug for language'
+        )
+      } else {
+        throw error
+      }
     }
   }
 
-  console.log('finished generating new language slugs')
+  logger?.info('finished generating new language slugs')
 }

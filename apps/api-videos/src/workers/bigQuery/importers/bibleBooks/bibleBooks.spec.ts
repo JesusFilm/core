@@ -13,7 +13,7 @@ jest.mock('../../importer', () => ({
   parseMany: jest.requireActual('../../importer').parseMany
 }))
 
-describe('bigquery/importers/bibleBooks', () => {
+describe('bigQuery/importers/bibleBooks', () => {
   afterEach(() => {
     setBibleBookIds([])
   })

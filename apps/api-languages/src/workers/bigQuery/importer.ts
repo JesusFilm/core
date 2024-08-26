@@ -1,8 +1,11 @@
 import { BigQuery, Job, RowMetadata } from '@google-cloud/bigquery'
 import get from 'lodash/get'
-import { ZodSchema } from 'zod'
+import { Logger } from 'pino'
+import { ZodSchema, z } from 'zod'
 
 import { prisma } from '../../lib/prisma'
+
+let logger: Logger | undefined
 
 export interface BigQueryRowError {
   bigQueryTableName: string
@@ -62,11 +65,13 @@ export async function* getRowsFromTable(
   do {
     if (results.data.length === 0)
       results = await getQueryResults(job, results.pageToken)
-    if (singleRow) {
-      yield results.data.shift()
-    } else {
-      yield results.data
-      results.data = []
+    if (results.data.length > 0) {
+      if (singleRow) {
+        yield results.data.shift()
+      } else {
+        yield results.data
+        results.data = []
+      }
     }
   } while (results.data.length > 0 || results.pageToken != null)
 }
@@ -96,7 +101,10 @@ export async function getCurrentTimeStamp(): Promise<string> {
   return result[0].f0_.value
 }
 
-export function parse<T>(schema: ZodSchema, row: unknown): T {
+export function parse<T extends ZodSchema>(
+  schema: T,
+  row: unknown
+): z.infer<T> {
   const parser = schema.safeParse(row)
   if (!parser.success) {
     throw new Error(
@@ -108,10 +116,10 @@ export function parse<T>(schema: ZodSchema, row: unknown): T {
   return parser.data
 }
 
-export function parseMany<T>(
-  schema: ZodSchema,
+export function parseMany<T extends ZodSchema>(
+  schema: T,
   rows: unknown[]
-): { data: T[]; inValidRowIds: string[] } {
+): { data: Array<z.infer<T>>; inValidRowIds: string[] } {
   const validRows: T[] = []
   const inValidRowIds: string[] = []
   for (const row of rows) {
@@ -120,7 +128,7 @@ export function parseMany<T>(
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       validRows.push(data.data)
     } else {
-      console.log(data.error)
+      logger?.error(data.error)
       inValidRowIds.push(get(row, 'id') ?? 'unknownId')
     }
   }
@@ -131,8 +139,17 @@ export async function processTable(
   bigQueryTableName: string,
   importOne: (row: unknown) => Promise<void>,
   importMany: (rows: unknown[]) => Promise<void>,
-  hasUpdatedAt: boolean
+  hasUpdatedAt: boolean,
+  parentLogger?: Logger
 ): Promise<void> {
+  logger = parentLogger?.child({
+    table: bigQueryTableName
+      .split('.')
+      .at(-1)
+      ?.replace('core_', '')
+      .replace('_arclight_data', '')
+  })
+  logger?.info('table import started')
   const errors: BigQueryRowError[] = []
   const importTime = await prisma.importTimes.findUnique({
     where: { modelName: bigQueryTableName }
@@ -158,7 +175,6 @@ export async function processTable(
     }
   } else {
     let page = 0
-    console.log('mass importing', bigQueryTableName)
     for await (const rows of getRowsFromTable(
       bigQueryTableName,
       undefined,
@@ -167,10 +183,10 @@ export async function processTable(
     )) {
       try {
         page++
-        console.log('importing', rows.length, 'page', page, bigQueryTableName)
+        logger?.info({ page, rows: rows.length }, 'importing page')
         await importMany(rows as unknown[])
       } catch (error) {
-        console.log('error', error)
+        logger?.error(error)
       }
     }
   }
@@ -183,5 +199,5 @@ export async function processTable(
     update: { lastImport: updateTime }
   })
 
-  console.log(`finished processing ${bigQueryTableName}`, errors)
+  logger?.info({ errors }, 'table import finished')
 }

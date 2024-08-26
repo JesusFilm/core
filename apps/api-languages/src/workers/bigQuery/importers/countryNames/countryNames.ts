@@ -1,74 +1,70 @@
 import omit from 'lodash/omit'
+import { Logger } from 'pino'
 import { z } from 'zod'
-
-import { Prisma } from '.prisma/api-languages-client'
 
 import { prisma } from '../../../../lib/prisma'
 import { parse, parseMany, processTable } from '../../importer'
+import { getCountryIds } from '../countries'
+import { getLanguageIds } from '../languages'
 
 const countryNameSchema = z
   .object({
     languageId: z.number().transform(String),
     shortName: z.string(),
-    value: z.string()
+    value: z.string().nullable()
   })
   .transform((value) => ({
     ...omit(value, ['shortName']),
     countryId: value.shortName,
-    primary: value.languageId === '529'
+    primary: value.languageId === '529',
+    value: value.value === null ? '' : value.value
   }))
 
-const bigQueryTableName =
-  'jfp-data-warehouse.jfp_mmdb_prod.core_countryNames_arclight_data'
-
-let existingLanguageIds: string[]
-let existingCountryIds: string[]
-
-export async function importCountryNames(
-  languageIds: string[],
-  countryIds: string[]
-): Promise<void> {
-  existingLanguageIds = languageIds
-  existingCountryIds = countryIds
-
-  await processTable(bigQueryTableName, importOne, importMany, true)
+export async function importCountryNames(logger?: Logger): Promise<void> {
+  await processTable(
+    'jfp-data-warehouse.jfp_mmdb_prod.core_countryNames_arclight_data',
+    importOne,
+    importMany,
+    true,
+    logger
+  )
 }
 
 export async function importOne(row: unknown): Promise<void> {
-  const data = parse<Prisma.CountryNameUncheckedCreateInput>(
-    countryNameSchema,
-    row
-  )
-  if (!existingCountryIds.includes(data.countryId))
-    throw new Error(`Country with id ${data.countryId} not found`)
+  const countryName = parse(countryNameSchema, row)
+  if (!getCountryIds().includes(countryName.countryId))
+    throw new Error(`Country with id ${countryName.countryId} not found`)
 
-  if (!existingLanguageIds.includes(data.languageId))
-    throw new Error(`Language with id ${data.languageId} not found`)
+  if (getLanguageIds().includes(countryName.languageId) === false)
+    throw new Error(`Language with id ${countryName.languageId} not found`)
 
   await prisma.countryName.upsert({
     where: {
       languageId_countryId: {
-        languageId: data.languageId,
-        countryId: data.countryId
+        languageId: countryName.languageId,
+        countryId: countryName.countryId
       }
     },
-    update: data,
-    create: data
+    update: countryName,
+    create: countryName
   })
 }
 
 export async function importMany(rows: unknown[]): Promise<void> {
-  const { data, inValidRowIds } =
-    parseMany<Prisma.CountryNameUncheckedCreateInput>(countryNameSchema, rows)
+  const { data: countryNames, inValidRowIds } = parseMany(
+    countryNameSchema,
+    rows
+  )
+
+  if (countryNames.length !== rows.length)
+    throw new Error(`some rows do not match schema: ${inValidRowIds.join(',')}`)
+
   await prisma.countryName.createMany({
-    data: data.filter(
+    data: countryNames.filter(
       ({ countryId, languageId }) =>
-        existingCountryIds.includes(countryId) &&
-        existingLanguageIds.includes(languageId)
+        getCountryIds().includes(countryId) &&
+        getLanguageIds().includes(languageId)
     ),
     skipDuplicates: true
   })
-  if (data.length !== rows.length) {
-    throw new Error(`some rows do not match schema: ${inValidRowIds.join(',')}`)
-  }
 }

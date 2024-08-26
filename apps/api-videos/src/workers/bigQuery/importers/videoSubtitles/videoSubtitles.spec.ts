@@ -17,7 +17,7 @@ jest.mock('../videos', () => ({
   getVideoIds: jest.fn().mockReturnValue(['mockVideoId', 'mockVideoId1'])
 }))
 
-describe('bigquery/importers/videoSubtitles', () => {
+describe('bigQuery/importers/videoSubtitles', () => {
   describe('importVideoSubtitles', () => {
     it('should import videoSubtitles', async () => {
       await importVideoSubtitles()

@@ -21,7 +21,7 @@ jest.mock('../bibleBooks', () => ({
   getBibleBookIds: jest.fn().mockReturnValue(['1'])
 }))
 
-describe('bigquery/importers/bibleCitations', () => {
+describe('bigQuery/importers/bibleCitations', () => {
   describe('importBibleCitations', () => {
     it('should import bibleCitations', async () => {
       await importBibleCitations()
