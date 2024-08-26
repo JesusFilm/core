@@ -47,8 +47,8 @@ export async function importMany(rows: unknown[]): Promise<void> {
     throw new Error(`some rows do not match schema: ${inValidRowIds.join(',')}`)
 
   await prisma.audioPreview.createMany({
-    data: audioPreviews.filter(
-      ({ languageId }) => getLanguageIds().includes(languageId)
+    data: audioPreviews.filter(({ languageId }) =>
+      getLanguageIds().includes(languageId)
     ),
     skipDuplicates: true
   })
