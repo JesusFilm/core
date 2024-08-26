@@ -47,12 +47,18 @@ describe('Footer', () => {
 
     expect(screen.getByText('Journey Appearance')).toBeInTheDocument()
 
-    await waitFor(() => expect(screen.getByRole('button', { name: 'Author details'})).toBeInTheDocument())
+    await waitFor(() =>
+      expect(
+        screen.getByRole('button', { name: 'Author details' })
+      ).toBeInTheDocument()
+    )
 
-    const details = await waitFor(() => 
-      screen.getByRole('button', { name: 'Author details' }))
-    const chat = await waitFor(() => 
-      screen.getByRole('button', { name: 'Chat widget' }))
+    const details = await waitFor(() =>
+      screen.getByRole('button', { name: 'Author details' })
+    )
+    const chat = await waitFor(() =>
+      screen.getByRole('button', { name: 'Chat widget' })
+    )
 
     expect(details).toBeInTheDocument()
     expect(chat).toBeInTheDocument()
