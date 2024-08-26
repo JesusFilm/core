@@ -58,10 +58,6 @@ export const Complete = {
     journeyId: '1',
     enableIconSelect: true,
     disableSelection: false
-  },
-  play: async () => {
-    const button = screen.getByRole('button', { name: 'Complete Option' })
-    await userEvent.click(button)
   }
 }
 
@@ -81,8 +77,6 @@ export const Icons = {
     disableSelection: false
   },
   play: async () => {
-    const accordion = screen.getByRole('button', { name: 'Icons' })
-    await userEvent.click(accordion)
     const select = screen.getByText('TikTok')
     await userEvent.click(select)
   }
