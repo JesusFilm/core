@@ -5,8 +5,10 @@ import { ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
+import MessageTyping from '@core/shared/ui/icons/MessageTyping'
 
 import { MessagePlatform } from '../../../../../../../../__generated__/globalTypes'
+import { Accordion } from '../../Properties/Accordion'
 
 import { ChatOption } from './ChatOption'
 
@@ -33,8 +35,13 @@ export function Chat(): ReactElement {
   )
 
   return (
-    <Box data-testid="Chat">
-      <ChatOption
+    <Accordion
+        id="chat platforms"
+        icon={<MessageTyping/>}
+        name={t('Chat widget')}
+      >
+      <Box data-testid="Chat">
+        <ChatOption
         title={t('Facebook Messenger')}
         chatButton={facebook}
         platform={MessagePlatform.facebook}
@@ -42,7 +49,7 @@ export function Chat(): ReactElement {
         journeyId={journey?.id}
         disableSelection={maxSelection}
       />
-      <ChatOption
+        <ChatOption
         chatButton={whatsApp}
         title={t('WhatsApp')}
         platform={MessagePlatform.whatsApp}
@@ -50,7 +57,7 @@ export function Chat(): ReactElement {
         journeyId={journey?.id}
         disableSelection={maxSelection}
       />
-      <ChatOption
+        <ChatOption
         chatButton={telegram}
         title={t('Telegram')}
         platform={MessagePlatform.telegram}
@@ -58,7 +65,7 @@ export function Chat(): ReactElement {
         journeyId={journey?.id}
         disableSelection={maxSelection}
       />
-      <ChatOption
+        <ChatOption
         chatButton={custom}
         title={t('Custom')}
         active={custom != null}
@@ -66,7 +73,7 @@ export function Chat(): ReactElement {
         disableSelection={maxSelection}
         enableIconSelect
       />
-      <Box
+        <Box
         sx={{
           display: maxSelection ? 'flex' : 'none',
           alignItems: 'center',
@@ -75,11 +82,12 @@ export function Chat(): ReactElement {
           mt: 5
         }}
       >
-        <InformationCircleContainedIcon sx={{ mr: 3 }} />
-        <Typography variant="caption">
-          {t('You can add no more than two chat platforms')}
-        </Typography>
+          <InformationCircleContainedIcon sx={{ mr: 3 }} />
+          <Typography variant="caption">
+            {t('You can add no more than two chat platforms')}
+          </Typography>
+        </Box>
       </Box>
-    </Box>
+    </Accordion>
   )
 }
