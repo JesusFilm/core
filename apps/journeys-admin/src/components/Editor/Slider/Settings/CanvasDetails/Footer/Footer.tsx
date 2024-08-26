@@ -3,11 +3,8 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect } from 'react'
 
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
-import MessageTyping from '@core/shared/ui/icons/MessageTyping'
-import UserProfileCircleIcon from '@core/shared/ui/icons/UserProfileCircle'
 
 import { Drawer } from '../../Drawer'
-import { Accordion } from '../Properties/Accordion'
 
 const Host = dynamic(
   async () =>
@@ -45,20 +42,8 @@ export function Footer(): ReactElement {
 
   return (
     <Drawer title={t('Journey Appearance')} onClose={onClose}>
-      <Accordion
-        id="author details"
-        icon={<UserProfileCircleIcon />}
-        name={t('Author details')}
-      >
-        <Host />
-      </Accordion>
-      <Accordion
-        id="chat platforms"
-        icon={<MessageTyping />}
-        name={t('Chat widget')}
-      >
-        <Chat />
-      </Accordion>
+      <Host />
+      <Chat />
     </Drawer>
   )
 }
