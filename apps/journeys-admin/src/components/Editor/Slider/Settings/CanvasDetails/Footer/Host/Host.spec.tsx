@@ -1,6 +1,7 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
@@ -126,7 +127,7 @@ describe('Host', () => {
   }
 
   it('should navigate to HostList', async () => {
-    const { getByRole, getByTestId } = render(
+    render(
       <MockedProvider mocks={[getUserTeamMock, getAllTeamHosts]}>
         <ThemeProvider>
           <JourneyProvider
@@ -135,20 +136,24 @@ describe('Host', () => {
               variant: 'admin'
             }}
           >
-            <Host />
+            <EditorProvider>
+              <Host />
+            </EditorProvider>
           </JourneyProvider>
         </ThemeProvider>
       </MockedProvider>
     )
 
+    fireEvent.click(screen.getByRole('button', { name: 'Author details' }))
+
     await waitFor(() => {
-      expect(getByRole('button', { name: 'Select a Host' })).not.toBeDisabled()
+      expect(screen.getByRole('button', { name: 'Select a Host' })).not.toBeDisabled()
     })
 
-    fireEvent.click(getByRole('button', { name: 'Select a Host' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Select a Host' }))
 
     await waitFor(() => {
-      expect(getByTestId('HostList')).toBeInTheDocument()
+      expect(screen.getByTestId('HostList')).toBeInTheDocument()
     })
   })
 
@@ -162,11 +167,15 @@ describe('Host', () => {
               variant: 'admin'
             }}
           >
-            <Host />
+            <EditorProvider>
+              <Host />
+            </EditorProvider>
           </JourneyProvider>
         </ThemeProvider>
       </MockedProvider>
     )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Author details' }))
 
     await waitFor(() => {
       expect(getByRole('button', { name: 'Select a Host' })).not.toBeDisabled()
@@ -195,11 +204,15 @@ describe('Host', () => {
               variant: 'admin'
             }}
           >
-            <Host />
+            <EditorProvider>
+              <Host />
+            </EditorProvider>
           </JourneyProvider>
         </ThemeProvider>
       </MockedProvider>
     )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Author details' }))
 
     await waitFor(() => {
       expect(getByRole('button', { name: 'Select a Host' })).not.toBeDisabled()

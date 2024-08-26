@@ -1,8 +1,10 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
+import { screen , userEvent } from '@storybook/testing-library'
 import { ComponentProps } from 'react'
 
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
@@ -157,9 +159,11 @@ const Template: StoryObj<
     <MockedProvider mocks={mocks}>
       <ThemeProvider>
         <JourneyProvider value={{ ...args, variant: 'admin' }}>
-          <Box sx={{ width: DRAWER_WIDTH }}>
-            <Host />
-          </Box>
+          <EditorProvider>
+            <Box sx={{ width: DRAWER_WIDTH }}>
+              <Host />
+            </Box>
+          </EditorProvider>
         </JourneyProvider>
       </ThemeProvider>
     </MockedProvider>
@@ -172,6 +176,17 @@ export const Default = {
   args: {
     mocks: [userMock, getUserTeamMock, getTeamHostsMock],
     journey: { ...journey, host: null }
+  }
+}
+
+export const Open = {
+  ...Template,
+  args: {
+    mocks: [userMock, getUserTeamMock, getTeamHostsMock],
+    journey: { ...journey, host: null }
+  },
+  play: async () => {
+    await userEvent.click(screen.getByRole('button', { name: 'Author details' }))
   }
 }
 

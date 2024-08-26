@@ -1,9 +1,11 @@
 import { gql, useLazyQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import dynamic from 'next/dynamic'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import UserProfileCircleIcon from '@core/shared/ui/icons/UserProfileCircle'
 
 import {
   GetAllTeamHosts,
@@ -12,6 +14,7 @@ import {
 import { UserTeamRole } from '../../../../../../../../__generated__/globalTypes'
 import { useCurrentUserLazyQuery } from '../../../../../../../libs/useCurrentUserLazyQuery'
 import { useUserTeamsAndInvitesQuery } from '../../../../../../../libs/useUserTeamsAndInvitesQuery'
+import { Accordion } from '../../Properties/Accordion'
 
 import { HostSelection } from './HostSelection'
 
@@ -57,6 +60,7 @@ export function Host(): ReactElement {
   const [openHostForm, setOpenHostForm] = useState(false)
   const [openHostInfo, setOpenHostInfo] = useState(false)
   const { journey } = useJourney()
+  const { t } = useTranslation('apps-journeys-admin')
   // Get all team members of journey team, check if user in team
   // TODO: Replace with CASL authorisation check
   const { loadUser, data: user } = useCurrentUserLazyQuery()
@@ -118,25 +122,31 @@ export function Host(): ReactElement {
   }
 
   return (
-    <Box data-testid="Host">
-      {openHostSelection && (
-        <HostSelection
+    <Accordion
+        id="author details"
+        icon={<UserProfileCircleIcon />}
+        name={t('Author details')}
+      >
+      <Box data-testid="Host">
+        {openHostSelection && (
+          <HostSelection
           data={data}
           userInTeam={userInTeam}
           handleSelection={handleSelection}
         />
       )}
-      {openHostList && (
-        <HostList teamHosts={teamHosts} handleSelection={handleSelection} />
+        {openHostList && (
+          <HostList teamHosts={teamHosts} handleSelection={handleSelection} />
       )}
 
-      {openHostInfo && <HostInfo handleSelection={handleSelection} />}
-      {openHostForm && (
-        <HostForm
+        {openHostInfo && <HostInfo handleSelection={handleSelection} />}
+        {openHostForm && (
+          <HostForm
           handleSelection={handleSelection}
           getAllTeamHostsQuery={getAllTeamHosts}
         />
       )}
-    </Box>
+      </Box>
+    </Accordion>
   )
 }
