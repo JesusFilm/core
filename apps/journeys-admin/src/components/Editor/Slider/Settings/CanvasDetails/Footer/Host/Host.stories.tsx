@@ -1,7 +1,7 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
-import { screen , userEvent } from '@storybook/testing-library'
+import { screen, userEvent } from '@storybook/testing-library'
 import { ComponentProps } from 'react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -186,7 +186,9 @@ export const Open = {
     journey: { ...journey, host: null }
   },
   play: async () => {
-    await userEvent.click(screen.getByRole('button', { name: 'Author details' }))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Author details' })
+    )
   }
 }
 

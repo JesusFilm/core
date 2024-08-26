@@ -30,9 +30,10 @@ const Template: StoryObj<typeof Chat> = {
 
 export const Default = { ...Template }
 
-export const Open = { ...Template,
+export const Open = {
+  ...Template,
   play: async () => {
-    const button = screen.getByRole('button', { name: 'Chat widget'})
+    const button = screen.getByRole('button', { name: 'Chat widget' })
     await userEvent.click(button)
   }
 }

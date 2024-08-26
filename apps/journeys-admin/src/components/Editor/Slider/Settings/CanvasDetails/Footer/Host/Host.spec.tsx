@@ -147,7 +147,9 @@ describe('Host', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Author details' }))
 
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: 'Select a Host' })).not.toBeDisabled()
+      expect(
+        screen.getByRole('button', { name: 'Select a Host' })
+      ).not.toBeDisabled()
     })
 
     fireEvent.click(screen.getByRole('button', { name: 'Select a Host' }))

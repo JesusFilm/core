@@ -123,29 +123,29 @@ export function Host(): ReactElement {
 
   return (
     <Accordion
-        id="author details"
-        icon={<UserProfileCircleIcon />}
-        name={t('Author details')}
-      >
+      id="author details"
+      icon={<UserProfileCircleIcon />}
+      name={t('Author details')}
+    >
       <Box data-testid="Host">
         {openHostSelection && (
           <HostSelection
-          data={data}
-          userInTeam={userInTeam}
-          handleSelection={handleSelection}
-        />
-      )}
+            data={data}
+            userInTeam={userInTeam}
+            handleSelection={handleSelection}
+          />
+        )}
         {openHostList && (
           <HostList teamHosts={teamHosts} handleSelection={handleSelection} />
-      )}
+        )}
 
         {openHostInfo && <HostInfo handleSelection={handleSelection} />}
         {openHostForm && (
           <HostForm
-          handleSelection={handleSelection}
-          getAllTeamHostsQuery={getAllTeamHosts}
-        />
-      )}
+            handleSelection={handleSelection}
+            getAllTeamHostsQuery={getAllTeamHosts}
+          />
+        )}
       </Box>
     </Accordion>
   )

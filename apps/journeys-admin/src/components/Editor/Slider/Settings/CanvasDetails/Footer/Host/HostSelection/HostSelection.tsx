@@ -59,19 +59,19 @@ export function HostSelection({
               handleSelection('list')
             }}
           />
-      )}
+        )}
         {!userInTeam && journey?.team != null && (
-        <Stack direction="row" alignItems="center" gap={3} sx={{ mt: 4 }}>
-          <AlertCircleIcon />
-          <Typography variant="subtitle2">
-            {data?.userTeams.length === 0
-              ? t('Cannot edit hosts for this old journey')
-              : t('Only {{ teamName }} members can edit this', {
-                  teamName: journey.team.title
-                })}
-          </Typography>
-        </Stack>
-      )}
+          <Stack direction="row" alignItems="center" gap={3} sx={{ mt: 4 }}>
+            <AlertCircleIcon />
+            <Typography variant="subtitle2">
+              {data?.userTeams.length === 0
+                ? t('Cannot edit hosts for this old journey')
+                : t('Only {{ teamName }} members can edit this', {
+                    teamName: journey.team.title
+                  })}
+            </Typography>
+          </Stack>
+        )}
       </Stack>
     </Box>
   )
