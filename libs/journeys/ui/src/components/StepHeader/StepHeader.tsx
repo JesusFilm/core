@@ -32,7 +32,7 @@ export function StepHeader({
         ...sx
       }}
       onClick={(e) => {
-        if (onHeaderClick != null && journey?.website === true) {
+        if (onHeaderClick != null) {
           e.stopPropagation()
           onHeaderClick()
         }

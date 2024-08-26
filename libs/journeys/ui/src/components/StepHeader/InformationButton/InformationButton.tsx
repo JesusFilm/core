@@ -32,7 +32,7 @@ export function InformationButton(): ReactElement {
   }
   return (
     <>
-      {(variant === 'admin' || router.query.noi == null) && (
+      {router.query.noi == null && (
         <IconButton
           data-testid="InformationButton"
           id="more-info"

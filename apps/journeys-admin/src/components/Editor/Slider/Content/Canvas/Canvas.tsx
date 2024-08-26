@@ -271,7 +271,7 @@ export function Canvas(): ReactElement {
                                 cursor: 'pointer',
                                 minHeight: '42px'
                               }}
-                              onHeaderClick={handleFooterClick}
+                              onHeaderClick={journey?.website === true ? handleFooterClick : undefined}
                             />
                           </ThemeProvider>
                           <BlockRenderer
