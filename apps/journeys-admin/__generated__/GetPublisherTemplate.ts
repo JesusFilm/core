@@ -569,6 +569,14 @@ export interface GetPublisherTemplate_publisherTemplate {
   host: GetPublisherTemplate_publisherTemplate_host | null;
   team: GetPublisherTemplate_publisherTemplate_team | null;
   tags: GetPublisherTemplate_publisherTemplate_tags[];
+  website: boolean | null;
+  showShareButton: boolean | null;
+  showLikeButton: boolean | null;
+  showDislikeButton: boolean | null;
+  /**
+   * public title for viewers
+   */
+  displayTitle: string | null;
 }
 
 export interface GetPublisherTemplate {
