@@ -44,25 +44,6 @@ export function WebsiteToggle(): ReactElement {
         })
       }
     })
-
-    // await journeyUpdate({
-    //   variables: {
-    //     id: journey.id,
-    //     input: { website: !currentMode }
-    //   },
-    //   optimisticResponse: {
-    //     journeyUpdate: {
-    //       id: journey.id,
-    //       __typename: 'Journey',
-    //       title: journey.title,
-    //       description: journey.description,
-    //       strategySlug: journey.strategySlug,
-    //       language: journey.language,
-    //       tags: [],
-    //       website: !currentMode
-    //     }
-    //   }
-    // })
   }
 
   return (
@@ -70,6 +51,16 @@ export function WebsiteToggle(): ReactElement {
       value={journey?.website === true ? 'website' : 'journey'}
       exclusive
       onChange={handleChange}
+      fullWidth
+      sx={{
+        p: 4,
+        '& .MuiToggleButton-root': {
+          borderRadius: '8px',
+          '&.Mui-selected': {
+            color: 'primary.main'
+          }
+        }
+      }}
     >
       <ToggleButton value="journey">{t('Journey')}</ToggleButton>
       <ToggleButton value="website">{t('Website')}</ToggleButton>
