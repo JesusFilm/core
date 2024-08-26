@@ -16,7 +16,7 @@ export function StepHeader({
   onHeaderClick,
   sx
 }: StepHeaderProps): ReactElement {
-  const { journey, variant } = useJourney()
+  const { journey } = useJourney()
 
   return (
     <Stack
