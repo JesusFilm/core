@@ -11,7 +11,7 @@ import {
   GridPaginationModel,
   GridRowParams,
   GridRowsProp,
-  // GridToolbar,
+  GridToolbar,
   MuiEvent,
   getGridStringOperators
 } from '@mui/x-data-grid'
@@ -38,7 +38,7 @@ const GET_VIDEOS_AND_COUNT = graphql(`
         value
       }
     }
-    videosCount: videos(where: $where) {
+    videosCount: videos(limit: 99999, where: $where) {
       id
     }
   }
@@ -74,6 +74,7 @@ export function VideoList(): ReactElement {
       showSnippet: columnVisibilityModel.description ?? true,
       where: getVideosWhereArgs
     }
+    fetchPolicy: 'no-cache'
   })
 
   const rows: GridRowsProp = data.videos.map((video) => {
@@ -135,7 +136,6 @@ export function VideoList(): ReactElement {
   }
 
   function handleFilterModelChange(model: GridFilterModel): void {
-    console.log(model)
     const where: VideosFilter = {}
     model.items.forEach((item) => {
       if (
@@ -153,6 +153,10 @@ export function VideoList(): ReactElement {
         where.title = item.value === '' ? null : item.value
     })
     setFilterModel(model)
+    setPaginationModel({
+      pageSize: videosLimit,
+      page: 0
+    })
     setGetVideosWhereArgs(where)
   }
 
@@ -168,9 +172,9 @@ export function VideoList(): ReactElement {
         onPaginationModelChange={handleChangePage}
         rowCount={data.videosCount.length}
         onRowClick={handleClick}
-        // slots={{
-        //   toolbar: GridToolbar
-        // }}
+        slots={{
+          toolbar: GridToolbar
+        }}
         columnVisibilityModel={columnVisibilityModel}
         onColumnVisibilityModelChange={(newModel) =>
           setColumnVisibilityModel(newModel)
