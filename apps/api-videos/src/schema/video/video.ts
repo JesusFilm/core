@@ -214,7 +214,9 @@ const Video = builder.prismaObject('Video', {
 })
 
 builder.asEntity(Video, {
-  key: builder.selection<{ id: string }>('id'),
+  key: builder.selection<{ id: string; primaryLanguageId: string }>(
+    'id primaryLanguageId'
+  ),
   resolveReference: async ({ id }) =>
     await prisma.video.findUniqueOrThrow({ where: { id } })
 })
