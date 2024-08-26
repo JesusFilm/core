@@ -1,6 +1,8 @@
 import Box from '@mui/material/Box'
 import Popper from '@mui/material/Popper'
 import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, ReactNode } from 'react'
 import { useRefinementList } from 'react-instantsearch'
 
@@ -20,6 +22,8 @@ export function AlgoliaLanguageDropdown({
   id,
   anchorEl
 }: AlgoliaLanguageDropdownProps): ReactElement {
+  const { t } = useTranslation('apps-watch')
+
   const { data } = useLanguagesContinentsQuery()
   const languages = useSortLanguageContinents({
     languages: data?.languages ?? []
@@ -30,14 +34,14 @@ export function AlgoliaLanguageDropdown({
   })
 
   function ContinentRefinements(): ReactNode {
-    return (
+    return refinements.items.length > 0 ? (
       <>
         {Object.entries(languages).map(([continent, continentLanguages]) => {
           const items = refinements.items.filter((item) =>
             continentLanguages.some((language) => language === item.label)
           )
 
-          return (
+          return items.length > 0 ? (
             <RefinementGroup
               key={continent}
               title={continent}
@@ -46,9 +50,17 @@ export function AlgoliaLanguageDropdown({
                 items
               }}
             />
+          ) : (
+            <></>
           )
         })}
       </>
+    ) : (
+      <Typography>
+        {t(
+          `Sorry, there are no languages available for this search. Try removing some of your search criteria!`
+        )}
+      </Typography>
     )
   }
 
@@ -72,13 +84,7 @@ export function AlgoliaLanguageDropdown({
         boxShadow="0px 4px 4px 0px #00000040"
         sx={{ p: 8, bgcolor: 'background.paper', mt: 3 }}
       >
-        <Stack
-          direction={{ xs: 'column', sm: 'row' }}
-          color="text.primary"
-          sx={{
-            height: 445
-          }}
-        >
+        <Stack direction={{ xs: 'column', sm: 'row' }} color="text.primary">
           <ContinentRefinements />
         </Stack>
       </Box>

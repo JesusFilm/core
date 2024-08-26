@@ -1,3 +1,4 @@
+import { MockedProvider } from '@apollo/client/testing'
 import { expect } from '@storybook/jest'
 import type { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent, waitFor, within } from '@storybook/testing-library'
@@ -6,6 +7,7 @@ import type { ComponentProps } from 'react'
 import { watchConfig } from '@core/shared/ui/storybook'
 
 import { InstantSearchTestWrapper } from '../../libs/algolia/InstantSearchTestWrapper'
+import { getLanguagesContinentsMock } from '../../libs/useLanguagesContinentsQuery/useLanguagesContinentsQuery.mock'
 
 import { SearchBar } from './SearchBar'
 import {
@@ -24,7 +26,9 @@ const Template: StoryObj<ComponentProps<typeof SearchBar> & { query: string }> =
   {
     render: (args) => (
       <InstantSearchTestWrapper query={args.query}>
-        <SearchBar showLanguageButton={args.showLanguageButton} />
+        <MockedProvider mocks={[getLanguagesContinentsMock]}>
+          <SearchBar showLanguageButton={args.showLanguageButton} />
+        </MockedProvider>
       </InstantSearchTestWrapper>
     )
   }
@@ -79,6 +83,7 @@ export const Language = {
 export const NoLanguages = {
   ...Template,
   args: {
+    query: 'abcdefghijklmnopqrstuvwxyz',
     showLanguageButton: true
   },
   parameters: {
@@ -94,7 +99,7 @@ export const NoLanguages = {
     await userEvent.click(canvas.getByTestId('LanguageSelect'))
     expect(
       screen.getByText(
-        'Sorry, there are no languages available for this search.'
+        'Sorry, there are no languages available for this search. Try removing some of your search criteria!'
       )
     )
   }

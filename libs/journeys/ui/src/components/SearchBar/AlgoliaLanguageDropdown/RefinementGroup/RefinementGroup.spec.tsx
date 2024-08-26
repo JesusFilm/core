@@ -31,7 +31,7 @@ describe('RefinementGroup', () => {
     expect(refine).toHaveBeenCalled()
   })
 
-  it('should display message when no facets are available', () => {
+  it('should render header but no options when refinements list is empty', () => {
     const emptyRefinementList = {
       items: [],
       refine
@@ -39,10 +39,7 @@ describe('RefinementGroup', () => {
     render(
       <RefinementGroup title="Languages" refinement={emptyRefinementList} />
     )
-    expect(
-      screen.getByText(
-        'Sorry, there are no languages available for this search. Try a broader search!'
-      )
-    ).toBeInTheDocument()
+    expect(screen.getByText('Languages')).toBeInTheDocument()
+    expect(screen.queryByRole('label')).not.toBeInTheDocument()
   })
 })

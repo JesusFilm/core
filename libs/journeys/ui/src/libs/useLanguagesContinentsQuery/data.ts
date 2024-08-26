@@ -17,7 +17,7 @@ export const languagesContinents: Languages[] = [
           __typename: 'Country',
           continent: {
             __typename: 'Continent',
-            id: 'NorthAmerica'
+            id: 'North America'
           }
         }
       }
@@ -139,7 +139,7 @@ export const languagesContinents: Languages[] = [
           __typename: 'Country',
           continent: {
             __typename: 'Continent',
-            id: 'SouthAmerica'
+            id: 'South America'
           }
         }
       }
@@ -173,6 +173,116 @@ export const languagesContinents: Languages[] = [
     name: [
       {
         value: 'Japanese',
+        __typename: 'LanguageName'
+      }
+    ],
+    countryLanguages: [
+      {
+        __typename: 'CountryLanguage',
+        country: {
+          __typename: 'Country',
+          continent: {
+            __typename: 'Continent',
+            id: 'Asia'
+          }
+        }
+      }
+    ]
+  },
+  {
+    __typename: 'Language',
+    id: '21028',
+    name: [
+      {
+        value: 'Spanish, Latin American',
+        __typename: 'LanguageName'
+      }
+    ],
+    countryLanguages: [
+      {
+        __typename: 'CountryLanguage',
+        country: {
+          __typename: 'Country',
+          continent: {
+            __typename: 'Continent',
+            id: 'South America'
+          }
+        }
+      }
+    ]
+  },
+  {
+    __typename: 'Language',
+    id: '20601',
+    name: [
+      {
+        value: 'Cantonese',
+        __typename: 'LanguageName'
+      }
+    ],
+    countryLanguages: [
+      {
+        __typename: 'CountryLanguage',
+        country: {
+          __typename: 'Country',
+          continent: {
+            __typename: 'Continent',
+            id: 'Asia'
+          }
+        }
+      }
+    ]
+  },
+  {
+    __typename: 'Language',
+    id: '21046',
+    name: [
+      {
+        value: 'Spanish, Castilian',
+        __typename: 'LanguageName'
+      }
+    ],
+    countryLanguages: [
+      {
+        __typename: 'CountryLanguage',
+        country: {
+          __typename: 'Country',
+          continent: {
+            __typename: 'Continent',
+            id: 'Europe'
+          }
+        }
+      }
+    ]
+  },
+  {
+    __typename: 'Language',
+    id: '21754',
+    name: [
+      {
+        value: 'Chinese, Simplified',
+        __typename: 'LanguageName'
+      }
+    ],
+    countryLanguages: [
+      {
+        __typename: 'CountryLanguage',
+        country: {
+          __typename: 'Country',
+          continent: {
+            __typename: 'Continent',
+            id: 'Asia'
+          }
+        }
+      }
+    ]
+  },
+  {
+    __typename: 'Language',
+    id: '21753',
+    name: [
+      {
+        value: 'Chinese, Traditional',
         __typename: 'LanguageName'
       }
     ],
