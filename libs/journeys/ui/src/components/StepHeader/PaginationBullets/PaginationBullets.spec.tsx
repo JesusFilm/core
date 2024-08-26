@@ -144,6 +144,8 @@ describe('PaginationBullets', () => {
   })
 
   it('renders placeholder bullets for admin', () => {
+    treeBlocksVar([])
+    blockHistoryVar([])
     render(
       <JourneyProvider value={{ variant: 'admin' }}>
         <PaginationBullets />
