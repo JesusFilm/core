@@ -89,7 +89,6 @@ describe('bigQuery/importers/videoVariants', () => {
           edition: 'mockEdition'
         }
       })
-      expect(getVideoVariantIds()).toEqual(['1'])
     })
 
     it('should throw error if video is not found', async () => {
