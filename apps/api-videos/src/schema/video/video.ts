@@ -178,9 +178,9 @@ const Video = builder.prismaObject('Video', {
 
         const journeysLanguageIdForBlock = (
           info.variableValues as {
-            representations: Array<{ primaryLanguageId: string }>
+            representations: Array<{ id: string; primaryLanguageId: string }>
           }
-        ).representations?.[0].primaryLanguageId
+        ).representations?.find(({ id }) => id === parent.id)?.primaryLanguageId
 
         if (
           info.variableValues.idType !== IdTypeShape.databaseId &&
