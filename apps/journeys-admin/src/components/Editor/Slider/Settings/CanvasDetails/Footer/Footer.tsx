@@ -11,6 +11,7 @@ import UserProfileCircleIcon from '@core/shared/ui/icons/UserProfileCircle'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
 import { Drawer } from '../../Drawer'
+import { WebsiteToggle } from '../WebsiteToggle'
 
 const HostTab = dynamic(
   async () =>
@@ -56,6 +57,7 @@ export function Footer(): ReactElement {
 
   return (
     <Drawer title={t('Footer Properties')} onClose={onClose}>
+      <WebsiteToggle />
       <Tabs
         value={tabValue}
         onChange={handleTabChange}
