@@ -33,7 +33,7 @@ export const Default = { ...Template }
 export const Open = {
   ...Template,
   play: async () => {
-    const button = screen.getByRole('button', { name: 'Chat widget' })
+    const button = screen.getByRole('button', { name: 'Chat Widget' })
     await userEvent.click(button)
   }
 }

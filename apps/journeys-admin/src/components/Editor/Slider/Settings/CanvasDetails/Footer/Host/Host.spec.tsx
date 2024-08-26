@@ -144,7 +144,7 @@ describe('Host', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(screen.getByRole('button', { name: 'Author details' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Author Details' }))
 
     await waitFor(() => {
       expect(
@@ -177,7 +177,7 @@ describe('Host', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(screen.getByRole('button', { name: 'Author details' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Author Details' }))
 
     await waitFor(() => {
       expect(getByRole('button', { name: 'Select a Host' })).not.toBeDisabled()
@@ -214,7 +214,7 @@ describe('Host', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(screen.getByRole('button', { name: 'Author details' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Author Details' }))
 
     await waitFor(() => {
       expect(getByRole('button', { name: 'Select a Host' })).not.toBeDisabled()

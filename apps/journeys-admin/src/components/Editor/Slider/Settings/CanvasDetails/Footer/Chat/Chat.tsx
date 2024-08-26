@@ -38,7 +38,7 @@ export function Chat(): ReactElement {
     <Accordion
       id="chat platforms"
       icon={<MessageTyping />}
-      name={t('Chat widget')}
+      name={t('Chat Widget')}
     >
       <Box data-testid="Chat">
         <ChatOption
