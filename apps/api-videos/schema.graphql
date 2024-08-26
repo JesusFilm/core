@@ -61,7 +61,7 @@ type Query {
 }
 
 type Video
-  @key(fields: "id")
+  @key(fields: "id primaryLanguageId")
   @shareable
 {
   bibleCitations: [BibleCitation!]!

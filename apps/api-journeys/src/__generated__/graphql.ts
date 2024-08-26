@@ -2176,6 +2176,7 @@ export type Query = {
   userTeamInvites: Array<UserTeamInvite>;
   userTeams: Array<UserTeam>;
   video: Video;
+  videoVariants: Array<VideoVariant>;
   videos: Array<Video>;
   /** Get a single visitor */
   visitor: Visitor;
@@ -3414,6 +3415,7 @@ export type VideoCompleteEventCreateInput = {
 
 export type VideoDescription = {
   __typename?: 'VideoDescription';
+  id: Scalars['ID']['output'];
   language: Language;
   primary: Scalars['Boolean']['output'];
   value: Scalars['String']['output'];
@@ -3452,6 +3454,7 @@ export type VideoExpandEventCreateInput = {
 
 export type VideoImageAlt = {
   __typename?: 'VideoImageAlt';
+  id: Scalars['ID']['output'];
   language: Language;
   primary: Scalars['Boolean']['output'];
   value: Scalars['String']['output'];
@@ -3567,6 +3570,7 @@ export type VideoProgressEventCreateInput = {
 
 export type VideoSnippet = {
   __typename?: 'VideoSnippet';
+  id: Scalars['ID']['output'];
   language: Language;
   primary: Scalars['Boolean']['output'];
   value: Scalars['String']['output'];
@@ -3605,6 +3609,7 @@ export type VideoStartEventCreateInput = {
 
 export type VideoStudyQuestion = {
   __typename?: 'VideoStudyQuestion';
+  id: Scalars['ID']['output'];
   language: Language;
   primary: Scalars['Boolean']['output'];
   value: Scalars['String']['output'];
@@ -3615,12 +3620,14 @@ export type VideoSubtitle = {
   edition: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   languageId: Scalars['ID']['output'];
+  primary: Scalars['Boolean']['output'];
   srtSrc?: Maybe<Scalars['String']['output']>;
   vttSrc?: Maybe<Scalars['String']['output']>;
 };
 
 export type VideoTitle = {
   __typename?: 'VideoTitle';
+  id: Scalars['ID']['output'];
   language: Language;
   primary: Scalars['Boolean']['output'];
   value: Scalars['String']['output'];
@@ -3665,6 +3672,7 @@ export type VideoVariantSubtitleArgs = {
 
 export type VideoVariantDownload = {
   __typename?: 'VideoVariantDownload';
+  id: Scalars['ID']['output'];
   quality: VideoVariantDownloadQuality;
   size: Scalars['Float']['output'];
   url: Scalars['String']['output'];
@@ -3677,6 +3685,7 @@ export enum VideoVariantDownloadQuality {
 
 export type VideoVariantSubtitle = {
   __typename?: 'VideoVariantSubtitle';
+  id: Scalars['ID']['output'];
   language: Language;
   primary: Scalars['Boolean']['output'];
   value: Scalars['String']['output'];

@@ -178,9 +178,9 @@ const Video = builder.prismaObject('Video', {
 
         const journeysLanguageIdForBlock = (
           info.variableValues as {
-            representations: Array<{ primaryLanguageId: string }>
+            representations: Array<{ id: string; primaryLanguageId: string }>
           }
-        ).representations?.[0].primaryLanguageId
+        ).representations?.find(({ id }) => id === parent.id)?.primaryLanguageId
 
         if (
           info.variableValues.idType !== IdTypeShape.databaseId &&
@@ -214,7 +214,9 @@ const Video = builder.prismaObject('Video', {
 })
 
 builder.asEntity(Video, {
-  key: builder.selection<{ id: string }>('id'),
+  key: builder.selection<{ id: string; primaryLanguageId: string }>(
+    'id primaryLanguageId'
+  ),
   resolveReference: async ({ id }) =>
     await prisma.video.findUniqueOrThrow({ where: { id } })
 })

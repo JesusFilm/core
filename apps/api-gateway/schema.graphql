@@ -403,7 +403,7 @@ type ContinentName
 }
 
 type Country
-  @join__type(graph: LANGUAGES)
+  @join__type(graph: LANGUAGES, key: "id")
 {
   id: ID!
   population: Int
@@ -2120,6 +2120,7 @@ type Query
   keywords: [Keyword!]! @join__field(graph: VIDEOS)
   video(id: ID!, idType: IdType = databaseId): Video! @join__field(graph: VIDEOS)
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]! @join__field(graph: VIDEOS)
+  videoVariants: [VideoVariant!]! @join__field(graph: VIDEOS)
 }
 
 type RadioOptionBlock implements Block
@@ -3002,7 +3003,7 @@ input UserTeamUpdateInput
 
 type Video
   @join__type(graph: JOURNEYS, key: "id primaryLanguageId")
-  @join__type(graph: VIDEOS, key: "id")
+  @join__type(graph: VIDEOS, key: "id primaryLanguageId")
 {
   id: ID!
   primaryLanguageId: ID!
@@ -3349,6 +3350,7 @@ input VideoCompleteEventCreateInput
 type VideoDescription
   @join__type(graph: VIDEOS)
 {
+  id: ID!
   value: String!
   primary: Boolean!
   language: Language!
@@ -3404,6 +3406,7 @@ input VideoExpandEventCreateInput
 type VideoImageAlt
   @join__type(graph: VIDEOS)
 {
+  id: ID!
   value: String!
   primary: Boolean!
   language: Language!
@@ -3586,6 +3589,7 @@ input VideosFilter
 type VideoSnippet
   @join__type(graph: VIDEOS)
 {
+  id: ID!
   value: String!
   primary: Boolean!
   language: Language!
@@ -3641,6 +3645,7 @@ input VideoStartEventCreateInput
 type VideoStudyQuestion
   @join__type(graph: VIDEOS)
 {
+  id: ID!
   value: String!
   primary: Boolean!
   language: Language!
@@ -3651,6 +3656,7 @@ type VideoSubtitle
 {
   id: ID!
   languageId: ID!
+  primary: Boolean!
   edition: String!
   vttSrc: String
   srtSrc: String
@@ -3659,6 +3665,7 @@ type VideoSubtitle
 type VideoTitle
   @join__type(graph: VIDEOS)
 {
+  id: ID!
   value: String!
   primary: Boolean!
   language: Language!
@@ -3703,6 +3710,7 @@ type VideoVariant
 type VideoVariantDownload
   @join__type(graph: VIDEOS)
 {
+  id: ID!
   quality: VideoVariantDownloadQuality!
   size: Float!
   url: String!
@@ -3718,6 +3726,7 @@ enum VideoVariantDownloadQuality
 type VideoVariantSubtitle
   @join__type(graph: VIDEOS)
 {
+  id: ID!
   value: String!
   primary: Boolean!
   language: Language!
