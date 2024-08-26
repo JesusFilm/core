@@ -25,7 +25,7 @@ export async function importAudioPreviews(logger?: Logger): Promise<void> {
 
 export async function importOne(row: unknown): Promise<void> {
   const audioPreview = parse(audioPreviewSchema, row)
-  if (getLanguageIds().includes(audioPreview.languageId) === false)
+  if (!getLanguageIds().includes(audioPreview.languageId))
     throw new Error(`Language with id ${audioPreview.languageId} not found`)
 
   await prisma.audioPreview.upsert({
@@ -48,7 +48,7 @@ export async function importMany(rows: unknown[]): Promise<void> {
 
   await prisma.audioPreview.createMany({
     data: audioPreviews.filter(
-      ({ languageId }) => getLanguageIds().includes(languageId) === true
+      ({ languageId }) => getLanguageIds().includes(languageId)
     ),
     skipDuplicates: true
   })

@@ -35,7 +35,7 @@ export async function importOne(row: unknown): Promise<void> {
   if (!getCountryIds().includes(countryName.countryId))
     throw new Error(`Country with id ${countryName.countryId} not found`)
 
-  if (getLanguageIds().includes(countryName.languageId) === false)
+  if (!getLanguageIds().includes(countryName.languageId))
     throw new Error(`Language with id ${countryName.languageId} not found`)
 
   await prisma.countryName.upsert({

@@ -30,12 +30,12 @@ export async function importLanguageNames(logger?: Logger): Promise<void> {
 export async function importOne(row: unknown): Promise<void> {
   const languageName = parse(languageNameSchema, row)
 
-  if (getLanguageIds().includes(languageName.parentLanguageId) === false)
+  if (!getLanguageIds().includes(languageName.parentLanguageId))
     throw new Error(
       `Parent Language with id ${languageName.parentLanguageId} not found`
     )
 
-  if (getLanguageIds().includes(languageName.languageId) === false)
+  if (!getLanguageIds().includes(languageName.languageId))
     throw new Error(`Language with id ${languageName.languageId} not found`)
 
   await prisma.languageName.upsert({
@@ -62,7 +62,7 @@ export async function importMany(rows: unknown[]): Promise<void> {
   await prisma.languageName.createMany({
     data: languageNames.filter(
       ({ parentLanguageId, languageId }) =>
-        getLanguageIds().includes(parentLanguageId) === true &&
+        getLanguageIds().includes(parentLanguageId) &&
         getLanguageIds().includes(languageId)
     ),
     skipDuplicates: true
