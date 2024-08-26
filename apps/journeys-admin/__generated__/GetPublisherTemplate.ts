@@ -272,7 +272,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_TypographyBlock {
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_title {
-  __typename: "Translation";
+  __typename: "VideoTitle";
   value: string;
 }
 
@@ -541,6 +541,9 @@ export interface GetPublisherTemplate_publisherTemplate {
   __typename: "Journey";
   id: string;
   slug: string;
+  /**
+   * private title for creators
+   */
   title: string;
   description: string | null;
   status: JourneyStatus;
@@ -551,6 +554,9 @@ export interface GetPublisherTemplate_publisherTemplate {
   themeName: ThemeName;
   themeMode: ThemeMode;
   strategySlug: string | null;
+  /**
+   * title for seo and sharing
+   */
   seoTitle: string | null;
   seoDescription: string | null;
   template: boolean | null;
@@ -563,6 +569,14 @@ export interface GetPublisherTemplate_publisherTemplate {
   host: GetPublisherTemplate_publisherTemplate_host | null;
   team: GetPublisherTemplate_publisherTemplate_team | null;
   tags: GetPublisherTemplate_publisherTemplate_tags[];
+  website: boolean | null;
+  showShareButton: boolean | null;
+  showLikeButton: boolean | null;
+  showDislikeButton: boolean | null;
+  /**
+   * public title for viewers
+   */
+  displayTitle: string | null;
 }
 
 export interface GetPublisherTemplate {

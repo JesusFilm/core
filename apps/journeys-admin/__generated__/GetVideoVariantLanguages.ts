@@ -32,7 +32,7 @@ export interface GetVideoVariantLanguages_video {
 }
 
 export interface GetVideoVariantLanguages {
-  video: GetVideoVariantLanguages_video | null;
+  video: GetVideoVariantLanguages_video;
 }
 
 export interface GetVideoVariantLanguagesVariables {

@@ -7,23 +7,11 @@
     "build": {
       "executor": "@nx/webpack:webpack",
       "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "development",
       "options": {
         "outputPath": "dist/apps/api-videos",
-        "main": "apps/api-videos/src/main.ts",
+        "main": "apps/api-videos/src/index.ts",
         "tsConfig": "apps/api-videos/tsconfig.app.json",
-        "assets": [
-          "apps/api-videos/src/assets",
-          {
-            "glob": "**/*.graphql",
-            "input": "apps/api-videos/src/app/",
-            "output": "./assets"
-          },
-          {
-            "glob": "**/*.graphql",
-            "input": "libs/nest/common/src/lib/TranslationModule/",
-            "output": "./assets"
-          }
-        ],
         "compiler": "tsc",
         "target": "node",
         "webpackConfig": "apps/api-videos/webpack.config.js"
@@ -33,30 +21,8 @@
           "generatePackageJson": true,
           "optimization": true,
           "extractLicenses": true,
-          "inspect": false,
-          "fileReplacements": [
-            {
-              "replace": "apps/api-videos/src/environments/environment.ts",
-              "with": "apps/api-videos/src/environments/environment.prod.ts"
-            }
-          ]
+          "inspect": false
         }
-      }
-    },
-    "ingest": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npm run ts-node apps/api-videos/src/app/modules/bigQuery/bigQuery.console.ts"
-      }
-    },
-    "export-language-slugs": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          "npm run ts-node apps/api-videos/src/exportExistingLanguageSlugs.ts",
-          "npx prettier apps/api-languages/src/__generated__/languageSlugs.ts --write"
-        ],
-        "parallel": false
       }
     },
     "serve": {
@@ -64,12 +30,6 @@
       "options": {
         "buildTarget": "api-videos:build",
         "inspect": false
-      }
-    },
-    "watcher": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npm run ts-node tools/scripts/generate-typings.ts api-videos --transpileOnly"
       }
     },
     "lint": {
@@ -86,12 +46,6 @@
       "outputs": ["{workspaceRoot}/coverage/apps/api-videos"],
       "options": {
         "jestConfig": "apps/api-videos/jest.config.ts"
-      }
-    },
-    "generate-graphql": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "rover subgraph introspect http://localhost:4004/graphql > apps/api-videos/schema.graphql"
       }
     },
     "subgraph-check": {
@@ -165,6 +119,28 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "codecov -f coverage/apps/api-videos/cobertura-coverage.xml -F apps.api-videos"
+      }
+    },
+    "ingest": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apps/api-videos/src/workers/cli.ts big-query"
+      }
+    },
+    "export-to-algolia": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apps/api-videos/src/workers/cli.ts algolia"
+      }
+    },
+    "export-language-slugs": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npm run ts-node apps/api-videos/src/lib/exportExistingLanguageSlugs.ts",
+          "npx prettier apps/api-languages/src/__generated__/languageSlugs.ts --write"
+        ],
+        "parallel": false
       }
     },
     "codegen": {

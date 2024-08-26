@@ -1,0 +1,1 @@
+export { importLanguageNames } from './languageNames'

@@ -258,7 +258,7 @@ export interface CardFormRestore_image_TypographyBlock {
 }
 
 export interface CardFormRestore_image_VideoBlock_video_title {
-  __typename: "Translation";
+  __typename: "VideoTitle";
   value: string;
 }
 
@@ -678,7 +678,7 @@ export interface CardFormRestore_subtitle_TypographyBlock {
 }
 
 export interface CardFormRestore_subtitle_VideoBlock_video_title {
-  __typename: "Translation";
+  __typename: "VideoTitle";
   value: string;
 }
 
@@ -1098,7 +1098,7 @@ export interface CardFormRestore_title_TypographyBlock {
 }
 
 export interface CardFormRestore_title_VideoBlock_video_title {
-  __typename: "Translation";
+  __typename: "VideoTitle";
   value: string;
 }
 
@@ -1518,7 +1518,7 @@ export interface CardFormRestore_textResponse_TypographyBlock {
 }
 
 export interface CardFormRestore_textResponse_VideoBlock_video_title {
-  __typename: "Translation";
+  __typename: "VideoTitle";
   value: string;
 }
 
@@ -1938,7 +1938,7 @@ export interface CardFormRestore_body_TypographyBlock {
 }
 
 export interface CardFormRestore_body_VideoBlock_video_title {
-  __typename: "Translation";
+  __typename: "VideoTitle";
   value: string;
 }
 
