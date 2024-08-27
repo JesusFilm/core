@@ -14,7 +14,11 @@ import {
   useState
 } from 'react'
 import { Root, createRoot } from 'react-dom/client'
-import { usePagination, useSearchBox } from 'react-instantsearch'
+import {
+  usePagination,
+  useRefinementList,
+  useSearchBox
+} from 'react-instantsearch'
 import '@algolia/autocomplete-theme-classic'
 
 type AutocompleteProps = Partial<AutocompleteOptions<BaseItem>> & {
@@ -24,7 +28,12 @@ type AutocompleteProps = Partial<AutocompleteOptions<BaseItem>> & {
 
 interface SetInstantSearchUiStateOptions {
   query: string
+  category?: string
 }
+
+const INSTANT_SEARCH_INDEX_NAME = 'video-variants-stg'
+const INSTANT_SEARCH_ATTRIBUTE = 'languageEnglishName'
+const INSTANT_SEARCH_QUERY_SUGGESTIONS = 'video-variants-stg_query_suggestions'
 
 export function Autocomplete({
   searchClient,
@@ -41,6 +50,23 @@ export function Autocomplete({
   const [instantSearchUiState, setInstantSearchUiState] =
     useState<SetInstantSearchUiStateOptions>({ query })
 
+  // Language filters
+  const { items: categories, refine: setCategory } = useRefinementList({
+    attribute: 'languageEnglishName'
+  })
+
+  useEffect(() => {
+    setQuery(instantSearchUiState.query)
+    instantSearchUiState.category && setCategory(instantSearchUiState.category)
+    setPage(0)
+  }, [instantSearchUiState])
+
+  const currentCategory = useMemo(() => {
+    const category = categories.find(({ isRefined }) => isRefined)
+    return category && category.value
+  }, [categories])
+
+  // Configure recent searches/query suggestions/categories
   const plugins = useMemo(() => {
     const recentSearches = createLocalStorageRecentSearchesPlugin({
       key: 'instantsearch',
@@ -49,7 +75,59 @@ export function Autocomplete({
         return {
           ...source,
           onSelect({ item }) {
-            setInstantSearchUiState({ query: item.label })
+            setInstantSearchUiState({
+              query: item.label,
+              category: item.category
+            })
+          }
+        }
+      }
+    })
+
+    const querySuggestionsInCategory = createQuerySuggestionsPlugin({
+      searchClient,
+      indexName: INSTANT_SEARCH_QUERY_SUGGESTIONS,
+      getSearchParams() {
+        return recentSearches.data!.getAlgoliaSearchParams({
+          hitsPerPage: 3,
+          facetFilters: [
+            `${INSTANT_SEARCH_INDEX_NAME}.facets.exact_matches.${INSTANT_SEARCH_ATTRIBUTE}.value:${currentCategory}`
+          ]
+        })
+      },
+      transformSource({ source }) {
+        return {
+          ...source,
+          sourceId: 'querySuggestionsInCategoryPlugin',
+          onSelect({ item }) {
+            setInstantSearchUiState({
+              query: item.query,
+              category: item.__autocomplete_qsCategory
+            })
+          },
+          getItems(params) {
+            if (!currentCategory) {
+              return []
+            }
+
+            return source.getItems(params)
+          },
+          templates: {
+            ...source.templates,
+            header({ items }) {
+              if (items.length === 0) {
+                return <Fragment />
+              }
+
+              return (
+                <Fragment>
+                  <span className="aa-SourceHeaderTitle">
+                    In {currentCategory}
+                  </span>
+                  <span className="aa-SourceHeaderLine" />
+                </Fragment>
+              )
+            }
           }
         }
       }
@@ -57,31 +135,60 @@ export function Autocomplete({
 
     const querySuggestions = createQuerySuggestionsPlugin({
       searchClient,
-      indexName: 'video-variants-stg_query_suggestions',
+      indexName: INSTANT_SEARCH_QUERY_SUGGESTIONS,
       getSearchParams() {
         return recentSearches.data!.getAlgoliaSearchParams({
-          hitsPerPage: 6
+          hitsPerPage: 6,
+          facetFilters: [
+            `${INSTANT_SEARCH_INDEX_NAME}.facets.exact_matches.${INSTANT_SEARCH_ATTRIBUTE}.value:-${currentCategory}`
+          ]
         })
       },
+      categoryAttribute: [
+        INSTANT_SEARCH_INDEX_NAME,
+        'facets',
+        'exact_matches',
+        INSTANT_SEARCH_ATTRIBUTE
+      ],
       transformSource({ source }) {
         return {
           ...source,
           sourceId: 'querySuggestionsPlugin',
           onSelect({ item }) {
-            setInstantSearchUiState({ query: item.query })
+            setInstantSearchUiState({
+              query: item.query,
+              category: item.__autocomplete_qsCategory ?? ''
+            })
           },
-          async getItems(params) {
+          getItems(params) {
             if (params.state.query === '') {
               return []
             }
 
-            return await source.getItems(params)
+            return source.getItems(params)
+          },
+          templates: {
+            ...source.templates,
+            header({ items }) {
+              if (!currentCategory || items.length === 0) {
+                return <Fragment />
+              }
+
+              return (
+                <Fragment>
+                  <span className="aa-SourceHeaderTitle">
+                    In other categories
+                  </span>
+                  <span className="aa-SourceHeaderLine" />
+                </Fragment>
+              )
+            }
           }
         }
       }
     })
-    return [recentSearches, querySuggestions]
-  }, [])
+    return [recentSearches, querySuggestionsInCategory, querySuggestions]
+  }, [currentCategory])
 
   useEffect(() => {
     setQuery(instantSearchUiState.query)
@@ -89,7 +196,7 @@ export function Autocomplete({
   }, [instantSearchUiState])
 
   useEffect(() => {
-    if (autocompleteContainer.current == null) {
+    if (!autocompleteContainer.current) {
       return
     }
 
@@ -98,7 +205,7 @@ export function Autocomplete({
       container: autocompleteContainer.current,
       initialState: { query },
       onReset() {
-        setInstantSearchUiState({ query: '' })
+        setInstantSearchUiState({ query: '', category: currentCategory })
       },
       onSubmit({ state }) {
         setInstantSearchUiState({ query: state.query })
@@ -112,7 +219,7 @@ export function Autocomplete({
       },
       renderer: { createElement, Fragment, render: () => {} },
       render({ children }, root) {
-        if (panelRootRef.current == null || rootRef.current !== root) {
+        if (!panelRootRef.current || rootRef.current !== root) {
           rootRef.current = root
 
           panelRootRef.current?.unmount()
