@@ -10,27 +10,27 @@ import { VideoLabel, VideoVariantDownloadQuality } from "./globalTypes";
 // ====================================================
 
 export interface GetVideoContainerAndVideoContent_container_imageAlt {
-  __typename: "Translation";
+  __typename: "VideoImageAlt";
   value: string;
 }
 
 export interface GetVideoContainerAndVideoContent_container_snippet {
-  __typename: "Translation";
+  __typename: "VideoSnippet";
   value: string;
 }
 
 export interface GetVideoContainerAndVideoContent_container_description {
-  __typename: "Translation";
+  __typename: "VideoDescription";
   value: string;
 }
 
 export interface GetVideoContainerAndVideoContent_container_studyQuestions {
-  __typename: "Translation";
+  __typename: "VideoStudyQuestion";
   value: string;
 }
 
 export interface GetVideoContainerAndVideoContent_container_title {
-  __typename: "Translation";
+  __typename: "VideoTitle";
   value: string;
 }
 
@@ -90,27 +90,27 @@ export interface GetVideoContainerAndVideoContent_container {
 }
 
 export interface GetVideoContainerAndVideoContent_content_imageAlt {
-  __typename: "Translation";
+  __typename: "VideoImageAlt";
   value: string;
 }
 
 export interface GetVideoContainerAndVideoContent_content_snippet {
-  __typename: "Translation";
+  __typename: "VideoSnippet";
   value: string;
 }
 
 export interface GetVideoContainerAndVideoContent_content_description {
-  __typename: "Translation";
+  __typename: "VideoDescription";
   value: string;
 }
 
 export interface GetVideoContainerAndVideoContent_content_studyQuestions {
-  __typename: "Translation";
+  __typename: "VideoStudyQuestion";
   value: string;
 }
 
 export interface GetVideoContainerAndVideoContent_content_title {
-  __typename: "Translation";
+  __typename: "VideoTitle";
   value: string;
 }
 
@@ -170,8 +170,8 @@ export interface GetVideoContainerAndVideoContent_content {
 }
 
 export interface GetVideoContainerAndVideoContent {
-  container: GetVideoContainerAndVideoContent_container | null;
-  content: GetVideoContainerAndVideoContent_content | null;
+  container: GetVideoContainerAndVideoContent_container;
+  content: GetVideoContainerAndVideoContent_content;
 }
 
 export interface GetVideoContainerAndVideoContentVariables {

@@ -1,0 +1,1 @@
+export { importVideoImageAlts } from './videoImageAlts'

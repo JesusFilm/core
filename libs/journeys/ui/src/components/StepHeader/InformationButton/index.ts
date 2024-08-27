@@ -1,0 +1,1 @@
+export { InformationButton } from './InformationButton'

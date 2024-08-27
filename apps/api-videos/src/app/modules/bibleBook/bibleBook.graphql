@@ -1,8 +1,0 @@
-type BibleBook {
-  name(languageId: ID, primary: Boolean): [Translation!]!
-  osisId: String!
-  alternateName: String
-  paratextAbbreviation: String!
-  isNewTestament: Boolean!
-  order: Int!
-}

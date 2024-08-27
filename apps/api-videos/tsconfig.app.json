@@ -12,6 +12,11 @@
     "emitDecoratorMetadata": true,
     "target": "es2021"
   },
-  "exclude": ["**/*.spec.ts", "jest.config.ts", "**/__mocks/*.ts"],
-  "include": ["**/*.ts", "src/app/modules/video/.resolver.ts"]
+  "exclude": [
+    "**/*.spec.ts",
+    "jest.config.ts",
+    "**/__mocks/*.ts",
+    "**/test/*.ts"
+  ],
+  "include": ["**/*.ts"]
 }
