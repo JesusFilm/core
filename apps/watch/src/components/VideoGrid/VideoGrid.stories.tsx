@@ -1,7 +1,9 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
+
+import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
 
 import { watchConfig } from '../../libs/storybook/config'
 import { videos } from '../Videos/__generated__/testData'
@@ -17,20 +19,22 @@ const VideoGridStory: Meta<typeof VideoGrid> = {
 const Template: StoryObj<typeof VideoGrid> = {
   render: (args) => {
     return (
-      <Stack spacing={2}>
-        <Box>
-          <VideoGrid {...args} hasNextPage />
-        </Box>
-        <Box>
-          <VideoGrid {...args} videos={[]} loading />
-        </Box>
-        <Box>
-          <VideoGrid {...args} variant="contained" />
-        </Box>
-        <Box>
-          <VideoGrid {...args} videos={[]} variant="contained" loading />
-        </Box>
-      </Stack>
+      <InstantSearchTestWrapper>
+        <Stack spacing={2}>
+          <Box>
+            <VideoGrid {...args} />
+          </Box>
+          <Box>
+            <VideoGrid {...args} videos={[]} loading />
+          </Box>
+          <Box>
+            <VideoGrid {...args} variant="contained" hasNextPage={false} />
+          </Box>
+          <Box>
+            <VideoGrid {...args} videos={[]} variant="contained" loading />
+          </Box>
+        </Stack>
+      </InstantSearchTestWrapper>
     )
   }
 }
@@ -46,7 +50,8 @@ export const Pagination = {
   ...Template,
   args: {
     videos: videos.slice(0, 3),
-    onLoadMore: noop
+    showLoadMore: true,
+    showMore: noop
   }
 }
 

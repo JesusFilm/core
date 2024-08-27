@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -231,7 +231,7 @@ describe('Canvas', () => {
 
   // TODO: Add to E2E tests when complete. Can't test in unit test as iframe doesn't render
   it.skip('should selected footer on click', () => {
-    const { getByTestId, getByText } = render(
+    render(
       <MockedProvider>
         <ThemeProvider>
           <JourneyProvider
@@ -258,22 +258,27 @@ describe('Canvas', () => {
         </ThemeProvider>
       </MockedProvider>
     )
-    expect(getByTestId('stepFooter')).toHaveStyle({
+    expect(screen.getByTestId('JourneysStepFooter')).toHaveStyle({
       outline: 'none'
     })
-    fireEvent.click(getByTestId('stepFooter'))
-    expect(getByText('selectedBlock: step0.id')).toBeInTheDocument()
-    expect(getByText('selectedAttributeId: hosted-by')).toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('JourneysStepFooter'))
+    expect(screen.getByText('selectedBlock: step0.id')).toBeInTheDocument()
     expect(
-      getByText(
+      screen.getByText('selectedAttributeId: hosted-by')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText(
         `activeCanvasDetailsDrawerAction: ${ActiveCanvasDetailsDrawer.Footer}`
       )
     ).toBeInTheDocument()
-    expect(getByTestId('stepFooter')).toHaveStyle({
+    expect(screen.getByTestId('JourneysStepFooter')).toHaveStyle({
       outline: '2px solid #C52D3A'
     })
-    expect(getByTestId('step-step0.id')).toHaveStyle({
+    expect(screen.getByTestId('step-step0.id')).toHaveStyle({
       outline: '0px solid'
+    })
+    expect(screen.getByTestId('JourneysStepHeader')).toHaveStyle({
+      outline: '2px solid #C52D3A'
     })
   })
 

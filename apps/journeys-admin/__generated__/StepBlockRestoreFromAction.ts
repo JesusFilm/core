@@ -268,7 +268,7 @@ export interface StepBlockRestoreFromAction_blockRestore_TypographyBlock {
 }
 
 export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_video_title {
-  __typename: "Translation";
+  __typename: "VideoTitle";
   value: string;
 }
 

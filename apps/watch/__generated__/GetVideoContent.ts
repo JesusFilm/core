@@ -10,27 +10,27 @@ import { VideoLabel, VideoVariantDownloadQuality } from "./globalTypes";
 // ====================================================
 
 export interface GetVideoContent_content_imageAlt {
-  __typename: "Translation";
+  __typename: "VideoImageAlt";
   value: string;
 }
 
 export interface GetVideoContent_content_snippet {
-  __typename: "Translation";
+  __typename: "VideoSnippet";
   value: string;
 }
 
 export interface GetVideoContent_content_description {
-  __typename: "Translation";
+  __typename: "VideoDescription";
   value: string;
 }
 
 export interface GetVideoContent_content_studyQuestions {
-  __typename: "Translation";
+  __typename: "VideoStudyQuestion";
   value: string;
 }
 
 export interface GetVideoContent_content_title {
-  __typename: "Translation";
+  __typename: "VideoTitle";
   value: string;
 }
 
@@ -90,7 +90,7 @@ export interface GetVideoContent_content {
 }
 
 export interface GetVideoContent {
-  content: GetVideoContent_content | null;
+  content: GetVideoContent_content;
 }
 
 export interface GetVideoContentVariables {

@@ -22,9 +22,11 @@ export const yoga = createYoga({
         await prisma.$queryRaw`SELECT 1`
       }
     }),
-    useResponseCache({
-      session: () => null,
-      cache
-    })
+    process.env.NODE_ENV !== 'test'
+      ? useResponseCache({
+          session: () => null,
+          cache
+        })
+      : {}
   ]
 })

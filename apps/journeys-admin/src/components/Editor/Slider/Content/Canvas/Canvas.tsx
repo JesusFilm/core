@@ -16,8 +16,8 @@ import { getStepTheme } from '@core/journeys/ui/getStepTheme'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { StepFooter } from '@core/journeys/ui/StepFooter'
+import { StepHeader } from '@core/journeys/ui/StepHeader'
 import { VideoWrapper } from '@core/journeys/ui/VideoWrapper'
-import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeName } from '@core/shared/ui/themes'
 
@@ -54,7 +54,6 @@ export function Canvas(): ReactElement {
   const { journey } = useJourney()
   const { rtl, locale } = getJourneyRTL(journey)
   const router = useRouter()
-  const { commands } = useFlags()
 
   const initialScale =
     typeof window !== 'undefined' && window.innerWidth <= 600 ? 0 : 1
@@ -202,7 +201,7 @@ export function Canvas(): ReactElement {
               >
                 {({ document }) => (
                   <ThemeProvider {...theme} rtl={rtl} locale={locale}>
-                    {commands && <Hotkeys document={document} />}
+                    <Hotkeys document={document} />
                     <TransitionGroup
                       component={Box}
                       sx={{
@@ -252,6 +251,33 @@ export function Canvas(): ReactElement {
                           }}
                           data-testid={`step-${selectedStep.id}`}
                         >
+                          <ThemeProvider
+                            themeName={ThemeName.journeyUi}
+                            themeMode={theme.themeMode}
+                            rtl={rtl}
+                            locale={locale}
+                            nested
+                          >
+                            <StepHeader
+                              sx={{
+                                outline:
+                                  activeCanvasDetailsDrawer ===
+                                    ActiveCanvasDetailsDrawer.Footer &&
+                                  journey?.website === true
+                                    ? '2px solid #C52D3A'
+                                    : 'none',
+                                outlineOffset: -4,
+                                borderRadius: 5,
+                                cursor: 'pointer',
+                                minHeight: '42px'
+                              }}
+                              onHeaderClick={
+                                journey?.website === true
+                                  ? handleFooterClick
+                                  : undefined
+                              }
+                            />
+                          </ThemeProvider>
                           <BlockRenderer
                             block={selectedStep}
                             wrappers={{

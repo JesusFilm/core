@@ -37,6 +37,7 @@ testem.log
 apps/api-gateway/router
 /**/tsconfig.tsbuildinfo
 .history/
+/.cache
 
 # System Files
 .DS_Store
@@ -74,6 +75,9 @@ terraform.tfstate.backup
 
 # ignore old locale files
 /libs/locales/**/*_old.json
+
+# ignore app router locale files
+/apps/**/src/locales
 
 .nx/cache
 .nx/workspace-data

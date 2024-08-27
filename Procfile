@@ -7,7 +7,6 @@ tags-serve: nx serve api-tags
 tags-watcher: nx watcher api-tags
 users-serve: nx serve api-users
 users-watcher: nx watcher api-users
-languages-serve: nx serve api-languages
-videos-serve: nx serve api-videos
-videos-watcher: nx watcher api-videos
-gateway: nx serve api-gateway | npx pino-pretty -c -S -i resource,target -m message
+languages-serve: nx serve api-languages | npx pino-pretty --config .pino-prettyrc.js
+videos-serve: nx serve api-videos | npx pino-pretty --config .pino-prettyrc.js
+gateway: nx serve api-gateway | npx pino-pretty -m message --config .pino-prettyrc.js

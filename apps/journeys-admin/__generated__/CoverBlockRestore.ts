@@ -15,7 +15,7 @@ export interface CoverBlockRestore_blockRestore_ButtonBlock {
 }
 
 export interface CoverBlockRestore_blockRestore_VideoBlock_video_title {
-  __typename: "Translation";
+  __typename: "VideoTitle";
   value: string;
 }
 

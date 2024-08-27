@@ -101,7 +101,12 @@ describe('processUserIds', () => {
     hostId: null,
     strategySlug: null,
     userJourneys,
-    team
+    team,
+    website: null,
+    showShareButton: null,
+    showLikeButton: null,
+    showDislikeButton: null,
+    displayTitle: null
   }
 
   it('should return an array of user IDs when visitor interaction email is true', () => {

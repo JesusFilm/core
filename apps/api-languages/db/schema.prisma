@@ -32,6 +32,7 @@ model Language {
   bcp47            String?
   iso3             String?
   hasVideos        Boolean           @default(true)
+  slug             String?
   name             LanguageName[]    @relation(name: "name")
   nameLanguage     LanguageName[]    @relation(name: "nameLanguage")
   countries        Country[]
