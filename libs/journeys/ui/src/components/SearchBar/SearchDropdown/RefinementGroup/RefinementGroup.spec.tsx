@@ -1,8 +1,8 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 
-import '../../../test/i18n'
-import { languageRefinements } from '../SearchBar/data'
+import '../../../../../test/i18n'
+import { languageRefinements } from '../../data'
 
 import { RefinementGroup } from './RefinementGroup'
 
@@ -31,7 +31,7 @@ describe('RefinementGroup', () => {
     expect(refine).toHaveBeenCalled()
   })
 
-  it('should display message when no facets are available', () => {
+  it('should render header but no options when refinements list is empty', () => {
     const emptyRefinementList = {
       items: [],
       refine
@@ -39,10 +39,7 @@ describe('RefinementGroup', () => {
     render(
       <RefinementGroup title="Languages" refinement={emptyRefinementList} />
     )
-    expect(
-      screen.getByText(
-        'Sorry, there are no languages available for this search. Try a broader search!'
-      )
-    ).toBeInTheDocument()
+    expect(screen.getByText('Languages')).toBeInTheDocument()
+    expect(screen.queryByRole('label')).not.toBeInTheDocument()
   })
 })

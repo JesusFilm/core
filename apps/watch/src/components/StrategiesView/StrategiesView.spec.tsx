@@ -1,3 +1,4 @@
+import { MockedProvider } from '@apollo/client/testing'
 import { render, screen } from '@testing-library/react'
 import { HitsRenderState } from 'instantsearch.js/es/connectors/hits/connectHits'
 import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
@@ -36,18 +37,30 @@ describe('StrategiesView', () => {
   })
 
   it('should render interaction text', () => {
-    render(<StrategiesView />)
+    render(
+      <MockedProvider>
+        <StrategiesView />
+      </MockedProvider>
+    )
     expect(screen.getByText('Resource for every')).toBeInTheDocument()
     expect(screen.getByText('interaction')).toBeInTheDocument()
   })
 
   it('should render searchbar', () => {
-    render(<StrategiesView />)
+    render(
+      <MockedProvider>
+        <StrategiesView />
+      </MockedProvider>
+    )
     expect(screen.getByTestId('SearchBar')).toBeInTheDocument()
   })
 
   it('should render strategy sections', () => {
-    render(<StrategiesView />)
+    render(
+      <MockedProvider>
+        <StrategiesView />
+      </MockedProvider>
+    )
     expect(screen.getByTestId('StrategySections')).toBeInTheDocument()
   })
 })

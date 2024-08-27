@@ -4,7 +4,6 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 import FormGroup from '@mui/material/FormGroup'
 import Typography from '@mui/material/Typography'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
-import { useTranslation } from 'next-i18next'
 import { type ReactElement } from 'react'
 
 interface RefinementGroupProps {
@@ -16,8 +15,6 @@ export function RefinementGroup({
   refinement,
   title
 }: RefinementGroupProps): ReactElement {
-  const { t } = useTranslation('apps-watch')
-
   return (
     <Box>
       <Typography variant="h6" color="primary.main" marginBottom={6}>
@@ -41,11 +38,7 @@ export function RefinementGroup({
             ))}
           </FormGroup>
         ) : (
-          <Typography>
-            {t(
-              `Sorry, there are no ${title.toLowerCase()} available for this search. Try a broader search!`
-            )}
-          </Typography>
+          <></>
         )}
       </Box>
     </Box>

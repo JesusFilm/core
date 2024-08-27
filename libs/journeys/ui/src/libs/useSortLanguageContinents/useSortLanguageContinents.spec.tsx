@@ -1,9 +1,8 @@
-import { languagesContinents } from '@core/journeys/ui/useLanguagesContinentsQuery/data'
-
 import {
   GetLanguagesContinents_languages_countryLanguages as CountryLanguage,
   GetLanguagesContinents_languages as Languages
-} from '../../../../__generated__/GetLanguagesContinents'
+} from '../useLanguagesContinentsQuery/__generated__/GetLanguagesContinents'
+import { languagesContinents } from '../useLanguagesContinentsQuery/data'
 
 import { useSortLanguageContinents } from './useSortLanguageContinents'
 
@@ -12,11 +11,17 @@ describe('useSortLanguageContinents', () => {
     const result = useSortLanguageContinents({ languages: languagesContinents })
     expect(result).toEqual({
       Africa: ['Deutsch', 'Arabic'],
-      Asia: ['Mandarin', 'Japanese'],
-      Europe: ['Français'],
+      Asia: [
+        'Mandarin',
+        'Japanese',
+        'Cantonese',
+        'Chinese, Simplified',
+        'Chinese, Traditional'
+      ],
+      Europe: ['Français', 'Spanish, Castilian'],
       Oceania: ['Bislama'],
-      NorthAmerica: ['English'],
-      SouthAmerica: ['Português']
+      'North America': ['English'],
+      'South America': ['Português', 'Spanish, Latin American']
     })
   })
 
