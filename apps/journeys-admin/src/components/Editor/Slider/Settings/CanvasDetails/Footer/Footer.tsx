@@ -8,7 +8,13 @@ import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { Drawer } from '../../Drawer'
 import { WebsiteToggle } from '../WebsiteToggle'
 
-import { Reactions } from './Reactions'
+const Reactions = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Footer/Reactions/Reactions" */ './Reactions'
+    ).then((mod) => mod.Reactions),
+  { ssr: false }
+  )
 
 const Host = dynamic(
   async () =>
