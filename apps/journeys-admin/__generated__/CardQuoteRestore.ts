@@ -258,7 +258,7 @@ export interface CardQuoteRestore_image_TypographyBlock {
 }
 
 export interface CardQuoteRestore_image_VideoBlock_video_title {
-  __typename: "Translation";
+  __typename: "VideoTitle";
   value: string;
 }
 
@@ -678,7 +678,7 @@ export interface CardQuoteRestore_subtitle_TypographyBlock {
 }
 
 export interface CardQuoteRestore_subtitle_VideoBlock_video_title {
-  __typename: "Translation";
+  __typename: "VideoTitle";
   value: string;
 }
 
@@ -1098,7 +1098,7 @@ export interface CardQuoteRestore_title_TypographyBlock {
 }
 
 export interface CardQuoteRestore_title_VideoBlock_video_title {
-  __typename: "Translation";
+  __typename: "VideoTitle";
   value: string;
 }
 
@@ -1518,7 +1518,7 @@ export interface CardQuoteRestore_body_TypographyBlock {
 }
 
 export interface CardQuoteRestore_body_VideoBlock_video_title {
-  __typename: "Translation";
+  __typename: "VideoTitle";
   value: string;
 }
 

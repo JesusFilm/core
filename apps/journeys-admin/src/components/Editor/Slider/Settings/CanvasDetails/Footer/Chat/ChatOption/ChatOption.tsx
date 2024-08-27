@@ -1,4 +1,3 @@
-import Accordion from '@mui/material/Accordion'
 import { ReactElement, useState } from 'react'
 
 import { MessagePlatform } from '../../../../../../../../../__generated__/globalTypes'
@@ -31,27 +30,9 @@ export function ChatOption({
   const [currentPlatform, setCurrentPlatform] = useState(
     platform ?? chatButton?.platform ?? MessagePlatform.custom
   )
-  const [expanded, setExpanded] = useState(false)
-  function handleChange(): void {
-    setExpanded(!expanded)
-  }
 
   return (
-    <Accordion
-      expanded={expanded}
-      onChange={handleChange}
-      disableGutters
-      square
-      sx={{
-        boxShadow: 'none',
-        border: '1px solid',
-        borderColor: 'divider',
-        borderTop: 0,
-        borderLeft: 0,
-        borderRight: 0
-      }}
-      data-testid="ChatOption"
-    >
+    <>
       <Summary
         title={title}
         active={active}
@@ -60,7 +41,6 @@ export function ChatOption({
         currentLink={currentLink}
         currentPlatform={currentPlatform}
         chatButtonId={chatButton?.id}
-        openAccordion={() => setExpanded(true)}
       />
       <Details
         journeyId={journeyId}
@@ -72,6 +52,6 @@ export function ChatOption({
         helperInfo={helperInfo}
         enableIconSelect={enableIconSelect}
       />
-    </Accordion>
+    </>
   )
 }

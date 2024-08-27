@@ -10,7 +10,7 @@ import { VideoBlockUpdateInput, VideoBlockSource, VideoBlockObjectFit } from "./
 // ====================================================
 
 export interface CoverVideoBlockUpdate_videoBlockUpdate_video_title {
-  __typename: "Translation";
+  __typename: "VideoTitle";
   value: string;
 }
 

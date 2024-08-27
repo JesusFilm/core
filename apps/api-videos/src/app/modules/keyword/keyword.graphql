@@ -1,9 +1,0 @@
-type Keyword {
-  id: ID!
-  value: String!
-  language: Language!
-}
-
-extend type Video {
-  keywords(languageId: ID): [Keyword!]!
-}

@@ -23,7 +23,7 @@ describe('VideoHeroOverlay', () => {
       'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_cl-0-0.mobileCinematicHigh.jpg',
     imageAlt: [
       {
-        __typename: 'Translation',
+        __typename: 'VideoImageAlt',
         value: 'The Story of Jesus for Children'
       }
     ],
@@ -63,7 +63,7 @@ describe('VideoHeroOverlay', () => {
     title: [
       {
         value: 'The Story of Jesus for Children',
-        __typename: 'Translation'
+        __typename: 'VideoTitle'
       }
     ],
     variantLanguagesCount: 1,

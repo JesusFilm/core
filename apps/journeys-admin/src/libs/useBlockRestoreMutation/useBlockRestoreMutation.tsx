@@ -43,40 +43,51 @@ export function blockRestoreUpdate(
 ): void {
   if (response != null) {
     const selected = response.find((block) => selectedBlock?.id === block.id)
-    const cacheOptions = {
-      fields: {
-        blocks(existingBlockRefs: Reference[], { readField }) {
-          const newBlockRef = response.map((block) => {
-            if (
-              existingBlockRefs.some(
-                (ref) => readField('id', ref) === block?.id
-              )
-            ) {
-              return null
-            }
-            return cache.writeFragment({
-              data: block,
-              fragment: gql`
-                fragment RestoredBlock on Block {
-                  id
-                }
-              `
-            })
-          })
-          return [...existingBlockRefs, ...compact(newBlockRef)]
-        }
-      }
-    }
     if (selected != null && journeyId != null) {
       cache.modify({
-        ...cacheOptions,
         id: cache.identify({
           __typename: 'Journey',
           id: journeyId
-        })
+        }),
+        fields: {
+          blocks(existingBlockRefs: Reference[], { readField }) {
+            const newBlockRef = response.map((block) => {
+              if (
+                existingBlockRefs.some(
+                  (ref) => readField('id', ref) === block?.id
+                )
+              ) {
+                return null
+              }
+              return cache.writeFragment({
+                data: block,
+                fragment: gql`
+                  fragment RestoredBlock on Block {
+                    id
+                  }
+                `
+              })
+            })
+            return [...existingBlockRefs, ...compact(newBlockRef)]
+          }
+        }
       })
       if (selected.__typename === 'StepBlock') {
-        cache.modify(cacheOptions)
+        cache.modify({
+          fields: {
+            blocks(existingBlockRefs: Reference[]) {
+              const newBlockRef = cache.writeFragment({
+                data: selected,
+                fragment: gql`
+                  fragment RestoredBlock on Block {
+                    id
+                  }
+                `
+              })
+              return [...existingBlockRefs, newBlockRef]
+            }
+          }
+        })
       }
     }
   }
