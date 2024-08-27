@@ -14,7 +14,7 @@ export function WebsiteToggle(): ReactElement {
   const [journeyUpdate] = useJourneyUpdateMutation()
   const { add } = useCommand()
 
-  async function handleChange(): Promise<void> {
+  function handleChange(): void {
     if (journey == null) return
 
     const currentMode = journey.website ?? false
@@ -37,7 +37,7 @@ export function WebsiteToggle(): ReactElement {
               description: journey.description,
               strategySlug: journey.strategySlug,
               language: journey.language,
-              tags: [],
+              tags: journey.tags,
               website: !currentMode
             }
           }
