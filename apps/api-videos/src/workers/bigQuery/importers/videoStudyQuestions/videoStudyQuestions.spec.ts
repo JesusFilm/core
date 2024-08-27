@@ -42,7 +42,7 @@ describe('bigQuery/importers/videoStudyQuestions', () => {
         languageId: 529,
         primary: 1,
         order: 3,
-        crowdInId: 'mockCrowdinId'
+        crowdinId: 'mockCrowdinId'
       })
       expect(prismaMock.videoStudyQuestion.upsert).toHaveBeenCalledWith({
         where: {
@@ -79,7 +79,7 @@ describe('bigQuery/importers/videoStudyQuestions', () => {
           languageId: 529,
           primary: 1,
           order: 3,
-          crowdInId: 'mockCrowdinId'
+          crowdinId: 'mockCrowdinId'
         })
       ).rejects.toThrow('Video with id mockVideoId2 not found')
     })
@@ -94,7 +94,7 @@ describe('bigQuery/importers/videoStudyQuestions', () => {
           languageId: 529,
           primary: 1,
           order: 3,
-          crowdInId: 'mockCrowdinId'
+          crowdinId: 'mockCrowdinId'
         },
         {
           value: 'mockValue1',
@@ -102,7 +102,7 @@ describe('bigQuery/importers/videoStudyQuestions', () => {
           languageId: 529,
           primary: 1,
           order: 3,
-          crowdInId: 'mockCrowdinId1'
+          crowdinId: 'mockCrowdinId1'
         }
       ])
       expect(prismaMock.videoStudyQuestion.createMany).toHaveBeenCalledWith({

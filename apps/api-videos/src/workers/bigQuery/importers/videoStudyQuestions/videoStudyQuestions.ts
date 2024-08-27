@@ -5,14 +5,23 @@ import { prisma } from '../../../../lib/prisma'
 import { parse, parseMany, processTable } from '../../importer'
 import { getVideoIds } from '../videos'
 
-const videoStudyQuestionSchema = z.object({
-  value: z.string(),
-  videoId: z.string(),
-  languageId: z.number().transform(String),
-  primary: z.number().transform(Boolean),
-  order: z.number(),
-  crowdInId: z.string().optional()
-})
+const videoStudyQuestionSchema = z
+  .object({
+    value: z.string(),
+    videoId: z.string(),
+    languageId: z.number().transform(String),
+    primary: z.number().transform(Boolean),
+    order: z.number(),
+    crowdinId: z.string().nullish()
+  })
+  .transform((o) => ({
+    value: o.value,
+    videoId: o.videoId,
+    languageId: o.languageId,
+    primary: o.primary,
+    order: o.order,
+    crowdInId: o.crowdinId
+  }))
 
 export async function importVideoStudyQuestions(
   logger?: Logger

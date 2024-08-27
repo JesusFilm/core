@@ -30,10 +30,6 @@ describe('crowdin/service', () => {
     jest.clearAllMocks()
   })
 
-  it('should do smth', () => {
-    expect(true).toBe(true)
-  })
-
   describe('pullTranslations', () => {
     it('should throw if no distribution hash', async () => {
       await expect(service()).rejects.toThrow(
