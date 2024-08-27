@@ -17,7 +17,7 @@ import { AlgoliaVideoGrid } from '../VideoGrid/AlgoliaVideoGrid/AlgoliaVideoGrid
 import { HomeHero } from './HomeHero'
 import { SeeAllVideos } from './SeeAllVideos'
 
-export function WatchHomePage(): ReactElement {
+export function WatchHomePage({ searchClient }): ReactElement {
   const { t } = useTranslation('apps-watch')
 
   const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
@@ -42,7 +42,7 @@ export function WatchHomePage(): ReactElement {
           <Container maxWidth="xxl" sx={{ paddingY: '4rem' }}>
             <Index indexName={indexName}>
               <Box sx={{ pb: 10 }}>
-                <SearchBar showLanguageButton />
+                <SearchBar showLanguageButton searchClient={searchClient} />
               </Box>
               <AlgoliaVideoGrid variant="contained" />
             </Index>

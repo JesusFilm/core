@@ -78,7 +78,7 @@ function HomePage({ serverState }: HomePageProps): ReactElement {
         routing={nextRouter}
       >
         <Configure ruleContexts={['home_page']} />
-        <VideoHomePage />
+        <VideoHomePage searchClient={searchClient} />
       </InstantSearch>
     </InstantSearchSSRProvider>
   )

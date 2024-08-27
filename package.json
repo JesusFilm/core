@@ -35,6 +35,10 @@
   "private": true,
   "dependencies": {
     "@adobe/apollo-link-mutation-queue": "^1.1.0",
+    "@algolia/autocomplete-js": "^1.17.4",
+    "@algolia/autocomplete-plugin-query-suggestions": "^1.17.4",
+    "@algolia/autocomplete-plugin-recent-searches": "^1.17.4",
+    "@algolia/autocomplete-theme-classic": "^1.17.4",
     "@algolia/client-search": "^4.14.3",
     "@apollo/client": "^3.8.3",
     "@apollo/experimental-nextjs-app-support": "^0.10.0",
@@ -83,6 +87,7 @@
     "@prisma/client": "^5.2.0",
     "@react-email/components": "^0.0.17",
     "@react-email/render": "^0.0.17",
+    "@selectize/selectize": "^0.15.2",
     "@storybook/core-server": "7.6.20",
     "@types/mailchimp__mailchimp_marketing": "^3.0.19",
     "adal-node": "^0.2.3",

@@ -6,9 +6,15 @@ import { styled } from '@mui/material/styles'
 import TextField, { TextFieldProps } from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Formik } from 'formik'
+import { BaseHit } from 'instantsearch.js'
 import { useTranslation } from 'next-i18next'
 import { type ReactElement, useRef, useState } from 'react'
-import { useRefinementList, useSearchBox } from 'react-instantsearch'
+import {
+  SearchBox,
+  useHits,
+  useRefinementList,
+  useSearchBox
+} from 'react-instantsearch'
 
 import ChevronDown from '@core/shared/ui/icons/ChevronDown'
 import Globe1Icon from '@core/shared/ui/icons/Globe1'
@@ -16,6 +22,8 @@ import Search1Icon from '@core/shared/ui/icons/Search1'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
 
 import { RefinementGroup } from '../RefinementGroup'
+
+import { Autocomplete } from '@core/journeys/ui/Algolia/Autocomplete/Autocomplete'
 
 /* Styles below used to fake a gradient border because the 
 css attributes border-radius and border-image-source are not compatible */
@@ -83,11 +91,13 @@ function LanguageButton({ onClick }: LangaugeButtonProps): ReactElement {
 interface SearchBarProps {
   showLanguageButton?: boolean
   props?: TextFieldProps
+  searchClient: any
 }
 
 export function SearchBar({
   showLanguageButton = false,
-  props
+  props,
+  searchClient
 }: SearchBarProps): ReactElement {
   const { t } = useTranslation('apps-watch')
 
@@ -126,7 +136,13 @@ export function SearchBar({
         data-testid="SearchBar"
         ref={popperRef}
       >
-        <Formik
+        <Autocomplete
+          searchClient={searchClient}
+          placeholder={t('Search by topic, occasion, or audience ...')}
+          detachedMediaQuery="none"
+          openOnFocus
+        />
+        {/* <Formik
           initialValues={initialValues}
           onSubmit={handleSubmit}
           enableReinitialize
@@ -134,6 +150,7 @@ export function SearchBar({
           {({ values, handleChange, handleBlur }) => (
             <>
               <StyledTextField
+                id="autocomplete"
                 value={values.title}
                 name="title"
                 type="search"
@@ -161,8 +178,9 @@ export function SearchBar({
               <SubmitListener />
             </>
           )}
-        </Formik>
+        </Formik> */}
       </Box>
+
       <Popper
         id={id}
         open={open}
@@ -184,6 +202,9 @@ export function SearchBar({
         >
           <Box color="text.primary">
             <RefinementGroup title="Languages" refinement={refinements} />
+            <Typography variant="h6" color="primary.main" marginBottom={6}>
+              Suggestions
+            </Typography>
           </Box>
         </Box>
       </Popper>
