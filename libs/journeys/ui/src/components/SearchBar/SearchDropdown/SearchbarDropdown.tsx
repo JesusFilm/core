@@ -31,7 +31,8 @@ export function SearchbarDropdown({
   const languages = useSortLanguageContinents({
     languages: data?.languages ?? []
   })
-  console.log('refinements', refinements)
+
+  console.log('languages', languages)
   const refinements = useRefinementList({
     attribute: 'languageEnglishName',
     limit: 1000
