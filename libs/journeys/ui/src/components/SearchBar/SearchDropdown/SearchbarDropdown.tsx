@@ -27,18 +27,13 @@ export function SearchbarDropdown({
   const theme = useTheme()
 
   const { data } = useLanguagesContinentsQuery()
-  console.log('data', data)
   const languages = useSortLanguageContinents({
     languages: data?.languages ?? []
   })
-
-  console.log('languages', languages)
   const refinements = useRefinementList({
     attribute: 'languageEnglishName',
     limit: 1000
   })
-
-  console.log('refinements', refinements)
 
   function ContinentRefinements(): ReactNode {
     return refinements.items.length > 0 ? (
