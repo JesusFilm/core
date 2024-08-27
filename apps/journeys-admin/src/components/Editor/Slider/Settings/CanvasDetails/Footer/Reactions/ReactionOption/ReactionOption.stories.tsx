@@ -9,7 +9,8 @@ import { ReactionOption } from '.'
 const ReactionOptionStory: Meta<typeof ReactionOption> = {
   ...simpleComponentConfig,
   component: ReactionOption,
-  title: 'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Footer/Reactions/ReactionOption'
+  title:
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Footer/Reactions/ReactionOption'
 }
 
 type Story = StoryObj<typeof ReactionOption>

@@ -1,13 +1,13 @@
-import { fireEvent, render, screen } from "@testing-library/react"
+import { fireEvent, render, screen } from '@testing-library/react'
 
-import { ReactionOption } from "./ReactionOption"
+import { ReactionOption } from './ReactionOption'
 
 describe('ReactionOption', () => {
   it('should render', () => {
     const mockToggle = jest.fn()
 
     render(
-      <ReactionOption 
+      <ReactionOption
         title="Share"
         active={false}
         field="showShareButton"
@@ -23,7 +23,7 @@ describe('ReactionOption', () => {
     const mockToggle = jest.fn()
 
     render(
-      <ReactionOption 
+      <ReactionOption
         title="Share"
         active={false}
         field="showShareButton"

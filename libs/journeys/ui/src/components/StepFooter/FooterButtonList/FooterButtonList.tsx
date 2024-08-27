@@ -7,7 +7,7 @@ import { ReactionButton } from './ReactionButton'
 import { ShareButton } from './ShareButton'
 
 export function FooterButtonList(): ReactElement {
-  const { journey } = useJourney();
+  const { journey } = useJourney()
 
   const showShareButton = journey?.showShareButton ?? true
   const showLikeButton = journey?.showLikeButton ?? true

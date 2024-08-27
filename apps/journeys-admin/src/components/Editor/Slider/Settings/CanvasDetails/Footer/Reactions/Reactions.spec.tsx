@@ -1,18 +1,27 @@
-import { MockedProvider, MockedResponse } from "@apollo/client/testing"
-import { fireEvent, render, screen, waitFor, within } from "@testing-library/react"
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within
+} from '@testing-library/react'
 
-import { EditorProvider } from "@core/journeys/ui/EditorProvider"
-import { JourneyProvider } from "@core/journeys/ui/JourneyProvider"
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { JourneyFields as Journey } from "../../../../../../../../__generated__/JourneyFields"
-import { JourneySettingsUpdate, JourneySettingsUpdateVariables } from "../../../../../../../../__generated__/JourneySettingsUpdate"
-import { JOURNEY_SETTINGS_UPDATE } from "../../../../../../../libs/useJourneyUpdateMutation/useJourneyUpdateMutation"
-import { CommandRedoItem } from "../../../../../Toolbar/Items/CommandRedoItem"
-import { CommandUndoItem } from "../../../../../Toolbar/Items/CommandUndoItem"
+import { JourneyFields as Journey } from '../../../../../../../../__generated__/JourneyFields'
+import {
+  JourneySettingsUpdate,
+  JourneySettingsUpdateVariables
+} from '../../../../../../../../__generated__/JourneySettingsUpdate'
+import { JOURNEY_SETTINGS_UPDATE } from '../../../../../../../libs/useJourneyUpdateMutation/useJourneyUpdateMutation'
+import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
+import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
-import { UpdateReactionInput } from "./Reactions"
+import { UpdateReactionInput } from './Reactions'
 
-import { Reactions } from "."
+import { Reactions } from '.'
 
 describe('Reactions', () => {
   const defaultJourney = {
@@ -43,21 +52,21 @@ describe('Reactions', () => {
     input: UpdateReactionInput
   ): MockedResponse<JourneySettingsUpdate, JourneySettingsUpdateVariables> => {
     return {
-       request: {
+      request: {
         query: JOURNEY_SETTINGS_UPDATE,
         variables: {
           id: defaultJourney.id,
           input
         }
-       },
-       result: jest.fn(() => ({
+      },
+      result: jest.fn(() => ({
         data: {
           journeyUpdate: {
             ...defaultJourney,
             ...input
           }
         }
-       }))
+      }))
     }
   }
 
@@ -70,7 +79,7 @@ describe('Reactions', () => {
       </MockedProvider>
     )
 
-    const reactionsAccordion = screen.getByRole('button', { name: 'Reactions'})
+    const reactionsAccordion = screen.getByRole('button', { name: 'Reactions' })
     expect(reactionsAccordion).toBeInTheDocument()
 
     fireEvent.click(reactionsAccordion)
@@ -93,7 +102,7 @@ describe('Reactions', () => {
       </MockedProvider>
     )
 
-    const reactionsAccordion = screen.getByRole('button', { name: 'Reactions'})
+    const reactionsAccordion = screen.getByRole('button', { name: 'Reactions' })
     expect(reactionsAccordion).toBeInTheDocument()
 
     fireEvent.click(reactionsAccordion)
@@ -121,7 +130,7 @@ describe('Reactions', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(screen.getByRole('button', { name: 'Reactions'}))
+    fireEvent.click(screen.getByRole('button', { name: 'Reactions' }))
 
     const share = screen.getByTestId('checkbox-Share')
     fireEvent.click(within(share).getByRole('checkbox'))
