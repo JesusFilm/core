@@ -187,7 +187,7 @@ export const Open = {
   },
   play: async () => {
     await userEvent.click(
-      screen.getByRole('button', { name: 'Author Details' })
+      screen.getByRole('button', { name: 'Hosted By' })
     )
   }
 }

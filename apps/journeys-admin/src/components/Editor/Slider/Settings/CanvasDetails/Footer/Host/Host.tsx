@@ -125,7 +125,7 @@ export function Host(): ReactElement {
     <Accordion
       id="author details"
       icon={<UserProfileCircleIcon />}
-      name={t('Author Details')}
+      name={t('Hosted By')}
     >
       <Box data-testid="Host">
         {openHostSelection && (

@@ -49,12 +49,12 @@ describe('Footer', () => {
 
     await waitFor(() =>
       expect(
-        screen.getByRole('button', { name: 'Author Details' })
+        screen.getByRole('button', { name: 'Hosted By' })
       ).toBeInTheDocument()
     )
 
     const details = await waitFor(() =>
-      screen.getByRole('button', { name: 'Author Details' })
+      screen.getByRole('button', { name: 'Hosted By' })
     )
     const chat = await waitFor(() =>
       screen.getByRole('button', { name: 'Chat Widget' })
