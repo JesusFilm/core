@@ -2,7 +2,6 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import { styled } from '@mui/material/styles'
-import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
@@ -13,11 +12,13 @@ const StyledButton = styled(Button)(({ theme }) => ({
   width: 168,
   borderRadius: 32,
   gap: 0,
+  padding: '8px 20px 8px 20px',
   border: '2px solid #0000001A',
-  color: theme.palette.primary.main,
-  backgroundColor: theme.palette.background.default,
+  color: theme.palette.common.black,
+  backgroundColor: theme.palette.common.white,
   '&:hover': {
-    backgroundColor: theme.palette.background.default
+    backgroundColor: theme.palette.common.white,
+    opacity: 0.9
   }
 }))
 
@@ -56,13 +57,7 @@ export function LanguageButton({ onClick }: LanguageButtonProps): ReactElement {
         startIcon={<Globe1Icon />}
         endIcon={<ChevronDown />}
       >
-        <Typography
-          sx={{
-            px: 2
-          }}
-        >
-          {t('Language')}
-        </Typography>
+        {t('Language')}
       </StyledButton>
     </Box>
   )
