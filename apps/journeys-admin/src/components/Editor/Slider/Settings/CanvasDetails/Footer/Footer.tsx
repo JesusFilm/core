@@ -14,7 +14,7 @@ const Reactions = dynamic(
       /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Footer/Reactions/Reactions" */ './Reactions'
     ).then((mod) => mod.Reactions),
   { ssr: false }
-  )
+)
 
 const Host = dynamic(
   async () =>
