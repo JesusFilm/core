@@ -6,6 +6,7 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, SyntheticEvent, useEffect, useState } from 'react'
 
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import MessageChat1Icon from '@core/shared/ui/icons/MessageChat1'
 import UserProfileCircleIcon from '@core/shared/ui/icons/UserProfileCircle'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
@@ -33,6 +34,7 @@ export function Footer(): ReactElement {
   const { dispatch } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
   const [tabValue, setTabValue] = useState(0)
+  const { websiteMode } = useFlags()
 
   function handleTabChange(
     _event: SyntheticEvent<Element, Event>,
@@ -57,7 +59,7 @@ export function Footer(): ReactElement {
 
   return (
     <Drawer title={t('Footer Properties')} onClose={onClose}>
-      <WebsiteToggle />
+      {websiteMode && <WebsiteToggle />}
       <Tabs
         value={tabValue}
         onChange={handleTabChange}
