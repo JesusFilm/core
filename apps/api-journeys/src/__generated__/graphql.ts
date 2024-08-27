@@ -2115,6 +2115,7 @@ export type Query = {
   blocks: Array<Block>;
   countries: Array<Country>;
   country?: Maybe<Country>;
+  currentVideoRoles: Array<VideoAdminUserRole>;
   customDomain: CustomDomain;
   customDomains: Array<CustomDomain>;
   getJourneyProfile?: Maybe<JourneyProfile>;
@@ -3169,6 +3170,14 @@ export type VideoTitleArgs = {
 export type VideoVariantArgs = {
   languageId?: InputMaybe<Scalars['ID']['input']>;
 };
+
+export enum VideoAdminUserRole {
+  Admin = 'admin',
+  CoreAdmin = 'coreAdmin',
+  CoreMember = 'coreMember',
+  YoutubeAdmin = 'youtubeAdmin',
+  YoutubeMember = 'youtubeMember'
+}
 
 export type VideoBlock = Block & {
   __typename?: 'VideoBlock';
