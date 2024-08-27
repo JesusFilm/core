@@ -31,13 +31,7 @@ export function WebsiteToggle(): ReactElement {
           },
           optimisticResponse: {
             journeyUpdate: {
-              id: journey.id,
-              __typename: 'Journey',
-              title: journey.title,
-              description: journey.description,
-              strategySlug: journey.strategySlug,
-              language: journey.language,
-              tags: journey.tags,
+              ...journey,
               website: !currentMode
             }
           }
