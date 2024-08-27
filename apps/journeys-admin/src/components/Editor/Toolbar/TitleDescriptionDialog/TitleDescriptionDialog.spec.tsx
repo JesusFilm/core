@@ -43,7 +43,10 @@ function getJourneySettingsUpdateMock(
           strategySlug: null,
           language: journey.language,
           tags: [],
-          website: null
+          website: null,
+          showShareButton: true,
+          showLikeButton: true,
+          showDislikeButton: true
         }
       }
     }
