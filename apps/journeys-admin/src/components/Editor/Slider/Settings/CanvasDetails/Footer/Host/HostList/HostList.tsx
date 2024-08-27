@@ -47,7 +47,7 @@ export function HostList({
         direction="row"
         justifyContent="space-between"
         alignItems="center"
-        sx={{ p: 4, pb: 0 }}
+        sx={{ p: 4, pt: 2 }}
       >
         <Stack direction="row" alignItems="center">
           <Typography variant="subtitle2">{t('Hosts')}</Typography>
