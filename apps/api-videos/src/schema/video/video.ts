@@ -1,5 +1,6 @@
 import compact from 'lodash/compact'
 import isEmpty from 'lodash/isEmpty'
+import orderBy from 'lodash/orderBy'
 
 import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
@@ -118,7 +119,21 @@ const Video = builder.prismaObject('Video', {
       description: 'slug is a permanent link to the video.'
     }),
     noIndex: t.exposeBoolean('noIndex', { nullable: true }),
-    children: t.relation('children'),
+    children: t.prismaField({
+      type: ['Video'],
+      async resolve(query, parent) {
+        return orderBy(
+          await prisma.video.findMany({
+            ...query,
+            where: {
+              parent: { some: { id: parent.id } }
+            }
+          }),
+          ({ id }) => parent.childIds.indexOf(id),
+          'asc'
+        )
+      }
+    }),
     childrenCount: t.int({
       resolve: async ({ id }) =>
         await prisma.video.count({ where: { parent: { some: { id } } } }),
