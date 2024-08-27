@@ -6,7 +6,7 @@ import { useRefinementList } from 'react-instantsearch'
 import { getLanguagesContinentsMock } from '../../../libs/useLanguagesContinentsQuery/useLanguagesContinentsQuery.mock'
 import { languageRefinements } from '../data'
 
-import { AlgoliaLanguageDropdown } from './AlgoliaLanguageDropdown'
+import { SearchbarDropdown } from './SearchbarDropdown'
 
 jest.mock('react-instantsearch')
 
@@ -14,7 +14,7 @@ const mockUseRefinementList = useRefinementList as jest.MockedFunction<
   typeof useRefinementList
 >
 
-describe('AlgoliaLanguageDropdown', () => {
+describe('SearchbarDropdown', () => {
   beforeEach(() => {
     mockUseRefinementList.mockReturnValue({
       items: languageRefinements,
@@ -27,11 +27,11 @@ describe('AlgoliaLanguageDropdown', () => {
   it('should render the correct continent headers', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <AlgoliaLanguageDropdown open />
+        <SearchbarDropdown open />
       </MockedProvider>
     )
     await waitFor(() => {
-      expect(screen.getByTestId('SearchLangaugeFilter')).toBeInTheDocument()
+      expect(screen.getByTestId('SearchLanguageFilter')).toBeInTheDocument()
     })
     expect(screen.getByText('Asia')).toBeInTheDocument()
     expect(screen.getByText('Europe')).toBeInTheDocument()
@@ -42,11 +42,11 @@ describe('AlgoliaLanguageDropdown', () => {
   it('should render the correct languages', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <AlgoliaLanguageDropdown open />
+        <SearchbarDropdown open />
       </MockedProvider>
     )
     await waitFor(() => {
-      expect(screen.getByTestId('SearchLangaugeFilter')).toBeInTheDocument()
+      expect(screen.getByTestId('SearchLanguageFilter')).toBeInTheDocument()
     })
     expect(screen.getByText('English')).toBeInTheDocument()
     expect(screen.getByText('Spanish, Castilian')).toBeInTheDocument()
@@ -63,7 +63,7 @@ describe('AlgoliaLanguageDropdown', () => {
     } as unknown as RefinementListRenderState)
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <AlgoliaLanguageDropdown open />
+        <SearchbarDropdown open />
       </MockedProvider>
     )
 
@@ -81,12 +81,12 @@ describe('AlgoliaLanguageDropdown', () => {
     } as unknown as RefinementListRenderState)
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <AlgoliaLanguageDropdown open />
+        <SearchbarDropdown open />
       </MockedProvider>
     )
 
     await waitFor(() => {
-      expect(screen.getByTestId('SearchLangaugeFilter')).toBeInTheDocument()
+      expect(screen.getByTestId('SearchLanguageFilter')).toBeInTheDocument()
     })
     expect(screen.queryByText('Africa')).not.toBeInTheDocument()
     expect(screen.queryByText('Asia')).not.toBeInTheDocument()
@@ -99,12 +99,12 @@ describe('AlgoliaLanguageDropdown', () => {
   it('should only render continent headers that have languages', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <AlgoliaLanguageDropdown open />
+        <SearchbarDropdown open />
       </MockedProvider>
     )
 
     await waitFor(() => {
-      expect(screen.getByTestId('SearchLangaugeFilter')).toBeInTheDocument()
+      expect(screen.getByTestId('SearchLanguageFilter')).toBeInTheDocument()
     })
     expect(screen.queryByText('Africa')).not.toBeInTheDocument()
     expect(screen.queryByText('Oceania')).not.toBeInTheDocument()
@@ -119,7 +119,7 @@ describe('AlgoliaLanguageDropdown', () => {
 
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <AlgoliaLanguageDropdown open />
+        <SearchbarDropdown open />
       </MockedProvider>
     )
     await waitFor(() => {

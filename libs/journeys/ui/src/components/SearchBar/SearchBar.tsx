@@ -15,7 +15,7 @@ import Globe1Icon from '@core/shared/ui/icons/Globe1'
 import Search1Icon from '@core/shared/ui/icons/Search1'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
 
-import { AlgoliaLanguageDropdown } from './AlgoliaLanguageDropdown'
+import { SearchbarDropdown } from './SearchDropdown'
 
 /* Styles below used to fake a gradient border because the 
 css attributes border-radius and border-image-source are not compatible */
@@ -160,7 +160,7 @@ export function SearchBar({
             )}
           </Formik>
         </Box>
-        <AlgoliaLanguageDropdown
+        <SearchbarDropdown
           open={open}
           id={open ? 'simple-popper' : undefined}
           anchorEl={anchorEl}

@@ -116,7 +116,7 @@ describe('SearchBar', () => {
     )
     expect(screen.getByText('Language')).toBeInTheDocument()
     fireEvent.click(screen.getByText('Language'))
-    expect(screen.getByTestId('SearchLangaugeFilter')).toBeInTheDocument()
+    expect(screen.getByTestId('SearchLanguageFilter')).toBeInTheDocument()
   })
 
   it('should close popper after it was opened', async () => {
@@ -126,8 +126,8 @@ describe('SearchBar', () => {
       </MockedProvider>
     )
     fireEvent.click(screen.getByText('Language'))
-    expect(screen.getByTestId('SearchLangaugeFilter')).toBeInTheDocument()
+    expect(screen.getByTestId('SearchLanguageFilter')).toBeInTheDocument()
     fireEvent.click(screen.getByText('Language'))
-    expect(screen.queryByTestId('SearchLangaugeFilter')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('SearchLanguageFilter')).not.toBeInTheDocument()
   })
 })

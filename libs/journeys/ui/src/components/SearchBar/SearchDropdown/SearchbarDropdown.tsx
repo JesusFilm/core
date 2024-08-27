@@ -12,17 +12,17 @@ import { useSortLanguageContinents } from '../../../libs/useSortLanguageContinen
 
 import { RefinementGroup } from './RefinementGroup'
 
-interface AlgoliaLanguageDropdownProps {
+interface SearchbarDropdownProps {
   open: boolean
   id?: string
   anchorEl?: HTMLElement | null
 }
 
-export function AlgoliaLanguageDropdown({
+export function SearchbarDropdown({
   open,
   id,
   anchorEl
-}: AlgoliaLanguageDropdownProps): ReactElement {
+}: SearchbarDropdownProps): ReactElement {
   const { t } = useTranslation('apps-watch')
   const theme = useTheme()
 

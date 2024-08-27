@@ -1,1 +1,0 @@
-export { AlgoliaLanguageDropdown } from './AlgoliaLanguageDropdown'
