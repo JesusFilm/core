@@ -244,7 +244,7 @@ describe('CardIntro', () => {
             title: [
               {
                 value: 'JESUS',
-                __typename: 'Translation'
+                __typename: 'VideoTitle'
               }
             ],
             image:
@@ -339,7 +339,6 @@ describe('CardIntro', () => {
         __typename: 'Journey'
       }
     })
-
     const { getByRole } = render(
       <MockedProvider cache={cache} mocks={[cardIntroCreateMock]}>
         <JourneyProvider

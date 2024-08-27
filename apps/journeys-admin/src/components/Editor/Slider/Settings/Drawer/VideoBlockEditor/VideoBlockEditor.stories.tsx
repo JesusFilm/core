@@ -3,7 +3,6 @@ import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent, waitFor } from '@storybook/testing-library'
 
-import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
@@ -12,6 +11,7 @@ import {
   BlockFields_ImageBlock as ImageBlock,
   BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../__generated__/BlockFields'
+import { GetVideos } from '../../../../../../../__generated__/GetVideos'
 import {
   GetVideoVariantLanguages,
   GetVideoVariantLanguages_video
@@ -21,6 +21,8 @@ import {
   VideoBlockSource
 } from '../../../../../../../__generated__/globalTypes'
 import { Drawer } from '../Drawer'
+import { videos } from '../VideoLibrary/VideoFromLocal/data'
+import { GET_VIDEOS } from '../VideoLibrary/VideoFromLocal/VideoFromLocal'
 
 import { GET_VIDEO_VARIANT_LANGUAGES } from './Source/SourceFromLocal/SourceFromLocal'
 import { VideoBlockEditor } from './VideoBlockEditor'
@@ -72,7 +74,7 @@ const videoInternal: TreeBlock<VideoBlock> = {
     id: '2_0-FallingPlates',
     title: [
       {
-        __typename: 'Translation',
+        __typename: 'VideoTitle',
         value: 'FallingPlates'
       }
     ],
@@ -161,6 +163,25 @@ const videoLanguages: GetVideoVariantLanguages_video = {
   ]
 }
 
+const mockGetVideos: MockedResponse<GetVideos> = {
+  request: {
+    query: GET_VIDEOS,
+    variables: {
+      offset: 0,
+      limit: 5,
+      where: {
+        availableVariantLanguageIds: ['529'],
+        title: null
+      }
+    }
+  },
+  result: {
+    data: {
+      videos
+    }
+  }
+}
+
 const mockGetVideoVariantLanguages: MockedResponse<GetVideoVariantLanguages> = {
   request: {
     query: GET_VIDEO_VARIANT_LANGUAGES,
@@ -177,17 +198,15 @@ const mockGetVideoVariantLanguages: MockedResponse<GetVideoVariantLanguages> = {
 
 const Template: StoryObj<typeof VideoBlockEditor> = {
   render: (args) => (
-    <MockedProvider mocks={[mockGetVideoVariantLanguages]}>
-      <InstantSearchTestWrapper>
-        <Drawer title="Video Properties">
-          <Box sx={{ pt: 4 }}>
-            <VideoBlockEditor
-              selectedBlock={args.selectedBlock}
-              onChange={onChange}
-            />
-          </Box>
-        </Drawer>
-      </InstantSearchTestWrapper>
+    <MockedProvider mocks={[mockGetVideos, mockGetVideoVariantLanguages]}>
+      <Drawer title="Video Properties">
+        <Box sx={{ pt: 4 }}>
+          <VideoBlockEditor
+            selectedBlock={args.selectedBlock}
+            onChange={onChange}
+          />
+        </Box>
+      </Drawer>
     </MockedProvider>
   )
 }

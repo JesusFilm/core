@@ -1,8 +1,10 @@
 import { ApolloError, gql } from '@apollo/client'
+import algoliasearch from 'algoliasearch'
 import { GetStaticPaths, GetStaticProps } from 'next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
+import { InstantSearch } from 'react-instantsearch'
 
 import { GetVideoContainerAndVideoContent } from '../../../../__generated__/GetVideoContainerAndVideoContent'
 import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
@@ -30,6 +32,11 @@ export const GET_VIDEO_CONTAINER_AND_VIDEO_CONTENT = gql`
   }
 `
 
+const searchClient = algoliasearch(
+  process.env.NEXT_PUBLIC_ALGOLIA_APP_ID ?? '',
+  process.env.NEXT_PUBLIC_ALGOLIA_API_KEY ?? ''
+)
+
 interface Part3PageProps {
   container: VideoContentFields
   content: VideoContentFields
@@ -39,14 +46,18 @@ export default function Part3Page({
   container,
   content
 }: Part3PageProps): ReactElement {
+  const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
+
   return (
-    <SnackbarProvider>
-      <LanguageProvider>
-        <VideoProvider value={{ content, container }}>
-          <VideoContentPage />
-        </VideoProvider>
-      </LanguageProvider>
-    </SnackbarProvider>
+    <InstantSearch insights searchClient={searchClient} indexName={indexName}>
+      <SnackbarProvider>
+        <LanguageProvider>
+          <VideoProvider value={{ content, container }}>
+            <VideoContentPage />
+          </VideoProvider>
+        </LanguageProvider>
+      </SnackbarProvider>
+    </InstantSearch>
   )
 }
 

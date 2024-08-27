@@ -37,28 +37,6 @@ describe('Summary', () => {
     expect(getByText('title')).toBeInTheDocument()
   })
 
-  it('should open accordion', () => {
-    const props = {
-      title: 'title',
-      active: true,
-      disableSelection: false,
-      journeyId: 'journeyId',
-      currentLink: 'https://example.com',
-      currentPlatform: MessagePlatform.facebook,
-      chatButtonId: 'chat.id',
-      openAccordion: jest.fn()
-    }
-    const { getByRole } = render(
-      <MockedProvider>
-        <SnackbarProvider>
-          <Summary {...props} />
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-    fireEvent.click(getByRole('checkbox'))
-    expect(props.openAccordion).toHaveBeenCalledWith()
-  })
-
   it('should disable if not selected and not active', () => {
     const props = {
       title: 'title',

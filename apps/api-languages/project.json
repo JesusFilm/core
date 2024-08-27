@@ -108,6 +108,12 @@
         ]
       }
     },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx tsc -b apps/api-languages/tsconfig.json"
+      }
+    },
     "codecov": {
       "executor": "nx:run-commands",
       "options": {
@@ -117,7 +123,13 @@
     "ingest": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npm run ts-node apps/api-languages/src/bigquery/console.ts"
+        "command": "npm run ts-node apps/api-languages/src/workers/cli.ts big-query"
+      }
+    },
+    "codegen": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "gql.tada generate output --tsconfig apps/api-languages/tsconfig.json"
       }
     }
   },

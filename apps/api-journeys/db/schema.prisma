@@ -380,6 +380,11 @@ model Journey {
   journeyVisitors           JourneyVisitor[]
   journeyCollectionJourneys JourneyCollectionJourneys[]
   journeyNotifications      JourneyNotification[]
+  website                   Boolean?                    @default(false)
+  showShareButton           Boolean?                    @default(true)
+  showLikeButton            Boolean?                    @default(true)
+  showDislikeButton         Boolean?                    @default(true)
+  displayTitle              String?
 
   @@index(title)
 }

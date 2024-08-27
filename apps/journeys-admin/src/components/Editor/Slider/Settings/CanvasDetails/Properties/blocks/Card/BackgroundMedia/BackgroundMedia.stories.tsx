@@ -1,7 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 
-import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -76,7 +75,12 @@ const journey: Journey = {
   chatButtons: [],
   host: null,
   team: null,
-  tags: []
+  tags: [],
+  website: null,
+  showShareButton: null,
+  showLikeButton: null,
+  showDislikeButton: null,
+  displayTitle: null
 }
 
 const card: TreeBlock<CardBlock> = {
@@ -116,7 +120,7 @@ const video: TreeBlock<VideoBlock> = {
     id: '2_0-FallingPlates',
     title: [
       {
-        __typename: 'Translation',
+        __typename: 'VideoTitle',
         value: 'FallingPlates'
       }
     ],
@@ -197,19 +201,17 @@ const Template: StoryObj<typeof BackgroundMedia> = {
         }
       ]}
     >
-      <InstantSearchTestWrapper>
-        <ThemeProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <EditorProvider
-              initialState={{
-                ...args
-              }}
-            >
-              <BackgroundMedia />
-            </EditorProvider>
-          </JourneyProvider>
-        </ThemeProvider>
-      </InstantSearchTestWrapper>
+      <ThemeProvider>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <EditorProvider
+            initialState={{
+              ...args
+            }}
+          >
+            <BackgroundMedia />
+          </EditorProvider>
+        </JourneyProvider>
+      </ThemeProvider>
     </MockedProvider>
   )
 }

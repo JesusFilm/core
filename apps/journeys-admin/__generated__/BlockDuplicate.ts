@@ -258,7 +258,7 @@ export interface BlockDuplicate_blockDuplicate_TypographyBlock {
 }
 
 export interface BlockDuplicate_blockDuplicate_VideoBlock_video_title {
-  __typename: "Translation";
+  __typename: "VideoTitle";
   value: string;
 }
 

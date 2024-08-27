@@ -5,12 +5,14 @@ import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { TreeBlock, useBlocks } from '../../../libs/block'
 import { filterActionBlocks } from '../../../libs/filterActionBlocks'
 import { ActionBlock } from '../../../libs/isActionBlock'
+import { useJourney } from '../../../libs/JourneyProvider'
 import { StepFields } from '../../Step/__generated__/StepFields'
 
 import { Bullet } from './Bullet'
 
 export function PaginationBullets(): ReactElement {
   const { treeBlocks, blockHistory } = useBlocks()
+  const { variant } = useJourney()
 
   const [activeIndex, setActiveIndex] = useState<number>(0)
   const [activeBlock, setActiveBlock] = useState<TreeBlock<StepFields>>(
@@ -20,10 +22,13 @@ export function PaginationBullets(): ReactElement {
     } as unknown as TreeBlock<StepFields>
   )
 
-  const bullets: number[] = useMemo(
-    () => bulletsToRender(treeBlocks),
-    [treeBlocks]
-  )
+  const bullets: number[] = useMemo(() => {
+    if (variant === 'admin') {
+      return [...new Array(3)]
+    } else {
+      return bulletsToRender(treeBlocks)
+    }
+  }, [treeBlocks, variant])
 
   useEffect(() => {
     const currentActiveBlock = blockHistory[

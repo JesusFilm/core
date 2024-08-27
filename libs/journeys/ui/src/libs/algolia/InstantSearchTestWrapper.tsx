@@ -1,6 +1,6 @@
 import algoliasearch from 'algoliasearch'
-import { UiState } from 'instantsearch.js'
-import { ReactElement, ReactNode } from 'react'
+import type { UiState } from 'instantsearch.js'
+import type { ReactElement, ReactNode } from 'react'
 import { InstantSearch } from 'react-instantsearch'
 
 interface InstantSearchWrapperProps {

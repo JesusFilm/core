@@ -1,8 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
-import { useSearchBox } from 'react-instantsearch'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SWRConfig } from 'swr'
 
 import { mswServer } from '../../../../../../../../test/mswServer'
@@ -21,23 +19,12 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: jest.fn()
 }))
 
-jest.mock('react-instantsearch')
-
-const mockUseSearchBox = useSearchBox as jest.MockedFunction<
-  typeof useSearchBox
->
-
 describe('VideoFromYouTube', () => {
-  beforeEach(() => {
-    ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
-    mockUseSearchBox.mockReturnValue({
-      refine: jest.fn()
-    } as unknown as SearchBoxRenderState)
-  })
+  beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
 
   it('should render a video list item', async () => {
     mswServer.use(getPlaylistItems)
-    render(
+    const { getByText } = render(
       <MockedProvider>
         <SWRConfig value={{ provider: () => new Map() }}>
           <VideoFromYouTube onSelect={jest.fn()} />
@@ -45,13 +32,13 @@ describe('VideoFromYouTube', () => {
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(screen.getByText('What is the Bible?')).toBeInTheDocument()
+      expect(getByText('What is the Bible?')).toBeInTheDocument()
     )
   })
 
   it('should call api to get more playlist', async () => {
     mswServer.use(getPlaylistItemsWithOffsetAndUrl)
-    render(
+    const { getByRole } = render(
       <MockedProvider>
         <SWRConfig value={{ provider: () => new Map() }}>
           <VideoFromYouTube onSelect={jest.fn()} />
@@ -59,20 +46,18 @@ describe('VideoFromYouTube', () => {
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(screen.getByRole('button', { name: 'Load More' })).toBeEnabled()
+      expect(getByRole('button', { name: 'Load More' })).toBeEnabled()
     )
-    fireEvent.click(screen.getByRole('button', { name: 'Load More' }))
+    fireEvent.click(getByRole('button', { name: 'Load More' }))
     await waitFor(() =>
-      expect(
-        screen.getByRole('button', { name: 'No More Videos' })
-      ).toBeDisabled()
+      expect(getByRole('button', { name: 'No More Videos' })).toBeDisabled()
     )
   })
 
   it('should render No More Videos if playlist length is 0', async () => {
     mswServer.use(getPlaylistItemsEmpty)
 
-    render(
+    const { getByText, getByRole } = render(
       <MockedProvider>
         <SWRConfig value={{ provider: () => new Map() }}>
           <VideoFromYouTube onSelect={jest.fn()} />
@@ -80,16 +65,14 @@ describe('VideoFromYouTube', () => {
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(screen.getByText('No Results Found')).toBeInTheDocument()
+      expect(getByText('No Results Found')).toBeInTheDocument()
     )
-    expect(
-      screen.getByRole('button', { name: 'No More Videos' })
-    ).toBeDisabled()
+    expect(getByRole('button', { name: 'No More Videos' })).toBeDisabled()
   })
 
   it('should re-enable Load More if filters change', async () => {
     mswServer.use(getPlaylistItemsWithOffsetAndUrl)
-    render(
+    const { getByRole, getByText } = render(
       <MockedProvider>
         <SWRConfig value={{ provider: () => new Map() }}>
           <VideoFromYouTube onSelect={jest.fn()} />
@@ -97,38 +80,36 @@ describe('VideoFromYouTube', () => {
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(screen.getByRole('button', { name: 'Load More' })).toBeEnabled()
+      expect(getByRole('button', { name: 'Load More' })).toBeEnabled()
     )
-    fireEvent.click(screen.getByRole('button', { name: 'Load More' }))
+    fireEvent.click(getByRole('button', { name: 'Load More' }))
     await waitFor(() =>
-      expect(
-        screen.getByRole('button', { name: 'No More Videos' })
-      ).toBeDisabled()
+      expect(getByRole('button', { name: 'No More Videos' })).toBeDisabled()
     )
-    const searchBox = screen.getByRole('searchbox', { name: 'Search' })
-    fireEvent.change(searchBox, {
+    const textbox = getByRole('textbox', { name: 'Search' })
+    fireEvent.change(textbox, {
       target: { value: 'https://www.youtube.com/watch?v=jQaeIJOA6J0' }
     })
     await waitFor(() =>
-      expect(screen.getByText('Blessing and Curse')).toBeInTheDocument()
+      expect(getByText('Blessing and Curse')).toBeInTheDocument()
     )
   })
 
   it('should render video item if filters change', async () => {
     mswServer.use(getVideosWithOffsetAndUrl)
-    render(
+    const { getByRole, getByText } = render(
       <MockedProvider>
         <SWRConfig value={{ provider: () => new Map() }}>
           <VideoFromYouTube onSelect={jest.fn()} />
         </SWRConfig>
       </MockedProvider>
     )
-    const searchBox = screen.getByRole('searchbox', { name: 'Search' })
-    fireEvent.change(searchBox, {
+    const textbox = getByRole('textbox', { name: 'Search' })
+    fireEvent.change(textbox, {
       target: { value: 'https://www.youtube.com/watch?v=ak06MSETeo4' }
     })
     await waitFor(() => {
-      expect(screen.getByText('Blessing and Curse')).toBeInTheDocument()
+      expect(getByText('Blessing and Curse')).toBeInTheDocument()
     })
   })
 })
