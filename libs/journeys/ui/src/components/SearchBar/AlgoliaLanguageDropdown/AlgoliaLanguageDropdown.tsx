@@ -1,6 +1,7 @@
 import Box from '@mui/material/Box'
 import Popper from '@mui/material/Popper'
 import Stack from '@mui/material/Stack'
+import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, ReactNode } from 'react'
@@ -23,6 +24,7 @@ export function AlgoliaLanguageDropdown({
   anchorEl
 }: AlgoliaLanguageDropdownProps): ReactElement {
   const { t } = useTranslation('apps-watch')
+  const theme = useTheme()
 
   const { data } = useLanguagesContinentsQuery()
   const languages = useSortLanguageContinents({
@@ -71,7 +73,7 @@ export function AlgoliaLanguageDropdown({
       anchorEl={anchorEl}
       placement="bottom-end"
       sx={{ width: anchorEl?.clientWidth }}
-      data-testid="SearchLangaugeFilter"
+      data-testid="SearchLanguageFilter"
       modifiers={[
         {
           name: 'flip',
@@ -84,7 +86,16 @@ export function AlgoliaLanguageDropdown({
         boxShadow="0px 4px 4px 0px #00000040"
         sx={{ p: 8, bgcolor: 'background.paper', mt: 3 }}
       >
-        <Stack direction={{ xs: 'column', sm: 'row' }} color="text.primary">
+        <Stack
+          color="text.primary"
+          direction={{ xs: 'column', lg: 'row' }}
+          justifyContent="space-around"
+          sx={{
+            [theme.breakpoints.down('lg')]: {
+              gap: 6
+            }
+          }}
+        >
           <ContinentRefinements />
         </Stack>
       </Box>

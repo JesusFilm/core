@@ -16,7 +16,7 @@ export function RefinementGroup({
   title
 }: RefinementGroupProps): ReactElement {
   return (
-    <Box>
+    <Box sx={{ minWidth: 215 }}>
       <Typography variant="h6" color="primary.main" marginBottom={6}>
         {title}
       </Typography>
