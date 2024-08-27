@@ -16,6 +16,7 @@ import { getStepTheme } from '@core/journeys/ui/getStepTheme'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { StepFooter } from '@core/journeys/ui/StepFooter'
+import { StepHeader } from '@core/journeys/ui/StepHeader'
 import { VideoWrapper } from '@core/journeys/ui/VideoWrapper'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeName } from '@core/shared/ui/themes'
@@ -250,6 +251,33 @@ export function Canvas(): ReactElement {
                           }}
                           data-testid={`step-${selectedStep.id}`}
                         >
+                          <ThemeProvider
+                            themeName={ThemeName.journeyUi}
+                            themeMode={theme.themeMode}
+                            rtl={rtl}
+                            locale={locale}
+                            nested
+                          >
+                            <StepHeader
+                              sx={{
+                                outline:
+                                  activeCanvasDetailsDrawer ===
+                                    ActiveCanvasDetailsDrawer.Footer &&
+                                  journey?.website === true
+                                    ? '2px solid #C52D3A'
+                                    : 'none',
+                                outlineOffset: -4,
+                                borderRadius: 5,
+                                cursor: 'pointer',
+                                minHeight: '42px'
+                              }}
+                              onHeaderClick={
+                                journey?.website === true
+                                  ? handleFooterClick
+                                  : undefined
+                              }
+                            />
+                          </ThemeProvider>
                           <BlockRenderer
                             block={selectedStep}
                             wrappers={{

@@ -2,14 +2,22 @@ import Stack from '@mui/material/Stack'
 import { SxProps } from '@mui/material/styles'
 import { ReactElement } from 'react'
 
+import { useJourney } from '../../libs/JourneyProvider'
+
 import { InformationButton } from './InformationButton'
 import { PaginationBullets } from './PaginationBullets'
 
 interface StepHeaderProps {
+  onHeaderClick?: () => void
   sx?: SxProps
 }
 
-export function StepHeader({ sx }: StepHeaderProps): ReactElement {
+export function StepHeader({
+  onHeaderClick,
+  sx
+}: StepHeaderProps): ReactElement {
+  const { journey } = useJourney()
+
   return (
     <Stack
       data-testid="JourneysStepHeader"
@@ -23,9 +31,25 @@ export function StepHeader({ sx }: StepHeaderProps): ReactElement {
         width: { xs: '100%', lg: 'auto' },
         ...sx
       }}
+      onClick={(e) => {
+        if (onHeaderClick != null) {
+          e.stopPropagation()
+          onHeaderClick()
+        }
+      }}
     >
-      <PaginationBullets />
-      <InformationButton />
+      {journey?.website === true ? (
+        <>
+          {/* Logo */}
+          {/* Title */}
+          {/* Menu */}
+        </>
+      ) : (
+        <>
+          <PaginationBullets />
+          <InformationButton />
+        </>
+      )}
     </Stack>
   )
 }
