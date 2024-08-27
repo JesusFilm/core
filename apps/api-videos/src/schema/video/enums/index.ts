@@ -1,1 +1,2 @@
+import './videoAdminUserRole'
 import './videoLabel'

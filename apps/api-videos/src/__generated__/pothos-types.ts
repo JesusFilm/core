@@ -1,5 +1,5 @@
 /* eslint-disable */
-import type { Prisma, Video, VideoTitle, VideoVariantDownload, VideoVariant, VideoSubtitle, VideoVariantSubtitle, VideoSnippet, VideoDescription, VideoImageAlt, VideoStudyQuestion, ImportTimes, BibleCitation, BibleBook, BibleBookName, Keyword } from ".prisma/api-videos-client";
+import type { Prisma, Video, VideoTitle, VideoVariantDownload, VideoVariant, VideoSubtitle, VideoVariantSubtitle, VideoSnippet, VideoDescription, VideoImageAlt, VideoStudyQuestion, ImportTimes, BibleCitation, BibleBook, BibleBookName, Keyword, VideoAdminUser } from ".prisma/api-videos-client";
 export default interface PrismaTypes {
     Video: {
         Name: "Video";
@@ -364,5 +364,19 @@ export default interface PrismaTypes {
                 Nullable: false;
             };
         };
+    };
+    VideoAdminUser: {
+        Name: "VideoAdminUser";
+        Shape: VideoAdminUser;
+        Include: never;
+        Select: Prisma.VideoAdminUserSelect;
+        OrderBy: Prisma.VideoAdminUserOrderByWithRelationAndSearchRelevanceInput;
+        WhereUnique: Prisma.VideoAdminUserWhereUniqueInput;
+        Where: Prisma.VideoAdminUserWhereInput;
+        Create: {};
+        Update: {};
+        RelationName: never;
+        ListRelations: never;
+        Relations: {};
     };
 }

@@ -2,10 +2,11 @@ import compact from 'lodash/compact'
 import isEmpty from 'lodash/isEmpty'
 
 import { prisma } from '../../lib/prisma'
-import { builder } from '../builder'
+import { Context, builder } from '../builder'
 import { IdType, IdTypeShape } from '../enums/idType'
 import { Language, LanguageWithSlug } from '../language'
 
+import { VideoAdminUserRole } from './enums/videoAdminUserRole'
 import { VideoLabel } from './enums/videoLabel'
 import { VideosFilter } from './inputs/videosFilter'
 import { videosFilter } from './lib/videosFilter'
@@ -257,5 +258,14 @@ builder.queryFields((t) => ({
         skip: offset ?? 0,
         take: limit ?? 100
       })
+  }),
+  currentVideoRoles: t.field({
+    type: [VideoAdminUserRole],
+    nullable: false,
+    authScopes: {
+      isAuthenticated: true
+    },
+    resolve: async (_query, _args, ctx: Context) =>
+      ctx.currentVideoUser?.roles ?? []
   })
 }))

@@ -57,6 +57,7 @@ type Query {
   keywords: [Keyword!]!
   video(id: ID!, idType: IdType = databaseId): Video!
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
+  currentVideoRoles: [VideoAdminUserRole!]!
   videoVariants: [VideoVariant!]!
 }
 
@@ -88,6 +89,14 @@ type Video
   variantLanguagesWithSlug: [LanguageWithSlug!]!
   subtitles(languageId: ID, primary: Boolean, edition: String): [VideoSubtitle!]!
   variant(languageId: ID): VideoVariant
+}
+
+enum VideoAdminUserRole {
+  admin
+  youtubeMember
+  youtubeAdmin
+  coreMember
+  coreAdmin
 }
 
 type VideoDescription {

@@ -256,3 +256,17 @@ model Keyword {
   @@unique([value, languageId])
   @@index([value(type: Hash)])
 }
+
+enum VideoAdminUserRole {
+  admin
+  youtubeMember
+  youtubeAdmin
+  coreMember
+  coreAdmin
+}
+
+model VideoAdminUser {
+  id     String               @id @default(uuid())
+  userId String               @unique
+  roles  VideoAdminUserRole[]
+}
