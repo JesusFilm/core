@@ -8,6 +8,8 @@ import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { Drawer } from '../../Drawer'
 import { WebsiteToggle } from '../WebsiteToggle'
 
+import { Reactions } from './Reactions'
+
 const Host = dynamic(
   async () =>
     await import(
@@ -46,6 +48,7 @@ export function Footer(): ReactElement {
   return (
     <Drawer title={t('Journey Appearance')} onClose={onClose}>
       {websiteMode && <WebsiteToggle />}
+      <Reactions />
       <Host />
       <Chat />
     </Drawer>
