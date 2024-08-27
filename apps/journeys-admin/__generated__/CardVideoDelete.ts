@@ -14,7 +14,7 @@ export interface CardVideoDelete_video_ImageBlock {
 }
 
 export interface CardVideoDelete_video_VideoBlock_video_title {
-  __typename: "Translation";
+  __typename: "VideoTitle";
   value: string;
 }
 

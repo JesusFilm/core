@@ -100,7 +100,12 @@ export const defaultJourney: Journey = {
       }
     }
   ],
-  tags: []
+  tags: [],
+  website: null,
+  showShareButton: null,
+  showLikeButton: null,
+  showDislikeButton: null,
+  displayTitle: null
 }
 
 export const publishedJourney: Journey = {
@@ -286,7 +291,7 @@ export const blocks: Block[] = [
       id: '2_0-FallingPlates',
       title: [
         {
-          __typename: 'Translation',
+          __typename: 'VideoTitle',
           value: 'FallingPlates'
         }
       ],
@@ -599,7 +604,7 @@ export const blocks: Block[] = [
       id: '2_0-FallingPlates',
       title: [
         {
-          __typename: 'Translation',
+          __typename: 'VideoTitle',
           value: 'FallingPlates'
         }
       ],

@@ -82,7 +82,7 @@ describe('CanvasDetails', () => {
       </MockedProvider>
     )
 
-    expect(screen.getByText('Footer Properties')).toBeInTheDocument()
+    expect(screen.getByText('Journey Appearance')).toBeInTheDocument()
   })
 
   it('should render properties', () => {

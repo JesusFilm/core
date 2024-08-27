@@ -85,5 +85,10 @@ export const JOURNEY_FIELDS = gql`
         primary
       }
     }
+    website
+    showShareButton
+    showLikeButton
+    showDislikeButton
+    displayTitle
   }
 `

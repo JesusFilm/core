@@ -1,3 +1,4 @@
+import { InMemoryCache } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { act, renderHook, waitFor } from '@testing-library/react'
 
@@ -44,9 +45,23 @@ describe('useBlockRestoreMutation', () => {
   } as unknown as EditorState
 
   it('should restore block', async () => {
+    const cache = new InMemoryCache()
+    cache.restore({
+      'Journey:journey-id': {
+        id: 'journey-id',
+        __typename: 'Journey',
+        blocks: [
+          { __ref: 'StepBlock:step1.id' },
+          { __ref: 'StepBlock:step2.id' }
+        ]
+      },
+      'StepBlock:step1.id': { __typename: 'StepBlock', id: 'step1.id' },
+      'StepBlock:step2.id': { __typename: 'StepBlock', id: 'step2.id' }
+    })
+
     const { result } = renderHook(() => useBlockRestoreMutation(), {
       wrapper: ({ children }) => (
-        <MockedProvider mocks={[useBlockRestoreMutationMock]}>
+        <MockedProvider mocks={[useBlockRestoreMutationMock]} cache={cache}>
           <JourneyProvider value={{ journey: defaultJourney }}>
             <EditorProvider initialState={initialState}>
               {children}
@@ -66,5 +81,15 @@ describe('useBlockRestoreMutation', () => {
         expect(useBlockRestoreMutationMock.result).toHaveBeenCalled()
       })
     })
+
+    const extractedCache = cache.extract()
+    expect(extractedCache['Journey:journey-id']?.blocks).toEqual([
+      { __ref: 'StepBlock:step1.id' },
+      { __ref: 'StepBlock:step2.id' },
+      { __ref: 'StepBlock:step3.id' }
+    ])
+    expect(extractedCache['StepBlock:step1.id']).toBeDefined()
+    expect(extractedCache['StepBlock:step2.id']).toBeDefined()
+    expect(extractedCache['StepBlock:step3.id']).toBeDefined()
   })
 })

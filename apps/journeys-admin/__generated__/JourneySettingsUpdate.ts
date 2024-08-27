@@ -22,6 +22,9 @@ export interface JourneySettingsUpdate_journeyUpdate_tags {
 export interface JourneySettingsUpdate_journeyUpdate {
   __typename: "Journey";
   id: string;
+  /**
+   * private title for creators
+   */
   title: string;
   description: string | null;
   strategySlug: string | null;

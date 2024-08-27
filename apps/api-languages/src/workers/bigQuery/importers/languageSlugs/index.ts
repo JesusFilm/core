@@ -1,0 +1,1 @@
+export { importLanguageSlugs } from './languageSlugs'

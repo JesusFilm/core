@@ -88,7 +88,12 @@ describe('Editor', () => {
     chatButtons: [],
     host: null,
     team: null,
-    tags: []
+    tags: [],
+    website: null,
+    showShareButton: null,
+    showLikeButton: null,
+    showDislikeButton: null,
+    displayTitle: null
   }
 
   beforeEach(() => {
