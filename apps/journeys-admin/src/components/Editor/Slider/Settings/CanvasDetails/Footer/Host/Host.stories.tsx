@@ -186,9 +186,7 @@ export const Open = {
     journey: { ...journey, host: null }
   },
   play: async () => {
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Hosted By' })
-    )
+    await userEvent.click(screen.getByRole('button', { name: 'Hosted By' }))
   }
 }
 
