@@ -3,16 +3,15 @@
 import { NormalizedCacheObject, createHttpLink } from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
 import {
+  ApolloClient,
   ApolloNextAppProvider,
-  NextSSRApolloClient,
-  NextSSRInMemoryCache
-} from '@apollo/experimental-nextjs-app-support/ssr'
+  InMemoryCache
+} from '@apollo/experimental-nextjs-app-support'
 import { UserCredential, getAuth, signInAnonymously } from 'firebase/auth'
-import { ReactNode } from 'react'
+import { PropsWithChildren, ReactNode } from 'react'
 
+import { cache } from '../../../libs/apollo'
 import { firebaseClient } from '../../../libs/firebaseClient/firebaseClient'
-
-import { cache } from './cache'
 
 const httpLink = createHttpLink({
   uri: process.env.NEXT_PUBLIC_GATEWAY_URL
@@ -36,9 +35,9 @@ const authLink = setContext(async (_, { headers }) => {
 })
 
 // have a function to create a client for you
-function makeClient(): NextSSRApolloClient<NormalizedCacheObject> {
-  return new NextSSRApolloClient({
-    cache: new NextSSRInMemoryCache(cache),
+function makeClient(): ApolloClient<NormalizedCacheObject> {
+  return new ApolloClient({
+    cache: new InMemoryCache(cache),
     link: typeof window === 'undefined' ? httpLink : authLink.concat(httpLink),
     name: 'watch',
     version: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA,
@@ -47,9 +46,7 @@ function makeClient(): NextSSRApolloClient<NormalizedCacheObject> {
 }
 
 // you need to create a component to wrap your app in
-export function ApolloWrapper({
-  children
-}: React.PropsWithChildren): ReactNode {
+export function ApolloWrapper({ children }: PropsWithChildren): ReactNode {
   return (
     <ApolloNextAppProvider makeClient={makeClient}>
       {children}

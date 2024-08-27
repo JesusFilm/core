@@ -42,5 +42,19 @@ export const authConfig = {
   theme: {
     colorScheme: 'light' // "auto" | "dark" | "light"
   },
-  secret: process.env.NEXT_PUBLIC_AUTH_CONFIG_SECRET
+  secret: process.env.NEXT_PUBLIC_AUTH_CONFIG_SECRET,
+  callbacks: {
+    jwt({ token, user }) {
+      if (user != null) token.id = user.id
+      return token
+    },
+    session: async ({ session, token, user }) => {
+      console.log(session)
+      console.log(token)
+      console.log(user)
+      if (token.id != null) session.user.id = token.id as string
+      if (user != null) session.user.id = user.id
+      return session
+    }
+  }
 } satisfies NextAuthConfig

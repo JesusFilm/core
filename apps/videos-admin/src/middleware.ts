@@ -1,9 +1,28 @@
+import { graphql } from 'gql.tada'
 import { NextRequest, NextResponse } from 'next/server'
+import NextAuth from 'next-auth'
 import createMiddleware from 'next-intl/middleware'
 
-import { auth } from './auth'
+import { signOut } from './auth'
+import { authConfig } from './auth.config'
+import { makeClient } from './libs/apollo/makeClient'
 
 const locales = ['en']
+
+const GET_AUTH = graphql(`
+  query me {
+    me {
+      id
+      email
+      firstName
+      lastName
+      imageUrl
+    }
+    currentVideoRoles
+  }
+`)
+
+const { auth } = NextAuth(authConfig)
 
 const testPathnameRegex = (pages: string[], pathName: string): boolean => {
   return RegExp(
@@ -40,6 +59,16 @@ export default async function middleware(
     session !== null ||
     testPathnameRegex(unAuthenticatedPages, req.nextUrl.pathname)
   ) {
+    const { data } = await makeClient({
+      headers: {
+        authorization: session?.accessToken ?? ''
+      }
+    }).query({
+      query: GET_AUTH
+    })
+    if (data?.currentVideoRoles?.length === 0) {
+      return await signOut()
+    }
     return intlResponse
   }
 
