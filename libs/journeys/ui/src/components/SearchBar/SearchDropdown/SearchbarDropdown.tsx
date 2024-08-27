@@ -35,6 +35,8 @@ export function SearchbarDropdown({
     limit: 1000
   })
 
+  console.log('refinements', refinements)
+
   function ContinentRefinements(): ReactNode {
     return refinements.items.length > 0 ? (
       <>
