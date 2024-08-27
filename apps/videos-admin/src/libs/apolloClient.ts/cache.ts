@@ -12,8 +12,16 @@ export const cache = {
     Query: {
       fields: {
         videos: {
-          ...offsetLimitPagination(),
-          keyArgs: ['where', ['labels', 'availableVariantLanguageIds', 'title']]
+          ...offsetLimitPagination([
+            'where',
+            ['labels', 'availableVariantLanguageIds', 'title']
+          ]),
+          read(existing, { args }) {
+            return existing?.slice(
+              args?.offset ?? 0,
+              (args?.offset ?? 0) + (args?.limit ?? 100)
+            )
+          }
         }
       }
     }

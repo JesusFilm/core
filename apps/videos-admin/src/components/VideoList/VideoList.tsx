@@ -66,15 +66,14 @@ export function VideoList(): ReactElement {
   const [getVideosWhereArgs, setGetVideosWhereArgs] = useState<VideosFilter>({})
 
   const t = useTranslations()
-  const { data, loading, refetch } = useQuery(GET_VIDEOS_AND_COUNT, {
+  const { data, loading, fetchMore } = useQuery(GET_VIDEOS_AND_COUNT, {
     variables: {
       limit: videosLimit,
       offset: paginationModel.page * videosLimit,
       showTitle: columnVisibilityModel.title ?? true,
       showSnippet: columnVisibilityModel.description ?? true,
       where: getVideosWhereArgs
-    },
-    fetchPolicy: 'no-cache'
+    }
   })
 
   const rows: GridRowsProp =
@@ -126,12 +125,10 @@ export function VideoList(): ReactElement {
     model: GridPaginationModel,
     _details: GridCallbackDetails
   ): Promise<void> {
-    await refetch({
-      limit: videosLimit,
-      offset: model.page * videosLimit,
-      showTitle: columnVisibilityModel.title ?? true,
-      showSnippet: columnVisibilityModel.description ?? true,
-      where: getVideosWhereArgs
+    await fetchMore({
+      variables: {
+        offset: model.page * videosLimit
+      }
     })
     setPaginationModel(model)
   }
