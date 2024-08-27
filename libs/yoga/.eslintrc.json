@@ -1,5 +1,5 @@
 {
-  "extends": ["../../../.eslintrc.json"],
+  "extends": ["../../.eslintrc.json"],
   "ignorePatterns": ["!**/*"],
   "overrides": [
     {
@@ -9,7 +9,7 @@
     {
       "files": ["*.ts", "*.tsx"],
       "parserOptions": {
-        "project": ["libs/nest/decorators/tsconfig.*?.json"]
+        "project": ["libs/yoga/tsconfig.*?.json"]
       },
       "rules": {}
     },

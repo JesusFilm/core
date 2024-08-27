@@ -20,6 +20,12 @@
       "options": {
         "command": "codecov -f coverage/libs/yoga/cobertura-coverage.xml -F libs.nest.decorators"
       }
+    },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx tsc -b libs/yoga/tsconfig.json"
+      }
     }
   },
   "tags": []
