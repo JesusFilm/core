@@ -89,10 +89,10 @@ export async function service(logger?: Logger): Promise<void> {
               title: true,
               description: true,
               imageAlt: true,
-              snippet: true
+              snippet: true,
+              subtitles: true
             }
-          },
-          subtitle: true
+          }
         },
         where:
           appIndex === 'video-variants-prd'
@@ -129,9 +129,9 @@ export async function service(logger?: Logger): Promise<void> {
           languageId: videoVariant.languageId,
           languageEnglishName: languages[videoVariant.languageId]?.english,
           languagePrimaryName: languages[videoVariant.languageId]?.primary,
-          subtitles: videoVariant.subtitle.map(
-            (subtitle) => subtitle.languageId
-          ),
+          subtitles: videoVariant.video?.subtitles
+            .filter((subtitle) => subtitle.edition === videoVariant.edition)
+            .map((subtitle) => subtitle.languageId),
           slug: videoVariant.slug,
           label: videoVariant.video?.label,
           image: videoVariant.video?.image,
