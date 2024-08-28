@@ -10,6 +10,7 @@ locals {
     "CROWDIN_API_KEY",
     "GATEWAY_URL",
     "PG_DATABASE_URL_VIDEOS",
+    "REDIS_PORT",
     "REDIS_URL"
   ]
   service_config = {

@@ -3628,9 +3628,11 @@ export type VideoSubtitle = {
   __typename?: 'VideoSubtitle';
   edition: Scalars['String']['output'];
   id: Scalars['ID']['output'];
+  language: Language;
   languageId: Scalars['ID']['output'];
   primary: Scalars['Boolean']['output'];
   srtSrc?: Maybe<Scalars['String']['output']>;
+  value: Scalars['String']['output'];
   vttSrc?: Maybe<Scalars['String']['output']>;
 };
 
@@ -3669,7 +3671,7 @@ export type VideoVariant = {
   language: Language;
   /** slug is a permanent link to the video variant. */
   slug: Scalars['String']['output'];
-  subtitle: Array<VideoVariantSubtitle>;
+  subtitle: Array<VideoSubtitle>;
   subtitleCount: Scalars['Int']['output'];
 };
 
@@ -3691,14 +3693,6 @@ export enum VideoVariantDownloadQuality {
   High = 'high',
   Low = 'low'
 }
-
-export type VideoVariantSubtitle = {
-  __typename?: 'VideoVariantSubtitle';
-  id: Scalars['ID']['output'];
-  language: Language;
-  primary: Scalars['Boolean']['output'];
-  value: Scalars['String']['output'];
-};
 
 export type VideosFilter = {
   availableVariantLanguageIds?: InputMaybe<Array<Scalars['ID']['input']>>;

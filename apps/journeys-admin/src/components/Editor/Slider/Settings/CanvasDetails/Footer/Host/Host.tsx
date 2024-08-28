@@ -1,9 +1,11 @@
 import { gql, useLazyQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import dynamic from 'next/dynamic'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import UserProfileCircleIcon from '@core/shared/ui/icons/UserProfileCircle'
 
 import {
   GetAllTeamHosts,
@@ -12,6 +14,7 @@ import {
 import { UserTeamRole } from '../../../../../../../../__generated__/globalTypes'
 import { useCurrentUserLazyQuery } from '../../../../../../../libs/useCurrentUserLazyQuery'
 import { useUserTeamsAndInvitesQuery } from '../../../../../../../libs/useUserTeamsAndInvitesQuery'
+import { Accordion } from '../../Properties/Accordion'
 
 import { HostSelection } from './HostSelection'
 
@@ -30,7 +33,7 @@ export const GET_ALL_TEAM_HOSTS = gql`
 const HostList = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/Tab/Attributes/blocks/Footer/HostTab/HostList/HostList" */ './HostList'
+      /* webpackChunkName: "Editor/Tab/Attributes/blocks/Footer/Host/HostList/HostList" */ './HostList'
     ).then((mod) => mod.HostList),
   { ssr: false }
 )
@@ -38,7 +41,7 @@ const HostList = dynamic(
 const HostInfo = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/Tab/Attributes/blocks/Footer/HostTab/HostInfo/HostInfo" */ './HostInfo'
+      /* webpackChunkName: "Editor/Tab/Attributes/blocks/Footer/Host/HostInfo/HostInfo" */ './HostInfo'
     ).then((mod) => mod.HostInfo),
   { ssr: false }
 )
@@ -46,17 +49,18 @@ const HostInfo = dynamic(
 const HostForm = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/Tab/Attributes/blocks/Footer/HostTab/HostForm/HostForm" */ './HostForm'
+      /* webpackChunkName: "Editor/Tab/Attributes/blocks/Footer/Host/HostForm/HostForm" */ './HostForm'
     ).then((mod) => mod.HostForm),
   { ssr: false }
 )
 
-export function HostTab(): ReactElement {
+export function Host(): ReactElement {
   const [openHostSelection, setOpenHostSelection] = useState(true)
   const [openHostList, setOpenHostList] = useState(false)
   const [openHostForm, setOpenHostForm] = useState(false)
   const [openHostInfo, setOpenHostInfo] = useState(false)
   const { journey } = useJourney()
+  const { t } = useTranslation('apps-journeys-admin')
   // Get all team members of journey team, check if user in team
   // TODO: Replace with CASL authorisation check
   const { loadUser, data: user } = useCurrentUserLazyQuery()
@@ -118,25 +122,31 @@ export function HostTab(): ReactElement {
   }
 
   return (
-    <Box data-testid="HostTab">
-      {openHostSelection && (
-        <HostSelection
-          data={data}
-          userInTeam={userInTeam}
-          handleSelection={handleSelection}
-        />
-      )}
-      {openHostList && (
-        <HostList teamHosts={teamHosts} handleSelection={handleSelection} />
-      )}
+    <Accordion
+      id="author details"
+      icon={<UserProfileCircleIcon />}
+      name={t('Hosted By')}
+    >
+      <Box data-testid="Host">
+        {openHostSelection && (
+          <HostSelection
+            data={data}
+            userInTeam={userInTeam}
+            handleSelection={handleSelection}
+          />
+        )}
+        {openHostList && (
+          <HostList teamHosts={teamHosts} handleSelection={handleSelection} />
+        )}
 
-      {openHostInfo && <HostInfo handleSelection={handleSelection} />}
-      {openHostForm && (
-        <HostForm
-          handleSelection={handleSelection}
-          getAllTeamHostsQuery={getAllTeamHosts}
-        />
-      )}
-    </Box>
+        {openHostInfo && <HostInfo handleSelection={handleSelection} />}
+        {openHostForm && (
+          <HostForm
+            handleSelection={handleSelection}
+            getAllTeamHostsQuery={getAllTeamHosts}
+          />
+        )}
+      </Box>
+    </Accordion>
   )
 }

@@ -42,7 +42,8 @@ function getJourneySettingsUpdateMock(
           description,
           strategySlug: null,
           language: journey.language,
-          tags: []
+          tags: [],
+          website: null
         }
       }
     }

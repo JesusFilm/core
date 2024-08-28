@@ -145,6 +145,8 @@ type VideoSubtitle {
   edition: String!
   vttSrc: String
   srtSrc: String
+  value: String!
+  language: Language!
 }
 
 type VideoTitle {
@@ -160,7 +162,7 @@ type VideoVariant {
   downloads: [VideoVariantDownload!]!
   duration: Int!
   language: Language!
-  subtitle(languageId: ID, primary: Boolean): [VideoVariantSubtitle!]!
+  subtitle(languageId: ID, primary: Boolean): [VideoSubtitle!]!
   subtitleCount: Int!
 
   """slug is a permanent link to the video variant."""
@@ -177,13 +179,6 @@ type VideoVariantDownload {
 enum VideoVariantDownloadQuality {
   low
   high
-}
-
-type VideoVariantSubtitle {
-  id: ID!
-  value: String!
-  primary: Boolean!
-  language: Language!
 }
 
 input VideosFilter {
