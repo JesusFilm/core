@@ -9,13 +9,13 @@ import {
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
+import { getJourneySettingsUpdateMock } from '../../../../../../../libs/useJourneyUpdateMutation/useJourneyUpdateMutation.mock'
 import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
 import { Reactions } from '.'
-import { getJourneySettingsUpdateMock } from '../../../../../../../libs/useJourneyUpdateMutation'
-import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
 describe('Reactions', () => {
   it('should render', () => {
