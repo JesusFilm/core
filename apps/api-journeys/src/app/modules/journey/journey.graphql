@@ -207,6 +207,8 @@ input JourneyUpdateInput {
   showMenu: Boolean
   showDisplayTitle: Boolean
   menuButtonIcon: JourneyMenuButtonIcon
+  menuStepBlockId: ID
+  logoImageBlockId: ID
 }
 
 extend type UserJourney {

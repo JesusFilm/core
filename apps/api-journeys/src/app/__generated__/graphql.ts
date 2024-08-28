@@ -739,6 +739,8 @@ export class JourneyUpdateInput {
     showMenu?: Nullable<boolean>;
     showDisplayTitle?: Nullable<boolean>;
     menuButtonIcon?: Nullable<JourneyMenuButtonIcon>;
+    menuStepBlockId?: Nullable<string>;
+    logoImageBlockId?: Nullable<string>;
 }
 
 export class JourneyTemplateInput {

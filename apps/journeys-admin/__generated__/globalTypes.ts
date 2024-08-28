@@ -487,6 +487,8 @@ export interface JourneyUpdateInput {
   showMenu?: boolean | null;
   showDisplayTitle?: boolean | null;
   menuButtonIcon?: JourneyMenuButtonIcon | null;
+  menuStepBlockId?: string | null;
+  logoImageBlockId?: string | null;
 }
 
 export interface JourneyVisitorFilter {
