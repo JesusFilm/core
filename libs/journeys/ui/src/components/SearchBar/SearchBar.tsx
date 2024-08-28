@@ -6,7 +6,7 @@ import TextField, { TextFieldProps } from '@mui/material/TextField'
 import { Formik } from 'formik'
 import { useTranslation } from 'next-i18next'
 import { type ReactElement, useRef, useState } from 'react'
-import { useSearchBox } from 'react-instantsearch'
+import { useRefinementList, useSearchBox } from 'react-instantsearch'
 
 import Search1Icon from '@core/shared/ui/icons/Search1'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
@@ -54,6 +54,13 @@ export function SearchBar({
     title: query
   }
 
+  const refinements = useRefinementList({
+    attribute: 'languageEnglishName',
+    limit: 1000
+  })
+
+  const refinedItems = refinements.items.filter((item) => item.isRefined)
+
   function handleSubmit(values: typeof initialValues): void {
     refine(values.title)
   }
@@ -100,7 +107,10 @@ export function SearchBar({
                     ),
                     endAdornment: languageButtonVisable ? (
                       <InputAdornment position="end">
-                        <LanguageButton onClick={handleClick} />
+                        <LanguageButton
+                          onClick={handleClick}
+                          selectedLanguage={refinedItems[0]?.label}
+                        />
                       </InputAdornment>
                     ) : (
                       <></>
@@ -115,6 +125,7 @@ export function SearchBar({
         </Box>
         <SearchbarDropdown
           open={open}
+          refinements={refinements}
           id={open ? 'simple-popper' : undefined}
           anchorEl={anchorEl}
         />

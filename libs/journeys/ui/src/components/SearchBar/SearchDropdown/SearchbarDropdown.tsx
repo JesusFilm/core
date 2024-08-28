@@ -3,9 +3,9 @@ import Popper from '@mui/material/Popper'
 import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, ReactNode } from 'react'
-import { useRefinementList } from 'react-instantsearch'
 
 import { useLanguagesContinentsQuery } from '../../../libs/useLanguagesContinentsQuery'
 import { useSortLanguageContinents } from '../../../libs/useSortLanguageContinents'
@@ -14,12 +14,14 @@ import { RefinementGroup } from './RefinementGroup'
 
 interface SearchbarDropdownProps {
   open: boolean
+  refinements: RefinementListRenderState
   id?: string
   anchorEl?: HTMLElement | null
 }
 
 export function SearchbarDropdown({
   open,
+  refinements,
   id,
   anchorEl
 }: SearchbarDropdownProps): ReactElement {
@@ -29,10 +31,6 @@ export function SearchbarDropdown({
   const { data } = useLanguagesContinentsQuery()
   const languages = useSortLanguageContinents({
     languages: data?.languages ?? []
-  })
-  const refinements = useRefinementList({
-    attribute: 'languageEnglishName',
-    limit: 1000
   })
 
   function ContinentRefinements(): ReactNode {

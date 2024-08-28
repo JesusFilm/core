@@ -26,9 +26,13 @@ const StyledButton = styled(Button)(({ theme }) => ({
 
 interface LanguageButtonProps {
   onClick: () => void
+  selectedLanguage?: string
 }
 
-export function LanguageButton({ onClick }: LanguageButtonProps): ReactElement {
+export function LanguageButton({
+  onClick,
+  selectedLanguage
+}: LanguageButtonProps): ReactElement {
   const { t } = useTranslation('apps-watch')
 
   return (
@@ -59,7 +63,9 @@ export function LanguageButton({ onClick }: LanguageButtonProps): ReactElement {
         startIcon={<Globe1Icon />}
         endIcon={<ChevronDown />}
       >
-        {t('Language')}
+        {selectedLanguage != null
+          ? selectedLanguage.split(' ')[0]
+          : t('Language')}
       </StyledButton>
     </Box>
   )
