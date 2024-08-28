@@ -3,7 +3,7 @@ import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import { styled } from '@mui/material/styles'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import { ReactElement, ReactNode } from 'react'
 
 import ChevronDown from '@core/shared/ui/icons/ChevronDown'
 import Globe1Icon from '@core/shared/ui/icons/Globe1'
@@ -26,14 +26,34 @@ const StyledButton = styled(Button)(({ theme }) => ({
 
 interface LanguageButtonProps {
   onClick: () => void
-  selectedLanguage?: string
+  selectedLanguages?: string[]
 }
 
 export function LanguageButton({
   onClick,
-  selectedLanguage
+  selectedLanguages = []
 }: LanguageButtonProps): ReactElement {
   const { t } = useTranslation('apps-watch')
+
+  function Button({
+    content,
+    index
+  }: {
+    content: string
+    index?: number
+  }): ReactNode {
+    return (
+      <StyledButton
+        key={index}
+        size="small"
+        onClick={onClick}
+        startIcon={<Globe1Icon />}
+        endIcon={<ChevronDown />}
+      >
+        {content}
+      </StyledButton>
+    )
+  }
 
   return (
     <Box
@@ -57,16 +77,15 @@ export function LanguageButton({
         }}
         variant="middle"
       />
-      <StyledButton
-        size="small"
-        onClick={onClick}
-        startIcon={<Globe1Icon />}
-        endIcon={<ChevronDown />}
-      >
-        {selectedLanguage != null
-          ? selectedLanguage.split(' ')[0]
-          : t('Language')}
-      </StyledButton>
+      {selectedLanguages?.length > 0 ? (
+        <>
+          {selectedLanguages.map((selectedLanguage: string, index: number) => (
+            <Button key={index} content={selectedLanguage.split(', ')[0]} />
+          ))}
+        </>
+      ) : (
+        <Button content={t('Language')} />
+      )}
     </Box>
   )
 }
