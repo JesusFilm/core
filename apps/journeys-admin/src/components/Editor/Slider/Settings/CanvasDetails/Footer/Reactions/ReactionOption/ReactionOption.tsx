@@ -19,7 +19,7 @@ export function ReactionOption({
   field
 }: ReactionOptionProps): ReactElement {
   function handleChange(): void {
-    handleToggle({ [field]: !active } as unknown as UpdateReactionInput)
+    handleToggle({ [field]: !active })
   }
 
   return (
