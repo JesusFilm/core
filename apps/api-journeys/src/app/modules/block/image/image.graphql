@@ -12,6 +12,7 @@ type ImageBlock implements Block {
   Find a frontend implementation at https://github.com/woltapp/blurhash
   """
   blurhash: String!
+  scale: Int
 }
 
 input ImageBlockCreateInput {
@@ -46,6 +47,7 @@ input ImageBlockUpdateInput {
   blurhash: String
   width: Int
   height: Int
+  scale: Int
 }
 
 extend type Mutation {

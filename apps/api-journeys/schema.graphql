@@ -393,6 +393,13 @@ type Journey
 
   """public title for viewers"""
   displayTitle: String
+  showHosts: Boolean
+  showChatButtons: Boolean
+  showReactions: Boolean
+  showLogo: Boolean
+  showMenu: Boolean
+  showDisplayTitle: Boolean
+  menuButtonIcon: JourneyMenuButtonIcon
   userJourneys: [UserJourney!]
 }
 
@@ -785,6 +792,7 @@ type ImageBlock implements Block {
   Find a frontend implementation at https://github.com/woltapp/blurhash
   """
   blurhash: String!
+  scale: Int
 }
 
 input ImageBlockCreateInput {
@@ -821,6 +829,7 @@ input ImageBlockUpdateInput {
   blurhash: String
   width: Int
   height: Int
+  scale: Int
 }
 
 type RadioOptionBlock implements Block {
@@ -2106,6 +2115,17 @@ extend type Tag
   id: ID! @external
 }
 
+enum JourneyMenuButtonIcon {
+  menu1
+  equals
+  home3
+  home4
+  more
+  ellipsis
+  globe01
+  chevronDown
+}
+
 enum IdType {
   databaseId
   slug
@@ -2211,6 +2231,13 @@ input JourneyUpdateInput {
   showLikeButton: Boolean
   showDislikeButton: Boolean
   displayTitle: String
+  showHosts: Boolean
+  showChatButtons: Boolean
+  showReactions: Boolean
+  showLogo: Boolean
+  showMenu: Boolean
+  showDisplayTitle: Boolean
+  menuButtonIcon: JourneyMenuButtonIcon
 }
 
 type UserJourney

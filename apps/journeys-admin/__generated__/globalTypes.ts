@@ -82,6 +82,17 @@ export enum IntegrationType {
   growthSpaces = "growthSpaces",
 }
 
+export enum JourneyMenuButtonIcon {
+  chevronDown = "chevronDown",
+  ellipsis = "ellipsis",
+  equals = "equals",
+  globe01 = "globe01",
+  home3 = "home3",
+  home4 = "home4",
+  menu1 = "menu1",
+  more = "more",
+}
+
 export enum JourneyStatus {
   archived = "archived",
   deleted = "deleted",
@@ -408,6 +419,7 @@ export interface ImageBlockUpdateInput {
   blurhash?: string | null;
   width?: number | null;
   height?: number | null;
+  scale?: number | null;
 }
 
 export interface IntegrationGrowthSpacesCreateInput {
@@ -467,6 +479,13 @@ export interface JourneyUpdateInput {
   showLikeButton?: boolean | null;
   showDislikeButton?: boolean | null;
   displayTitle?: string | null;
+  showHosts?: boolean | null;
+  showChatButtons?: boolean | null;
+  showReactions?: boolean | null;
+  showLogo?: boolean | null;
+  showMenu?: boolean | null;
+  showDisplayTitle?: boolean | null;
+  menuButtonIcon?: JourneyMenuButtonIcon | null;
 }
 
 export interface JourneyVisitorFilter {

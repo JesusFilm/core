@@ -807,6 +807,7 @@ type ImageBlock implements Block
   Find a frontend implementation at https://github.com/woltapp/blurhash
   """
   blurhash: String!
+  scale: Int
 }
 
 input ImageBlockCreateInput
@@ -847,6 +848,7 @@ input ImageBlockUpdateInput
   blurhash: String
   width: Int
   height: Int
+  scale: Int
 }
 
 interface Integration
@@ -955,6 +957,13 @@ type Journey
 
   """public title for viewers"""
   displayTitle: String
+  showHosts: Boolean
+  showChatButtons: Boolean
+  showReactions: Boolean
+  showLogo: Boolean
+  showMenu: Boolean
+  showDisplayTitle: Boolean
+  menuButtonIcon: JourneyMenuButtonIcon
   userJourneys: [UserJourney!]
 }
 
@@ -1006,6 +1015,19 @@ input JourneyCreateInput
   at the end of the slug guaranteeing uniqueness
   """
   slug: String
+}
+
+enum JourneyMenuButtonIcon
+  @join__type(graph: JOURNEYS)
+{
+  menu1 @join__enumValue(graph: JOURNEYS)
+  equals @join__enumValue(graph: JOURNEYS)
+  home3 @join__enumValue(graph: JOURNEYS)
+  home4 @join__enumValue(graph: JOURNEYS)
+  more @join__enumValue(graph: JOURNEYS)
+  ellipsis @join__enumValue(graph: JOURNEYS)
+  globe01 @join__enumValue(graph: JOURNEYS)
+  chevronDown @join__enumValue(graph: JOURNEYS)
 }
 
 type JourneyNotification
@@ -1137,6 +1159,13 @@ input JourneyUpdateInput
   showLikeButton: Boolean
   showDislikeButton: Boolean
   displayTitle: String
+  showHosts: Boolean
+  showChatButtons: Boolean
+  showReactions: Boolean
+  showLogo: Boolean
+  showMenu: Boolean
+  showDisplayTitle: Boolean
+  menuButtonIcon: JourneyMenuButtonIcon
 }
 
 type JourneyViewEvent implements Event

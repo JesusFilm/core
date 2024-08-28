@@ -540,7 +540,9 @@ export class JourneyResolver {
                   'teamId',
                   'createdAt',
                   'strategySlug',
-                  'journeyTags'
+                  'journeyTags',
+                  'logoImageBlockId',
+                  'menuStepBlockId'
                 ]),
                 id: duplicateJourneyId,
                 slug,
