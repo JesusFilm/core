@@ -4,9 +4,9 @@ import {
   BibleCitation,
   Keyword,
   Video,
-  VideoAdminUserRole,
   VideoDescription,
   VideoImageAlt,
+  VideoRole,
   VideoSnippet,
   VideoStudyQuestion,
   VideoSubtitle,
@@ -680,7 +680,7 @@ describe('video', () => {
       prismaMock.videoAdminUser.findUnique.mockResolvedValueOnce({
         id: 'id',
         userId: 'userId',
-        roles: [VideoAdminUserRole.admin]
+        roles: [VideoRole.publisher]
       })
       const data = await authClient({
         document: CURRENT_VIDEO_ROLES,
@@ -690,7 +690,7 @@ describe('video', () => {
       })
       expect(prismaMock.videoAdminUser.findUnique).toHaveBeenCalled()
       expect(data).toHaveProperty('data.currentVideoRoles', [
-        VideoAdminUserRole.admin
+        VideoRole.publisher
       ])
     })
   })

@@ -6,8 +6,8 @@ import { Context, builder } from '../builder'
 import { IdType, IdTypeShape } from '../enums/idType'
 import { Language, LanguageWithSlug } from '../language'
 
-import { VideoAdminUserRole } from './enums/videoAdminUserRole'
 import { VideoLabel } from './enums/videoLabel'
+import { VideoRole } from './enums/videoRole'
 import { VideosFilter } from './inputs/videosFilter'
 import { videosFilter } from './lib/videosFilter'
 
@@ -260,12 +260,11 @@ builder.queryFields((t) => ({
       })
   }),
   currentVideoRoles: t.field({
-    type: [VideoAdminUserRole],
+    type: [VideoRole],
     nullable: false,
     authScopes: {
       isAuthenticated: true
     },
-    resolve: async (_query, _args, ctx: Context) =>
-      ctx.currentVideoUser?.roles ?? []
+    resolve: async (_query, _args, ctx: Context) => ctx.currentRoles ?? []
   })
 }))

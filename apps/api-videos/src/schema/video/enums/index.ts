@@ -1,2 +1,2 @@
-import './videoAdminUserRole'
+import './videoRole'
 import './videoLabel'
