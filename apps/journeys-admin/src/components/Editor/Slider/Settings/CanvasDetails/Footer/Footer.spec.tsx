@@ -12,13 +12,13 @@ import {
   ActiveCanvasDetailsDrawer,
   ActiveSlide
 } from '@core/journeys/ui/EditorProvider/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import { TestEditorState } from '../../../../../../libs/TestEditorState'
 
 import { Footer } from './Footer'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,

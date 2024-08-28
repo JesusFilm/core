@@ -8,7 +8,6 @@ import { useFlags } from '@core/shared/ui/FlagsProvider'
 
 import { Drawer } from '../../Drawer'
 import { WebsiteToggle } from '../WebsiteToggle'
-<<<<<<< HEAD
 
 const Reactions = dynamic(
   async () =>
@@ -17,8 +16,6 @@ const Reactions = dynamic(
     ).then((mod) => mod.Reactions),
   { ssr: false }
 )
-=======
->>>>>>> e4469d8a4 (fix: lint)
 
 const Host = dynamic(
   async () =>
