@@ -42,13 +42,9 @@ export function TitleDescriptionDialog({
         },
         optimisticResponse: {
           journeyUpdate: {
-            id: journey.id,
-            __typename: 'Journey',
+            ...journey,
             title: values.title,
-            description: values.description,
-            strategySlug: journey.strategySlug,
-            language: journey.language,
-            tags: []
+            description: values.description
           }
         }
       })
