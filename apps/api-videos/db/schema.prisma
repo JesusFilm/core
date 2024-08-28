@@ -257,7 +257,7 @@ model Keyword {
   @@index([value(type: Hash)])
 }
 
-enum VideoAdminUserRole {
+enum VideoRole {
   admin
   youtubeMember
   youtubeAdmin
@@ -266,7 +266,7 @@ enum VideoAdminUserRole {
 }
 
 model VideoAdminUser {
-  id     String               @id @default(uuid())
-  userId String               @unique
-  roles  VideoAdminUserRole[]
+  id     String      @id @default(uuid())
+  userId String      @unique
+  roles  VideoRole[]
 }
