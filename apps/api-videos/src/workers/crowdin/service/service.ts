@@ -44,6 +44,7 @@ const schema = z.object({
 type CrowdinData = z.infer<typeof schema>
 
 export async function pullTranslations(logger?: Logger): Promise<void> {
+  console.time()
   logger?.info('crowdin import started')
   if (process.env.CROWDIN_DISTRIBUTION_HASH == null)
     throw new Error('crowdin distribution hash not set')
@@ -55,30 +56,23 @@ export async function pullTranslations(logger?: Logger): Promise<void> {
 
   const languages = await client.getTranslations()
 
-  await Promise.all(
-    map(languages, async (language) => {
-      const languageId = /\/content\/(?<languageId>\d+)\.xliff/.exec(
-        language[0].file
-      )?.groups?.languageId
+  for (const languageCode in languages) {
+    const languageId = /\/content\/(?<languageId>\d+)\.xliff/.exec(
+      languages[languageCode][0].file
+    )?.groups?.languageId
 
-      if (languageId != null) {
-        try {
-          const data = schema.parse(await xliff12ToJs(language[0].content))
-          await storeTranslations(languageId, data)
-        } catch (err) {
-          if (err instanceof MatchError) {
-            throw new Error(err.message)
-          }
-          throw new Error('xliff12ToJs data does not match schema')
-        }
-      } else {
-        throw new Error(
-          `export filename does not match format or custom mapping not set: ${language[0].file}`
-        )
-      }
-    })
-  )
+    if (languageId != null) {
+      const res = await xliff12ToJs(languages[languageCode][0].content)
+      const data = schema.parse(res)
+      await storeTranslations(languageId, data, logger)
+    } else {
+      throw new Error(
+        `export filename does not match format or custom mapping not set: ${languages[languageCode][0].file}`
+      )
+    }
+  }
   logger?.info('crowdin import finished')
+  console.timeEnd()
 }
 
 async function storeTranslations(
