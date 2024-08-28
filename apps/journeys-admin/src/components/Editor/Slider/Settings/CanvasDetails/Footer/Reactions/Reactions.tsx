@@ -44,13 +44,7 @@ export function Reactions(): ReactElement {
           },
           optimisticResponse: {
             journeyUpdate: {
-              __typename: 'Journey',
-              id: journey.id,
-              title: journey.title,
-              description: journey.description,
-              strategySlug: journey.strategySlug,
-              language: journey.language,
-              tags: [],
+              ...journey,
               showShareButton: input.showShareButton ?? journey.showShareButton,
               showLikeButton: input.showLikeButton ?? journey.showLikeButton,
               showDislikeButton:
@@ -69,19 +63,19 @@ export function Reactions(): ReactElement {
           title={t('Share')}
           active={journey?.showShareButton ?? true}
           field="showShareButton"
-          toggle={handleToggle}
+          handleToggle={handleToggle}
         />
         <ReactionOption
           title={t('Like')}
           active={journey?.showLikeButton ?? true}
           field="showLikeButton"
-          toggle={handleToggle}
+          handleToggle={handleToggle}
         />
         <ReactionOption
           title={t('Dislike')}
           active={journey?.showDislikeButton ?? true}
           field="showDislikeButton"
-          toggle={handleToggle}
+          handleToggle={handleToggle}
         />
       </Stack>
     </Accordion>

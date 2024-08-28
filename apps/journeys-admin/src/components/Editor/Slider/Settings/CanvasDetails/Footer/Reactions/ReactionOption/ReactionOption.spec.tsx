@@ -11,7 +11,7 @@ describe('ReactionOption', () => {
         title="Share"
         active={false}
         field="showShareButton"
-        toggle={mockToggle}
+        handleToggle={mockToggle}
       />
     )
 
@@ -27,7 +27,7 @@ describe('ReactionOption', () => {
         title="Share"
         active={false}
         field="showShareButton"
-        toggle={mockToggle}
+        handleToggle={mockToggle}
       />
     )
 

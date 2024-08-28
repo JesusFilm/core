@@ -36,17 +36,12 @@ function getJourneySettingsUpdateMock(
     result: {
       data: {
         journeyUpdate: {
+          ...defaultJourney,
           id: defaultJourney.id,
-          __typename: 'Journey',
           title,
           description,
           strategySlug: null,
-          language: journey.language,
-          tags: [],
-          website: null,
-          showShareButton: true,
-          showLikeButton: true,
-          showDislikeButton: true
+          language: journey.language
         }
       }
     }

@@ -8,18 +8,18 @@ import type { ReactionFields, UpdateReactionInput } from '../Reactions'
 interface ReactionOptionProps {
   title: string
   active: boolean
-  toggle: (input: UpdateReactionInput) => void
+  handleToggle: (input: UpdateReactionInput) => void
   field: ReactionFields
 }
 
 export function ReactionOption({
   title,
   active,
-  toggle,
+  handleToggle,
   field
 }: ReactionOptionProps): ReactElement {
   function handleChange(): void {
-    toggle({ [field]: !active } as unknown as UpdateReactionInput)
+    handleToggle({ [field]: !active } as unknown as UpdateReactionInput)
   }
 
   return (

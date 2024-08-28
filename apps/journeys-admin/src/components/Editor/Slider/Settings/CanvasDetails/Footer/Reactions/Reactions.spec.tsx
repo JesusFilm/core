@@ -44,11 +44,11 @@ describe('Reactions', () => {
     tags: [],
     website: null,
     showShareButton: true,
-    showLikeButton: true,
-    showDislikeButton: true
+    showLikeButton: false,
+    showDislikeButton: null
   } as unknown as Journey
 
-  const journeySettingsUpdateMock = (
+  const getJourneySettingsUpdateMock = (
     input: UpdateReactionInput
   ): MockedResponse<JourneySettingsUpdate, JourneySettingsUpdateVariables> => {
     return {
@@ -73,9 +73,11 @@ describe('Reactions', () => {
   it('should render', () => {
     render(
       <MockedProvider>
-        <EditorProvider>
-          <Reactions />
-        </EditorProvider>
+        <JourneyProvider value={{ journey: defaultJourney }}>
+          <EditorProvider>
+            <Reactions />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
 
@@ -84,14 +86,19 @@ describe('Reactions', () => {
 
     fireEvent.click(reactionsAccordion)
 
-    const reactionsContent = screen.getByTestId('Reactions')
-    expect(within(reactionsContent).getByText('Share')).toBeVisible()
-    expect(within(reactionsContent).getByText('Like')).toBeVisible()
-    expect(within(reactionsContent).getByText('Dislike')).toBeVisible()
+    expect(screen.getByText('Share')).toBeVisible()
+    expect(screen.getByText('Like')).toBeVisible()
+    expect(screen.getByText('Dislike')).toBeVisible()
+
+    const checkboxes = screen.getAllByRole('checkbox')
+
+    expect(checkboxes[0]).toBeChecked() // true
+    expect(checkboxes[1]).not.toBeChecked() // false
+    expect(checkboxes[2]).toBeChecked() // null
   })
 
   it('should update an option', async () => {
-    const mockUpdate = journeySettingsUpdateMock({ showShareButton: false })
+    const mockUpdate = getJourneySettingsUpdateMock({ showShareButton: false })
     render(
       <MockedProvider mocks={[mockUpdate]}>
         <JourneyProvider value={{ journey: defaultJourney }}>
@@ -114,9 +121,9 @@ describe('Reactions', () => {
   })
 
   it('should undo and redo an option', async () => {
-    const mockUpdate = journeySettingsUpdateMock({ showShareButton: false })
-    const mockUpdateUndo = journeySettingsUpdateMock({ showShareButton: true })
-    const mockUpdateRedo = journeySettingsUpdateMock({ showShareButton: false })
+    const mockUpdate = getJourneySettingsUpdateMock({ showShareButton: false })
+    const mockUpdateUndo = getJourneySettingsUpdateMock({ showShareButton: true })
+    const mockUpdateRedo = getJourneySettingsUpdateMock({ showShareButton: false })
 
     render(
       <MockedProvider mocks={[mockUpdate, mockUpdateUndo, mockUpdateRedo]}>
