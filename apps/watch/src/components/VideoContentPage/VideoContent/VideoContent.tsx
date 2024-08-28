@@ -94,7 +94,7 @@ export function VideoContent(): ReactElement {
           color="text.secondary"
           sx={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
         >
-          {description[0]?.value}
+          {description[0]?.value.replace(/&#13;/g, '\n')}
         </Typography>
       </TabPanel>
       {studyQuestions?.length !== 0 && (
