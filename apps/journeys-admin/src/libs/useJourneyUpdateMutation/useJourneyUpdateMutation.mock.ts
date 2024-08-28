@@ -1,11 +1,14 @@
 import { MockedResponse } from '@apollo/client/testing'
+
+import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
+
 import { JourneyUpdateInput } from '../../../__generated__/globalTypes'
 import {
   JourneySettingsUpdate,
   JourneySettingsUpdateVariables
 } from '../../../__generated__/JourneySettingsUpdate'
+
 import { JOURNEY_SETTINGS_UPDATE } from './useJourneyUpdateMutation'
-import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
 export const getJourneySettingsUpdateMock = <T extends JourneyUpdateInput>(
   input: T
