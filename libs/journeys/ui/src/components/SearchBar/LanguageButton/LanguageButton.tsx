@@ -13,11 +13,13 @@ const StyledButton = styled(Button)(({ theme }) => ({
   borderRadius: 32,
   gap: 0,
   padding: '8px 20px 8px 20px',
-  border: '2px solid #0000001A',
-  color: theme.palette.common.black,
-  backgroundColor: theme.palette.common.white,
+  border: `2px solid ${theme.palette.text.primary}${
+    theme.palette.mode === 'dark' ? 'D4' : '1A'
+  }`,
+  color: theme.palette.text.primary,
+  backgroundColor: theme.palette.background.default,
   '&:hover': {
-    backgroundColor: theme.palette.common.white,
+    backgroundColor: theme.palette.background.default,
     opacity: 0.9
   }
 }))
