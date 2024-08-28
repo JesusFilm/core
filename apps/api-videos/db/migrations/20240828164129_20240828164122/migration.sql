@@ -1,11 +1,11 @@
 -- CreateEnum
-CREATE TYPE "VideoAdminUserRole" AS ENUM ('admin', 'youtubeMember', 'youtubeAdmin', 'coreMember', 'coreAdmin');
+CREATE TYPE "VideoRole" AS ENUM ('publisher');
 
 -- CreateTable
 CREATE TABLE "VideoAdminUser" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
-    "roles" "VideoAdminUserRole"[],
+    "roles" "VideoRole"[],
 
     CONSTRAINT "VideoAdminUser_pkey" PRIMARY KEY ("id")
 );

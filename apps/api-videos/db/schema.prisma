@@ -258,11 +258,7 @@ model Keyword {
 }
 
 enum VideoRole {
-  admin
-  youtubeMember
-  youtubeAdmin
-  coreMember
-  coreAdmin
+  publisher
 }
 
 model VideoAdminUser {
