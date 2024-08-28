@@ -921,6 +921,12 @@ export class JourneyResolver {
     if (journey.creatorImageBlockId != null) {
       idNotIn.push(journey.creatorImageBlockId)
     }
+    if (journey.logoImageBlockId != null) {
+      idNotIn.push(journey.logoImageBlockId)
+    }
+    if (journey.menuStepBlockId != null) {
+      idNotIn.push(journey.menuStepBlockId)
+    }
     if (idNotIn.length > 0) {
       filter.id = { notIn: idNotIn }
     }

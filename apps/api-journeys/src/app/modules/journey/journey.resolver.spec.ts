@@ -1871,7 +1871,7 @@ describe('JourneyResolver', () => {
     })
 
     it('returns blocks without creatorImageBlock', async () => {
-      const journeyWithPrimaryImageBlock = {
+      const journeyWithCreatorImageBlock = {
         ...journey,
         creatorImageBlockId: 'creatorImageBlockId'
       }
@@ -1879,7 +1879,7 @@ describe('JourneyResolver', () => {
       blockService.removeDescendantsOfDeletedBlocks.mockResolvedValueOnce([
         block as BlockWithAction
       ])
-      expect(await resolver.blocks(journeyWithPrimaryImageBlock)).toEqual([
+      expect(await resolver.blocks(journeyWithCreatorImageBlock)).toEqual([
         { ...block, __typename: 'ImageBlock', typename: undefined }
       ])
       expect(prismaService.block.findMany).toHaveBeenCalledWith({
@@ -1897,11 +1897,67 @@ describe('JourneyResolver', () => {
       })
     })
 
-    it('returns blocks without primaryImageBlock or creatorImageBlock', async () => {
+    it('returns blocks without logoImageBlock', async () => {
+      const journeyWithLogoImageBlock = {
+        ...journey,
+        logoImageBlockId: 'logoImageBlockId'
+      }
+      prismaService.block.findMany.mockResolvedValueOnce([block])
+      blockService.removeDescendantsOfDeletedBlocks.mockResolvedValueOnce([
+        block as BlockWithAction
+      ])
+      expect(await resolver.blocks(journeyWithLogoImageBlock)).toEqual([
+        { ...block, __typename: 'ImageBlock', typename: undefined }
+      ])
+      expect(prismaService.block.findMany).toHaveBeenCalledWith({
+        include: {
+          action: true
+        },
+        orderBy: {
+          parentOrder: 'asc'
+        },
+        where: {
+          journeyId: 'journeyId',
+          id: { notIn: ['logoImageBlockId'] },
+          deletedAt: null
+        }
+      })
+    })
+
+    it('returns blocks without menuStepBlock', async () => {
+      const journeyWithMenuStepBlock = {
+        ...journey,
+        menuStepBlockId: 'menuStepBlockId'
+      }
+      prismaService.block.findMany.mockResolvedValueOnce([block])
+      blockService.removeDescendantsOfDeletedBlocks.mockResolvedValueOnce([
+        block as BlockWithAction
+      ])
+      expect(await resolver.blocks(journeyWithMenuStepBlock)).toEqual([
+        { ...block, __typename: 'ImageBlock', typename: undefined }
+      ])
+      expect(prismaService.block.findMany).toHaveBeenCalledWith({
+        include: {
+          action: true
+        },
+        orderBy: {
+          parentOrder: 'asc'
+        },
+        where: {
+          journeyId: 'journeyId',
+          id: { notIn: ['menuStepBlockId'] },
+          deletedAt: null
+        }
+      })
+    })
+
+    it('returns blocks without primaryImageBlock, creatorImageBlock, logoImageBlock or menuStepBlock', async () => {
       const journeyWithPrimaryImageBlock = {
         ...journey,
         primaryImageBlockId: 'primaryImageBlockId',
-        creatorImageBlockId: 'creatorImageBlockId'
+        creatorImageBlockId: 'creatorImageBlockId',
+        logoImageBlockId: 'logoImageBlockId',
+        menuStepBlockId: 'menuStepBlockId'
       }
       prismaService.block.findMany.mockResolvedValueOnce([block])
       blockService.removeDescendantsOfDeletedBlocks.mockResolvedValueOnce([
@@ -1919,7 +1975,14 @@ describe('JourneyResolver', () => {
         },
         where: {
           journeyId: 'journeyId',
-          id: { notIn: ['primaryImageBlockId', 'creatorImageBlockId'] },
+          id: {
+            notIn: [
+              'primaryImageBlockId',
+              'creatorImageBlockId',
+              'logoImageBlockId',
+              'menuStepBlockId'
+            ]
+          },
           deletedAt: null
         }
       })
