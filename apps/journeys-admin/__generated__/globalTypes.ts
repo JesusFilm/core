@@ -410,6 +410,7 @@ export interface ImageBlockCreateInput {
   width?: number | null;
   height?: number | null;
   isCover?: boolean | null;
+  scale?: number | null;
 }
 
 export interface ImageBlockUpdateInput {

@@ -369,6 +369,7 @@ export class ImageBlockCreateInput {
     width?: Nullable<number>;
     height?: Nullable<number>;
     isCover?: Nullable<boolean>;
+    scale?: Nullable<number>;
 }
 
 export class ImageBlockUpdateInput {

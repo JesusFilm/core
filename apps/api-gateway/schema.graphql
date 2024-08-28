@@ -833,6 +833,7 @@ input ImageBlockCreateInput
   True if the coverBlockId in a parent block should be set to this block's id.
   """
   isCover: Boolean
+  scale: Int
 }
 
 input ImageBlockUpdateInput
