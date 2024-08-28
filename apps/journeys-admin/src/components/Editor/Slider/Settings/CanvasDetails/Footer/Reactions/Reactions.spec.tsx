@@ -1,4 +1,4 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing'
 import {
   fireEvent,
   render,
@@ -10,70 +10,24 @@ import {
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { JourneyFields as Journey } from '../../../../../../../../__generated__/JourneyFields'
-import {
-  JourneySettingsUpdate,
-  JourneySettingsUpdateVariables
-} from '../../../../../../../../__generated__/JourneySettingsUpdate'
-import { JOURNEY_SETTINGS_UPDATE } from '../../../../../../../libs/useJourneyUpdateMutation/useJourneyUpdateMutation'
 import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
-import { UpdateReactionInput } from './Reactions'
-
 import { Reactions } from '.'
+import { getJourneySettingsUpdateMock } from '../../../../../../../libs/useJourneyUpdateMutation'
+import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
 describe('Reactions', () => {
-  const defaultJourney = {
-    __typename: 'Journey',
-    id: 'journey.id',
-    title: 'Internal Title',
-    description: 'Internal Description',
-    strategySlug: null,
-    language: {
-      __typename: 'Language',
-      id: '529',
-      name: [
-        {
-          __typename: 'LanguageName',
-          value: 'English',
-          primary: true
-        }
-      ]
-    },
-    tags: [],
-    website: null,
-    showShareButton: true,
-    showLikeButton: false,
-    showDislikeButton: null
-  } as unknown as Journey
-
-  const getJourneySettingsUpdateMock = (
-    input: UpdateReactionInput
-  ): MockedResponse<JourneySettingsUpdate, JourneySettingsUpdateVariables> => {
-    return {
-      request: {
-        query: JOURNEY_SETTINGS_UPDATE,
-        variables: {
-          id: defaultJourney.id,
-          input
-        }
-      },
-      result: jest.fn(() => ({
-        data: {
-          journeyUpdate: {
-            ...defaultJourney,
-            ...input
-          }
-        }
-      }))
-    }
-  }
-
   it('should render', () => {
+    const journey = {
+      ...defaultJourney,
+      showShareButton: true,
+      showLikeButton: false,
+      showDislikeButton: null
+    }
     render(
       <MockedProvider>
-        <JourneyProvider value={{ journey: defaultJourney }}>
+        <JourneyProvider value={{ journey }}>
           <EditorProvider>
             <Reactions />
           </EditorProvider>
@@ -122,8 +76,12 @@ describe('Reactions', () => {
 
   it('should undo and redo an option', async () => {
     const mockUpdate = getJourneySettingsUpdateMock({ showShareButton: false })
-    const mockUpdateUndo = getJourneySettingsUpdateMock({ showShareButton: true })
-    const mockUpdateRedo = getJourneySettingsUpdateMock({ showShareButton: false })
+    const mockUpdateUndo = getJourneySettingsUpdateMock({
+      showShareButton: true
+    })
+    const mockUpdateRedo = getJourneySettingsUpdateMock({
+      showShareButton: false
+    })
 
     render(
       <MockedProvider mocks={[mockUpdate, mockUpdateUndo, mockUpdateRedo]}>
