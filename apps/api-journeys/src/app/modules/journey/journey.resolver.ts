@@ -979,6 +979,28 @@ export class JourneyResolver {
   }
 
   @ResolveField()
+  async logoImageBlock(@Parent() journey: Journey): Promise<Block | null> {
+    if (journey.logoImageBlockId == null) return null
+    const block = await this.prismaService.block.findUnique({
+      where: { id: journey.logoImageBlockId },
+      include: { action: true }
+    })
+    if (block?.journeyId !== journey.id) return null
+    return block
+  }
+
+  @ResolveField()
+  async menuStepBlock(@Parent() journey: Journey): Promise<Block | null> {
+    if (journey.menuStepBlockId == null) return null
+    const block = await this.prismaService.block.findUnique({
+      where: { id: journey.menuStepBlockId },
+      include: { action: true }
+    })
+    if (block?.journeyId !== journey.id) return null
+    return block
+  }
+
+  @ResolveField()
   async userJourneys(
     @Parent() journey: Journey,
     @CaslAbility({ optional: true }) ability?: AppAbility

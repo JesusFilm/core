@@ -2065,6 +2065,82 @@ describe('JourneyResolver', () => {
     })
   })
 
+  describe('logoImageBlock', () => {
+    it('returns logoImageBlock', async () => {
+      const journeyWithPrimaryImageBlock = {
+        ...journey,
+        logoImageBlockId: 'blockId'
+      }
+      prismaService.block.findUnique.mockResolvedValueOnce(block)
+      expect(
+        await resolver.logoImageBlock(journeyWithPrimaryImageBlock)
+      ).toEqual(block)
+      expect(prismaService.block.findUnique).toHaveBeenCalledWith({
+        where: { id: 'blockId' },
+        include: { action: true }
+      })
+    })
+
+    it('returns null if no logoImageBlockId', async () => {
+      expect(await resolver.logoImageBlock(journey)).toBeNull()
+    })
+
+    it('returns null if logoImageBlock journey is not current journey', async () => {
+      const journeyWithLogoImageBlockFromDifferentJourney = {
+        ...journey,
+        id: 'differentJourneyId',
+        logoImageBlockId: 'blockId'
+      }
+      expect(
+        await resolver.logoImageBlock(
+          journeyWithLogoImageBlockFromDifferentJourney
+        )
+      ).toBeNull()
+      expect(prismaService.block.findUnique).toHaveBeenCalledWith({
+        where: { id: 'blockId' },
+        include: { action: true }
+      })
+    })
+  })
+
+  describe('menuStepBlock', () => {
+    it('returns menuStepBlock', async () => {
+      const journeyWithPrimaryImageBlock = {
+        ...journey,
+        menuStepBlockId: 'blockId'
+      }
+      prismaService.block.findUnique.mockResolvedValueOnce(block)
+      expect(
+        await resolver.menuStepBlock(journeyWithPrimaryImageBlock)
+      ).toEqual(block)
+      expect(prismaService.block.findUnique).toHaveBeenCalledWith({
+        where: { id: 'blockId' },
+        include: { action: true }
+      })
+    })
+
+    it('returns null if no menuStepBlockId', async () => {
+      expect(await resolver.menuStepBlock(journey)).toBeNull()
+    })
+
+    it('returns null if menuStepBlock journey is not current journey', async () => {
+      const journeyWithMenuStepBlockFromDifferentJourney = {
+        ...journey,
+        id: 'differentJourneyId',
+        menuStepBlockId: 'blockId'
+      }
+      expect(
+        await resolver.menuStepBlock(
+          journeyWithMenuStepBlockFromDifferentJourney
+        )
+      ).toBeNull()
+      expect(prismaService.block.findUnique).toHaveBeenCalledWith({
+        where: { id: 'blockId' },
+        include: { action: true }
+      })
+    })
+  })
+
   describe('userJourneys', () => {
     it('returns userJourneys related to current journey', async () => {
       const userJourney = [
