@@ -29,7 +29,7 @@ export const Default: Story = {
     title: 'Default',
     active: true,
     field: 'showShareButton',
-    toggle: noop
+    handleToggle: noop
   }
 }
 
@@ -39,7 +39,7 @@ export const Empty: Story = {
     title: 'Empty',
     active: false,
     field: 'showShareButton',
-    toggle: noop
+    handleToggle: noop
   }
 }
 
