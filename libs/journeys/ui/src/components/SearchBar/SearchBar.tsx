@@ -1,20 +1,17 @@
 import Box from '@mui/material/Box'
 import ClickAwayListener from '@mui/material/ClickAwayListener'
-import Divider from '@mui/material/Divider'
 import InputAdornment from '@mui/material/InputAdornment'
 import { styled } from '@mui/material/styles'
 import TextField, { TextFieldProps } from '@mui/material/TextField'
-import Typography from '@mui/material/Typography'
 import { Formik } from 'formik'
 import { useTranslation } from 'next-i18next'
 import { type ReactElement, useRef, useState } from 'react'
 import { useSearchBox } from 'react-instantsearch'
 
-import ChevronDown from '@core/shared/ui/icons/ChevronDown'
-import Globe1Icon from '@core/shared/ui/icons/Globe1'
 import Search1Icon from '@core/shared/ui/icons/Search1'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
 
+import { LanguageButton } from './LanguageButton'
 import { SearchbarDropdown } from './SearchDropdown'
 
 /* Styles below used to fake a gradient border because the 
@@ -35,50 +32,6 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
     }
   }
 }))
-
-interface LangaugeButtonProps {
-  onClick: () => void
-}
-
-function LanguageButton({ onClick }: LangaugeButtonProps): ReactElement {
-  const { t } = useTranslation('apps-watch')
-
-  return (
-    <Box
-      component="button"
-      data-testid="LanguageSelect"
-      onClick={onClick}
-      sx={{
-        display: 'flex',
-        alignItems: 'center',
-        cursor: 'pointer',
-        border: 'none',
-        backgroundColor: 'background.default',
-        color: 'text.secondary'
-      }}
-    >
-      <Divider
-        orientation="vertical"
-        flexItem
-        sx={{
-          height: 35,
-          alignSelf: 'center',
-          marginRight: 6
-        }}
-        variant="middle"
-      />
-      <Globe1Icon />
-      <Typography
-        sx={{
-          px: 2
-        }}
-      >
-        {t('Language')}
-      </Typography>
-      <ChevronDown />
-    </Box>
-  )
-}
 
 interface SearchBarProps {
   showLanguageButton?: boolean
