@@ -138,7 +138,7 @@ describe('fetchEmailDetails', () => {
     displayTitle: null,
     showHosts: null,
     showChatButtons: null,
-    showReactions: null,
+    showReactionButtons: null,
     showLogo: null,
     showMenu: null,
     showDisplayTitle: null,
