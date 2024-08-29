@@ -36,7 +36,7 @@ const schema = z.object({
 
 type CrowdinData = z.infer<typeof schema>
 
-export async function pullTranslations(logger?: Logger): Promise<void> {
+export async function service(logger?: Logger): Promise<void> {
   logger?.info('crowdin import started')
   if (process.env.CROWDIN_DISTRIBUTION_HASH == null)
     throw new Error('crowdin distribution hash not set')
@@ -278,8 +278,4 @@ async function updateBibleBookName(
       primary: false
     }
   })
-}
-
-export async function service(logger?: Logger): Promise<void> {
-  await pullTranslations(logger)
 }
