@@ -37,7 +37,6 @@ const schema = z.object({
 type CrowdinData = z.infer<typeof schema>
 
 export async function pullTranslations(logger?: Logger): Promise<void> {
-  console.time()
   logger?.info('crowdin import started')
   if (process.env.CROWDIN_DISTRIBUTION_HASH == null)
     throw new Error('crowdin distribution hash not set')
@@ -65,7 +64,6 @@ export async function pullTranslations(logger?: Logger): Promise<void> {
     }
   }
   logger?.info('crowdin import finished')
-  console.timeEnd()
 }
 
 async function storeTranslations(
@@ -139,7 +137,7 @@ async function storeTranslation(
           map(englishStudyQuestions, async (englishStudyQuestion) => {
             const videoId = englishStudyQuestion.videoId
             if (videoId == null) {
-              logger?.error({ resName }, 'no matching videoId found for')
+              logger?.error({ resName }, 'no matching videoId found')
             } else {
               await updateStudyQuestion(
                 videoId,
