@@ -19,7 +19,7 @@ import { VariablesOf, graphql } from 'gql.tada'
 import { useTranslations } from 'next-intl'
 import { ReactElement, useState } from 'react'
 
-const GET_VIDEOS_AND_COUNT = graphql(`
+export const GET_VIDEOS_AND_COUNT = graphql(`
   query GetVideosAndCount(
     $limit: Int
     $offset: Int
@@ -76,6 +76,7 @@ export function VideoList(): ReactElement {
     }
   })
 
+  console.log(data)
   const rows: GridRowsProp =
     data?.videos.map((video) => {
       const title = video?.title?.find(({ primary }) => primary)?.value
@@ -86,6 +87,8 @@ export function VideoList(): ReactElement {
         description
       }
     }) ?? []
+
+  console.log(rows)
 
   const columns: GridColDef[] = [
     {
@@ -161,6 +164,7 @@ export function VideoList(): ReactElement {
   return (
     <Box sx={{ height: '80cqh' }}>
       <DataGrid
+        data-testid="VideoListDataGrid"
         loading={loading}
         filterMode="server"
         rows={rows}
@@ -169,7 +173,7 @@ export function VideoList(): ReactElement {
         paginationModel={paginationModel}
         paginationMode="server"
         onPaginationModelChange={handleChangePage}
-        rowCount={data?.videosCount.length}
+        rowCount={data?.videosCount.length ?? 0}
         onRowClick={handleClick}
         slots={{
           toolbar: GridToolbar
