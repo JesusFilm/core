@@ -6,13 +6,6 @@ import z from 'zod'
 
 import { prisma } from '../../../lib/prisma'
 
-class MatchError extends Error {
-  constructor(message: string) {
-    super(message)
-    this.name = 'MatchError'
-  }
-}
-
 type CrowdinFileName =
   | '/Arclight/collection_title.csv'
   | '/Arclight/collection_long_description.csv'
@@ -101,13 +94,15 @@ async function storeTranslations(
       )
     })
   )
+  logger?.info(`finished storing translation ${languageId}`)
 }
 
 async function storeTranslation(
   languageId: string,
   value: string,
   resName: string,
-  fileName: CrowdinFileName
+  fileName: CrowdinFileName,
+  logger?: Logger
 ): Promise<void> {
   switch (fileName) {
     case '/Arclight/media_metadata_tile.csv':
@@ -115,9 +110,11 @@ async function storeTranslation(
       {
         const videoId = resName
         const videos = await getVideos(videoId)
-        if (videos.length === 0)
-          throw new MatchError(`no matching videoId found for ${videoId}`)
-        await updateVideoTitle(videos[0].id, languageId, value)
+        if (videos.length === 0) {
+          logger?.error({ videoId }, 'no matching videoId found')
+        } else {
+          await updateVideoTitle(videos[0].id, languageId, value)
+        }
       }
       break
     case '/Arclight/collection_long_description.csv':
@@ -125,29 +122,33 @@ async function storeTranslation(
       {
         const videoId = resName
         const videos = await getVideos(videoId)
-        if (videos.length === 0)
-          throw new MatchError(`no matching videoId found for ${videoId}`)
-        await updateVideoDescription(videos[0].id, languageId, value)
+        if (videos.length === 0) {
+          logger?.error({ videoId }, 'no matching videoId found')
+        } else {
+          await updateVideoDescription(videos[0].id, languageId, value)
+        }
       }
       break
     case '/Arclight/study_questions.csv':
       {
         const englishStudyQuestions = await getStudyQuestions(resName)
         if (englishStudyQuestions.length === 0)
-          throw new MatchError(`no matching crowdInId found for ${resName}`)
+          logger?.error({ resName }, 'no matching crowdInId found')
 
         await Promise.all(
           map(englishStudyQuestions, async (englishStudyQuestion) => {
             const videoId = englishStudyQuestion.videoId
-            if (videoId == null)
-              throw new MatchError(`no matching videoId found for ${resName}`)
-            await updateStudyQuestion(
-              videoId,
-              languageId,
-              value,
-              resName,
-              englishStudyQuestion.order
-            )
+            if (videoId == null) {
+              logger?.error({ resName }, 'no matching videoId found for')
+            } else {
+              await updateStudyQuestion(
+                videoId,
+                languageId,
+                value,
+                resName,
+                englishStudyQuestion.order
+              )
+            }
           })
         )
       }
@@ -157,9 +158,8 @@ async function storeTranslation(
         const bibleBookId = resName
         const bibleBooks = await getBibleBooks(bibleBookId)
         if (bibleBooks.length === 0)
-          throw new MatchError(
-            `no matching bibleBookId found for ${bibleBookId}`
-          )
+          logger?.error({ bibleBookId }, 'no matching bibleBookId found')
+
         await updateBibleBookName(bibleBookId, languageId, value)
       }
       break
