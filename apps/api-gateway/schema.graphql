@@ -3692,6 +3692,8 @@ type VideoSubtitle
   edition: String!
   vttSrc: String
   srtSrc: String
+  value: String!
+  language: Language!
 }
 
 type VideoTitle
@@ -3732,7 +3734,7 @@ type VideoVariant
   downloads: [VideoVariantDownload!]!
   duration: Int!
   language: Language!
-  subtitle(languageId: ID, primary: Boolean): [VideoVariantSubtitle!]!
+  subtitle(languageId: ID, primary: Boolean): [VideoSubtitle!]!
   subtitleCount: Int!
 
   """slug is a permanent link to the video variant."""
@@ -3753,15 +3755,6 @@ enum VideoVariantDownloadQuality
 {
   low @join__enumValue(graph: VIDEOS)
   high @join__enumValue(graph: VIDEOS)
-}
-
-type VideoVariantSubtitle
-  @join__type(graph: VIDEOS)
-{
-  id: ID!
-  value: String!
-  primary: Boolean!
-  language: Language!
 }
 
 """A visitor with attributes connected to a team."""

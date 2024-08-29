@@ -107,6 +107,10 @@ describe('video', () => {
             primary
             vttSrc
             srtSrc
+            value
+            language {
+              id
+            }
           }
           variant(languageId: $languageId) {
             id
@@ -234,6 +238,24 @@ describe('video', () => {
             srtSrc: null,
             videoId: 'videoId',
             primary: true
+          },
+          {
+            id: 'subtitleId1',
+            languageId: 'languageId',
+            edition: 'edition',
+            vttSrc: 'vttSrc',
+            srtSrc: null,
+            videoId: 'videoId',
+            primary: true
+          },
+          {
+            id: 'subtitleId2',
+            languageId: 'languageId',
+            edition: 'edition',
+            vttSrc: null,
+            srtSrc: 'srtSrc',
+            videoId: 'videoId',
+            primary: true
           }
         ]
       }
@@ -301,7 +323,35 @@ describe('video', () => {
             languageId: 'languageId',
             primary: true,
             srtSrc: null,
-            vttSrc: null
+            vttSrc: null,
+            value: '',
+            language: {
+              id: 'languageId'
+            }
+          },
+          {
+            edition: 'edition',
+            id: 'subtitleId1',
+            languageId: 'languageId',
+            primary: true,
+            srtSrc: null,
+            vttSrc: 'vttSrc',
+            value: 'vttSrc',
+            language: {
+              id: 'languageId'
+            }
+          },
+          {
+            edition: 'edition',
+            id: 'subtitleId2',
+            languageId: 'languageId',
+            primary: true,
+            srtSrc: 'srtSrc',
+            vttSrc: null,
+            value: 'srtSrc',
+            language: {
+              id: 'languageId'
+            }
           }
         ],
         title: [
