@@ -8,6 +8,7 @@ locals {
     "INTEROP_TOKEN",
     "JOURNEYS_ADMIN_URL",
     "PG_DATABASE_URL_USERS",
+    "REDIS_PORT",
     "REDIS_URL"
   ]
   service_config = {
