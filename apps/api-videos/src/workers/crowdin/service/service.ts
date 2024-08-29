@@ -284,12 +284,5 @@ async function updateBibleBookName(
 }
 
 export async function service(logger?: Logger): Promise<void> {
-  try {
-    await pullTranslations(logger)
-  } catch (e) {
-    if (e instanceof Error) {
-      logger?.warn(`${e.message}`)
-      throw new Error(e.message)
-    }
-  }
+  await pullTranslations(logger)
 }

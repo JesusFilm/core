@@ -371,9 +371,7 @@ describe('crowdin/service', () => {
         ]
       })
 
-      await expect(service()).rejects.toThrow(
-        'xliff12ToJs data does not match schema'
-      )
+      await expect(service()).rejects.toThrow('Text data outside of root node')
     })
 
     it('should throw if no matching videoId for titles', async () => {
