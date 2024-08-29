@@ -1,7 +1,8 @@
 import Box from '@mui/material/Box'
 import ClickAwayListener from '@mui/material/ClickAwayListener'
+import Divider from '@mui/material/Divider'
 import InputAdornment from '@mui/material/InputAdornment'
-import { styled } from '@mui/material/styles'
+import { styled, useTheme } from '@mui/material/styles'
 import TextField, { TextFieldProps } from '@mui/material/TextField'
 import { Formik } from 'formik'
 import { useTranslation } from 'next-i18next'
@@ -11,7 +12,7 @@ import { useRefinementList, useSearchBox } from 'react-instantsearch'
 import Search1Icon from '@core/shared/ui/icons/Search1'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
 
-import { LanguageButton } from './LanguageButton'
+import { LanguageButtons } from './LanguageButtons'
 import { SearchbarDropdown } from './SearchDropdown'
 
 /* Styles below used to fake a gradient border because the 
@@ -29,6 +30,11 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
     input: {
       // Overriding the default set in components.tsx
       transform: 'none'
+    },
+    [theme.breakpoints.down('lg')]: {
+      borderRadius: 0,
+      borderTopLeftRadius: 8,
+      borderTopRightRadius: 8
     }
   }
 }))
@@ -42,6 +48,7 @@ export function SearchBar({
   showLanguageButton = false,
   props
 }: SearchBarProps): ReactElement {
+  const theme = useTheme()
   const { t } = useTranslation('apps-watch')
 
   const popperRef = useRef(null)
@@ -108,8 +115,13 @@ export function SearchBar({
                       </InputAdornment>
                     ),
                     endAdornment: languageButtonVisable ? (
-                      <InputAdornment position="end">
-                        <LanguageButton
+                      <InputAdornment
+                        position="end"
+                        sx={{
+                          [theme.breakpoints.down('lg')]: { display: 'none' }
+                        }}
+                      >
+                        <LanguageButtons
                           onClick={handleClick}
                           selectedLanguages={selectedLanguage}
                         />
@@ -124,6 +136,17 @@ export function SearchBar({
               </>
             )}
           </Formik>
+          <Box
+            sx={{
+              [theme.breakpoints.up('lg')]: { display: 'none' }
+            }}
+          >
+            <Divider variant="middle" orientation="horizontal" />
+            <LanguageButtons
+              onClick={handleClick}
+              selectedLanguages={selectedLanguage}
+            />
+          </Box>
         </Box>
         <SearchbarDropdown
           open={open}
