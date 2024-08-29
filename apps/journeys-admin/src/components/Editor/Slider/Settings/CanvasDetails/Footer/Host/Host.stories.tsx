@@ -1,8 +1,10 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
+import { screen, userEvent } from '@storybook/testing-library'
 import { ComponentProps } from 'react'
 
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
@@ -21,12 +23,12 @@ import { GET_USER_TEAMS_AND_INVITES } from '../../../../../../../libs/useUserTea
 import { ThemeProvider } from '../../../../../../ThemeProvider'
 import { DRAWER_WIDTH } from '../../../../../constants'
 
-import { GET_ALL_TEAM_HOSTS, HostTab } from './HostTab'
+import { GET_ALL_TEAM_HOSTS, Host } from './Host'
 
-const Demo: Meta<typeof HostTab> = {
+const Demo: Meta<typeof Host> = {
   ...journeysAdminConfig,
-  component: HostTab,
-  title: 'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Footer/HostTab'
+  component: Host,
+  title: 'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Footer/Host'
 }
 
 const user = {
@@ -151,27 +153,40 @@ const getTeamHostsMock: MockedResponse<
 }
 
 const Template: StoryObj<
-  ComponentProps<typeof HostTab> & { mocks: MockedResponse[] }
+  ComponentProps<typeof Host> & { mocks: MockedResponse[] }
 > = {
   render: ({ mocks, ...args }) => (
     <MockedProvider mocks={mocks}>
       <ThemeProvider>
         <JourneyProvider value={{ ...args, variant: 'admin' }}>
-          <Box sx={{ width: DRAWER_WIDTH }}>
-            <HostTab />
-          </Box>
+          <EditorProvider>
+            <Box sx={{ width: DRAWER_WIDTH }}>
+              <Host />
+            </Box>
+          </EditorProvider>
         </JourneyProvider>
       </ThemeProvider>
     </MockedProvider>
   )
 }
 
-// Default HostTabs based on host availability
+// Default Hosts based on host availability
 export const Default = {
   ...Template,
   args: {
     mocks: [userMock, getUserTeamMock, getTeamHostsMock],
     journey: { ...journey, host: null }
+  }
+}
+
+export const Open = {
+  ...Template,
+  args: {
+    mocks: [userMock, getUserTeamMock, getTeamHostsMock],
+    journey: { ...journey, host: null }
+  },
+  play: async () => {
+    await userEvent.click(screen.getByRole('button', { name: 'Hosted By' }))
   }
 }
 

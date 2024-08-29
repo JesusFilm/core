@@ -18,7 +18,7 @@ const Demo: Meta<typeof HostList> = {
   ...simpleComponentConfig,
   component: HostList,
   title:
-    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Footer/HostTab/HostList'
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Footer/Host/HostList'
 }
 
 const teamHosts: GetAllTeamHosts = {

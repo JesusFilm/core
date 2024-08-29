@@ -99,17 +99,18 @@ describe('algolia/service', () => {
           {
             id: 'id',
             videoId: 'videoId',
+            edition: 'edition',
             video: {
               title: [{ value: 'title' }],
               description: [{ value: 'description' }],
               label: 'label',
               image: 'image',
               imageAlt: [{ value: 'imageAlt', languageId: '529' }],
-              childIds: ['childId']
+              childIds: ['childId'],
+              subtitles: [{ edition: 'edition', languageId: '21754' }]
             },
             duration: 100,
             languageId: '21754',
-            subtitle: [{ languageId: 'subtitle' }],
             slug: 'slug'
           } as unknown as VideoVariant
         ])
@@ -126,10 +127,10 @@ describe('algolia/service', () => {
               title: true,
               description: true,
               imageAlt: true,
-              snippet: true
+              snippet: true,
+              subtitles: true
             }
-          },
-          subtitle: true
+          }
         },
         where: {
           languageId: {
@@ -161,7 +162,7 @@ describe('algolia/service', () => {
           languagePrimaryName: '简体中文',
           objectID: 'id',
           slug: 'slug',
-          subtitles: ['subtitle'],
+          subtitles: ['21754'],
           titles: ['title'],
           videoId: 'videoId',
           manualRanking: 1
@@ -184,10 +185,10 @@ describe('algolia/service', () => {
               title: true,
               description: true,
               imageAlt: true,
-              snippet: true
+              snippet: true,
+              subtitles: true
             }
-          },
-          subtitle: true
+          }
         }
       })
     })
