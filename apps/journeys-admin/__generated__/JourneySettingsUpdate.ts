@@ -22,11 +22,15 @@ export interface JourneySettingsUpdate_journeyUpdate_tags {
 export interface JourneySettingsUpdate_journeyUpdate {
   __typename: "Journey";
   id: string;
+  /**
+   * private title for creators
+   */
   title: string;
   description: string | null;
   strategySlug: string | null;
   language: JourneySettingsUpdate_journeyUpdate_language;
   tags: JourneySettingsUpdate_journeyUpdate_tags[];
+  website: boolean | null;
 }
 
 export interface JourneySettingsUpdate {

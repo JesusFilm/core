@@ -38,8 +38,9 @@ export type AudioPreview = {
 export type BibleBook = {
   __typename?: 'BibleBook';
   alternateName?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
   isNewTestament: Scalars['Boolean']['output'];
-  name: Array<Translation>;
+  name: Array<BibleBookName>;
   order: Scalars['Int']['output'];
   osisId: Scalars['String']['output'];
   paratextAbbreviation: Scalars['String']['output'];
@@ -51,14 +52,23 @@ export type BibleBookNameArgs = {
   primary?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
+export type BibleBookName = {
+  __typename?: 'BibleBookName';
+  language: Language;
+  primary: Scalars['Boolean']['output'];
+  value: Scalars['String']['output'];
+};
+
 export type BibleCitation = {
   __typename?: 'BibleCitation';
   bibleBook: BibleBook;
   chapterEnd?: Maybe<Scalars['Int']['output']>;
   chapterStart: Scalars['Int']['output'];
+  id: Scalars['ID']['output'];
   osisId: Scalars['String']['output'];
   verseEnd?: Maybe<Scalars['Int']['output']>;
   verseStart: Scalars['Int']['output'];
+  video: Video;
 };
 
 export type Block = {
@@ -190,11 +200,6 @@ export enum ButtonSize {
 export enum ButtonVariant {
   Contained = 'contained',
   Text = 'text'
-}
-
-export enum CacheControlScope {
-  Private = 'PRIVATE',
-  Public = 'PUBLIC'
 }
 
 export type CardBlock = Block & {
@@ -736,6 +741,8 @@ export type Journey = {
   creatorImageBlock?: Maybe<ImageBlock>;
   deletedAt?: Maybe<Scalars['DateTime']['output']>;
   description?: Maybe<Scalars['String']['output']>;
+  /** public title for viewers */
+  displayTitle?: Maybe<Scalars['String']['output']>;
   featuredAt?: Maybe<Scalars['DateTime']['output']>;
   host?: Maybe<Host>;
   id: Scalars['ID']['output'];
@@ -746,7 +753,11 @@ export type Journey = {
   primaryImageBlock?: Maybe<ImageBlock>;
   publishedAt?: Maybe<Scalars['DateTime']['output']>;
   seoDescription?: Maybe<Scalars['String']['output']>;
+  /** title for seo and sharing */
   seoTitle?: Maybe<Scalars['String']['output']>;
+  showDislikeButton?: Maybe<Scalars['Boolean']['output']>;
+  showLikeButton?: Maybe<Scalars['Boolean']['output']>;
+  showShareButton?: Maybe<Scalars['Boolean']['output']>;
   slug: Scalars['String']['output'];
   status: JourneyStatus;
   strategySlug?: Maybe<Scalars['String']['output']>;
@@ -755,9 +766,11 @@ export type Journey = {
   template?: Maybe<Scalars['Boolean']['output']>;
   themeMode: ThemeMode;
   themeName: ThemeName;
+  /** private title for creators */
   title: Scalars['String']['output'];
   trashedAt?: Maybe<Scalars['DateTime']['output']>;
   userJourneys?: Maybe<Array<UserJourney>>;
+  website?: Maybe<Scalars['Boolean']['output']>;
 };
 
 export type JourneyCollection = {
@@ -848,17 +861,22 @@ export type JourneyUpdateInput = {
   creatorDescription?: InputMaybe<Scalars['String']['input']>;
   creatorImageBlockId?: InputMaybe<Scalars['ID']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
+  displayTitle?: InputMaybe<Scalars['String']['input']>;
   hostId?: InputMaybe<Scalars['String']['input']>;
   languageId?: InputMaybe<Scalars['String']['input']>;
   primaryImageBlockId?: InputMaybe<Scalars['ID']['input']>;
   seoDescription?: InputMaybe<Scalars['String']['input']>;
   seoTitle?: InputMaybe<Scalars['String']['input']>;
+  showDislikeButton?: InputMaybe<Scalars['Boolean']['input']>;
+  showLikeButton?: InputMaybe<Scalars['Boolean']['input']>;
+  showShareButton?: InputMaybe<Scalars['Boolean']['input']>;
   slug?: InputMaybe<Scalars['String']['input']>;
   strategySlug?: InputMaybe<Scalars['String']['input']>;
   tagIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   themeMode?: InputMaybe<ThemeMode>;
   themeName?: InputMaybe<ThemeName>;
   title?: InputMaybe<Scalars['String']['input']>;
+  website?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type JourneyViewEvent = Event & {
@@ -1067,8 +1085,8 @@ export type LanguageName = {
 
 export type LanguageWithSlug = {
   __typename?: 'LanguageWithSlug';
-  language?: Maybe<Language>;
-  slug?: Maybe<Scalars['String']['output']>;
+  language: Language;
+  slug: Scalars['String']['output'];
 };
 
 export type LanguagesFilter = {
@@ -2091,6 +2109,8 @@ export type Query = {
    */
   adminJourneys: Array<Journey>;
   adminJourneysReport?: Maybe<PowerBiEmbed>;
+  bibleBooks: Array<BibleBook>;
+  bibleCitations: Array<BibleCitation>;
   block: Block;
   blocks: Array<Block>;
   countries: Array<Country>;
@@ -2140,6 +2160,7 @@ export type Query = {
    * corresponds to the main visitor graph.
    */
   journeysPlausibleStatsTimeseries: Array<PlausibleStatsResponse>;
+  keywords: Array<Keyword>;
   language?: Maybe<Language>;
   languages: Array<Language>;
   listUnsplashCollectionPhotos: Array<UnsplashPhoto>;
@@ -2154,7 +2175,8 @@ export type Query = {
   userTeam: UserTeam;
   userTeamInvites: Array<UserTeamInvite>;
   userTeams: Array<UserTeam>;
-  video?: Maybe<Video>;
+  video: Video;
+  videoVariants: Array<VideoVariant>;
   videos: Array<Video>;
   /** Get a single visitor */
   visitor: Visitor;
@@ -3081,20 +3103,20 @@ export type Video = {
   children: Array<Video>;
   /** the number value of the amount of children on a video */
   childrenCount: Scalars['Int']['output'];
-  description: Array<Translation>;
+  description: Array<VideoDescription>;
   id: Scalars['ID']['output'];
   image?: Maybe<Scalars['String']['output']>;
-  imageAlt: Array<Translation>;
+  imageAlt: Array<VideoImageAlt>;
   keywords: Array<Keyword>;
   label: VideoLabel;
   noIndex?: Maybe<Scalars['Boolean']['output']>;
   primaryLanguageId: Scalars['ID']['output'];
   /** slug is a permanent link to the video. */
   slug: Scalars['String']['output'];
-  snippet: Array<Translation>;
-  studyQuestions: Array<Translation>;
+  snippet: Array<VideoSnippet>;
+  studyQuestions: Array<VideoStudyQuestion>;
   subtitles: Array<VideoSubtitle>;
-  title: Array<Translation>;
+  title: Array<VideoTitle>;
   variant?: Maybe<VideoVariant>;
   variantLanguages: Array<Language>;
   variantLanguagesCount: Scalars['Int']['output'];
@@ -3391,6 +3413,14 @@ export type VideoCompleteEventCreateInput = {
   value?: InputMaybe<VideoBlockSource>;
 };
 
+export type VideoDescription = {
+  __typename?: 'VideoDescription';
+  id: Scalars['ID']['output'];
+  language: Language;
+  primary: Scalars['Boolean']['output'];
+  value: Scalars['String']['output'];
+};
+
 export type VideoExpandEvent = Event & {
   __typename?: 'VideoExpandEvent';
   /** time event was created */
@@ -3420,6 +3450,14 @@ export type VideoExpandEventCreateInput = {
   stepId?: InputMaybe<Scalars['ID']['input']>;
   /** source of the video */
   value?: InputMaybe<VideoBlockSource>;
+};
+
+export type VideoImageAlt = {
+  __typename?: 'VideoImageAlt';
+  id: Scalars['ID']['output'];
+  language: Language;
+  primary: Scalars['Boolean']['output'];
+  value: Scalars['String']['output'];
 };
 
 export enum VideoLabel {
@@ -3530,6 +3568,14 @@ export type VideoProgressEventCreateInput = {
   value?: InputMaybe<VideoBlockSource>;
 };
 
+export type VideoSnippet = {
+  __typename?: 'VideoSnippet';
+  id: Scalars['ID']['output'];
+  language: Language;
+  primary: Scalars['Boolean']['output'];
+  value: Scalars['String']['output'];
+};
+
 export type VideoStartEvent = Event & {
   __typename?: 'VideoStartEvent';
   /** time event was created */
@@ -3561,13 +3607,32 @@ export type VideoStartEventCreateInput = {
   value?: InputMaybe<VideoBlockSource>;
 };
 
+export type VideoStudyQuestion = {
+  __typename?: 'VideoStudyQuestion';
+  id: Scalars['ID']['output'];
+  language: Language;
+  primary: Scalars['Boolean']['output'];
+  value: Scalars['String']['output'];
+};
+
 export type VideoSubtitle = {
   __typename?: 'VideoSubtitle';
   edition: Scalars['String']['output'];
-  id: Scalars['String']['output'];
-  languageId: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  language: Language;
+  languageId: Scalars['ID']['output'];
+  primary: Scalars['Boolean']['output'];
   srtSrc?: Maybe<Scalars['String']['output']>;
+  value: Scalars['String']['output'];
   vttSrc?: Maybe<Scalars['String']['output']>;
+};
+
+export type VideoTitle = {
+  __typename?: 'VideoTitle';
+  id: Scalars['ID']['output'];
+  language: Language;
+  primary: Scalars['Boolean']['output'];
+  value: Scalars['String']['output'];
 };
 
 /**
@@ -3593,11 +3658,11 @@ export type VideoVariant = {
   downloads: Array<VideoVariantDownload>;
   duration: Scalars['Int']['output'];
   hls?: Maybe<Scalars['String']['output']>;
-  id: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
   language: Language;
   /** slug is a permanent link to the video variant. */
   slug: Scalars['String']['output'];
-  subtitle: Array<Translation>;
+  subtitle: Array<VideoSubtitle>;
   subtitleCount: Scalars['Int']['output'];
 };
 
@@ -3609,6 +3674,7 @@ export type VideoVariantSubtitleArgs = {
 
 export type VideoVariantDownload = {
   __typename?: 'VideoVariantDownload';
+  id: Scalars['ID']['output'];
   quality: VideoVariantDownloadQuality;
   size: Scalars['Float']['output'];
   url: Scalars['String']['output'];

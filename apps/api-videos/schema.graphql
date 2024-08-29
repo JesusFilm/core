@@ -1,24 +1,9 @@
-directive @cacheControl(maxAge: Int, scope: CacheControlScope, inheritMaxAge: Boolean) on FIELD_DEFINITION | OBJECT | INTERFACE | UNION
-
-directive @key(fields: _FieldSet!, resolvable: Boolean = true) repeatable on OBJECT | INTERFACE
-
-directive @requires(fields: _FieldSet!) on FIELD_DEFINITION
-
-directive @provides(fields: _FieldSet!) on FIELD_DEFINITION
-
-directive @external(reason: String) on OBJECT | FIELD_DEFINITION
-
-directive @tag(name: String!) repeatable on FIELD_DEFINITION | OBJECT | INTERFACE | UNION | ARGUMENT_DEFINITION | SCALAR | ENUM | ENUM_VALUE | INPUT_OBJECT | INPUT_FIELD_DEFINITION
-
-directive @extends on OBJECT | INTERFACE
-
-enum CacheControlScope {
-  PUBLIC
-  PRIVATE
-}
+extend schema
+  @link(url: "https://specs.apollo.dev/federation/v2.7", import: ["@extends", "@external", "@key", "@shareable"])
 
 type BibleBook {
-  name(languageId: ID, primary: Boolean): [Translation!]!
+  id: ID!
+  name(languageId: ID, primary: Boolean): [BibleBookName!]!
   osisId: String!
   alternateName: String
   paratextAbbreviation: String!
@@ -26,30 +11,70 @@ type BibleBook {
   order: Int!
 }
 
+type BibleBookName {
+  value: String!
+  primary: Boolean!
+  language: Language!
+}
+
 type BibleCitation {
+  id: ID!
   osisId: String!
   bibleBook: BibleBook!
   chapterStart: Int!
   chapterEnd: Int
   verseStart: Int!
   verseEnd: Int
+  video: Video!
+}
+
+enum IdType {
+  databaseId
+  slug
+}
+
+type Keyword {
+  id: ID!
+  value: String!
+  language: Language!
+}
+
+type Language
+  @key(fields: "id")
+  @extends
+{
+  id: ID! @external
+}
+
+type LanguageWithSlug {
+  language: Language!
+  slug: String!
+}
+
+type Query {
+  bibleBooks: [BibleBook!]!
+  bibleCitations: [BibleCitation!]!
+  keywords: [Keyword!]!
+  video(id: ID!, idType: IdType = databaseId): Video!
+  videos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
+  videoVariants: [VideoVariant!]!
 }
 
 type Video
   @key(fields: "id primaryLanguageId")
-  @cacheControl(maxAge: 86400)
+  @shareable
 {
   bibleCitations: [BibleCitation!]!
   keywords(languageId: ID): [Keyword!]!
   id: ID!
   label: VideoLabel!
   primaryLanguageId: ID!
-  title(languageId: ID, primary: Boolean): [Translation!]!
-  snippet(languageId: ID, primary: Boolean): [Translation!]!
-  description(languageId: ID, primary: Boolean): [Translation!]!
-  studyQuestions(languageId: ID, primary: Boolean): [Translation!]!
+  title(languageId: ID, primary: Boolean): [VideoTitle!]!
+  snippet(languageId: ID, primary: Boolean): [VideoSnippet!]!
+  description(languageId: ID, primary: Boolean): [VideoDescription!]!
+  studyQuestions(languageId: ID, primary: Boolean): [VideoStudyQuestion!]!
   image: String
-  imageAlt(languageId: ID, primary: Boolean): [Translation!]!
+  imageAlt(languageId: ID, primary: Boolean): [VideoImageAlt!]!
   variantLanguages: [Language!]!
   variantLanguagesCount: Int!
 
@@ -65,21 +90,18 @@ type Video
   variant(languageId: ID): VideoVariant
 }
 
-type Keyword {
+type VideoDescription {
   id: ID!
   value: String!
+  primary: Boolean!
   language: Language!
 }
 
-extend type Language
-  @key(fields: "id")
-{
-  id: ID! @external
-}
-
-enum IdType {
-  databaseId
-  slug
+type VideoImageAlt {
+  id: ID!
+  value: String!
+  primary: Boolean!
+  language: Language!
 }
 
 enum VideoLabel {
@@ -93,17 +115,61 @@ enum VideoLabel {
   behindTheScenes
 }
 
-type LanguageWithSlug {
-  language: Language
-  slug: String
+type VideoSnippet {
+  id: ID!
+  value: String!
+  primary: Boolean!
+  language: Language!
+}
+
+type VideoStudyQuestion {
+  id: ID!
+  value: String!
+  primary: Boolean!
+  language: Language!
 }
 
 type VideoSubtitle {
-  id: String!
-  languageId: String!
+  id: ID!
+  languageId: ID!
+  primary: Boolean!
   edition: String!
   vttSrc: String
   srtSrc: String
+  value: String!
+  language: Language!
+}
+
+type VideoTitle {
+  id: ID!
+  value: String!
+  primary: Boolean!
+  language: Language!
+}
+
+type VideoVariant {
+  id: ID!
+  hls: String
+  downloads: [VideoVariantDownload!]!
+  duration: Int!
+  language: Language!
+  subtitle(languageId: ID, primary: Boolean): [VideoSubtitle!]!
+  subtitleCount: Int!
+
+  """slug is a permanent link to the video variant."""
+  slug: String!
+}
+
+type VideoVariantDownload {
+  id: ID!
+  quality: VideoVariantDownloadQuality!
+  size: Float!
+  url: String!
+}
+
+enum VideoVariantDownloadQuality {
+  low
+  high
 }
 
 input VideosFilter {
@@ -113,50 +179,3 @@ input VideosFilter {
   ids: [ID!]
   subtitleLanguageIds: [ID!]
 }
-
-type Query {
-  videos(where: VideosFilter, offset: Int, limit: Int): [Video!]! @cacheControl(maxAge: 86400)
-  video(id: ID!, idType: IdType): Video @cacheControl(maxAge: 86400)
-  _entities(representations: [_Any!]!): [_Entity]!
-  _service: _Service!
-}
-
-enum VideoVariantDownloadQuality {
-  low
-  high
-}
-
-type VideoVariantDownload {
-  quality: VideoVariantDownloadQuality!
-  size: Float!
-  url: String!
-}
-
-type VideoVariant {
-  id: String!
-  hls: String
-  downloads: [VideoVariantDownload!]!
-  duration: Int!
-  language: Language!
-  subtitle(languageId: ID, primary: Boolean): [Translation!]!
-  subtitleCount: Int!
-
-  """slug is a permanent link to the video variant."""
-  slug: String!
-}
-
-type Translation {
-  value: String!
-  language: Language!
-  primary: Boolean!
-}
-
-scalar _FieldSet
-
-scalar _Any
-
-type _Service {
-  sdl: String
-}
-
-union _Entity = Language | Video

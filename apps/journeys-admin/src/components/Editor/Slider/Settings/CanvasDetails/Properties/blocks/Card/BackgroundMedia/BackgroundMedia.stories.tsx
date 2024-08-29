@@ -75,7 +75,12 @@ const journey: Journey = {
   chatButtons: [],
   host: null,
   team: null,
-  tags: []
+  tags: [],
+  website: null,
+  showShareButton: null,
+  showLikeButton: null,
+  showDislikeButton: null,
+  displayTitle: null
 }
 
 const card: TreeBlock<CardBlock> = {
@@ -115,7 +120,7 @@ const video: TreeBlock<VideoBlock> = {
     id: '2_0-FallingPlates',
     title: [
       {
-        __typename: 'Translation',
+        __typename: 'VideoTitle',
         value: 'FallingPlates'
       }
     ],

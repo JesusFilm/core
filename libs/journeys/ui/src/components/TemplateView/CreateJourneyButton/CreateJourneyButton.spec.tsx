@@ -67,7 +67,12 @@ const journey: Journey = {
   creatorDescription: null,
   creatorImageBlock: null,
   userJourneys: [],
-  tags: []
+  tags: [],
+  website: null,
+  showShareButton: null,
+  showLikeButton: null,
+  showDislikeButton: null,
+  displayTitle: null
 }
 
 const teamResult = jest.fn(() => ({

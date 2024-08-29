@@ -10,17 +10,17 @@ import { VideosFilter, VideoLabel } from "./globalTypes";
 // ====================================================
 
 export interface GetVideos_videos_title {
-  __typename: "Translation";
+  __typename: "VideoTitle";
   value: string;
 }
 
 export interface GetVideos_videos_imageAlt {
-  __typename: "Translation";
+  __typename: "VideoImageAlt";
   value: string;
 }
 
 export interface GetVideos_videos_snippet {
-  __typename: "Translation";
+  __typename: "VideoSnippet";
   value: string;
 }
 
