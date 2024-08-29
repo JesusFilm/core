@@ -71,7 +71,6 @@ async function storeTranslations(
   data: CrowdinData,
   logger?: Logger
 ): Promise<void> {
-  logger?.info(`storing translation ${languageId}`)
   await Promise.all(
     map(data.resources, async (translations, fileName) => {
       await Promise.all(
@@ -92,7 +91,7 @@ async function storeTranslations(
       )
     })
   )
-  logger?.info(`finished storing translation ${languageId}`)
+  logger?.info({ languageId }, 'finished storing translation')
 }
 
 async function storeTranslation(
