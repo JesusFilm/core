@@ -14,13 +14,12 @@ const StyledButton = styled(Button)(({ theme }) => ({
   gap: 0,
   padding: '8px 20px 8px 20px',
   border: `2px solid ${theme.palette.text.primary}${
-    theme.palette.mode === 'dark' ? 'D4' : '1A'
+    theme.palette.mode === 'dark' ? '2E' : '1A'
   }`,
   color: theme.palette.text.primary,
   backgroundColor: theme.palette.background.default,
-  '&:hover': {
-    backgroundColor: theme.palette.background.default,
-    opacity: 0.9
+  [theme.breakpoints.down('lg')]: {
+    padding: 4
   }
 }))
 
@@ -60,6 +59,7 @@ export function LanguageButton({
       <StyledButton
         size="small"
         onClick={onClick}
+        color="inherit"
         startIcon={<Globe1Icon />}
         endIcon={<ChevronDown />}
       >
