@@ -135,7 +135,16 @@ describe('fetchEmailDetails', () => {
     showShareButton: null,
     showLikeButton: null,
     showDislikeButton: null,
-    displayTitle: null
+    displayTitle: null,
+    showHosts: null,
+    showChatButtons: null,
+    showReactions: null,
+    showLogo: null,
+    showMenu: null,
+    showDisplayTitle: null,
+    menuButtonIcon: null,
+    logoImageBlockId: null,
+    menuStepBlockId: null
   }
 
   const event: Event = {
