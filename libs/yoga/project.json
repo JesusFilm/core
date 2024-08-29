@@ -12,13 +12,13 @@
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/libs/yoga"],
       "options": {
-        "jestConfig": "libs/nest/decorators/jest.config.ts"
+        "jestConfig": "libs/yoga/jest.config.ts"
       }
     },
     "codecov": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "codecov -f coverage/libs/yoga/cobertura-coverage.xml -F libs.nest.decorators"
+        "command": "codecov -f coverage/libs/yoga/cobertura-coverage.xml -F libs.yoga"
       }
     },
     "type-check": {

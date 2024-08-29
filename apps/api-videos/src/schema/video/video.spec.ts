@@ -4,9 +4,9 @@ import {
   BibleCitation,
   Keyword,
   Video,
-  VideoAdminUserRole,
   VideoDescription,
   VideoImageAlt,
+  VideoRole,
   VideoSnippet,
   VideoStudyQuestion,
   VideoSubtitle,
@@ -126,6 +126,10 @@ describe('video', () => {
             primary
             vttSrc
             srtSrc
+            value
+            language {
+              id
+            }
           }
           variant(languageId: $languageId) {
             id
@@ -146,6 +150,27 @@ describe('video', () => {
       subtitles: VideoSubtitle[]
     }
 
+    const children: Video[] = [
+      {
+        id: 'videoId2',
+        label: 'collection',
+        primaryLanguageId: 'primaryLanguageId',
+        image: null,
+        slug: null,
+        noIndex: null,
+        childIds: []
+      },
+      {
+        id: 'videoId1',
+        label: 'collection',
+        primaryLanguageId: 'primaryLanguageId',
+        image: null,
+        slug: null,
+        noIndex: null,
+        childIds: []
+      }
+    ]
+
     const videos: VideoAndIncludes[] = [
       {
         id: 'videoId',
@@ -154,7 +179,7 @@ describe('video', () => {
         image: null,
         slug: null,
         noIndex: null,
-        childIds: [],
+        childIds: ['videoId1', 'videoId2'],
         bibleCitation: [
           {
             id: 'bibleCitationId',
@@ -222,17 +247,7 @@ describe('video', () => {
             primary: true
           }
         ],
-        children: [
-          {
-            id: 'videoId2',
-            label: 'collection',
-            primaryLanguageId: 'primaryLanguageId',
-            image: null,
-            slug: null,
-            noIndex: null,
-            childIds: []
-          }
-        ],
+        children,
         subtitles: [
           {
             id: 'subtitleId',
@@ -240,6 +255,24 @@ describe('video', () => {
             edition: 'edition',
             vttSrc: null,
             srtSrc: null,
+            videoId: 'videoId',
+            primary: true
+          },
+          {
+            id: 'subtitleId1',
+            languageId: 'languageId',
+            edition: 'edition',
+            vttSrc: 'vttSrc',
+            srtSrc: null,
+            videoId: 'videoId',
+            primary: true
+          },
+          {
+            id: 'subtitleId2',
+            languageId: 'languageId',
+            edition: 'edition',
+            vttSrc: null,
+            srtSrc: 'srtSrc',
             videoId: 'videoId',
             primary: true
           }
@@ -251,6 +284,9 @@ describe('video', () => {
       {
         bibleCitations: [{ id: 'bibleCitationId' }],
         children: [
+          {
+            id: 'videoId1'
+          },
           {
             id: 'videoId2'
           }
@@ -306,7 +342,35 @@ describe('video', () => {
             languageId: 'languageId',
             primary: true,
             srtSrc: null,
-            vttSrc: null
+            vttSrc: null,
+            value: '',
+            language: {
+              id: 'languageId'
+            }
+          },
+          {
+            edition: 'edition',
+            id: 'subtitleId1',
+            languageId: 'languageId',
+            primary: true,
+            srtSrc: null,
+            vttSrc: 'vttSrc',
+            value: 'vttSrc',
+            language: {
+              id: 'languageId'
+            }
+          },
+          {
+            edition: 'edition',
+            id: 'subtitleId2',
+            languageId: 'languageId',
+            primary: true,
+            srtSrc: 'srtSrc',
+            vttSrc: null,
+            value: 'srtSrc',
+            language: {
+              id: 'languageId'
+            }
           }
         ],
         title: [
@@ -333,6 +397,7 @@ describe('video', () => {
 
     it('should query videos', async () => {
       prismaMock.video.findMany.mockResolvedValueOnce(videos)
+      prismaMock.video.findMany.mockResolvedValueOnce(children)
       // variantLanguages
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         { languageId: 'languageId' } as unknown as VideoVariant
@@ -358,7 +423,6 @@ describe('video', () => {
         where: {},
         include: {
           bibleCitation: true,
-          children: true,
           description: {
             orderBy: {
               primary: 'desc'
@@ -441,6 +505,8 @@ describe('video', () => {
       prismaMock.video.findMany.mockResolvedValueOnce([
         { ...videos[0], slug: 'slug', noIndex: true }
       ])
+      // children
+      prismaMock.video.findMany.mockResolvedValueOnce(children)
       // variantLanguages
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         { languageId: 'languageId' } as unknown as VideoVariant
@@ -468,6 +534,8 @@ describe('video', () => {
 
     it('should query videoVariants with variables', async () => {
       prismaMock.video.findMany.mockResolvedValueOnce(videos)
+      // children
+      prismaMock.video.findMany.mockResolvedValueOnce(children)
       // variantLanguages
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         { languageId: 'languageId' } as unknown as VideoVariant
@@ -511,7 +579,6 @@ describe('video', () => {
         },
         include: {
           bibleCitation: true,
-          children: true,
           description: {
             orderBy: {
               primary: 'desc'
@@ -680,7 +747,7 @@ describe('video', () => {
       prismaMock.videoAdminUser.findUnique.mockResolvedValueOnce({
         id: 'id',
         userId: 'userId',
-        roles: [VideoAdminUserRole.admin]
+        roles: [VideoRole.publisher]
       })
       const data = await authClient({
         document: CURRENT_VIDEO_ROLES,
@@ -690,7 +757,7 @@ describe('video', () => {
       })
       expect(prismaMock.videoAdminUser.findUnique).toHaveBeenCalled()
       expect(data).toHaveProperty('data.currentVideoRoles', [
-        VideoAdminUserRole.admin
+        VideoRole.publisher
       ])
     })
   })

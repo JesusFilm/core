@@ -1,13 +1,14 @@
 import compact from 'lodash/compact'
 import isEmpty from 'lodash/isEmpty'
+import orderBy from 'lodash/orderBy'
 
 import { prisma } from '../../lib/prisma'
 import { Context, builder } from '../builder'
 import { IdType, IdTypeShape } from '../enums/idType'
 import { Language, LanguageWithSlug } from '../language'
 
-import { VideoAdminUserRole } from './enums/videoAdminUserRole'
 import { VideoLabel } from './enums/videoLabel'
+import { VideoRole } from './enums/videoRole'
 import { VideosFilter } from './inputs/videosFilter'
 import { videosFilter } from './lib/videosFilter'
 
@@ -119,7 +120,21 @@ const Video = builder.prismaObject('Video', {
       description: 'slug is a permanent link to the video.'
     }),
     noIndex: t.exposeBoolean('noIndex', { nullable: true }),
-    children: t.relation('children'),
+    children: t.prismaField({
+      type: ['Video'],
+      async resolve(query, parent) {
+        return orderBy(
+          await prisma.video.findMany({
+            ...query,
+            where: {
+              parent: { some: { id: parent.id } }
+            }
+          }),
+          ({ id }) => parent.childIds.indexOf(id),
+          'asc'
+        )
+      }
+    }),
     childrenCount: t.int({
       resolve: async ({ id }) =>
         await prisma.video.count({ where: { parent: { some: { id } } } }),
@@ -260,12 +275,11 @@ builder.queryFields((t) => ({
       })
   }),
   currentVideoRoles: t.field({
-    type: [VideoAdminUserRole],
+    type: [VideoRole],
     nullable: false,
     authScopes: {
       isAuthenticated: true
     },
-    resolve: async (_query, _args, ctx: Context) =>
-      ctx.currentVideoUser?.roles ?? []
+    resolve: async (_query, _args, ctx: Context) => ctx.currentRoles ?? []
   })
 }))

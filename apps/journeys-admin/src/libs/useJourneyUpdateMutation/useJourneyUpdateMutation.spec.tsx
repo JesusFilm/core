@@ -19,7 +19,8 @@ describe('useJourneyUpdateMutation', () => {
           description: 'New Description',
           strategySlug: 'www.example.com/embed',
           tagIds: ['tagId'],
-          languageId: '529'
+          languageId: '529',
+          website: true
         }
       }
     },
@@ -32,7 +33,8 @@ describe('useJourneyUpdateMutation', () => {
           description: 'New Description',
           strategySlug: 'www.example.com/embed',
           tags: [{ __typename: 'Tag', id: 'tagId' }],
-          language: { id: '529', __typename: 'Language' }
+          language: { id: '529', __typename: 'Language' },
+          website: true
         }
       }
     }))
@@ -57,7 +59,8 @@ describe('useJourneyUpdateMutation', () => {
               description: 'New Description',
               strategySlug: 'www.example.com/embed',
               tagIds: ['tagId'],
-              languageId: '529'
+              languageId: '529',
+              website: true
             }
           }
         })

@@ -1,10 +1,6 @@
 import { graphql } from 'gql.tada'
 
-import {
-  VideoVariant,
-  VideoVariantDownload,
-  VideoVariantSubtitle
-} from '.prisma/api-videos-client'
+import { VideoVariant, VideoVariantDownload } from '.prisma/api-videos-client'
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
@@ -44,7 +40,6 @@ describe('videoVariant', () => {
 
     type VideoVariantAndIncludes = VideoVariant & {
       downloads: VideoVariantDownload[]
-      subtitle: VideoVariantSubtitle[]
     }
 
     it('should query videoVariants', async () => {
@@ -65,32 +60,39 @@ describe('videoVariant', () => {
               url: 'url',
               videoVariantId: 'videoVariantId'
             }
-          ],
-          subtitle: [
-            {
-              id: 'subtitleId',
-              value: 'value',
-              primary: false,
-              languageId: 'languageId',
-              videoVariantId: 'videoVariantId'
-            }
           ]
         }
       ] as VideoVariantAndIncludes[])
-      prismaMock.videoVariantSubtitle.count.mockResolvedValueOnce(123)
+      prismaMock.videoSubtitle.findMany.mockResolvedValueOnce([
+        {
+          edition: 'base',
+          id: 'subtitleId',
+          vttSrc: 'value',
+          srtSrc: null,
+          primary: false,
+          languageId: 'languageId',
+          videoId: 'videoId'
+        }
+      ])
+      prismaMock.videoSubtitle.count.mockResolvedValueOnce(123)
       const data = await client({
         document: VIDEO_VARIANTS_QUERY
       })
       expect(prismaMock.videoVariant.findMany).toHaveBeenCalledWith({
         include: {
-          downloads: true,
-          subtitle: {
-            orderBy: { primary: 'desc' },
-            where: {
-              OR: [{ languageId: '529' }]
-            }
-          }
+          downloads: true
         }
+      })
+      expect(prismaMock.videoSubtitle.findMany).toHaveBeenCalledWith({
+        where: {
+          AND: [{ videoId: 'videoId', edition: 'base' }, { OR: [] }]
+        },
+        orderBy: {
+          primary: 'desc'
+        }
+      })
+      expect(prismaMock.videoSubtitle.count).toHaveBeenCalledWith({
+        where: { videoId: 'videoId', edition: 'base' }
       })
       expect(data).toHaveProperty('data.videoVariants', [
         {
@@ -140,32 +142,39 @@ describe('videoVariant', () => {
               url: 'url',
               videoVariantId: 'videoVariantId'
             }
-          ],
-          subtitle: [
-            {
-              id: 'subtitleId',
-              value: 'value',
-              primary: false,
-              languageId: 'languageId',
-              videoVariantId: 'videoVariantId'
-            }
           ]
         }
       ] as VideoVariantAndIncludes[])
-      prismaMock.videoVariantSubtitle.count.mockResolvedValueOnce(123)
+      prismaMock.videoSubtitle.findMany.mockResolvedValueOnce([
+        {
+          id: 'subtitleId',
+          vttSrc: 'value',
+          srtSrc: null,
+          primary: false,
+          languageId: 'languageId',
+          videoId: 'videoId',
+          edition: 'base'
+        }
+      ])
+      prismaMock.videoSubtitle.count.mockResolvedValueOnce(123)
       const data = await client({
         document: VIDEO_VARIANTS_QUERY
       })
       expect(prismaMock.videoVariant.findMany).toHaveBeenCalledWith({
         include: {
-          downloads: true,
-          subtitle: {
-            orderBy: { primary: 'desc' },
-            where: {
-              OR: [{ languageId: '529' }]
-            }
-          }
+          downloads: true
         }
+      })
+      expect(prismaMock.videoSubtitle.findMany).toHaveBeenCalledWith({
+        where: {
+          AND: [{ videoId: 'videoId', edition: 'base' }, { OR: [] }]
+        },
+        orderBy: {
+          primary: 'desc'
+        }
+      })
+      expect(prismaMock.videoSubtitle.count).toHaveBeenCalledWith({
+        where: { videoId: 'videoId', edition: 'base' }
       })
       expect(data).toHaveProperty('data.videoVariants', [
         {
@@ -215,32 +224,28 @@ describe('videoVariant', () => {
               url: 'url',
               videoVariantId: 'videoVariantId'
             }
-          ],
-          subtitle: [
-            {
-              id: 'subtitleId',
-              value: 'value',
-              primary: false,
-              languageId: 'languageId',
-              videoVariantId: 'videoVariantId'
-            }
           ]
         }
       ] as VideoVariantAndIncludes[])
-      prismaMock.videoVariantSubtitle.count.mockResolvedValueOnce(123)
+      prismaMock.videoSubtitle.findMany.mockResolvedValueOnce([
+        {
+          edition: 'base',
+          id: 'subtitleId',
+          vttSrc: 'value',
+          srtSrc: null,
+          primary: false,
+          languageId: 'languageId',
+          videoId: 'videoId'
+        }
+      ])
+      prismaMock.videoSubtitle.count.mockResolvedValueOnce(123)
       const data = await client({
         document: VIDEO_VARIANTS_QUERY,
         variables: { languageId: 'languageId', primary: false }
       })
       expect(prismaMock.videoVariant.findMany).toHaveBeenCalledWith({
         include: {
-          downloads: true,
-          subtitle: {
-            orderBy: { primary: 'desc' },
-            where: {
-              OR: [{ primary: false }, { languageId: 'languageId' }]
-            }
-          }
+          downloads: true
         }
       })
       expect(data).toHaveProperty('data.videoVariants', [

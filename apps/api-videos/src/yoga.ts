@@ -21,11 +21,13 @@ export const yoga = createYoga({
 
     return {
       currentUser,
-      currentVideoUser:
+      currentRoles:
         currentUser != null
-          ? await prisma.videoAdminUser.findUnique({
-              where: { userId: currentUser.id }
-            })
+          ? (
+              await prisma.videoAdminUser.findUnique({
+                where: { userId: currentUser.id }
+              })
+            )?.roles ?? null
           : null,
       token
     } satisfies Context

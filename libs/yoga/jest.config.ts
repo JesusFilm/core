@@ -1,7 +1,7 @@
 import type { Config } from 'jest'
 
 const config: Config = {
-  displayName: 'nest-decorators',
+  displayName: 'yoga',
   globals: {},
   transform: {
     '^.+\\.[tj]sx?$': [

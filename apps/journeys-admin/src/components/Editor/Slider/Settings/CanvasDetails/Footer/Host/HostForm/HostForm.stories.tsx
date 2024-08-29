@@ -9,40 +9,16 @@ import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__ge
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { GetAllTeamHosts_hosts as Host } from '../../../../../../../../../__generated__/GetAllTeamHosts'
-import {
-  GetUserTeamsAndInvites,
-  GetUserTeamsAndInvites_userTeams as UserTeam
-} from '../../../../../../../../../__generated__/GetUserTeamsAndInvites'
-import { UserTeamRole } from '../../../../../../../../../__generated__/globalTypes'
 import { ThemeProvider } from '../../../../../../../ThemeProvider'
 import { DRAWER_WIDTH } from '../../../../../../constants'
 
-import { HostSelection } from './HostSelection'
+import { HostForm } from './HostForm'
 
-const Demo: Meta<typeof HostSelection> = {
+const Demo: Meta<typeof HostForm> = {
   ...simpleComponentConfig,
-  component: HostSelection,
+  component: HostForm,
   title:
-    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Footer/HostTab/HostSelection'
-}
-
-const user = {
-  id: 'userId',
-  email: 'admin@email.com'
-}
-
-const userTeam: UserTeam = {
-  id: 'teamId',
-  __typename: 'UserTeam',
-  role: UserTeamRole.manager,
-  user: {
-    __typename: 'User',
-    email: user.email,
-    firstName: 'User',
-    id: user.id,
-    imageUrl: 'imageURL',
-    lastName: '1'
-  }
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Footer/Host/HostForm'
 }
 
 const defaultHost: Host = {
@@ -59,7 +35,7 @@ const journey = {
   id: 'journeyId',
   seoTitle: 'My awesome journey',
   host: defaultHost,
-  team: { id: userTeam.id, title: 'My team' },
+  team: { id: 'teamId', title: 'My team' },
   language: {
     __typename: 'Language',
     id: '529',
@@ -73,16 +49,9 @@ const journey = {
   }
 } as unknown as Journey
 
-const data: GetUserTeamsAndInvites = {
-  userTeams: [userTeam],
-  userTeamInvites: []
-}
-
-const handleSelection = jest.fn()
-
 const Template: StoryObj<{
   journey: Journey
-  componentProps: ComponentProps<typeof HostSelection>
+  componentProps: ComponentProps<typeof HostForm>
 }> = {
   render: ({ journey, componentProps }) => {
     return (
@@ -90,7 +59,7 @@ const Template: StoryObj<{
         <ThemeProvider>
           <JourneyProvider value={{ journey, variant: 'admin' }}>
             <Box sx={{ width: DRAWER_WIDTH }}>
-              <HostSelection {...componentProps} />
+              <HostForm {...componentProps} />
             </Box>
           </JourneyProvider>
         </ThemeProvider>
@@ -104,33 +73,19 @@ export const Default = {
   args: {
     journey: { ...journey, host: null },
     componentProps: {
-      userInTeam: true,
-      data,
-      handleSelection
+      handleSelection: jest.fn(),
+      getAllTeamHosts: jest.fn()
     }
   }
 }
 
-export const EditHost = {
+export const Filled = {
   ...Template,
   args: {
     journey,
     componentProps: {
-      userInTeam: true,
-      data,
-      handleSelection
-    }
-  }
-}
-
-export const Disabled = {
-  ...Template,
-  args: {
-    journey: { ...journey, host: null },
-    componentProps: {
-      userInTeam: false,
-      data,
-      handleSelection
+      handleSelection: jest.fn(),
+      getAllTeamHosts: jest.fn()
     }
   }
 }
