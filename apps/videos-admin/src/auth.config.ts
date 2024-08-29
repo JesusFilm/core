@@ -1,6 +1,14 @@
-import type { NextAuthConfig } from 'next-auth'
+import type { NextAuthConfig, Session, User } from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 import Google from 'next-auth/providers/google'
+
+export interface VideoSession extends Session {
+  user: VideoUser
+}
+
+interface VideoUser extends User {
+  token: string
+}
 
 export const authConfig = {
   providers: [
@@ -44,17 +52,21 @@ export const authConfig = {
   },
   secret: process.env.NEXT_PUBLIC_AUTH_CONFIG_SECRET,
   callbacks: {
-    jwt({ token, user }) {
-      if (user != null) token.id = user.id
+    jwt({ token, profile, user, account, session }) {
+      // console.log('session', session)
+      // console.log('token', token)
+      // console.log('user', user)
+      // console.log('profile', profile)
+      // console.log('account', account)
+      // google auth id
+      if (account != null) token._id = account.id_token
       return token
     },
     session: async ({ session, token, user }) => {
-      console.log(session)
-      console.log(token)
-      console.log(user)
-      if (token.id != null) session.user.id = token.id as string
-      if (user != null) session.user.id = user.id
-      return session
+      if (token._id != null) session.user.token = token._id as string
+      // console.log('session', session)
+      // if (user != null) session.user.id = user.id
+      return session as Session
     }
   }
 } satisfies NextAuthConfig

@@ -6,6 +6,9 @@ import { ReactNode } from 'react'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
+import { AuthProvider } from '../../libs/auth/AuthProvider'
+import { getUser } from '../../libs/auth/getUser'
+
 import { ApolloWrapper } from './_apolloWrapper/apolloWrapper'
 
 export default async function LocaleLayout({
@@ -16,6 +19,7 @@ export default async function LocaleLayout({
   params: { locale: string }
 }): Promise<ReactNode> {
   const messages = await getMessages()
+  const user = await getUser()
 
   return (
     <html lang={locale}>
@@ -27,7 +31,7 @@ export default async function LocaleLayout({
                 themeName={ThemeName.website}
                 themeMode={ThemeMode.light}
               >
-                {children}
+                <AuthProvider user={user}>{children}</AuthProvider>
               </ThemeProvider>
             </AppRouterCacheProvider>
           </ApolloWrapper>

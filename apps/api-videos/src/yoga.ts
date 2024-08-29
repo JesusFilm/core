@@ -15,7 +15,9 @@ export const cache = createInMemoryCache()
 export const yoga = createYoga({
   schema,
   context: async ({ request }) => {
-    const token = request.headers.get('authorization')
+    console.log('headers', request.headers)
+    const token = request.headers.get('Authorization')
+    console.log('token', token)
     const currentUser =
       token == null || token === '' ? null : await getUserFromAuthToken(token)
 

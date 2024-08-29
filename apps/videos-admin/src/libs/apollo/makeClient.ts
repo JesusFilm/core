@@ -1,6 +1,6 @@
 import {
   ApolloClient,
-  ApolloClientOptions,
+  HttpOptions,
   InMemoryCache,
   NormalizedCacheObject,
   createHttpLink
@@ -9,10 +9,11 @@ import {
 import { cache } from './cache'
 
 export function makeClient(
-  options?: Partial<ApolloClientOptions<NormalizedCacheObject>>
+  options?: HttpOptions
 ): ApolloClient<NormalizedCacheObject> {
   const httpLink = createHttpLink({
-    uri: process.env.NEXT_PUBLIC_GATEWAY_URL
+    uri: process.env.NEXT_PUBLIC_GATEWAY_URL,
+    ...options
   })
 
   return new ApolloClient({
@@ -20,7 +21,6 @@ export function makeClient(
     cache: new InMemoryCache(cache),
     name: 'watch',
     version: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA,
-    connectToDevTools: true,
-    ...options
+    connectToDevTools: true
   })
 }
