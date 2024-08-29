@@ -8,3 +8,9 @@ export const authConfig = {
     privateKey: process.env.FIREBASE_PRIVATE_KEY as string
   }
 }
+
+export const clientConfig = {
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY as string,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN as string,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID as string
+}

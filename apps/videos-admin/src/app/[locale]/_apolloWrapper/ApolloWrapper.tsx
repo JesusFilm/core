@@ -10,7 +10,7 @@ import {
 import { UserCredential, getAuth, signInAnonymously } from 'firebase/auth'
 import { PropsWithChildren, ReactNode } from 'react'
 
-import { cache } from '../../../libs/apollo'
+import { cache } from '../../../libs/apollo/cache'
 import { firebaseClient } from '../../../libs/firebaseClient/firebaseClient'
 
 const httpLink = createHttpLink({
@@ -39,7 +39,7 @@ function makeClient(): ApolloClient<NormalizedCacheObject> {
   return new ApolloClient({
     cache: new InMemoryCache(cache),
     link: typeof window === 'undefined' ? httpLink : authLink.concat(httpLink),
-    name: 'watch',
+    name: 'videos-admin',
     version: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA,
     connectToDevTools: true
   })

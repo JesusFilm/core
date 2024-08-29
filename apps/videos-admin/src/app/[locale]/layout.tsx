@@ -9,7 +9,7 @@ import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 import { AuthProvider } from '../../libs/auth/AuthProvider'
 import { getUser } from '../../libs/auth/getUser'
 
-import { ApolloWrapper } from './_apolloWrapper/apolloWrapper'
+import { ApolloWrapper } from './_apolloWrapper/ApolloWrapper'
 
 export default async function LocaleLayout({
   children,
@@ -24,18 +24,20 @@ export default async function LocaleLayout({
   return (
     <html lang={locale}>
       <body>
-        <NextIntlClientProvider messages={messages}>
-          <ApolloWrapper>
-            <AppRouterCacheProvider>
-              <ThemeProvider
-                themeName={ThemeName.website}
-                themeMode={ThemeMode.light}
-              >
-                <AuthProvider user={user}>{children}</AuthProvider>
-              </ThemeProvider>
-            </AppRouterCacheProvider>
-          </ApolloWrapper>
-        </NextIntlClientProvider>
+        <AuthProvider user={user}>
+          <NextIntlClientProvider messages={messages}>
+            <ApolloWrapper>
+              <AppRouterCacheProvider>
+                <ThemeProvider
+                  themeName={ThemeName.website}
+                  themeMode={ThemeMode.light}
+                >
+                  {children}
+                </ThemeProvider>
+              </AppRouterCacheProvider>
+            </ApolloWrapper>
+          </NextIntlClientProvider>
+        </AuthProvider>
       </body>
     </html>
   )

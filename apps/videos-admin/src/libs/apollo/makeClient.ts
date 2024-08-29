@@ -19,7 +19,7 @@ export function makeClient(
   return new ApolloClient({
     link: httpLink,
     cache: new InMemoryCache(cache),
-    name: 'watch',
+    name: 'videos-admin',
     version: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA,
     connectToDevTools: true
   })

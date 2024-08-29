@@ -1,15 +1,16 @@
 import { registerApolloClient } from '@apollo/experimental-nextjs-app-support'
+import { cookies } from 'next/headers'
+import { getTokens } from 'next-firebase-auth-edge'
 
-import { auth } from '../../auth'
-import { VideoSession } from '../../auth.config'
+import { authConfig } from '../auth'
 
 import { makeClient } from './makeClient'
 
 export const { getClient: getApolloClient, query } = registerApolloClient(
   async () => {
-    const session = await auth()
+    const token = await getTokens(cookies(), authConfig)
     return makeClient({
-      headers: { Authorization: (session as VideoSession)?.user?.token ?? '' }
+      headers: { Authorization: token?.token ?? '' }
     })
   }
 )
