@@ -766,7 +766,7 @@ export type Journey = {
   showLikeButton?: Maybe<Scalars['Boolean']['output']>;
   showLogo?: Maybe<Scalars['Boolean']['output']>;
   showMenu?: Maybe<Scalars['Boolean']['output']>;
-  showReactions?: Maybe<Scalars['Boolean']['output']>;
+  showReactionButtons?: Maybe<Scalars['Boolean']['output']>;
   showShareButton?: Maybe<Scalars['Boolean']['output']>;
   slug: Scalars['String']['output'];
   status: JourneyStatus;
@@ -898,7 +898,7 @@ export type JourneyUpdateInput = {
   showLikeButton?: InputMaybe<Scalars['Boolean']['input']>;
   showLogo?: InputMaybe<Scalars['Boolean']['input']>;
   showMenu?: InputMaybe<Scalars['Boolean']['input']>;
-  showReactions?: InputMaybe<Scalars['Boolean']['input']>;
+  showReactionButtons?: InputMaybe<Scalars['Boolean']['input']>;
   showShareButton?: InputMaybe<Scalars['Boolean']['input']>;
   slug?: InputMaybe<Scalars['String']['input']>;
   strategySlug?: InputMaybe<Scalars['String']['input']>;

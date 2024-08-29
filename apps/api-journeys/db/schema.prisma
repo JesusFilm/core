@@ -398,7 +398,7 @@ model Journey {
   displayTitle              String?
   showHosts                 Boolean?                    @default(true)
   showChatButtons           Boolean?                    @default(true)
-  showReactions             Boolean?                    @default(true)
+  showReactionButtons       Boolean?                    @default(true)
   showLogo                  Boolean?                    @default(false)
   showMenu                  Boolean?                    @default(false)
   showDisplayTitle          Boolean?                    @default(false)

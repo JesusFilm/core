@@ -734,7 +734,7 @@ export class JourneyUpdateInput {
     displayTitle?: Nullable<string>;
     showHosts?: Nullable<boolean>;
     showChatButtons?: Nullable<boolean>;
-    showReactions?: Nullable<boolean>;
+    showReactionButtons?: Nullable<boolean>;
     showLogo?: Nullable<boolean>;
     showMenu?: Nullable<boolean>;
     showDisplayTitle?: Nullable<boolean>;
@@ -1136,7 +1136,7 @@ export class Journey {
     displayTitle?: Nullable<string>;
     showHosts?: Nullable<boolean>;
     showChatButtons?: Nullable<boolean>;
-    showReactions?: Nullable<boolean>;
+    showReactionButtons?: Nullable<boolean>;
     showLogo?: Nullable<boolean>;
     showMenu?: Nullable<boolean>;
     showDisplayTitle?: Nullable<boolean>;

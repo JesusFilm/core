@@ -482,7 +482,7 @@ export interface JourneyUpdateInput {
   displayTitle?: string | null;
   showHosts?: boolean | null;
   showChatButtons?: boolean | null;
-  showReactions?: boolean | null;
+  showReactionButtons?: boolean | null;
   showLogo?: boolean | null;
   showMenu?: boolean | null;
   showDisplayTitle?: boolean | null;

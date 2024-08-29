@@ -20,7 +20,7 @@ ADD COLUMN     "showDisplayTitle" BOOLEAN DEFAULT false,
 ADD COLUMN     "showHosts" BOOLEAN DEFAULT true,
 ADD COLUMN     "showLogo" BOOLEAN DEFAULT false,
 ADD COLUMN     "showMenu" BOOLEAN DEFAULT false,
-ADD COLUMN     "showReactions" BOOLEAN DEFAULT true;
+ADD COLUMN     "showReactionButtons" BOOLEAN DEFAULT true;
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Journey_logoImageBlockId_key" ON "Journey"("logoImageBlockId");

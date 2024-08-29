@@ -61,7 +61,7 @@ type Journey @key(fields: "id") {
   displayTitle: String
   showHosts: Boolean
   showChatButtons: Boolean
-  showReactions: Boolean
+  showReactionButtons: Boolean
   showLogo: Boolean
   showMenu: Boolean
   showDisplayTitle: Boolean
@@ -202,7 +202,7 @@ input JourneyUpdateInput {
   displayTitle: String
   showHosts: Boolean
   showChatButtons: Boolean
-  showReactions: Boolean
+  showReactionButtons: Boolean
   showLogo: Boolean
   showMenu: Boolean
   showDisplayTitle: Boolean
