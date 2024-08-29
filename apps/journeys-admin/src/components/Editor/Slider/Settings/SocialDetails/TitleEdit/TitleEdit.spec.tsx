@@ -33,7 +33,7 @@ describe('TitleEdit', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    expect(getByRole('textbox')).toHaveTextContent('Social share title') 
+    expect(getByRole('textbox')).toHaveTextContent('Social share title')
   })
 
   it('should display nothing when seo title not set', () => {
@@ -52,7 +52,7 @@ describe('TitleEdit', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    expect(getByRole('textbox')).toHaveTextContent("") 
+    expect(getByRole('textbox')).toHaveTextContent('')
   })
 
   it('should update seo title', async () => {
