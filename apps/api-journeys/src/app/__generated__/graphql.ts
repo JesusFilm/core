@@ -192,7 +192,7 @@ export enum JourneyMenuButtonIcon {
     home4 = "home4",
     more = "more",
     ellipsis = "ellipsis",
-    globe01 = "globe01",
+    grid1 = "grid1",
     chevronDown = "chevronDown"
 }
 

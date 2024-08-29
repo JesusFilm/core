@@ -1027,7 +1027,7 @@ enum JourneyMenuButtonIcon
   home4 @join__enumValue(graph: JOURNEYS)
   more @join__enumValue(graph: JOURNEYS)
   ellipsis @join__enumValue(graph: JOURNEYS)
-  globe01 @join__enumValue(graph: JOURNEYS)
+  grid1 @join__enumValue(graph: JOURNEYS)
   chevronDown @join__enumValue(graph: JOURNEYS)
 }
 

@@ -86,7 +86,7 @@ export enum JourneyMenuButtonIcon {
   chevronDown = "chevronDown",
   ellipsis = "ellipsis",
   equals = "equals",
-  globe01 = "globe01",
+  grid1 = "grid1",
   home3 = "home3",
   home4 = "home4",
   menu1 = "menu1",

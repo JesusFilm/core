@@ -348,7 +348,7 @@ enum JourneyMenuButtonIcon {
   home4
   more
   ellipsis
-  globe01
+  grid1
   chevronDown
 }
 
