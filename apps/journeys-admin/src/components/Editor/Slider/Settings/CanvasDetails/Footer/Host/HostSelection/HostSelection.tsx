@@ -27,8 +27,8 @@ export function HostSelection({
   const { t } = useTranslation('apps-journeys-admin')
   return (
     <Box data-testid="HostSelection">
-      {journey?.host != null ? (
-        <Stack sx={{ p: 4 }}>
+      <Stack sx={{ p: 4, pt: 0 }}>
+        {journey?.host != null ? (
           <ContainedIconButton
             label={journey.host.title}
             description={journey.host.location ?? ''}
@@ -48,9 +48,7 @@ export function HostSelection({
             }}
             actionIcon={<Edit2Icon />}
           />
-        </Stack>
-      ) : (
-        <Stack sx={{ p: 4 }}>
+        ) : (
           <ContainedIconButton
             label={t('Select a Host')}
             disabled={!userInTeam}
@@ -61,20 +59,20 @@ export function HostSelection({
               handleSelection('list')
             }}
           />
-        </Stack>
-      )}
-      {!userInTeam && journey?.team != null && (
-        <Stack direction="row" alignItems="center" gap={3}>
-          <AlertCircleIcon />
-          <Typography variant="subtitle2">
-            {data?.userTeams.length === 0
-              ? t('Cannot edit hosts for this old journey')
-              : t('Only {{ teamName }} members can edit this', {
-                  teamName: journey.team.title
-                })}
-          </Typography>
-        </Stack>
-      )}
+        )}
+        {!userInTeam && journey?.team != null && (
+          <Stack direction="row" alignItems="center" gap={3} sx={{ mt: 4 }}>
+            <AlertCircleIcon />
+            <Typography variant="subtitle2">
+              {data?.userTeams.length === 0
+                ? t('Cannot edit hosts for this old journey')
+                : t('Only {{ teamName }} members can edit this', {
+                    teamName: journey.team.title
+                  })}
+            </Typography>
+          </Stack>
+        )}
+      </Stack>
     </Box>
   )
 }

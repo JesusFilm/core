@@ -84,24 +84,17 @@ export function HostForm({
 
   return (
     <Box data-testid="HostForm">
-      {journey?.host != null ? (
-        <Stack
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center"
-          sx={{ p: 4 }}
-        >
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        sx={{ px: 4, py: 2 }}
+      >
+        {journey?.host != null ? (
           <Button variant="outlined" size="small" onClick={handleClear}>
             {t('Clear')}
           </Button>
-        </Stack>
-      ) : (
-        <Stack
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center"
-          sx={{ p: 4 }}
-        >
+        ) : (
           <Button
             variant="outlined"
             size="small"
@@ -109,8 +102,8 @@ export function HostForm({
           >
             {t('Back')}
           </Button>
-        </Stack>
-      )}
+        )}
+      </Stack>
       <Stack sx={{ p: 4 }} gap={6}>
         <HostTitleFieldForm />
         <HostLocationFieldForm />

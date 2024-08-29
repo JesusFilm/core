@@ -1,13 +1,14 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
 import {
   GetAllTeamHosts,
   GetAllTeamHostsVariables,
-  GetAllTeamHosts_hosts as Host
+  GetAllTeamHosts_hosts as TeamHost
 } from '../../../../../../../../__generated__/GetAllTeamHosts'
 import {
   GetUserTeamsAndInvites,
@@ -18,7 +19,7 @@ import { useCurrentUserLazyQuery } from '../../../../../../../libs/useCurrentUse
 import { GET_USER_TEAMS_AND_INVITES } from '../../../../../../../libs/useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
 import { ThemeProvider } from '../../../../../../ThemeProvider'
 
-import { GET_ALL_TEAM_HOSTS, HostTab } from './HostTab'
+import { GET_ALL_TEAM_HOSTS, Host } from './Host'
 
 const user1 = { id: 'userId', email: 'admin@email.com' }
 
@@ -29,7 +30,7 @@ jest.mock('../../../../../../../libs/useCurrentUserLazyQuery', () => ({
 
 const mockUseCurrentUserLazyQuery = useCurrentUserLazyQuery as jest.Mock
 
-describe('HostTab', () => {
+describe('Host', () => {
   beforeEach(() => {
     mockUseCurrentUserLazyQuery.mockReturnValue({
       loadUser: jest.fn(),
@@ -55,7 +56,7 @@ describe('HostTab', () => {
     }
   }
 
-  const defaultHost: Host = {
+  const defaultHost: TeamHost = {
     id: 'hostId',
     __typename: 'Host',
     title: 'Cru International',
@@ -126,7 +127,7 @@ describe('HostTab', () => {
   }
 
   it('should navigate to HostList', async () => {
-    const { getByRole, getByTestId } = render(
+    render(
       <MockedProvider mocks={[getUserTeamMock, getAllTeamHosts]}>
         <ThemeProvider>
           <JourneyProvider
@@ -135,20 +136,26 @@ describe('HostTab', () => {
               variant: 'admin'
             }}
           >
-            <HostTab />
+            <EditorProvider>
+              <Host />
+            </EditorProvider>
           </JourneyProvider>
         </ThemeProvider>
       </MockedProvider>
     )
 
+    fireEvent.click(screen.getByRole('button', { name: 'Hosted By' }))
+
     await waitFor(() => {
-      expect(getByRole('button', { name: 'Select a Host' })).not.toBeDisabled()
+      expect(
+        screen.getByRole('button', { name: 'Select a Host' })
+      ).not.toBeDisabled()
     })
 
-    fireEvent.click(getByRole('button', { name: 'Select a Host' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Select a Host' }))
 
     await waitFor(() => {
-      expect(getByTestId('HostList')).toBeInTheDocument()
+      expect(screen.getByTestId('HostList')).toBeInTheDocument()
     })
   })
 
@@ -162,11 +169,15 @@ describe('HostTab', () => {
               variant: 'admin'
             }}
           >
-            <HostTab />
+            <EditorProvider>
+              <Host />
+            </EditorProvider>
           </JourneyProvider>
         </ThemeProvider>
       </MockedProvider>
     )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Hosted By' }))
 
     await waitFor(() => {
       expect(getByRole('button', { name: 'Select a Host' })).not.toBeDisabled()
@@ -195,11 +206,15 @@ describe('HostTab', () => {
               variant: 'admin'
             }}
           >
-            <HostTab />
+            <EditorProvider>
+              <Host />
+            </EditorProvider>
           </JourneyProvider>
         </ThemeProvider>
       </MockedProvider>
     )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Hosted By' }))
 
     await waitFor(() => {
       expect(getByRole('button', { name: 'Select a Host' })).not.toBeDisabled()

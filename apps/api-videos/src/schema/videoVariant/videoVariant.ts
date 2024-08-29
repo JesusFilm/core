@@ -25,18 +25,6 @@ builder.prismaObject('VideoVariantDownload', {
   })
 })
 
-builder.prismaObject('VideoVariantSubtitle', {
-  fields: (t) => ({
-    id: t.exposeID('id'),
-    value: t.exposeString('value'),
-    primary: t.exposeBoolean('primary'),
-    language: t.field({
-      type: Language,
-      resolve: ({ languageId: id }) => ({ id })
-    })
-  })
-})
-
 builder.prismaObject('VideoVariant', {
   fields: (t) => ({
     id: t.exposeID('id'),
@@ -47,25 +35,38 @@ builder.prismaObject('VideoVariant', {
       type: Language,
       resolve: ({ languageId: id }) => ({ id })
     }),
-    subtitle: t.relation('subtitle', {
+    subtitle: t.prismaField({
+      type: ['VideoSubtitle'],
       args: {
         languageId: t.arg.id({ required: false }),
         primary: t.arg.boolean({ required: false })
       },
-      query: ({ languageId, primary }) => ({
-        where: {
-          OR: compact([
-            primary != null ? { primary } : undefined,
-            { languageId: languageId ?? '529' }
-          ])
-        },
-        orderBy: { primary: 'desc' },
-        include: { language: true }
-      })
+      resolve: async (query, parent, { languageId, primary }) => {
+        if (parent.videoId == null) return []
+        return await prisma.videoSubtitle.findMany({
+          ...query,
+          where: {
+            AND: [
+              { videoId: parent.videoId, edition: parent.edition },
+              {
+                OR: compact([
+                  primary != null ? { primary } : undefined,
+                  languageId != null ? { languageId } : undefined
+                ])
+              }
+            ]
+          },
+          orderBy: { primary: 'desc' }
+        })
+      }
     }),
     subtitleCount: t.int({
-      resolve: async ({ id: videoVariantId }) =>
-        await prisma.videoVariantSubtitle.count({ where: { videoVariantId } })
+      resolve: async (parent) => {
+        if (parent.videoId == null) return 0
+        return await prisma.videoSubtitle.count({
+          where: { videoId: parent.videoId, edition: parent.edition }
+        })
+      }
     }),
     slug: t.exposeString('slug', {
       description: 'slug is a permanent link to the video variant.'
