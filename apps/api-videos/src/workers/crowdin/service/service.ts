@@ -1,17 +1,14 @@
 import OtaClient from '@crowdin/ota-client'
+import chunk from 'lodash/chunk'
 import map from 'lodash/map'
+import uniqBy from 'lodash/uniqBy'
 import { Logger } from 'pino'
 import { xliff12ToJs } from 'xliff'
 import z from 'zod'
 
-import { prisma } from '../../../lib/prisma'
+import { Prisma } from '.prisma/api-videos-client'
 
-class MatchError extends Error {
-  constructor(message: string) {
-    super(message)
-    this.name = 'MatchError'
-  }
-}
+import { prisma } from '../../../lib/prisma'
 
 type CrowdinFileName =
   | '/Arclight/collection_title.csv'
@@ -56,21 +53,47 @@ export async function pullTranslations(logger?: Logger): Promise<void> {
 
   const languages = await client.getTranslations()
 
-  for (const languageCode in languages) {
-    const languageId = /\/content\/(?<languageId>\d+)\.xliff/.exec(
-      languages[languageCode][0].file
-    )?.groups?.languageId
+  const languagesChunk = chunk(map(languages), 2)
 
-    if (languageId != null) {
-      const res = await xliff12ToJs(languages[languageCode][0].content)
-      const data = schema.parse(res)
-      await storeTranslations(languageId, data, logger)
-    } else {
-      throw new Error(
-        `export filename does not match format or custom mapping not set: ${languages[languageCode][0].file}`
-      )
-    }
+  for (const chunk of languagesChunk) {
+    await Promise.all(
+      chunk.map(async (language) => {
+        const languageId = /\/content\/(?<languageId>\d+)\.xliff/.exec(
+          language[0].file
+        )?.groups?.languageId
+
+        if (languageId != null) {
+          const data = schema.parse(await xliff12ToJs(language[0].content))
+          try {
+            await storeTranslations(languageId, data, logger)
+          } catch (e) {
+            console.log(e)
+          }
+        } else {
+          throw new Error(
+            `export filename does not match format or custom mapping not set: ${language[0].file}`
+          )
+        }
+      })
+    )
   }
+
+  // for (const languageCode in languages) {
+  //   const languageId = /\/content\/(?<languageId>\d+)\.xliff/.exec(
+  //     languages[languageCode][0].file
+  //   )?.groups?.languageId
+
+  //   if (languageId != null) {
+  //     const res = await xliff12ToJs(languages[languageCode][0].content)
+  //     const data = schema.parse(res)
+  //     await storeTranslations(languageId, data, logger)
+  //   } else {
+  //     throw new Error(
+  //       `export filename does not match format or custom mapping not set: ${languages[languageCode][0].file}`
+  //     )
+  //   }
+  // }
+
   logger?.info('crowdin import finished')
   console.timeEnd()
 }
@@ -81,101 +104,430 @@ async function storeTranslations(
   logger?: Logger
 ): Promise<void> {
   logger?.info(`storing translation ${languageId}`)
-  await Promise.all(
-    map(data.resources, async (translations, fileName) => {
-      await Promise.all(
-        map(translations, async ({ source, target, additionalAttributes }) => {
-          if (
-            source.localeCompare(target) === 0 ||
-            additionalAttributes?.translate === 'no' ||
-            additionalAttributes?.resname == null
-          )
-            return
-          await storeTranslation(
-            languageId,
-            target,
-            additionalAttributes.resname,
-            fileName
-          )
-        })
-      )
-    })
-  )
+  const fileNames = Object.keys(data.resources)
+  const videos = await prisma.video.findMany({
+    include: { title: true, description: true, studyQuestions: true }
+  })
+
+  const studyQuestions = await prisma.videoStudyQuestion.findMany()
+
+  for (const name of fileNames) {
+    const translationCodes = Object.keys(data.resources[name])
+    switch (name) {
+      case '/Arclight/media_metadata_tile.csv':
+      case '/Arclight/collection_title.csv':
+        {
+          const update: any = []
+          const create: Prisma.VideoTitleCreateManyInput[] = []
+
+          for (const code of translationCodes) {
+            const translation = data.resources[name][code]
+            if (
+              translation.source.localeCompare(translation.target) === 0 ||
+              translation.additionalAttributes?.translate === 'no' ||
+              translation.additionalAttributes?.resname == null
+            )
+              continue
+
+            const video = videos.find((video) =>
+              video.id.endsWith(
+                translation.additionalAttributes?.resname as string
+              )
+            )
+            if (video == null) {
+              const videoId = translation.additionalAttributes?.resname
+              logger?.error({ videoId }, 'no matching videoId found')
+              continue
+            }
+            const title = video.title.find((title) => {
+              return title.languageId === languageId
+            })
+            if (title == null)
+              create.push({
+                value: translation.target,
+                languageId,
+                primary: false,
+                videoId: video.id
+              })
+
+            if (title?.value !== translation.target)
+              update.push({
+                languageId,
+                videoId: video.id,
+                value: translation.target
+              })
+          }
+
+          if (create.length > 0)
+            await prisma.videoTitle.createMany({ data: create })
+
+          if (update.length > 0)
+            for (const item of update) {
+              await prisma.videoTitle.update({
+                where: {
+                  videoId_languageId: {
+                    videoId: item.videoId,
+                    languageId: item.languageId
+                  }
+                },
+                data: {
+                  value: item.value
+                }
+              })
+            }
+        }
+        break
+      case '/Arclight/collection_long_description.csv':
+      case '/Arclight/media_metadata_description.csv':
+        {
+          const update: any = []
+          const create: Prisma.VideoDescriptionCreateManyInput[] = []
+
+          for (const code of translationCodes) {
+            const translation = data.resources[name][code]
+            if (
+              translation.source.localeCompare(translation.target) === 0 ||
+              translation.additionalAttributes?.translate === 'no' ||
+              translation.additionalAttributes?.resname == null
+            )
+              continue
+
+            const video = videos.find((video) =>
+              video.id.endsWith(
+                translation.additionalAttributes?.resname as string
+              )
+            )
+            if (video == null) {
+              const videoId = translation.additionalAttributes?.resname
+              logger?.error({ videoId }, 'no matching videoId found')
+              continue
+            }
+            const description = video.description.find((title) => {
+              return title.languageId === languageId
+            })
+            if (description == null)
+              create.push({
+                value: translation.target,
+                languageId,
+                primary: false,
+                videoId: video.id
+              })
+
+            if (description?.value !== translation.target)
+              update.push({
+                languageId,
+                videoId: video.id,
+                value: translation.target
+              })
+          }
+
+          if (create.length > 0)
+            await prisma.videoDescription.createMany({ data: create })
+
+          if (update.length > 0)
+            for (const item of update) {
+              await prisma.videoDescription.update({
+                where: {
+                  videoId_languageId: {
+                    videoId: item.videoId,
+                    languageId: item.languageId
+                  }
+                },
+                data: {
+                  value: item.value
+                }
+              })
+            }
+        }
+        break
+      case '/Arclight/study_questions.csv':
+        {
+          const update: any = []
+          const toValidate: Prisma.VideoStudyQuestionCreateManyInput[] = []
+          const create: Prisma.VideoStudyQuestionCreateManyInput[] = []
+
+          for (const code of translationCodes) {
+            const translation = data.resources[name][code]
+            if (
+              translation.source.localeCompare(translation.target) === 0 ||
+              translation.additionalAttributes?.translate === 'no' ||
+              translation.additionalAttributes?.resname == null
+            )
+              continue
+
+            const resName = translation.additionalAttributes?.resname
+
+            // const englishStudyQuestions = await getStudyQuestions(resName)
+            const englishStudyQuestions = studyQuestions.filter(
+              (question) => question.crowdInId === resName
+            )
+
+            if (englishStudyQuestions.length === 0) {
+              logger?.error({ resName }, 'no matching crowdInId found')
+            } else {
+              for (const englishStudyQuestion of englishStudyQuestions) {
+                const videoId = englishStudyQuestion.videoId
+                if (videoId == null) {
+                  logger?.error(
+                    { resName },
+                    'video id is null for study question for crowdinId'
+                  )
+                } else {
+                  // const _studyQuestion =
+                  //   await prisma.videoStudyQuestion.findUnique({
+                  //     where: {
+                  //       videoId_languageId_order: {
+                  //         videoId,
+                  //         languageId,
+                  //         order: englishStudyQuestion.order
+                  //       }
+                  //     }
+                  //   })
+
+                  toValidate.push({
+                    videoId,
+                    languageId,
+                    value: translation.target,
+                    crowdInId: resName,
+                    order: englishStudyQuestion.order,
+                    primary: false
+                  })
+
+                  // await prisma.videoStudyQuestion.upsert({
+                  //   where: {
+                  //     videoId_languageId_order: {
+                  //       videoId,
+                  //       languageId,
+                  //       order
+                  //     }
+                  //   },
+                  //   update: {
+                  //     value
+                  //   },
+                  //   create: {
+                  //     value,
+                  //     languageId,
+                  //     primary: false,
+                  //     videoId,
+                  //     order,
+                  //     crowdInId: resName
+                  //   }
+                  // })
+                  // await updateStudyQuestion(
+                  //   videoId,
+                  //   languageId,
+                  //   translation.target,
+                  //   resName,
+                  //   englishStudyQuestion.order
+                  // )
+                }
+              }
+            }
+            // const englishStudyQuestions =
+            //   await prisma.videoStudyQuestion.findMany({
+            //     select: {
+            //       videoId: true,
+            //       order: true
+            //     },
+            //     where: { crowdInId: translation.additionalAttributes?.resname }
+            //   })
+
+            // const englishStudyQuestions = studyQuestions.filter(
+            //   (question) =>
+            //     question.crowdInId ===
+            //       translation.additionalAttributes?.resname &&
+            //     question.languageId === '529'
+            // )
+
+            // for (const englishStudyQuestion of englishStudyQuestions) {
+            //   if (englishStudyQuestion.videoId == null) continue
+
+            //   const studyQuestion = await prisma.videoStudyQuestion.findUnique({
+            //     where: {
+            //       videoId_languageId_order: {
+            //         videoId: englishStudyQuestion.videoId,
+            //         languageId,
+            //         order: englishStudyQuestion.order
+            //       }
+            //     }
+            //   })
+            //   // const studyQuestion = studyQuestions.find(
+            //   //   (question) =>
+            //   //     question.videoId ===
+            //   //       (englishStudyQuestion.videoId as string) &&
+            //   //     question.languageId === languageId &&
+            //   //     question.order === englishStudyQuestion.order
+            //   // )
+
+            //   if (studyQuestion == null) {
+            //     create.push({
+            //       value: translation.target,
+            //       languageId,
+            //       primary: false,
+            //       videoId: englishStudyQuestion.videoId,
+            //       order: englishStudyQuestion.order,
+            //       crowdInId: translation.additionalAttributes?.resname
+            //     })
+            //   }
+
+            //   if (studyQuestion?.value !== translation.target)
+            //     update.push({
+            //       value: translation.target,
+            //       languageId,
+            //       primary: false,
+            //       videoId: englishStudyQuestion.videoId,
+            //       order: englishStudyQuestion.order,
+            //       crowdInId: translation.additionalAttributes?.resname
+            //     })
+            // }
+            for (const c of toValidate) {
+              const findUnique = studyQuestions.find(
+                (question) =>
+                  question.languageId === c.languageId &&
+                  question.order === c.order &&
+                  question.videoId === c.videoId
+              )
+              if (findUnique == null) {
+                create.push(c)
+              } else {
+                update.push(c)
+              }
+            }
+            if (create.length > 0) {
+              await prisma.videoStudyQuestion.createMany({ data: create })
+            }
+            if (update.length > 0) {
+              for (const item of update) {
+                await prisma.videoStudyQuestion.update({
+                  where: {
+                    videoId_languageId_order: {
+                      videoId: item.videoId,
+                      languageId: item.languageId,
+                      order: item.order
+                    }
+                  },
+                  data: {
+                    value: item.value
+                  }
+                })
+              }
+            }
+
+            // await updateStudyQuestion(
+            //   videoId,
+            //   languageId,
+            //   value,
+            //   resName,
+            //   englishStudyQuestion.order
+            // )
+          }
+        }
+        break
+    }
+  }
+
+  // old code
+  // await Promise.all(
+  //   map(data.resources, async (translations, fileName) => {
+  //     await Promise.all(
+  //       map(translations, async ({ source, target, additionalAttributes }) => {
+  //         if (
+  //           source.localeCompare(target) === 0 ||
+  //           additionalAttributes?.translate === 'no' ||
+  //           additionalAttributes?.resname == null
+  //         )
+  //           return
+  //         await storeTranslation(
+  //           languageId,
+  //           target,
+  //           additionalAttributes.resname,
+  //           fileName
+  //         )
+  //       })
+  //     )
+  //   })
+  // )
+  logger?.info(`finished storing translation ${languageId}`)
 }
 
 async function storeTranslation(
   languageId: string,
   value: string,
   resName: string,
-  fileName: CrowdinFileName
+  fileName: CrowdinFileName,
+  logger?: Logger
 ): Promise<void> {
   switch (fileName) {
     case '/Arclight/media_metadata_tile.csv':
     case '/Arclight/collection_title.csv':
       {
         const videoId = resName
-        const videos = await getVideos(videoId)
-        if (videos.length === 0)
-          throw new MatchError(`no matching videoId found for ${videoId}`)
-        await updateVideoTitle(videos[0].id, languageId, value)
+        const video = await getVideoById(videoId)
+        if (video == null) {
+          logger?.error({ videoId }, 'no matching videoId found')
+        } else {
+          await updateVideoTitle(video, languageId, value)
+        }
       }
       break
     case '/Arclight/collection_long_description.csv':
     case '/Arclight/media_metadata_description.csv':
       {
         const videoId = resName
-        const videos = await getVideos(videoId)
-        if (videos.length === 0)
-          throw new MatchError(`no matching videoId found for ${videoId}`)
-        await updateVideoDescription(videos[0].id, languageId, value)
+        const video = await getVideoById(videoId)
+        if (video == null) {
+          logger?.error({ videoId }, 'no matching videoId found')
+        } else {
+          await updateVideoDescription(video, languageId, value)
+        }
       }
       break
     case '/Arclight/study_questions.csv':
       {
         const englishStudyQuestions = await getStudyQuestions(resName)
-        if (englishStudyQuestions.length === 0)
-          throw new MatchError(`no matching crowdInId found for ${resName}`)
-
-        await Promise.all(
-          map(englishStudyQuestions, async (englishStudyQuestion) => {
-            const videoId = englishStudyQuestion.videoId
-            if (videoId == null)
-              throw new MatchError(`no matching videoId found for ${resName}`)
-            await updateStudyQuestion(
-              videoId,
-              languageId,
-              value,
-              resName,
-              englishStudyQuestion.order
-            )
-          })
-        )
+        if (englishStudyQuestions.length === 0) {
+          logger?.error({ resName }, 'no matching crowdInId found')
+        } else {
+          await Promise.all(
+            map(englishStudyQuestions, async (englishStudyQuestion) => {
+              const videoId = englishStudyQuestion.videoId
+              if (videoId == null) {
+                logger?.error({ resName }, 'no matching videoId found')
+              } else {
+                await updateStudyQuestion(
+                  videoId,
+                  languageId,
+                  value,
+                  resName,
+                  englishStudyQuestion.order
+                )
+              }
+            })
+          )
+        }
       }
       break
     case '/Arclight/Bible_books.csv':
       {
         const bibleBookId = resName
         const bibleBooks = await getBibleBooks(bibleBookId)
-        if (bibleBooks.length === 0)
-          throw new MatchError(
-            `no matching bibleBookId found for ${bibleBookId}`
-          )
-        await updateBibleBookName(bibleBookId, languageId, value)
+        if (bibleBooks.length === 0) {
+          logger?.error({ bibleBookId }, 'no matching bibleBookId found')
+        } else {
+          await updateBibleBookName(bibleBookId, languageId, value)
+        }
       }
       break
   }
 }
 
-async function getVideos(videoId: string): Promise<
-  Array<{
-    id: string
-  }>
-> {
-  const res = await prisma.video.findMany({
-    select: { id: true },
-    where: { id: { endsWith: videoId } }
-  })
-  return res
+async function getVideoById(videoId: string): Promise<string | undefined> {
+  return (
+    await prisma.video.findFirst({
+      select: { id: true },
+      where: { id: { endsWith: videoId } }
+    })
+  )?.id
 }
 
 async function updateVideoTitle(
