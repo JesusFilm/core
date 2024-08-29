@@ -3,6 +3,7 @@
 
 import './cloudflare'
 import './segmind'
+import './unsplash'
 
 import { builder } from './builder'
 

@@ -4,12 +4,12 @@ interface UnsplashPhotoShape {
   id: string
   created_at: string
   updated_at?: string
-  blur_hash?: string
+  blur_hash?: string | null
   width: number
   height: number
-  color?: string
-  description?: string
-  alt_description?: string
+  color?: string | null
+  description?: string | null
+  alt_description?: string | null
   categories?: string[]
   likes: number
   // urls: UnsplashPhotoUrls

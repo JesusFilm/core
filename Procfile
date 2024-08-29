@@ -1,8 +1,7 @@
 analytics-serve: nx serve api-analytics
 journeys-serve: nx serve api-journeys
 journeys-watcher: nx watcher api-journeys
-media-serve: nx serve api-media
-media-watcher: nx watcher api-media
+media-serve: nx serve api-media | npx pino-pretty --config .pino-prettyrc.js
 tags-serve: nx serve api-tags
 tags-watcher: nx watcher api-tags
 users-serve: nx serve api-users
