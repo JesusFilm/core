@@ -9,6 +9,7 @@ import { ReactElement, SyntheticEvent, useEffect, useState } from 'react'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
 import { useVideo } from '../../../libs/videoContext'
+import { TextFormatter } from '../../TextFormatter'
 
 export function VideoContent(): ReactElement {
   const { description, studyQuestions } = useVideo()
@@ -89,13 +90,17 @@ export function VideoContent(): ReactElement {
         )}
       </Tabs>
       <TabPanel name="description" value={tabValue} index={0}>
-        <Typography
-          variant="body1"
-          color="text.secondary"
-          sx={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
+        <TextFormatter
+          slotProps={{
+            typography: {
+              variant: 'body1',
+              color: 'text.secondary',
+              gutterBottom: true
+            }
+          }}
         >
           {description[0]?.value}
-        </Typography>
+        </TextFormatter>
       </TabPanel>
       {studyQuestions?.length !== 0 && (
         <TabPanel name="discussion-questions" value={tabValue} index={1}>
