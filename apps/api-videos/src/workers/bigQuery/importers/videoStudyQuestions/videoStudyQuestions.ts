@@ -1,3 +1,4 @@
+import omit from 'lodash/omit'
 import { Logger } from 'pino'
 import { z } from 'zod'
 
@@ -15,11 +16,7 @@ const videoStudyQuestionSchema = z
     crowdinId: z.string().nullish()
   })
   .transform((o) => ({
-    value: o.value,
-    videoId: o.videoId,
-    languageId: o.languageId,
-    primary: o.primary,
-    order: o.order,
+    ...omit(o, 'crowdinId'),
     crowdInId: o.crowdinId
   }))
 
