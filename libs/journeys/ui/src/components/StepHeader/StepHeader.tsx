@@ -1,8 +1,10 @@
 import Stack from '@mui/material/Stack'
 import { SxProps } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
 import { useJourney } from '../../libs/JourneyProvider'
+import { getJourneyRTL } from '../../libs/rtl'
 
 import { InformationButton } from './InformationButton'
 import { PaginationBullets } from './PaginationBullets'
@@ -17,6 +19,7 @@ export function StepHeader({
   sx
 }: StepHeaderProps): ReactElement {
   const { journey } = useJourney()
+  const { rtl } = getJourneyRTL(journey)
 
   return (
     <Stack
@@ -39,11 +42,45 @@ export function StepHeader({
       }}
     >
       {journey?.website === true ? (
-        <>
-          {/* Logo */}
-          {/* Title */}
-          {/* Menu */}
-        </>
+        <Stack
+          justifyContent="space-between"
+          spacing={2}
+          sx={{
+            px: { xs: 6, lg: 0 },
+            flexDirection: { lg: rtl ? 'row-reverse' : 'row' },
+            justifyContent: 'space-between',
+            alignItems: { xs: 'flex-start', lg: 'center' },
+            width: '100%'
+          }}
+        >
+          <Stack
+            sx={{
+              width: '100%',
+              height: 52,
+              flexDirection: rtl ? 'row-reverse' : 'row',
+              alignItems: 'center'
+            }}
+            gap={4}
+          >
+            {/* Logo */}
+            <Stack sx={{ flex: '1 1 100%', minWidth: 0 }}>
+              <Typography
+                variant="subtitle1"
+                sx={{
+                  zIndex: 1,
+                  // Always dark mode on lg breakpoint
+                  color: { xs: 'primary.main', lg: 'white' },
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
+                }}
+              >
+                {journey?.displayTitle ?? journey?.seoTitle}
+              </Typography>
+            </Stack>
+            {/* Menu */}
+          </Stack>
+        </Stack>
       ) : (
         <>
           <PaginationBullets />
