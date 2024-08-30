@@ -20,8 +20,7 @@ describe('useJourneyUpdateMutation', () => {
           strategySlug: 'www.example.com/embed',
           tagIds: ['tagId'],
           languageId: '529',
-          website: true,
-          displayTitle: 'display title'
+          website: true
         }
       }
     },
