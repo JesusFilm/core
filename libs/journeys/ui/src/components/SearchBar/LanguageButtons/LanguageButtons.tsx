@@ -3,11 +3,15 @@ import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import { styled, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, ReactNode } from 'react'
+import { MouseEvent, MouseEventHandler, ReactElement } from 'react'
 
 import ChevronDown from '@core/shared/ui/icons/ChevronDown'
 import Globe1Icon from '@core/shared/ui/icons/Globe1'
+import X2Icon from '@core/shared/ui/icons/X2'
+
+const MAX_DISPLAYED_LANGUAGES = 2
 
 const StyledButton = styled(Button)(({ theme }) => ({
   width: 168,
@@ -15,14 +19,10 @@ const StyledButton = styled(Button)(({ theme }) => ({
   gap: 0,
   padding: '8px 20px 8px 20px',
   border: `2px solid ${theme.palette.text.primary}${
-    theme.palette.mode === 'dark' ? 'D4' : '1A'
+    theme.palette.mode === 'dark' ? '2E' : '1A'
   }`,
   color: theme.palette.text.primary,
   backgroundColor: theme.palette.background.default,
-  '&:hover': {
-    backgroundColor: theme.palette.background.default,
-    opacity: 0.9
-  },
   [theme.breakpoints.down('lg')]: {
     padding: 4
   }
@@ -30,40 +30,32 @@ const StyledButton = styled(Button)(({ theme }) => ({
 
 interface LanguageButtonsProps {
   onClick: () => void
-  selectedLanguages?: string[]
+  refinements: RefinementListRenderState
 }
 
 export function LanguageButtons({
   onClick,
-  selectedLanguages = []
+  refinements
 }: LanguageButtonsProps): ReactElement {
   const theme = useTheme()
   const { t } = useTranslation('apps-watch')
+  const { items, refine } = refinements
 
-  const displayedLanguages = selectedLanguages.slice(0, 2)
+  const refinedItems = items
+    .filter((item) => item.isRefined)
+    .map((item) => item.label)
 
-  function Button({
-    content,
-    index
-  }: {
-    content: string
-    index?: number
-  }): ReactNode {
-    return (
-      <StyledButton
-        key={index}
-        size="small"
-        onClick={onClick}
-        startIcon={<Globe1Icon />}
-        endIcon={<ChevronDown />}
-      >
-        {content}
-      </StyledButton>
-    )
-  }
+  const displayedLanguages = refinedItems.slice(0, MAX_DISPLAYED_LANGUAGES)
+
+  const additionalLanguagesCount = Math.max(
+    0,
+    refinedItems.length - MAX_DISPLAYED_LANGUAGES
+  )
 
   return (
     <Box
+      component="button"
+      onClick={onClick}
       data-testid="LanguageSelect"
       sx={{
         gap: 2,
@@ -75,6 +67,7 @@ export function LanguageButtons({
         color: 'text.secondary',
         [theme.breakpoints.down('lg')]: {
           padding: 2,
+          width: '100%',
           justifyContent: 'flex-end',
           borderBottomLeftRadius: 8,
           borderBottomRightRadius: 8
@@ -92,23 +85,58 @@ export function LanguageButtons({
         }}
         variant="middle"
       />
-      {selectedLanguages?.length > 0 ? (
+      {refinedItems?.length > 0 ? (
         <>
           {displayedLanguages.map((selectedLanguage: string, index: number) => (
-            <Button key={index} content={selectedLanguage.split(', ')[0]} />
+            <LanguageButton
+              isRefined
+              key={index}
+              content={selectedLanguage.split(', ')[0]}
+              handleClick={(event: MouseEvent<HTMLButtonElement>) => {
+                event.stopPropagation()
+                refine(selectedLanguage)
+              }}
+            />
           ))}
-          {selectedLanguages.length > 2 && (
+          {additionalLanguagesCount > 0 && (
             <Typography
               variant="h6"
               sx={{ color: 'text.primary', textAlign: 'center' }}
             >
-              +{selectedLanguages.length - 2}
+              +{additionalLanguagesCount}
             </Typography>
           )}
         </>
       ) : (
-        <Button content={t('Language')} />
+        <LanguageButton content={t('Language')} />
       )}
     </Box>
+  )
+}
+
+interface LanguageButtonProps {
+  content: string
+  index?: number
+  isRefined?: boolean
+  handleClick?: MouseEventHandler<HTMLButtonElement> | undefined
+}
+
+function LanguageButton({
+  content,
+  index,
+  isRefined = false,
+  handleClick
+}: LanguageButtonProps): ReactElement {
+  return (
+    <StyledButton
+      key={index}
+      size="small"
+      color="inherit"
+      onClick={handleClick}
+      startIcon={<Globe1Icon />}
+      endIcon={isRefined ? <X2Icon /> : <ChevronDown />}
+    >
+      {content}
+    </StyledButton>
   )
 }

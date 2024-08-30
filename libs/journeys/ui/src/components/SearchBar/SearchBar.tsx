@@ -66,10 +66,6 @@ export function SearchBar({
     limit: 1000
   })
 
-  const selectedLanguage = refinements.items
-    .filter((item) => item.isRefined)
-    .map((item) => item.label)
-
   function handleSubmit(values: typeof initialValues): void {
     refine(values.title)
   }
@@ -123,7 +119,7 @@ export function SearchBar({
                       >
                         <LanguageButtons
                           onClick={handleClick}
-                          selectedLanguages={selectedLanguage}
+                          refinements={refinements}
                         />
                       </InputAdornment>
                     ) : (
@@ -142,10 +138,7 @@ export function SearchBar({
             }}
           >
             <Divider variant="middle" orientation="horizontal" />
-            <LanguageButtons
-              onClick={handleClick}
-              selectedLanguages={selectedLanguage}
-            />
+            <LanguageButtons onClick={handleClick} refinements={refinements} />
           </Box>
         </Box>
         <SearchbarDropdown
