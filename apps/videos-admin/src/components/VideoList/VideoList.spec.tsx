@@ -1,5 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
+// import { userEvent } from '@testing-library/user-event'
 import { ResultOf, VariablesOf } from 'gql.tada'
 import { NextIntlClientProvider } from 'next-intl'
 
@@ -26,8 +27,22 @@ describe('VideoList', () => {
     },
     result: {
       data: {
-        videosCount: [{ id: 'example-id' }],
+        videosCount: [
+          { id: 'example-id' },
+          { id: 'example-id' },
+          { id: 'example-id' }
+        ],
         videos: [
+          {
+            id: 'example-id',
+            snippet: [{ value: 'Example snippet', primary: true }],
+            title: [{ value: 'Example title', primary: true }]
+          },
+          {
+            id: 'example-id',
+            snippet: [{ value: 'Example snippet', primary: true }],
+            title: [{ value: 'Example title', primary: true }]
+          },
           {
             id: 'example-id',
             snippet: [{ value: 'Example snippet', primary: true }],
@@ -51,7 +66,7 @@ describe('VideoList', () => {
   })
 
   it('should show all videos', async () => {
-    const result = jest.fn().mockResolvedValue(mockGetVideosAndCount.result)
+    const result = jest.fn().mockReturnValue(mockGetVideosAndCount.result)
     render(
       <NextIntlClientProvider locale="en">
         <MockedProvider mocks={[{ ...mockGetVideosAndCount, result }]}>
@@ -61,7 +76,35 @@ describe('VideoList', () => {
     )
 
     await waitFor(() => expect(result).toHaveBeenCalled())
-    screen.debug(undefined, 1000000)
-    expect(screen.getByTestId('example-id')).toBeInTheDocument()
+    expect(screen.getAllByText('example-id')).toHaveLength(2)
   })
+
+  // it('should paginate all videos', async () => {
+  //   const videos = Array.from({ length: 100 }, (x, z) => ({
+  //     id: 'example-id',
+  //     snippet: [{ value: 'Example snippet', primary: true }],
+  //     title: [{ value: 'Example title', primary: true }]
+  //   }))
+  //   const videosCount = Array.from({ length: 100 }, (x, z) => ({
+  //     id: 'example-id'
+  //   }))
+
+  //   console.log(videos)
+
+  //   const result = jest.fn().mockReturnValue(mockGetVideosAndCount.result)
+  //   render(
+  //     <NextIntlClientProvider locale="en">
+  //       <MockedProvider mocks={[{ ...mockGetVideosAndCount, result }]}>
+  //         <VideoList />
+  //       </MockedProvider>
+  //     </NextIntlClientProvider>
+  //   )
+
+  //   await waitFor(() => expect(result).toHaveBeenCalled())
+  //   expect(screen.getAllByText('example-id')).toHaveLength(2)
+  //   await userEvent.click(
+  //     screen.getByRole('button', { name: 'Go to next page' })
+  //   )
+  //   await waitFor(() => expect(result).toHaveBeenCalled())
+  // })
 })

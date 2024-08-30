@@ -76,7 +76,6 @@ export function VideoList(): ReactElement {
     }
   })
 
-  console.log(data)
   const rows: GridRowsProp =
     data?.videos.map((video) => {
       const title = video?.title?.find(({ primary }) => primary)?.value
@@ -87,8 +86,6 @@ export function VideoList(): ReactElement {
         description
       }
     }) ?? []
-
-  console.log(rows)
 
   const columns: GridColDef[] = [
     {
@@ -128,6 +125,7 @@ export function VideoList(): ReactElement {
     model: GridPaginationModel,
     _details: GridCallbackDetails
   ): Promise<void> {
+    console.log('here')
     await fetchMore({
       variables: {
         offset: model.page * videosLimit
