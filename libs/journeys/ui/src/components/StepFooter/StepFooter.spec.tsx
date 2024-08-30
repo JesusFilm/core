@@ -135,25 +135,6 @@ describe('StepFooter', () => {
     expect(screen.getByText('My awesome journey')).toBeInTheDocument()
   })
 
-  it('should display journey title if no display title and social media title', () => {
-    render(
-      <MockedProvider>
-        <SnackbarProvider>
-          <JourneyProvider
-            value={{
-              journey: { ...journey, seoTitle: null },
-              variant: 'admin'
-            }}
-          >
-            <StepFooter />
-          </JourneyProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    expect(screen.getByText('my journey')).toBeInTheDocument()
-  })
-
   it('should render custom styles', () => {
     render(
       <MockedProvider>

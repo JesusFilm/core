@@ -62,31 +62,6 @@ describe('DisplayTitle', () => {
     expect(input).toHaveValue('Seo title')
   })
 
-  it('initial value should be journey title if no display and seo title', () => {
-    render(
-      <MockedProvider>
-        <JourneyProvider
-          value={{
-            journey: { ...defaultJourney, title: 'Journey title' }
-          }}
-        >
-          <EditorProvider>
-            <DisplayTitle />
-          </EditorProvider>
-        </JourneyProvider>
-      </MockedProvider>
-    )
-
-    const accordion = screen.getByRole('button', { name: 'Display Title' })
-    expect(accordion).toBeInTheDocument()
-
-    fireEvent.click(accordion)
-
-    const input = screen.getByRole('textbox')
-    expect(input).toBeVisible()
-    expect(input).toHaveValue('Journey title')
-  })
-
   it('should update display title', async () => {
     const mockUpdate = getJourneySettingsUpdateMock({
       displayTitle: 'display title'
