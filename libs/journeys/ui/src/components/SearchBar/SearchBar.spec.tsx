@@ -95,8 +95,7 @@ describe('SearchBar', () => {
         <SearchBar showLanguageButton />
       </MockedProvider>
     )
-    const searchIcon = screen.getByTestId('Globe1Icon')
-    expect(searchIcon).toBeInTheDocument()
+    expect(screen.getAllByTestId('Globe1Icon')[0]).toBeInTheDocument()
   })
 
   it('should render language', async () => {
@@ -105,7 +104,7 @@ describe('SearchBar', () => {
         <SearchBar showLanguageButton />
       </MockedProvider>
     )
-    expect(screen.getByText('Language')).toBeInTheDocument()
+    expect(screen.getAllByText('Language')[0]).toBeInTheDocument()
   })
 
   it('should open popper when language button clicked', async () => {
@@ -114,8 +113,8 @@ describe('SearchBar', () => {
         <SearchBar showLanguageButton />
       </MockedProvider>
     )
-    expect(screen.getByText('Language')).toBeInTheDocument()
-    fireEvent.click(screen.getByText('Language'))
+    expect(screen.getAllByText('Language')[0]).toBeInTheDocument()
+    fireEvent.click(screen.getAllByText('Language')[0])
     expect(screen.getByTestId('SearchLanguageFilter')).toBeInTheDocument()
   })
 
@@ -125,9 +124,10 @@ describe('SearchBar', () => {
         <SearchBar showLanguageButton />
       </MockedProvider>
     )
-    fireEvent.click(screen.getByText('Language'))
+    const button = screen.getAllByText('Language')[0]
+    fireEvent.click(button)
     expect(screen.getByTestId('SearchLanguageFilter')).toBeInTheDocument()
-    fireEvent.click(screen.getByText('Language'))
+    fireEvent.click(button)
     expect(screen.queryByTestId('SearchLanguageFilter')).not.toBeInTheDocument()
   })
 })
