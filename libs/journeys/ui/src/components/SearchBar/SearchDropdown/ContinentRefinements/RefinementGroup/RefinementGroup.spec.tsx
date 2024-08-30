@@ -1,8 +1,8 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 
-import '../../../../../test/i18n'
-import { languageRefinements } from '../../data'
+import '../../../../../../test/i18n'
+import { languageRefinements } from '../../../data'
 
 import { RefinementGroup } from './RefinementGroup'
 

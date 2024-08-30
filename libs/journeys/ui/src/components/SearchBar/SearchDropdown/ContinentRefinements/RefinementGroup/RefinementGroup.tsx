@@ -7,29 +7,30 @@ import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refine
 import { type ReactElement } from 'react'
 
 interface RefinementGroupProps {
-  refinement: RefinementListRenderState
   title: string
+  refinement: RefinementListRenderState
 }
 
 export function RefinementGroup({
-  refinement,
-  title
+  title,
+  refinement
 }: RefinementGroupProps): ReactElement {
+  const { items, refine } = refinement
   return (
     <Box>
       <Typography variant="h6" color="primary.main" marginBottom={6}>
         {title}
       </Typography>
       <Box color="text.primary">
-        {refinement.items.length > 0 ? (
+        {items.length > 0 ? (
           <FormGroup>
-            {refinement.items.map((item) => (
+            {items.map((item) => (
               <FormControlLabel
                 key={item.value}
                 control={
                   <Checkbox
                     checked={item.isRefined}
-                    onClick={() => refinement.refine(item.value)}
+                    onClick={() => refine(item.value)}
                     size="small"
                   />
                 }
