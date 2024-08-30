@@ -8,10 +8,12 @@ import { UnsplashPhotoOrientationEnum } from './enums/UnsplashPhotoOrientation'
 import { UnsplashPhoto } from './objects/UnsplashPhoto'
 import { UnsplashQueryResponse } from './objects/UnsplashQueryResponse'
 
-const client = createApi({
-  accessKey: process.env.UNSPLASH_ACCESS_KEY ?? '',
-  fetch: nodeFetch as unknown as typeof fetch
-})
+function getClient(): ReturnType<typeof createApi> {
+  return createApi({
+    accessKey: process.env.UNSPLASH_ACCESS_KEY ?? '',
+    fetch: nodeFetch as unknown as typeof fetch
+  })
+}
 
 export async function listUnsplashCollectionPhotos(
   collectionId: string,
@@ -19,7 +21,7 @@ export async function listUnsplashCollectionPhotos(
   perPage?: number,
   orientation?: UnsplashPhotoOrientationEnum
 ): Promise<Array<typeof UnsplashPhoto.$inferType>> {
-  const { response } = await client.collections.getPhotos({
+  const { response } = await getClient().collections.getPhotos({
     collectionId,
     page,
     perPage,
@@ -38,7 +40,7 @@ export async function searchUnsplashPhotos(
   color?: UnsplashColorEnum,
   orientation?: UnsplashPhotoOrientationEnum
 ): Promise<typeof UnsplashQueryResponse.$inferType> {
-  const response = await client.search.getPhotos({
+  const response = await getClient().search.getPhotos({
     query,
     page,
     perPage,
@@ -55,6 +57,8 @@ export async function searchUnsplashPhotos(
 }
 
 export async function triggerUnsplashDownload(url: string): Promise<boolean> {
-  const response = await client.photos.trackDownload({ downloadLocation: url })
+  const response = await getClient().photos.trackDownload({
+    downloadLocation: url
+  })
   return response.status === 200
 }

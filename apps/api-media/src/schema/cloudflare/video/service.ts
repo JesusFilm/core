@@ -1,107 +1,65 @@
-import fetch from 'node-fetch'
+import Cloudflare from 'cloudflare'
+import { Video } from 'cloudflare/resources/stream/stream'
 
-export interface CloudflareVideoUploadUrl {
-  id: string
-  uploadUrl: string
-}
-export interface CloudflareVideoUrlUploadResponse {
-  result: {
-    uid: string
-  } | null
-  success: boolean
-  errors: string[]
-  messages: string[]
+function getClient(): Cloudflare {
+  if (process.env.CLOUDFLARE_IMAGES_TOKEN == null)
+    throw new Error('Missing CLOUDFLARE_IMAGES_TOKEN')
+
+  return new Cloudflare({
+    apiToken: process.env.CLOUDFLARE_IMAGES_TOKEN
+  })
 }
 
-export interface CloudflareVideoGetResponse {
-  result: {
-    readyToStream: boolean
-  } | null
-  success: boolean
-  errors: string[]
-  messages: string[]
-}
-
-export async function uploadToCloudflareByFile(
+export async function createVideoByDirectUpload(
   uploadLength: number,
   name: string,
   userId: string
-): Promise<CloudflareVideoUploadUrl | undefined> {
-  const response = await fetch(
-    `https://api.cloudflare.com/client/v4/accounts/${
-      process.env.CLOUDFLARE_ACCOUNT_ID ?? ''
-    }/stream?direct_user=true`,
-    {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${process.env.CLOUDFLARE_STREAM_TOKEN ?? ''}`,
-        'Tus-Resumable': '1.0.0',
-        'Upload-Length': uploadLength.toString(),
-        'Upload-Creator': userId,
-        'Upload-Metadata': 'name ' + btoa(name.replace(/\W/g, ''))
-      }
-    }
-  )
+): Promise<{ id: string; uploadUrl: string }> {
+  if (process.env.CLOUDFLARE_ACCOUNT_ID == null)
+    throw new Error('Missing CLOUDFLARE_ACCOUNT_ID')
+
+  const response = (await getClient().stream.create({
+    body: {
+      direct_user: true
+    },
+    account_id: process.env.CLOUDFLARE_ACCOUNT_ID,
+    'Tus-Resumable': '1.0.0',
+    'Upload-Length': uploadLength,
+    'Upload-Creator': userId,
+    'Upload-Metadata': 'name ' + btoa(name.replace(/\W/g, ''))
+  })) as unknown as Response
+
+  const id = response.headers.get('stream-media-id')
   const uploadUrl = response.headers.get('Location')
 
-  if (uploadUrl != null) {
-    return {
-      id: response.headers.get('stream-media-id') ?? '',
-      uploadUrl
-    }
+  if (id == null || uploadUrl == null)
+    throw new Error("Couldn't get upload information from cloudflare")
+
+  return {
+    id,
+    uploadUrl
   }
 }
 
-export async function deleteVideoFromCloudflare(
-  videoId: string
-): Promise<boolean> {
-  const response = await fetch(
-    `https://api.cloudflare.com/client/v4/accounts/${
-      process.env.CLOUDFLARE_ACCOUNT_ID ?? ''
-    }/stream/${videoId}`,
-    {
-      method: 'DELETE',
-      headers: {
-        Authorization: `Bearer ${process.env.CLOUDFLARE_STREAM_TOKEN ?? ''}`
-      }
-    }
-  )
-  return response.ok
-}
-
-export async function getVideoFromCloudflare(
-  videoId: string
-): Promise<CloudflareVideoGetResponse> {
-  const response = await fetch(
-    `https://api.cloudflare.com/client/v4/accounts/${
-      process.env.CLOUDFLARE_ACCOUNT_ID ?? ''
-    }/stream/${videoId}`,
-    {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${process.env.CLOUDFLARE_STREAM_TOKEN ?? ''}`
-      }
-    }
-  )
-  return await response.json()
-}
-
-export async function uploadToCloudflareByUrl(
+export async function createVideoFromUrl(
   url: string,
   userId: string
-): Promise<CloudflareVideoUrlUploadResponse> {
-  const response = await fetch(
-    `https://api.cloudflare.com/client/v4/accounts/${
-      process.env.CLOUDFLARE_ACCOUNT_ID ?? ''
-    }/stream/copy`,
-    {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${process.env.CLOUDFLARE_STREAM_TOKEN ?? ''}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ url, creator: userId })
-    }
-  )
-  return await response.json()
+): Promise<Video> {
+  if (process.env.CLOUDFLARE_ACCOUNT_ID == null)
+    throw new Error('Missing CLOUDFLARE_ACCOUNT_ID')
+
+  return await getClient().stream.copy.create({
+    account_id: process.env.CLOUDFLARE_ACCOUNT_ID,
+    url,
+    creator: userId
+  })
+}
+
+export async function deleteVideo(videoId: string): Promise<void> {
+  if (process.env.CLOUDFLARE_ACCOUNT_ID == null)
+    throw new Error('Missing CLOUDFLARE_ACCOUNT_ID')
+
+  await getClient().stream.delete(videoId, {
+    account_id: process.env.CLOUDFLARE_ACCOUNT_ID
+  })
 }

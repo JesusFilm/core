@@ -1,94 +1,80 @@
-import FormData from 'form-data'
-import fetch from 'node-fetch'
+import 'cloudflare/shims/node'
 
-interface CloudflareDirectCreatorUploadResponse {
-  result: {
-    id: string
-    uploadURL: string
-  }
-  result_info?: string
-  success: boolean
-  errors: string[]
-  messages: string[]
+import Cloudflare from 'cloudflare'
+import fetch, { Response } from 'node-fetch'
+
+function getClient(): Cloudflare {
+  if (process.env.CLOUDFLARE_IMAGES_TOKEN == null)
+    throw new Error('Missing CLOUDFLARE_IMAGES_TOKEN')
+
+  return new Cloudflare({
+    apiToken: process.env.CLOUDFLARE_IMAGES_TOKEN,
+    fetch
+  })
 }
 
-interface CloudflarUrlUploadResponse {
-  result: {
-    id: string
-  }
-  success: boolean
-  errors: string[]
-  messages: string[]
+export async function createImageByDirectUpload(
+  metadata?: Record<string, string>
+): Promise<Cloudflare.Images.V2.DirectUploads.DirectUploadCreateResponse> {
+  if (process.env.CLOUDFLARE_ACCOUNT_ID == null)
+    throw new Error('Missing CLOUDFLARE_ACCOUNT_ID')
+
+  return await getClient().images.v2.directUploads.create({
+    account_id: process.env.CLOUDFLARE_ACCOUNT_ID,
+    requireSignedURLs: false,
+    metadata
+  })
 }
 
-export async function getImageInfoFromCloudflare(): Promise<CloudflareDirectCreatorUploadResponse> {
-  const response = await fetch(
-    `https://api.cloudflare.com/client/v4/accounts/${
-      process.env.CLOUDFLARE_ACCOUNT_ID ?? ''
-    }/images/v2/direct_upload?requireSignedURLs=true&metadata={"key":"value"}`,
-    {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${process.env.CLOUDFLARE_IMAGES_TOKEN ?? ''}`
+export async function createImageFromResponse(
+  response: Response
+): Promise<Cloudflare.Images.V1.Image> {
+  if (process.env.CLOUDFLARE_ACCOUNT_ID == null)
+    throw new Error('Missing CLOUDFLARE_ACCOUNT_ID')
+
+  return await getClient().images.v1.create({
+    account_id: process.env.CLOUDFLARE_ACCOUNT_ID,
+    requireSignedURLs: false,
+    file: response
+  })
+}
+
+export async function createImageFromText(prompt: string): Promise<Response> {
+  if (process.env.CLOUDFLARE_ACCOUNT_ID == null)
+    throw new Error('Missing CLOUDFLARE_ACCOUNT_ID')
+
+  return await getClient()
+    .post(
+      `/accounts/${process.env.CLOUDFLARE_ACCOUNT_ID}/ai/run/@cf/stabilityai/stable-diffusion-xl-base-1.0`,
+      {
+        body: {
+          prompt
+        }
       }
-    }
-  )
-  return await response.json()
+    )
+    .asResponse()
 }
 
-export async function uploadImageToCloudflare(
-  file
-): Promise<CloudflareDirectCreatorUploadResponse> {
-  const body = new FormData()
-  body.append('file', file)
-  const response = await fetch(
-    `https://api.cloudflare.com/client/v4/accounts/${
-      process.env.CLOUDFLARE_ACCOUNT_ID ?? ''
-    }/images/v1`,
-    {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${process.env.CLOUDFLARE_IMAGES_TOKEN ?? ''}`
-      },
-      body
-    }
-  )
-  return await response.json()
+export async function createImageFromUrl(
+  url: string,
+  metadata?: Record<string, string>
+): Promise<Cloudflare.Images.V1.Image> {
+  if (process.env.CLOUDFLARE_ACCOUNT_ID == null)
+    throw new Error('Missing CLOUDFLARE_ACCOUNT_ID')
+
+  return await getClient().images.v1.create({
+    account_id: process.env.CLOUDFLARE_ACCOUNT_ID,
+    requireSignedURLs: false,
+    metadata,
+    url
+  })
 }
 
-export async function deleteImageFromCloudflare(
-  imageId: string
-): Promise<CloudflareDirectCreatorUploadResponse> {
-  const response = await fetch(
-    `https://api.cloudflare.com/client/v4/accounts/${
-      process.env.CLOUDFLARE_ACCOUNT_ID ?? ''
-    }/images/v1/${imageId}`,
-    {
-      method: 'DELETE',
-      headers: {
-        Authorization: `Bearer ${process.env.CLOUDFLARE_IMAGES_TOKEN ?? ''}`
-      }
-    }
-  )
-  return await response.json()
-}
+export async function deleteImage(imageId: string): Promise<unknown> {
+  if (process.env.CLOUDFLARE_ACCOUNT_ID == null)
+    throw new Error('Missing CLOUDFLARE_ACCOUNT_ID')
 
-export async function uploadToCloudlareByUrl(
-  url: string
-): Promise<CloudflarUrlUploadResponse> {
-  const formData = new FormData()
-  formData.append('url', url)
-  const response = await fetch(
-    `https://api.cloudflare.com/client/v4/accounts/${
-      process.env.CLOUDFLARE_ACCOUNT_ID ?? ''
-    }/images/v1?requireSignedURLs=false&metadata={"key":"value"}`,
-    {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${process.env.CLOUDFLARE_IMAGES_TOKEN ?? ''}`
-      },
-      body: formData
-    }
-  )
-  return await response.json()
+  return await getClient().images.v1.delete(imageId, {
+    account_id: process.env.CLOUDFLARE_ACCOUNT_ID
+  })
 }

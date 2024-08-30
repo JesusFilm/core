@@ -2,9 +2,9 @@ import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
 
 import {
-  deleteImageFromCloudflare,
-  getImageInfoFromCloudflare,
-  uploadToCloudlareByUrl
+  createImageByDirectUpload,
+  createImageFromUrl,
+  deleteImage
 } from './service'
 
 builder.prismaObject('CloudflareImage', {
@@ -67,14 +67,13 @@ builder.mutationFields((t) => ({
     resolve: async (query, _root, _args, { userId }) => {
       if (userId == null) throw new Error('User not found')
 
-      const result = await getImageInfoFromCloudflare()
-      if (!result.success) throw new Error(result.errors[0])
+      const { id, uploadURL } = await createImageByDirectUpload({ userId })
 
       return await prisma.cloudflareImage.create({
         ...query,
         data: {
-          id: result.result.id,
-          uploadUrl: result.result.uploadURL,
+          id,
+          uploadUrl: uploadURL,
           userId
         }
       })
@@ -90,13 +89,13 @@ builder.mutationFields((t) => ({
     },
     resolve: async (query, _root, { url }, { userId }) => {
       if (userId == null) throw new Error('User not found')
-      const result = await uploadToCloudlareByUrl(url)
-      if (!result.success) throw new Error(result.errors[0])
+
+      const { id } = await createImageFromUrl(url, { userId, url })
 
       return await prisma.cloudflareImage.create({
         ...query,
         data: {
-          id: result.result.id,
+          id,
           userId,
           uploaded: true
         }
@@ -117,8 +116,7 @@ builder.mutationFields((t) => ({
         where: { id, userId }
       })
 
-      const result = await deleteImageFromCloudflare(id)
-      if (!result.success) throw new Error(result.errors[0])
+      await deleteImage(id)
 
       await prisma.cloudflareImage.delete({ where: { id } })
       return true
@@ -138,6 +136,7 @@ builder.mutationFields((t) => ({
         where: { id, userId },
         data: { uploaded: true }
       })
+
       return true
     }
   })

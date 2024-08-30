@@ -2,9 +2,9 @@ import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
 
 import {
-  deleteVideoFromCloudflare,
-  uploadToCloudflareByFile,
-  uploadToCloudflareByUrl
+  createVideoByDirectUpload,
+  createVideoFromUrl,
+  deleteVideo
 } from './service'
 
 builder.prismaObject('CloudflareVideo', {
@@ -72,18 +72,17 @@ builder.mutationFields((t) => ({
     resolve: async (query, _root, { uploadLength, name }, { userId }) => {
       if (userId == null) throw new Error('User not found')
 
-      const response = await uploadToCloudflareByFile(
+      const { id, uploadUrl } = await createVideoByDirectUpload(
         uploadLength,
         name,
         userId
       )
-      if (response == null) throw new Error('unable to connect to cloudflare')
 
       return await prisma.cloudflareVideo.create({
         ...query,
         data: {
-          id: response.id,
-          uploadUrl: response.uploadUrl,
+          id,
+          uploadUrl,
           userId,
           name
         }
@@ -101,15 +100,12 @@ builder.mutationFields((t) => ({
     resolve: async (query, _root, { url }, { userId }) => {
       if (userId == null) throw new Error('User not found')
 
-      const response = await uploadToCloudflareByUrl(url, userId)
-
-      if (!response.success || response.result == null)
-        throw new Error(response.errors[0])
+      const { uid: id } = await createVideoFromUrl(url, userId)
 
       return await prisma.cloudflareVideo.create({
         ...query,
         data: {
-          id: response.result.uid,
+          id,
           userId
         }
       })
@@ -129,9 +125,7 @@ builder.mutationFields((t) => ({
         where: { id, userId }
       })
 
-      const response = await deleteVideoFromCloudflare(id)
-      if (response == null)
-        throw new Error('Video could not be deleted from cloudflare')
+      await deleteVideo(id)
 
       await prisma.cloudflareVideo.delete({ where: { id } })
 

@@ -1,6 +1,9 @@
 import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
-import { uploadImageToCloudflare } from '../cloudflare/image/service'
+import {
+  createImageFromResponse,
+  createImageFromText
+} from '../cloudflare/image/service'
 
 import { SegmindModel } from './enums/segmindModel'
 
@@ -14,38 +17,22 @@ builder.mutationFields((t) => ({
       prompt: t.arg.string({ required: true }),
       model: t.arg({ type: SegmindModel, required: true })
     },
-    async resolve(query, _root, { prompt, model }, { userId }) {
+    async resolve(query, _root, { prompt }, { userId }) {
+      // We retired the segmind service in favor of Cloudflare Workers AI
+      // at the time of this migration, Cloudflare Workers AI is free for
+      // image generation. This resolver remains intact for historical
+      // reasons and should be removed in the future.
+
       if (userId == null) throw new Error('User not found')
 
-      const body = new FormData()
-      let path = 'sdxl1.0-txt2img' // defaulted to avoid error
-      switch (model) {
-        case 'sdxl1__0_txt2img':
-          path = 'sdxl1.0-txt2img'
-          body.append('num_inference_steps', '20')
-          body.append('samples', '1')
-          body.append('scheduler', 'UniPC')
-          body.append('img_height', '1024')
-          body.append('img_width', '1024')
-          break
-      }
-      body.append('prompt', prompt)
-      const res0 = await fetch(`https://api.segmind.com/v1/${path}`, {
-        method: 'POST',
-        headers: { 'x-api-key': process.env.SEGMIND_API_KEY ?? '' },
-        body
-      })
-
-      if (res0.status !== 200) throw new Error(res0.statusText)
-
-      const res1 = await uploadImageToCloudflare(res0.body)
-
-      if (!res1.success) throw new Error(res1.errors[0])
+      const image = await createImageFromResponse(
+        await createImageFromText(prompt)
+      )
 
       return await prisma.cloudflareImage.create({
         ...query,
         data: {
-          id: res1.result.id,
+          id: image.id,
           uploaded: true,
           userId
         }
