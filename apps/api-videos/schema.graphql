@@ -61,6 +61,14 @@ type Query {
   videoVariants: [VideoVariant!]!
 }
 
+type User
+  @key(fields: "id")
+  @extends
+{
+  id: ID! @external
+  videoRoles: [VideoRole!]!
+}
+
 type Video
   @key(fields: "id primaryLanguageId")
   @shareable

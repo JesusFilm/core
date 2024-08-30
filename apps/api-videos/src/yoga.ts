@@ -15,14 +15,11 @@ export const cache = createInMemoryCache()
 export const yoga = createYoga({
   schema,
   context: async ({ request }) => {
-    // console.log('headers', request.headers)
     const token = request.headers.get('Authorization')
-    // console.log('token', token)
     const currentUser =
       token == null || token === '' ? null : await getUserFromAuthToken(token)
-    console.log('currentUser', currentUser)
 
-    const result = {
+    return {
       currentUser,
       currentRoles:
         currentUser != null
@@ -33,9 +30,7 @@ export const yoga = createYoga({
             )?.roles ?? null
           : null,
       token
-    }
-    console.log('result', result)
-    return result satisfies Context
+    } satisfies Context
   },
   plugins: [
     useReadinessCheck({

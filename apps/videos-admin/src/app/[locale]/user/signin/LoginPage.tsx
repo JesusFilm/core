@@ -1,7 +1,6 @@
 'use client'
 
 import LoadingButton from '@mui/lab/LoadingButton'
-import ButtonGroup from '@mui/material/ButtonGroup'
 import Typography from '@mui/material/Typography'
 import {
   UserCredential,
@@ -71,6 +70,7 @@ export function LoginPage(): ReactElement {
   async function handleLoginWithRedirect(): Promise<void> {
     const auth = getFirebaseAuth()
     const credential = await getRedirectResult(auth)
+    console.log('credential', credential)
 
     if (credential?.user != null) {
       await handleLogin(credential)
@@ -88,7 +88,7 @@ export function LoginPage(): ReactElement {
       <Typography variant="h1">{t('Login')}</Typography>
       {hasLogged && (
         <div>
-          {t('Redirecting to {{redirect}}', { redirect: redirect ?? '/' })}
+          {t('Redirecting to {redirect}', { redirect: redirect ?? '/' })}
         </div>
       )}
       {!hasLogged && (
@@ -97,23 +97,24 @@ export function LoginPage(): ReactElement {
           onSubmit={handleLoginWithEmailAndPassword}
           error={emailPasswordError ?? googleError ?? googleUsingRedirectError}
         >
-          <ButtonGroup>
+          {process.env.NEXT_PUBLIC_VERCEL_ENV == null ? (
             <LoadingButton
               variant="outlined"
               loading={isGoogleLoading}
               disabled={isGoogleLoading}
               onClick={handleLoginWithGoogle}
             >
-              {t('Log in with Google (Popup)')}
+              {t('Log in with Google')}
             </LoadingButton>
+          ) : (
             <LoadingButton
               loading={isGoogleUsingRedirectLoading}
               disabled={isGoogleUsingRedirectLoading}
               onClick={handleLoginWithGoogleUsingRedirect}
             >
-              {t('Log in with Google (Redirect)')}
+              {t('Log in with Google')}
             </LoadingButton>
-          </ButtonGroup>
+          )}
         </PasswordForm>
       )}
     </div>

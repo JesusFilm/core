@@ -16,8 +16,8 @@ const GET_AUTH = graphql(`
       firstName
       lastName
       imageUrl
+      videoRoles
     }
-    currentVideoRoles
   }
 `)
 
@@ -36,18 +36,16 @@ const intlMiddleware = createMiddleware({
 })
 
 const authPage = '/user/signin'
-const publicPaths = [authPage]
+const publicPaths = [authPage, '/user/unauthorized']
 
 export default async function middleware(
   req: NextRequest
 ): Promise<NextResponse<unknown>> {
-  if (testPathnameRegex(publicPaths, req.nextUrl.pathname))
-    return intlMiddleware(req)
-
   return await authMiddleware(req, {
     ...authConfig,
     loginPath: '/api/login',
     logoutPath: '/api/logout',
+    refreshTokenPath: '/api/refresh-token',
     cookieSerializeOptions: {
       path: '/',
       httpOnly: true,
@@ -56,36 +54,35 @@ export default async function middleware(
       maxAge: 12 * 60 * 60 * 24 // Twelve days
     },
     handleValidToken: async (token) => {
-      // console.log('tokens', token.token)
       const { data } = await makeClient({
         headers: { Authorization: token.token }
       }).query({
         query: GET_AUTH
       })
-      console.log('data', data)
-      if (data.currentVideoRoles.length === 0) {
-        return redirectToLogin(req, {
-          path: authPage,
-          publicPaths
-        })
-      }
+      console.log('data', data.me)
+      if (data.me?.videoRoles.length === 0)
+        req.nextUrl.pathname = '/user/unauthorized'
+
       return intlMiddleware(req)
     },
     handleInvalidToken: async (reason) => {
-      return redirectToLogin(req, {
-        path: authPage,
-        publicPaths
-      })
+      if (!testPathnameRegex(publicPaths, req.nextUrl.pathname))
+        req.nextUrl.pathname = authPage
+      return intlMiddleware(req)
     },
     handleError: async () => {
-      return redirectToLogin(req, {
-        path: authPage,
-        publicPaths
-      })
+      if (!testPathnameRegex(publicPaths, req.nextUrl.pathname))
+        req.nextUrl.pathname = authPage
+      return intlMiddleware(req)
     }
   })
 }
 
 export const config = {
-  matcher: ['/api/login', '/api/logout', '/((?!_next|favicon.ico|api|.*\\.).*)']
+  matcher: [
+    '/api/login',
+    '/api/logout',
+    `/${locales.join('|')}/:path*`,
+    '/((?!_next|favicon.ico|api|.*\\.).*)'
+  ]
 }
