@@ -1,24 +1,21 @@
 import Typography from '@mui/material/Typography'
+import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
-import { useRefinementList } from 'react-instantsearch'
-
-import { useLanguagesContinentsQuery } from '../../../../libs/useLanguagesContinentsQuery'
-import { useSortLanguageContinents } from '../../../../libs/useSortLanguageContinents'
 
 import { RefinementGroup } from './RefinementGroup'
 
-export function ContinentRefinements(): ReactElement {
-  const { t } = useTranslation('apps-watch')
+interface LanguageContinentRefinementsProps {
+  refinements: RefinementListRenderState
+  languages: Record<string, string[]>
+}
 
-  const { data } = useLanguagesContinentsQuery()
-  const languages = useSortLanguageContinents({
-    languages: data?.languages ?? []
-  })
-  const refinements = useRefinementList({
-    attribute: 'languageEnglishName',
-    limit: 1000
-  })
+export function LanguageContinentRefinements({
+  refinements,
+  languages
+}: LanguageContinentRefinementsProps): ReactElement {
+  const { t } = useTranslation('apps-watch')
+  const [selectedContinent, setSelectedContinent] = useState<string>()
 
   return (
     <>
@@ -36,6 +33,10 @@ export function ContinentRefinements(): ReactElement {
                   ...refinements,
                   items
                 }}
+                selectedContinent={selectedContinent}
+                handleSelectedContinent={(continent) =>
+                  setSelectedContinent(continent)
+                }
               />
             ) : (
               <></>
