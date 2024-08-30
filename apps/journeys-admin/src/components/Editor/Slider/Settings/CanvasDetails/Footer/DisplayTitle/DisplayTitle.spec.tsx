@@ -3,12 +3,13 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
+
+import { getJourneySettingsUpdateMock } from '../../../../../../../libs/useJourneyUpdateMutation/useJourneyUpdateMutation.mock'
+import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
+import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
 import { DisplayTitle } from '.'
-import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
-import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
-import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
-import { getJourneySettingsUpdateMock } from '../../../../../../../libs/useJourneyUpdateMutation'
 
 describe('DisplayTitle', () => {
   it('should render with initial value of display title', () => {
