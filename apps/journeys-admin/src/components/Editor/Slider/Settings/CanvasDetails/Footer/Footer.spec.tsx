@@ -53,6 +53,10 @@ describe('Footer', () => {
       ).toBeInTheDocument()
     )
 
+    const reactions = await waitFor(() =>
+      screen.getByRole('button', { name: 'Reactions' })
+    )
+
     const details = await waitFor(() =>
       screen.getByRole('button', { name: 'Hosted By' })
     )
@@ -60,6 +64,7 @@ describe('Footer', () => {
       screen.getByRole('button', { name: 'Chat Widget' })
     )
 
+    expect(reactions).toBeInTheDocument()
     expect(details).toBeInTheDocument()
     expect(chat).toBeInTheDocument()
   })
