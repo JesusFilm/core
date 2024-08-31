@@ -1,4 +1,5 @@
 import './enums'
 import './inputs'
 import './objects'
+import './user'
 import './video'

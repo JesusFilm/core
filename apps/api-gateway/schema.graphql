@@ -2120,7 +2120,7 @@ type Query
   keywords: [Keyword!]! @join__field(graph: VIDEOS)
   video(id: ID!, idType: IdType = databaseId): Video! @join__field(graph: VIDEOS)
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]! @join__field(graph: VIDEOS)
-  currentVideoRoles: [VideoAdminUserRole!]! @join__field(graph: VIDEOS)
+  currentVideoRoles: [VideoRole!]! @join__field(graph: VIDEOS)
   videoVariants: [VideoVariant!]! @join__field(graph: VIDEOS)
 }
 
@@ -2891,6 +2891,7 @@ type UnsplashUserLinks
 type User
   @join__type(graph: JOURNEYS, key: "id")
   @join__type(graph: USERS, key: "id")
+  @join__type(graph: VIDEOS, key: "id", extension: true)
 {
   id: ID!
   firstName: String! @join__field(graph: USERS)
@@ -2899,6 +2900,7 @@ type User
   imageUrl: String @join__field(graph: USERS)
   superAdmin: Boolean @join__field(graph: USERS)
   emailVerified: Boolean! @join__field(graph: USERS)
+  videoRoles: [VideoRole!]! @join__field(graph: VIDEOS)
 }
 
 """These types are a subset provided by the @types/ua-parser-js library."""
@@ -3030,16 +3032,6 @@ type Video
   variantLanguagesWithSlug: [LanguageWithSlug!]! @join__field(graph: VIDEOS)
   subtitles(languageId: ID, primary: Boolean, edition: String): [VideoSubtitle!]! @join__field(graph: VIDEOS)
   variant(languageId: ID): VideoVariant @join__field(graph: VIDEOS)
-}
-
-enum VideoAdminUserRole
-  @join__type(graph: VIDEOS)
-{
-  admin @join__enumValue(graph: VIDEOS)
-  youtubeMember @join__enumValue(graph: VIDEOS)
-  youtubeAdmin @join__enumValue(graph: VIDEOS)
-  coreMember @join__enumValue(graph: VIDEOS)
-  coreAdmin @join__enumValue(graph: VIDEOS)
 }
 
 type VideoBlock implements Block
@@ -3585,6 +3577,12 @@ input VideoProgressEventCreateInput
 
   """source of the video"""
   value: VideoBlockSource
+}
+
+enum VideoRole
+  @join__type(graph: VIDEOS)
+{
+  publisher @join__enumValue(graph: VIDEOS)
 }
 
 input VideosFilter
