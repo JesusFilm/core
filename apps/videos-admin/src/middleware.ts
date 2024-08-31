@@ -1,6 +1,6 @@
 import { graphql } from 'gql.tada'
 import { NextRequest, NextResponse } from 'next/server'
-import { authMiddleware, redirectToLogin } from 'next-firebase-auth-edge'
+import { authMiddleware } from 'next-firebase-auth-edge'
 import createMiddleware from 'next-intl/middleware'
 
 import { makeClient } from './libs/apollo/makeClient'
@@ -41,6 +41,12 @@ const publicPaths = [authPage, '/user/unauthorized']
 export default async function middleware(
   req: NextRequest
 ): Promise<NextResponse<unknown>> {
+  if (
+    testPathnameRegex(publicPaths, req.nextUrl.pathname) &&
+    req.nextUrl.pathname !== authPage
+  )
+    return intlMiddleware(req)
+
   return await authMiddleware(req, {
     ...authConfig,
     loginPath: '/api/login',
@@ -59,7 +65,6 @@ export default async function middleware(
       }).query({
         query: GET_AUTH
       })
-      console.log('data', data.me)
       if (data.me?.videoRoles.length === 0)
         req.nextUrl.pathname = '/user/unauthorized'
 
@@ -79,10 +84,5 @@ export default async function middleware(
 }
 
 export const config = {
-  matcher: [
-    '/api/login',
-    '/api/logout',
-    `/${locales.join('|')}/:path*`,
-    '/((?!_next|favicon.ico|api|.*\\.).*)'
-  ]
+  matcher: ['/api/login', '/api/logout', '/((?!_next|favicon.ico|api|.*\\.).*)']
 }

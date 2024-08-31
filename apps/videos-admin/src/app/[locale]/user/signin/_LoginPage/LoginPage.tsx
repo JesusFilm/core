@@ -11,10 +11,10 @@ import { useTranslations } from 'next-intl'
 import { ReactElement, useEffect, useState } from 'react'
 import { useLoadingCallback } from 'react-loading-hook'
 
-import { getFirebaseAuth } from '../../../../libs/auth/firebase'
-import { useRedirectAfterLogin } from '../../../../libs/auth/useRedirectAfterLogin'
-import { useRedirectParam } from '../../../../libs/auth/useRedirectParam'
-import { loginWithCredential } from '../../../api'
+import { getFirebaseAuth } from '../../../../../libs/auth/firebase'
+import { useRedirectAfterLogin } from '../../../../../libs/auth/useRedirectAfterLogin'
+import { useRedirectParam } from '../../../../../libs/auth/useRedirectParam'
+import { loginWithCredential } from '../../../../api'
 
 import {
   getGoogleProvider,
@@ -70,7 +70,6 @@ export function LoginPage(): ReactElement {
   async function handleLoginWithRedirect(): Promise<void> {
     const auth = getFirebaseAuth()
     const credential = await getRedirectResult(auth)
-    console.log('credential', credential)
 
     if (credential?.user != null) {
       await handleLogin(credential)
