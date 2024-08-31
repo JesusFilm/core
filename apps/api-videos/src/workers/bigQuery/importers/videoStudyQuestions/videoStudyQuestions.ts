@@ -1,3 +1,4 @@
+import omit from 'lodash/omit'
 import { Logger } from 'pino'
 import { z } from 'zod'
 
@@ -5,14 +6,19 @@ import { prisma } from '../../../../lib/prisma'
 import { parse, parseMany, processTable } from '../../importer'
 import { getVideoIds } from '../videos'
 
-const videoStudyQuestionSchema = z.object({
-  value: z.string(),
-  videoId: z.string(),
-  languageId: z.number().transform(String),
-  primary: z.number().transform(Boolean),
-  order: z.number(),
-  crowdInId: z.string().optional()
-})
+const videoStudyQuestionSchema = z
+  .object({
+    value: z.string(),
+    videoId: z.string(),
+    languageId: z.number().transform(String),
+    primary: z.number().transform(Boolean),
+    order: z.number(),
+    crowdinId: z.string().nullish()
+  })
+  .transform((o) => ({
+    ...omit(o, 'crowdinId'),
+    crowdInId: o.crowdinId
+  }))
 
 export async function importVideoStudyQuestions(
   logger?: Logger
