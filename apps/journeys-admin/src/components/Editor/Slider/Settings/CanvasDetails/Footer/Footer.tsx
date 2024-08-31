@@ -8,6 +8,14 @@ import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { Drawer } from '../../Drawer'
 import { WebsiteToggle } from '../WebsiteToggle'
 
+const Reactions = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Footer/Reactions/Reactions" */ './Reactions'
+    ).then((mod) => mod.Reactions),
+  { ssr: false }
+)
+
 const Host = dynamic(
   async () =>
     await import(
@@ -46,6 +54,7 @@ export function Footer(): ReactElement {
   return (
     <Drawer title={t('Journey Appearance')} onClose={onClose}>
       {websiteMode && <WebsiteToggle />}
+      <Reactions />
       <Host />
       <Chat />
     </Drawer>

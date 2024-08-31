@@ -127,6 +127,12 @@
         "command": "npm run ts-node apps/api-videos/src/workers/cli.ts big-query"
       }
     },
+    "crowdin": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apps/api-videos/src/workers/cli.ts crowdin"
+      }
+    },
     "export-to-algolia": {
       "executor": "nx:run-commands",
       "options": {
