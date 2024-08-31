@@ -3,6 +3,8 @@ import { builder } from '../../builder'
 
 import {
   createImageByDirectUpload,
+  createImageFromResponse,
+  createImageFromText,
   createImageFromUrl,
   deleteImage
 } from './service'
@@ -96,6 +98,31 @@ builder.mutationFields((t) => ({
         ...query,
         data: {
           id,
+          userId,
+          uploaded: true
+        }
+      })
+    }
+  }),
+  createCloudflareImageFromPrompt: t.prismaField({
+    type: 'CloudflareImage',
+    authScopes: {
+      isAuthenticated: true
+    },
+    args: {
+      prompt: t.arg.string({ required: true })
+    },
+    resolve: async (query, _root, { prompt }, { userId }) => {
+      if (userId == null) throw new Error('User not found')
+
+      const image = await createImageFromResponse(
+        await createImageFromText(prompt)
+      )
+
+      return await prisma.cloudflareImage.create({
+        ...query,
+        data: {
+          id: image.id,
           userId,
           uploaded: true
         }

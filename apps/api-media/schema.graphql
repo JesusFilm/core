@@ -24,12 +24,13 @@ scalar Date
 type Mutation {
   createCloudflareUploadByFile: CloudflareImage!
   createCloudflareUploadByUrl(url: String!): CloudflareImage!
+  createCloudflareImageFromPrompt(prompt: String!): CloudflareImage!
   deleteCloudflareImage(id: ID!): Boolean!
   cloudflareUploadComplete(id: ID!): Boolean!
   createCloudflareVideoUploadByFile(uploadLength: Int!, name: String!): CloudflareVideo!
   createCloudflareVideoUploadByUrl(url: String!): CloudflareVideo!
   deleteCloudflareVideo(id: ID!): Boolean!
-  createImageBySegmindPrompt(prompt: String!, model: SegmindModel!): CloudflareImage!
+  createImageBySegmindPrompt(prompt: String!, model: SegmindModel!): CloudflareImage! @deprecated(reason: "use createCloudflareImageFromPrompt")
 }
 
 type Query {

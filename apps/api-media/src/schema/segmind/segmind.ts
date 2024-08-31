@@ -9,6 +9,7 @@ import { SegmindModel } from './enums/segmindModel'
 
 builder.mutationFields((t) => ({
   createImageBySegmindPrompt: t.prismaField({
+    deprecationReason: 'use createCloudflareImageFromPrompt',
     type: 'CloudflareImage',
     authScopes: {
       isAuthenticated: true
@@ -18,8 +19,8 @@ builder.mutationFields((t) => ({
       model: t.arg({ type: SegmindModel, required: true })
     },
     async resolve(query, _root, { prompt }, { userId }) {
-      // We retired the segmind service in favor of Cloudflare Workers AI
-      // at the time of this migration, Cloudflare Workers AI is free for
+      // We retired the segmind service in favor of Cloudflare Workers AI.
+      // At the time of this migration, Cloudflare Workers AI is free for
       // image generation. This resolver remains intact for historical
       // reasons and should be removed in the future.
 
