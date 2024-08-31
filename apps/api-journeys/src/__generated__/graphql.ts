@@ -2115,7 +2115,6 @@ export type Query = {
   blocks: Array<Block>;
   countries: Array<Country>;
   country?: Maybe<Country>;
-  currentVideoRoles: Array<VideoAdminUserRole>;
   customDomain: CustomDomain;
   customDomains: Array<CustomDomain>;
   getJourneyProfile?: Maybe<JourneyProfile>;
@@ -3009,6 +3008,7 @@ export type User = {
   imageUrl?: Maybe<Scalars['String']['output']>;
   lastName?: Maybe<Scalars['String']['output']>;
   superAdmin?: Maybe<Scalars['Boolean']['output']>;
+  videoUserRoles: Array<VideoRole>;
 };
 
 /** These types are a subset provided by the @types/ua-parser-js library. */
@@ -3170,14 +3170,6 @@ export type VideoTitleArgs = {
 export type VideoVariantArgs = {
   languageId?: InputMaybe<Scalars['ID']['input']>;
 };
-
-export enum VideoAdminUserRole {
-  Admin = 'admin',
-  CoreAdmin = 'coreAdmin',
-  CoreMember = 'coreMember',
-  YoutubeAdmin = 'youtubeAdmin',
-  YoutubeMember = 'youtubeMember'
-}
 
 export type VideoBlock = Block & {
   __typename?: 'VideoBlock';
@@ -3576,6 +3568,10 @@ export type VideoProgressEventCreateInput = {
   /** source of the video */
   value?: InputMaybe<VideoBlockSource>;
 };
+
+export enum VideoRole {
+  Publisher = 'publisher'
+}
 
 export type VideoSnippet = {
   __typename?: 'VideoSnippet';
