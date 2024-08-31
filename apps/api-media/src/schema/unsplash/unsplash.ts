@@ -6,7 +6,11 @@ import { UnsplashOrderBy } from './enums/UnsplashOrderBy'
 import { UnsplashPhotoOrientation } from './enums/UnsplashPhotoOrientation'
 import { UnsplashPhoto } from './objects/UnsplashPhoto'
 import { UnsplashQueryResponse } from './objects/UnsplashQueryResponse'
-import { listUnsplashCollectionPhotos, searchUnsplashPhotos } from './service'
+import {
+  listUnsplashCollectionPhotos,
+  searchUnsplashPhotos,
+  triggerUnsplashDownload
+} from './service'
 
 builder.queryFields((t) => ({
   listUnsplashCollectionPhotos: t.field({
@@ -61,6 +65,18 @@ builder.queryFields((t) => ({
         color ?? undefined,
         orientation ?? undefined
       )
+    }
+  })
+}))
+
+builder.mutationFields((t) => ({
+  triggerUnsplashDownload: t.field({
+    type: 'Boolean',
+    args: {
+      url: t.arg.string({ required: true })
+    },
+    resolve: async (_root, { url }) => {
+      return await triggerUnsplashDownload(url)
     }
   })
 }))

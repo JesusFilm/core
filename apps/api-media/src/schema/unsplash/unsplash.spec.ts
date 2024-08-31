@@ -7,7 +7,11 @@ import { UnsplashContentFilterEnum } from './enums/UnsplashContentFilter'
 import { UnsplashOrderByEnum } from './enums/UnsplashOrderBy'
 import { UnsplashPhotoOrientationEnum } from './enums/UnsplashPhotoOrientation'
 import { UnsplashPhoto } from './objects/UnsplashPhoto'
-import { listUnsplashCollectionPhotos, searchUnsplashPhotos } from './service'
+import {
+  listUnsplashCollectionPhotos,
+  searchUnsplashPhotos,
+  triggerUnsplashDownload
+} from './service'
 
 const mockListUnsplashCollectionPhotos =
   listUnsplashCollectionPhotos as jest.MockedFunction<
@@ -18,10 +22,14 @@ const mockSearchUnsplashPhotos = searchUnsplashPhotos as jest.MockedFunction<
   typeof searchUnsplashPhotos
 >
 
+const mockTriggerUnsplashDownload =
+  triggerUnsplashDownload as jest.MockedFunction<typeof triggerUnsplashDownload>
+
 jest.mock('./service', () => ({
   __esModule: true,
   listUnsplashCollectionPhotos: jest.fn(),
-  searchUnsplashPhotos: jest.fn()
+  searchUnsplashPhotos: jest.fn(),
+  triggerUnsplashDownload: jest.fn()
 }))
 
 describe('unsplash', () => {
@@ -363,6 +371,31 @@ describe('unsplash', () => {
           color,
           orientation
         )
+      })
+    })
+  })
+
+  describe('mutations', () => {
+    describe('triggerUnsplashDownload', () => {
+      const TRIGGER_UNSPLASH_DOWNLOAD_MUTATION = graphql(`
+        mutation triggerUnsplashDownload($url: String!) {
+          triggerUnsplashDownload(url: $url)
+        }
+      `)
+
+      it('should trigger unsplash download', async () => {
+        mockTriggerUnsplashDownload.mockResolvedValue(true)
+
+        const result = await client({
+          document: TRIGGER_UNSPLASH_DOWNLOAD_MUTATION,
+          variables: { url: 'testUrl' }
+        })
+        expect(result).toEqual({
+          data: {
+            triggerUnsplashDownload: true
+          }
+        })
+        expect(mockTriggerUnsplashDownload).toHaveBeenCalledWith('testUrl')
       })
     })
   })
