@@ -2120,7 +2120,6 @@ type Query
   keywords: [Keyword!]! @join__field(graph: VIDEOS)
   video(id: ID!, idType: IdType = databaseId): Video! @join__field(graph: VIDEOS)
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]! @join__field(graph: VIDEOS)
-  currentVideoRoles: [VideoRole!]! @join__field(graph: VIDEOS)
   videoVariants: [VideoVariant!]! @join__field(graph: VIDEOS)
 }
 
