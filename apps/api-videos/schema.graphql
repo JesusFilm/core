@@ -57,8 +57,15 @@ type Query {
   keywords: [Keyword!]!
   video(id: ID!, idType: IdType = databaseId): Video!
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
-  currentVideoRoles: [VideoAdminUserRole!]!
   videoVariants: [VideoVariant!]!
+}
+
+type User
+  @key(fields: "id")
+  @extends
+{
+  id: ID! @external
+  videoRoles: [VideoRole!]!
 }
 
 type Video
@@ -91,14 +98,6 @@ type Video
   variant(languageId: ID): VideoVariant
 }
 
-enum VideoAdminUserRole {
-  admin
-  youtubeMember
-  youtubeAdmin
-  coreMember
-  coreAdmin
-}
-
 type VideoDescription {
   id: ID!
   value: String!
@@ -122,6 +121,10 @@ enum VideoLabel {
   shortFilm
   trailer
   behindTheScenes
+}
+
+enum VideoRole {
+  publisher
 }
 
 type VideoSnippet {

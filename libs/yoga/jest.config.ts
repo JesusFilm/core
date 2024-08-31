@@ -15,7 +15,7 @@ const config: Config = {
   coverageDirectory: '../../../coverage/libs/nest/decorators',
   collectCoverage: true,
   coverageReporters: ['cobertura'],
-  preset: '../../../jest.preset.js'
+  preset: '../../jest.preset.js'
 }
 
 export default config

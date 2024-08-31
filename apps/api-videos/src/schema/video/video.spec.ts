@@ -6,7 +6,6 @@ import {
   Video,
   VideoDescription,
   VideoImageAlt,
-  VideoRole,
   VideoSnippet,
   VideoStudyQuestion,
   VideoSubtitle,
@@ -17,26 +16,8 @@ import {
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 
-jest.mock('@core/yoga/firebaseClient', () => ({
-  getUserFromAuthToken: jest.fn().mockResolvedValue({
-    id: '1',
-    userId: '1',
-    createdAt: new Date('2021-01-01T00:00:00.000Z'),
-    firstName: 'Amin',
-    lastName: 'One',
-    email: 'amin@email.com',
-    imageUrl: 'https://bit.ly/3Gth4',
-    emailVerified: false
-  })
-}))
-
 describe('video', () => {
   const client = getClient()
-  const authClient = getClient({
-    headers: {
-      authorization: 'token'
-    }
-  })
 
   describe('videos', () => {
     const VIDEOS_QUERY = graphql(`
@@ -733,32 +714,6 @@ describe('video', () => {
         }
       })
       expect(data).toHaveProperty('data.video', { id: 'videoId' })
-    })
-  })
-
-  describe('currentVideoRoles', () => {
-    const CURRENT_VIDEO_ROLES = graphql(`
-      query CurrentVideoRoles {
-        currentVideoRoles
-      }
-    `)
-
-    it('should return currentVideoUser roles', async () => {
-      prismaMock.videoAdminUser.findUnique.mockResolvedValueOnce({
-        id: 'id',
-        userId: 'userId',
-        roles: [VideoRole.publisher]
-      })
-      const data = await authClient({
-        document: CURRENT_VIDEO_ROLES,
-        variables: {
-          id: 'videoId'
-        }
-      })
-      expect(prismaMock.videoAdminUser.findUnique).toHaveBeenCalled()
-      expect(data).toHaveProperty('data.currentVideoRoles', [
-        VideoRole.publisher
-      ])
     })
   })
 })

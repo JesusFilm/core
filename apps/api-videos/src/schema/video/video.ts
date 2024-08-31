@@ -3,12 +3,11 @@ import isEmpty from 'lodash/isEmpty'
 import orderBy from 'lodash/orderBy'
 
 import { prisma } from '../../lib/prisma'
-import { Context, builder } from '../builder'
+import { builder } from '../builder'
 import { IdType, IdTypeShape } from '../enums/idType'
 import { Language, LanguageWithSlug } from '../language'
 
 import { VideoLabel } from './enums/videoLabel'
-import { VideoRole } from './enums/videoRole'
 import { VideosFilter } from './inputs/videosFilter'
 import { videosFilter } from './lib/videosFilter'
 
@@ -273,13 +272,5 @@ builder.queryFields((t) => ({
         skip: offset ?? 0,
         take: limit ?? 100
       })
-  }),
-  currentVideoRoles: t.field({
-    type: [VideoRole],
-    nullable: false,
-    authScopes: {
-      isAuthenticated: true
-    },
-    resolve: async (_query, _args, ctx: Context) => ctx.currentRoles ?? []
   })
 }))
