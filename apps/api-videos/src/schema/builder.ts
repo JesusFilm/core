@@ -23,6 +23,7 @@ export const builder = new SchemaBuilder<{
   PrismaTypes: PrismaTypes
   Scalars: {
     ID: { Input: string; Output: number | string }
+    _Any: any
   }
   AuthScopes: {
     isAuthenticated: boolean

@@ -6,7 +6,7 @@
     "plugins": [
       {
         "name": "@0no-co/graphqlsp",
-        "schema": "../api-gateway/schema.graphql",
+        "schema": "./schema.graphql",
         "tadaOutputLocation": "./src/__generated__/graphql-env.d.ts"
       }
     ]

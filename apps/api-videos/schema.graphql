@@ -65,7 +65,7 @@ type User
   @extends
 {
   id: ID! @external
-  videoRoles: [VideoRole!]!
+  videoUserRoles: [VideoRole!]!
 }
 
 type Video

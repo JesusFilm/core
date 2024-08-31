@@ -36,7 +36,9 @@ export async function importLanguageSlugs(
 ): Promise<() => void> {
   logger?.info('fetch language slugs from api-languages started')
 
-  const { data } = await apollo.query({
+  const { data } = await apollo.query<{
+    languages: Array<{ id: string; slug: string | null }>
+  }>({
     query: GET_LANGUAGE_SLUGS
   })
 

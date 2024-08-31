@@ -8,7 +8,7 @@ builder.externalRef('User', builder.selection<{ id: string }>('id')).implement({
     id: t.id()
   }),
   fields: (t) => ({
-    videoRoles: t.field({
+    videoUserRoles: t.field({
       type: [VideoRole],
       authScopes: {
         isAuthenticated: true

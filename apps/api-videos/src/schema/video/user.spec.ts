@@ -30,7 +30,7 @@ describe('usesr', () => {
       _entities(representations: $representations) {
         ... on User {
           id
-          videoRoles
+          videoUserRoles
         }
       }
     }
@@ -54,7 +54,7 @@ describe('usesr', () => {
       }
     })
     expect(prismaMock.videoAdminUser.findUnique).toHaveBeenCalled()
-    expect(data.data._entities[0]).toHaveProperty('videoRoles', [
+    expect(data).toHaveProperty('data._entities[0].videoUserRoles', [
       VideoRole.publisher
     ])
   })

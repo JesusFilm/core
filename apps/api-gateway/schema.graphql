@@ -2899,7 +2899,7 @@ type User
   imageUrl: String @join__field(graph: USERS)
   superAdmin: Boolean @join__field(graph: USERS)
   emailVerified: Boolean! @join__field(graph: USERS)
-  videoRoles: [VideoRole!]! @join__field(graph: VIDEOS)
+  videoUserRoles: [VideoRole!]! @join__field(graph: VIDEOS)
 }
 
 """These types are a subset provided by the @types/ua-parser-js library."""
