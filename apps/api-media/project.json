@@ -7,6 +7,7 @@
     "build": {
       "executor": "@nx/webpack:webpack",
       "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "development",
       "options": {
         "outputPath": "dist/apps/api-media",
         "main": "apps/api-media/src/index.ts",
@@ -123,6 +124,12 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "codecov -f coverage/apps/api-media/cobertura-coverage.xml -F apps.api-media"
+      }
+    },
+    "codegen": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "gql.tada generate output --tsconfig apps/api-media/tsconfig.json"
       }
     }
   },

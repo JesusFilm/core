@@ -71,6 +71,7 @@ enum UnsplashContentFilter {
 enum UnsplashOrderBy {
   latest
   relevant
+  editorial
 }
 
 type UnsplashPhoto {
@@ -83,8 +84,18 @@ type UnsplashPhoto {
   color: String
   description: String
   alt_description: String
-  categories: [String!]
+  promoted_at: String
   likes: Int!
+  urls: UnsplashPhotoUrls!
+  links: UnsplashPhotoLinks!
+  user: UnsplashUser!
+}
+
+type UnsplashPhotoLinks {
+  self: String!
+  html: String!
+  download: String!
+  download_location: String!
 }
 
 enum UnsplashPhotoOrientation {
@@ -93,8 +104,51 @@ enum UnsplashPhotoOrientation {
   squarish
 }
 
+type UnsplashPhotoUrls {
+  full: String!
+  raw: String!
+  regular: String!
+  small: String!
+  thumb: String!
+}
+
 type UnsplashQueryResponse {
   total: Int!
   total_pages: Int!
   results: [UnsplashPhoto!]!
+}
+
+type UnsplashUser {
+  id: ID!
+  updated_at: String!
+  username: String!
+  name: String!
+  first_name: String!
+  last_name: String
+  twitter_username: String
+  portfolio_url: String
+  bio: String
+  location: String
+  instagram_username: String
+  total_collections: Int!
+  total_likes: Int!
+  total_photos: Int!
+  links: UnsplashUserLinks!
+  profile_image: UnsplashUserImage!
+}
+
+type UnsplashUserImage {
+  small: String!
+  medium: String!
+  large: String!
+}
+
+type UnsplashUserLinks {
+  followers: String!
+  following: String!
+  html: String!
+  likes: String!
+  photos: String!
+  portfolio: String!
+  self: String!
 }

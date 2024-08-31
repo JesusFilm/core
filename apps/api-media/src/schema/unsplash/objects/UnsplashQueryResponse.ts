@@ -1,15 +1,12 @@
+import { Photos } from 'unsplash-js/src/methods/search/types/response'
+
 import { builder } from '../../builder'
 
 import { UnsplashPhoto } from './UnsplashPhoto'
 
-interface UnsplashQueryResponseShape {
-  total: number
-  total_pages: number
-  results: Array<typeof UnsplashPhoto.$inferType>
-}
-
-export const UnsplashQueryResponse =
-  builder.objectRef<UnsplashQueryResponseShape>('UnsplashQueryResponse')
+export const UnsplashQueryResponse = builder.objectRef<Photos>(
+  'UnsplashQueryResponse'
+)
 
 UnsplashQueryResponse.implement({
   fields: (t) => ({

@@ -1,24 +1,12 @@
+import { Basic } from 'unsplash-js/src/methods/photos/types'
+
 import { builder } from '../../builder'
 
-interface UnsplashPhotoShape {
-  id: string
-  created_at: string
-  updated_at?: string
-  blur_hash?: string | null
-  width: number
-  height: number
-  color?: string | null
-  description?: string | null
-  alt_description?: string | null
-  categories?: string[]
-  likes: number
-  // urls: UnsplashPhotoUrls
-  // links: UnsplashPhotoLinks
-  // user: UnsplashUser
-}
+import { UnsplashPhotoLinks } from './UnsplashPhotoLinks'
+import { UnsplashPhotoUrls } from './UnsplashPhotoUrls'
+import { UnsplashUser } from './UnsplashUser'
 
-export const UnsplashPhoto =
-  builder.objectRef<UnsplashPhotoShape>('UnsplashPhoto')
+export const UnsplashPhoto = builder.objectRef<Basic>('UnsplashPhoto')
 
 UnsplashPhoto.implement({
   fields: (t) => ({
@@ -31,7 +19,10 @@ UnsplashPhoto.implement({
     color: t.exposeString('color', { nullable: true }),
     description: t.exposeString('description', { nullable: true }),
     alt_description: t.exposeString('alt_description', { nullable: true }),
-    categories: t.exposeStringList('categories', { nullable: true }),
-    likes: t.exposeInt('likes')
+    promoted_at: t.exposeString('promoted_at', { nullable: true }),
+    likes: t.exposeInt('likes'),
+    urls: t.expose('urls', { type: UnsplashPhotoUrls }),
+    links: t.expose('links', { type: UnsplashPhotoLinks }),
+    user: t.expose('user', { type: UnsplashUser })
   })
 })
