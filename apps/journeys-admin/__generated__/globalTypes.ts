@@ -605,6 +605,7 @@ export interface StepBlockUpdateInput {
   locked?: boolean | null;
   x?: number | null;
   y?: number | null;
+  slug?: string | null;
 }
 
 export interface StepNextEventCreateInput {

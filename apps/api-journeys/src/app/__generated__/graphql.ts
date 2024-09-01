@@ -427,6 +427,7 @@ export class StepBlockUpdateInput {
     locked?: Nullable<boolean>;
     x?: Nullable<number>;
     y?: Nullable<number>;
+    slug?: Nullable<string>;
 }
 
 export class StepBlockPositionUpdateInput {
@@ -1350,6 +1351,7 @@ export class StepBlock implements Block {
     parentOrder?: Nullable<number>;
     x?: Nullable<number>;
     y?: Nullable<number>;
+    slug?: Nullable<string>;
 }
 
 export class TextResponseBlock implements Block {
