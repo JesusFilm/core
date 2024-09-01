@@ -401,7 +401,7 @@ model Journey {
   showReactionButtons       Boolean?                    @default(true)
   showLogo                  Boolean?                    @default(false)
   showMenu                  Boolean?                    @default(false)
-  showDisplayTitle          Boolean?                    @default(false)
+  showDisplayTitle          Boolean?                    @default(true)
   logoImageBlockId          String?                     @unique
   logoImageBlock            Block?                      @relation("LogoImageBlock", fields: [logoImageBlockId], references: [id], onDelete: SetNull)
   menuStepBlockId           String?                     @unique
