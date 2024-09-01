@@ -38,9 +38,7 @@ export const GET_VIDEOS_AND_COUNT = graphql(`
         value
       }
     }
-    videosCount: videos(limit: 99999, where: $where) {
-      id
-    }
+    videosCount(where: $where)
   }
 `)
 
@@ -125,7 +123,6 @@ export function VideoList(): ReactElement {
     model: GridPaginationModel,
     _details: GridCallbackDetails
   ): Promise<void> {
-    console.log('here')
     await fetchMore({
       variables: {
         offset: model.page * videosLimit
@@ -171,7 +168,7 @@ export function VideoList(): ReactElement {
         paginationModel={paginationModel}
         paginationMode="server"
         onPaginationModelChange={handleChangePage}
-        rowCount={data?.videosCount.length ?? 0}
+        rowCount={data?.videosCount ?? 0}
         onRowClick={handleClick}
         slots={{
           toolbar: GridToolbar
