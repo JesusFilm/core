@@ -7,29 +7,41 @@ import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refine
 import { type ReactElement } from 'react'
 
 interface RefinementGroupProps {
-  refinement: RefinementListRenderState
   title: string
+  refinement: RefinementListRenderState
+  handleSelectedContinent: (continent: string) => void
+  selectedContinent?: string
 }
 
 export function RefinementGroup({
+  title,
   refinement,
-  title
+  handleSelectedContinent,
+  selectedContinent
 }: RefinementGroupProps): ReactElement {
+  const { items, refine } = refinement
+
+  function handleClick(language: string): void {
+    handleSelectedContinent(title)
+    refine(language)
+  }
+
   return (
     <Box>
       <Typography variant="h6" color="primary.main" marginBottom={6}>
         {title}
       </Typography>
       <Box color="text.primary">
-        {refinement.items.length > 0 ? (
+        {items.length > 0 ? (
           <FormGroup>
-            {refinement.items.map((item) => (
+            {items.map((item) => (
               <FormControlLabel
                 key={item.value}
                 control={
                   <Checkbox
-                    checked={item.isRefined}
-                    onClick={() => refinement.refine(item.value)}
+                    checked={item.isRefined && title === selectedContinent}
+                    disabled={item.isRefined && title !== selectedContinent}
+                    onClick={() => handleClick(item.label)}
                     size="small"
                   />
                 }
