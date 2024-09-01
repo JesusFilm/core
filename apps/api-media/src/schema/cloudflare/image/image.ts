@@ -69,7 +69,7 @@ builder.mutationFields((t) => ({
     resolve: async (query, _root, _args, { userId }) => {
       if (userId == null) throw new Error('User not found')
 
-      const { id, uploadURL } = await createImageByDirectUpload({ userId })
+      const { id, uploadURL } = await createImageByDirectUpload()
 
       return await prisma.cloudflareImage.create({
         ...query,
@@ -92,7 +92,7 @@ builder.mutationFields((t) => ({
     resolve: async (query, _root, { url }, { userId }) => {
       if (userId == null) throw new Error('User not found')
 
-      const { id } = await createImageFromUrl(url, { userId, url })
+      const { id } = await createImageFromUrl(url)
 
       return await prisma.cloudflareImage.create({
         ...query,

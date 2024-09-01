@@ -13,16 +13,13 @@ function getClient(): Cloudflare {
   })
 }
 
-export async function createImageByDirectUpload(
-  metadata?: Record<string, string>
-): Promise<Cloudflare.Images.V2.DirectUploads.DirectUploadCreateResponse> {
+export async function createImageByDirectUpload(): Promise<Cloudflare.Images.V2.DirectUploads.DirectUploadCreateResponse> {
   if (process.env.CLOUDFLARE_ACCOUNT_ID == null)
     throw new Error('Missing CLOUDFLARE_ACCOUNT_ID')
 
   return await getClient().images.v2.directUploads.create({
     account_id: process.env.CLOUDFLARE_ACCOUNT_ID,
-    requireSignedURLs: false,
-    metadata
+    requireSignedURLs: false
   })
 }
 
@@ -56,8 +53,7 @@ export async function createImageFromText(prompt: string): Promise<Response> {
 }
 
 export async function createImageFromUrl(
-  url: string,
-  metadata?: Record<string, string>
+  url: string
 ): Promise<Cloudflare.Images.V1.Image> {
   if (process.env.CLOUDFLARE_ACCOUNT_ID == null)
     throw new Error('Missing CLOUDFLARE_ACCOUNT_ID')
@@ -65,7 +61,6 @@ export async function createImageFromUrl(
   return await getClient().images.v1.create({
     account_id: process.env.CLOUDFLARE_ACCOUNT_ID,
     requireSignedURLs: false,
-    metadata,
     url
   })
 }

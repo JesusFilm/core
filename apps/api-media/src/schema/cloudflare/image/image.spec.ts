@@ -204,6 +204,7 @@ describe('cloudflareImage', () => {
             uploadUrl: 'testUrl'
           }
         })
+        expect(mockCreateImageByDirectUpload).toHaveBeenCalledWith()
       })
     })
 
@@ -250,6 +251,7 @@ describe('cloudflareImage', () => {
             userId: 'testUserId'
           }
         })
+        expect(mockCreateImageFromUrl).toHaveBeenCalledWith('testUrl')
       })
     })
 

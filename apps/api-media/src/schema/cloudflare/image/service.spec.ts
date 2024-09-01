@@ -39,7 +39,7 @@ describe('ImageService', () => {
         id: '1',
         uploadURL: 'https://upload.com'
       })
-      expect(await createImageByDirectUpload({ key: 'value' })).toEqual({
+      expect(await createImageByDirectUpload()).toEqual({
         id: '1',
         uploadURL: 'https://upload.com'
       })
@@ -47,8 +47,7 @@ describe('ImageService', () => {
         mockCloudflare.images.v2.directUploads.create
       ).toHaveBeenCalledWith({
         account_id: 'cf_account_id',
-        requireSignedURLs: false,
-        metadata: { key: 'value' }
+        requireSignedURLs: false
       })
     })
 
@@ -121,15 +120,12 @@ describe('ImageService', () => {
       mockCloudflare.images.v1.create.mockResolvedValueOnce({
         id: '1'
       })
-      expect(
-        await createImageFromUrl('https://image.com', { key: 'value' })
-      ).toEqual({
+      expect(await createImageFromUrl('https://image.com')).toEqual({
         id: '1'
       })
       expect(mockCloudflare.images.v1.create).toHaveBeenCalledWith({
         account_id: 'cf_account_id',
         requireSignedURLs: false,
-        metadata: { key: 'value' },
         url: 'https://image.com'
       })
     })

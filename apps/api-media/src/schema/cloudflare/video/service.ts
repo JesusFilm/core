@@ -2,11 +2,11 @@ import Cloudflare from 'cloudflare'
 import { Video } from 'cloudflare/resources/stream/stream'
 
 function getClient(): Cloudflare {
-  if (process.env.CLOUDFLARE_IMAGES_TOKEN == null)
-    throw new Error('Missing CLOUDFLARE_IMAGES_TOKEN')
+  if (process.env.CLOUDFLARE_STREAM_TOKEN == null)
+    throw new Error('Missing CLOUDFLARE_STREAM_TOKEN')
 
   return new Cloudflare({
-    apiToken: process.env.CLOUDFLARE_IMAGES_TOKEN
+    apiToken: process.env.CLOUDFLARE_STREAM_TOKEN
   })
 }
 
@@ -18,16 +18,20 @@ export async function createVideoByDirectUpload(
   if (process.env.CLOUDFLARE_ACCOUNT_ID == null)
     throw new Error('Missing CLOUDFLARE_ACCOUNT_ID')
 
-  const response = (await getClient().stream.create({
-    body: {
-      direct_user: true
-    },
-    account_id: process.env.CLOUDFLARE_ACCOUNT_ID,
-    'Tus-Resumable': '1.0.0',
-    'Upload-Length': uploadLength,
-    'Upload-Creator': userId,
-    'Upload-Metadata': 'name ' + btoa(name.replace(/\W/g, ''))
-  })) as unknown as Response
+  const response = await getClient()
+    .post(
+      `/accounts/${process.env.CLOUDFLARE_ACCOUNT_ID}/stream?direct_user=true`,
+      {
+        headers: {
+          Accept: '*/*',
+          'Tus-Resumable': '1.0.0',
+          'Upload-Length': uploadLength.toString(),
+          'Upload-Creator': userId,
+          'Upload-Metadata': 'name ' + btoa(name.replace(/\W/g, ''))
+        }
+      }
+    )
+    .asResponse()
 
   const id = response.headers.get('stream-media-id')
   const uploadUrl = response.headers.get('Location')
