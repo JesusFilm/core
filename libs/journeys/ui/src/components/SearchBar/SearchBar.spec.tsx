@@ -108,7 +108,29 @@ describe('SearchBar', () => {
     expect(screen.getByText('Language')).toBeInTheDocument()
   })
 
-  it('should open popper when language button clicked', async () => {
+  it('should have dropdown closed by default', async () => {
+    render(
+      <MockedProvider>
+        <SearchBar />
+      </MockedProvider>
+    )
+    expect(screen.queryByTestId('SearchLanguageFilter')).not.toBeInTheDocument()
+  })
+
+  it('should open dropdown when searchbar clicked', async () => {
+    render(
+      <MockedProvider>
+        <SearchBar />
+      </MockedProvider>
+    )
+    const inputElement = screen.getByPlaceholderText(
+      /Search by topic, occasion, or audience .../i
+    )
+    fireEvent.click(inputElement)
+    expect(screen.getByTestId('SearchLanguageFilter')).toBeInTheDocument()
+  })
+
+  it('should open dropdown when language button clicked', async () => {
     render(
       <MockedProvider>
         <SearchBar showLanguageButton />
@@ -119,7 +141,7 @@ describe('SearchBar', () => {
     expect(screen.getByTestId('SearchLanguageFilter')).toBeInTheDocument()
   })
 
-  it('should close popper after it was opened', async () => {
+  it('should close dropdown after it was opened', async () => {
     render(
       <MockedProvider>
         <SearchBar showLanguageButton />

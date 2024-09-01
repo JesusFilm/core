@@ -75,6 +75,7 @@ export function SearchBar({
           }}
           data-testid="SearchBar"
           ref={popperRef}
+          onClick={handleClick}
         >
           <Formik
             initialValues={initialValues}
@@ -100,7 +101,7 @@ export function SearchBar({
                     ),
                     endAdornment: languageButtonVisable ? (
                       <InputAdornment position="end">
-                        <LanguageButton onClick={handleClick} />
+                        <LanguageButton onClick={() => console.log} />
                       </InputAdornment>
                     ) : (
                       <></>
