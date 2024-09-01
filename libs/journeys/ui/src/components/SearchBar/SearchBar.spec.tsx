@@ -114,7 +114,7 @@ describe('SearchBar', () => {
         <SearchBar />
       </MockedProvider>
     )
-    expect(screen.queryByTestId('SearchLanguageFilter')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('SearchBarDropdown')).not.toBeInTheDocument()
   })
 
   it('should open dropdown when searchbar clicked', async () => {
@@ -127,7 +127,7 @@ describe('SearchBar', () => {
       /Search by topic, occasion, or audience .../i
     )
     fireEvent.click(inputElement)
-    expect(screen.getByTestId('SearchLanguageFilter')).toBeInTheDocument()
+    expect(screen.getByTestId('SearchBarDropdown')).toBeInTheDocument()
   })
 
   it('should open dropdown when language button clicked', async () => {
@@ -138,7 +138,7 @@ describe('SearchBar', () => {
     )
     expect(screen.getByText('Language')).toBeInTheDocument()
     fireEvent.click(screen.getByText('Language'))
-    expect(screen.getByTestId('SearchLanguageFilter')).toBeInTheDocument()
+    expect(screen.getByTestId('SearchBarDropdown')).toBeInTheDocument()
   })
 
   it('should close dropdown after it was opened', async () => {
@@ -148,8 +148,8 @@ describe('SearchBar', () => {
       </MockedProvider>
     )
     fireEvent.click(screen.getByText('Language'))
-    expect(screen.getByTestId('SearchLanguageFilter')).toBeInTheDocument()
+    expect(screen.getByTestId('SearchBarDropdown')).toBeInTheDocument()
     fireEvent.click(screen.getByText('Language'))
-    expect(screen.queryByTestId('SearchLanguageFilter')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('SearchBarDropdown')).not.toBeInTheDocument()
   })
 })

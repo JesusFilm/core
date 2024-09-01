@@ -38,7 +38,7 @@ describe('SearchbarDropdown', () => {
       </MockedProvider>
     )
     await waitFor(() => {
-      expect(screen.getByTestId('SearchLanguageFilter')).toBeInTheDocument()
+      expect(screen.getByTestId('SearchBarDropdown')).toBeInTheDocument()
     })
     expect(screen.getByText('Asia')).toBeInTheDocument()
     expect(screen.getByText('Europe')).toBeInTheDocument()
@@ -53,7 +53,7 @@ describe('SearchbarDropdown', () => {
       </MockedProvider>
     )
     await waitFor(() => {
-      expect(screen.getByTestId('SearchLanguageFilter')).toBeInTheDocument()
+      expect(screen.getByTestId('SearchBarDropdown')).toBeInTheDocument()
     })
     expect(screen.getByText('English')).toBeInTheDocument()
     expect(screen.getByText('Spanish, Castilian')).toBeInTheDocument()
@@ -87,7 +87,7 @@ describe('SearchbarDropdown', () => {
     )
 
     await waitFor(() => {
-      expect(screen.getByTestId('SearchLanguageFilter')).toBeInTheDocument()
+      expect(screen.getByTestId('SearchBarDropdown')).toBeInTheDocument()
     })
     expect(screen.queryByText('Africa')).not.toBeInTheDocument()
     expect(screen.queryByText('Asia')).not.toBeInTheDocument()
@@ -105,7 +105,7 @@ describe('SearchbarDropdown', () => {
     )
 
     await waitFor(() => {
-      expect(screen.getByTestId('SearchLanguageFilter')).toBeInTheDocument()
+      expect(screen.getByTestId('SearchBarDropdown')).toBeInTheDocument()
     })
     expect(screen.queryByText('Africa')).not.toBeInTheDocument()
     expect(screen.queryByText('Oceania')).not.toBeInTheDocument()
@@ -137,7 +137,7 @@ describe('SearchbarDropdown', () => {
       </MockedProvider>
     )
     await waitFor(() => {
-      expect(screen.getByTestId('SearchLanguageFilter')).toBeInTheDocument()
+      expect(screen.getByTestId('SearchBarDropdown')).toBeInTheDocument()
     })
   })
 })

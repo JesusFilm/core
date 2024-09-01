@@ -41,7 +41,7 @@ export function SearchbarDropdown({
       anchorEl={anchorEl}
       placement="bottom-end"
       sx={{ width: anchorEl?.clientWidth }}
-      data-testid="SearchLanguageFilter"
+      data-testid="SearchBarDropdown"
       modifiers={[
         {
           name: 'flip',
