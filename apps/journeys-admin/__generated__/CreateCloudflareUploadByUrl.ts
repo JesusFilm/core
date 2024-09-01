@@ -13,7 +13,7 @@ export interface CreateCloudflareUploadByUrl_createCloudflareUploadByUrl {
 }
 
 export interface CreateCloudflareUploadByUrl {
-  createCloudflareUploadByUrl: CreateCloudflareUploadByUrl_createCloudflareUploadByUrl | null;
+  createCloudflareUploadByUrl: CreateCloudflareUploadByUrl_createCloudflareUploadByUrl;
 }
 
 export interface CreateCloudflareUploadByUrlVariables {

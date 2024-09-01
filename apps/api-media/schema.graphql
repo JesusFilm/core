@@ -31,7 +31,7 @@ type Mutation {
   createCloudflareVideoUploadByUrl(url: String!): CloudflareVideo!
   deleteCloudflareVideo(id: ID!): Boolean!
   createImageBySegmindPrompt(prompt: String!, model: SegmindModel!): CloudflareImage! @deprecated(reason: "use createCloudflareImageFromPrompt")
-  triggerUnsplashDownload(photoId: String!): Boolean!
+  triggerUnsplashDownload(url: String!): Boolean!
 }
 
 type Query {

@@ -14,6 +14,8 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  /** A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
+  Date: { input: any; output: any; }
   DateTime: { input: any; output: any; }
   Json: { input: any; output: any; }
   join__DirectiveArguments: { input: any; output: any; }
@@ -297,7 +299,7 @@ export type ChatOpenEventCreateInput = {
 
 export type CloudflareImage = {
   __typename?: 'CloudflareImage';
-  createdAt: Scalars['String']['output'];
+  createdAt: Scalars['Date']['output'];
   id: Scalars['ID']['output'];
   uploadUrl?: Maybe<Scalars['String']['output']>;
   userId: Scalars['ID']['output'];
@@ -305,7 +307,7 @@ export type CloudflareImage = {
 
 export type CloudflareVideo = {
   __typename?: 'CloudflareVideo';
-  createdAt: Scalars['String']['output'];
+  createdAt: Scalars['Date']['output'];
   id: Scalars['ID']['output'];
   readyToStream: Scalars['Boolean']['output'];
   uploadUrl?: Maybe<Scalars['String']['output']>;
@@ -1171,19 +1173,21 @@ export type Mutation = {
   chatButtonRemove: ChatButton;
   chatButtonUpdate: ChatButton;
   chatOpenEventCreate: ChatOpenEvent;
-  cloudflareUploadComplete?: Maybe<Scalars['Boolean']['output']>;
-  createCloudflareUploadByFile?: Maybe<CloudflareImage>;
-  createCloudflareUploadByUrl?: Maybe<CloudflareImage>;
-  createCloudflareVideoUploadByFile?: Maybe<CloudflareVideo>;
-  createCloudflareVideoUploadByUrl?: Maybe<CloudflareVideo>;
-  createImageBySegmindPrompt?: Maybe<CloudflareImage>;
+  cloudflareUploadComplete: Scalars['Boolean']['output'];
+  createCloudflareImageFromPrompt: CloudflareImage;
+  createCloudflareUploadByFile: CloudflareImage;
+  createCloudflareUploadByUrl: CloudflareImage;
+  createCloudflareVideoUploadByFile: CloudflareVideo;
+  createCloudflareVideoUploadByUrl: CloudflareVideo;
+  /** @deprecated use createCloudflareImageFromPrompt */
+  createImageBySegmindPrompt: CloudflareImage;
   createVerificationRequest?: Maybe<Scalars['Boolean']['output']>;
   customDomainCheck: CustomDomainCheck;
   customDomainCreate: CustomDomain;
   customDomainDelete: CustomDomain;
   customDomainUpdate: CustomDomain;
-  deleteCloudflareImage?: Maybe<Scalars['Boolean']['output']>;
-  deleteCloudflareVideo?: Maybe<Scalars['Boolean']['output']>;
+  deleteCloudflareImage: Scalars['Boolean']['output'];
+  deleteCloudflareVideo: Scalars['Boolean']['output'];
   formBlockCreate: FormBlock;
   formBlockUpdate?: Maybe<FormBlock>;
   hostCreate: Host;
@@ -1241,7 +1245,7 @@ export type Mutation = {
   textResponseBlockCreate: TextResponseBlock;
   textResponseBlockUpdate?: Maybe<TextResponseBlock>;
   textResponseSubmissionEventCreate: TextResponseSubmissionEvent;
-  triggerUnsplashDownload?: Maybe<Scalars['Boolean']['output']>;
+  triggerUnsplashDownload: Scalars['Boolean']['output'];
   typographyBlockCreate: TypographyBlock;
   typographyBlockUpdate: TypographyBlock;
   updateJourneysEmailPreference?: Maybe<JourneysEmailPreference>;
@@ -1394,6 +1398,11 @@ export type MutationChatOpenEventCreateArgs = {
 
 export type MutationCloudflareUploadCompleteArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type MutationCreateCloudflareImageFromPromptArgs = {
+  prompt: Scalars['String']['input'];
 };
 
 
@@ -2118,9 +2127,10 @@ export type Query = {
   customDomain: CustomDomain;
   customDomains: Array<CustomDomain>;
   getJourneyProfile?: Maybe<JourneyProfile>;
-  getMyCloudflareImages?: Maybe<Array<Maybe<CloudflareImage>>>;
-  getMyCloudflareVideo?: Maybe<CloudflareVideo>;
-  getMyCloudflareVideos?: Maybe<Array<Maybe<CloudflareVideo>>>;
+  getMyCloudflareImage: CloudflareImage;
+  getMyCloudflareImages: Array<CloudflareImage>;
+  getMyCloudflareVideo: CloudflareVideo;
+  getMyCloudflareVideos: Array<CloudflareVideo>;
   getUserRole?: Maybe<UserRole>;
   hosts: Array<Host>;
   integrations: Array<Integration>;
@@ -2229,8 +2239,25 @@ export type QueryCustomDomainsArgs = {
 };
 
 
+export type QueryGetMyCloudflareImageArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryGetMyCloudflareImagesArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
 export type QueryGetMyCloudflareVideoArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type QueryGetMyCloudflareVideosArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -2339,7 +2366,7 @@ export type QueryMeArgs = {
 
 
 export type QuerySearchUnsplashPhotosArgs = {
-  collections?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  collections?: InputMaybe<Array<Scalars['String']['input']>>;
   color?: InputMaybe<UnsplashColor>;
   contentFilter?: InputMaybe<UnsplashContentFilter>;
   orderBy?: InputMaybe<UnsplashOrderBy>;
@@ -2906,6 +2933,7 @@ export enum UnsplashContentFilter {
 }
 
 export enum UnsplashOrderBy {
+  Editorial = 'editorial',
   Latest = 'latest',
   Relevant = 'relevant'
 }
@@ -2913,17 +2941,15 @@ export enum UnsplashOrderBy {
 export type UnsplashPhoto = {
   __typename?: 'UnsplashPhoto';
   alt_description?: Maybe<Scalars['String']['output']>;
-  blur_hash: Scalars['String']['output'];
-  categories?: Maybe<Array<Scalars['String']['output']>>;
+  blur_hash?: Maybe<Scalars['String']['output']>;
   color?: Maybe<Scalars['String']['output']>;
   created_at: Scalars['String']['output'];
-  current_user_collections: Array<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   height: Scalars['Int']['output'];
-  id: Scalars['String']['output'];
-  liked_by_user: Scalars['Boolean']['output'];
+  id: Scalars['ID']['output'];
   likes: Scalars['Int']['output'];
   links: UnsplashPhotoLinks;
+  promoted_at?: Maybe<Scalars['String']['output']>;
   updated_at?: Maybe<Scalars['String']['output']>;
   urls: UnsplashPhotoUrls;
   user: UnsplashUser;
@@ -2962,22 +2988,21 @@ export type UnsplashQueryResponse = {
 
 export type UnsplashUser = {
   __typename?: 'UnsplashUser';
-  accepted_tos: Scalars['Boolean']['output'];
   bio?: Maybe<Scalars['String']['output']>;
-  first_name?: Maybe<Scalars['String']['output']>;
-  id: Scalars['String']['output'];
+  first_name: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
   instagram_username?: Maybe<Scalars['String']['output']>;
   last_name?: Maybe<Scalars['String']['output']>;
   links: UnsplashUserLinks;
   location?: Maybe<Scalars['String']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
   portfolio_url?: Maybe<Scalars['String']['output']>;
-  profile_image?: Maybe<UnsplashUserImage>;
+  profile_image: UnsplashUserImage;
   total_collections: Scalars['Int']['output'];
   total_likes: Scalars['Int']['output'];
   total_photos: Scalars['Int']['output'];
   twitter_username?: Maybe<Scalars['String']['output']>;
-  updated_at?: Maybe<Scalars['String']['output']>;
+  updated_at: Scalars['String']['output'];
   username: Scalars['String']['output'];
 };
 
