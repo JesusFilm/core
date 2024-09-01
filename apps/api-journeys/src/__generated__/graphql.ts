@@ -2188,6 +2188,7 @@ export type Query = {
   video: Video;
   videoVariants: Array<VideoVariant>;
   videos: Array<Video>;
+  videosCount: Scalars['Int']['output'];
   /** Get a single visitor */
   visitor: Visitor;
   /** A list of visitors that are connected with a specific team. */
@@ -2422,6 +2423,11 @@ export type QueryVideoArgs = {
 export type QueryVideosArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<VideosFilter>;
+};
+
+
+export type QueryVideosCountArgs = {
   where?: InputMaybe<VideosFilter>;
 };
 
