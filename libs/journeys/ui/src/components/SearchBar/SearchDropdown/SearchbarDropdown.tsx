@@ -9,6 +9,7 @@ import { useLanguagesContinentsQuery } from '../../../libs/useLanguagesContinent
 import { useSortLanguageContinents } from '../../../libs/useSortLanguageContinents'
 
 import { LanguageContinentRefinements } from './LanguageContinentRefinements'
+import { Suggestions } from './Suggestions'
 
 interface SearchbarDropdownProps {
   open: boolean
@@ -70,6 +71,7 @@ export function SearchbarDropdown({
               languages={languages}
             />
           )}
+          {varient === 'suggestions' && <Suggestions />}
         </Stack>
       </Box>
     </Popper>

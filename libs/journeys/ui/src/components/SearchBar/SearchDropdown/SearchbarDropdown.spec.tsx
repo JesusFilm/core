@@ -140,4 +140,16 @@ describe('SearchbarDropdown', () => {
       expect(screen.getByTestId('SearchBarDropdown')).toBeInTheDocument()
     })
   })
+
+  it('should render suggestions when suggestions varient', async () => {
+    mockEmptyRefinementsList()
+    render(
+      <MockedProvider mocks={[getLanguagesContinentsMock]}>
+        <SearchbarDropdown open varient="suggestions" />
+      </MockedProvider>
+    )
+    await waitFor(() => {
+      expect(screen.getByText('Suggestions')).toBeInTheDocument()
+    })
+  })
 })
