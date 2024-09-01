@@ -272,5 +272,13 @@ builder.queryFields((t) => ({
         skip: offset ?? 0,
         take: limit ?? 100
       })
+  }),
+  videosCount: t.int({
+    args: { where: t.arg({ type: VideosFilter, required: false }) },
+    resolve: async (_parent, { where }) => {
+      return await prisma.video.count({
+        where: videosFilter(where ?? {})
+      })
+    }
   })
 }))
