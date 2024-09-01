@@ -48,6 +48,7 @@ export function SearchBar({
   const [open, setOpen] = useState(false)
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [languageButtonVisable] = useState(showLanguageButton)
+  const [dropdownVarient] = useState<string>('languages')
   const { query, refine } = useSearchBox()
 
   const initialValues = {
@@ -118,6 +119,7 @@ export function SearchBar({
           open={open}
           id={open ? 'simple-popper' : undefined}
           anchorEl={anchorEl}
+          varient={dropdownVarient}
         />
       </Box>
     </ClickAwayListener>

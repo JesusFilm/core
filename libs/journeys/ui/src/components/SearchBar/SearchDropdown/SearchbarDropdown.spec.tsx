@@ -14,6 +14,13 @@ const mockUseRefinementList = useRefinementList as jest.MockedFunction<
   typeof useRefinementList
 >
 
+function mockEmptyRefinementsList(): void {
+  mockUseRefinementList.mockReturnValue({
+    items: [],
+    refine: jest.fn()
+  } as unknown as RefinementListRenderState)
+}
+
 describe('SearchbarDropdown', () => {
   beforeEach(() => {
     mockUseRefinementList.mockReturnValue({
@@ -57,10 +64,7 @@ describe('SearchbarDropdown', () => {
   })
 
   it('should render message if no languages', async () => {
-    mockUseRefinementList.mockReturnValue({
-      items: [],
-      refine: jest.fn()
-    } as unknown as RefinementListRenderState)
+    mockEmptyRefinementsList()
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
         <SearchbarDropdown open />
@@ -75,10 +79,7 @@ describe('SearchbarDropdown', () => {
   })
 
   it('should not render headers if no languages', async () => {
-    mockUseRefinementList.mockReturnValue({
-      items: [],
-      refine: jest.fn()
-    } as unknown as RefinementListRenderState)
+    mockEmptyRefinementsList()
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
         <SearchbarDropdown open />
@@ -126,5 +127,17 @@ describe('SearchbarDropdown', () => {
       fireEvent.click(screen.getByText('English'))
     })
     expect(refine).toHaveBeenCalled()
+  })
+
+  it('should render continent refinements when languages varient', async () => {
+    mockEmptyRefinementsList()
+    render(
+      <MockedProvider mocks={[getLanguagesContinentsMock]}>
+        <SearchbarDropdown open varient="languages" />
+      </MockedProvider>
+    )
+    await waitFor(() => {
+      expect(screen.getByTestId('SearchLanguageFilter')).toBeInTheDocument()
+    })
   })
 })
