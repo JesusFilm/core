@@ -2,7 +2,7 @@ import Box from '@mui/material/Box'
 import Popper from '@mui/material/Popper'
 import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 import { useRefinementList } from 'react-instantsearch'
 
 import { useLanguagesContinentsQuery } from '../../../libs/useLanguagesContinentsQuery'
@@ -31,6 +31,7 @@ export function SearchbarDropdown({
     attribute: 'languageEnglishName',
     limit: 1000
   })
+  const [selectedContinent, setSelectedContinent] = useState<string>()
 
   return (
     <Popper
@@ -65,6 +66,8 @@ export function SearchbarDropdown({
           <LanguageContinentRefinements
             refinements={refinements}
             languages={languages}
+            setSelectedContinent={setSelectedContinent}
+            selectedContinent={selectedContinent}
           />
         </Stack>
       </Box>
