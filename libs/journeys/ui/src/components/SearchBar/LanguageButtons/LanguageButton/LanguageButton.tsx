@@ -31,7 +31,7 @@ interface LanguageButtonProps {
 export function LanguageButton({
   content,
   index,
-  isDropdown = false,
+  isDropdown = true,
   handleClick
 }: LanguageButtonProps): ReactElement {
   return (
@@ -41,7 +41,7 @@ export function LanguageButton({
       color="inherit"
       onClick={handleClick}
       startIcon={<Globe1Icon />}
-      endIcon={isDropdown ? <X2Icon /> : <ChevronDown />}
+      endIcon={isDropdown ? <ChevronDown /> : <X2Icon />}
     >
       {content}
     </StyledButton>

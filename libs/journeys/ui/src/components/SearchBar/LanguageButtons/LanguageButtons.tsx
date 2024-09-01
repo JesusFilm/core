@@ -71,7 +71,7 @@ export function LanguageButtons({
         <>
           {displayedLanguages.map((selectedLanguage: string, index: number) => (
             <LanguageButton
-              isDropdown
+              isDropdown={false}
               key={index}
               content={selectedLanguage.split(', ')[0]}
               handleClick={(event: MouseEvent<HTMLButtonElement>) => {
