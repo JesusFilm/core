@@ -87,7 +87,7 @@ describe('language', () => {
       audioPreview: {
         ...audioPreview,
         language: { id: audioPreview.languageId }
-      }
+      },
       name: languageName
     } as unknown as Language)
     prismaMock.languageName.findMany.mockResolvedValue(languageName)
