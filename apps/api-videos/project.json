@@ -48,12 +48,6 @@
         "jestConfig": "apps/api-videos/jest.config.ts"
       }
     },
-    "subgraph-check": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "rover subgraph check API-GATEWAY-0zuda@current --name api-videos --schema apps/api-videos/schema.graphql"
-      }
-    },
     "fetch-secrets": {
       "executor": "nx:run-commands",
       "options": {
@@ -119,34 +113,6 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "codecov -f coverage/apps/api-videos/cobertura-coverage.xml -F apps.api-videos"
-      }
-    },
-    "ingest": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npm run ts-node apps/api-videos/src/workers/cli.ts big-query"
-      }
-    },
-    "crowdin": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npm run ts-node apps/api-videos/src/workers/cli.ts crowdin"
-      }
-    },
-    "export-to-algolia": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npm run ts-node apps/api-videos/src/workers/cli.ts algolia"
-      }
-    },
-    "export-language-slugs": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          "npm run ts-node apps/api-videos/src/lib/exportExistingLanguageSlugs.ts",
-          "npx prettier apps/api-languages/src/__generated__/languageSlugs.ts --write"
-        ],
-        "parallel": false
       }
     },
     "codegen": {
