@@ -25,6 +25,12 @@
       }
     },
     "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "nx _serve api-tags | npx pino-pretty --config .pino-prettyrc.js"
+      }
+    },
+    "_serve": {
       "executor": "@nx/js:node",
       "options": {
         "buildTarget": "api-tags:build",
