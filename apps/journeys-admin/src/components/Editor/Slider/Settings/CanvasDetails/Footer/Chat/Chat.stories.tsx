@@ -17,7 +17,7 @@ const ChatStory: Meta<typeof Chat> = {
 }
 
 const Template: StoryObj<typeof Chat> = {
-  render: ({ ...args }) => (
+  render: () => (
     <MockedProvider>
       <EditorProvider>
         <Box sx={{ width: DRAWER_WIDTH }}>

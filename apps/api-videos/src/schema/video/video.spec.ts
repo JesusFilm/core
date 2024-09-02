@@ -716,4 +716,47 @@ describe('video', () => {
       expect(data).toHaveProperty('data.video', { id: 'videoId' })
     })
   })
+
+  describe('videosCount', () => {
+    const VIDEO_COUNT = graphql(`
+      query VideoCount($where: VideosFilter) {
+        videosCount(where: $where)
+      }
+    `)
+
+    it('should return a count of videos', async () => {
+      prismaMock.video.count.mockResolvedValueOnce(1)
+      const data = await client({
+        document: VIDEO_COUNT,
+        variables: {
+          where: null
+        }
+      })
+      expect(prismaMock.video.count).toHaveBeenCalledWith({
+        where: {}
+      })
+      expect(data).toHaveProperty('data.videosCount', 1)
+    })
+
+    it('should return a count of videos with where', async () => {
+      prismaMock.video.count.mockResolvedValueOnce(1)
+      const data = await client({
+        document: VIDEO_COUNT,
+        variables: {
+          where: {
+            title: 'Jesus'
+          }
+        }
+      })
+      expect(prismaMock.video.count).toHaveBeenCalledWith({
+        where: {
+          id: undefined,
+          label: undefined,
+          title: { some: { value: { search: 'Jesus' } } },
+          variants: undefined
+        }
+      })
+      expect(data).toHaveProperty('data.videosCount', 1)
+    })
+  })
 })

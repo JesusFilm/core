@@ -373,7 +373,7 @@ type CloudflareImage
   id: ID!
   uploadUrl: String
   userId: ID!
-  createdAt: String!
+  createdAt: Date!
 }
 
 type CloudflareVideo
@@ -382,7 +382,7 @@ type CloudflareVideo
   id: ID!
   uploadUrl: String
   userId: ID!
-  createdAt: String!
+  createdAt: Date!
   readyToStream: Boolean!
 }
 
@@ -506,6 +506,12 @@ type CustomDomainVerificationResponse
   code: String!
   message: String!
 }
+
+"""
+A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar Date
+  @join__type(graph: MEDIA)
 
 scalar DateTime
   @join__type(graph: JOURNEYS)
@@ -1347,7 +1353,6 @@ type Keyword
 type Language
   @join__type(graph: JOURNEYS, key: "id")
   @join__type(graph: LANGUAGES, key: "id")
-  @join__type(graph: MEDIA, key: "id")
   @join__type(graph: TAGS, key: "id")
   @join__type(graph: USERS, key: "id")
   @join__type(graph: VIDEOS, key: "id", extension: true)
@@ -1737,15 +1742,16 @@ type Mutation
   Allow current user to update specific allowable fields of their visitor record
   """
   visitorUpdateForCurrentUser(input: VisitorUpdateInput!): Visitor! @join__field(graph: JOURNEYS)
-  createCloudflareUploadByFile: CloudflareImage @join__field(graph: MEDIA)
-  createCloudflareUploadByUrl(url: String!): CloudflareImage @join__field(graph: MEDIA)
-  deleteCloudflareImage(id: ID!): Boolean @join__field(graph: MEDIA)
-  cloudflareUploadComplete(id: ID!): Boolean @join__field(graph: MEDIA)
-  createCloudflareVideoUploadByFile(uploadLength: Int!, name: String!): CloudflareVideo @join__field(graph: MEDIA)
-  createCloudflareVideoUploadByUrl(url: String!): CloudflareVideo @join__field(graph: MEDIA)
-  deleteCloudflareVideo(id: ID!): Boolean @join__field(graph: MEDIA)
-  createImageBySegmindPrompt(prompt: String!, model: SegmindModel!): CloudflareImage @join__field(graph: MEDIA)
-  triggerUnsplashDownload(url: String!): Boolean @join__field(graph: MEDIA)
+  createCloudflareUploadByFile: CloudflareImage! @join__field(graph: MEDIA)
+  createCloudflareUploadByUrl(url: String!): CloudflareImage! @join__field(graph: MEDIA)
+  createCloudflareImageFromPrompt(prompt: String!): CloudflareImage! @join__field(graph: MEDIA)
+  deleteCloudflareImage(id: ID!): Boolean! @join__field(graph: MEDIA)
+  cloudflareUploadComplete(id: ID!): Boolean! @join__field(graph: MEDIA)
+  createCloudflareVideoUploadByFile(uploadLength: Int!, name: String!): CloudflareVideo! @join__field(graph: MEDIA)
+  createCloudflareVideoUploadByUrl(url: String!): CloudflareVideo! @join__field(graph: MEDIA)
+  deleteCloudflareVideo(id: ID!): Boolean! @join__field(graph: MEDIA)
+  createImageBySegmindPrompt(prompt: String!, model: SegmindModel!): CloudflareImage! @join__field(graph: MEDIA) @deprecated(reason: "use createCloudflareImageFromPrompt")
+  triggerUnsplashDownload(url: String!): Boolean! @join__field(graph: MEDIA)
   userImpersonate(email: String!): String @join__field(graph: USERS)
   createVerificationRequest(input: CreateVerificationRequestInput): Boolean @join__field(graph: USERS)
   validateEmail(email: String!, token: String!): User @join__field(graph: USERS)
@@ -2138,11 +2144,12 @@ type Query
   languages(offset: Int, limit: Int, where: LanguagesFilter): [Language!]! @join__field(graph: LANGUAGES)
   country(id: ID!): Country @join__field(graph: LANGUAGES)
   countries: [Country!]! @join__field(graph: LANGUAGES)
-  getMyCloudflareImages: [CloudflareImage] @join__field(graph: MEDIA)
-  getMyCloudflareVideos: [CloudflareVideo] @join__field(graph: MEDIA)
-  getMyCloudflareVideo(id: ID!): CloudflareVideo @join__field(graph: MEDIA)
+  getMyCloudflareImages(offset: Int, limit: Int): [CloudflareImage!]! @join__field(graph: MEDIA)
+  getMyCloudflareImage(id: ID!): CloudflareImage! @join__field(graph: MEDIA)
+  getMyCloudflareVideos(offset: Int, limit: Int): [CloudflareVideo!]! @join__field(graph: MEDIA)
+  getMyCloudflareVideo(id: ID!): CloudflareVideo! @join__field(graph: MEDIA)
   listUnsplashCollectionPhotos(collectionId: String!, page: Int, perPage: Int, orientation: UnsplashPhotoOrientation): [UnsplashPhoto!]! @join__field(graph: MEDIA)
-  searchUnsplashPhotos(query: String!, page: Int, perPage: Int, orderBy: UnsplashOrderBy, collections: [String], contentFilter: UnsplashContentFilter, color: UnsplashColor, orientation: UnsplashPhotoOrientation): UnsplashQueryResponse! @join__field(graph: MEDIA)
+  searchUnsplashPhotos(query: String!, page: Int, perPage: Int, orderBy: UnsplashOrderBy, collections: [String!], contentFilter: UnsplashContentFilter, color: UnsplashColor, orientation: UnsplashPhotoOrientation): UnsplashQueryResponse! @join__field(graph: MEDIA)
   tags: [Tag!]! @join__field(graph: TAGS)
   me(input: MeInput): User @join__field(graph: USERS)
   user(id: ID!): User @join__field(graph: USERS)
@@ -2152,6 +2159,7 @@ type Query
   keywords: [Keyword!]! @join__field(graph: VIDEOS)
   video(id: ID!, idType: IdType = databaseId): Video! @join__field(graph: VIDEOS)
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]! @join__field(graph: VIDEOS)
+  videosCount(where: VideosFilter): Int! @join__field(graph: VIDEOS)
   videoVariants: [VideoVariant!]! @join__field(graph: VIDEOS)
 }
 
@@ -2731,7 +2739,6 @@ enum ThemeName
 
 type Translation
   @join__type(graph: JOURNEYS)
-  @join__type(graph: MEDIA)
   @join__type(graph: TAGS)
   @join__type(graph: USERS)
 {
@@ -2837,26 +2844,25 @@ enum UnsplashOrderBy
 {
   latest @join__enumValue(graph: MEDIA)
   relevant @join__enumValue(graph: MEDIA)
+  editorial @join__enumValue(graph: MEDIA)
 }
 
 type UnsplashPhoto
   @join__type(graph: MEDIA)
 {
-  id: String!
+  id: ID!
   created_at: String!
   updated_at: String
-  blur_hash: String!
+  blur_hash: String
   width: Int!
   height: Int!
   color: String
   description: String
   alt_description: String
+  promoted_at: String
+  likes: Int!
   urls: UnsplashPhotoUrls!
   links: UnsplashPhotoLinks!
-  categories: [String!]
-  likes: Int!
-  liked_by_user: Boolean!
-  current_user_collections: [String!]!
   user: UnsplashUser!
 }
 
@@ -2880,8 +2886,8 @@ enum UnsplashPhotoOrientation
 type UnsplashPhotoUrls
   @join__type(graph: MEDIA)
 {
-  raw: String!
   full: String!
+  raw: String!
   regular: String!
   small: String!
   thumb: String!
@@ -2898,23 +2904,22 @@ type UnsplashQueryResponse
 type UnsplashUser
   @join__type(graph: MEDIA)
 {
-  id: String!
-  updated_at: String
+  id: ID!
+  updated_at: String!
   username: String!
-  name: String
-  first_name: String
+  name: String!
+  first_name: String!
   last_name: String
   twitter_username: String
   portfolio_url: String
   bio: String
   location: String
-  links: UnsplashUserLinks!
-  profile_image: UnsplashUserImage
   instagram_username: String
   total_collections: Int!
   total_likes: Int!
   total_photos: Int!
-  accepted_tos: Boolean!
+  links: UnsplashUserLinks!
+  profile_image: UnsplashUserImage!
 }
 
 type UnsplashUserImage
@@ -2928,13 +2933,13 @@ type UnsplashUserImage
 type UnsplashUserLinks
   @join__type(graph: MEDIA)
 {
-  self: String!
-  html: String!
-  photos: String!
-  likes: String!
-  portfolio: String!
-  following: String!
   followers: String!
+  following: String!
+  html: String!
+  likes: String!
+  photos: String!
+  portfolio: String!
+  self: String!
 }
 
 type User
