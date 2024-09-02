@@ -1,9 +1,7 @@
 // version 6
 // increment to trigger re-seed (ie: files other than seed.ts are changed)
 
-import { PrismaClient } from '.prisma/api-tags-client'
-
-import { Service } from '../src/app/__generated__/graphql'
+import { PrismaClient, Service } from '.prisma/api-tags-client'
 
 const prisma = new PrismaClient()
 
@@ -19,18 +17,18 @@ async function upsertTag(
     },
     create: {
       name,
-      // 529 is ID for English
-      nameTranslations: [{ value: name, languageId: '529', primary: true }],
       parentId,
       service
     },
-    update: {
-      name,
-      // 529 is ID for English
-      nameTranslations: [{ value: name, languageId: '529', primary: true }],
-      parentId,
-      service
-    }
+    update: {}
+  })
+
+  prisma.tagName.upsert({
+    where: {
+      tagId_languageId: { tagId: tag.id, languageId: '529' }
+    },
+    create: { tagId: tag.id, value: name, languageId: '529', primary: true },
+    update: {}
   })
 
   // eslint-disable-next-line @typescript-eslint/no-floating-promises

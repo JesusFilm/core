@@ -512,6 +512,7 @@ A date string, such as 2007-12-03, compliant with the `full-date` format outline
 """
 scalar Date
   @join__type(graph: MEDIA)
+  @join__type(graph: TAGS)
 
 scalar DateTime
   @join__type(graph: JOURNEYS)
@@ -1353,7 +1354,7 @@ type Language
   @join__type(graph: JOURNEYS, key: "id")
   @join__type(graph: LANGUAGES, key: "id")
   @join__type(graph: MEDIA, key: "id", extension: true)
-  @join__type(graph: TAGS, key: "id")
+  @join__type(graph: TAGS, key: "id", extension: true)
   @join__type(graph: USERS, key: "id")
 {
   id: ID!
@@ -2604,9 +2605,18 @@ type Tag
   @join__type(graph: TAGS, key: "id")
 {
   id: ID!
-  name: [Translation!]! @join__field(graph: TAGS)
   parentId: ID @join__field(graph: TAGS)
+  name(languageId: ID, primary: Boolean): [TagName!]! @join__field(graph: TAGS)
   service: Service @join__field(graph: TAGS)
+}
+
+type TagName
+  @join__type(graph: TAGS)
+{
+  id: ID!
+  value: String!
+  primary: Boolean!
+  language: Language!
 }
 
 type Team
@@ -2737,7 +2747,6 @@ enum ThemeName
 
 type Translation
   @join__type(graph: JOURNEYS)
-  @join__type(graph: TAGS)
   @join__type(graph: USERS)
 {
   value: String!

@@ -2,7 +2,15 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "incremental": true,
-    "tsBuildInfoFile": "../../.cache/api-tags/tsc/.tsbuildinfo"
+    "strict": true,
+    "tsBuildInfoFile": "../../.cache/api-tags/tsc/.tsbuildinfo",
+    "plugins": [
+      {
+        "name": "@0no-co/graphqlsp",
+        "schema": "../api-gateway/schema.graphql",
+        "tadaOutputLocation": "./src/__generated__/graphql-env.d.ts"
+      }
+    ]
   },
   "files": [],
   "include": [],
