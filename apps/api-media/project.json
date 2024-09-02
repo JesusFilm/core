@@ -25,11 +25,17 @@
         }
       }
     },
-    "serve": {
+    "_serve": {
       "executor": "@nx/js:node",
       "options": {
         "buildTarget": "api-media:build",
         "inspect": false
+      }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "nx _serve api-media | npx pino-pretty --config .pino-prettyrc.js"
       }
     },
     "lint": {
