@@ -82,7 +82,7 @@ async function main(): Promise<void> {
     'Catholic/Orthodox',
     'Muslim',
     'Hindu/Buddist',
-    'Athiest/Agnostic',
+    'Atheist/Agnostic',
     'Seeker',
     'New Believer',
     'Mature Believer',
