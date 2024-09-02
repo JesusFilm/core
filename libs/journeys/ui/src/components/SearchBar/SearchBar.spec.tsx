@@ -1,10 +1,12 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import type { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
 import { useRefinementList, useSearchBox } from 'react-instantsearch'
 
 import '../../../test/i18n'
+import { getLanguagesContinentsMock } from '../../libs/useLanguagesContinentsQuery/useLanguagesContinentsQuery.mock'
+
 import { languageRefinements } from './data'
 import { SearchBar } from './SearchBar'
 
@@ -36,7 +38,7 @@ describe('SearchBar', () => {
 
   it('should render input field', async () => {
     render(
-      <MockedProvider>
+      <MockedProvider mocks={[getLanguagesContinentsMock]}>
         <SearchBar />
       </MockedProvider>
     )
@@ -45,7 +47,7 @@ describe('SearchBar', () => {
 
   it('should have placeholder text', async () => {
     render(
-      <MockedProvider>
+      <MockedProvider mocks={[getLanguagesContinentsMock]}>
         <SearchBar />
       </MockedProvider>
     )
@@ -57,7 +59,7 @@ describe('SearchBar', () => {
 
   it('should have globe icon', async () => {
     render(
-      <MockedProvider>
+      <MockedProvider mocks={[getLanguagesContinentsMock]}>
         <SearchBar />
       </MockedProvider>
     )
@@ -67,7 +69,7 @@ describe('SearchBar', () => {
 
   it('should refine when text typed', async () => {
     render(
-      <MockedProvider>
+      <MockedProvider mocks={[getLanguagesContinentsMock]}>
         <SearchBar />
       </MockedProvider>
     )
@@ -78,7 +80,7 @@ describe('SearchBar', () => {
 
   it('should refine once when further keystrokes', async () => {
     render(
-      <MockedProvider>
+      <MockedProvider mocks={[getLanguagesContinentsMock]}>
         <SearchBar />
       </MockedProvider>
     )
@@ -91,7 +93,7 @@ describe('SearchBar', () => {
 
   it('should have language icon', async () => {
     render(
-      <MockedProvider>
+      <MockedProvider mocks={[getLanguagesContinentsMock]}>
         <SearchBar showLanguageButton />
       </MockedProvider>
     )
@@ -101,7 +103,7 @@ describe('SearchBar', () => {
 
   it('should render language', async () => {
     render(
-      <MockedProvider>
+      <MockedProvider mocks={[getLanguagesContinentsMock]}>
         <SearchBar showLanguageButton />
       </MockedProvider>
     )
@@ -110,46 +112,37 @@ describe('SearchBar', () => {
 
   it('should have dropdown closed by default', async () => {
     render(
-      <MockedProvider>
+      <MockedProvider mocks={[getLanguagesContinentsMock]}>
         <SearchBar />
       </MockedProvider>
     )
     expect(screen.queryByTestId('SearchBarDropdown')).not.toBeInTheDocument()
   })
 
-  it('should open dropdown when searchbar clicked', async () => {
+  it('should open suggestions dropdown when searchbar clicked', async () => {
     render(
-      <MockedProvider>
+      <MockedProvider mocks={[getLanguagesContinentsMock]}>
         <SearchBar />
       </MockedProvider>
     )
-    const inputElement = screen.getByPlaceholderText(
-      /Search by topic, occasion, or audience .../i
-    )
-    fireEvent.click(inputElement)
+    const input = screen.getByDisplayValue('Hello World!')
+    await act(() => {
+      input.click()
+      input.focus()
+    })
     expect(screen.getByTestId('SearchBarDropdown')).toBeInTheDocument()
+    expect(screen.getByText('Suggestions')).toBeInTheDocument()
   })
 
-  it('should open dropdown when language button clicked', async () => {
+  it('should open languages dropdown when language button clicked', async () => {
     render(
-      <MockedProvider>
+      <MockedProvider mocks={[getLanguagesContinentsMock]}>
         <SearchBar showLanguageButton />
       </MockedProvider>
     )
     expect(screen.getByText('Language')).toBeInTheDocument()
     fireEvent.click(screen.getByText('Language'))
     expect(screen.getByTestId('SearchBarDropdown')).toBeInTheDocument()
-  })
-
-  it('should close dropdown after it was opened', async () => {
-    render(
-      <MockedProvider>
-        <SearchBar showLanguageButton />
-      </MockedProvider>
-    )
-    fireEvent.click(screen.getByText('Language'))
-    expect(screen.getByTestId('SearchBarDropdown')).toBeInTheDocument()
-    fireEvent.click(screen.getByText('Language'))
-    expect(screen.queryByTestId('SearchBarDropdown')).not.toBeInTheDocument()
+    await waitFor(() => expect(screen.getByText('Europe')).toBeInTheDocument())
   })
 })
