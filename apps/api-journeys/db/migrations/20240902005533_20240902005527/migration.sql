@@ -1,7 +1,7 @@
 /*
   Warnings:
 
-  - A unique constraint covering the columns `[slug]` on the table `Block` will be added. If there are existing duplicate values, this will fail.
+  - A unique constraint covering the columns `[slug,journeyId]` on the table `Block` will be added. If there are existing duplicate values, this will fail.
   - A unique constraint covering the columns `[logoImageBlockId]` on the table `Journey` will be added. If there are existing duplicate values, this will fail.
   - A unique constraint covering the columns `[menuStepBlockId]` on the table `Journey` will be added. If there are existing duplicate values, this will fail.
 
@@ -25,7 +25,7 @@ ADD COLUMN     "showMenu" BOOLEAN DEFAULT false,
 ADD COLUMN     "showReactionButtons" BOOLEAN DEFAULT true;
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Block_slug_key" ON "Block"("slug");
+CREATE UNIQUE INDEX "Block_slug_journeyId_key" ON "Block"("slug", "journeyId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Journey_logoImageBlockId_key" ON "Journey"("logoImageBlockId");

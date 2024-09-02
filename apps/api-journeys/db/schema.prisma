@@ -533,8 +533,9 @@ model Block {
   scale                   Int?
   menuStepBlockParent     Journey?             @relation("MenuStepBlock")
   logoImageBlockParent    Journey?             @relation("LogoImageBlock")
-  slug                    String?              @unique
+  slug                    String?
 
+  @@unique([slug, journeyId])
   @@index(journeyId)
   @@index(parentOrder(sort: Asc))
   @@index(typename)
