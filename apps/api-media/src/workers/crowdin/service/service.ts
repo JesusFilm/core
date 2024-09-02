@@ -54,7 +54,9 @@ export async function service(logger?: Logger): Promise<void> {
     )?.groups?.languageId
 
     if (languageId != null) {
-      const res = await xliff12ToJs(languages[languageCode][0].content)
+      const res = await xliff12ToJs(
+        languages[languageCode][0].content as string
+      )
       const data = schema.parse(res)
       await storeTranslations(languageId, data, logger)
     } else {

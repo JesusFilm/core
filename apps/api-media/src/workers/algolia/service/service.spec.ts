@@ -1,4 +1,5 @@
 import algoliasearch from 'algoliasearch'
+import clone from 'lodash/clone'
 
 import { VideoVariant } from '.prisma/api-media-client'
 
@@ -65,13 +66,10 @@ const mockAlgoliaSearch = algoliasearch as jest.MockedFunction<
 >
 
 describe('algolia/service', () => {
-  let originalEnv
+  const originalEnv = clone(process.env)
 
   beforeEach(() => {
-    originalEnv = process.env
-    process.env = {
-      ...originalEnv
-    }
+    process.env = originalEnv
     jest.resetModules()
   })
 
