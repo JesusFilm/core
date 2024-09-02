@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
 import { useSearchBox } from 'react-instantsearch'
@@ -28,6 +28,7 @@ describe('Suggestions', () => {
 
   beforeEach(() => {
     mockUseSearchBox.mockReturnValue(searchBox)
+    jest.clearAllMocks()
   })
 
   it('should display suggestions header', () => {
@@ -41,5 +42,21 @@ describe('Suggestions', () => {
     expect(
       screen.getByText('in English and Spanish, Latin American')
     ).toBeInTheDocument()
+  })
+
+  it('should refine on click of first default query', () => {
+    render(<Suggestions refinements={refinements} />)
+    const firstSuggestion = screen.getByText('in English')
+    fireEvent.click(firstSuggestion)
+    expect(refine).toHaveBeenCalledTimes(2)
+  })
+
+  it('should refine on click of second default query', () => {
+    render(<Suggestions refinements={refinements} />)
+    const secondSuggestion = screen.getByText(
+      'in English and Spanish, Latin American'
+    )
+    fireEvent.click(secondSuggestion)
+    expect(refine).toHaveBeenCalledTimes(3)
   })
 })

@@ -21,10 +21,15 @@ export function Suggestions({ refinements }: SuggestionsProps): ReactElement {
   const { refine: refineLanguages } = refinements
 
   function selectSuggestion(suggestion: string): void {
-    const item = suggestion.split(' in ')
-    if (item.length === 2) {
-      refine(item[0])
-      refineLanguages(item[1])
+    const suggestionParts = suggestion.split(/\s(?:in|and)\s/)
+    if (suggestionParts.length === 2) {
+      refine(suggestionParts[0])
+      refineLanguages(suggestionParts[1])
+    }
+    if (suggestionParts.length === 3) {
+      refine(suggestionParts[0])
+      refineLanguages(suggestionParts[1])
+      refineLanguages(suggestionParts[2])
     }
   }
 
@@ -56,6 +61,9 @@ export function Suggestions({ refinements }: SuggestionsProps): ReactElement {
           <MenuItem
             sx={{ p: 3, borderRadius: 3 }}
             value="Jesus in English and Spanish, Latin American"
+            onClick={() =>
+              selectSuggestion('Jesus in English and Spanish, Latin American')
+            }
           >
             <ListItemIcon>
               <Globe1Icon />
