@@ -77,4 +77,25 @@ describe('Suggestions', () => {
     expect(refine).toHaveBeenCalledWith('English')
     expect(refine).toHaveBeenCalledWith('Spanish, Latin American')
   })
+
+  it('should not refine language if it is already refined', () => {
+    const refinedLanguage = {
+      count: 842,
+      isRefined: true,
+      value: 'English',
+      label: 'English',
+      highlighted: 'English'
+    }
+    const languageRefinementsWithRefined = languageRefinements.slice(1, -1)
+    languageRefinementsWithRefined.push(refinedLanguage)
+    const refinementsWithRefined = {
+      items: languageRefinementsWithRefined,
+      refine
+    } as unknown as RefinementListRenderState
+
+    render(<Suggestions refinements={refinementsWithRefined} />)
+    const firstSuggestion = screen.getByText('- in English')
+    fireEvent.click(firstSuggestion)
+    expect(refine).not.toHaveBeenCalledWith('English')
+  })
 })

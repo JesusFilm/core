@@ -15,19 +15,21 @@ interface SuggestionsProps {
 export function Suggestions({ refinements }: SuggestionsProps): ReactElement {
   const { t } = useTranslation('apps-watch')
   const { refine } = useSearchBox()
-  const { refine: refineLanguages } = refinements
+  const { items, refine: refineLanguage } = refinements
+
+  function refineLanguages(languagesToRefine: string[]): void {
+    languagesToRefine.forEach((language) => {
+      const refinement = items.find((item) => item.value === language)
+      if (refinement?.isRefined === false) {
+        refineLanguage(language)
+      }
+    })
+  }
 
   function selectSuggestion(suggestion: string): void {
     const suggestionParts = suggestion.split(/\s(?:in|and)\s/)
-    if (suggestionParts.length === 2) {
-      refine(suggestionParts[0])
-      refineLanguages(suggestionParts[1])
-    }
-    if (suggestionParts.length === 3) {
-      refine(suggestionParts[0])
-      refineLanguages(suggestionParts[1])
-      refineLanguages(suggestionParts[2])
-    }
+    refine(suggestionParts[0])
+    refineLanguages(suggestionParts.slice(1))
   }
 
   return (
