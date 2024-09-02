@@ -23,7 +23,7 @@ async function upsertTag(
     update: {}
   })
 
-  prisma.tagName.upsert({
+  await prisma.tagName.upsert({
     where: {
       tagId_languageId: { tagId: tag.id, languageId: '529' }
     },
@@ -31,10 +31,11 @@ async function upsertTag(
     update: {}
   })
 
-  // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  await childrenNames.map(async (name) => {
-    await upsertTag(name, [], tag.id, service)
-  })
+  await Promise.all(
+    childrenNames.map(async (name) => {
+      await upsertTag(name, [], tag.id, service)
+    })
+  )
 }
 
 async function main(): Promise<void> {
