@@ -1,4 +1,4 @@
-import { Prisma } from '.prisma/api-videos-client'
+import { Prisma } from '.prisma/api-media-client'
 
 import { type VideosFilter } from '../../inputs/videosFilter'
 import { parseFullTextSearch } from '../parseFullTextSearch'

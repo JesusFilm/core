@@ -11,7 +11,7 @@ import {
   VideoSubtitle,
   VideoTitle,
   VideoVariant
-} from '.prisma/api-videos-client'
+} from '.prisma/api-media-client'
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'

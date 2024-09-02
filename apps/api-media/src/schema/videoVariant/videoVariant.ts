@@ -1,6 +1,6 @@
 import compact from 'lodash/compact'
 
-import { VideoVariantDownloadQuality as PrismaVideoVariantDownloadQuality } from '.prisma/api-videos-client'
+import { VideoVariantDownloadQuality as PrismaVideoVariantDownloadQuality } from '.prisma/api-media-client'
 
 import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
