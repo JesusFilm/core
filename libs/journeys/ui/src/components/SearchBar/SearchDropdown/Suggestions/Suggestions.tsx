@@ -1,7 +1,4 @@
 import Box from '@mui/material/Box'
-import ListItemIcon from '@mui/material/ListItemIcon'
-import ListItemText from '@mui/material/ListItemText'
-import MenuItem from '@mui/material/MenuItem'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
@@ -9,7 +6,7 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { useSearchBox } from 'react-instantsearch'
 
-import Globe1Icon from '@core/shared/ui/icons/Globe1'
+import { Suggestion } from './Suggestion'
 
 interface SuggestionsProps {
   refinements: RefinementListRenderState
@@ -40,46 +37,32 @@ export function Suggestions({ refinements }: SuggestionsProps): ReactElement {
       </Typography>
       <Box color="text.primary">
         <Stack spacing={1}>
-          <MenuItem
-            sx={{ p: 3, borderRadius: 3 }}
-            value="Jesus in English"
-            onClick={() => selectSuggestion('Jesus in English')}
-          >
-            <ListItemIcon>
-              <Globe1Icon />
-            </ListItemIcon>
-            <ListItemText>
-              <Typography display="inline" fontWeight="1000">
-                {t('Jesus')}
-              </Typography>
-              <Typography display="inline">{t(' in English')}</Typography>
-            </ListItemText>
-            <Typography variant="body1" color="text.secondary" ml={6}>
-              {t('Language')}
-            </Typography>
-          </MenuItem>
-          <MenuItem
-            sx={{ p: 3, borderRadius: 3 }}
-            value="Jesus in English and Spanish, Latin American"
-            onClick={() =>
+          <Suggestion
+            query="Jesus"
+            filters={['English']}
+            handleClick={() => selectSuggestion('Jesus in English')}
+          />
+          <Suggestion
+            query="Jesus"
+            filters={['Spanish, Latin American']}
+            handleClick={() =>
+              selectSuggestion('Jesus in Spanish, Latin American')
+            }
+          />
+          <Suggestion
+            query="Easter"
+            filters={['English', 'Spanish, Latin American']}
+            handleClick={() =>
               selectSuggestion('Jesus in English and Spanish, Latin American')
             }
-          >
-            <ListItemIcon>
-              <Globe1Icon />
-            </ListItemIcon>
-            <ListItemText>
-              <Typography display="inline" fontWeight="1000">
-                {t('Jesus')}
-              </Typography>
-              <Typography display="inline">
-                {t(' in English and Spanish, Latin American')}
-              </Typography>
-            </ListItemText>
-            <Typography variant="body1" color="text.secondary" ml={6}>
-              {t('Language')}
-            </Typography>
-          </MenuItem>
+          />
+          <Suggestion
+            query="Love"
+            filters={['French', 'Arabic, Modern Standard']}
+            handleClick={() =>
+              selectSuggestion('Love in French and Arabic, Modern Standard')
+            }
+          />
         </Stack>
       </Box>
     </Box>
