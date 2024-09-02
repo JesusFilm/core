@@ -4,6 +4,13 @@
 import './cloudflare'
 import './segmind'
 import './unsplash'
+import './bibleBook'
+import './bibleCitation'
+import './enums'
+import './keyword'
+import './language'
+import './video'
+import './videoVariant'
 
 import { builder } from './builder'
 
