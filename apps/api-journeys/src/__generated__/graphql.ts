@@ -3939,8 +3939,7 @@ export enum Join__Graph {
   Languages = 'LANGUAGES',
   Media = 'MEDIA',
   Tags = 'TAGS',
-  Users = 'USERS',
-  Videos = 'VIDEOS'
+  Users = 'USERS'
 }
 
 export enum Link__Purpose {
