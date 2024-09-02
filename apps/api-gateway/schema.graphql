@@ -813,6 +813,7 @@ type ImageBlock implements Block
   Find a frontend implementation at https://github.com/woltapp/blurhash
   """
   blurhash: String!
+  scale: Int
 }
 
 input ImageBlockCreateInput
@@ -838,6 +839,7 @@ input ImageBlockCreateInput
   True if the coverBlockId in a parent block should be set to this block's id.
   """
   isCover: Boolean
+  scale: Int
 }
 
 input ImageBlockUpdateInput
@@ -853,6 +855,7 @@ input ImageBlockUpdateInput
   blurhash: String
   width: Int
   height: Int
+  scale: Int
 }
 
 interface Integration
@@ -961,6 +964,13 @@ type Journey
 
   """public title for viewers"""
   displayTitle: String
+  showHosts: Boolean
+  showChatButtons: Boolean
+  showReactionButtons: Boolean
+  showLogo: Boolean
+  showMenu: Boolean
+  showDisplayTitle: Boolean
+  menuButtonIcon: JourneyMenuButtonIcon
   userJourneys: [UserJourney!]
 }
 
@@ -1012,6 +1022,19 @@ input JourneyCreateInput
   at the end of the slug guaranteeing uniqueness
   """
   slug: String
+}
+
+enum JourneyMenuButtonIcon
+  @join__type(graph: JOURNEYS)
+{
+  menu1 @join__enumValue(graph: JOURNEYS)
+  equals @join__enumValue(graph: JOURNEYS)
+  home3 @join__enumValue(graph: JOURNEYS)
+  home4 @join__enumValue(graph: JOURNEYS)
+  more @join__enumValue(graph: JOURNEYS)
+  ellipsis @join__enumValue(graph: JOURNEYS)
+  grid1 @join__enumValue(graph: JOURNEYS)
+  chevronDown @join__enumValue(graph: JOURNEYS)
 }
 
 type JourneyNotification
@@ -1143,6 +1166,15 @@ input JourneyUpdateInput
   showLikeButton: Boolean
   showDislikeButton: Boolean
   displayTitle: String
+  showHosts: Boolean
+  showChatButtons: Boolean
+  showReactionButtons: Boolean
+  showLogo: Boolean
+  showMenu: Boolean
+  showDisplayTitle: Boolean
+  menuButtonIcon: JourneyMenuButtonIcon
+  menuStepBlockId: ID
+  logoImageBlockId: ID
 }
 
 type JourneyViewEvent implements Event
@@ -2387,6 +2419,15 @@ type StepBlock implements Block
   the editor.
   """
   y: Int
+
+  """
+  Slug should be unique amongst all blocks
+  (server will throw BAD_USER_INPUT error if not)
+  If not required will use the current block id
+  If the generated slug is not unique the uuid will be placed
+  at the end of the slug guaranteeing uniqueness
+  """
+  slug: String
 }
 
 input StepBlockCreateInput
@@ -2435,6 +2476,15 @@ input StepBlockUpdateInput
   the editor.
   """
   y: Int
+
+  """
+  Slug should be unique amongst all blocks
+  (server will throw BAD_USER_INPUT error if not)
+  If not required will use the current block id
+  If the generated slug is not unique the uuid will be placed
+  at the end of the slug guaranteeing uniqueness
+  """
+  slug: String
 }
 
 type StepNextEvent implements Event
