@@ -71,7 +71,9 @@ export function SearchbarDropdown({
               languages={languages}
             />
           )}
-          {varient === 'suggestions' && <Suggestions />}
+          {varient === 'suggestions' && (
+            <Suggestions refinements={refinements} />
+          )}
         </Stack>
       </Box>
     </Popper>
