@@ -33,7 +33,3 @@ What follows is the most up to date Entity Relationship Diagrams ([main branch](
 ### API Users
 
 ![API Users ERD](https://raw.githubusercontent.com/JesusFilm/core/main/apps/api-users/db/ERD.svg)
-
-### API Videos
-
-![API Videos ERD](https://raw.githubusercontent.com/JesusFilm/core/main/apps/api-videos/db/ERD.svg)

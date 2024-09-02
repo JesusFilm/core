@@ -43,8 +43,8 @@ describe('setBlockRestoreEditorState', () => {
       selectedStep: {
         __typename: 'StepBlock',
         children: [],
-        id: 'step',
-        journeyId: 'journeyId',
+        id: 'step3.id',
+        journeyId: 'journey-id',
         nextBlockId: 'someId',
         parentBlockId: null
       },
@@ -61,8 +61,8 @@ describe('setBlockRestoreEditorState', () => {
     expect(dispatch).toHaveBeenCalledWith({
       activeContent: 'canvas',
       activeSlide: 0,
-      selectedBlockId: 'step',
-      selectedStepId: 'step',
+      selectedBlockId: 'step3.id',
+      selectedStepId: 'step3.id',
       type: 'SetEditorFocusAction'
     })
   })

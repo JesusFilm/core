@@ -3,8 +3,8 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { Chat } from '../../Editor/Slider/Settings/CanvasDetails/Footer/Chat'
-import { HostAvatarsButton } from '../../Editor/Slider/Settings/CanvasDetails/Footer/HostTab/HostForm/HostAvatarsButton'
-import { HostTitleFieldForm } from '../../Editor/Slider/Settings/CanvasDetails/Footer/HostTab/HostForm/HostTitleFieldForm'
+import { HostAvatarsButton } from '../../Editor/Slider/Settings/CanvasDetails/Footer/Host/HostForm/HostAvatarsButton'
+import { HostTitleFieldForm } from '../../Editor/Slider/Settings/CanvasDetails/Footer/Host/HostForm/HostTitleFieldForm'
 
 interface JourneyQuickSettingsChatProps {
   displayName?: string

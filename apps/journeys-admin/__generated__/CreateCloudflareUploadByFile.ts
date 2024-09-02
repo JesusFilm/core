@@ -14,5 +14,5 @@ export interface CreateCloudflareUploadByFile_createCloudflareUploadByFile {
 }
 
 export interface CreateCloudflareUploadByFile {
-  createCloudflareUploadByFile: CreateCloudflareUploadByFile_createCloudflareUploadByFile | null;
+  createCloudflareUploadByFile: CreateCloudflareUploadByFile_createCloudflareUploadByFile;
 }
