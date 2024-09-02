@@ -667,6 +667,7 @@ export type ImageBlock = Block & {
   journeyId: Scalars['ID']['output'];
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
+  scale?: Maybe<Scalars['Int']['output']>;
   src?: Maybe<Scalars['String']['output']>;
   width: Scalars['Int']['output'];
 };
@@ -682,6 +683,7 @@ export type ImageBlockCreateInput = {
   isCover?: InputMaybe<Scalars['Boolean']['input']>;
   journeyId: Scalars['ID']['input'];
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
+  scale?: InputMaybe<Scalars['Int']['input']>;
   src?: InputMaybe<Scalars['String']['input']>;
   width?: InputMaybe<Scalars['Int']['input']>;
 };
@@ -692,6 +694,7 @@ export type ImageBlockUpdateInput = {
   blurhash?: InputMaybe<Scalars['String']['input']>;
   height?: InputMaybe<Scalars['Int']['input']>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
+  scale?: InputMaybe<Scalars['Int']['input']>;
   src?: InputMaybe<Scalars['String']['input']>;
   width?: InputMaybe<Scalars['Int']['input']>;
 };
@@ -750,6 +753,7 @@ export type Journey = {
   id: Scalars['ID']['output'];
   journeyCollections: Array<JourneyCollection>;
   language: Language;
+  menuButtonIcon?: Maybe<JourneyMenuButtonIcon>;
   /** used in a plausible share link to embed report */
   plausibleToken?: Maybe<Scalars['String']['output']>;
   primaryImageBlock?: Maybe<ImageBlock>;
@@ -757,8 +761,14 @@ export type Journey = {
   seoDescription?: Maybe<Scalars['String']['output']>;
   /** title for seo and sharing */
   seoTitle?: Maybe<Scalars['String']['output']>;
+  showChatButtons?: Maybe<Scalars['Boolean']['output']>;
   showDislikeButton?: Maybe<Scalars['Boolean']['output']>;
+  showDisplayTitle?: Maybe<Scalars['Boolean']['output']>;
+  showHosts?: Maybe<Scalars['Boolean']['output']>;
   showLikeButton?: Maybe<Scalars['Boolean']['output']>;
+  showLogo?: Maybe<Scalars['Boolean']['output']>;
+  showMenu?: Maybe<Scalars['Boolean']['output']>;
+  showReactionButtons?: Maybe<Scalars['Boolean']['output']>;
   showShareButton?: Maybe<Scalars['Boolean']['output']>;
   slug: Scalars['String']['output'];
   status: JourneyStatus;
@@ -817,6 +827,17 @@ export type JourneyCreateInput = {
   title: Scalars['String']['input'];
 };
 
+export enum JourneyMenuButtonIcon {
+  ChevronDown = 'chevronDown',
+  Ellipsis = 'ellipsis',
+  Equals = 'equals',
+  Grid1 = 'grid1',
+  Home3 = 'home3',
+  Home4 = 'home4',
+  Menu1 = 'menu1',
+  More = 'more'
+}
+
 export type JourneyNotification = {
   __typename?: 'JourneyNotification';
   id: Scalars['ID']['output'];
@@ -866,11 +887,20 @@ export type JourneyUpdateInput = {
   displayTitle?: InputMaybe<Scalars['String']['input']>;
   hostId?: InputMaybe<Scalars['String']['input']>;
   languageId?: InputMaybe<Scalars['String']['input']>;
+  logoImageBlockId?: InputMaybe<Scalars['ID']['input']>;
+  menuButtonIcon?: InputMaybe<JourneyMenuButtonIcon>;
+  menuStepBlockId?: InputMaybe<Scalars['ID']['input']>;
   primaryImageBlockId?: InputMaybe<Scalars['ID']['input']>;
   seoDescription?: InputMaybe<Scalars['String']['input']>;
   seoTitle?: InputMaybe<Scalars['String']['input']>;
+  showChatButtons?: InputMaybe<Scalars['Boolean']['input']>;
   showDislikeButton?: InputMaybe<Scalars['Boolean']['input']>;
+  showDisplayTitle?: InputMaybe<Scalars['Boolean']['input']>;
+  showHosts?: InputMaybe<Scalars['Boolean']['input']>;
   showLikeButton?: InputMaybe<Scalars['Boolean']['input']>;
+  showLogo?: InputMaybe<Scalars['Boolean']['input']>;
+  showMenu?: InputMaybe<Scalars['Boolean']['input']>;
+  showReactionButtons?: InputMaybe<Scalars['Boolean']['input']>;
   showShareButton?: InputMaybe<Scalars['Boolean']['input']>;
   slug?: InputMaybe<Scalars['String']['input']>;
   strategySlug?: InputMaybe<Scalars['String']['input']>;
@@ -2629,6 +2659,14 @@ export type StepBlock = Block & {
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
   /**
+   * Slug should be unique amongst all blocks
+   * (server will throw BAD_USER_INPUT error if not)
+   * If not required will use the current block id
+   * If the generated slug is not unique the uuid will be placed
+   * at the end of the slug guaranteeing uniqueness
+   */
+  slug?: Maybe<Scalars['String']['output']>;
+  /**
    * x is used to position the block horizontally in the journey flow diagram on
    * the editor.
    */
@@ -2666,6 +2704,14 @@ export type StepBlockPositionUpdateInput = {
 export type StepBlockUpdateInput = {
   locked?: InputMaybe<Scalars['Boolean']['input']>;
   nextBlockId?: InputMaybe<Scalars['ID']['input']>;
+  /**
+   * Slug should be unique amongst all blocks
+   * (server will throw BAD_USER_INPUT error if not)
+   * If not required will use the current block id
+   * If the generated slug is not unique the uuid will be placed
+   * at the end of the slug guaranteeing uniqueness
+   */
+  slug?: InputMaybe<Scalars['String']['input']>;
   /**
    * x is used to position the block horizontally in the journey flow diagram on
    * the editor.
