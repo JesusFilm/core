@@ -7,7 +7,17 @@ locals {
     "CLOUDFLARE_STREAM_TOKEN",
     "GOOGLE_APPLICATION_JSON",
     "UNSPLASH_ACCESS_KEY",
-    "SEGMIND_API_KEY"
+    "SEGMIND_API_KEY",
+    "ALGOLIA_APPLICATION_ID",
+    "ALGOLIA_API_KEY",
+    "ALGOLIA_INDEX",
+    "ARCLIGHT_API_KEY",
+    "ARCLIGHT_V3_URL",
+    "BIG_QUERY_APPLICATION_JSON",
+    "CROWDIN_API_KEY",
+    "GATEWAY_URL",
+    "REDIS_PORT",
+    "REDIS_URL"
   ]
   service_config = {
     name           = "api-media"

@@ -259,7 +259,7 @@ export type introspection = {
     'VisitorsConnection': { kind: 'OBJECT'; name: 'VisitorsConnection'; fields: { 'edges': { name: 'edges'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'LIST'; name: never; ofType: { kind: 'NON_NULL'; name: never; ofType: { kind: 'OBJECT'; name: 'VisitorEdge'; ofType: null; }; }; }; } }; 'pageInfo': { name: 'pageInfo'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'OBJECT'; name: 'PageInfo'; ofType: null; }; } }; }; };
     'join__DirectiveArguments': unknown;
     'join__FieldSet': unknown;
-    'join__Graph': { name: 'join__Graph'; enumValues: 'ANALYTICS' | 'JOURNEYS' | 'LANGUAGES' | 'MEDIA' | 'TAGS' | 'USERS' | 'VIDEOS'; };
+    'join__Graph': { name: 'join__Graph'; enumValues: 'ANALYTICS' | 'JOURNEYS' | 'LANGUAGES' | 'MEDIA' | 'TAGS' | 'USERS'; };
     'link__Import': unknown;
     'link__Purpose': { name: 'link__Purpose'; enumValues: 'SECURITY' | 'EXECUTION'; };
   };

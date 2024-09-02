@@ -137,17 +137,6 @@ module "api-users" {
   }
 }
 
-module "api-videos" {
-  source        = "../../../apps/api-videos/infrastructure"
-  ecs_config    = local.internal_ecs_config
-  env           = "stage"
-  doppler_token = data.aws_ssm_parameter.doppler_api_videos_stage_token.value
-  alb = {
-    arn      = module.stage.internal_alb.arn
-    dns_name = module.stage.internal_alb.dns_name
-  }
-}
-
 module "api-media" {
   source        = "../../../apps/api-media/infrastructure"
   ecs_config    = local.internal_ecs_config
