@@ -20,7 +20,7 @@ interface SuggestionProps {
 
 export function Suggestion({
   query = 'Jesus',
-  filters = ['English', 'Spanish, Latin American'],
+  filters = ['English', 'Spanish'],
   variant = SuggestionVariant.LANGUAGE,
   handleClick
 }: SuggestionProps): ReactElement {
@@ -40,7 +40,7 @@ export function Suggestion({
         <Typography display="inline" fontWeight="1000">
           {query}
         </Typography>
-        <Typography display="inline">{` in ${filtersLabel}`}</Typography>
+        <Typography display="inline">{` - in ${filtersLabel}`}</Typography>
       </ListItemText>
       <Typography variant="body1" color="text.secondary" ml={6}>
         {variant}

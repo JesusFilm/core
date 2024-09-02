@@ -22,10 +22,12 @@ const mockUseSearchBox = useSearchBox as jest.MockedFunction<
 
 describe('SearchBar', () => {
   const refine = jest.fn()
+
   const useRefinementList = {
     items: languageRefinements,
     refine
   } as unknown as RefinementListRenderState
+
   const useSearchBox = {
     query: 'Hello World!',
     refine

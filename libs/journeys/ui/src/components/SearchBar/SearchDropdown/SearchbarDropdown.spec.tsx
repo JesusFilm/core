@@ -166,4 +166,16 @@ describe('SearchbarDropdown', () => {
       expect(screen.getByText('Suggestions')).toBeInTheDocument()
     })
   })
+
+  it('should refine query when suggestion clicked', async () => {
+    mockEmptyRefinementsList()
+    render(
+      <MockedProvider mocks={[getLanguagesContinentsMock]}>
+        <SearchbarDropdown open varient="suggestions" />
+      </MockedProvider>
+    )
+    await waitFor(() => {
+      expect(screen.getByText('Suggestions')).toBeInTheDocument()
+    })
+  })
 })

@@ -12,9 +12,7 @@ describe('Suggestion', () => {
 
   it('should display default filters', () => {
     render(<Suggestion handleClick={handleClick} />)
-    expect(
-      screen.getByText('in English and Spanish, Latin American')
-    ).toBeInTheDocument()
+    expect(screen.getByText('- in English and Spanish')).toBeInTheDocument()
   })
 
   it('should display default variant label', () => {
@@ -29,14 +27,9 @@ describe('Suggestion', () => {
 
   it('should display prop filters', () => {
     render(
-      <Suggestion
-        filters={['French', 'Arabic, Modern Standard']}
-        handleClick={handleClick}
-      />
+      <Suggestion filters={['French', 'Arabic']} handleClick={handleClick} />
     )
-    expect(
-      screen.getByText('in French and Arabic, Modern Standard')
-    ).toBeInTheDocument()
+    expect(screen.getByText('- in French and Arabic')).toBeInTheDocument()
   })
 
   it('should display prop variant label', () => {
