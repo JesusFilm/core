@@ -75,7 +75,7 @@ export function VideoList(): ReactElement {
   })
 
   const rows: GridRowsProp =
-    data?.videos.map((video) => {
+    data?.videos?.map((video) => {
       const title = video?.title?.find(({ primary }) => primary)?.value
       const description = video?.snippet?.find(({ primary }) => primary)?.value
       return {
