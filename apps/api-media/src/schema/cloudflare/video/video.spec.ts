@@ -1,3 +1,4 @@
+import { Video } from 'cloudflare/resources/stream/stream'
 import { graphql } from 'gql.tada'
 
 import { getClient } from '../../../../test/client'
@@ -6,7 +7,8 @@ import { prismaMock } from '../../../../test/prismaMock'
 import {
   createVideoByDirectUpload,
   createVideoFromUrl,
-  deleteVideo
+  deleteVideo,
+  getVideo
 } from './service'
 
 const mockCreateVideoByDirectUpload =
@@ -17,12 +19,15 @@ const mockCreateVideoFromUrl = createVideoFromUrl as jest.MockedFunction<
   typeof createVideoFromUrl
 >
 
+const mockGetVideo = getVideo as jest.MockedFunction<typeof getVideo>
+
 const mockDeleteVideo = deleteVideo as jest.MockedFunction<typeof deleteVideo>
 
 jest.mock('./service', () => ({
   __esModule: true,
   createVideoByDirectUpload: jest.fn(),
   createVideoFromUrl: jest.fn(),
+  getVideo: jest.fn(),
   deleteVideo: jest.fn()
 }))
 
@@ -157,6 +162,55 @@ describe('cloudflareVideo', () => {
           prismaMock.cloudflareVideo.findFirstOrThrow
         ).toHaveBeenCalledWith({
           where: { id: 'testId', userId: 'testUserId' }
+        })
+      })
+
+      it('should return cloudflare video with readyToStream', async () => {
+        prismaMock.cloudflareVideo.findFirstOrThrow.mockResolvedValue({
+          id: 'testId',
+          userId: 'testUserId',
+          uploadUrl: 'testUrl',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          name: 'testName',
+          readyToStream: false
+        })
+        prismaMock.cloudflareVideo.update.mockResolvedValue({
+          id: 'testId',
+          userId: 'testUserId',
+          uploadUrl: 'testUrl',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          name: 'testName',
+          readyToStream: true
+        })
+        mockGetVideo.mockResolvedValue({
+          id: 'testId',
+          readyToStream: true
+        } as unknown as Video)
+        const result = await client({
+          document: GET_MY_CLOUDFLARE_VIDEO_QUERY
+        })
+        expect(result).toEqual({
+          data: {
+            getMyCloudflareVideo: {
+              id: 'testId',
+              uploadUrl: 'testUrl',
+              userId: 'testUserId',
+              createdAt: expect.any(String),
+              readyToStream: true
+            }
+          }
+        })
+        expect(
+          prismaMock.cloudflareVideo.findFirstOrThrow
+        ).toHaveBeenCalledWith({
+          where: { id: 'testId', userId: 'testUserId' }
+        })
+        expect(mockGetVideo).toHaveBeenCalledWith('testId')
+        expect(prismaMock.cloudflareVideo.update).toHaveBeenCalledWith({
+          where: { id: 'testId' },
+          data: { readyToStream: true }
         })
       })
     })
