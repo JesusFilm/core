@@ -41,7 +41,7 @@ export const slugMap = {
   'creole-french-guyanese': 'guyanese-creole',
   'mixe-atitlan': 'atitlan-mixe',
   'nahuatl-guerrero-aztec': 'aztec-nahuatl-guerrero',
-  'portuguese-brazil': 'spanish-castilian',
+  'portuguese-brazil': 'portuguese-brazil',
   'motu-hiri': 'hiri-motu',
   'chinese-hui': 'hui',
   'karen-pao': 'pao',
