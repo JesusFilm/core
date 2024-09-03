@@ -154,7 +154,7 @@ const mocks: MockedResponse[] = [
         input: {
           id: 'uuid',
           blockId: 'step1.id',
-          value: 'Step 1'
+          value: 'Step {{number}}'
         }
       }
     },
@@ -184,7 +184,7 @@ describe('EmbeddedPreview', () => {
       <MockedProvider mocks={mocks}>
         <SnackbarProvider>
           <JourneyProvider value={{ journey, variant: 'embed' }}>
-            <EmbeddedPreview blocks={basic} />
+            <EmbeddedPreview />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -197,7 +197,7 @@ describe('EmbeddedPreview', () => {
       <MockedProvider mocks={mocks}>
         <SnackbarProvider>
           <JourneyProvider value={{ journey, variant: 'embed' }}>
-            <EmbeddedPreview blocks={basic} />
+            <EmbeddedPreview />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -219,7 +219,7 @@ describe('EmbeddedPreview', () => {
       <MockedProvider mocks={mocks}>
         <SnackbarProvider>
           <JourneyProvider value={{ journey, variant: 'embed' }}>
-            <EmbeddedPreview blocks={basic} disableFullscreen />
+            <EmbeddedPreview disableFullscreen />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
