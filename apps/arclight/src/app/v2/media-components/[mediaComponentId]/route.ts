@@ -31,6 +31,13 @@ const GET_VIDEO = graphql(`
       studyQuestions {
         value
       }
+      bibleCitations {
+        osisId
+        chapterStart
+        verseStart
+        chapterEnd
+        verseEnd
+      }
       childrenCount
       variant {
         duration
@@ -96,9 +103,14 @@ export async function GET(
         video.variant?.downloads?.find(({ quality }) => quality === 'high')
           ?.size ?? 0
     },
-    // TODO: Needs new field in the schema
-    bibleCitations: [],
-    primaryLanguageId: video.primaryLanguageId,
+    bibleCitations: video.bibleCitations.map((citation) => ({
+      osisBibleBook: citation.osisId,
+      chapterStart: citation.chapterStart,
+      verseStart: citation.verseStart,
+      chapterEnd: citation.chapterEnd,
+      verseEnd: citation.verseEnd
+    })),
+    primaryLanguageId: Number(video.primaryLanguageId),
     title: video.title[0].value,
     shortDescription: video.snippet[0].value,
     longDescription: video.description[0].value,
