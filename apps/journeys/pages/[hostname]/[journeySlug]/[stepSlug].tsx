@@ -34,8 +34,9 @@ function HostStepPage({ journey, locale, rtl }: StepPageProps): ReactElement {
   const stepSlug = router.query.stepSlug as string
 
   const stepBlock = blocks.find(
-    (block) => block.__typename === 'StepBlock' && block.id === stepSlug
-    // || block.slug === stepSlug
+    (block) =>
+      block.__typename === 'StepBlock' &&
+      (block.slug === stepSlug || block.id === stepSlug)
   ) as TreeBlock<StepBlock> | undefined
 
   if (stepBlock == null) {
