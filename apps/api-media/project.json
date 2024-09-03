@@ -132,22 +132,28 @@
         "command": "codecov -f coverage/apps/api-media/cobertura-coverage.xml -F apps.api-media"
       }
     },
-    "ingest": {
+    "queue-ingest": {
       "executor": "nx:run-commands",
       "options": {
         "command": "npm run ts-node apps/api-media/src/workers/cli.ts big-query"
       }
     },
-    "crowdin": {
+    "queue-crowdin": {
       "executor": "nx:run-commands",
       "options": {
         "command": "npm run ts-node apps/api-media/src/workers/cli.ts crowdin"
       }
     },
-    "export-to-algolia": {
+    "queue-algolia": {
       "executor": "nx:run-commands",
       "options": {
         "command": "npm run ts-node apps/api-media/src/workers/cli.ts algolia"
+      }
+    },
+    "queue-seed": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apps/api-media/src/workers/cli.ts seed"
       }
     },
     "export-language-slugs": {

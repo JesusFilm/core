@@ -11,6 +11,7 @@ import './keyword'
 import './language'
 import './video'
 import './videoVariant'
+import './tag'
 
 import { builder } from './builder'
 
