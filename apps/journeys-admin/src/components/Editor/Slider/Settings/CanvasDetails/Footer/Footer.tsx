@@ -66,6 +66,7 @@ export function Footer(): ReactElement {
       {websiteMode && <WebsiteToggle />}
       {journey?.website === true ? (
         <>
+          <DisplayTitle />
           <Chat />
         </>
       ) : (

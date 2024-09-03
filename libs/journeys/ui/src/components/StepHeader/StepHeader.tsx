@@ -63,7 +63,13 @@ export function StepHeader({
             gap={4}
           >
             {/* Logo */}
-            <Stack sx={{ flex: '1 1 100%', minWidth: 0 }}>
+            <Stack
+              sx={{
+                flex: '1 1 100%',
+                minWidth: 0,
+                alignItems: 'center'
+              }}
+            >
               <Typography
                 variant="subtitle1"
                 sx={{
