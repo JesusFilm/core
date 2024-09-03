@@ -4,13 +4,13 @@ import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { DRAWER_WIDTH } from '../../../../../constants'
 
 import { DisplayTitle } from '.'
-import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 const DisplayTitleStory: Meta<typeof DisplayTitle> = {
   ...simpleComponentConfig,
