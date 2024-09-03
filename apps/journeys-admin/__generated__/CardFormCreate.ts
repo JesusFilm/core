@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ImageBlockCreateInput, TypographyBlockCreateInput, TextResponseBlockCreateInput, CardBlockUpdateInput, TypographyAlign, TypographyColor, TypographyVariant, TextResponseType, ThemeMode, ThemeName } from "./globalTypes";
+import { ImageBlockCreateInput, TypographyBlockCreateInput, TextResponseBlockCreateInput, CardBlockUpdateInput, TypographyAlign, TypographyVariant, TextResponseType, ThemeMode, ThemeName } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CardFormCreate
@@ -31,7 +31,7 @@ export interface CardFormCreate_subtitle {
   parentBlockId: string | null;
   parentOrder: number | null;
   align: TypographyAlign | null;
-  color: TypographyColor | null;
+  customColor: string | null;
   content: string;
   variant: TypographyVariant | null;
 }
@@ -42,7 +42,7 @@ export interface CardFormCreate_title {
   parentBlockId: string | null;
   parentOrder: number | null;
   align: TypographyAlign | null;
-  color: TypographyColor | null;
+  customColor: string | null;
   content: string;
   variant: TypographyVariant | null;
 }
@@ -66,7 +66,7 @@ export interface CardFormCreate_body {
   parentBlockId: string | null;
   parentOrder: number | null;
   align: TypographyAlign | null;
-  color: TypographyColor | null;
+  customColor: string | null;
   content: string;
   variant: TypographyVariant | null;
 }

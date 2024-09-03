@@ -672,6 +672,7 @@ export interface TypographyBlockCreateInput {
   content: string;
   variant?: TypographyVariant | null;
   color?: TypographyColor | null;
+  customColor?: string | null;
   align?: TypographyAlign | null;
 }
 
@@ -680,6 +681,7 @@ export interface TypographyBlockUpdateInput {
   content?: string | null;
   variant?: TypographyVariant | null;
   color?: TypographyColor | null;
+  customColor?: string | null;
   align?: TypographyAlign | null;
 }
 

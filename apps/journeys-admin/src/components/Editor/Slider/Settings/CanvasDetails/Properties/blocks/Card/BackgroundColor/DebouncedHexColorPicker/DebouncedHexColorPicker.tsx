@@ -4,7 +4,6 @@ import {
   ReactElement,
   useEffect,
   useRef,
-  useState
 } from 'react'
 import { HexColorPicker } from 'react-colorful'
 
@@ -13,8 +12,6 @@ export function DebouncedHexColorPicker({
   onChange,
   ...props
 }: ComponentProps<typeof HexColorPicker>): ReactElement {
-  const [value, setValue] = useState(color)
-
   const debouncedChange = useRef(
     debounce((value: string) => {
       onChange?.(value)
@@ -29,13 +26,12 @@ export function DebouncedHexColorPicker({
 
   async function handleChange(value: string): Promise<void> {
     void debouncedChange(value.toUpperCase())
-    setValue(value.toUpperCase())
   }
 
   return (
     <HexColorPicker
       data-testId="HexColorPicker"
-      color={value}
+      color={color}
       onChange={handleChange}
       {...props}
     />
