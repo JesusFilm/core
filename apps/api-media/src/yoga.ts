@@ -41,7 +41,10 @@ export const yoga = createYoga({
     process.env.NODE_ENV !== 'test'
       ? useResponseCache({
           session: () => null,
-          cache
+          cache,
+          ttlPerType: {
+            User: 1000
+          }
         })
       : {}
   ]
