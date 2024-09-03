@@ -16,9 +16,10 @@ export function DisplayTitle(): ReactElement {
   const { add } = useCommand()
   const [journeyUpdate] = useJourneyUpdateMutation()
 
-  async function handleUpdate(displayTitle): Promise<void> {
+  async function handleUpdate(newTitle: string): Promise<void> {
     if (journey == null) return
 
+    const displayTitle = newTitle === '' ? null : newTitle
     const undoDisplayTitle = journey.displayTitle
     add({
       parameters: {
@@ -37,7 +38,7 @@ export function DisplayTitle(): ReactElement {
             journeyUpdate: {
               ...journey,
               tags: [],
-              displayTitle: displayTitle ?? journey.seoTitle
+              displayTitle
             }
           }
         })
@@ -50,7 +51,7 @@ export function DisplayTitle(): ReactElement {
       <Stack sx={{ p: 4, pt: 2 }} data-testid="DisplayTitle">
         <TextFieldForm
           id="display-title"
-          initialValue={journey?.displayTitle ?? journey?.seoTitle ?? ''}
+          initialValue={journey?.displayTitle ?? ''}
           onSubmit={handleUpdate}
           label={t('Display Title')}
         />
