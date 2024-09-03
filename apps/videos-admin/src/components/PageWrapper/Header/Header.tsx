@@ -6,6 +6,7 @@ import { BreadcrumbNavigation } from './BreadcrumbNavigation'
 export function Header(): ReactElement {
   return (
     <AppBar
+      data-testid="VideosAdminHeader"
       color="default"
       sx={{
         top: 0,

@@ -1,11 +1,15 @@
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
-import { ReactElement } from 'react'
+import { ReactElement, ReactNode } from 'react'
 
 import { Header } from './Header'
 import { Nav } from './Nav'
 
-export function PageWrapper({ children }): ReactElement {
+interface PageWrapperProps {
+  children?: ReactNode
+}
+
+export function PageWrapper({ children }: PageWrapperProps): ReactElement {
   return (
     <Stack sx={{ height: '100%' }} direction="row">
       <Nav />

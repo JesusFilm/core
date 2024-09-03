@@ -10,8 +10,6 @@ interface IndexProps {
   params: { locale: string }
 }
 
-export const dynamic = 'force-dynamic'
-
 export default function Index({ params }: IndexProps): ReactElement {
   const t = useTranslations()
 
@@ -19,7 +17,7 @@ export default function Index({ params }: IndexProps): ReactElement {
     <Box>
       <Stack justifyContent="center" alignItems="center">
         <Box sx={{ m: 5 }}>
-          <Typography variant="h4">{t('Dashboard')}</Typography>
+          <Typography variant="h4">{t('Welcome!')}</Typography>
         </Box>
       </Stack>
       <Link href={`${params.locale}/videos`}>

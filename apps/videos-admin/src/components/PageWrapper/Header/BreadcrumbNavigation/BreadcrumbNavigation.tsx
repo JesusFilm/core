@@ -31,7 +31,10 @@ export function BreadcrumbNavigation(): ReactElement {
     )
 
   return (
-    <Breadcrumbs separator={<Typography variant="h4">{'>'}</Typography>}>
+    <Breadcrumbs
+      separator={<Typography variant="h4">{'>'}</Typography>}
+      data-testid="BreadcrumbNavigation"
+    >
       {routes.map((route, i) => (
         <NextLink key={i} href={route.path} style={{ textDecoration: 'none' }}>
           <Typography
