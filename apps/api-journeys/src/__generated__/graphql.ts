@@ -3957,7 +3957,6 @@ export enum Join__Graph {
   Journeys = 'JOURNEYS',
   Languages = 'LANGUAGES',
   Media = 'MEDIA',
-  Tags = 'TAGS',
   Users = 'USERS'
 }
 
