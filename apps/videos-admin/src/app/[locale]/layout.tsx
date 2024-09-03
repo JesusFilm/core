@@ -1,4 +1,3 @@
-import Container from '@mui/material/Container'
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter'
 import { NextIntlClientProvider, useMessages } from 'next-intl'
 import { ReactNode } from 'react'
@@ -6,7 +5,7 @@ import { ReactNode } from 'react'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
-import { Nav } from '../../components/Nav'
+import { PageWrapper } from '../../components/PageWrapper/PageWrapper'
 
 export default function LocaleLayout({
   children,
@@ -25,10 +24,7 @@ export default function LocaleLayout({
               themeName={ThemeName.journeysAdmin}
               themeMode={ThemeMode.light}
             >
-              <Nav />
-              <Container sx={{ my: 10, maxHeight: '100%' }}>
-                {children}
-              </Container>
+              <PageWrapper>{children}</PageWrapper>
             </ThemeProvider>
           </AppRouterCacheProvider>
         </NextIntlClientProvider>

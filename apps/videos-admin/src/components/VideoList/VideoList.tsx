@@ -157,7 +157,7 @@ export function VideoList(): ReactElement {
   }
 
   return (
-    <Box sx={{ height: '80cqh' }}>
+    <Box sx={{ height: '90cqh' }}>
       <DataGrid
         data-testid="VideoListDataGrid"
         loading={loading}
