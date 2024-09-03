@@ -68,8 +68,10 @@ export function SearchBar({
   }
 
   function openSuggestionsDropdown(): void {
-    setDropdownVarient('suggestions')
-    openDropwdown()
+    if (!open) {
+      setDropdownVarient('suggestions')
+      openDropwdown()
+    }
   }
 
   function openLanguagesDropdown(): void {

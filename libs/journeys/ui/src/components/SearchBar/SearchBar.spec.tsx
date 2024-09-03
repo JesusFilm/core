@@ -127,10 +127,10 @@ describe('SearchBar', () => {
         <SearchBar />
       </MockedProvider>
     )
-    const input = screen.getByDisplayValue('Hello World!')
+    const searchBar = screen.getByDisplayValue('Hello World!')
     await act(() => {
-      input.click()
-      input.focus()
+      searchBar.click()
+      searchBar.focus()
     })
     expect(screen.getByTestId('SearchBarDropdown')).toBeInTheDocument()
     expect(screen.getByText('Suggestions')).toBeInTheDocument()
@@ -145,6 +145,23 @@ describe('SearchBar', () => {
     expect(screen.getByText('Language')).toBeInTheDocument()
     fireEvent.click(screen.getByText('Language'))
     expect(screen.getByTestId('SearchBarDropdown')).toBeInTheDocument()
+    await waitFor(() => expect(screen.getByText('Europe')).toBeInTheDocument())
+  })
+
+  it('should not switch back to suggestions after languages button clicked', async () => {
+    render(
+      <MockedProvider mocks={[getLanguagesContinentsMock]}>
+        <SearchBar showLanguageButton />
+      </MockedProvider>
+    )
+    expect(screen.getByText('Language')).toBeInTheDocument()
+    fireEvent.click(screen.getByText('Language'))
+    expect(screen.getByTestId('SearchBarDropdown')).toBeInTheDocument()
+    const searchBar = screen.getByDisplayValue('Hello World!')
+    await act(() => {
+      searchBar.click()
+      searchBar.focus()
+    })
     await waitFor(() => expect(screen.getByText('Europe')).toBeInTheDocument())
   })
 })
