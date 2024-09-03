@@ -1,3 +1,6 @@
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { useTranslation } from 'next-i18next'
@@ -20,29 +23,41 @@ export function LanguageContinentRefinements({
   return (
     <>
       {refinements.items.length > 0 ? (
-        <>
-          {Object.entries(languages).map(([continent, continentLanguages]) => {
-            const items = refinements.items.filter((item) =>
-              continentLanguages.some((language) => language === item.label)
-            )
-            return items.length > 0 ? (
-              <RefinementGroup
-                key={continent}
-                title={continent}
-                refinement={{
-                  ...refinements,
-                  items
-                }}
-                selectedContinent={selectedContinent}
-                handleSelectedContinent={(continent) =>
-                  setSelectedContinent(continent)
-                }
-              />
-            ) : (
-              <></>
-            )
-          })}
-        </>
+        <Box display="flex" flexDirection="column" alignItems="center">
+          <Stack direction={{ xs: 'column', md: 'row' }}>
+            {Object.entries(languages).map(
+              ([continent, continentLanguages]) => {
+                const items = refinements.items.filter((item) =>
+                  continentLanguages.some((language) => language === item.label)
+                )
+                return items.length > 0 ? (
+                  <RefinementGroup
+                    key={continent}
+                    title={continent}
+                    refinement={{
+                      ...refinements,
+                      items
+                    }}
+                    selectedContinent={selectedContinent}
+                    handleSelectedContinent={(continent) =>
+                      setSelectedContinent(continent)
+                    }
+                  />
+                ) : (
+                  <></>
+                )
+              }
+            )}
+          </Stack>
+          {refinements.canToggleShowMore && (
+            <Button
+              onClick={refinements.toggleShowMore}
+              disabled={!refinements.canToggleShowMore}
+            >
+              {t(refinements.isShowingMore ? 'See All' : 'See Less')}
+            </Button>
+          )}
+        </Box>
       ) : (
         <Typography>
           {t(

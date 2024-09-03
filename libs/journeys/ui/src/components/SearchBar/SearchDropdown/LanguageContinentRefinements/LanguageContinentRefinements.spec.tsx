@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 
 import { languageRefinements } from '../../data'
@@ -63,5 +63,56 @@ describe('LanguageContinentRefinements', () => {
         `Sorry, there are no languages available for this search. Try removing some of your search criteria!`
       )
     ).toBeInTheDocument()
+  })
+
+  it('should render a see all button', () => {
+    const showMoreRefinements = {
+      ...refinements,
+      canToggleShowMore: true,
+      isShowingMore: true,
+      toggleShowMore: jest.fn()
+    }
+    render(
+      <LanguageContinentRefinements
+        refinements={showMoreRefinements}
+        languages={languages}
+      />
+    )
+    expect(screen.getByText('See All')).toBeInTheDocument()
+  })
+
+  it('should render a see less button', () => {
+    const showMoreRefinements = {
+      ...refinements,
+      canToggleShowMore: true,
+      isShowingMore: false,
+      toggleShowMore: jest.fn()
+    }
+    render(
+      <LanguageContinentRefinements
+        refinements={showMoreRefinements}
+        languages={languages}
+      />
+    )
+    expect(screen.getByText('See Less')).toBeInTheDocument()
+  })
+
+  it('should call toggleShowMore when see all button clicked', () => {
+    const toggleShowMore = jest.fn()
+    const showMoreRefinements = {
+      ...refinements,
+      canToggleShowMore: true,
+      isShowingMore: true,
+      toggleShowMore
+    }
+    render(
+      <LanguageContinentRefinements
+        refinements={showMoreRefinements}
+        languages={languages}
+      />
+    )
+    const seeAllButton = screen.getByText('See All')
+    fireEvent.click(seeAllButton)
+    expect(toggleShowMore).toHaveBeenCalled()
   })
 })
