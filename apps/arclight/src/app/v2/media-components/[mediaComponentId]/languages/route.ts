@@ -7,7 +7,7 @@ import { paramsToRecord } from '../../../../../lib/paramsToRecord'
 /* TODO: 
   querystring:
     apiKey
-    platform
+    platform (web, ios, android) downloadUrls differnt for Android, web has different videoPlayer Fields
     languageIds
     reduce
     metadataLanguageTags
@@ -19,10 +19,10 @@ const GET_VIDEO_LANGUAGES = graphql(`
   query GetVideoVariants($id: ID!) {
     video(id: $id) {
       id
-      # Needs variants call, using variant just for mapping
-      variant {
+      variants {
         id
         duration
+        hls
         subtitle {
           language {
             id
@@ -34,8 +34,8 @@ const GET_VIDEO_LANGUAGES = graphql(`
           value
         }
         downloads {
-          quality
           size
+          quality
           url
         }
         language {
@@ -57,7 +57,7 @@ export async function GET(
   const { mediaComponentId } = params
   const query = request.nextUrl.searchParams
 
-  const platform = query.get('platform') ?? 'web'
+  const platform = query.get('platform') ?? 'ios'
   const apiSessionId = query.get('apiSessionId') ?? 'default'
 
   const { data } = await getApolloClient().query<
@@ -70,9 +70,9 @@ export async function GET(
   })
 
   const mediaComponentLanguage =
-    data.video?.variant == null
+    data.video?.variants == null
       ? []
-      : [data.video.variant].map((variant) => ({
+      : data.video.variants.map((variant) => ({
           mediaComponentId,
           languageId: variant.language?.id,
           // Todo: calculate
@@ -80,7 +80,7 @@ export async function GET(
           lengthInMilliseconds: variant.duration,
           subtitleUrls: {
             vtt: variant.subtitle?.map((subtitle) => ({
-              languageId: subtitle.language?.id,
+              languageId: Number(subtitle.language?.id),
               languageName: subtitle.language?.name[0].value,
               languageTag: subtitle.language?.bcp47,
               url: subtitle.value
@@ -95,9 +95,25 @@ export async function GET(
             )
           },
           // TODO: evaluate
-          streamingUrls: {},
+          streamingUrls:
+            platform === 'web'
+              ? {}
+              : platform === 'android'
+              ? {
+                  // TODO: implement dash urls
+                  dash: [],
+                  hls: [{ videoBitrate: 0, url: variant.hls }],
+
+                  http: []
+                }
+              : {
+                  m3u8: [{ videoBitrate: 0, url: variant.hls }],
+                  http: []
+                },
           // TODO: implement
           shareUrl: 'https://arc.gt/8un8j?apiSessionId=6622f10d2260a8.05128925',
+
+          // Below fields are only on web
           // TODO: implement
           webEmbedPlayer: '',
           // TODO: implement
