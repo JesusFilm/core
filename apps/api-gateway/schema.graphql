@@ -915,7 +915,6 @@ enum join__Graph {
   JOURNEYS @join__graph(name: "journeys", url: "http://127.0.0.1:4001/graphql")
   LANGUAGES @join__graph(name: "languages", url: "http://127.0.0.1:4003/graphql")
   MEDIA @join__graph(name: "media", url: "http://127.0.0.1:4005/graphql")
-  TAGS @join__graph(name: "tags", url: "http://127.0.0.1:4006/graphql")
   USERS @join__graph(name: "users", url: "http://127.0.0.1:4002/graphql")
 }
 
@@ -2036,7 +2035,6 @@ type Query
   @join__type(graph: JOURNEYS)
   @join__type(graph: LANGUAGES)
   @join__type(graph: MEDIA)
-  @join__type(graph: TAGS)
   @join__type(graph: USERS)
 {
   blocks(where: BlocksFilter): [Block!]! @join__field(graph: JOURNEYS)
@@ -2949,17 +2947,17 @@ type UnsplashUserLinks
 
 type User
   @join__type(graph: JOURNEYS, key: "id")
+  @join__type(graph: MEDIA, key: "id", extension: true)
   @join__type(graph: USERS, key: "id")
-  @join__type(graph: VIDEOS, key: "id", extension: true)
 {
   id: ID!
+  videoUserRoles: [VideoRole!]! @join__field(graph: MEDIA)
   firstName: String! @join__field(graph: USERS)
   lastName: String @join__field(graph: USERS)
   email: String! @join__field(graph: USERS)
   imageUrl: String @join__field(graph: USERS)
   superAdmin: Boolean @join__field(graph: USERS)
   emailVerified: Boolean! @join__field(graph: USERS)
-  videoUserRoles: [VideoRole!]! @join__field(graph: VIDEOS)
 }
 
 """These types are a subset provided by the @types/ua-parser-js library."""
@@ -3639,9 +3637,9 @@ input VideoProgressEventCreateInput
 }
 
 enum VideoRole
-  @join__type(graph: VIDEOS)
+  @join__type(graph: MEDIA)
 {
-  publisher @join__enumValue(graph: VIDEOS)
+  publisher @join__enumValue(graph: MEDIA)
 }
 
 input VideosFilter

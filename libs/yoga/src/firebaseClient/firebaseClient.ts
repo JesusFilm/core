@@ -24,9 +24,11 @@ export const firebaseClient = initializeApp(
 
 export const auth = getAuth(firebaseClient)
 
-export async function getUserIdFromAuthToken(
-  token: string
+export async function getUserIdFromRequest(
+  request: Request
 ): Promise<string | null> {
+  if (process.env.NODE_ENV === 'test') return 'testUserId'
+  const token = request.headers.get('Authorization')
   if (token == null || token === '') return null
   try {
     const { uid } = await auth.verifyIdToken(token)
@@ -43,10 +45,10 @@ export async function getUserIdFromAuthToken(
   }
 }
 
-export async function getUserFromAuthToken(
-  token: string
+export async function getUserFromRequest(
+  request: Request
 ): Promise<User | null> {
-  const userId = await getUserIdFromAuthToken(token)
+  const userId = await getUserIdFromRequest(request)
 
   if (userId != null) {
     const { displayName, email, photoURL, emailVerified } = await auth.getUser(

@@ -237,6 +237,14 @@ type UnsplashUserLinks {
   self: String!
 }
 
+type User
+  @key(fields: "id")
+  @extends
+{
+  id: ID! @external
+  videoUserRoles: [VideoRole!]!
+}
+
 type Video
   @key(fields: "id primaryLanguageId")
   @shareable
@@ -290,6 +298,10 @@ enum VideoLabel {
   shortFilm
   trailer
   behindTheScenes
+}
+
+enum VideoRole {
+  publisher
 }
 
 type VideoSnippet {

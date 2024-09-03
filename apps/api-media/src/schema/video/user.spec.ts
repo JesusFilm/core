@@ -1,6 +1,6 @@
 import { graphql } from 'gql.tada'
 
-import { VideoRole } from '.prisma/api-videos-client'
+import { VideoRole } from '.prisma/api-media-client'
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'

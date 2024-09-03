@@ -5,7 +5,7 @@ import pluginName from '@pothos/plugin-prisma'
 import ScopeAuthPlugin from '@pothos/plugin-scope-auth'
 import { DateResolver } from 'graphql-scalars'
 
-import { Prisma, VideoRole } from '.prisma/api-videos-client'
+import { Prisma, VideoRole } from '.prisma/api-media-client'
 
 import type PrismaTypes from '../__generated__/pothos-types'
 import { prisma } from '../lib/prisma'
