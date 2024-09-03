@@ -137,18 +137,6 @@ module "api-media" {
   }
 }
 
-module "api-nexus" {
-  source        = "../../../apps/api-nexus/infrastructure"
-  ecs_config    = local.internal_ecs_config
-  env           = "stage"
-  doppler_token = data.aws_ssm_parameter.doppler_api_nexus_stage_token.value
-  alb = {
-    arn      = module.stage.internal_alb.arn
-    dns_name = module.stage.internal_alb.dns_name
-  }
-
-}
-
 module "bastion" {
   source             = "../../modules/aws/ec2-bastion"
   name               = "bastion"
