@@ -512,7 +512,6 @@ A date string, such as 2007-12-03, compliant with the `full-date` format outline
 """
 scalar Date
   @join__type(graph: MEDIA)
-  @join__type(graph: TAGS)
 
 scalar DateTime
   @join__type(graph: JOURNEYS)
@@ -1354,7 +1353,6 @@ type Language
   @join__type(graph: JOURNEYS, key: "id")
   @join__type(graph: LANGUAGES, key: "id")
   @join__type(graph: MEDIA, key: "id", extension: true)
-  @join__type(graph: TAGS, key: "id", extension: true)
   @join__type(graph: USERS, key: "id")
 {
   id: ID!
@@ -2156,7 +2154,7 @@ type Query
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]! @join__field(graph: MEDIA)
   videosCount(where: VideosFilter): Int! @join__field(graph: MEDIA)
   videoVariants: [VideoVariant!]! @join__field(graph: MEDIA)
-  tags: [Tag!]! @join__field(graph: TAGS)
+  tags: [Tag!]! @join__field(graph: MEDIA)
   me(input: MeInput): User @join__field(graph: USERS)
   user(id: ID!): User @join__field(graph: USERS)
   userByEmail(email: String!): User @join__field(graph: USERS)
@@ -2267,14 +2265,14 @@ enum SegmindModel
 }
 
 enum Service
-  @join__type(graph: TAGS)
+  @join__type(graph: MEDIA)
 {
-  apiJourneys @join__enumValue(graph: TAGS)
-  apiLanguages @join__enumValue(graph: TAGS)
-  apiMedia @join__enumValue(graph: TAGS)
-  apiTags @join__enumValue(graph: TAGS)
-  apiUsers @join__enumValue(graph: TAGS)
-  apiVideos @join__enumValue(graph: TAGS)
+  apiJourneys @join__enumValue(graph: MEDIA)
+  apiLanguages @join__enumValue(graph: MEDIA)
+  apiMedia @join__enumValue(graph: MEDIA)
+  apiTags @join__enumValue(graph: MEDIA)
+  apiUsers @join__enumValue(graph: MEDIA)
+  apiVideos @join__enumValue(graph: MEDIA)
 }
 
 type SignUpBlock implements Block
@@ -2602,16 +2600,16 @@ input StepViewEventCreateInput
 
 type Tag
   @join__type(graph: JOURNEYS, key: "id")
-  @join__type(graph: TAGS, key: "id")
+  @join__type(graph: MEDIA, key: "id")
 {
   id: ID!
-  parentId: ID @join__field(graph: TAGS)
-  name(languageId: ID, primary: Boolean): [TagName!]! @join__field(graph: TAGS)
-  service: Service @join__field(graph: TAGS)
+  parentId: ID @join__field(graph: MEDIA)
+  name(languageId: ID, primary: Boolean): [TagName!]! @join__field(graph: MEDIA)
+  service: Service @join__field(graph: MEDIA)
 }
 
 type TagName
-  @join__type(graph: TAGS)
+  @join__type(graph: MEDIA)
 {
   id: ID!
   value: String!
