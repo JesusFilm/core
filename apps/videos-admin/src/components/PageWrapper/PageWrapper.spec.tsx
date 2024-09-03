@@ -7,8 +7,6 @@ jest.mock('next/navigation', () => ({
   usePathname: jest.fn()
 }))
 
-jest.mock('next-auth')
-
 const mockUsePathname = usePathname as jest.MockedFunction<typeof usePathname>
 
 describe('PageWrapper', () => {
