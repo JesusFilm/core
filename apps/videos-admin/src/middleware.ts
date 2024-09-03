@@ -48,7 +48,7 @@ export default async function middleware(
   )
     return intlMiddleware(req)
 
-  return authMiddleware(req, {
+  return await authMiddleware(req, {
     ...authConfig,
     loginPath: '/api/login',
     logoutPath: '/api/logout',
