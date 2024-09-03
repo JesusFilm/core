@@ -39,8 +39,7 @@ export function RefinementGroup({
                 key={item.value}
                 control={
                   <Checkbox
-                    checked={item.isRefined && title === selectedContinent}
-                    disabled={item.isRefined && title !== selectedContinent}
+                    checked={item.isRefined}
                     onClick={() => handleClick(item.label)}
                     size="small"
                   />
