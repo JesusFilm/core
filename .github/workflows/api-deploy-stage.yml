@@ -69,19 +69,6 @@ jobs:
       JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
       JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
       AWS_NETWORK_CONFIG: ${{ secrets.AWS_NETWORK_CONFIG }}
-  api-videos:
-    uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@stage
-    with:
-      name: api-videos
-      env: stage
-      branch: ${{ github.ref_name }}
-      endpoint_url: http://api-videos.stage.internal:4004/graphql
-    secrets:
-      APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
-      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-      JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
-      JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
-      AWS_NETWORK_CONFIG: ${{ secrets.AWS_NETWORK_CONFIG }}
   api-media:
     uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@stage
     with:

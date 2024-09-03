@@ -524,7 +524,7 @@ export interface GetAdminJourneyWithPlausibleToken_journey_tags_name_language {
 }
 
 export interface GetAdminJourneyWithPlausibleToken_journey_tags_name {
-  __typename: "Translation";
+  __typename: "TagName";
   value: string;
   language: GetAdminJourneyWithPlausibleToken_journey_tags_name_language;
   primary: boolean;
