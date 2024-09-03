@@ -46,23 +46,9 @@ export function Suggestions({ refinements }: SuggestionsProps): ReactElement {
           />
           <Suggestion
             query="Jesus"
-            filters={['Spanish']}
-            handleClick={() =>
-              selectSuggestion('Jesus in Spanish, Latin American')
-            }
-          />
-          <Suggestion
-            query="Easter"
             filters={['English', 'Spanish']}
             handleClick={() =>
-              selectSuggestion('Easter in English and Spanish, Latin American')
-            }
-          />
-          <Suggestion
-            query="Love"
-            filters={['French', 'Arabic']}
-            handleClick={() =>
-              selectSuggestion('Love in French and Arabic, Modern Standard')
+              selectSuggestion('Jesus in English and Spanish, Latin American')
             }
           />
         </Stack>

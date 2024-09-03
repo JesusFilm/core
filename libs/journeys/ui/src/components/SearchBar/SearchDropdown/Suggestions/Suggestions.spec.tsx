@@ -39,7 +39,7 @@ describe('Suggestions', () => {
   it('should display default suggestions', () => {
     render(<Suggestions refinements={refinements} />)
     expect(screen.getByText('- in English')).toBeInTheDocument()
-    expect(screen.getByText('- in Spanish')).toBeInTheDocument()
+    expect(screen.getByText('- in English and Spanish')).toBeInTheDocument()
   })
 
   it('should refine on click of first default query', () => {
