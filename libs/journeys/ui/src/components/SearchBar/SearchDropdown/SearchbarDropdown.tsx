@@ -1,7 +1,5 @@
 import Box from '@mui/material/Box'
 import Popper from '@mui/material/Popper'
-import Stack from '@mui/material/Stack'
-import { useTheme } from '@mui/material/styles'
 import { ReactElement } from 'react'
 import { useRefinementList } from 'react-instantsearch'
 
