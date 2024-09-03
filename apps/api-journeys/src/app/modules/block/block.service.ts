@@ -228,6 +228,7 @@ export class BlockService {
         )
       })
     )
+
     return duplicateChildren.reduce((acc, val) => {
       return acc.concat(val)
     }, [])

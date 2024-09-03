@@ -40,7 +40,7 @@ type AudioPreview
 }
 
 type BibleBook
-  @join__type(graph: VIDEOS)
+  @join__type(graph: MEDIA)
 {
   id: ID!
   name(languageId: ID, primary: Boolean): [BibleBookName!]!
@@ -52,7 +52,7 @@ type BibleBook
 }
 
 type BibleBookName
-  @join__type(graph: VIDEOS)
+  @join__type(graph: MEDIA)
 {
   value: String!
   primary: Boolean!
@@ -60,7 +60,7 @@ type BibleBookName
 }
 
 type BibleCitation
-  @join__type(graph: VIDEOS)
+  @join__type(graph: MEDIA)
 {
   id: ID!
   osisId: String!
@@ -373,7 +373,7 @@ type CloudflareImage
   id: ID!
   uploadUrl: String
   userId: ID!
-  createdAt: String!
+  createdAt: Date!
 }
 
 type CloudflareVideo
@@ -382,7 +382,7 @@ type CloudflareVideo
   id: ID!
   uploadUrl: String
   userId: ID!
-  createdAt: String!
+  createdAt: Date!
   readyToStream: Boolean!
 }
 
@@ -506,6 +506,12 @@ type CustomDomainVerificationResponse
   code: String!
   message: String!
 }
+
+"""
+A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar Date
+  @join__type(graph: MEDIA)
 
 scalar DateTime
   @join__type(graph: JOURNEYS)
@@ -783,10 +789,10 @@ enum IconSize
 
 enum IdType
   @join__type(graph: JOURNEYS)
-  @join__type(graph: VIDEOS)
+  @join__type(graph: MEDIA)
 {
-  databaseId @join__enumValue(graph: JOURNEYS) @join__enumValue(graph: VIDEOS)
-  slug @join__enumValue(graph: JOURNEYS) @join__enumValue(graph: VIDEOS)
+  databaseId @join__enumValue(graph: JOURNEYS) @join__enumValue(graph: MEDIA)
+  slug @join__enumValue(graph: JOURNEYS) @join__enumValue(graph: MEDIA)
 }
 
 type ImageBlock implements Block
@@ -807,6 +813,7 @@ type ImageBlock implements Block
   Find a frontend implementation at https://github.com/woltapp/blurhash
   """
   blurhash: String!
+  scale: Int
 }
 
 input ImageBlockCreateInput
@@ -832,6 +839,7 @@ input ImageBlockCreateInput
   True if the coverBlockId in a parent block should be set to this block's id.
   """
   isCover: Boolean
+  scale: Int
 }
 
 input ImageBlockUpdateInput
@@ -847,6 +855,7 @@ input ImageBlockUpdateInput
   blurhash: String
   width: Int
   height: Int
+  scale: Int
 }
 
 interface Integration
@@ -908,7 +917,6 @@ enum join__Graph {
   MEDIA @join__graph(name: "media", url: "http://127.0.0.1:4005/graphql")
   TAGS @join__graph(name: "tags", url: "http://127.0.0.1:4006/graphql")
   USERS @join__graph(name: "users", url: "http://127.0.0.1:4002/graphql")
-  VIDEOS @join__graph(name: "videos", url: "http://127.0.0.1:4004/graphql")
 }
 
 type Journey
@@ -955,6 +963,13 @@ type Journey
 
   """public title for viewers"""
   displayTitle: String
+  showHosts: Boolean
+  showChatButtons: Boolean
+  showReactionButtons: Boolean
+  showLogo: Boolean
+  showMenu: Boolean
+  showDisplayTitle: Boolean
+  menuButtonIcon: JourneyMenuButtonIcon
   userJourneys: [UserJourney!]
 }
 
@@ -1006,6 +1021,19 @@ input JourneyCreateInput
   at the end of the slug guaranteeing uniqueness
   """
   slug: String
+}
+
+enum JourneyMenuButtonIcon
+  @join__type(graph: JOURNEYS)
+{
+  menu1 @join__enumValue(graph: JOURNEYS)
+  equals @join__enumValue(graph: JOURNEYS)
+  home3 @join__enumValue(graph: JOURNEYS)
+  home4 @join__enumValue(graph: JOURNEYS)
+  more @join__enumValue(graph: JOURNEYS)
+  ellipsis @join__enumValue(graph: JOURNEYS)
+  grid1 @join__enumValue(graph: JOURNEYS)
+  chevronDown @join__enumValue(graph: JOURNEYS)
 }
 
 type JourneyNotification
@@ -1137,6 +1165,15 @@ input JourneyUpdateInput
   showLikeButton: Boolean
   showDislikeButton: Boolean
   displayTitle: String
+  showHosts: Boolean
+  showChatButtons: Boolean
+  showReactionButtons: Boolean
+  showLogo: Boolean
+  showMenu: Boolean
+  showDisplayTitle: Boolean
+  menuButtonIcon: JourneyMenuButtonIcon
+  menuStepBlockId: ID
+  logoImageBlockId: ID
 }
 
 type JourneyViewEvent implements Event
@@ -1305,7 +1342,7 @@ scalar Json
   @join__type(graph: JOURNEYS)
 
 type Keyword
-  @join__type(graph: VIDEOS)
+  @join__type(graph: MEDIA)
 {
   id: ID!
   value: String!
@@ -1315,10 +1352,8 @@ type Keyword
 type Language
   @join__type(graph: JOURNEYS, key: "id")
   @join__type(graph: LANGUAGES, key: "id")
-  @join__type(graph: MEDIA, key: "id")
-  @join__type(graph: TAGS, key: "id")
+  @join__type(graph: MEDIA, key: "id", extension: true)
   @join__type(graph: USERS, key: "id")
-  @join__type(graph: VIDEOS, key: "id", extension: true)
 {
   id: ID!
   bcp47: String @join__field(graph: LANGUAGES)
@@ -1351,7 +1386,7 @@ input LanguagesFilter
 }
 
 type LanguageWithSlug
-  @join__type(graph: VIDEOS)
+  @join__type(graph: MEDIA)
 {
   language: Language!
   slug: String!
@@ -1705,15 +1740,16 @@ type Mutation
   Allow current user to update specific allowable fields of their visitor record
   """
   visitorUpdateForCurrentUser(input: VisitorUpdateInput!): Visitor! @join__field(graph: JOURNEYS)
-  createCloudflareUploadByFile: CloudflareImage @join__field(graph: MEDIA)
-  createCloudflareUploadByUrl(url: String!): CloudflareImage @join__field(graph: MEDIA)
-  deleteCloudflareImage(id: ID!): Boolean @join__field(graph: MEDIA)
-  cloudflareUploadComplete(id: ID!): Boolean @join__field(graph: MEDIA)
-  createCloudflareVideoUploadByFile(uploadLength: Int!, name: String!): CloudflareVideo @join__field(graph: MEDIA)
-  createCloudflareVideoUploadByUrl(url: String!): CloudflareVideo @join__field(graph: MEDIA)
-  deleteCloudflareVideo(id: ID!): Boolean @join__field(graph: MEDIA)
-  createImageBySegmindPrompt(prompt: String!, model: SegmindModel!): CloudflareImage @join__field(graph: MEDIA)
-  triggerUnsplashDownload(url: String!): Boolean @join__field(graph: MEDIA)
+  createCloudflareUploadByFile: CloudflareImage! @join__field(graph: MEDIA)
+  createCloudflareUploadByUrl(url: String!): CloudflareImage! @join__field(graph: MEDIA)
+  createCloudflareImageFromPrompt(prompt: String!): CloudflareImage! @join__field(graph: MEDIA)
+  deleteCloudflareImage(id: ID!): Boolean! @join__field(graph: MEDIA)
+  cloudflareUploadComplete(id: ID!): Boolean! @join__field(graph: MEDIA)
+  createCloudflareVideoUploadByFile(uploadLength: Int!, name: String!): CloudflareVideo! @join__field(graph: MEDIA)
+  createCloudflareVideoUploadByUrl(url: String!): CloudflareVideo! @join__field(graph: MEDIA)
+  deleteCloudflareVideo(id: ID!): Boolean! @join__field(graph: MEDIA)
+  createImageBySegmindPrompt(prompt: String!, model: SegmindModel!): CloudflareImage! @join__field(graph: MEDIA) @deprecated(reason: "use createCloudflareImageFromPrompt")
+  triggerUnsplashDownload(url: String!): Boolean! @join__field(graph: MEDIA)
   userImpersonate(email: String!): String @join__field(graph: USERS)
   createVerificationRequest(input: CreateVerificationRequestInput): Boolean @join__field(graph: USERS)
   validateEmail(email: String!, token: String!): User @join__field(graph: USERS)
@@ -2002,7 +2038,6 @@ type Query
   @join__type(graph: MEDIA)
   @join__type(graph: TAGS)
   @join__type(graph: USERS)
-  @join__type(graph: VIDEOS)
 {
   blocks(where: BlocksFilter): [Block!]! @join__field(graph: JOURNEYS)
   block(id: ID!): Block! @join__field(graph: JOURNEYS)
@@ -2106,21 +2141,23 @@ type Query
   languages(offset: Int, limit: Int, where: LanguagesFilter): [Language!]! @join__field(graph: LANGUAGES)
   country(id: ID!): Country @join__field(graph: LANGUAGES)
   countries: [Country!]! @join__field(graph: LANGUAGES)
-  getMyCloudflareImages: [CloudflareImage] @join__field(graph: MEDIA)
-  getMyCloudflareVideos: [CloudflareVideo] @join__field(graph: MEDIA)
-  getMyCloudflareVideo(id: ID!): CloudflareVideo @join__field(graph: MEDIA)
+  getMyCloudflareImages(offset: Int, limit: Int): [CloudflareImage!]! @join__field(graph: MEDIA)
+  getMyCloudflareImage(id: ID!): CloudflareImage! @join__field(graph: MEDIA)
+  getMyCloudflareVideos(offset: Int, limit: Int): [CloudflareVideo!]! @join__field(graph: MEDIA)
+  getMyCloudflareVideo(id: ID!): CloudflareVideo! @join__field(graph: MEDIA)
   listUnsplashCollectionPhotos(collectionId: String!, page: Int, perPage: Int, orientation: UnsplashPhotoOrientation): [UnsplashPhoto!]! @join__field(graph: MEDIA)
-  searchUnsplashPhotos(query: String!, page: Int, perPage: Int, orderBy: UnsplashOrderBy, collections: [String], contentFilter: UnsplashContentFilter, color: UnsplashColor, orientation: UnsplashPhotoOrientation): UnsplashQueryResponse! @join__field(graph: MEDIA)
-  tags: [Tag!]! @join__field(graph: TAGS)
+  searchUnsplashPhotos(query: String!, page: Int, perPage: Int, orderBy: UnsplashOrderBy, collections: [String!], contentFilter: UnsplashContentFilter, color: UnsplashColor, orientation: UnsplashPhotoOrientation): UnsplashQueryResponse! @join__field(graph: MEDIA)
+  bibleBooks: [BibleBook!]! @join__field(graph: MEDIA)
+  bibleCitations: [BibleCitation!]! @join__field(graph: MEDIA)
+  keywords: [Keyword!]! @join__field(graph: MEDIA)
+  video(id: ID!, idType: IdType = databaseId): Video! @join__field(graph: MEDIA)
+  videos(where: VideosFilter, offset: Int, limit: Int): [Video!]! @join__field(graph: MEDIA)
+  videosCount(where: VideosFilter): Int! @join__field(graph: MEDIA)
+  videoVariants: [VideoVariant!]! @join__field(graph: MEDIA)
+  tags: [Tag!]! @join__field(graph: MEDIA)
   me(input: MeInput): User @join__field(graph: USERS)
   user(id: ID!): User @join__field(graph: USERS)
   userByEmail(email: String!): User @join__field(graph: USERS)
-  bibleBooks: [BibleBook!]! @join__field(graph: VIDEOS)
-  bibleCitations: [BibleCitation!]! @join__field(graph: VIDEOS)
-  keywords: [Keyword!]! @join__field(graph: VIDEOS)
-  video(id: ID!, idType: IdType = databaseId): Video! @join__field(graph: VIDEOS)
-  videos(where: VideosFilter, offset: Int, limit: Int): [Video!]! @join__field(graph: VIDEOS)
-  videoVariants: [VideoVariant!]! @join__field(graph: VIDEOS)
 }
 
 type RadioOptionBlock implements Block
@@ -2228,14 +2265,14 @@ enum SegmindModel
 }
 
 enum Service
-  @join__type(graph: TAGS)
+  @join__type(graph: MEDIA)
 {
-  apiJourneys @join__enumValue(graph: TAGS)
-  apiLanguages @join__enumValue(graph: TAGS)
-  apiMedia @join__enumValue(graph: TAGS)
-  apiTags @join__enumValue(graph: TAGS)
-  apiUsers @join__enumValue(graph: TAGS)
-  apiVideos @join__enumValue(graph: TAGS)
+  apiJourneys @join__enumValue(graph: MEDIA)
+  apiLanguages @join__enumValue(graph: MEDIA)
+  apiMedia @join__enumValue(graph: MEDIA)
+  apiTags @join__enumValue(graph: MEDIA)
+  apiUsers @join__enumValue(graph: MEDIA)
+  apiVideos @join__enumValue(graph: MEDIA)
 }
 
 type SignUpBlock implements Block
@@ -2379,6 +2416,15 @@ type StepBlock implements Block
   the editor.
   """
   y: Int
+
+  """
+  Slug should be unique amongst all blocks
+  (server will throw BAD_USER_INPUT error if not)
+  If not required will use the current block id
+  If the generated slug is not unique the uuid will be placed
+  at the end of the slug guaranteeing uniqueness
+  """
+  slug: String
 }
 
 input StepBlockCreateInput
@@ -2427,6 +2473,15 @@ input StepBlockUpdateInput
   the editor.
   """
   y: Int
+
+  """
+  Slug should be unique amongst all blocks
+  (server will throw BAD_USER_INPUT error if not)
+  If not required will use the current block id
+  If the generated slug is not unique the uuid will be placed
+  at the end of the slug guaranteeing uniqueness
+  """
+  slug: String
 }
 
 type StepNextEvent implements Event
@@ -2545,12 +2600,21 @@ input StepViewEventCreateInput
 
 type Tag
   @join__type(graph: JOURNEYS, key: "id")
-  @join__type(graph: TAGS, key: "id")
+  @join__type(graph: MEDIA, key: "id")
 {
   id: ID!
-  name: [Translation!]! @join__field(graph: TAGS)
-  parentId: ID @join__field(graph: TAGS)
-  service: Service @join__field(graph: TAGS)
+  parentId: ID @join__field(graph: MEDIA)
+  name(languageId: ID, primary: Boolean): [TagName!]! @join__field(graph: MEDIA)
+  service: Service @join__field(graph: MEDIA)
+}
+
+type TagName
+  @join__type(graph: MEDIA)
+{
+  id: ID!
+  value: String!
+  primary: Boolean!
+  language: Language!
 }
 
 type Team
@@ -2681,8 +2745,6 @@ enum ThemeName
 
 type Translation
   @join__type(graph: JOURNEYS)
-  @join__type(graph: MEDIA)
-  @join__type(graph: TAGS)
   @join__type(graph: USERS)
 {
   value: String!
@@ -2787,26 +2849,25 @@ enum UnsplashOrderBy
 {
   latest @join__enumValue(graph: MEDIA)
   relevant @join__enumValue(graph: MEDIA)
+  editorial @join__enumValue(graph: MEDIA)
 }
 
 type UnsplashPhoto
   @join__type(graph: MEDIA)
 {
-  id: String!
+  id: ID!
   created_at: String!
   updated_at: String
-  blur_hash: String!
+  blur_hash: String
   width: Int!
   height: Int!
   color: String
   description: String
   alt_description: String
+  promoted_at: String
+  likes: Int!
   urls: UnsplashPhotoUrls!
   links: UnsplashPhotoLinks!
-  categories: [String!]
-  likes: Int!
-  liked_by_user: Boolean!
-  current_user_collections: [String!]!
   user: UnsplashUser!
 }
 
@@ -2830,8 +2891,8 @@ enum UnsplashPhotoOrientation
 type UnsplashPhotoUrls
   @join__type(graph: MEDIA)
 {
-  raw: String!
   full: String!
+  raw: String!
   regular: String!
   small: String!
   thumb: String!
@@ -2848,23 +2909,22 @@ type UnsplashQueryResponse
 type UnsplashUser
   @join__type(graph: MEDIA)
 {
-  id: String!
-  updated_at: String
+  id: ID!
+  updated_at: String!
   username: String!
-  name: String
-  first_name: String
+  name: String!
+  first_name: String!
   last_name: String
   twitter_username: String
   portfolio_url: String
   bio: String
   location: String
-  links: UnsplashUserLinks!
-  profile_image: UnsplashUserImage
   instagram_username: String
   total_collections: Int!
   total_likes: Int!
   total_photos: Int!
-  accepted_tos: Boolean!
+  links: UnsplashUserLinks!
+  profile_image: UnsplashUserImage!
 }
 
 type UnsplashUserImage
@@ -2878,13 +2938,13 @@ type UnsplashUserImage
 type UnsplashUserLinks
   @join__type(graph: MEDIA)
 {
-  self: String!
-  html: String!
-  photos: String!
-  likes: String!
-  portfolio: String!
-  following: String!
   followers: String!
+  following: String!
+  html: String!
+  likes: String!
+  photos: String!
+  portfolio: String!
+  self: String!
 }
 
 type User
@@ -3005,32 +3065,32 @@ input UserTeamUpdateInput
 
 type Video
   @join__type(graph: JOURNEYS, key: "id primaryLanguageId")
-  @join__type(graph: VIDEOS, key: "id primaryLanguageId")
+  @join__type(graph: MEDIA, key: "id primaryLanguageId")
 {
   id: ID!
   primaryLanguageId: ID!
-  bibleCitations: [BibleCitation!]! @join__field(graph: VIDEOS)
-  keywords(languageId: ID): [Keyword!]! @join__field(graph: VIDEOS)
-  label: VideoLabel! @join__field(graph: VIDEOS)
-  title(languageId: ID, primary: Boolean): [VideoTitle!]! @join__field(graph: VIDEOS)
-  snippet(languageId: ID, primary: Boolean): [VideoSnippet!]! @join__field(graph: VIDEOS)
-  description(languageId: ID, primary: Boolean): [VideoDescription!]! @join__field(graph: VIDEOS)
-  studyQuestions(languageId: ID, primary: Boolean): [VideoStudyQuestion!]! @join__field(graph: VIDEOS)
-  image: String @join__field(graph: VIDEOS)
-  imageAlt(languageId: ID, primary: Boolean): [VideoImageAlt!]! @join__field(graph: VIDEOS)
-  variantLanguages: [Language!]! @join__field(graph: VIDEOS)
-  variantLanguagesCount: Int! @join__field(graph: VIDEOS)
+  bibleCitations: [BibleCitation!]! @join__field(graph: MEDIA)
+  keywords(languageId: ID): [Keyword!]! @join__field(graph: MEDIA)
+  label: VideoLabel! @join__field(graph: MEDIA)
+  title(languageId: ID, primary: Boolean): [VideoTitle!]! @join__field(graph: MEDIA)
+  snippet(languageId: ID, primary: Boolean): [VideoSnippet!]! @join__field(graph: MEDIA)
+  description(languageId: ID, primary: Boolean): [VideoDescription!]! @join__field(graph: MEDIA)
+  studyQuestions(languageId: ID, primary: Boolean): [VideoStudyQuestion!]! @join__field(graph: MEDIA)
+  image: String @join__field(graph: MEDIA)
+  imageAlt(languageId: ID, primary: Boolean): [VideoImageAlt!]! @join__field(graph: MEDIA)
+  variantLanguages: [Language!]! @join__field(graph: MEDIA)
+  variantLanguagesCount: Int! @join__field(graph: MEDIA)
 
   """slug is a permanent link to the video."""
-  slug: String! @join__field(graph: VIDEOS)
-  noIndex: Boolean @join__field(graph: VIDEOS)
-  children: [Video!]! @join__field(graph: VIDEOS)
+  slug: String! @join__field(graph: MEDIA)
+  noIndex: Boolean @join__field(graph: MEDIA)
+  children: [Video!]! @join__field(graph: MEDIA)
 
   """the number value of the amount of children on a video"""
-  childrenCount: Int! @join__field(graph: VIDEOS)
-  variantLanguagesWithSlug: [LanguageWithSlug!]! @join__field(graph: VIDEOS)
-  subtitles(languageId: ID, primary: Boolean, edition: String): [VideoSubtitle!]! @join__field(graph: VIDEOS)
-  variant(languageId: ID): VideoVariant @join__field(graph: VIDEOS)
+  childrenCount: Int! @join__field(graph: MEDIA)
+  variantLanguagesWithSlug: [LanguageWithSlug!]! @join__field(graph: MEDIA)
+  subtitles(languageId: ID, primary: Boolean, edition: String): [VideoSubtitle!]! @join__field(graph: MEDIA)
+  variant(languageId: ID): VideoVariant @join__field(graph: MEDIA)
 }
 
 type VideoBlock implements Block
@@ -3350,7 +3410,7 @@ input VideoCompleteEventCreateInput
 }
 
 type VideoDescription
-  @join__type(graph: VIDEOS)
+  @join__type(graph: MEDIA)
 {
   id: ID!
   value: String!
@@ -3406,7 +3466,7 @@ input VideoExpandEventCreateInput
 }
 
 type VideoImageAlt
-  @join__type(graph: VIDEOS)
+  @join__type(graph: MEDIA)
 {
   id: ID!
   value: String!
@@ -3415,16 +3475,16 @@ type VideoImageAlt
 }
 
 enum VideoLabel
-  @join__type(graph: VIDEOS)
+  @join__type(graph: MEDIA)
 {
-  collection @join__enumValue(graph: VIDEOS)
-  episode @join__enumValue(graph: VIDEOS)
-  featureFilm @join__enumValue(graph: VIDEOS)
-  segment @join__enumValue(graph: VIDEOS)
-  series @join__enumValue(graph: VIDEOS)
-  shortFilm @join__enumValue(graph: VIDEOS)
-  trailer @join__enumValue(graph: VIDEOS)
-  behindTheScenes @join__enumValue(graph: VIDEOS)
+  collection @join__enumValue(graph: MEDIA)
+  episode @join__enumValue(graph: MEDIA)
+  featureFilm @join__enumValue(graph: MEDIA)
+  segment @join__enumValue(graph: MEDIA)
+  series @join__enumValue(graph: MEDIA)
+  shortFilm @join__enumValue(graph: MEDIA)
+  trailer @join__enumValue(graph: MEDIA)
+  behindTheScenes @join__enumValue(graph: MEDIA)
 }
 
 type VideoPauseEvent implements Event
@@ -3585,7 +3645,7 @@ enum VideoRole
 }
 
 input VideosFilter
-  @join__type(graph: VIDEOS)
+  @join__type(graph: MEDIA)
 {
   availableVariantLanguageIds: [ID!]
   title: String
@@ -3595,7 +3655,7 @@ input VideosFilter
 }
 
 type VideoSnippet
-  @join__type(graph: VIDEOS)
+  @join__type(graph: MEDIA)
 {
   id: ID!
   value: String!
@@ -3651,7 +3711,7 @@ input VideoStartEventCreateInput
 }
 
 type VideoStudyQuestion
-  @join__type(graph: VIDEOS)
+  @join__type(graph: MEDIA)
 {
   id: ID!
   value: String!
@@ -3660,7 +3720,7 @@ type VideoStudyQuestion
 }
 
 type VideoSubtitle
-  @join__type(graph: VIDEOS)
+  @join__type(graph: MEDIA)
 {
   id: ID!
   languageId: ID!
@@ -3673,7 +3733,7 @@ type VideoSubtitle
 }
 
 type VideoTitle
-  @join__type(graph: VIDEOS)
+  @join__type(graph: MEDIA)
 {
   id: ID!
   value: String!
@@ -3703,7 +3763,7 @@ type VideoTriggerBlock implements Block
 }
 
 type VideoVariant
-  @join__type(graph: VIDEOS)
+  @join__type(graph: MEDIA)
 {
   id: ID!
   hls: String
@@ -3718,7 +3778,7 @@ type VideoVariant
 }
 
 type VideoVariantDownload
-  @join__type(graph: VIDEOS)
+  @join__type(graph: MEDIA)
 {
   id: ID!
   quality: VideoVariantDownloadQuality!
@@ -3727,10 +3787,10 @@ type VideoVariantDownload
 }
 
 enum VideoVariantDownloadQuality
-  @join__type(graph: VIDEOS)
+  @join__type(graph: MEDIA)
 {
-  low @join__enumValue(graph: VIDEOS)
-  high @join__enumValue(graph: VIDEOS)
+  low @join__enumValue(graph: MEDIA)
+  high @join__enumValue(graph: MEDIA)
 }
 
 """A visitor with attributes connected to a team."""
