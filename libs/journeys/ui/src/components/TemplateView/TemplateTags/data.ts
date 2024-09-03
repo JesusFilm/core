@@ -9,7 +9,7 @@ export const parentTags: ParentTag[] = [
     parentId: null,
     name: [
       {
-        __typename: 'Translation',
+        __typename: 'TagName',
         value: 'Topics',
         primary: true
       }
@@ -22,7 +22,7 @@ export const parentTags: ParentTag[] = [
     service: null,
     name: [
       {
-        __typename: 'Translation',
+        __typename: 'TagName',
         value: 'Felt Needs',
         primary: true
       }
@@ -35,7 +35,7 @@ export const parentTags: ParentTag[] = [
     service: null,
     name: [
       {
-        __typename: 'Translation',
+        __typename: 'TagName',
         value: 'Holidays',
         primary: true
       }
@@ -48,7 +48,7 @@ export const parentTags: ParentTag[] = [
     service: null,
     name: [
       {
-        __typename: 'Translation',
+        __typename: 'TagName',
         value: 'Audience',
         primary: true
       }
@@ -61,7 +61,7 @@ export const parentTags: ParentTag[] = [
     service: null,
     name: [
       {
-        __typename: 'Translation',
+        __typename: 'TagName',
         value: 'Genre',
         primary: true
       }
@@ -74,7 +74,7 @@ export const parentTags: ParentTag[] = [
     service: null,
     name: [
       {
-        __typename: 'Translation',
+        __typename: 'TagName',
         value: 'Collections',
         primary: true
       }
@@ -87,7 +87,7 @@ export const parentTags: ParentTag[] = [
     service: null,
     name: [
       {
-        __typename: 'Translation',
+        __typename: 'TagName',
         value: 'Other',
         primary: true
       }
@@ -102,7 +102,7 @@ export const tags: Array<Tag & { parentId: string }> = [
     parentId: 'tags.topic.id',
     name: [
       {
-        __typename: 'Translation',
+        __typename: 'TagName',
         value: 'Topic sub-tag',
         primary: true,
         language: {
@@ -118,7 +118,7 @@ export const tags: Array<Tag & { parentId: string }> = [
     parentId: 'tags.feltNeeds.id',
     name: [
       {
-        __typename: 'Translation',
+        __typename: 'TagName',
         value: 'Felt Needs sub-tag',
         primary: true,
         language: {
@@ -134,7 +134,7 @@ export const tags: Array<Tag & { parentId: string }> = [
     parentId: 'tags.holidays.id',
     name: [
       {
-        __typename: 'Translation',
+        __typename: 'TagName',
         value: 'Holidays sub-tag',
         primary: true,
         language: {
@@ -150,7 +150,7 @@ export const tags: Array<Tag & { parentId: string }> = [
     parentId: 'tags.audience.id',
     name: [
       {
-        __typename: 'Translation',
+        __typename: 'TagName',
         value: 'Audience sub-tag',
         primary: true,
         language: {
@@ -166,7 +166,7 @@ export const tags: Array<Tag & { parentId: string }> = [
     parentId: 'tags.genre.id',
     name: [
       {
-        __typename: 'Translation',
+        __typename: 'TagName',
         value: 'Genre sub-tag',
         primary: true,
         language: {
@@ -182,7 +182,7 @@ export const tags: Array<Tag & { parentId: string }> = [
     parentId: 'tags.collections.id',
     name: [
       {
-        __typename: 'Translation',
+        __typename: 'TagName',
         value: 'Collections sub-tag',
         primary: true,
         language: {
@@ -198,7 +198,7 @@ export const tags: Array<Tag & { parentId: string }> = [
     parentId: 'otherTag.id',
     name: [
       {
-        __typename: 'Translation',
+        __typename: 'TagName',
         value: 'Other Tag',
         primary: true,
         language: {

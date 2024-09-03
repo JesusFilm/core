@@ -7,6 +7,12 @@ generator client {
   binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
+generator pothos {
+  provider     = "prisma-pothos-types"
+  clientOutput = ".prisma/api-tags-client"
+  output       = "../src/__generated__/pothos-types.ts"
+}
+
 generator erd {
   provider    = "prisma-erd-generator"
   ignoreEnums = true
@@ -27,17 +33,33 @@ enum Service {
   apiVideos
 }
 
+model TagName {
+  id         String   @id @default(uuid())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  value      String
+  languageId String
+  primary    Boolean
+  tagId      String
+  tag        Tag      @relation(fields: [tagId], references: [id])
+
+  @@unique([tagId, languageId])
+  @@index(value(type: Hash))
+  @@index(primary(type: Hash))
+  @@index(languageId(type: Hash))
+}
+
 model Tag {
-  id               String    @id @default(uuid())
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-  name             String    @unique
-  nameTranslations Json[]
-  Tagging          Tagging[]
-  parent           Tag?      @relation("ParentChildren", fields: [parentId], references: [id], onDelete: Cascade)
-  parentId         String?
-  children         Tag[]     @relation("ParentChildren")
-  service          Service?
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  name      String    @unique
+  Tagging   Tagging[]
+  parent    Tag?      @relation("ParentChildren", fields: [parentId], references: [id], onDelete: Cascade)
+  parentId  String?
+  children  Tag[]     @relation("ParentChildren")
+  service   Service?
+  tagName   TagName[]
 }
 
 model Tagging {
