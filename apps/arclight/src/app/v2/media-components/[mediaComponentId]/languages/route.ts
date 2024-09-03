@@ -7,12 +7,10 @@ import { paramsToRecord } from '../../../../../lib/paramsToRecord'
 /* TODO: 
   querystring:
     apiKey
-    platform (web, ios, android) downloadUrls differnt for Android, web has different videoPlayer Fields
+    platform (web, ios, android)
     languageIds
     reduce
     metadataLanguageTags
-  graphql:
-    missing variants type call
 */
 
 const GET_VIDEO_LANGUAGES = graphql(`
@@ -57,6 +55,7 @@ export async function GET(
   const { mediaComponentId } = params
   const query = request.nextUrl.searchParams
 
+  const apiKey = query.get('apiKey') ?? '616db012e9a951.51499299'
   const platform = query.get('platform') ?? 'ios'
   const apiSessionId = query.get('apiSessionId') ?? 'default'
 
@@ -94,7 +93,6 @@ export async function GET(
               (download) => download.quality === 'high'
             )
           },
-          // TODO: evaluate
           streamingUrls:
             platform === 'web'
               ? {}
@@ -121,17 +119,14 @@ export async function GET(
           // TODO: investigate
           openGraphVideoPlayer: 'https://jesusfilm.org/',
           _links: {
-            // TODO: handle querystring
             self: {
-              href: `https://api.arclight.com/v2/media-components/${mediaComponentId}/languages/${variant.language?.id}`
+              href: `https://api.arclight.com/v2/media-components/${mediaComponentId}/languages/${variant.language?.id}?platform=${platform}&apiKey=${apiKey}`
             },
-            // TODO handle querystring
             mediaComponent: {
-              href: `https://api.arclight.com/v2/media-components/${mediaComponentId}`
+              href: `https://api.arclight.com/v2/media-components/${mediaComponentId}?apiKey=${apiKey}`
             },
-            // TODO handle querystring
             mediaLanguage: {
-              href: `https://api.arclight.com/v2/media-languages/${variant.language?.id}`
+              href: `https://api.arclight.com/v2/media-languages/${variant.language?.id}/?apiKey=${apiKey}`
             }
           }
         }))
