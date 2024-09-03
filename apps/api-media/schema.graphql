@@ -98,6 +98,7 @@ type Query {
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
   videosCount(where: VideosFilter): Int!
   videoVariants: [VideoVariant!]!
+  tags: [Tag!]!
 }
 
 enum SegmindModel {
@@ -105,6 +106,31 @@ enum SegmindModel {
   kandinsky2__2_txt2img
   sd1__5_paragon
   tinysd1__5_txt2img
+}
+
+enum Service {
+  apiJourneys
+  apiLanguages
+  apiMedia
+  apiTags
+  apiUsers
+  apiVideos
+}
+
+type Tag
+  @key(fields: "id")
+{
+  id: ID!
+  parentId: ID
+  name(languageId: ID, primary: Boolean): [TagName!]!
+  service: Service
+}
+
+type TagName {
+  id: ID!
+  value: String!
+  primary: Boolean!
+  language: Language!
 }
 
 enum UnsplashColor {

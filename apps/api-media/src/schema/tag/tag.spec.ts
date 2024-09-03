@@ -1,6 +1,6 @@
 import { graphql } from 'gql.tada'
 
-import { Tag, TagName } from '.prisma/api-tags-client'
+import { Tag, TagName } from '.prisma/api-media-client'
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'

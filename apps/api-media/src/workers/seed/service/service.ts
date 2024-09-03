@@ -1,7 +1,4 @@
-// version 6
-// increment to trigger re-seed (ie: files other than seed.ts are changed)
-
-import { PrismaClient, Service } from '.prisma/api-tags-client'
+import { PrismaClient, Service } from '.prisma/api-media-client'
 
 const prisma = new PrismaClient()
 
@@ -38,7 +35,7 @@ async function upsertTag(
   )
 }
 
-async function main(): Promise<void> {
+export async function service(): Promise<void> {
   await upsertTag('Felt Needs', [
     'Acceptance',
     'Anxiety',
@@ -108,7 +105,3 @@ async function main(): Promise<void> {
     Service.apiJourneys
   )
 }
-main().catch((e) => {
-  console.error(e)
-  process.exit(1)
-})
