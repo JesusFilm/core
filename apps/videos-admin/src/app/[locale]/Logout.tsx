@@ -16,7 +16,7 @@ export function Logout(): ReactElement {
     await signOut(auth)
     await logout()
 
-    router.refresh()
+    router.push('/user/signin')
   }
   return <button onClick={handleLogout}>{t('Sign Out')}</button>
 }
