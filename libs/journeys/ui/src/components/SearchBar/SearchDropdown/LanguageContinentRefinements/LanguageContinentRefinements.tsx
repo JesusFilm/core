@@ -1,13 +1,28 @@
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
-import { useTheme } from '@mui/material/styles'
+import { styled, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
+import ChevronDown from '@core/shared/ui/icons/ChevronDown'
+import ChevronUp from '@core/shared/ui/icons/ChevronUp'
+
 import { RefinementGroup } from './RefinementGroup'
+
+const StyledButton = styled(Button)(({ theme }) => ({
+  width: 168,
+  borderRadius: 32,
+  gap: 0,
+  padding: '8px 20px 8px 20px',
+  border: `2px solid ${theme.palette.primary.main}${
+    theme.palette.mode === 'dark' ? 'D4' : '1A'
+  }`,
+  color: theme.palette.primary.main,
+  backgroundColor: theme.palette.background.paper
+}))
 
 interface LanguageContinentRefinementsProps {
   refinements: RefinementListRenderState
@@ -62,12 +77,16 @@ export function LanguageContinentRefinements({
           </Stack>
           {refinements.canToggleShowMore && (
             <Box display="flex" flexDirection="column" alignItems="center">
-              <Button
+              <StyledButton
+                size="small"
                 onClick={refinements.toggleShowMore}
                 disabled={!refinements.canToggleShowMore}
+                endIcon={
+                  refinements.isShowingMore ? <ChevronUp /> : <ChevronDown />
+                }
               >
                 {t(refinements.isShowingMore ? 'See Less' : 'See All')}
-              </Button>
+              </StyledButton>
             </Box>
           )}
         </>
