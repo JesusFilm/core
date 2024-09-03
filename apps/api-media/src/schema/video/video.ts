@@ -152,6 +152,14 @@ const Video = builder.prismaObject('Video', {
           language: { id }
         }))
     }),
+    variants: t.prismaField({
+      type: ['VideoVariant'],
+      resolve: async (query, parent) =>
+        await prisma.videoVariant.findMany({
+          ...query,
+          where: { videoId: parent.id }
+        })
+    }),
     subtitles: t.relation('subtitles', {
       args: {
         languageId: t.arg.id({ required: false }),
