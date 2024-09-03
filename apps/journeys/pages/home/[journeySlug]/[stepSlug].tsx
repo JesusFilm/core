@@ -34,9 +34,10 @@ function StepPage({ journey, locale, rtl }: StepPageProps): ReactElement {
   const stepSlug = router.query.stepSlug as string
 
   const stepBlock = blocks.find(
-    (block) => block.__typename === 'StepBlock' && block.id === stepSlug
-    // || block.slug === stepSlug
-  ) as TreeBlock<StepBlock> | undefined
+    (block) =>
+      block.__typename === 'StepBlock' &&
+      (block.slug === stepSlug || block.id === stepSlug)
+  )
 
   if (stepBlock == null) {
     void router.push('/404')
@@ -94,7 +95,9 @@ function StepPage({ journey, locale, rtl }: StepPageProps): ReactElement {
         }}
       />
       <JourneyPageWrapper journey={journey} rtl={rtl} locale={locale}>
-        {stepBlock != null && <WebView stepBlock={stepBlock} />}
+        {stepBlock != null && (
+          <WebView stepBlock={stepBlock as TreeBlock<StepBlock>} />
+        )}
       </JourneyPageWrapper>
     </>
   )
