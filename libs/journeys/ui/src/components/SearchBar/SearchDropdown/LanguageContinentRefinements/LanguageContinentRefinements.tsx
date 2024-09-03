@@ -13,13 +13,10 @@ import ChevronUp from '@core/shared/ui/icons/ChevronUp'
 import { RefinementGroup } from './RefinementGroup'
 
 const StyledButton = styled(Button)(({ theme }) => ({
-  width: 168,
   borderRadius: 32,
   gap: 0,
   padding: '8px 20px 8px 20px',
-  border: `2px solid ${theme.palette.primary.main}${
-    theme.palette.mode === 'dark' ? 'D4' : '1A'
-  }`,
+  border: `2px solid ${theme.palette.primary.main}`,
   color: theme.palette.primary.main,
   backgroundColor: theme.palette.background.paper
 }))
