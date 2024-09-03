@@ -21,8 +21,6 @@ export function SearchbarDropdown({
   id,
   anchorEl
 }: SearchbarDropdownProps): ReactElement {
-  const theme = useTheme()
-
   const { data } = useLanguagesContinentsQuery()
   const languages = useSortLanguageContinents({
     languages: data?.languages ?? []
@@ -53,22 +51,12 @@ export function SearchbarDropdown({
         borderRadius={3}
         boxShadow="0px 4px 4px 0px #00000040"
         sx={{ p: 8, bgcolor: 'background.paper', mt: 3 }}
+        color="text.primary"
       >
-        <Stack
-          color="text.primary"
-          direction={{ xs: 'column', lg: 'row' }}
-          justifyContent="space-around"
-          sx={{
-            [theme.breakpoints.down('lg')]: {
-              gap: 6
-            }
-          }}
-        >
-          <LanguageContinentRefinements
-            refinements={refinements}
-            languages={languages}
-          />
-        </Stack>
+        <LanguageContinentRefinements
+          refinements={refinements}
+          languages={languages}
+        />
       </Box>
     </Popper>
   )

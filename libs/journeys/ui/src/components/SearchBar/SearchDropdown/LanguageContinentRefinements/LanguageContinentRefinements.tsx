@@ -1,3 +1,4 @@
+import { useTheme } from '@mui/material'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
@@ -18,13 +19,23 @@ export function LanguageContinentRefinements({
   languages
 }: LanguageContinentRefinementsProps): ReactElement {
   const { t } = useTranslation('apps-watch')
+  const theme = useTheme()
+
   const [selectedContinent, setSelectedContinent] = useState<string>()
 
   return (
     <>
       {refinements.items.length > 0 ? (
-        <Box display="flex" flexDirection="column" alignItems="center">
-          <Stack direction={{ xs: 'column', md: 'row' }}>
+        <>
+          <Stack
+            direction={{ xs: 'column', lg: 'row' }}
+            justifyContent="space-between"
+            sx={{
+              [theme.breakpoints.down('lg')]: {
+                gap: 6
+              }
+            }}
+          >
             {Object.entries(languages).map(
               ([continent, continentLanguages]) => {
                 const items = refinements.items.filter((item) =>
@@ -50,14 +61,16 @@ export function LanguageContinentRefinements({
             )}
           </Stack>
           {refinements.canToggleShowMore && (
-            <Button
-              onClick={refinements.toggleShowMore}
-              disabled={!refinements.canToggleShowMore}
-            >
-              {t(refinements.isShowingMore ? 'See All' : 'See Less')}
-            </Button>
+            <Box display="flex" flexDirection="column" alignItems="center">
+              <Button
+                onClick={refinements.toggleShowMore}
+                disabled={!refinements.canToggleShowMore}
+              >
+                {t(refinements.isShowingMore ? 'See All' : 'See Less')}
+              </Button>
+            </Box>
           )}
-        </Box>
+        </>
       ) : (
         <Typography>
           {t(
