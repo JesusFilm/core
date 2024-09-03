@@ -89,7 +89,7 @@ export function VideoList(): ReactElement {
     {
       field: 'id',
       headerName: t('ID'),
-      width: 150,
+      minWidth: 150,
       filterOperators: getGridStringOperators().filter(
         (operator) => operator.value === 'equals'
       )
@@ -97,7 +97,7 @@ export function VideoList(): ReactElement {
     {
       field: 'title',
       headerName: t('Title'),
-      width: 200,
+      minWidth: 200,
       filterOperators: getGridStringOperators().filter(
         (operator) => operator.value === 'equals'
       )
@@ -105,7 +105,7 @@ export function VideoList(): ReactElement {
     {
       field: 'description',
       headerName: t('Description'),
-      width: 500,
+      flex: 1,
       filterable: false
     }
   ]
@@ -116,7 +116,7 @@ export function VideoList(): ReactElement {
     _details: GridCallbackDetails
   ): void {
     // console.log(`redirect to: [locale]/videos/[${params.id}]`)
-    // console.log(params)
+    // console.log(params)io
   }
 
   async function handleChangePage(
@@ -157,8 +157,10 @@ export function VideoList(): ReactElement {
   }
 
   return (
-    <Box sx={{ height: '90cqh' }}>
+    <Box sx={{ height: 'calc(100vh - 170px)', width: '100%' }}>
       <DataGrid
+        checkboxSelection
+        density="compact"
         data-testid="VideoListDataGrid"
         loading={loading}
         filterMode="server"
@@ -173,6 +175,7 @@ export function VideoList(): ReactElement {
         slots={{
           toolbar: GridToolbar
         }}
+        disableDensitySelector
         columnVisibilityModel={columnVisibilityModel}
         onColumnVisibilityModelChange={(newModel) =>
           setColumnVisibilityModel(newModel)

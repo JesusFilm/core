@@ -1,55 +1,58 @@
 import { NextRequest, NextResponse } from 'next/server'
-import createMiddleware from 'next-intl/middleware'
+import createIntlMiddleware from 'next-intl/middleware'
 
 import { auth } from './auth'
+import { defaultLocale, localePrefix, locales } from './i18n/config'
 
-const locales = ['en']
+interface AppRouteHandlerFnContext {
+  params?: Record<string, string | string[]>
+}
 
-const testPathnameRegex = (pages: string[], pathName: string): boolean => {
-  return RegExp(
+const intlMiddleware = createIntlMiddleware({
+  locales,
+  defaultLocale,
+  localePrefix
+})
+
+const authPages = ['/auth/login']
+
+const getPathnameRegex = (pages: string[]): RegExp =>
+  RegExp(
     `^(/(${locales.join('|')}))?(${pages
       .flatMap((p) => (p === '/' ? ['', '/'] : p))
       .join('|')})/?$`,
     'i'
-  ).test(pathName)
+  )
+
+const authPathnameRegex = getPathnameRegex(authPages)
+
+async function authMiddleware(
+  request: NextRequest,
+  ctx: AppRouteHandlerFnContext
+) {
+  return await auth((req) => {
+    const path = req.nextUrl.pathname
+    const isAuth = req.auth != null
+
+    const isAuthPage = authPathnameRegex.test(path)
+
+    if (isAuth && isAuthPage)
+      return NextResponse.redirect(new URL('/', req.url))
+
+    if (!isAuth && !isAuthPage)
+      return NextResponse.redirect(new URL('/auth/login', req.url))
+
+    return intlMiddleware(request)
+  })(request, ctx)
 }
 
-const intlMiddleware = createMiddleware({
-  locales,
-  defaultLocale: 'en'
-})
-
-const authPage = '/api/auth/signin'
-const unAuthenticatedPages = [authPage]
-
-export default async function middleware(
-  req: NextRequest
-): Promise<NextResponse<unknown>> {
-  if (req.nextUrl.pathname === '/api/auth/signIn') {
-    const signinUrl = req.nextUrl.clone()
-    signinUrl.pathname = '/api/auth/signin'
-    return NextResponse.redirect(signinUrl, { status: 301 })
-  }
-
-  if (req.nextUrl.pathname.startsWith('/api/')) return NextResponse.next()
-
-  const intlResponse = intlMiddleware(req)
-
-  const session = await auth()
-  if (
-    session !== null ||
-    testPathnameRegex(unAuthenticatedPages, req.nextUrl.pathname)
-  ) {
-    return intlResponse
-  }
-
-  const nextUrl = req.nextUrl.clone()
-  nextUrl.pathname = authPage
-
-  return NextResponse.redirect(nextUrl, {
-    // ...intlResponse,
-    status: 301
-  })
+export default function middleware(
+  request: NextRequest,
+  ctx: AppRouteHandlerFnContext
+): NextResponse {
+  return authMiddleware(request, ctx) as unknown as NextResponse
 }
 
-export const config = { matcher: ['/((?!_next.*\\..*).*)'] }
+export const config = {
+  matcher: ['/((?!api|_next|_vercel|.*\\..*).*)']
+}

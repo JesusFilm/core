@@ -1,6 +1,6 @@
 import { ReactNode } from 'react'
 
-import { ApolloWrapper } from '../_apolloWrapper/apolloWrapper'
+import { ApolloWrapper } from '../../_apolloWrapper/apolloWrapper'
 
 export default function LocaleLayout({
   children

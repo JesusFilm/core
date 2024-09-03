@@ -1,32 +1,71 @@
-import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter'
-import { NextIntlClientProvider, useMessages } from 'next-intl'
-import { ReactNode } from 'react'
+import DashboardIcon from '@mui/icons-material/Dashboard'
+import VideoLibraryIcon from '@mui/icons-material/VideoLibrary'
+import { AppRouterCacheProvider } from '@mui/material-nextjs/v14-appRouter'
+import { AppProvider } from '@toolpad/core/nextjs'
+import Image from 'next/image'
+import { SessionProvider, signIn, signOut } from 'next-auth/react'
+import { NextIntlClientProvider } from 'next-intl'
+import { getMessages } from 'next-intl/server'
+import { ReactElement, ReactNode } from 'react'
 
-import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
-import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
+import { auth } from '../../auth'
+import { theme } from '../../theme'
 
-import { PageWrapper } from '../../components/PageWrapper/PageWrapper'
+import logo from './logo.png'
 
-export default function LocaleLayout({
+interface RootLayoutProps {
+  children: ReactNode
+  params: { locale: string }
+}
+
+export default async function RootLayout({
   children,
   params: { locale }
-}: {
-  children: React.ReactNode
-  params: { locale: string }
-}): ReactNode {
-  const messages = useMessages()
+}: RootLayoutProps): Promise<ReactElement> {
+  const session = await auth()
+  const messages = await getMessages()
+
   return (
-    <html lang={locale}>
+    <html lang={locale} data-toolpad-color-scheme="light">
       <body>
-        <NextIntlClientProvider messages={messages}>
-          <AppRouterCacheProvider>
-            <ThemeProvider
-              themeName={ThemeName.journeysAdmin}
-              themeMode={ThemeMode.light}
-            >
-              <PageWrapper>{children}</PageWrapper>
-            </ThemeProvider>
-          </AppRouterCacheProvider>
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          <SessionProvider session={session}>
+            <AppRouterCacheProvider options={{ enableCssLayer: true }}>
+              <AppProvider
+                navigation={[
+                  {
+                    segment: '',
+                    title: 'Dashboard',
+                    icon: <DashboardIcon />
+                  },
+                  {
+                    segment: 'videos',
+                    title: 'Videos',
+                    icon: <VideoLibraryIcon />
+                  }
+                ]}
+                branding={{
+                  title: 'JFP Media Admin',
+                  logo: (
+                    <Image
+                      src={logo}
+                      width="40"
+                      height="40"
+                      alt="Jesus Film Project"
+                    />
+                  )
+                }}
+                session={session}
+                theme={theme}
+                authentication={{
+                  signIn,
+                  signOut
+                }}
+              >
+                {children}
+              </AppProvider>
+            </AppRouterCacheProvider>
+          </SessionProvider>
         </NextIntlClientProvider>
       </body>
     </html>
