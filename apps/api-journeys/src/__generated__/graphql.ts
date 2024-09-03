@@ -2801,9 +2801,23 @@ export type StepViewEventCreateInput = {
 export type Tag = {
   __typename?: 'Tag';
   id: Scalars['ID']['output'];
-  name: Array<Translation>;
+  name: Array<TagName>;
   parentId?: Maybe<Scalars['ID']['output']>;
   service?: Maybe<Service>;
+};
+
+
+export type TagNameArgs = {
+  languageId?: InputMaybe<Scalars['ID']['input']>;
+  primary?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type TagName = {
+  __typename?: 'TagName';
+  id: Scalars['ID']['output'];
+  language: Language;
+  primary: Scalars['Boolean']['output'];
+  value: Scalars['String']['output'];
 };
 
 export type Team = {
