@@ -81,16 +81,6 @@ module "api-languages" {
   }
 }
 
-module "api-tags" {
-  source        = "../../../apps/api-tags/infrastructure"
-  ecs_config    = local.internal_ecs_config
-  doppler_token = data.aws_ssm_parameter.doppler_api_tags_prod_token.value
-  alb = {
-    arn      = module.prod.internal_alb.arn
-    dns_name = module.prod.internal_alb.dns_name
-  }
-}
-
 module "api-users" {
   source        = "../../../apps/api-users/infrastructure"
   ecs_config    = local.internal_ecs_config
