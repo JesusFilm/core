@@ -4,9 +4,7 @@ import { render } from '@testing-library/react'
 import { CollectionButton } from '.'
 
 describe('CollectionButton', () => {
-  const name = [
-    { __typename: 'Translation' as const, value: 'NUA', primary: true }
-  ]
+  const name = [{ __typename: 'TagName' as const, value: 'NUA', primary: true }]
   const tag = {
     id: 'tagId',
     __typename: 'Tag' as const,
@@ -31,7 +29,7 @@ describe('CollectionButton', () => {
           ...tag,
           name: [
             {
-              __typename: 'Translation' as const,
+              __typename: 'TagName' as const,
               value: 'New',
               primary: true
             }

@@ -78,7 +78,7 @@ const acceptance: Tag = {
     {
       value: 'Acceptance',
       primary: true,
-      __typename: 'Translation',
+      __typename: 'TagName',
       language: {
         __typename: 'Language',
         id: 'en'
@@ -95,7 +95,7 @@ const addiction: Tag = {
     {
       value: 'Addiction',
       primary: true,
-      __typename: 'Translation',
+      __typename: 'TagName',
       language: {
         __typename: 'Language',
         id: 'en'
