@@ -66,7 +66,7 @@ export function LanguageContinentRefinements({
                 onClick={refinements.toggleShowMore}
                 disabled={!refinements.canToggleShowMore}
               >
-                {t(refinements.isShowingMore ? 'See All' : 'See Less')}
+                {t(refinements.isShowingMore ? 'See Less' : 'See All')}
               </Button>
             </Box>
           )}

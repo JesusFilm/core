@@ -69,7 +69,7 @@ describe('LanguageContinentRefinements', () => {
     const showMoreRefinements = {
       ...refinements,
       canToggleShowMore: true,
-      isShowingMore: true,
+      isShowingMore: false,
       toggleShowMore: jest.fn()
     }
     render(
@@ -85,7 +85,7 @@ describe('LanguageContinentRefinements', () => {
     const showMoreRefinements = {
       ...refinements,
       canToggleShowMore: true,
-      isShowingMore: false,
+      isShowingMore: true,
       toggleShowMore: jest.fn()
     }
     render(
@@ -102,7 +102,7 @@ describe('LanguageContinentRefinements', () => {
     const showMoreRefinements = {
       ...refinements,
       canToggleShowMore: true,
-      isShowingMore: true,
+      isShowingMore: false,
       toggleShowMore
     }
     render(
