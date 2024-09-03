@@ -30,6 +30,7 @@ describe('DynamicCardList', () => {
     parentOrder: 0,
     locked: false,
     nextBlockId: null,
+    slug: null,
     children: []
   }
   const step2: TreeBlock<StepBlock> = {
@@ -39,6 +40,7 @@ describe('DynamicCardList', () => {
     parentOrder: 1,
     locked: false,
     nextBlockId: null,
+    slug: null,
     children: []
   }
   const step3: TreeBlock<StepBlock> = {
@@ -48,6 +50,7 @@ describe('DynamicCardList', () => {
     parentOrder: 2,
     locked: false,
     nextBlockId: null,
+    slug: null,
     children: []
   }
   const step4: TreeBlock<StepBlock> = {
@@ -57,6 +60,7 @@ describe('DynamicCardList', () => {
     parentOrder: 2,
     locked: false,
     nextBlockId: null,
+    slug: null,
     children: []
   }
 
