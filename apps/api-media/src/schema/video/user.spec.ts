@@ -26,8 +26,8 @@ describe('usesr', () => {
   })
 
   const VIDEO_ROLES = graphql(`
-    query VideoRoles($representations: [_Any!]!) {
-      _entities(representations: $representations) {
+    query VideoRoles {
+      _entities(representations: [{ __typename: "User", id: "id" }]) {
         ... on User {
           id
           videoUserRoles
@@ -43,15 +43,7 @@ describe('usesr', () => {
       roles: [VideoRole.publisher]
     })
     const data = await authClient({
-      document: VIDEO_ROLES,
-      variables: {
-        representations: [
-          {
-            __typename: 'User',
-            id: 'id'
-          }
-        ]
-      }
+      document: VIDEO_ROLES
     })
     expect(prismaMock.videoAdminUser.findUnique).toHaveBeenCalled()
     expect(data).toHaveProperty('data._entities[0].videoUserRoles', [

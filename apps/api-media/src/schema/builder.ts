@@ -27,7 +27,6 @@ export const builder = new SchemaBuilder<{
   Scalars: {
     Date: { Input: Date; Output: Date }
     ID: { Input: string; Output: number | string }
-    _Any: any
   }
 }>({
   plugins: [ScopeAuthPlugin, PrismaPlugin, DirectivesPlugin, FederationPlugin],
