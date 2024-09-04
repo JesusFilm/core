@@ -58,7 +58,13 @@ export function Slider(): ReactElement {
     boolean | undefined
   >(undefined)
   const {
-    state: { activeSlide, activeContent, selectedStep, showAnalytics },
+    state: {
+      activeSlide,
+      activeContent,
+      selectedStep,
+      showAnalytics,
+      importedSteps
+    },
     dispatch
   } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
@@ -111,6 +117,13 @@ export function Slider(): ReactElement {
       swiperRef.current.swiper.setGrabCursor()
     }
   }, [showAnalytics])
+
+  useEffect(() => {
+    if (swiperRef.current != null) {
+      swiperRef.current.swiper.allowTouchMove = importedSteps == null
+      swiperRef.current.swiper.setGrabCursor()
+    }
+  }, [importedSteps])
 
   function resetCanvasFocus(): void {
     if (isSlideChangingTo(ActiveSlide.JourneyFlow)) {

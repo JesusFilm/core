@@ -30,7 +30,7 @@ export function ActionButton({
 }: ActionButtonProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const {
-    state: { showAnalytics, analytics }
+    state: { showAnalytics, analytics, importedSteps }
   } = useEditor()
   const updateEdge = useUpdateEdge()
 
@@ -81,7 +81,9 @@ export function ActionButton({
     <BaseNode
       id={block.id}
       sourceHandle={
-        showAnalytics === true ? HandleVariant.Disabled : HandleVariant.Shown
+        showAnalytics === true || importedSteps != null
+          ? HandleVariant.Disabled
+          : HandleVariant.Shown
       }
       onSourceConnect={updateEdge}
       selected={selected}

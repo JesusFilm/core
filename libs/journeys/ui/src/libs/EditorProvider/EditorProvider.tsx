@@ -93,6 +93,10 @@ export interface EditorState {
    */
   selectedStepId?: string
   steps?: Array<TreeBlock<StepBlock>>
+  /**
+   * importedSteps is a temporary store to allow imported step data to be visually previewed before saving permanently to the journey.
+   */
+  importedSteps?: Array<TreeBlock<StepBlock>>
 }
 interface SetActiveContentAction {
   type: 'SetActiveContentAction'
@@ -138,6 +142,10 @@ interface SetStepsAction {
   type: 'SetStepsAction'
   steps: Array<TreeBlock<StepBlock>>
 }
+interface SetImportedStepsAction {
+  type: 'SetImportedStepsAction'
+  importedSteps?: Array<TreeBlock<StepBlock>>
+}
 interface SetShowAnalyticsAction {
   type: 'SetShowAnalyticsAction'
   showAnalytics: boolean
@@ -176,6 +184,7 @@ export type EditorAction =
   | SetSelectedStepAction
   | SetSelectedStepByIdAction
   | SetStepsAction
+  | SetImportedStepsAction
   | SetShowAnalyticsAction
   | SetAnalyticsAction
   | SetEditorFocusAction
@@ -275,6 +284,25 @@ export const reducer = (
           state.selectedBlockId != null
             ? searchBlocks(action.steps, state.selectedBlockId)
             : action.steps[0]
+      }
+    case 'SetImportedStepsAction':
+      return {
+        ...state,
+        importedSteps: action.importedSteps,
+        selectedStep:
+          action.importedSteps != null
+            ? state.selectedStepId != null
+              ? action.importedSteps.find(
+                  ({ id }) => id === state.selectedStepId
+                )
+              : action.importedSteps[0]
+            : undefined,
+        selectedBlock:
+          action.importedSteps != null
+            ? state.selectedBlockId != null
+              ? searchBlocks(action.importedSteps, state.selectedBlockId)
+              : action.importedSteps[0]
+            : undefined
       }
     case 'SetShowAnalyticsAction':
       return {

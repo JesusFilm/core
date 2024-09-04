@@ -22,9 +22,11 @@ export function StepBlockNode({
   dragging
 }: NodeProps): ReactElement {
   const {
-    state: { steps, selectedStep, activeContent, showAnalytics }
+    state: { steps, importedSteps, selectedStep, activeContent, showAnalytics }
   } = useEditor()
-  const step = steps?.find((step) => step.id === id)
+  const step =
+    importedSteps?.find((step) => step.id === id) ??
+    steps?.find((step) => step.id === id)
 
   const actionBlocks = useMemo(
     () => (step != null ? [step, ...filterActionBlocks(step)] : []),
@@ -41,7 +43,7 @@ export function StepBlockNode({
           <StepBlockNodeAnalytics stepId={step.id} />
         </div>
       </Fade>
-      {showAnalytics !== true && (
+      {showAnalytics !== true && importedSteps == null && (
         <StepBlockNodeMenu
           in={isSelected}
           className="fab"
@@ -68,7 +70,7 @@ export function StepBlockNode({
         <BaseNode
           id={step.id}
           targetHandle={
-            showAnalytics === true
+            showAnalytics === true || importedSteps != null
               ? HandleVariant.Disabled
               : HandleVariant.Shown
           }

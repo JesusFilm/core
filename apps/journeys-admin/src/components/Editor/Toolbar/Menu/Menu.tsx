@@ -25,6 +25,7 @@ import { ShareItem } from '../Items/ShareItem'
 import { StrategyItem } from '../Items/StrategyItem'
 import { TemplateSettingsItem } from '../Items/TemplateSettingsItem'
 import { TitleItem } from '../Items/TitleItem'
+import { ExportItem } from '../Items/ExportItem'
 
 export const GET_ROLE = gql`
   query GetRole {
@@ -85,6 +86,9 @@ export function Menu({ user }: MenuProps): ReactElement {
         <AccessItem variant="menu-item" onClose={handleCloseMenu} />
         {journey?.template === true && (
           <TemplateSettingsItem variant="menu-item" onClose={handleCloseMenu} />
+        )}
+        {journey?.template !== true && (
+          <ExportItem variant="menu-item" onClose={handleCloseMenu} />
         )}
         {journey?.template !== true && (
           <TitleItem variant="menu-item" onClose={handleCloseMenu} />

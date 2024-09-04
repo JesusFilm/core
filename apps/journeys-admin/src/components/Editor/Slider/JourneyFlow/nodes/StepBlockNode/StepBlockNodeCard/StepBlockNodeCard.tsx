@@ -27,7 +27,7 @@ export function StepBlockNodeCard({
   selected
 }: StepBlockNodeCardProps): ReactElement {
   const {
-    state: { selectedStep, showAnalytics },
+    state: { selectedStep, showAnalytics, importedSteps },
     dispatch
   } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
@@ -44,7 +44,11 @@ export function StepBlockNodeCard({
   } = getCardMetadata(card)
 
   function handleClick(): void {
-    if (selectedStep?.id === step?.id && showAnalytics !== true) {
+    if (
+      selectedStep?.id === step?.id &&
+      showAnalytics !== true &&
+      importedSteps == null
+    ) {
       dispatch({
         type: 'SetSelectedBlockAction',
         selectedBlock: selectedStep

@@ -69,6 +69,7 @@ import { StepBlockNode } from './nodes/StepBlockNode'
 import { STEP_NODE_CARD_HEIGHT } from './nodes/StepBlockNode/libs/sizes'
 
 import 'reactflow/dist/style.css'
+import { Item } from '../../Toolbar/Items/Item'
 
 // some styles can only be updated through css after render
 const additionalEdgeStyles = {
@@ -98,7 +99,7 @@ export function JourneyFlow(): ReactElement {
   const { editorAnalytics } = useFlags()
   const theme = useTheme()
   const {
-    state: { steps, activeSlide, showAnalytics, analytics },
+    state: { steps, activeSlide, showAnalytics, analytics, importedSteps },
     dispatch
   } = useEditor()
   const [reactFlowInstance, setReactFlowInstance] =
@@ -191,6 +192,19 @@ export function JourneyFlow(): ReactElement {
     },
     [data, dispatch, steps, add, blockPositionUpdate]
   )
+
+  const handleCancelPreviewMode = useCallback(() => {
+    dispatch({
+      type: 'SetImportedStepsAction',
+      importedSteps: undefined
+    })
+    if (steps) {
+      dispatch({
+        type: 'SetStepsAction',
+        steps
+      })
+    }
+  }, [dispatch])
 
   useEffect(() => {
     if (
@@ -446,7 +460,11 @@ export function JourneyFlow(): ReactElement {
         onConnectEnd={onConnectEnd}
         onConnectStart={onConnectStart}
         onNodeDragStop={onNodeDragStop}
-        onEdgeUpdate={showAnalytics === true ? undefined : onEdgeUpdate}
+        onEdgeUpdate={
+          showAnalytics === true || importedSteps != null
+            ? undefined
+            : onEdgeUpdate
+        }
         onEdgeUpdateStart={onEdgeUpdateStart}
         onEdgeUpdateEnd={onEdgeUpdateEnd}
         onSelectionChange={onSelectionChange}
@@ -466,10 +484,38 @@ export function JourneyFlow(): ReactElement {
         {activeSlide === ActiveSlide.JourneyFlow && (
           <>
             <Panel position="top-right">
-              {showAnalytics !== true && (
+              {(showAnalytics !== true || importedSteps == null) && (
                 <NewStepButton disabled={steps == null || loading} />
               )}
             </Panel>
+            {importedSteps != null && (
+              <Panel position="top-right">
+                <Item
+                  variant="button"
+                  icon={null}
+                  label={'Confirm import'}
+                  ButtonProps={{
+                    disabled: true,
+                    sx: { backgroundColor: 'background.paper' }
+                  }}
+                />
+                <Item
+                  variant="button"
+                  icon={null}
+                  label={'Exit preview mode'}
+                  onClick={handleCancelPreviewMode}
+                  ButtonProps={{
+                    sx: {
+                      ml: 4,
+                      backgroundColor: 'background.paper',
+                      ':hover': {
+                        backgroundColor: 'background.paper'
+                      }
+                    }
+                  }}
+                />
+              </Panel>
+            )}
             {editorAnalytics && (
               <Panel position="top-left">
                 <>
