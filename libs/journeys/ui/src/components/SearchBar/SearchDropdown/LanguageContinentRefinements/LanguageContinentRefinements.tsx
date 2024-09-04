@@ -34,6 +34,7 @@ export function LanguageContinentRefinements({
   const theme = useTheme()
 
   const [selectedContinent, setSelectedContinent] = useState<string>()
+  const shouldFade = refinements.canToggleShowMore && !refinements.isShowingMore
 
   return (
     <>
@@ -45,7 +46,19 @@ export function LanguageContinentRefinements({
             sx={{
               [theme.breakpoints.down('lg')]: {
                 gap: 6
-              }
+              },
+              '-webkit-mask-image': shouldFade
+                ? {
+                    xs: 'linear-gradient(to bottom, black 85%, transparent 100%)',
+                    lg: 'linear-gradient(to bottom, black 60%, transparent 60%)'
+                  }
+                : 'none',
+              'mask-image': shouldFade
+                ? {
+                    xs: 'linear-gradient(to bottom, black 85%, transparent 100%)',
+                    lg: 'linear-gradient(to bottom, black 60%, transparent 85%)'
+                  }
+                : 'none'
             }}
           >
             {Object.entries(languages).map(
