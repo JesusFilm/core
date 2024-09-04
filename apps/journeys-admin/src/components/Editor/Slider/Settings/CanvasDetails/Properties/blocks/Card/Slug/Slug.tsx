@@ -71,7 +71,6 @@ export function Slug(): ReactElement {
               slug: newSlug
             }
           },
-
           onError: (_) => {
             enqueueSnackbar(t('Error updating, make sure slug is unique'), {
               variant: 'error',
