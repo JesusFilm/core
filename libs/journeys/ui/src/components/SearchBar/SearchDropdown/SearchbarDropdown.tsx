@@ -80,6 +80,9 @@ export function SearchbarDropdown({
               icon={<Search1 sx={{ md: { marginRight: 5 } }} />}
               iconPosition="start"
               label={isSmallScreen ? '' : 'Search Suggestions'}
+              sx={{
+                minHeight: '50px'
+              }}
             />
             <Tab
               icon={<Globe1 sx={{ md: { marginRight: 5 } }} />}
