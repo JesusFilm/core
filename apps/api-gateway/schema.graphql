@@ -1424,6 +1424,12 @@ input LinkActionInput
   target: String
 }
 
+enum MediaRole
+  @join__type(graph: MEDIA)
+{
+  publisher @join__enumValue(graph: MEDIA)
+}
+
 input MeInput
   @join__type(graph: USERS)
 {
@@ -2951,7 +2957,7 @@ type User
   @join__type(graph: USERS, key: "id")
 {
   id: ID!
-  videoUserRoles: [VideoRole!]! @join__field(graph: MEDIA)
+  mediaUserRoles: [MediaRole!]! @join__field(graph: MEDIA)
   firstName: String! @join__field(graph: USERS)
   lastName: String @join__field(graph: USERS)
   email: String! @join__field(graph: USERS)

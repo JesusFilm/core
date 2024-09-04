@@ -16,7 +16,7 @@ const GET_AUTH = graphql(`
       firstName
       lastName
       imageUrl
-      videoUserRoles
+      mediaUserRoles
     }
   }
 `)
@@ -66,7 +66,7 @@ export default async function middleware(
       }).query({
         query: GET_AUTH
       })
-      if (data.me?.videoUserRoles.length === 0)
+      if (data.me?.mediaUserRoles.length === 0)
         req.nextUrl.pathname = unAuthorizedPage
 
       return intlMiddleware(req)
