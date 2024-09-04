@@ -29,7 +29,8 @@ const authPathnameRegex = getPathnameRegex(authPages)
 async function authMiddleware(
   request: NextRequest,
   ctx: AppRouteHandlerFnContext
-) {
+  // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+): Promise<void | Response> {
   return await auth((req) => {
     const path = req.nextUrl.pathname
     const isAuth = req.auth != null
