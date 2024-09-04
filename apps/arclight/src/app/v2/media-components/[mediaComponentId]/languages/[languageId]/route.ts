@@ -2,13 +2,12 @@ import { ResultOf, graphql } from 'gql.tada'
 import { NextRequest } from 'next/server'
 
 import { getApolloClient } from '../../../../../../lib/apolloClient'
-import { paramsToRecord } from '../../../../../../lib/paramsToRecord'
 
 /* TODO: 
   querystring:
     apiKey
     platform
-    reduce
+    reduce (only for web)
     expand
     metadataLanguageTags
 */
@@ -24,6 +23,7 @@ const GET_VIDEO_VARIANT = graphql(`
       variant(languageId: $languageId) {
         id
         duration
+        hls
         subtitle {
           language {
             id
@@ -32,7 +32,8 @@ const GET_VIDEO_VARIANT = graphql(`
               value
             }
           }
-          value
+          vttSrc
+          srtSrc
         }
         downloads {
           quality
@@ -61,14 +62,13 @@ export async function GET(
     }
   })
 
-  if (data.video == null) return new Response(null, { status: 404 })
+  const apiKey = query.get('apiKey') ?? '616db012e9a951.51499299'
+  const platform = query.get('platform') ?? 'ios'
+
+  if (data.video == null || data.video.variant == null)
+    return new Response(null, { status: 404 })
 
   const video = data.video
-
-  const queryObject: Record<string, string> = {
-    ...paramsToRecord(query.entries())
-  }
-  const queryString = new URLSearchParams(queryObject).toString()
 
   const downloadLow = video.variant?.downloads?.find(
     (download) => download.quality === 'low'
@@ -99,29 +99,60 @@ export async function GET(
           }
   }
 
+  const subtitleUrls =
+    platform === 'android'
+      ? {
+          vtt:
+            video.variant?.subtitle?.map((subtitle) => ({
+              languageId: Number(subtitle.language?.id),
+              languageName: subtitle.language?.name[0].value,
+              languageTag: subtitle.language?.bcp47,
+              url: subtitle.vttSrc
+            })) ?? [],
+          srt:
+            video.variant?.subtitle?.map((subtitle) => ({
+              languageId: Number(subtitle.language?.id),
+              languageName: subtitle.language?.name[0].value,
+              languageTag: subtitle.language?.bcp47,
+              url: subtitle.srtSrc
+            })) ?? []
+        }
+      : {
+          vtt:
+            video.variant?.subtitle?.map((subtitle) => ({
+              languageId: Number(subtitle.language?.id),
+              languageName: subtitle.language?.name[0].value,
+              languageTag: subtitle.language?.bcp47,
+              url: subtitle.vttSrc
+            })) ?? []
+        }
+
+  const streamingUrls =
+    platform === 'web'
+      ? {}
+      : platform === 'android'
+      ? {
+          // TODO: implement dash urls
+          dash: [],
+          hls: [{ videoBitrate: 0, url: video.variant?.hls }],
+          http: []
+        }
+      : {
+          m3u8: [{ videoBitrate: 0, url: video.variant?.hls }],
+          http: []
+        }
+
   const response = {
     mediaComponentId,
-    languageId,
-    // TODO: create reference id
-    refId: '123',
+    languageId: Number(languageId),
+    refId: video.variant?.id,
     // TODO create api session id
     apiSessionId: '',
-    // TODO handle platform
-    platform: 'web',
+    platform,
     lengthInMilliseconds: video.variant?.duration ?? 0,
-    // TODO: investigate other formats
-    subtitleUrls: {
-      vtt:
-        video.variant?.subtitle?.map((subtitle) => ({
-          languageId: subtitle.language.id,
-          languageName: subtitle.language.name[0].value,
-          languageTag: subtitle.language.bcp47,
-          url: subtitle.value
-        })) ?? []
-    },
+    subtitleUrls,
     downloadUrls,
-    // TODO: implement
-    streamingUrls: {},
+    streamingUrls,
     // TODO: implement
     shareUrl: 'https://arc.gt/8un8j?apiSessionId=6622f10d2260a8.05128925',
     // TODO: implement
@@ -134,15 +165,13 @@ export async function GET(
     openGraphVideoPlayer: 'https://jesusfilm.org/',
     _links: {
       self: {
-        href: `https://api.arclight.com/v2/media-components/${mediaComponentId}/languages/${languageId}?${queryString}`
+        href: `https://api.arclight.com/v2/media-components/${mediaComponentId}/languages/${languageId}?platform=${platform}&apiKey=${apiKey}`
       },
-      // TODO handle querystring
       mediaComponent: {
-        href: `https://api.arclight.com/v2/media-components/${mediaComponentId}`
+        href: `https://api.arclight.com/v2/media-components/${mediaComponentId}?apiKey=${apiKey}`
       },
-      // TODO handle querystring
       mediaLanguage: {
-        href: `https://api.arclight.com/v2/media-languages/${languageId}`
+        href: `https://api.arclight.com/v2/media-languages/${languageId}?apiKey=${apiKey}`
       }
     }
   }
