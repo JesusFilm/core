@@ -1,9 +1,8 @@
-import { graphql } from 'gql.tada'
-
 import { BibleBook, BibleBookName } from '.prisma/api-media-client'
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
+import { graphql } from '../../lib/graphql/subgraphGraphql'
 
 describe('BibleBook', () => {
   const client = getClient()

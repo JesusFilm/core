@@ -7,8 +7,18 @@
     "plugins": [
       {
         "name": "gql.tada/ts-plugin",
-        "schema": "../api-gateway/schema.graphql",
-        "tadaOutputLocation": "./apps/api-media/src/__generated__/graphql-env.d.ts"
+        "schemas": [
+          {
+            "name": "subgraph",
+            "schema": "./schema.graphql",
+            "tadaOutputLocation": "./src/__generated__/graphql-subgraph-env.d.ts"
+          },
+          {
+            "name": "gateway",
+            "schema": "../api-gateway/schema.graphql",
+            "tadaOutputLocation": "./src/__generated__/graphql-gateway-env.d.ts"
+          }
+        ]
       }
     ]
   },
