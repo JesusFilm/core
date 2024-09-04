@@ -304,10 +304,6 @@ enum VideoLabel {
   behindTheScenes
 }
 
-enum VideoRole {
-  publisher
-}
-
 type VideoSnippet {
   id: ID!
   value: String!
