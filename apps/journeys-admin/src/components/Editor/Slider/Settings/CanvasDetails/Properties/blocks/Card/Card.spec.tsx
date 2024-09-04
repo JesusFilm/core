@@ -4,8 +4,13 @@ import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../__generated__/BlockFields'
+import {
+  BlockFields_CardBlock as CardBlock,
+  BlockFields_StepBlock as StepBlock
+} from '../../../../../../../../../__generated__/BlockFields'
+import { GetJourney_journey as Journey } from '../../../../../../../../../__generated__/GetJourney'
 import {
   ThemeMode,
   ThemeName,
@@ -50,6 +55,48 @@ describe('Card', () => {
     ).toBeInTheDocument()
     expect(
       screen.getByRole('button', { name: 'Layout Contained' })
+    ).toBeInTheDocument()
+  })
+
+  it('shows website attributes', () => {
+    const card: TreeBlock<CardBlock> = {
+      id: 'card1.id',
+      __typename: 'CardBlock',
+      parentBlockId: 'step1.id',
+      coverBlockId: null,
+      parentOrder: 0,
+      backgroundColor: null,
+      themeMode: ThemeMode.light,
+      themeName: ThemeName.base,
+      fullscreen: false,
+      children: []
+    }
+
+    const journey = {
+      __typename: 'Journey',
+      id: 'journey1.id',
+      website: true,
+      language: {
+        __typename: 'Language',
+        id: 'language1.id',
+        bcp47: 'en'
+      }
+    } as unknown as Journey
+
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey }}>
+            <EditorProvider initialState={{ selectedBlock: card }}>
+              <Card {...card} />
+            </EditorProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(
+      screen.getByRole('button', { name: 'Card URL None' })
     ).toBeInTheDocument()
   })
 
@@ -461,6 +508,80 @@ describe('Card', () => {
       fireEvent.click(screen.getByText('Layout'))
       expect(
         screen.getByText('selectedAttributeId: card1.id-layout')
+      ).toBeInTheDocument()
+    })
+  })
+
+  describe('slug', () => {
+    const selectedStep: TreeBlock<StepBlock> = {
+      id: 'step1.id',
+      __typename: 'StepBlock',
+      parentBlockId: 'journey1.id',
+      parentOrder: 0,
+      slug: 'step-slug',
+      locked: false,
+      nextBlockId: null,
+      children: []
+    }
+
+    const selectedBlock: TreeBlock<CardBlock> = {
+      id: 'card1.id',
+      __typename: 'CardBlock',
+      parentBlockId: 'step1.id',
+      coverBlockId: null,
+      parentOrder: 0,
+      backgroundColor: null,
+      themeMode: ThemeMode.light,
+      themeName: ThemeName.base,
+      fullscreen: false,
+      children: []
+    }
+
+    const journey = {
+      __typename: 'Journey',
+      id: 'journey1.id',
+      website: true,
+      language: {
+        __typename: 'Language',
+        id: 'language1.id',
+        bcp47: 'en'
+      }
+    } as unknown as Journey
+
+    it('shows the step slug', () => {
+      render(
+        <MockedProvider>
+          <SnackbarProvider>
+            <JourneyProvider value={{ journey }}>
+              <EditorProvider initialState={{ selectedBlock, selectedStep }}>
+                <Card {...selectedBlock} />
+              </EditorProvider>
+            </JourneyProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+
+      expect(
+        screen.getByRole('button', { name: 'Card URL step-slug' })
+      ).toBeInTheDocument()
+    })
+
+    it('opens the accordion when clicked', () => {
+      render(
+        <MockedProvider>
+          <SnackbarProvider>
+            <JourneyProvider value={{ journey }}>
+              <EditorProvider initialState={{ selectedBlock, selectedStep }}>
+                <TestEditorState />
+                <Card {...selectedBlock} />
+              </EditorProvider>
+            </JourneyProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+      fireEvent.click(screen.getByText('Card URL'))
+      expect(
+        screen.getByText('selectedAttributeId: card1.id-slug')
       ).toBeInTheDocument()
     })
   })
