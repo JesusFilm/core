@@ -74,9 +74,9 @@ export const Language = {
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     const canvas = within(canvasElement)
     await waitFor(async () => {
-      await expect(screen.getByTestId('LanguageSelect')).toBeInTheDocument()
+      await expect(canvas.getByText('Language')).toBeInTheDocument()
     })
-    await userEvent.click(canvas.getByTestId('LanguageSelect'))
+    await userEvent.click(canvas.getByText('Language'))
   }
 }
 
@@ -94,9 +94,9 @@ export const NoLanguages = {
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     const canvas = within(canvasElement)
     await waitFor(async () => {
-      await expect(screen.getByTestId('LanguageSelect')).toBeInTheDocument()
+      await expect(canvas.getByText('Language')).toBeInTheDocument()
     })
-    await userEvent.click(canvas.getByTestId('LanguageSelect'))
+    await userEvent.click(canvas.getByText('Language'))
     expect(
       screen.getByText(
         'Sorry, there are no languages available for this search. Try removing some of your search criteria!'
