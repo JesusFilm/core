@@ -1,6 +1,5 @@
-import { graphql } from 'gql.tada'
-
 import { getClient } from '../../../test/client'
+import { graphql } from '../../lib/graphql/subgraphGraphql'
 
 import { UnsplashColorEnum } from './enums/UnsplashColor'
 import { UnsplashContentFilterEnum } from './enums/UnsplashContentFilter'

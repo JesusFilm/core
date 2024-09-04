@@ -1,2 +1,1 @@
-import './videoRole'
 import './videoLabel'

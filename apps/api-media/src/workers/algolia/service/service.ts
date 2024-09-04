@@ -1,8 +1,8 @@
 import { ApolloClient, InMemoryCache } from '@apollo/client'
 import algoliasearch from 'algoliasearch'
-import { graphql } from 'gql.tada'
 import { Logger } from 'pino'
 
+import { graphql } from '../../../lib/graphql/gatewayGraphql'
 import { prisma } from '../../../lib/prisma'
 
 const ENGLISH_LANGUAGE_ID = '529'
@@ -43,16 +43,7 @@ interface LanguageRecord {
 
 async function getLanguages(logger?: Logger): Promise<LanguageRecord> {
   try {
-    const { data } = await apollo.query<{
-      languages: Array<{
-        id: string
-        name: Array<{
-          value: string
-          primary: boolean
-          language: { id: string }
-        }>
-      }>
-    }>({
+    const { data } = await apollo.query({
       query: GET_LANGUAGES
     })
 

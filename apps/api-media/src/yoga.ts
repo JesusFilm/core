@@ -24,7 +24,7 @@ export const yoga = createYoga({
       currentRoles:
         userId != null
           ? (
-              await prisma.videoAdminUser.findUnique({
+              await prisma.userMediaRole.findUnique({
                 where: { userId }
               })
             )?.roles ?? null
