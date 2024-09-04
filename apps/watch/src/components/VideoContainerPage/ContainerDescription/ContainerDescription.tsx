@@ -1,9 +1,9 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
 import { ShareButton } from '../../ShareButton'
+import { TextFormatter } from '../../TextFormatter'
 
 export interface ContainerDescriptionProps {
   value: string
@@ -22,14 +22,18 @@ export function ContainerDescription({
       spacing={4}
       data-testid="ContainerDescription"
     >
-      <Typography
-        variant="subtitle1"
-        component="h2"
-        color="text.primary"
-        sx={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
-      >
-        {value}
-      </Typography>
+      <Box>
+        <TextFormatter
+          slotProps={{
+            typography: {
+              variant: 'subtitle1',
+              color: 'text.primary'
+            }
+          }}
+        >
+          {value}
+        </TextFormatter>
+      </Box>
       <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
         <ShareButton onClick={openDialog} variant="button" />
       </Box>

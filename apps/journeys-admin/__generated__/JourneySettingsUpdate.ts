@@ -30,6 +30,10 @@ export interface JourneySettingsUpdate_journeyUpdate {
   strategySlug: string | null;
   language: JourneySettingsUpdate_journeyUpdate_language;
   tags: JourneySettingsUpdate_journeyUpdate_tags[];
+  website: boolean | null;
+  showShareButton: boolean | null;
+  showLikeButton: boolean | null;
+  showDislikeButton: boolean | null;
 }
 
 export interface JourneySettingsUpdate {

@@ -182,10 +182,12 @@ export function DuplicateStep({
                     if (
                       existingBlockRefs?.some(
                         (ref) => readField('id', ref) === block.id
-                      )
+                      ) ||
+                      newStepBlockRef?.__ref !== `StepBlock:${stepBlock.id}`
                     ) {
                       return existingBlockRefs ?? []
                     }
+
                     return [...existingBlockRefs, newStepBlockRef]
                   }
                 }

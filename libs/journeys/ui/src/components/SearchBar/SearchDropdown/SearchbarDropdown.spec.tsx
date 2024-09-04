@@ -1,7 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
-import { useRefinementList } from 'react-instantsearch'
+import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
+import { useRefinementList, useSearchBox } from 'react-instantsearch'
 
 import { getLanguagesContinentsMock } from '../../../libs/useLanguagesContinentsQuery/useLanguagesContinentsQuery.mock'
 import { languageRefinements } from '../data'
@@ -14,13 +15,33 @@ const mockUseRefinementList = useRefinementList as jest.MockedFunction<
   typeof useRefinementList
 >
 
-describe('SearchbarDropdown', () => {
-  beforeEach(() => {
-    mockUseRefinementList.mockReturnValue({
-      items: languageRefinements,
-      refine: jest.fn()
-    } as unknown as RefinementListRenderState)
+const mockUseSearchBox = useSearchBox as jest.MockedFunction<
+  typeof useSearchBox
+>
 
+function mockEmptyRefinementsList(): void {
+  mockUseRefinementList.mockReturnValue({
+    items: [],
+    refine: jest.fn()
+  } as unknown as RefinementListRenderState)
+}
+
+describe('SearchbarDropdown', () => {
+  const refine = jest.fn()
+
+  const refinementsList = {
+    items: languageRefinements,
+    refine
+  } as unknown as RefinementListRenderState
+
+  const searchBox = {
+    query: 'Hello World!',
+    refine
+  } as unknown as SearchBoxRenderState
+
+  beforeEach(() => {
+    mockUseRefinementList.mockReturnValue(refinementsList)
+    mockUseSearchBox.mockReturnValue(searchBox)
     jest.clearAllMocks()
   })
 
@@ -31,7 +52,7 @@ describe('SearchbarDropdown', () => {
       </MockedProvider>
     )
     await waitFor(() => {
-      expect(screen.getByTestId('SearchLanguageFilter')).toBeInTheDocument()
+      expect(screen.getByTestId('SearchBarDropdown')).toBeInTheDocument()
     })
     expect(screen.getByText('Asia')).toBeInTheDocument()
     expect(screen.getByText('Europe')).toBeInTheDocument()
@@ -46,7 +67,7 @@ describe('SearchbarDropdown', () => {
       </MockedProvider>
     )
     await waitFor(() => {
-      expect(screen.getByTestId('SearchLanguageFilter')).toBeInTheDocument()
+      expect(screen.getByTestId('SearchBarDropdown')).toBeInTheDocument()
     })
     expect(screen.getByText('English')).toBeInTheDocument()
     expect(screen.getByText('Spanish, Castilian')).toBeInTheDocument()
@@ -57,10 +78,7 @@ describe('SearchbarDropdown', () => {
   })
 
   it('should render message if no languages', async () => {
-    mockUseRefinementList.mockReturnValue({
-      items: [],
-      refine: jest.fn()
-    } as unknown as RefinementListRenderState)
+    mockEmptyRefinementsList()
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
         <SearchbarDropdown open />
@@ -75,10 +93,7 @@ describe('SearchbarDropdown', () => {
   })
 
   it('should not render headers if no languages', async () => {
-    mockUseRefinementList.mockReturnValue({
-      items: [],
-      refine: jest.fn()
-    } as unknown as RefinementListRenderState)
+    mockEmptyRefinementsList()
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
         <SearchbarDropdown open />
@@ -86,7 +101,7 @@ describe('SearchbarDropdown', () => {
     )
 
     await waitFor(() => {
-      expect(screen.getByTestId('SearchLanguageFilter')).toBeInTheDocument()
+      expect(screen.getByTestId('SearchBarDropdown')).toBeInTheDocument()
     })
     expect(screen.queryByText('Africa')).not.toBeInTheDocument()
     expect(screen.queryByText('Asia')).not.toBeInTheDocument()
@@ -104,7 +119,7 @@ describe('SearchbarDropdown', () => {
     )
 
     await waitFor(() => {
-      expect(screen.getByTestId('SearchLanguageFilter')).toBeInTheDocument()
+      expect(screen.getByTestId('SearchBarDropdown')).toBeInTheDocument()
     })
     expect(screen.queryByText('Africa')).not.toBeInTheDocument()
     expect(screen.queryByText('Oceania')).not.toBeInTheDocument()
@@ -126,5 +141,41 @@ describe('SearchbarDropdown', () => {
       fireEvent.click(screen.getByText('English'))
     })
     expect(refine).toHaveBeenCalled()
+  })
+
+  it('should render continent refinements when languages variant', async () => {
+    mockEmptyRefinementsList()
+    render(
+      <MockedProvider mocks={[getLanguagesContinentsMock]}>
+        <SearchbarDropdown open variant="languages" />
+      </MockedProvider>
+    )
+    await waitFor(() => {
+      expect(screen.getByTestId('SearchBarDropdown')).toBeInTheDocument()
+    })
+  })
+
+  it('should render suggestions when suggestions variant', async () => {
+    mockEmptyRefinementsList()
+    render(
+      <MockedProvider mocks={[getLanguagesContinentsMock]}>
+        <SearchbarDropdown open variant="suggestions" />
+      </MockedProvider>
+    )
+    await waitFor(() => {
+      expect(screen.getByText('Suggestions')).toBeInTheDocument()
+    })
+  })
+
+  it('should refine query when suggestion clicked', async () => {
+    mockEmptyRefinementsList()
+    render(
+      <MockedProvider mocks={[getLanguagesContinentsMock]}>
+        <SearchbarDropdown open variant="suggestions" />
+      </MockedProvider>
+    )
+    await waitFor(() => {
+      expect(screen.getByText('Suggestions')).toBeInTheDocument()
+    })
   })
 })

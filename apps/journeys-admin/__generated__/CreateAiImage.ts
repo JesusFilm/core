@@ -15,7 +15,7 @@ export interface CreateAiImage_createImageBySegmindPrompt {
 }
 
 export interface CreateAiImage {
-  createImageBySegmindPrompt: CreateAiImage_createImageBySegmindPrompt | null;
+  createImageBySegmindPrompt: CreateAiImage_createImageBySegmindPrompt;
 }
 
 export interface CreateAiImageVariables {
