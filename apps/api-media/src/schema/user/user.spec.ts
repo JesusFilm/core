@@ -1,4 +1,4 @@
-import { VideoRole } from '.prisma/api-media-client'
+import { MediaRole } from '.prisma/api-media-client'
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
@@ -17,7 +17,7 @@ jest.mock('@core/yoga/firebaseClient', () => ({
   })
 }))
 
-describe('usesr', () => {
+describe('user', () => {
   const authClient = getClient({
     headers: {
       authorization: 'token'
@@ -29,24 +29,24 @@ describe('usesr', () => {
       _entities(representations: [{ __typename: "User", id: "id" }]) {
         ... on User {
           id
-          videoUserRoles
+          mediaUserRoles
         }
       }
     }
   `)
 
-  it('should return video roles', async () => {
-    prismaMock.videoAdminUser.findUnique.mockResolvedValue({
+  it('should return media roles', async () => {
+    prismaMock.userMediaRole.findUnique.mockResolvedValue({
       id: 'id',
       userId: 'userId',
-      roles: [VideoRole.publisher]
+      roles: [MediaRole.publisher]
     })
     const data = await authClient({
       document: VIDEO_ROLES
     })
-    expect(prismaMock.videoAdminUser.findUnique).toHaveBeenCalled()
-    expect(data).toHaveProperty('data._entities[0].videoUserRoles', [
-      VideoRole.publisher
+    expect(prismaMock.userMediaRole.findUnique).toHaveBeenCalled()
+    expect(data).toHaveProperty('data._entities[0].mediaUserRoles', [
+      MediaRole.publisher
     ])
   })
 })

@@ -1,5 +1,5 @@
 /* eslint-disable */
-import type { Prisma, CloudflareImage, CloudflareVideo, Video, VideoTitle, VideoVariantDownload, VideoVariant, VideoSubtitle, VideoVariantSubtitle, VideoSnippet, VideoDescription, VideoImageAlt, VideoStudyQuestion, ImportTimes, BibleCitation, BibleBook, BibleBookName, Keyword, TagName, Tag, Tagging, VideoAdminUser } from ".prisma/api-media-client";
+import type { Prisma, CloudflareImage, CloudflareVideo, Video, VideoTitle, VideoVariantDownload, VideoVariant, VideoSubtitle, VideoVariantSubtitle, VideoSnippet, VideoDescription, VideoImageAlt, VideoStudyQuestion, ImportTimes, BibleCitation, BibleBook, BibleBookName, Keyword, TagName, Tag, Tagging, UserMediaRole } from ".prisma/api-media-client";
 export default interface PrismaTypes {
     CloudflareImage: {
         Name: "CloudflareImage";
@@ -468,14 +468,14 @@ export default interface PrismaTypes {
             };
         };
     };
-    VideoAdminUser: {
-        Name: "VideoAdminUser";
-        Shape: VideoAdminUser;
+    UserMediaRole: {
+        Name: "UserMediaRole";
+        Shape: UserMediaRole;
         Include: never;
-        Select: Prisma.VideoAdminUserSelect;
-        OrderBy: Prisma.VideoAdminUserOrderByWithRelationAndSearchRelevanceInput;
-        WhereUnique: Prisma.VideoAdminUserWhereUniqueInput;
-        Where: Prisma.VideoAdminUserWhereInput;
+        Select: Prisma.UserMediaRoleSelect;
+        OrderBy: Prisma.UserMediaRoleOrderByWithRelationAndSearchRelevanceInput;
+        WhereUnique: Prisma.UserMediaRoleWhereUniqueInput;
+        Where: Prisma.UserMediaRoleWhereInput;
         Create: {};
         Update: {};
         RelationName: never;

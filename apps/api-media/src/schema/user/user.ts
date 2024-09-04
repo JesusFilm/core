@@ -1,21 +1,22 @@
 import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
-import { VideoRole } from '../video/enums/videoRole'
+
+import { MediaRole } from './enums/mediaRole'
 
 builder.externalRef('User', builder.selection<{ id: string }>('id')).implement({
   externalFields: (t) => ({
     id: t.id()
   }),
   fields: (t) => ({
-    videoUserRoles: t.field({
-      type: [VideoRole],
+    mediaUserRoles: t.field({
+      type: [MediaRole],
       authScopes: {
         isAuthenticated: true
       },
       resolve: async (data) => {
         return (
           (
-            await prisma.videoAdminUser.findUnique({
+            await prisma.userMediaRole.findUnique({
               where: { id: data.id }
             })
           )?.roles ?? []
