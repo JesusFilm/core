@@ -9,8 +9,10 @@ import './bibleCitation'
 import './enums'
 import './keyword'
 import './language'
+import './user'
 import './video'
 import './videoVariant'
+import './tag'
 
 import { builder } from './builder'
 

@@ -3,7 +3,6 @@ journeys-serve: nx serve api-journeys
 journeys-watcher: nx watcher api-journeys
 languages-serve: nx serve api-languages
 media-serve: nx serve api-media
-tags-serve: nx serve api-tags
 users-serve: nx serve api-users
 users-watcher: nx watcher api-users
 gateway: nx serve api-gateway

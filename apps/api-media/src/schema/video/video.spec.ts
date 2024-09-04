@@ -1,4 +1,4 @@
-import { ResultOf, graphql } from 'gql.tada'
+import { ResultOf } from 'gql.tada'
 
 import {
   BibleCitation,
@@ -15,6 +15,7 @@ import {
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
+import { graphql } from '../../lib/graphql/subgraphGraphql'
 
 describe('video', () => {
   const client = getClient()

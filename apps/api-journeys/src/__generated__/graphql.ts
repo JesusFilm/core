@@ -1144,6 +1144,10 @@ export type MeInput = {
   redirect?: InputMaybe<Scalars['String']['input']>;
 };
 
+export enum MediaRole {
+  Publisher = 'publisher'
+}
+
 export enum MessagePlatform {
   CheckBroken = 'checkBroken',
   CheckContained = 'checkContained',
@@ -3098,6 +3102,7 @@ export type User = {
   id: Scalars['ID']['output'];
   imageUrl?: Maybe<Scalars['String']['output']>;
   lastName?: Maybe<Scalars['String']['output']>;
+  mediaUserRoles: Array<MediaRole>;
   superAdmin?: Maybe<Scalars['Boolean']['output']>;
 };
 
@@ -3952,7 +3957,6 @@ export enum Join__Graph {
   Journeys = 'JOURNEYS',
   Languages = 'LANGUAGES',
   Media = 'MEDIA',
-  Tags = 'TAGS',
   Users = 'USERS'
 }
 
