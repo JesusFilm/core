@@ -43,16 +43,7 @@ interface LanguageRecord {
 
 async function getLanguages(logger?: Logger): Promise<LanguageRecord> {
   try {
-    const { data } = await apollo.query<{
-      languages: Array<{
-        id: string
-        name: Array<{
-          value: string
-          primary: boolean
-          language: { id: string }
-        }>
-      }>
-    }>({
+    const { data } = await apollo.query({
       query: GET_LANGUAGES
     })
 
