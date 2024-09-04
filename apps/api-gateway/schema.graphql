@@ -3642,12 +3642,6 @@ input VideoProgressEventCreateInput
   value: VideoBlockSource
 }
 
-enum VideoRole
-  @join__type(graph: MEDIA)
-{
-  publisher @join__enumValue(graph: MEDIA)
-}
-
 input VideosFilter
   @join__type(graph: MEDIA)
 {
