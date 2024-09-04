@@ -1,6 +1,7 @@
 import { ApolloClient, InMemoryCache } from '@apollo/client'
-import { graphql } from 'gql.tada'
 import { Logger } from 'pino'
+
+import { graphql } from '../../../../lib/graphql/gatewayGraphql'
 
 export const GET_LANGUAGE_SLUGS = graphql(`
   query GetLanguageSlugs {

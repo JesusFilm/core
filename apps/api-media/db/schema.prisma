@@ -332,12 +332,12 @@ model Tagging {
   @@index([tagId])
 }
 
-enum VideoRole {
+enum MediaRole {
   publisher
 }
 
-model VideoAdminUser {
+model UserMediaRole {
   id     String      @id @default(uuid())
   userId String      @unique
-  roles  VideoRole[]
+  roles  MediaRole[]
 }

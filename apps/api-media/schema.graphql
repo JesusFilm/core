@@ -71,6 +71,10 @@ type LanguageWithSlug {
   slug: String!
 }
 
+enum MediaRole {
+  publisher
+}
+
 type Mutation {
   createCloudflareUploadByFile: CloudflareImage!
   createCloudflareUploadByUrl(url: String!): CloudflareImage!
@@ -242,7 +246,7 @@ type User
   @extends
 {
   id: ID! @external
-  videoUserRoles: [VideoRole!]!
+  mediaUserRoles: [MediaRole!]!
 }
 
 type Video
