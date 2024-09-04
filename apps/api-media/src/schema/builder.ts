@@ -5,7 +5,7 @@ import pluginName from '@pothos/plugin-prisma'
 import ScopeAuthPlugin from '@pothos/plugin-scope-auth'
 import { DateResolver } from 'graphql-scalars'
 
-import { Prisma } from '.prisma/api-media-client'
+import { MediaRole, Prisma } from '.prisma/api-media-client'
 
 import type PrismaTypes from '../__generated__/pothos-types'
 import { prisma } from '../lib/prisma'
@@ -13,6 +13,7 @@ import { prisma } from '../lib/prisma'
 const PrismaPlugin = pluginName
 
 export interface Context {
+  currentRoles?: MediaRole[] | null
   userId: string | null
 }
 
@@ -20,6 +21,7 @@ export const builder = new SchemaBuilder<{
   Context: Context
   AuthScopes: {
     isAuthenticated: boolean
+    isPublisher: boolean
   }
   PrismaTypes: PrismaTypes
   Scalars: {
@@ -30,7 +32,8 @@ export const builder = new SchemaBuilder<{
   plugins: [ScopeAuthPlugin, PrismaPlugin, DirectivesPlugin, FederationPlugin],
   scopeAuth: {
     authScopes: async (context) => ({
-      isAuthenticated: context.userId != null
+      isAuthenticated: context.userId != null,
+      isPublisher: context.currentRoles?.includes('publisher') ?? false
     })
   },
   prisma: {
