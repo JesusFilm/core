@@ -37,7 +37,8 @@ describe('useJourneyUpdateMutation', () => {
           website: true,
           showShareButton: true,
           showLikeButton: true,
-          showDislikeButton: true
+          showDislikeButton: true,
+          displayTitle: 'display title'
         }
       }
     }))

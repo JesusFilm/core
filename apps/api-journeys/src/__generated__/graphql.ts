@@ -3099,6 +3099,7 @@ export type User = {
   imageUrl?: Maybe<Scalars['String']['output']>;
   lastName?: Maybe<Scalars['String']['output']>;
   superAdmin?: Maybe<Scalars['Boolean']['output']>;
+  videoUserRoles: Array<VideoRole>;
 };
 
 /** These types are a subset provided by the @types/ua-parser-js library. */
@@ -3659,6 +3660,10 @@ export type VideoProgressEventCreateInput = {
   value?: InputMaybe<VideoBlockSource>;
 };
 
+export enum VideoRole {
+  Publisher = 'publisher'
+}
+
 export type VideoSnippet = {
   __typename?: 'VideoSnippet';
   id: Scalars['ID']['output'];
@@ -3952,7 +3957,6 @@ export enum Join__Graph {
   Journeys = 'JOURNEYS',
   Languages = 'LANGUAGES',
   Media = 'MEDIA',
-  Tags = 'TAGS',
   Users = 'USERS'
 }
 
