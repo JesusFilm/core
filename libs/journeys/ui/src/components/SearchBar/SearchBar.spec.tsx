@@ -99,8 +99,7 @@ describe('SearchBar', () => {
         <SearchBar showLanguageButton />
       </MockedProvider>
     )
-    const searchIcon = screen.getByTestId('Globe1Icon')
-    expect(searchIcon).toBeInTheDocument()
+    expect(screen.getAllByTestId('Globe1Icon')[0]).toBeInTheDocument()
   })
 
   it('should render language', async () => {
@@ -109,7 +108,7 @@ describe('SearchBar', () => {
         <SearchBar showLanguageButton />
       </MockedProvider>
     )
-    expect(screen.getByText('Language')).toBeInTheDocument()
+    expect(screen.getAllByText('Language')[0]).toBeInTheDocument()
   })
 
   it('should have dropdown closed by default', async () => {
@@ -142,8 +141,9 @@ describe('SearchBar', () => {
         <SearchBar showLanguageButton />
       </MockedProvider>
     )
-    expect(screen.getByText('Language')).toBeInTheDocument()
-    fireEvent.click(screen.getByText('Language'))
+    expect(screen.getAllByText('Language')[0]).toBeInTheDocument()
+    fireEvent.click(screen.getAllByText('Language')[0])
+
     expect(screen.getByTestId('SearchBarDropdown')).toBeInTheDocument()
     await waitFor(() => expect(screen.getByText('Europe')).toBeInTheDocument())
   })
@@ -154,8 +154,9 @@ describe('SearchBar', () => {
         <SearchBar showLanguageButton />
       </MockedProvider>
     )
-    expect(screen.getByText('Language')).toBeInTheDocument()
-    fireEvent.click(screen.getByText('Language'))
+    const button = screen.getAllByText('Language')[0]
+    fireEvent.click(button)
+
     expect(screen.getByTestId('SearchBarDropdown')).toBeInTheDocument()
     const searchBar = screen.getByDisplayValue('Hello World!')
     await act(() => {

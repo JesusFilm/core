@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box'
 import Popper from '@mui/material/Popper'
+import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { ReactElement } from 'react'
-import { useRefinementList } from 'react-instantsearch'
 
 import { useLanguagesContinentsQuery } from '../../../libs/useLanguagesContinentsQuery'
 import { useSortLanguageContinents } from '../../../libs/useSortLanguageContinents'
@@ -11,6 +11,7 @@ import { Suggestions } from './Suggestions'
 
 interface SearchbarDropdownProps {
   open: boolean
+  refinements: RefinementListRenderState
   id?: string
   anchorEl?: HTMLElement | null
   variant?: string
@@ -18,6 +19,7 @@ interface SearchbarDropdownProps {
 
 export function SearchbarDropdown({
   open,
+  refinements,
   id,
   anchorEl,
   variant = 'languages'
@@ -25,12 +27,6 @@ export function SearchbarDropdown({
   const { data } = useLanguagesContinentsQuery()
   const languages = useSortLanguageContinents({
     languages: data?.languages ?? []
-  })
-  const refinements = useRefinementList({
-    attribute: 'languageEnglishName',
-    showMore: true,
-    limit: 5,
-    showMoreLimit: 5000
   })
 
   return (
