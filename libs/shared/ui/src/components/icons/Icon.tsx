@@ -101,6 +101,7 @@ import Home3 from './Home3'
 import Home4 from './Home4'
 import Image3 from './Image3'
 import ImageX from './ImageX'
+import Inbox2 from './Inbox2'
 import InformationCircleContained from './InformationCircleContained'
 import InformationSquareContained from './InformationSquareContained'
 import Instagram from './Instagram'
@@ -310,6 +311,7 @@ export type IconName =
   | 'Home4'
   | 'Image3'
   | 'ImageX'
+  | 'Inbox2'
   | 'InformationCircleContained'
   | 'InformationSquareContained'
   | 'Instagram'
@@ -523,6 +525,7 @@ const iconComponents: IconComponents = {
   Home4,
   Image3,
   ImageX,
+  Inbox2,
   InformationCircleContained,
   InformationSquareContained,
   Instagram,
