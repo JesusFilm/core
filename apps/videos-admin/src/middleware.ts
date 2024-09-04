@@ -48,7 +48,7 @@ export default async function middleware(
   )
     return intlMiddleware(req)
 
-  return authMiddleware(req, {
+  return await authMiddleware(req, {
     ...authConfig,
     loginPath: '/api/login',
     logoutPath: '/api/logout',
@@ -66,20 +66,17 @@ export default async function middleware(
       }).query({
         query: GET_AUTH
       })
-      console.log('data', data)
       if (data.me?.mediaUserRoles.length === 0)
         req.nextUrl.pathname = unAuthorizedPage
 
       return intlMiddleware(req)
     },
     handleInvalidToken: async (reason) => {
-      console.log('reason', reason)
       if (!testPathnameRegex(publicPaths, req.nextUrl.pathname))
         req.nextUrl.pathname = authPage
       return intlMiddleware(req)
     },
-    handleError: async (error) => {
-      console.log('error')
+    handleError: async () => {
       if (!testPathnameRegex(publicPaths, req.nextUrl.pathname))
         req.nextUrl.pathname = authPage
       return intlMiddleware(req)

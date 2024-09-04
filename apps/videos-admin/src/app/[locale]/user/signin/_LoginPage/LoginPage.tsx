@@ -11,16 +11,16 @@ import { useTranslations } from 'next-intl'
 import { ReactElement, useEffect, useState } from 'react'
 import { useLoadingCallback } from 'react-loading-hook'
 
-import { getFirebaseAuth } from '../../../../../libs/auth/firebase'
+import {
+  getFirebaseAuth,
+  getGoogleProvider,
+  loginWithProvider,
+  loginWithProviderUsingRedirect
+} from '../../../../../libs/auth/firebase'
 import { useRedirectAfterLogin } from '../../../../../libs/auth/useRedirectAfterLogin'
 import { useRedirectParam } from '../../../../../libs/auth/useRedirectParam'
 import { loginWithCredential } from '../../../../api'
 
-import {
-  getGoogleProvider,
-  loginWithProvider,
-  loginWithProviderUsingRedirect
-} from './firebase'
 import { PasswordForm, PasswordFormValue } from './PasswordForm'
 
 export function LoginPage(): ReactElement {
