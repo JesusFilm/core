@@ -76,7 +76,7 @@ export function SearchbarDropdown({
         <TabPanel name="suggestions-tab" value={tabValue} index={0}>
           <Suggestions refinements={refinements} />
         </TabPanel>
-        <TabPanel name="languages-tab" value={tabValue} index={1}>
+        <TabPanel name="languages-tab" value={tabValue} index={1} pt={3}>
           <LanguageContinentRefinements
             refinements={refinements}
             languages={languages}

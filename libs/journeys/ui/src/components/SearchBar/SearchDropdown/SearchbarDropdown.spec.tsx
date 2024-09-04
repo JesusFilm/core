@@ -38,42 +38,65 @@ describe('SearchbarDropdown', () => {
     jest.clearAllMocks()
   })
 
-  it('should render the correct continent headers', async () => {
+  it('should render tab headers', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
         <SearchbarDropdown open refinements={refinements} />
       </MockedProvider>
     )
+    expect(screen.getByText('Search Suggestions')).toBeVisible()
+    expect(screen.getByText('Languages')).toBeVisible()
+  })
+
+  it('should navigate to languages tab', async () => {
+    render(
+      <MockedProvider mocks={[getLanguagesContinentsMock]}>
+        <SearchbarDropdown open refinements={refinements} />
+      </MockedProvider>
+    )
+    fireEvent.click(screen.getByText('Languages'))
+    await waitFor(() => expect(screen.getByText('Asia')).toBeVisible())
+    expect(screen.getByText('Europe')).toBeVisible()
+    expect(screen.getByText('North America')).toBeVisible()
+    expect(screen.getByText('South America')).toBeVisible()
+  })
+
+  it('should render the correct continent headers', async () => {
+    render(
+      <MockedProvider mocks={[getLanguagesContinentsMock]}>
+        <SearchbarDropdown open refinements={refinements} tabIndex={1} />
+      </MockedProvider>
+    )
     await waitFor(() => {
       expect(screen.getByTestId('SearchBarDropdown')).toBeInTheDocument()
     })
-    expect(screen.getByText('Asia')).toBeInTheDocument()
-    expect(screen.getByText('Europe')).toBeInTheDocument()
-    expect(screen.getByText('North America')).toBeInTheDocument()
-    expect(screen.getByText('South America')).toBeInTheDocument()
+    expect(screen.getByText('Asia')).toBeVisible()
+    expect(screen.getByText('Europe')).toBeVisible()
+    expect(screen.getByText('North America')).toBeVisible()
+    expect(screen.getByText('South America')).toBeVisible()
   })
 
   it('should render the correct languages', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchbarDropdown open refinements={refinements} />
+        <SearchbarDropdown open refinements={refinements} tabIndex={1} />
       </MockedProvider>
     )
     await waitFor(() => {
       expect(screen.getByTestId('SearchBarDropdown')).toBeInTheDocument()
     })
-    expect(screen.getByText('English')).toBeInTheDocument()
-    expect(screen.getByText('Spanish, Castilian')).toBeInTheDocument()
-    expect(screen.getByText('Spanish, Latin American')).toBeInTheDocument()
-    expect(screen.getByText('Cantonese')).toBeInTheDocument()
-    expect(screen.getByText('Chinese, Simplified')).toBeInTheDocument()
-    expect(screen.getByText('Chinese, Traditional')).toBeInTheDocument()
+    expect(screen.getByText('English')).toBeVisible()
+    expect(screen.getByText('Spanish, Castilian')).toBeVisible()
+    expect(screen.getByText('Spanish, Latin American')).toBeVisible()
+    expect(screen.getByText('Cantonese')).toBeVisible()
+    expect(screen.getByText('Chinese, Simplified')).toBeVisible()
+    expect(screen.getByText('Chinese, Traditional')).toBeVisible()
   })
 
   it('should render message if no languages', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchbarDropdown open refinements={emptyRefinements} />
+        <SearchbarDropdown open refinements={emptyRefinements} tabIndex={1} />
       </MockedProvider>
     )
 
@@ -81,13 +104,13 @@ describe('SearchbarDropdown', () => {
       screen.getByText(
         'Sorry, there are no languages available for this search. Try removing some of your search criteria!'
       )
-    ).toBeInTheDocument()
+    ).toBeVisible()
   })
 
   it('should not render headers if no languages', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchbarDropdown open refinements={emptyRefinements} />
+        <SearchbarDropdown open refinements={emptyRefinements} tabIndex={1} />
       </MockedProvider>
     )
 
@@ -105,7 +128,7 @@ describe('SearchbarDropdown', () => {
   it('should only render continent headers that have languages', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchbarDropdown open refinements={refinements} />
+        <SearchbarDropdown open refinements={refinements} tabIndex={1} />
       </MockedProvider>
     )
 
@@ -119,7 +142,7 @@ describe('SearchbarDropdown', () => {
   it('should call refine on language click', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchbarDropdown open refinements={refinements} />
+        <SearchbarDropdown open refinements={refinements} tabIndex={1} />
       </MockedProvider>
     )
     await waitFor(() => {
@@ -128,36 +151,17 @@ describe('SearchbarDropdown', () => {
     expect(refine).toHaveBeenCalled()
   })
 
-  it('should render continent refinements when languages variant', async () => {
+  it('should refine query when suggestion clicked', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
         <SearchbarDropdown open refinements={emptyRefinements} tabIndex={0} />
       </MockedProvider>
     )
     await waitFor(() => {
-      expect(screen.getByTestId('SearchBarDropdown')).toBeInTheDocument()
-    })
-  })
-
-  it('should render suggestions when suggestions variant', async () => {
-    render(
-      <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchbarDropdown open refinements={emptyRefinements} tabIndex={1} />
-      </MockedProvider>
-    )
-    await waitFor(() => {
       expect(screen.getByText('Search Suggestions')).toBeInTheDocument()
     })
-  })
-
-  it('should refine query when suggestion clicked', async () => {
-    render(
-      <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchbarDropdown open refinements={emptyRefinements} tabIndex={1} />
-      </MockedProvider>
-    )
-    await waitFor(() => {
-      expect(screen.getByText('Search Suggestions')).toBeInTheDocument()
-    })
+    const firstSuggestion = screen.getByText('- in English')
+    fireEvent.click(firstSuggestion)
+    expect(refine).toHaveBeenCalledWith('Jesus')
   })
 })
