@@ -9,17 +9,20 @@ import { useLanguagesContinentsQuery } from '../../../libs/useLanguagesContinent
 import { useSortLanguageContinents } from '../../../libs/useSortLanguageContinents'
 
 import { LanguageContinentRefinements } from './LanguageContinentRefinements'
+import { Suggestions } from './Suggestions'
 
 interface SearchbarDropdownProps {
   open: boolean
   id?: string
   anchorEl?: HTMLElement | null
+  variant?: string
 }
 
 export function SearchbarDropdown({
   open,
   id,
-  anchorEl
+  anchorEl,
+  variant = 'languages'
 }: SearchbarDropdownProps): ReactElement {
   const theme = useTheme()
 
@@ -39,7 +42,7 @@ export function SearchbarDropdown({
       anchorEl={anchorEl}
       placement="bottom-end"
       sx={{ width: anchorEl?.clientWidth }}
-      data-testid="SearchLanguageFilter"
+      data-testid="SearchBarDropdown"
       modifiers={[
         {
           name: 'flip',
@@ -62,10 +65,15 @@ export function SearchbarDropdown({
             }
           }}
         >
-          <LanguageContinentRefinements
-            refinements={refinements}
-            languages={languages}
-          />
+          {variant === 'languages' && (
+            <LanguageContinentRefinements
+              refinements={refinements}
+              languages={languages}
+            />
+          )}
+          {variant === 'suggestions' && (
+            <Suggestions refinements={refinements} />
+          )}
         </Stack>
       </Box>
     </Popper>
