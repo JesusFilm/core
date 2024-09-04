@@ -56,7 +56,13 @@ export function ProjectIdSelect({
           {t('None')}
         </MenuItem>
         {projects?.map((project) => (
-          <MenuItem key={project.id} value={project.id}>
+          <MenuItem
+            role="button"
+            key={project.id}
+            value={project.id}
+            aria-label={project.name}
+            id={project.name}
+          >
             {project.name}
           </MenuItem>
         ))}
