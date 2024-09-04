@@ -1,7 +1,5 @@
 import Box from '@mui/material/Box'
 import Popper from '@mui/material/Popper'
-import Stack from '@mui/material/Stack'
-import { useTheme } from '@mui/material/styles'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { ReactElement } from 'react'
 
@@ -26,8 +24,6 @@ export function SearchbarDropdown({
   anchorEl,
   variant = 'languages'
 }: SearchbarDropdownProps): ReactElement {
-  const theme = useTheme()
-
   const { data } = useLanguagesContinentsQuery()
   const languages = useSortLanguageContinents({
     languages: data?.languages ?? []
@@ -52,27 +48,15 @@ export function SearchbarDropdown({
         borderRadius={3}
         boxShadow="0px 4px 4px 0px #00000040"
         sx={{ p: 8, bgcolor: 'background.paper', mt: 3 }}
+        color="text.primary"
       >
-        <Stack
-          color="text.primary"
-          direction={{ xs: 'column', lg: 'row' }}
-          justifyContent="space-around"
-          sx={{
-            [theme.breakpoints.down('lg')]: {
-              gap: 6
-            }
-          }}
-        >
-          {variant === 'languages' && (
-            <LanguageContinentRefinements
-              refinements={refinements}
-              languages={languages}
-            />
-          )}
-          {variant === 'suggestions' && (
-            <Suggestions refinements={refinements} />
-          )}
-        </Stack>
+        {variant === 'languages' && (
+          <LanguageContinentRefinements
+            refinements={refinements}
+            languages={languages}
+          />
+        )}
+        {variant === 'suggestions' && <Suggestions refinements={refinements} />}
       </Box>
     </Popper>
   )
