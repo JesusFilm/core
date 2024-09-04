@@ -5,9 +5,8 @@ import { Components, Theme, alpha } from '@mui/material/styles'
 import { svgIconClasses } from '@mui/material/SvgIcon'
 import { typographyClasses } from '@mui/material/Typography'
 
-import { gray, green, red } from '../themePrimitives'
+import { green, grey, red } from '../themePrimitives'
 
-/* eslint-disable import/prefer-default-export */
 export const dataDisplayCustomizations: Components<Theme> = {
   MuiList: {
     styleOverrides: {
@@ -104,22 +103,22 @@ export const dataDisplayCustomizations: Components<Theme> = {
               color: 'default'
             },
             style: {
-              borderColor: gray[200],
-              backgroundColor: gray[100],
+              borderColor: grey[200],
+              backgroundColor: grey[100],
               [`& .${chipClasses.label}`]: {
-                color: gray[500]
+                color: grey[500]
               },
               [`& .${chipClasses.icon}`]: {
-                color: gray[500]
+                color: grey[500]
               },
               ...theme.applyStyles('dark', {
-                borderColor: gray[700],
-                backgroundColor: gray[800],
+                borderColor: grey[700],
+                backgroundColor: grey[800],
                 [`& .${chipClasses.label}`]: {
-                  color: gray[300]
+                  color: grey[300]
                 },
                 [`& .${chipClasses.icon}`]: {
-                  color: gray[300]
+                  color: grey[300]
                 }
               })
             }

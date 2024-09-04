@@ -2,28 +2,27 @@ import { Theme } from '@mui/material/styles'
 import { axisClasses, chartsGridClasses, legendClasses } from '@mui/x-charts'
 import type { ChartsComponents } from '@mui/x-charts/themeAugmentation'
 
-import { gray } from '../themePrimitives'
+import { grey } from '../themePrimitives'
 
-/* eslint-disable import/prefer-default-export */
 export const chartsCustomizations: ChartsComponents<Theme> = {
   MuiChartsAxis: {
     styleOverrides: {
       root: ({ theme }) => ({
         [`& .${axisClasses.line}`]: {
-          stroke: gray[300]
+          stroke: grey[300]
         },
-        [`& .${axisClasses.tick}`]: { stroke: gray[300] },
+        [`& .${axisClasses.tick}`]: { stroke: grey[300] },
         [`& .${axisClasses.tickLabel}`]: {
-          fill: gray[500],
+          fill: grey[500],
           fontWeight: 500
         },
         ...theme.applyStyles('dark', {
           [`& .${axisClasses.line}`]: {
-            stroke: gray[700]
+            stroke: grey[700]
           },
-          [`& .${axisClasses.tick}`]: { stroke: gray[700] },
+          [`& .${axisClasses.tick}`]: { stroke: grey[700] },
           [`& .${axisClasses.tickLabel}`]: {
-            fill: gray[300],
+            fill: grey[300],
             fontWeight: 500
           }
         })
@@ -42,7 +41,7 @@ export const chartsCustomizations: ChartsComponents<Theme> = {
         borderRadius: theme.shape.borderRadius,
         background: 'hsl(0, 0%, 100%)',
         ...theme.applyStyles('dark', {
-          background: gray[900]
+          background: grey[900]
         })
       })
     }
@@ -60,13 +59,13 @@ export const chartsCustomizations: ChartsComponents<Theme> = {
     styleOverrides: {
       root: ({ theme }) => ({
         [`& .${chartsGridClasses.line}`]: {
-          stroke: gray[200],
+          stroke: grey[200],
           strokeDasharray: '4 2',
           strokeWidth: 0.8
         },
         ...theme.applyStyles('dark', {
           [`& .${chartsGridClasses.line}`]: {
-            stroke: gray[700],
+            stroke: grey[700],
             strokeDasharray: '4 2',
             strokeWidth: 0.8
           }

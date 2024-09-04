@@ -9,9 +9,8 @@ import { tablePaginationClasses } from '@mui/material/TablePagination'
 import { gridClasses } from '@mui/x-data-grid'
 import type { DataGridComponents } from '@mui/x-data-grid/themeAugmentation'
 
-import { gray } from '../themePrimitives'
+import { grey } from '../themePrimitives'
 
-/* eslint-disable import/prefer-default-export */
 export const dataGridCustomizations: DataGridComponents<Theme> = {
   MuiDataGrid: {
     styleOverrides: {
@@ -85,15 +84,15 @@ export const dataGridCustomizations: DataGridComponents<Theme> = {
             backgroundColor: alpha(theme.palette.action.selected, 0.3)
           },
           '&:active': {
-            backgroundColor: gray[200]
+            backgroundColor: grey[200]
           },
           ...theme.applyStyles('dark', {
-            color: gray[50],
+            color: grey[50],
             '&:hover': {
-              backgroundColor: gray[800]
+              backgroundColor: grey[800]
             },
             '&:active': {
-              backgroundColor: gray[900]
+              backgroundColor: grey[900]
             }
           })
         }
@@ -102,18 +101,18 @@ export const dataGridCustomizations: DataGridComponents<Theme> = {
         border: 'none',
         backgroundColor: 'transparent',
         '&:hover': {
-          backgroundColor: gray[100]
+          backgroundColor: grey[100]
         },
         '&:active': {
-          backgroundColor: gray[200]
+          backgroundColor: grey[200]
         },
         ...theme.applyStyles('dark', {
-          color: gray[50],
+          color: grey[50],
           '&:hover': {
-            backgroundColor: gray[800]
+            backgroundColor: grey[800]
           },
           '&:active': {
-            backgroundColor: gray[900]
+            backgroundColor: grey[900]
           }
         })
       }),

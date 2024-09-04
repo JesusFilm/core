@@ -4,7 +4,10 @@
     "jsx": "preserve",
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
-    "types": ["node", "jest"],
+    "types": [
+      "node",
+      "jest"
+    ],
     "strict": false,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
@@ -21,7 +24,8 @@
         "tadaOutputLocation": "./apps/videos-admin/src/__generated__/graphql-env.d.ts"
       }
     ],
-    "tsBuildInfoFile": "../../.cache/videos-admin/tsc/.tsbuildinfo"
+    "tsBuildInfoFile": "../../.cache/videos-admin/tsc/.tsbuildinfo",
+    "strictNullChecks": true
   },
   "include": [
     "**/*.ts",
@@ -35,5 +39,8 @@
     "src/middleware.ts",
     "../../dist/apps/videos-admin/.next/types/**/*.ts"
   ],
-  "exclude": ["node_modules", "jest.config.ts"]
+  "exclude": [
+    "node_modules",
+    "jest.config.ts"
+  ]
 }

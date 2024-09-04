@@ -6,8 +6,8 @@ import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
-import { getFirebaseAuth } from '../../../libs/auth/firebase'
-import { logout } from '../../api'
+import { logout } from '../../app/api'
+import { getFirebaseAuth } from '../../libs/auth/firebase'
 
 export function Logout(): ReactElement {
   const t = useTranslations()

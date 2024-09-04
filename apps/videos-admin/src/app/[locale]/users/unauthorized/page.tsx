@@ -6,7 +6,7 @@ import { ReactElement } from 'react'
 
 import minimalLogo from '../../../../assets/minimal-logo.png'
 import { CenterPage } from '../../../../components/CenterPage'
-import { Logout } from '../../_Logout'
+import { Logout } from '../../../../components/Logout'
 
 export default function UnauthorizedPage(): ReactElement {
   const t = useTranslations()

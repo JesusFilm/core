@@ -1,0 +1,1 @@
+export { PageViewsBarChart } from './PageViewsBarChart'
