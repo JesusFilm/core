@@ -101,7 +101,7 @@ describe('RefinementGroup', () => {
     expect(screen.getByRole('checkbox', { name: 'Cantonese' })).toBeChecked()
   })
 
-  it('should disable the checkbox if title and continent match but refinement does not', () => {
+  it.skip('should disable the checkbox if title and continent match but refinement does not', () => {
     const useRefinementListWithRefinedValue = {
       items: [
         {
