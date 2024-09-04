@@ -1424,6 +1424,12 @@ input LinkActionInput
   target: String
 }
 
+enum MediaRole
+  @join__type(graph: MEDIA)
+{
+  publisher @join__enumValue(graph: MEDIA)
+}
+
 input MeInput
   @join__type(graph: USERS)
 {
@@ -2947,9 +2953,11 @@ type UnsplashUserLinks
 
 type User
   @join__type(graph: JOURNEYS, key: "id")
+  @join__type(graph: MEDIA, key: "id", extension: true)
   @join__type(graph: USERS, key: "id")
 {
   id: ID!
+  mediaUserRoles: [MediaRole!]! @join__field(graph: MEDIA)
   firstName: String! @join__field(graph: USERS)
   lastName: String @join__field(graph: USERS)
   email: String! @join__field(graph: USERS)
