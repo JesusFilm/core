@@ -55,6 +55,7 @@ export function SearchBar({
   const [open, setOpen] = useState(false)
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [languageButtonVisable] = useState(showLanguageButton)
+  const [dropdownVarient, setDropdownVarient] = useState<string>('suggestions')
   const { query, refine } = useSearchBox()
 
   const initialValues = {
@@ -70,13 +71,28 @@ export function SearchBar({
     refine(values.title)
   }
 
-  function handleClick(): void {
-    setAnchorEl(popperRef.current)
-    setOpen((prevOpen) => !prevOpen)
+  function openDropwdown(): void {
+    setOpen(true)
+  }
+
+  function closeDropwdown(): void {
+    setOpen(false)
+  }
+
+  function openSuggestionsDropdown(): void {
+    if (!open) {
+      setDropdownVarient('suggestions')
+      openDropwdown()
+    }
+  }
+
+  function openLanguagesDropdown(): void {
+    setDropdownVarient('languages')
+    openDropwdown()
   }
 
   return (
-    <ClickAwayListener onClickAway={() => setOpen(false)}>
+    <ClickAwayListener onClickAway={closeDropwdown}>
       <Box>
         <Box
           sx={{
@@ -87,6 +103,7 @@ export function SearchBar({
           }}
           data-testid="SearchBar"
           ref={popperRef}
+          onClick={() => setAnchorEl(popperRef.current)}
         >
           <Formik
             initialValues={initialValues}
@@ -104,6 +121,7 @@ export function SearchBar({
                   autoComplete="off"
                   onChange={handleChange}
                   onBlur={handleBlur}
+                  onFocus={openSuggestionsDropdown}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
@@ -118,7 +136,7 @@ export function SearchBar({
                         }}
                       >
                         <LanguageButtons
-                          onClick={handleClick}
+                          onClick={openLanguagesDropdown}
                           refinements={refinements}
                         />
                       </InputAdornment>
@@ -138,7 +156,10 @@ export function SearchBar({
             }}
           >
             <Divider variant="middle" orientation="horizontal" />
-            <LanguageButtons onClick={handleClick} refinements={refinements} />
+            <LanguageButtons
+              onClick={openLanguagesDropdown}
+              refinements={refinements}
+            />
           </Box>
         </Box>
         <SearchbarDropdown
@@ -146,6 +167,7 @@ export function SearchBar({
           refinements={refinements}
           id={open ? 'simple-popper' : undefined}
           anchorEl={anchorEl}
+          variant={dropdownVarient}
         />
       </Box>
     </ClickAwayListener>
