@@ -340,6 +340,8 @@ type VideoTitle {
 type VideoVariant {
   id: ID!
   hls: String
+  dash: String
+  share: String
   downloads: [VideoVariantDownload!]!
   duration: Int!
   language: Language!
@@ -354,6 +356,8 @@ type VideoVariantDownload {
   id: ID!
   quality: VideoVariantDownloadQuality!
   size: Float!
+  height: Int!
+  width: Int!
   url: String!
 }
 
