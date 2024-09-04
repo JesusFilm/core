@@ -34,6 +34,10 @@ export interface JourneySettingsUpdate_journeyUpdate {
   showShareButton: boolean | null;
   showLikeButton: boolean | null;
   showDislikeButton: boolean | null;
+  /**
+   * public title for viewers
+   */
+  displayTitle: string | null;
 }
 
 export interface JourneySettingsUpdate {

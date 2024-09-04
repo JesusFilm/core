@@ -1144,6 +1144,10 @@ export type MeInput = {
   redirect?: InputMaybe<Scalars['String']['input']>;
 };
 
+export enum MediaRole {
+  Publisher = 'publisher'
+}
+
 export enum MessagePlatform {
   CheckBroken = 'checkBroken',
   CheckContained = 'checkContained',
@@ -2801,9 +2805,23 @@ export type StepViewEventCreateInput = {
 export type Tag = {
   __typename?: 'Tag';
   id: Scalars['ID']['output'];
-  name: Array<Translation>;
+  name: Array<TagName>;
   parentId?: Maybe<Scalars['ID']['output']>;
   service?: Maybe<Service>;
+};
+
+
+export type TagNameArgs = {
+  languageId?: InputMaybe<Scalars['ID']['input']>;
+  primary?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type TagName = {
+  __typename?: 'TagName';
+  id: Scalars['ID']['output'];
+  language: Language;
+  primary: Scalars['Boolean']['output'];
+  value: Scalars['String']['output'];
 };
 
 export type Team = {
@@ -3084,6 +3102,7 @@ export type User = {
   id: Scalars['ID']['output'];
   imageUrl?: Maybe<Scalars['String']['output']>;
   lastName?: Maybe<Scalars['String']['output']>;
+  mediaUserRoles: Array<MediaRole>;
   superAdmin?: Maybe<Scalars['Boolean']['output']>;
 };
 
@@ -3938,7 +3957,6 @@ export enum Join__Graph {
   Journeys = 'JOURNEYS',
   Languages = 'LANGUAGES',
   Media = 'MEDIA',
-  Tags = 'TAGS',
   Users = 'USERS'
 }
 

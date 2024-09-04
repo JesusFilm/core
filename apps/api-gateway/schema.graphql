@@ -915,7 +915,6 @@ enum join__Graph {
   JOURNEYS @join__graph(name: "journeys", url: "http://127.0.0.1:4001/graphql")
   LANGUAGES @join__graph(name: "languages", url: "http://127.0.0.1:4003/graphql")
   MEDIA @join__graph(name: "media", url: "http://127.0.0.1:4005/graphql")
-  TAGS @join__graph(name: "tags", url: "http://127.0.0.1:4006/graphql")
   USERS @join__graph(name: "users", url: "http://127.0.0.1:4002/graphql")
 }
 
@@ -1353,7 +1352,6 @@ type Language
   @join__type(graph: JOURNEYS, key: "id")
   @join__type(graph: LANGUAGES, key: "id")
   @join__type(graph: MEDIA, key: "id", extension: true)
-  @join__type(graph: TAGS, key: "id")
   @join__type(graph: USERS, key: "id")
 {
   id: ID!
@@ -1424,6 +1422,12 @@ input LinkActionInput
   gtmEventName: String
   url: String!
   target: String
+}
+
+enum MediaRole
+  @join__type(graph: MEDIA)
+{
+  publisher @join__enumValue(graph: MEDIA)
 }
 
 input MeInput
@@ -2037,7 +2041,6 @@ type Query
   @join__type(graph: JOURNEYS)
   @join__type(graph: LANGUAGES)
   @join__type(graph: MEDIA)
-  @join__type(graph: TAGS)
   @join__type(graph: USERS)
 {
   blocks(where: BlocksFilter): [Block!]! @join__field(graph: JOURNEYS)
@@ -2155,7 +2158,7 @@ type Query
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]! @join__field(graph: MEDIA)
   videosCount(where: VideosFilter): Int! @join__field(graph: MEDIA)
   videoVariants: [VideoVariant!]! @join__field(graph: MEDIA)
-  tags: [Tag!]! @join__field(graph: TAGS)
+  tags: [Tag!]! @join__field(graph: MEDIA)
   me(input: MeInput): User @join__field(graph: USERS)
   user(id: ID!): User @join__field(graph: USERS)
   userByEmail(email: String!): User @join__field(graph: USERS)
@@ -2266,14 +2269,14 @@ enum SegmindModel
 }
 
 enum Service
-  @join__type(graph: TAGS)
+  @join__type(graph: MEDIA)
 {
-  apiJourneys @join__enumValue(graph: TAGS)
-  apiLanguages @join__enumValue(graph: TAGS)
-  apiMedia @join__enumValue(graph: TAGS)
-  apiTags @join__enumValue(graph: TAGS)
-  apiUsers @join__enumValue(graph: TAGS)
-  apiVideos @join__enumValue(graph: TAGS)
+  apiJourneys @join__enumValue(graph: MEDIA)
+  apiLanguages @join__enumValue(graph: MEDIA)
+  apiMedia @join__enumValue(graph: MEDIA)
+  apiTags @join__enumValue(graph: MEDIA)
+  apiUsers @join__enumValue(graph: MEDIA)
+  apiVideos @join__enumValue(graph: MEDIA)
 }
 
 type SignUpBlock implements Block
@@ -2601,12 +2604,21 @@ input StepViewEventCreateInput
 
 type Tag
   @join__type(graph: JOURNEYS, key: "id")
-  @join__type(graph: TAGS, key: "id")
+  @join__type(graph: MEDIA, key: "id")
 {
   id: ID!
-  name: [Translation!]! @join__field(graph: TAGS)
-  parentId: ID @join__field(graph: TAGS)
-  service: Service @join__field(graph: TAGS)
+  parentId: ID @join__field(graph: MEDIA)
+  name(languageId: ID, primary: Boolean): [TagName!]! @join__field(graph: MEDIA)
+  service: Service @join__field(graph: MEDIA)
+}
+
+type TagName
+  @join__type(graph: MEDIA)
+{
+  id: ID!
+  value: String!
+  primary: Boolean!
+  language: Language!
 }
 
 type Team
@@ -2737,7 +2749,6 @@ enum ThemeName
 
 type Translation
   @join__type(graph: JOURNEYS)
-  @join__type(graph: TAGS)
   @join__type(graph: USERS)
 {
   value: String!
@@ -2942,9 +2953,11 @@ type UnsplashUserLinks
 
 type User
   @join__type(graph: JOURNEYS, key: "id")
+  @join__type(graph: MEDIA, key: "id", extension: true)
   @join__type(graph: USERS, key: "id")
 {
   id: ID!
+  mediaUserRoles: [MediaRole!]! @join__field(graph: MEDIA)
   firstName: String! @join__field(graph: USERS)
   lastName: String @join__field(graph: USERS)
   email: String! @join__field(graph: USERS)

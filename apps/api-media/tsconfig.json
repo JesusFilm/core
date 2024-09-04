@@ -6,9 +6,19 @@
     "tsBuildInfoFile": "../../.cache/api-media/tsc/.tsbuildinfo",
     "plugins": [
       {
-        "name": "@0no-co/graphqlsp",
-        "schema": "../api-gateway/schema.graphql",
-        "tadaOutputLocation": "./src/__generated__/graphql-env.d.ts"
+        "name": "gql.tada/ts-plugin",
+        "schemas": [
+          {
+            "name": "subgraph",
+            "schema": "./schema.graphql",
+            "tadaOutputLocation": "./src/__generated__/graphql-subgraph-env.d.ts"
+          },
+          {
+            "name": "gateway",
+            "schema": "../api-gateway/schema.graphql",
+            "tadaOutputLocation": "./src/__generated__/graphql-gateway-env.d.ts"
+          }
+        ]
       }
     ]
   },

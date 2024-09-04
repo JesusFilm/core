@@ -143,6 +143,7 @@ describe('SearchBar', () => {
     )
     expect(screen.getAllByText('Language')[0]).toBeInTheDocument()
     fireEvent.click(screen.getAllByText('Language')[0])
+
     expect(screen.getByTestId('SearchBarDropdown')).toBeInTheDocument()
     await waitFor(() => expect(screen.getByText('Europe')).toBeInTheDocument())
   })

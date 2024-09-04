@@ -1,5 +1,5 @@
 /* eslint-disable */
-import type { Prisma, CloudflareImage, CloudflareVideo, Video, VideoTitle, VideoVariantDownload, VideoVariant, VideoSubtitle, VideoVariantSubtitle, VideoSnippet, VideoDescription, VideoImageAlt, VideoStudyQuestion, ImportTimes, BibleCitation, BibleBook, BibleBookName, Keyword } from ".prisma/api-media-client";
+import type { Prisma, CloudflareImage, CloudflareVideo, Video, VideoTitle, VideoVariantDownload, VideoVariant, VideoSubtitle, VideoVariantSubtitle, VideoSnippet, VideoDescription, VideoImageAlt, VideoStudyQuestion, ImportTimes, BibleCitation, BibleBook, BibleBookName, Keyword, TagName, Tag, Tagging, UserMediaRole } from ".prisma/api-media-client";
 export default interface PrismaTypes {
     CloudflareImage: {
         Name: "CloudflareImage";
@@ -392,5 +392,94 @@ export default interface PrismaTypes {
                 Nullable: false;
             };
         };
+    };
+    TagName: {
+        Name: "TagName";
+        Shape: TagName;
+        Include: Prisma.TagNameInclude;
+        Select: Prisma.TagNameSelect;
+        OrderBy: Prisma.TagNameOrderByWithRelationAndSearchRelevanceInput;
+        WhereUnique: Prisma.TagNameWhereUniqueInput;
+        Where: Prisma.TagNameWhereInput;
+        Create: {};
+        Update: {};
+        RelationName: "tag";
+        ListRelations: never;
+        Relations: {
+            tag: {
+                Shape: Tag;
+                Name: "Tag";
+                Nullable: false;
+            };
+        };
+    };
+    Tag: {
+        Name: "Tag";
+        Shape: Tag;
+        Include: Prisma.TagInclude;
+        Select: Prisma.TagSelect;
+        OrderBy: Prisma.TagOrderByWithRelationAndSearchRelevanceInput;
+        WhereUnique: Prisma.TagWhereUniqueInput;
+        Where: Prisma.TagWhereInput;
+        Create: {};
+        Update: {};
+        RelationName: "Tagging" | "parent" | "children" | "tagName";
+        ListRelations: "Tagging" | "children" | "tagName";
+        Relations: {
+            Tagging: {
+                Shape: Tagging[];
+                Name: "Tagging";
+                Nullable: false;
+            };
+            parent: {
+                Shape: Tag | null;
+                Name: "Tag";
+                Nullable: true;
+            };
+            children: {
+                Shape: Tag[];
+                Name: "Tag";
+                Nullable: false;
+            };
+            tagName: {
+                Shape: TagName[];
+                Name: "TagName";
+                Nullable: false;
+            };
+        };
+    };
+    Tagging: {
+        Name: "Tagging";
+        Shape: Tagging;
+        Include: Prisma.TaggingInclude;
+        Select: Prisma.TaggingSelect;
+        OrderBy: Prisma.TaggingOrderByWithRelationAndSearchRelevanceInput;
+        WhereUnique: Prisma.TaggingWhereUniqueInput;
+        Where: Prisma.TaggingWhereInput;
+        Create: {};
+        Update: {};
+        RelationName: "tag";
+        ListRelations: never;
+        Relations: {
+            tag: {
+                Shape: Tag;
+                Name: "Tag";
+                Nullable: false;
+            };
+        };
+    };
+    UserMediaRole: {
+        Name: "UserMediaRole";
+        Shape: UserMediaRole;
+        Include: never;
+        Select: Prisma.UserMediaRoleSelect;
+        OrderBy: Prisma.UserMediaRoleOrderByWithRelationAndSearchRelevanceInput;
+        WhereUnique: Prisma.UserMediaRoleWhereUniqueInput;
+        Where: Prisma.UserMediaRoleWhereInput;
+        Create: {};
+        Update: {};
+        RelationName: never;
+        ListRelations: never;
+        Relations: {};
     };
 }

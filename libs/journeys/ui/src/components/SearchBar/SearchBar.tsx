@@ -55,7 +55,6 @@ export function SearchBar({
   const [open, setOpen] = useState(false)
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [languageButtonVisable] = useState(showLanguageButton)
-  const [dropdownVarient, setDropdownVarient] = useState<string>('suggestions')
   const { query, refine } = useSearchBox()
 
   const initialValues = {
@@ -83,14 +82,14 @@ export function SearchBar({
 
   function openSuggestionsDropdown(): void {
     if (!open) {
-      setDropdownVarient('suggestions')
       openDropwdown()
     }
   }
 
   function openLanguagesDropdown(): void {
-    setDropdownVarient('languages')
-    openDropwdown()
+    if (!open) {
+      openDropwdown()
+    }
   }
 
   return (
@@ -169,7 +168,6 @@ export function SearchBar({
           refinements={refinements}
           id={open ? 'simple-popper' : undefined}
           anchorEl={anchorEl}
-          varient={dropdownVarient}
         />
       </Box>
     </ClickAwayListener>

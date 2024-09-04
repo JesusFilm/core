@@ -279,3 +279,65 @@ model Keyword {
   @@unique([value, languageId])
   @@index([value(type: Hash)])
 }
+
+enum Service {
+  apiJourneys
+  apiLanguages
+  apiMedia
+  apiTags
+  apiUsers
+  apiVideos
+}
+
+model TagName {
+  id         String   @id @default(uuid())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  value      String
+  languageId String
+  primary    Boolean
+  tagId      String
+  tag        Tag      @relation(fields: [tagId], references: [id])
+
+  @@unique([tagId, languageId])
+  @@index(value(type: Hash))
+  @@index(primary(type: Hash))
+  @@index(languageId(type: Hash))
+}
+
+model Tag {
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  name      String    @unique
+  Tagging   Tagging[]
+  parent    Tag?      @relation("ParentChildren", fields: [parentId], references: [id], onDelete: Cascade)
+  parentId  String?
+  children  Tag[]     @relation("ParentChildren")
+  service   Service?
+  tagName   TagName[]
+}
+
+model Tagging {
+  id           String   @id @default(uuid())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  tag          Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  tagId        String
+  taggableType String
+  taggableId   String
+  context      String
+
+  @@unique([taggableId, taggableType, tagId, context])
+  @@index([tagId])
+}
+
+enum MediaRole {
+  publisher
+}
+
+model UserMediaRole {
+  id     String      @id @default(uuid())
+  userId String      @unique
+  roles  MediaRole[]
+}
