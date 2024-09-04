@@ -64,7 +64,9 @@ export function SearchBar({
 
   const refinements = useRefinementList({
     attribute: 'languageEnglishName',
-    limit: 1000
+    showMore: true,
+    limit: 5,
+    showMoreLimit: 5000
   })
 
   function handleSubmit(values: typeof initialValues): void {

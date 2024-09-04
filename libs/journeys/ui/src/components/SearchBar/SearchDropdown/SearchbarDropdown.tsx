@@ -52,6 +52,7 @@ export function SearchbarDropdown({
         borderRadius={3}
         boxShadow="0px 4px 4px 0px #00000040"
         sx={{ p: 8, bgcolor: 'background.paper', mt: 3 }}
+        color="text.primary"
       >
         <Stack
           color="text.primary"
