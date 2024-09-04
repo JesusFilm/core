@@ -131,11 +131,7 @@ describe('SearchbarDropdown', () => {
   it('should render continent refinements when languages varient', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchbarDropdown
-          open
-          refinements={emptyRefinements}
-          varient="languages"
-        />
+        <SearchbarDropdown open refinements={emptyRefinements} tabIndex={0} />
       </MockedProvider>
     )
     await waitFor(() => {
@@ -146,30 +142,22 @@ describe('SearchbarDropdown', () => {
   it('should render suggestions when suggestions varient', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchbarDropdown
-          open
-          refinements={emptyRefinements}
-          varient="suggestions"
-        />
+        <SearchbarDropdown open refinements={emptyRefinements} tabIndex={1} />
       </MockedProvider>
     )
     await waitFor(() => {
-      expect(screen.getByText('Suggestions')).toBeInTheDocument()
+      expect(screen.getByText('Search Suggestions')).toBeInTheDocument()
     })
   })
 
   it('should refine query when suggestion clicked', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchbarDropdown
-          open
-          refinements={emptyRefinements}
-          varient="suggestions"
-        />
+        <SearchbarDropdown open refinements={emptyRefinements} tabIndex={1} />
       </MockedProvider>
     )
     await waitFor(() => {
-      expect(screen.getByText('Suggestions')).toBeInTheDocument()
+      expect(screen.getByText('Search Suggestions')).toBeInTheDocument()
     })
   })
 })

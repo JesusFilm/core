@@ -1,9 +1,11 @@
 import Box from '@mui/material/Box'
 import Popper from '@mui/material/Popper'
-import Stack from '@mui/material/Stack'
-import { useTheme } from '@mui/material/styles'
+import Tab from '@mui/material/Tab'
+import Tabs from '@mui/material/Tabs'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
+
+import { TabPanel } from '@core/shared/ui/TabPanel'
 
 import { useLanguagesContinentsQuery } from '../../../libs/useLanguagesContinentsQuery'
 import { useSortLanguageContinents } from '../../../libs/useSortLanguageContinents'
@@ -16,7 +18,7 @@ interface SearchbarDropdownProps {
   refinements: RefinementListRenderState
   id?: string
   anchorEl?: HTMLElement | null
-  varient?: string
+  tabIndex?: number
 }
 
 export function SearchbarDropdown({
@@ -24,12 +26,21 @@ export function SearchbarDropdown({
   refinements,
   id,
   anchorEl,
-  varient = 'languages'
+  tabIndex = 0
 }: SearchbarDropdownProps): ReactElement {
   const { data } = useLanguagesContinentsQuery()
   const languages = useSortLanguageContinents({
     languages: data?.languages ?? []
   })
+
+  const [tabValue, setTabValue] = useState<number>(tabIndex)
+
+  const handleTabChange = (
+    event: React.SyntheticEvent,
+    newValue: number
+  ): void => {
+    setTabValue(newValue)
+  }
 
   return (
     <Popper
@@ -52,13 +63,25 @@ export function SearchbarDropdown({
         sx={{ p: 8, bgcolor: 'background.paper', mt: 3 }}
         color="text.primary"
       >
-        {varient === 'languages' && (
+        <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 5 }}>
+          <Tabs
+            value={tabValue}
+            onChange={handleTabChange}
+            aria-label="Searchbar dropdown"
+          >
+            <Tab label="Search Suggestions" />
+            <Tab label="Languages" />
+          </Tabs>
+        </Box>
+        <TabPanel name="suggestions-tab" value={tabValue} index={0}>
+          <Suggestions refinements={refinements} />
+        </TabPanel>
+        <TabPanel name="languages-tab" value={tabValue} index={1}>
           <LanguageContinentRefinements
             refinements={refinements}
             languages={languages}
           />
-        )}
-        {varient === 'suggestions' && <Suggestions refinements={refinements} />}
+        </TabPanel>
       </Box>
     </Popper>
   )

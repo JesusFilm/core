@@ -33,7 +33,7 @@ describe('Suggestions', () => {
 
   it('should display suggestions header', () => {
     render(<Suggestions refinements={refinements} />)
-    expect(screen.getByText('Suggestions')).toBeInTheDocument()
+    expect(screen.getByText('Search Suggestions')).toBeInTheDocument()
   })
 
   it('should display default suggestions', () => {

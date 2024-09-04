@@ -132,7 +132,7 @@ describe('SearchBar', () => {
       searchBar.focus()
     })
     expect(screen.getByTestId('SearchBarDropdown')).toBeInTheDocument()
-    expect(screen.getByText('Suggestions')).toBeInTheDocument()
+    expect(screen.getByText('Search Suggestions')).toBeInTheDocument()
   })
 
   it('should open languages dropdown when language button clicked', async () => {
