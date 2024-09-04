@@ -143,11 +143,11 @@ describe('SearchbarDropdown', () => {
     expect(refine).toHaveBeenCalled()
   })
 
-  it('should render continent refinements when languages varient', async () => {
+  it('should render continent refinements when languages variant', async () => {
     mockEmptyRefinementsList()
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchbarDropdown open varient="languages" />
+        <SearchbarDropdown open variant="languages" />
       </MockedProvider>
     )
     await waitFor(() => {
@@ -155,11 +155,11 @@ describe('SearchbarDropdown', () => {
     })
   })
 
-  it('should render suggestions when suggestions varient', async () => {
+  it('should render suggestions when suggestions variant', async () => {
     mockEmptyRefinementsList()
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchbarDropdown open varient="suggestions" />
+        <SearchbarDropdown open variant="suggestions" />
       </MockedProvider>
     )
     await waitFor(() => {
@@ -171,7 +171,7 @@ describe('SearchbarDropdown', () => {
     mockEmptyRefinementsList()
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchbarDropdown open varient="suggestions" />
+        <SearchbarDropdown open variant="suggestions" />
       </MockedProvider>
     )
     await waitFor(() => {

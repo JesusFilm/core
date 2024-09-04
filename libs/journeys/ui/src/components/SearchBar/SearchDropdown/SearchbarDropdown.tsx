@@ -15,14 +15,14 @@ interface SearchbarDropdownProps {
   open: boolean
   id?: string
   anchorEl?: HTMLElement | null
-  varient?: string
+  variant?: string
 }
 
 export function SearchbarDropdown({
   open,
   id,
   anchorEl,
-  varient = 'languages'
+  variant = 'languages'
 }: SearchbarDropdownProps): ReactElement {
   const theme = useTheme()
 
@@ -65,13 +65,13 @@ export function SearchbarDropdown({
             }
           }}
         >
-          {varient === 'languages' && (
+          {variant === 'languages' && (
             <LanguageContinentRefinements
               refinements={refinements}
               languages={languages}
             />
           )}
-          {varient === 'suggestions' && (
+          {variant === 'suggestions' && (
             <Suggestions refinements={refinements} />
           )}
         </Stack>

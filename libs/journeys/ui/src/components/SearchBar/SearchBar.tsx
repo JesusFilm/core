@@ -135,7 +135,7 @@ export function SearchBar({
           open={open}
           id={open ? 'simple-popper' : undefined}
           anchorEl={anchorEl}
-          varient={dropdownVarient}
+          variant={dropdownVarient}
         />
       </Box>
     </ClickAwayListener>
