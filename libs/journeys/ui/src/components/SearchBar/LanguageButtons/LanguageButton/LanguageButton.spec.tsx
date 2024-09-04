@@ -12,7 +12,7 @@ describe('LanguageButton', () => {
   })
 
   it('should render the button with a selected language and icons', () => {
-    render(<LanguageButton content="English" isRefined />)
+    render(<LanguageButton content="English" isDropdown={false} />)
 
     expect(screen.getByTestId('Globe1Icon')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'English' })).toBeInTheDocument()

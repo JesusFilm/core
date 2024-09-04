@@ -24,14 +24,14 @@ const StyledButton = styled(Button)(({ theme }) => ({
 interface LanguageButtonProps {
   content: string
   index?: number
-  isRefined?: boolean
+  isDropdown?: boolean
   handleClick?: MouseEventHandler<HTMLButtonElement> | undefined
 }
 
 export function LanguageButton({
   content,
   index,
-  isRefined = false,
+  isDropdown = true,
   handleClick
 }: LanguageButtonProps): ReactElement {
   return (
@@ -41,7 +41,7 @@ export function LanguageButton({
       color="inherit"
       onClick={handleClick}
       startIcon={<Globe1Icon />}
-      endIcon={isRefined ? <X2Icon /> : <ChevronDown />}
+      endIcon={isDropdown ? <ChevronDown /> : <X2Icon />}
     >
       {content}
     </StyledButton>
