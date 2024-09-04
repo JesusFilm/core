@@ -40,7 +40,6 @@ export function SearchbarDropdown({
     isRefined: boolean
   ): void {
     const currentLanguages = selectedLanguagesByContinent?.[continent] ?? []
-
     const updatedLanguages = isRefined
       ? [...currentLanguages, language]
       : currentLanguages.filter((lang) => lang !== language)

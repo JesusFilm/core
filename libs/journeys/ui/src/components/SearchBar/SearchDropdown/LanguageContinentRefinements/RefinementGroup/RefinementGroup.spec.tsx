@@ -18,7 +18,7 @@ describe('RefinementGroup', () => {
       <RefinementGroup
         title="Languages"
         refinement={useRefinementList}
-        handleSelectedContinent={jest.fn()}
+        handleLanguagesSelect={jest.fn()}
       />
     )
     expect(screen.getByText('Languages')).toBeInTheDocument()
@@ -29,7 +29,7 @@ describe('RefinementGroup', () => {
       <RefinementGroup
         title="Languages"
         refinement={useRefinementList}
-        handleSelectedContinent={jest.fn()}
+        handleLanguagesSelect={jest.fn()}
       />
     )
     expect(screen.getByText('English')).toBeInTheDocument()
@@ -42,7 +42,7 @@ describe('RefinementGroup', () => {
       <RefinementGroup
         title="Languages"
         refinement={useRefinementList}
-        handleSelectedContinent={jest.fn()}
+        handleLanguagesSelect={jest.fn()}
       />
     )
     fireEvent.click(screen.getByText('Cantonese'))
@@ -58,7 +58,7 @@ describe('RefinementGroup', () => {
       <RefinementGroup
         title="Languages"
         refinement={emptyRefinementList}
-        handleSelectedContinent={jest.fn()}
+        handleLanguagesSelect={jest.fn()}
       />
     )
     expect(screen.getByText('Languages')).toBeInTheDocument()
@@ -66,19 +66,19 @@ describe('RefinementGroup', () => {
   })
 
   it('should handle selected continent on click', () => {
-    const handleSelectedContinent = jest.fn()
+    const handleLanguagesSelect = jest.fn()
     render(
       <RefinementGroup
         title="Languages"
         refinement={useRefinementList}
-        handleSelectedContinent={handleSelectedContinent}
+        handleLanguagesSelect={handleLanguagesSelect}
       />
     )
     fireEvent.click(screen.getByText('Cantonese'))
-    expect(handleSelectedContinent).toHaveBeenCalled()
+    expect(handleLanguagesSelect).toHaveBeenCalled()
   })
 
-  it('should check the checkbox if title, continent, and refinement match', () => {
+  it('should check the checkbox if the language is refined and selected in the specified continent', () => {
     const useRefinementListWithRefinedValue = {
       items: [
         {
@@ -94,14 +94,16 @@ describe('RefinementGroup', () => {
       <RefinementGroup
         title="Asia"
         refinement={useRefinementListWithRefinedValue}
-        selectedContinent="Asia"
-        handleSelectedContinent={jest.fn()}
+        selectedLanguagesByContinent={{
+          Asia: ['Cantonese']
+        }}
+        handleLanguagesSelect={jest.fn()}
       />
     )
     expect(screen.getByRole('checkbox', { name: 'Cantonese' })).toBeChecked()
   })
 
-  it('should disable the checkbox if title and continent match but refinement does not', () => {
+  it('should disable the checkbox if the language is selected in a different continent', () => {
     const useRefinementListWithRefinedValue = {
       items: [
         {
@@ -117,8 +119,10 @@ describe('RefinementGroup', () => {
       <RefinementGroup
         title="Asia"
         refinement={useRefinementListWithRefinedValue}
-        selectedContinent="Europe"
-        handleSelectedContinent={jest.fn()}
+        selectedLanguagesByContinent={{
+          Europe: ['Cantonese']
+        }}
+        handleLanguagesSelect={jest.fn()}
       />
     )
     expect(screen.getByRole('checkbox', { name: 'Cantonese' })).toBeDisabled()

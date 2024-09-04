@@ -25,6 +25,7 @@ describe('LanguageContinentRefinements', () => {
       <LanguageContinentRefinements
         refinements={refinements}
         languages={languages}
+        handleLanguagesSelect={jest.fn()}
       />
     )
     expect(screen.getByText('Asia')).toBeInTheDocument()
@@ -38,6 +39,7 @@ describe('LanguageContinentRefinements', () => {
       <LanguageContinentRefinements
         refinements={refinements}
         languages={languages}
+        handleLanguagesSelect={jest.fn()}
       />
     )
     expect(screen.getByText('English')).toBeInTheDocument()
@@ -56,6 +58,7 @@ describe('LanguageContinentRefinements', () => {
           } as unknown as RefinementListRenderState
         }
         languages={languages}
+        handleLanguagesSelect={jest.fn()}
       />
     )
     expect(

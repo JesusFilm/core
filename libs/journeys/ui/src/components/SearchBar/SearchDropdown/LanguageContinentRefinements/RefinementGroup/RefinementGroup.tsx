@@ -21,14 +21,28 @@ export function RefinementGroup({
   title,
   refinement,
   handleLanguagesSelect,
-  selectedLanguagesByContinent
+  selectedLanguagesByContinent = {}
 }: RefinementGroupProps): ReactElement {
   const { items, refine } = refinement
 
   function handleClick(language: string, isRefined: boolean): void {
-    if (handleLanguagesSelect != null)
-      handleLanguagesSelect(title, language, isRefined)
+    handleLanguagesSelect(title, language, isRefined)
     refine(language)
+  }
+
+  function isItemChecked(item: { label: string; isRefined: boolean }): boolean {
+    return (
+      (item.isRefined &&
+        selectedLanguagesByContinent[title]?.includes(item.label)) ??
+      false
+    )
+  }
+
+  function isItemDisabled(itemLabel: string): boolean {
+    return Object.entries(selectedLanguagesByContinent).some(
+      ([continent, languages]) =>
+        continent !== title && languages.includes(itemLabel)
+    )
   }
 
   return (
@@ -44,22 +58,8 @@ export function RefinementGroup({
                 key={item.value}
                 control={
                   <Checkbox
-                    checked={
-                      (item.isRefined &&
-                        selectedLanguagesByContinent?.[title]?.includes(
-                          item.label
-                        )) ??
-                      false
-                    }
-                    disabled={Object.keys(
-                      selectedLanguagesByContinent ?? {}
-                    ).some(
-                      (continent) =>
-                        continent !== title &&
-                        selectedLanguagesByContinent?.[continent]?.includes(
-                          item.label
-                        )
-                    )}
+                    checked={isItemChecked(item)}
+                    disabled={isItemDisabled(item.label)}
                     onClick={() => handleClick(item.label, !item.isRefined)}
                     size="small"
                   />
