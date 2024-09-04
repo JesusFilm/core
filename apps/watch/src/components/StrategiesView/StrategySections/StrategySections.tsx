@@ -7,19 +7,19 @@ import { EmptySearch } from '@core/journeys/ui/EmptySearch'
 import { StrategySection } from './StrategySection/StrategySection'
 
 const PROD_INDEXES = [
-  'wp_prd_posts_digital_strategies',
-  'wp_prd_posts_prayer_resources',
-  'wp_prd_posts_outreach_resources',
+  'wp_prd_posts_equipment',
   'wp_prd_posts_training_strategies',
-  'wp_prd_posts_training_strategies'
+  'wp_prd_posts_outreach_resources',
+  'wp_prd_posts_prayer_resources',
+  'wp_prd_posts_digital_strategies'
 ]
 
 const DEV_INDEXES = [
-  'wp_dev_posts_digital_strategies',
-  'wp_dev_posts_prayer_resources',
-  'wp_dev_posts_outreach_resources',
+  'wp_dev_posts_equipment',
   'wp_dev_posts_training_strategies',
-  'wp_dev_posts_training_strategies'
+  'wp_dev_posts_outreach_resources',
+  'wp_dev_posts_prayer_resources',
+  'wp_dev_posts_digital_strategies'
 ]
 
 function getIndexes(): string[] {
