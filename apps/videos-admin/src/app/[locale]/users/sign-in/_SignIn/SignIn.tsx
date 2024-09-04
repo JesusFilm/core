@@ -1,19 +1,23 @@
 'use client'
 
 import LoadingButton from '@mui/lab/LoadingButton'
+import Box from '@mui/material/Box'
+import CircularProgress from '@mui/material/CircularProgress'
 import Typography from '@mui/material/Typography'
 import {
   UserCredential,
   getRedirectResult,
   signInWithEmailAndPassword
 } from 'firebase/auth'
+import Image from 'next/image'
 import { useTranslations } from 'next-intl'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useState } from 'react'
 import { useLoadingCallback } from 'react-loading-hook'
 
+import minimalLogo from '../../../../../assets/minimal-logo.png'
+import { CenterPage } from '../../../../../components/CenterPage'
 import { getFirebaseAuth } from '../../../../../libs/auth/firebase'
 import { useRedirectAfterLogin } from '../../../../../libs/auth/useRedirectAfterLogin'
-import { useRedirectParam } from '../../../../../libs/auth/useRedirectParam'
 import { loginWithCredential } from '../../../../api'
 
 import {
@@ -21,18 +25,21 @@ import {
   loginWithProvider,
   loginWithProviderUsingRedirect
 } from './firebase'
+import { GoogleIcon } from './GoogleIcon'
 import { PasswordForm, PasswordFormValue } from './PasswordForm'
 
-export function LoginPage(): ReactElement {
+export function SignIn(): ReactElement {
   const t = useTranslations()
   const [hasLogged, setHasLogged] = useState(false)
-  const redirect = useRedirectParam()
   const redirectAfterLogin = useRedirectAfterLogin()
 
-  async function handleLogin(credential: UserCredential): Promise<void> {
-    await loginWithCredential(credential)
-    redirectAfterLogin()
-  }
+  const handleLogin = useCallback(
+    async function (credential: UserCredential): Promise<void> {
+      await loginWithCredential(credential)
+      redirectAfterLogin()
+    },
+    [redirectAfterLogin]
+  )
 
   const [handleLoginWithEmailAndPassword, isEmailLoading, emailPasswordError] =
     useLoadingCallback(async ({ email, password }: PasswordFormValue) => {
@@ -67,28 +74,48 @@ export function LoginPage(): ReactElement {
     setHasLogged(true)
   })
 
-  async function handleLoginWithRedirect(): Promise<void> {
-    const auth = getFirebaseAuth()
-    const credential = await getRedirectResult(auth)
+  const handleLoginWithRedirect = useCallback(
+    async function (): Promise<void> {
+      const auth = getFirebaseAuth()
+      const credential = await getRedirectResult(auth)
 
-    if (credential?.user != null) {
-      await handleLogin(credential)
+      if (credential?.user != null) {
+        await handleLogin(credential)
 
-      setHasLogged(true)
-    }
-  }
+        setHasLogged(true)
+      }
+    },
+    [handleLogin]
+  )
 
   useEffect(() => {
     void handleLoginWithRedirect()
-  }, [])
+  }, [handleLoginWithRedirect])
 
   return (
-    <div>
-      <Typography variant="h1">{t('Login')}</Typography>
+    <CenterPage>
+      <Image
+        src={minimalLogo}
+        alt={t('Jesus Film Project')}
+        width={100}
+        height={100}
+      />
+      <Typography
+        component="h1"
+        variant="h4"
+        sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}
+      >
+        {t('Sign in')}
+      </Typography>
       {hasLogged && (
-        <div>
-          {t('Redirecting to {redirect}', { redirect: redirect ?? '/' })}
-        </div>
+        <Box
+          height={300}
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <CircularProgress />
+        </Box>
       )}
       {!hasLogged && (
         <PasswordForm
@@ -102,20 +129,24 @@ export function LoginPage(): ReactElement {
               loading={isGoogleLoading}
               disabled={isGoogleLoading}
               onClick={handleLoginWithGoogle}
+              startIcon={<GoogleIcon />}
+              fullWidth
             >
-              {t('Log in with Google')}
+              {t('Sign in with Google')}
             </LoadingButton>
           ) : (
             <LoadingButton
               loading={isGoogleUsingRedirectLoading}
               disabled={isGoogleUsingRedirectLoading}
               onClick={handleLoginWithGoogleUsingRedirect}
+              startIcon={<GoogleIcon />}
+              fullWidth
             >
-              {t('Log in with Google')}
+              {t('Sign in with Google')}
             </LoadingButton>
           )}
         </PasswordForm>
       )}
-    </div>
+    </CenterPage>
   )
 }

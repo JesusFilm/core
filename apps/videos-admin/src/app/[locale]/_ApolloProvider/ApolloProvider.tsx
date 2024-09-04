@@ -46,7 +46,7 @@ function makeClient(): ApolloClient<NormalizedCacheObject> {
 }
 
 // you need to create a component to wrap your app in
-export function ApolloWrapper({ children }: PropsWithChildren): ReactNode {
+export function ApolloProvider({ children }: PropsWithChildren): ReactNode {
   return (
     <ApolloNextAppProvider makeClient={makeClient}>
       {children}

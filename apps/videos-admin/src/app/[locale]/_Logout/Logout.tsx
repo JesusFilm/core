@@ -1,12 +1,13 @@
 'use client'
 
+import Button from '@mui/material/Button'
 import { signOut } from 'firebase/auth'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
-import { getFirebaseAuth } from '../../libs/auth/firebase'
-import { logout } from '../api'
+import { getFirebaseAuth } from '../../../libs/auth/firebase'
+import { logout } from '../../api'
 
 export function Logout(): ReactElement {
   const t = useTranslations()
@@ -16,7 +17,11 @@ export function Logout(): ReactElement {
     await signOut(auth)
     await logout()
 
-    router.push('/user/signin')
+    router.push('/user/sign-in')
   }
-  return <button onClick={handleLogout}>{t('Sign Out')}</button>
+  return (
+    <Button variant="contained" fullWidth onClick={handleLogout}>
+      {t('Sign out')}
+    </Button>
+  )
 }

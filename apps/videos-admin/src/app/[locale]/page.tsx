@@ -1,7 +1,7 @@
 import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
-import { Logout } from './Logout'
+import { Logout } from './_Logout'
 
 export default function Index(): ReactElement {
   const t = useTranslations()

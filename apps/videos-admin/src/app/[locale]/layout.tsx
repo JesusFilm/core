@@ -1,15 +1,15 @@
+import CssBaseline from '@mui/material/CssBaseline'
+import { ThemeProvider } from '@mui/material/styles'
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter'
 import { NextIntlClientProvider } from 'next-intl'
 import { getMessages } from 'next-intl/server'
 import { ReactNode } from 'react'
 
-import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
-import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
-
 import { AuthProvider } from '../../libs/auth/AuthProvider'
 import { getUser } from '../../libs/auth/getUser'
+import { theme } from '../../theme'
 
-import { ApolloWrapper } from './_apolloWrapper/ApolloWrapper'
+import { ApolloProvider } from './_ApolloProvider'
 
 export default async function LocaleLayout({
   children,
@@ -26,16 +26,14 @@ export default async function LocaleLayout({
       <body>
         <AuthProvider user={user}>
           <NextIntlClientProvider messages={messages}>
-            <ApolloWrapper>
+            <ApolloProvider>
               <AppRouterCacheProvider>
-                <ThemeProvider
-                  themeName={ThemeName.website}
-                  themeMode={ThemeMode.light}
-                >
+                <ThemeProvider theme={theme}>
+                  <CssBaseline />
                   {children}
                 </ThemeProvider>
               </AppRouterCacheProvider>
-            </ApolloWrapper>
+            </ApolloProvider>
           </NextIntlClientProvider>
         </AuthProvider>
       </body>
