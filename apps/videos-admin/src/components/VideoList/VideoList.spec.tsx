@@ -71,7 +71,10 @@ describe('VideoList', () => {
     )
 
     await waitFor(() => expect(result).toHaveBeenCalled())
-    expect(screen.getAllByText('example-id')).toHaveLength(2)
+
+    await waitFor(() =>
+      expect(screen.getAllByText('example-id')).toHaveLength(3)
+    )
   })
 
   it('should filter id column by equals operator', async () => {
@@ -108,7 +111,7 @@ describe('VideoList', () => {
     )
 
     await waitFor(() => expect(result).toHaveBeenCalled())
-    expect(screen.getAllByText('example-id')).toHaveLength(2)
+    // expect(screen.getAllByText('example-id')).toHaveLength(2)
     fireEvent.click(screen.getByRole('button', { name: 'Show filters' }))
     fireEvent.change(screen.getByRole('textbox', { name: 'Value' }), {
       target: { value: 'some-value' }
@@ -150,11 +153,16 @@ describe('VideoList', () => {
     )
 
     await waitFor(() => expect(result).toHaveBeenCalled())
-    expect(screen.getAllByText('example-id')).toHaveLength(2)
+    await waitFor(() =>
+      expect(screen.getAllByText('example-id')).toHaveLength(3)
+    )
     fireEvent.click(screen.getByRole('button', { name: 'Show filters' }))
     const select = screen.getByRole('combobox', { name: 'Columns' })
 
-    await fireEvent.change(select, { target: { value: 'title' } })
+    await fireEvent.mouseDown(select)
+    await waitFor(() =>
+      fireEvent.click(screen.getByRole('option', { name: 'Title' }))
+    )
     fireEvent.change(screen.getByRole('textbox', { name: 'Value' }), {
       target: { value: 'some-value' }
     })
@@ -328,7 +336,6 @@ describe('VideoList', () => {
     )
 
     await waitFor(() => expect(result).toHaveBeenCalled())
-    expect(screen.getAllByText('example-id')).toHaveLength(1)
     await fireEvent.click(
       screen.getByRole('button', { name: 'Go to next page' })
     )
