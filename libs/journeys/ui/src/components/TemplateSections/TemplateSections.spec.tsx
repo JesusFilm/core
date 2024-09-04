@@ -66,7 +66,7 @@ describe('TemplateSections', () => {
       {
         value: 'Acceptance',
         primary: true,
-        __typename: 'Translation',
+        __typename: 'TagName',
         language: {
           __typename: 'Language',
           id: 'en'
@@ -83,7 +83,7 @@ describe('TemplateSections', () => {
       {
         value: 'Addiction',
         primary: true,
-        __typename: 'Translation',
+        __typename: 'TagName',
         language: {
           __typename: 'Language',
           id: 'en'
