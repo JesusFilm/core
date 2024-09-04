@@ -1,5 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import { useTranslation } from 'next-i18next'
+import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
@@ -20,6 +21,7 @@ export const STEP_BLOCK_SLUG_UPDATE = gql`
 export function Slug(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { add } = useCommand()
+  const { enqueueSnackbar } = useSnackbar()
   const {
     state: { selectedStep }
   } = useEditor()
@@ -27,20 +29,18 @@ export function Slug(): ReactElement {
     STEP_BLOCK_SLUG_UPDATE
   )
 
-  const slug = selectedStep?.slug ?? selectedStep?.id ?? ''
+  const slug = selectedStep?.slug ?? selectedStep?.id
 
   function handleUpdate(value?: string): void {
-    if (selectedStep == null || value == null) return
+    if (selectedStep == null) return
+    const newSlug = value == null || value === '' ? selectedStep.id : value
 
     add({
       parameters: {
         execute: {
-          slug: value
+          slug: newSlug
         },
         undo: {
-          slug: selectedStep.slug
-        },
-        redo: {
           slug
         }
       },
@@ -56,8 +56,15 @@ export function Slug(): ReactElement {
             stepBlockUpdate: {
               __typename: 'StepBlock',
               id: selectedStep.id,
-              slug: value
+              slug: newSlug
             }
+          },
+
+          onError: (_) => {
+            enqueueSnackbar(t('Error updating, make sure slug is unique'), {
+              variant: 'error',
+              preventDuplicate: true
+            })
           }
         })
       }
