@@ -1,8 +1,8 @@
 import { ApolloClient, InMemoryCache } from '@apollo/client'
 import algoliasearch from 'algoliasearch'
-import { graphql } from 'gql.tada'
 import { Logger } from 'pino'
 
+import { graphql } from '../../../lib/graphql/gatewayGraphql'
 import { prisma } from '../../../lib/prisma'
 
 const ENGLISH_LANGUAGE_ID = '529'

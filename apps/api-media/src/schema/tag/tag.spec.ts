@@ -1,9 +1,8 @@
-import { graphql } from 'gql.tada'
-
 import { Tag, TagName } from '.prisma/api-media-client'
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
+import { graphql } from '../../lib/graphql/subgraphGraphql'
 
 describe('Tag', () => {
   const client = getClient()

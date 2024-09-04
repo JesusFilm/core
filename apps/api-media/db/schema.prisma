@@ -331,3 +331,13 @@ model Tagging {
   @@unique([taggableId, taggableType, tagId, context])
   @@index([tagId])
 }
+
+enum MediaRole {
+  publisher
+}
+
+model UserMediaRole {
+  id     String      @id @default(uuid())
+  userId String      @unique
+  roles  MediaRole[]
+}

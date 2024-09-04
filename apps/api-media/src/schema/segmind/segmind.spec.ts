@@ -1,7 +1,6 @@
-import { graphql } from 'gql.tada'
-
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
+import { graphql } from '../../lib/graphql/subgraphGraphql'
 import {
   createImageFromResponse,
   createImageFromText

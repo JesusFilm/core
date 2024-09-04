@@ -86,7 +86,8 @@
       "options": {
         "commands": [
           "bash -c 'npx prisma migrate dev --schema apps/api-media/db/schema.prisma --name `date +\"%Y%m%d%H%M%S\"`'"
-        ]
+        ],
+        "parallel": false
       },
       "configurations": {
         "production": {
