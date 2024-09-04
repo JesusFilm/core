@@ -1,6 +1,7 @@
 import { gql, useMutation } from '@apollo/client'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
@@ -8,6 +9,7 @@ import { ReactElement } from 'react'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
 
 import { StepBlockSlugUpdate } from '../../../../../../../../../../__generated__/StepBlockSlugUpdate'
 import { useCustomDomainsQuery } from '../../../../../../../../../libs/useCustomDomainsQuery'
@@ -81,7 +83,7 @@ export function Slug(): ReactElement {
     })
   }
 
-  async function handleCopyClick(): Promise<void> {
+  async function handleCopy(): Promise<void> {
     if (slug == null || journey == null) return
     const cardUrl = `${
       hostname != null
@@ -104,9 +106,17 @@ export function Slug(): ReactElement {
         initialValue={slug}
         onSubmit={async (value) => handleUpdate(value)}
       />
-      <Button variant="contained" onClick={handleCopyClick}>
+      <Button variant="contained" onClick={handleCopy}>
         {t('Copy Card URL')}
       </Button>
+      <Stack direction="row" alignItems="center" color="text.secondary">
+        <InformationCircleContainedIcon sx={{ mr: 4 }} />
+        <Typography variant="caption">
+          {t(
+            'URL must be unique within the journey. Currently only useable in website mode'
+          )}
+        </Typography>
+      </Stack>
     </Stack>
   )
 }
