@@ -9,20 +9,25 @@ import { type ReactElement } from 'react'
 interface RefinementGroupProps {
   title: string
   refinement: RefinementListRenderState
-  handleSelectedContinent: (continent: string) => void
-  selectedContinent?: string
+  handleLanguagesSelect: (
+    continent: string,
+    language: string,
+    isRefined: boolean
+  ) => void
+  selectedLanguagesByContinent?: Record<string, string[]>
 }
 
 export function RefinementGroup({
   title,
   refinement,
-  handleSelectedContinent,
-  selectedContinent
+  handleLanguagesSelect,
+  selectedLanguagesByContinent
 }: RefinementGroupProps): ReactElement {
   const { items, refine } = refinement
 
-  function handleClick(language: string): void {
-    handleSelectedContinent(title)
+  function handleClick(language: string, isRefined: boolean): void {
+    if (handleLanguagesSelect != null)
+      handleLanguagesSelect(title, language, isRefined)
     refine(language)
   }
 
@@ -39,9 +44,23 @@ export function RefinementGroup({
                 key={item.value}
                 control={
                   <Checkbox
-                    checked={item.isRefined && title === selectedContinent}
-                    disabled={item.isRefined && title !== selectedContinent}
-                    onClick={() => handleClick(item.label)}
+                    checked={
+                      (item.isRefined &&
+                        selectedLanguagesByContinent?.[title]?.includes(
+                          item.label
+                        )) ??
+                      false
+                    }
+                    disabled={Object.keys(
+                      selectedLanguagesByContinent ?? {}
+                    ).some(
+                      (continent) =>
+                        continent !== title &&
+                        selectedLanguagesByContinent?.[continent]?.includes(
+                          item.label
+                        )
+                    )}
+                    onClick={() => handleClick(item.label, !item.isRefined)}
                     size="small"
                   />
                 }

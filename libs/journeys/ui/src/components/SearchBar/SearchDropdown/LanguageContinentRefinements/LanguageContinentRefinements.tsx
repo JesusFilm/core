@@ -8,15 +8,19 @@ import { RefinementGroup } from './RefinementGroup'
 interface LanguageContinentRefinementsProps {
   refinements: RefinementListRenderState
   languages: Record<string, string[]>
-  setSelectedContinent: (continent: string) => void
-  selectedContinent?: string
+  handleLanguagesSelect: (
+    continent: string,
+    language: string,
+    isRefined: boolean
+  ) => void
+  selectedLanguagesByContinent?: Record<string, string[]>
 }
 
 export function LanguageContinentRefinements({
   refinements,
   languages,
-  setSelectedContinent,
-  selectedContinent
+  handleLanguagesSelect,
+  selectedLanguagesByContinent
 }: LanguageContinentRefinementsProps): ReactElement {
   const { t } = useTranslation('apps-watch')
 
@@ -36,10 +40,8 @@ export function LanguageContinentRefinements({
                   ...refinements,
                   items
                 }}
-                selectedContinent={selectedContinent}
-                handleSelectedContinent={(continent) =>
-                  setSelectedContinent(continent)
-                }
+                selectedLanguagesByContinent={selectedLanguagesByContinent}
+                handleLanguagesSelect={handleLanguagesSelect}
               />
             ) : (
               <></>

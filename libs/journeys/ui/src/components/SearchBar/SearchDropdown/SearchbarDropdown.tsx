@@ -31,7 +31,25 @@ export function SearchbarDropdown({
     attribute: 'languageEnglishName',
     limit: 1000
   })
-  const [selectedContinent, setSelectedContinent] = useState<string>()
+  const [selectedLanguagesByContinent, setSelectedLanguagesByContinent] =
+    useState<Record<string, string[]>>()
+
+  function handleLanguageSelect(
+    continent: string,
+    language: string,
+    isRefined: boolean
+  ): void {
+    const currentLanguages = selectedLanguagesByContinent?.[continent] ?? []
+
+    const updatedLanguages = isRefined
+      ? [...currentLanguages, language]
+      : currentLanguages.filter((lang) => lang !== language)
+
+    setSelectedLanguagesByContinent({
+      ...selectedLanguagesByContinent,
+      [continent]: updatedLanguages
+    })
+  }
 
   return (
     <Popper
@@ -66,8 +84,8 @@ export function SearchbarDropdown({
           <LanguageContinentRefinements
             refinements={refinements}
             languages={languages}
-            setSelectedContinent={setSelectedContinent}
-            selectedContinent={selectedContinent}
+            selectedLanguagesByContinent={selectedLanguagesByContinent}
+            handleLanguagesSelect={handleLanguageSelect}
           />
         </Stack>
       </Box>
