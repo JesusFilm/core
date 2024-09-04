@@ -68,8 +68,6 @@ export function Card({
   const { rtl, locale } = getJourneyRTL(journey)
   const { t } = useTranslation('apps-journeys-admin')
 
-  console.log(journey)
-
   const coverBlock = children.find((block) => block.id === coverBlockId)
 
   const cardTheme = getTheme({
