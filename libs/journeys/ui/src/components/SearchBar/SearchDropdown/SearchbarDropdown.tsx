@@ -1,7 +1,9 @@
 import Box from '@mui/material/Box'
 import Popper from '@mui/material/Popper'
+import { useTheme } from '@mui/material/styles'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { ReactElement, useState } from 'react'
 
@@ -30,6 +32,9 @@ export function SearchbarDropdown({
   anchorEl,
   tabIndex = 0
 }: SearchbarDropdownProps): ReactElement {
+  const theme = useTheme()
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'))
+
   const { data } = useLanguagesContinentsQuery()
   const languages = useSortLanguageContinents({
     languages: data?.languages ?? []
@@ -72,14 +77,14 @@ export function SearchbarDropdown({
             aria-label="Searchbar dropdown"
           >
             <Tab
-              icon={<Search1 sx={{ marginRight: 5 }} />}
+              icon={<Search1 sx={{ md: { marginRight: 5 } }} />}
               iconPosition="start"
-              label="Search Suggestions"
+              label={isSmallScreen ? '' : 'Search Suggestions'}
             />
             <Tab
-              icon={<Globe1 sx={{ marginRight: 5 }} />}
+              icon={<Globe1 sx={{ md: { marginRight: 5 } }} />}
               iconPosition="start"
-              label="Languages"
+              label={isSmallScreen ? '' : 'Languages'}
             />
           </Tabs>
         </Box>
