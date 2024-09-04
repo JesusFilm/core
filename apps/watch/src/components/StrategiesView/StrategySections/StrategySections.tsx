@@ -6,6 +6,27 @@ import { EmptySearch } from '@core/journeys/ui/EmptySearch'
 
 import { StrategySection } from './StrategySection/StrategySection'
 
+const PROD_INDEXES = [
+  'wp_prd_posts_digital_strategies',
+  'wp_prd_posts_prayer_resources',
+  'wp_prd_posts_outreach_resources',
+  'wp_prd_posts_training_strategies',
+  'wp_prd_posts_training_strategies'
+]
+
+const DEV_INDEXES = [
+  'wp_dev_posts_digital_strategies',
+  'wp_dev_posts_prayer_resources',
+  'wp_dev_posts_outreach_resources',
+  'wp_dev_posts_training_strategies',
+  'wp_dev_posts_training_strategies'
+]
+
+function getIndexes(): string[] {
+  const isProd = process.env.DOPPLER_ENVIRONMENT === 'prd'
+  return isProd ? PROD_INDEXES : DEV_INDEXES
+}
+
 interface StrategySectionsProps {
   includeIndex?: boolean
 }
@@ -13,9 +34,7 @@ interface StrategySectionsProps {
 export function StrategySections({
   includeIndex = false
 }: StrategySectionsProps): ReactElement {
-  // TODO: update this indexes variable to use the real indexes
-  const indexes = ['wp_dev_posts_mission-trip', 'wp_dev_posts_passionpurpose']
-
+  const indexes = getIndexes()
   const [hasResult, setHasResult] = useState<boolean>(true)
 
   const resultsMap = new Map<number, boolean>()
