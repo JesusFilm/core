@@ -25,6 +25,14 @@ const Host = dynamic(
   { ssr: false }
 )
 
+const DisplayTitle = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Footer/DisplayTitle/DisplayTitle" */ './DisplayTitle'
+    ).then((mod) => mod.DisplayTitle),
+  { ssr: false }
+)
+
 const Chat = dynamic(
   async () =>
     await import(
@@ -63,6 +71,7 @@ export function Footer(): ReactElement {
       ) : (
         <>
           <Reactions />
+          <DisplayTitle />
           <Host />
           <Chat />
         </>
