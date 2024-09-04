@@ -12,6 +12,7 @@ type ImageBlock implements Block {
   Find a frontend implementation at https://github.com/woltapp/blurhash
   """
   blurhash: String!
+  scale: Int
 }
 
 input ImageBlockCreateInput {
@@ -34,6 +35,7 @@ input ImageBlockCreateInput {
   True if the coverBlockId in a parent block should be set to this block's id.
   """
   isCover: Boolean
+  scale: Int
 }
 
 input ImageBlockUpdateInput {
@@ -46,6 +48,7 @@ input ImageBlockUpdateInput {
   blurhash: String
   width: Int
   height: Int
+  scale: Int
 }
 
 extend type Mutation {

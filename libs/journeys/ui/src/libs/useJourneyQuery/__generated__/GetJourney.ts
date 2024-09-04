@@ -524,7 +524,7 @@ export interface GetJourney_journey_tags_name_language {
 }
 
 export interface GetJourney_journey_tags_name {
-  __typename: "Translation";
+  __typename: "TagName";
   value: string;
   language: GetJourney_journey_tags_name_language;
   primary: boolean;

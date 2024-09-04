@@ -23,6 +23,11 @@ export const JOURNEY_SETTINGS_UPDATE = gql`
       tags {
         id
       }
+      website
+      showShareButton
+      showLikeButton
+      showDislikeButton
+      displayTitle
     }
   }
 `

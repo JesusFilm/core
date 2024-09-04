@@ -1,53 +1,108 @@
-directive @key(fields: _FieldSet!, resolvable: Boolean = true) repeatable on OBJECT | INTERFACE
+extend schema
+  @link(url: "https://specs.apollo.dev/federation/v2.7", import: ["@extends", "@external", "@key", "@shareable"])
 
-directive @requires(fields: _FieldSet!) on FIELD_DEFINITION
+type BibleBook {
+  id: ID!
+  name(languageId: ID, primary: Boolean): [BibleBookName!]!
+  osisId: String!
+  alternateName: String
+  paratextAbbreviation: String!
+  isNewTestament: Boolean!
+  order: Int!
+}
 
-directive @provides(fields: _FieldSet!) on FIELD_DEFINITION
+type BibleBookName {
+  value: String!
+  primary: Boolean!
+  language: Language!
+}
 
-directive @external(reason: String) on OBJECT | FIELD_DEFINITION
-
-directive @tag(name: String!) repeatable on FIELD_DEFINITION | OBJECT | INTERFACE | UNION | ARGUMENT_DEFINITION | SCALAR | ENUM | ENUM_VALUE | INPUT_OBJECT | INPUT_FIELD_DEFINITION
-
-directive @extends on OBJECT | INTERFACE
+type BibleCitation {
+  id: ID!
+  osisId: String!
+  bibleBook: BibleBook!
+  chapterStart: Int!
+  chapterEnd: Int
+  verseStart: Int!
+  verseEnd: Int
+  video: Video!
+}
 
 type CloudflareImage {
   id: ID!
   uploadUrl: String
   userId: ID!
-  createdAt: String!
-}
-
-type Query {
-  _entities(representations: [_Any!]!): [_Entity]!
-  _service: _Service!
-}
-
-extend type Query {
-  getMyCloudflareImages: [CloudflareImage]
-  getMyCloudflareVideos: [CloudflareVideo]
-  getMyCloudflareVideo(id: ID!): CloudflareVideo
-  listUnsplashCollectionPhotos(collectionId: String!, page: Int, perPage: Int, orientation: UnsplashPhotoOrientation): [UnsplashPhoto!]!
-  searchUnsplashPhotos(query: String!, page: Int, perPage: Int, orderBy: UnsplashOrderBy, collections: [String], contentFilter: UnsplashContentFilter, color: UnsplashColor, orientation: UnsplashPhotoOrientation): UnsplashQueryResponse!
-}
-
-extend type Mutation {
-  createCloudflareUploadByFile: CloudflareImage
-  createCloudflareUploadByUrl(url: String!): CloudflareImage
-  deleteCloudflareImage(id: ID!): Boolean
-  cloudflareUploadComplete(id: ID!): Boolean
-  createCloudflareVideoUploadByFile(uploadLength: Int!, name: String!): CloudflareVideo
-  createCloudflareVideoUploadByUrl(url: String!): CloudflareVideo
-  deleteCloudflareVideo(id: ID!): Boolean
-  createImageBySegmindPrompt(prompt: String!, model: SegmindModel!): CloudflareImage
-  triggerUnsplashDownload(url: String!): Boolean
+  createdAt: Date!
 }
 
 type CloudflareVideo {
   id: ID!
   uploadUrl: String
   userId: ID!
-  createdAt: String!
+  createdAt: Date!
   readyToStream: Boolean!
+}
+
+"""
+A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar Date
+
+enum IdType {
+  databaseId
+  slug
+}
+
+type Keyword {
+  id: ID!
+  value: String!
+  language: Language!
+}
+
+type Language
+  @key(fields: "id")
+  @extends
+{
+  id: ID! @external
+}
+
+type LanguageWithSlug {
+  language: Language!
+  slug: String!
+}
+
+enum MediaRole {
+  publisher
+}
+
+type Mutation {
+  createCloudflareUploadByFile: CloudflareImage!
+  createCloudflareUploadByUrl(url: String!): CloudflareImage!
+  createCloudflareImageFromPrompt(prompt: String!): CloudflareImage!
+  deleteCloudflareImage(id: ID!): Boolean!
+  cloudflareUploadComplete(id: ID!): Boolean!
+  createCloudflareVideoUploadByFile(uploadLength: Int!, name: String!): CloudflareVideo!
+  createCloudflareVideoUploadByUrl(url: String!): CloudflareVideo!
+  deleteCloudflareVideo(id: ID!): Boolean!
+  createImageBySegmindPrompt(prompt: String!, model: SegmindModel!): CloudflareImage! @deprecated(reason: "use createCloudflareImageFromPrompt")
+  triggerUnsplashDownload(url: String!): Boolean!
+}
+
+type Query {
+  getMyCloudflareImages(offset: Int, limit: Int): [CloudflareImage!]!
+  getMyCloudflareImage(id: ID!): CloudflareImage!
+  getMyCloudflareVideos(offset: Int, limit: Int): [CloudflareVideo!]!
+  getMyCloudflareVideo(id: ID!): CloudflareVideo!
+  listUnsplashCollectionPhotos(collectionId: String!, page: Int, perPage: Int, orientation: UnsplashPhotoOrientation): [UnsplashPhoto!]!
+  searchUnsplashPhotos(query: String!, page: Int, perPage: Int, orderBy: UnsplashOrderBy, collections: [String!], contentFilter: UnsplashContentFilter, color: UnsplashColor, orientation: UnsplashPhotoOrientation): UnsplashQueryResponse!
+  bibleBooks: [BibleBook!]!
+  bibleCitations: [BibleCitation!]!
+  keywords: [Keyword!]!
+  video(id: ID!, idType: IdType = databaseId): Video!
+  videos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
+  videosCount(where: VideosFilter): Int!
+  videoVariants: [VideoVariant!]!
+  tags: [Tag!]!
 }
 
 enum SegmindModel {
@@ -57,62 +112,29 @@ enum SegmindModel {
   tinysd1__5_txt2img
 }
 
-type UnsplashQueryResponse {
-  total: Int!
-  total_pages: Int!
-  results: [UnsplashPhoto!]!
+enum Service {
+  apiJourneys
+  apiLanguages
+  apiMedia
+  apiTags
+  apiUsers
+  apiVideos
 }
 
-type UnsplashUserImage {
-  small: String!
-  medium: String!
-  large: String!
+type Tag
+  @key(fields: "id")
+{
+  id: ID!
+  parentId: ID
+  name(languageId: ID, primary: Boolean): [TagName!]!
+  service: Service
 }
 
-type UnsplashUserLinks {
-  self: String!
-  html: String!
-  photos: String!
-  likes: String!
-  portfolio: String!
-  following: String!
-  followers: String!
-}
-
-type UnsplashUser {
-  id: String!
-  updated_at: String
-  username: String!
-  name: String
-  first_name: String
-  last_name: String
-  twitter_username: String
-  portfolio_url: String
-  bio: String
-  location: String
-  links: UnsplashUserLinks!
-  profile_image: UnsplashUserImage
-  instagram_username: String
-  total_collections: Int!
-  total_likes: Int!
-  total_photos: Int!
-  accepted_tos: Boolean!
-}
-
-enum UnsplashPhotoOrientation {
-  landscape
-  portrait
-  squarish
-}
-
-enum UnsplashContentFilter {
-  low
-  high
-}
-
-enum UnsplashOrderBy {
-  latest
-  relevant
+type TagName {
+  id: ID!
+  value: String!
+  primary: Boolean!
+  language: Language!
 }
 
 enum UnsplashColor {
@@ -129,31 +151,32 @@ enum UnsplashColor {
   blue
 }
 
+enum UnsplashContentFilter {
+  low
+  high
+}
+
+enum UnsplashOrderBy {
+  latest
+  relevant
+  editorial
+}
+
 type UnsplashPhoto {
-  id: String!
+  id: ID!
   created_at: String!
   updated_at: String
-  blur_hash: String!
+  blur_hash: String
   width: Int!
   height: Int!
   color: String
   description: String
   alt_description: String
+  promoted_at: String
+  likes: Int!
   urls: UnsplashPhotoUrls!
   links: UnsplashPhotoLinks!
-  categories: [String!]
-  likes: Int!
-  liked_by_user: Boolean!
-  current_user_collections: [String!]!
   user: UnsplashUser!
-}
-
-type UnsplashPhotoUrls {
-  raw: String!
-  full: String!
-  regular: String!
-  small: String!
-  thumb: String!
 }
 
 type UnsplashPhotoLinks {
@@ -163,24 +186,185 @@ type UnsplashPhotoLinks {
   download_location: String!
 }
 
-extend type Language
+enum UnsplashPhotoOrientation {
+  landscape
+  portrait
+  squarish
+}
+
+type UnsplashPhotoUrls {
+  full: String!
+  raw: String!
+  regular: String!
+  small: String!
+  thumb: String!
+}
+
+type UnsplashQueryResponse {
+  total: Int!
+  total_pages: Int!
+  results: [UnsplashPhoto!]!
+}
+
+type UnsplashUser {
+  id: ID!
+  updated_at: String!
+  username: String!
+  name: String!
+  first_name: String!
+  last_name: String
+  twitter_username: String
+  portfolio_url: String
+  bio: String
+  location: String
+  instagram_username: String
+  total_collections: Int!
+  total_likes: Int!
+  total_photos: Int!
+  links: UnsplashUserLinks!
+  profile_image: UnsplashUserImage!
+}
+
+type UnsplashUserImage {
+  small: String!
+  medium: String!
+  large: String!
+}
+
+type UnsplashUserLinks {
+  followers: String!
+  following: String!
+  html: String!
+  likes: String!
+  photos: String!
+  portfolio: String!
+  self: String!
+}
+
+type User
   @key(fields: "id")
+  @extends
 {
   id: ID! @external
+  mediaUserRoles: [MediaRole!]!
 }
 
-type Translation {
+type Video
+  @key(fields: "id primaryLanguageId")
+  @shareable
+{
+  bibleCitations: [BibleCitation!]!
+  keywords(languageId: ID): [Keyword!]!
+  id: ID!
+  label: VideoLabel!
+  primaryLanguageId: ID!
+  title(languageId: ID, primary: Boolean): [VideoTitle!]!
+  snippet(languageId: ID, primary: Boolean): [VideoSnippet!]!
+  description(languageId: ID, primary: Boolean): [VideoDescription!]!
+  studyQuestions(languageId: ID, primary: Boolean): [VideoStudyQuestion!]!
+  image: String
+  imageAlt(languageId: ID, primary: Boolean): [VideoImageAlt!]!
+  variantLanguages: [Language!]!
+  variantLanguagesCount: Int!
+
+  """slug is a permanent link to the video."""
+  slug: String!
+  noIndex: Boolean
+  children: [Video!]!
+
+  """the number value of the amount of children on a video"""
+  childrenCount: Int!
+  variantLanguagesWithSlug: [LanguageWithSlug!]!
+  subtitles(languageId: ID, primary: Boolean, edition: String): [VideoSubtitle!]!
+  variant(languageId: ID): VideoVariant
+}
+
+type VideoDescription {
+  id: ID!
+  value: String!
+  primary: Boolean!
+  language: Language!
+}
+
+type VideoImageAlt {
+  id: ID!
+  value: String!
+  primary: Boolean!
+  language: Language!
+}
+
+enum VideoLabel {
+  collection
+  episode
+  featureFilm
+  segment
+  series
+  shortFilm
+  trailer
+  behindTheScenes
+}
+
+type VideoSnippet {
+  id: ID!
+  value: String!
+  primary: Boolean!
+  language: Language!
+}
+
+type VideoStudyQuestion {
+  id: ID!
+  value: String!
+  primary: Boolean!
+  language: Language!
+}
+
+type VideoSubtitle {
+  id: ID!
+  languageId: ID!
+  primary: Boolean!
+  edition: String!
+  vttSrc: String
+  srtSrc: String
   value: String!
   language: Language!
+}
+
+type VideoTitle {
+  id: ID!
+  value: String!
   primary: Boolean!
+  language: Language!
 }
 
-scalar _FieldSet
+type VideoVariant {
+  id: ID!
+  hls: String
+  downloads: [VideoVariantDownload!]!
+  duration: Int!
+  language: Language!
+  subtitle(languageId: ID, primary: Boolean): [VideoSubtitle!]!
+  subtitleCount: Int!
 
-scalar _Any
-
-type _Service {
-  sdl: String
+  """slug is a permanent link to the video variant."""
+  slug: String!
 }
 
-union _Entity = Language
+type VideoVariantDownload {
+  id: ID!
+  quality: VideoVariantDownloadQuality!
+  size: Float!
+  url: String!
+}
+
+enum VideoVariantDownloadQuality {
+  low
+  high
+}
+
+input VideosFilter {
+  availableVariantLanguageIds: [ID!]
+  title: String
+  labels: [VideoLabel!]
+  ids: [ID!]
+  subtitleLanguageIds: [ID!]
+}

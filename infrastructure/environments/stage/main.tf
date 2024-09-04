@@ -115,33 +115,11 @@ module "api-languages" {
   }
 }
 
-module "api-tags" {
-  source        = "../../../apps/api-tags/infrastructure"
-  ecs_config    = local.internal_ecs_config
-  env           = "stage"
-  doppler_token = data.aws_ssm_parameter.doppler_api_tags_stage_token.value
-  alb = {
-    arn      = module.stage.internal_alb.arn
-    dns_name = module.stage.internal_alb.dns_name
-  }
-}
-
 module "api-users" {
   source        = "../../../apps/api-users/infrastructure"
   ecs_config    = local.internal_ecs_config
   env           = "stage"
   doppler_token = data.aws_ssm_parameter.doppler_api_users_stage_token.value
-  alb = {
-    arn      = module.stage.internal_alb.arn
-    dns_name = module.stage.internal_alb.dns_name
-  }
-}
-
-module "api-videos" {
-  source        = "../../../apps/api-videos/infrastructure"
-  ecs_config    = local.internal_ecs_config
-  env           = "stage"
-  doppler_token = data.aws_ssm_parameter.doppler_api_videos_stage_token.value
   alb = {
     arn      = module.stage.internal_alb.arn
     dns_name = module.stage.internal_alb.dns_name
@@ -157,18 +135,6 @@ module "api-media" {
     arn      = module.stage.internal_alb.arn
     dns_name = module.stage.internal_alb.dns_name
   }
-}
-
-module "api-nexus" {
-  source        = "../../../apps/api-nexus/infrastructure"
-  ecs_config    = local.internal_ecs_config
-  env           = "stage"
-  doppler_token = data.aws_ssm_parameter.doppler_api_nexus_stage_token.value
-  alb = {
-    arn      = module.stage.internal_alb.arn
-    dns_name = module.stage.internal_alb.dns_name
-  }
-
 }
 
 module "bastion" {

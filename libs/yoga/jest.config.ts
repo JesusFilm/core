@@ -1,7 +1,7 @@
 import type { Config } from 'jest'
 
 const config: Config = {
-  displayName: 'nest-decorators',
+  displayName: 'yoga',
   globals: {},
   transform: {
     '^.+\\.[tj]sx?$': [
@@ -15,7 +15,7 @@ const config: Config = {
   coverageDirectory: '../../../coverage/libs/nest/decorators',
   collectCoverage: true,
   coverageReporters: ['cobertura'],
-  preset: '../../../jest.preset.js'
+  preset: '../../jest.preset.js'
 }
 
 export default config

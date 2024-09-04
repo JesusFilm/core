@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
 
@@ -12,6 +12,9 @@ import {
   ActiveCanvasDetailsDrawer,
   ActiveSlide
 } from '@core/journeys/ui/EditorProvider/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import { TestEditorState } from '../../../../../../libs/TestEditorState'
 
@@ -34,56 +37,71 @@ describe('Footer', () => {
     jest.resetAllMocks()
   })
 
-  it('should display Footer attributes', () => {
-    const { getByText } = render(
+  it('should display Footer attributes for Journey mode', async () => {
+    render(
       <MockedProvider>
         <SnackbarProvider>
-          <EditorProvider initialState={state}>
-            <Footer />
-          </EditorProvider>
+          <FlagsProvider flags={{ websiteMode: true }}>
+            <JourneyProvider value={{ journey: defaultJourney }}>
+              <EditorProvider initialState={state}>
+                <Footer />
+              </EditorProvider>
+            </JourneyProvider>
+          </FlagsProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
 
-    expect(getByText('Hosted By')).toBeInTheDocument()
-    expect(getByText('Chat Widget')).toBeInTheDocument()
+    expect(screen.getByText('Journey Appearance')).toBeInTheDocument()
+
+    const toggleBtn = screen.getByRole('button', { name: 'Journey' })
+    expect(toggleBtn).toBeInTheDocument()
+    expect(toggleBtn).toHaveAttribute('aria-pressed', 'true')
+
+    const reactions = await waitFor(() =>
+      screen.getByRole('button', { name: 'Reactions' })
+    )
+
+    const details = await waitFor(() =>
+      screen.getByRole('button', { name: 'Hosted By' })
+    )
+    const chat = await waitFor(() =>
+      screen.getByRole('button', { name: 'Chat Widget' })
+    )
+
+    expect(reactions).toBeInTheDocument()
+    expect(details).toBeInTheDocument()
+    expect(chat).toBeInTheDocument()
   })
 
-  it('should render the components', async () => {
-    const { getByTestId } = render(
+  it('should display Footer attributes for Website mode', async () => {
+    render(
       <MockedProvider>
         <SnackbarProvider>
-          <EditorProvider initialState={state}>
-            <Footer />
-          </EditorProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-    await waitFor(() => expect(getByTestId('Chat')).toBeInTheDocument())
-    expect(getByTestId('HostTab')).toBeInTheDocument()
-  })
-
-  it('should switch tabs', () => {
-    const { getByRole } = render(
-      <MockedProvider>
-        <SnackbarProvider>
-          <EditorProvider initialState={state}>
-            <TestEditorState />
-            <Footer />
-          </EditorProvider>
+          <FlagsProvider flags={{ websiteMode: true }}>
+            <JourneyProvider
+              value={{ journey: { ...defaultJourney, website: true } }}
+            >
+              <EditorProvider initialState={state}>
+                <Footer />
+              </EditorProvider>
+            </JourneyProvider>
+          </FlagsProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
 
-    expect(getByRole('tab', { name: 'Hosted By' })).toHaveAttribute(
-      'aria-selected',
-      'true'
+    expect(screen.getByText('Journey Appearance')).toBeInTheDocument()
+
+    const toggleBtn = screen.getByRole('button', { name: 'Website' })
+    expect(toggleBtn).toBeInTheDocument()
+    expect(toggleBtn).toHaveAttribute('aria-pressed', 'true')
+
+    const chat = await waitFor(() =>
+      screen.getByRole('button', { name: 'Chat Widget' })
     )
-    fireEvent.click(getByRole('tab', { name: 'Chat Widget' }))
-    expect(getByRole('tab', { name: 'Chat Widget' })).toHaveAttribute(
-      'aria-selected',
-      'true'
-    )
+
+    expect(chat).toBeInTheDocument()
   })
 
   it('should return to journey map when close icon is clicked', async () => {
