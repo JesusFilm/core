@@ -42,7 +42,12 @@ export function Suggestion({
         </Typography>
         <Typography display="inline">{` - in ${filtersLabel}`}</Typography>
       </ListItemText>
-      <Typography variant="body1" color="text.secondary" ml={6}>
+      <Typography
+        variant="body1"
+        color="text.secondary"
+        ml={6}
+        sx={{ display: { xs: 'none', md: 'block' } }}
+      >
         {variant}
       </Typography>
     </MenuItem>
