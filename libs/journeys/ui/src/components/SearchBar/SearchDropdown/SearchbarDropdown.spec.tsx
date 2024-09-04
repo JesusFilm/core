@@ -2,7 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
-import { useRefinementList, useSearchBox } from 'react-instantsearch'
+import { useSearchBox } from 'react-instantsearch'
 
 import { getLanguagesContinentsMock } from '../../../libs/useLanguagesContinentsQuery/useLanguagesContinentsQuery.mock'
 import { languageRefinements } from '../data'
@@ -11,25 +11,14 @@ import { SearchbarDropdown } from './SearchbarDropdown'
 
 jest.mock('react-instantsearch')
 
-const mockUseRefinementList = useRefinementList as jest.MockedFunction<
-  typeof useRefinementList
->
-
 const mockUseSearchBox = useSearchBox as jest.MockedFunction<
   typeof useSearchBox
 >
 
-function mockEmptyRefinementsList(): void {
-  mockUseRefinementList.mockReturnValue({
-    items: [],
-    refine: jest.fn()
-  } as unknown as RefinementListRenderState)
-}
-
 describe('SearchbarDropdown', () => {
   const refine = jest.fn()
 
-  const refinementsList = {
+  const refinements = {
     items: languageRefinements,
     refine
   } as unknown as RefinementListRenderState
@@ -39,8 +28,12 @@ describe('SearchbarDropdown', () => {
     refine
   } as unknown as SearchBoxRenderState
 
+  const emptyRefinements = {
+    items: [],
+    refine: jest.fn()
+  } as unknown as RefinementListRenderState
+
   beforeEach(() => {
-    mockUseRefinementList.mockReturnValue(refinementsList)
     mockUseSearchBox.mockReturnValue(searchBox)
     jest.clearAllMocks()
   })
@@ -48,7 +41,7 @@ describe('SearchbarDropdown', () => {
   it('should render the correct continent headers', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchbarDropdown open />
+        <SearchbarDropdown open refinements={refinements} />
       </MockedProvider>
     )
     await waitFor(() => {
@@ -63,7 +56,7 @@ describe('SearchbarDropdown', () => {
   it('should render the correct languages', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchbarDropdown open />
+        <SearchbarDropdown open refinements={refinements} />
       </MockedProvider>
     )
     await waitFor(() => {
@@ -78,10 +71,9 @@ describe('SearchbarDropdown', () => {
   })
 
   it('should render message if no languages', async () => {
-    mockEmptyRefinementsList()
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchbarDropdown open />
+        <SearchbarDropdown open refinements={emptyRefinements} />
       </MockedProvider>
     )
 
@@ -93,10 +85,9 @@ describe('SearchbarDropdown', () => {
   })
 
   it('should not render headers if no languages', async () => {
-    mockEmptyRefinementsList()
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchbarDropdown open />
+        <SearchbarDropdown open refinements={emptyRefinements} />
       </MockedProvider>
     )
 
@@ -114,7 +105,7 @@ describe('SearchbarDropdown', () => {
   it('should only render continent headers that have languages', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchbarDropdown open />
+        <SearchbarDropdown open refinements={refinements} />
       </MockedProvider>
     )
 
@@ -126,15 +117,9 @@ describe('SearchbarDropdown', () => {
   })
 
   it('should call refine on language click', async () => {
-    const refine = jest.fn()
-    mockUseRefinementList.mockReturnValue({
-      items: languageRefinements,
-      refine
-    } as unknown as RefinementListRenderState)
-
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchbarDropdown open />
+        <SearchbarDropdown open refinements={refinements} />
       </MockedProvider>
     )
     await waitFor(() => {
@@ -144,10 +129,13 @@ describe('SearchbarDropdown', () => {
   })
 
   it('should render continent refinements when languages varient', async () => {
-    mockEmptyRefinementsList()
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchbarDropdown open varient="languages" />
+        <SearchbarDropdown
+          open
+          refinements={emptyRefinements}
+          varient="languages"
+        />
       </MockedProvider>
     )
     await waitFor(() => {
@@ -156,10 +144,13 @@ describe('SearchbarDropdown', () => {
   })
 
   it('should render suggestions when suggestions varient', async () => {
-    mockEmptyRefinementsList()
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchbarDropdown open varient="suggestions" />
+        <SearchbarDropdown
+          open
+          refinements={emptyRefinements}
+          varient="suggestions"
+        />
       </MockedProvider>
     )
     await waitFor(() => {
@@ -168,10 +159,13 @@ describe('SearchbarDropdown', () => {
   })
 
   it('should refine query when suggestion clicked', async () => {
-    mockEmptyRefinementsList()
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchbarDropdown open varient="suggestions" />
+        <SearchbarDropdown
+          open
+          refinements={emptyRefinements}
+          varient="suggestions"
+        />
       </MockedProvider>
     )
     await waitFor(() => {

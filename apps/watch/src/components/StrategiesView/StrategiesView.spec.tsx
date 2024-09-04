@@ -1,8 +1,9 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, screen } from '@testing-library/react'
 import { HitsRenderState } from 'instantsearch.js/es/connectors/hits/connectHits'
+import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
-import { useHits, useSearchBox } from 'react-instantsearch'
+import { useHits, useRefinementList, useSearchBox } from 'react-instantsearch'
 
 import { StrategiesView } from './StrategiesView'
 import { strategyItems } from './StrategySections/StrategySection/data'
@@ -12,28 +13,34 @@ jest.mock('react-instantsearch')
 const mockUseSearchBox = useSearchBox as jest.MockedFunction<
   typeof useSearchBox
 >
-
-function mockSearchBox(): jest.Mock {
-  const refine = jest.fn()
-  mockUseSearchBox.mockReturnValue({
-    query: 'Hello World!',
-    refine
-  } as unknown as SearchBoxRenderState)
-  return refine
-}
-
 const mockedUseHits = useHits as jest.MockedFunction<typeof useHits>
-
-function mockUseHits(): void {
-  mockedUseHits.mockReturnValue({
-    hits: strategyItems
-  } as unknown as HitsRenderState)
-}
+const mockUseRefinementList = useRefinementList as jest.MockedFunction<
+  typeof useRefinementList
+>
 
 describe('StrategiesView', () => {
+  const refine = jest.fn()
+
   beforeEach(() => {
-    mockSearchBox()
-    mockUseHits()
+    mockUseSearchBox.mockReturnValue({
+      query: 'Hello World!',
+      refine
+    } as unknown as SearchBoxRenderState)
+
+    mockedUseHits.mockReturnValue({
+      hits: strategyItems
+    } as unknown as HitsRenderState)
+
+    mockUseRefinementList.mockReturnValue({
+      items: [
+        {
+          label: 'English',
+          value: 'English',
+          isRefined: true
+        }
+      ],
+      refine
+    } as unknown as RefinementListRenderState)
   })
 
   it('should render interaction text', () => {
