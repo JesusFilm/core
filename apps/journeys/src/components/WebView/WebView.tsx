@@ -128,7 +128,7 @@ export function WebView({ stepBlock }: WebViewProps): ReactElement {
     >
       <Container
         data-testid="WebView"
-        maxWidth="xxl"
+        maxWidth="xl"
         disableGutters
         sx={{
           justifyContent: 'center',
