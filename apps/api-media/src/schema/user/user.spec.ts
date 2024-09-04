@@ -1,9 +1,8 @@
-import { graphql } from 'gql.tada'
-
 import { VideoRole } from '.prisma/api-media-client'
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
+import { graphql } from '../../lib/graphql/subgraphGraphql'
 
 jest.mock('@core/yoga/firebaseClient', () => ({
   getUserFromAuthToken: jest.fn().mockResolvedValue({

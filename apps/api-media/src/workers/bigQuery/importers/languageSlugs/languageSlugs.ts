@@ -1,6 +1,7 @@
 import { ApolloClient, InMemoryCache } from '@apollo/client'
-import { graphql } from 'gql.tada'
 import { Logger } from 'pino'
+
+import { graphql } from '../../../../lib/graphql/gatewayGraphql'
 
 export const GET_LANGUAGE_SLUGS = graphql(`
   query GetLanguageSlugs {
@@ -36,9 +37,7 @@ export async function importLanguageSlugs(
 ): Promise<() => void> {
   logger?.info('fetch language slugs from api-languages started')
 
-  const { data } = await apollo.query<{
-    languages: Array<{ id: string; slug: string | null }>
-  }>({
+  const { data } = await apollo.query({
     query: GET_LANGUAGE_SLUGS
   })
 

@@ -1,7 +1,6 @@
 import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
-
-import { VideoRole } from './enums/videoRole'
+import { VideoRole } from '../video/enums/videoRole'
 
 builder.externalRef('User', builder.selection<{ id: string }>('id')).implement({
   externalFields: (t) => ({
