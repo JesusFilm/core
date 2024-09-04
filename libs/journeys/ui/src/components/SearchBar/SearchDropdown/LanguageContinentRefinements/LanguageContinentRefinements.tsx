@@ -34,7 +34,8 @@ export function LanguageContinentRefinements({
   const theme = useTheme()
 
   const [selectedContinent, setSelectedContinent] = useState<string>()
-  const shouldFade = refinements.canToggleShowMore && !refinements.isShowingMore
+  const { canToggleShowMore, isShowingMore, toggleShowMore } = refinements
+  const shouldFade = canToggleShowMore && !isShowingMore
 
   return (
     <>
@@ -85,17 +86,15 @@ export function LanguageContinentRefinements({
               }
             )}
           </Stack>
-          {refinements.canToggleShowMore && (
+          {canToggleShowMore && (
             <Box display="flex" flexDirection="column" alignItems="center">
               <StyledButton
                 size="small"
-                onClick={refinements.toggleShowMore}
-                disabled={!refinements.canToggleShowMore}
-                endIcon={
-                  refinements.isShowingMore ? <ChevronUp /> : <ChevronDown />
-                }
+                onClick={toggleShowMore}
+                disabled={!canToggleShowMore}
+                endIcon={isShowingMore ? <ChevronUp /> : <ChevronDown />}
               >
-                {t(refinements.isShowingMore ? 'See Less' : 'See All')}
+                {t(isShowingMore ? 'See Less' : 'See All')}
               </StyledButton>
             </Box>
           )}
