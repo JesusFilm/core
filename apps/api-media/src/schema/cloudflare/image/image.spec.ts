@@ -1,8 +1,8 @@
-import { graphql } from 'gql.tada'
 import { Response } from 'node-fetch'
 
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
+import { graphql } from '../../../lib/graphql/subgraphGraphql'
 
 import {
   createImageByDirectUpload,
