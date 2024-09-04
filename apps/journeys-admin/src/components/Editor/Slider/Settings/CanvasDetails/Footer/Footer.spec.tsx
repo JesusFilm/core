@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
 
@@ -34,8 +34,8 @@ describe('Footer', () => {
     jest.resetAllMocks()
   })
 
-  it('should display Footer attributes', () => {
-    const { getByText } = render(
+  it('should display Footer attributes', async () => {
+    render(
       <MockedProvider>
         <SnackbarProvider>
           <EditorProvider initialState={state}>
@@ -45,45 +45,28 @@ describe('Footer', () => {
       </MockedProvider>
     )
 
-    expect(getByText('Hosted By')).toBeInTheDocument()
-    expect(getByText('Chat Widget')).toBeInTheDocument()
-  })
+    expect(screen.getByText('Journey Appearance')).toBeInTheDocument()
 
-  it('should render the components', async () => {
-    const { getByTestId } = render(
-      <MockedProvider>
-        <SnackbarProvider>
-          <EditorProvider initialState={state}>
-            <Footer />
-          </EditorProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-    await waitFor(() => expect(getByTestId('Chat')).toBeInTheDocument())
-    expect(getByTestId('HostTab')).toBeInTheDocument()
-  })
-
-  it('should switch tabs', () => {
-    const { getByRole } = render(
-      <MockedProvider>
-        <SnackbarProvider>
-          <EditorProvider initialState={state}>
-            <TestEditorState />
-            <Footer />
-          </EditorProvider>
-        </SnackbarProvider>
-      </MockedProvider>
+    await waitFor(() =>
+      expect(
+        screen.getByRole('button', { name: 'Hosted By' })
+      ).toBeInTheDocument()
     )
 
-    expect(getByRole('tab', { name: 'Hosted By' })).toHaveAttribute(
-      'aria-selected',
-      'true'
+    const reactions = await waitFor(() =>
+      screen.getByRole('button', { name: 'Reactions' })
     )
-    fireEvent.click(getByRole('tab', { name: 'Chat Widget' }))
-    expect(getByRole('tab', { name: 'Chat Widget' })).toHaveAttribute(
-      'aria-selected',
-      'true'
+
+    const details = await waitFor(() =>
+      screen.getByRole('button', { name: 'Hosted By' })
     )
+    const chat = await waitFor(() =>
+      screen.getByRole('button', { name: 'Chat Widget' })
+    )
+
+    expect(reactions).toBeInTheDocument()
+    expect(details).toBeInTheDocument()
+    expect(chat).toBeInTheDocument()
   })
 
   it('should return to journey map when close icon is clicked', async () => {
