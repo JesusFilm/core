@@ -1,4 +1,9 @@
 {
+  "Sign Out": "Sign Out",
   "Nexus Admin": "Nexus Admin",
-  "Sign Out": "Sign Out"
+  "Login": "Connexion",
+  "Redirecting to {redirect}": "Redirection vers {redirect}",
+  "Log in with Google": "Connecte-toi avec Google",
+  "Submit": "Soumettre",
+  "Unauthorized": "Non autorisé"
 }
