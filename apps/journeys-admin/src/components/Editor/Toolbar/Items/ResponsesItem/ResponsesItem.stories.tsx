@@ -37,4 +37,6 @@ const Template: StoryObj<typeof ResponsesItem> = {
   )
 }
 
+export const Default = { ...Template }
+
 export default Demo
