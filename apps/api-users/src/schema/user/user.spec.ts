@@ -236,7 +236,7 @@ describe('api-users', () => {
       const data = await client({
         document: CREATE_VERIFICATION_REQUEST_MUTATION
       })
-      expect(data).toHaveProperty('data', null)
+      expect(data).toHaveProperty('data.createVerificationRequest', null)
     })
   })
 
@@ -332,7 +332,7 @@ describe('api-users', () => {
           token: 'token'
         }
       })
-      expect(data).toHaveProperty('data', null)
+      expect(data).toHaveProperty('data.validateEmail', null)
     })
   })
 })

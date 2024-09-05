@@ -32,7 +32,7 @@ function run({
     })
 
     childLogger.info('started job')
-    await service(childLogger, job)
+    await service(childLogger)
     childLogger.info('finished job')
   }
 

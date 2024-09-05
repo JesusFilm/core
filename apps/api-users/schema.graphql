@@ -10,9 +10,9 @@ input MeInput {
 }
 
 type Mutation {
-  userImpersonate(email: String!): String!
-  validateEmail(token: String!, email: String!): User!
-  createVerificationRequest(input: CreateVerificationRequestInput): Boolean!
+  userImpersonate(email: String!): String
+  validateEmail(token: String!, email: String!): User
+  createVerificationRequest(input: CreateVerificationRequestInput): Boolean
 }
 
 type Query {
@@ -29,6 +29,6 @@ type User
   lastName: String
   email: String!
   imageUrl: String
-  superAdmin: Boolean!
+  superAdmin: Boolean
   emailVerified: Boolean!
 }

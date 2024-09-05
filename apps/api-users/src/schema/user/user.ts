@@ -14,7 +14,7 @@ import { verifyUser } from './verifyUser'
 builder.asEntity(User, {
   key: builder.selection<{ id: string }>('id'),
   resolveReference: async ({ id }) =>
-    await prisma.user.findUnique({ where: { id } })
+    await prisma.user.findUnique({ where: { userId: id } })
 })
 
 builder.queryFields((t) => ({
@@ -78,6 +78,7 @@ builder.mutationFields((t) => ({
     args: {
       email: t.arg.string({ required: true })
     },
+    nullable: true,
     authScopes: {
       isSuperAdmin: true
     },
@@ -100,6 +101,7 @@ builder.mutationFields((t) => ({
       token: t.arg.string({ required: true }),
       email: t.arg.string({ required: true })
     },
+    nullable: true,
     resolve: async (_parent, { token, email }) => {
       const user = await prisma.user.findUnique({
         where: {
@@ -125,6 +127,7 @@ builder.mutationFields((t) => ({
         required: false
       })
     },
+    nullable: true,
     authScopes: {
       isAuthenticated: true
     },
