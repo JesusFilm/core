@@ -25,6 +25,7 @@ import { ShareItem } from '../Items/ShareItem'
 import { StrategyItem } from '../Items/StrategyItem'
 import { TemplateSettingsItem } from '../Items/TemplateSettingsItem'
 import { TitleItem } from '../Items/TitleItem'
+import { ResponsesItem } from '../Items/ResponsesItem'
 
 export const GET_ROLE = gql`
   query GetRole {
@@ -97,6 +98,9 @@ export function Menu({ user }: MenuProps): ReactElement {
         )}
         {!smUp && journey?.template !== true && (
           <AnalyticsItem variant="menu-item" />
+        )}
+        {!smUp && journey?.template !== true && (
+          <ResponsesItem variant="menu-item" />
         )}
         {journey?.template !== true && isPublisher === true && (
           <CreateTemplateItem variant="menu-item" />
