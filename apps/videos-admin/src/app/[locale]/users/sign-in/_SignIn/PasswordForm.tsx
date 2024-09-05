@@ -7,15 +7,15 @@ import FormControl from '@mui/material/FormControl'
 import FormLabel from '@mui/material/FormLabel'
 import TextField from '@mui/material/TextField'
 import { useTranslations } from 'next-intl'
-import { FormEvent, ReactElement, useState } from 'react'
+import { FormEvent, ReactElement, ReactNode, useState } from 'react'
 
 export interface PasswordFormValue {
   email: string
   password: string
 }
 
-interface PasswordFormProps
-  extends Omit<JSX.IntrinsicElements['form'], 'onSubmit'> {
+interface PasswordFormProps {
+  children?: ReactNode
   loading: boolean
   onSubmit: (value: PasswordFormValue) => void
   disabled?: boolean
@@ -26,8 +26,7 @@ export function PasswordForm({
   loading,
   disabled,
   error,
-  onSubmit,
-  ...props
+  onSubmit
 }: PasswordFormProps): ReactElement {
   const t = useTranslations()
   const [email, setEmail] = useState('')
@@ -53,7 +52,6 @@ export function PasswordForm({
         width: '100%',
         gap: 2
       }}
-      {...props}
     >
       <FormControl>
         <FormLabel htmlFor="email">{t('Email')}</FormLabel>
