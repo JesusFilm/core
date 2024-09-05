@@ -44,7 +44,7 @@ describe('SearchBar', () => {
         <SearchBar />
       </MockedProvider>
     )
-    expect(screen.getByDisplayValue('Hello World!')).toBeInTheDocument()
+    expect(screen.getByDisplayValue('Hello World!')).toBeVisible()
   })
 
   it('should have placeholder text', async () => {
@@ -56,7 +56,7 @@ describe('SearchBar', () => {
     const inputElement = screen.getByPlaceholderText(
       /Search by topic, occasion, or audience .../i
     )
-    expect(inputElement).toBeInTheDocument()
+    expect(inputElement).toBeVisible()
   })
 
   it('should have globe icon', async () => {
@@ -99,16 +99,16 @@ describe('SearchBar', () => {
         <SearchBar showLanguageButton />
       </MockedProvider>
     )
-    expect(screen.getAllByTestId('Globe1Icon')[0]).toBeInTheDocument()
+    expect(screen.getAllByTestId('Globe1Icon')[0]).toBeVisible()
   })
 
-  it('should render language', async () => {
+  it('should render language button', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
         <SearchBar showLanguageButton />
       </MockedProvider>
     )
-    expect(screen.getAllByText('Language')[0]).toBeInTheDocument()
+    expect(screen.getAllByText('Language')[0]).toBeVisible()
   })
 
   it('should have dropdown closed by default', async () => {
@@ -132,7 +132,7 @@ describe('SearchBar', () => {
       searchBar.focus()
     })
     expect(screen.getByTestId('SearchBarDropdown')).toBeInTheDocument()
-    expect(screen.getByText('Search Suggestions')).toBeInTheDocument()
+    expect(screen.getByText('Search Suggestions')).toBeVisible()
   })
 
   it('should open languages dropdown when language button clicked', async () => {
@@ -144,8 +144,10 @@ describe('SearchBar', () => {
     expect(screen.getAllByText('Language')[0]).toBeInTheDocument()
     fireEvent.click(screen.getAllByText('Language')[0])
 
-    expect(screen.getByTestId('SearchBarDropdown')).toBeInTheDocument()
-    await waitFor(() => expect(screen.getByText('Europe')).toBeInTheDocument())
+    await waitFor(() =>
+      expect(screen.getByTestId('SearchBarDropdown')).toBeInTheDocument()
+    )
+    expect(screen.getByText('Europe')).toBeInTheDocument()
   })
 
   it('should not switch back to suggestions after languages button clicked', async () => {
