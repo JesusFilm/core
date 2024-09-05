@@ -6,6 +6,17 @@ extend type Tag @key(fields: "id") {
   id: ID! @external
 }
 
+enum JourneyMenuButtonIcon {
+  menu1
+  equals
+  home3
+  home4
+  more
+  ellipsis
+  grid1
+  chevronDown
+}
+
 type Journey @key(fields: "id") {
   id: ID!
   """
@@ -48,6 +59,13 @@ type Journey @key(fields: "id") {
   public title for viewers
   """
   displayTitle: String
+  showHosts: Boolean
+  showChatButtons: Boolean
+  showReactionButtons: Boolean
+  showLogo: Boolean
+  showMenu: Boolean
+  showDisplayTitle: Boolean
+  menuButtonIcon: JourneyMenuButtonIcon
 }
 
 enum IdType {
@@ -182,6 +200,15 @@ input JourneyUpdateInput {
   showLikeButton: Boolean
   showDislikeButton: Boolean
   displayTitle: String
+  showHosts: Boolean
+  showChatButtons: Boolean
+  showReactionButtons: Boolean
+  showLogo: Boolean
+  showMenu: Boolean
+  showDisplayTitle: Boolean
+  menuButtonIcon: JourneyMenuButtonIcon
+  menuStepBlockId: ID
+  logoImageBlockId: ID
 }
 
 extend type UserJourney {

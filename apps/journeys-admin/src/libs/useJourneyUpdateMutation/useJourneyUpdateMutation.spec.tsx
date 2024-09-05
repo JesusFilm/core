@@ -34,7 +34,11 @@ describe('useJourneyUpdateMutation', () => {
           strategySlug: 'www.example.com/embed',
           tags: [{ __typename: 'Tag', id: 'tagId' }],
           language: { id: '529', __typename: 'Language' },
-          website: true
+          website: true,
+          showShareButton: true,
+          showLikeButton: true,
+          showDislikeButton: true,
+          displayTitle: 'display title'
         }
       }
     }))

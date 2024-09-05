@@ -128,7 +128,16 @@ describe('EmailEventsConsumer', () => {
     showShareButton: null,
     showLikeButton: null,
     showDislikeButton: null,
-    displayTitle: null
+    displayTitle: null,
+    showHosts: null,
+    showChatButtons: null,
+    showReactionButtons: null,
+    showLogo: null,
+    showMenu: null,
+    showDisplayTitle: null,
+    menuButtonIcon: null,
+    logoImageBlockId: null,
+    menuStepBlockId: null
   }
 
   const event: Event = {

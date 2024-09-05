@@ -3,16 +3,33 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect } from 'react'
 
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 
 import { Drawer } from '../../Drawer'
 import { WebsiteToggle } from '../WebsiteToggle'
+
+const Reactions = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Footer/Reactions/Reactions" */ './Reactions'
+    ).then((mod) => mod.Reactions),
+  { ssr: false }
+)
 
 const Host = dynamic(
   async () =>
     await import(
       /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Footer/Host/Host" */ './Host'
     ).then((mod) => mod.Host),
+  { ssr: false }
+)
+
+const DisplayTitle = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Footer/DisplayTitle/DisplayTitle" */ './DisplayTitle'
+    ).then((mod) => mod.DisplayTitle),
   { ssr: false }
 )
 
@@ -28,6 +45,7 @@ export function Footer(): ReactElement {
   const { dispatch } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
   const { websiteMode } = useFlags()
+  const { journey } = useJourney()
 
   function onClose(): void {
     dispatch({
@@ -46,8 +64,19 @@ export function Footer(): ReactElement {
   return (
     <Drawer title={t('Journey Appearance')} onClose={onClose}>
       {websiteMode && <WebsiteToggle />}
-      <Host />
-      <Chat />
+      {journey?.website === true ? (
+        <>
+          <DisplayTitle />
+          <Chat />
+        </>
+      ) : (
+        <>
+          <Reactions />
+          <DisplayTitle />
+          <Host />
+          <Chat />
+        </>
+      )}
     </Drawer>
   )
 }

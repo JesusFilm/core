@@ -1,11 +1,18 @@
-export const audioPreview = {
+import {
+  AudioPreview,
+  Language,
+  LanguageName
+} from '.prisma/api-languages-client'
+
+export const audioPreview: AudioPreview = {
   value: 'abc.mp3',
   size: 1024,
   duration: 10,
-  languageId: '20615'
+  languageId: '20615',
+  updatedAt: new Date('2021-01-01T00:00:00.000Z')
 }
 
-export const language = {
+export const language: Language = {
   id: '20615',
   bcp47: 'zh',
   iso3: 'zh',
@@ -15,7 +22,7 @@ export const language = {
   updatedAt: new Date('2021-01-01T00:00:00.000Z')
 }
 
-export const languageName = [
+export const languageName: LanguageName[] = [
   {
     id: '1',
     parentLanguageId: language.id,

@@ -48,6 +48,7 @@ describe('CardTemplates', () => {
       parentOrder: 0,
       locked: false,
       nextBlockId: null,
+      slug: null,
       children: [card]
     }
     const { getByRole, getByText } = render(

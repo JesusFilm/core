@@ -10,14 +10,7 @@ data "aws_ssm_parameter" "doppler_api_languages_prod_token" {
   name = "/terraform/prd/DOPPLER_API_LANGUAGES_PROD_TOKEN"
 }
 
-data "aws_ssm_parameter" "doppler_api_tags_prod_token" {
-  name = "/terraform/prd/DOPPLER_API_TAGS_PROD_TOKEN"
-}
-
 data "aws_ssm_parameter" "doppler_api_users_prod_token" {
   name = "/terraform/prd/DOPPLER_API_USERS_PROD_TOKEN"
 }
 
-data "aws_ssm_parameter" "doppler_api_videos_prod_token" {
-  name = "/terraform/prd/DOPPLER_API_VIDEOS_PROD_TOKEN"
-}
