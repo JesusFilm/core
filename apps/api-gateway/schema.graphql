@@ -2158,9 +2158,9 @@ type Query
   videosCount(where: VideosFilter): Int! @join__field(graph: MEDIA)
   videoVariants: [VideoVariant!]! @join__field(graph: MEDIA)
   tags: [Tag!]! @join__field(graph: MEDIA)
+  me(input: MeInput): User @join__field(graph: USERS)
   user(id: ID!): User @join__field(graph: USERS)
   userByEmail(email: String!): User @join__field(graph: USERS)
-  me(input: MeInput): User @join__field(graph: USERS)
 }
 
 type RadioOptionBlock implements Block

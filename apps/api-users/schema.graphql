@@ -16,9 +16,9 @@ type Mutation {
 }
 
 type Query {
+  me(input: MeInput): User
   user(id: ID!): User
   userByEmail(email: String!): User
-  me(input: MeInput): User
 }
 
 type User

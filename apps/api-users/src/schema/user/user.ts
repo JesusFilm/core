@@ -18,6 +18,27 @@ builder.asEntity(User, {
 })
 
 builder.queryFields((t) => ({
+  me: t.prismaField({
+    type: 'User',
+    nullable: true,
+    args: {
+      input: t.arg({
+        type: MeInput,
+        required: false
+      })
+    },
+    authScopes: {
+      isAuthenticated: true
+    },
+    resolve: async (query, _parent, { input }, ctx) => {
+      if (ctx.currentUser?.id == null) return null
+      return await findOrFetchUser(
+        query,
+        ctx.currentUser?.id,
+        input?.redirect ?? undefined
+      )
+    }
+  }),
   user: t.prismaField({
     type: 'User',
     nullable: true,
@@ -47,27 +68,6 @@ builder.queryFields((t) => ({
         ...query,
         where: { email }
       })
-    }
-  }),
-  me: t.prismaField({
-    type: 'User',
-    nullable: true,
-    args: {
-      input: t.arg({
-        type: MeInput,
-        required: false
-      })
-    },
-    authScopes: {
-      isAuthenticated: true
-    },
-    resolve: async (query, _parent, { input }, ctx) => {
-      if (ctx.currentUser?.id == null) return null
-      return await findOrFetchUser(
-        query,
-        ctx.currentUser?.id,
-        input?.redirect ?? undefined
-      )
     }
   })
 }))
