@@ -53,7 +53,7 @@ export function SideMenu(): ReactElement {
           height={37}
         />
         <Typography component="h1" variant="h6">
-          {t('JFP Nexus')}
+          {t('Nexus')}
         </Typography>
       </Stack>
       <MenuContent />

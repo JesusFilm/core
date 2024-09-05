@@ -3,9 +3,6 @@
 import LoadingButton from '@mui/lab/LoadingButton'
 import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
-import Divider from '@mui/material/Divider'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import {
   UserCredential,
   getRedirectResult,
@@ -96,21 +93,12 @@ export function SignIn(): ReactElement {
 
   return (
     <CenterPage>
-      <Stack direction="row" alignItems="center" gap={2}>
-        <Image
-          src={minimalLogo}
-          alt={t('Jesus Film Project')}
-          width={70}
-          height={70}
-        />
-        <Typography
-          component="h1"
-          variant="h4"
-          sx={{ fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}
-        >
-          {t('Nexus')}
-        </Typography>
-      </Stack>
+      <Image
+        src={minimalLogo}
+        alt={t('Jesus Film Project')}
+        width={70}
+        height={70}
+      />
       {hasLogged && (
         <Box
           height={300}
