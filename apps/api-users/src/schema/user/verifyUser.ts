@@ -1,6 +1,6 @@
 import crypto from 'crypto'
 
-import { emailQueue } from '../../email/queue'
+import { queue } from '../../workers/email/queue'
 
 export function generateSixDigitNumber(): string {
   return crypto.randomInt(100000, 999999).toString()
@@ -16,10 +16,10 @@ export async function verifyUser(
     ? process.env.EXAMPLE_EMAIL_TOKEN ?? ''
     : generateSixDigitNumber()
 
-  const job = await emailQueue.getJob(userId)
+  const job = await queue.getJob(userId)
   if (job != null) {
     await job.remove()
-    await emailQueue.add(
+    await queue.add(
       'verifyUser',
       {
         userId,
@@ -38,7 +38,7 @@ export async function verifyUser(
       }
     )
   } else {
-    await emailQueue.add(
+    await queue.add(
       'verifyUser',
       {
         userId,

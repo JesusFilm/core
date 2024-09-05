@@ -16,7 +16,6 @@ interface PrismaUser extends User {
 }
 export interface Context {
   currentUser: PrismaUser | null
-  token?: string | null
   interopToken?: string | null
   ipAddress?: string | null
 }
@@ -26,11 +25,8 @@ export function validateIpV4(s?: string | null): boolean {
 
   const match = s.match(/([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})/g)
   const ip = match?.[0] ?? ''
-  return (
-    ip === '3.13.104.200' || // prod aws nat
-    ip === '18.225.26.131' || // stage aws nat
-    ip === '127.0.0.1' // localhost
-  )
+  const validIps = process.env.NAT_ADDRESSES?.split(',') ?? []
+  return validIps.includes(ip)
 }
 
 export function isValidInterOp(
@@ -56,20 +52,20 @@ export const builder = new SchemaBuilder<{
   }
 }>({
   plugins: [ScopeAuthPlugin, PrismaPlugin, DirectivesPlugin, FederationPlugin],
-  authScopes: async (context: Context) => ({
-    isAuthenticated: context.currentUser != null,
-    isCurrentUser: (id) => context.currentUser?.id === id,
-    isSuperAdmin: async () => {
-      const user = await prisma.user.findUnique({
-        where: { userId: context.currentUser?.id }
-      })
-      return user?.superAdmin ?? false
-    },
-    isValidInterOp: isValidInterOp(context.interopToken, context.ipAddress),
-    scopeAuthOptions: {
-      authorizeOnSubscribe: true
-    }
-  }),
+  scopeAuth: {
+    authorizeOnSubscribe: true,
+    authScopes: async (context: Context) => ({
+      isAuthenticated: context.currentUser != null,
+      isCurrentUser: (id) => context.currentUser?.id === id,
+      isSuperAdmin: async () => {
+        const user = await prisma.user.findUnique({
+          where: { userId: context.currentUser?.id }
+        })
+        return user?.superAdmin ?? false
+      },
+      isValidInterOp: isValidInterOp(context.interopToken, context.ipAddress)
+    })
+  },
   prisma: {
     client: prisma,
     dmmf: Prisma.dmmf,

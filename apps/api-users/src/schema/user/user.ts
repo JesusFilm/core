@@ -6,42 +6,10 @@ import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 
 import { findOrFetchUser } from './findOrFetchUser'
+import { CreateVerificationRequestInput, MeInput } from './inputs'
+import { User } from './objects'
 import { validateEmail } from './validateEmail'
 import { verifyUser } from './verifyUser'
-
-export function isCurrentUser(
-  currentUserId: string,
-  contextUserId: string
-): boolean {
-  return currentUserId === contextUserId
-}
-
-const CreateVerificationRequestInput = builder.inputType(
-  'CreateVerificationRequestInput',
-  {
-    fields: (t) => ({
-      redirect: t.string({ required: false })
-    })
-  }
-)
-
-const MeInput = builder.inputType('MeInput', {
-  fields: (t) => ({
-    redirect: t.string({ required: false })
-  })
-})
-
-export const User = builder.prismaObject('User', {
-  fields: (t) => ({
-    id: t.exposeID('id'),
-    firstName: t.exposeString('firstName'),
-    lastName: t.exposeString('lastName', { nullable: true }),
-    email: t.exposeString('email'),
-    imageUrl: t.exposeString('imageUrl', { nullable: true }),
-    superAdmin: t.exposeBoolean('superAdmin'),
-    emailVerified: t.exposeBoolean('emailVerified')
-  })
-})
 
 builder.asEntity(User, {
   key: builder.selection<{ id: string }>('id'),

@@ -1,3 +1,3 @@
+import './inputs'
+import './objects'
 import './user'
-
-export { User } from './user'

@@ -13,7 +13,7 @@ function run({
   jobName,
   repeat
 }: {
-  service: (logger?: Logger) => Promise<void>
+  service: (job: Job, logger?: Logger) => Promise<void>
   queueName: string
   jobName: string
   repeat?: string
@@ -31,48 +31,19 @@ function run({
       jobId: job.id
     })
 
-    childLogger.info('started job')
-    await service(childLogger, job)
-    childLogger.info('finished job')
+    childLogger.info(`started job: ${job.name}`)
+    await service(job, childLogger)
+    childLogger.info(`finished job: ${job.name}`)
   }
 
   logger.info({ queue: queueName }, 'waiting for jobs')
-  const queue = new Queue(queueName, { connection })
-
-  void queue.add(
-    jobName,
-    {},
-    {
-      removeOnComplete: { age: ONE_HOUR },
-      removeOnFail: { age: ONE_DAY },
-      repeat: repeat != null ? { pattern: repeat } : undefined
-    }
-  )
 }
 
 async function main(): Promise<void> {
   run(
     await import(
-      /* webpackChunkName: "algolia" */
-      './algolia'
-    )
-  )
-  run(
-    await import(
-      /* webpackChunkName: "big-query" */
-      './bigQuery'
-    )
-  )
-  run(
-    await import(
-      /* webpackChunkName: "crowdin" */
-      './crowdin'
-    )
-  )
-  run(
-    await import(
-      /* webpackChunkName: "seed" */
-      './seed'
+      /* webpackChunkName: "email" */
+      './email'
     )
   )
 }

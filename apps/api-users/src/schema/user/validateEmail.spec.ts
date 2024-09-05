@@ -1,8 +1,9 @@
-jest.mock('firebase-admin/auth', () => ({
-  __esModule: true,
-  getAuth: jest.fn().mockReturnValue({
-    
-}))
+// jest.mock('firebase-admin/auth', () => ({
+//   __esModule: true,
+//   getAuth: jest.fn().mockReturnValue({
+// }))
+
+import { queue } from '../../workers/email/queue'
 
 describe('validateEmail', () => {
   it('should update user emailVerified', async () => {
@@ -13,7 +14,7 @@ describe('validateEmail', () => {
     const getJob = jest.fn()
     const job = { data: { token } }
     getJob.mockReturnValueOnce(job)
-    emailQueue.getJob.mockReturnValueOnce(getJob)
+    queue.getJob.mockReturnValueOnce(getJob)
     prisma.user.update.mockReturnValueOnce(update)
     await validateEmail(userId, token)
     expect(update).toHaveBeenCalledWith({
