@@ -20,32 +20,6 @@ jest.mock('next/router', () => ({
 const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('ResponsesItem', () => {
-  it('should link to journey visitors page with correct params', async () => {
-    mockedUseRouter.mockReturnValue({
-      query: { journeyId: 'journey-id' }
-    } as unknown as NextRouter)
-    render(
-      <SnackbarProvider>
-        <MockedProvider mocks={[]}>
-          <TeamProvider>
-            <JourneyProvider
-              value={{
-                journey: defaultJourney,
-                variant: 'admin'
-              }}
-            >
-              <ResponsesItem variant="menu-item" />
-            </JourneyProvider>
-          </TeamProvider>
-        </MockedProvider>
-      </SnackbarProvider>
-    )
-    expect(screen.getByRole('menuitem', { name: 'Responses' })).toHaveAttribute(
-      'href',
-      '/journeys/journey-id/reports/visitors?withSubmittedText=true'
-    )
-  })
-
   it('should link to journey visitors page as an icon button', async () => {
     mockedUseRouter.mockReturnValue({
       query: { journeyId: 'journey-id' }
@@ -60,7 +34,7 @@ describe('ResponsesItem', () => {
                 variant: 'admin'
               }}
             >
-              <ResponsesItem variant="button" />
+              <ResponsesItem />
             </JourneyProvider>
           </TeamProvider>
         </MockedProvider>
@@ -98,7 +72,7 @@ describe('ResponsesItem', () => {
                 variant: 'admin'
               }}
             >
-              <ResponsesItem variant="icon-button" />
+              <ResponsesItem />
             </JourneyProvider>
           </TeamProvider>
         </MockedProvider>

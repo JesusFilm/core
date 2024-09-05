@@ -16,7 +16,7 @@ export function Items(): ReactElement {
       data-testid="ItemsStack"
       alignItems="center"
     >
-      <ResponsesItem variant="icon-button" />
+      <ResponsesItem />
       <AnalyticsItem variant="icon-button" />
       <StrategyItem variant="button" />
       <ShareItem variant="button" />

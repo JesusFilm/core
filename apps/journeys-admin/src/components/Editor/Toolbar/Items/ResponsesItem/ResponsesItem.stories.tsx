@@ -17,7 +17,7 @@ const Demo: Meta<typeof ResponsesItem> = {
 }
 
 const Template: StoryObj<typeof ResponsesItem> = {
-  render: ({ ...args }) => (
+  render: () => (
     <ApolloLoadingProvider>
       <MockedProvider>
         <JourneyProvider
@@ -29,7 +29,7 @@ const Template: StoryObj<typeof ResponsesItem> = {
               backgroundColor: 'background.paper'
             }}
           >
-            <ResponsesItem {...args} />
+            <ResponsesItem />
           </Box>
         </JourneyProvider>
       </MockedProvider>

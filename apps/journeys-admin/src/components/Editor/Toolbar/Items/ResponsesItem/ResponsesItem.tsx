@@ -4,7 +4,7 @@ import Typography from '@mui/material/Typography'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
-import { ComponentProps, ReactElement } from 'react'
+import { ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Inbox2Icon from '@core/shared/ui/icons/Inbox2'
@@ -13,11 +13,7 @@ import { GetJourneyVisitorsCount } from '../../../../../../__generated__/GetJour
 import { GET_JOURNEY_VISITORS_COUNT } from '../../../../../../pages/journeys/[journeyId]/reports/visitors'
 import { Item } from '../Item/Item'
 
-interface ResponsesItemProps {
-  variant: ComponentProps<typeof Item>['variant']
-}
-
-export function ResponsesItem({ variant }: ResponsesItemProps): ReactElement {
+export function ResponsesItem(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const router = useRouter()
@@ -40,7 +36,11 @@ export function ResponsesItem({ variant }: ResponsesItemProps): ReactElement {
         legacyBehavior
         prefetch={false}
       >
-        <Item variant={variant} label={t('Responses')} icon={<Inbox2Icon />} />
+        <Item
+          variant="icon-button"
+          label={t('Responses')}
+          icon={<Inbox2Icon />}
+        />
       </NextLink>
       <Typography variant="body2" sx={{ fontWeight: '600' }}>
         {data?.journeyVisitorCount ?? ''}
