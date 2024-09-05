@@ -1,4 +1,9 @@
 {
+  "Sign Out": "Sign Out",
   "Nexus Admin": "Nexus Admin",
-  "Sign Out": "Sign Out"
+  "Login": "ログイン",
+  "Redirecting to {redirect}": "{redirect}へのリダイレクト",
+  "Log in with Google": "Googleでログイン",
+  "Submit": "投稿する",
+  "Unauthorized": "無許可"
 }
