@@ -50,7 +50,7 @@ export function RefinementGroup({
       <Typography variant="h6" color="primary.main" marginBottom={6}>
         {title}
       </Typography>
-      <Box color="text.primary">
+      <Box color="text.primary" marginBottom={10}>
         {items.length > 0 ? (
           <FormGroup>
             {items.map((item) => (

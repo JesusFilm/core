@@ -31,9 +31,9 @@ function run({
       jobId: job.id
     })
 
-    logger.info('started job')
+    childLogger.info('started job')
     await service(childLogger)
-    logger.info('finished job')
+    childLogger.info('finished job')
   }
 
   logger.info({ queue: queueName }, 'waiting for jobs')
@@ -67,6 +67,12 @@ async function main(): Promise<void> {
     await import(
       /* webpackChunkName: "crowdin" */
       './crowdin'
+    )
+  )
+  run(
+    await import(
+      /* webpackChunkName: "seed" */
+      './seed'
     )
   )
 }

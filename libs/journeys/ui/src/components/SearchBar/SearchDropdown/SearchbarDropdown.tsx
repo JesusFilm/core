@@ -1,9 +1,7 @@
 import Box from '@mui/material/Box'
 import Popper from '@mui/material/Popper'
-import Stack from '@mui/material/Stack'
-import { useTheme } from '@mui/material/styles'
+import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { ReactElement, useState } from 'react'
-import { useRefinementList } from 'react-instantsearch'
 
 import { useLanguagesContinentsQuery } from '../../../libs/useLanguagesContinentsQuery'
 import { useSortLanguageContinents } from '../../../libs/useSortLanguageContinents'
@@ -13,6 +11,7 @@ import { Suggestions } from './Suggestions'
 
 interface SearchbarDropdownProps {
   open: boolean
+  refinements: RefinementListRenderState
   id?: string
   anchorEl?: HTMLElement | null
   variant?: string
@@ -20,19 +19,14 @@ interface SearchbarDropdownProps {
 
 export function SearchbarDropdown({
   open,
+  refinements,
   id,
   anchorEl,
   variant = 'languages'
 }: SearchbarDropdownProps): ReactElement {
-  const theme = useTheme()
-
   const { data } = useLanguagesContinentsQuery()
   const languages = useSortLanguageContinents({
     languages: data?.languages ?? []
-  })
-  const refinements = useRefinementList({
-    attribute: 'languageEnglishName',
-    limit: 1000
   })
   const [selectedLanguagesByContinent, setSelectedLanguagesByContinent] =
     useState<Record<string, string[]>>()
@@ -72,29 +66,17 @@ export function SearchbarDropdown({
         borderRadius={3}
         boxShadow="0px 4px 4px 0px #00000040"
         sx={{ p: 8, bgcolor: 'background.paper', mt: 3 }}
+        color="text.primary"
       >
-        <Stack
-          color="text.primary"
-          direction={{ xs: 'column', lg: 'row' }}
-          justifyContent="space-around"
-          sx={{
-            [theme.breakpoints.down('lg')]: {
-              gap: 6
-            }
-          }}
-        >
-          {variant === 'languages' && (
-            <LanguageContinentRefinements
-              refinements={refinements}
-              languages={languages}
-              selectedLanguagesByContinent={selectedLanguagesByContinent}
-              handleLanguagesSelect={handleLanguageSelect}
-            />
-          )}
-          {variant === 'suggestions' && (
-            <Suggestions refinements={refinements} />
-          )}
-        </Stack>
+        {variant === 'languages' && (
+          <LanguageContinentRefinements
+            refinements={refinements}
+            languages={languages}
+            selectedLanguagesByContinent={selectedLanguagesByContinent}
+            handleLanguagesSelect={handleLanguageSelect}
+          />
+        )}
+        {variant === 'suggestions' && <Suggestions refinements={refinements} />}
       </Box>
     </Popper>
   )

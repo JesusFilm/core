@@ -49,9 +49,9 @@ export async function service(logger?: Logger): Promise<void> {
   const languages = await client.getTranslations()
 
   for (const languageCode in languages) {
-    const languageId = /\/content\/(?<languageId>\d+)\.xliff/.exec(
+    const languageId = /\/content\/(\d+)\.xliff/.exec(
       languages[languageCode][0].file
-    )?.groups?.languageId
+    )?.[1]
 
     if (languageId != null) {
       const res = await xliff12ToJs(
