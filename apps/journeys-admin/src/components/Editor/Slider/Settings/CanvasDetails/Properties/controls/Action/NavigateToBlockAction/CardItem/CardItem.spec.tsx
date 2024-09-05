@@ -18,6 +18,7 @@ describe('CardItem', () => {
     parentOrder: 4,
     locked: false,
     nextBlockId: null,
+    slug: null,
     children: [
       {
         __typename: 'CardBlock' as const,

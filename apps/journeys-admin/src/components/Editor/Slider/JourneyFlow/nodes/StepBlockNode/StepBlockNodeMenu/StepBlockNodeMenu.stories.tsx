@@ -26,7 +26,8 @@ const step: TreeBlock<StepBlock> = {
   nextBlockId: null,
   parentOrder: 0,
   locked: false,
-  children: []
+  children: [],
+  slug: null
 }
 
 const Template: StoryObj<ComponentProps<typeof StepBlockNodeMenu>> = {

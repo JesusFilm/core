@@ -13,6 +13,7 @@ const step = {
   parentOrder: 0,
   locked: false,
   nextBlockId: null,
+  slug: null,
   children: []
 }
 
@@ -27,6 +28,7 @@ describe('block', () => {
           parentOrder: 0,
           locked: false,
           nextBlockId: null,
+          slug: null,
           children: [
             {
               id: 'b',
@@ -35,6 +37,7 @@ describe('block', () => {
               parentOrder: 0,
               locked: false,
               nextBlockId: null,
+              slug: null,
               children: [
                 {
                   id: 'c',
@@ -43,6 +46,7 @@ describe('block', () => {
                   parentOrder: 0,
                   locked: false,
                   nextBlockId: null,
+                  slug: null,
                   children: []
                 }
               ]

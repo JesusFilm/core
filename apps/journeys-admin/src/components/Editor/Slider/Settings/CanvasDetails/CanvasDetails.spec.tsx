@@ -48,7 +48,8 @@ describe('CanvasDetails', () => {
     parentOrder: 0,
     locked: false,
     nextBlockId: null,
-    children: [mockButtonBlock]
+    children: [mockButtonBlock],
+    slug: null
   }
 
   it('should render add block', () => {
