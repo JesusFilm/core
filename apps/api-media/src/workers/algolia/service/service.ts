@@ -5,14 +5,7 @@ import { Logger } from 'pino'
 import { graphql } from '../../../lib/graphql/gatewayGraphql'
 import { prisma } from '../../../lib/prisma'
 
-const ENGLISH_LANGUAGE_ID = '529'
-const TULA_LANGUAGE_ID = '9999'
-const SPANISH_CASTILIAN_LANGUAGE_ID = '21046'
-const SPANISH_LATIN_AMERICAN_LANGUAGE_ID = '21028'
-const CHINESE_TRADITIONAL_LANGUAGE_ID = '21753'
-const CHINESE_SIMPLIFIED_LANGUAGE_ID = '21754'
-const CHINESE_MANDARIN_LANGUAGE_ID = '20615'
-const CHINESE_CANTONESE_LANGUAGE_ID = '20601'
+import { LANGUAGES_TO_INCLUDE } from './languages'
 
 export const GET_LANGUAGES = graphql(`
   query getLanguages {
@@ -99,16 +92,7 @@ export async function service(logger?: Logger): Promise<void> {
             ? undefined
             : {
                 languageId: {
-                  in: [
-                    ENGLISH_LANGUAGE_ID,
-                    TULA_LANGUAGE_ID,
-                    SPANISH_CASTILIAN_LANGUAGE_ID,
-                    SPANISH_LATIN_AMERICAN_LANGUAGE_ID,
-                    CHINESE_TRADITIONAL_LANGUAGE_ID,
-                    CHINESE_SIMPLIFIED_LANGUAGE_ID,
-                    CHINESE_MANDARIN_LANGUAGE_ID,
-                    CHINESE_CANTONESE_LANGUAGE_ID
-                  ]
+                  in: LANGUAGES_TO_INCLUDE
                 }
               }
       })

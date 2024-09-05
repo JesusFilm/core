@@ -31,11 +31,6 @@ describe('Suggestions', () => {
     jest.clearAllMocks()
   })
 
-  it('should display suggestions header', () => {
-    render(<Suggestions refinements={refinements} />)
-    expect(screen.getByText('Suggestions')).toBeInTheDocument()
-  })
-
   it('should display default suggestions', () => {
     render(<Suggestions refinements={refinements} />)
     expect(screen.getByText('- in English')).toBeInTheDocument()

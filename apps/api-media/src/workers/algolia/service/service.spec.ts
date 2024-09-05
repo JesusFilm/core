@@ -5,6 +5,7 @@ import { VideoVariant } from '.prisma/api-media-client'
 
 import { prismaMock } from '../../../../test/prismaMock'
 
+import { LANGUAGES_TO_INCLUDE } from './languages'
 import { GET_LANGUAGES, apollo } from './service'
 
 import { service } from '.'
@@ -132,16 +133,7 @@ describe('algolia/service', () => {
         },
         where: {
           languageId: {
-            in: [
-              '529', // English
-              '9999', // Tula
-              '21046', // Spanish, Castilian
-              '21028', // Spanish, Latin American
-              '21753', // Chinese, Traditional
-              '21754', // Chinese, Simplified
-              '20615', // Chinese, Mandarin
-              '20601' // Chinese, Cantonese
-            ]
+            in: LANGUAGES_TO_INCLUDE
           }
         }
       })

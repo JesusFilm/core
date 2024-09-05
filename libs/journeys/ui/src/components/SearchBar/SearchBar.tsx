@@ -55,9 +55,10 @@ export function SearchBar({
 
   const popperRef = useRef(null)
   const [open, setOpen] = useState(false)
-  const { query, refine } = useSearchBox()
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-  const [dropdownVariant, setDropdownVariant] = useState<string>('suggestions')
+  const [tabValue, setTabValue] = useState<number>(0)
+
+  const { query, refine } = useSearchBox()
 
   const {
     selectedLanguagesByContinent,
@@ -77,14 +78,13 @@ export function SearchBar({
   }
 
   function openSuggestionsDropdown(): void {
-    if (!open) {
-      setDropdownVariant('suggestions')
-      setOpen(true)
-    }
+    setAnchorEl(popperRef.current)
+    setOpen(true)
   }
 
   function handleLanguageClick(): void {
-    setDropdownVariant('languages')
+    setAnchorEl(popperRef.current)
+    setTabValue(1)
     setOpen(!open)
   }
 
@@ -100,7 +100,6 @@ export function SearchBar({
           }}
           data-testid="SearchBar"
           ref={popperRef}
-          onClick={() => setAnchorEl(popperRef.current)}
         >
           <Formik
             initialValues={{
@@ -168,9 +167,10 @@ export function SearchBar({
           refinements={refinements}
           id={open ? 'simple-popper' : undefined}
           anchorEl={anchorEl}
-          variant={dropdownVariant}
           handleLanguagesSelect={selectLanguageForContinent}
           selectedLanguagesByContinent={selectedLanguagesByContinent}
+          tabIndex={tabValue}
+          handleTabValueChange={setTabValue}
         />
       </Box>
     </ClickAwayListener>

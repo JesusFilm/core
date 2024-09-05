@@ -20,6 +20,14 @@ const mockUseSearchBox = useSearchBox as jest.MockedFunction<
   typeof useSearchBox
 >
 
+async function clickOnSearchBar(): Promise<void> {
+  const searchBar = screen.getByDisplayValue('Hello World!')
+  await act(() => {
+    searchBar.click()
+    searchBar.focus()
+  })
+}
+
 describe('SearchBar', () => {
   const refine = jest.fn()
 
@@ -44,7 +52,7 @@ describe('SearchBar', () => {
         <SearchBar />
       </MockedProvider>
     )
-    expect(screen.getByDisplayValue('Hello World!')).toBeInTheDocument()
+    expect(screen.getByDisplayValue('Hello World!')).toBeVisible()
   })
 
   it('should have placeholder text', async () => {
@@ -56,7 +64,7 @@ describe('SearchBar', () => {
     const inputElement = screen.getByPlaceholderText(
       /Search by topic, occasion, or audience .../i
     )
-    expect(inputElement).toBeInTheDocument()
+    expect(inputElement).toBeVisible()
   })
 
   it('should have globe icon', async () => {
@@ -99,16 +107,16 @@ describe('SearchBar', () => {
         <SearchBar showLanguageButton />
       </MockedProvider>
     )
-    expect(screen.getAllByTestId('Globe1Icon')[0]).toBeInTheDocument()
+    expect(screen.getAllByTestId('Globe1Icon')[0]).toBeVisible()
   })
 
-  it('should render language', async () => {
+  it('should render language button', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
         <SearchBar showLanguageButton />
       </MockedProvider>
     )
-    expect(screen.getAllByText('Language')[0]).toBeInTheDocument()
+    expect(screen.getAllByText('Language')[0]).toBeVisible()
   })
 
   it('should have dropdown closed by default', async () => {
@@ -126,13 +134,9 @@ describe('SearchBar', () => {
         <SearchBar />
       </MockedProvider>
     )
-    const searchBar = screen.getByDisplayValue('Hello World!')
-    await act(() => {
-      searchBar.click()
-      searchBar.focus()
-    })
+    await clickOnSearchBar()
     expect(screen.getByTestId('SearchBarDropdown')).toBeInTheDocument()
-    expect(screen.getByText('Suggestions')).toBeInTheDocument()
+    expect(screen.getByText('Search Suggestions')).toBeVisible()
   })
 
   it('should open languages dropdown when language button clicked', async () => {
@@ -144,8 +148,10 @@ describe('SearchBar', () => {
     expect(screen.getAllByText('Language')[0]).toBeInTheDocument()
     fireEvent.click(screen.getAllByText('Language')[0])
 
-    expect(screen.getByTestId('SearchBarDropdown')).toBeInTheDocument()
-    await waitFor(() => expect(screen.getByText('Europe')).toBeInTheDocument())
+    await waitFor(() =>
+      expect(screen.getByTestId('SearchBarDropdown')).toBeInTheDocument()
+    )
+    expect(screen.getByText('Europe')).toBeInTheDocument()
   })
 
   it('should not switch back to suggestions after languages button clicked', async () => {
@@ -154,15 +160,35 @@ describe('SearchBar', () => {
         <SearchBar showLanguageButton />
       </MockedProvider>
     )
-    const button = screen.getAllByText('Language')[0]
-    fireEvent.click(button)
-
+    fireEvent.click(screen.getAllByText('Language')[0])
     expect(screen.getByTestId('SearchBarDropdown')).toBeInTheDocument()
-    const searchBar = screen.getByDisplayValue('Hello World!')
-    await act(() => {
-      searchBar.click()
-      searchBar.focus()
-    })
+    await clickOnSearchBar()
     await waitFor(() => expect(screen.getByText('Europe')).toBeInTheDocument())
+  })
+
+  it('should navigate to suggestions tab from languages', async () => {
+    render(
+      <MockedProvider mocks={[getLanguagesContinentsMock]}>
+        <SearchBar showLanguageButton />
+      </MockedProvider>
+    )
+    fireEvent.click(screen.getAllByText('Language')[0])
+    expect(screen.getByTestId('SearchBarDropdown')).toBeInTheDocument()
+    fireEvent.click(screen.getByText('Search Suggestions'))
+
+    await waitFor(() => expect(screen.getByText('- in English')).toBeVisible())
+  })
+
+  it('should navigate to languages tab from suggestions', async () => {
+    render(
+      <MockedProvider mocks={[getLanguagesContinentsMock]}>
+        <SearchBar showLanguageButton />
+      </MockedProvider>
+    )
+    await clickOnSearchBar()
+    expect(screen.getByTestId('SearchBarDropdown')).toBeInTheDocument()
+    fireEvent.click(screen.getByText('Languages'))
+
+    await waitFor(() => expect(screen.getByText('Cantonese')).toBeVisible())
   })
 })
