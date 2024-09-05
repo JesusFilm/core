@@ -1,4 +1,9 @@
 {
+  "Sign Out": "Sign Out",
   "Nexus Admin": "Nexus Admin",
-  "Sign Out": "Sign Out"
+  "Login": "Masuk",
+  "Redirecting to {redirect}": "Mengalihkan ke {redirect}",
+  "Log in with Google": "Masuk dengan Google",
+  "Submit": "Kirim",
+  "Unauthorized": "Tidak sah"
 }
