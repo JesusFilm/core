@@ -29,18 +29,6 @@ describe('getNextStepSlug', () => {
   }
 
   it('should return the slug to the next step for step id', () => {
-    const journey = {
-      ...defaultJourney,
-      website: true,
-      blocks: [defaultBlock]
-    }
-
-    const result = getNextStepSlug(journey, defaultAction)
-
-    expect(result).toBe(`/${journey.slug}/${defaultBlock.slug}`)
-  })
-
-  it('should return the slug to the next step for step slug', () => {
     const block = {
       ...defaultBlock,
       slug: null
@@ -54,6 +42,18 @@ describe('getNextStepSlug', () => {
     const result = getNextStepSlug(journey, defaultAction)
 
     expect(result).toBe(`/${journey.slug}/${defaultBlock.id}`)
+  })
+
+  it('should return the slug to the next step for step slug', () => {
+    const journey = {
+      ...defaultJourney,
+      website: true,
+      blocks: [defaultBlock]
+    }
+
+    const result = getNextStepSlug(journey, defaultAction)
+
+    expect(result).toBe(`/${journey.slug}/${defaultBlock.slug}`)
   })
 
   it('should return undefined if journey is not a website', () => {
