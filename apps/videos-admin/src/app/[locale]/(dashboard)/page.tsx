@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 
-import { MainGrid } from '../../../components/MainGrid'
+import { Dashboard } from './_Dashboard'
 
-export default function Index(): ReactElement {
-  return <MainGrid />
+export default function DashboardPage(): ReactElement {
+  return <Dashboard />
 }

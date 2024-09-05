@@ -1,1 +1,0 @@
-export { SessionsChart } from './SessionsChart'

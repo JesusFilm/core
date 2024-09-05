@@ -4,10 +4,12 @@ import MuiDrawer, { drawerClasses } from '@mui/material/Drawer'
 import Stack from '@mui/material/Stack'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
-import { CardAlert } from '../CardAlert'
+import minimalLogo from '../../assets/minimal-logo.png'
+import { useAuth } from '../../libs/auth/authContext'
 import { MenuContent } from '../MenuContent'
 import { OptionsMenu } from '../OptionsMenu'
 
@@ -26,6 +28,7 @@ const Drawer = styled(MuiDrawer)({
 
 export function SideMenu(): ReactElement {
   const t = useTranslations()
+  const auth = useAuth()
 
   return (
     <Drawer
@@ -37,8 +40,23 @@ export function SideMenu(): ReactElement {
         }
       }}
     >
+      <Stack
+        direction="row"
+        sx={{ px: 1.5, pt: 1.5 }}
+        alignItems="center"
+        gap={1}
+      >
+        <Image
+          src={minimalLogo}
+          alt={t('Jesus Film Project')}
+          width={37}
+          height={37}
+        />
+        <Typography component="h1" variant="h6">
+          {t('JFP Nexus')}
+        </Typography>
+      </Stack>
       <MenuContent />
-      <CardAlert />
       <Stack
         direction="row"
         sx={{
@@ -51,19 +69,31 @@ export function SideMenu(): ReactElement {
       >
         <Avatar
           sizes="small"
-          alt="Riley Carter"
-          src="/static/images/avatar/7.jpg"
+          alt={auth.user?.displayName ?? ''}
+          src={auth.user?.photoURL ?? ''}
           sx={{ width: 36, height: 36 }}
         />
-        <Box sx={{ mr: 'auto' }}>
+        <Box
+          flexGrow={1}
+          sx={{
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis'
+          }}
+        >
           <Typography
             variant="body2"
             sx={{ fontWeight: 500, lineHeight: '16px' }}
           >
-            {t('Riley Carter')}
+            {auth.user?.displayName}
           </Typography>
-          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-            {t('riley@email.com')}
+          <Typography
+            variant="caption"
+            sx={{
+              color: 'text.secondary'
+            }}
+          >
+            {auth.user?.email}
           </Typography>
         </Box>
         <OptionsMenu />

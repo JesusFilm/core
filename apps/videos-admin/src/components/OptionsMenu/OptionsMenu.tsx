@@ -11,6 +11,7 @@ import { styled } from '@mui/material/styles'
 import { useTranslations } from 'next-intl'
 import { MouseEvent, ReactElement, useState } from 'react'
 
+import { useLogout } from '../../libs/useLogout'
 import { MenuButton } from '../MenuButton'
 
 const MenuItem = styled(MuiMenuItem)({
@@ -21,10 +22,13 @@ export function OptionsMenu(): ReactElement {
   const t = useTranslations()
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
-  const handleClick = (event: MouseEvent<HTMLElement>): void => {
+  const handleLogout = useLogout({ onSuccess: handleClose })
+
+  function handleClick(event: MouseEvent<HTMLElement>): void {
     setAnchorEl(event.currentTarget)
   }
-  const handleClose = (): void => {
+
+  function handleClose(): void {
     setAnchorEl(null)
   }
   return (
@@ -49,6 +53,7 @@ export function OptionsMenu(): ReactElement {
             padding: '4px'
           },
           [`& .${paperClasses.root}`]: {
+            minWidth: 180,
             padding: 0
           },
           [`& .${dividerClasses.root}`]: {
@@ -56,14 +61,10 @@ export function OptionsMenu(): ReactElement {
           }
         }}
       >
-        <MenuItem onClick={handleClose}>{t('Profile')}</MenuItem>
-        <MenuItem onClick={handleClose}>{t('My account')}</MenuItem>
-        <Divider />
-        <MenuItem onClick={handleClose}>{t('Add another account')}</MenuItem>
         <MenuItem onClick={handleClose}>{t('Settings')}</MenuItem>
         <Divider />
         <MenuItem
-          onClick={handleClose}
+          onClick={handleLogout}
           sx={{
             [`& .${listItemIconClasses.root}`]: {
               ml: 'auto',
@@ -71,7 +72,7 @@ export function OptionsMenu(): ReactElement {
             }
           }}
         >
-          <ListItemText>{t('Logout')}</ListItemText>
+          <ListItemText>{t('Sign Out')}</ListItemText>
           <ListItemIcon>
             <LogoutRoundedIcon fontSize="small" />
           </ListItemIcon>

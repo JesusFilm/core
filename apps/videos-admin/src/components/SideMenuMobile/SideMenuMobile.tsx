@@ -1,5 +1,4 @@
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded'
-import NotificationsRoundedIcon from '@mui/icons-material/NotificationsRounded'
 import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
@@ -10,8 +9,7 @@ import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
 import { useAuth } from '../../libs/auth/authContext'
-import { CardAlert } from '../CardAlert'
-import { MenuButton } from '../MenuButton'
+import { useLogout } from '../../libs/useLogout'
 import { MenuContent } from '../MenuContent'
 
 interface SideMenuMobileProps {
@@ -25,6 +23,7 @@ export function SideMenuMobile({
 }: SideMenuMobileProps): ReactElement {
   const t = useTranslations()
   const auth = useAuth()
+  const handleLogout = useLogout()
 
   return (
     <Drawer
@@ -51,31 +50,28 @@ export function SideMenuMobile({
           >
             <Avatar
               sizes="small"
-              alt="Riley Carter"
-              src="/static/images/avatar/7.jpg"
+              alt={auth.user?.displayName ?? ''}
+              src={auth.user?.photoURL ?? ''}
               sx={{ width: 24, height: 24 }}
             />
             <Typography component="p" variant="h6">
-              {auth.user?.name}
+              {auth.user?.displayName}
             </Typography>
           </Stack>
-          <MenuButton showBadge>
-            <NotificationsRoundedIcon />
-          </MenuButton>
         </Stack>
         <Divider />
         <Stack sx={{ flexGrow: 1 }}>
           <MenuContent />
           <Divider />
         </Stack>
-        <CardAlert />
         <Stack sx={{ p: 2 }}>
           <Button
+            onClick={handleLogout}
             variant="outlined"
             fullWidth
             startIcon={<LogoutRoundedIcon />}
           >
-            {t('Logout')}
+            {t('Sign Out')}
           </Button>
         </Stack>
       </Stack>

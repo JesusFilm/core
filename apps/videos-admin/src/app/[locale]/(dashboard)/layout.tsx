@@ -1,6 +1,6 @@
 import { ReactElement, ReactNode } from 'react'
 
-import { Dashboard } from './_Dashboard'
+import { DashboardLayout as ClientDashboardLayout } from './_DashboardLayout'
 
 interface DashboardLayoutProps {
   children: ReactNode
@@ -9,5 +9,5 @@ interface DashboardLayoutProps {
 export default function DashboardLayout({
   children
 }: DashboardLayoutProps): ReactElement {
-  return <Dashboard>{children}</Dashboard>
+  return <ClientDashboardLayout>{children}</ClientDashboardLayout>
 }
