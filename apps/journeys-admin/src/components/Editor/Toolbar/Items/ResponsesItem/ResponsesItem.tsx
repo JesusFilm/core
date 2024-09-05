@@ -1,17 +1,19 @@
+import { useQuery } from '@apollo/client'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import NextLink from 'next/link'
+import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { ComponentProps, ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Inbox2Icon from '@core/shared/ui/icons/Inbox2'
 
-import { Item } from '../Item/Item'
-import Typography from '@mui/material/Typography'
-import Stack from '@mui/material/Stack'
-import { GET_JOURNEY_VISITORS_COUNT } from '../../../../../../pages/journeys/[journeyId]/reports/visitors'
 import { GetJourneyVisitorsCount } from '../../../../../../__generated__/GetJourneyVisitorsCount'
-import { useRouter } from 'next/router'
-import { useQuery } from '@apollo/client'
+import { GET_JOURNEY_VISITORS_COUNT } from '../../../../../../pages/journeys/[journeyId]/reports/visitors'
+import { Item } from '../Item/Item'
+
+
 
 interface ResponsesItemProps {
   variant: ComponentProps<typeof Item>['variant']

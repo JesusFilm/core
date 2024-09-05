@@ -21,11 +21,11 @@ import { CreateTemplateItem } from '../Items/CreateTemplateItem'
 import { DescriptionItem } from '../Items/DescriptionItem'
 import { LanguageItem } from '../Items/LanguageItem'
 import { PreviewItem } from '../Items/PreviewItem'
+import { ResponsesItem } from '../Items/ResponsesItem'
 import { ShareItem } from '../Items/ShareItem'
 import { StrategyItem } from '../Items/StrategyItem'
 import { TemplateSettingsItem } from '../Items/TemplateSettingsItem'
 import { TitleItem } from '../Items/TitleItem'
-import { ResponsesItem } from '../Items/ResponsesItem'
 
 export const GET_ROLE = gql`
   query GetRole {

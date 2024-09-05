@@ -3,9 +3,9 @@ import { ReactElement } from 'react'
 
 import { AnalyticsItem } from './AnalyticsItem'
 import { PreviewItem } from './PreviewItem'
+import { ResponsesItem } from './ResponsesItem'
 import { ShareItem } from './ShareItem'
 import { StrategyItem } from './StrategyItem'
-import { ResponsesItem } from './ResponsesItem'
 
 export function Items(): ReactElement {
   return (
