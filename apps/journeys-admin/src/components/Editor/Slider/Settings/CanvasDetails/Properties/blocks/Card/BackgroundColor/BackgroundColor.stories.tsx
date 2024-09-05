@@ -37,7 +37,8 @@ const step = (block: TreeBlock): TreeBlock<StepBlock> => {
     parentOrder: 0,
     children: [block],
     locked: false,
-    nextBlockId: null
+    nextBlockId: null,
+    slug: null
   }
 }
 

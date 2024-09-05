@@ -6,7 +6,6 @@ import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
-import { transformer } from '@core/journeys/ui/transformer'
 import { GET_JOURNEY } from '@core/journeys/ui/useJourneyQuery'
 
 import {
@@ -16,8 +15,8 @@ import {
 } from '../../__generated__/GetJourney'
 import { IdType } from '../../__generated__/globalTypes'
 import i18nConfig from '../../next-i18next.config'
-import { Conductor } from '../../src/components/Conductor'
 import { JourneyPageWrapper } from '../../src/components/JourneyPageWrapper'
+import { JourneyRenderer } from '../../src/components/JourneyRenderer'
 import { createApolloClient } from '../../src/libs/apolloClient'
 
 interface JourneyPageProps {
@@ -84,9 +83,7 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
         }}
       />
       <JourneyPageWrapper journey={journey} rtl={rtl} locale={locale}>
-        {journey.blocks != null && (
-          <Conductor blocks={transformer(journey.blocks)} />
-        )}
+        <JourneyRenderer />
       </JourneyPageWrapper>
     </>
   )
