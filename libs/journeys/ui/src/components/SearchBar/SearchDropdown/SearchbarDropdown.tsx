@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box'
 import Popper from '@mui/material/Popper'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
-import { ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
 
 import { useLanguagesContinentsQuery } from '../../../libs/useLanguagesContinentsQuery'
 import { useSortLanguageContinents } from '../../../libs/useSortLanguageContinents'
@@ -15,6 +15,12 @@ interface SearchbarDropdownProps {
   id?: string
   anchorEl?: HTMLElement | null
   variant?: string
+  handleLanguagesSelect: (
+    continent: string,
+    language: string,
+    isRefined: boolean
+  ) => void
+  selectedLanguagesByContinent?: Record<string, string[]>
 }
 
 export function SearchbarDropdown({
@@ -22,30 +28,14 @@ export function SearchbarDropdown({
   refinements,
   id,
   anchorEl,
-  variant = 'languages'
+  variant = 'languages',
+  handleLanguagesSelect,
+  selectedLanguagesByContinent
 }: SearchbarDropdownProps): ReactElement {
   const { data } = useLanguagesContinentsQuery()
   const languages = useSortLanguageContinents({
     languages: data?.languages ?? []
   })
-  const [selectedLanguagesByContinent, setSelectedLanguagesByContinent] =
-    useState<Record<string, string[]>>()
-
-  function handleLanguageSelect(
-    continent: string,
-    language: string,
-    isRefined: boolean
-  ): void {
-    const currentLanguages = selectedLanguagesByContinent?.[continent] ?? []
-    const updatedLanguages = isRefined
-      ? [...currentLanguages, language]
-      : currentLanguages.filter((lang) => lang !== language)
-
-    setSelectedLanguagesByContinent({
-      ...selectedLanguagesByContinent,
-      [continent]: updatedLanguages
-    })
-  }
 
   return (
     <Popper
@@ -73,7 +63,7 @@ export function SearchbarDropdown({
             refinements={refinements}
             languages={languages}
             selectedLanguagesByContinent={selectedLanguagesByContinent}
-            handleLanguagesSelect={handleLanguageSelect}
+            handleLanguagesSelect={handleLanguagesSelect}
           />
         )}
         {variant === 'suggestions' && <Suggestions refinements={refinements} />}

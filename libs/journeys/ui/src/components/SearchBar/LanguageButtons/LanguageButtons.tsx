@@ -13,11 +13,13 @@ const MAX_DISPLAYED_LANGUAGES = 2
 interface LanguageButtonsProps {
   onClick: () => void
   refinements: RefinementListRenderState
+  handleRemoveLanguage: (language: string) => void
 }
 
 export function LanguageButtons({
   onClick,
-  refinements
+  refinements,
+  handleRemoveLanguage
 }: LanguageButtonsProps): ReactElement {
   const theme = useTheme()
   const { t } = useTranslation('apps-watch')
@@ -77,6 +79,7 @@ export function LanguageButtons({
               handleClick={(event: MouseEvent<HTMLButtonElement>) => {
                 event.stopPropagation()
                 refine(selectedLanguage)
+                handleRemoveLanguage(selectedLanguage)
               }}
             />
           ))}

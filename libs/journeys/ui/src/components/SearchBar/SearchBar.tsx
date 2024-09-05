@@ -12,6 +12,8 @@ import { useRefinementList, useSearchBox } from 'react-instantsearch'
 import Search1Icon from '@core/shared/ui/icons/Search1'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
 
+import { useContinentLanguages } from '../../libs/useContinentLanguages'
+
 import { LanguageButtons } from './LanguageButtons'
 import { SearchbarDropdown } from './SearchDropdown'
 
@@ -53,14 +55,15 @@ export function SearchBar({
 
   const popperRef = useRef(null)
   const [open, setOpen] = useState(false)
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-  const [languageButtonVisable] = useState(showLanguageButton)
-  const [dropdownVarient, setDropdownVarient] = useState<string>('suggestions')
   const { query, refine } = useSearchBox()
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const [dropdownVariant, setDropdownVariant] = useState<string>('suggestions')
 
-  const initialValues = {
-    title: query
-  }
+  const {
+    selectedLanguagesByContinent,
+    selectLanguageForContinent,
+    removeLanguageFromAllContinents
+  } = useContinentLanguages()
 
   const refinements = useRefinementList({
     attribute: 'languageEnglishName',
@@ -69,32 +72,24 @@ export function SearchBar({
     showMoreLimit: 5000
   })
 
-  function handleSubmit(values: typeof initialValues): void {
+  function handleSubmit(values: { title: string }): void {
     refine(values.title)
-  }
-
-  function openDropwdown(): void {
-    setOpen(true)
-  }
-
-  function closeDropwdown(): void {
-    setOpen(false)
   }
 
   function openSuggestionsDropdown(): void {
     if (!open) {
-      setDropdownVarient('suggestions')
-      openDropwdown()
+      setDropdownVariant('suggestions')
+      setOpen(true)
     }
   }
 
-  function openLanguagesDropdown(): void {
-    setDropdownVarient('languages')
-    openDropwdown()
+  function handleLanguageClick(): void {
+    setDropdownVariant('languages')
+    setOpen(!open)
   }
 
   return (
-    <ClickAwayListener onClickAway={closeDropwdown}>
+    <ClickAwayListener onClickAway={() => setOpen(false)}>
       <Box>
         <Box
           sx={{
@@ -108,7 +103,9 @@ export function SearchBar({
           onClick={() => setAnchorEl(popperRef.current)}
         >
           <Formik
-            initialValues={initialValues}
+            initialValues={{
+              title: query
+            }}
             onSubmit={handleSubmit}
             enableReinitialize
           >
@@ -130,7 +127,7 @@ export function SearchBar({
                         <Search1Icon />
                       </InputAdornment>
                     ),
-                    endAdornment: languageButtonVisable ? (
+                    endAdornment: showLanguageButton ? (
                       <InputAdornment
                         position="end"
                         sx={{
@@ -138,8 +135,9 @@ export function SearchBar({
                         }}
                       >
                         <LanguageButtons
-                          onClick={openLanguagesDropdown}
+                          onClick={handleLanguageClick}
                           refinements={refinements}
+                          handleRemoveLanguage={removeLanguageFromAllContinents}
                         />
                       </InputAdornment>
                     ) : (
@@ -159,8 +157,9 @@ export function SearchBar({
           >
             <Divider variant="middle" orientation="horizontal" />
             <LanguageButtons
-              onClick={openLanguagesDropdown}
+              onClick={handleLanguageClick}
               refinements={refinements}
+              handleRemoveLanguage={removeLanguageFromAllContinents}
             />
           </Box>
         </Box>
@@ -169,7 +168,9 @@ export function SearchBar({
           refinements={refinements}
           id={open ? 'simple-popper' : undefined}
           anchorEl={anchorEl}
-          variant={dropdownVarient}
+          variant={dropdownVariant}
+          handleLanguagesSelect={selectLanguageForContinent}
+          selectedLanguagesByContinent={selectedLanguagesByContinent}
         />
       </Box>
     </ClickAwayListener>
