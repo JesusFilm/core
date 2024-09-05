@@ -1,12 +1,14 @@
 import Cloudflare from 'cloudflare'
 import { APIPromise } from 'cloudflare/core'
+import { Video } from 'cloudflare/resources/stream/stream'
 import { mockDeep } from 'jest-mock-extended'
 import clone from 'lodash/clone'
 
 import {
   createVideoByDirectUpload,
   createVideoFromUrl,
-  deleteVideo
+  deleteVideo,
+  getVideo
 } from './service'
 
 const mockCloudflare = mockDeep<Cloudflare>()
@@ -128,6 +130,30 @@ describe('VideoService', () => {
       it('throws error when missing CLOUDFLARE_ACCOUNT_ID', async () => {
         delete process.env.CLOUDFLARE_ACCOUNT_ID
         await expect(createVideoFromUrl('url', 'userId')).rejects.toThrow(
+          'Missing CLOUDFLARE_ACCOUNT_ID'
+        )
+      })
+    })
+
+    describe('getVideo', () => {
+      it('returns stream get response', async () => {
+        mockCloudflare.stream.get.mockResolvedValueOnce({
+          id: 'streamMediaId'
+        } as unknown as Video)
+        expect(await getVideo('streamMediaId')).toEqual({
+          id: 'streamMediaId'
+        })
+        expect(mockCloudflare.stream.get).toHaveBeenCalledWith(
+          'streamMediaId',
+          {
+            account_id: 'cf_account_id'
+          }
+        )
+      })
+
+      it('throws error when missing CLOUDFLARE_ACCOUNT_ID', async () => {
+        delete process.env.CLOUDFLARE_ACCOUNT_ID
+        await expect(getVideo('streamMediaId')).rejects.toThrow(
           'Missing CLOUDFLARE_ACCOUNT_ID'
         )
       })

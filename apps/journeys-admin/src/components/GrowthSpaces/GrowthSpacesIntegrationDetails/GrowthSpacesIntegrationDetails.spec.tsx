@@ -151,7 +151,7 @@ describe('GrowthSpacesIntegrationDetails', () => {
       fireEvent.change(accessIdInput, {
         target: { value: 'new.access.id' }
       })
-      fireEvent.submit(accessIdInput)
+      await waitFor(() => fireEvent.submit(accessIdInput))
       await waitFor(() =>
         expect(screen.getByDisplayValue('new.access.id')).toBeInTheDocument()
       )
@@ -160,10 +160,11 @@ describe('GrowthSpacesIntegrationDetails', () => {
         screen.getByDisplayValue('access.secret')
       )
       fireEvent.click(screen.getAllByTestId('EyeClosedIcon')[0])
+
       fireEvent.change(accessSecretInput, {
         target: { value: 'new.access.secret' }
       })
-      fireEvent.submit(accessSecretInput)
+      await waitFor(() => fireEvent.submit(accessSecretInput))
       await waitFor(() =>
         expect(
           screen.getByDisplayValue('new.access.secret')
@@ -173,12 +174,12 @@ describe('GrowthSpacesIntegrationDetails', () => {
       fireEvent.click(screen.getByRole('button', { name: 'Save' }))
       await waitFor(() => {
         expect(result).toHaveBeenCalled()
-        expect(
-          screen.getByText(
-            'Growth Spaces settings failed. Reload the page or try again.'
-          )
-        ).toBeInTheDocument()
       })
+      expect(
+        screen.getByText(
+          'Growth Spaces settings failed. Reload the page or try again.'
+        )
+      ).toBeInTheDocument()
     })
   })
 

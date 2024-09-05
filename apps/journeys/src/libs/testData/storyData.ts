@@ -18,6 +18,7 @@ export const basic: TreeBlock[] = [
     parentOrder: 0,
     locked: false,
     nextBlockId: 'step2.id',
+    slug: null,
     children: [
       {
         id: 'card1.id',
@@ -125,6 +126,7 @@ export const basic: TreeBlock[] = [
     parentOrder: 1,
     locked: true,
     nextBlockId: 'step3.id',
+    slug: null,
     children: [
       {
         id: 'card2.id',
@@ -220,6 +222,7 @@ export const basic: TreeBlock[] = [
     parentOrder: 2,
     locked: false,
     nextBlockId: null,
+    slug: null,
     children: [
       {
         id: 'card3.id',
@@ -315,6 +318,7 @@ export const basic: TreeBlock[] = [
     parentOrder: 3,
     locked: false,
     nextBlockId: null,
+    slug: null,
     children: [
       {
         id: 'card4.id',
@@ -413,6 +417,7 @@ export const imageBlocks: TreeBlock[] = [
     parentOrder: 0,
     locked: false,
     nextBlockId: 'step1.id',
+    slug: null,
     children: [
       {
         id: 'card0.id',
@@ -496,6 +501,7 @@ export const imageBlocks: TreeBlock[] = [
     parentOrder: 1,
     locked: false,
     nextBlockId: 'step2.id',
+    slug: null,
     children: [
       {
         id: 'card0.id',
@@ -578,6 +584,7 @@ export const imageBlocks: TreeBlock[] = [
     parentOrder: 2,
     locked: false,
     nextBlockId: 'step3.id',
+    slug: null,
     children: [
       {
         id: 'card2.id',
@@ -648,6 +655,7 @@ export const imageBlocks: TreeBlock[] = [
     parentOrder: 3,
     locked: false,
     nextBlockId: 'step4.id',
+    slug: null,
     children: [
       {
         id: 'card0.id',
@@ -731,6 +739,7 @@ export const imageBlocks: TreeBlock[] = [
     parentOrder: 4,
     locked: false,
     nextBlockId: null,
+    slug: null,
     children: [
       {
         id: 'card0.id',
@@ -834,6 +843,7 @@ export const videoBlocks: TreeBlock[] = [
     parentOrder: 0,
     locked: false,
     nextBlockId: 'step2.id',
+    slug: null,
     children: [
       {
         id: 'card1.id',
@@ -907,6 +917,7 @@ export const videoBlocks: TreeBlock[] = [
     parentOrder: 1,
     locked: true,
     nextBlockId: 'step3.id',
+    slug: null,
     children: [
       {
         id: 'card2.id',
@@ -988,6 +999,7 @@ export const videoBlocks: TreeBlock[] = [
     parentOrder: 2,
     locked: false,
     nextBlockId: 'step4.id',
+    slug: null,
     children: [
       {
         id: 'card3.id',
@@ -1047,6 +1059,7 @@ export const videoBlocks: TreeBlock[] = [
     parentOrder: 3,
     locked: false,
     nextBlockId: null,
+    slug: null,
     children: [
       {
         id: 'card4.id',
@@ -1096,6 +1109,7 @@ export const videoBlocksNoPoster: TreeBlock[] = [
     parentOrder: 0,
     locked: false,
     nextBlockId: 'step2.id',
+    slug: null,
     children: [
       {
         id: 'card1.id',
@@ -1157,6 +1171,7 @@ export const videoBlocksNoPoster: TreeBlock[] = [
     parentOrder: 1,
     locked: true,
     nextBlockId: 'step3.id',
+    slug: null,
     children: [
       {
         id: 'card2.id',
@@ -1238,6 +1253,7 @@ export const videoBlocksNoPoster: TreeBlock[] = [
     parentOrder: 2,
     locked: false,
     nextBlockId: 'step4.id',
+    slug: null,
     children: [
       {
         id: 'card3.id',
@@ -1297,6 +1313,7 @@ export const videoBlocksNoPoster: TreeBlock[] = [
     parentOrder: 3,
     locked: false,
     nextBlockId: null,
+    slug: null,
     children: [
       {
         id: 'card4.id',
@@ -1346,6 +1363,7 @@ export const videoBlocksNoVideo: TreeBlock[] = [
     parentOrder: 0,
     locked: false,
     nextBlockId: 'step2.id',
+    slug: null,
     children: [
       {
         id: 'card1.id',
@@ -1407,6 +1425,7 @@ export const videoBlocksNoVideo: TreeBlock[] = [
     parentOrder: 1,
     locked: true,
     nextBlockId: 'step3.id',
+    slug: null,
     children: [
       {
         id: 'card2.id',
@@ -1488,6 +1507,7 @@ export const videoBlocksNoVideo: TreeBlock[] = [
     parentOrder: 2,
     locked: false,
     nextBlockId: 'step4.id',
+    slug: null,
     children: [
       {
         id: 'card3.id',
@@ -1547,6 +1567,7 @@ export const videoBlocksNoVideo: TreeBlock[] = [
     parentOrder: 3,
     locked: false,
     nextBlockId: null,
+    slug: null,
     children: [
       {
         id: 'card4.id',
@@ -1596,6 +1617,7 @@ export const videoLoop: TreeBlock[] = [
     parentOrder: 0,
     locked: false,
     nextBlockId: 'step1.id',
+    slug: null,
     children: [
       {
         id: 'card0.id',
@@ -1703,6 +1725,7 @@ export const videoLoop: TreeBlock[] = [
     parentOrder: 0,
     locked: false,
     nextBlockId: 'step2.id',
+    slug: null,
     children: [
       {
         id: 'card1.id',
@@ -1767,6 +1790,7 @@ export const videoLoop: TreeBlock[] = [
     parentOrder: 0,
     locked: false,
     nextBlockId: null,
+    slug: null,
     children: [
       {
         id: 'card2.id',
