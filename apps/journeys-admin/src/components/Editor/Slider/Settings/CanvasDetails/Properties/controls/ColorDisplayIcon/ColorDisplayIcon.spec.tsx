@@ -29,6 +29,7 @@ describe('ColorDisplayIcon', () => {
       parentOrder: 0,
       locked: false,
       nextBlockId: null,
+      slug: null,
       children: [
         {
           id: 'card1.id',
@@ -77,6 +78,7 @@ describe('ColorDisplayIcon', () => {
       parentOrder: 0,
       locked: false,
       nextBlockId: null,
+      slug: null,
       children: [
         {
           id: 'card1.id',

@@ -12,7 +12,7 @@ describe('Select', () => {
     )
 
     expect(screen.getAllByText('Select Option')[0]).toBeInTheDocument()
-    fireEvent.mouseDown(screen.getByRole('button'))
+    fireEvent.mouseDown(screen.getByRole('combobox'))
     const option = screen.getByRole('option', { name: 'Option 1' })
     fireEvent.click(option)
     expect(onChange).toHaveBeenCalledWith('1')
@@ -32,7 +32,7 @@ describe('Select', () => {
     )
 
     expect(screen.getAllByText('Select Option')[0]).toBeInTheDocument()
-    fireEvent.mouseDown(screen.getByRole('button'))
+    fireEvent.mouseDown(screen.getByRole('combobox'))
     const option = screen.getByRole('option', { name: 'None' })
     fireEvent.click(option)
     expect(onChange).toHaveBeenCalledWith(null)

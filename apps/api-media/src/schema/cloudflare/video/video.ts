@@ -4,7 +4,8 @@ import { builder } from '../../builder'
 import {
   createVideoByDirectUpload,
   createVideoFromUrl,
-  deleteVideo
+  deleteVideo,
+  getVideo
 } from './service'
 
 builder.prismaObject('CloudflareVideo', {
@@ -51,10 +52,25 @@ builder.queryFields((t) => ({
     resolve: async (query, _root, { id }, { userId }) => {
       if (userId == null) throw new Error('User not found')
 
-      return await prisma.cloudflareVideo.findFirstOrThrow({
+      const video = await prisma.cloudflareVideo.findFirstOrThrow({
         ...query,
         where: { id, userId }
       })
+
+      if (!video.readyToStream) {
+        const cloudflareVideo = await getVideo(id)
+
+        if (cloudflareVideo.readyToStream === true) {
+          return await prisma.cloudflareVideo.update({
+            ...query,
+            where: { id },
+            data: {
+              readyToStream: true
+            }
+          })
+        }
+      }
+      return video
     }
   })
 }))

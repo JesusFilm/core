@@ -51,6 +51,7 @@ describe('ChatButtons', () => {
     parentOrder: 0,
     locked: false,
     nextBlockId: 'someId',
+    slug: null,
     children: []
   }
 

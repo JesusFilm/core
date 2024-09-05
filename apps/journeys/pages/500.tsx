@@ -27,7 +27,8 @@ export function Custom500(): ReactElement {
       locked: false,
       nextBlockId: null,
       parentBlockId: null,
-      parentOrder: 0
+      parentOrder: 0,
+      slug: null
     },
     {
       __typename: 'CardBlock',
