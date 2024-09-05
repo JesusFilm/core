@@ -1,6 +1,8 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { useSearchBox } from 'react-instantsearch'
 
@@ -11,7 +13,8 @@ interface SuggestionsProps {
 }
 
 export function Suggestions({ refinements }: SuggestionsProps): ReactElement {
-  const { refine } = useSearchBox()
+  const { t } = useTranslation('apps-watch')
+  const { query } = useSearchBox()
   const { items, refine: refineLanguage } = refinements
 
   function refineLanguages(languagesToRefine: string[]): void {
@@ -25,21 +28,23 @@ export function Suggestions({ refinements }: SuggestionsProps): ReactElement {
 
   function selectSuggestion(suggestion: string): void {
     const suggestionParts = suggestion.split(/\s(?:in|and)\s/)
-    refine(suggestionParts[0])
     refineLanguages(suggestionParts.slice(1))
   }
 
   return (
     <Box width="100%">
+      <Typography variant="h6" color="primary.main" marginBottom={6} pl={3}>
+        {t('Suggestions')}
+      </Typography>
       <Box color="text.primary">
         <Stack spacing={1}>
           <Suggestion
-            query="Jesus"
+            query={query !== '' ? query : 'Jesus'}
             filters={['English']}
             handleClick={() => selectSuggestion('Jesus in English')}
           />
           <Suggestion
-            query="Jesus"
+            query={query !== '' ? query : 'Jesus'}
             filters={['English', 'Spanish']}
             handleClick={() =>
               selectSuggestion('Jesus in English and Spanish, Latin American')
