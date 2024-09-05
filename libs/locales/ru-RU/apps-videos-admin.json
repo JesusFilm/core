@@ -1,4 +1,9 @@
 {
+  "Sign Out": "Выйти из игры",
   "Nexus Admin": "Администратор Нексуса",
-  "Sign Out": "Выйти из игры"
+  "Login": "Вход",
+  "Redirecting to {redirect}": "Перенаправление на {redirect}",
+  "Log in with Google": "Войдите в систему с помощью Google",
+  "Submit": "Представлять на рассмотрение",
+  "Unauthorized": "Неавторизованный"
 }
