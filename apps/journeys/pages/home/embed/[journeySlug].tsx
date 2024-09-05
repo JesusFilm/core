@@ -48,7 +48,7 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
         description={journey.description ?? undefined}
         openGraph={{
           type: 'website',
-          title: journey.seoTitle ?? journey.title,
+          title: journey.seoTitle ?? journey.displayTitle ?? '',
           url: `https://${
             process.env.NEXT_PUBLIC_VERCEL_URL ?? 'your.nextstep.is'
           }/embed/${journey.slug}`,
