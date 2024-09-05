@@ -20,6 +20,14 @@ const mockUseSearchBox = useSearchBox as jest.MockedFunction<
   typeof useSearchBox
 >
 
+async function clickOnSearchBar(): Promise<void> {
+  const searchBar = screen.getByDisplayValue('Hello World!')
+  await act(() => {
+    searchBar.click()
+    searchBar.focus()
+  })
+}
+
 describe('SearchBar', () => {
   const refine = jest.fn()
 
@@ -126,11 +134,7 @@ describe('SearchBar', () => {
         <SearchBar />
       </MockedProvider>
     )
-    const searchBar = screen.getByDisplayValue('Hello World!')
-    await act(() => {
-      searchBar.click()
-      searchBar.focus()
-    })
+    await clickOnSearchBar()
     expect(screen.getByTestId('SearchBarDropdown')).toBeInTheDocument()
     expect(screen.getByText('Search Suggestions')).toBeVisible()
   })
@@ -156,14 +160,35 @@ describe('SearchBar', () => {
         <SearchBar showLanguageButton />
       </MockedProvider>
     )
-    const button = screen.getAllByText('Language')[0]
-    fireEvent.click(button)
+    fireEvent.click(screen.getAllByText('Language')[0])
     expect(screen.getByTestId('SearchBarDropdown')).toBeInTheDocument()
-    const searchBar = screen.getByDisplayValue('Hello World!')
-    await act(() => {
-      searchBar.click()
-      searchBar.focus()
-    })
+    await clickOnSearchBar()
     await waitFor(() => expect(screen.getByText('Europe')).toBeInTheDocument())
+  })
+
+  it('should navigate to suggestions tab from languages', async () => {
+    render(
+      <MockedProvider mocks={[getLanguagesContinentsMock]}>
+        <SearchBar showLanguageButton />
+      </MockedProvider>
+    )
+    fireEvent.click(screen.getAllByText('Language')[0])
+    expect(screen.getByTestId('SearchBarDropdown')).toBeInTheDocument()
+    fireEvent.click(screen.getByText('Search Suggestions'))
+
+    await waitFor(() => expect(screen.getByText('- in English')).toBeVisible())
+  })
+
+  it('should navigate to languages tab from suggestions', async () => {
+    render(
+      <MockedProvider mocks={[getLanguagesContinentsMock]}>
+        <SearchBar showLanguageButton />
+      </MockedProvider>
+    )
+    await clickOnSearchBar()
+    expect(screen.getByTestId('SearchBarDropdown')).toBeInTheDocument()
+    fireEvent.click(screen.getByText('Languages'))
+
+    await waitFor(() => expect(screen.getByText('Cantonese')).toBeVisible())
   })
 })

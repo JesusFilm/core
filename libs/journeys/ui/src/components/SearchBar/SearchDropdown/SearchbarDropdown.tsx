@@ -5,7 +5,7 @@ import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
-import { ReactElement, useState } from 'react'
+import { Dispatch, ReactElement, SetStateAction } from 'react'
 
 import Globe1 from '@core/shared/ui/icons/Globe1'
 import Search1 from '@core/shared/ui/icons/Search1'
@@ -23,6 +23,7 @@ interface SearchbarDropdownProps {
   id?: string
   anchorEl?: HTMLElement | null
   tabIndex?: number
+  handleTabValueChange: Dispatch<SetStateAction<number>>
 }
 
 export function SearchbarDropdown({
@@ -30,7 +31,8 @@ export function SearchbarDropdown({
   refinements,
   id,
   anchorEl,
-  tabIndex = 0
+  tabIndex: tabValue = 0,
+  handleTabValueChange: setTabValue
 }: SearchbarDropdownProps): ReactElement {
   const theme = useTheme()
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'))
@@ -39,8 +41,6 @@ export function SearchbarDropdown({
   const languages = useSortLanguageContinents({
     languages: data?.languages ?? []
   })
-
-  const [tabValue, setTabValue] = useState<number>(tabIndex)
 
   const handleTabChange = (
     event: React.SyntheticEvent,
