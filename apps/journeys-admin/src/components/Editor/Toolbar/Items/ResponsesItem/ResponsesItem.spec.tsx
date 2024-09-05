@@ -1,5 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
+import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -10,7 +11,6 @@ import { GetJourneyVisitorsCount } from '../../../../../../__generated__/GetJour
 import { GET_JOURNEY_VISITORS_COUNT } from '../../../../../../pages/journeys/[journeyId]/reports/visitors'
 
 import { ResponsesItem } from '.'
-import { NextRouter, useRouter } from 'next/router'
 
 jest.mock('next/router', () => ({
   __esModule: true,

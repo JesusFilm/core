@@ -13,8 +13,6 @@ import { GetJourneyVisitorsCount } from '../../../../../../__generated__/GetJour
 import { GET_JOURNEY_VISITORS_COUNT } from '../../../../../../pages/journeys/[journeyId]/reports/visitors'
 import { Item } from '../Item/Item'
 
-
-
 interface ResponsesItemProps {
   variant: ComponentProps<typeof Item>['variant']
 }
