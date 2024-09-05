@@ -2,7 +2,7 @@ import OtaClient from '@crowdin/ota-client'
 import map from 'lodash/map'
 import { Logger } from 'pino'
 import { xliff12ToJs } from 'xliff'
-import z from 'zod'
+import { z } from 'zod'
 
 import { prisma } from '../../../lib/prisma'
 
