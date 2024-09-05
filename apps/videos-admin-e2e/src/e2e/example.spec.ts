@@ -5,6 +5,6 @@ test('Authentication', async ({ page }) => {
 
   // Expect h1 to contain a substring.
   await expect(
-    page.getByRole('button', { name: 'Sign in with Credentials' })
+    page.getByRole('button', { name: 'Log in with Google' })
   ).toBeVisible()
 })
