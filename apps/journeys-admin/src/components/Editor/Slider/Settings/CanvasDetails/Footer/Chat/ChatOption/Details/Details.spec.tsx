@@ -127,7 +127,7 @@ describe('Details', () => {
       </MockedProvider>
     )
 
-    fireEvent.mouseDown(getByRole('button', { name: 'TikTok' }))
+    fireEvent.mouseDown(getByRole('combobox'))
     fireEvent.click(getByText('Snapchat'))
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
