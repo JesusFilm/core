@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box'
 import Popper from '@mui/material/Popper'
-import { useTheme } from '@mui/material/styles'
+import { styled, useTheme } from '@mui/material/styles'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import useMediaQuery from '@mui/material/useMediaQuery'
@@ -16,6 +16,11 @@ import { useSortLanguageContinents } from '../../../libs/useSortLanguageContinen
 
 import { LanguageContinentRefinements } from './LanguageContinentRefinements'
 import { Suggestions } from './Suggestions'
+
+const StyledTab = styled(Tab)({
+  minHeight: '50px',
+  fontSize: '14px !important'
+})
 
 interface SearchbarDropdownProps {
   open: boolean
@@ -75,19 +80,27 @@ export function SearchbarDropdown({
             value={tabValue}
             onChange={handleTabChange}
             aria-label="Searchbar dropdown"
+            textColor="secondary"
           >
-            <Tab
-              icon={<Search1 sx={{ md: { marginRight: 5 } }} />}
+            <StyledTab
+              icon={<Search1 />}
               iconPosition="start"
               label={isSmallScreen ? '' : 'Search Suggestions'}
               sx={{
-                minHeight: '50px'
+                '& .MuiTab-iconWrapper': {
+                  marginRight: { md: 5 }
+                }
               }}
             />
-            <Tab
-              icon={<Globe1 sx={{ md: { marginRight: 5 } }} />}
+            <StyledTab
+              icon={<Globe1 />}
               iconPosition="start"
               label={isSmallScreen ? '' : 'Languages'}
+              sx={{
+                '& .MuiTab-iconWrapper': {
+                  marginRight: { md: 5 }
+                }
+              }}
             />
           </Tabs>
         </Box>
