@@ -140,4 +140,16 @@ export const Default = {
   }
 }
 
+export const Website = {
+  ...Template,
+  args: {
+    journey: {
+      ...defaultJourney,
+      website: true,
+      displayTitle: 'Display title'
+    },
+    variant: 'default'
+  }
+}
+
 export default Demo
