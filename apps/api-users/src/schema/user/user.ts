@@ -98,8 +98,8 @@ builder.mutationFields((t) => ({
   validateEmail: t.field({
     type: User,
     args: {
-      token: t.arg.string({ required: true }),
-      email: t.arg.string({ required: true })
+      email: t.arg.string({ required: true }),
+      token: t.arg.string({ required: true })
     },
     nullable: true,
     resolve: async (_parent, { token, email }) => {

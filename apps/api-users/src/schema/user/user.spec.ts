@@ -284,7 +284,7 @@ describe('api-users', () => {
           email: 'abc@example.com'
         }
       })
-      expect(data).toHaveProperty('data', null)
+      expect(data).toHaveProperty('data.userImpersonate', null)
     })
   })
 
