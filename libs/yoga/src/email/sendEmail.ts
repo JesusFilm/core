@@ -22,8 +22,8 @@ export async function sendEmail({
 
   if (SMTP_URL != null) {
     try {
-      const smtpUrl = process.env.SMTP_URL ?? 'smtp://maildev:1025'
-      const transporter = nodemailer.createTransport(smtpUrl, [defaults])
+      const smtpUrl = (process.env.SMTP_URL as string) ?? 'smtp://maildev:1025'
+      const transporter = nodemailer.createTransport(smtpUrl, defaults)
       await transporter.sendMail({
         to,
         subject,

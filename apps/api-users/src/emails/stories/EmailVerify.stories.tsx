@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react'
 
-import { apiUsersConfig } from '../../app/lib/apiUsersConfig/apiUsersConfig'
+import { apiUsersConfig } from '../../lib/apiUsersConfig/apiUsersConfig'
 import { EmailVerifyEmail } from '../templates/EmailVerify'
 
 const EmailVerifyEmailDemo: Meta<typeof EmailVerifyEmail> = {
