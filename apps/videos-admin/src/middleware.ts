@@ -1,9 +1,25 @@
+import { graphql } from 'gql.tada'
 import { NextRequest, NextResponse } from 'next/server'
+import { authMiddleware } from 'next-firebase-auth-edge'
 import createMiddleware from 'next-intl/middleware'
 
-import { auth } from './auth'
+import { makeClient } from './libs/apollo/makeClient'
+import { authConfig } from './libs/auth'
 
 const locales = ['en']
+
+const GET_AUTH = graphql(`
+  query me {
+    me {
+      id
+      email
+      firstName
+      lastName
+      imageUrl
+      mediaUserRoles
+    }
+  }
+`)
 
 const testPathnameRegex = (pages: string[], pathName: string): boolean => {
   return RegExp(
@@ -19,37 +35,55 @@ const intlMiddleware = createMiddleware({
   defaultLocale: 'en'
 })
 
-const authPage = '/api/auth/signin'
-const unAuthenticatedPages = [authPage]
+const authPage = '/user/signin'
+const unAuthorizedPage = '/user/unauthorized'
+const publicPaths = [authPage, unAuthorizedPage]
 
 export default async function middleware(
   req: NextRequest
 ): Promise<NextResponse<unknown>> {
-  if (req.nextUrl.pathname === '/api/auth/signIn') {
-    const signinUrl = req.nextUrl.clone()
-    signinUrl.pathname = '/api/auth/signin'
-    return NextResponse.redirect(signinUrl, { status: 301 })
-  }
-
-  if (req.nextUrl.pathname.startsWith('/api/')) return NextResponse.next()
-
-  const intlResponse = intlMiddleware(req)
-
-  const session = await auth()
   if (
-    session !== null ||
-    testPathnameRegex(unAuthenticatedPages, req.nextUrl.pathname)
-  ) {
-    return intlResponse
-  }
+    testPathnameRegex(publicPaths, req.nextUrl.pathname) &&
+    req.nextUrl.pathname !== authPage
+  )
+    return intlMiddleware(req)
 
-  const nextUrl = req.nextUrl.clone()
-  nextUrl.pathname = authPage
+  return await authMiddleware(req, {
+    ...authConfig,
+    loginPath: '/api/login',
+    logoutPath: '/api/logout',
+    refreshTokenPath: '/api/refresh-token',
+    cookieSerializeOptions: {
+      path: '/',
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax' as const,
+      maxAge: 12 * 60 * 60 * 24 // Twelve days
+    },
+    handleValidToken: async (token) => {
+      const { data } = await makeClient({
+        headers: { Authorization: token.token }
+      }).query({
+        query: GET_AUTH
+      })
+      if (data.me?.mediaUserRoles.length === 0)
+        req.nextUrl.pathname = unAuthorizedPage
 
-  return NextResponse.redirect(nextUrl, {
-    // ...intlResponse,
-    status: 301
+      return intlMiddleware(req)
+    },
+    handleInvalidToken: async (reason) => {
+      if (!testPathnameRegex(publicPaths, req.nextUrl.pathname))
+        req.nextUrl.pathname = authPage
+      return intlMiddleware(req)
+    },
+    handleError: async () => {
+      if (!testPathnameRegex(publicPaths, req.nextUrl.pathname))
+        req.nextUrl.pathname = authPage
+      return intlMiddleware(req)
+    }
   })
 }
 
-export const config = { matcher: ['/((?!_next.*\\..*).*)'] }
+export const config = {
+  matcher: ['/api/login', '/api/logout', '/((?!_next|favicon.ico|api|.*\\.).*)']
+}
