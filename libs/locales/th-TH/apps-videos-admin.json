@@ -1,4 +1,9 @@
 {
+  "Sign Out": "ออกจากระบบ",
   "Nexus Admin": "ผู้ดูแลเนกซัส",
-  "Sign Out": "ออกจากระบบ"
+  "Login": "เข้าสู่ระบบ",
+  "Redirecting to {redirect}": "กำลังเปลี่ยนเส้นทางไปที่ {redirect}",
+  "Log in with Google": "เข้าสู่ระบบด้วย Google",
+  "Submit": "ส่ง",
+  "Unauthorized": "ไม่ได้รับอนุญาต"
 }
