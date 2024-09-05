@@ -37,11 +37,4 @@ const Template: StoryObj<typeof ResponsesItem> = {
   )
 }
 
-export const Default = {
-  ...Template,
-  args: {
-    variant: 'icon-button'
-  }
-}
-
 export default Demo
