@@ -90,7 +90,8 @@ const blocks: Blocks[] = [
     parentBlockId: null,
     parentOrder: 0,
     locked: false,
-    nextBlockId: null
+    nextBlockId: null,
+    slug: null
   },
   {
     __typename: 'CardBlock',

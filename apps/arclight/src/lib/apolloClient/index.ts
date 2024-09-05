@@ -1,1 +1,1 @@
-export { getApolloClient } from './apolloClient'
+export { getApolloClient, query } from './apolloClient'

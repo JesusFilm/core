@@ -144,7 +144,8 @@ export function useCreateStepFromSocialPreview(): (
       parentOrder: 0,
       id: uuidv4(),
       x,
-      y
+      y,
+      slug: null
     }
     const card: CardBlock = {
       __typename: 'CardBlock',

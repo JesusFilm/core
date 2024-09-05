@@ -30,6 +30,7 @@ describe('EditorContext', () => {
           parentOrder: 0,
           locked: false,
           nextBlockId: null,
+          slug: null,
           children: []
         }
 
@@ -140,6 +141,7 @@ describe('EditorContext', () => {
           parentOrder: 0,
           locked: false,
           nextBlockId: null,
+          slug: null,
           children: []
         }
         const state: EditorState = {
@@ -167,6 +169,7 @@ describe('EditorContext', () => {
           parentOrder: 0,
           locked: false,
           nextBlockId: null,
+          slug: null,
           children: []
         }
 
@@ -184,6 +187,7 @@ describe('EditorContext', () => {
             parentOrder: 0,
             locked: false,
             nextBlockId: null,
+            slug: null,
             children: []
           }
         }
@@ -203,6 +207,7 @@ describe('EditorContext', () => {
           parentOrder: 0,
           locked: false,
           nextBlockId: null,
+          slug: null,
           children: []
         }
         const state: EditorState = {
@@ -246,6 +251,7 @@ describe('EditorContext', () => {
           parentOrder: 0,
           locked: false,
           nextBlockId: null,
+          slug: null,
           children: [block]
         }
         const state: EditorState = {
@@ -287,6 +293,7 @@ describe('EditorContext', () => {
           parentOrder: 0,
           locked: false,
           nextBlockId: null,
+          slug: null,
           children: [block]
         }
         const state: EditorState = {
@@ -346,6 +353,7 @@ describe('EditorContext', () => {
           parentOrder: 0,
           locked: false,
           nextBlockId: null,
+          slug: null,
           children: [block]
         }
         const step2: TreeBlock = {
@@ -355,6 +363,7 @@ describe('EditorContext', () => {
           parentOrder: 0,
           locked: false,
           nextBlockId: null,
+          slug: null,
           children: [block]
         }
         const state: EditorState = {
@@ -446,6 +455,7 @@ describe('EditorContext', () => {
           parentOrder: 0,
           locked: false,
           nextBlockId: null,
+          slug: null,
           children: []
         }
         const state: EditorState = {
@@ -479,6 +489,7 @@ describe('EditorContext', () => {
           parentOrder: 0,
           locked: false,
           nextBlockId: null,
+          slug: null,
           children: []
         }
         const state: EditorState = {
@@ -524,6 +535,7 @@ describe('EditorContext', () => {
           parentOrder: 0,
           locked: false,
           nextBlockId: null,
+          slug: null,
           children: [block]
         }
         const updatedStep: TreeBlock = {
@@ -575,6 +587,7 @@ describe('EditorContext', () => {
           parentOrder: 0,
           locked: false,
           nextBlockId: null,
+          slug: null,
           children: [block]
         }
         const state: EditorState = {
@@ -612,7 +625,8 @@ describe('EditorContext', () => {
             locked: false,
             nextBlockId: null,
             parentBlockId: null,
-            parentOrder: 0
+            parentOrder: 0,
+            slug: null
           },
           steps: [step]
         })
@@ -638,6 +652,7 @@ describe('EditorContext', () => {
           parentOrder: 0,
           locked: false,
           nextBlockId: null,
+          slug: null,
           children: [block]
         }
 
@@ -715,6 +730,7 @@ describe('EditorContext', () => {
       parentOrder: 0,
       locked: false,
       nextBlockId: null,
+      slug: null,
       children: []
     }
 

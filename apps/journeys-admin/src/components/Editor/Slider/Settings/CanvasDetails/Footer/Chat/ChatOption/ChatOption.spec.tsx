@@ -89,8 +89,8 @@ describe('ChatOption', () => {
       </MockedProvider>
     )
 
-    fireEvent.mouseDown(screen.getByRole('button', { name: 'TikTok' }))
+    fireEvent.mouseDown(screen.getByText('TikTok'))
     fireEvent.click(screen.getByText('Snapchat'))
-    expect(screen.getByRole('button', { name: 'Snapchat' })).toBeInTheDocument()
+    expect(screen.getByRole('combobox')).toHaveTextContent('Snapchat')
   })
 })
