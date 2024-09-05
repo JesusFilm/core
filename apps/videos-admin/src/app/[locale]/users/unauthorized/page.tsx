@@ -11,9 +11,10 @@ import { ReactNode } from 'react'
 
 import minimalLogo from '../../../../assets/minimal-logo.png'
 import { CenterPage } from '../../../../components/CenterPage'
-import { Logout } from '../../../../components/Logout'
 import { makeClient } from '../../../../libs/apollo/makeClient'
 import { getUser } from '../../../../libs/auth/getUser'
+
+import { Logout } from './_Logout'
 
 const GET_AUTH = graphql(`
   query me {
