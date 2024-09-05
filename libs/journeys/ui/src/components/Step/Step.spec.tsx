@@ -115,6 +115,7 @@ const block: TreeBlock<StepFields> = {
   parentOrder: 0,
   nextBlockId: null,
   locked: false,
+  slug: null,
   children: [
     {
       __typename: 'ButtonBlock',

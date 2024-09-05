@@ -96,6 +96,7 @@ const activeBlock: TreeBlock<StepBlock> = {
   parentOrder: 0,
   locked: true,
   nextBlockId: null,
+  slug: null,
   children: [
     {
       __typename: 'CardBlock',
@@ -237,6 +238,7 @@ describe('Button', () => {
       parentOrder: 0,
       locked: true,
       nextBlockId: null,
+      slug: null,
       children: [
         {
           __typename: 'CardBlock',

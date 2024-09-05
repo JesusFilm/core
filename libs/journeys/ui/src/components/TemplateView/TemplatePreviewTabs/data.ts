@@ -170,7 +170,8 @@ export const journeyVideoBlocks: Blocks[] = [
     parentBlockId: null,
     parentOrder: 0,
     locked: false,
-    nextBlockId: null
+    nextBlockId: null,
+    slug: null
   },
   {
     __typename: 'VideoBlock',
@@ -250,7 +251,8 @@ export const journeyVideoBlocks: Blocks[] = [
     parentBlockId: null,
     parentOrder: 1,
     locked: false,
-    nextBlockId: null
+    nextBlockId: null,
+    slug: null
   },
   {
     __typename: 'StepBlock',
@@ -258,7 +260,8 @@ export const journeyVideoBlocks: Blocks[] = [
     parentBlockId: null,
     parentOrder: 2,
     locked: false,
-    nextBlockId: null
+    nextBlockId: null,
+    slug: null
   },
   {
     __typename: 'StepBlock',
@@ -266,7 +269,8 @@ export const journeyVideoBlocks: Blocks[] = [
     parentBlockId: null,
     parentOrder: 3,
     locked: false,
-    nextBlockId: null
+    nextBlockId: null,
+    slug: null
   },
   {
     __typename: 'StepBlock',
@@ -274,7 +278,8 @@ export const journeyVideoBlocks: Blocks[] = [
     parentBlockId: null,
     parentOrder: 4,
     locked: false,
-    nextBlockId: null
+    nextBlockId: null,
+    slug: null
   }
 ]
 
