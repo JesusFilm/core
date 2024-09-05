@@ -68,7 +68,7 @@ export function Slug(): ReactElement {
             stepBlockUpdate: {
               __typename: 'StepBlock',
               id: selectedStep.id,
-              slug: newSlug
+              slug
             }
           },
           onError: (_) => {
