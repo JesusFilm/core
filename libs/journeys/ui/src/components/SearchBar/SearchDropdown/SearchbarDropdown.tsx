@@ -1,10 +1,10 @@
 import Box from '@mui/material/Box'
 import Popper from '@mui/material/Popper'
-import { styled, useTheme } from '@mui/material/styles'
+import { styled } from '@mui/material/styles'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
+import { useTranslation } from 'next-i18next'
 import { Dispatch, ReactElement, SetStateAction } from 'react'
 
 import Globe1 from '@core/shared/ui/icons/Globe1'
@@ -17,10 +17,23 @@ import { useSortLanguageContinents } from '../../../libs/useSortLanguageContinen
 import { LanguageContinentRefinements } from './LanguageContinentRefinements'
 import { Suggestions } from './Suggestions'
 
-const StyledTab = styled(Tab)({
+const StyledTab = styled(Tab)(({ theme }) => ({
   minHeight: '50px',
-  fontSize: '14px !important'
-})
+  fontSize: '14px !important',
+
+  '& .MuiTab-iconWrapper': {
+    [theme.breakpoints.up('md')]: {
+      marginRight: theme.spacing(5)
+    }
+  },
+
+  // Hide the text label on small screens
+  [theme.breakpoints.down('md')]: {
+    '& .tab-label': {
+      display: 'none'
+    }
+  }
+}))
 
 interface SearchbarDropdownProps {
   open: boolean
@@ -39,18 +52,17 @@ export function SearchbarDropdown({
   tabIndex: tabValue = 0,
   handleTabValueChange: setTabValue
 }: SearchbarDropdownProps): ReactElement {
-  const theme = useTheme()
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'))
+  const { t } = useTranslation('apps-watch')
 
   const { data } = useLanguagesContinentsQuery()
   const languages = useSortLanguageContinents({
     languages: data?.languages ?? []
   })
 
-  const handleTabChange = (
+  function handleTabChange(
     event: React.SyntheticEvent,
     newValue: number
-  ): void => {
+  ): void {
     setTabValue(newValue)
   }
 
@@ -85,22 +97,14 @@ export function SearchbarDropdown({
             <StyledTab
               icon={<Search1 />}
               iconPosition="start"
-              label={isSmallScreen ? '' : 'Search Suggestions'}
-              sx={{
-                '& .MuiTab-iconWrapper': {
-                  marginRight: { md: 5 }
-                }
-              }}
+              label={
+                <span className="tab-label">{t('Search Suggestions')}</span>
+              }
             />
             <StyledTab
               icon={<Globe1 />}
               iconPosition="start"
-              label={isSmallScreen ? '' : 'Languages'}
-              sx={{
-                '& .MuiTab-iconWrapper': {
-                  marginRight: { md: 5 }
-                }
-              }}
+              label={<span className="tab-label">{t('Languages')}</span>}
             />
           </Tabs>
         </Box>
