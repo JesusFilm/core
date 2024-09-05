@@ -35,8 +35,8 @@ const intlMiddleware = createMiddleware({
   defaultLocale: 'en'
 })
 
-const authPage = '/user/signin'
-const unAuthorizedPage = '/user/unauthorized'
+const authPage = '/users/sign-in'
+const unAuthorizedPage = '/users/unauthorized'
 const publicPaths = [authPage, unAuthorizedPage]
 
 export default async function middleware(

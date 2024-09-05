@@ -59,6 +59,15 @@ export async function createVideoFromUrl(
   })
 }
 
+export async function getVideo(videoId: string): Promise<Video> {
+  if (process.env.CLOUDFLARE_ACCOUNT_ID == null)
+    throw new Error('Missing CLOUDFLARE_ACCOUNT_ID')
+
+  return await getClient().stream.get(videoId, {
+    account_id: process.env.CLOUDFLARE_ACCOUNT_ID
+  })
+}
+
 export async function deleteVideo(videoId: string): Promise<void> {
   if (process.env.CLOUDFLARE_ACCOUNT_ID == null)
     throw new Error('Missing CLOUDFLARE_ACCOUNT_ID')
