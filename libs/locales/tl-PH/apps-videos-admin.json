@@ -1,4 +1,9 @@
 {
+  "Sign Out": "Sign Out",
   "Nexus Admin": "Nexus Admin",
-  "Sign Out": "Sign Out"
+  "Login": "Login",
+  "Redirecting to {redirect}": "Redirecting to {redirect}",
+  "Log in with Google": "Log in with Google",
+  "Submit": "Ipasa",
+  "Unauthorized": "Unauthorized"
 }
