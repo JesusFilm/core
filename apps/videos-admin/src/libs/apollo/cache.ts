@@ -1,5 +1,4 @@
 import { offsetLimitPagination } from '@apollo/client/utilities'
-import uniqBy from 'lodash/uniqBy'
 
 interface VideoData {
   __ref: string
@@ -23,22 +22,7 @@ export const cache = {
             ['labels', 'availableVariantLanguageIds', 'title']
           ]),
           read(existing, { args }) {
-            if (args?.where?.ids?.length > 0) {
-              return uniqBy(
-                existing
-                  // eslint-disable-next-line @typescript-eslint/naming-convention
-                  ?.filter(({ __ref }) => {
-                    return __ref === `Video:${args?.where?.ids[0]}`
-                  })
-                  ?.slice(
-                    args?.offset ?? 0,
-                    (args?.offset ?? 0) + (args?.limit ?? 100)
-                  ) as VideoData[],
-                '__ref'
-              )
-            }
-
-            return uniqBy(
+            return (
               existing?.slice(
                 args?.offset ?? 0,
                 (args?.offset ?? 0) + (args?.limit ?? 100)
