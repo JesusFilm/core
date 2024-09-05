@@ -1,4 +1,9 @@
 {
+  "Sign Out": "Sign Out",
   "Nexus Admin": "Nexus Admin",
-  "Sign Out": "Sign Out"
+  "Login": "Giriş",
+  "Redirecting to {redirect}": "{redirect}adresine yönlendirme",
+  "Log in with Google": "Google ile giriş yapın",
+  "Submit": "Gönder",
+  "Unauthorized": "Yetkisiz"
 }
