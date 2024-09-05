@@ -1,4 +1,9 @@
 {
+  "Sign Out": "Sign Out",
   "Nexus Admin": "Nexus Admin",
-  "Sign Out": "Sign Out"
+  "Login": "登录",
+  "Redirecting to {redirect}": "重定向至 {redirect}",
+  "Log in with Google": "使用 Google 登录",
+  "Submit": "提交",
+  "Unauthorized": "未经授权"
 }
