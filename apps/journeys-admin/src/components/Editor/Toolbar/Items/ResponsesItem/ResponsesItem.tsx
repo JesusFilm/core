@@ -1,4 +1,3 @@
-import Box from '@mui/material/Box'
 import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
 import { ComponentProps, ReactElement } from 'react'
@@ -9,6 +8,10 @@ import Inbox2Icon from '@core/shared/ui/icons/Inbox2'
 import { Item } from '../Item/Item'
 import Typography from '@mui/material/Typography'
 import Stack from '@mui/material/Stack'
+import { GET_JOURNEY_VISITORS_COUNT } from '../../../../../../pages/journeys/[journeyId]/reports/visitors'
+import { GetJourneyVisitorsCount } from '../../../../../../__generated__/GetJourneyVisitorsCount'
+import { useRouter } from 'next/router'
+import { useQuery } from '@apollo/client'
 
 interface ResponsesItemProps {
   variant: ComponentProps<typeof Item>['variant']
@@ -17,25 +20,33 @@ interface ResponsesItemProps {
 export function ResponsesItem({ variant }: ResponsesItemProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
+  const router = useRouter()
+  const journeyId = router.query.journeyId as string
+
+  const { data } = useQuery<GetJourneyVisitorsCount>(
+    GET_JOURNEY_VISITORS_COUNT,
+    {
+      variables: {
+        filter: { journeyId, hasTextResponse: true }
+      }
+    }
+  )
+
   return (
-    <Box data-testid="ResponsesItem">
+    <Stack direction="row" alignItems="center" data-testid="ResponsesItem">
       <NextLink
-        href={`/journeys/${journey?.id}/reports/visitors`}
+        href={`/journeys/${journey?.id}/reports/visitors?withSubmittedText=true`}
         passHref
         legacyBehavior
         prefetch={false}
       >
-        <Stack direction="row" alignItems="center">
-          <Item
-            variant={variant}
-            label={t('Analytics')}
-            icon={<Inbox2Icon />}
-          />
-          <Typography variant="body2" sx={{ fontWeight: '600' }}>
-            14 {/* TODO: Add actual count */}
-          </Typography>
-        </Stack>
+        <Item variant={variant} label={t('Responses')} icon={<Inbox2Icon />} />
       </NextLink>
-    </Box>
+      {variant !== 'menu-item' && (
+        <Typography variant="body2" sx={{ fontWeight: '600' }}>
+          {data?.journeyVisitorCount ?? ''}
+        </Typography>
+      )}
+    </Stack>
   )
 }
