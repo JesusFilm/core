@@ -65,6 +65,7 @@ describe('NewTextResponseButton', () => {
     parentOrder: null,
     locked: false,
     nextBlockId: null,
+    slug: null,
     children: [
       {
         id: 'card.id',

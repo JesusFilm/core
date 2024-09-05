@@ -1,5 +1,5 @@
 import MuiTypography from '@mui/material/Typography'
-import { ReactElement } from 'react'
+import { ElementType, ReactElement } from 'react'
 
 import type { TreeBlock } from '../../libs/block'
 
@@ -31,7 +31,11 @@ export function Typography({
       variant={variant ?? undefined}
       align={align ?? undefined}
       color={content === '' ? 'text.disabled' : color ?? undefined}
-      paragraph={variant === 'overline' || variant === 'caption'}
+      component={
+        variant === 'overline' || variant === 'caption'
+          ? 'p'
+          : (variant as ElementType) ?? 'p'
+      }
       gutterBottom
       whiteSpace="pre-line"
       data-testid="JourneysTypography"

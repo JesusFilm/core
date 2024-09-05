@@ -42,6 +42,9 @@ export const yoga = createYoga({
       ? useResponseCache({
           session: () => null,
           cache,
+          ttlPerSchemaCoordinate: {
+            'Query.getMyCloudflareVideo': 0
+          },
           ttlPerType: {
             User: 1000
           }
