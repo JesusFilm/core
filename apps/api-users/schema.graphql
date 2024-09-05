@@ -11,8 +11,8 @@ input MeInput {
 
 type Mutation {
   userImpersonate(email: String!): String
-  validateEmail(email: String!, token: String!): User
   createVerificationRequest(input: CreateVerificationRequestInput): Boolean
+  validateEmail(email: String!, token: String!): User
 }
 
 type Query {

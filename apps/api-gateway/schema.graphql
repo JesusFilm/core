@@ -1755,8 +1755,8 @@ type Mutation
   createImageBySegmindPrompt(prompt: String!, model: SegmindModel!): CloudflareImage! @join__field(graph: MEDIA) @deprecated(reason: "use createCloudflareImageFromPrompt")
   triggerUnsplashDownload(url: String!): Boolean! @join__field(graph: MEDIA)
   userImpersonate(email: String!): String @join__field(graph: USERS)
-  validateEmail(email: String!, token: String!): User @join__field(graph: USERS)
   createVerificationRequest(input: CreateVerificationRequestInput): Boolean @join__field(graph: USERS)
+  validateEmail(email: String!, token: String!): User @join__field(graph: USERS)
 }
 
 union MutationSiteCreateResult

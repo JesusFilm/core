@@ -95,30 +95,6 @@ builder.mutationFields((t) => ({
       return await impersonateUser(userToImpersonate.userId)
     }
   }),
-  validateEmail: t.field({
-    type: User,
-    args: {
-      email: t.arg.string({ required: true }),
-      token: t.arg.string({ required: true })
-    },
-    nullable: true,
-    resolve: async (_parent, { token, email }) => {
-      const user = await prisma.user.findUnique({
-        where: {
-          email
-        }
-      })
-      if (user == null)
-        throw new GraphQLError('User not found', {
-          extensions: { code: '404' }
-        })
-
-      const validatedEmail = await validateEmail(user.userId, token)
-      if (!validatedEmail)
-        throw new GraphQLError('Invalid token', { extensions: { code: '403' } })
-      return { ...user, emailVerified: true }
-    }
-  }),
   createVerificationRequest: t.field({
     type: 'Boolean',
     args: {
@@ -144,6 +120,30 @@ builder.mutationFields((t) => ({
         input?.redirect ?? undefined
       )
       return true
+    }
+  }),
+  validateEmail: t.field({
+    type: User,
+    args: {
+      email: t.arg.string({ required: true }),
+      token: t.arg.string({ required: true })
+    },
+    nullable: true,
+    resolve: async (_parent, { token, email }) => {
+      const user = await prisma.user.findUnique({
+        where: {
+          email
+        }
+      })
+      if (user == null)
+        throw new GraphQLError('User not found', {
+          extensions: { code: '404' }
+        })
+
+      const validatedEmail = await validateEmail(user.userId, token)
+      if (!validatedEmail)
+        throw new GraphQLError('Invalid token', { extensions: { code: '403' } })
+      return { ...user, emailVerified: true }
     }
   })
 }))
