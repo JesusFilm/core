@@ -42,11 +42,9 @@ export function ResponsesItem({ variant }: ResponsesItemProps): ReactElement {
       >
         <Item variant={variant} label={t('Responses')} icon={<Inbox2Icon />} />
       </NextLink>
-      {variant !== 'menu-item' && (
-        <Typography variant="body2" sx={{ fontWeight: '600' }}>
-          {data?.journeyVisitorCount ?? ''}
-        </Typography>
-      )}
+      <Typography variant="body2" sx={{ fontWeight: '600' }}>
+        {data?.journeyVisitorCount ?? ''}
+      </Typography>
     </Stack>
   )
 }

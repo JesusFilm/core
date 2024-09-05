@@ -99,9 +99,6 @@ export function Menu({ user }: MenuProps): ReactElement {
         {!smUp && journey?.template !== true && (
           <AnalyticsItem variant="menu-item" />
         )}
-        {!smUp && journey?.template !== true && (
-          <ResponsesItem variant="menu-item" />
-        )}
         {journey?.template !== true && isPublisher === true && (
           <CreateTemplateItem variant="menu-item" />
         )}
