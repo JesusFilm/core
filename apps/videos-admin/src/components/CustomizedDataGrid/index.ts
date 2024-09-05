@@ -1,1 +1,0 @@
-export { CustomizedDataGrid } from './CustomizedDataGrid'

@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 
-import { Videos } from './_Videos'
+import { VideoList } from '../../../../components/VideoList'
 
 export default function VideosPage(): ReactElement {
-  return <Videos />
+  return <VideoList />
 }
