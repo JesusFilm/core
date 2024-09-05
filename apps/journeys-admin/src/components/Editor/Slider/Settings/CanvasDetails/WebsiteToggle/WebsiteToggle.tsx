@@ -14,10 +14,11 @@ export function WebsiteToggle(): ReactElement {
   const [journeyUpdate] = useJourneyUpdateMutation()
   const { add } = useCommand()
 
-  function handleChange(): void {
-    if (journey == null) return
+  function handleChange(event, value): void {
+    const currentMode =
+      value === 'journey' ? false : value === 'website' ? true : null
+    if (journey == null || currentMode == null) return
 
-    const currentMode = journey.website ?? false
     add({
       parameters: {
         execute: { currentMode },
@@ -27,12 +28,12 @@ export function WebsiteToggle(): ReactElement {
         void journeyUpdate({
           variables: {
             id: journey.id,
-            input: { website: !currentMode }
+            input: { website: currentMode }
           },
           optimisticResponse: {
             journeyUpdate: {
               ...journey,
-              website: !currentMode
+              website: currentMode
             }
           }
         })
