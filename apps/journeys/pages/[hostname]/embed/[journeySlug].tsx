@@ -83,10 +83,7 @@ function HostJourneyEmbedPage({
         rtl={rtl}
         locale={locale}
       >
-        <EmbeddedPreview
-          blocks={blocks}
-          disableFullscreen={query?.expand === 'false'}
-        />
+        <EmbeddedPreview disableFullscreen={query?.expand === 'false'} />
       </JourneyPageWrapper>
     </>
   )

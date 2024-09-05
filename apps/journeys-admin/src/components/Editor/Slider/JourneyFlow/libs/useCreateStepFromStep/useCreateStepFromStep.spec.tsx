@@ -74,7 +74,8 @@ describe('useCreateStepFromStep', () => {
       parentBlockId: null,
       parentOrder: null,
       x: 777,
-      y: 777
+      y: 777,
+      slug: null
     })
     expect(cache.extract()['CardBlock:newCard.id']).toEqual({
       __typename: 'CardBlock',
@@ -141,7 +142,8 @@ describe('useCreateStepFromStep', () => {
       parentBlockId: null,
       parentOrder: null,
       x: 777,
-      y: 777
+      y: 777,
+      slug: null
     })
     expect(cache.extract()['CardBlock:newCard.id']).toEqual({
       __typename: 'CardBlock',
@@ -215,7 +217,8 @@ describe('useCreateStepFromStep', () => {
       parentBlockId: null,
       parentOrder: null,
       x: 777,
-      y: 777
+      y: 777,
+      slug: null
     })
     expect(cache.extract()['CardBlock:newCard.id']).toEqual({
       __typename: 'CardBlock',

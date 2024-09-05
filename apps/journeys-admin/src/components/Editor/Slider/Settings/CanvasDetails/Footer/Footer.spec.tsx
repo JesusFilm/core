@@ -61,7 +61,9 @@ describe('Footer', () => {
     const reactions = await waitFor(() =>
       screen.getByRole('button', { name: 'Reactions' })
     )
-
+    const title = await waitFor(() =>
+      screen.getByRole('button', { name: 'Display Title' })
+    )
     const details = await waitFor(() =>
       screen.getByRole('button', { name: 'Hosted By' })
     )
@@ -70,6 +72,7 @@ describe('Footer', () => {
     )
 
     expect(reactions).toBeInTheDocument()
+    expect(title).toBeInTheDocument()
     expect(details).toBeInTheDocument()
     expect(chat).toBeInTheDocument()
   })
@@ -97,10 +100,14 @@ describe('Footer', () => {
     expect(toggleBtn).toBeInTheDocument()
     expect(toggleBtn).toHaveAttribute('aria-pressed', 'true')
 
+    const title = await waitFor(() =>
+      screen.getByRole('button', { name: 'Display Title' })
+    )
     const chat = await waitFor(() =>
       screen.getByRole('button', { name: 'Chat Widget' })
     )
 
+    expect(title).toBeInTheDocument()
     expect(chat).toBeInTheDocument()
   })
 
