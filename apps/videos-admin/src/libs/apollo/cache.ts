@@ -22,13 +22,14 @@ export const cache = {
             ['labels', 'availableVariantLanguageIds', 'title']
           ]),
           read(existing, { args }) {
-            return (
-              existing?.slice(
-                args?.offset ?? 0,
-                (args?.offset ?? 0) + (args?.limit ?? 100)
-              ) as VideoData[],
-              '__ref'
-            )
+            // A read function should always return undefined if existing is
+            // undefined. Returning undefined signals that the field is
+            // missing from the cache, which instructs Apollo Client to
+            // fetch its value from your GraphQL server.
+            return existing?.slice(
+              args?.offset ?? 0,
+              (args?.offset ?? 0) + (args?.limit ?? 100)
+            ) as VideoData[]
           }
         }
       }

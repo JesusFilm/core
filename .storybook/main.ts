@@ -21,7 +21,7 @@ const storiesForProject = {
     '../apps/api-journeys/src/app/emails/stories/*.stories.@(js|jsx|ts|tsx)'
   ],
   'api-users': [
-    '../apps/api-users/src/app/emails/stories/*.stories.@(js|jsx|ts|tsx)'
+    '../apps/api-users/src/emails/stories/*.stories.@(js|jsx|ts|tsx)'
   ]
   // Add new UI projects here and in allStories
 }
