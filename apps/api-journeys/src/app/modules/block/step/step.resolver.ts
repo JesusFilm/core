@@ -33,6 +33,7 @@ export class StepBlockResolver {
   ): Promise<Block> {
     const parentOrder = (await this.blockService.getSiblings(input.journeyId))
       .length
+
     return await this.prismaService.$transaction(async (tx) => {
       const block = await tx.block.create({
         data: {

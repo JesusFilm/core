@@ -69,6 +69,9 @@ import { StepBlockNode } from './nodes/StepBlockNode'
 import { STEP_NODE_CARD_HEIGHT } from './nodes/StepBlockNode/libs/sizes'
 
 import 'reactflow/dist/style.css'
+import { MenuNode } from './nodes/MenuNode'
+
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 // some styles can only be updated through css after render
 const additionalEdgeStyles = {
@@ -118,6 +121,7 @@ export function JourneyFlow(): ReactElement {
   const { onSelectionChange } = useDeleteOnKeyPress()
   const [stepBlockPositionUpdate] = useStepBlockPositionUpdateMutation()
   const { add } = useCommand()
+  const { journey } = useJourney()
 
   const { data, loading } = useQuery<
     GetStepBlocksWithPosition,
@@ -193,6 +197,7 @@ export function JourneyFlow(): ReactElement {
   )
 
   useEffect(() => {
+    // console.log(data?.blocks, steps, data?.blocks.length, steps?.length)
     if (
       data?.blocks == null ||
       steps == null ||
@@ -225,7 +230,16 @@ export function JourneyFlow(): ReactElement {
       return
     }
 
-    const { nodes, edges } = transformSteps(steps ?? [], positions)
+    const foo =
+      journey?.website === true
+        ? steps.map((step) =>
+            step.id === journey.menuStepBlockId
+              ? { ...step, menuBlock: true }
+              : step
+          )
+        : steps.filter((step) => step.id !== journey?.menuStepBlockId)
+
+    const { nodes, edges } = transformSteps(foo, positions)
 
     setEdges(edges)
     setNodes(nodes)
@@ -391,7 +405,8 @@ export function JourneyFlow(): ReactElement {
       StepBlock: StepBlockNode,
       SocialPreview: SocialPreviewNode,
       Link: LinkNode,
-      Referrer: ReferrerNode
+      Referrer: ReferrerNode,
+      Menu: MenuNode
     }),
     []
   )
@@ -405,7 +420,7 @@ export function JourneyFlow(): ReactElement {
     []
   )
 
-  const hideReferrers =
+  const hideFlowElement =
     <T extends Node | Edge>(hidden: boolean) =>
     (nodeOrEdge: T) => {
       nodeOrEdge.hidden = hidden
@@ -423,9 +438,24 @@ export function JourneyFlow(): ReactElement {
   }, [analytics?.referrers, setReferrerEdges, setReferrerNodes])
 
   useEffect(() => {
-    setReferrerNodes((nds) => nds.map(hideReferrers(showAnalytics === false)))
-    setReferrerEdges((eds) => eds.map(hideReferrers(showAnalytics === false)))
+    setReferrerNodes((nds) => nds.map(hideFlowElement(showAnalytics === false)))
+    setReferrerEdges((eds) => eds.map(hideFlowElement(showAnalytics === false)))
   }, [setReferrerEdges, setReferrerNodes, showAnalytics])
+
+  // useEffect(() => {
+  //   if (journey != null && journey.menuStepBlockId != null)
+  //     setNodes((nds) =>
+  //       nds.map((node) => {
+  //         if (node.id === journey.menuStepBlockId) {
+  //           // node.hidden = journey.website == null || !journey.website
+  //           node.hidden = !(journey.website === true)
+  //           console.log('This node is a menu node', node)
+  //         }
+
+  //         return node
+  //       })
+  //     )
+  // }, [journey, journey?.website, journey?.menuStepBlockId, setNodes])
 
   return (
     <Box

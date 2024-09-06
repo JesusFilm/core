@@ -29,6 +29,7 @@ export const JOURNEY_SETTINGS_UPDATE = gql`
       showDislikeButton
       displayTitle
       menuButtonIcon
+      menuStepBlockId
     }
   }
 `

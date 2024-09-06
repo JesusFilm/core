@@ -6,6 +6,7 @@ import { NodeProps } from 'reactflow'
 
 import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
 import { filterActionBlocks } from '@core/journeys/ui/filterActionBlocks'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { BaseNode, HandleVariant } from '../BaseNode'
 
@@ -24,6 +25,7 @@ export function StepBlockNode({
   const {
     state: { steps, selectedStep, activeContent, showAnalytics }
   } = useEditor()
+  const { journey } = useJourney()
   const step = steps?.find((step) => step.id === id)
 
   const actionBlocks = useMemo(
