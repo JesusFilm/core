@@ -46,6 +46,7 @@ describe('SearchbarDropdown', () => {
           open={false}
           refinements={refinements}
           handleTabValueChange={noop}
+          handleLanguagesSelect={noop}
         />
       </MockedProvider>
     )
@@ -61,6 +62,7 @@ describe('SearchbarDropdown', () => {
           open
           refinements={refinements}
           handleTabValueChange={noop}
+          handleLanguagesSelect={noop}
         />
       </MockedProvider>
     )
@@ -75,6 +77,7 @@ describe('SearchbarDropdown', () => {
           open
           refinements={refinements}
           handleTabValueChange={noop}
+          handleLanguagesSelect={noop}
         />
       </MockedProvider>
     )
@@ -89,6 +92,7 @@ describe('SearchbarDropdown', () => {
           refinements={refinements}
           tabIndex={1}
           handleTabValueChange={noop}
+          handleLanguagesSelect={noop}
         />
       </MockedProvider>
     )
@@ -103,6 +107,7 @@ describe('SearchbarDropdown', () => {
           refinements={refinements}
           tabIndex={1}
           handleTabValueChange={noop}
+          handleLanguagesSelect={noop}
         />
       </MockedProvider>
     )
@@ -123,6 +128,7 @@ describe('SearchbarDropdown', () => {
           refinements={refinements}
           tabIndex={1}
           handleTabValueChange={noop}
+          handleLanguagesSelect={noop}
         />
       </MockedProvider>
     )
@@ -145,6 +151,7 @@ describe('SearchbarDropdown', () => {
           refinements={emptyRefinements}
           tabIndex={1}
           handleTabValueChange={noop}
+          handleLanguagesSelect={noop}
         />
       </MockedProvider>
     )
@@ -164,6 +171,7 @@ describe('SearchbarDropdown', () => {
           refinements={emptyRefinements}
           tabIndex={1}
           handleTabValueChange={noop}
+          handleLanguagesSelect={noop}
         />
       </MockedProvider>
     )
@@ -187,6 +195,7 @@ describe('SearchbarDropdown', () => {
           refinements={refinements}
           tabIndex={1}
           handleTabValueChange={noop}
+          handleLanguagesSelect={noop}
         />
       </MockedProvider>
     )
@@ -206,6 +215,7 @@ describe('SearchbarDropdown', () => {
           refinements={refinements}
           tabIndex={1}
           handleTabValueChange={noop}
+          handleLanguagesSelect={noop}
         />
       </MockedProvider>
     )
@@ -223,6 +233,7 @@ describe('SearchbarDropdown', () => {
           refinements={emptyRefinements}
           tabIndex={0}
           handleTabValueChange={noop}
+          handleLanguagesSelect={noop}
         />
       </MockedProvider>
     )

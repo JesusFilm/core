@@ -79,6 +79,7 @@ describe('LanguageContinentRefinements', () => {
       <LanguageContinentRefinements
         refinements={showMoreRefinements}
         languages={languages}
+        handleLanguagesSelect={jest.fn()}
       />
     )
     expect(screen.getByText('See All')).toBeInTheDocument()
@@ -95,6 +96,7 @@ describe('LanguageContinentRefinements', () => {
       <LanguageContinentRefinements
         refinements={showMoreRefinements}
         languages={languages}
+        handleLanguagesSelect={jest.fn()}
       />
     )
     expect(screen.getByText('See Less')).toBeInTheDocument()
@@ -112,6 +114,7 @@ describe('LanguageContinentRefinements', () => {
       <LanguageContinentRefinements
         refinements={showMoreRefinements}
         languages={languages}
+        handleLanguagesSelect={jest.fn()}
       />
     )
     const seeAllButton = screen.getByText('See All')
