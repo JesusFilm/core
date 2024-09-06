@@ -86,7 +86,7 @@
     "@pothos/plugin-prisma": "^3.65.3",
     "@pothos/plugin-scope-auth": "^4.1.0",
     "@prisma/client": "^5.2.0",
-    "@react-email/components": "^0.0.17",
+    "@react-email/components": "^0.0.25",
     "@react-email/render": "^0.0.17",
     "@storybook/core-server": "7.6.20",
     "@types/mailchimp__mailchimp_marketing": "^3.0.19",
