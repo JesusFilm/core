@@ -6,6 +6,8 @@ import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refine
 import { useTranslation } from 'next-i18next'
 import { MouseEvent, ReactElement } from 'react'
 
+import { useContinentLanguages } from '../../../libs/ContinentLanguageProvider'
+
 import { LanguageButton } from './LanguageButton'
 
 const MAX_DISPLAYED_LANGUAGES = 2
@@ -13,17 +15,17 @@ const MAX_DISPLAYED_LANGUAGES = 2
 interface LanguageButtonsProps {
   onClick: () => void
   refinements: RefinementListRenderState
-  handleRemoveLanguage: (language: string) => void
 }
 
 export function LanguageButtons({
   onClick,
-  refinements,
-  handleRemoveLanguage
+  refinements
 }: LanguageButtonsProps): ReactElement {
   const theme = useTheme()
   const { t } = useTranslation('apps-watch')
   const { items, refine } = refinements
+
+  const { removeLanguage } = useContinentLanguages()
 
   const refinedItems = items
     .filter((item) => item.isRefined)
@@ -79,7 +81,7 @@ export function LanguageButtons({
               handleClick={(event: MouseEvent<HTMLButtonElement>) => {
                 event.stopPropagation()
                 refine(selectedLanguage)
-                handleRemoveLanguage(selectedLanguage)
+                removeLanguage(selectedLanguage)
               }}
             />
           ))}

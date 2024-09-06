@@ -12,7 +12,7 @@ import { useRefinementList, useSearchBox } from 'react-instantsearch'
 import Search1Icon from '@core/shared/ui/icons/Search1'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
 
-import { useContinentLanguages } from '../../libs/useContinentLanguages'
+import { ContinentLanguagesProvider } from '../../libs/ContinentLanguageProvider'
 
 import { LanguageButtons } from './LanguageButtons'
 import { SearchbarDropdown } from './SearchDropdown'
@@ -60,12 +60,6 @@ export function SearchBar({
 
   const { query, refine } = useSearchBox()
 
-  const {
-    selectedLanguagesByContinent,
-    selectLanguageForContinent,
-    removeLanguageFromAllContinents
-  } = useContinentLanguages()
-
   const refinements = useRefinementList({
     attribute: 'languageEnglishName',
     showMore: true,
@@ -89,90 +83,90 @@ export function SearchBar({
   }
 
   return (
-    <ClickAwayListener onClickAway={() => setOpen(false)}>
-      <Box>
-        <Box
-          sx={{
-            borderRadius: 3,
-            background:
-              'linear-gradient(90deg, #0C79B3 0%, #0FDABC 51%, #E72DBB 100%)',
-            p: 1
-          }}
-          data-testid="SearchBar"
-          ref={popperRef}
-        >
-          <Formik
-            initialValues={{
-              title: query
-            }}
-            onSubmit={handleSubmit}
-            enableReinitialize
-          >
-            {({ values, handleChange, handleBlur }) => (
-              <>
-                <StyledTextField
-                  value={values.title}
-                  name="title"
-                  type="search"
-                  placeholder={t('Search by topic, occasion, or audience ...')}
-                  fullWidth
-                  autoComplete="off"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  onFocus={openSuggestionsDropdown}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Search1Icon />
-                      </InputAdornment>
-                    ),
-                    endAdornment: showLanguageButton ? (
-                      <InputAdornment
-                        position="end"
-                        sx={{
-                          [theme.breakpoints.down('lg')]: { display: 'none' }
-                        }}
-                      >
-                        <LanguageButtons
-                          onClick={handleLanguageClick}
-                          refinements={refinements}
-                          handleRemoveLanguage={removeLanguageFromAllContinents}
-                        />
-                      </InputAdornment>
-                    ) : (
-                      <></>
-                    )
-                  }}
-                  {...props}
-                />
-                <SubmitListener />
-              </>
-            )}
-          </Formik>
+    <ContinentLanguagesProvider>
+      <ClickAwayListener onClickAway={() => setOpen(false)}>
+        <Box>
           <Box
             sx={{
-              [theme.breakpoints.up('lg')]: { display: 'none' }
+              borderRadius: 3,
+              background:
+                'linear-gradient(90deg, #0C79B3 0%, #0FDABC 51%, #E72DBB 100%)',
+              p: 1
             }}
+            data-testid="SearchBar"
+            ref={popperRef}
           >
-            <Divider variant="middle" orientation="horizontal" />
-            <LanguageButtons
-              onClick={handleLanguageClick}
-              refinements={refinements}
-              handleRemoveLanguage={removeLanguageFromAllContinents}
-            />
+            <Formik
+              initialValues={{
+                title: query
+              }}
+              onSubmit={handleSubmit}
+              enableReinitialize
+            >
+              {({ values, handleChange, handleBlur }) => (
+                <>
+                  <StyledTextField
+                    value={values.title}
+                    name="title"
+                    type="search"
+                    placeholder={t(
+                      'Search by topic, occasion, or audience ...'
+                    )}
+                    fullWidth
+                    autoComplete="off"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    onFocus={openSuggestionsDropdown}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <Search1Icon />
+                        </InputAdornment>
+                      ),
+                      endAdornment: showLanguageButton ? (
+                        <InputAdornment
+                          position="end"
+                          sx={{
+                            [theme.breakpoints.down('lg')]: { display: 'none' }
+                          }}
+                        >
+                          <LanguageButtons
+                            onClick={handleLanguageClick}
+                            refinements={refinements}
+                          />
+                        </InputAdornment>
+                      ) : (
+                        <></>
+                      )
+                    }}
+                    {...props}
+                  />
+                  <SubmitListener />
+                </>
+              )}
+            </Formik>
+            <Box
+              sx={{
+                [theme.breakpoints.up('lg')]: { display: 'none' }
+              }}
+            >
+              <Divider variant="middle" orientation="horizontal" />
+              <LanguageButtons
+                onClick={handleLanguageClick}
+                refinements={refinements}
+              />
+            </Box>
           </Box>
+          <SearchbarDropdown
+            open={open}
+            refinements={refinements}
+            id={open ? 'simple-popper' : undefined}
+            anchorEl={anchorEl}
+            tabIndex={tabValue}
+            handleTabValueChange={setTabValue}
+          />
         </Box>
-        <SearchbarDropdown
-          open={open}
-          refinements={refinements}
-          id={open ? 'simple-popper' : undefined}
-          anchorEl={anchorEl}
-          handleLanguagesSelect={selectLanguageForContinent}
-          selectedLanguagesByContinent={selectedLanguagesByContinent}
-          tabIndex={tabValue}
-          handleTabValueChange={setTabValue}
-        />
-      </Box>
-    </ClickAwayListener>
+      </ClickAwayListener>
+    </ContinentLanguagesProvider>
   )
 }

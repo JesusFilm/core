@@ -1,7 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
-import noop from 'lodash/noop'
 import { useSearchBox } from 'react-instantsearch'
 
 import { languageRefinements } from '../../data'
@@ -27,92 +26,47 @@ describe('Suggestions', () => {
     refine
   } as unknown as SearchBoxRenderState
 
-  const languages = {
-    'North America': ['English'],
-    Europe: ['French', 'Spanish, Castilian'],
-    Oceania: ['Bislama'],
-    Africa: ['Deutsch'],
-    Asia: ['Cantonese', 'Chinese, Simplified'],
-    'South America': ['Spanish, Latin American']
-  }
-
   beforeEach(() => {
     mockUseSearchBox.mockReturnValue(searchBox)
     jest.clearAllMocks()
   })
 
   it('should display default suggestions', () => {
-    render(
-      <Suggestions
-        refinements={refinements}
-        languages={languages}
-        handleLanguagesSelect={noop}
-      />
-    )
+    render(<Suggestions refinements={refinements} />)
     expect(screen.getByText('- in English')).toBeInTheDocument()
     expect(screen.getByText('- in English and Spanish')).toBeInTheDocument()
   })
 
   it('should refine on click of first default query', () => {
-    render(
-      <Suggestions
-        refinements={refinements}
-        languages={languages}
-        handleLanguagesSelect={noop}
-      />
-    )
+    render(<Suggestions refinements={refinements} />)
     const firstSuggestion = screen.getByText('- in English')
     fireEvent.click(firstSuggestion)
     expect(refine).toHaveBeenCalledTimes(2)
   })
 
   it('should refine on click of second default query', () => {
-    render(
-      <Suggestions
-        refinements={refinements}
-        languages={languages}
-        handleLanguagesSelect={noop}
-      />
-    )
+    render(<Suggestions refinements={refinements} />)
     const secondSuggestion = screen.getByText('- in English and Spanish')
     fireEvent.click(secondSuggestion)
     expect(refine).toHaveBeenCalledTimes(3)
   })
 
   it('should refine query on suggestion click', () => {
-    render(
-      <Suggestions
-        refinements={refinements}
-        languages={languages}
-        handleLanguagesSelect={noop}
-      />
-    )
+    render(<Suggestions refinements={refinements} />)
     const firstSuggestion = screen.getByText('- in English')
     fireEvent.click(firstSuggestion)
     expect(refine).toHaveBeenCalledWith('Jesus')
   })
 
   it('should refine language on suggestion click', () => {
-    render(
-      <Suggestions
-        refinements={refinements}
-        languages={languages}
-        handleLanguagesSelect={noop}
-      />
-    )
+    render(<Suggestions refinements={refinements} />)
     const firstSuggestion = screen.getByText('- in English')
     fireEvent.click(firstSuggestion)
     expect(refine).toHaveBeenCalledWith('English')
   })
 
   it('should refine multiple languages on suggestion click', () => {
-    render(
-      <Suggestions
-        refinements={refinements}
-        languages={languages}
-        handleLanguagesSelect={noop}
-      />
-    )
+    render(<Suggestions refinements={refinements} />)
     const secondSuggestion = screen.getByText('- in English and Spanish')
     fireEvent.click(secondSuggestion)
     expect(refine).toHaveBeenCalledWith('English')
@@ -134,13 +88,7 @@ describe('Suggestions', () => {
       refine
     } as unknown as RefinementListRenderState
 
-    render(
-      <Suggestions
-        refinements={refinementsWithRefined}
-        languages={languages}
-        handleLanguagesSelect={noop}
-      />
-    )
+    render(<Suggestions refinements={refinementsWithRefined} />)
     const firstSuggestion = screen.getByText('- in English')
     fireEvent.click(firstSuggestion)
     expect(refine).not.toHaveBeenCalledWith('English')
@@ -148,13 +96,7 @@ describe('Suggestions', () => {
 
   it('should call handleLanguageSelect on suggestions click', () => {
     const handleLanguagesSelect = jest.fn()
-    render(
-      <Suggestions
-        refinements={refinements}
-        languages={languages}
-        handleLanguagesSelect={handleLanguagesSelect}
-      />
-    )
+    render(<Suggestions refinements={refinements} />)
     const firstSuggestion = screen.getByText('- in English')
     fireEvent.click(firstSuggestion)
     expect(handleLanguagesSelect).toHaveBeenCalledTimes(1)

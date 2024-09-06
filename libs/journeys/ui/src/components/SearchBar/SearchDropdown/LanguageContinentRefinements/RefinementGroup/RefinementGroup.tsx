@@ -6,27 +6,25 @@ import Typography from '@mui/material/Typography'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { type ReactElement } from 'react'
 
+import { useContinentLanguages } from '../../../../../libs/ContinentLanguageProvider'
+
 interface RefinementGroupProps {
   title: string
   refinement: RefinementListRenderState
-  handleLanguagesSelect: (
-    continent: string,
-    language: string,
-    isRefined: boolean
-  ) => void
-  selectedLanguagesByContinent?: Record<string, string[]>
 }
 
 export function RefinementGroup({
   title,
-  refinement,
-  handleLanguagesSelect,
-  selectedLanguagesByContinent = {}
+  refinement
 }: RefinementGroupProps): ReactElement {
+  const {
+    selectLanguage,
+    state: { selectedLanguagesByContinent }
+  } = useContinentLanguages()
   const { items, refine } = refinement
 
   function handleClick(language: string, isRefined: boolean): void {
-    handleLanguagesSelect(title, language, isRefined)
+    selectLanguage(title, language, isRefined)
     refine(language)
   }
 

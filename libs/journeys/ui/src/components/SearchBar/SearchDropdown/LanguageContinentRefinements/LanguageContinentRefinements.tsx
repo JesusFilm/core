@@ -24,19 +24,11 @@ const StyledButton = styled(Button)(({ theme }) => ({
 interface LanguageContinentRefinementsProps {
   refinements: RefinementListRenderState
   languages: Record<string, string[]>
-  handleLanguagesSelect: (
-    continent: string,
-    language: string,
-    isRefined: boolean
-  ) => void
-  selectedLanguagesByContinent?: Record<string, string[]>
 }
 
 export function LanguageContinentRefinements({
   refinements,
-  languages,
-  handleLanguagesSelect,
-  selectedLanguagesByContinent
+  languages
 }: LanguageContinentRefinementsProps): ReactElement {
   const { t } = useTranslation('apps-watch')
   const theme = useTheme()
@@ -82,8 +74,6 @@ export function LanguageContinentRefinements({
                       ...refinements,
                       items
                     }}
-                    selectedLanguagesByContinent={selectedLanguagesByContinent}
-                    handleLanguagesSelect={handleLanguagesSelect}
                   />
                 ) : (
                   <></>

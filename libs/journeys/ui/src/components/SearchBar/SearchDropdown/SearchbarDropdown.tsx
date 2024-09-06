@@ -40,12 +40,6 @@ interface SearchbarDropdownProps {
   refinements: RefinementListRenderState
   id?: string
   anchorEl?: HTMLElement | null
-  handleLanguagesSelect: (
-    continent: string,
-    language: string,
-    isRefined: boolean
-  ) => void
-  selectedLanguagesByContinent?: Record<string, string[]>
   tabIndex?: number
   handleTabValueChange: Dispatch<SetStateAction<number>>
 }
@@ -55,8 +49,6 @@ export function SearchbarDropdown({
   refinements,
   id,
   anchorEl,
-  handleLanguagesSelect,
-  selectedLanguagesByContinent,
   tabIndex: tabValue = 0,
   handleTabValueChange: setTabValue
 }: SearchbarDropdownProps): ReactElement {
@@ -117,18 +109,12 @@ export function SearchbarDropdown({
           </Tabs>
         </Box>
         <TabPanel name="suggestions-tab" value={tabValue} index={0}>
-          <Suggestions
-            refinements={refinements}
-            languages={languages}
-            handleLanguagesSelect={handleLanguagesSelect}
-          />
+          <Suggestions refinements={refinements} />
         </TabPanel>
         <TabPanel name="languages-tab" value={tabValue} index={1} pt={3}>
           <LanguageContinentRefinements
             refinements={refinements}
             languages={languages}
-            selectedLanguagesByContinent={selectedLanguagesByContinent}
-            handleLanguagesSelect={handleLanguagesSelect}
           />
         </TabPanel>
       </Box>
