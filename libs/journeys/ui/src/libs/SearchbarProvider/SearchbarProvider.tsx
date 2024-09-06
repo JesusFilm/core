@@ -11,14 +11,17 @@ type Continent = string
 type Language = string
 
 interface SearchbarState {
-  selectedLanguagesByContinent: Record<Continent, Language[]>
+  /**
+   * selected languages sorted by continent
+   */
+  continentLanguages: Record<Continent, Language[]>
 }
 
 interface SelectLanguageAction {
   type: 'SelectLanguage'
   continent: Continent
   language: Language
-  isRefined: boolean
+  isSelected: boolean
 }
 
 interface RemoveLanguageAction {
@@ -34,36 +37,32 @@ const searchbarReducer = (
 ): SearchbarState => {
   switch (action.type) {
     case 'SelectLanguage': {
-      const { continent, language, isRefined } = action
-      const currentLanguages =
-        state.selectedLanguagesByContinent[continent] ?? []
-      const updatedLanguages = isRefined
+      const { continent, language, isSelected } = action
+      const currentLanguages = state.continentLanguages[continent] ?? []
+      const updatedLanguages = isSelected
         ? [...currentLanguages, language]
         : currentLanguages.filter((lang) => lang !== language)
-
       return {
         ...state,
-        selectedLanguagesByContinent: {
-          ...state.selectedLanguagesByContinent,
+        continentLanguages: {
+          ...state.continentLanguages,
           [continent]: updatedLanguages
         }
       }
     }
     case 'RemoveLanguage': {
       const { language } = action
-      const updatedLanguages = Object.entries(
-        state.selectedLanguagesByContinent
-      ).reduce(
+      const languageEntries = Object.entries(state.continentLanguages)
+      const updatedLanguages = languageEntries.reduce(
         (acc, [continent, languages]) => ({
           ...acc,
           [continent]: languages.filter((lang) => lang !== language)
         }),
         {}
       )
-
       return {
         ...state,
-        selectedLanguagesByContinent: updatedLanguages
+        continentLanguages: updatedLanguages
       }
     }
     default:
@@ -74,11 +73,17 @@ const searchbarReducer = (
 interface SearchbarContextType {
   state: SearchbarState
   dispatch: Dispatch<SearchbarAction>
+  /**
+   * Select a language for a continent
+   */
   selectLanguage: (
     continent: Continent,
     language: Language,
-    isRefined: boolean
+    isSelected: boolean
   ) => void
+  /**
+   * Remove a language from all continents
+   */
   removeLanguage: (language: Language) => void
 }
 
@@ -96,16 +101,16 @@ export function SearchbarProvider({
   initialState
 }: SearchbarProviderProps): ReactElement {
   const [state, dispatch] = useReducer(searchbarReducer, {
-    selectedLanguagesByContinent: {},
+    continentLanguages: {},
     ...initialState
   })
 
   function selectLanguage(
     continent: Continent,
     language: Language,
-    isRefined: boolean
+    isSelected: boolean
   ): void {
-    dispatch({ type: 'SelectLanguage', continent, language, isRefined })
+    dispatch({ type: 'SelectLanguage', continent, language, isSelected })
   }
 
   function removeLanguage(language: Language): void {

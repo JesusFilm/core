@@ -19,7 +19,7 @@ export function RefinementGroup({
 }: RefinementGroupProps): ReactElement {
   const {
     selectLanguage,
-    state: { selectedLanguagesByContinent }
+    state: { continentLanguages }
   } = useSearchbar()
   const { items, refine } = refinement
 
@@ -30,14 +30,13 @@ export function RefinementGroup({
 
   function isItemChecked(item: { label: string; isRefined: boolean }): boolean {
     return (
-      (item.isRefined &&
-        selectedLanguagesByContinent[title]?.includes(item.label)) ??
+      (item.isRefined && continentLanguages[title]?.includes(item.label)) ??
       false
     )
   }
 
   function isItemDisabled(itemLabel: string): boolean {
-    return Object.entries(selectedLanguagesByContinent).some(
+    return Object.entries(continentLanguages).some(
       ([continent, languages]) =>
         continent !== title && languages.includes(itemLabel)
     )
