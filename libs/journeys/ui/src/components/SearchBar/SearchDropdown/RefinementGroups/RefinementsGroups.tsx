@@ -3,9 +3,9 @@ import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refine
 
 import { languageRefinements } from '../../data'
 
-import { LanguageContinentRefinements } from './LanguageContinentRefinements'
+import { RefinementGroups } from './RefinementGroups'
 
-describe('LanguageContinentRefinements', () => {
+describe('RefinementGroups', () => {
   const refinements = {
     items: languageRefinements,
     refine: jest.fn()
@@ -21,12 +21,7 @@ describe('LanguageContinentRefinements', () => {
   }
 
   it('should render the correct continent headers', () => {
-    render(
-      <LanguageContinentRefinements
-        refinements={refinements}
-        languages={languages}
-      />
-    )
+    render(<RefinementGroups refinements={refinements} languages={languages} />)
     expect(screen.getByText('Asia')).toBeInTheDocument()
     expect(screen.getByText('Europe')).toBeInTheDocument()
     expect(screen.getByText('North America')).toBeInTheDocument()
@@ -34,12 +29,7 @@ describe('LanguageContinentRefinements', () => {
   })
 
   it('should render the correct languages', () => {
-    render(
-      <LanguageContinentRefinements
-        refinements={refinements}
-        languages={languages}
-      />
-    )
+    render(<RefinementGroups refinements={refinements} languages={languages} />)
     expect(screen.getByText('English')).toBeInTheDocument()
     expect(screen.getByText('Cantonese')).toBeInTheDocument()
     expect(screen.getByText('Spanish, Castilian')).toBeInTheDocument()
@@ -48,7 +38,7 @@ describe('LanguageContinentRefinements', () => {
 
   it('should render message if no languages', () => {
     render(
-      <LanguageContinentRefinements
+      <RefinementGroups
         refinements={
           {
             items: [],
@@ -73,7 +63,7 @@ describe('LanguageContinentRefinements', () => {
       toggleShowMore: jest.fn()
     }
     render(
-      <LanguageContinentRefinements
+      <RefinementGroups
         refinements={showMoreRefinements}
         languages={languages}
       />
@@ -89,7 +79,7 @@ describe('LanguageContinentRefinements', () => {
       toggleShowMore: jest.fn()
     }
     render(
-      <LanguageContinentRefinements
+      <RefinementGroups
         refinements={showMoreRefinements}
         languages={languages}
       />
@@ -106,7 +96,7 @@ describe('LanguageContinentRefinements', () => {
       toggleShowMore
     }
     render(
-      <LanguageContinentRefinements
+      <RefinementGroups
         refinements={showMoreRefinements}
         languages={languages}
       />

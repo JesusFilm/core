@@ -14,7 +14,7 @@ import { TabPanel } from '@core/shared/ui/TabPanel'
 import { useLanguagesContinentsQuery } from '../../../libs/useLanguagesContinentsQuery'
 import { useSortLanguageContinents } from '../../../libs/useSortLanguageContinents'
 
-import { LanguageContinentRefinements } from './LanguageContinentRefinements'
+import { RefinementGroups } from './RefinementGroups'
 import { Suggestions } from './Suggestions'
 
 const StyledTab = styled(Tab)(({ theme }) => ({
@@ -112,10 +112,7 @@ export function SearchbarDropdown({
           <Suggestions refinements={refinements} />
         </TabPanel>
         <TabPanel name="languages-tab" value={tabValue} index={1} pt={3}>
-          <LanguageContinentRefinements
-            refinements={refinements}
-            languages={languages}
-          />
+          <RefinementGroups refinements={refinements} languages={languages} />
         </TabPanel>
       </Box>
     </Popper>

@@ -21,15 +21,15 @@ const StyledButton = styled(Button)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper
 }))
 
-interface LanguageContinentRefinementsProps {
+interface RefinementGroupsProps {
   refinements: RefinementListRenderState
   languages: Record<string, string[]>
 }
 
-export function LanguageContinentRefinements({
+export function RefinementGroups({
   refinements,
   languages
-}: LanguageContinentRefinementsProps): ReactElement {
+}: RefinementGroupsProps): ReactElement {
   const { t } = useTranslation('apps-watch')
   const theme = useTheme()
 
