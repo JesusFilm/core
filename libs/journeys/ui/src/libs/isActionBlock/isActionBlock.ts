@@ -15,5 +15,7 @@ export type ActionBlock =
   | TreeBlock<VideoBlock>
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const isActionBlock = (block: TreeBlock<any>): block is ActionBlock =>
-  block?.action !== undefined
+export const isActionBlock = (block: TreeBlock<any>): block is ActionBlock => {
+  console.log({ block, logic: block?.action !== undefined })
+  return block?.action !== undefined
+}

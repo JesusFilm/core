@@ -17,7 +17,8 @@ export function MenuNode({
   id,
   xPos,
   yPos,
-  dragging
+  dragging,
+  data
 }: NodeProps): ReactElement {
   const {
     state: { activeContent, selectedStep, steps }
@@ -26,13 +27,20 @@ export function MenuNode({
   const step = steps?.find((step) => step.id === id)
 
   const actionBlocks = useMemo(
-    () => (step != null ? [step, ...filterActionBlocks(step)] : []),
+    () => (step != null ? filterActionBlocks(step) : []),
     [step]
   )
 
   const isSelected =
     activeContent === ActiveContent.Canvas && selectedStep?.id === step?.id
 
+  console.log('menuNode', {
+    step,
+    steps,
+    id,
+    data,
+    actionBlocks
+  })
   return (
     <Stack
       // data-testid={`StepBlockNode-${step.id}`}
@@ -50,7 +58,7 @@ export function MenuNode({
       }}
     >
       <BaseNode
-        id="MenuNode"
+        id={id}
         selected={activeContent === ActiveContent.Canvas}
         targetHandle={HandleVariant.Hidden}
         sourceHandle={HandleVariant.Hidden}

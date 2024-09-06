@@ -123,6 +123,8 @@ export function Canvas(): ReactElement {
     selectionRef.current = false
   }
 
+  console.log({ selectedStep })
+
   const theme =
     selectedStep != null ? getStepTheme(selectedStep, journey) : null
 

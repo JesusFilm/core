@@ -36,10 +36,6 @@ export function StepBlockNode({
   const isSelected =
     activeContent === ActiveContent.Canvas && selectedStep?.id === step?.id
 
-  const isMenu = step?.id === journey?.menuStepBlockId
-
-  // console.log({ isMenu })
-
   return step != null ? (
     <Stack sx={{ position: 'relative' }}>
       <Fade in={showAnalytics === true}>

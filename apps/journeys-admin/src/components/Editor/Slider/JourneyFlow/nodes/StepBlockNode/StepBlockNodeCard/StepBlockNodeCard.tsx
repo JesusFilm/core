@@ -44,6 +44,7 @@ export function StepBlockNodeCard({
   } = getCardMetadata(card)
 
   function handleClick(): void {
+    console.log('handleClick', { step })
     if (selectedStep?.id === step?.id && showAnalytics !== true) {
       dispatch({
         type: 'SetSelectedBlockAction',

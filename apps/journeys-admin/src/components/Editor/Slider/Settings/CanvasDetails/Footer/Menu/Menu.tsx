@@ -168,8 +168,8 @@ function EditMenuCardCTA(): ReactElement {
   const handleClick = async (): Promise<void> => {
     if (journey == null) return
 
-    // const x = -256
-    // const y = 48
+    // const x = 0
+    // const y = 144
 
     // const stepId = uuidv4()
 

@@ -1,7 +1,8 @@
-import { Box } from '@mui/material'
+import { Box, IconButton } from '@mui/material'
 import Stack from '@mui/material/Stack'
 import { SxProps } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 
 import ChevronDown from '@core/shared/ui/icons/ChevronDown'
@@ -40,6 +41,14 @@ function Menu(): ReactElement {
     Icon = menuIcons[journey.menuButtonIcon]
   }
 
+  const router = useRouter()
+  const handleClick = (): void => {
+    alert('clicked menu')
+    if (journey != null) {
+      void router.push(`/${journey.id}/${journey?.menuStepBlockId}`)
+    }
+  }
+
   return (
     <Box
       sx={{
@@ -55,7 +64,11 @@ function Menu(): ReactElement {
       }}
       data-testid="Menu"
     >
-      {Icon}
+      {variant === 'default' && journey?.menuStepBlockId != null ? (
+        <IconButton onClick={handleClick}>{Icon}</IconButton>
+      ) : (
+        Icon
+      )}
     </Box>
   )
 }

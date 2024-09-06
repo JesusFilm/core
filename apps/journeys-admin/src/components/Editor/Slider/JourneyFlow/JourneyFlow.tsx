@@ -204,7 +204,6 @@ export function JourneyFlow(): ReactElement {
       data.blocks.length !== steps.length
     )
       return
-    console.log('First set node useEffect')
 
     const positions: PositionMap =
       data.blocks.reduce((acc, block) => {
@@ -231,13 +230,19 @@ export function JourneyFlow(): ReactElement {
       return
     }
 
-    const { nodes, edges } = transformSteps(steps ?? [], positions)
+    const foo =
+      journey?.website === true
+        ? steps.map((step) =>
+            step.id === journey.menuStepBlockId
+              ? { ...step, menuBlock: true }
+              : step
+          )
+        : steps.filter((step) => step.id !== journey?.menuStepBlockId)
+
+    const { nodes, edges } = transformSteps(foo, positions)
 
     setEdges(edges)
-    setNodes([
-      ...nodes,
-      { id: 'Menu', type: 'Menu', data: {}, position: { x: -256, y: 48 } }
-    ])
+    setNodes(nodes)
   }, [steps, data, theme, setEdges, setNodes, allBlockPositionUpdate])
 
   const onConnect = useCallback<OnConnect>(() => {
@@ -437,23 +442,20 @@ export function JourneyFlow(): ReactElement {
     setReferrerEdges((eds) => eds.map(hideFlowElement(showAnalytics === false)))
   }, [setReferrerEdges, setReferrerNodes, showAnalytics])
 
-  useEffect(() => {
-    if (journey != null && journey.menuStepBlockId != null)
-      setNodes((nds) =>
-        nds.map((node) => {
-          console.log({ journey: journey.menuStepBlockId, node })
-          if (node.id === journey.menuStepBlockId) {
-            // node.hidden = journey.website == null || !journey.website
-            node.hidden = !(journey.website === true)
-            console.log('This node is a menu node', node)
-          }
+  // useEffect(() => {
+  //   if (journey != null && journey.menuStepBlockId != null)
+  //     setNodes((nds) =>
+  //       nds.map((node) => {
+  //         if (node.id === journey.menuStepBlockId) {
+  //           // node.hidden = journey.website == null || !journey.website
+  //           node.hidden = !(journey.website === true)
+  //           console.log('This node is a menu node', node)
+  //         }
 
-          return node
-        })
-      )
-  }, [journey, journey?.website, journey?.menuStepBlockId, setNodes])
-
-  useEffect(() => console.log(nodes), [nodes])
+  //         return node
+  //       })
+  //     )
+  // }, [journey, journey?.website, journey?.menuStepBlockId, setNodes])
 
   return (
     <Box
