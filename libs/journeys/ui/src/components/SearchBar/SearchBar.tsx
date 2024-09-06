@@ -12,7 +12,7 @@ import { useRefinementList, useSearchBox } from 'react-instantsearch'
 import Search1Icon from '@core/shared/ui/icons/Search1'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
 
-import { ContinentLanguagesProvider } from '../../libs/SearchbarProvider'
+import { SearchbarProvider } from '../../libs/SearchbarProvider'
 
 import { LanguageButtons } from './LanguageButtons'
 import { SearchbarDropdown } from './SearchDropdown'
@@ -83,7 +83,7 @@ export function SearchBar({
   }
 
   return (
-    <ContinentLanguagesProvider>
+    <SearchbarProvider>
       <ClickAwayListener onClickAway={() => setOpen(false)}>
         <Box>
           <Box
@@ -167,6 +167,6 @@ export function SearchBar({
           />
         </Box>
       </ClickAwayListener>
-    </ContinentLanguagesProvider>
+    </SearchbarProvider>
   )
 }
