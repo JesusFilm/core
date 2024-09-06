@@ -18,7 +18,6 @@
     "**/*.spec.jsx",
     "**/*.d.ts",
     "setupTests.ts",
-    "jest.config.ts",
-    "src/components/SearchBar/SearchDropdown/LanguageContinentRefinements/RefinementsGroups.tsx"
+    "jest.config.ts"
   ]
 }
