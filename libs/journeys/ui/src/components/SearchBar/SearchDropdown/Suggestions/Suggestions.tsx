@@ -8,17 +8,36 @@ import { Suggestion } from './Suggestion'
 
 interface SuggestionsProps {
   refinements: RefinementListRenderState
+  languages: Record<string, string[]>
+  handleLanguagesSelect: (
+    continent: string,
+    language: string,
+    isRefined: boolean
+  ) => void
 }
 
-export function Suggestions({ refinements }: SuggestionsProps): ReactElement {
+export function Suggestions({
+  refinements,
+  languages,
+  handleLanguagesSelect
+}: SuggestionsProps): ReactElement {
   const { refine } = useSearchBox()
   const { items, refine: refineLanguage } = refinements
+
+  function findLanguageContinent(language: string): string | undefined {
+    return Object.entries(languages).find(([_, languages]) =>
+      languages.includes(language)
+    )?.[0]
+  }
 
   function refineLanguages(languagesToRefine: string[]): void {
     languagesToRefine.forEach((language) => {
       const refinement = items.find((item) => item.value === language)
       if (refinement?.isRefined === false) {
         refineLanguage(language)
+        const continent = findLanguageContinent(language)
+        if (continent != null)
+          handleLanguagesSelect(continent, language, !refinement?.isRefined)
       }
     })
   }

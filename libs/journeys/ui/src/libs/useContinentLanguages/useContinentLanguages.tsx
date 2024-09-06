@@ -19,14 +19,16 @@ export function useContinentLanguages(): UseContinentLanguages {
     language: string,
     isRefined: boolean
   ): void {
-    const currentLanguages = selectedLanguagesByContinent?.[continent] ?? []
-    const updatedLanguages = isRefined
-      ? [...currentLanguages, language]
-      : currentLanguages.filter((lang) => lang !== language)
+    setSelectedLanguagesByContinent((prevState) => {
+      const currentLanguages = prevState?.[continent] ?? []
+      const updatedLanguages = isRefined
+        ? [...currentLanguages, language]
+        : currentLanguages.filter((lang) => lang !== language)
 
-    setSelectedLanguagesByContinent({
-      ...selectedLanguagesByContinent,
-      [continent]: updatedLanguages
+      return {
+        ...prevState,
+        [continent]: updatedLanguages
+      }
     })
   }
 
