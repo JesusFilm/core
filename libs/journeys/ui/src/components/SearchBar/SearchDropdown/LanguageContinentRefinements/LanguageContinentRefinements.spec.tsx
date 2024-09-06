@@ -1,15 +1,28 @@
 import { fireEvent, render, screen } from '@testing-library/react'
+import { ClearRefinementsRenderState } from 'instantsearch.js/es/connectors/clear-refinements/connectClearRefinements'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
+import { useClearRefinements } from 'react-instantsearch'
 
 import { languageRefinements } from '../../data'
 
 import { LanguageContinentRefinements } from './LanguageContinentRefinements'
+
+jest.mock('react-instantsearch')
+
+const mockUseClearRefinements = useClearRefinements as jest.MockedFunction<
+  typeof useClearRefinements
+>
 
 describe('LanguageContinentRefinements', () => {
   const refinements = {
     items: languageRefinements,
     refine: jest.fn()
   } as unknown as RefinementListRenderState
+
+  const clearRefinements = {
+    refine: jest.fn(),
+    canRefine: false
+  } as unknown as ClearRefinementsRenderState
 
   const languages = {
     'North America': ['English'],
@@ -19,6 +32,10 @@ describe('LanguageContinentRefinements', () => {
     Asia: ['Cantonese', 'Chinese, Simplified'],
     'South America': ['Spanish, Latin American']
   }
+
+  beforeEach(() => {
+    mockUseClearRefinements.mockReturnValue(clearRefinements)
+  })
 
   it('should render the correct continent headers', () => {
     render(
@@ -114,5 +131,53 @@ describe('LanguageContinentRefinements', () => {
     const seeAllButton = screen.getByText('See All')
     fireEvent.click(seeAllButton)
     expect(toggleShowMore).toHaveBeenCalled()
+  })
+
+  it('should not show clear all button if cannot clear refinements', () => {
+    render(
+      <LanguageContinentRefinements
+        refinements={refinements}
+        languages={languages}
+      />
+    )
+    const clearAllButton = screen.queryByText('Clear All')
+    expect(clearAllButton).not.toBeInTheDocument()
+  })
+
+  it('should show clear all button when one can clear refinements', () => {
+    const clearRefinements = {
+      refine: jest.fn(),
+      canRefine: true
+    } as unknown as ClearRefinementsRenderState
+    mockUseClearRefinements.mockReturnValue(clearRefinements)
+
+    render(
+      <LanguageContinentRefinements
+        refinements={refinements}
+        languages={languages}
+      />
+    )
+
+    const clearAllButton = screen.queryByText('Clear All')
+    expect(clearAllButton).toBeInTheDocument()
+  })
+
+  it('should clear refinements when clear all button clicked', () => {
+    const refine = jest.fn()
+    const clearRefinements = {
+      refine,
+      canRefine: true
+    } as unknown as ClearRefinementsRenderState
+    mockUseClearRefinements.mockReturnValue(clearRefinements)
+
+    render(
+      <LanguageContinentRefinements
+        refinements={refinements}
+        languages={languages}
+      />
+    )
+
+    fireEvent.click(screen.getByText('Clear All'))
+    expect(refine).toHaveBeenCalled()
   })
 })

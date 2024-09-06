@@ -6,9 +6,11 @@ import Typography from '@mui/material/Typography'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
+import { useClearRefinements } from 'react-instantsearch'
 
 import ChevronDown from '@core/shared/ui/icons/ChevronDown'
 import ChevronUp from '@core/shared/ui/icons/ChevronUp'
+import X1 from '@core/shared/ui/icons/X1'
 
 import { RefinementGroup } from './RefinementGroup'
 
@@ -16,6 +18,7 @@ const StyledButton = styled(Button)(({ theme }) => ({
   borderRadius: 32,
   gap: 0,
   padding: '8px 20px 8px 20px',
+  margin: `0 ${theme.spacing(5)}`,
   border: `2px solid ${theme.palette.primary.main}`,
   color: theme.palette.primary.main,
   backgroundColor: theme.palette.background.paper
@@ -32,6 +35,8 @@ export function LanguageContinentRefinements({
 }: LanguageContinentRefinementsProps): ReactElement {
   const { t } = useTranslation('apps-watch')
   const theme = useTheme()
+  const { refine: clearRefinements, canRefine: canClearRefinements } =
+    useClearRefinements()
 
   const [selectedContinent, setSelectedContinent] = useState<string>()
   const { canToggleShowMore, isShowingMore, toggleShowMore } = refinements
@@ -86,8 +91,8 @@ export function LanguageContinentRefinements({
               }
             )}
           </Stack>
-          {canToggleShowMore && (
-            <Box display="flex" flexDirection="column" alignItems="center">
+          <Box sx={{ justifyContent: 'center', display: 'flex' }}>
+            {canToggleShowMore && (
               <StyledButton
                 size="small"
                 onClick={toggleShowMore}
@@ -96,8 +101,18 @@ export function LanguageContinentRefinements({
               >
                 {t(isShowingMore ? 'See Less' : 'See All')}
               </StyledButton>
-            </Box>
-          )}
+            )}
+            {canClearRefinements && (
+              <StyledButton
+                size="small"
+                onClick={clearRefinements}
+                disabled={!canClearRefinements}
+                endIcon={<X1 />}
+              >
+                {t('Clear All')}
+              </StyledButton>
+            )}
+          </Box>
         </>
       ) : (
         <Typography>
