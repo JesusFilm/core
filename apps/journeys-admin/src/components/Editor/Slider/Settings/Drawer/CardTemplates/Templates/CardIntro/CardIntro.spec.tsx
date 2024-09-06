@@ -69,6 +69,7 @@ describe('CardIntro', () => {
     parentOrder: 0,
     locked: false,
     nextBlockId: null,
+    slug: null,
     children: [card]
   }
   const cardIntroCreateMock: MockedResponse<

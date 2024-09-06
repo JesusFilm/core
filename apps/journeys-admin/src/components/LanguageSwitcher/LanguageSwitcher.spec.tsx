@@ -52,7 +52,7 @@ describe('LanguageSwitcher', () => {
     )
 
     expect(getByText('Change Language')).toBeInTheDocument()
-    fireEvent.mouseDown(getByRole('button', { name: 'English' }))
+    fireEvent.mouseDown(getByRole('combobox'))
     await waitFor(() => {
       fireEvent.click(getByText('Japanese'))
     })
@@ -71,7 +71,7 @@ describe('LanguageSwitcher', () => {
     )
 
     expect(getByText('Change Language')).toBeInTheDocument()
-    fireEvent.mouseDown(getByRole('button', { name: 'English' }))
+    fireEvent.mouseDown(getByRole('combobox'))
     await waitFor(() => fireEvent.click(getByText('Japanese')))
     expect(push).toHaveBeenCalledWith('/', '/', { locale: 'ja' })
     expect(

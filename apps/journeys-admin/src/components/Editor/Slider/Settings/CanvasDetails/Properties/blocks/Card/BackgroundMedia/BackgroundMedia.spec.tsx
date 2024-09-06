@@ -335,6 +335,7 @@ describe('BackgroundMedia', () => {
       locked: false,
       nextBlockId: null,
       parentOrder: 0,
+      slug: null,
       children: [{ ...card, coverBlockId: image.id, children: [image] }]
     }
     render(

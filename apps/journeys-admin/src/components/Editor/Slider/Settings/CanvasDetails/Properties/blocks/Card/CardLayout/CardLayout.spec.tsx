@@ -147,6 +147,7 @@ describe('CardLayout', () => {
       locked: false,
       nextBlockId: null,
       parentOrder: 0,
+      slug: null,
       children: [card]
     }
     render(

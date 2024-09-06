@@ -1144,6 +1144,10 @@ export type MeInput = {
   redirect?: InputMaybe<Scalars['String']['input']>;
 };
 
+export enum MediaRole {
+  Publisher = 'publisher'
+}
+
 export enum MessagePlatform {
   CheckBroken = 'checkBroken',
   CheckContained = 'checkContained',
@@ -3098,8 +3102,8 @@ export type User = {
   id: Scalars['ID']['output'];
   imageUrl?: Maybe<Scalars['String']['output']>;
   lastName?: Maybe<Scalars['String']['output']>;
+  mediaUserRoles: Array<MediaRole>;
   superAdmin?: Maybe<Scalars['Boolean']['output']>;
-  videoUserRoles: Array<VideoRole>;
 };
 
 /** These types are a subset provided by the @types/ua-parser-js library. */
@@ -3659,10 +3663,6 @@ export type VideoProgressEventCreateInput = {
   /** source of the video */
   value?: InputMaybe<VideoBlockSource>;
 };
-
-export enum VideoRole {
-  Publisher = 'publisher'
-}
 
 export type VideoSnippet = {
   __typename?: 'VideoSnippet';
