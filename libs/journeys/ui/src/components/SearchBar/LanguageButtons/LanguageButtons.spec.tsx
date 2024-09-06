@@ -1,5 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
+import noop from 'lodash/noop'
 
 import { languageRefinements } from '../data'
 
@@ -27,7 +28,13 @@ describe('LanguageButtons', () => {
   })
 
   it('should render the language button with default text', () => {
-    render(<LanguageButtons onClick={jest.fn()} refinements={refinements} />)
+    render(
+      <LanguageButtons
+        onClick={jest.fn()}
+        refinements={refinements}
+        handleRemoveLanguage={noop}
+      />
+    )
     expect(
       screen.getAllByRole('button', { name: 'Language' })[0]
     ).toBeInTheDocument()
@@ -36,7 +43,13 @@ describe('LanguageButtons', () => {
   it('should call onClick on language button click', () => {
     const onClick = jest.fn()
 
-    render(<LanguageButtons onClick={onClick} refinements={refinements} />)
+    render(
+      <LanguageButtons
+        onClick={onClick}
+        refinements={refinements}
+        handleRemoveLanguage={noop}
+      />
+    )
 
     const button = screen.getAllByRole('button', { name: 'Language' })[0]
     fireEvent.click(button)
@@ -48,6 +61,7 @@ describe('LanguageButtons', () => {
       <LanguageButtons
         onClick={jest.fn()}
         refinements={refinementsWithRefinedValue}
+        handleRemoveLanguage={noop}
       />
     )
     expect(
@@ -77,7 +91,11 @@ describe('LanguageButtons', () => {
     } as unknown as RefinementListRenderState
 
     render(
-      <LanguageButtons onClick={jest.fn()} refinements={selectedRefinements} />
+      <LanguageButtons
+        onClick={jest.fn()}
+        refinements={selectedRefinements}
+        handleRemoveLanguage={noop}
+      />
     )
 
     expect(screen.getByRole('button', { name: 'English' })).toBeInTheDocument()
