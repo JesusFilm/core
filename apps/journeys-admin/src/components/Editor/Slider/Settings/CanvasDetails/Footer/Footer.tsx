@@ -9,6 +9,8 @@ import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { Drawer } from '../../Drawer'
 import { WebsiteToggle } from '../WebsiteToggle'
 
+import { Menu } from './Menu'
+
 const Reactions = dynamic(
   async () =>
     await import(
@@ -67,6 +69,7 @@ export function Footer(): ReactElement {
       {journey?.website === true ? (
         <>
           <DisplayTitle />
+          <Menu />
           <Chat />
         </>
       ) : (
