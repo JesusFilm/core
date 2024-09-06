@@ -17,8 +17,12 @@ import { RefinementGroup } from './RefinementGroup'
 const StyledButton = styled(Button)(({ theme }) => ({
   borderRadius: 32,
   gap: 0,
-  padding: '8px 20px 8px 20px',
-  margin: `0 ${theme.spacing(5)}`,
+  [theme.breakpoints.up('md')]: {
+    padding: `${theme.spacing(2)} ${theme.spacing(5)}`
+  },
+  [theme.breakpoints.down('md')]: {
+    padding: `${theme.spacing(1)} ${theme.spacing(2)}`
+  },
   border: `2px solid ${theme.palette.primary.main}`,
   color: theme.palette.primary.main,
   backgroundColor: theme.palette.background.paper
@@ -92,26 +96,28 @@ export function LanguageContinentRefinements({
             )}
           </Stack>
           <Box sx={{ justifyContent: 'center', display: 'flex' }}>
-            {canToggleShowMore && (
-              <StyledButton
-                size="small"
-                onClick={toggleShowMore}
-                disabled={!canToggleShowMore}
-                endIcon={isShowingMore ? <ChevronUp /> : <ChevronDown />}
-              >
-                {t(isShowingMore ? 'See Less' : 'See All')}
-              </StyledButton>
-            )}
-            {canClearRefinements && (
-              <StyledButton
-                size="small"
-                onClick={clearRefinements}
-                disabled={!canClearRefinements}
-                endIcon={<X1 />}
-              >
-                {t('Clear All')}
-              </StyledButton>
-            )}
+            <Stack direction="row" spacing={3}>
+              {canToggleShowMore && (
+                <StyledButton
+                  size="small"
+                  onClick={toggleShowMore}
+                  disabled={!canToggleShowMore}
+                  endIcon={isShowingMore ? <ChevronUp /> : <ChevronDown />}
+                >
+                  {t(isShowingMore ? 'See Less' : 'See All')}
+                </StyledButton>
+              )}
+              {canClearRefinements && (
+                <StyledButton
+                  size="small"
+                  onClick={clearRefinements}
+                  disabled={!canClearRefinements}
+                  endIcon={<X1 />}
+                >
+                  {t('Clear All')}
+                </StyledButton>
+              )}
+            </Stack>
           </Box>
         </>
       ) : (
