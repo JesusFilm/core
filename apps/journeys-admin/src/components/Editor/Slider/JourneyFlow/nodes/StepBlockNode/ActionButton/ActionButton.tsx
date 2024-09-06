@@ -148,7 +148,7 @@ export function ActionButton({
             }}
             variant="body2"
           >
-            {title}
+            {stepId}
           </Typography>
           <Box
             className="stats-overlay__event-count"

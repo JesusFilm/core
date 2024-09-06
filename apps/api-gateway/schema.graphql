@@ -969,6 +969,8 @@ type Journey
   showMenu: Boolean
   showDisplayTitle: Boolean
   menuButtonIcon: JourneyMenuButtonIcon
+  menuStepBlockId: ID
+  menuStepBlock: Block
   userJourneys: [UserJourney!]
 }
 
@@ -1422,6 +1424,12 @@ input LinkActionInput
   gtmEventName: String
   url: String!
   target: String
+}
+
+enum MediaRole
+  @join__type(graph: MEDIA)
+{
+  publisher @join__enumValue(graph: MEDIA)
 }
 
 input MeInput
@@ -2951,7 +2959,7 @@ type User
   @join__type(graph: USERS, key: "id")
 {
   id: ID!
-  videoUserRoles: [VideoRole!]! @join__field(graph: MEDIA)
+  mediaUserRoles: [MediaRole!]! @join__field(graph: MEDIA)
   firstName: String! @join__field(graph: USERS)
   lastName: String @join__field(graph: USERS)
   email: String! @join__field(graph: USERS)
@@ -3634,12 +3642,6 @@ input VideoProgressEventCreateInput
 
   """source of the video"""
   value: VideoBlockSource
-}
-
-enum VideoRole
-  @join__type(graph: MEDIA)
-{
-  publisher @join__enumValue(graph: MEDIA)
 }
 
 input VideosFilter

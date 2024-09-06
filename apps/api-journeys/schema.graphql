@@ -400,6 +400,8 @@ type Journey
   showMenu: Boolean
   showDisplayTitle: Boolean
   menuButtonIcon: JourneyMenuButtonIcon
+  menuStepBlockId: ID
+  menuStepBlock: Block
   userJourneys: [UserJourney!]
 }
 

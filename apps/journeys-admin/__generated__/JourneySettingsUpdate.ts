@@ -39,6 +39,7 @@ export interface JourneySettingsUpdate_journeyUpdate {
    */
   displayTitle: string | null;
   menuButtonIcon: JourneyMenuButtonIcon | null;
+  menuStepBlockId: string | null;
 }
 
 export interface JourneySettingsUpdate {

@@ -66,6 +66,8 @@ type Journey @key(fields: "id") {
   showMenu: Boolean
   showDisplayTitle: Boolean
   menuButtonIcon: JourneyMenuButtonIcon
+  menuStepBlockId: ID
+  menuStepBlock: Block
 }
 
 enum IdType {
