@@ -10,7 +10,7 @@ import {
 type Continent = string
 type Language = string
 
-interface ContinentLanguagesState {
+interface SearchbarState {
   selectedLanguagesByContinent: Record<Continent, Language[]>
 }
 
@@ -26,12 +26,12 @@ interface RemoveLanguageAction {
   language: Language
 }
 
-type ContinentLanguagesAction = SelectLanguageAction | RemoveLanguageAction
+type SearchbarAction = SelectLanguageAction | RemoveLanguageAction
 
-const continentLanguagesReducer = (
-  state: ContinentLanguagesState,
-  action: ContinentLanguagesAction
-): ContinentLanguagesState => {
+const searchbarReducer = (
+  state: SearchbarState,
+  action: SearchbarAction
+): SearchbarState => {
   switch (action.type) {
     case 'SelectLanguage': {
       const { continent, language, isRefined } = action
@@ -71,9 +71,9 @@ const continentLanguagesReducer = (
   }
 }
 
-interface ContinentLanguagesContextType {
-  state: ContinentLanguagesState
-  dispatch: Dispatch<ContinentLanguagesAction>
+interface SearchbarContextType {
+  state: SearchbarState
+  dispatch: Dispatch<SearchbarAction>
   selectLanguage: (
     continent: Continent,
     language: Language,
@@ -82,20 +82,20 @@ interface ContinentLanguagesContextType {
   removeLanguage: (language: Language) => void
 }
 
-const ContinentLanguagesContext = createContext<
-  ContinentLanguagesContextType | undefined
->(undefined)
+const SearchbarContext = createContext<SearchbarContextType | undefined>(
+  undefined
+)
 
-interface ContinentLanguagesProviderProps {
+interface SearchbarProviderProps {
   children: ReactNode
-  initialState?: Partial<ContinentLanguagesState>
+  initialState?: Partial<SearchbarState>
 }
 
-export function ContinentLanguagesProvider({
+export function SearchbarProvider({
   children,
   initialState
-}: ContinentLanguagesProviderProps): ReactElement {
-  const [state, dispatch] = useReducer(continentLanguagesReducer, {
+}: SearchbarProviderProps): ReactElement {
+  const [state, dispatch] = useReducer(searchbarReducer, {
     selectedLanguagesByContinent: {},
     ...initialState
   })
@@ -113,7 +113,7 @@ export function ContinentLanguagesProvider({
   }
 
   return (
-    <ContinentLanguagesContext.Provider
+    <SearchbarContext.Provider
       value={{
         state,
         dispatch,
@@ -122,16 +122,14 @@ export function ContinentLanguagesProvider({
       }}
     >
       {children}
-    </ContinentLanguagesContext.Provider>
+    </SearchbarContext.Provider>
   )
 }
 
-export function useContinentLanguages(): ContinentLanguagesContextType {
-  const context = useContext(ContinentLanguagesContext)
+export function useSearchbar(): SearchbarContextType {
+  const context = useContext(SearchbarContext)
   if (context === undefined) {
-    throw new Error(
-      'useContinentLanguages must be used within a ContinentLanguagesProvider'
-    )
+    throw new Error('useSearchbar must be used within a SearchbarProvider')
   }
   return context
 }

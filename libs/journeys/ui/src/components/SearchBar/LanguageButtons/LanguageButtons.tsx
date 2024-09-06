@@ -6,7 +6,7 @@ import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refine
 import { useTranslation } from 'next-i18next'
 import { MouseEvent, ReactElement } from 'react'
 
-import { useContinentLanguages } from '../../../libs/ContinentLanguageProvider'
+import { useSearchbar } from '../../../libs/SearchbarProvider'
 
 import { LanguageButton } from './LanguageButton'
 
@@ -25,7 +25,7 @@ export function LanguageButtons({
   const { t } = useTranslation('apps-watch')
   const { items, refine } = refinements
 
-  const { removeLanguage } = useContinentLanguages()
+  const { removeLanguage } = useSearchbar()
 
   const refinedItems = items
     .filter((item) => item.isRefined)
