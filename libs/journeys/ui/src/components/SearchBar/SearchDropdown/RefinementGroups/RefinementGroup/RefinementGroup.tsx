@@ -18,13 +18,18 @@ export function RefinementGroup({
   refinement
 }: RefinementGroupProps): ReactElement {
   const {
-    selectLanguageContinent,
+    dispatch,
     state: { continentLanguages }
   } = useSearchbar()
   const { items, refine } = refinement
 
   function handleClick(language: string, isRefined: boolean): void {
-    selectLanguageContinent(title, language, isRefined)
+    dispatch({
+      type: 'SelectLanguageContinent',
+      continent: title,
+      language,
+      isSelected: isRefined
+    })
     refine(language)
   }
 

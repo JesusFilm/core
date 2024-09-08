@@ -1,3 +1,5 @@
+import filter from 'lodash/filter'
+import mapValues from 'lodash/mapValues'
 import {
   Dispatch,
   ReactElement,
@@ -29,9 +31,16 @@ interface RemoveLanguageContinentsAction {
   language: Language
 }
 
+interface SetDefaultLanguageContinentAction {
+  type: 'SetDefaultLanguageContinent'
+  continents: Record<Continent, Language[]>
+  refinedItems: string[]
+}
+
 type SearchbarAction =
   | SelectLanguageContinentAction
   | RemoveLanguageContinentsAction
+  | SetDefaultLanguageContinentAction
 
 const searchbarReducer = (
   state: SearchbarState,
@@ -52,15 +61,43 @@ const searchbarReducer = (
         }
       }
     }
+    case 'SetDefaultLanguageContinent': {
+      const { continents, refinedItems } = action
+
+      const updatedContinentLanguages = refinedItems.reduce(
+        (acc, item) => {
+          const continent = Object.keys(continents).find((continent) =>
+            continents[continent].includes(item)
+          )
+
+          if (continent != null) {
+            if (!(continent in acc)) {
+              acc[continent] = []
+            }
+            if (!acc[continent].includes(item)) {
+              acc[continent] = [...acc[continent], item]
+            }
+          }
+
+          return acc
+        },
+        { ...state.continentLanguages }
+      )
+
+      if (Object.keys(updatedContinentLanguages).length > 0) {
+        return {
+          ...state,
+          continentLanguages: updatedContinentLanguages
+        }
+      }
+
+      return state
+    }
     case 'RemoveLanguageContinents': {
       const { language } = action
-      const languageEntries = Object.entries(state.continentLanguages)
-      const updatedLanguages = languageEntries.reduce(
-        (acc, [continent, languages]) => ({
-          ...acc,
-          [continent]: languages.filter((lang) => lang !== language)
-        }),
-        {}
+      const updatedLanguages = mapValues(
+        state.continentLanguages,
+        (languages) => filter(languages, (lang) => lang !== language)
       )
       return {
         ...state,
@@ -75,18 +112,6 @@ const searchbarReducer = (
 interface SearchbarContextType {
   state: SearchbarState
   dispatch: Dispatch<SearchbarAction>
-  /**
-   * Select a language for a continent
-   */
-  selectLanguageContinent: (
-    continent: Continent,
-    language: Language,
-    isSelected: boolean
-  ) => void
-  /**
-   * Remove a language from all continents
-   */
-  removeLanguageContinents: (language: Language) => void
 }
 
 const SearchbarContext = createContext<SearchbarContextType | undefined>(
@@ -107,30 +132,11 @@ export function SearchbarProvider({
     ...initialState
   })
 
-  function selectLanguageContinent(
-    continent: Continent,
-    language: Language,
-    isSelected: boolean
-  ): void {
-    dispatch({
-      type: 'SelectLanguageContinent',
-      continent,
-      language,
-      isSelected
-    })
-  }
-
-  function removeLanguageContinents(language: Language): void {
-    dispatch({ type: 'RemoveLanguageContinents', language })
-  }
-
   return (
     <SearchbarContext.Provider
       value={{
         state,
-        dispatch,
-        selectLanguageContinent,
-        removeLanguageContinents
+        dispatch
       }}
     >
       {children}
