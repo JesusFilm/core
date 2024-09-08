@@ -315,6 +315,7 @@ export class JourneyResolver {
     const journey = await this.prismaService.journey.findUnique({
       where: filter
     })
+    console.log({ journey, id, idType, filter })
     if (journey == null)
       throw new GraphQLError('journey not found', {
         extensions: { code: 'NOT_FOUND' }

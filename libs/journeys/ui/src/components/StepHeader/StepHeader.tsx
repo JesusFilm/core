@@ -12,6 +12,7 @@ import Home3 from '@core/shared/ui/icons/Home3'
 import Home4 from '@core/shared/ui/icons/Home4'
 import Menu1 from '@core/shared/ui/icons/Menu1'
 import More from '@core/shared/ui/icons/More'
+import X2 from '@core/shared/ui/icons/X2'
 
 import { JourneyMenuButtonIcon } from '../../../__generated__/globalTypes'
 import { useJourney } from '../../libs/JourneyProvider'
@@ -19,9 +20,27 @@ import { getJourneyRTL } from '../../libs/rtl'
 
 import { InformationButton } from './InformationButton'
 import { PaginationBullets } from './PaginationBullets'
+import { useBlocks } from '../../libs/block'
+import { transformer } from '../../libs/transformer'
 
 function Menu(): ReactElement {
   const { journey, variant } = useJourney()
+  const { setTreeBlocks, blockHistory, showHeaderFooter } = useBlocks()
+
+  const router = useRouter()
+
+  const blocks = transformer(journey?.blocks ?? [])
+  const stepSlug = router.query.stepSlug as string
+
+  const stepBlock = blocks.find(
+    (block) =>
+      block.__typename === 'StepBlock' &&
+      (block.slug === stepSlug || block.id === stepSlug)
+  )
+
+  const isMenu = stepBlock?.id === journey?.menuStepBlockId
+
+  console.log({ isMenu })
 
   const menuIcons = {
     [JourneyMenuButtonIcon.chevronDown]: <ChevronDown />,
@@ -38,14 +57,21 @@ function Menu(): ReactElement {
   let Icon = variant === 'admin' ? menuIcons[JourneyMenuButtonIcon.menu1] : null
 
   if (journey != null && journey.menuButtonIcon != null) {
-    Icon = menuIcons[journey.menuButtonIcon]
+    if (isMenu) {
+      Icon = <X2 />
+    } else {
+      Icon = menuIcons[journey.menuButtonIcon]
+    }
   }
 
-  const router = useRouter()
   const handleClick = (): void => {
     alert('clicked menu')
     if (journey != null) {
-      void router.push(`/${journey.id}/${journey?.menuStepBlockId}`)
+      if (isMenu) {
+        void router.back()
+      } else {
+        void router.push(`/${journey?.slug}/${journey?.menuStepBlock.slug}`)
+      }
     }
   }
 

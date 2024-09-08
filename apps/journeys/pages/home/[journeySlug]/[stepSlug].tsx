@@ -115,6 +115,7 @@ export const getStaticProps: GetStaticProps<StepPageProps> = async (
         idType: IdType.slug
       }
     })
+    console.log(data)
     const { rtl, locale } = getJourneyRTL(data.journey)
     return {
       props: {

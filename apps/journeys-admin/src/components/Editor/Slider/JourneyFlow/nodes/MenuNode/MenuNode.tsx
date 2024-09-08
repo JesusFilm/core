@@ -1,8 +1,8 @@
 import Fade from '@mui/material/Fade'
 import Stack from '@mui/material/Stack'
 import { alpha } from '@mui/material/styles'
-import { ReactElement, ReactElement, useMemo } from 'react'
-import { NodeProps, NodeProps } from 'reactflow'
+import { ReactElement, useMemo } from 'react'
+import { NodeProps } from 'reactflow'
 
 import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
 import { filterActionBlocks } from '@core/journeys/ui/filterActionBlocks'
