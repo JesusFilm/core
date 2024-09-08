@@ -18,7 +18,7 @@ import Globe1 from '@core/shared/ui/icons/Globe1'
 import Search1 from '@core/shared/ui/icons/Search1'
 import { TabPanel } from '@core/shared/ui/TabPanel'
 
-import { useSearchbar } from '../../../libs/SearchbarProvider'
+import { useSearchBar } from '../../../libs/SearchbarProvider'
 import { useLanguagesContinentsQuery } from '../../../libs/useLanguagesContinentsQuery'
 import { useSortLanguageContinents } from '../../../libs/useSortLanguageContinents'
 
@@ -64,7 +64,7 @@ export function SearchbarDropdown({
   const {
     dispatch,
     state: { continentLanguages }
-  } = useSearchbar()
+  } = useSearchBar()
 
   const { data } = useLanguagesContinentsQuery()
   const languages = useSortLanguageContinents({

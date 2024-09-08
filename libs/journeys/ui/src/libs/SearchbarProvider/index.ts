@@ -1,1 +1,1 @@
-export { useSearchbar, SearchbarProvider } from './SearchbarProvider'
+export { useSearchBar, SearchbarProvider } from './SearchbarProvider'

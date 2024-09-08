@@ -12,7 +12,7 @@ import {
 type Continent = string
 type Language = string
 
-interface SearchbarState {
+interface SearchBarState {
   /**
    * selected languages sorted by continent
    */
@@ -43,9 +43,9 @@ type SearchbarAction =
   | RemoveLanguageContinentsAction
 
 const searchbarReducer = (
-  state: SearchbarState,
+  state: SearchBarState,
   action: SearchbarAction
-): SearchbarState => {
+): SearchBarState => {
   switch (action.type) {
     case 'SelectLanguageContinent': {
       const { continent, language, isSelected } = action
@@ -110,7 +110,7 @@ const searchbarReducer = (
 }
 
 interface SearchbarContextType {
-  state: SearchbarState
+  state: SearchBarState
   dispatch: Dispatch<SearchbarAction>
 }
 
@@ -120,7 +120,7 @@ const SearchbarContext = createContext<SearchbarContextType | undefined>(
 
 interface SearchbarProviderProps {
   children: ReactNode
-  initialState?: Partial<SearchbarState>
+  initialState?: Partial<SearchBarState>
 }
 
 export function SearchbarProvider({
@@ -144,10 +144,10 @@ export function SearchbarProvider({
   )
 }
 
-export function useSearchbar(): SearchbarContextType {
+export function useSearchBar(): SearchbarContextType {
   const context = useContext(SearchbarContext)
   if (context === undefined) {
-    throw new Error('useSearchbar must be used within a SearchbarProvider')
+    throw new Error('useSearchBar must be used within a SearchbarProvider')
   }
   return context
 }

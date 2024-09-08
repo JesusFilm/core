@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { type ReactElement } from 'react'
 
-import { useSearchbar } from '../../../../../libs/SearchbarProvider'
+import { useSearchBar } from '../../../../../libs/SearchbarProvider'
 
 interface RefinementGroupProps {
   title: string
@@ -20,7 +20,7 @@ export function RefinementGroup({
   const {
     dispatch,
     state: { continentLanguages }
-  } = useSearchbar()
+  } = useSearchBar()
   const { items, refine } = refinement
 
   function handleClick(language: string, isRefined: boolean): void {
