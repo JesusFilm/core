@@ -17,26 +17,28 @@ interface SearchbarState {
   continentLanguages: Record<Continent, Language[]>
 }
 
-interface SelectLanguageAction {
-  type: 'SelectLanguage'
+interface SelectLanguageContinentAction {
+  type: 'SelectLanguageContinent'
   continent: Continent
   language: Language
   isSelected: boolean
 }
 
-interface RemoveLanguageAction {
-  type: 'RemoveLanguage'
+interface RemoveLanguageContinentsAction {
+  type: 'RemoveLanguageContinents'
   language: Language
 }
 
-type SearchbarAction = SelectLanguageAction | RemoveLanguageAction
+type SearchbarAction =
+  | SelectLanguageContinentAction
+  | RemoveLanguageContinentsAction
 
 const searchbarReducer = (
   state: SearchbarState,
   action: SearchbarAction
 ): SearchbarState => {
   switch (action.type) {
-    case 'SelectLanguage': {
+    case 'SelectLanguageContinent': {
       const { continent, language, isSelected } = action
       const currentLanguages = state.continentLanguages[continent] ?? []
       const updatedLanguages = isSelected
@@ -50,7 +52,7 @@ const searchbarReducer = (
         }
       }
     }
-    case 'RemoveLanguage': {
+    case 'RemoveLanguageContinents': {
       const { language } = action
       const languageEntries = Object.entries(state.continentLanguages)
       const updatedLanguages = languageEntries.reduce(
@@ -76,7 +78,7 @@ interface SearchbarContextType {
   /**
    * Select a language for a continent
    */
-  selectLanguage: (
+  selectLanguageContinent: (
     continent: Continent,
     language: Language,
     isSelected: boolean
@@ -84,7 +86,7 @@ interface SearchbarContextType {
   /**
    * Remove a language from all continents
    */
-  removeLanguage: (language: Language) => void
+  removeLanguageContinents: (language: Language) => void
 }
 
 const SearchbarContext = createContext<SearchbarContextType | undefined>(
@@ -105,16 +107,21 @@ export function SearchbarProvider({
     ...initialState
   })
 
-  function selectLanguage(
+  function selectLanguageContinent(
     continent: Continent,
     language: Language,
     isSelected: boolean
   ): void {
-    dispatch({ type: 'SelectLanguage', continent, language, isSelected })
+    dispatch({
+      type: 'SelectLanguageContinent',
+      continent,
+      language,
+      isSelected
+    })
   }
 
-  function removeLanguage(language: Language): void {
-    dispatch({ type: 'RemoveLanguage', language })
+  function removeLanguageContinents(language: Language): void {
+    dispatch({ type: 'RemoveLanguageContinents', language })
   }
 
   return (
@@ -122,8 +129,8 @@ export function SearchbarProvider({
       value={{
         state,
         dispatch,
-        selectLanguage,
-        removeLanguage
+        selectLanguageContinent,
+        removeLanguageContinents
       }}
     >
       {children}

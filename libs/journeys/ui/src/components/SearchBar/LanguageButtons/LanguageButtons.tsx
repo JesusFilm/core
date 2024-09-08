@@ -25,7 +25,7 @@ export function LanguageButtons({
   const { t } = useTranslation('apps-watch')
   const { items, refine } = refinements
 
-  const { removeLanguage } = useSearchbar()
+  const { removeLanguageContinents } = useSearchbar()
 
   const refinedItems = items
     .filter((item) => item.isRefined)
@@ -81,7 +81,7 @@ export function LanguageButtons({
               handleClick={(event: MouseEvent<HTMLButtonElement>) => {
                 event.stopPropagation()
                 refine(selectedLanguage)
-                removeLanguage(selectedLanguage)
+                removeLanguageContinents(selectedLanguage)
               }}
             />
           ))}
