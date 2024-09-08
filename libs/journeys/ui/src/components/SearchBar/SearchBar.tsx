@@ -5,6 +5,7 @@ import InputAdornment from '@mui/material/InputAdornment'
 import { styled, useTheme } from '@mui/material/styles'
 import TextField, { TextFieldProps } from '@mui/material/TextField'
 import { Formik } from 'formik'
+import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next'
 import { type ReactElement, useRef, useState } from 'react'
 import { useRefinementList, useSearchBox } from 'react-instantsearch'
@@ -15,7 +16,14 @@ import { SubmitListener } from '@core/shared/ui/SubmitListener'
 import { SearchbarProvider } from '../../libs/SearchbarProvider'
 
 import { LanguageButtons } from './LanguageButtons'
-import { SearchbarDropdown } from './SearchDropdown'
+
+const DynamicSearchbarDropdown = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "SearchbarDropdown" */
+      './SearchDropdown'
+    ).then((mod) => mod.SearchbarDropdown)
+)
 
 /* Styles below used to fake a gradient border because the 
 css attributes border-radius and border-image-source are not compatible */
@@ -157,14 +165,16 @@ export function SearchBar({
               />
             </Box>
           </Box>
-          <SearchbarDropdown
-            open={open}
-            refinements={refinements}
-            id={open ? 'simple-popper' : undefined}
-            anchorEl={anchorEl}
-            tabIndex={tabValue}
-            handleTabValueChange={setTabValue}
-          />
+          {open && (
+            <DynamicSearchbarDropdown
+              open={open}
+              refinements={refinements}
+              id={open ? 'simple-popper' : undefined}
+              anchorEl={anchorEl}
+              tabIndex={tabValue}
+              handleTabValueChange={setTabValue}
+            />
+          )}
         </Box>
       </ClickAwayListener>
     </SearchbarProvider>
