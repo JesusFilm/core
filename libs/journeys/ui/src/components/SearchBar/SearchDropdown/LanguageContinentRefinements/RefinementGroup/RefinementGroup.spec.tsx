@@ -1,17 +1,34 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
-
+import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
+import { useSearchBox } from 'react-instantsearch'
 import '../../../../../../test/i18n'
+
 import { languageRefinements } from '../../../data'
 
 import { RefinementGroup } from './RefinementGroup'
 
+jest.mock('react-instantsearch')
+const mockUseSearchBox = useSearchBox as jest.MockedFunction<
+  typeof useSearchBox
+>
+
 describe('RefinementGroup', () => {
   const refine = jest.fn()
+
   const useRefinementList = {
     items: languageRefinements,
     refine
   } as unknown as RefinementListRenderState
+
+  const useSearchBox = {
+    query: 'Hello World!',
+    refine
+  } as unknown as SearchBoxRenderState
+
+  beforeEach(() => {
+    mockUseSearchBox.mockReturnValue(useSearchBox)
+  })
 
   it('should have languages header', () => {
     render(

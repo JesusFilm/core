@@ -22,8 +22,7 @@ describe('Suggestions', () => {
   } as unknown as RefinementListRenderState
 
   const searchBox = {
-    query: 'Hello World!',
-    refine
+    query: 'Jesus'
   } as unknown as SearchBoxRenderState
 
   beforeEach(() => {
@@ -37,25 +36,18 @@ describe('Suggestions', () => {
     expect(screen.getByText('- in English and Spanish')).toBeInTheDocument()
   })
 
-  it('should refine on click of first default query', () => {
+  it('should refine language on click of first suggestion', () => {
     render(<Suggestions refinements={refinements} />)
     const firstSuggestion = screen.getByText('- in English')
     fireEvent.click(firstSuggestion)
-    expect(refine).toHaveBeenCalledTimes(2)
+    expect(refine).toHaveBeenCalled()
   })
 
-  it('should refine on click of second default query', () => {
+  it('should refine languages on click of second suggestion', () => {
     render(<Suggestions refinements={refinements} />)
     const secondSuggestion = screen.getByText('- in English and Spanish')
     fireEvent.click(secondSuggestion)
-    expect(refine).toHaveBeenCalledTimes(3)
-  })
-
-  it('should refine query on suggestion click', () => {
-    render(<Suggestions refinements={refinements} />)
-    const firstSuggestion = screen.getByText('- in English')
-    fireEvent.click(firstSuggestion)
-    expect(refine).toHaveBeenCalledWith('Jesus')
+    expect(refine).toHaveBeenCalledTimes(2)
   })
 
   it('should refine language on suggestion click', () => {
@@ -92,5 +84,14 @@ describe('Suggestions', () => {
     const firstSuggestion = screen.getByText('- in English')
     fireEvent.click(firstSuggestion)
     expect(refine).not.toHaveBeenCalledWith('English')
+  })
+
+  it('should show suggestions using query string', () => {
+    mockUseSearchBox.mockReturnValue({
+      query: 'Discipleship'
+    } as unknown as SearchBoxRenderState)
+
+    render(<Suggestions refinements={refinements} />)
+    expect(screen.getAllByText('Discipleship')).toHaveLength(2)
   })
 })

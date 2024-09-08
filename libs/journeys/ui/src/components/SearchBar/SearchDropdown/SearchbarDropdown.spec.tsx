@@ -210,9 +210,9 @@ describe('SearchbarDropdown', () => {
       </MockedProvider>
     )
     await waitFor(() => {
-      fireEvent.click(screen.getByText('English'))
+      fireEvent.click(screen.getByText('Cantonese'))
     })
-    expect(refine).toHaveBeenCalled()
+    expect(refine).toHaveBeenCalledWith('Cantonese')
   })
 
   it('should refine query when suggestion clicked', async () => {
@@ -220,7 +220,7 @@ describe('SearchbarDropdown', () => {
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
         <SearchbarDropdown
           open
-          refinements={emptyRefinements}
+          refinements={refinements}
           tabIndex={0}
           handleTabValueChange={noop}
         />
@@ -231,6 +231,6 @@ describe('SearchbarDropdown', () => {
     })
     const firstSuggestion = screen.getByText('- in English')
     fireEvent.click(firstSuggestion)
-    expect(refine).toHaveBeenCalledWith('Jesus')
+    expect(refine).toHaveBeenCalledWith('English')
   })
 })
