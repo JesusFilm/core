@@ -26,21 +26,21 @@ interface SelectLanguageContinentAction {
   isSelected: boolean
 }
 
-interface RemoveLanguageContinentsAction {
-  type: 'RemoveLanguageContinents'
-  language: Language
-}
-
 interface SetDefaultLanguageContinentAction {
   type: 'SetDefaultLanguageContinent'
   continents: Record<Continent, Language[]>
   refinedItems: string[]
 }
 
+interface RemoveLanguageContinentsAction {
+  type: 'RemoveLanguageContinents'
+  language: Language
+}
+
 type SearchbarAction =
   | SelectLanguageContinentAction
-  | RemoveLanguageContinentsAction
   | SetDefaultLanguageContinentAction
+  | RemoveLanguageContinentsAction
 
 const searchbarReducer = (
   state: SearchbarState,
