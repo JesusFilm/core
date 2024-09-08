@@ -22,6 +22,17 @@ describe('RefinementGroup', () => {
     refine
   } as unknown as RefinementListRenderState
 
+  const useRefinementListWithRefinedValue = {
+    items: [
+      {
+        label: 'Cantonese',
+        value: 'Cantonese',
+        isRefined: true
+      }
+    ],
+    refine
+  } as unknown as RefinementListRenderState
+
   const useSearchBox = {
     query: 'Hello World!',
     refine
@@ -97,17 +108,6 @@ describe('RefinementGroup', () => {
   })
 
   it('should check the checkbox if title, continent, and refinement match', () => {
-    const useRefinementListWithRefinedValue = {
-      items: [
-        {
-          label: 'Cantonese',
-          value: 'Cantonese',
-          isRefined: true
-        }
-      ],
-      refine
-    } as unknown as RefinementListRenderState
-
     render(
       <RefinementGroup
         title="Asia"
@@ -120,17 +120,6 @@ describe('RefinementGroup', () => {
   })
 
   it.skip('should disable the checkbox if title and continent match but refinement does not', () => {
-    const useRefinementListWithRefinedValue = {
-      items: [
-        {
-          label: 'Cantonese',
-          value: 'Cantonese',
-          isRefined: true
-        }
-      ],
-      refine
-    } as unknown as RefinementListRenderState
-
     render(
       <RefinementGroup
         title="Asia"
@@ -161,17 +150,6 @@ describe('RefinementGroup', () => {
   })
 
   it('should not refine query when no language in query', () => {
-    const useRefinementListWithRefinedValue = {
-      items: [
-        {
-          label: 'Russian',
-          value: 'Russian',
-          isRefined: true
-        }
-      ],
-      refine
-    } as unknown as RefinementListRenderState
-
     const refineQuery = jest.fn()
     const useSearchBox = {
       query: 'Hello World!',
@@ -191,17 +169,6 @@ describe('RefinementGroup', () => {
   })
 
   it('should not refine query when refinement being unselected', () => {
-    const useRefinementListWithRefinedValue = {
-      items: [
-        {
-          label: 'Russian',
-          value: 'Russian',
-          isRefined: true
-        }
-      ],
-      refine
-    } as unknown as RefinementListRenderState
-
     const refineQuery = jest.fn()
     const useSearchBox = {
       query: 'Hello World!',
@@ -217,7 +184,7 @@ describe('RefinementGroup', () => {
         handleSelectedContinent={jest.fn()}
       />
     )
-    fireEvent.click(screen.getByText('Russian'))
+    fireEvent.click(screen.getByText('Cantonese'))
     expect(refineQuery).not.toHaveBeenCalled()
   })
 
