@@ -3205,6 +3205,9 @@ export type Video = {
   imageAlt: Array<VideoImageAlt>;
   keywords: Array<Keyword>;
   label: VideoLabel;
+  mobileCinematicHigh?: Maybe<Scalars['String']['output']>;
+  mobileCinematicLow?: Maybe<Scalars['String']['output']>;
+  mobileCinematicVeryLow?: Maybe<Scalars['String']['output']>;
   noIndex?: Maybe<Scalars['Boolean']['output']>;
   primaryLanguageId: Scalars['ID']['output'];
   /** slug is a permanent link to the video. */
@@ -3212,11 +3215,14 @@ export type Video = {
   snippet: Array<VideoSnippet>;
   studyQuestions: Array<VideoStudyQuestion>;
   subtitles: Array<VideoSubtitle>;
+  thumbnail?: Maybe<Scalars['String']['output']>;
   title: Array<VideoTitle>;
   variant?: Maybe<VideoVariant>;
   variantLanguages: Array<Language>;
   variantLanguagesCount: Scalars['Int']['output'];
   variantLanguagesWithSlug: Array<LanguageWithSlug>;
+  variants: Array<VideoVariant>;
+  videoStill?: Maybe<Scalars['String']['output']>;
 };
 
 
@@ -3751,11 +3757,13 @@ export type VideoTriggerBlock = Block & {
 
 export type VideoVariant = {
   __typename?: 'VideoVariant';
+  dash?: Maybe<Scalars['String']['output']>;
   downloads: Array<VideoVariantDownload>;
   duration: Scalars['Int']['output'];
   hls?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   language: Language;
+  share?: Maybe<Scalars['String']['output']>;
   /** slug is a permanent link to the video variant. */
   slug: Scalars['String']['output'];
   subtitle: Array<VideoSubtitle>;
@@ -3770,10 +3778,12 @@ export type VideoVariantSubtitleArgs = {
 
 export type VideoVariantDownload = {
   __typename?: 'VideoVariantDownload';
+  height: Scalars['Int']['output'];
   id: Scalars['ID']['output'];
   quality: VideoVariantDownloadQuality;
   size: Scalars['Float']['output'];
   url: Scalars['String']['output'];
+  width: Scalars['Int']['output'];
 };
 
 export enum VideoVariantDownloadQuality {
