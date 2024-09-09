@@ -36,6 +36,8 @@ const GET_VIDEO_VARIANT = graphql(`
           srtSrc
         }
         downloads {
+          height
+          width
           quality
           size
           url
@@ -82,9 +84,8 @@ export async function GET(
         ? undefined
         : {
             url: downloadLow.url,
-            // TODO: handle size
-            height: 180,
-            width: 320,
+            height: downloadLow.height,
+            width: downloadLow.width,
             sizeInBytes: downloadLow.size
           },
     high:
@@ -92,9 +93,8 @@ export async function GET(
         ? undefined
         : {
             url: downloadHigh.url,
-            // TODO: handle size
-            height: 180,
-            width: 320,
+            height: downloadHigh.height,
+            width: downloadHigh.width,
             sizeInBytes: downloadHigh.size
           }
   }

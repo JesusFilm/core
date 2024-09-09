@@ -52,6 +52,8 @@ const GET_VIDEOS = graphql(`
           bcp47
         }
         downloads {
+          height
+          width
           quality
           size
         }

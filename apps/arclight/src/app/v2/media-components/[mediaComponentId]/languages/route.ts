@@ -32,6 +32,8 @@ const GET_VIDEO_LANGUAGES = graphql(`
           value
         }
         downloads {
+          height
+          width
           size
           quality
           url
