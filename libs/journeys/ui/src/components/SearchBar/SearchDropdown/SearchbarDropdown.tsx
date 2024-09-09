@@ -17,6 +17,22 @@ import { useSortLanguageContinents } from '../../../libs/useSortLanguageContinen
 import { LanguageContinentRefinements } from './LanguageContinentRefinements'
 import { Suggestions } from './Suggestions'
 
+interface LocalTabsHeaderProps {
+  label: string
+  count?: number
+}
+
+function LocalTabsHeader({ label, count }: LocalTabsHeaderProps): ReactElement {
+  return (
+    <div className="tab-label">
+      <Box display="flex" flexDirection="row">
+        <span>{label}</span>
+        {count != null && count > 0 && <Box ml={3}>{`(${count})`}</Box>}
+      </Box>
+    </div>
+  )
+}
+
 const StyledTab = styled(Tab)(({ theme }) => ({
   minHeight: '50px',
   fontSize: '14px !important',
@@ -97,20 +113,16 @@ export function SearchbarDropdown({
             <StyledTab
               icon={<Search1 />}
               iconPosition="start"
-              label={
-                <span className="tab-label">{t('Search Suggestions')}</span>
-              }
+              label={<LocalTabsHeader label={t('Search Suggestions')} />}
             />
             <StyledTab
               icon={<Globe1 />}
               iconPosition="start"
               label={
-                <div className="tab-label">
-                  <Box display="flex" flexDirection="row">
-                    <span className="tab-label">{t('Languages')}</span>
-                    <Box ml={3}>{`(${refinements.items.length})`}</Box>
-                  </Box>
-                </div>
+                <LocalTabsHeader
+                  label={t('Languages')}
+                  count={refinements.items.length}
+                />
               }
             />
           </Tabs>
