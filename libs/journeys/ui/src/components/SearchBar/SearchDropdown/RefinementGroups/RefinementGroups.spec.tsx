@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 
+import { SearchbarProvider } from '../../../../libs/SearchbarProvider'
 import { languageRefinements } from '../../data'
 
 import { RefinementGroups } from './RefinementGroups'
@@ -21,7 +22,11 @@ describe('RefinementGroups', () => {
   }
 
   it('should render the correct continent headers', () => {
-    render(<RefinementGroups refinements={refinements} languages={languages} />)
+    render(
+      <SearchbarProvider>
+        <RefinementGroups refinements={refinements} languages={languages} />
+      </SearchbarProvider>
+    )
     expect(screen.getByText('Asia')).toBeInTheDocument()
     expect(screen.getByText('Europe')).toBeInTheDocument()
     expect(screen.getByText('North America')).toBeInTheDocument()
@@ -29,7 +34,11 @@ describe('RefinementGroups', () => {
   })
 
   it('should render the correct languages', () => {
-    render(<RefinementGroups refinements={refinements} languages={languages} />)
+    render(
+      <SearchbarProvider>
+        <RefinementGroups refinements={refinements} languages={languages} />
+      </SearchbarProvider>
+    )
     expect(screen.getByText('English')).toBeInTheDocument()
     expect(screen.getByText('Cantonese')).toBeInTheDocument()
     expect(screen.getByText('Spanish, Castilian')).toBeInTheDocument()
@@ -63,10 +72,12 @@ describe('RefinementGroups', () => {
       toggleShowMore: jest.fn()
     }
     render(
-      <RefinementGroups
-        refinements={showMoreRefinements}
-        languages={languages}
-      />
+      <SearchbarProvider>
+        <RefinementGroups
+          refinements={showMoreRefinements}
+          languages={languages}
+        />
+      </SearchbarProvider>
     )
     expect(screen.getByText('See All')).toBeInTheDocument()
   })
@@ -79,10 +90,12 @@ describe('RefinementGroups', () => {
       toggleShowMore: jest.fn()
     }
     render(
-      <RefinementGroups
-        refinements={showMoreRefinements}
-        languages={languages}
-      />
+      <SearchbarProvider>
+        <RefinementGroups
+          refinements={showMoreRefinements}
+          languages={languages}
+        />
+      </SearchbarProvider>
     )
     expect(screen.getByText('See Less')).toBeInTheDocument()
   })
@@ -96,10 +109,12 @@ describe('RefinementGroups', () => {
       toggleShowMore
     }
     render(
-      <RefinementGroups
-        refinements={showMoreRefinements}
-        languages={languages}
-      />
+      <SearchbarProvider>
+        <RefinementGroups
+          refinements={showMoreRefinements}
+          languages={languages}
+        />
+      </SearchbarProvider>
     )
     const seeAllButton = screen.getByText('See All')
     fireEvent.click(seeAllButton)

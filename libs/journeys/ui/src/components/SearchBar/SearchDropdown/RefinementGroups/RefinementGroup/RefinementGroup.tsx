@@ -23,12 +23,12 @@ export function RefinementGroup({
   } = useSearchBar()
   const { items, refine } = refinement
 
-  function handleClick(language: string, isRefined: boolean): void {
+  function handleClick(language: string, isSelected: boolean): void {
     dispatch({
       type: 'SelectLanguageContinent',
       continent: title,
       language,
-      isSelected: isRefined
+      isSelected
     })
     refine(language)
   }

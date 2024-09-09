@@ -93,12 +93,4 @@ describe('Suggestions', () => {
     fireEvent.click(firstSuggestion)
     expect(refine).not.toHaveBeenCalledWith('English')
   })
-
-  it('should call handleLanguageSelect on suggestions click', () => {
-    const handleLanguagesSelect = jest.fn()
-    render(<Suggestions refinements={refinements} />)
-    const firstSuggestion = screen.getByText('- in English')
-    fireEvent.click(firstSuggestion)
-    expect(handleLanguagesSelect).toHaveBeenCalledTimes(1)
-  })
 })

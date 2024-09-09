@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 
+import { SearchbarProvider } from '../../../libs/SearchbarProvider'
 import { languageRefinements } from '../data'
 
 import { LanguageButtons } from './LanguageButtons'
@@ -27,7 +28,11 @@ describe('LanguageButtons', () => {
   })
 
   it('should render the language button with default text', () => {
-    render(<LanguageButtons onClick={jest.fn()} refinements={refinements} />)
+    render(
+      <SearchbarProvider>
+        <LanguageButtons onClick={jest.fn()} refinements={refinements} />
+      </SearchbarProvider>
+    )
     expect(
       screen.getAllByRole('button', { name: 'Language' })[0]
     ).toBeInTheDocument()
@@ -36,7 +41,11 @@ describe('LanguageButtons', () => {
   it('should call onClick on language button click', () => {
     const onClick = jest.fn()
 
-    render(<LanguageButtons onClick={onClick} refinements={refinements} />)
+    render(
+      <SearchbarProvider>
+        <LanguageButtons onClick={onClick} refinements={refinements} />
+      </SearchbarProvider>
+    )
 
     const button = screen.getAllByRole('button', { name: 'Language' })[0]
     fireEvent.click(button)
@@ -45,10 +54,12 @@ describe('LanguageButtons', () => {
 
   it('should render the button with a selected language', () => {
     render(
-      <LanguageButtons
-        onClick={jest.fn()}
-        refinements={refinementsWithRefinedValue}
-      />
+      <SearchbarProvider>
+        <LanguageButtons
+          onClick={jest.fn()}
+          refinements={refinementsWithRefinedValue}
+        />
+      </SearchbarProvider>
     )
     expect(
       screen.getAllByRole('button', { name: 'English' })[0]
@@ -77,7 +88,12 @@ describe('LanguageButtons', () => {
     } as unknown as RefinementListRenderState
 
     render(
-      <LanguageButtons onClick={jest.fn()} refinements={selectedRefinements} />
+      <SearchbarProvider>
+        <LanguageButtons
+          onClick={jest.fn()}
+          refinements={selectedRefinements}
+        />
+      </SearchbarProvider>
     )
 
     expect(screen.getByRole('button', { name: 'English' })).toBeInTheDocument()
