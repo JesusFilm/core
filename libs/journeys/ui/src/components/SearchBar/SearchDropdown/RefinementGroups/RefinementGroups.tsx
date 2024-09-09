@@ -5,7 +5,7 @@ import { styled, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
 
 import ChevronDown from '@core/shared/ui/icons/ChevronDown'
 import ChevronUp from '@core/shared/ui/icons/ChevronUp'
@@ -21,19 +21,18 @@ const StyledButton = styled(Button)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper
 }))
 
-interface LanguageContinentRefinementsProps {
+interface RefinementGroupsProps {
   refinements: RefinementListRenderState
   languages: Record<string, string[]>
 }
 
-export function LanguageContinentRefinements({
+export function RefinementGroups({
   refinements,
   languages
-}: LanguageContinentRefinementsProps): ReactElement {
+}: RefinementGroupsProps): ReactElement {
   const { t } = useTranslation('apps-watch')
   const theme = useTheme()
 
-  const [selectedContinent, setSelectedContinent] = useState<string>()
   const { canToggleShowMore, isShowingMore, toggleShowMore } = refinements
   const shouldFade = canToggleShowMore && !isShowingMore
 
@@ -75,10 +74,6 @@ export function LanguageContinentRefinements({
                       ...refinements,
                       items
                     }}
-                    selectedContinent={selectedContinent}
-                    handleSelectedContinent={(continent) =>
-                      setSelectedContinent(continent)
-                    }
                   />
                 ) : (
                   <></>
