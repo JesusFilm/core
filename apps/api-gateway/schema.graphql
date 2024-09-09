@@ -924,6 +924,8 @@ type Journey
   blocks: [Block!]
   primaryImageBlock: ImageBlock
   creatorImageBlock: ImageBlock
+  logoImageBlock: ImageBlock
+  menuStepBlock: StepBlock
   chatButtons: [ChatButton!]!
   id: ID!
 

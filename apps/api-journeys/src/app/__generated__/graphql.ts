@@ -1105,6 +1105,8 @@ export class Journey {
     blocks?: Nullable<Block[]>;
     primaryImageBlock?: Nullable<ImageBlock>;
     creatorImageBlock?: Nullable<ImageBlock>;
+    logoImageBlock?: Nullable<ImageBlock>;
+    menuStepBlock?: Nullable<StepBlock>;
     chatButtons: ChatButton[];
     id: string;
     title: string;
