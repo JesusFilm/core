@@ -5,7 +5,7 @@ import { styled, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useState } from 'react'
 
 import ChevronDown from '@core/shared/ui/icons/ChevronDown'
 import ChevronUp from '@core/shared/ui/icons/ChevronUp'
@@ -33,14 +33,34 @@ export function LanguageContinentRefinements({
   const { t } = useTranslation('apps-watch')
   const theme = useTheme()
 
+  const [country, setCountry] = useState('')
   const [selectedContinent, setSelectedContinent] = useState<string>()
   const { canToggleShowMore, isShowingMore, toggleShowMore } = refinements
   const shouldFade = canToggleShowMore && !isShowingMore
+
+  const detectCountry = useCallback(() => {
+    const locale = navigator.language
+    try {
+      const regionCode = new Intl.Locale(locale).maximize().region
+      const regionNames = new Intl.DisplayNames([locale], { type: 'region' })
+      const countryName = regionNames.of(regionCode ?? '')
+      setCountry(countryName ?? '')
+    } catch (error) {
+      console.error('Error detecting country:', error)
+    }
+  }, [])
+
+  useEffect(() => {
+    detectCountry()
+  }, [detectCountry])
 
   return (
     <>
       {refinements.items.length > 0 ? (
         <>
+          <Stack spacing={2} sx={{ pb: 12 }}>
+            <Typography variant="h6">{country}: </Typography>
+          </Stack>
           <Stack
             direction={{ xs: 'column', lg: 'row' }}
             justifyContent="space-between"
