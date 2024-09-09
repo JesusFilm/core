@@ -66,6 +66,8 @@ export async function GET(
 
   const apiKey = query.get('apiKey') ?? '616db012e9a951.51499299'
   const platform = query.get('platform') ?? 'ios'
+  // TODO: implement
+  const apiSessionId = '6622f10d2260a8.05128925'
 
   if (data.video == null || data.video.variant == null)
     return new Response(null, { status: 404 })
@@ -98,6 +100,66 @@ export async function GET(
             sizeInBytes: downloadHigh.size
           }
   }
+
+  const url = `https://api.arclight.org/videoPlayerUrl?refId=${video.variant?.id}&apiSessionId=${apiSessionId}&player=bc.vanilla6&dtm=0&playerStyle=vanilla`
+
+  const cleanString = (str: string): string => str.replace(/\s+/g, ' ').trim()
+
+  const webEmbedPlayer = cleanString(`
+  <div class="arc-cont">
+    <iframe src="${url}" allowfullscreen webkitallowfullscreen mozallowfullscreen></iframe>
+    <style>
+      .arc-cont {
+        position: relative;
+        display: block;
+        margin: 10px auto;
+        width: 100%;
+      }
+      .arc-cont:after {
+        padding-top: 59%;
+        display: block;
+        content: "";
+      }
+      .arc-cont > iframe {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        width: 98%;
+        height: 98%;
+        border: 0;
+      }
+    </style>
+  </div>`)
+
+  const webEmbedSharePlayer = cleanString(`
+  <div class="arc-cont">
+    <iframe src="${url}" allowfullscreen webkitallowfullscreen mozallowfullscreen></iframe>
+    <style>
+      .arc-cont {
+        position: relative;
+        display: block;
+        margin: 10px auto;
+        width: 100%;
+      }
+      .arc-cont:after {
+        padding-top: 59%;
+        display: block;
+        content: "";
+      }
+      .arc-cont > iframe {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        width: 98%;
+        height: 98%;
+        border: 0;
+      }
+    </style>
+  </div>`)
 
   const subtitleUrls =
     platform === 'android'
@@ -155,13 +217,13 @@ export async function GET(
     streamingUrls,
     // TODO: implement
     shareUrl: 'https://arc.gt/8un8j?apiSessionId=6622f10d2260a8.05128925',
-    // TODO: implement
+    // socialMediaUrls never implemented in arclight
     socialMediaUrls: {},
-    // TODO: implement
-    webEmbedPlayer: '',
-    // TODO: implement
-    webEmbedSharePlayer: '',
-    // TODO: investigate
+    ...(platform === 'web' && {
+      webEmbedPlayer,
+      webEmbedSharePlayer
+    }),
+    // openGraphVideoPlayer never implemented in arclight
     openGraphVideoPlayer: 'https://jesusfilm.org/',
     _links: {
       self: {
