@@ -1,5 +1,4 @@
 import { ApolloProvider, NormalizedCacheObject, gql } from '@apollo/client'
-import algoliasearch from 'algoliasearch'
 import type { UiState } from 'instantsearch.js'
 import type { RouterProps } from 'instantsearch.js/es/middlewares'
 import type { GetStaticProps } from 'next'
@@ -15,6 +14,8 @@ import {
   getServerState
 } from 'react-instantsearch'
 import { createInstantSearchRouterNext } from 'react-instantsearch-router-nextjs'
+
+import { useInstantSearchClient } from '@core/journeys/ui/algolia/InstantSearchProvider'
 
 import i18nConfig from '../../next-i18next.config'
 import { WatchHomePage as VideoHomePage } from '../../src/components/WatchHomePage'
@@ -33,13 +34,6 @@ export const GET_HOME_VIDEOS = gql`
     }
   }
 `
-
-const searchClient = algoliasearch(
-  process.env.NEXT_PUBLIC_ALGOLIA_APP_ID ?? '',
-  process.env.ALGOLIA_SERVER_API_KEY ??
-    process.env.NEXT_PUBLIC_ALGOLIA_API_KEY ??
-    ''
-)
 
 interface HomePageProps {
   initialApolloState?: NormalizedCacheObject
@@ -80,11 +74,12 @@ function HomePage({
   initialApolloState,
   serverState
 }: HomePageProps): ReactElement {
-  const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
-
   const client = useApolloClient({
     initialState: initialApolloState
   })
+
+  const searchClient = useInstantSearchClient()
+  const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
 
   return (
     <InstantSearchSSRProvider {...serverState}>

@@ -1,11 +1,12 @@
 import { ApolloError, gql } from '@apollo/client'
-import algoliasearch from 'algoliasearch'
 import type { GetStaticPaths, GetStaticProps } from 'next'
 import dynamic from 'next/dynamic'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { SnackbarProvider } from 'notistack'
 import type { ReactElement } from 'react'
 import { InstantSearch } from 'react-instantsearch'
+
+import { useInstantSearchClient } from '@core/journeys/ui/algolia/InstantSearchProvider'
 
 import type { GetVideoContent } from '../../../__generated__/GetVideoContent'
 import type { VideoContentFields } from '../../../__generated__/VideoContentFields'
@@ -46,12 +47,8 @@ const DynamicVideoContainerPage = dynamic(
     )
 )
 
-const searchClient = algoliasearch(
-  process.env.NEXT_PUBLIC_ALGOLIA_APP_ID ?? '',
-  process.env.NEXT_PUBLIC_ALGOLIA_API_KEY ?? ''
-)
-
 export default function Part2Page({ content }: Part2PageProps): ReactElement {
+  const searchClient = useInstantSearchClient()
   const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
 
   return (
