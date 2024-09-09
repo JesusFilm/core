@@ -1,8 +1,6 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
-import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { useSearchBox } from 'react-instantsearch'
 
@@ -13,7 +11,6 @@ interface SuggestionsProps {
 }
 
 export function Suggestions({ refinements }: SuggestionsProps): ReactElement {
-  const { t } = useTranslation('apps-watch')
   const { query } = useSearchBox()
   const { items, refine: refineLanguage } = refinements
 
