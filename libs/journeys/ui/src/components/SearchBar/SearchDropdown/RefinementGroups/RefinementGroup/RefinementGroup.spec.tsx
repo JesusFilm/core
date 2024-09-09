@@ -2,8 +2,9 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
 import { useSearchBox } from 'react-instantsearch'
-import '../../../../../../test/i18n'
 
+import '../../../../../../test/i18n'
+import { SearchBarProvider } from '../../../../../libs/algolia/SearchBarProvider'
 import { languageRefinements } from '../../../data'
 
 import { RefinementGroup } from './RefinementGroup'
@@ -44,22 +45,18 @@ describe('RefinementGroup', () => {
 
   it('should have languages header', () => {
     render(
-      <RefinementGroup
-        title="Languages"
-        refinement={useRefinementList}
-        handleSelectedContinent={jest.fn()}
-      />
+      <SearchBarProvider>
+        <RefinementGroup title="Languages" refinement={useRefinementList} />
+      </SearchBarProvider>
     )
     expect(screen.getByText('Languages')).toBeInTheDocument()
   })
 
   it('should have languages listed', () => {
     render(
-      <RefinementGroup
-        title="Languages"
-        refinement={useRefinementList}
-        handleSelectedContinent={jest.fn()}
-      />
+      <SearchBarProvider>
+        <RefinementGroup title="Languages" refinement={useRefinementList} />
+      </SearchBarProvider>
     )
     expect(screen.getByText('English')).toBeInTheDocument()
     expect(screen.getByText('Spanish, Latin American')).toBeInTheDocument()
@@ -68,11 +65,9 @@ describe('RefinementGroup', () => {
 
   it('should refine when langauge selected', () => {
     render(
-      <RefinementGroup
-        title="Languages"
-        refinement={useRefinementList}
-        handleSelectedContinent={jest.fn()}
-      />
+      <SearchBarProvider>
+        <RefinementGroup title="Languages" refinement={useRefinementList} />
+      </SearchBarProvider>
     )
     fireEvent.click(screen.getByText('Cantonese'))
     expect(refine).toHaveBeenCalled()
@@ -84,49 +79,57 @@ describe('RefinementGroup', () => {
       refine
     } as unknown as RefinementListRenderState
     render(
-      <RefinementGroup
-        title="Languages"
-        refinement={emptyRefinementList}
-        handleSelectedContinent={jest.fn()}
-      />
+      <SearchBarProvider>
+        <RefinementGroup title="Languages" refinement={emptyRefinementList} />
+      </SearchBarProvider>
     )
     expect(screen.getByText('Languages')).toBeInTheDocument()
     expect(screen.queryByRole('label')).not.toBeInTheDocument()
   })
 
-  it('should handle selected continent on click', () => {
-    const handleSelectedContinent = jest.fn()
-    render(
-      <RefinementGroup
-        title="Languages"
-        refinement={useRefinementList}
-        handleSelectedContinent={handleSelectedContinent}
-      />
-    )
-    fireEvent.click(screen.getByText('Cantonese'))
-    expect(handleSelectedContinent).toHaveBeenCalled()
-  })
-
   it('should check the checkbox if title, continent, and refinement match', () => {
     render(
-      <RefinementGroup
-        title="Asia"
-        refinement={useRefinementListWithRefinedValue}
-        selectedContinent="Asia"
-        handleSelectedContinent={jest.fn()}
-      />
+      <SearchBarProvider
+        initialState={{
+          continentLanguages: {
+            Asia: ['Cantonese']
+          }
+        }}
+      >
+        <RefinementGroup
+          title="Asia"
+          refinement={useRefinementListWithRefinedValue}
+        />
+      </SearchBarProvider>
     )
     expect(screen.getByRole('checkbox', { name: 'Cantonese' })).toBeChecked()
   })
 
-  it.skip('should disable the checkbox if title and continent match but refinement does not', () => {
+  it('should disable the checkbox if the language is selected in a different continent', () => {
+    const useRefinementListWithRefinedValue = {
+      items: [
+        {
+          label: 'Cantonese',
+          value: 'Cantonese',
+          isRefined: true
+        }
+      ],
+      refine
+    } as unknown as RefinementListRenderState
+
     render(
-      <RefinementGroup
-        title="Asia"
-        refinement={useRefinementListWithRefinedValue}
-        selectedContinent="Europe"
-        handleSelectedContinent={jest.fn()}
-      />
+      <SearchBarProvider
+        initialState={{
+          continentLanguages: {
+            Europe: ['Cantonese']
+          }
+        }}
+      >
+        <RefinementGroup
+          title="Asia"
+          refinement={useRefinementListWithRefinedValue}
+        />
+      </SearchBarProvider>
     )
     expect(screen.getByRole('checkbox', { name: 'Cantonese' })).toBeDisabled()
   })
@@ -140,12 +143,12 @@ describe('RefinementGroup', () => {
     mockUseSearchBox.mockReturnValue(useSearchBox)
 
     render(
-      <RefinementGroup
-        title="Asia"
-        refinement={useRefinementListWithRefinedValue}
-        selectedContinent="Europe"
-        handleSelectedContinent={jest.fn()}
-      />
+      <SearchBarProvider>
+        <RefinementGroup
+          title="Asia"
+          refinement={useRefinementListWithRefinedValue}
+        />
+      </SearchBarProvider>
     )
     expect(refineQuery).not.toHaveBeenCalled()
   })
@@ -159,12 +162,12 @@ describe('RefinementGroup', () => {
     mockUseSearchBox.mockReturnValue(useSearchBox)
 
     render(
-      <RefinementGroup
-        title="Asia"
-        refinement={useRefinementListWithRefinedValue}
-        selectedContinent="Europe"
-        handleSelectedContinent={jest.fn()}
-      />
+      <SearchBarProvider>
+        <RefinementGroup
+          title="Asia"
+          refinement={useRefinementListWithRefinedValue}
+        />
+      </SearchBarProvider>
     )
     fireEvent.click(screen.getByText('Cantonese'))
     expect(refineQuery).not.toHaveBeenCalled()
@@ -179,12 +182,9 @@ describe('RefinementGroup', () => {
     mockUseSearchBox.mockReturnValue(useSearchBox)
 
     render(
-      <RefinementGroup
-        title="Asia"
-        refinement={useRefinementList}
-        selectedContinent="Europe"
-        handleSelectedContinent={jest.fn()}
-      />
+      <SearchBarProvider>
+        <RefinementGroup title="Asia" refinement={useRefinementList} />
+      </SearchBarProvider>
     )
     fireEvent.click(screen.getByText('Chinese, Traditional'))
     await waitFor(() => expect(refineQuery).toHaveBeenCalledWith('Jesus'))
