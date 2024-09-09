@@ -1,0 +1,1 @@
+export { IconSelect } from './IconSelect'
