@@ -68,7 +68,8 @@ describe('StepFooter', () => {
     showShareButton: null,
     showLikeButton: null,
     showDislikeButton: null,
-    displayTitle: null
+    displayTitle: null,
+    logoImageBlock: null
   }
 
   it('should display host avatar, name and location', () => {

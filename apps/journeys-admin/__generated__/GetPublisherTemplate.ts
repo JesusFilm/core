@@ -545,6 +545,22 @@ export interface GetPublisherTemplate_publisherTemplate_tags {
   name: GetPublisherTemplate_publisherTemplate_tags_name[];
 }
 
+export interface GetPublisherTemplate_publisherTemplate_logoImageBlock {
+  __typename: "ImageBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  src: string | null;
+  alt: string;
+  width: number;
+  height: number;
+  /**
+   * blurhash is a compact representation of a placeholder for an image.
+   * Find a frontend implementation at https: // github.com/woltapp/blurhash
+   */
+  blurhash: string;
+}
+
 export interface GetPublisherTemplate_publisherTemplate {
   __typename: "Journey";
   id: string;
@@ -585,6 +601,7 @@ export interface GetPublisherTemplate_publisherTemplate {
    * public title for viewers
    */
   displayTitle: string | null;
+  logoImageBlock: GetPublisherTemplate_publisherTemplate_logoImageBlock | null;
 }
 
 export interface GetPublisherTemplate {

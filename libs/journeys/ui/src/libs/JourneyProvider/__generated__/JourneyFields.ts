@@ -545,6 +545,22 @@ export interface JourneyFields_tags {
   name: JourneyFields_tags_name[];
 }
 
+export interface JourneyFields_logoImageBlock {
+  __typename: "ImageBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  src: string | null;
+  alt: string;
+  width: number;
+  height: number;
+  /**
+   * blurhash is a compact representation of a placeholder for an image.
+   * Find a frontend implementation at https: // github.com/woltapp/blurhash
+   */
+  blurhash: string;
+}
+
 export interface JourneyFields {
   __typename: "Journey";
   id: string;
@@ -585,4 +601,5 @@ export interface JourneyFields {
    * public title for viewers
    */
   displayTitle: string | null;
+  logoImageBlock: JourneyFields_logoImageBlock | null;
 }

@@ -545,6 +545,22 @@ export interface GetAdminJourney_journey_tags {
   name: GetAdminJourney_journey_tags_name[];
 }
 
+export interface GetAdminJourney_journey_logoImageBlock {
+  __typename: "ImageBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  src: string | null;
+  alt: string;
+  width: number;
+  height: number;
+  /**
+   * blurhash is a compact representation of a placeholder for an image.
+   * Find a frontend implementation at https: // github.com/woltapp/blurhash
+   */
+  blurhash: string;
+}
+
 export interface GetAdminJourney_journey {
   __typename: "Journey";
   id: string;
@@ -585,6 +601,7 @@ export interface GetAdminJourney_journey {
    * public title for viewers
    */
   displayTitle: string | null;
+  logoImageBlock: GetAdminJourney_journey_logoImageBlock | null;
 }
 
 export interface GetAdminJourney {

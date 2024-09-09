@@ -62,7 +62,8 @@ const journey: Journey = {
   showShareButton: null,
   showLikeButton: null,
   showDislikeButton: null,
-  displayTitle: null
+  displayTitle: null,
+  logoImageBlock: null
 }
 
 type Story = StoryObj<ComponentPropsWithoutRef<typeof InformationButton>>

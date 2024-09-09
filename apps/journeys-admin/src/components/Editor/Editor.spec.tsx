@@ -93,7 +93,8 @@ describe('Editor', () => {
     showShareButton: null,
     showLikeButton: null,
     showDislikeButton: null,
-    displayTitle: null
+    displayTitle: null,
+    logoImageBlock: null
   }
 
   beforeEach(() => {
