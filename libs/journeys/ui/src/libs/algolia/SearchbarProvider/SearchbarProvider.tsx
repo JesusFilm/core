@@ -12,7 +12,7 @@ import {
 type Continent = string
 type Language = string
 
-interface SearchBarState {
+export interface SearchBarState {
   /**
    * selected languages sorted by continent
    */
@@ -110,7 +110,7 @@ function handleRemoveLanguageContinents(
   }
 }
 
-const searchbarReducer = (
+export const reducer = (
   state: SearchBarState,
   action: SearchbarAction
 ): SearchBarState => {
@@ -144,7 +144,7 @@ export function SearchbarProvider({
   children,
   initialState
 }: SearchbarProviderProps): ReactElement {
-  const [state, dispatch] = useReducer(searchbarReducer, {
+  const [state, dispatch] = useReducer(reducer, {
     continentLanguages: {},
     ...initialState
   })
