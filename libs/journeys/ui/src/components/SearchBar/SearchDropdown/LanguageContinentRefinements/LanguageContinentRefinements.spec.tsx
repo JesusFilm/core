@@ -1,9 +1,17 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
+import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
+import { useSearchBox } from 'react-instantsearch'
 
 import { languageRefinements } from '../../data'
 
 import { LanguageContinentRefinements } from './LanguageContinentRefinements'
+
+jest.mock('react-instantsearch')
+
+const mockUseSearchBox = useSearchBox as jest.MockedFunction<
+  typeof useSearchBox
+>
 
 describe('LanguageContinentRefinements', () => {
   const refinements = {
@@ -19,6 +27,15 @@ describe('LanguageContinentRefinements', () => {
     Asia: ['Cantonese', 'Chinese, Simplified'],
     'South America': ['Spanish, Latin American']
   }
+
+  const useSearchBox = {
+    query: 'Hello World!',
+    refine: jest.fn()
+  } as unknown as SearchBoxRenderState
+
+  beforeEach(() => {
+    mockUseSearchBox.mockReturnValue(useSearchBox)
+  })
 
   it('should render the correct continent headers', () => {
     render(

@@ -36,7 +36,6 @@ describe('SearchbarDropdown', () => {
 
   beforeEach(() => {
     mockUseSearchBox.mockReturnValue(searchBox)
-    jest.clearAllMocks()
   })
 
   it('should default to dropdown closed', async () => {

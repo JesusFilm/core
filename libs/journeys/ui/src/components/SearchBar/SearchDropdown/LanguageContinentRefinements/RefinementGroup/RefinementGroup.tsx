@@ -5,6 +5,9 @@ import FormGroup from '@mui/material/FormGroup'
 import Typography from '@mui/material/Typography'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { type ReactElement } from 'react'
+import { useSearchBox } from 'react-instantsearch'
+
+import { normalizeLanguage } from '../../../../../libs/algolia/normalizeLanguage'
 
 interface RefinementGroupProps {
   title: string
@@ -20,9 +23,26 @@ export function RefinementGroup({
   selectedContinent
 }: RefinementGroupProps): ReactElement {
   const { items, refine } = refinement
+  const { query, refine: refineQuery } = useSearchBox()
+
+  function stripLanguageFromQuery(language: string): void {
+    const normalizedLanguage = normalizeLanguage(language)
+    const hasLanguageInQuery = query.toLowerCase().includes(normalizedLanguage)
+    if (hasLanguageInQuery) {
+      const regEx = new RegExp(normalizedLanguage, 'ig')
+      const strippedQuery = query.replace(regEx, '').trim()
+      refineQuery(strippedQuery)
+    }
+  }
+
+  function isLanguageRefined(language: string): boolean {
+    const languageRefinement = items.find((item) => item.label === language)
+    return languageRefinement !== undefined && !languageRefinement.isRefined
+  }
 
   function handleClick(language: string): void {
     handleSelectedContinent(title)
+    if (isLanguageRefined(language)) stripLanguageFromQuery(language)
     refine(language)
   }
 
