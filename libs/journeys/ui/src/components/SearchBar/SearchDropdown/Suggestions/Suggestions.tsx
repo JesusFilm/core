@@ -33,9 +33,6 @@ export function Suggestions({ refinements }: SuggestionsProps): ReactElement {
 
   return (
     <Box width="100%">
-      <Typography variant="h6" color="primary.main" marginBottom={6} pl={3}>
-        {t('Suggestions')}
-      </Typography>
       <Box color="text.primary">
         <Stack spacing={1}>
           <Suggestion
