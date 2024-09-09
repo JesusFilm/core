@@ -25,6 +25,11 @@ const GET_VIDEOS = graphql(`
       id
       label
       image
+      thumbnail
+      videoStill
+      mobileCinematicHigh
+      mobileCinematicLow
+      mobileCinematicVeryLow
       primaryLanguageId
       title {
         value
@@ -90,7 +95,11 @@ export async function GET(request: NextRequest): Promise<Response> {
     contentType: 'video',
     subType: video.label,
     imageUrls: {
-      hd: video.image
+      thumbnail: video.thumbnail,
+      videoStill: video.videoStill,
+      mobileCinematicHigh: video.mobileCinematicHigh,
+      mobileCinematicLow: video.mobileCinematicLow,
+      mobileCinematicVeryLow: video.mobileCinematicVeryLow
     },
     lengthInMilliseconds: video.variant?.duration ?? 0,
     containsCount: video.childrenCount,
