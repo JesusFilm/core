@@ -50,11 +50,11 @@ function getJourneySettingsUpdateMock(
           description: 'Changed Description',
           strategySlug: null,
           language: {
-            __typename: 'Language', // Ensure this matches the typename expected
-            id: languageId, // or whatever ID you have
-            name: journey.language.name, // assuming this is the name of the language
-            bcp47: 'journey.language.bcp47', // add the bcp47 code
-            iso3: 'journey.language.iso3' // add the iso3 code
+            __typename: 'Language',
+            id: languageId,
+            name: journey.language.name,
+            bcp47: 'journey.language.bcp47',
+            iso3: 'journey.language.iso3'
           },
           tags: [],
           createdAt: null,

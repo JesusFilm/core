@@ -245,10 +245,8 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
                   >
                     {journey.title}
                   </Typography>
-                  <Stack sx={{  flexDirection: 'row' }}>
-                    <Globe1Icon
-                      sx={{ fontSize: 13, mt: 0.7, mr: 1 }}
-                    />
+                  <Stack sx={{ flexDirection: 'row' }}>
+                    <Globe1Icon sx={{ fontSize: 13, mt: 0.7, mr: 1 }} />
                     <Typography variant="caption">
                       {` ${journeyLanguage} • `}
                     </Typography>
