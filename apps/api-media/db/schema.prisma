@@ -65,24 +65,29 @@ enum VideoLabel {
 }
 
 model Video {
-  id                String               @id @default(uuid())
-  label             VideoLabel
-  primaryLanguageId String
-  title             VideoTitle[]
-  snippet           VideoSnippet[]
-  description       VideoDescription[]
-  studyQuestions    VideoStudyQuestion[]
-  image             String?
-  imageAlt          VideoImageAlt[]
-  slug              String?              @unique
-  noIndex           Boolean?
-  childIds          String[] // needed for child sort order
-  subtitles         VideoSubtitle[]
-  children          Video[]              @relation("ParentChild")
-  parent            Video[]              @relation("ParentChild")
-  variants          VideoVariant[]
-  bibleCitation     BibleCitation[]
-  keywords          Keyword[]            @relation("VideoToKeyword")
+  id                     String               @id @default(uuid())
+  label                  VideoLabel
+  primaryLanguageId      String
+  title                  VideoTitle[]
+  snippet                VideoSnippet[]
+  description            VideoDescription[]
+  studyQuestions         VideoStudyQuestion[]
+  image                  String?
+  imageAlt               VideoImageAlt[]
+  thumbnail              String?
+  videoStill             String?
+  mobileCinematicHigh    String?
+  mobileCinematicLow     String?
+  mobileCinematicVeryLow String?
+  slug                   String?              @unique
+  noIndex                Boolean?
+  childIds               String[] // needed for child sort order
+  subtitles              VideoSubtitle[]
+  children               Video[]              @relation("ParentChild")
+  parent                 Video[]              @relation("ParentChild")
+  variants               VideoVariant[]
+  bibleCitation          BibleCitation[]
+  keywords               Keyword[]            @relation("VideoToKeyword")
 
   @@index(label)
   @@index(childIds)

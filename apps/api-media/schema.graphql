@@ -264,6 +264,11 @@ type Video
   studyQuestions(languageId: ID, primary: Boolean): [VideoStudyQuestion!]!
   image: String
   imageAlt(languageId: ID, primary: Boolean): [VideoImageAlt!]!
+  videoStill: String
+  thumbnail: String
+  mobileCinematicHigh: String
+  mobileCinematicLow: String
+  mobileCinematicVeryLow: String
   variantLanguages: [Language!]!
   variantLanguagesCount: Int!
 
