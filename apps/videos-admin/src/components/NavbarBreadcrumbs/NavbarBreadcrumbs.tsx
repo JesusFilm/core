@@ -52,6 +52,7 @@ export function NavbarBreadcrumbs(): ReactElement {
     <StyledBreadcrumbs
       aria-label="breadcrumb"
       separator={<NavigateNextRoundedIcon fontSize="small" />}
+      data-testid="NavBarBreadcrumbs"
     >
       {pathNames.map((link, index) => {
         const href = `/${pathNames.slice(0, index + 1).join('/')}`
