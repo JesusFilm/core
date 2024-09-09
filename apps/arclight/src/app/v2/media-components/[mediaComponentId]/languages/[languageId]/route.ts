@@ -24,6 +24,8 @@ const GET_VIDEO_VARIANT = graphql(`
         id
         duration
         hls
+        dash
+        share
         subtitle {
           language {
             id
@@ -194,8 +196,7 @@ export async function GET(
       ? {}
       : platform === 'android'
       ? {
-          // TODO: implement dash urls
-          dash: [],
+          dash: [{ videoBitrate: 0, url: video.variant?.dash }],
           hls: [{ videoBitrate: 0, url: video.variant?.hls }],
           http: []
         }
@@ -209,14 +210,13 @@ export async function GET(
     languageId: Number(languageId),
     refId: video.variant?.id,
     // TODO create api session id
-    apiSessionId: '',
+    apiSessionId,
     platform,
     lengthInMilliseconds: video.variant?.duration ?? 0,
     subtitleUrls,
     downloadUrls,
     streamingUrls,
-    // TODO: implement
-    shareUrl: 'https://arc.gt/8un8j?apiSessionId=6622f10d2260a8.05128925',
+    shareUrl: video.variant?.share ?? '',
     // socialMediaUrls never implemented in arclight
     socialMediaUrls: {},
     ...(platform === 'web' && {
