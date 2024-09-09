@@ -21,26 +21,30 @@ const mockUseRefinementList = useRefinementList as jest.MockedFunction<
 describe('StrategiesView', () => {
   const refine = jest.fn()
 
+  const useSearchBox = {
+    query: 'Hello World!',
+    refine
+  } as unknown as SearchBoxRenderState
+
+  const useHits = {
+    hits: strategyItems
+  } as unknown as HitsRenderState
+
+  const useRefinementsList = {
+    items: [
+      {
+        label: 'English',
+        value: 'English',
+        isRefined: true
+      }
+    ],
+    refine
+  } as unknown as RefinementListRenderState
+
   beforeEach(() => {
-    mockUseSearchBox.mockReturnValue({
-      query: 'Hello World!',
-      refine
-    } as unknown as SearchBoxRenderState)
-
-    mockedUseHits.mockReturnValue({
-      hits: strategyItems
-    } as unknown as HitsRenderState)
-
-    mockUseRefinementList.mockReturnValue({
-      items: [
-        {
-          label: 'English',
-          value: 'English',
-          isRefined: true
-        }
-      ],
-      refine
-    } as unknown as RefinementListRenderState)
+    mockUseSearchBox.mockReturnValue(useSearchBox)
+    mockedUseHits.mockReturnValue(useHits)
+    mockUseRefinementList.mockReturnValue(useRefinementsList)
   })
 
   it('should render interaction text', () => {
