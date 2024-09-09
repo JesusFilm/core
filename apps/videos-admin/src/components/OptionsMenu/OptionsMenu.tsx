@@ -8,6 +8,7 @@ import Menu from '@mui/material/Menu'
 import MuiMenuItem from '@mui/material/MenuItem'
 import { paperClasses } from '@mui/material/Paper'
 import { styled } from '@mui/material/styles'
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { MouseEvent, ReactElement, useState } from 'react'
 
@@ -20,6 +21,8 @@ const MenuItem = styled(MuiMenuItem)({
 
 export function OptionsMenu(): ReactElement {
   const t = useTranslations()
+  const router = useRouter()
+
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
   const handleLogout = useLogout({ onSuccess: handleClose })
@@ -31,6 +34,11 @@ export function OptionsMenu(): ReactElement {
   function handleClose(): void {
     setAnchorEl(null)
   }
+
+  function handleSettingsClick(): void {
+    router.push('/settings')
+  }
+
   return (
     <>
       <MenuButton
@@ -61,7 +69,7 @@ export function OptionsMenu(): ReactElement {
           }
         }}
       >
-        <MenuItem onClick={handleClose}>{t('Settings')}</MenuItem>
+        <MenuItem onClick={handleSettingsClick}>{t('Settings')}</MenuItem>
         <Divider />
         <MenuItem
           onClick={handleLogout}
