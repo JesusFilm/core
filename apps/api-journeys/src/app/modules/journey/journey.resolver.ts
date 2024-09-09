@@ -959,7 +959,7 @@ export class JourneyResolver {
       idNotIn.push(journey.logoImageBlockId)
     }
     if (journey.menuStepBlockId != null) {
-      idNotIn.push(journey.menuStepBlockId)
+      // idNotIn.push(journey.menuStepBlockId)
     }
     if (idNotIn.length > 0) {
       filter.id = { notIn: idNotIn }

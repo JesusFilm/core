@@ -6,6 +6,7 @@ import { NodeProps } from 'reactflow'
 
 import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
 import { filterActionBlocks } from '@core/journeys/ui/filterActionBlocks'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { BaseNode, HandleVariant } from '../BaseNode'
 
