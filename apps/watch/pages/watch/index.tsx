@@ -57,9 +57,16 @@ export const nextRouter: RouterProps = {
   }),
   stateMapping: {
     stateToRoute(uiState) {
-      return uiState[
-        process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
-      ] as unknown as UiState
+      const indexUiState = uiState[process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? '']
+
+      const stateRoute = {
+        query: indexUiState.query,
+        refinementList: {
+          languageEnglishName: indexUiState.refinementList?.languageEnglishName
+        }
+      } as unknown as UiState
+
+      return stateRoute
     },
     routeToState(routeState) {
       return {
