@@ -20,7 +20,7 @@ export function useLanguage(): Language | undefined {
   const router = useRouter()
   const language =
     languages.find(
-      (l) => l.bcp47 === router?.locale ?? router?.defaultLocale
+      (l) => l.bcp47 === router?.locale || router?.defaultLocale
     ) ?? languages[0]
   const context = useContext(createContext(language))
   return context
