@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 
 import '../../../../../../test/i18n'
-import { SearchbarProvider } from '../../../../../libs/SearchbarProvider'
+import { SearchbarProvider } from '../../../../../libs/algolia/SearchbarProvider'
 import { languageRefinements } from '../../../data'
 
 import { RefinementGroup } from './RefinementGroup'

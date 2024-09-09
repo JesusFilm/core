@@ -13,7 +13,7 @@ import { useRefinementList, useSearchBox } from 'react-instantsearch'
 import Search1Icon from '@core/shared/ui/icons/Search1'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
 
-import { SearchbarProvider } from '../../libs/SearchbarProvider'
+import { SearchbarProvider } from '../../libs/algolia/SearchbarProvider'
 
 import { LanguageButtons } from './LanguageButtons'
 

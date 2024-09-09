@@ -5,7 +5,7 @@ import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/
 import noop from 'lodash/noop'
 import { useSearchBox } from 'react-instantsearch'
 
-import { SearchbarProvider } from '../../../libs/SearchbarProvider'
+import { SearchbarProvider } from '../../../libs/algolia/SearchbarProvider'
 import { getLanguagesContinentsMock } from '../../../libs/useLanguagesContinentsQuery/useLanguagesContinentsQuery.mock'
 import { languageRefinements } from '../data'
 

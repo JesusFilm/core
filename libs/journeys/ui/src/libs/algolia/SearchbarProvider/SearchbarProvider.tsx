@@ -115,15 +115,12 @@ const searchbarReducer = (
   action: SearchbarAction
 ): SearchBarState => {
   switch (action.type) {
-    case 'SelectLanguageContinent': {
+    case 'SelectLanguageContinent':
       return handleSelectLanguageContinent(state, action)
-    }
-    case 'SetDefaultLanguageContinent': {
+    case 'SetDefaultLanguageContinent':
       return handleSetDefaultLanguageContinent(state, action)
-    }
-    case 'RemoveLanguageContinents': {
+    case 'RemoveLanguageContinents':
       return handleRemoveLanguageContinents(state, action)
-    }
     default:
       return state
   }

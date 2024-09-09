@@ -6,7 +6,7 @@ import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refine
 import { useTranslation } from 'next-i18next'
 import { MouseEvent, ReactElement } from 'react'
 
-import { useSearchBar } from '../../../libs/SearchbarProvider'
+import { useSearchBar } from '../../../libs/algolia/SearchbarProvider'
 
 import { LanguageButton } from './LanguageButton'
 
