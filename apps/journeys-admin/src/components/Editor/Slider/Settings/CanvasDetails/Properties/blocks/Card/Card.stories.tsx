@@ -4,9 +4,11 @@ import { ComponentProps } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../__generated__/BlockFields'
+import { GetJourney_journey as Journey } from '../../../../../../../../../__generated__/GetJourney'
 import {
   ThemeMode,
   ThemeName
@@ -37,22 +39,44 @@ const block: TreeBlock<CardBlock> = {
   children: []
 }
 
-const Template: StoryObj<ComponentProps<typeof Card>> = {
-  render: (args) => {
-    return (
-      <EditorProvider initialState={{ selectedBlock: args }}>
-        <Drawer title="Card Properties" onClose={onClose}>
-          <Card {...args} />
-        </Drawer>
-      </EditorProvider>
-    )
+const Template: StoryObj<ComponentProps<typeof Card> & { journey?: Journey }> =
+  {
+    render: ({ journey, ...args }) => {
+      return (
+        <JourneyProvider value={{ journey }}>
+          <EditorProvider initialState={{ selectedBlock: args }}>
+            <Drawer title="Card Properties" onClose={onClose}>
+              <Card {...args} />
+            </Drawer>
+          </EditorProvider>
+        </JourneyProvider>
+      )
+    }
   }
-}
 
 export const Default = {
   ...Template,
   args: {
     ...block
+  }
+}
+
+const journey = {
+  __typename: 'Journey',
+  id: 'journey1.id',
+  website: true,
+  language: {
+    __typename: 'Language',
+    id: 'language1.id',
+    bcp47: 'en'
+  }
+} as unknown as Journey
+
+export const Website = {
+  ...Template,
+  args: {
+    ...block,
+    journey
   }
 }
 

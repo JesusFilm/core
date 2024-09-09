@@ -116,6 +116,16 @@ export const getStaticProps: GetStaticProps<StepPageProps> = async (
         idType: IdType.slug
       }
     })
+
+    if (data.journey.website !== true) {
+      return {
+        redirect: {
+          permanent: false,
+          destination: `/${data.journey.slug}`
+        }
+      }
+    }
+
     const { rtl, locale } = getJourneyRTL(data.journey)
     return {
       props: {
