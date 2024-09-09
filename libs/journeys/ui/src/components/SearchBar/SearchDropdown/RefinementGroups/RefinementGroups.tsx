@@ -21,20 +21,19 @@ const StyledButton = styled(Button)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper
 }))
 
-interface LanguageContinentRefinementsProps {
+interface RefinementGroupsProps {
   refinements: RefinementListRenderState
   languages: Record<string, string[]>
 }
 
-export function LanguageContinentRefinements({
+export function RefinementGroups({
   refinements,
   languages
-}: LanguageContinentRefinementsProps): ReactElement {
+}: RefinementGroupsProps): ReactElement {
   const { t } = useTranslation('apps-watch')
   const theme = useTheme()
 
   const [country, setCountry] = useState('')
-  const [selectedContinent, setSelectedContinent] = useState<string>()
   const { canToggleShowMore, isShowingMore, toggleShowMore } = refinements
   const shouldFade = canToggleShowMore && !isShowingMore
 
@@ -95,10 +94,6 @@ export function LanguageContinentRefinements({
                       ...refinements,
                       items
                     }}
-                    selectedContinent={selectedContinent}
-                    handleSelectedContinent={(continent) =>
-                      setSelectedContinent(continent)
-                    }
                   />
                 ) : (
                   <></>

@@ -11,7 +11,7 @@ interface SuggestionsProps {
 }
 
 export function Suggestions({ refinements }: SuggestionsProps): ReactElement {
-  const { refine } = useSearchBox()
+  const { query } = useSearchBox()
   const { items, refine: refineLanguage } = refinements
 
   function refineLanguages(languagesToRefine: string[]): void {
@@ -25,7 +25,6 @@ export function Suggestions({ refinements }: SuggestionsProps): ReactElement {
 
   function selectSuggestion(suggestion: string): void {
     const suggestionParts = suggestion.split(/\s(?:in|and)\s/)
-    refine(suggestionParts[0])
     refineLanguages(suggestionParts.slice(1))
   }
 
@@ -34,12 +33,12 @@ export function Suggestions({ refinements }: SuggestionsProps): ReactElement {
       <Box color="text.primary">
         <Stack spacing={1}>
           <Suggestion
-            query="Jesus"
+            query={query !== '' ? query : 'Jesus'}
             filters={['English']}
             handleClick={() => selectSuggestion('Jesus in English')}
           />
           <Suggestion
-            query="Jesus"
+            query={query !== '' ? query : 'Jesus'}
             filters={['English', 'Spanish']}
             handleClick={() =>
               selectSuggestion('Jesus in English and Spanish, Latin American')
