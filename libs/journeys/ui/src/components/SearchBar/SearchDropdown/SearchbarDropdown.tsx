@@ -104,7 +104,14 @@ export function SearchbarDropdown({
             <StyledTab
               icon={<Globe1 />}
               iconPosition="start"
-              label={<span className="tab-label">{t('Languages')}</span>}
+              label={
+                <div className="tab-label">
+                  <Box display="flex" flexDirection="row">
+                    <span className="tab-label">{t('Languages')}</span>
+                    <Box ml={3}>{`(${refinements.items.length})`}</Box>
+                  </Box>
+                </div>
+              }
             />
           </Tabs>
         </Box>

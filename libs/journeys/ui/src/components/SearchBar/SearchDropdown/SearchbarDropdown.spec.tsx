@@ -232,4 +232,21 @@ describe('SearchbarDropdown', () => {
     fireEvent.click(firstSuggestion)
     expect(refine).toHaveBeenCalledWith('English')
   })
+
+  it('should display number of languages available in tab header', async () => {
+    render(
+      <MockedProvider mocks={[getLanguagesContinentsMock]}>
+        <SearchbarDropdown
+          open
+          refinements={refinements}
+          tabIndex={1}
+          handleTabValueChange={noop}
+        />
+      </MockedProvider>
+    )
+    await waitFor(() => {
+      expect(screen.getByText('Search Suggestions')).toBeInTheDocument()
+    })
+    expect(screen.getByText('(7)')).toBeVisible()
+  })
 })
