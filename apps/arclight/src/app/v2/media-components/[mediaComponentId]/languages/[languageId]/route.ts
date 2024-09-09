@@ -223,7 +223,7 @@ export async function GET(
       webEmbedPlayer,
       webEmbedSharePlayer
     }),
-    // openGraphVideoPlayer never implemented in arclight
+    // openGraphVideoPlayer never implemented in arclight in languages/id
     openGraphVideoPlayer: 'https://jesusfilm.org/',
     _links: {
       self: {
