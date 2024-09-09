@@ -17,17 +17,41 @@ import { useSortLanguageContinents } from '../../../libs/useSortLanguageContinen
 import { LanguageContinentRefinements } from './LanguageContinentRefinements'
 import { Suggestions } from './Suggestions'
 
+const StyledBox = styled(Box)(({ theme }) => ({
+  borderRadius: 32,
+  padding: `0 ${theme.spacing(1)}`,
+  marginLeft: theme.spacing(3),
+  border: `2px solid ${theme.palette.secondary.main}${
+    theme.palette.mode === 'dark' ? '2E' : '1A'
+  }`
+}))
+
 interface LocalTabsHeaderProps {
   label: string
   count?: number
+  maxCount?: number
 }
 
-function LocalTabsHeader({ label, count }: LocalTabsHeaderProps): ReactElement {
+function LocalTabsHeader({
+  label,
+  count,
+  maxCount = 1000
+}: LocalTabsHeaderProps): ReactElement {
+  const getDisplayedCount = (
+    count: number | undefined,
+    maxCount: number
+  ): string | null => {
+    if (count == null || count <= 0) return null
+    return count >= maxCount ? `${maxCount}+` : count.toString()
+  }
+
+  const displayedCount = getDisplayedCount(count, maxCount)
+
   return (
     <div className="tab-label">
-      <Box display="flex" flexDirection="row">
+      <Box display="flex" flexDirection="row" alignItems="center">
         <span>{label}</span>
-        {count != null && count > 0 && <Box ml={3}>{`(${count})`}</Box>}
+        {displayedCount != null && <StyledBox>{displayedCount}</StyledBox>}
       </Box>
     </div>
   )

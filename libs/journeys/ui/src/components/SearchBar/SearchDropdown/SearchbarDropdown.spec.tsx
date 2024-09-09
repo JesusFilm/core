@@ -247,6 +247,6 @@ describe('SearchbarDropdown', () => {
     await waitFor(() => {
       expect(screen.getByText('Search Suggestions')).toBeInTheDocument()
     })
-    expect(screen.getByText('(7)')).toBeVisible()
+    expect(screen.getByText('7')).toBeVisible()
   })
 })
