@@ -6,7 +6,7 @@ import '../../../../../../test/i18n'
 
 import { languageRefinements } from '../../../data'
 
-import { RefinementGroup, normalizeLanguage } from './RefinementGroup'
+import { RefinementGroup } from './RefinementGroup'
 
 jest.mock('react-instantsearch')
 
@@ -129,24 +129,6 @@ describe('RefinementGroup', () => {
       />
     )
     expect(screen.getByRole('checkbox', { name: 'Cantonese' })).toBeDisabled()
-  })
-
-  it('should normalise empty language name', () => {
-    expect(normalizeLanguage('')).toBe('')
-  })
-
-  it('should normalise french language name', () => {
-    expect(normalizeLanguage('French')).toBe('french')
-  })
-
-  it('should normalise spanish language name', () => {
-    expect(normalizeLanguage('Spanish, Latin American')).toBe('spanish')
-  })
-
-  it('should normalise quecha language name', () => {
-    expect(
-      normalizeLanguage('Quechua, Huanuco, Huamalies-Northern Dos De Mayo')
-    ).toBe('quechua')
   })
 
   it('should not refine query when no language in query', () => {

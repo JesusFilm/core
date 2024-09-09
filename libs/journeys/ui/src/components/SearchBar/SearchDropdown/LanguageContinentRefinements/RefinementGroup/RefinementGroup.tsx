@@ -7,15 +7,13 @@ import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refine
 import { type ReactElement } from 'react'
 import { useSearchBox } from 'react-instantsearch'
 
+import { normalizeLanguage } from '../../../../../libs/algolia/normalizeLanguage'
+
 interface RefinementGroupProps {
   title: string
   refinement: RefinementListRenderState
   handleSelectedContinent: (continent: string) => void
   selectedContinent?: string
-}
-
-export function normalizeLanguage(language: string): string {
-  return language.toLowerCase().split(',')[0].trim()
 }
 
 export function RefinementGroup({
