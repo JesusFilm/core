@@ -12,6 +12,7 @@ import type {
   GetLanguages,
   GetLanguagesVariables
 } from '../../../../../__generated__/GetLanguages'
+import { ThemeMode, ThemeName } from '../../../../../__generated__/globalTypes'
 import type {
   JourneySettingsUpdate,
   JourneySettingsUpdateVariables
@@ -45,11 +46,35 @@ function getJourneySettingsUpdateMock(
         journeyUpdate: {
           id: defaultJourney.id,
           __typename: 'Journey',
-          title,
-          description,
+          title: 'Changed Title',
+          description: 'Changed Description',
           strategySlug: null,
-          language: journey.language,
-          tags: []
+          language: {
+            __typename: 'Language', // Ensure this matches the typename expected
+            id: languageId, // or whatever ID you have
+            name: journey.language.name, // assuming this is the name of the language
+            bcp47: 'journey.language.bcp47', // add the bcp47 code
+            iso3: 'journey.language.iso3' // add the iso3 code
+          },
+          tags: [],
+          createdAt: null,
+          featuredAt: null,
+          publishedAt: null,
+          themeName: ThemeName.base,
+          themeMode: ThemeMode.light,
+          seoTitle: null,
+          seoDescription: null,
+          template: null,
+          primaryImageBlock: null,
+          creatorDescription: null,
+          creatorImageBlock: null,
+          userJourneys: null,
+          host: null,
+          slug: 'null',
+          status: journey.status,
+          blocks: null,
+          chatButtons: [],
+          team: null
         }
       }
     }
