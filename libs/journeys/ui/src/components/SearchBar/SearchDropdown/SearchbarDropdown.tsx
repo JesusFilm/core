@@ -22,6 +22,7 @@ import { useSearchBar } from '../../../libs/algolia/SearchBarProvider'
 import { useLanguagesContinentsQuery } from '../../../libs/useLanguagesContinentsQuery'
 import { useSortLanguageContinents } from '../../../libs/useSortLanguageContinents'
 
+import { LocaleDetails } from './LocaleDetails'
 import { RefinementGroups } from './RefinementGroups'
 import { Suggestions } from './Suggestions'
 
@@ -117,6 +118,7 @@ export function SearchbarDropdown({
         sx={{ px: 8, pb: 8, bgcolor: 'background.paper', mt: 3 }}
         color="text.primary"
       >
+        <LocaleDetails />
         <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 5 }}>
           <Tabs
             value={tabValue}
