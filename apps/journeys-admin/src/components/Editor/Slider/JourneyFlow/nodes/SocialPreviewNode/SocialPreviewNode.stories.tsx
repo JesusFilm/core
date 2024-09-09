@@ -63,7 +63,8 @@ const stepAndCardBlockCreateMock: MockedResponse<
         nextBlockId: null,
         __typename: 'StepBlock',
         x: null,
-        y: null
+        y: null,
+        slug: null
       },
       cardBlockCreate: {
         id: 'cardId',

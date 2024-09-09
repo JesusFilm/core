@@ -5,6 +5,7 @@ import { createContext, useContext } from 'react'
 export interface User extends UserInfo {
   emailVerified: boolean
   customClaims: Claims
+  token: string
 }
 
 export interface AuthContextValue {

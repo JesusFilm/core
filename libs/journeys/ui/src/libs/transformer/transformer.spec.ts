@@ -18,7 +18,8 @@ describe('transformer', () => {
           parentOrder: 0,
           id: 'Root1',
           nextBlockId: null,
-          locked: false
+          locked: false,
+          slug: null
         },
         {
           __typename: 'CardBlock',
@@ -59,7 +60,8 @@ describe('transformer', () => {
           parentOrder: 1,
           id: 'Root2',
           nextBlockId: null,
-          locked: false
+          locked: false,
+          slug: null
         },
         {
           __typename: 'RadioOptionBlock',
@@ -111,7 +113,8 @@ describe('transformer', () => {
         parentBlockId: null,
         parentOrder: 0,
         nextBlockId: null,
-        locked: false
+        locked: false,
+        slug: null
       },
       {
         children: [
@@ -147,7 +150,8 @@ describe('transformer', () => {
         parentBlockId: null,
         parentOrder: 1,
         nextBlockId: null,
-        locked: false
+        locked: false,
+        slug: null
       }
     ])
   })

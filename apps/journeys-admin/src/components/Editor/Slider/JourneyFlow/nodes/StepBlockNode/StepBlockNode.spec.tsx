@@ -38,6 +38,7 @@ describe('StepBlockNode', () => {
       parentOrder: 0,
       locked: false,
       nextBlockId: null,
+      slug: null,
       children: []
     }
 
@@ -125,6 +126,7 @@ describe('StepBlockNode', () => {
       parentOrder: 0,
       locked: false,
       nextBlockId: null,
+      slug: null,
       children: [
         {
           __typename: 'CardBlock',
@@ -182,6 +184,7 @@ describe('StepBlockNode', () => {
       parentOrder: 0,
       locked: false,
       nextBlockId: null,
+      slug: null,
       children: []
     }
 
@@ -218,6 +221,7 @@ describe('StepBlockNode', () => {
       parentOrder: 0,
       locked: false,
       nextBlockId: null,
+      slug: null,
       children: []
     }
 
