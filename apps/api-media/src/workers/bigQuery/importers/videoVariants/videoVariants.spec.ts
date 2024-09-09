@@ -59,6 +59,8 @@ describe('bigQuery/importers/videoVariants', () => {
       await importOne({
         id: '1',
         hls: 'www.example.com',
+        dash: 'www.example.com',
+        share: 'www.example.com',
         duration: 123.123,
         languageId: 529,
         videoId: 'videoId',
@@ -73,6 +75,8 @@ describe('bigQuery/importers/videoVariants', () => {
         create: {
           duration: 123,
           hls: 'www.example.com',
+          dash: 'www.example.com',
+          share: 'www.example.com',
           id: '1',
           languageId: '529',
           slug: 'video-slug/english',
@@ -82,6 +86,8 @@ describe('bigQuery/importers/videoVariants', () => {
         update: {
           duration: 123,
           hls: 'www.example.com',
+          dash: 'www.example.com',
+          share: 'www.example.com',
           id: '1',
           languageId: '529',
           slug: 'video-slug/english',
@@ -96,6 +102,8 @@ describe('bigQuery/importers/videoVariants', () => {
         importOne({
           id: 'mockId',
           hls: 'www.example.com',
+          dash: 'www.example.com',
+          share: 'www.example.com',
           duration: 123.123,
           languageId: 529,
           videoId: 'unknownVideoId',
@@ -115,6 +123,8 @@ describe('bigQuery/importers/videoVariants', () => {
         {
           id: 'mockId',
           hls: 'www.example.com',
+          dash: 'www.example.com',
+          share: 'www.example.com',
           duration: 123.123,
           languageId: 529,
           videoId: 'videoId',
@@ -127,6 +137,8 @@ describe('bigQuery/importers/videoVariants', () => {
         {
           id: 'mockId1',
           hls: 'www.example.com',
+          dash: 'www.example.com',
+          share: 'www.example.com',
           duration: 123.123,
           languageId: 3804,
           videoId: 'videoId1',
@@ -142,6 +154,8 @@ describe('bigQuery/importers/videoVariants', () => {
           {
             id: 'mockId',
             hls: 'www.example.com',
+            dash: 'www.example.com',
+            share: 'www.example.com',
             duration: 123,
             languageId: '529',
             slug: 'video-slug/english',
@@ -151,6 +165,8 @@ describe('bigQuery/importers/videoVariants', () => {
           {
             id: 'mockId1',
             hls: 'www.example.com',
+            dash: 'www.example.com',
+            share: 'www.example.com',
             duration: 123,
             languageId: '3804',
             slug: 'video-slug-1/korean',
