@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { type ReactElement } from 'react'
 
-import { useSearchBar } from '../../../../../libs/algolia/SearchbarProvider'
+import { useSearchBar } from '../../../../../libs/algolia/SearchBarProvider'
 
 interface RefinementGroupProps {
   title: string

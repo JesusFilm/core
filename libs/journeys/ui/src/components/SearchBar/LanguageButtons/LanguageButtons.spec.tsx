@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 
-import { SearchbarProvider } from '../../../libs/algolia/SearchbarProvider'
+import { SearchBarProvider } from '../../../libs/algolia/SearchBarProvider'
 import { languageRefinements } from '../data'
 
 import { LanguageButtons } from './LanguageButtons'
@@ -29,9 +29,9 @@ describe('LanguageButtons', () => {
 
   it('should render the language button with default text', () => {
     render(
-      <SearchbarProvider>
+      <SearchBarProvider>
         <LanguageButtons onClick={jest.fn()} refinements={refinements} />
-      </SearchbarProvider>
+      </SearchBarProvider>
     )
     expect(
       screen.getAllByRole('button', { name: 'Language' })[0]
@@ -42,9 +42,9 @@ describe('LanguageButtons', () => {
     const onClick = jest.fn()
 
     render(
-      <SearchbarProvider>
+      <SearchBarProvider>
         <LanguageButtons onClick={onClick} refinements={refinements} />
-      </SearchbarProvider>
+      </SearchBarProvider>
     )
 
     const button = screen.getAllByRole('button', { name: 'Language' })[0]
@@ -54,12 +54,12 @@ describe('LanguageButtons', () => {
 
   it('should render the button with a selected language', () => {
     render(
-      <SearchbarProvider>
+      <SearchBarProvider>
         <LanguageButtons
           onClick={jest.fn()}
           refinements={refinementsWithRefinedValue}
         />
-      </SearchbarProvider>
+      </SearchBarProvider>
     )
     expect(
       screen.getAllByRole('button', { name: 'English' })[0]
@@ -88,12 +88,12 @@ describe('LanguageButtons', () => {
     } as unknown as RefinementListRenderState
 
     render(
-      <SearchbarProvider>
+      <SearchBarProvider>
         <LanguageButtons
           onClick={jest.fn()}
           refinements={selectedRefinements}
         />
-      </SearchbarProvider>
+      </SearchBarProvider>
     )
 
     expect(screen.getByRole('button', { name: 'English' })).toBeInTheDocument()

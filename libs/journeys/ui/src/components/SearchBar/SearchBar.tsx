@@ -13,7 +13,7 @@ import { useRefinementList, useSearchBox } from 'react-instantsearch'
 import Search1Icon from '@core/shared/ui/icons/Search1'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
 
-import { SearchbarProvider } from '../../libs/algolia/SearchbarProvider'
+import { SearchBarProvider } from '../../libs/algolia/SearchBarProvider'
 
 import { LanguageButtons } from './LanguageButtons'
 
@@ -91,7 +91,7 @@ export function SearchBar({
   }
 
   return (
-    <SearchbarProvider>
+    <SearchBarProvider>
       <ClickAwayListener onClickAway={() => setOpen(false)}>
         <Box>
           <Box
@@ -177,6 +177,6 @@ export function SearchBar({
           )}
         </Box>
       </ClickAwayListener>
-    </SearchbarProvider>
+    </SearchBarProvider>
   )
 }

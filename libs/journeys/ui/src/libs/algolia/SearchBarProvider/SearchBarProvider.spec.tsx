@@ -2,13 +2,13 @@ import { renderHook } from '@testing-library/react'
 import { ReactNode } from 'react'
 
 import {
+  SearchBarProvider,
   SearchBarState,
-  SearchbarProvider,
   reducer,
   useSearchBar
-} from './SearchbarProvider'
+} from './SearchBarProvider'
 
-describe('SearchbarContext', () => {
+describe('SearchBarContext', () => {
   describe('reducer', () => {
     describe('SelectLanguageContinent', () => {
       it('should set a continent for the selected language', () => {
@@ -158,14 +158,14 @@ describe('SearchbarContext', () => {
     })
   })
 
-  describe('SearchbarProvider', () => {
+  describe('SearchBarProvider', () => {
     it('should set initial state', () => {
       const state: SearchBarState = {
         continentLanguages: {}
       }
 
       const wrapper = ({ children }: { children: ReactNode }): ReactNode => (
-        <SearchbarProvider initialState={state}>{children}</SearchbarProvider>
+        <SearchBarProvider initialState={state}>{children}</SearchBarProvider>
       )
       const { result } = renderHook(() => useSearchBar(), {
         wrapper

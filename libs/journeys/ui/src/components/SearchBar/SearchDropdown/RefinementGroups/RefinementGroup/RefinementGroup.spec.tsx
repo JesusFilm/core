@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 
 import '../../../../../../test/i18n'
-import { SearchbarProvider } from '../../../../../libs/algolia/SearchbarProvider'
+import { SearchBarProvider } from '../../../../../libs/algolia/SearchBarProvider'
 import { languageRefinements } from '../../../data'
 
 import { RefinementGroup } from './RefinementGroup'
@@ -16,18 +16,18 @@ describe('RefinementGroup', () => {
 
   it('should have languages header', () => {
     render(
-      <SearchbarProvider>
+      <SearchBarProvider>
         <RefinementGroup title="Languages" refinement={useRefinementList} />
-      </SearchbarProvider>
+      </SearchBarProvider>
     )
     expect(screen.getByText('Languages')).toBeInTheDocument()
   })
 
   it('should have languages listed', () => {
     render(
-      <SearchbarProvider>
+      <SearchBarProvider>
         <RefinementGroup title="Languages" refinement={useRefinementList} />
-      </SearchbarProvider>
+      </SearchBarProvider>
     )
     expect(screen.getByText('English')).toBeInTheDocument()
     expect(screen.getByText('Spanish, Latin American')).toBeInTheDocument()
@@ -36,9 +36,9 @@ describe('RefinementGroup', () => {
 
   it('should refine when langauge selected', () => {
     render(
-      <SearchbarProvider>
+      <SearchBarProvider>
         <RefinementGroup title="Languages" refinement={useRefinementList} />
-      </SearchbarProvider>
+      </SearchBarProvider>
     )
     fireEvent.click(screen.getByText('Cantonese'))
     expect(refine).toHaveBeenCalled()
@@ -50,9 +50,9 @@ describe('RefinementGroup', () => {
       refine
     } as unknown as RefinementListRenderState
     render(
-      <SearchbarProvider>
+      <SearchBarProvider>
         <RefinementGroup title="Languages" refinement={emptyRefinementList} />
-      </SearchbarProvider>
+      </SearchBarProvider>
     )
     expect(screen.getByText('Languages')).toBeInTheDocument()
     expect(screen.queryByRole('label')).not.toBeInTheDocument()
@@ -71,7 +71,7 @@ describe('RefinementGroup', () => {
     } as unknown as RefinementListRenderState
 
     render(
-      <SearchbarProvider
+      <SearchBarProvider
         initialState={{
           continentLanguages: {
             Asia: ['Cantonese']
@@ -82,7 +82,7 @@ describe('RefinementGroup', () => {
           title="Asia"
           refinement={useRefinementListWithRefinedValue}
         />
-      </SearchbarProvider>
+      </SearchBarProvider>
     )
     expect(screen.getByRole('checkbox', { name: 'Cantonese' })).toBeChecked()
   })
@@ -100,7 +100,7 @@ describe('RefinementGroup', () => {
     } as unknown as RefinementListRenderState
 
     render(
-      <SearchbarProvider
+      <SearchBarProvider
         initialState={{
           continentLanguages: {
             Europe: ['Cantonese']
@@ -111,7 +111,7 @@ describe('RefinementGroup', () => {
           title="Asia"
           refinement={useRefinementListWithRefinedValue}
         />
-      </SearchbarProvider>
+      </SearchBarProvider>
     )
     expect(screen.getByRole('checkbox', { name: 'Cantonese' })).toBeDisabled()
   })

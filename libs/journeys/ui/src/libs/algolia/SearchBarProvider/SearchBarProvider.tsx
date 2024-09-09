@@ -37,12 +37,12 @@ interface RemoveLanguageContinentsAction {
   language: Language
 }
 
-type SearchbarAction =
+type SearchBarAction =
   | SelectLanguageContinentAction
   | SetDefaultLanguageContinentAction
   | RemoveLanguageContinentsAction
 
-function handleSelectLanguageContinent(
+function selectLanguageContinent(
   state: SearchBarState,
   action: SelectLanguageContinentAction
 ): SearchBarState {
@@ -60,7 +60,7 @@ function handleSelectLanguageContinent(
   }
 }
 
-function handleSetDefaultLanguageContinent(
+function setDefaultLanguageContinent(
   state: SearchBarState,
   action: SetDefaultLanguageContinentAction
 ): SearchBarState {
@@ -96,7 +96,7 @@ function handleSetDefaultLanguageContinent(
   return state
 }
 
-function handleRemoveLanguageContinents(
+function removeLanguageContinents(
   state: SearchBarState,
   action: RemoveLanguageContinentsAction
 ): SearchBarState {
@@ -112,57 +112,57 @@ function handleRemoveLanguageContinents(
 
 export const reducer = (
   state: SearchBarState,
-  action: SearchbarAction
+  action: SearchBarAction
 ): SearchBarState => {
   switch (action.type) {
     case 'SelectLanguageContinent':
-      return handleSelectLanguageContinent(state, action)
+      return selectLanguageContinent(state, action)
     case 'SetDefaultLanguageContinent':
-      return handleSetDefaultLanguageContinent(state, action)
+      return setDefaultLanguageContinent(state, action)
     case 'RemoveLanguageContinents':
-      return handleRemoveLanguageContinents(state, action)
+      return removeLanguageContinents(state, action)
     default:
       return state
   }
 }
 
-interface SearchbarContextType {
+interface SearchBarContextType {
   state: SearchBarState
-  dispatch: Dispatch<SearchbarAction>
+  dispatch: Dispatch<SearchBarAction>
 }
 
-const SearchbarContext = createContext<SearchbarContextType | undefined>(
+const SearchBarContext = createContext<SearchBarContextType | undefined>(
   undefined
 )
 
-interface SearchbarProviderProps {
+interface SearchBarProviderProps {
   children: ReactNode
   initialState?: Partial<SearchBarState>
 }
 
-export function SearchbarProvider({
+export function SearchBarProvider({
   children,
   initialState
-}: SearchbarProviderProps): ReactElement {
+}: SearchBarProviderProps): ReactElement {
   const [state, dispatch] = useReducer(reducer, {
     continentLanguages: {},
     ...initialState
   })
 
   return (
-    <SearchbarContext.Provider
+    <SearchBarContext.Provider
       value={{
         state,
         dispatch
       }}
     >
       {children}
-    </SearchbarContext.Provider>
+    </SearchBarContext.Provider>
   )
 }
 
-export function useSearchBar(): SearchbarContextType {
-  const context = useContext(SearchbarContext)
+export function useSearchBar(): SearchBarContextType {
+  const context = useContext(SearchBarContext)
   if (context === undefined) {
     throw new Error('useSearchBar must be used within a SearchbarProvider')
   }
