@@ -160,8 +160,8 @@ export function transformSteps(
 
     nodes.push({
       id: step.id,
-      type: 'StepBlock',
-      data: {},
+      type: step.menuBlock ? 'Menu' : 'StepBlock',
+      data: step,
       position: positions[step.id]
     })
   })

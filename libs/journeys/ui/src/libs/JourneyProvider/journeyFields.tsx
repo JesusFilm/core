@@ -90,5 +90,10 @@ export const JOURNEY_FIELDS = gql`
     showLikeButton
     showDislikeButton
     displayTitle
+    menuButtonIcon
+    menuStepBlockId
+    menuStepBlock {
+      ...BlockFields
+    }
   }
 `

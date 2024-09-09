@@ -315,6 +315,7 @@ export class JourneyResolver {
     const journey = await this.prismaService.journey.findUnique({
       where: filter
     })
+    console.log({ journey, id, idType, filter })
     if (journey == null)
       throw new GraphQLError('journey not found', {
         extensions: { code: 'NOT_FOUND' }
@@ -959,7 +960,7 @@ export class JourneyResolver {
       idNotIn.push(journey.logoImageBlockId)
     }
     if (journey.menuStepBlockId != null) {
-      idNotIn.push(journey.menuStepBlockId)
+      // idNotIn.push(journey.menuStepBlockId)
     }
     if (idNotIn.length > 0) {
       filter.id = { notIn: idNotIn }

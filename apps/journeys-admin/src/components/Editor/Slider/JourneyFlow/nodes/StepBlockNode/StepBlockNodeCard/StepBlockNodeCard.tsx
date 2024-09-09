@@ -8,6 +8,7 @@ import { ReactElement } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import {
   BlockFields_CardBlock as CardBlock,
@@ -16,6 +17,8 @@ import {
 import { getCardMetadata } from '../libs/getCardMetadata'
 import { STEP_NODE_CARD_HEIGHT, STEP_NODE_CARD_WIDTH } from '../libs/sizes'
 import { StepBlockNodeIcon } from '../StepBlockNodeIcon'
+
+import { MenuBlockNodeIcon } from './MenuBlockNodeIcon'
 
 interface StepBlockNodeCardProps {
   step: TreeBlock<StepBlock>
@@ -31,6 +34,7 @@ export function StepBlockNodeCard({
     dispatch
   } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
+  const { journey } = useJourney()
 
   const card = step?.children[0] as TreeBlock<CardBlock> | undefined
   const {
@@ -59,6 +63,10 @@ export function StepBlockNodeCard({
   }
 
   const nodeBgImage = priorityImage ?? bgImage
+
+  const isMenuNode =
+    journey?.menuStepBlockId != null &&
+    card?.parentBlockId === journey?.menuStepBlockId
 
   const conditionalStyles =
     showAnalytics === true
@@ -117,11 +125,17 @@ export function StepBlockNodeCard({
               nodeBgImage != null ? `url(${nodeBgImage})` : undefined
           }}
         >
-          {priorityBlock != null && (
-            <StepBlockNodeIcon
-              typename={priorityBlock.__typename}
-              showMultiIcon={hasMultipleActions}
-            />
+          {isMenuNode && journey.menuButtonIcon != null ? (
+            <MenuBlockNodeIcon icon={journey.menuButtonIcon} />
+          ) : (
+            <>
+              {priorityBlock != null && (
+                <StepBlockNodeIcon
+                  typename={priorityBlock.__typename}
+                  showMultiIcon={hasMultipleActions}
+                />
+              )}
+            </>
           )}
         </Box>
         <Box

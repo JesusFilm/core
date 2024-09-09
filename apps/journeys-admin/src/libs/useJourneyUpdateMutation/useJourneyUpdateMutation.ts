@@ -28,6 +28,8 @@ export const JOURNEY_SETTINGS_UPDATE = gql`
       showLikeButton
       showDislikeButton
       displayTitle
+      menuButtonIcon
+      menuStepBlockId
     }
   }
 `
