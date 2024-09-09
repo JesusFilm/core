@@ -1,5 +1,7 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
+import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
+import { useSearchBox } from 'react-instantsearch'
 
 import '../../../../../../test/i18n'
 import { SearchBarProvider } from '../../../../../libs/algolia/SearchBarProvider'
@@ -7,12 +9,39 @@ import { languageRefinements } from '../../../data'
 
 import { RefinementGroup } from './RefinementGroup'
 
+jest.mock('react-instantsearch')
+
+const mockUseSearchBox = useSearchBox as jest.MockedFunction<
+  typeof useSearchBox
+>
+
 describe('RefinementGroup', () => {
   const refine = jest.fn()
+
   const useRefinementList = {
     items: languageRefinements,
     refine
   } as unknown as RefinementListRenderState
+
+  const useRefinementListWithRefinedValue = {
+    items: [
+      {
+        label: 'Cantonese',
+        value: 'Cantonese',
+        isRefined: true
+      }
+    ],
+    refine
+  } as unknown as RefinementListRenderState
+
+  const useSearchBox = {
+    query: 'Hello World!',
+    refine
+  } as unknown as SearchBoxRenderState
+
+  beforeEach(() => {
+    mockUseSearchBox.mockReturnValue(useSearchBox)
+  })
 
   it('should have languages header', () => {
     render(
@@ -58,18 +87,7 @@ describe('RefinementGroup', () => {
     expect(screen.queryByRole('label')).not.toBeInTheDocument()
   })
 
-  it('should check the checkbox if the language is refined and selected in the specified continent', () => {
-    const useRefinementListWithRefinedValue = {
-      items: [
-        {
-          label: 'Cantonese',
-          value: 'Cantonese',
-          isRefined: true
-        }
-      ],
-      refine
-    } as unknown as RefinementListRenderState
-
+  it('should check the checkbox if title, continent, and refinement match', () => {
     render(
       <SearchBarProvider
         initialState={{
@@ -114,5 +132,61 @@ describe('RefinementGroup', () => {
       </SearchBarProvider>
     )
     expect(screen.getByRole('checkbox', { name: 'Cantonese' })).toBeDisabled()
+  })
+
+  it('should not refine query when no language in query', () => {
+    const refineQuery = jest.fn()
+    const useSearchBox = {
+      query: 'Hello World!',
+      refineQuery
+    } as unknown as SearchBoxRenderState
+    mockUseSearchBox.mockReturnValue(useSearchBox)
+
+    render(
+      <SearchBarProvider>
+        <RefinementGroup
+          title="Asia"
+          refinement={useRefinementListWithRefinedValue}
+        />
+      </SearchBarProvider>
+    )
+    expect(refineQuery).not.toHaveBeenCalled()
+  })
+
+  it('should not refine query when refinement being unselected', () => {
+    const refineQuery = jest.fn()
+    const useSearchBox = {
+      query: 'Hello World!',
+      refineQuery
+    } as unknown as SearchBoxRenderState
+    mockUseSearchBox.mockReturnValue(useSearchBox)
+
+    render(
+      <SearchBarProvider>
+        <RefinementGroup
+          title="Asia"
+          refinement={useRefinementListWithRefinedValue}
+        />
+      </SearchBarProvider>
+    )
+    fireEvent.click(screen.getByText('Cantonese'))
+    expect(refineQuery).not.toHaveBeenCalled()
+  })
+
+  it('should refine query with language-striped query when language in query', async () => {
+    const refineQuery = jest.fn()
+    const useSearchBox = {
+      query: 'Jesus Chinese',
+      refine: refineQuery
+    } as unknown as SearchBoxRenderState
+    mockUseSearchBox.mockReturnValue(useSearchBox)
+
+    render(
+      <SearchBarProvider>
+        <RefinementGroup title="Asia" refinement={useRefinementList} />
+      </SearchBarProvider>
+    )
+    fireEvent.click(screen.getByText('Chinese, Traditional'))
+    await waitFor(() => expect(refineQuery).toHaveBeenCalledWith('Jesus'))
   })
 })
