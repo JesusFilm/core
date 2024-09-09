@@ -33,6 +33,7 @@ const step1: TreeBlock<StepBlock> = {
   parentOrder: 0,
   locked: false,
   nextBlockId: null,
+  slug: null,
   children: [
     {
       __typename: 'CardBlock',
@@ -87,6 +88,7 @@ const step2: TreeBlock<StepBlock> = {
   parentOrder: 1,
   locked: false,
   nextBlockId: null,
+  slug: null,
   children: [
     {
       __typename: 'CardBlock',

@@ -61,6 +61,7 @@ export const selectedStep: TreeBlock<StepBlock> = {
   parentOrder: 0,
   locked: true,
   nextBlockId: null,
+  slug: null,
   children: [selectedStepCardBlock]
 }
 

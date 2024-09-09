@@ -5,19 +5,15 @@ import isFunction from 'lodash/isFunction'
 import { ReactElement, useEffect, useState } from 'react'
 import { use100vh } from 'react-div-100vh'
 
-import type { TreeBlock } from '@core/journeys/ui/block'
-
-import { Conductor } from '../Conductor'
+import { JourneyRenderer } from '../JourneyRenderer'
 
 import { ClickableCard } from './ClickableCard'
 
 interface EmbeddedPreviewProps {
-  blocks: TreeBlock[]
   disableFullscreen?: boolean
 }
 
 export function EmbeddedPreview({
-  blocks,
   disableFullscreen
 }: EmbeddedPreviewProps): ReactElement {
   const viewportHeight = use100vh()
@@ -108,7 +104,7 @@ export function EmbeddedPreview({
               <Close />
             </IconButton>
           )}
-          <Conductor blocks={blocks} />
+          <JourneyRenderer />
         </ClickableCard>
       </Box>
     </>

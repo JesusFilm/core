@@ -1352,7 +1352,6 @@ type Language
   @join__type(graph: JOURNEYS, key: "id")
   @join__type(graph: LANGUAGES, key: "id")
   @join__type(graph: MEDIA, key: "id", extension: true)
-  @join__type(graph: USERS, key: "id")
 {
   id: ID!
   bcp47: String @join__field(graph: LANGUAGES)
@@ -2749,7 +2748,6 @@ enum ThemeName
 
 type Translation
   @join__type(graph: JOURNEYS)
-  @join__type(graph: USERS)
 {
   value: String!
   language: Language!

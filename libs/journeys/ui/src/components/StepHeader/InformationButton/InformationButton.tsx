@@ -106,7 +106,7 @@ export function InformationButton(): ReactElement {
         </NextLink>
         <Box sx={{ px: 4, py: 1, maxWidth: '204px' }}>
           <Typography
-            color={(theme) => theme.palette.action.disabled}
+            color={theme.palette.action.disabled}
             variant="caption"
             sx={{ display: 'block', lineHeight: 1.2 }}
           >

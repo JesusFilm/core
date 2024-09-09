@@ -166,7 +166,7 @@ describe('NavigationDrawer', () => {
           </Suspense>
         </MockedProvider>
       )
-      fireEvent.focusIn(getByTestId('NavigationListItemDiscover'))
+      fireEvent.mouseOver(getByTestId('NavigationListItemDiscover'))
       await waitFor(() =>
         expect(
           getByRole('tooltip', { name: 'New Journey' })
