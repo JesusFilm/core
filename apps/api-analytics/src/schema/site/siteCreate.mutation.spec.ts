@@ -1,16 +1,17 @@
+import { graphql } from 'gql.tada'
+
 import { Prisma } from '.prisma/api-analytics-client'
 
 import { getAuthenticatedClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { fixedDate } from '../../../test/timers'
-import { gql } from '../../__generated__/gql'
 
 jest.mock('short-unique-id', () => ({
   __esModule: true,
   default: jest.fn().mockImplementation(() => ({ rnd: () => 'test-slug' }))
 }))
 
-const SITE_CREATE_MUTATION = gql(`
+const SITE_CREATE_MUTATION = graphql(`
   mutation SiteCreate($input: SiteCreateInput!) {
     siteCreate(input: $input) {
       ... on Error {

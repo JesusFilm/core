@@ -53,12 +53,6 @@
         "jestConfig": "apps/api-analytics/jest.config.ts"
       }
     },
-    "codegen": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "graphql-codegen --config apps/api-analytics/codegen.ts"
-      }
-    },
     "generate-graphql": {
       "executor": "nx:run-commands",
       "options": {
@@ -113,6 +107,12 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "codecov -f coverage/apps/api-analytics/cobertura-coverage.xml -F apps.api-analytics"
+      }
+    },
+    "codegen": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "gql.tada generate output --tsconfig apps/api-analytics/tsconfig.json"
       }
     }
   },
