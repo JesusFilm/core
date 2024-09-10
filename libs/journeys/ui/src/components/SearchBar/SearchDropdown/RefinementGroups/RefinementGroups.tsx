@@ -1,11 +1,12 @@
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import Grid from '@mui/material/Grid2'
 import Stack from '@mui/material/Stack'
-import { styled, useTheme } from '@mui/material/styles'
+import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
 import { useClearRefinements } from 'react-instantsearch'
 
 import ChevronDown from '@core/shared/ui/icons/ChevronDown'
@@ -28,35 +29,32 @@ const StyledButton = styled(Button)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper
 }))
 
-interface LanguageContinentRefinementsProps {
+interface RefinementGroupsProps {
   refinements: RefinementListRenderState
   languages: Record<string, string[]>
 }
 
-export function LanguageContinentRefinements({
+export function RefinementGroups({
   refinements,
   languages
-}: LanguageContinentRefinementsProps): ReactElement {
+}: RefinementGroupsProps): ReactElement {
   const { t } = useTranslation('apps-watch')
-  const theme = useTheme()
-  const { refine: clearRefinements, canRefine: canClearRefinements } =
-    useClearRefinements()
 
-  const [selectedContinent, setSelectedContinent] = useState<string>()
   const { canToggleShowMore, isShowingMore, toggleShowMore } = refinements
   const shouldFade = canToggleShowMore && !isShowingMore
+  const { refine: clearRefinements, canRefine: canClearRefinements } =
+    useClearRefinements()
 
   return (
     <>
       {refinements.items.length > 0 ? (
         <>
-          <Stack
+          <Grid
+            container
+            spacing={1}
+            columns={{ xs: 1, lg: 6 }}
             direction={{ xs: 'column', lg: 'row' }}
-            justifyContent="space-between"
             sx={{
-              [theme.breakpoints.down('lg')]: {
-                gap: 6
-              },
               '-webkit-mask-image': shouldFade
                 ? {
                     xs: 'linear-gradient(to bottom, black 85%, transparent 100%)',
@@ -77,24 +75,21 @@ export function LanguageContinentRefinements({
                   continentLanguages.some((language) => language === item.label)
                 )
                 return items.length > 0 ? (
-                  <RefinementGroup
-                    key={continent}
-                    title={continent}
-                    refinement={{
-                      ...refinements,
-                      items
-                    }}
-                    selectedContinent={selectedContinent}
-                    handleSelectedContinent={(continent) =>
-                      setSelectedContinent(continent)
-                    }
-                  />
+                  <Grid key={continent} size={1}>
+                    <RefinementGroup
+                      title={continent}
+                      refinement={{
+                        ...refinements,
+                        items
+                      }}
+                    />
+                  </Grid>
                 ) : (
                   <></>
                 )
               }
             )}
-          </Stack>
+          </Grid>
           <Box sx={{ justifyContent: 'center', display: 'flex' }}>
             <Stack direction="row" spacing={3}>
               {canToggleShowMore && (

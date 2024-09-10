@@ -1,6 +1,6 @@
 import Button from '@mui/material/Button'
 import { styled } from '@mui/material/styles'
-import { MouseEventHandler, ReactElement } from 'react'
+import { ComponentProps, MouseEventHandler, ReactElement } from 'react'
 
 import ChevronDown from '@core/shared/ui/icons/ChevronDown'
 import Globe1Icon from '@core/shared/ui/icons/Globe1'
@@ -26,13 +26,15 @@ interface LanguageButtonProps {
   index?: number
   isDropdown?: boolean
   handleClick?: MouseEventHandler<HTMLButtonElement> | undefined
+  props?: ComponentProps<typeof Button>
 }
 
 export function LanguageButton({
   content,
   index,
   isDropdown = true,
-  handleClick
+  handleClick,
+  ...props
 }: LanguageButtonProps): ReactElement {
   return (
     <StyledButton
@@ -42,6 +44,7 @@ export function LanguageButton({
       onClick={handleClick}
       startIcon={<Globe1Icon />}
       endIcon={isDropdown ? <ChevronDown /> : <X2Icon />}
+      {...props}
     >
       {content}
     </StyledButton>

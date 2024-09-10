@@ -5,16 +5,24 @@ import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { useTranslation } from 'next-i18next'
-import { Dispatch, ReactElement, SetStateAction } from 'react'
+import {
+  Dispatch,
+  ReactElement,
+  SetStateAction,
+  SyntheticEvent,
+  useCallback,
+  useEffect
+} from 'react'
 
 import Globe1 from '@core/shared/ui/icons/Globe1'
 import Search1 from '@core/shared/ui/icons/Search1'
 import { TabPanel } from '@core/shared/ui/TabPanel'
 
+import { useSearchBar } from '../../../libs/algolia/SearchBarProvider'
 import { useLanguagesContinentsQuery } from '../../../libs/useLanguagesContinentsQuery'
 import { useSortLanguageContinents } from '../../../libs/useSortLanguageContinents'
 
-import { LanguageContinentRefinements } from './LanguageContinentRefinements'
+import { RefinementGroups } from './RefinementGroups'
 import { Suggestions } from './Suggestions'
 
 const StyledTab = styled(Tab)(({ theme }) => ({
@@ -53,16 +61,38 @@ export function SearchbarDropdown({
   handleTabValueChange: setTabValue
 }: SearchbarDropdownProps): ReactElement {
   const { t } = useTranslation('apps-watch')
+  const {
+    dispatch,
+    state: { continentLanguages }
+  } = useSearchBar()
 
   const { data } = useLanguagesContinentsQuery()
   const languages = useSortLanguageContinents({
     languages: data?.languages ?? []
   })
 
-  function handleTabChange(
-    event: React.SyntheticEvent,
-    newValue: number
-  ): void {
+  const updateDefaultLanguageContinent = useCallback(() => {
+    const refinedItems = refinements.items.filter((item) => item.isRefined)
+    if (refinedItems.length > 0) {
+      const refinedItemsContinents = Object.entries(continentLanguages).filter(
+        ([continent, languages]) =>
+          refinedItems.some((item) => languages.includes(item.label))
+      )
+      if (refinedItemsContinents.length === 0) {
+        dispatch({
+          type: 'SetDefaultLanguageContinent',
+          continents: languages,
+          refinedItems: refinedItems.map((item) => item.label)
+        })
+      }
+    }
+  }, [refinements.items, continentLanguages, dispatch, languages])
+
+  useEffect(() => {
+    updateDefaultLanguageContinent()
+  }, [updateDefaultLanguageContinent])
+
+  function handleTabChange(event: SyntheticEvent, newValue: number): void {
     setTabValue(newValue)
   }
 
@@ -97,14 +127,17 @@ export function SearchbarDropdown({
             <StyledTab
               icon={<Search1 />}
               iconPosition="start"
-              label={
-                <span className="tab-label">{t('Search Suggestions')}</span>
-              }
+              label={<LocalTabsHeader label={t('Search Suggestions')} />}
             />
             <StyledTab
               icon={<Globe1 />}
               iconPosition="start"
-              label={<span className="tab-label">{t('Languages')}</span>}
+              label={
+                <LocalTabsHeader
+                  label={t('Languages')}
+                  count={refinements.items.length}
+                />
+              }
             />
           </Tabs>
         </Box>
@@ -112,12 +145,49 @@ export function SearchbarDropdown({
           <Suggestions refinements={refinements} />
         </TabPanel>
         <TabPanel name="languages-tab" value={tabValue} index={1} pt={3}>
-          <LanguageContinentRefinements
-            refinements={refinements}
-            languages={languages}
-          />
+          <RefinementGroups refinements={refinements} languages={languages} />
         </TabPanel>
       </Box>
     </Popper>
+  )
+}
+
+const StyledBox = styled(Box)(({ theme }) => ({
+  borderRadius: 32,
+  padding: `0 ${theme.spacing(1)}`,
+  marginLeft: theme.spacing(3),
+  border: `2px solid ${theme.palette.secondary.main}${
+    theme.palette.mode === 'dark' ? '2E' : '1A'
+  }`
+}))
+
+interface LocalTabsHeaderProps {
+  label: string
+  count?: number
+  maxCount?: number
+}
+
+function LocalTabsHeader({
+  label,
+  count,
+  maxCount = 1000
+}: LocalTabsHeaderProps): ReactElement {
+  function getDisplayedCount(
+    count: number | undefined,
+    maxCount: number
+  ): string | null {
+    if (count == null || count <= 0) return null
+    return count >= maxCount ? `${maxCount}+` : count.toString()
+  }
+
+  const displayedCount = getDisplayedCount(count, maxCount)
+
+  return (
+    <div className="tab-label">
+      <Box display="flex" flexDirection="row" alignItems="center">
+        <span>{label}</span>
+        {displayedCount != null && <StyledBox>{displayedCount}</StyledBox>}
+      </Box>
+    </div>
   )
 }

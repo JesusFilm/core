@@ -1,11 +1,13 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { ClearRefinementsRenderState } from 'instantsearch.js/es/connectors/clear-refinements/connectClearRefinements'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
-import { useClearRefinements } from 'react-instantsearch'
+import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
+import { useClearRefinements, useSearchBox } from 'react-instantsearch'
 
+import { SearchBarProvider } from '../../../../libs/algolia/SearchBarProvider'
 import { languageRefinements } from '../../data'
 
-import { LanguageContinentRefinements } from './LanguageContinentRefinements'
+import { RefinementGroups } from './RefinementGroups'
 
 jest.mock('react-instantsearch')
 
@@ -13,7 +15,11 @@ const mockUseClearRefinements = useClearRefinements as jest.MockedFunction<
   typeof useClearRefinements
 >
 
-describe('LanguageContinentRefinements', () => {
+const mockUseSearchBox = useSearchBox as jest.MockedFunction<
+  typeof useSearchBox
+>
+
+describe('RefinementGroups', () => {
   const refinements = {
     items: languageRefinements,
     refine: jest.fn()
@@ -33,16 +39,21 @@ describe('LanguageContinentRefinements', () => {
     'South America': ['Spanish, Latin American']
   }
 
+  const useSearchBox = {
+    query: 'Hello World!',
+    refine: jest.fn()
+  } as unknown as SearchBoxRenderState
+
   beforeEach(() => {
+    mockUseSearchBox.mockReturnValue(useSearchBox)
     mockUseClearRefinements.mockReturnValue(clearRefinements)
   })
 
   it('should render the correct continent headers', () => {
     render(
-      <LanguageContinentRefinements
-        refinements={refinements}
-        languages={languages}
-      />
+      <SearchBarProvider>
+        <RefinementGroups refinements={refinements} languages={languages} />
+      </SearchBarProvider>
     )
     expect(screen.getByText('Asia')).toBeInTheDocument()
     expect(screen.getByText('Europe')).toBeInTheDocument()
@@ -52,10 +63,9 @@ describe('LanguageContinentRefinements', () => {
 
   it('should render the correct languages', () => {
     render(
-      <LanguageContinentRefinements
-        refinements={refinements}
-        languages={languages}
-      />
+      <SearchBarProvider>
+        <RefinementGroups refinements={refinements} languages={languages} />
+      </SearchBarProvider>
     )
     expect(screen.getByText('English')).toBeInTheDocument()
     expect(screen.getByText('Cantonese')).toBeInTheDocument()
@@ -65,7 +75,7 @@ describe('LanguageContinentRefinements', () => {
 
   it('should render message if no languages', () => {
     render(
-      <LanguageContinentRefinements
+      <RefinementGroups
         refinements={
           {
             items: [],
@@ -90,10 +100,12 @@ describe('LanguageContinentRefinements', () => {
       toggleShowMore: jest.fn()
     }
     render(
-      <LanguageContinentRefinements
-        refinements={showMoreRefinements}
-        languages={languages}
-      />
+      <SearchBarProvider>
+        <RefinementGroups
+          refinements={showMoreRefinements}
+          languages={languages}
+        />
+      </SearchBarProvider>
     )
     expect(screen.getByText('See All')).toBeInTheDocument()
   })
@@ -106,10 +118,12 @@ describe('LanguageContinentRefinements', () => {
       toggleShowMore: jest.fn()
     }
     render(
-      <LanguageContinentRefinements
-        refinements={showMoreRefinements}
-        languages={languages}
-      />
+      <SearchBarProvider>
+        <RefinementGroups
+          refinements={showMoreRefinements}
+          languages={languages}
+        />
+      </SearchBarProvider>
     )
     expect(screen.getByText('See Less')).toBeInTheDocument()
   })
@@ -123,10 +137,12 @@ describe('LanguageContinentRefinements', () => {
       toggleShowMore
     }
     render(
-      <LanguageContinentRefinements
-        refinements={showMoreRefinements}
-        languages={languages}
-      />
+      <SearchBarProvider>
+        <RefinementGroups
+          refinements={showMoreRefinements}
+          languages={languages}
+        />
+      </SearchBarProvider>
     )
     const seeAllButton = screen.getByText('See All')
     fireEvent.click(seeAllButton)
@@ -135,10 +151,9 @@ describe('LanguageContinentRefinements', () => {
 
   it('should not show clear all button if cannot clear refinements', () => {
     render(
-      <LanguageContinentRefinements
-        refinements={refinements}
-        languages={languages}
-      />
+      <SearchBarProvider>
+        <RefinementGroups refinements={refinements} languages={languages} />
+      </SearchBarProvider>
     )
     const clearAllButton = screen.queryByText('Clear All')
     expect(clearAllButton).not.toBeInTheDocument()
@@ -152,10 +167,9 @@ describe('LanguageContinentRefinements', () => {
     mockUseClearRefinements.mockReturnValue(clearRefinements)
 
     render(
-      <LanguageContinentRefinements
-        refinements={refinements}
-        languages={languages}
-      />
+      <SearchBarProvider>
+        <RefinementGroups refinements={refinements} languages={languages} />
+      </SearchBarProvider>
     )
 
     const clearAllButton = screen.queryByText('Clear All')
@@ -171,10 +185,9 @@ describe('LanguageContinentRefinements', () => {
     mockUseClearRefinements.mockReturnValue(clearRefinements)
 
     render(
-      <LanguageContinentRefinements
-        refinements={refinements}
-        languages={languages}
-      />
+      <SearchBarProvider>
+        <RefinementGroups refinements={refinements} languages={languages} />
+      </SearchBarProvider>
     )
 
     fireEvent.click(screen.getByText('Clear All'))
