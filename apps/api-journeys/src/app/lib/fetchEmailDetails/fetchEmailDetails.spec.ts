@@ -130,21 +130,7 @@ describe('fetchEmailDetails', () => {
     hostId: null,
     strategySlug: null,
     userJourneys,
-    team,
-    website: null,
-    showShareButton: null,
-    showLikeButton: null,
-    showDislikeButton: null,
-    displayTitle: null,
-    showHosts: null,
-    showChatButtons: null,
-    showReactionButtons: null,
-    showLogo: null,
-    showMenu: null,
-    showDisplayTitle: null,
-    menuButtonIcon: null,
-    logoImageBlockId: null,
-    menuStepBlockId: null
+    team
   }
 
   const event: Event = {

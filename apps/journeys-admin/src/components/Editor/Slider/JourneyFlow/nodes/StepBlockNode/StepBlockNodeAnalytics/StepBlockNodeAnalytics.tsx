@@ -74,7 +74,7 @@ export function StepBlockNodeAnalytics({
   const timeOnPage = stepStats?.timeOnPage ?? 0
 
   const totalVisitors = analytics?.totalVisitors ?? 0
-  const VISITOR_THRESHOLD = plausibleThreshold ? 1 : 10
+  const VISITOR_THRESHOLD = plausibleThreshold ? 1 : 50
   const hideStats = totalVisitors < VISITOR_THRESHOLD
 
   return (

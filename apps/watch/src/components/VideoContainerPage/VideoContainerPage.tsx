@@ -47,7 +47,7 @@ export function VideoContainerPage(): ReactElement {
           <ShareDialog open={shareDialog} onClose={handleCloseDialog} />
           <Box>
             {loading ? (
-              <VideoGrid variant="expanded" />
+              <VideoGrid loading variant="expanded" />
             ) : (
               <VideoGrid
                 containerSlug={slug}

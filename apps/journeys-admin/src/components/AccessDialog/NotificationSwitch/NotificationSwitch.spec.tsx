@@ -47,7 +47,7 @@ describe('NotificationSwitch', () => {
       </SnackbarProvider>
     )
 
-    fireEvent.mouseOver(screen.getByRole('checkbox'))
+    fireEvent.focusIn(screen.getByRole('checkbox'))
     await waitFor(() =>
       expect(
         screen.getByRole('tooltip', { name: 'Only username can change this' })

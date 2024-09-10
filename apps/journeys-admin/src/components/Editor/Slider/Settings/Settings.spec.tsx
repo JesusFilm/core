@@ -59,6 +59,6 @@ describe('Settings', () => {
     )
 
     expect(screen.getByTestId('SettingsDrawer')).toBeInTheDocument()
-    expect(screen.getByText('Journey Appearance')).toBeInTheDocument()
+    expect(screen.getByText('Footer Properties')).toBeInTheDocument()
   })
 })

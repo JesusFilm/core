@@ -56,12 +56,7 @@ describe('HostAvatars', () => {
       src2: null
     },
     team: null,
-    tags: [],
-    website: null,
-    showShareButton: null,
-    showLikeButton: null,
-    showDislikeButton: null,
-    displayTitle: null
+    tags: []
   }
 
   it('renders both avatars if both images are set', () => {

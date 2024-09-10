@@ -122,7 +122,7 @@ describe('Icon', () => {
       </MockedProvider>
     )
 
-    fireEvent.mouseDown(getByRole('combobox', { name: 'icon-name' }))
+    fireEvent.mouseDown(getByRole('button', { name: 'icon-name' }))
     fireEvent.click(getByRole('option', { name: 'Arrow Right' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
@@ -160,7 +160,7 @@ describe('Icon', () => {
         </EditorProvider>
       </MockedProvider>
     )
-    fireEvent.mouseDown(getByRole('combobox', { name: 'icon-name' }))
+    fireEvent.mouseDown(getByRole('button', { name: 'icon-name' }))
     fireEvent.click(getByRole('option', { name: 'Select an icon...' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
@@ -198,7 +198,7 @@ describe('Icon', () => {
         </EditorProvider>
       </MockedProvider>
     )
-    fireEvent.mouseDown(getByRole('combobox', { name: 'icon-name' }))
+    fireEvent.mouseDown(getByRole('button', { name: 'icon-name' }))
     fireEvent.click(getByRole('option', { name: 'Been Here' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
@@ -259,7 +259,7 @@ describe('Icon', () => {
       </MockedProvider>
     )
 
-    fireEvent.mouseDown(screen.getByRole('combobox', { name: 'icon-name' }))
+    fireEvent.mouseDown(screen.getByRole('button', { name: 'icon-name' }))
     fireEvent.click(screen.getByRole('option', { name: 'Been Here' }))
     await waitFor(() => expect(result1).toHaveBeenCalled())
 
@@ -325,7 +325,7 @@ describe('Icon', () => {
       </MockedProvider>
     )
 
-    fireEvent.mouseDown(screen.getByRole('combobox', { name: 'icon-name' }))
+    fireEvent.mouseDown(screen.getByRole('button', { name: 'icon-name' }))
     fireEvent.click(screen.getByRole('option', { name: 'Been Here' }))
     await waitFor(() => expect(result1).toHaveBeenCalled())
 

@@ -49,8 +49,7 @@ describe('StepBlockResolver', () => {
     nextBlockId: 'nextBlockId',
     locked: false,
     x: 0,
-    y: 0,
-    slug: 'Convert To Slug'
+    y: 0
   }
   const blockService = {
     provide: BlockService,
@@ -142,8 +141,7 @@ describe('StepBlockResolver', () => {
         locked: false,
         nextBlockId: 'nextBlockId',
         x: 0,
-        y: 0,
-        slug: 'convert-to-slug'
+        y: 0
       })
     })
 

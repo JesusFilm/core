@@ -78,7 +78,6 @@ describe('MoveBlockButton', () => {
     parentOrder: 0,
     locked: true,
     nextBlockId: null,
-    slug: null,
     children: [card]
   }
 

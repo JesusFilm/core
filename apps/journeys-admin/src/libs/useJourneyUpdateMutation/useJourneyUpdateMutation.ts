@@ -5,32 +5,17 @@ import {
   useMutation
 } from '@apollo/client'
 
-import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
-
 import {
   JourneySettingsUpdate,
   JourneySettingsUpdateVariables
 } from '../../../__generated__/JourneySettingsUpdate'
+import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
 
 export const JOURNEY_SETTINGS_UPDATE = gql`
   ${JOURNEY_FIELDS}
   mutation JourneySettingsUpdate($id: ID!, $input: JourneyUpdateInput!) {
     journeyUpdate(id: $id, input: $input) {
-      id
-      title
-      description
-      strategySlug
-      language {
-        id
-      }
-      tags {
-        id
-      }
-      website
-      showShareButton
-      showLikeButton
-      showDislikeButton
-      displayTitle
+     ...JourneyFields
     }
   }
 `

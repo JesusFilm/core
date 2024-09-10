@@ -10,7 +10,7 @@ import { Service } from "./../../../../__generated__/globalTypes";
 // ====================================================
 
 export interface GetTags_tags_name {
-  __typename: "TagName";
+  __typename: "Translation";
   value: string;
   primary: boolean;
 }

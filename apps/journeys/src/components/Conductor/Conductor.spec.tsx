@@ -147,12 +147,7 @@ describe('Conductor', () => {
     chatButtons: [],
     host: null,
     team: null,
-    tags: [],
-    website: null,
-    showShareButton: null,
-    showLikeButton: null,
-    showDislikeButton: null,
-    displayTitle: null
+    tags: []
   }
 
   it('should create a journeyViewEvent', async () => {

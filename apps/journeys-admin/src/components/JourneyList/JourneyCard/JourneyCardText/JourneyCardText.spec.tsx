@@ -73,8 +73,7 @@ describe('JourneyCardText', () => {
         variant={JourneyCardVariant.new}
       />
     )
-
-    fireEvent.mouseOver(getByTestId('CircleRoundedIcon'))
+    fireEvent.focusIn(getByTestId('CircleRoundedIcon'))
     await waitFor(async () =>
       expect(getByRole('tooltip', { name: 'New' })).toBeInTheDocument()
     )

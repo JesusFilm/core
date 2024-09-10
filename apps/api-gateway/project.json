@@ -7,7 +7,7 @@
     "serve": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "./apps/api-gateway/router --supergraph apps/api-gateway/schema.graphql --config apps/api-gateway/router.yaml --dev | npx pino-pretty -m message --config .pino-prettyrc.js"
+        "command": "./apps/api-gateway/router --supergraph apps/api-gateway/schema.graphql --config apps/api-gateway/router.yaml --dev"
       }
     },
     "serve-all": {

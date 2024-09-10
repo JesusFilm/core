@@ -89,7 +89,7 @@ const video: TreeBlock<VideoBlock> = {
     id: '2_0-FallingPlates',
     title: [
       {
-        __typename: 'VideoTitle',
+        __typename: 'Translation',
         value: 'FallingPlates'
       }
     ],
@@ -335,7 +335,6 @@ describe('BackgroundMedia', () => {
       locked: false,
       nextBlockId: null,
       parentOrder: 0,
-      slug: null,
       children: [{ ...card, coverBlockId: image.id, children: [image] }]
     }
     render(

@@ -18,7 +18,7 @@ const LanguagesFilter = builder.inputType('LanguagesFilter', {
   })
 })
 
-builder.prismaObject('AudioPreview', {
+export const AudioPreview = builder.prismaObject('AudioPreview', {
   fields: (t) => ({
     language: t.relation('language'),
     value: t.exposeString('value'),
@@ -27,7 +27,7 @@ builder.prismaObject('AudioPreview', {
   })
 })
 
-builder.prismaObject('LanguageName', {
+const LanguageName = builder.prismaObject('LanguageName', {
   fields: (t) => ({
     value: t.exposeString('value'),
     primary: t.exposeBoolean('primary'),
@@ -41,13 +41,15 @@ export const Language = builder.prismaObject('Language', {
     bcp47: t.exposeString('bcp47', { nullable: true }),
     iso3: t.exposeString('iso3', { nullable: true }),
     slug: t.exposeString('slug', { nullable: true }),
-    name: t.relation('name', {
+    name: t.prismaField({
+      type: [LanguageName],
       args: {
         languageId: t.arg.id({ required: false }),
         primary: t.arg.boolean({ required: false })
       },
-      query: ({ languageId, primary }) => {
+      resolve: async (query, language, { languageId, primary }) => {
         const where: Prisma.LanguageNameWhereInput = {
+          parentLanguageId: language.id,
           OR:
             languageId == null && primary == null
               ? [{ languageId: '529' }, { primary: true }]
@@ -55,10 +57,12 @@ export const Language = builder.prismaObject('Language', {
         }
         if (languageId != null) where.OR?.push({ languageId })
         if (primary != null) where.OR?.push({ primary })
-        return {
+        return await prisma.languageName.findMany({
+          ...query,
           where,
-          orderBy: { primary: 'desc' }
-        }
+          orderBy: { primary: 'desc' },
+          include: { language: true }
+        })
       }
     }),
     countryLanguages: t.relation('countryLanguages'),

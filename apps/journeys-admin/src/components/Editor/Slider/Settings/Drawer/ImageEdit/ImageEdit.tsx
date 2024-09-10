@@ -239,7 +239,7 @@ export function ImageEdit({
           onChange={handleChange}
           onDelete={handleDelete}
           loading={createLoading || updateLoading}
-          error={createError != null || updateError != null}
+          error={createError != null ?? updateError != null}
         />
       )}
     </>

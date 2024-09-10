@@ -8,7 +8,7 @@
 // ====================================================
 
 export interface TriggerUnsplashDownload {
-  triggerUnsplashDownload: boolean;
+  triggerUnsplashDownload: boolean | null;
 }
 
 export interface TriggerUnsplashDownloadVariables {

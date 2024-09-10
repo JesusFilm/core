@@ -32,8 +32,7 @@
       "@core/shared/ui/*": [
         "libs/shared/ui/src/components/*",
         "libs/shared/ui/src/libs/*"
-      ],
-      "@core/yoga/*": ["libs/yoga/src/*"]
+      ]
     }
   },
   "exclude": ["node_modules", "tmp"]

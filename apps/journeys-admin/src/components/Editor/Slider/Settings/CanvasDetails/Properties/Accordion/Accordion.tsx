@@ -15,7 +15,8 @@ interface AccordionProps {
   id: string
   icon: ReactElement
   name: string
-  value?: string
+  value: string
+  testId?: string
   param?: string
   children: ReactNode
 }
@@ -74,19 +75,13 @@ export function Accordion({
       >
         <Stack spacing={3} alignItems="center" direction="row">
           {icon}
-          <Box sx={{ maxWidth: '24ch', overflow: 'hidden' }}>
-            {value != null ? (
-              <>
-                <Typography variant="caption" color="text.secondary" noWrap>
-                  {name}
-                </Typography>
-                <Typography noWrap>{value !== '' ? value : 'None'}</Typography>
-              </>
-            ) : (
-              <Typography variant="subtitle1" noWrap>
+          <Box sx={{ maxWidth: 92, overflow: 'hidden' }}>
+            {name != null && (
+              <Typography variant="caption" color="text.secondary" noWrap>
                 {name}
               </Typography>
             )}
+            <Typography noWrap>{value !== '' ? value : 'None'}</Typography>
           </Box>
         </Stack>
       </AccordionSummary>

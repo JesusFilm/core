@@ -1,5 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
-import Box from '@mui/material/Box'
+import AccordionDetails from '@mui/material/AccordionDetails'
 import FormControl from '@mui/material/FormControl'
 import MenuItem from '@mui/material/MenuItem'
 import Select from '@mui/material/Select'
@@ -293,7 +293,7 @@ export function Details({
   }
 
   return (
-    <Box sx={{ px: 6 }} data-testid="ChatOptionDetails">
+    <AccordionDetails sx={{ px: 6 }} data-testid="ChatOptionDetails">
       <Stack direction="column" spacing={8} sx={{ pb: 4 }}>
         {enableIconSelect && (
           <FormControl variant="filled" fullWidth hiddenLabel>
@@ -329,6 +329,6 @@ export function Details({
           <Typography variant="caption">{helperInfo}</Typography>
         )}
       </Stack>
-    </Box>
+    </AccordionDetails>
   )
 }

@@ -56,7 +56,7 @@ describe('FormSlugSelect', () => {
       </MockedProvider>
     )
 
-    expect(getByRole('combobox')).toHaveTextContent('formName')
+    expect(getByRole('button', { name: 'formName' })).toBeInTheDocument()
   })
 
   it('updates the projectId', async () => {
@@ -97,7 +97,7 @@ describe('FormSlugSelect', () => {
       </MockedProvider>
     )
 
-    fireEvent.mouseDown(getByRole('combobox'))
+    fireEvent.mouseDown(getByRole('button', { name: 'formName' }))
     fireEvent.click(getByRole('option', { name: 'otherFormName' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
@@ -140,7 +140,7 @@ describe('FormSlugSelect', () => {
       </MockedProvider>
     )
 
-    fireEvent.mouseDown(getByRole('combobox'))
+    fireEvent.mouseDown(getByRole('button', { name: 'formName' }))
     fireEvent.click(getByRole('option', { name: 'formName' }))
     await waitFor(() => expect(result).not.toHaveBeenCalled())
   })
@@ -159,6 +159,6 @@ describe('FormSlugSelect', () => {
       </MockedProvider>
     )
 
-    expect(getByRole('combobox')).toHaveAttribute('aria-disabled', 'true')
+    expect(getByRole('button')).toHaveAttribute('aria-disabled', 'true')
   })
 })

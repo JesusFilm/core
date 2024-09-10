@@ -1,5 +1,3 @@
-'use client'
-
 import { ThemeOptions } from '@mui/material/styles'
 
 import { spacingThemeToken } from './spacing'

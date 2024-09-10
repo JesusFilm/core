@@ -11,7 +11,7 @@ describe('getSortedTags', () => {
         parentId: 'tags.topic.id',
         name: [
           {
-            __typename: 'TagName',
+            __typename: 'Translation',
             value: 'Topic sub-tag',
             primary: true,
             language: {
@@ -27,7 +27,7 @@ describe('getSortedTags', () => {
         parentId: 'tags.feltNeeds.id',
         name: [
           {
-            __typename: 'TagName',
+            __typename: 'Translation',
             value: 'Felt Needs sub-tag',
             primary: true,
             language: {
@@ -43,7 +43,7 @@ describe('getSortedTags', () => {
         parentId: 'tags.holidays.id',
         name: [
           {
-            __typename: 'TagName',
+            __typename: 'Translation',
             value: 'Holidays sub-tag',
             primary: true,
             language: {
@@ -59,7 +59,7 @@ describe('getSortedTags', () => {
         parentId: 'tags.audience.id',
         name: [
           {
-            __typename: 'TagName',
+            __typename: 'Translation',
             value: 'Audience sub-tag',
             primary: true,
             language: {
@@ -75,7 +75,7 @@ describe('getSortedTags', () => {
         parentId: 'tags.genre.id',
         name: [
           {
-            __typename: 'TagName',
+            __typename: 'Translation',
             value: 'Genre sub-tag',
             primary: true,
             language: {
@@ -91,7 +91,7 @@ describe('getSortedTags', () => {
         parentId: 'tags.collections.id',
         name: [
           {
-            __typename: 'TagName',
+            __typename: 'Translation',
             value: 'Collections sub-tag',
             primary: true,
             language: {

@@ -15,7 +15,7 @@ export const getSubtitleMock = {
         variant: {
           subtitle: [
             {
-              __typename: 'VideoSubtitle',
+              __typename: 'Translation',
               language: {
                 __typename: 'Language',
                 bcp47: 'ar',

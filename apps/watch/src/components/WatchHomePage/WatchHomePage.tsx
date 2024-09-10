@@ -3,26 +3,24 @@ import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { type ReactElement } from 'react'
-import { Index } from 'react-instantsearch'
+import { ReactElement } from 'react'
 
-import { SearchBar } from '@core/journeys/ui/SearchBar'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
-import { useAlgoliaRouter } from '../../libs/algolia/useAlgoliaRouter'
+import { VideoChildFields } from '../../../__generated__/VideoChildFields'
 import { PageWrapper } from '../PageWrapper'
-import { AlgoliaVideoGrid } from '../VideoGrid/AlgoliaVideoGrid/AlgoliaVideoGrid'
+import { VideoGrid } from '../VideoGrid'
 
 import { HomeHero } from './HomeHero'
 import { SeeAllVideos } from './SeeAllVideos'
 
-export function WatchHomePage(): ReactElement {
+interface WatchHomePageProps {
+  videos: VideoChildFields[]
+}
+
+export function WatchHomePage({ videos }: WatchHomePageProps): ReactElement {
   const { t } = useTranslation('apps-watch')
-
-  const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
-
-  useAlgoliaRouter()
 
   return (
     <PageWrapper
@@ -40,12 +38,7 @@ export function WatchHomePage(): ReactElement {
           data-testid="WatchHomePage"
         >
           <Container maxWidth="xxl" sx={{ paddingY: '4rem' }}>
-            <Box sx={{ pb: 10 }}>
-              <SearchBar />
-            </Box>
-            <Index indexName={indexName}>
-              <AlgoliaVideoGrid variant="contained" />
-            </Index>
+            <VideoGrid videos={videos} variant="contained" />
             <SeeAllVideos />
             <Box
               sx={{

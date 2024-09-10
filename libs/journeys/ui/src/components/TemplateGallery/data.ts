@@ -67,7 +67,7 @@ const acceptance: Tag = {
     {
       value: 'Acceptance',
       primary: true,
-      __typename: 'TagName',
+      __typename: 'Translation',
       language: {
         __typename: 'Language',
         id: 'en'
@@ -84,7 +84,7 @@ const hope: Tag = {
     {
       value: 'Hope',
       primary: true,
-      __typename: 'TagName',
+      __typename: 'Translation',
       language: {
         __typename: 'Language',
         id: 'en'
@@ -362,7 +362,7 @@ export const getTagsMock: MockedResponse<GetTags> = {
           parentId: null,
           name: [
             {
-              __typename: 'TagName',
+              __typename: 'Translation',
               value: 'Felt Needs',
               primary: true
             }
@@ -375,7 +375,7 @@ export const getTagsMock: MockedResponse<GetTags> = {
           parentId: 'parentId1',
           name: [
             {
-              __typename: 'TagName',
+              __typename: 'Translation',
               value: 'Acceptance',
               primary: true
             }
@@ -388,7 +388,7 @@ export const getTagsMock: MockedResponse<GetTags> = {
           parentId: 'parentId1',
           name: [
             {
-              __typename: 'TagName',
+              __typename: 'Translation',
               value: 'Depression',
               primary: true
             }
@@ -401,7 +401,7 @@ export const getTagsMock: MockedResponse<GetTags> = {
           parentId: 'parentId1',
           name: [
             {
-              __typename: 'TagName',
+              __typename: 'Translation',
               value: 'Anxiety',
               primary: true
             }
@@ -414,7 +414,7 @@ export const getTagsMock: MockedResponse<GetTags> = {
           parentId: 'parentId1',
           name: [
             {
-              __typename: 'TagName',
+              __typename: 'Translation',
               value: 'Forgiveness',
               primary: true
             }
@@ -427,7 +427,7 @@ export const getTagsMock: MockedResponse<GetTags> = {
           parentId: 'parentId1',
           name: [
             {
-              __typename: 'TagName',
+              __typename: 'Translation',
               value: 'Hope',
               primary: true
             }
@@ -440,7 +440,7 @@ export const getTagsMock: MockedResponse<GetTags> = {
           parentId: 'parentId1',
           name: [
             {
-              __typename: 'TagName',
+              __typename: 'Translation',
               value: 'Loneliness',
               primary: true
             }
@@ -453,7 +453,7 @@ export const getTagsMock: MockedResponse<GetTags> = {
           parentId: 'parentId1',
           name: [
             {
-              __typename: 'TagName',
+              __typename: 'Translation',
               value: 'Love',
               primary: true
             }
@@ -466,7 +466,7 @@ export const getTagsMock: MockedResponse<GetTags> = {
           parentId: 'parentId1',
           name: [
             {
-              __typename: 'TagName',
+              __typename: 'Translation',
               value: 'Security',
               primary: true
             }
@@ -479,7 +479,7 @@ export const getTagsMock: MockedResponse<GetTags> = {
           parentId: 'parentId1',
           name: [
             {
-              __typename: 'TagName',
+              __typename: 'Translation',
               value: 'Significance',
               primary: true
             }
@@ -492,7 +492,7 @@ export const getTagsMock: MockedResponse<GetTags> = {
           parentId: 'parentId1',
           name: [
             {
-              __typename: 'TagName',
+              __typename: 'Translation',
               value: 'Fear/Power',
               primary: true
             }
@@ -505,7 +505,7 @@ export const getTagsMock: MockedResponse<GetTags> = {
           parentId: null,
           name: [
             {
-              __typename: 'TagName',
+              __typename: 'Translation',
               value: 'Collections',
               primary: true
             }
@@ -518,7 +518,7 @@ export const getTagsMock: MockedResponse<GetTags> = {
           parentId: 'parentId2',
           name: [
             {
-              __typename: 'TagName',
+              __typename: 'Translation',
               value: 'Jesus Film',
               primary: true
             }
@@ -531,7 +531,7 @@ export const getTagsMock: MockedResponse<GetTags> = {
           parentId: 'parentId2',
           name: [
             {
-              __typename: 'TagName',
+              __typename: 'Translation',
               value: 'NUA',
               primary: true
             }
@@ -544,7 +544,7 @@ export const getTagsMock: MockedResponse<GetTags> = {
           parentId: null,
           name: [
             {
-              __typename: 'TagName',
+              __typename: 'Translation',
               value: 'Topics',
               primary: true
             }
@@ -557,7 +557,7 @@ export const getTagsMock: MockedResponse<GetTags> = {
           parentId: 'parentId3',
           name: [
             {
-              __typename: 'TagName',
+              __typename: 'Translation',
               value: 'Addiction',
               primary: true
             }

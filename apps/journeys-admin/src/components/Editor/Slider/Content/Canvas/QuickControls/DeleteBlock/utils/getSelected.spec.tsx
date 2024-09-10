@@ -46,7 +46,6 @@ describe('updatedSelected', () => {
     parentOrder: 0,
     locked: true,
     nextBlockId: null,
-    slug: null,
     children: [
       {
         id: 'card1.id',
@@ -70,7 +69,6 @@ describe('updatedSelected', () => {
     parentOrder: 1,
     locked: true,
     nextBlockId: 'step2.id',
-    slug: null,
     children: []
   }
 

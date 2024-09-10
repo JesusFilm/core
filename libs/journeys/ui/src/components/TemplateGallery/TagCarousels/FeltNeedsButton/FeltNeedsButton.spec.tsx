@@ -5,7 +5,7 @@ import { FeltNeedsButton } from '.'
 
 describe('FeltNeedsButton', () => {
   const name = [
-    { __typename: 'TagName' as const, value: 'Acceptance', primary: true }
+    { __typename: 'Translation' as const, value: 'Acceptance', primary: true }
   ]
   const tag = {
     id: 'tagId',
@@ -40,7 +40,7 @@ describe('FeltNeedsButton', () => {
           ...tag,
           name: [
             {
-              __typename: 'TagName' as const,
+              __typename: 'Translation' as const,
               value: 'invalid name',
               primary: true
             }

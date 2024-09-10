@@ -40,7 +40,6 @@ const steps: Array<TreeBlock<StepBlock>> = [
     parentOrder: 0,
     locked: false,
     nextBlockId: 'step1.id',
-    slug: null,
     children: [
       {
         id: 'card0.id',

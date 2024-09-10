@@ -18,11 +18,9 @@ export const yoga = createYoga({
         await prisma.$queryRaw`SELECT 1`
       }
     }),
-    process.env.NODE_ENV !== 'test'
-      ? useResponseCache({
-          session: () => null,
-          cache
-        })
-      : {}
+    useResponseCache({
+      session: () => null,
+      cache
+    })
   ]
 })

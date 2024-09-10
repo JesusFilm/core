@@ -33,7 +33,6 @@ const step1: TreeBlock<StepBlock> = {
   parentOrder: 0,
   locked: false,
   nextBlockId: null,
-  slug: null,
   children: [block]
 }
 

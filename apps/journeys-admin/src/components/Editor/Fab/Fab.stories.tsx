@@ -28,8 +28,7 @@ const defaultStep: TreeBlock<StepBlock> = {
   parentOrder: 0,
   locked: false,
   nextBlockId: null,
-  children: [],
-  slug: null
+  children: []
 }
 
 const Template: StoryObj<ComponentProps<typeof Fab> & { state: EditorState }> =

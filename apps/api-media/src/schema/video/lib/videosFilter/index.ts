@@ -1,1 +1,0 @@
-export { videosFilter } from './videosFilter'

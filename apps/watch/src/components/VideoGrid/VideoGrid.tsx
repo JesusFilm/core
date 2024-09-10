@@ -2,33 +2,27 @@ import AddRounded from '@mui/icons-material/AddRounded'
 import LoadingButton from '@mui/lab/LoadingButton'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
-import type { ComponentProps, ReactElement } from 'react'
+import { ComponentProps, ReactElement } from 'react'
 
-import { EmptySearch } from '@core/journeys/ui/EmptySearch'
-
-import type { VideoChildFields } from '../../../__generated__/VideoChildFields'
+import { VideoChildFields } from '../../../__generated__/VideoChildFields'
 import { VideoCard } from '../VideoCard'
 
-export interface VideoGridProps {
+interface VideoGridProps {
   videos?: VideoChildFields[]
-  showLoadMore?: boolean
+  loading?: boolean
+  hasNextPage?: boolean
+  onLoadMore?: () => void
   containerSlug?: string
   variant?: ComponentProps<typeof VideoCard>['variant']
-  loading?: boolean
-  showMore?: () => void
-  hasNextPage?: boolean
-  hasNoResults?: boolean
 }
 
 export function VideoGrid({
-  videos = [],
-  showLoadMore = false,
+  loading,
+  hasNextPage,
+  onLoadMore,
+  videos,
   containerSlug,
-  variant = 'expanded',
-  loading = false,
-  showMore,
-  hasNextPage = true,
-  hasNoResults = false
+  variant = 'expanded'
 }: VideoGridProps): ReactElement {
   return (
     <Grid
@@ -47,7 +41,7 @@ export function VideoGrid({
             />
           </Grid>
         ))}
-      {loading && videos?.length === 0 && (
+      {loading === true && (
         <>
           <Grid item xs={12} md={4} xl={3}>
             <VideoCard variant={variant} />
@@ -75,26 +69,21 @@ export function VideoGrid({
           </Grid>
         </>
       )}
-      {!loading && hasNoResults && (
-        <Grid item xs={12} justifyContent="center" alignItems="center">
-          <EmptySearch />
-        </Grid>
-      )}
-      {showLoadMore && !hasNoResults && (
+      {onLoadMore != null && (
         <Grid item xs={12}>
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
             <LoadingButton
               variant="outlined"
-              onClick={showMore}
+              onClick={onLoadMore}
               loading={loading}
               startIcon={<AddRounded />}
-              disabled={!hasNextPage}
+              disabled={hasNextPage !== true}
               loadingPosition="start"
               size="medium"
             >
-              {loading
+              {loading === true
                 ? 'Loading...'
-                : hasNextPage
+                : hasNextPage === true
                 ? 'Load More'
                 : 'No More Videos'}
             </LoadingButton>

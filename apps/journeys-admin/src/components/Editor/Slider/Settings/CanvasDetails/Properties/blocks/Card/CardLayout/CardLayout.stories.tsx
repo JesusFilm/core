@@ -65,12 +65,7 @@ const journey: Journey = {
   chatButtons: [],
   host: null,
   team: null,
-  tags: [],
-  website: null,
-  showShareButton: null,
-  showLikeButton: null,
-  showDislikeButton: null,
-  displayTitle: null
+  tags: []
 }
 
 const block: TreeBlock<CardBlock> = {

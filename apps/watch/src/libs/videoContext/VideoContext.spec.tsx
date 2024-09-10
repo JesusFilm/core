@@ -16,23 +16,23 @@ const chapter1: VideoContentFields = {
   label: VideoLabel.segment,
   image:
     'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf6101-0-0.mobileCinematicHigh.jpg',
-  imageAlt: [{ __typename: 'VideoImageAlt', value: 'The Beginning' }],
+  imageAlt: [{ __typename: 'Translation', value: 'The Beginning' }],
   snippet: [
     {
-      __typename: 'VideoSnippet',
+      __typename: 'Translation',
       value:
         'The story of Jesus fits within the larger story of the Judeo Christian tradition. The purpose of everything since creation has been to point to the life of Jesus.'
     }
   ],
   description: [
     {
-      __typename: 'VideoDescription',
+      __typename: 'Translation',
       value:
         'The story of Jesus fits within the larger story of the Judeo Christian tradition. The purpose of everything since creation has been to point to the life of Jesus.\n\nAll of creation speaks of the majesty of God. As God created man and woman he intended them to live in peace with him forever. But because of their disobedience mankind was separated from God. But God still loved mankind so throughout the Scriptures God reveals his plan to save the world.'
     }
   ],
   studyQuestions: [],
-  title: [{ __typename: 'VideoTitle', value: 'The Beginning' }],
+  title: [{ __typename: 'Translation', value: 'The Beginning' }],
   variant: {
     __typename: 'VideoVariant',
     id: '1_529-jf6101-0-0',

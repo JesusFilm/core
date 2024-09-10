@@ -7,7 +7,7 @@ import { DetailsForm } from '.'
 
 describe('DetailsForm', () => {
   it('fetches remote data and fills in form', async () => {
-    const { getByRole, getByText } = render(
+    const { getByRole } = render(
       <MockedProvider mocks={[getVisitorMock]}>
         <DetailsForm id="visitorId" />
       </MockedProvider>
@@ -17,7 +17,7 @@ describe('DetailsForm', () => {
         '0800123456'
       )
     )
-    expect(getByText('🎉')).toBeInTheDocument()
+    expect(getByRole('button', { name: '🎉' })).toBeInTheDocument()
     expect(getByRole('textbox', { name: 'Name' })).toHaveValue('Bilbo Baggins')
     expect(getByRole('textbox', { name: 'Private Note' })).toHaveValue(
       'Has a ring to give you.'
@@ -26,7 +26,7 @@ describe('DetailsForm', () => {
 
   it('submits data when form updated', async () => {
     const visitorUpdateResult = jest.fn(() => visitorUpdateMock.result)
-    const { getByText } = render(
+    const { getByRole } = render(
       <MockedProvider
         mocks={[
           getVisitorMock,
@@ -36,8 +36,10 @@ describe('DetailsForm', () => {
         <DetailsForm id="visitorId" />
       </MockedProvider>
     )
-    await waitFor(() => expect(getByText('🎉')).toBeInTheDocument())
-    fireEvent.mouseDown(getByText('🎉'))
+    await waitFor(() =>
+      expect(getByRole('button', { name: '🎉' })).toBeInTheDocument()
+    )
+    fireEvent.mouseDown(getByRole('button', { name: '🎉' }))
     fireEvent.click(screen.getByRole('option', { name: '⚪️' }))
     await waitFor(() => expect(visitorUpdateResult).toHaveBeenCalled())
   })

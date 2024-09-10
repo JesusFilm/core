@@ -12,9 +12,6 @@ import { JourneysQueryOptions } from "./globalTypes";
 export interface GetJourneysSummary_journeys {
   __typename: "Journey";
   id: string;
-  /**
-   * private title for creators
-   */
   title: string;
   slug: string;
 }

@@ -1,31 +1,21 @@
-import { ApolloProvider, type NormalizedCacheObject, gql } from '@apollo/client'
-import algoliasearch from 'algoliasearch'
-import type { UiState } from 'instantsearch.js'
-import type { RouterProps } from 'instantsearch.js/es/middlewares'
-import type { GetStaticProps } from 'next'
-import singletonRouter from 'next/router'
+import { NormalizedCacheObject, gql } from '@apollo/client'
+import { GetStaticProps } from 'next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
-import type { ReactElement } from 'react'
-import { renderToString } from 'react-dom/server'
-import {
-  Configure,
-  InstantSearch,
-  InstantSearchSSRProvider,
-  type InstantSearchServerState,
-  getServerState
-} from 'react-instantsearch'
-import { createInstantSearchRouterNext } from 'react-instantsearch-router-nextjs'
+import { ReactElement } from 'react'
 
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 
+import {
+  GetHomeVideos,
+  GetHomeVideos_videos as Video
+} from '../../__generated__/GetHomeVideos'
 import i18nConfig from '../../next-i18next.config'
 import { Videos } from '../../src/components/VideosPage'
-import {
-  createApolloClient,
-  useApolloClient
-} from '../../src/libs/apolloClient'
+import { createApolloClient } from '../../src/libs/apolloClient'
 import { getFlags } from '../../src/libs/getFlags'
 import { VIDEO_CHILD_FIELDS } from '../../src/libs/videoChildFields'
+
+import { GET_HOME_VIDEOS } from './index'
 
 const GET_VIDEOS = gql`
   ${VIDEO_CHILD_FIELDS}
@@ -41,78 +31,57 @@ const GET_VIDEOS = gql`
   }
 `
 
-const searchClient = algoliasearch(
-  process.env.NEXT_PUBLIC_ALGOLIA_APP_ID ?? '',
-  process.env.ALGOLIA_SERVER_API_KEY ??
-    process.env.NEXT_PUBLIC_ALGOLIA_API_KEY ??
-    ''
-)
-
 interface VideosPageProps {
-  initialApolloState?: NormalizedCacheObject
-  serverState?: InstantSearchServerState
+  initialApolloState: NormalizedCacheObject
+}
+function VideosPage({ videos }): ReactElement {
+  return <Videos videos={videos} />
 }
 
-const nextRouter: RouterProps = {
-  // Manages the URL paramers with instant search state
-  router: createInstantSearchRouterNext({
-    serverUrl: process.env.NEXT_PUBLIC_WATCH_URL,
-    singletonRouter,
-    routerOptions: {
-      cleanUrlOnDispose: false
-    }
-  }),
-  stateMapping: {
-    stateToRoute(uiState) {
-      return uiState[
-        process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
-      ] as unknown as UiState
-    },
-    routeToState(routeState) {
-      return {
-        [process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? '']: routeState
-      }
-    }
-  }
-}
-
-function VideosPage({
-  initialApolloState,
-  serverState
-}: VideosPageProps): ReactElement {
-  const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
-
-  const client = useApolloClient({
-    initialState: initialApolloState
-  })
-
-  return (
-    <InstantSearchSSRProvider {...serverState}>
-      <ApolloProvider client={client}>
-        <InstantSearch
-          insights
-          indexName={indexName}
-          searchClient={searchClient}
-          future={{ preserveSharedStateOnUnmount: true }}
-          stalledSearchDelay={500}
-          routing={nextRouter}
-        >
-          <Configure ruleContexts={['all_videos_page']} />
-          <Videos index />
-        </InstantSearch>
-      </ApolloProvider>
-    </InstantSearchSSRProvider>
-  )
-}
+const videoIds = [
+  '1_jf-0-0',
+  '2_ChosenWitness',
+  '2_GOJ-0-0',
+  'MAG1',
+  '1_cl-0-0',
+  'IsItWorthIt',
+  'Wonder',
+  'Nua',
+  '8_NBC',
+  'GoodStory',
+  '2_FileZero-0-0',
+  '1_fj-0-0',
+  '1_riv-0-0',
+  '1_wjv-0-0',
+  '2_Acts-0-0',
+  'CS1',
+  'DWJ1',
+  'LOJS',
+  '1_cl13-0-0',
+  '1_wl7-0-0',
+  '2_0-UseThisApp',
+  '2_0-LeaderImpact',
+  'LUMOCollection'
+]
 
 export const getStaticProps: GetStaticProps<VideosPageProps> = async ({
   locale
 }) => {
-  const serverState = await getServerState(<VideosPage />, {
-    renderToString
+  const apolloClient = createApolloClient()
+
+  const { data } = await apolloClient.query<GetHomeVideos>({
+    query: GET_HOME_VIDEOS,
+    variables: {
+      ids: videoIds,
+      languageId: '529'
+    }
   })
 
-  const apolloClient = createApolloClient()
+  const videos: Video[] = []
+
+  data.videos.forEach((video) => {
+    videos[videoIds.indexOf(video.id)] = video
+  })
 
   await apolloClient.query({
     query: GET_VIDEOS,
@@ -134,8 +103,8 @@ export const getStaticProps: GetStaticProps<VideosPageProps> = async ({
     revalidate: 3600,
     props: {
       flags: await getFlags(),
-      serverState,
       initialApolloState: apolloClient.cache.extract(),
+      videos,
       ...(await serverSideTranslations(
         locale ?? 'en',
         ['apps-watch'],

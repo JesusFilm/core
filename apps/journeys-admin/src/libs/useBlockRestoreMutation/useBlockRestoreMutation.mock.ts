@@ -22,8 +22,8 @@ import { BLOCK_RESTORE } from './useBlockRestoreMutation'
 
 export const stepBlock = {
   __typename: 'StepBlock',
-  id: 'step3.id',
-  journeyId: 'journey-id',
+  id: 'step',
+  journeyId: 'journeyId',
   parentBlockId: null,
   nextBlockId: 'someId',
   children: []
@@ -31,8 +31,8 @@ export const stepBlock = {
 
 export const stepBlockRes = {
   __typename: 'StepBlock',
-  id: 'step3.id',
-  journeyId: 'journey-id',
+  id: 'step',
+  journeyId: 'journeyId',
   parentBlockId: null,
   nextBlockId: 'someId',
   children: []
@@ -97,7 +97,6 @@ const selectedStep: TreeBlock<StepBlock> = {
   parentOrder: 0,
   locked: true,
   nextBlockId: null,
-  slug: null,
   children: [
     {
       id: 'card1.id',

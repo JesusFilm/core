@@ -10,13 +10,13 @@ import { VideosFilter } from "./globalTypes";
 // ====================================================
 
 export interface GetVideos_videos_snippet {
-  __typename: "VideoSnippet";
+  __typename: "Translation";
   primary: boolean;
   value: string;
 }
 
 export interface GetVideos_videos_title {
-  __typename: "VideoTitle";
+  __typename: "Translation";
   primary: boolean;
   value: string;
 }

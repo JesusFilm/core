@@ -7,9 +7,7 @@ locals {
     "GOOGLE_APPLICATION_JSON",
     "INTEROP_TOKEN",
     "JOURNEYS_ADMIN_URL",
-    "NAT_ADDRESSES",
     "PG_DATABASE_URL_USERS",
-    "REDIS_PORT",
     "REDIS_URL"
   ]
   service_config = {

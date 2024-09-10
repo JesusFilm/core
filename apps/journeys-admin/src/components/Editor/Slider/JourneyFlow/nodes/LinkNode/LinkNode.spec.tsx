@@ -22,7 +22,6 @@ describe('LinkNode', () => {
       parentOrder: 0,
       locked: false,
       nextBlockId: null,
-      slug: null,
       children: [
         {
           __typename: 'CardBlock',

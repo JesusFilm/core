@@ -54,7 +54,7 @@ describe('ProjectIdSelect', () => {
       </MockedProvider>
     )
 
-    expect(getByRole('combobox')).toHaveTextContent('projectName')
+    expect(getByRole('button', { name: 'projectName' })).toBeInTheDocument()
   })
 
   it('updates the projectId', async () => {
@@ -95,7 +95,7 @@ describe('ProjectIdSelect', () => {
       </MockedProvider>
     )
 
-    fireEvent.mouseDown(getByRole('combobox'))
+    fireEvent.mouseDown(getByRole('button', { name: 'projectName' }))
     fireEvent.click(getByRole('option', { name: 'otherProjectName' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
@@ -138,7 +138,7 @@ describe('ProjectIdSelect', () => {
       </MockedProvider>
     )
 
-    fireEvent.mouseDown(getByRole('combobox'))
+    fireEvent.mouseDown(getByRole('button', { name: 'projectName' }))
     fireEvent.click(getByRole('option', { name: 'projectName' }))
     await waitFor(() => expect(result).not.toHaveBeenCalled())
   })
@@ -157,6 +157,6 @@ describe('ProjectIdSelect', () => {
       </MockedProvider>
     )
 
-    expect(getByRole('combobox')).toHaveAttribute('aria-disabled', 'true')
+    expect(getByRole('button')).toHaveAttribute('aria-disabled', 'true')
   })
 })

@@ -5,7 +5,6 @@ locals {
     "ARCLIGHT_API_KEY",
     "ARCLIGHT_V3_URL",
     "BIG_QUERY_APPLICATION_JSON",
-    "REDIS_PORT",
     "REDIS_URL",
     "WESS_API_TOKEN",
   ]

@@ -27,7 +27,11 @@ on:
         required: true
       DOPPLER_API_LANGUAGES_TOKEN:
         required: true
+      DOPPLER_API_TAGS_TOKEN:
+        required: true
       DOPPLER_API_USERS_TOKEN:
+        required: true
+      DOPPLER_API_VIDEOS_TOKEN:
         required: true
       DOPPLER_API_MEDIA_TOKEN:
         required: true
@@ -108,7 +112,9 @@ jobs:
           DOPPLER_API_GATEWAY_TOKEN: ${{ secrets.DOPPLER_API_GATEWAY_TOKEN }}
           DOPPLER_API_JOURNEYS_TOKEN: ${{ secrets.DOPPLER_API_JOURNEYS_TOKEN }}
           DOPPLER_API_LANGUAGES_TOKEN: ${{ secrets.DOPPLER_API_LANGUAGES_TOKEN }}
+          DOPPLER_API_TAGS_TOKEN: ${{ secrets.DOPPLER_API_TAGS_TOKEN }}
           DOPPLER_API_USERS_TOKEN: ${{ secrets.DOPPLER_API_USERS_TOKEN }}
+          DOPPLER_API_VIDEOS_TOKEN: ${{ secrets.DOPPLER_API_VIDEOS_TOKEN }}
           DOPPLER_API_MEDIA_TOKEN: ${{ secrets.DOPPLER_API_MEDIA_TOKEN }}
           DOPPLER_ARCLIGHT_TOKEN: ${{ secrets.DOPPLER_ARCLIGHT_TOKEN }}
           DOPPLER_DOCS_TOKEN: ${{ secrets.DOPPLER_DOCS_TOKEN }}

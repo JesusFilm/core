@@ -48,7 +48,7 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
         description={journey.description ?? undefined}
         openGraph={{
           type: 'website',
-          title: journey.seoTitle ?? journey.displayTitle ?? '',
+          title: journey.seoTitle ?? journey.title,
           url: `https://${
             process.env.NEXT_PUBLIC_VERCEL_URL ?? 'your.nextstep.is'
           }/embed/${journey.slug}`,
@@ -91,7 +91,10 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
         rtl={rtl}
         locale={locale}
       >
-        <EmbeddedPreview disableFullscreen={query?.expand === 'false'} />
+        <EmbeddedPreview
+          blocks={blocks}
+          disableFullscreen={query?.expand === 'false'}
+        />
       </JourneyPageWrapper>
     </>
   )

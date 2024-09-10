@@ -38,9 +38,6 @@ export interface CreateJourney_journeyCreate_userJourneys {
 export interface CreateJourney_journeyCreate {
   __typename: "Journey";
   id: string;
-  /**
-   * private title for creators
-   */
   title: string;
   createdAt: any;
   publishedAt: any | null;

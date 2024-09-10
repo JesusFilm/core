@@ -45,8 +45,7 @@ describe('Toolbar Menu', () => {
         parentOrder: 0,
         locked: true,
         nextBlockId: null,
-        children: [],
-        slug: null
+        children: []
       }
       render(
         <SnackbarProvider>
@@ -94,8 +93,7 @@ describe('Toolbar Menu', () => {
         parentOrder: 0,
         locked: true,
         nextBlockId: null,
-        children: [],
-        slug: null
+        children: []
       }
       render(
         <SnackbarProvider>
@@ -165,8 +163,7 @@ describe('Toolbar Menu', () => {
         parentOrder: 0,
         locked: true,
         nextBlockId: null,
-        children: [],
-        slug: null
+        children: []
       }
       render(
         <SnackbarProvider>
@@ -315,8 +312,7 @@ describe('Toolbar Menu', () => {
         parentOrder: 0,
         locked: true,
         nextBlockId: null,
-        children: [],
-        slug: null
+        children: []
       }
       render(
         <SnackbarProvider>

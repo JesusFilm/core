@@ -66,7 +66,6 @@ const step: TreeBlock = {
   parentOrder: 0,
   locked: false,
   nextBlockId: null,
-  slug: null,
   children: [card]
 }
 const cardQuoteCreateMock: MockedResponse<

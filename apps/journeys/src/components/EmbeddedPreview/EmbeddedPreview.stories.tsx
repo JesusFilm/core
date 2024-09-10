@@ -88,12 +88,7 @@ const journey: Journey = {
   },
   team: null,
   blocks: basic,
-  tags: [],
-  website: null,
-  showShareButton: null,
-  showLikeButton: null,
-  showDislikeButton: null,
-  displayTitle: null
+  tags: []
 }
 
 const Template: StoryObj<typeof EmbeddedPreview> = {

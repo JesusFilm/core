@@ -47,7 +47,6 @@ function addActionToStep(action: Action): TreeBlock<StepBlock> {
     parentOrder: 0,
     locked: false,
     nextBlockId: null,
-    slug: null,
     children: [
       {
         __typename: 'CardBlock',

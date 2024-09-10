@@ -77,7 +77,6 @@ const activeBlock: TreeBlock<StepBlock> = {
   parentOrder: 0,
   locked: true,
   nextBlockId: null,
-  slug: null,
   children: []
 }
 

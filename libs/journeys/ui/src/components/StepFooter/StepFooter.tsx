@@ -105,9 +105,7 @@ export function StepFooter({
                   textOverflow: 'ellipsis'
                 }}
               >
-                {title != null
-                  ? title
-                  : journey?.displayTitle ?? journey?.seoTitle}
+                {title != null ? title : journey?.seoTitle ?? journey?.title}
               </Typography>
               <HostTitleLocation />
             </Stack>

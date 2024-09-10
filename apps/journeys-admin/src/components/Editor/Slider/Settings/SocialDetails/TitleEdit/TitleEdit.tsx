@@ -50,7 +50,7 @@ export function TitleEdit(): ReactElement {
   const initialValues =
     journey != null
       ? {
-          seoTitle: journey.seoTitle ?? ''
+          seoTitle: journey.seoTitle ?? journey.title
         }
       : null
 

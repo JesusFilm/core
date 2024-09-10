@@ -165,8 +165,7 @@ test.describe('verify card level actions', () => {
   })
 
   // Footer properties - Hosted By & Chat Widget
-  // eslint-disable-next-line playwright/no-skipped-test
-  test.skip('Footer properties - create, update & delete', async ({ page }) => {
+  test('Footer properties - create, update & delete', async ({ page }) => {
     const cardLevelActionPage = new CardLevelActionPage(page)
     await cardLevelActionPage.selectWholeFooterSectionInCard() // selecting the whole Fotter section
     await cardLevelActionPage.clicSelectHostBtn() // clicking the 'select a host' button below the 'Hosted by' tab in the footer properties drawer

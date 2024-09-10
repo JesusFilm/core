@@ -28,7 +28,6 @@ describe('AddBlock', () => {
     parentOrder: 0,
     locked: true,
     nextBlockId: null,
-    slug: null,
     children: [
       {
         id: 'card1.id',

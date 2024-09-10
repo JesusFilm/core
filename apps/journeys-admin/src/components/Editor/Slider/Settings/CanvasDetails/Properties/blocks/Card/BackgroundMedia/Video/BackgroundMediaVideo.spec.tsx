@@ -104,7 +104,7 @@ const video: TreeBlock<VideoBlock> = {
     id: '2_0-FallingPlates',
     title: [
       {
-        __typename: 'VideoTitle',
+        __typename: 'Translation',
         value: '#FallingPlates'
       }
     ],
@@ -164,7 +164,7 @@ const getVideoMock: MockedResponse<GetVideo, GetVideoVariables> = {
           {
             primary: true,
             value: 'Jesus Taken Up Into Heaven',
-            __typename: 'VideoTitle'
+            __typename: 'Translation'
           }
         ],
         description: [
@@ -172,7 +172,7 @@ const getVideoMock: MockedResponse<GetVideo, GetVideoVariables> = {
             primary: true,
             value:
               'Jesus promises the Holy Spirit; then ascends into the clouds.',
-            __typename: 'VideoDescription'
+            __typename: 'Translation'
           }
         ],
         variant: {

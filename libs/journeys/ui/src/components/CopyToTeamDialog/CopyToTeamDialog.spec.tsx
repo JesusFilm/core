@@ -1,5 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, waitFor, within } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '../../libs/JourneyProvider'
@@ -65,9 +65,9 @@ describe('DuplicateJourneys', () => {
     )
 
     await waitFor(() => expect(result).toHaveBeenCalled())
-    expect(getByRole('combobox', { name: 'Select Team' })).toHaveTextContent(
-      'Team Name'
-    )
+    expect(
+      getByRole('button', { name: 'Select Team Team Name' })
+    ).toBeInTheDocument()
   })
 
   it('should call submit action on dialog submit', async () => {
@@ -96,11 +96,6 @@ describe('DuplicateJourneys', () => {
             id: 'teamId',
             title: 'Team Name',
             __typename: 'Team'
-          },
-          {
-            id: 'teamId2',
-            title: 'Team Name Two',
-            __typename: 'Team'
           }
         ],
         getJourneyProfile: {
@@ -110,7 +105,7 @@ describe('DuplicateJourneys', () => {
       }
     }))
 
-    const { getByRole, getByText } = render(
+    const { getByRole, getByText, getByTestId } = render(
       <MockedProvider
         mocks={[
           updateLastActiveTeamIdMock,
@@ -142,8 +137,9 @@ describe('DuplicateJourneys', () => {
       </MockedProvider>
     )
     await waitFor(() => expect(result).toHaveBeenCalled())
-
-    await fireEvent.mouseDown(getByRole('combobox', { name: 'Select Team' }))
+    const muiSelect = getByTestId('team-duplicate-select')
+    const muiSelectDropDownButton = await within(muiSelect).getByRole('button')
+    await fireEvent.mouseDown(muiSelectDropDownButton)
     const muiSelectOptions = await getByRole('option', {
       name: 'Team Name'
     })

@@ -51,7 +51,7 @@ describe('ContainedCover', () => {
       id: '2_0-FallingPlates',
       title: [
         {
-          __typename: 'VideoTitle',
+          __typename: 'Translation',
           value: 'FallingPlates'
         }
       ],

@@ -10,9 +10,9 @@
     "tsBuildInfoFile": "../../.cache/api-analytics/tsc/.tsbuildinfo",
     "plugins": [
       {
-        "name": "gql.tada/ts-plugin",
+        "name": "@0no-co/graphqlsp",
         "schema": "../api-gateway/schema.graphql",
-        "tadaOutputLocation": "./apps/api-analytics/src/__generated__/graphql-env.d.ts"
+        "tadaOutputLocation": "./src/__generated__/graphql-env.d.ts"
       }
     ]
   },

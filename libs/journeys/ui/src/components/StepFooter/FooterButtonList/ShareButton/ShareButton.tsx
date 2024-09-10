@@ -53,7 +53,7 @@ export function ShareButton(): ReactElement {
 
     const shareDetails = {
       url,
-      title: journey?.seoTitle ?? journey?.displayTitle ?? t('Journey'),
+      title: journey?.seoTitle ?? journey?.title ?? t('Journey'),
       text: journey?.seoDescription ?? ''
     }
 

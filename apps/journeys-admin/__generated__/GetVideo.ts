@@ -8,13 +8,13 @@
 // ====================================================
 
 export interface GetVideo_video_title {
-  __typename: "VideoTitle";
+  __typename: "Translation";
   primary: boolean;
   value: string;
 }
 
 export interface GetVideo_video_description {
-  __typename: "VideoDescription";
+  __typename: "Translation";
   primary: boolean;
   value: string;
 }
@@ -50,7 +50,7 @@ export interface GetVideo_video {
 }
 
 export interface GetVideo {
-  video: GetVideo_video;
+  video: GetVideo_video | null;
 }
 
 export interface GetVideoVariables {

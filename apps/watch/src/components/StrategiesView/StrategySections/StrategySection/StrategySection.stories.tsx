@@ -19,7 +19,7 @@ type Story = StoryObj<ComponentProps<typeof StrategySection>>
 
 const Template: Story = {
   render: (args) => (
-    <InstantSearchTestWrapper>
+    <InstantSearchTestWrapper indexName="indexName">
       <StrategySection {...args} />
     </InstantSearchTestWrapper>
   )

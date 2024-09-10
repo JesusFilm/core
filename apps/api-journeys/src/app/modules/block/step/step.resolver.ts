@@ -3,7 +3,6 @@ import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 import omit from 'lodash/omit'
-import slugify from 'slugify'
 
 import { Block } from '.prisma/api-journeys-client'
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
@@ -98,11 +97,6 @@ export class StepBlockResolver {
           extensions: { code: 'BAD_USER_INPUT' }
         }
       )
-    if (input.slug != null)
-      input.slug = slugify(input.slug, {
-        lower: true,
-        strict: true
-      })
     return await this.blockService.update(id, input)
   }
 

@@ -14,7 +14,7 @@ export interface GetMyCloudflareVideoQuery_getMyCloudflareVideo {
 }
 
 export interface GetMyCloudflareVideoQuery {
-  getMyCloudflareVideo: GetMyCloudflareVideoQuery_getMyCloudflareVideo;
+  getMyCloudflareVideo: GetMyCloudflareVideoQuery_getMyCloudflareVideo | null;
 }
 
 export interface GetMyCloudflareVideoQueryVariables {

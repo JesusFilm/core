@@ -58,7 +58,7 @@ describe('AccessAvatars', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    fireEvent.mouseOver(getByRole('img', { name: 'Janelle Five' }))
+    fireEvent.focusIn(getByRole('img', { name: 'Janelle Five' }))
     await waitFor(() =>
       expect(getByRole('tooltip', { name: 'Janelle Five' })).toBeInTheDocument()
     )

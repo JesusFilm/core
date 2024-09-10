@@ -10,7 +10,7 @@ import { VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 // ====================================================
 
 export interface VideoFields_video_title {
-  __typename: "VideoTitle";
+  __typename: "Translation";
   value: string;
 }
 

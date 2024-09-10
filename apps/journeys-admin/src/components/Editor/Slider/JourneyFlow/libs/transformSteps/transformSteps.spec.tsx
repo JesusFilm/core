@@ -21,7 +21,6 @@ describe('transformSteps', () => {
         parentOrder: 0,
         locked: false,
         nextBlockId: 'step2.id',
-        slug: null,
         children: []
       },
       {
@@ -31,7 +30,6 @@ describe('transformSteps', () => {
         parentOrder: 0,
         locked: false,
         nextBlockId: 'step3.id',
-        slug: null,
         children: []
       },
       {
@@ -41,7 +39,6 @@ describe('transformSteps', () => {
         parentOrder: 0,
         locked: false,
         nextBlockId: null,
-        slug: null,
         children: []
       }
     ]
@@ -132,7 +129,6 @@ describe('transformSteps', () => {
         parentOrder: 0,
         locked: false,
         nextBlockId: null,
-        slug: null,
         children: [
           {
             __typename: 'CardBlock',
@@ -175,7 +171,6 @@ describe('transformSteps', () => {
         parentOrder: 0,
         locked: false,
         nextBlockId: null,
-        slug: null,
         children: []
       }
     ]
@@ -230,7 +225,6 @@ describe('transformSteps', () => {
         parentOrder: 0,
         locked: false,
         nextBlockId: 'step1.id',
-        slug: null,
         children: [
           {
             __typename: 'CardBlock',
@@ -304,7 +298,6 @@ describe('transformSteps', () => {
         parentOrder: 0,
         locked: false,
         nextBlockId: 'step1.id',
-        slug: null,
         children: [
           {
             __typename: 'CardBlock',

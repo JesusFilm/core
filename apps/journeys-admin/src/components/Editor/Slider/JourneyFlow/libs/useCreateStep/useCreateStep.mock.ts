@@ -23,8 +23,7 @@ export const mockNewStepBlock: TreeBlock<StepBlock> = {
   parentOrder: 1,
   locked: false,
   nextBlockId: null,
-  children: [],
-  slug: null
+  children: []
 }
 
 export const mockNewCardBlock: TreeBlock<CardBlock> = {

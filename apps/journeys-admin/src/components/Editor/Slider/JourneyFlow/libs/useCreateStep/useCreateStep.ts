@@ -43,8 +43,7 @@ export function useCreateStep(): (input: CreateStepInput) => void {
       parentOrder: 0,
       id: uuidv4(),
       x,
-      y,
-      slug: null
+      y
     }
     const card: CardBlock = {
       __typename: 'CardBlock',

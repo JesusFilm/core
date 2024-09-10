@@ -23,7 +23,6 @@ describe('getActionLabel', () => {
         parentOrder: null,
         locked: false,
         nextBlockId: null,
-        slug: null,
         children: [
           {
             __typename: 'TypographyBlock',
@@ -60,7 +59,6 @@ describe('getActionLabel', () => {
         parentOrder: null,
         locked: false,
         nextBlockId: null,
-        slug: null,
         children: []
       }
     ]

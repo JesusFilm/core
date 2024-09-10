@@ -59,7 +59,6 @@ const step1 = {
   parentOrder: 0,
   locked: false,
   nextBlockId: 'step3.id',
-  slug: null,
   children: []
 }
 const step2 = {
@@ -69,7 +68,6 @@ const step2 = {
   parentOrder: 1,
   locked: true,
   nextBlockId: null,
-  slug: null,
   children: []
 }
 const step3 = {
@@ -79,7 +77,6 @@ const step3 = {
   parentOrder: 2,
   locked: false,
   nextBlockId: null,
-  slug: null,
   children: []
 }
 

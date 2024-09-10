@@ -41,7 +41,7 @@ const tag: Tag = {
   parentId: 'parentTag.id',
   name: [
     {
-      __typename: 'TagName',
+      __typename: 'Translation',
       primary: true,
       value: 'tag.name',
       language: { __typename: 'Language', id: 'language.id' }

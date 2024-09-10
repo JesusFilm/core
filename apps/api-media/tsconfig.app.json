@@ -4,7 +4,6 @@
     "outDir": "../../dist/out-tsc",
     "module": "commonjs",
     "types": [
-      "jest",
       "node",
       "@nx/react/typings/cssmodule.d.ts",
       "@nx/react/typings/image.d.ts"
@@ -12,11 +11,6 @@
     "emitDecoratorMetadata": true,
     "target": "es2021"
   },
-  "exclude": [
-    "**/*.spec.ts",
-    "jest.config.ts",
-    "**/__mocks/*.ts",
-    "**/test/*.ts"
-  ],
+  "exclude": ["**/*.spec.ts", "**/*.test.ts", "jest.config.ts"],
   "include": ["**/*.ts"]
 }

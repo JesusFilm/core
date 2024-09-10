@@ -26,8 +26,7 @@ export function Custom404(): ReactElement {
       locked: false,
       nextBlockId: null,
       parentBlockId: null,
-      parentOrder: 0,
-      slug: null
+      parentOrder: 0
     },
     {
       __typename: 'CardBlock',

@@ -217,8 +217,7 @@ export function useCreateStepFromAction(): (
       parentOrder: 0,
       id: uuidv4(),
       x,
-      y,
-      slug: null
+      y
     }
     const card: CardBlock = {
       __typename: 'CardBlock',

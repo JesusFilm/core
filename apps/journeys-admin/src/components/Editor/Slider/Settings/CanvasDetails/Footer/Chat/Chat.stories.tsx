@@ -1,12 +1,10 @@
 import { MockedProvider } from '@apollo/client/testing'
-import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent } from '@storybook/testing-library'
 
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
-import { DRAWER_WIDTH } from '../../../../../constants'
+import { Drawer } from '../../../Drawer'
 
 import { Chat } from '.'
 
@@ -19,22 +17,26 @@ const ChatStory: Meta<typeof Chat> = {
 const Template: StoryObj<typeof Chat> = {
   render: () => (
     <MockedProvider>
-      <EditorProvider>
-        <Box sx={{ width: DRAWER_WIDTH }}>
-          <Chat />
-        </Box>
-      </EditorProvider>
+      <Drawer title="Chat">
+        <Chat />
+      </Drawer>
     </MockedProvider>
   )
 }
-
 export const Default = { ...Template }
 
 export const Open = {
   ...Template,
   play: async () => {
-    const button = screen.getByRole('button', { name: 'Chat Widget' })
-    await userEvent.click(button)
+    const facebook = screen.getByRole('button', { name: 'Facebook Messenger' })
+    const whatsApp = screen.getByRole('button', { name: 'WhatsApp' })
+    const telegram = screen.getByRole('button', { name: 'Telegram' })
+    const custom = screen.getByRole('button', { name: 'Custom' })
+
+    await userEvent.click(facebook)
+    await userEvent.click(whatsApp)
+    await userEvent.click(telegram)
+    await userEvent.click(custom)
   }
 }
 

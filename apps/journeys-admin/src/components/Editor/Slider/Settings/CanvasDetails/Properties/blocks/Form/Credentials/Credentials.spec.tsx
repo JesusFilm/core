@@ -83,8 +83,10 @@ describe('Credentials', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
 
     expect(screen.getByLabelText('Api Token')).toBeInTheDocument()
-    expect(screen.getAllByRole('combobox')[0]).toHaveTextContent('projectName')
-    expect(screen.getAllByRole('combobox')[1]).toHaveTextContent('formName')
+    expect(
+      screen.getByRole('button', { name: 'projectName' })
+    ).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'formName' })).toBeInTheDocument()
   })
 
   it('shows info message', async () => {

@@ -82,17 +82,6 @@ export enum IntegrationType {
   growthSpaces = "growthSpaces",
 }
 
-export enum JourneyMenuButtonIcon {
-  chevronDown = "chevronDown",
-  ellipsis = "ellipsis",
-  equals = "equals",
-  grid1 = "grid1",
-  home3 = "home3",
-  home4 = "home4",
-  menu1 = "menu1",
-  more = "more",
-}
-
 export enum JourneyStatus {
   archived = "archived",
   deleted = "deleted",
@@ -410,7 +399,6 @@ export interface ImageBlockCreateInput {
   width?: number | null;
   height?: number | null;
   isCover?: boolean | null;
-  scale?: number | null;
 }
 
 export interface ImageBlockUpdateInput {
@@ -420,7 +408,6 @@ export interface ImageBlockUpdateInput {
   blurhash?: string | null;
   width?: number | null;
   height?: number | null;
-  scale?: number | null;
 }
 
 export interface IntegrationGrowthSpacesCreateInput {
@@ -475,20 +462,6 @@ export interface JourneyUpdateInput {
   hostId?: string | null;
   strategySlug?: string | null;
   tagIds?: string[] | null;
-  website?: boolean | null;
-  showShareButton?: boolean | null;
-  showLikeButton?: boolean | null;
-  showDislikeButton?: boolean | null;
-  displayTitle?: string | null;
-  showHosts?: boolean | null;
-  showChatButtons?: boolean | null;
-  showReactionButtons?: boolean | null;
-  showLogo?: boolean | null;
-  showMenu?: boolean | null;
-  showDisplayTitle?: boolean | null;
-  menuButtonIcon?: JourneyMenuButtonIcon | null;
-  menuStepBlockId?: string | null;
-  logoImageBlockId?: string | null;
 }
 
 export interface JourneyVisitorFilter {
@@ -605,7 +578,6 @@ export interface StepBlockUpdateInput {
   locked?: boolean | null;
   x?: number | null;
   y?: number | null;
-  slug?: string | null;
 }
 
 export interface StepNextEventCreateInput {

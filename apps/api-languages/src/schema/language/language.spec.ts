@@ -45,9 +45,9 @@ describe('language', () => {
       audioPreview: {
         ...audioPreview,
         language
-      },
-      name: languageName
+      }
     } as unknown as Language)
+    prismaMock.languageName.findMany.mockResolvedValue(languageName)
     const data = await client({
       document: LANGUAGE_QUERY
     })
@@ -60,14 +60,16 @@ describe('language', () => {
           include: {
             language: true
           }
-        },
-        name: {
-          where: {
-            OR: [{ languageId: '529' }, { primary: true }]
-          },
-          orderBy: { primary: 'desc' }
         }
       }
+    })
+    expect(prismaMock.languageName.findMany).toHaveBeenCalledWith({
+      where: {
+        parentLanguageId: '20615',
+        OR: [{ languageId: '529' }, { primary: true }]
+      },
+      include: { language: true },
+      orderBy: { primary: 'desc' }
     })
     expect(data).toHaveProperty('data.language', {
       ...omit(language, ['createdAt', 'updatedAt', 'hasVideos']),
@@ -75,7 +77,7 @@ describe('language', () => {
         omit(languageName, ['id', 'languageId', 'parentLanguageId'])
       ),
       audioPreview: {
-        ...omit(audioPreview, 'languageId', 'updatedAt'),
+        ...omit(audioPreview, 'languageId'),
         language: { id: audioPreview.languageId }
       }
     })
@@ -87,8 +89,7 @@ describe('language', () => {
       audioPreview: {
         ...audioPreview,
         language: { id: audioPreview.languageId }
-      },
-      name: languageName
+      }
     } as unknown as Language)
     prismaMock.languageName.findMany.mockResolvedValue(languageName)
     const data = await client({
@@ -107,14 +108,16 @@ describe('language', () => {
           include: {
             language: true
           }
-        },
-        name: {
-          where: {
-            OR: [{ languageId: '529' }, { primary: true }]
-          },
-          orderBy: { primary: 'desc' }
         }
       }
+    })
+    expect(prismaMock.languageName.findMany).toHaveBeenCalledWith({
+      where: {
+        parentLanguageId: '20615',
+        OR: [{ languageId: '529' }, { primary: true }]
+      },
+      include: { language: true },
+      orderBy: { primary: 'desc' }
     })
     expect(data).toHaveProperty('data.language', {
       ...omit(language, ['createdAt', 'updatedAt', 'hasVideos']),
@@ -122,7 +125,7 @@ describe('language', () => {
         omit(languageName, ['id', 'languageId', 'parentLanguageId'])
       ),
       audioPreview: {
-        ...omit(audioPreview, 'languageId', 'updatedAt'),
+        ...omit(audioPreview, 'languageId'),
         language: { id: audioPreview.languageId }
       }
     })

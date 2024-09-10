@@ -12,9 +12,6 @@ import { CustomDomainCreateInput } from "./globalTypes";
 export interface CreateCustomDomain_customDomainCreate_journeyCollection_journeys {
   __typename: "Journey";
   id: string;
-  /**
-   * private title for creators
-   */
   title: string;
 }
 

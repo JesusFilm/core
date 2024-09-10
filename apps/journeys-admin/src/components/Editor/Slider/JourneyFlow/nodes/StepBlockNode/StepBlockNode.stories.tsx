@@ -165,7 +165,7 @@ const videoNode = {
               id: '1_0-TrainV_1Install',
               title: [
                 {
-                  __typename: 'VideoTitle',
+                  __typename: 'Translation',
                   value: 'Installing the Jesus Film Media App'
                 }
               ],
@@ -249,7 +249,7 @@ const videoNode = {
                   id: '1_0-TrainV_1Install',
                   title: [
                     {
-                      __typename: 'VideoTitle',
+                      __typename: 'Translation',
                       value: 'Installing the Jesus Film Media App'
                     }
                   ],

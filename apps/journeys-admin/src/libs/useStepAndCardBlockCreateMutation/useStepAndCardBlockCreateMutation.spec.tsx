@@ -91,8 +91,7 @@ describe('useStepAndCardBlockCreateMutation', () => {
         parentBlockId: null,
         parentOrder: null,
         x: -200,
-        y: 38,
-        slug: null
+        y: 38
       })
       expect(cache.extract()['CardBlock:newCard.id']).toEqual({
         __typename: 'CardBlock',

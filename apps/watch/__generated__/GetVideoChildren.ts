@@ -10,17 +10,17 @@ import { VideoLabel } from "./globalTypes";
 // ====================================================
 
 export interface GetVideoChildren_video_children_title {
-  __typename: "VideoTitle";
+  __typename: "Translation";
   value: string;
 }
 
 export interface GetVideoChildren_video_children_imageAlt {
-  __typename: "VideoImageAlt";
+  __typename: "Translation";
   value: string;
 }
 
 export interface GetVideoChildren_video_children_snippet {
-  __typename: "VideoSnippet";
+  __typename: "Translation";
   value: string;
 }
 
@@ -61,7 +61,7 @@ export interface GetVideoChildren_video {
 }
 
 export interface GetVideoChildren {
-  video: GetVideoChildren_video;
+  video: GetVideoChildren_video | null;
 }
 
 export interface GetVideoChildrenVariables {

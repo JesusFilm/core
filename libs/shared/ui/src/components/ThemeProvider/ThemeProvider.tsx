@@ -1,5 +1,3 @@
-'use client'
-
 import CssBaseline from '@mui/material/CssBaseline'
 import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles'
 import { ReactElement, ReactNode } from 'react'

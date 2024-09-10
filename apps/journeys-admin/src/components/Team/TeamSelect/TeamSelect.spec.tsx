@@ -85,10 +85,10 @@ describe('TeamSelect', () => {
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getByRole('combobox')).toHaveTextContent('Team Title')
+      expect(getByRole('button')).toHaveTextContent('Team Title')
     )
     expect(getByTestId('active-team-title')).toHaveTextContent('Team Title')
-    await userEvent.click(getByRole('combobox'))
+    await userEvent.click(getByRole('button'))
     await waitFor(() => expect(screen.getByRole('listbox')).toBeInTheDocument())
     expect(getByText('Shared With Me')).toBeInTheDocument()
     fireEvent.click(getByRole('option', { name: 'Team Title2' }))
@@ -123,8 +123,12 @@ describe('TeamSelect', () => {
         </TeamProvider>
       </MockedProvider>
     )
-    await waitFor(() => expect(getByRole('combobox')).toBeInTheDocument())
-    fireEvent.click(getByRole('combobox'))
+    await waitFor(() =>
+      expect(
+        getByRole('button', { name: 'Shared With Me' })
+      ).toBeInTheDocument()
+    )
+    fireEvent.click(getByRole('button', { name: 'Shared With Me' }))
     expect(
       queryByRole('button', { name: 'Create Custom Journey' })
     ).not.toBeInTheDocument()

@@ -1,1 +1,0 @@
-export { authConfig } from './config'

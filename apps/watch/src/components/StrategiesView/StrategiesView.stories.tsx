@@ -21,7 +21,7 @@ type Story = StoryObj<ComponentProps<typeof StrategiesView> & { query: string }>
 
 const Template: Story = {
   render: () => (
-    <InstantSearchTestWrapper>
+    <InstantSearchTestWrapper indexName="indexName">
       <StrategiesView />
     </InstantSearchTestWrapper>
   )

@@ -14,7 +14,7 @@ export interface CreateCloudflareVideoUploadByFileMutation_createCloudflareVideo
 }
 
 export interface CreateCloudflareVideoUploadByFileMutation {
-  createCloudflareVideoUploadByFile: CreateCloudflareVideoUploadByFileMutation_createCloudflareVideoUploadByFile;
+  createCloudflareVideoUploadByFile: CreateCloudflareVideoUploadByFileMutation_createCloudflareVideoUploadByFile | null;
 }
 
 export interface CreateCloudflareVideoUploadByFileMutationVariables {

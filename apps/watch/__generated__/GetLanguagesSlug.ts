@@ -21,8 +21,8 @@ export interface GetLanguagesSlug_video_variantLanguagesWithSlug_language {
 
 export interface GetLanguagesSlug_video_variantLanguagesWithSlug {
   __typename: "LanguageWithSlug";
-  slug: string;
-  language: GetLanguagesSlug_video_variantLanguagesWithSlug_language;
+  slug: string | null;
+  language: GetLanguagesSlug_video_variantLanguagesWithSlug_language | null;
 }
 
 export interface GetLanguagesSlug_video {
@@ -31,7 +31,7 @@ export interface GetLanguagesSlug_video {
 }
 
 export interface GetLanguagesSlug {
-  video: GetLanguagesSlug_video;
+  video: GetLanguagesSlug_video | null;
 }
 
 export interface GetLanguagesSlugVariables {

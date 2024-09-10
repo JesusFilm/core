@@ -64,7 +64,6 @@ describe('CardVideo', () => {
     parentOrder: 0,
     locked: false,
     nextBlockId: null,
-    slug: null,
     children: [card]
   }
   const cardVideoDeleteMock: MockedResponse<

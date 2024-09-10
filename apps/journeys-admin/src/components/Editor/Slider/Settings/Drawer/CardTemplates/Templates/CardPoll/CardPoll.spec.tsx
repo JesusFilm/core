@@ -67,7 +67,6 @@ describe('CardPoll', () => {
     parentOrder: 0,
     locked: false,
     nextBlockId: null,
-    slug: null,
     children: [card]
   }
   const cardPollCreateMock: MockedResponse<

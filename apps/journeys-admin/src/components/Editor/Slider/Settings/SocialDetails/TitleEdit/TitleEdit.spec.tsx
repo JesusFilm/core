@@ -18,7 +18,7 @@ describe('TitleEdit', () => {
   })
 
   it('should display seo title', () => {
-    const { getByRole } = render(
+    const { getByText } = render(
       <MockedProvider>
         <JourneyProvider
           value={{
@@ -33,11 +33,11 @@ describe('TitleEdit', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    expect(getByRole('textbox')).toHaveTextContent('Social share title')
+    expect(getByText('Social share title')).toBeInTheDocument()
   })
 
-  it('should display nothing when seo title not set', () => {
-    const { getByRole } = render(
+  it('should display journey title when seo title not set', () => {
+    const { getByText } = render(
       <MockedProvider>
         <JourneyProvider
           value={{
@@ -52,7 +52,7 @@ describe('TitleEdit', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    expect(getByRole('textbox')).toHaveTextContent('')
+    expect(getByText('journey title')).toBeInTheDocument()
   })
 
   it('should update seo title', async () => {

@@ -163,7 +163,7 @@ describe('Toolbar', () => {
     expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
   })
 
-  it.skip('should open analytics popover', () => {
+  it('should open analytics popover', () => {
     const initialState = {
       showAnalytics: true
     } as unknown as EditorState

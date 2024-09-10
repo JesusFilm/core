@@ -90,8 +90,7 @@ const blocks: Blocks[] = [
     parentBlockId: null,
     parentOrder: 0,
     locked: false,
-    nextBlockId: null,
-    slug: null
+    nextBlockId: null
   },
   {
     __typename: 'CardBlock',
@@ -144,12 +143,7 @@ describe('Goals', () => {
     chatButtons: [],
     host: null,
     team: null,
-    tags: [],
-    website: null,
-    showShareButton: null,
-    showLikeButton: null,
-    showDislikeButton: null,
-    displayTitle: null
+    tags: []
   }
 
   it('should render placeholder', () => {

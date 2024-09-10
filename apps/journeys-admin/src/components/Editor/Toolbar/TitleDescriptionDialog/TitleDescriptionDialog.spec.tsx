@@ -45,7 +45,6 @@ function getJourneySettingsUpdateMock(
     result: {
       data: {
         journeyUpdate: {
-          ...defaultJourney,
           id: defaultJourney.id,
           __typename: 'Journey',
           title: 'Changed Title',

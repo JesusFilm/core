@@ -16,7 +16,6 @@ describe('StepBlockNodeMenu', () => {
     nextBlockId: null,
     parentOrder: 0,
     locked: false,
-    slug: null,
     children: []
   }
 

@@ -499,7 +499,6 @@ describe('BlockRenderer', () => {
       nextBlockId: null,
       parentOrder: 0,
       locked: false,
-      slug: null,
       children: [
         {
           __typename: 'ButtonBlock',
@@ -537,7 +536,6 @@ describe('BlockRenderer', () => {
       nextBlockId: null,
       parentOrder: 0,
       locked: false,
-      slug: null,
       children: [
         {
           __typename: 'ButtonBlock',
@@ -651,7 +649,7 @@ describe('BlockRenderer', () => {
         id: '2_0-FallingPlates',
         title: [
           {
-            __typename: 'VideoTitle',
+            __typename: 'Translation',
             value: 'FallingPlates'
           }
         ],
@@ -702,7 +700,7 @@ describe('BlockRenderer', () => {
         id: '2_0-FallingPlates',
         title: [
           {
-            __typename: 'VideoTitle',
+            __typename: 'Translation',
             value: 'FallingPlates'
           }
         ],

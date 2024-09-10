@@ -29,8 +29,6 @@ describe('VideoControls', () => {
   let player
 
   beforeEach(() => {
-    jest.clearAllMocks()
-
     const video = document.createElement('video')
     document.body.appendChild(video)
     player = videojs(video, {

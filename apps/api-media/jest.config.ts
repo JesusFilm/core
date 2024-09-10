@@ -16,8 +16,7 @@ const config: Config = {
   coverageDirectory: '../../coverage/apps/api-media',
   collectCoverage: true,
   coverageReporters: ['cobertura'],
-  preset: '../../jest.preset.js',
-  setupFilesAfterEnv: ['<rootDir>/test/prismaMock.ts']
+  preset: '../../jest.preset.js'
 }
 
 export default config

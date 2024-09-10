@@ -13,6 +13,7 @@
     "import/no-dynamic-require": "error",
     "import/no-webpack-loader-syntax": "error",
     "import/no-self-import": "error",
+    "import/no-cycle": "warn",
     "import/no-useless-path-segments": "error",
     "import/no-relative-packages": "error",
     "import/export": "error",
@@ -138,7 +139,6 @@
         "@typescript-eslint/prefer-optional-chain": "off",
         "@typescript-eslint/non-nullable-type-assertion-style": "off",
         "@typescript-eslint/no-extra-semi": "off",
-        "@typescript-eslint/no-unsafe-argument": "off",
         "no-extra-semi": "off"
       }
     },

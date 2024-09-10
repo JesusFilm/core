@@ -132,7 +132,7 @@ describe('Route', () => {
       </MockedProvider>
     )
     await waitFor(() => expect(result).toHaveBeenCalled())
-    fireEvent.mouseDown(screen.getByRole('combobox'))
+    fireEvent.mouseDown(screen.getByRole('button'))
     await waitFor(() =>
       fireEvent.click(screen.getByRole('option', { name: 'My First Email' }))
     )
@@ -191,7 +191,7 @@ describe('Route', () => {
     )
 
     await waitFor(() => expect(result).toHaveBeenCalled())
-    fireEvent.mouseDown(screen.getAllByRole('combobox')[0])
+    fireEvent.mouseDown(screen.getAllByRole('button')[0])
     await waitFor(() =>
       fireEvent.click(screen.getByRole('option', { name: 'My First Email' }))
     )
@@ -232,7 +232,7 @@ describe('Route', () => {
     )
 
     await waitFor(() => expect(result).toHaveBeenCalled())
-    fireEvent.mouseDown(screen.getAllByRole('combobox')[0])
+    fireEvent.mouseDown(screen.getAllByRole('button')[0])
     await waitFor(() =>
       fireEvent.click(screen.getByRole('option', { name: 'My First Email' }))
     )

@@ -69,7 +69,6 @@ describe('CardIntro', () => {
     parentOrder: 0,
     locked: false,
     nextBlockId: null,
-    slug: null,
     children: [card]
   }
   const cardIntroCreateMock: MockedResponse<
@@ -245,7 +244,7 @@ describe('CardIntro', () => {
             title: [
               {
                 value: 'JESUS',
-                __typename: 'VideoTitle'
+                __typename: 'Translation'
               }
             ],
             image:
@@ -340,6 +339,7 @@ describe('CardIntro', () => {
         __typename: 'Journey'
       }
     })
+
     const { getByRole } = render(
       <MockedProvider cache={cache} mocks={[cardIntroCreateMock]}>
         <JourneyProvider

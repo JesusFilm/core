@@ -38,7 +38,6 @@ const step0: TreeBlock<StepBlock> = {
   parentOrder: 0,
   locked: false,
   nextBlockId: null,
-  slug: null,
   children: []
 }
 const step1: TreeBlock<StepBlock> = {
@@ -48,7 +47,6 @@ const step1: TreeBlock<StepBlock> = {
   parentOrder: 1,
   locked: false,
   nextBlockId: null,
-  slug: null,
   children: [block]
 }
 const step2: TreeBlock<StepBlock> = {
@@ -58,7 +56,6 @@ const step2: TreeBlock<StepBlock> = {
   parentOrder: 2,
   locked: false,
   nextBlockId: null,
-  slug: null,
   children: []
 }
 

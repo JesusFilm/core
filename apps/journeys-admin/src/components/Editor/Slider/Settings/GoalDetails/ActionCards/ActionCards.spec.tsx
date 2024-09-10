@@ -70,8 +70,7 @@ describe('ActionCards', () => {
                     parentBlockId: null,
                     parentOrder: 0,
                     locked: false,
-                    nextBlockId: null,
-                    slug: null
+                    nextBlockId: null
                   }
                 ]
               },

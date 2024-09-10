@@ -10,27 +10,27 @@ import { VideoLabel, VideoVariantDownloadQuality } from "./globalTypes";
 // ====================================================
 
 export interface VideoContentFields_imageAlt {
-  __typename: "VideoImageAlt";
+  __typename: "Translation";
   value: string;
 }
 
 export interface VideoContentFields_snippet {
-  __typename: "VideoSnippet";
+  __typename: "Translation";
   value: string;
 }
 
 export interface VideoContentFields_description {
-  __typename: "VideoDescription";
+  __typename: "Translation";
   value: string;
 }
 
 export interface VideoContentFields_studyQuestions {
-  __typename: "VideoStudyQuestion";
+  __typename: "Translation";
   value: string;
 }
 
 export interface VideoContentFields_title {
-  __typename: "VideoTitle";
+  __typename: "Translation";
   value: string;
 }
 

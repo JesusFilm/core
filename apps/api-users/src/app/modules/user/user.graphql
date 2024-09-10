@@ -1,0 +1,29 @@
+type User @key(fields: "id") {
+  id: ID!
+  firstName: String!
+  lastName: String
+  email: String!
+  imageUrl: String
+  superAdmin: Boolean
+  emailVerified: Boolean!
+}
+
+input CreateVerificationRequestInput {
+  redirect: String
+}
+
+input MeInput {
+  redirect: String
+}
+
+extend type Query {
+  me(input: MeInput): User
+  user(id: ID!): User
+  userByEmail(email: String!): User
+}
+
+extend type Mutation {
+  userImpersonate(email: String!): String
+  createVerificationRequest(input: CreateVerificationRequestInput): Boolean
+  validateEmail(email: String!, token: String!): User
+}

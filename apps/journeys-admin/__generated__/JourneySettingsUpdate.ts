@@ -540,9 +540,6 @@ export interface JourneySettingsUpdate_journeyUpdate_tags {
 export interface JourneySettingsUpdate_journeyUpdate {
   __typename: "Journey";
   id: string;
-  /**
-   * private title for creators
-   */
   slug: string;
   title: string;
   description: string | null;
@@ -566,14 +563,6 @@ export interface JourneySettingsUpdate_journeyUpdate {
   host: JourneySettingsUpdate_journeyUpdate_host | null;
   team: JourneySettingsUpdate_journeyUpdate_team | null;
   tags: JourneySettingsUpdate_journeyUpdate_tags[];
-  website: boolean | null;
-  showShareButton: boolean | null;
-  showLikeButton: boolean | null;
-  showDislikeButton: boolean | null;
-  /**
-   * public title for viewers
-   */
-  displayTitle: string | null;
 }
 
 export interface JourneySettingsUpdate {

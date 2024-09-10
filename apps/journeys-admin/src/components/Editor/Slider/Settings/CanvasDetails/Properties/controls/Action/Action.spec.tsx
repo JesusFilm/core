@@ -35,7 +35,7 @@ describe('Action', () => {
         <Action />
       </MockedProvider>
     )
-    fireEvent.mouseDown(getByRole('combobox'))
+    fireEvent.mouseDown(getByRole('button', { name: 'None' }))
     await waitFor(() => expect(getByText('Selected Card')).toBeInTheDocument())
     fireEvent.click(getByRole('option', { name: 'Selected Card' }))
     await waitFor(() =>
@@ -49,7 +49,7 @@ describe('Action', () => {
         <Action />
       </MockedProvider>
     )
-    fireEvent.mouseDown(getByRole('combobox'))
+    fireEvent.mouseDown(getByRole('button', { name: 'None' }))
     await waitFor(() => expect(getByText('Selected Card')).toBeInTheDocument())
     fireEvent.click(getByRole('option', { name: 'URL/Website' }))
     await waitFor(() =>
@@ -115,8 +115,8 @@ describe('Action', () => {
     )
     expect(getByText('URL/Website')).toBeInTheDocument()
 
-    expect(getByRole('combobox')).toHaveTextContent('URL/Website')
-    fireEvent.mouseDown(getByRole('combobox'))
+    expect(getByRole('button', { name: 'URL/Website' })).toBeInTheDocument()
+    fireEvent.mouseDown(getByRole('button', { name: 'URL/Website' }))
     fireEvent.click(getByRole('option', { name: 'None' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
 

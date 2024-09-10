@@ -18,12 +18,6 @@ datasource db {
   url      = env("PG_DATABASE_URL_USERS")
 }
 
-generator pothos {
-  provider     = "prisma-pothos-types"
-  clientOutput = ".prisma/api-users-client"
-  output       = "../src/__generated__/pothos-types.ts"
-}
-
 model User {
   id            String   @id @default(uuid())
   userId        String   @unique

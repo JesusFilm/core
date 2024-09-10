@@ -8,7 +8,7 @@ export const videos: Video[] = [
       'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_AndreasStory-0-0.mobileCinematicHigh.jpg',
     snippet: [
       {
-        __typename: 'VideoSnippet',
+        __typename: 'Translation',
         primary: true,
         value:
           'After living a life full of fighter planes and porsches, Andreas realizes something is missing.'
@@ -16,7 +16,7 @@ export const videos: Video[] = [
     ],
     title: [
       {
-        __typename: 'VideoTitle',
+        __typename: 'Translation',
         primary: true,
         value: "Andreas' Story"
       }
@@ -34,14 +34,14 @@ export const videos: Video[] = [
       'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-Brand_Video.mobileCinematicHigh.jpg',
     snippet: [
       {
-        __typename: 'VideoSnippet',
+        __typename: 'Translation',
         primary: true,
         value: 'Brand Video'
       }
     ],
     title: [
       {
-        __typename: 'VideoTitle',
+        __typename: 'Translation',
         primary: true,
         value: 'Brand_Video'
       }
@@ -59,7 +59,7 @@ export const videos: Video[] = [
       'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-Demoniac.mobileCinematicHigh.jpg',
     snippet: [
       {
-        __typename: 'VideoSnippet',
+        __typename: 'Translation',
         primary: true,
         value:
           'Powerfully-told, this is the famous Biblical account of Jesus healing a man by casting out demons.'
@@ -67,7 +67,7 @@ export const videos: Video[] = [
     ],
     title: [
       {
-        __typename: 'VideoTitle',
+        __typename: 'Translation',
         primary: true,
         value: 'The Demoniac'
       }

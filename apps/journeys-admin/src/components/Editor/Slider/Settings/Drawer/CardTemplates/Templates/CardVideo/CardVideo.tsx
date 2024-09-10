@@ -102,7 +102,7 @@ export function CardVideo(): ReactElement {
         title: [
           {
             value: 'JESUS',
-            __typename: 'VideoTitle'
+            __typename: 'Translation'
           }
         ],
         image:

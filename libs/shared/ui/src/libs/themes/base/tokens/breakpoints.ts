@@ -1,6 +1,8 @@
-import { Breakpoint, BreakpointsOptions } from '@mui/material/styles'
+import { Breakpoint } from '@mui/material/styles'
 // eslint-disable-next-line no-restricted-imports
-import { createBreakpoints } from '@mui/system'
+import createBreakpoints, {
+  BreakpointsOptions
+} from '@mui/system/createTheme/createBreakpoints'
 
 declare module '@mui/material/styles' {
   interface BreakpointOverrides {

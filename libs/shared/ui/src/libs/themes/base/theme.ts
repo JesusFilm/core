@@ -1,5 +1,3 @@
-'use client'
-
 import { Theme, ThemeOptions, createTheme } from '@mui/material/styles'
 import { deepmerge } from '@mui/utils'
 

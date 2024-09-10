@@ -12,9 +12,6 @@ import { JourneyCollectionCreateInput, CustomDomainUpdateInput } from "./globalT
 export interface CreateJourneyCollection_journeyCollectionCreate_journeys {
   __typename: "Journey";
   id: string;
-  /**
-   * private title for creators
-   */
   title: string;
 }
 
@@ -27,9 +24,6 @@ export interface CreateJourneyCollection_journeyCollectionCreate {
 export interface CreateJourneyCollection_customDomainUpdate_journeyCollection_journeys {
   __typename: "Journey";
   id: string;
-  /**
-   * private title for creators
-   */
   title: string;
 }
 

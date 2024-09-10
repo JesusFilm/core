@@ -128,7 +128,7 @@ describe('App', () => {
     await waitFor(() => {
       expect(screen.getByText('Growth Spaces')).toBeInTheDocument()
     })
-    fireEvent.mouseDown(screen.getByRole('combobox'))
+    fireEvent.mouseDown(screen.getByRole('button'))
     await waitFor(() =>
       fireEvent.click(screen.getByRole('option', { name: 'access.id' }))
     )
@@ -156,7 +156,7 @@ describe('App', () => {
     await waitFor(() => {
       expect(screen.getByText('Growth Spaces')).toBeInTheDocument()
     })
-    fireEvent.mouseDown(screen.getByRole('combobox'))
+    fireEvent.mouseDown(screen.getAllByRole('button')[1])
     await waitFor(() =>
       fireEvent.click(screen.getByRole('option', { name: 'access.id' }))
     )
@@ -194,7 +194,7 @@ describe('App', () => {
     await waitFor(() => {
       expect(screen.getByText('Growth Spaces')).toBeInTheDocument()
     })
-    fireEvent.mouseDown(screen.getByRole('combobox'))
+    fireEvent.mouseDown(screen.getAllByRole('button')[2])
     await waitFor(() =>
       fireEvent.click(screen.getByRole('option', { name: 'access.id' }))
     )

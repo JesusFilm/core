@@ -54,7 +54,6 @@ const steps: Array<TreeBlock<StepBlock>> = [
     parentOrder: 0,
     locked: false,
     nextBlockId: 'step1.id',
-    slug: null,
     children: []
   },
   {
@@ -64,7 +63,6 @@ const steps: Array<TreeBlock<StepBlock>> = [
     parentOrder: 1,
     locked: false,
     nextBlockId: 'step2.id',
-    slug: null,
     children: []
   },
   {
@@ -74,7 +72,6 @@ const steps: Array<TreeBlock<StepBlock>> = [
     parentOrder: 2,
     locked: false,
     nextBlockId: 'step3.id',
-    slug: null,
     children: []
   },
   {
@@ -84,7 +81,6 @@ const steps: Array<TreeBlock<StepBlock>> = [
     parentOrder: 3,
     locked: false,
     nextBlockId: null,
-    slug: null,
     children: []
   }
 ]
@@ -114,7 +110,6 @@ describe('arrangeSteps', () => {
         parentOrder: 0,
         locked: false,
         nextBlockId: null,
-        slug: null,
         children: [card]
       },
       { ...steps[1] }

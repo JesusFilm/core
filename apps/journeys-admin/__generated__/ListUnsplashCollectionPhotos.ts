@@ -20,7 +20,7 @@ export interface ListUnsplashCollectionPhotos_listUnsplashCollectionPhotos_links
 
 export interface ListUnsplashCollectionPhotos_listUnsplashCollectionPhotos_user {
   __typename: "UnsplashUser";
-  first_name: string;
+  first_name: string | null;
   last_name: string | null;
   username: string;
 }
@@ -29,7 +29,7 @@ export interface ListUnsplashCollectionPhotos_listUnsplashCollectionPhotos {
   __typename: "UnsplashPhoto";
   id: string;
   alt_description: string | null;
-  blur_hash: string | null;
+  blur_hash: string;
   width: number;
   height: number;
   urls: ListUnsplashCollectionPhotos_listUnsplashCollectionPhotos_urls;

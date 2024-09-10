@@ -1,8 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 
-import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
-
 import { watchConfig } from '../../libs/storybook'
 import { getVideoChildrenMock } from '../../libs/useVideoChildren/getVideoChildrenMock'
 import { VideoProvider } from '../../libs/videoContext'
@@ -28,9 +26,7 @@ const Template: StoryObj<typeof VideoContentPage> = {
       mocks={[getLanguagesSlugMock, getSubtitleMock, getVideoChildrenMock]}
     >
       <VideoProvider value={{ content: videos[0] }}>
-        <InstantSearchTestWrapper>
-          <VideoContentPage />
-        </InstantSearchTestWrapper>
+        <VideoContentPage />
       </VideoProvider>
     </MockedProvider>
   )

@@ -51,7 +51,6 @@ describe('ChatButtons', () => {
     parentOrder: 0,
     locked: false,
     nextBlockId: 'someId',
-    slug: null,
     children: []
   }
 
@@ -92,12 +91,7 @@ describe('ChatButtons', () => {
     chatButtons: [],
     host: null,
     team: null,
-    tags: [],
-    website: null,
-    showShareButton: null,
-    showLikeButton: null,
-    showDislikeButton: null,
-    displayTitle: null
+    tags: []
   }
 
   const result = jest.fn(() => ({

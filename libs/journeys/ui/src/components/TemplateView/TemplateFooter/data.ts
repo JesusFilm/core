@@ -82,8 +82,7 @@ export const journey: Journey = {
       parentBlockId: null,
       parentOrder: 0,
       locked: false,
-      nextBlockId: null,
-      slug: null
+      nextBlockId: null
     },
     // step 2
     {
@@ -128,8 +127,7 @@ export const journey: Journey = {
       parentBlockId: null,
       parentOrder: 0,
       locked: false,
-      nextBlockId: null,
-      slug: null
+      nextBlockId: null
     }
   ],
   primaryImageBlock: null,
@@ -142,10 +140,5 @@ export const journey: Journey = {
   chatButtons: [],
   host: null,
   team: null,
-  tags: [],
-  website: null,
-  showShareButton: null,
-  showLikeButton: null,
-  showDislikeButton: null,
-  displayTitle: null
+  tags: []
 }

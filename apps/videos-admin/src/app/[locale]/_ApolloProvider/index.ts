@@ -1,1 +1,0 @@
-export { ApolloProvider } from './ApolloProvider'

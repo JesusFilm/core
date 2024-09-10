@@ -82,7 +82,6 @@ export function LanguagesFilterPopper({
             }}
           >
             <FieldArray name="languages">
-              {/* eslint-disable-next-line @typescript-eslint/unbound-method */}
               {({ push, remove }) => (
                 <Popper
                   open={open}
