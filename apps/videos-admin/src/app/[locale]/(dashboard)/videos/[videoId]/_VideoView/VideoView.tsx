@@ -23,9 +23,8 @@ export function VideoView(): ReactElement {
         <Box
           sx={{
             position: 'relative',
-            minHeight: 225,
-            maxHeight: 225,
-            width: 400,
+            height: 225,
+            width: { xs: 'auto', sm: 400 },
             borderRadius: 2,
             overflow: 'hidden',
             flexShrink: 0
@@ -34,8 +33,9 @@ export function VideoView(): ReactElement {
           <Image
             src={data?.video.image as string}
             alt={`${data?.video.imageAlt[0].value}`}
-            fill
+            layout="fill"
             objectFit="cover"
+            priority
           />
         </Box>
         <Box sx={{ width: '100%' }}>
