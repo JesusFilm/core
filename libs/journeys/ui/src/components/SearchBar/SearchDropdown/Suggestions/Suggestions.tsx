@@ -6,9 +6,6 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { useSearchBox } from 'react-instantsearch'
 
-import { normalizeLanguage } from '../../../../libs/algolia/normalizeLanguage'
-import { capitalizeFirstLetter } from '../../../../libs/algolia/normalizeLanguage/normalizeLanguage'
-
 import { Suggestion } from './Suggestion'
 
 interface SuggestionsProps {
@@ -40,13 +37,7 @@ export function Suggestions({ refinements }: SuggestionsProps): ReactElement {
   const unrefinedLanguages = items
     .filter((item) => !item.isRefined)
     .slice(0, MAX_QUERY_SUGGESTIONS)
-
-  const firstLanguage = capitalizeFirstLetter(
-    normalizeLanguage(unrefinedLanguages[0].value)
-  )
-  const secondLanguage = capitalizeFirstLetter(
-    normalizeLanguage(unrefinedLanguages[1].value)
-  )
+    .map((item) => item.value)
 
   return (
     <Box width="100%">
@@ -60,25 +51,25 @@ export function Suggestions({ refinements }: SuggestionsProps): ReactElement {
           {unrefinedLanguages.length > 0 && (
             <Suggestion
               query={query !== '' ? query : 'Jesus'}
-              filters={[firstLanguage]}
+              filters={[unrefinedLanguages[0]]}
               handleClick={() => {
                 if (query === '') {
                   refineQuery('Jesus')
                 }
-                selectSuggestion(`Jesus in ${firstLanguage}`)
+                selectSuggestion(`Jesus in ${unrefinedLanguages[0]}`)
               }}
             />
           )}
           {unrefinedLanguages.length > 1 && (
             <Suggestion
               query={query !== '' ? query : 'Jesus'}
-              filters={[firstLanguage, secondLanguage]}
+              filters={[unrefinedLanguages[0], unrefinedLanguages[1]]}
               handleClick={() => {
                 if (query === '') {
                   refineQuery('Jesus')
                 }
                 selectSuggestion(
-                  `Jesus in ${firstLanguage} and ${secondLanguage}`
+                  `Jesus in ${unrefinedLanguages[0]} and ${unrefinedLanguages[1]}`
                 )
               }}
             />
