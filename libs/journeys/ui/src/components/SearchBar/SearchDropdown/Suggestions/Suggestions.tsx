@@ -6,6 +6,8 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { useSearchBox } from 'react-instantsearch'
 
+import { parseSuggestion } from '../../../../libs/algolia/languageUtils'
+
 import { Suggestion } from './Suggestion'
 
 interface SuggestionsProps {
@@ -30,7 +32,8 @@ export function Suggestions({ refinements }: SuggestionsProps): ReactElement {
   }
 
   function selectSuggestion(suggestion: string): void {
-    const suggestionParts = suggestion.split(/\s(?:in|and)\s/)
+    if (query === '') refineQuery('Jesus')
+    const suggestionParts = parseSuggestion(suggestion)
     refineLanguages(suggestionParts.slice(1))
   }
 
@@ -52,26 +55,20 @@ export function Suggestions({ refinements }: SuggestionsProps): ReactElement {
             <Suggestion
               query={query !== '' ? query : 'Jesus'}
               filters={[unrefinedLanguages[0]]}
-              handleClick={() => {
-                if (query === '') {
-                  refineQuery('Jesus')
-                }
+              handleClick={() =>
                 selectSuggestion(`Jesus in ${unrefinedLanguages[0]}`)
-              }}
+              }
             />
           )}
           {unrefinedLanguages.length > 1 && (
             <Suggestion
               query={query !== '' ? query : 'Jesus'}
               filters={[unrefinedLanguages[0], unrefinedLanguages[1]]}
-              handleClick={() => {
-                if (query === '') {
-                  refineQuery('Jesus')
-                }
+              handleClick={() =>
                 selectSuggestion(
                   `Jesus in ${unrefinedLanguages[0]} and ${unrefinedLanguages[1]}`
                 )
-              }}
+              }
             />
           )}
         </Stack>
