@@ -1,5 +1,5 @@
 import { Meta, StoryObj } from '@storybook/react'
-import { fireEvent, within } from '@storybook/testing-library'
+import { fireEvent, within } from '@storybook/test'
 import noop from 'lodash/noop'
 import { ComponentProps } from 'react'
 
@@ -49,7 +49,7 @@ export const Videos = {
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     const canvas = within(canvasElement)
-    fireEvent.click(canvas.getByText('{{count}} Videos'))
+    await fireEvent.click(canvas.getByText('{{count}} Videos'))
   }
 }
 
