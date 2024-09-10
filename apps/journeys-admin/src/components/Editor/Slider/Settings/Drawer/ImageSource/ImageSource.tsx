@@ -19,7 +19,7 @@ const ImageLibrary = dynamic(
 )
 
 interface ImageSourceProps {
-  selectedBlock: ImageBlock | null
+  selectedBlock?: ImageBlock | null
   onChange: (block: ImageBlockUpdateInput) => Promise<void>
   onDelete?: () => Promise<void>
   loading?: boolean
