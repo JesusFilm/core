@@ -12,6 +12,8 @@ const videoVariantDownloadSchema = z
   .object({
     quality: z.nativeEnum(VideoVariantDownloadQuality),
     size: z.number(),
+    height: z.number(),
+    width: z.number(),
     uri: z.string(),
     videoVariantId: z.string()
   })

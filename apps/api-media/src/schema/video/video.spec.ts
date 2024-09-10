@@ -72,6 +72,11 @@ describe('video', () => {
               id
             }
           }
+          thumbnail
+          videoStill
+          mobileCinematicHigh
+          mobileCinematicLow
+          mobileCinematicVeryLow
           image
           imageAlt(languageId: $languageId, primary: $primary) {
             id
@@ -137,6 +142,11 @@ describe('video', () => {
         id: 'videoId2',
         label: 'collection',
         primaryLanguageId: 'primaryLanguageId',
+        thumbnail: null,
+        videoStill: null,
+        mobileCinematicHigh: null,
+        mobileCinematicLow: null,
+        mobileCinematicVeryLow: null,
         image: null,
         slug: null,
         noIndex: null,
@@ -145,6 +155,11 @@ describe('video', () => {
       {
         id: 'videoId1',
         label: 'collection',
+        thumbnail: null,
+        videoStill: null,
+        mobileCinematicHigh: null,
+        mobileCinematicLow: null,
+        mobileCinematicVeryLow: null,
         primaryLanguageId: 'primaryLanguageId',
         image: null,
         slug: null,
@@ -159,6 +174,11 @@ describe('video', () => {
         label: 'behindTheScenes',
         primaryLanguageId: 'primaryLanguageId',
         image: null,
+        thumbnail: null,
+        videoStill: null,
+        mobileCinematicHigh: null,
+        mobileCinematicLow: null,
+        mobileCinematicVeryLow: null,
         slug: null,
         noIndex: null,
         childIds: ['videoId1', 'videoId2'],
@@ -264,7 +284,11 @@ describe('video', () => {
 
     const result: ResultOf<typeof VIDEOS_QUERY>['videos'] = [
       {
-        bibleCitations: [{ id: 'bibleCitationId' }],
+        bibleCitations: [
+          {
+            id: 'bibleCitationId'
+          }
+        ],
         children: [
           {
             id: 'videoId1'
@@ -283,6 +307,11 @@ describe('video', () => {
           }
         ],
         id: 'videoId',
+        thumbnail: null,
+        videoStill: null,
+        mobileCinematicHigh: null,
+        mobileCinematicLow: null,
+        mobileCinematicVeryLow: null,
         image: null,
         imageAlt: [
           {
@@ -678,6 +707,11 @@ describe('video', () => {
       id: 'videoId',
       label: 'behindTheScenes',
       primaryLanguageId: 'primaryLanguageId',
+      thumbnail: null,
+      videoStill: null,
+      mobileCinematicHigh: null,
+      mobileCinematicLow: null,
+      mobileCinematicVeryLow: null,
       image: null,
       slug: null,
       noIndex: null,

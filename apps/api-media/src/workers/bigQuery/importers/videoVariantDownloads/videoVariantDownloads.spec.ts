@@ -41,6 +41,8 @@ describe('bigQuery/importers/videoVariantDownloads', () => {
       await importOne({
         quality: 'low',
         size: 1111112,
+        height: 180,
+        width: 320,
         uri: 'www.example.com',
         videoVariantId: 'mockVariantId'
       })
@@ -54,12 +56,16 @@ describe('bigQuery/importers/videoVariantDownloads', () => {
         create: {
           quality: 'low',
           size: 1111112,
+          height: 180,
+          width: 320,
           url: 'www.example.com',
           videoVariantId: 'mockVariantId'
         },
         update: {
           quality: 'low',
           size: 1111112,
+          height: 180,
+          width: 320,
           url: 'www.example.com',
           videoVariantId: 'mockVariantId'
         }
@@ -71,6 +77,8 @@ describe('bigQuery/importers/videoVariantDownloads', () => {
         importOne({
           quality: 'low',
           size: 1111112,
+          height: 180,
+          width: 320,
           uri: 'www.example.com',
           videoVariantId: 'mockVariantId2'
         })
@@ -84,12 +92,16 @@ describe('bigQuery/importers/videoVariantDownloads', () => {
         {
           quality: 'low',
           size: 1111112,
+          height: 180,
+          width: 320,
           uri: 'www.example.com',
           videoVariantId: 'mockVariantId'
         },
         {
           quality: 'low',
           size: 1111112,
+          height: 180,
+          width: 320,
           uri: 'www.example.com',
           videoVariantId: 'mockVariantId1'
         }
@@ -99,12 +111,16 @@ describe('bigQuery/importers/videoVariantDownloads', () => {
           {
             quality: 'low',
             size: 1111112,
+            height: 180,
+            width: 320,
             url: 'www.example.com',
             videoVariantId: 'mockVariantId'
           },
           {
             quality: 'low',
             size: 1111112,
+            height: 180,
+            width: 320,
             url: 'www.example.com',
             videoVariantId: 'mockVariantId1'
           }
