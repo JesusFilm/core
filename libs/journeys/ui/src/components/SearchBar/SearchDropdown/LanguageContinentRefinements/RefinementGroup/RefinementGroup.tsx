@@ -7,7 +7,7 @@ import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refine
 import { type ReactElement } from 'react'
 import { useSearchBox } from 'react-instantsearch'
 
-import { normalizeLanguage } from '../../../../../libs/algolia/normalizeLanguage'
+import { normalizeLanguage } from '../../../../../libs/algolia/languageUtils'
 
 interface RefinementGroupProps {
   title: string
