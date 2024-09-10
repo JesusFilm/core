@@ -86,7 +86,8 @@ export function SearchbarDropdown({
         })
       }
     }
-  }, [refinements.items, continentLanguages, dispatch, languages])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [refinements.items, dispatch])
 
   useEffect(() => {
     updateDefaultLanguageContinent()
