@@ -21,6 +21,8 @@ builder.prismaObject('VideoVariantDownload', {
       resolve: ({ quality }) => quality
     }),
     size: t.float({ resolve: ({ size }) => size ?? 0 }),
+    height: t.int({ resolve: ({ height }) => height ?? 0 }),
+    width: t.int({ resolve: ({ width }) => width ?? 0 }),
     url: t.exposeString('url')
   })
 })
@@ -29,6 +31,8 @@ builder.prismaObject('VideoVariant', {
   fields: (t) => ({
     id: t.exposeID('id'),
     hls: t.exposeString('hls', { nullable: true }),
+    dash: t.exposeString('dash', { nullable: true }),
+    share: t.exposeString('share', { nullable: true }),
     downloads: t.relation('downloads'),
     duration: t.int({ resolve: ({ duration }) => duration ?? 0 }),
     language: t.field({

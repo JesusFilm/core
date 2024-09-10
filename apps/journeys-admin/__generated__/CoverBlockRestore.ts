@@ -9,8 +9,8 @@ import { VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 // GraphQL mutation operation: CoverBlockRestore
 // ====================================================
 
-export interface CoverBlockRestore_blockRestore_ButtonBlock {
-  __typename: "ButtonBlock" | "CardBlock" | "FormBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "StepBlock" | "TextResponseBlock" | "TypographyBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+export interface CoverBlockRestore_blockRestore_StepBlock {
+  __typename: "StepBlock" | "ButtonBlock" | "CardBlock" | "FormBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "TextResponseBlock" | "TypographyBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
 }
 
@@ -164,7 +164,7 @@ export interface CoverBlockRestore_blockRestore_ImageBlock {
   blurhash: string;
 }
 
-export type CoverBlockRestore_blockRestore = CoverBlockRestore_blockRestore_ButtonBlock | CoverBlockRestore_blockRestore_VideoBlock | CoverBlockRestore_blockRestore_ImageBlock;
+export type CoverBlockRestore_blockRestore = CoverBlockRestore_blockRestore_StepBlock | CoverBlockRestore_blockRestore_VideoBlock | CoverBlockRestore_blockRestore_ImageBlock;
 
 export interface CoverBlockRestore_cardBlockUpdate {
   __typename: "CardBlock";
