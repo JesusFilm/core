@@ -13,7 +13,8 @@ import {
   GridRowsProp,
   GridToolbar,
   MuiEvent,
-  getGridStringOperators
+  getGridStringOperators,
+  gridClasses
 } from '@mui/x-data-grid'
 import { VariablesOf, graphql } from 'gql.tada'
 import { usePathname, useRouter } from 'next/navigation'
@@ -187,9 +188,18 @@ export function VideoList(): ReactElement {
         }
         filterModel={filterModel}
         onFilterModelChange={handleFilterModelChange}
+        sx={{
+          [`& .${gridClasses.columnHeader}, & .${gridClasses.cell}`]: {
+            outline: 'transparent'
+          },
+          [`& .${gridClasses.columnHeader}:focus-within, & .${gridClasses.cell}:focus-within`]:
+            {
+              outline: 'none'
+            }
+        }}
         slotProps={{
           row: {
-            sx: {
+            style: {
               cursor: 'pointer'
             }
           }
