@@ -1,6 +1,7 @@
 import { MockedProvider, type MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { GraphQLError } from 'graphql/error'
 import { SnackbarProvider } from 'notistack'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -76,7 +77,14 @@ function getJourneySettingsUpdateMock(
           chatButtons: [],
           team: null
         }
-      }
+      },
+      errors: [
+        new GraphQLError('Field update failed. Reload the page or try again.', {
+          extensions: {
+            code: 'INTERNAL_SERVER_ERROR'
+          }
+        })
+      ]
     }
   }
 }
@@ -92,7 +100,7 @@ const mockLanguagesQuery: MockedResponse<GetLanguages, GetLanguagesVariables> =
         languages: [
           {
             __typename: 'Language',
-            id: 'languageId',
+            id: '529',
             name: [
               {
                 __typename: 'LanguageName',
@@ -183,13 +191,62 @@ describe('TitleDescriptionDialog', () => {
   })
 
   it('shows notistack error alert when title fails to update', async () => {
-    const mock = getJourneySettingsUpdateMock(
-      'Changed Title',
-      'Changed Description',
-      '529'
-    )
+    const mockJourneySettingsUpate: MockedResponse<
+      JourneySettingsUpdate,
+      JourneySettingsUpdateVariables
+    > = {
+      request: {
+        query: JOURNEY_SETTINGS_UPDATE,
+        variables: {
+          id: defaultJourney.id,
+          input: {
+            title: 'New Journey',
+            description: 'Description',
+            languageId: '529'
+          }
+        }
+      },
+      result: {
+        errors: [
+          new GraphQLError(
+            'Field update failed. Reload the page or try again.',
+            {
+              extensions: {
+                code: 'INTERNAL_SERVER_ERROR'
+              }
+            }
+          )
+        ]
+      }
+    }
+
+    const mockedLanguage: MockedResponse<GetLanguages, GetLanguagesVariables> =
+      {
+        request: {
+          query: GET_LANGUAGES,
+          variables: { languageId: '529' }
+        },
+        result: {
+          data: {
+            languages: [
+              {
+                __typename: 'Language',
+                id: '529',
+                name: [
+                  {
+                    __typename: 'LanguageName',
+                    value: 'english',
+                    primary: true
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+
     render(
-      <MockedProvider mocks={[{ ...mock }]}>
+      <MockedProvider mocks={[{ ...mockJourneySettingsUpate }, mockedLanguage]}>
         <SnackbarProvider>
           <JourneyProvider
             value={{
@@ -206,6 +263,7 @@ describe('TitleDescriptionDialog', () => {
     fireEvent.change(screen.getAllByRole('textbox')[0], {
       target: { value: 'New Journey' }
     })
+
     fireEvent.click(screen.getByRole('button', { name: 'Save' }))
     await waitFor(() =>
       expect(
