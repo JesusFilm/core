@@ -73,25 +73,30 @@ enum VideoLabel {
 }
 
 model Video {
-  id                String               @id @default(uuid())
-  label             VideoLabel
-  primaryLanguageId String
-  title             VideoTitle[]
-  snippet           VideoSnippet[]
-  description       VideoDescription[]
-  studyQuestions    VideoStudyQuestion[]
-  image             String?
-  imageAlt          VideoImageAlt[]
-  slug              String?              @unique
-  noIndex           Boolean?
-  childIds          String[] // needed for child sort order
-  subtitles         VideoSubtitle[]
-  children          Video[]              @relation("ParentChild")
-  parent            Video[]              @relation("ParentChild")
-  variants          VideoVariant[]
-  bibleCitation     BibleCitation[]
-  keywords          Keyword[]            @relation("VideoToKeyword")
-  images            CloudflareImage[]
+  id                     String               @id @default(uuid())
+  label                  VideoLabel
+  primaryLanguageId      String
+  title                  VideoTitle[]
+  snippet                VideoSnippet[]
+  description            VideoDescription[]
+  studyQuestions         VideoStudyQuestion[]
+  image                  String?
+  imageAlt               VideoImageAlt[]
+  thumbnail              String?
+  videoStill             String?
+  mobileCinematicHigh    String?
+  mobileCinematicLow     String?
+  mobileCinematicVeryLow String?
+  slug                   String?              @unique
+  noIndex                Boolean?
+  childIds               String[] // needed for child sort order
+  subtitles              VideoSubtitle[]
+  children               Video[]              @relation("ParentChild")
+  parent                 Video[]              @relation("ParentChild")
+  variants               VideoVariant[]
+  bibleCitation          BibleCitation[]
+  keywords               Keyword[]            @relation("VideoToKeyword")
+  images                 CloudflareImage[]
 
   @@index(label)
   @@index(childIds)
@@ -120,6 +125,8 @@ model VideoVariantDownload {
   id             String                      @id @default(uuid())
   quality        VideoVariantDownloadQuality
   size           Float?
+  height         Int?
+  width          Int?
   url            String
   videoVariantId String?
   videoVariant   VideoVariant?               @relation(fields: [videoVariantId], references: [id], onDelete: Cascade)
@@ -131,6 +138,8 @@ model VideoVariantDownload {
 model VideoVariant {
   id         String                 @id
   hls        String?
+  dash       String?
+  share      String?
   downloads  VideoVariantDownload[]
   duration   Int?
   languageId String

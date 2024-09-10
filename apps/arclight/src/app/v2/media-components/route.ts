@@ -25,6 +25,11 @@ const GET_VIDEOS = graphql(`
       id
       label
       image
+      thumbnail
+      videoStill
+      mobileCinematicHigh
+      mobileCinematicLow
+      mobileCinematicVeryLow
       primaryLanguageId
       title {
         value
@@ -38,6 +43,13 @@ const GET_VIDEOS = graphql(`
       studyQuestions {
         value
       }
+      bibleCitations {
+        osisId
+        chapterStart
+        verseStart
+        chapterEnd
+        verseEnd
+      }
       childrenCount
       variant {
         duration
@@ -45,6 +57,8 @@ const GET_VIDEOS = graphql(`
           bcp47
         }
         downloads {
+          height
+          width
           quality
           size
         }
@@ -81,7 +95,11 @@ export async function GET(request: NextRequest): Promise<Response> {
     contentType: 'video',
     subType: video.label,
     imageUrls: {
-      hd: video.image
+      thumbnail: video.thumbnail,
+      videoStill: video.videoStill,
+      mobileCinematicHigh: video.mobileCinematicHigh,
+      mobileCinematicLow: video.mobileCinematicLow,
+      mobileCinematicVeryLow: video.mobileCinematicVeryLow
     },
     lengthInMilliseconds: video.variant?.duration ?? 0,
     containsCount: video.childrenCount,
@@ -95,9 +113,14 @@ export async function GET(request: NextRequest): Promise<Response> {
         video.variant?.downloads?.find(({ quality }) => quality === 'high')
           ?.size ?? 0
     },
-    // TODO: Needs new field in the schema
-    bibleCitations: [],
-    primaryLanguageId: video.primaryLanguageId,
+    bibleCitations: video.bibleCitations.map((citation) => ({
+      osisBibleBook: citation.osisId,
+      chapterStart: citation.chapterStart,
+      verseStart: citation.verseStart,
+      chapterEnd: citation.chapterEnd,
+      verseEnd: citation.verseEnd
+    })),
+    primaryLanguageId: Number(video.primaryLanguageId),
     title: video.title[0].value,
     shortDescription: video.snippet[0].value,
     longDescription: video.description[0].value,

@@ -101,6 +101,18 @@ const Video = builder.prismaObject('Video', {
         orderBy: { primary: 'desc' }
       })
     }),
+    videoStill: t.exposeString('videoStill', { nullable: true }),
+    thumbnail: t.exposeString('thumbnail', { nullable: true }),
+    mobileCinematicHigh: t.exposeString('mobileCinematicHigh', {
+      nullable: true
+    }),
+    mobileCinematicLow: t.exposeString('mobileCinematicLow', {
+      nullable: true
+    }),
+    mobileCinematicVeryLow: t.exposeString('mobileCinematicVeryLow', {
+      nullable: true
+    }),
+
     variantLanguages: t.field({
       type: [Language],
       resolve: async ({ id: videoId }) =>
@@ -152,6 +164,14 @@ const Video = builder.prismaObject('Video', {
           slug,
           language: { id }
         }))
+    }),
+    variants: t.prismaField({
+      type: ['VideoVariant'],
+      resolve: async (query, parent) =>
+        await prisma.videoVariant.findMany({
+          ...query,
+          where: { videoId: parent.id }
+        })
     }),
     subtitles: t.relation('subtitles', {
       args: {

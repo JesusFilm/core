@@ -10,6 +10,8 @@ import { getVideoIds, getVideoSlugs } from '../videos'
 const videoVariantSchema = z.object({
   id: z.string(),
   hls: z.string().nullable(),
+  dash: z.string().nullable(),
+  share: z.string().nullable(),
   duration: z
     .custom()
     .transform(String)
@@ -73,6 +75,8 @@ function transform(
   return {
     id: videoVariant.id,
     hls: videoVariant.hls,
+    dash: videoVariant.dash,
+    share: videoVariant.share,
     duration: videoVariant.duration,
     languageId: videoVariant.languageId,
     videoId: videoVariant.videoId,
