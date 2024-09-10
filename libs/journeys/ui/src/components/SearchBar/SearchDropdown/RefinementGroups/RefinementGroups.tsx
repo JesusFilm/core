@@ -41,7 +41,7 @@ export function RefinementGroups({
         <>
           <Grid
             container
-            spacing={3}
+            spacing={1}
             columns={{ xs: 1, lg: 6 }}
             direction={{ xs: 'column', lg: 'row' }}
             sx={{
@@ -74,7 +74,9 @@ export function RefinementGroups({
                       }}
                     />
                   </Grid>
-                ) : null
+                ) : (
+                  <></>
+                )
               }
             )}
           </Grid>
