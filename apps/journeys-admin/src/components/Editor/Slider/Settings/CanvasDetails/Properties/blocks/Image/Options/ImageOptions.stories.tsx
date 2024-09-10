@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { jest } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
+import { fn } from '@storybook/test'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -19,7 +19,7 @@ const Demo: Meta<typeof ImageOptions> = {
     'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Image/ImageOptions'
 }
 
-const onClose = jest.fn()
+const onClose = fn()
 
 const image: TreeBlock<ImageBlock> = {
   id: 'image1.id',

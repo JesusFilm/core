@@ -5,6 +5,8 @@ import { NextIntlClientProvider } from 'next-intl'
 
 import { GET_VIDEOS_AND_COUNT, VideoList } from './VideoList'
 
+jest.mock('next/navigation')
+
 describe('VideoList', () => {
   type GetVideosAndCountResult = ResultOf<typeof GET_VIDEOS_AND_COUNT>
 

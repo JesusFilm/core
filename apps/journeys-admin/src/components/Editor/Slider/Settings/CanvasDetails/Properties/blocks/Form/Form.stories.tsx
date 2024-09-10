@@ -1,7 +1,7 @@
 import { MockedResponse } from '@apollo/client/testing'
 import { Form as FormType } from '@formium/types'
-import { jest } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
+import { fn } from '@storybook/test'
 import { ComponentProps } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -26,7 +26,7 @@ const Demo: Meta<typeof Form> = {
     'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Form'
 }
 
-const onClose = jest.fn()
+const onClose = fn()
 
 const formBlock: TreeBlock<FormBlock> = {
   id: 'formBlock.id',

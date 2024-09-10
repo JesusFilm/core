@@ -1,5 +1,5 @@
-import { jest } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
+import { fn } from '@storybook/test'
 import { ComponentProps } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -24,7 +24,7 @@ const Demo: Meta<typeof TextResponse> = {
   }
 }
 
-const onClose = jest.fn()
+const onClose = fn()
 
 const block: TreeBlock<TextResponseBlock> = {
   __typename: 'TextResponseBlock',

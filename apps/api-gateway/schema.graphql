@@ -3082,6 +3082,11 @@ type Video
   studyQuestions(languageId: ID, primary: Boolean): [VideoStudyQuestion!]! @join__field(graph: MEDIA)
   image: String @join__field(graph: MEDIA)
   imageAlt(languageId: ID, primary: Boolean): [VideoImageAlt!]! @join__field(graph: MEDIA)
+  videoStill: String @join__field(graph: MEDIA)
+  thumbnail: String @join__field(graph: MEDIA)
+  mobileCinematicHigh: String @join__field(graph: MEDIA)
+  mobileCinematicLow: String @join__field(graph: MEDIA)
+  mobileCinematicVeryLow: String @join__field(graph: MEDIA)
   variantLanguages: [Language!]! @join__field(graph: MEDIA)
   variantLanguagesCount: Int! @join__field(graph: MEDIA)
 
@@ -3093,6 +3098,7 @@ type Video
   """the number value of the amount of children on a video"""
   childrenCount: Int! @join__field(graph: MEDIA)
   variantLanguagesWithSlug: [LanguageWithSlug!]! @join__field(graph: MEDIA)
+  variants: [VideoVariant!]! @join__field(graph: MEDIA)
   subtitles(languageId: ID, primary: Boolean, edition: String): [VideoSubtitle!]! @join__field(graph: MEDIA)
   variant(languageId: ID): VideoVariant @join__field(graph: MEDIA)
 }
@@ -3765,6 +3771,8 @@ type VideoVariant
 {
   id: ID!
   hls: String
+  dash: String
+  share: String
   downloads: [VideoVariantDownload!]!
   duration: Int!
   language: Language!
@@ -3781,6 +3789,8 @@ type VideoVariantDownload
   id: ID!
   quality: VideoVariantDownloadQuality!
   size: Float!
+  height: Int!
+  width: Int!
   url: String!
 }
 
