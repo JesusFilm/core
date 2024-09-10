@@ -160,7 +160,8 @@ describe('Card', () => {
             parentBlockId: 'card1.id',
             parentOrder: 0,
             blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
-            children: []
+            children: [],
+            scale: null
           }
         ]
       }

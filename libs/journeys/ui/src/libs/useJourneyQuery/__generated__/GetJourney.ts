@@ -156,6 +156,7 @@ export interface GetJourney_journey_blocks_ImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToBlockAction {
@@ -465,6 +466,7 @@ export interface GetJourney_journey_primaryImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface GetJourney_journey_creatorImageBlock {
@@ -481,6 +483,7 @@ export interface GetJourney_journey_creatorImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface GetJourney_journey_userJourneys_user {
@@ -559,6 +562,7 @@ export interface GetJourney_journey_logoImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface GetJourney_journey {

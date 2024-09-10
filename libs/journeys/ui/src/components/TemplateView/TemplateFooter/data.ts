@@ -45,7 +45,8 @@ export const journey: Journey = {
       alt: 'photo-1522911715181-6ce196f07c76',
       width: 2766,
       height: 3457,
-      blurhash: 'LXJGyfWCEgs:~VWVofoet,jZ$%oe'
+      blurhash: 'LXJGyfWCEgs:~VWVofoet,jZ$%oe',
+      scale: null
     },
     {
       __typename: 'CardBlock',
@@ -95,7 +96,8 @@ export const journey: Journey = {
       alt: 'photo-1522911715181-6ce196f07c76',
       width: 2766,
       height: 3457,
-      blurhash: 'LXJGyfWCEgs:~VWVofoet,jZ$%oe'
+      blurhash: 'LXJGyfWCEgs:~VWVofoet,jZ$%oe',
+      scale: null
     },
     {
       __typename: 'CardBlock',

@@ -67,7 +67,8 @@ const image: TreeBlock<ImageBlock> = {
   blurhash: '',
   width: 10,
   height: 10,
-  children: []
+  children: [],
+  scale: null
 }
 
 const journey: Journey = {

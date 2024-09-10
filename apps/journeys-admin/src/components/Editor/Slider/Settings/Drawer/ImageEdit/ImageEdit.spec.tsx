@@ -47,7 +47,8 @@ describe('ImageEdit', () => {
     alt: 'public',
     width: 1920,
     height: 1080,
-    blurhash: ''
+    blurhash: '',
+    scale: null
   }
 
   it('should disaply placeholder icon when no image set', () => {

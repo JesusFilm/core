@@ -90,7 +90,8 @@ const image: ImageBlock = {
   alt: 'image.jpg',
   width: 1920,
   height: 1080,
-  blurhash: ''
+  blurhash: '',
+  scale: null
 }
 
 const defaultJourney: Journey = {

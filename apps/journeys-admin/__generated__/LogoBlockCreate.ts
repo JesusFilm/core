@@ -23,6 +23,7 @@ export interface LogoBlockCreate_imageBlockCreate {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface LogoBlockCreate_journeyUpdate_logoImageBlock {

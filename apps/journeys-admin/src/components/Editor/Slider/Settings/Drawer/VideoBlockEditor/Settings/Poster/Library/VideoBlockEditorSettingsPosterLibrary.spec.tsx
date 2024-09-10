@@ -157,7 +157,8 @@ const image: ImageBlock = {
   alt: 'public',
   width: 1920,
   height: 1080,
-  blurhash: ''
+  blurhash: '',
+  scale: null
 }
 
 const onClose = jest.fn()
@@ -195,7 +196,8 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
           alt: 'public',
           width: 0,
           height: 0,
-          blurhash: ''
+          blurhash: '',
+          scale: null
         }
       }
     },
@@ -210,7 +212,8 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
           width: image.width,
           height: image.height,
           parentOrder: image.parentOrder,
-          blurhash: image.blurhash
+          blurhash: image.blurhash,
+          scale: null
         },
         videoBlockUpdate: {
           id: video.id,
@@ -365,7 +368,8 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
           width: image.width,
           height: image.height,
           parentOrder: image.parentOrder,
-          blurhash: image.blurhash
+          blurhash: image.blurhash,
+          scale: null
         }
       }
       const posterImageBlockUpdateMock: MockedResponse<
