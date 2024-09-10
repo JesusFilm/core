@@ -99,6 +99,7 @@ describe('CardBlock', () => {
     parentOrder: 0,
     locked: false,
     nextBlockId: 'step2.id',
+    slug: null,
     children: []
   }
   const step2: TreeBlock<StepBlock> = {
@@ -108,6 +109,7 @@ describe('CardBlock', () => {
     parentOrder: 0,
     locked: false,
     nextBlockId: 'step3.id',
+    slug: null,
     children: []
   }
   const step3: TreeBlock<StepBlock> = {
@@ -117,6 +119,7 @@ describe('CardBlock', () => {
     parentOrder: 0,
     locked: false,
     nextBlockId: null,
+    slug: null,
     children: []
   }
   const card1: TreeBlock<CardBlock> = {
@@ -220,7 +223,7 @@ describe('CardBlock', () => {
       id: '2_0-FallingPlates',
       title: [
         {
-          __typename: 'Translation',
+          __typename: 'VideoTitle',
           value: 'FallingPlates'
         }
       ],

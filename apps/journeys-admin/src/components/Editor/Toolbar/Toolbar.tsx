@@ -79,6 +79,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
       } else {
         setAnchorEl(menuRef.current)
       }
+      setAnchorEl(null)
     }
   }, [showAnalytics, smUp, setAnchorEl])
 

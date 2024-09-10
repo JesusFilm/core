@@ -48,7 +48,8 @@ describe('CanvasDetails', () => {
     parentOrder: 0,
     locked: false,
     nextBlockId: null,
-    children: [mockButtonBlock]
+    children: [mockButtonBlock],
+    slug: null
   }
 
   it('should render add block', () => {
@@ -82,7 +83,7 @@ describe('CanvasDetails', () => {
       </MockedProvider>
     )
 
-    expect(screen.getByText('Footer Properties')).toBeInTheDocument()
+    expect(screen.getByText('Journey Appearance')).toBeInTheDocument()
   })
 
   it('should render properties', () => {

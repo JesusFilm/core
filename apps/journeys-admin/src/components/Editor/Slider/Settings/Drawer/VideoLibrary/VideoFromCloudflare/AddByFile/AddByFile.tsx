@@ -66,7 +66,7 @@ export function AddByFile({
       notifyOnNetworkStatusChange: true,
       onCompleted: (data) => {
         if (
-          data.getMyCloudflareVideo?.readyToStream === true &&
+          data.getMyCloudflareVideo?.readyToStream &&
           data.getMyCloudflareVideo.id != null
         ) {
           stopPolling()

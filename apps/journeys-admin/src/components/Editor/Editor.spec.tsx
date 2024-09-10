@@ -88,7 +88,12 @@ describe('Editor', () => {
     chatButtons: [],
     host: null,
     team: null,
-    tags: []
+    tags: [],
+    website: null,
+    showShareButton: null,
+    showLikeButton: null,
+    showDislikeButton: null,
+    displayTitle: null
   }
 
   beforeEach(() => {
@@ -151,7 +156,8 @@ describe('Editor', () => {
           parentBlockId: null,
           parentOrder: 0,
           locked: false,
-          nextBlockId: 'step1.id'
+          nextBlockId: 'step1.id',
+          slug: null
         },
         {
           __typename: 'CardBlock',

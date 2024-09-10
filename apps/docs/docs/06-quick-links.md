@@ -13,5 +13,4 @@
 | Journeys Admin | `nx serve journeys-admin`  | [4200](http://localhost:4200) | [admin.nextstep.is](https://admin.nextstep.is/)                                 |
 | Watch          | `nx serve watch`           | [4300](http://localhost:4300) | [watch.jesusfilm.org](https://watch.jesusfilm.org/)                             |
 | Storybook      | `nx demo shared-storybook` | [4400](http://localhost:4400) | [storybook.core.jesusfilm.org](https://storybook.core.jesusfilm.org)            |
-| Nexus          | `nx serve nexus`           | [4500](http://localhost:4500) | [nexus.jesusfilm.org](https://nexus.jesusfilm.org)                              |
 | Arclight       | `nx serve arclight`        | [4600](http://localhost:4600) | [core.arclight.org](https://core.arclight.org)                                  |

@@ -62,7 +62,7 @@ export interface GetJourneys_journeys_tags_name_language {
 }
 
 export interface GetJourneys_journeys_tags_name {
-  __typename: "Translation";
+  __typename: "TagName";
   value: string;
   language: GetJourneys_journeys_tags_name_language;
   primary: boolean;
@@ -78,6 +78,9 @@ export interface GetJourneys_journeys_tags {
 export interface GetJourneys_journeys {
   __typename: "Journey";
   id: string;
+  /**
+   * private title for creators
+   */
   title: string;
   createdAt: any;
   publishedAt: any | null;
@@ -89,6 +92,9 @@ export interface GetJourneys_journeys {
   themeMode: ThemeMode;
   language: GetJourneys_journeys_language;
   status: JourneyStatus;
+  /**
+   * title for seo and sharing
+   */
   seoTitle: string | null;
   seoDescription: string | null;
   template: boolean | null;

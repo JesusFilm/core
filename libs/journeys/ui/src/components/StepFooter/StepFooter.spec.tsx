@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import {
@@ -63,11 +63,16 @@ describe('StepFooter', () => {
       src2: null
     },
     team: null,
-    tags: []
+    tags: [],
+    website: null,
+    showShareButton: null,
+    showLikeButton: null,
+    showDislikeButton: null,
+    displayTitle: null
   }
 
   it('should display host avatar, name and location', () => {
-    const { getByTestId } = render(
+    render(
       <MockedProvider>
         <SnackbarProvider>
           <JourneyProvider value={{ journey, variant: 'admin' }}>
@@ -77,12 +82,14 @@ describe('StepFooter', () => {
       </MockedProvider>
     )
 
-    expect(getByTestId('StepFooterHostAvatars')).toBeInTheDocument()
-    expect(getByTestId('StepFooterHostTitleLocation')).toBeInTheDocument()
+    expect(screen.getByTestId('StepFooterHostAvatars')).toBeInTheDocument()
+    expect(
+      screen.getByTestId('StepFooterHostTitleLocation')
+    ).toBeInTheDocument()
   })
 
   it('should show footer buttons', () => {
-    const { getAllByTestId } = render(
+    render(
       <MockedProvider>
         <SnackbarProvider>
           <JourneyProvider value={{ journey, variant: 'admin' }}>
@@ -92,30 +99,16 @@ describe('StepFooter', () => {
       </MockedProvider>
     )
 
-    expect(getAllByTestId('StepFooterButtonList')).toHaveLength(2)
+    expect(screen.getAllByTestId('StepFooterButtonList')).toHaveLength(2)
   })
 
-  it('should display social media journey title by default', () => {
-    const { getByText } = render(
-      <MockedProvider>
-        <SnackbarProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <StepFooter />
-          </JourneyProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    expect(getByText('My awesome journey')).toBeInTheDocument()
-  })
-
-  it('should display journey title if no social media title', () => {
-    const { getByText } = render(
+  it('should show display title by default', () => {
+    render(
       <MockedProvider>
         <SnackbarProvider>
           <JourneyProvider
             value={{
-              journey: { ...journey, seoTitle: null },
+              journey: { ...journey, displayTitle: 'Display title' },
               variant: 'admin'
             }}
           >
@@ -125,11 +118,25 @@ describe('StepFooter', () => {
       </MockedProvider>
     )
 
-    expect(getByText('my journey')).toBeInTheDocument()
+    expect(screen.getByText('Display title')).toBeInTheDocument()
+  })
+
+  it('should display social media title if no display title', () => {
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <StepFooter />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByText('My awesome journey')).toBeInTheDocument()
   })
 
   it('should render custom styles', () => {
-    const { getByTestId } = render(
+    render(
       <MockedProvider>
         <SnackbarProvider>
           <JourneyProvider value={{ journey, variant: 'admin' }}>
@@ -139,14 +146,14 @@ describe('StepFooter', () => {
       </MockedProvider>
     )
 
-    expect(getByTestId('JourneysStepFooter')).toHaveStyle(
+    expect(screen.getByTestId('JourneysStepFooter')).toHaveStyle(
       'outline: 1px solid red'
     )
   })
 
   it('should call onFooterClick on click', () => {
     const onFooterClick = jest.fn()
-    const { getByTestId } = render(
+    render(
       <MockedProvider>
         <SnackbarProvider>
           <JourneyProvider
@@ -161,14 +168,14 @@ describe('StepFooter', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(getByTestId('JourneysStepFooter'))
+    fireEvent.click(screen.getByTestId('JourneysStepFooter'))
 
     expect(onFooterClick).toHaveBeenCalledTimes(1)
-    expect(getByTestId('Plus2Icon')).toBeInTheDocument()
+    expect(screen.getByTestId('Plus2Icon')).toBeInTheDocument()
   })
 
   it('should render custom title', () => {
-    const { getByText } = render(
+    render(
       <MockedProvider>
         <SnackbarProvider>
           <JourneyProvider
@@ -185,6 +192,6 @@ describe('StepFooter', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    expect(getByText('discovery journey title')).toBeInTheDocument()
+    expect(screen.getByText('discovery journey title')).toBeInTheDocument()
   })
 })

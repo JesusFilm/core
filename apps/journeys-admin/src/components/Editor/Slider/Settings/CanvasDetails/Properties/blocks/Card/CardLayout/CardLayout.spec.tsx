@@ -62,7 +62,12 @@ const journey: Journey = {
   chatButtons: [],
   host: null,
   team: null,
-  tags: []
+  tags: [],
+  website: null,
+  showShareButton: null,
+  showLikeButton: null,
+  showDislikeButton: null,
+  displayTitle: null
 }
 
 describe('CardLayout', () => {
@@ -142,6 +147,7 @@ describe('CardLayout', () => {
       locked: false,
       nextBlockId: null,
       parentOrder: 0,
+      slug: null,
       children: [card]
     }
     render(

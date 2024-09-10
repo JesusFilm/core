@@ -100,7 +100,12 @@ export const defaultJourney: Journey = {
       }
     }
   ],
-  tags: []
+  tags: [],
+  website: null,
+  showShareButton: null,
+  showLikeButton: null,
+  showDislikeButton: null,
+  displayTitle: null
 }
 
 export const publishedJourney: Journey = {
@@ -116,7 +121,8 @@ export const publishedJourney: Journey = {
       parentBlockId: null,
       parentOrder: 0,
       locked: false,
-      nextBlockId: 'step1.id'
+      nextBlockId: 'step1.id',
+      slug: null
     },
     {
       id: 'card0.id',
@@ -205,7 +211,8 @@ export const blocks: Block[] = [
     parentBlockId: null,
     parentOrder: 0,
     locked: false,
-    nextBlockId: 'step1.id'
+    nextBlockId: 'step1.id',
+    slug: null
   },
   {
     id: 'card0.id',
@@ -286,7 +293,7 @@ export const blocks: Block[] = [
       id: '2_0-FallingPlates',
       title: [
         {
-          __typename: 'Translation',
+          __typename: 'VideoTitle',
           value: 'FallingPlates'
         }
       ],
@@ -322,7 +329,8 @@ export const blocks: Block[] = [
     parentBlockId: null,
     parentOrder: 1,
     locked: false,
-    nextBlockId: 'step2.id'
+    nextBlockId: 'step2.id',
+    slug: null
   },
   {
     id: 'card1.id',
@@ -400,7 +408,8 @@ export const blocks: Block[] = [
     parentBlockId: null,
     parentOrder: 2,
     locked: false,
-    nextBlockId: 'step3.id'
+    nextBlockId: 'step3.id',
+    slug: null
   },
   {
     id: 'card2.id',
@@ -495,7 +504,8 @@ export const blocks: Block[] = [
     parentBlockId: null,
     parentOrder: 3,
     locked: false,
-    nextBlockId: 'step4.id'
+    nextBlockId: 'step4.id',
+    slug: null
   },
   {
     id: 'card3.id',
@@ -577,7 +587,8 @@ export const blocks: Block[] = [
     parentBlockId: null,
     parentOrder: 4,
     locked: false,
-    nextBlockId: null
+    nextBlockId: null,
+    slug: null
   },
   {
     __typename: 'VideoBlock',
@@ -599,7 +610,7 @@ export const blocks: Block[] = [
       id: '2_0-FallingPlates',
       title: [
         {
-          __typename: 'Translation',
+          __typename: 'VideoTitle',
           value: 'FallingPlates'
         }
       ],
@@ -635,7 +646,8 @@ export const blocks: Block[] = [
     parentBlockId: null,
     parentOrder: 5,
     locked: false,
-    nextBlockId: null
+    nextBlockId: null,
+    slug: null
   },
   {
     id: 'card5.id',
@@ -683,7 +695,8 @@ export const blocks: Block[] = [
     parentBlockId: null,
     parentOrder: 6,
     locked: false,
-    nextBlockId: null
+    nextBlockId: null,
+    slug: null
   },
   {
     id: 'card6.id',

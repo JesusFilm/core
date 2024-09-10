@@ -1,7 +1,8 @@
-import { render } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 
 import { TreeBlock, blockHistoryVar, treeBlocksVar } from '../../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../../libs/block/__generated__/BlockFields'
+import { JourneyProvider } from '../../../libs/JourneyProvider'
 
 import { PaginationBullets } from './PaginationBullets'
 
@@ -13,6 +14,7 @@ describe('PaginationBullets', () => {
     parentOrder: 0,
     locked: false,
     nextBlockId: null,
+    slug: null,
     children: [
       {
         __typename: 'CardBlock',
@@ -58,6 +60,7 @@ describe('PaginationBullets', () => {
     parentOrder: 1,
     locked: false,
     nextBlockId: 'step3.id',
+    slug: null,
     children: []
   }
   const step3: TreeBlock<StepBlock> = {
@@ -67,6 +70,7 @@ describe('PaginationBullets', () => {
     parentOrder: 2,
     locked: false,
     nextBlockId: 'step4.id',
+    slug: null,
     children: []
   }
   const step4: TreeBlock<StepBlock> = {
@@ -76,6 +80,7 @@ describe('PaginationBullets', () => {
     parentOrder: 3,
     locked: false,
     nextBlockId: 'step5.id',
+    slug: null,
     children: []
   }
   const step5: TreeBlock<StepBlock> = {
@@ -85,6 +90,7 @@ describe('PaginationBullets', () => {
     parentOrder: 4,
     locked: false,
     nextBlockId: 'step6.id',
+    slug: null,
     children: []
   }
   const step6: TreeBlock<StepBlock> = {
@@ -94,6 +100,7 @@ describe('PaginationBullets', () => {
     parentOrder: 5,
     locked: false,
     nextBlockId: 'step7.id',
+    slug: null,
     children: []
   }
   const step7: TreeBlock<StepBlock> = {
@@ -103,42 +110,56 @@ describe('PaginationBullets', () => {
     parentOrder: 6,
     locked: false,
     nextBlockId: null,
+    slug: null,
     children: []
   }
 
   it('should display the active bullet', () => {
     treeBlocksVar([step1, step2, step3, step4, step5, step6, step7])
     blockHistoryVar([step1])
-    const { getByTestId } = render(<PaginationBullets />)
-    expect(getByTestId('bullet-active')).toBeInTheDocument()
+    render(<PaginationBullets />)
+    expect(screen.getByTestId('bullet-active')).toBeInTheDocument()
   })
 
   it('should render the correct sized bullets', () => {
     treeBlocksVar([step1, step2, step3, step4, step5, step6, step7])
     blockHistoryVar([step1, step2, step3])
-    const { getAllByTestId } = render(<PaginationBullets />)
-    expect(getAllByTestId('bullet-active')).toHaveLength(1)
-    expect(getAllByTestId('bullet-adjacent')).toHaveLength(2)
-    expect(getAllByTestId('bullet-default')).toHaveLength(4)
+    render(<PaginationBullets />)
+    expect(screen.getAllByTestId('bullet-active')).toHaveLength(1)
+    expect(screen.getAllByTestId('bullet-adjacent')).toHaveLength(2)
+    expect(screen.getAllByTestId('bullet-default')).toHaveLength(4)
   })
 
   it('should paginate to last bullet if the current step does not have next step', () => {
     treeBlocksVar([step1, step2, step3, step4, step5, step6, step7])
     blockHistoryVar([step7])
-    const { getAllByTestId } = render(<PaginationBullets />)
-    expect(getAllByTestId('bullet-active')).toHaveLength(1)
-    expect(getAllByTestId('bullet-adjacent')).toHaveLength(1)
-    expect(getAllByTestId('bullet-default')).toHaveLength(5)
+    render(<PaginationBullets />)
+    expect(screen.getAllByTestId('bullet-active')).toHaveLength(1)
+    expect(screen.getAllByTestId('bullet-adjacent')).toHaveLength(1)
+    expect(screen.getAllByTestId('bullet-default')).toHaveLength(5)
   })
 
   it('should paginate back if block history has already visited card', () => {
     treeBlocksVar([step1, step2, step3, step4, step5, step6, step7])
     const blockHistory = blockHistoryVar([step1, step2, step3, step4, step2])
     expect(blockHistory).toHaveLength(5)
-    const { getAllByTestId } = render(<PaginationBullets />)
-    expect(getAllByTestId('bullet-active')).toHaveLength(1)
-    expect(getAllByTestId('bullet-adjacent')).toHaveLength(2)
-    expect(getAllByTestId('bullet-default')).toHaveLength(4)
+    render(<PaginationBullets />)
+    expect(screen.getAllByTestId('bullet-active')).toHaveLength(1)
+    expect(screen.getAllByTestId('bullet-adjacent')).toHaveLength(2)
+    expect(screen.getAllByTestId('bullet-default')).toHaveLength(4)
     expect(blockHistory).toHaveLength(2)
+  })
+
+  it('renders placeholder bullets for admin', () => {
+    treeBlocksVar([])
+    blockHistoryVar([])
+    render(
+      <JourneyProvider value={{ variant: 'admin' }}>
+        <PaginationBullets />
+      </JourneyProvider>
+    )
+    expect(screen.getAllByTestId('bullet-active')).toHaveLength(1)
+    expect(screen.getAllByTestId('bullet-adjacent')).toHaveLength(1)
+    expect(screen.getAllByTestId('bullet-default')).toHaveLength(1)
   })
 })

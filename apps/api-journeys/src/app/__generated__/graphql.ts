@@ -185,6 +185,17 @@ export enum IntegrationType {
     growthSpaces = "growthSpaces"
 }
 
+export enum JourneyMenuButtonIcon {
+    menu1 = "menu1",
+    equals = "equals",
+    home3 = "home3",
+    home4 = "home4",
+    more = "more",
+    ellipsis = "ellipsis",
+    grid1 = "grid1",
+    chevronDown = "chevronDown"
+}
+
 export enum IdType {
     databaseId = "databaseId",
     slug = "slug"
@@ -358,6 +369,7 @@ export class ImageBlockCreateInput {
     width?: Nullable<number>;
     height?: Nullable<number>;
     isCover?: Nullable<boolean>;
+    scale?: Nullable<number>;
 }
 
 export class ImageBlockUpdateInput {
@@ -367,6 +379,7 @@ export class ImageBlockUpdateInput {
     blurhash?: Nullable<string>;
     width?: Nullable<number>;
     height?: Nullable<number>;
+    scale?: Nullable<number>;
 }
 
 export class RadioOptionBlockCreateInput {
@@ -414,6 +427,7 @@ export class StepBlockUpdateInput {
     locked?: Nullable<boolean>;
     x?: Nullable<number>;
     y?: Nullable<number>;
+    slug?: Nullable<string>;
 }
 
 export class StepBlockPositionUpdateInput {
@@ -714,6 +728,20 @@ export class JourneyUpdateInput {
     hostId?: Nullable<string>;
     strategySlug?: Nullable<string>;
     tagIds?: Nullable<string[]>;
+    website?: Nullable<boolean>;
+    showShareButton?: Nullable<boolean>;
+    showLikeButton?: Nullable<boolean>;
+    showDislikeButton?: Nullable<boolean>;
+    displayTitle?: Nullable<string>;
+    showHosts?: Nullable<boolean>;
+    showChatButtons?: Nullable<boolean>;
+    showReactionButtons?: Nullable<boolean>;
+    showLogo?: Nullable<boolean>;
+    showMenu?: Nullable<boolean>;
+    showDisplayTitle?: Nullable<boolean>;
+    menuButtonIcon?: Nullable<JourneyMenuButtonIcon>;
+    menuStepBlockId?: Nullable<string>;
+    logoImageBlockId?: Nullable<string>;
 }
 
 export class JourneyTemplateInput {
@@ -1077,6 +1105,8 @@ export class Journey {
     blocks?: Nullable<Block[]>;
     primaryImageBlock?: Nullable<ImageBlock>;
     creatorImageBlock?: Nullable<ImageBlock>;
+    logoImageBlock?: Nullable<ImageBlock>;
+    menuStepBlock?: Nullable<StepBlock>;
     chatButtons: ChatButton[];
     id: string;
     title: string;
@@ -1102,6 +1132,18 @@ export class Journey {
     tags: Tag[];
     journeyCollections: JourneyCollection[];
     plausibleToken?: Nullable<string>;
+    website?: Nullable<boolean>;
+    showShareButton?: Nullable<boolean>;
+    showLikeButton?: Nullable<boolean>;
+    showDislikeButton?: Nullable<boolean>;
+    displayTitle?: Nullable<string>;
+    showHosts?: Nullable<boolean>;
+    showChatButtons?: Nullable<boolean>;
+    showReactionButtons?: Nullable<boolean>;
+    showLogo?: Nullable<boolean>;
+    showMenu?: Nullable<boolean>;
+    showDisplayTitle?: Nullable<boolean>;
+    menuButtonIcon?: Nullable<JourneyMenuButtonIcon>;
     userJourneys?: Nullable<UserJourney[]>;
 }
 
@@ -1269,6 +1311,7 @@ export class ImageBlock implements Block {
     height: number;
     alt: string;
     blurhash: string;
+    scale?: Nullable<number>;
 }
 
 export class RadioOptionBlock implements Block {
@@ -1310,6 +1353,7 @@ export class StepBlock implements Block {
     parentOrder?: Nullable<number>;
     x?: Nullable<number>;
     y?: Nullable<number>;
+    slug?: Nullable<string>;
 }
 
 export class TextResponseBlock implements Block {

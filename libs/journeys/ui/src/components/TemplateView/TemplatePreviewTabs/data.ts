@@ -37,7 +37,7 @@ export const journeyVideoBlocks: Blocks[] = [
       id: '1_0-TrainV_1Install',
       title: [
         {
-          __typename: 'Translation',
+          __typename: 'VideoTitle',
           value: 'Installing the Jesus Film Media App'
         }
       ],
@@ -76,7 +76,7 @@ export const journeyVideoBlocks: Blocks[] = [
       id: '1_0-TrainV_5Ministry',
       title: [
         {
-          __typename: 'Translation',
+          __typename: 'VideoTitle',
           value: 'Use this App in Ministry'
         }
       ],
@@ -115,7 +115,7 @@ export const journeyVideoBlocks: Blocks[] = [
       id: '1_cl1302-0-0',
       title: [
         {
-          __typename: 'Translation',
+          __typename: 'VideoTitle',
           value: 'StoryClubs: Childhood of Jesus'
         }
       ],
@@ -170,7 +170,8 @@ export const journeyVideoBlocks: Blocks[] = [
     parentBlockId: null,
     parentOrder: 0,
     locked: false,
-    nextBlockId: null
+    nextBlockId: null,
+    slug: null
   },
   {
     __typename: 'VideoBlock',
@@ -197,7 +198,7 @@ export const journeyVideoBlocks: Blocks[] = [
       id: '1_cl1305-0-0',
       title: [
         {
-          __typename: 'Translation',
+          __typename: 'VideoTitle',
           value: 'StoryClubs: Sinful Woman Forgiven'
         }
       ],
@@ -250,7 +251,8 @@ export const journeyVideoBlocks: Blocks[] = [
     parentBlockId: null,
     parentOrder: 1,
     locked: false,
-    nextBlockId: null
+    nextBlockId: null,
+    slug: null
   },
   {
     __typename: 'StepBlock',
@@ -258,7 +260,8 @@ export const journeyVideoBlocks: Blocks[] = [
     parentBlockId: null,
     parentOrder: 2,
     locked: false,
-    nextBlockId: null
+    nextBlockId: null,
+    slug: null
   },
   {
     __typename: 'StepBlock',
@@ -266,7 +269,8 @@ export const journeyVideoBlocks: Blocks[] = [
     parentBlockId: null,
     parentOrder: 3,
     locked: false,
-    nextBlockId: null
+    nextBlockId: null,
+    slug: null
   },
   {
     __typename: 'StepBlock',
@@ -274,7 +278,8 @@ export const journeyVideoBlocks: Blocks[] = [
     parentBlockId: null,
     parentOrder: 4,
     locked: false,
-    nextBlockId: null
+    nextBlockId: null,
+    slug: null
   }
 ]
 
@@ -330,7 +335,7 @@ export const videoBlocksFiltered = [
       id: '1_cl1301-0-0',
       title: [
         {
-          __typename: 'Translation',
+          __typename: 'VideoTitle',
           value: 'StoryClubs: Birth of Jesus'
         }
       ],
@@ -399,7 +404,7 @@ export const videoBlocksFiltered = [
       id: '1_jf-0-0',
       title: [
         {
-          __typename: 'Translation',
+          __typename: 'VideoTitle',
           value: 'JESUS'
         }
       ],
@@ -441,7 +446,7 @@ export const videoBlocksFiltered = [
       id: '1_cl1303-0-0',
       title: [
         {
-          __typename: 'Translation',
+          __typename: 'VideoTitle',
           value: 'StoryClubs: Miraculous Catch of Fish'
         }
       ],
@@ -483,7 +488,7 @@ export const videoBlocksFiltered = [
       id: '1_jf6125-0-0',
       title: [
         {
-          __typename: 'Translation',
+          __typename: 'VideoTitle',
           value: "The Lord's Prayer"
         }
       ],

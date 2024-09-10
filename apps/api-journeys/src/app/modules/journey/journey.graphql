@@ -6,8 +6,22 @@ extend type Tag @key(fields: "id") {
   id: ID! @external
 }
 
+enum JourneyMenuButtonIcon {
+  menu1
+  equals
+  home3
+  home4
+  more
+  ellipsis
+  grid1
+  chevronDown
+}
+
 type Journey @key(fields: "id") {
   id: ID!
+  """
+  private title for creators
+  """
   title: String!
   language: Language!
   themeMode: ThemeMode!
@@ -22,6 +36,9 @@ type Journey @key(fields: "id") {
   featuredAt: DateTime
   createdAt: DateTime!
   status: JourneyStatus!
+  """
+  title for seo and sharing
+  """
   seoTitle: String
   seoDescription: String
   template: Boolean
@@ -34,6 +51,21 @@ type Journey @key(fields: "id") {
   used in a plausible share link to embed report
   """
   plausibleToken: String
+  website: Boolean
+  showShareButton: Boolean
+  showLikeButton: Boolean
+  showDislikeButton: Boolean
+  """
+  public title for viewers
+  """
+  displayTitle: String
+  showHosts: Boolean
+  showChatButtons: Boolean
+  showReactionButtons: Boolean
+  showLogo: Boolean
+  showMenu: Boolean
+  showDisplayTitle: Boolean
+  menuButtonIcon: JourneyMenuButtonIcon
 }
 
 enum IdType {
@@ -163,6 +195,20 @@ input JourneyUpdateInput {
   hostId: String
   strategySlug: String
   tagIds: [ID!]
+  website: Boolean
+  showShareButton: Boolean
+  showLikeButton: Boolean
+  showDislikeButton: Boolean
+  displayTitle: String
+  showHosts: Boolean
+  showChatButtons: Boolean
+  showReactionButtons: Boolean
+  showLogo: Boolean
+  showMenu: Boolean
+  showDisplayTitle: Boolean
+  menuButtonIcon: JourneyMenuButtonIcon
+  menuStepBlockId: ID
+  logoImageBlockId: ID
 }
 
 extend type UserJourney {

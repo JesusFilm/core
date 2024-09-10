@@ -84,7 +84,12 @@ const journey: Journey = {
   },
   team: null,
   blocks: basic,
-  tags: []
+  tags: [],
+  website: null,
+  showShareButton: null,
+  showLikeButton: null,
+  showDislikeButton: null,
+  displayTitle: null
 }
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
@@ -149,7 +154,7 @@ const mocks: MockedResponse[] = [
         input: {
           id: 'uuid',
           blockId: 'step1.id',
-          value: 'Step 1'
+          value: 'Step {{number}}'
         }
       }
     },
@@ -179,7 +184,7 @@ describe('EmbeddedPreview', () => {
       <MockedProvider mocks={mocks}>
         <SnackbarProvider>
           <JourneyProvider value={{ journey, variant: 'embed' }}>
-            <EmbeddedPreview blocks={basic} />
+            <EmbeddedPreview />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -192,7 +197,7 @@ describe('EmbeddedPreview', () => {
       <MockedProvider mocks={mocks}>
         <SnackbarProvider>
           <JourneyProvider value={{ journey, variant: 'embed' }}>
-            <EmbeddedPreview blocks={basic} />
+            <EmbeddedPreview />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -214,7 +219,7 @@ describe('EmbeddedPreview', () => {
       <MockedProvider mocks={mocks}>
         <SnackbarProvider>
           <JourneyProvider value={{ journey, variant: 'embed' }}>
-            <EmbeddedPreview blocks={basic} disableFullscreen />
+            <EmbeddedPreview disableFullscreen />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
