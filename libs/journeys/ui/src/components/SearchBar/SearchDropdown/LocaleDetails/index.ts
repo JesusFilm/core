@@ -1,1 +1,0 @@
-export { LocaleDetails } from './LocaleDetails'
