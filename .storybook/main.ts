@@ -44,7 +44,9 @@ const config: StorybookConfig = {
       to: '/watch/assets/fonts'
     }
   ],
+
   stories,
+
   addons: [
     '@storybook/addon-essentials',
     '@storybook/addon-interactions',
@@ -52,6 +54,7 @@ const config: StorybookConfig = {
     'storybook-addon-apollo-client',
     '@storybook/addon-actions'
   ],
+
   webpackFinal: async (config) => {
     const tsPaths = new TsconfigPathsPlugin({
       configFile: './tsconfig.base.json'
@@ -81,8 +84,10 @@ const config: StorybookConfig = {
     options: {}
   },
 
-  docs: {
-    autodocs: false
+  docs: {},
+
+  typescript: {
+    reactDocgen: 'react-docgen-typescript'
   }
 }
 
