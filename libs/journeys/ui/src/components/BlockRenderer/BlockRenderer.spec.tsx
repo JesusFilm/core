@@ -499,6 +499,7 @@ describe('BlockRenderer', () => {
       nextBlockId: null,
       parentOrder: 0,
       locked: false,
+      slug: null,
       children: [
         {
           __typename: 'ButtonBlock',
@@ -536,6 +537,7 @@ describe('BlockRenderer', () => {
       nextBlockId: null,
       parentOrder: 0,
       locked: false,
+      slug: null,
       children: [
         {
           __typename: 'ButtonBlock',

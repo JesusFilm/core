@@ -94,6 +94,7 @@ const step: TreeBlock<StepBlock> = {
   parentOrder: 0,
   locked: false,
   nextBlockId: null,
+  slug: null,
   children: [card]
 }
 

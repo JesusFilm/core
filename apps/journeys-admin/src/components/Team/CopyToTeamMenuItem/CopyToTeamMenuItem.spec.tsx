@@ -118,7 +118,9 @@ describe('DuplicateJourneys', () => {
     await waitFor(() => expect(result2).toHaveBeenCalled())
     await fireEvent.click(getByRole('menuitem', { name: 'Copy to ...' }))
     const muiSelect = getByTestId('team-duplicate-select')
-    const muiSelectDropDownButton = await within(muiSelect).getByRole('button')
+    const muiSelectDropDownButton = await within(muiSelect).getByRole(
+      'combobox'
+    )
     await fireEvent.mouseDown(muiSelectDropDownButton)
     const muiSelectOptions = await getByRole('option', {
       name: 'Team Name'

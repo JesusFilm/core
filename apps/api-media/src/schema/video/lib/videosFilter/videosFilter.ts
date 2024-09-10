@@ -15,18 +15,19 @@ export function videosFilter({
       title != null
         ? { some: { value: { search: parseFullTextSearch(title) } } }
         : undefined,
-    variants:
-      availableVariantLanguageIds != null || subtitleLanguageIds != null
+    subtitles:
+      subtitleLanguageIds != null
         ? {
             some: {
-              subtitle:
-                subtitleLanguageIds != null
-                  ? { some: { languageId: { in: subtitleLanguageIds } } }
-                  : undefined,
-              languageId:
-                availableVariantLanguageIds != null
-                  ? { in: availableVariantLanguageIds }
-                  : undefined
+              languageId: { in: subtitleLanguageIds }
+            }
+          }
+        : undefined,
+    variants:
+      availableVariantLanguageIds != null
+        ? {
+            some: {
+              languageId: { in: availableVariantLanguageIds }
             }
           }
         : undefined,

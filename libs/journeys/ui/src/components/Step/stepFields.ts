@@ -7,5 +7,6 @@ export const STEP_FIELDS = gql`
     parentOrder
     locked
     nextBlockId
+    slug
   }
 `

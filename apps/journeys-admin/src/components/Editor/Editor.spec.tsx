@@ -156,7 +156,8 @@ describe('Editor', () => {
           parentBlockId: null,
           parentOrder: 0,
           locked: false,
-          nextBlockId: 'step1.id'
+          nextBlockId: 'step1.id',
+          slug: null
         },
         {
           __typename: 'CardBlock',

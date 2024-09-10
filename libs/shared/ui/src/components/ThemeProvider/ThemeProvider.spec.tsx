@@ -11,13 +11,12 @@ describe('ThemeProvider', () => {
         Hello from ThemeProvider
       </ThemeProvider>
     )
-    expect(baseElement.parentElement?.innerHTML).toEqual(
-      expect.stringContaining(
-        `background-color:${
-          getTheme({ themeName: ThemeName.base, themeMode: ThemeMode.light })
-            .palette.background.default
-        };`
-      )
+    const expectedBackgroundColor = getTheme({
+      themeName: ThemeName.base,
+      themeMode: ThemeMode.light
+    }).palette.background.default
+    expect(baseElement).toHaveStyle(
+      `background-color: ${expectedBackgroundColor}`
     )
   })
 
@@ -27,13 +26,13 @@ describe('ThemeProvider', () => {
         Hello from ThemeProvider
       </ThemeProvider>
     )
-    expect(baseElement.parentElement?.innerHTML).toEqual(
-      expect.stringContaining(
-        `background-color:${
-          getTheme({ themeName: ThemeName.base, themeMode: ThemeMode.dark })
-            .palette.background.default
-        };`
-      )
+    const expectedBackgroundColor = getTheme({
+      themeName: ThemeName.base,
+      themeMode: ThemeMode.dark
+    }).palette.background.default
+
+    expect(baseElement).toHaveStyle(
+      `background-color: ${expectedBackgroundColor}`
     )
   })
 
@@ -43,17 +42,15 @@ describe('ThemeProvider', () => {
         Hello from ThemeProvider
       </ThemeProvider>
     )
-    expect(baseElement.parentElement?.innerHTML).toEqual(
-      expect.stringContaining(
-        `font-family:${
-          getTheme({
-            themeName: ThemeName.base,
-            themeMode: ThemeMode.light,
-            rtl: true
-          }).typography.fontFamily ?? ''
-        };`
-      )
-    )
+    const expectedRtlTheme = `font-family:${
+      getTheme({
+        themeName: ThemeName.base,
+        themeMode: ThemeMode.light,
+        rtl: true
+      }).typography.fontFamily ?? ''
+    };`
+
+    expect(baseElement).toHaveStyle(expectedRtlTheme)
   })
 
   it('should apply urdu rtl theme', () => {
@@ -67,18 +64,17 @@ describe('ThemeProvider', () => {
         Hello from ThemeProvider
       </ThemeProvider>
     )
-    expect(baseElement.parentElement?.innerHTML).toEqual(
-      expect.stringContaining(
-        `font-family:${
-          getTheme({
-            themeName: ThemeName.base,
-            themeMode: ThemeMode.light,
-            rtl: true,
-            locale: 'ur'
-          }).typography.fontFamily ?? ''
-        };`
-      )
-    )
+
+    const expectedUrduRtlTheme = `font-family:${
+      getTheme({
+        themeName: ThemeName.base,
+        themeMode: ThemeMode.light,
+        rtl: true,
+        locale: 'ur'
+      }).typography.fontFamily ?? ''
+    };`
+
+    expect(baseElement).toHaveStyle(expectedUrduRtlTheme)
   })
 
   it('should not apply CssBaseline when nestedTheme', () => {

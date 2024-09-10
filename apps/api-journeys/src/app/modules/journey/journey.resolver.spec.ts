@@ -2125,34 +2125,7 @@ describe('JourneyResolver', () => {
       })
     })
 
-    it('returns blocks without menuStepBlock', async () => {
-      const journeyWithMenuStepBlock = {
-        ...journey,
-        menuStepBlockId: 'menuStepBlockId'
-      }
-      prismaService.block.findMany.mockResolvedValueOnce([block])
-      blockService.removeDescendantsOfDeletedBlocks.mockResolvedValueOnce([
-        block as BlockWithAction
-      ])
-      expect(await resolver.blocks(journeyWithMenuStepBlock)).toEqual([
-        { ...block, __typename: 'ImageBlock', typename: undefined }
-      ])
-      expect(prismaService.block.findMany).toHaveBeenCalledWith({
-        include: {
-          action: true
-        },
-        orderBy: {
-          parentOrder: 'asc'
-        },
-        where: {
-          journeyId: 'journeyId',
-          id: { notIn: ['menuStepBlockId'] },
-          deletedAt: null
-        }
-      })
-    })
-
-    it('returns blocks without primaryImageBlock, creatorImageBlock, logoImageBlock or menuStepBlock', async () => {
+    it('returns blocks without primaryImageBlock, creatorImageBlock, logoImageBlock', async () => {
       const journeyWithPrimaryImageBlock = {
         ...journey,
         primaryImageBlockId: 'primaryImageBlockId',
@@ -2180,8 +2153,7 @@ describe('JourneyResolver', () => {
             notIn: [
               'primaryImageBlockId',
               'creatorImageBlockId',
-              'logoImageBlockId',
-              'menuStepBlockId'
+              'logoImageBlockId'
             ]
           },
           deletedAt: null
