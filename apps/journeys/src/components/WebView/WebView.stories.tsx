@@ -52,6 +52,7 @@ export const Default = {
   ...Template,
   args: {
     journey,
+    blocks: basic,
     stepBlock: basic[0]
   }
 }

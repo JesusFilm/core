@@ -17,6 +17,7 @@ import {
 import { handleAction } from '../../libs/action'
 import type { TreeBlock } from '../../libs/block'
 import { useBlocks } from '../../libs/block'
+import { getNextStepSlug } from '../../libs/getNextStepSlug'
 import { getStepHeading } from '../../libs/getStepHeading'
 import { useJourney } from '../../libs/JourneyProvider'
 import { JourneyPlausibleEvents } from '../../libs/plausibleHelpers'
@@ -215,7 +216,8 @@ export function Button({
       void createChatEvent()
     }
 
-    handleAction(router, action)
+    const nextStepSlug = getNextStepSlug(journey, action)
+    handleAction(router, action, nextStepSlug)
   }
 
   return (
