@@ -1892,7 +1892,34 @@ describe('JourneyResolver', () => {
       })
     })
 
-    it('returns blocks without primaryImageBlock or creatorImageBlock', async () => {
+    it('returns blocks without logoImageBlock', async () => {
+      const journeyWithLogoImageBlock = {
+        ...journey,
+        logoImageBlockId: 'logoImageBlockId'
+      }
+      prismaService.block.findMany.mockResolvedValueOnce([block])
+      blockService.removeDescendantsOfDeletedBlocks.mockResolvedValueOnce([
+        block as BlockWithAction
+      ])
+      expect(await resolver.blocks(journeyWithLogoImageBlock)).toEqual([
+        { ...block, __typename: 'ImageBlock', typename: undefined }
+      ])
+      expect(prismaService.block.findMany).toHaveBeenCalledWith({
+        include: {
+          action: true
+        },
+        orderBy: {
+          parentOrder: 'asc'
+        },
+        where: {
+          journeyId: 'journeyId',
+          id: { notIn: ['logoImageBlockId'] },
+          deletedAt: null
+        }
+      })
+    })
+
+    it('returns blocks without primaryImageBlock, creatorImageBlock, logoImageBlock', async () => {
       const journeyWithPrimaryImageBlock = {
         ...journey,
         primaryImageBlockId: 'primaryImageBlockId',
@@ -1914,7 +1941,13 @@ describe('JourneyResolver', () => {
         },
         where: {
           journeyId: 'journeyId',
-          id: { notIn: ['primaryImageBlockId', 'creatorImageBlockId'] },
+          id: {
+            notIn: [
+              'primaryImageBlockId',
+              'creatorImageBlockId',
+              'logoImageBlockId'
+            ]
+          },
           deletedAt: null
         }
       })
