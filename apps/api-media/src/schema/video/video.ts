@@ -4,6 +4,7 @@ import orderBy from 'lodash/orderBy'
 
 import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
+import { ImageAspectRatio } from '../cloudflare/image/enums'
 import { IdType, IdTypeShape } from '../enums/idType'
 import { Language, LanguageWithSlug } from '../language'
 
@@ -224,6 +225,19 @@ const Video = builder.prismaObject('Video', {
           }
         })
       }
+    }),
+    images: t.relation('images', {
+      args: {
+        aspectRatio: t.arg({
+          type: ImageAspectRatio,
+          required: false
+        })
+      },
+      query: ({ aspectRatio }) => ({
+        where: {
+          aspectRatio: aspectRatio ?? undefined
+        }
+      })
     })
   })
 })

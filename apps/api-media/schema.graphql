@@ -33,6 +33,7 @@ type CloudflareImage {
   uploadUrl: String
   userId: ID!
   createdAt: Date!
+  aspectRatio: ImageAspectRatio
 }
 
 type CloudflareVideo {
@@ -51,6 +52,16 @@ scalar Date
 enum IdType {
   databaseId
   slug
+}
+
+enum ImageAspectRatio {
+  hd
+  banner
+}
+
+input ImageInput {
+  aspectRatio: ImageAspectRatio
+  videoId: ID
 }
 
 type Keyword {
@@ -76,9 +87,9 @@ enum MediaRole {
 }
 
 type Mutation {
-  createCloudflareUploadByFile: CloudflareImage!
-  createCloudflareUploadByUrl(url: String!): CloudflareImage!
-  createCloudflareImageFromPrompt(prompt: String!): CloudflareImage!
+  createCloudflareUploadByFile(input: ImageInput): CloudflareImage!
+  createCloudflareUploadByUrl(url: String!, input: ImageInput): CloudflareImage!
+  createCloudflareImageFromPrompt(prompt: String!, input: ImageInput): CloudflareImage!
   deleteCloudflareImage(id: ID!): Boolean!
   cloudflareUploadComplete(id: ID!): Boolean!
   createCloudflareVideoUploadByFile(uploadLength: Int!, name: String!): CloudflareVideo!
@@ -277,6 +288,7 @@ type Video
   variantLanguagesWithSlug: [LanguageWithSlug!]!
   subtitles(languageId: ID, primary: Boolean, edition: String): [VideoSubtitle!]!
   variant(languageId: ID): VideoVariant
+  images(aspectRatio: ImageAspectRatio): [CloudflareImage!]!
 }
 
 type VideoDescription {
