@@ -74,8 +74,6 @@ export async function GET(
             (download) => download.quality === 'high'
           )
 
-          console.log(variant.subtitle)
-
           const subtitleUrls =
             platform === 'android'
               ? {
