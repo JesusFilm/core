@@ -2,7 +2,7 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid2'
 import Stack from '@mui/material/Stack'
-import { styled } from '@mui/material/styles'
+import { styled, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { useTranslation } from 'next-i18next'
@@ -39,6 +39,7 @@ export function RefinementGroups({
   languages
 }: RefinementGroupsProps): ReactElement {
   const { t } = useTranslation('apps-watch')
+  const theme = useTheme()
 
   const { canToggleShowMore, isShowingMore, toggleShowMore } = refinements
   const shouldFade = canToggleShowMore && !isShowingMore
@@ -108,6 +109,10 @@ export function RefinementGroups({
                   onClick={clearRefinements}
                   disabled={!canClearRefinements}
                   endIcon={<X1 />}
+                  sx={{
+                    border: `2px solid ${theme.palette.secondary.main}`,
+                    color: theme.palette.secondary.main
+                  }}
                 >
                   {t('Clear All')}
                 </StyledButton>
