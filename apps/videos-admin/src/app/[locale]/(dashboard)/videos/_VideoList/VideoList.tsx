@@ -16,6 +16,7 @@ import {
   getGridStringOperators
 } from '@mui/x-data-grid'
 import { VariablesOf, graphql } from 'gql.tada'
+import { usePathname, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { ReactElement, useState } from 'react'
 
@@ -64,6 +65,9 @@ export function VideoList(): ReactElement {
   const [getVideosWhereArgs, setGetVideosWhereArgs] = useState<VideosFilter>({})
 
   const t = useTranslations()
+  const router = useRouter()
+  const pathname = usePathname()
+
   const { data, loading, fetchMore } = useQuery(GET_VIDEOS_AND_COUNT, {
     variables: {
       limit: videosLimit,
@@ -115,8 +119,7 @@ export function VideoList(): ReactElement {
     _event: MuiEvent,
     _details: GridCallbackDetails
   ): void {
-    // console.log(`redirect to: [locale]/videos/[${params.id}]`)
-    // console.log(params)io
+    router.push(`${pathname}/${params.id}`)
   }
 
   async function handleChangePage(
@@ -159,7 +162,6 @@ export function VideoList(): ReactElement {
   return (
     <Box sx={{ height: 'calc(100vh - 90px)', width: '100%' }}>
       <DataGrid
-        checkboxSelection
         getRowClassName={(params) =>
           params.indexRelativeToCurrentPage % 2 === 0 ? 'even' : 'odd'
         }
@@ -185,6 +187,13 @@ export function VideoList(): ReactElement {
         }
         filterModel={filterModel}
         onFilterModelChange={handleFilterModelChange}
+        slotProps={{
+          row: {
+            sx: {
+              cursor: 'pointer'
+            }
+          }
+        }}
       />
     </Box>
   )
