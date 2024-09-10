@@ -10,6 +10,7 @@ export const GET_COUNTRY = gql`
       countryLanguages {
         language {
           name {
+            primary
             value
           }
         }

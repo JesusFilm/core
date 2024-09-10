@@ -118,7 +118,7 @@ export function SearchbarDropdown({
         sx={{ px: 8, pb: 8, bgcolor: 'background.paper', mt: 3 }}
         color="text.primary"
       >
-        <CountryLanguageSelector />
+        <CountryLanguageSelector refinements={refinements} />
         <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 5 }}>
           <Tabs
             value={tabValue}

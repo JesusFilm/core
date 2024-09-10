@@ -1,15 +1,49 @@
+import Chip from '@mui/material/Chip'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import {
+  RefinementListItem,
+  RefinementListRenderState
+} from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
+import orderBy from 'lodash/orderBy'
 import { ReactElement, useEffect, useState } from 'react'
 
-import { useCountryQuery } from '../../../../libs/useCountryQuery/useCountryQuery'
+import { useCountryQuery } from '../../../../libs/useCountryQuery'
 
-export function CountryLanguageSelector(): ReactElement {
+interface CountryLanguageSelectorProps {
+  refinements: RefinementListRenderState
+}
+
+export function CountryLanguageSelector({
+  refinements
+}: CountryLanguageSelectorProps): ReactElement {
+  const { items, refine } = refinements
   const [country, setCountry] = useState<string>()
   const [countryCode, setCountryCode] = useState<string>()
 
   const { data } = useCountryQuery({ countryId: countryCode ?? '' })
-  console.log(data)
+
+  function getTopSpokenLanguages(
+    availableLanguages: RefinementListItem[]
+  ): string[] {
+    const availableLanguageSet = new Set(
+      availableLanguages.map((lang) => lang.value)
+    )
+    const countryLanguages = data?.country?.countryLanguages ?? []
+    return orderBy(countryLanguages, ['speakers'], ['desc'])
+      .map(({ language }) => {
+        const localName = language.name.find(
+          ({ primary }) => primary !== true
+        )?.value
+        const nativeName = language.name.find(({ primary }) => primary)?.value
+        return localName ?? nativeName ?? ''
+      })
+      .filter(Boolean)
+      .filter((language) => availableLanguageSet.has(language))
+      .slice(0, 4)
+  }
+
+  const spokenLanguages = getTopSpokenLanguages(items)
 
   function getCountryName(countryCode: string): string {
     try {
@@ -39,8 +73,30 @@ export function CountryLanguageSelector(): ReactElement {
   return (
     <>
       {country != null && (
-        <Stack spacing={2} sx={{ pt: 6, pb: 3 }}>
+        <Stack
+          spacing={4}
+          direction="row"
+          alignItems="center"
+          sx={{ pt: 6, pb: 3 }}
+        >
           <Typography variant="h6">{country}: </Typography>
+          {spokenLanguages.length > 0 &&
+            spokenLanguages.map((language) => (
+              <Chip
+                clickable
+                key={language}
+                label={language}
+                variant="outlined"
+                size="medium"
+                onClick={() => refine(language)}
+                sx={{
+                  border: (theme) =>
+                    `2px solid ${theme.palette.text.primary}${
+                      theme.palette.mode === 'dark' ? '2E' : '1A'
+                    }`
+                }}
+              />
+            ))}
         </Stack>
       )}
     </>
