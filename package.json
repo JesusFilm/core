@@ -196,6 +196,7 @@
     "@babel/core": "^7.22.15",
     "@babel/preset-env": "^7.22.15",
     "@babel/preset-typescript": "^7.22.15",
+    "@chromatic-com/storybook": "^1.9.0",
     "@commitlint/cli": "^17.7.1",
     "@commitlint/lint": "^17.7.0",
     "@docusaurus/module-type-aliases": "^3.0.1",

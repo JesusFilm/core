@@ -52,7 +52,8 @@ const config: StorybookConfig = {
     '@storybook/addon-interactions',
     '@storybook/addon-a11y',
     'storybook-addon-apollo-client',
-    '@storybook/addon-actions'
+    '@storybook/addon-actions',
+    '@chromatic-com/storybook'
   ],
 
   webpackFinal: async (config) => {
