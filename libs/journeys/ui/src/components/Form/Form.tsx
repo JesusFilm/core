@@ -8,6 +8,8 @@ import { FormiumForm } from '@core/shared/ui/FormiumForm'
 
 import { handleAction } from '../../libs/action'
 import { TreeBlock } from '../../libs/block'
+import { getNextStepSlug } from '../../libs/getNextStepSlug'
+import { useJourney } from '../../libs/JourneyProvider'
 
 import { FormFields } from './__generated__/FormFields'
 
@@ -17,10 +19,12 @@ export function Form({
   action
 }: TreeBlock<FormFields>): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
+  const { journey } = useJourney()
   const router = useRouter()
 
   function handleSubmit(): void {
-    handleAction(router, action)
+    const nextStepSlug = getNextStepSlug(journey, action)
+    handleAction(router, action, nextStepSlug)
   }
 
   return form != null ? (
