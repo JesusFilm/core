@@ -4,6 +4,8 @@ import React, { ComponentProps } from 'react'
 
 import { watchConfig } from '@core/shared/ui/storybook'
 
+import { SearchBarProvider } from '../../../libs/algolia/SearchBarProvider'
+
 import { LanguageButtons } from './LanguageButtons'
 
 const LanguageButtonsStory: Meta<typeof LanguageButtons> = {
@@ -15,7 +17,11 @@ const LanguageButtonsStory: Meta<typeof LanguageButtons> = {
 type Story = StoryObj<ComponentProps<typeof LanguageButtons>>
 
 const Template: Story = {
-  render: (args) => <LanguageButtons {...args} />
+  render: (args) => (
+    <SearchBarProvider>
+      <LanguageButtons {...args} />
+    </SearchBarProvider>
+  )
 }
 
 export const Default = {

@@ -3,9 +3,10 @@ import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refine
 import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
 import { useSearchBox } from 'react-instantsearch'
 
+import { SearchBarProvider } from '../../../../libs/algolia/SearchBarProvider'
 import { languageRefinements } from '../../data'
 
-import { LanguageContinentRefinements } from './LanguageContinentRefinements'
+import { RefinementGroups } from './RefinementGroups'
 
 jest.mock('react-instantsearch')
 
@@ -13,7 +14,7 @@ const mockUseSearchBox = useSearchBox as jest.MockedFunction<
   typeof useSearchBox
 >
 
-describe('LanguageContinentRefinements', () => {
+describe('RefinementGroups', () => {
   const refinements = {
     items: languageRefinements,
     refine: jest.fn()
@@ -39,10 +40,9 @@ describe('LanguageContinentRefinements', () => {
 
   it('should render the correct continent headers', () => {
     render(
-      <LanguageContinentRefinements
-        refinements={refinements}
-        languages={languages}
-      />
+      <SearchBarProvider>
+        <RefinementGroups refinements={refinements} languages={languages} />
+      </SearchBarProvider>
     )
     expect(screen.getByText('Asia')).toBeInTheDocument()
     expect(screen.getByText('Europe')).toBeInTheDocument()
@@ -52,10 +52,9 @@ describe('LanguageContinentRefinements', () => {
 
   it('should render the correct languages', () => {
     render(
-      <LanguageContinentRefinements
-        refinements={refinements}
-        languages={languages}
-      />
+      <SearchBarProvider>
+        <RefinementGroups refinements={refinements} languages={languages} />
+      </SearchBarProvider>
     )
     expect(screen.getByText('English')).toBeInTheDocument()
     expect(screen.getByText('Cantonese')).toBeInTheDocument()
@@ -65,7 +64,7 @@ describe('LanguageContinentRefinements', () => {
 
   it('should render message if no languages', () => {
     render(
-      <LanguageContinentRefinements
+      <RefinementGroups
         refinements={
           {
             items: [],
@@ -90,10 +89,12 @@ describe('LanguageContinentRefinements', () => {
       toggleShowMore: jest.fn()
     }
     render(
-      <LanguageContinentRefinements
-        refinements={showMoreRefinements}
-        languages={languages}
-      />
+      <SearchBarProvider>
+        <RefinementGroups
+          refinements={showMoreRefinements}
+          languages={languages}
+        />
+      </SearchBarProvider>
     )
     expect(screen.getByText('See All')).toBeInTheDocument()
   })
@@ -106,10 +107,12 @@ describe('LanguageContinentRefinements', () => {
       toggleShowMore: jest.fn()
     }
     render(
-      <LanguageContinentRefinements
-        refinements={showMoreRefinements}
-        languages={languages}
-      />
+      <SearchBarProvider>
+        <RefinementGroups
+          refinements={showMoreRefinements}
+          languages={languages}
+        />
+      </SearchBarProvider>
     )
     expect(screen.getByText('See Less')).toBeInTheDocument()
   })
@@ -123,10 +126,12 @@ describe('LanguageContinentRefinements', () => {
       toggleShowMore
     }
     render(
-      <LanguageContinentRefinements
-        refinements={showMoreRefinements}
-        languages={languages}
-      />
+      <SearchBarProvider>
+        <RefinementGroups
+          refinements={showMoreRefinements}
+          languages={languages}
+        />
+      </SearchBarProvider>
     )
     const seeAllButton = screen.getByText('See All')
     fireEvent.click(seeAllButton)

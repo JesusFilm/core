@@ -8,20 +8,21 @@ import { type ReactElement } from 'react'
 import { useSearchBox } from 'react-instantsearch'
 
 import { normalizeLanguage } from '../../../../../libs/algolia/languageUtils'
+import { useSearchBar } from '../../../../../libs/algolia/SearchBarProvider'
 
 interface RefinementGroupProps {
   title: string
   refinement: RefinementListRenderState
-  handleSelectedContinent: (continent: string) => void
-  selectedContinent?: string
 }
 
 export function RefinementGroup({
   title,
-  refinement,
-  handleSelectedContinent,
-  selectedContinent
+  refinement
 }: RefinementGroupProps): ReactElement {
+  const {
+    dispatch,
+    state: { continentLanguages }
+  } = useSearchBar()
   const { items, refine } = refinement
   const { query, refine: refineQuery } = useSearchBox()
 
@@ -40,10 +41,29 @@ export function RefinementGroup({
     return languageRefinement !== undefined && !languageRefinement.isRefined
   }
 
-  function handleClick(language: string): void {
-    handleSelectedContinent(title)
+  function handleClick(language: string, isSelected: boolean): void {
+    dispatch({
+      type: 'SelectLanguageContinent',
+      continent: title,
+      language,
+      isSelected
+    })
     if (isLanguageRefined(language)) stripLanguageFromQuery(language)
     refine(language)
+  }
+
+  function isItemChecked(item: { label: string; isRefined: boolean }): boolean {
+    return (
+      (item.isRefined && continentLanguages[title]?.includes(item.label)) ??
+      false
+    )
+  }
+
+  function isItemDisabled(itemLabel: string): boolean {
+    return Object.entries(continentLanguages).some(
+      ([continent, languages]) =>
+        continent !== title && languages.includes(itemLabel)
+    )
   }
 
   return (
@@ -59,8 +79,9 @@ export function RefinementGroup({
                 key={item.value}
                 control={
                   <Checkbox
-                    checked={item.isRefined}
-                    onClick={() => handleClick(item.label)}
+                    checked={isItemChecked(item)}
+                    disabled={isItemDisabled(item.label)}
+                    onClick={() => handleClick(item.label, !item.isRefined)}
                     size="small"
                   />
                 }
