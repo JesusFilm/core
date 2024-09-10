@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { MessagePlatform } from '../../../../../../../../../__generated__/globalTypes'
@@ -8,7 +8,7 @@ import { JourneyFields_chatButtons as ChatButton } from '../../../../../../../..
 import { ChatOption } from '.'
 
 describe('ChatOption', () => {
-  it('should show accordion summary and details', () => {
+  it('should render', () => {
     const props = {
       title: 'title',
       chatButton: {
@@ -23,7 +23,7 @@ describe('ChatOption', () => {
       disableSelection: false
     }
 
-    const { getByRole } = render(
+    render(
       <MockedProvider>
         <SnackbarProvider>
           <ChatOption {...props} />
@@ -31,8 +31,9 @@ describe('ChatOption', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(getByRole('button', { name: 'title' }))
-    expect(getByRole('textbox')).toHaveValue('https://example.com')
+    expect(screen.getByText(props.title)).toBeInTheDocument()
+    expect(screen.getByRole('checkbox')).toBeInTheDocument()
+    expect(screen.getByRole('textbox')).toHaveValue('https://example.com')
   })
 
   it('should update currentLink locally', () => {
@@ -50,7 +51,7 @@ describe('ChatOption', () => {
       disableSelection: false
     }
 
-    const { getByRole } = render(
+    render(
       <MockedProvider>
         <SnackbarProvider>
           <ChatOption {...props} />
@@ -58,11 +59,10 @@ describe('ChatOption', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(getByRole('button', { name: 'title' }))
-    fireEvent.change(getByRole('textbox'), {
+    fireEvent.change(screen.getByRole('textbox'), {
       target: { value: 'https://newlink.com' }
     })
-    expect(getByRole('textbox')).toHaveValue('https://newlink.com')
+    expect(screen.getByRole('textbox')).toHaveValue('https://newlink.com')
   })
 
   it('should update currentPlatform locally', () => {
@@ -81,7 +81,7 @@ describe('ChatOption', () => {
       enableIconSelect: true
     }
 
-    const { getByRole, getByText } = render(
+    render(
       <MockedProvider>
         <SnackbarProvider>
           <ChatOption {...props} />
@@ -89,33 +89,8 @@ describe('ChatOption', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(getByRole('button', { name: 'title' }))
-    fireEvent.mouseDown(getByRole('button', { name: 'TikTok' }))
-    fireEvent.click(getByText('Snapchat'))
-    expect(getByRole('button', { name: 'Snapchat' })).toBeInTheDocument()
-  })
-
-  it('should not close accordion when clicking on the checkbox', () => {
-    const props = {
-      title: 'title',
-      chatButton: undefined,
-      platform: MessagePlatform.tikTok,
-      active: false,
-      journeyId: 'journeyId',
-      disableSelection: false
-    }
-
-    const { getByRole, queryByRole } = render(
-      <MockedProvider>
-        <SnackbarProvider>
-          <ChatOption {...props} />
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    expect(queryByRole('textbox')).not.toBeInTheDocument()
-    fireEvent.click(getByRole('button', { name: 'title' }))
-    fireEvent.click(getByRole('checkbox'))
-    expect(getByRole('textbox')).toBeInTheDocument()
+    fireEvent.mouseDown(screen.getByText('TikTok'))
+    fireEvent.click(screen.getByText('Snapchat'))
+    expect(screen.getByRole('combobox')).toHaveTextContent('Snapchat')
   })
 })

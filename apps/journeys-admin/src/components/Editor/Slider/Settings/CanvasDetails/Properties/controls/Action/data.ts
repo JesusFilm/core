@@ -16,6 +16,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
     parentOrder: 0,
     locked: false,
     nextBlockId: 'step1.id',
+    slug: null,
     children: [
       {
         id: 'card0.id',
@@ -93,6 +94,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
     parentOrder: 1,
     locked: false,
     nextBlockId: 'step2.id',
+    slug: null,
     children: [
       {
         id: 'card1.id',
@@ -188,6 +190,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
     parentOrder: 2,
     locked: false,
     nextBlockId: 'step3.id',
+    slug: null,
     children: [
       {
         id: 'card2.id',
@@ -295,6 +298,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
     parentOrder: 2,
     locked: false,
     nextBlockId: 'step4.id',
+    slug: null,
     children: [
       {
         id: 'card3.id',
@@ -407,6 +411,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
     parentOrder: 3,
     locked: false,
     nextBlockId: null,
+    slug: null,
     children: [
       {
         id: 'card4.id',

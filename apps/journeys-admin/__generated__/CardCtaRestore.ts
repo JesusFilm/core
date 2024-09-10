@@ -231,6 +231,14 @@ export interface CardCtaRestore_imageRestore_StepBlock {
    * manually set the next block they want to card to navigate to
    */
   nextBlockId: string | null;
+  /**
+   * Slug should be unique amongst all blocks
+   * (server will throw BAD_USER_INPUT error if not)
+   * If not required will use the current block id
+   * If the generated slug is not unique the uuid will be placed
+   * at the end of the slug guaranteeing uniqueness
+   */
+  slug: string | null;
 }
 
 export interface CardCtaRestore_imageRestore_TextResponseBlock {
@@ -258,7 +266,7 @@ export interface CardCtaRestore_imageRestore_TypographyBlock {
 }
 
 export interface CardCtaRestore_imageRestore_VideoBlock_video_title {
-  __typename: "Translation";
+  __typename: "VideoTitle";
   value: string;
 }
 
@@ -651,6 +659,14 @@ export interface CardCtaRestore_subtitleRestore_StepBlock {
    * manually set the next block they want to card to navigate to
    */
   nextBlockId: string | null;
+  /**
+   * Slug should be unique amongst all blocks
+   * (server will throw BAD_USER_INPUT error if not)
+   * If not required will use the current block id
+   * If the generated slug is not unique the uuid will be placed
+   * at the end of the slug guaranteeing uniqueness
+   */
+  slug: string | null;
 }
 
 export interface CardCtaRestore_subtitleRestore_TextResponseBlock {
@@ -678,7 +694,7 @@ export interface CardCtaRestore_subtitleRestore_TypographyBlock {
 }
 
 export interface CardCtaRestore_subtitleRestore_VideoBlock_video_title {
-  __typename: "Translation";
+  __typename: "VideoTitle";
   value: string;
 }
 
@@ -1071,6 +1087,14 @@ export interface CardCtaRestore_titleRestore_StepBlock {
    * manually set the next block they want to card to navigate to
    */
   nextBlockId: string | null;
+  /**
+   * Slug should be unique amongst all blocks
+   * (server will throw BAD_USER_INPUT error if not)
+   * If not required will use the current block id
+   * If the generated slug is not unique the uuid will be placed
+   * at the end of the slug guaranteeing uniqueness
+   */
+  slug: string | null;
 }
 
 export interface CardCtaRestore_titleRestore_TextResponseBlock {
@@ -1098,7 +1122,7 @@ export interface CardCtaRestore_titleRestore_TypographyBlock {
 }
 
 export interface CardCtaRestore_titleRestore_VideoBlock_video_title {
-  __typename: "Translation";
+  __typename: "VideoTitle";
   value: string;
 }
 
@@ -1491,6 +1515,14 @@ export interface CardCtaRestore_button1Restore_StepBlock {
    * manually set the next block they want to card to navigate to
    */
   nextBlockId: string | null;
+  /**
+   * Slug should be unique amongst all blocks
+   * (server will throw BAD_USER_INPUT error if not)
+   * If not required will use the current block id
+   * If the generated slug is not unique the uuid will be placed
+   * at the end of the slug guaranteeing uniqueness
+   */
+  slug: string | null;
 }
 
 export interface CardCtaRestore_button1Restore_TextResponseBlock {
@@ -1518,7 +1550,7 @@ export interface CardCtaRestore_button1Restore_TypographyBlock {
 }
 
 export interface CardCtaRestore_button1Restore_VideoBlock_video_title {
-  __typename: "Translation";
+  __typename: "VideoTitle";
   value: string;
 }
 
@@ -1911,6 +1943,14 @@ export interface CardCtaRestore_startIcon1Restore_StepBlock {
    * manually set the next block they want to card to navigate to
    */
   nextBlockId: string | null;
+  /**
+   * Slug should be unique amongst all blocks
+   * (server will throw BAD_USER_INPUT error if not)
+   * If not required will use the current block id
+   * If the generated slug is not unique the uuid will be placed
+   * at the end of the slug guaranteeing uniqueness
+   */
+  slug: string | null;
 }
 
 export interface CardCtaRestore_startIcon1Restore_TextResponseBlock {
@@ -1938,7 +1978,7 @@ export interface CardCtaRestore_startIcon1Restore_TypographyBlock {
 }
 
 export interface CardCtaRestore_startIcon1Restore_VideoBlock_video_title {
-  __typename: "Translation";
+  __typename: "VideoTitle";
   value: string;
 }
 
@@ -2331,6 +2371,14 @@ export interface CardCtaRestore_endIcon1Restore_StepBlock {
    * manually set the next block they want to card to navigate to
    */
   nextBlockId: string | null;
+  /**
+   * Slug should be unique amongst all blocks
+   * (server will throw BAD_USER_INPUT error if not)
+   * If not required will use the current block id
+   * If the generated slug is not unique the uuid will be placed
+   * at the end of the slug guaranteeing uniqueness
+   */
+  slug: string | null;
 }
 
 export interface CardCtaRestore_endIcon1Restore_TextResponseBlock {
@@ -2358,7 +2406,7 @@ export interface CardCtaRestore_endIcon1Restore_TypographyBlock {
 }
 
 export interface CardCtaRestore_endIcon1Restore_VideoBlock_video_title {
-  __typename: "Translation";
+  __typename: "VideoTitle";
   value: string;
 }
 
@@ -2751,6 +2799,14 @@ export interface CardCtaRestore_button2Restore_StepBlock {
    * manually set the next block they want to card to navigate to
    */
   nextBlockId: string | null;
+  /**
+   * Slug should be unique amongst all blocks
+   * (server will throw BAD_USER_INPUT error if not)
+   * If not required will use the current block id
+   * If the generated slug is not unique the uuid will be placed
+   * at the end of the slug guaranteeing uniqueness
+   */
+  slug: string | null;
 }
 
 export interface CardCtaRestore_button2Restore_TextResponseBlock {
@@ -2778,7 +2834,7 @@ export interface CardCtaRestore_button2Restore_TypographyBlock {
 }
 
 export interface CardCtaRestore_button2Restore_VideoBlock_video_title {
-  __typename: "Translation";
+  __typename: "VideoTitle";
   value: string;
 }
 
@@ -3171,6 +3227,14 @@ export interface CardCtaRestore_startIcon2Restore_StepBlock {
    * manually set the next block they want to card to navigate to
    */
   nextBlockId: string | null;
+  /**
+   * Slug should be unique amongst all blocks
+   * (server will throw BAD_USER_INPUT error if not)
+   * If not required will use the current block id
+   * If the generated slug is not unique the uuid will be placed
+   * at the end of the slug guaranteeing uniqueness
+   */
+  slug: string | null;
 }
 
 export interface CardCtaRestore_startIcon2Restore_TextResponseBlock {
@@ -3198,7 +3262,7 @@ export interface CardCtaRestore_startIcon2Restore_TypographyBlock {
 }
 
 export interface CardCtaRestore_startIcon2Restore_VideoBlock_video_title {
-  __typename: "Translation";
+  __typename: "VideoTitle";
   value: string;
 }
 
@@ -3591,6 +3655,14 @@ export interface CardCtaRestore_endIcon2Restore_StepBlock {
    * manually set the next block they want to card to navigate to
    */
   nextBlockId: string | null;
+  /**
+   * Slug should be unique amongst all blocks
+   * (server will throw BAD_USER_INPUT error if not)
+   * If not required will use the current block id
+   * If the generated slug is not unique the uuid will be placed
+   * at the end of the slug guaranteeing uniqueness
+   */
+  slug: string | null;
 }
 
 export interface CardCtaRestore_endIcon2Restore_TextResponseBlock {
@@ -3618,7 +3690,7 @@ export interface CardCtaRestore_endIcon2Restore_TypographyBlock {
 }
 
 export interface CardCtaRestore_endIcon2Restore_VideoBlock_video_title {
-  __typename: "Translation";
+  __typename: "VideoTitle";
   value: string;
 }
 
@@ -4011,6 +4083,14 @@ export interface CardCtaRestore_button3Restore_StepBlock {
    * manually set the next block they want to card to navigate to
    */
   nextBlockId: string | null;
+  /**
+   * Slug should be unique amongst all blocks
+   * (server will throw BAD_USER_INPUT error if not)
+   * If not required will use the current block id
+   * If the generated slug is not unique the uuid will be placed
+   * at the end of the slug guaranteeing uniqueness
+   */
+  slug: string | null;
 }
 
 export interface CardCtaRestore_button3Restore_TextResponseBlock {
@@ -4038,7 +4118,7 @@ export interface CardCtaRestore_button3Restore_TypographyBlock {
 }
 
 export interface CardCtaRestore_button3Restore_VideoBlock_video_title {
-  __typename: "Translation";
+  __typename: "VideoTitle";
   value: string;
 }
 
@@ -4431,6 +4511,14 @@ export interface CardCtaRestore_startIcon3Restore_StepBlock {
    * manually set the next block they want to card to navigate to
    */
   nextBlockId: string | null;
+  /**
+   * Slug should be unique amongst all blocks
+   * (server will throw BAD_USER_INPUT error if not)
+   * If not required will use the current block id
+   * If the generated slug is not unique the uuid will be placed
+   * at the end of the slug guaranteeing uniqueness
+   */
+  slug: string | null;
 }
 
 export interface CardCtaRestore_startIcon3Restore_TextResponseBlock {
@@ -4458,7 +4546,7 @@ export interface CardCtaRestore_startIcon3Restore_TypographyBlock {
 }
 
 export interface CardCtaRestore_startIcon3Restore_VideoBlock_video_title {
-  __typename: "Translation";
+  __typename: "VideoTitle";
   value: string;
 }
 
@@ -4851,6 +4939,14 @@ export interface CardCtaRestore_endIcon3Restore_StepBlock {
    * manually set the next block they want to card to navigate to
    */
   nextBlockId: string | null;
+  /**
+   * Slug should be unique amongst all blocks
+   * (server will throw BAD_USER_INPUT error if not)
+   * If not required will use the current block id
+   * If the generated slug is not unique the uuid will be placed
+   * at the end of the slug guaranteeing uniqueness
+   */
+  slug: string | null;
 }
 
 export interface CardCtaRestore_endIcon3Restore_TextResponseBlock {
@@ -4878,7 +4974,7 @@ export interface CardCtaRestore_endIcon3Restore_TypographyBlock {
 }
 
 export interface CardCtaRestore_endIcon3Restore_VideoBlock_video_title {
-  __typename: "Translation";
+  __typename: "VideoTitle";
   value: string;
 }
 

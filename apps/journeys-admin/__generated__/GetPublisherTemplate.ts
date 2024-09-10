@@ -245,6 +245,14 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_StepBlock {
    * manually set the next block they want to card to navigate to
    */
   nextBlockId: string | null;
+  /**
+   * Slug should be unique amongst all blocks
+   * (server will throw BAD_USER_INPUT error if not)
+   * If not required will use the current block id
+   * If the generated slug is not unique the uuid will be placed
+   * at the end of the slug guaranteeing uniqueness
+   */
+  slug: string | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock {
@@ -272,7 +280,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_TypographyBlock {
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_title {
-  __typename: "Translation";
+  __typename: "VideoTitle";
   value: string;
 }
 
@@ -524,7 +532,7 @@ export interface GetPublisherTemplate_publisherTemplate_tags_name_language {
 }
 
 export interface GetPublisherTemplate_publisherTemplate_tags_name {
-  __typename: "Translation";
+  __typename: "TagName";
   value: string;
   language: GetPublisherTemplate_publisherTemplate_tags_name_language;
   primary: boolean;
@@ -541,6 +549,9 @@ export interface GetPublisherTemplate_publisherTemplate {
   __typename: "Journey";
   id: string;
   slug: string;
+  /**
+   * private title for creators
+   */
   title: string;
   description: string | null;
   status: JourneyStatus;
@@ -551,6 +562,9 @@ export interface GetPublisherTemplate_publisherTemplate {
   themeName: ThemeName;
   themeMode: ThemeMode;
   strategySlug: string | null;
+  /**
+   * title for seo and sharing
+   */
   seoTitle: string | null;
   seoDescription: string | null;
   template: boolean | null;
@@ -563,6 +577,14 @@ export interface GetPublisherTemplate_publisherTemplate {
   host: GetPublisherTemplate_publisherTemplate_host | null;
   team: GetPublisherTemplate_publisherTemplate_team | null;
   tags: GetPublisherTemplate_publisherTemplate_tags[];
+  website: boolean | null;
+  showShareButton: boolean | null;
+  showLikeButton: boolean | null;
+  showDislikeButton: boolean | null;
+  /**
+   * public title for viewers
+   */
+  displayTitle: string | null;
 }
 
 export interface GetPublisherTemplate {

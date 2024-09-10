@@ -462,9 +462,14 @@ export class JourneyResolver {
       orderBy: { parentOrder: 'asc' },
       include: { action: true }
     })
+    let duplicateMenuStepBlockId: string | undefined
     const duplicateStepIds = new Map<string, string>()
     originalBlocks.forEach((block) => {
-      duplicateStepIds.set(block.id, uuidv4())
+      const duplicateBlockId = uuidv4()
+      if (journey.menuStepBlockId === block.id) {
+        duplicateMenuStepBlockId = duplicateBlockId
+      }
+      duplicateStepIds.set(block.id, duplicateBlockId)
     })
     const duplicateBlocks = await this.blockService.getDuplicateChildren(
       originalBlocks,
@@ -490,6 +495,23 @@ export class JourneyResolver {
         }
 
         duplicateBlocks.push(duplicatePrimaryImageBlock)
+      }
+    }
+
+    let duplicateLogoImageBlock: BlockWithAction | undefined
+    if (journey.logoImageBlockId != null) {
+      const logoImageBlock = await this.prismaService.block.findUnique({
+        where: { id: journey.logoImageBlockId },
+        include: { action: true }
+      })
+      if (logoImageBlock != null) {
+        const id = uuidv4()
+        duplicateLogoImageBlock = {
+          ...omit(logoImageBlock, ['id']),
+          id
+        }
+
+        duplicateBlocks.push(duplicateLogoImageBlock)
       }
     }
 
@@ -540,7 +562,9 @@ export class JourneyResolver {
                   'teamId',
                   'createdAt',
                   'strategySlug',
-                  'journeyTags'
+                  'journeyTags',
+                  'logoImageBlockId',
+                  'menuStepBlockId'
                 ]),
                 id: duplicateJourneyId,
                 slug,
@@ -633,6 +657,18 @@ export class JourneyResolver {
           await this.prismaService.journey.update({
             where: { id: duplicateJourneyId },
             data: { primaryImageBlockId: duplicatePrimaryImageBlock.id }
+          })
+        }
+        if (duplicateLogoImageBlock != null) {
+          await this.prismaService.journey.update({
+            where: { id: duplicateJourneyId },
+            data: { logoImageBlockId: duplicateLogoImageBlock.id }
+          })
+        }
+        if (duplicateMenuStepBlockId != null) {
+          await this.prismaService.journey.update({
+            where: { id: duplicateJourneyId },
+            data: { menuStepBlockId: duplicateMenuStepBlockId }
           })
         }
         retry = false
@@ -919,6 +955,9 @@ export class JourneyResolver {
     if (journey.creatorImageBlockId != null) {
       idNotIn.push(journey.creatorImageBlockId)
     }
+    if (journey.logoImageBlockId != null) {
+      idNotIn.push(journey.logoImageBlockId)
+    }
     if (idNotIn.length > 0) {
       filter.id = { notIn: idNotIn }
     }
@@ -970,6 +1009,28 @@ export class JourneyResolver {
     if (journey.creatorImageBlockId == null) return null
     const block = await this.prismaService.block.findUnique({
       where: { id: journey.creatorImageBlockId },
+      include: { action: true }
+    })
+    if (block?.journeyId !== journey.id) return null
+    return block
+  }
+
+  @ResolveField()
+  async logoImageBlock(@Parent() journey: Journey): Promise<Block | null> {
+    if (journey.logoImageBlockId == null) return null
+    const block = await this.prismaService.block.findUnique({
+      where: { id: journey.logoImageBlockId },
+      include: { action: true }
+    })
+    if (block?.journeyId !== journey.id) return null
+    return block
+  }
+
+  @ResolveField()
+  async menuStepBlock(@Parent() journey: Journey): Promise<Block | null> {
+    if (journey.menuStepBlockId == null) return null
+    const block = await this.prismaService.block.findUnique({
+      where: { id: journey.menuStepBlockId },
       include: { action: true }
     })
     if (block?.journeyId !== journey.id) return null

@@ -73,9 +73,7 @@ describe('DownloadDialog', () => {
 
     const downloadButton = getByRole('button', { name: 'Download' })
 
-    fireEvent.mouseDown(
-      getByRole('button', { name: 'Select a file size Low (197.69 MB)' })
-    )
+    fireEvent.mouseDown(getByRole('combobox'))
     fireEvent.click(getByRole('option', { name: 'High (2.2 GB)' }), {
       name: 'High'
     })

@@ -341,6 +341,17 @@ enum ThemeName {
   base
 }
 
+enum JourneyMenuButtonIcon {
+  menu1
+  equals
+  home3
+  home4
+  more
+  ellipsis
+  grid1
+  chevronDown
+}
+
 model Journey {
   id                        String                      @id @default(uuid())
   title                     String
@@ -380,6 +391,22 @@ model Journey {
   journeyVisitors           JourneyVisitor[]
   journeyCollectionJourneys JourneyCollectionJourneys[]
   journeyNotifications      JourneyNotification[]
+  website                   Boolean?                    @default(false)
+  showShareButton           Boolean?                    @default(true)
+  showLikeButton            Boolean?                    @default(true)
+  showDislikeButton         Boolean?                    @default(true)
+  displayTitle              String?
+  showHosts                 Boolean?                    @default(true)
+  showChatButtons           Boolean?                    @default(true)
+  showReactionButtons       Boolean?                    @default(true)
+  showLogo                  Boolean?                    @default(false)
+  showMenu                  Boolean?                    @default(false)
+  showDisplayTitle          Boolean?                    @default(true)
+  logoImageBlockId          String?                     @unique
+  logoImageBlock            Block?                      @relation("LogoImageBlock", fields: [logoImageBlockId], references: [id], onDelete: SetNull)
+  menuStepBlockId           String?                     @unique
+  menuStepBlock             Block?                      @relation("MenuStepBlock", fields: [menuStepBlockId], references: [id], onDelete: SetNull)
+  menuButtonIcon            JourneyMenuButtonIcon?
 
   @@index(title)
 }
@@ -503,7 +530,12 @@ model Block {
   parentBlock             Block?               @relation("ParentBlock", fields: [parentBlockId], references: [id], onDelete: Cascade)
   childBlocks             Block[]              @relation("ParentBlock")
   targetActions           Action[]             @relation("Block")
+  scale                   Int?
+  menuStepBlockParent     Journey?             @relation("MenuStepBlock")
+  logoImageBlockParent    Journey?             @relation("LogoImageBlock")
+  slug                    String?
 
+  @@unique([slug, journeyId])
   @@index(journeyId)
   @@index(parentOrder(sort: Asc))
   @@index(typename)

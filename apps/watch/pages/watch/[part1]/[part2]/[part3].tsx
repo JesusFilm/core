@@ -13,6 +13,7 @@ import { VideoContentPage } from '../../../../src/components/VideoContentPage'
 import { createApolloClient } from '../../../../src/libs/apolloClient'
 import { getFlags } from '../../../../src/libs/getFlags'
 import { LanguageProvider } from '../../../../src/libs/languageContext/LanguageContext'
+import { slugMap } from '../../../../src/libs/slugMap'
 import { VIDEO_CONTENT_FIELDS } from '../../../../src/libs/videoContentFields'
 import { VideoProvider } from '../../../../src/libs/videoContext'
 
@@ -78,7 +79,7 @@ export const getStaticProps: GetStaticProps<Part3PageProps> = async (
     containerIdExtension !== 'html' ||
     contentIdExtension !== undefined ||
     languageIdExtension !== 'html'
-  ) {
+  )
     return {
       redirect: {
         permanent: false,
@@ -87,7 +88,16 @@ export const getStaticProps: GetStaticProps<Part3PageProps> = async (
         )}/${languageId}.html`
       }
     }
-  }
+
+  if (slugMap[languageId] != null)
+    return {
+      redirect: {
+        permanent: false,
+        destination: `/watch/${containerId}.html/${encodeURIComponent(
+          contentId
+        )}/${slugMap[languageId]}.html`
+      }
+    }
 
   const client = createApolloClient()
   try {

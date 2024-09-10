@@ -355,8 +355,12 @@ type Journey
   blocks: [Block!]
   primaryImageBlock: ImageBlock
   creatorImageBlock: ImageBlock
+  logoImageBlock: ImageBlock
+  menuStepBlock: StepBlock
   chatButtons: [ChatButton!]!
   id: ID!
+
+  """private title for creators"""
   title: String!
   language: Language!
   themeMode: ThemeMode!
@@ -371,6 +375,8 @@ type Journey
   featuredAt: DateTime
   createdAt: DateTime!
   status: JourneyStatus!
+
+  """title for seo and sharing"""
   seoTitle: String
   seoDescription: String
   template: Boolean
@@ -382,6 +388,20 @@ type Journey
 
   """used in a plausible share link to embed report"""
   plausibleToken: String
+  website: Boolean
+  showShareButton: Boolean
+  showLikeButton: Boolean
+  showDislikeButton: Boolean
+
+  """public title for viewers"""
+  displayTitle: String
+  showHosts: Boolean
+  showChatButtons: Boolean
+  showReactionButtons: Boolean
+  showLogo: Boolean
+  showMenu: Boolean
+  showDisplayTitle: Boolean
+  menuButtonIcon: JourneyMenuButtonIcon
   userJourneys: [UserJourney!]
 }
 
@@ -774,6 +794,7 @@ type ImageBlock implements Block {
   Find a frontend implementation at https://github.com/woltapp/blurhash
   """
   blurhash: String!
+  scale: Int
 }
 
 input ImageBlockCreateInput {
@@ -797,6 +818,7 @@ input ImageBlockCreateInput {
   True if the coverBlockId in a parent block should be set to this block's id.
   """
   isCover: Boolean
+  scale: Int
 }
 
 input ImageBlockUpdateInput {
@@ -810,6 +832,7 @@ input ImageBlockUpdateInput {
   blurhash: String
   width: Int
   height: Int
+  scale: Int
 }
 
 type RadioOptionBlock implements Block {
@@ -898,6 +921,15 @@ type StepBlock implements Block {
   the editor.
   """
   y: Int
+
+  """
+  Slug should be unique amongst all blocks
+  (server will throw BAD_USER_INPUT error if not)
+  If not required will use the current block id
+  If the generated slug is not unique the uuid will be placed
+  at the end of the slug guaranteeing uniqueness
+  """
+  slug: String
 }
 
 input StepBlockCreateInput {
@@ -934,6 +966,15 @@ input StepBlockUpdateInput {
   the editor.
   """
   y: Int
+
+  """
+  Slug should be unique amongst all blocks
+  (server will throw BAD_USER_INPUT error if not)
+  If not required will use the current block id
+  If the generated slug is not unique the uuid will be placed
+  at the end of the slug guaranteeing uniqueness
+  """
+  slug: String
 }
 
 input StepBlockPositionUpdateInput {
@@ -2095,6 +2136,17 @@ extend type Tag
   id: ID! @external
 }
 
+enum JourneyMenuButtonIcon {
+  menu1
+  equals
+  home3
+  home4
+  more
+  ellipsis
+  grid1
+  chevronDown
+}
+
 enum IdType {
   databaseId
   slug
@@ -2195,6 +2247,20 @@ input JourneyUpdateInput {
   hostId: String
   strategySlug: String
   tagIds: [ID!]
+  website: Boolean
+  showShareButton: Boolean
+  showLikeButton: Boolean
+  showDislikeButton: Boolean
+  displayTitle: String
+  showHosts: Boolean
+  showChatButtons: Boolean
+  showReactionButtons: Boolean
+  showLogo: Boolean
+  showMenu: Boolean
+  showDisplayTitle: Boolean
+  menuButtonIcon: JourneyMenuButtonIcon
+  menuStepBlockId: ID
+  logoImageBlockId: ID
 }
 
 type UserJourney

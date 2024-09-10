@@ -26,6 +26,12 @@
       }
     },
     "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "nx _serve api-languages | npx pino-pretty --config .pino-prettyrc.js"
+      }
+    },
+    "_serve": {
       "executor": "@nx/js:node",
       "options": {
         "buildTarget": "api-languages:build",
@@ -108,6 +114,12 @@
         ]
       }
     },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx tsc -b apps/api-languages/tsconfig.json"
+      }
+    },
     "codecov": {
       "executor": "nx:run-commands",
       "options": {
@@ -117,7 +129,7 @@
     "ingest": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npm run ts-node apps/api-languages/src/bigquery/console.ts"
+        "command": "npm run ts-node apps/api-languages/src/workers/cli.ts big-query"
       }
     },
     "codegen": {

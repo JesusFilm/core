@@ -267,6 +267,7 @@ describe('CardWrapper', () => {
       parentOrder: 0,
       locked: false,
       nextBlockId: null,
+      slug: null,
       children: [card]
     }
     const { queryByRole } = render(
@@ -307,6 +308,7 @@ describe('CardWrapper', () => {
         parentOrder: 0,
         locked: false,
         nextBlockId: null,
+        slug: null,
         children: [card]
       }
       const { getByRole, getByText } = render(
@@ -355,6 +357,7 @@ describe('CardWrapper', () => {
         parentOrder: 0,
         locked: false,
         nextBlockId: null,
+        slug: null,
         children: [card]
       }
       const { queryByRole } = render(

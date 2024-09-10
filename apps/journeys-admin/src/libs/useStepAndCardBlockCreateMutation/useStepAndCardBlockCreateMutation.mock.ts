@@ -40,7 +40,8 @@ export const stepAndCardBlockCreateMock: MockedResponse<
         locked: false,
         nextBlockId: null,
         x: -200,
-        y: 38
+        y: 38,
+        slug: null
       },
       cardBlockCreate: {
         __typename: 'CardBlock',

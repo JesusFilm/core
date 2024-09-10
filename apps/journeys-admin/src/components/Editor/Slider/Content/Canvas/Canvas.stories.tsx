@@ -46,6 +46,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
     parentOrder: 0,
     locked: false,
     nextBlockId: 'step1.id',
+    slug: null,
     children: [
       {
         id: 'card0.id',
@@ -134,6 +135,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
     parentOrder: 1,
     locked: false,
     nextBlockId: 'step2.id',
+    slug: null,
     children: [
       {
         id: 'card1.id',
@@ -221,6 +223,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
     parentOrder: 2,
     locked: false,
     nextBlockId: 'step3.id',
+    slug: null,
     children: [
       {
         id: 'card2.id',
@@ -317,6 +320,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
     parentOrder: 3,
     locked: false,
     nextBlockId: 'step4.id',
+    slug: null,
     children: [
       {
         id: 'card3.id',
@@ -399,6 +403,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
     parentOrder: 4,
     locked: false,
     nextBlockId: null,
+    slug: null,
     children: [
       {
         id: 'card4.id',
@@ -431,7 +436,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
               id: '2_0-FallingPlates',
               title: [
                 {
-                  __typename: 'Translation',
+                  __typename: 'VideoTitle',
                   value: 'FallingPlates'
                 }
               ],
@@ -462,6 +467,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
     parentOrder: 5,
     locked: false,
     nextBlockId: null,
+    slug: null,
     children: [
       {
         id: 'card5.id',
@@ -507,6 +513,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
     parentOrder: 6,
     locked: false,
     nextBlockId: null,
+    slug: null,
     children: [
       {
         id: 'card6.id',

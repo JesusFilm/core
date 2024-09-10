@@ -231,6 +231,14 @@ export interface CardFormRestore_image_StepBlock {
    * manually set the next block they want to card to navigate to
    */
   nextBlockId: string | null;
+  /**
+   * Slug should be unique amongst all blocks
+   * (server will throw BAD_USER_INPUT error if not)
+   * If not required will use the current block id
+   * If the generated slug is not unique the uuid will be placed
+   * at the end of the slug guaranteeing uniqueness
+   */
+  slug: string | null;
 }
 
 export interface CardFormRestore_image_TextResponseBlock {
@@ -258,7 +266,7 @@ export interface CardFormRestore_image_TypographyBlock {
 }
 
 export interface CardFormRestore_image_VideoBlock_video_title {
-  __typename: "Translation";
+  __typename: "VideoTitle";
   value: string;
 }
 
@@ -651,6 +659,14 @@ export interface CardFormRestore_subtitle_StepBlock {
    * manually set the next block they want to card to navigate to
    */
   nextBlockId: string | null;
+  /**
+   * Slug should be unique amongst all blocks
+   * (server will throw BAD_USER_INPUT error if not)
+   * If not required will use the current block id
+   * If the generated slug is not unique the uuid will be placed
+   * at the end of the slug guaranteeing uniqueness
+   */
+  slug: string | null;
 }
 
 export interface CardFormRestore_subtitle_TextResponseBlock {
@@ -678,7 +694,7 @@ export interface CardFormRestore_subtitle_TypographyBlock {
 }
 
 export interface CardFormRestore_subtitle_VideoBlock_video_title {
-  __typename: "Translation";
+  __typename: "VideoTitle";
   value: string;
 }
 
@@ -1071,6 +1087,14 @@ export interface CardFormRestore_title_StepBlock {
    * manually set the next block they want to card to navigate to
    */
   nextBlockId: string | null;
+  /**
+   * Slug should be unique amongst all blocks
+   * (server will throw BAD_USER_INPUT error if not)
+   * If not required will use the current block id
+   * If the generated slug is not unique the uuid will be placed
+   * at the end of the slug guaranteeing uniqueness
+   */
+  slug: string | null;
 }
 
 export interface CardFormRestore_title_TextResponseBlock {
@@ -1098,7 +1122,7 @@ export interface CardFormRestore_title_TypographyBlock {
 }
 
 export interface CardFormRestore_title_VideoBlock_video_title {
-  __typename: "Translation";
+  __typename: "VideoTitle";
   value: string;
 }
 
@@ -1491,6 +1515,14 @@ export interface CardFormRestore_textResponse_StepBlock {
    * manually set the next block they want to card to navigate to
    */
   nextBlockId: string | null;
+  /**
+   * Slug should be unique amongst all blocks
+   * (server will throw BAD_USER_INPUT error if not)
+   * If not required will use the current block id
+   * If the generated slug is not unique the uuid will be placed
+   * at the end of the slug guaranteeing uniqueness
+   */
+  slug: string | null;
 }
 
 export interface CardFormRestore_textResponse_TextResponseBlock {
@@ -1518,7 +1550,7 @@ export interface CardFormRestore_textResponse_TypographyBlock {
 }
 
 export interface CardFormRestore_textResponse_VideoBlock_video_title {
-  __typename: "Translation";
+  __typename: "VideoTitle";
   value: string;
 }
 
@@ -1911,6 +1943,14 @@ export interface CardFormRestore_body_StepBlock {
    * manually set the next block they want to card to navigate to
    */
   nextBlockId: string | null;
+  /**
+   * Slug should be unique amongst all blocks
+   * (server will throw BAD_USER_INPUT error if not)
+   * If not required will use the current block id
+   * If the generated slug is not unique the uuid will be placed
+   * at the end of the slug guaranteeing uniqueness
+   */
+  slug: string | null;
 }
 
 export interface CardFormRestore_body_TextResponseBlock {
@@ -1938,7 +1978,7 @@ export interface CardFormRestore_body_TypographyBlock {
 }
 
 export interface CardFormRestore_body_VideoBlock_video_title {
-  __typename: "Translation";
+  __typename: "VideoTitle";
   value: string;
 }
 

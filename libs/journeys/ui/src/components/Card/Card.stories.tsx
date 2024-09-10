@@ -120,7 +120,7 @@ const video: TreeBlock<VideoFields> = {
     id: '2_0-FallingPlates',
     title: [
       {
-        __typename: 'Translation',
+        __typename: 'VideoTitle',
         value: 'FallingPlates'
       }
     ],

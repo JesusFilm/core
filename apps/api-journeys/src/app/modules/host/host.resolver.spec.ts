@@ -244,7 +244,21 @@ describe('HostResolver', () => {
       strategySlug: null,
       creatorDescription: null,
       creatorImageBlockId: null,
-      plausibleToken: null
+      plausibleToken: null,
+      website: null,
+      showShareButton: null,
+      showLikeButton: null,
+      showDislikeButton: null,
+      displayTitle: null,
+      showHosts: null,
+      showChatButtons: null,
+      showReactionButtons: null,
+      showLogo: null,
+      showMenu: null,
+      showDisplayTitle: null,
+      menuButtonIcon: null,
+      logoImageBlockId: null,
+      menuStepBlockId: null
     }
 
     it('deletes an existing host', async () => {
