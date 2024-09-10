@@ -44,7 +44,9 @@ describe('segmind', () => {
         userId: 'testUserId',
         uploadUrl: null,
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
+        aspectRatio: null,
+        videoId: null
       })
       const result = await client({
         document: CREATE_IMAGE_BY_SEGMIND_PROMPT_MUTATION,
