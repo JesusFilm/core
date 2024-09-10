@@ -164,7 +164,7 @@ export function SearchBarProvider({
 export function useSearchBar(): SearchBarContextType {
   const context = useContext(SearchBarContext)
   if (context === undefined) {
-    throw new Error('useSearchBar must be used within a SearchbarProvider')
+    throw new Error('useSearchBar must be used within a SearchBarProvider')
   }
   return context
 }
