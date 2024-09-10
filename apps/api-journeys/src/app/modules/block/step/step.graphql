@@ -93,3 +93,7 @@ extend type Mutation {
     input: [StepBlockPositionUpdateInput!]!
   ): [StepBlock!]!
 }
+
+extend type Journey {
+  menuStepBlock: StepBlock
+}
