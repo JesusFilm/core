@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { STEP_VIEW_EVENT_CREATE } from '@core/journeys/ui/Step/Step'
 import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
 
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
@@ -14,6 +15,10 @@ import {
   JourneyViewEventCreateVariables
 } from '../../../__generated__/JourneyViewEventCreate'
 import { StepFields } from '../../../__generated__/StepFields'
+import {
+  StepViewEventCreate,
+  StepViewEventCreateVariables
+} from '../../../__generated__/StepViewEventCreate'
 import {
   VisitorUpdateForCurrentUser,
   VisitorUpdateForCurrentUserVariables
@@ -135,12 +140,46 @@ describe('WebView', () => {
 
   it('should create analytics event', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
+    mockUuidv4.mockReturnValueOnce('stepId')
+
+    const mockStepViewEventCreate: MockedResponse<
+      StepViewEventCreate,
+      StepViewEventCreateVariables
+    > = {
+      request: {
+        query: STEP_VIEW_EVENT_CREATE,
+        variables: {
+          input: {
+            id: 'stepId',
+            blockId: 'step1.id',
+            value: 'Step 1'
+          }
+        }
+      },
+      result: {
+        data: {
+          stepViewEventCreate: {
+            id: 'stepId',
+            __typename: 'StepViewEvent'
+          }
+        }
+      }
+    }
 
     render(
-      <MockedProvider mocks={[visitorUpdateMock, journeyViewEventMock]}>
+      <MockedProvider
+        mocks={[
+          visitorUpdateMock,
+          journeyViewEventMock,
+          mockStepViewEventCreate
+        ]}
+      >
         <JourneyProvider value={{ journey, variant: 'default' }}>
           <SnackbarProvider>
-            <WebView stepBlock={basic[0] as TreeBlock<StepFields>} />
+            <WebView
+              blocks={basic}
+              stepBlock={basic[0] as TreeBlock<StepFields>}
+            />
           </SnackbarProvider>
         </JourneyProvider>
       </MockedProvider>
@@ -163,7 +202,10 @@ describe('WebView', () => {
       <MockedProvider mocks={[]}>
         <JourneyProvider value={{ journey }}>
           <SnackbarProvider>
-            <WebView stepBlock={basic[0] as TreeBlock<StepFields>} />
+            <WebView
+              blocks={basic}
+              stepBlock={basic[0] as TreeBlock<StepFields>}
+            />
           </SnackbarProvider>
         </JourneyProvider>
       </MockedProvider>

@@ -8,6 +8,7 @@ import { isIPhone } from '@core/shared/ui/deviceUtils'
 
 import { handleAction } from '../../libs/action'
 import { type TreeBlock, useBlocks } from '../../libs/block'
+import { getNextStepSlug } from '../../libs/getNextStepSlug'
 import { useJourney } from '../../libs/JourneyProvider'
 import { JourneyPlausibleEvents, keyify } from '../../libs/plausibleHelpers'
 
@@ -69,21 +70,22 @@ export function VideoTrigger({
             }
           }
 
+          const nextStepSlug = getNextStepSlug(journey, triggerAction)
           if (variant === 'embed' && !isIPhone()) {
-            handleAction(router, triggerAction)
+            handleAction(router, triggerAction, nextStepSlug)
             plausible('videoTrigger', input)
             return
           }
           if (player.isFullscreen() ?? false) {
             void player.exitFullscreen().then(() => {
-              handleAction(router, triggerAction)
+              handleAction(router, triggerAction, nextStepSlug)
               plausible('videoTrigger', input)
             })
           } else {
             if (fscreen.fullscreenElement != null) {
               void fscreen.exitFullscreen()
             }
-            handleAction(router, triggerAction)
+            handleAction(router, triggerAction, nextStepSlug)
             plausible('videoTrigger', input)
           }
         }
@@ -100,7 +102,7 @@ export function VideoTrigger({
     variant,
     blockId,
     plausible,
-    journey?.id,
+    journey,
     activeBlock?.id
   ])
 
