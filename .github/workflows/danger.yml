@@ -18,6 +18,10 @@ on:
 jobs:
   danger:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      repository-projects: write
     strategy:
       matrix:
         node-version: [20]
