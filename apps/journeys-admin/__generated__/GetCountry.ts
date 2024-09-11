@@ -9,6 +9,7 @@
 
 export interface GetCountry_country_countryLanguages_language_name {
   __typename: "LanguageName";
+  primary: boolean;
   value: string;
 }
 

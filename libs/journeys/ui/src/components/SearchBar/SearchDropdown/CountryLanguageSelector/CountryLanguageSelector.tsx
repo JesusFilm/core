@@ -33,7 +33,7 @@ export function CountryLanguageSelector({
     return orderBy(countryLanguages, ['speakers'], ['desc'])
       .map(({ language }) => {
         const localName = language.name.find(
-          ({ primary }) => primary !== true
+          ({ primary }) => !primary
         )?.value
         const nativeName = language.name.find(({ primary }) => primary)?.value
         return localName ?? nativeName ?? ''
