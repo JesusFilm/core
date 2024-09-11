@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import Stack from '@mui/material/Stack'
-import { styled, useTheme } from '@mui/material/styles'
+import Grid from '@mui/material/Grid2'
+import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { useTranslation } from 'next-i18next'
@@ -31,7 +31,6 @@ export function RefinementGroups({
   languages
 }: RefinementGroupsProps): ReactElement {
   const { t } = useTranslation('apps-watch')
-  const theme = useTheme()
 
   const { canToggleShowMore, isShowingMore, toggleShowMore } = refinements
   const shouldFade = canToggleShowMore && !isShowingMore
@@ -40,13 +39,12 @@ export function RefinementGroups({
     <>
       {refinements.items.length > 0 ? (
         <>
-          <Stack
+          <Grid
+            container
+            spacing={1}
+            columns={{ xs: 1, lg: 6 }}
             direction={{ xs: 'column', lg: 'row' }}
-            justifyContent="space-between"
             sx={{
-              [theme.breakpoints.down('lg')]: {
-                gap: 6
-              },
               '-webkit-mask-image': shouldFade
                 ? {
                     xs: 'linear-gradient(to bottom, black 85%, transparent 100%)',
@@ -67,20 +65,21 @@ export function RefinementGroups({
                   continentLanguages.some((language) => language === item.label)
                 )
                 return items.length > 0 ? (
-                  <RefinementGroup
-                    key={continent}
-                    title={continent}
-                    refinement={{
-                      ...refinements,
-                      items
-                    }}
-                  />
+                  <Grid key={continent} size={1}>
+                    <RefinementGroup
+                      title={continent}
+                      refinement={{
+                        ...refinements,
+                        items
+                      }}
+                    />
+                  </Grid>
                 ) : (
                   <></>
                 )
               }
             )}
-          </Stack>
+          </Grid>
           {canToggleShowMore && (
             <Box display="flex" flexDirection="column" alignItems="center">
               <StyledButton
