@@ -1,14 +1,11 @@
 import Chip from '@mui/material/Chip'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import {
-  RefinementListItem,
-  RefinementListRenderState
-} from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
-import orderBy from 'lodash/orderBy'
+import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import Image from 'next/image'
 import { ReactElement, useEffect, useState } from 'react'
 
+import { getTopSpokenLanguages } from '../../../../libs/algolia/getTopSpokenLanguages'
 import { useSearchBar } from '../../../../libs/algolia/SearchBarProvider'
 import { useCountryQuery } from '../../../../libs/useCountryQuery'
 
@@ -26,25 +23,10 @@ export function CountryLanguageSelector({
   const { data } = useCountryQuery({ countryId: countryCode ?? '' })
   const { dispatch } = useSearchBar()
 
-  function getTopSpokenLanguages(
-    availableLanguages: RefinementListItem[]
-  ): string[] {
-    const availableLanguageSet = new Set(
-      availableLanguages.map((lang) => lang.value)
-    )
-    const countryLanguages = data?.country?.countryLanguages ?? []
-    return orderBy(countryLanguages, ['speakers'], ['desc'])
-      .map(({ language }) => {
-        const localName = language.name.find(({ primary }) => !primary)?.value
-        const nativeName = language.name.find(({ primary }) => primary)?.value
-        return localName ?? nativeName ?? ''
-      })
-      .filter(Boolean)
-      .filter((language) => availableLanguageSet.has(language))
-      .slice(0, 4)
-  }
-
-  const spokenLanguages = getTopSpokenLanguages(items)
+  const spokenLanguages = getTopSpokenLanguages({
+    country: data?.country,
+    availableLanguages: items
+  })
 
   function getCountryName(countryCode: string): string {
     try {
