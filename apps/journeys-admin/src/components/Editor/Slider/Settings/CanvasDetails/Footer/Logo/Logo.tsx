@@ -3,7 +3,6 @@ import Box from '@mui/material/Box'
 import Slider from '@mui/material/Slider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import pick from 'lodash/pick'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
@@ -148,7 +147,10 @@ export function Logo(): ReactElement {
         void imageBlockUpdate({
           variables: {
             id: imageBlock.id,
-            input: pick(block, Object.keys(input))
+            input: {
+              scale: block.scale,
+              src: block.src
+            }
           },
           optimisticResponse: {
             imageBlockUpdate: block
@@ -166,11 +168,9 @@ export function Logo(): ReactElement {
       updateImageBlock(input)
     }
   }
-
   async function deleteImageBlock(): Promise<void> {
     await updateImageBlock({ src: null, alt: '' })
   }
-
   function handleImageScaleChange(_, value: number): void {
     setCurrentScale(value)
   }
