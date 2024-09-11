@@ -9,7 +9,7 @@ describe('useCountryQuery', () => {
   it('should get country based on countryId', async () => {
     const result = jest.fn().mockReturnValue(getCountryMock.result)
 
-    renderHook(() => useCountryQuery({ countryId: 'country.id' }), {
+    renderHook(() => useCountryQuery({ countryId: 'US' }), {
       wrapper: ({ children }) => (
         <MockedProvider mocks={[{ ...getCountryMock, result }]}>
           {children}
