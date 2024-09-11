@@ -50,7 +50,14 @@ export function WebsiteToggle(): ReactElement {
       sx={{
         p: 4,
         '& .MuiToggleButton-root': {
-          borderRadius: '8px',
+          '&:first-of-type': {
+            borderTopLeftRadius: 8,
+            borderBottomLeftRadius: 8
+          },
+          '&:last-of-type': {
+            borderTopRightRadius: 8,
+            borderBottomRightRadius: 8
+          },
           '&.Mui-selected': {
             color: 'primary.main'
           }
