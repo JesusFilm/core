@@ -45,7 +45,7 @@ export function CountryLanguageSelector({
 
   function getCountryName(countryCode: string): string {
     try {
-      // set to 'en' as Watch only supports English
+      // set to 'en' as Watch is only translated to English
       const displayNames = new Intl.DisplayNames(['en'], { type: 'region' })
       return displayNames.of(countryCode) ?? countryCode
     } catch (error) {
