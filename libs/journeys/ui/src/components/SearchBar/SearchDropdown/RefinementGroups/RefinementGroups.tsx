@@ -1,21 +1,29 @@
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid2'
-import { styled } from '@mui/material/styles'
+import Stack from '@mui/material/Stack'
+import { styled, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
+import { useClearRefinements } from 'react-instantsearch'
 
 import ChevronDown from '@core/shared/ui/icons/ChevronDown'
 import ChevronUp from '@core/shared/ui/icons/ChevronUp'
+import X1 from '@core/shared/ui/icons/X1'
 
 import { RefinementGroup } from './RefinementGroup'
 
 const StyledButton = styled(Button)(({ theme }) => ({
   borderRadius: 32,
   gap: 0,
-  padding: '8px 20px 8px 20px',
+  [theme.breakpoints.up('md')]: {
+    padding: `${theme.spacing(2)} ${theme.spacing(5)}`
+  },
+  [theme.breakpoints.down('md')]: {
+    padding: `${theme.spacing(1)} ${theme.spacing(2)}`
+  },
   border: `2px solid ${theme.palette.primary.main}`,
   color: theme.palette.primary.main,
   backgroundColor: theme.palette.background.paper
@@ -31,6 +39,10 @@ export function RefinementGroups({
   languages
 }: RefinementGroupsProps): ReactElement {
   const { t } = useTranslation('apps-watch')
+  const theme = useTheme()
+
+  const { refine: clearRefinements, canRefine: canClearRefinements } =
+    useClearRefinements()
 
   const languageEntries = Object.entries(languages)
 
@@ -82,18 +94,34 @@ export function RefinementGroups({
               )
             })}
           </Grid>
-          {canToggleShowMore && (
-            <Box display="flex" flexDirection="column" alignItems="center">
-              <StyledButton
-                size="small"
-                onClick={toggleShowMore}
-                disabled={!canToggleShowMore}
-                endIcon={isShowingMore ? <ChevronUp /> : <ChevronDown />}
-              >
-                {t(isShowingMore ? 'See Less' : 'See All')}
-              </StyledButton>
-            </Box>
-          )}
+          <Box sx={{ justifyContent: 'center', display: 'flex' }}>
+            <Stack direction="row" spacing={3}>
+              {canToggleShowMore && (
+                <StyledButton
+                  size="small"
+                  onClick={toggleShowMore}
+                  disabled={!canToggleShowMore}
+                  endIcon={isShowingMore ? <ChevronUp /> : <ChevronDown />}
+                >
+                  {t(isShowingMore ? 'See Less' : 'See All')}
+                </StyledButton>
+              )}
+              {canClearRefinements && (
+                <StyledButton
+                  size="small"
+                  onClick={clearRefinements}
+                  disabled={!canClearRefinements}
+                  endIcon={<X1 />}
+                  sx={{
+                    border: `2px solid ${theme.palette.secondary.main}`,
+                    color: theme.palette.secondary.main
+                  }}
+                >
+                  {t('Clear All')}
+                </StyledButton>
+              )}
+            </Stack>
+          </Box>
         </>
       ) : (
         <>
