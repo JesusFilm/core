@@ -1,4 +1,4 @@
-import { fireEvent } from '@storybook/testing-library'
+import { fireEvent } from '@storybook/test'
 import { render } from '@testing-library/react'
 
 import { CollectionButton } from '.'
