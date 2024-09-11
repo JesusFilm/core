@@ -92,7 +92,16 @@ describe('JourneyResolver', () => {
     showShareButton: null,
     showLikeButton: null,
     showDislikeButton: null,
-    displayTitle: null
+    displayTitle: null,
+    showHosts: null,
+    showChatButtons: null,
+    showReactionButtons: null,
+    showLogo: null,
+    showMenu: null,
+    showDisplayTitle: null,
+    menuButtonIcon: null,
+    logoImageBlockId: null,
+    menuStepBlockId: null
   }
   const journeyWithUserTeam = {
     ...journey,
@@ -1116,6 +1125,28 @@ describe('JourneyResolver', () => {
       journeyId: 'duplicateJourneyId'
     }
 
+    const logoImage = {
+      ...primaryImage,
+      id: 'logoImageBlockId'
+    }
+
+    const duplicatedLogoImage = {
+      ...logoImage,
+      id: 'duplicatedLogoImageId',
+      journeyId: 'duplicateJourneyId'
+    }
+
+    const menuStep: Block & { action: Action | null } = {
+      ...step,
+      id: 'menuStepBlockId'
+    }
+
+    const duplicatedMenuStep = {
+      ...menuStep,
+      id: 'duplicatedMenuStepBlockId',
+      journeyId: 'duplicateJourneyId'
+    }
+
     beforeEach(() => {
       mockUuidv4.mockReturnValueOnce('duplicateJourneyId')
       prismaService.journey.findUnique
@@ -1159,7 +1190,9 @@ describe('JourneyResolver', () => {
             'publishedAt',
             'teamId',
             'createdAt',
-            'strategySlug'
+            'strategySlug',
+            'logoImageBlockId',
+            'menuStepBlockId'
           ]),
           id: 'duplicateJourneyId',
           status: JourneyStatus.published,
@@ -1223,7 +1256,9 @@ describe('JourneyResolver', () => {
           'publishedAt',
           'teamId',
           'createdAt',
-          'strategySlug'
+          'strategySlug',
+          'logoImageBlockId',
+          'menuStepBlockId'
         ]),
         id: 'duplicateJourneyId',
         status: JourneyStatus.published,
@@ -1336,7 +1371,9 @@ describe('JourneyResolver', () => {
             'publishedAt',
             'teamId',
             'createdAt',
-            'strategySlug'
+            'strategySlug',
+            'logoImageBlockId',
+            'menuStepBlockId'
           ]),
           id: 'duplicateJourneyId',
           status: JourneyStatus.published,
@@ -1425,6 +1462,170 @@ describe('JourneyResolver', () => {
         },
         {
           ...omit(duplicatedPrimaryImage, [
+            'journeyId',
+            'parentBlockId',
+            'posterBlockId',
+            'coverBlockId',
+            'nextBlockId',
+            'action'
+          ]),
+          journey: { connect: { id: 'duplicateJourneyId' } }
+        }
+      ])
+    })
+
+    it('should duplicate the logoImageBlock and add it to the duplicated journey', async () => {
+      prismaService.journey.findUnique
+        .mockReset()
+        // lookup existing journey to duplicate and authorize
+        .mockResolvedValueOnce({
+          ...journeyWithUserTeam,
+          logoImageBlockId: logoImage.id
+        })
+        // lookup duplicate journey once created and authorize
+        .mockResolvedValueOnce(journeyWithUserTeam)
+      prismaService.block.findUnique.mockResolvedValueOnce(logoImage)
+      mockUuidv4.mockReturnValueOnce(duplicatedStep.id)
+      mockUuidv4.mockReturnValueOnce(duplicatedNextStep.id)
+      mockUuidv4.mockReturnValueOnce(duplicatedLogoImage.id)
+      const duplicateStepIds = new Map([
+        [step.id, duplicatedStep.id],
+        [nextStep.id, duplicatedNextStep.id]
+      ])
+      prismaService.block.findMany
+        .mockReset()
+        .mockResolvedValueOnce([step, nextStep])
+      await resolver.journeyDuplicate(ability, 'journeyId', 'userId', 'teamId')
+      expect(blockService.getDuplicateChildren).toHaveBeenCalledWith(
+        [step, nextStep],
+        'journeyId',
+        null,
+        duplicateStepIds,
+        undefined,
+        'duplicateJourneyId',
+        duplicateStepIds
+      )
+      expect(blockService.saveAll).toHaveBeenCalledWith([
+        {
+          ...omit(duplicatedStep, [
+            'journeyId',
+            'parentBlockId',
+            'posterBlockId',
+            'coverBlockId',
+            'nextBlockId',
+            'action'
+          ]),
+          journey: { connect: { id: 'duplicateJourneyId' } }
+        },
+        {
+          ...omit(duplicatedButton, [
+            'journeyId',
+            'parentBlockId',
+            'posterBlockId',
+            'coverBlockId',
+            'nextBlockId',
+            'action'
+          ]),
+          journey: { connect: { id: 'duplicateJourneyId' } }
+        },
+        {
+          ...omit(duplicatedNextStep, [
+            'journeyId',
+            'parentBlockId',
+            'posterBlockId',
+            'coverBlockId',
+            'nextBlockId',
+            'action'
+          ]),
+          journey: { connect: { id: 'duplicateJourneyId' } }
+        },
+        {
+          ...omit(duplicatedLogoImage, [
+            'journeyId',
+            'parentBlockId',
+            'posterBlockId',
+            'coverBlockId',
+            'nextBlockId',
+            'action'
+          ]),
+          journey: { connect: { id: 'duplicateJourneyId' } }
+        }
+      ])
+    })
+
+    it('should duplicate the menuStepBlock and add it to the duplicated journey', async () => {
+      prismaService.journey.findUnique
+        .mockReset()
+        // lookup existing journey to duplicate and authorize
+        .mockResolvedValueOnce({
+          ...journeyWithUserTeam,
+          menuStepBlockId: menuStep.id
+        })
+        // lookup duplicate journey once created and authorize
+        .mockResolvedValueOnce(journeyWithUserTeam)
+      blockService.getDuplicateChildren.mockResolvedValue([
+        duplicatedStep,
+        duplicatedButton,
+        duplicatedNextStep,
+        duplicatedMenuStep
+      ])
+      mockUuidv4.mockReturnValueOnce(duplicatedStep.id)
+      mockUuidv4.mockReturnValueOnce(duplicatedNextStep.id)
+      mockUuidv4.mockReturnValueOnce(duplicatedMenuStep.id)
+      const duplicateStepIds = new Map([
+        [step.id, duplicatedStep.id],
+        [nextStep.id, duplicatedNextStep.id],
+        [menuStep.id, duplicatedMenuStep.id]
+      ])
+      prismaService.block.findMany
+        .mockReset()
+        .mockResolvedValueOnce([step, nextStep, menuStep])
+      await resolver.journeyDuplicate(ability, 'journeyId', 'userId', 'teamId')
+      expect(blockService.getDuplicateChildren).toHaveBeenCalledWith(
+        [step, nextStep, menuStep],
+        'journeyId',
+        null,
+        duplicateStepIds,
+        undefined,
+        'duplicateJourneyId',
+        duplicateStepIds
+      )
+      expect(blockService.saveAll).toHaveBeenCalledWith([
+        {
+          ...omit(duplicatedStep, [
+            'journeyId',
+            'parentBlockId',
+            'posterBlockId',
+            'coverBlockId',
+            'nextBlockId',
+            'action'
+          ]),
+          journey: { connect: { id: 'duplicateJourneyId' } }
+        },
+        {
+          ...omit(duplicatedButton, [
+            'journeyId',
+            'parentBlockId',
+            'posterBlockId',
+            'coverBlockId',
+            'nextBlockId',
+            'action'
+          ]),
+          journey: { connect: { id: 'duplicateJourneyId' } }
+        },
+        {
+          ...omit(duplicatedNextStep, [
+            'journeyId',
+            'parentBlockId',
+            'posterBlockId',
+            'coverBlockId',
+            'nextBlockId',
+            'action'
+          ]),
+          journey: { connect: { id: 'duplicateJourneyId' } }
+        },
+        {
+          ...omit(duplicatedMenuStep, [
             'journeyId',
             'parentBlockId',
             'posterBlockId',
@@ -1871,7 +2072,7 @@ describe('JourneyResolver', () => {
     })
 
     it('returns blocks without creatorImageBlock', async () => {
-      const journeyWithPrimaryImageBlock = {
+      const journeyWithCreatorImageBlock = {
         ...journey,
         creatorImageBlockId: 'creatorImageBlockId'
       }
@@ -1879,7 +2080,7 @@ describe('JourneyResolver', () => {
       blockService.removeDescendantsOfDeletedBlocks.mockResolvedValueOnce([
         block as BlockWithAction
       ])
-      expect(await resolver.blocks(journeyWithPrimaryImageBlock)).toEqual([
+      expect(await resolver.blocks(journeyWithCreatorImageBlock)).toEqual([
         { ...block, __typename: 'ImageBlock', typename: undefined }
       ])
       expect(prismaService.block.findMany).toHaveBeenCalledWith({
@@ -1897,11 +2098,40 @@ describe('JourneyResolver', () => {
       })
     })
 
-    it('returns blocks without primaryImageBlock or creatorImageBlock', async () => {
+    it('returns blocks without logoImageBlock', async () => {
+      const journeyWithLogoImageBlock = {
+        ...journey,
+        logoImageBlockId: 'logoImageBlockId'
+      }
+      prismaService.block.findMany.mockResolvedValueOnce([block])
+      blockService.removeDescendantsOfDeletedBlocks.mockResolvedValueOnce([
+        block as BlockWithAction
+      ])
+      expect(await resolver.blocks(journeyWithLogoImageBlock)).toEqual([
+        { ...block, __typename: 'ImageBlock', typename: undefined }
+      ])
+      expect(prismaService.block.findMany).toHaveBeenCalledWith({
+        include: {
+          action: true
+        },
+        orderBy: {
+          parentOrder: 'asc'
+        },
+        where: {
+          journeyId: 'journeyId',
+          id: { notIn: ['logoImageBlockId'] },
+          deletedAt: null
+        }
+      })
+    })
+
+    it('returns blocks without primaryImageBlock, creatorImageBlock, logoImageBlock', async () => {
       const journeyWithPrimaryImageBlock = {
         ...journey,
         primaryImageBlockId: 'primaryImageBlockId',
-        creatorImageBlockId: 'creatorImageBlockId'
+        creatorImageBlockId: 'creatorImageBlockId',
+        logoImageBlockId: 'logoImageBlockId',
+        menuStepBlockId: 'menuStepBlockId'
       }
       prismaService.block.findMany.mockResolvedValueOnce([block])
       blockService.removeDescendantsOfDeletedBlocks.mockResolvedValueOnce([
@@ -1919,7 +2149,13 @@ describe('JourneyResolver', () => {
         },
         where: {
           journeyId: 'journeyId',
-          id: { notIn: ['primaryImageBlockId', 'creatorImageBlockId'] },
+          id: {
+            notIn: [
+              'primaryImageBlockId',
+              'creatorImageBlockId',
+              'logoImageBlockId'
+            ]
+          },
           deletedAt: null
         }
       })
@@ -2056,6 +2292,82 @@ describe('JourneyResolver', () => {
       expect(
         await resolver.creatorImageBlock(
           journeyWithCreatorImageBlockFromDifferentJourney
+        )
+      ).toBeNull()
+      expect(prismaService.block.findUnique).toHaveBeenCalledWith({
+        where: { id: 'blockId' },
+        include: { action: true }
+      })
+    })
+  })
+
+  describe('logoImageBlock', () => {
+    it('returns logoImageBlock', async () => {
+      const journeyWithPrimaryImageBlock = {
+        ...journey,
+        logoImageBlockId: 'blockId'
+      }
+      prismaService.block.findUnique.mockResolvedValueOnce(block)
+      expect(
+        await resolver.logoImageBlock(journeyWithPrimaryImageBlock)
+      ).toEqual(block)
+      expect(prismaService.block.findUnique).toHaveBeenCalledWith({
+        where: { id: 'blockId' },
+        include: { action: true }
+      })
+    })
+
+    it('returns null if no logoImageBlockId', async () => {
+      expect(await resolver.logoImageBlock(journey)).toBeNull()
+    })
+
+    it('returns null if logoImageBlock journey is not current journey', async () => {
+      const journeyWithLogoImageBlockFromDifferentJourney = {
+        ...journey,
+        id: 'differentJourneyId',
+        logoImageBlockId: 'blockId'
+      }
+      expect(
+        await resolver.logoImageBlock(
+          journeyWithLogoImageBlockFromDifferentJourney
+        )
+      ).toBeNull()
+      expect(prismaService.block.findUnique).toHaveBeenCalledWith({
+        where: { id: 'blockId' },
+        include: { action: true }
+      })
+    })
+  })
+
+  describe('menuStepBlock', () => {
+    it('returns menuStepBlock', async () => {
+      const journeyWithPrimaryImageBlock = {
+        ...journey,
+        menuStepBlockId: 'blockId'
+      }
+      prismaService.block.findUnique.mockResolvedValueOnce(block)
+      expect(
+        await resolver.menuStepBlock(journeyWithPrimaryImageBlock)
+      ).toEqual(block)
+      expect(prismaService.block.findUnique).toHaveBeenCalledWith({
+        where: { id: 'blockId' },
+        include: { action: true }
+      })
+    })
+
+    it('returns null if no menuStepBlockId', async () => {
+      expect(await resolver.menuStepBlock(journey)).toBeNull()
+    })
+
+    it('returns null if menuStepBlock journey is not current journey', async () => {
+      const journeyWithMenuStepBlockFromDifferentJourney = {
+        ...journey,
+        id: 'differentJourneyId',
+        menuStepBlockId: 'blockId'
+      }
+      expect(
+        await resolver.menuStepBlock(
+          journeyWithMenuStepBlockFromDifferentJourney
         )
       ).toBeNull()
       expect(prismaService.block.findUnique).toHaveBeenCalledWith({

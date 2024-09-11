@@ -14,7 +14,7 @@ export function transformer(data: BlockFields[]): TreeBlock[] {
     }
     const { id, parentBlockId } = item
     childrenOf[id] ||= []
-    newNode.children = childrenOf[id] as TreeBlock[]
+    newNode.children = childrenOf[id]
     if (parentBlockId != null) {
       childrenOf[parentBlockId] ||= []
       childrenOf[parentBlockId]?.push(newNode)

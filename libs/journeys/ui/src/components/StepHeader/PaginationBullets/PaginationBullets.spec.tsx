@@ -14,6 +14,7 @@ describe('PaginationBullets', () => {
     parentOrder: 0,
     locked: false,
     nextBlockId: null,
+    slug: null,
     children: [
       {
         __typename: 'CardBlock',
@@ -59,6 +60,7 @@ describe('PaginationBullets', () => {
     parentOrder: 1,
     locked: false,
     nextBlockId: 'step3.id',
+    slug: null,
     children: []
   }
   const step3: TreeBlock<StepBlock> = {
@@ -68,6 +70,7 @@ describe('PaginationBullets', () => {
     parentOrder: 2,
     locked: false,
     nextBlockId: 'step4.id',
+    slug: null,
     children: []
   }
   const step4: TreeBlock<StepBlock> = {
@@ -77,6 +80,7 @@ describe('PaginationBullets', () => {
     parentOrder: 3,
     locked: false,
     nextBlockId: 'step5.id',
+    slug: null,
     children: []
   }
   const step5: TreeBlock<StepBlock> = {
@@ -86,6 +90,7 @@ describe('PaginationBullets', () => {
     parentOrder: 4,
     locked: false,
     nextBlockId: 'step6.id',
+    slug: null,
     children: []
   }
   const step6: TreeBlock<StepBlock> = {
@@ -95,6 +100,7 @@ describe('PaginationBullets', () => {
     parentOrder: 5,
     locked: false,
     nextBlockId: 'step7.id',
+    slug: null,
     children: []
   }
   const step7: TreeBlock<StepBlock> = {
@@ -104,6 +110,7 @@ describe('PaginationBullets', () => {
     parentOrder: 6,
     locked: false,
     nextBlockId: null,
+    slug: null,
     children: []
   }
 

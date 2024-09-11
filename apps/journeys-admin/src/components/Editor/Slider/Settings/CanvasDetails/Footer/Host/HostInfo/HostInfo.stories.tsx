@@ -1,7 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
-import { jest } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
+import { fn } from '@storybook/test'
 import { ComponentProps } from 'react'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
@@ -32,7 +32,7 @@ const Template: StoryObj<ComponentProps<typeof HostInfo>> = {
 export const Default = {
   ...Template,
   componentProps: {
-    handleSelection: jest.fn()
+    handleSelection: fn()
   }
 }
 

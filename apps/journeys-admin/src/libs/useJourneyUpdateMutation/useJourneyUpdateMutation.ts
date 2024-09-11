@@ -27,6 +27,7 @@ export const JOURNEY_SETTINGS_UPDATE = gql`
       showShareButton
       showLikeButton
       showDislikeButton
+      displayTitle
     }
   }
 `

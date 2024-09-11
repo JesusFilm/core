@@ -31,7 +31,7 @@ describe('TemplateView', () => {
     parentId: 'tags.topic.id',
     name: [
       {
-        __typename: 'Translation',
+        __typename: 'TagName',
         primary: true,
         value: 'tag.name',
         language: { __typename: 'Language', id: 'language.id' }

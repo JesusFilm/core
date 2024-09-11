@@ -245,6 +245,14 @@ export interface GetJourney_journey_blocks_StepBlock {
    * manually set the next block they want to card to navigate to
    */
   nextBlockId: string | null;
+  /**
+   * Slug should be unique amongst all blocks
+   * (server will throw BAD_USER_INPUT error if not)
+   * If not required will use the current block id
+   * If the generated slug is not unique the uuid will be placed
+   * at the end of the slug guaranteeing uniqueness
+   */
+  slug: string | null;
 }
 
 export interface GetJourney_journey_blocks_TextResponseBlock {
@@ -524,7 +532,7 @@ export interface GetJourney_journey_tags_name_language {
 }
 
 export interface GetJourney_journey_tags_name {
-  __typename: "Translation";
+  __typename: "TagName";
   value: string;
   language: GetJourney_journey_tags_name_language;
   primary: boolean;

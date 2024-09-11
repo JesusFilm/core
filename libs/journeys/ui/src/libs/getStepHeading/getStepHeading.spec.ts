@@ -11,7 +11,8 @@ describe('getStepHeading', () => {
     parentBlockId: null,
     parentOrder: null,
     locked: false,
-    nextBlockId: null
+    nextBlockId: null,
+    slug: null
   }
 
   const t = (str: string): string => str

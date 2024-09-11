@@ -35,6 +35,7 @@ describe('Canvas', () => {
     parentOrder: 0,
     locked: false,
     nextBlockId: null,
+    slug: null,
     children: [
       {
         __typename: 'TypographyBlock',
@@ -56,6 +57,7 @@ describe('Canvas', () => {
     parentOrder: 1,
     locked: false,
     nextBlockId: null,
+    slug: null,
     children: []
   }
   const initialState: EditorState = {
