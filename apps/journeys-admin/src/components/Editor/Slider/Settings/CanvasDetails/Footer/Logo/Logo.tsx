@@ -11,7 +11,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { IMAGE_FIELDS } from '@core/journeys/ui/Image/imageFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import Type3 from '@core/shared/ui/icons/Type3'
+import DiamondIcon from '@core/shared/ui/icons/Diamond'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/BlockFields'
 import {
@@ -179,7 +179,7 @@ export function Logo(): ReactElement {
   }
 
   return (
-    <Accordion id="logo" icon={<Type3 />} name={t('Logo')}>
+    <Accordion id="logo" icon={<DiamondIcon />} name={t('Logo')}>
       <Stack gap={4} sx={{ p: 4, pt: 2 }} data-testid="Logo">
         <ImageSource
           selectedBlock={imageBlock}
