@@ -69,6 +69,7 @@ describe('CardForm', () => {
     parentOrder: 0,
     locked: false,
     nextBlockId: null,
+    slug: null,
     children: [card]
   }
   const cardFormCreateMock: MockedResponse<

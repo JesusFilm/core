@@ -21,7 +21,7 @@ const storiesForProject = {
     '../apps/api-journeys/src/app/emails/stories/*.stories.@(js|jsx|ts|tsx)'
   ],
   'api-users': [
-    '../apps/api-users/src/app/emails/stories/*.stories.@(js|jsx|ts|tsx)'
+    '../apps/api-users/src/emails/stories/*.stories.@(js|jsx|ts|tsx)'
   ]
   // Add new UI projects here and in allStories
 }
@@ -44,14 +44,18 @@ const config: StorybookConfig = {
       to: '/watch/assets/fonts'
     }
   ],
+
   stories,
+
   addons: [
     '@storybook/addon-essentials',
     '@storybook/addon-interactions',
     '@storybook/addon-a11y',
     'storybook-addon-apollo-client',
-    '@storybook/addon-actions'
+    '@storybook/addon-actions',
+    '@chromatic-com/storybook'
   ],
+
   webpackFinal: async (config) => {
     const tsPaths = new TsconfigPathsPlugin({
       configFile: './tsconfig.base.json'
@@ -81,8 +85,10 @@ const config: StorybookConfig = {
     options: {}
   },
 
-  docs: {
-    autodocs: false
+  docs: {},
+
+  typescript: {
+    reactDocgen: 'react-docgen-typescript'
   }
 }
 

@@ -77,6 +77,7 @@ const activeBlock: TreeBlock<StepBlock> = {
   parentOrder: 0,
   locked: true,
   nextBlockId: null,
+  slug: null,
   children: []
 }
 
@@ -237,7 +238,8 @@ describe('SignUp', () => {
           parentBlockId: 'signUp0.id',
           gtmEventName: 'signUp',
           url: '#'
-        }
+        },
+        undefined
       )
     })
   })

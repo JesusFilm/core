@@ -108,6 +108,29 @@ describe('WebsiteToggle', () => {
     )
   })
 
+  it('should not update when clicking the already selected option', async () => {
+    const mockWebsiteTrueUpdate = getJourneySettingsUpdateMock(true)
+
+    render(
+      <MockedProvider mocks={[mockWebsiteTrueUpdate]}>
+        <JourneyProvider value={{ journey: defaultJourney }}>
+          <EditorProvider>
+            <WebsiteToggle />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByRole('button', { name: 'Journey' })).toHaveClass(
+      'Mui-selected'
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Journey' }))
+    await waitFor(() =>
+      expect(mockWebsiteTrueUpdate.result).not.toHaveBeenCalled()
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Journey' }))
+  })
+
   it('should undo and redo', async () => {
     const journey = {
       ...defaultJourney,

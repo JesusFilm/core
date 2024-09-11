@@ -17,6 +17,7 @@ import { handleAction } from '../../libs/action'
 import { useBlocks } from '../../libs/block'
 import type { TreeBlock } from '../../libs/block'
 import { useEditor } from '../../libs/EditorProvider'
+import { getNextStepSlug } from '../../libs/getNextStepSlug'
 import { getStepHeading } from '../../libs/getStepHeading'
 import { useJourney } from '../../libs/JourneyProvider'
 import { JourneyPlausibleEvents, keyify } from '../../libs/plausibleHelpers'
@@ -164,7 +165,8 @@ export const SignUp = ({
         onSubmit={(values) => {
           if (selectedBlock === undefined) {
             void onSubmitHandler(values).then(() => {
-              handleAction(router, action)
+              const nextStepSlug = getNextStepSlug(journey, action)
+              handleAction(router, action, nextStepSlug)
             })
           }
         }}

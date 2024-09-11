@@ -1,7 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
-import { screen, userEvent } from '@storybook/testing-library'
+import { screen, userEvent } from '@storybook/test'
 import { ComponentProps } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -26,7 +26,8 @@ const step: TreeBlock<StepBlock> = {
   nextBlockId: null,
   parentOrder: 0,
   locked: false,
-  children: []
+  children: [],
+  slug: null
 }
 
 const Template: StoryObj<ComponentProps<typeof StepBlockNodeMenu>> = {

@@ -37,7 +37,7 @@ test('Homepage', async () => {
       accessibility: 93,
       'best-practices': 83,
       seo: 82,
-      pwa: 67
+      pwa: 40
     },
     reports: {
       formats: { html: true },

@@ -27,16 +27,31 @@ export function Typography({
   }
 
   return (
-    <MuiTypography
-      variant={variant ?? undefined}
-      align={align ?? undefined}
-      color={content === '' ? 'text.disabled' : color ?? undefined}
-      paragraph={variant === 'overline' || variant === 'caption'}
-      gutterBottom
-      whiteSpace="pre-line"
-      data-testid="JourneysTypography"
-    >
-      {displayContent}
-    </MuiTypography>
+    <>
+      {variant === 'overline' || variant === 'caption' ? (
+        <MuiTypography
+          variant={variant ?? undefined}
+          align={align ?? undefined}
+          color={content === '' ? 'text.disabled' : color ?? undefined}
+          component="p"
+          gutterBottom
+          whiteSpace="pre-line"
+          data-testid="JourneysTypography"
+        >
+          {displayContent}
+        </MuiTypography>
+      ) : (
+        <MuiTypography
+          variant={variant ?? undefined}
+          align={align ?? undefined}
+          color={content === '' ? 'text.disabled' : color ?? undefined}
+          gutterBottom
+          whiteSpace="pre-line"
+          data-testid="JourneysTypography"
+        >
+          {displayContent}
+        </MuiTypography>
+      )}
+    </>
   )
 }

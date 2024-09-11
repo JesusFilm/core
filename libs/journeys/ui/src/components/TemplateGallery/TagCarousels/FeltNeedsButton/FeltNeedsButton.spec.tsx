@@ -1,11 +1,10 @@
-import { fireEvent } from '@storybook/testing-library'
-import { render } from '@testing-library/react'
+import { fireEvent, render } from '@testing-library/react'
 
 import { FeltNeedsButton } from '.'
 
 describe('FeltNeedsButton', () => {
   const name = [
-    { __typename: 'Translation' as const, value: 'Acceptance', primary: true }
+    { __typename: 'TagName' as const, value: 'Acceptance', primary: true }
   ]
   const tag = {
     id: 'tagId',
@@ -40,7 +39,7 @@ describe('FeltNeedsButton', () => {
           ...tag,
           name: [
             {
-              __typename: 'Translation' as const,
+              __typename: 'TagName' as const,
               value: 'invalid name',
               primary: true
             }

@@ -60,7 +60,6 @@ export function CopyToTeamDialog({
     setActiveTeam(teams.find((team) => team.id === values.teamSelect) ?? null)
     resetForm()
   }
-
   return (
     <Formik
       initialValues={{ teamSelect: teams.length === 1 ? teams[0].id : '' }}
@@ -100,8 +99,10 @@ export function CopyToTeamDialog({
               onChange={(e) => {
                 handleChange(e)
               }}
-              SelectProps={{
-                IconComponent: ChevronDownIcon
+              slotProps={{
+                select: {
+                  IconComponent: ChevronDownIcon
+                }
               }}
               sx={{
                 '& >.MuiFormHelperText-contained': {
