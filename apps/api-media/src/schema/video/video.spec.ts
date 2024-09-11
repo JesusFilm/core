@@ -2,6 +2,8 @@ import { ResultOf } from 'gql.tada'
 
 import {
   BibleCitation,
+  CloudflareImage,
+  ImageAspectRatio,
   Keyword,
   Video,
   VideoDescription,
@@ -29,6 +31,7 @@ describe('video', () => {
         $offset: Int
         $limit: Int
         $where: VideosFilter
+        $aspectRatio: ImageAspectRatio
       ) {
         videos(offset: $offset, limit: $limit, where: $where) {
           id
@@ -121,6 +124,10 @@ describe('video', () => {
           variant(languageId: $languageId) {
             id
           }
+          images(aspectRatio: $aspectRatio) {
+            id
+            aspectRatio
+          }
         }
       }
     `)
@@ -135,6 +142,7 @@ describe('video', () => {
       imageAlt: VideoImageAlt[]
       children: Video[]
       subtitles: VideoSubtitle[]
+      images: CloudflareImage[]
     }
 
     const children: Video[] = [
@@ -278,6 +286,18 @@ describe('video', () => {
             videoId: 'videoId',
             primary: true
           }
+        ],
+        images: [
+          {
+            id: 'imageId',
+            aspectRatio: ImageAspectRatio.hd,
+            uploaded: true,
+            userId: 'testUserId',
+            uploadUrl: 'testUrl',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            videoId: null
+          }
         ]
       }
     ]
@@ -402,6 +422,12 @@ describe('video', () => {
             language: { id: 'languageId' },
             slug: 'slug'
           }
+        ],
+        images: [
+          {
+            id: 'imageId',
+            aspectRatio: ImageAspectRatio.hd
+          }
         ]
       }
     ]
@@ -506,7 +532,8 @@ describe('video', () => {
                 }
               ]
             }
-          }
+          },
+          images: { where: { aspectRatio: undefined } }
         }
       })
       expect(data).toHaveProperty('data.videos', result)
@@ -532,6 +559,7 @@ describe('video', () => {
       ])
       // variant
       prismaMock.videoVariant.findUnique.mockResolvedValueOnce(null)
+
       const data = await client({
         document: VIDEOS_QUERY,
         variables: {
@@ -573,7 +601,8 @@ describe('video', () => {
           limit: 20,
           where: {
             title: 'Jesus'
-          }
+          },
+          aspectRatio: ImageAspectRatio.hd
         }
       })
       expect(prismaMock.video.findMany).toHaveBeenCalledWith({
@@ -686,6 +715,11 @@ describe('video', () => {
                   languageId: '987'
                 }
               ]
+            }
+          },
+          images: {
+            where: {
+              aspectRatio: ImageAspectRatio.hd
             }
           }
         }
