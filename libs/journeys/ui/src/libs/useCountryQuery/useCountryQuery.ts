@@ -21,7 +21,7 @@ export const GET_COUNTRY = gql`
 `
 
 export function useCountryQuery(
-  variables?: GetCountryVariables
+  variables: GetCountryVariables
 ): QueryResult<GetCountry, GetCountryVariables> {
   return useQuery<GetCountry, GetCountryVariables>(GET_COUNTRY, {
     variables

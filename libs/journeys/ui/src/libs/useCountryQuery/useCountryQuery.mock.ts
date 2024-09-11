@@ -8,7 +8,7 @@ export const getCountryMock: MockedResponse<GetCountry> = {
   request: {
     query: GET_COUNTRY,
     variables: {
-      countryId: 'country.id'
+      countryId: 'US'
     }
   },
   result: {

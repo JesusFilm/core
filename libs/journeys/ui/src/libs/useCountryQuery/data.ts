@@ -2,7 +2,7 @@ import { GetCountry_country as Country } from './__generated__/GetCountry'
 
 export const country: Country = {
   __typename: 'Country',
-  id: 'country.id',
+  id: 'US',
   flagPngSrc: 'https://example.flag.com',
   countryLanguages: [
     {
