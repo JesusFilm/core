@@ -17,6 +17,7 @@ import {
   importVideoVariants,
   importVideos
 } from '../importers'
+import { imageSeed, importVideoImages } from '../importers/videoImages'
 
 export async function service(logger?: Logger): Promise<void> {
   const cleanup = [
@@ -35,6 +36,8 @@ export async function service(logger?: Logger): Promise<void> {
     await importVideoVariants(logger),
     await importVideoSubtitles(logger),
     await importVideoChildren(logger),
+    await imageSeed(logger),
+    await importVideoImages(logger),
     // depends on bibleBooks and videos
     await importBibleCitations(logger),
     // depends on videoVariants
