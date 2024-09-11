@@ -194,7 +194,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
             <Box
               flexShrink={1}
               sx={{
-                display: 'inline-flex',
+                display: { xs: 'none', md: 'inline-flex' },
                 overflow: 'hidden',
                 whiteSpace: 'nowrap',
                 textOverflow: 'ellipsis'
