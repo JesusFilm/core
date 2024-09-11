@@ -25,13 +25,21 @@ datasource db {
   url      = env("PG_DATABASE_URL_MEDIA")
 }
 
+enum ImageAspectRatio {
+  hd // 16:9
+  banner // 2.13:1
+}
+
 model CloudflareImage {
-  id        String   @id @default(uuid())
-  uploadUrl String?
-  userId    String
-  createdAt DateTime @default(now())
-  uploaded  Boolean  @default(false)
-  updatedAt DateTime @default(now()) @updatedAt
+  id          String            @id @default(uuid())
+  uploadUrl   String?
+  userId      String
+  createdAt   DateTime          @default(now())
+  uploaded    Boolean           @default(false)
+  updatedAt   DateTime          @default(now()) @updatedAt
+  aspectRatio ImageAspectRatio?
+  videoId     String?
+  video       Video?            @relation(fields: [videoId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }
@@ -88,6 +96,7 @@ model Video {
   variants               VideoVariant[]
   bibleCitation          BibleCitation[]
   keywords               Keyword[]            @relation("VideoToKeyword")
+  images                 CloudflareImage[]
 
   @@index(label)
   @@index(childIds)

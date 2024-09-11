@@ -4,16 +4,22 @@ export default interface PrismaTypes {
     CloudflareImage: {
         Name: "CloudflareImage";
         Shape: CloudflareImage;
-        Include: never;
+        Include: Prisma.CloudflareImageInclude;
         Select: Prisma.CloudflareImageSelect;
         OrderBy: Prisma.CloudflareImageOrderByWithRelationAndSearchRelevanceInput;
         WhereUnique: Prisma.CloudflareImageWhereUniqueInput;
         Where: Prisma.CloudflareImageWhereInput;
         Create: {};
         Update: {};
-        RelationName: never;
+        RelationName: "video";
         ListRelations: never;
-        Relations: {};
+        Relations: {
+            video: {
+                Shape: Video | null;
+                Name: "Video";
+                Nullable: true;
+            };
+        };
     };
     CloudflareVideo: {
         Name: "CloudflareVideo";
@@ -39,8 +45,8 @@ export default interface PrismaTypes {
         Where: Prisma.VideoWhereInput;
         Create: {};
         Update: {};
-        RelationName: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parent" | "variants" | "bibleCitation" | "keywords";
-        ListRelations: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parent" | "variants" | "bibleCitation" | "keywords";
+        RelationName: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parent" | "variants" | "bibleCitation" | "keywords" | "images";
+        ListRelations: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parent" | "variants" | "bibleCitation" | "keywords" | "images";
         Relations: {
             title: {
                 Shape: VideoTitle[];
@@ -95,6 +101,11 @@ export default interface PrismaTypes {
             keywords: {
                 Shape: Keyword[];
                 Name: "Keyword";
+                Nullable: false;
+            };
+            images: {
+                Shape: CloudflareImage[];
+                Name: "CloudflareImage";
                 Nullable: false;
             };
         };
