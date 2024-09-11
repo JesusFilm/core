@@ -27,6 +27,7 @@ export function SideMenuMobile({
 
   return (
     <Drawer
+      data-testid="SideMenuMobile"
       anchor="right"
       open={open}
       onClose={toggleDrawer(false)}

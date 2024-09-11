@@ -5,7 +5,7 @@ import IconButton from '@mui/material/IconButton'
 import Link from '@mui/material/Link'
 import Menu from '@mui/material/Menu'
 import MuiMenuItem from '@mui/material/MenuItem'
-import { useTheme } from '@mui/material/styles'
+import { SxProps, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
@@ -14,7 +14,13 @@ import { MouseEvent, ReactElement, useState } from 'react'
 
 import { useJourney } from '../../../libs/JourneyProvider'
 
-export function InformationButton(): ReactElement {
+interface InformationButtonProps {
+  sx?: SxProps
+}
+
+export function InformationButton({
+  sx
+}: InformationButtonProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const { journey, variant } = useJourney()
 
@@ -39,7 +45,7 @@ export function InformationButton(): ReactElement {
           aria-controls="more-info"
           aria-haspopup="true"
           aria-expanded={open ? 'true' : 'false'}
-          sx={{ mx: 2, mt: 1 }}
+          sx={{ mx: 2, mt: 1, ...sx }}
           onClick={handleClick}
         >
           <InfoOutlinedIcon

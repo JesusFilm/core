@@ -16,8 +16,9 @@ export function MenuButton({
       variant="dot"
       invisible={!showBadge}
       sx={{ [`& .${badgeClasses.badge}`]: { right: 2, top: 2 } }}
+      data-testid="MenuButtonBadge"
     >
-      <IconButton size="small" {...props} />
+      <IconButton size="small" {...props} data-testid="MenuButton" />
     </Badge>
   )
 }

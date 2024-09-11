@@ -23,9 +23,15 @@ export function ToggleColorMode(props: ToggleColorModeProps): ReactElement {
       {...props}
     >
       {mode === 'dark' ? (
-        <WbSunnyRoundedIcon fontSize="small" />
+        <WbSunnyRoundedIcon
+          fontSize="small"
+          data-testid="ToggleColorModeLight"
+        />
       ) : (
-        <ModeNightRoundedIcon fontSize="small" />
+        <ModeNightRoundedIcon
+          fontSize="small"
+          data-testid="ToggleColorModeDark"
+        />
       )}
     </MenuButton>
   )

@@ -136,7 +136,8 @@ export class BlockService {
           'posterBlockId',
           'coverBlockId',
           'nextBlockId',
-          'action'
+          'action',
+          'slug'
         ]),
         journey: {
           connect: { id: block.journeyId }

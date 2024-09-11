@@ -41,8 +41,14 @@ interface CenterPageProps {
 }
 export function CenterPage({ children }: CenterPageProps): ReactElement {
   return (
-    <Container direction="column" justifyContent="space-between">
-      <Card variant="outlined">{children}</Card>
+    <Container
+      direction="column"
+      justifyContent="space-between"
+      data-testid="CenterPageContainer"
+    >
+      <Card variant="outlined" data-testid="CenterPageCard">
+        {children}
+      </Card>
     </Container>
   )
 }

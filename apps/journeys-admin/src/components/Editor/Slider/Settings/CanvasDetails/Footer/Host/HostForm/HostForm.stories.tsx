@@ -1,7 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
-import { jest } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
+import { fn } from '@storybook/test'
 import { ComponentProps } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -73,8 +73,8 @@ export const Default = {
   args: {
     journey: { ...journey, host: null },
     componentProps: {
-      handleSelection: jest.fn(),
-      getAllTeamHosts: jest.fn()
+      handleSelection: fn(),
+      getAllTeamHosts: fn()
     }
   }
 }
@@ -84,8 +84,8 @@ export const Filled = {
   args: {
     journey,
     componentProps: {
-      handleSelection: jest.fn(),
-      getAllTeamHosts: jest.fn()
+      handleSelection: fn(),
+      getAllTeamHosts: fn()
     }
   }
 }
