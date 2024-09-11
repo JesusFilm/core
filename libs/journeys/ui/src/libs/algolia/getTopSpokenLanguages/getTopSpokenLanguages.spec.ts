@@ -64,19 +64,19 @@ describe('getTopSpokenLanguages', () => {
   }
 
   it('should return the top spoken languages of a country', () => {
-    const topSpokenLanguages = getTopSpokenLanguages(
+    const topSpokenLanguages = getTopSpokenLanguages({
       country,
       availableLanguages
-    )
+    })
 
     expect(topSpokenLanguages).toEqual(['Spanish', 'English'])
   })
 
   it('should return the top spoken languages of a country when there are more than 4 languages', () => {
-    const topSpokenLanguages = getTopSpokenLanguages(
-      countryWithMoreLanguages,
+    const topSpokenLanguages = getTopSpokenLanguages({
+      country: countryWithMoreLanguages,
       availableLanguages
-    )
+    })
 
     expect(topSpokenLanguages).toEqual([
       'French',
@@ -91,10 +91,10 @@ describe('getTopSpokenLanguages', () => {
       (language) => language.value !== 'Spanish'
     )
 
-    const topSpokenLanguages = getTopSpokenLanguages(
-      countryWithMoreLanguages,
-      customAvailableLanguages
-    )
+    const topSpokenLanguages = getTopSpokenLanguages({
+      country: countryWithMoreLanguages,
+      availableLanguages: customAvailableLanguages
+    })
 
     expect(topSpokenLanguages).toEqual([
       'French',
@@ -102,5 +102,15 @@ describe('getTopSpokenLanguages', () => {
       'German',
       'Italian'
     ])
+  })
+
+  it('should limit the number of languages returned', () => {
+    const topSpokenLanguages = getTopSpokenLanguages({
+      country: countryWithMoreLanguages,
+      availableLanguages,
+      limit: 2
+    })
+
+    expect(topSpokenLanguages).toHaveLength(2)
   })
 })

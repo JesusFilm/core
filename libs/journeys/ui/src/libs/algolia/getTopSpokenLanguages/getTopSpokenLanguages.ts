@@ -3,10 +3,17 @@ import orderBy from 'lodash/orderBy'
 
 import { GetCountry_country as Country } from '../../useCountryQuery/__generated__/GetCountry'
 
-export function getTopSpokenLanguages(
-  country: Country,
+interface getTopSpokenLanguagesProps {
+  country: Country
   availableLanguages: RefinementListItem[]
-): string[] {
+  limit?: number
+}
+
+export function getTopSpokenLanguages({
+  country,
+  availableLanguages,
+  limit = 4
+}: getTopSpokenLanguagesProps): string[] {
   const availableLanguageSet = new Set(
     availableLanguages.map((lang) => lang.value)
   )
@@ -24,7 +31,7 @@ export function getTopSpokenLanguages(
   const topSpokenLanguages = languageNames
     .filter(Boolean)
     .filter((language) => availableLanguageSet.has(language))
-    .slice(0, 4)
+    .slice(0, limit)
 
   return topSpokenLanguages
 }
