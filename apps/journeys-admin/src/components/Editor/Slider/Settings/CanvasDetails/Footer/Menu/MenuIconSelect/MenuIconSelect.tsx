@@ -61,7 +61,7 @@ const Icons: IconOptions = [
   }
 ]
 
-export function IconSelect(): ReactElement {
+export function MenuIconSelect(): ReactElement {
   const { journey } = useJourney()
   const { add } = useCommand()
   const [journeyUpdate] = useJourneyUpdateMutation()
@@ -109,6 +109,7 @@ export function IconSelect(): ReactElement {
     <Stack
       direction="row"
       sx={{ justifyContent: 'space-between', alignItems: 'center' }}
+      data-testid="MenuIconSelect"
     >
       <Typography variant="subtitle2" sx={{ color: 'secondary.light' }}>
         {t('Select Icon')}
