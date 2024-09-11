@@ -113,4 +113,13 @@ describe('getTopSpokenLanguages', () => {
 
     expect(topSpokenLanguages).toHaveLength(2)
   })
+
+  it('should return an empty array if the country is null', () => {
+    const topSpokenLanguages = getTopSpokenLanguages({
+      country: null,
+      availableLanguages
+    })
+
+    expect(topSpokenLanguages).toEqual([])
+  })
 })

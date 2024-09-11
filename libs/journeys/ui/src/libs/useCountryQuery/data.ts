@@ -4,6 +4,15 @@ export const country: Country = {
   __typename: 'Country',
   id: 'US',
   flagPngSrc: 'https://example.flag.com',
+  continent: {
+    __typename: 'Continent',
+    name: [
+      {
+        __typename: 'ContinentName',
+        value: 'North America'
+      }
+    ]
+  },
   countryLanguages: [
     {
       __typename: 'CountryLanguage',

@@ -16,17 +16,43 @@ interface CountryLanguageSelectorProps {
 export function CountryLanguageSelector({
   refinements
 }: CountryLanguageSelectorProps): ReactElement {
+  const { dispatch } = useSearchBar()
   const { items, refine } = refinements
+
   const [country, setCountry] = useState<string>()
   const [countryCode, setCountryCode] = useState<string>()
 
   const { data } = useCountryQuery({ countryId: countryCode ?? '' })
-  const { dispatch } = useSearchBar()
+
+  const continent = data?.country?.continent?.name?.find(
+    (value) => value != null
+  )?.value
 
   const spokenLanguages = getTopSpokenLanguages({
     country: data?.country,
     availableLanguages: items
   })
+
+  function handleClick(language: string): void {
+    if (continent == null) return
+    const refinedItem = items.find((item) => item.label === language)?.isRefined
+
+    refine(language)
+
+    if (refinedItem === true) {
+      dispatch({
+        type: 'RemoveLanguageContinents',
+        language
+      })
+    } else {
+      dispatch({
+        type: 'SelectLanguageContinent',
+        continent,
+        language,
+        isSelected: true
+      })
+    }
+  }
 
   function getCountryName(countryCode: string): string {
     try {
@@ -77,13 +103,7 @@ export function CountryLanguageSelector({
                 label={language}
                 variant="outlined"
                 size="medium"
-                onClick={() => {
-                  refine(language)
-                  dispatch({
-                    type: 'RemoveLanguageContinents',
-                    language
-                  })
-                }}
+                onClick={() => handleClick(language)}
                 sx={{
                   border: (theme) =>
                     `2px solid ${theme.palette.text.primary}${
