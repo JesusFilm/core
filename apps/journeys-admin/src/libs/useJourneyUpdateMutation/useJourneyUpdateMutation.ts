@@ -5,12 +5,15 @@ import {
   useMutation
 } from '@apollo/client'
 
+import { BLOCK_FIELDS } from '@core/journeys/ui/block/blockFields'
+
 import {
   JourneySettingsUpdate,
   JourneySettingsUpdateVariables
 } from '../../../__generated__/JourneySettingsUpdate'
 
 export const JOURNEY_SETTINGS_UPDATE = gql`
+  ${BLOCK_FIELDS}
   mutation JourneySettingsUpdate($id: ID!, $input: JourneyUpdateInput!) {
     journeyUpdate(id: $id, input: $input) {
       id
@@ -29,6 +32,9 @@ export const JOURNEY_SETTINGS_UPDATE = gql`
       showDislikeButton
       displayTitle
       menuButtonIcon
+      menuStepBlock {
+        ...BlockFields
+      }
     }
   }
 `

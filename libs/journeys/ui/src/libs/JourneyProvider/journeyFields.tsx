@@ -91,5 +91,8 @@ export const JOURNEY_FIELDS = gql`
     showDislikeButton
     displayTitle
     menuButtonIcon
+    menuStepBlock {
+      ...BlockFields
+    }
   }
 `
