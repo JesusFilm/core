@@ -59,7 +59,7 @@ function updateCache(
   )
     return
 
-    console.log('create data:', data)
+  console.log('create data:', data)
 
   cache.modify({
     fields: {
