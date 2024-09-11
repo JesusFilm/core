@@ -59,8 +59,6 @@ function updateCache(
   )
     return
 
-  console.log('create data:', data)
-
   cache.modify({
     fields: {
       blocks(existingBlockRefs = []) {

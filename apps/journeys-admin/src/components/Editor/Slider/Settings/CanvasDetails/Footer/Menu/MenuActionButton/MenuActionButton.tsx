@@ -166,8 +166,6 @@ export function MenuActionButton(): ReactElement {
               removeCachedBlocks(cache, createdBlocks, journey?.id)
             }
           })
-
-          // MENU-TODO: set selected block here
         },
         redo() {
           if (selectedStep != null)

@@ -69,16 +69,10 @@ export function removeCachedBlocks(cache, blocks, journeyId): void {
 export function useMenuBlockDeleteMutation(
   options?: MutationHookOptions<MenuBlockDelete, MenuBlockDeleteVariables>
 ): MutationTuple<MenuBlockDelete, MenuBlockDeleteVariables> {
-  // const { journey } = useJourney()
   const mutation = useMutation<MenuBlockDelete, MenuBlockDeleteVariables>(
     MENU_BLOCK_DELETE,
     {
       ...options
-      // update(...args) {
-      //   options?.update?.(...args)
-      //   const [cache, { data }] = args
-      //   removeCachedBlocks(cache, data, journey?.id)
-      // }
     }
   )
 
