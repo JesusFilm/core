@@ -15,7 +15,10 @@ const meta: Meta<typeof CenterPage> = {
     nextjs: {
       appDirectory: false
     },
-    layout: 'fullscreen'
+    layout: 'fullscreen',
+    viewport: {
+      defaultViewport: 'none'
+    }
   },
   tags: ['!autodocs']
 }
