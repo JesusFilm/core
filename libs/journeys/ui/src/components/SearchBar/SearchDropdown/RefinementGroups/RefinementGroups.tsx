@@ -41,14 +41,19 @@ export function RefinementGroups({
   const { t } = useTranslation('apps-watch')
   const theme = useTheme()
 
-  const { canToggleShowMore, isShowingMore, toggleShowMore } = refinements
-  const shouldFade = canToggleShowMore && !isShowingMore
   const { refine: clearRefinements, canRefine: canClearRefinements } =
     useClearRefinements()
 
+  const languageEntries = Object.entries(languages)
+
+  const { canToggleShowMore, isShowingMore, toggleShowMore } = refinements
+  const shouldFade = canToggleShowMore && !isShowingMore
+  const isLoading = languageEntries.length === 0
+  const hasRefinements = refinements.items.length > 0
+
   return (
     <>
-      {refinements.items.length > 0 ? (
+      {!isLoading && hasRefinements ? (
         <>
           <Grid
             container
@@ -70,26 +75,24 @@ export function RefinementGroups({
                 : 'none'
             }}
           >
-            {Object.entries(languages).map(
-              ([continent, continentLanguages]) => {
-                const items = refinements.items.filter((item) =>
-                  continentLanguages.some((language) => language === item.label)
-                )
-                return items.length > 0 ? (
-                  <Grid key={continent} size={1}>
-                    <RefinementGroup
-                      title={continent}
-                      refinement={{
-                        ...refinements,
-                        items
-                      }}
-                    />
-                  </Grid>
-                ) : (
-                  <></>
-                )
-              }
-            )}
+            {languageEntries.map(([continent, continentLanguages]) => {
+              const items = refinements.items.filter((item) =>
+                continentLanguages.some((language) => language === item.label)
+              )
+              return items.length > 0 ? (
+                <Grid key={continent} size={1}>
+                  <RefinementGroup
+                    title={continent}
+                    refinement={{
+                      ...refinements,
+                      items
+                    }}
+                  />
+                </Grid>
+              ) : (
+                <></>
+              )
+            })}
           </Grid>
           <Box sx={{ justifyContent: 'center', display: 'flex' }}>
             <Stack direction="row" spacing={3}>
@@ -121,11 +124,25 @@ export function RefinementGroups({
           </Box>
         </>
       ) : (
-        <Typography>
-          {t(
-            `Sorry, there are no languages available for this search. Try removing some of your search criteria!`
+        <>
+          {!hasRefinements && (
+            <Typography mb={5}>
+              {t(
+                `Sorry, there are no languages available for this search. Try removing some of your search criteria!`
+              )}
+            </Typography>
           )}
-        </Typography>
+          {isLoading && (
+            <Box
+              display="flex"
+              flexDirection="column"
+              alignItems="center"
+              mb={5}
+            >
+              <Typography>{t(`Loading...`)}</Typography>
+            </Box>
+          )}
+        </>
       )}
     </>
   )

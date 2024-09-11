@@ -193,4 +193,13 @@ describe('RefinementGroups', () => {
     fireEvent.click(screen.getByText('Clear All'))
     expect(refine).toHaveBeenCalled()
   })
+
+  it('should show loading when loading languages', () => {
+    render(
+      <SearchBarProvider>
+        <RefinementGroups refinements={refinements} languages={{}} />
+      </SearchBarProvider>
+    )
+    expect(screen.getByText('Loading...')).toBeVisible()
+  })
 })
