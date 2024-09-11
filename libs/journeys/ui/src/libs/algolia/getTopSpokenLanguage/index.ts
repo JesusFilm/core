@@ -1,1 +1,0 @@
-export { getTopSpokenLanguages } from './getTopSpokenLanguage'
