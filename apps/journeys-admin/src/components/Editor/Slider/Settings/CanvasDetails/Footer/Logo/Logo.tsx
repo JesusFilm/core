@@ -1,8 +1,11 @@
 import { gql, useMutation } from '@apollo/client'
+import Box from '@mui/material/Box'
+import Slider from '@mui/material/Slider'
 import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import pick from 'lodash/pick'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
@@ -54,6 +57,9 @@ export function Logo(): ReactElement {
   const { journey } = useJourney()
   const { add } = useCommand()
   const { addBlock } = useBlockCreateCommand()
+  const [currentScale, setCurrentScale] = useState(
+    journey?.logoImageBlock?.scale ?? 1
+  )
 
   const [logoBlockCreate] = useMutation<
     LogoBlockCreate,
@@ -129,7 +135,8 @@ export function Logo(): ReactElement {
       alt: input.alt ?? imageBlock.alt,
       blurhash: input.blurhash ?? imageBlock.blurhash,
       height: input.height ?? imageBlock.height,
-      width: input.width ?? imageBlock.width
+      width: input.width ?? imageBlock.width,
+      scale: input.scale ?? imageBlock.scale
     }
 
     add({
@@ -147,11 +154,12 @@ export function Logo(): ReactElement {
             imageBlockUpdate: block
           }
         })
+        setCurrentScale(block.scale ?? 1)
       }
     })
   }
 
-  function handleChange(input: ImageBlockUpdateInput): void {
+  function handleImageChange(input: ImageBlockUpdateInput): void {
     if (imageBlock == null) {
       createImageBlock(input)
     } else {
@@ -163,14 +171,42 @@ export function Logo(): ReactElement {
     await updateImageBlock({ src: null, alt: '' })
   }
 
+  function handleImageScaleChange(_, value: number): void {
+    setCurrentScale(value)
+  }
+  function handleImageScaleCommit(): void {
+    updateImageBlock({ scale: currentScale })
+  }
+
   return (
     <Accordion id="logo" icon={<Type3 />} name={t('Logo')}>
-      <Stack sx={{ p: 4, pt: 2 }} data-testid="Logo">
+      <Stack gap={4} sx={{ p: 4, pt: 2 }} data-testid="Logo">
         <ImageSource
           selectedBlock={imageBlock}
-          onChange={async (input) => handleChange(input)}
+          onChange={async (input) => handleImageChange(input)}
           onDelete={deleteImageBlock}
         />
+        <Box>
+          <Typography>{t('Size')}</Typography>
+          <Slider
+            value={currentScale}
+            onChange={handleImageScaleChange}
+            onChangeCommitted={handleImageScaleCommit}
+            min={1}
+            max={100}
+            size="medium"
+            sx={{
+              '& .MuiSlider-rail': {
+                color: (theme) => `${theme.palette.secondary.light}`,
+                opacity: '0.38'
+              },
+              '& .MuiSlider-track': {
+                color: (theme) => `${theme.palette.secondary.light}`,
+                opacity: '0.7'
+              }
+            }}
+          />
+        </Box>
       </Stack>
     </Accordion>
   )
