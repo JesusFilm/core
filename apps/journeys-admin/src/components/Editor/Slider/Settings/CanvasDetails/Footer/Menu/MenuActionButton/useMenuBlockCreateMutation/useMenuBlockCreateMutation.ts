@@ -40,6 +40,7 @@ export const MENU_BLOCK_CREATE = gql`
     }
     journeyUpdate(id: $journeyId, input: $journeyUpdateInput) {
       menuStepBlock {
+        id
         ...StepFields
       }
     }

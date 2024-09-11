@@ -35,6 +35,7 @@ export const MENU_BLOCK_DELETE = gql`
       parentOrder
     }
     journeyUpdate(id: $journeyId, input: $journeyUpdateInput) {
+      id
       menuStepBlock {
         ...StepFields
       }

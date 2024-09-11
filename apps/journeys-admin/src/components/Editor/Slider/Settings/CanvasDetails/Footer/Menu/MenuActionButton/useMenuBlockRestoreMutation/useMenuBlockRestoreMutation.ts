@@ -37,6 +37,7 @@ export const MENU_BLOCK_RESTORE = gql`
       ...TypographyFields
     }
     journeyUpdate(id: $journeyId, input: $journeyUpdateInput) {
+      id
       menuStepBlock {
         ...StepFields
       }
