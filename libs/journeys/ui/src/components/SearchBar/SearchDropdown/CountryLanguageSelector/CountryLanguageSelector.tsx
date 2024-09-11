@@ -32,9 +32,7 @@ export function CountryLanguageSelector({
     const countryLanguages = data?.country?.countryLanguages ?? []
     return orderBy(countryLanguages, ['speakers'], ['desc'])
       .map(({ language }) => {
-        const localName = language.name.find(
-          ({ primary }) => !primary
-        )?.value
+        const localName = language.name.find(({ primary }) => !primary)?.value
         const nativeName = language.name.find(({ primary }) => primary)?.value
         return localName ?? nativeName ?? ''
       })
