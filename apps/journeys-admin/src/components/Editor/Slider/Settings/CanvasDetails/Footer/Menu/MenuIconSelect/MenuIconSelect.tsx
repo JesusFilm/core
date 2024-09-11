@@ -70,7 +70,7 @@ export function MenuIconSelect(): ReactElement {
   function iconUpdate(icon: JourneyMenuButtonIcon | null): void {
     if (journey == null) return
 
-    const undoIcon = journey.menuButtonIcon
+    const undoIcon = journey.menuButtonIcon ?? null
     add({
       parameters: {
         execute: { icon },
