@@ -9,6 +9,7 @@ import orderBy from 'lodash/orderBy'
 import Image from 'next/image'
 import { ReactElement, useEffect, useState } from 'react'
 
+import { useSearchBar } from '../../../../libs/algolia/SearchBarProvider'
 import { useCountryQuery } from '../../../../libs/useCountryQuery'
 
 interface CountryLanguageSelectorProps {
@@ -23,6 +24,7 @@ export function CountryLanguageSelector({
   const [countryCode, setCountryCode] = useState<string>()
 
   const { data } = useCountryQuery({ countryId: countryCode ?? '' })
+  const { dispatch } = useSearchBar()
 
   function getTopSpokenLanguages(
     availableLanguages: RefinementListItem[]
@@ -93,7 +95,13 @@ export function CountryLanguageSelector({
                 label={language}
                 variant="outlined"
                 size="medium"
-                onClick={() => refine(language)}
+                onClick={() => {
+                  refine(language)
+                  dispatch({
+                    type: 'RemoveLanguageContinents',
+                    language
+                  })
+                }}
                 sx={{
                   border: (theme) =>
                     `2px solid ${theme.palette.text.primary}${
