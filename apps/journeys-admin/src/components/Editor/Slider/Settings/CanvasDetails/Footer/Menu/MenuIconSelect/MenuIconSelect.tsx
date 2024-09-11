@@ -11,6 +11,7 @@ import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import ChevronDown from '@core/shared/ui/icons/ChevronDown'
 import Ellipsis from '@core/shared/ui/icons/Ellipsis'
+import Equals from '@core/shared/ui/icons/Equals'
 import Grid1 from '@core/shared/ui/icons/Grid1'
 import Home3 from '@core/shared/ui/icons/Home3'
 import Home4 from '@core/shared/ui/icons/Home4'
@@ -34,9 +35,8 @@ const Icons: IconOptions = [
     Icon: Ellipsis,
     value: JourneyMenuButtonIcon.ellipsis
   },
-  // MENU-TODO: change this to correct icon
   {
-    Icon: Menu1,
+    Icon: Equals,
     value: JourneyMenuButtonIcon.equals
   },
   {
