@@ -1,7 +1,8 @@
 import { fireEvent, render, screen } from '@testing-library/react'
+import { ClearRefinementsRenderState } from 'instantsearch.js/es/connectors/clear-refinements/connectClearRefinements'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
-import { useSearchBox } from 'react-instantsearch'
+import { useClearRefinements, useSearchBox } from 'react-instantsearch'
 
 import { SearchBarProvider } from '../../../../libs/algolia/SearchBarProvider'
 import { languageRefinements } from '../../data'
@@ -9,6 +10,10 @@ import { languageRefinements } from '../../data'
 import { RefinementGroups } from './RefinementGroups'
 
 jest.mock('react-instantsearch')
+
+const mockUseClearRefinements = useClearRefinements as jest.MockedFunction<
+  typeof useClearRefinements
+>
 
 const mockUseSearchBox = useSearchBox as jest.MockedFunction<
   typeof useSearchBox
@@ -19,6 +24,11 @@ describe('RefinementGroups', () => {
     items: languageRefinements,
     refine: jest.fn()
   } as unknown as RefinementListRenderState
+
+  const clearRefinements = {
+    refine: jest.fn(),
+    canRefine: false
+  } as unknown as ClearRefinementsRenderState
 
   const languages = {
     'North America': ['English'],
@@ -36,6 +46,7 @@ describe('RefinementGroups', () => {
 
   beforeEach(() => {
     mockUseSearchBox.mockReturnValue(useSearchBox)
+    mockUseClearRefinements.mockReturnValue(clearRefinements)
   })
 
   it('should render the correct continent headers', () => {
@@ -136,5 +147,59 @@ describe('RefinementGroups', () => {
     const seeAllButton = screen.getByText('See All')
     fireEvent.click(seeAllButton)
     expect(toggleShowMore).toHaveBeenCalled()
+  })
+
+  it('should not show clear all button if cannot clear refinements', () => {
+    render(
+      <SearchBarProvider>
+        <RefinementGroups refinements={refinements} languages={languages} />
+      </SearchBarProvider>
+    )
+    const clearAllButton = screen.queryByText('Clear All')
+    expect(clearAllButton).not.toBeInTheDocument()
+  })
+
+  it('should show clear all button when one can clear refinements', () => {
+    const clearRefinements = {
+      refine: jest.fn(),
+      canRefine: true
+    } as unknown as ClearRefinementsRenderState
+    mockUseClearRefinements.mockReturnValue(clearRefinements)
+
+    render(
+      <SearchBarProvider>
+        <RefinementGroups refinements={refinements} languages={languages} />
+      </SearchBarProvider>
+    )
+
+    const clearAllButton = screen.queryByText('Clear All')
+    expect(clearAllButton).toBeInTheDocument()
+  })
+
+  it('should clear refinements when clear all button clicked', () => {
+    const refine = jest.fn()
+    const clearRefinements = {
+      refine,
+      canRefine: true
+    } as unknown as ClearRefinementsRenderState
+    mockUseClearRefinements.mockReturnValue(clearRefinements)
+
+    render(
+      <SearchBarProvider>
+        <RefinementGroups refinements={refinements} languages={languages} />
+      </SearchBarProvider>
+    )
+
+    fireEvent.click(screen.getByText('Clear All'))
+    expect(refine).toHaveBeenCalled()
+  })
+
+  it('should show loading when loading languages', () => {
+    render(
+      <SearchBarProvider>
+        <RefinementGroups refinements={refinements} languages={{}} />
+      </SearchBarProvider>
+    )
+    expect(screen.getByText('Loading...')).toBeVisible()
   })
 })

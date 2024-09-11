@@ -6,7 +6,8 @@ import { ActionFields } from './__generated__/ActionFields'
 
 export function handleAction(
   router: NextRouter,
-  action?: ActionFields | null
+  action?: ActionFields | null,
+  nextBlockAddress?: string
 ): void {
   const journeysUrls = [
     'your.nextstep.is',
@@ -17,7 +18,11 @@ export function handleAction(
   if (action == null) return
   switch (action.__typename) {
     case 'NavigateToBlockAction':
-      nextActiveBlock({ id: action.blockId })
+      if (nextBlockAddress != null) {
+        void router.push(nextBlockAddress)
+      } else {
+        nextActiveBlock({ id: action.blockId })
+      }
       break
     case 'LinkAction':
       if (

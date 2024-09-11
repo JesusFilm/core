@@ -96,7 +96,10 @@ function StepPage({ journey, locale, rtl }: StepPageProps): ReactElement {
       />
       <JourneyPageWrapper journey={journey} rtl={rtl} locale={locale}>
         {stepBlock != null && (
-          <WebView stepBlock={stepBlock as TreeBlock<StepBlock>} />
+          <WebView
+            blocks={blocks}
+            stepBlock={stepBlock as TreeBlock<StepBlock>}
+          />
         )}
       </JourneyPageWrapper>
     </>

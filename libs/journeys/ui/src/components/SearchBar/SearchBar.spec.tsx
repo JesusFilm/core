@@ -1,8 +1,13 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { ClearRefinementsRenderState } from 'instantsearch.js/es/connectors/clear-refinements/connectClearRefinements'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import type { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
-import { useRefinementList, useSearchBox } from 'react-instantsearch'
+import {
+  useClearRefinements,
+  useRefinementList,
+  useSearchBox
+} from 'react-instantsearch'
 
 import '../../../test/i18n'
 import { getLanguagesContinentsMock } from '../../libs/useLanguagesContinentsQuery/useLanguagesContinentsQuery.mock'
@@ -18,6 +23,10 @@ const mockUseRefinementList = useRefinementList as jest.MockedFunction<
 
 const mockUseSearchBox = useSearchBox as jest.MockedFunction<
   typeof useSearchBox
+>
+
+const mockUseClearRefinements = useClearRefinements as jest.MockedFunction<
+  typeof useClearRefinements
 >
 
 async function clickOnSearchBar(): Promise<void> {
@@ -41,9 +50,15 @@ describe('SearchBar', () => {
     refine
   } as unknown as SearchBoxRenderState
 
+  const clearRefinements = {
+    refine: jest.fn(),
+    canRefine: false
+  } as unknown as ClearRefinementsRenderState
+
   beforeEach(() => {
     mockUseRefinementList.mockReturnValue(useRefinementList)
     mockUseSearchBox.mockReturnValue(useSearchBox)
+    mockUseClearRefinements.mockReturnValue(clearRefinements)
   })
 
   it('should render input field', async () => {

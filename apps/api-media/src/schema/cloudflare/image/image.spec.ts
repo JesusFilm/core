@@ -1,5 +1,7 @@
 import { Response } from 'node-fetch'
 
+import { ImageAspectRatio } from '.prisma/api-media-client'
+
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
@@ -48,6 +50,7 @@ describe('cloudflareImage', () => {
             id
             uploadUrl
             userId
+            aspectRatio
           }
         }
       `)
@@ -60,7 +63,9 @@ describe('cloudflareImage', () => {
             userId: 'testUserId',
             uploadUrl: 'testUrl',
             createdAt: new Date(),
-            updatedAt: new Date()
+            updatedAt: new Date(),
+            aspectRatio: ImageAspectRatio.hd,
+            videoId: null
           }
         ])
         const result = await client({
@@ -72,7 +77,8 @@ describe('cloudflareImage', () => {
               {
                 id: 'testId',
                 uploadUrl: 'testUrl',
-                userId: 'testUserId'
+                userId: 'testUserId',
+                aspectRatio: ImageAspectRatio.hd
               }
             ]
           }
@@ -90,7 +96,9 @@ describe('cloudflareImage', () => {
             userId: 'testUserId',
             uploadUrl: 'testUrl',
             createdAt: new Date(),
-            updatedAt: new Date()
+            updatedAt: new Date(),
+            aspectRatio: null,
+            videoId: null
           }
         ])
         const result = await client({
@@ -106,7 +114,8 @@ describe('cloudflareImage', () => {
               {
                 id: 'testId',
                 uploadUrl: 'testUrl',
-                userId: 'testUserId'
+                userId: 'testUserId',
+                aspectRatio: null
               }
             ]
           }
@@ -126,6 +135,7 @@ describe('cloudflareImage', () => {
             id
             uploadUrl
             userId
+            aspectRatio
           }
         }
       `)
@@ -137,7 +147,9 @@ describe('cloudflareImage', () => {
           userId: 'testUserId',
           uploadUrl: 'testUrl',
           createdAt: new Date(),
-          updatedAt: new Date()
+          updatedAt: new Date(),
+          aspectRatio: null,
+          videoId: null
         })
         const result = await client({
           document: GET_MY_CLOUDFLARE_IMAGE_QUERY
@@ -147,7 +159,8 @@ describe('cloudflareImage', () => {
             getMyCloudflareImage: {
               id: 'testId',
               uploadUrl: 'testUrl',
-              userId: 'testUserId'
+              userId: 'testUserId',
+              aspectRatio: null
             }
           }
         })
@@ -163,11 +176,12 @@ describe('cloudflareImage', () => {
   describe('mutations', () => {
     describe('createCloudflareUploadByFile', () => {
       const CREATE_CLOUDFLARE_UPLOAD_BY_FILE_MUTATION = graphql(`
-        mutation createCloudflareUploadByFile {
-          createCloudflareUploadByFile {
+        mutation createCloudflareUploadByFile($input: ImageInput!) {
+          createCloudflareUploadByFile(input: $input) {
             id
             uploadUrl
             userId
+            aspectRatio
           }
         }
       `)
@@ -183,17 +197,26 @@ describe('cloudflareImage', () => {
           userId: 'testUserId',
           uploadUrl: 'testUrl',
           createdAt: new Date(),
-          updatedAt: new Date()
+          updatedAt: new Date(),
+          aspectRatio: ImageAspectRatio.hd,
+          videoId: 'videoId'
         })
         const result = await client({
-          document: CREATE_CLOUDFLARE_UPLOAD_BY_FILE_MUTATION
+          document: CREATE_CLOUDFLARE_UPLOAD_BY_FILE_MUTATION,
+          variables: {
+            input: {
+              aspectRatio: ImageAspectRatio.hd,
+              videoId: 'videoId'
+            }
+          }
         })
         expect(result).toEqual({
           data: {
             createCloudflareUploadByFile: {
               id: 'id',
               uploadUrl: 'testUrl',
-              userId: 'testUserId'
+              userId: 'testUserId',
+              aspectRatio: ImageAspectRatio.hd
             }
           }
         })
@@ -201,7 +224,9 @@ describe('cloudflareImage', () => {
           data: {
             id: 'id',
             userId: 'testUserId',
-            uploadUrl: 'testUrl'
+            uploadUrl: 'testUrl',
+            aspectRatio: ImageAspectRatio.hd,
+            videoId: 'videoId'
           }
         })
         expect(mockCreateImageByDirectUpload).toHaveBeenCalledWith()
@@ -215,6 +240,7 @@ describe('cloudflareImage', () => {
             id
             uploadUrl
             userId
+            aspectRatio
           }
         }
       `)
@@ -227,12 +253,18 @@ describe('cloudflareImage', () => {
           userId: 'testUserId',
           uploadUrl: null,
           createdAt: new Date(),
-          updatedAt: new Date()
+          updatedAt: new Date(),
+          aspectRatio: ImageAspectRatio.banner,
+          videoId: 'videoId'
         })
         const result = await client({
           document: CREATE_CLOUDFLARE_UPLOAD_BY_URL_MUTATION,
           variables: {
-            url: 'testUrl'
+            url: 'testUrl',
+            input: {
+              aspectRatio: ImageAspectRatio.banner,
+              videoId: 'videoId'
+            }
           }
         })
         expect(result).toEqual({
@@ -240,7 +272,8 @@ describe('cloudflareImage', () => {
             createCloudflareUploadByUrl: {
               id: 'id',
               uploadUrl: null,
-              userId: 'testUserId'
+              userId: 'testUserId',
+              aspectRatio: ImageAspectRatio.banner
             }
           }
         })
@@ -262,6 +295,7 @@ describe('cloudflareImage', () => {
             id
             uploadUrl
             userId
+            aspectRatio
           }
         }
       `)
@@ -276,12 +310,18 @@ describe('cloudflareImage', () => {
           userId: 'testUserId',
           uploadUrl: null,
           createdAt: new Date(),
-          updatedAt: new Date()
+          updatedAt: new Date(),
+          aspectRatio: ImageAspectRatio.hd,
+          videoId: 'videoId'
         })
         const result = await client({
           document: CREATE_CLOUDFLARE_IMAGE_FROM_PROMPT_MUTATION,
           variables: {
-            prompt: 'test prompt'
+            prompt: 'test prompt',
+            input: {
+              aspectRatio: ImageAspectRatio.hd,
+              videoId: 'videoId'
+            }
           }
         })
         expect(result).toEqual({
@@ -289,7 +329,8 @@ describe('cloudflareImage', () => {
             createCloudflareImageFromPrompt: {
               id: 'id',
               uploadUrl: null,
-              userId: 'testUserId'
+              userId: 'testUserId',
+              aspectRatio: ImageAspectRatio.hd
             }
           }
         })

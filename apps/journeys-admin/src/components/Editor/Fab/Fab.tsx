@@ -67,9 +67,8 @@ export function Fab({ variant }: FabProps): ReactElement {
     (block) =>
       block.__typename === 'VideoBlock' && cardBlock.coverBlockId !== block.id
   )
-  const disabled =
-    steps == null ||
-    (videoBlock != null && activeSlide !== ActiveSlide.JourneyFlow)
+
+  const disabled = steps == null || videoBlock != null
 
   const fabIn =
     variant === 'mobile'

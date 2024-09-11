@@ -115,7 +115,11 @@ export function ChatButtons(): ReactElement {
             backgroundColor: getColor(index === 0, 'background'),
             '&:hover': {
               backgroundColor: getColor(index === 0, 'background')
-            }
+            },
+            boxShadow: (theme) =>
+              journey?.website === true
+                ? `0px 6px 6px ${theme.palette.background.paper}`
+                : undefined
           }}
         >
           <MessageChatIcon

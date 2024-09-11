@@ -54,7 +54,12 @@ describe('bigQuery/importers/videos', () => {
         slug: 'Some Title',
         extraStuff: 'randomData',
         childIds: null,
-        image: null
+        image: null,
+        thumbnail: null,
+        videoStill: null,
+        mobileCinematicHigh: null,
+        mobileCinematicLow: null,
+        mobileCinematicVeryLow: null
       })
       expect(prismaMock.video.upsert).toHaveBeenCalledWith({
         where: { id: 'mockValue0' },
@@ -65,6 +70,11 @@ describe('bigQuery/importers/videos', () => {
           slug: 'some-title-2',
           childIds: [],
           image: null,
+          thumbnail: null,
+          videoStill: null,
+          mobileCinematicHigh: null,
+          mobileCinematicLow: null,
+          mobileCinematicVeryLow: null,
           noIndex: false
         },
         update: {
@@ -74,6 +84,11 @@ describe('bigQuery/importers/videos', () => {
           slug: 'some-title-2',
           childIds: [],
           image: null,
+          thumbnail: null,
+          videoStill: null,
+          mobileCinematicHigh: null,
+          mobileCinematicLow: null,
+          mobileCinematicVeryLow: null,
           noIndex: false
         }
       })
@@ -91,7 +106,12 @@ describe('bigQuery/importers/videos', () => {
           slug: 'Some Title',
           extraStuff: 'randomData',
           childIds: null,
-          image: null
+          image: null,
+          thumbnail: null,
+          videoStill: null,
+          mobileCinematicHigh: null,
+          mobileCinematicLow: null,
+          mobileCinematicVeryLow: null
         },
         {
           id: 'mockValue1',
@@ -100,7 +120,12 @@ describe('bigQuery/importers/videos', () => {
           slug: 'Some Title',
           extraStuff: 'randomData',
           childIds: null,
-          image: null
+          image: null,
+          thumbnail: null,
+          videoStill: null,
+          mobileCinematicHigh: null,
+          mobileCinematicLow: null,
+          mobileCinematicVeryLow: null
         }
       ])
       expect(prismaMock.video.createMany).toHaveBeenCalledWith({
@@ -112,6 +137,11 @@ describe('bigQuery/importers/videos', () => {
             slug: 'some-title',
             childIds: [],
             image: null,
+            thumbnail: null,
+            videoStill: null,
+            mobileCinematicHigh: null,
+            mobileCinematicLow: null,
+            mobileCinematicVeryLow: null,
             noIndex: false
           },
           {
@@ -121,6 +151,11 @@ describe('bigQuery/importers/videos', () => {
             slug: 'some-title-2',
             childIds: [],
             image: null,
+            thumbnail: null,
+            videoStill: null,
+            mobileCinematicHigh: null,
+            mobileCinematicLow: null,
+            mobileCinematicVeryLow: null,
             noIndex: false
           }
         ],
@@ -137,6 +172,11 @@ describe('bigQuery/importers/videos', () => {
             slug: 'some-title',
             childIds: [],
             image: null,
+            thumbnail: null,
+            videoStill: null,
+            mobileCinematicHigh: null,
+            mobileCinematicLow: null,
+            mobileCinematicVeryLow: null,
             noIndex: false
           },
           {
