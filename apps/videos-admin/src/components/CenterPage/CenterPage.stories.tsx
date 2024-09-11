@@ -11,11 +11,13 @@ const meta: Meta<typeof CenterPage> = {
   title: 'Videos-Admin/CenterPage',
   component: CenterPage,
   parameters: {
+    ...videosAdminConfig.parameters,
     nextjs: {
       appDirectory: false
     },
     layout: 'fullscreen'
-  }
+  },
+  tags: ['!autodocs']
 }
 
 export default meta
