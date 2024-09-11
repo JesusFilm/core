@@ -20,7 +20,6 @@ import { CopyLinkItem } from '../Items/CopyLinkItem'
 import { CreateTemplateItem } from '../Items/CreateTemplateItem'
 import { DescriptionItem } from '../Items/DescriptionItem'
 import { LanguageItem } from '../Items/LanguageItem'
-import { PreviewItem } from '../Items/PreviewItem'
 import { ShareItem } from '../Items/ShareItem'
 import { StrategyItem } from '../Items/StrategyItem'
 import { TemplateSettingsItem } from '../Items/TemplateSettingsItem'
@@ -81,7 +80,6 @@ export function Menu({ user }: MenuProps): ReactElement {
           'aria-labelledby': 'edit-journey-actions'
         }}
       >
-        {!smUp && <PreviewItem variant="menu-item" onClick={handleCloseMenu} />}
         <AccessItem variant="menu-item" onClose={handleCloseMenu} />
         {journey?.template === true && (
           <TemplateSettingsItem variant="menu-item" onClose={handleCloseMenu} />

@@ -37,6 +37,7 @@ import { EDIT_TOOLBAR_HEIGHT } from '../constants'
 import { Items } from './Items'
 import { CommandRedoItem } from './Items/CommandRedoItem'
 import { CommandUndoItem } from './Items/CommandUndoItem'
+import { PreviewItem } from './Items/PreviewItem'
 import { Menu } from './Menu'
 
 const TitleDescriptionDialog = dynamic(
@@ -266,9 +267,12 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
           <Items />
         </>
       )}
-      <Box ref={menuRef}>
+      <Stack ref={menuRef} flexDirection="row">
+        <Box sx={{ display: { xs: 'flex', sm: 'none' } }}>
+          <PreviewItem variant="icon-button" />
+        </Box>
         <Menu user={user} />
-      </Box>
+      </Stack>
       <Box
         ref={helpScoutRef}
         sx={{
