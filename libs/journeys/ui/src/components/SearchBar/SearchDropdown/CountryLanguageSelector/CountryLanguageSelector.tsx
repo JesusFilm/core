@@ -6,6 +6,7 @@ import {
   RefinementListRenderState
 } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import orderBy from 'lodash/orderBy'
+import Image from 'next/image'
 import { ReactElement, useEffect, useState } from 'react'
 
 import { useCountryQuery } from '../../../../libs/useCountryQuery'
@@ -77,6 +78,12 @@ export function CountryLanguageSelector({
           alignItems="center"
           sx={{ pt: 6, pb: 3 }}
         >
+          <Image
+            src={data?.country?.flagPngSrc ?? ''}
+            alt={country}
+            width={40}
+            height={20}
+          />
           <Typography variant="h6">{country}: </Typography>
           {spokenLanguages.length > 0 &&
             spokenLanguages.map((language) => (
