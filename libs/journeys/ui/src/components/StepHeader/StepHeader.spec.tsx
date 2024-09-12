@@ -37,5 +37,6 @@ describe('StepHeader', () => {
     )
 
     expect(screen.getByText('Journey display title')).toBeInTheDocument()
+    expect(screen.getByTestId('StepHeaderMenu')).toBeInTheDocument()
   })
 })
