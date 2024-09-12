@@ -125,6 +125,10 @@ export function SearchBar({
                     onChange={handleChange}
                     onBlur={handleBlur}
                     onFocus={openSuggestionsDropdown}
+                    onClick={openSuggestionsDropdown}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') setOpen(false)
+                    }}
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
