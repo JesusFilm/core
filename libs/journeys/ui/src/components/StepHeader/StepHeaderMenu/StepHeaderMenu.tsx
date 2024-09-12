@@ -68,7 +68,7 @@ export function StepHeaderMenu(): ReactElement {
         maxWidth: 'min-content',
         opacity: journey?.menuButtonIcon == null ? 0.6 : 1
       }}
-      data-testid="Menu"
+      data-testid="StepHeaderMenu"
     >
       {Icon != null && (
         <>
