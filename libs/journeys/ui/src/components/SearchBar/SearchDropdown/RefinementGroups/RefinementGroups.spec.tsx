@@ -75,15 +75,17 @@ describe('RefinementGroups', () => {
 
   it('should render message if no languages', () => {
     render(
-      <RefinementGroups
-        refinements={
-          {
-            items: [],
-            refine: jest.fn()
-          } as unknown as RefinementListRenderState
-        }
-        languages={languages}
-      />
+      <SearchBarProvider>
+        <RefinementGroups
+          refinements={
+            {
+              items: [],
+              refine: jest.fn()
+            } as unknown as RefinementListRenderState
+          }
+          languages={languages}
+        />
+      </SearchBarProvider>
     )
     expect(
       screen.getByText(
