@@ -40,7 +40,8 @@ export function LanguageButtons({
 
   return (
     <Box
-      component="button"
+      component="div"
+      role="button"
       onClick={onClick}
       data-testid="LanguageSelect"
       sx={{
