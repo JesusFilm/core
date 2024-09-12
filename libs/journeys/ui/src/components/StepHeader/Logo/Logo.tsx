@@ -36,6 +36,7 @@ export function Logo(): ReactElement {
     />
   ) : showEmpty ? (
     <Box
+      data-testid="empty-logo"
       sx={{
         width: 44,
         height: 44
