@@ -53,4 +53,18 @@ export const Default = {
   }
 }
 
+export const Loading = {
+  ...Template,
+  args: {
+    refinements: {
+      items: languageRefinements
+    }
+  },
+  parameters: {
+    apolloClient: {
+      mocks: [{ ...getCountryMock, delay: 100000000000000 }]
+    }
+  }
+}
+
 export default CountryLanguageSelectorStory
