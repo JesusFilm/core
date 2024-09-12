@@ -8,7 +8,7 @@ import { getTopSpokenLanguages } from './getTopSpokenLanguages'
 describe('getTopSpokenLanguages', () => {
   const availableLanguages = [
     { value: 'English' },
-    { value: 'Spanish' },
+    { value: 'Spanish, Latin American' },
     { value: 'French' },
     { value: 'German' },
     { value: 'Italian' }
@@ -69,7 +69,7 @@ describe('getTopSpokenLanguages', () => {
       availableLanguages
     })
 
-    expect(topSpokenLanguages).toEqual(['Spanish', 'English'])
+    expect(topSpokenLanguages).toEqual(['Spanish, Latin American', 'English'])
   })
 
   it('should return the top spoken languages of a country when there are more than 4 languages', () => {
@@ -80,7 +80,7 @@ describe('getTopSpokenLanguages', () => {
 
     expect(topSpokenLanguages).toEqual([
       'French',
-      'Spanish',
+      'Spanish, Latin American',
       'English',
       'German'
     ])
@@ -88,7 +88,7 @@ describe('getTopSpokenLanguages', () => {
 
   it('should not return languages that are not available in Algolia refinement', () => {
     const customAvailableLanguages = availableLanguages.filter(
-      (language) => language.value !== 'Spanish'
+      (language) => language.value !== 'Spanish, Latin American'
     )
 
     const topSpokenLanguages = getTopSpokenLanguages({

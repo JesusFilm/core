@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -27,18 +28,16 @@ export function CountryLanguageSelector({
   const [countryCode, setCountryCode] = useState<string>()
   const { data } = useCountryQuery({ countryId: countryCode ?? '' })
 
-  const continent = data?.country?.continent?.name?.find(
-    (value) => value != null
-  )?.value
-
   const spokenLanguages = getTopSpokenLanguages({
     country: data?.country,
     availableLanguages: items
   })
 
   function handleClick(language: string): void {
-    if (continent == null) return
+    const continent = data?.country?.continent?.name?.find(Boolean)?.value
     const refinedItem = items.find((item) => item.label === language)?.isRefined
+
+    if (continent == null) return
 
     refine(language)
 
@@ -77,34 +76,51 @@ export function CountryLanguageSelector({
       {country != null && (
         <Stack
           spacing={4}
-          direction="row"
-          alignItems="center"
+          direction={{ xs: 'column', sm: 'row' }}
+          alignItems={{ xs: 'flex-start', sm: 'center' }}
           sx={{ pt: 6, pb: 3 }}
         >
-          <Image
-            src={data?.country?.flagPngSrc ?? ''}
-            alt={country}
-            width={40}
-            height={20}
-          />
-          <Typography variant="h6">{country}: </Typography>
-          {spokenLanguages.length > 0 &&
-            spokenLanguages.map((language) => (
-              <Chip
-                clickable
-                key={language}
-                label={language}
-                variant="outlined"
-                size="medium"
-                onClick={() => handleClick(language)}
-                sx={{
-                  border: (theme) =>
-                    `2px solid ${theme.palette.text.primary}${
-                      theme.palette.mode === 'dark' ? '2E' : '1A'
-                    }`
-                }}
-              />
-            ))}
+          <Box
+            sx={{
+              gap: 4,
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center'
+            }}
+          >
+            <Image
+              src={data?.country?.flagPngSrc ?? ''}
+              alt={country}
+              width={40}
+              height={20}
+            />
+            <Typography variant="h6">{country}: </Typography>
+          </Box>
+          <Box
+            sx={{
+              gap: 4,
+              display: 'flex',
+              flexWrap: 'wrap'
+            }}
+          >
+            {spokenLanguages.length > 0 &&
+              spokenLanguages.map((language) => (
+                <Chip
+                  clickable
+                  key={language}
+                  label={language}
+                  variant="outlined"
+                  size="medium"
+                  onClick={() => handleClick(language)}
+                  sx={{
+                    border: (theme) =>
+                      `2px solid ${theme.palette.text.primary}${
+                        theme.palette.mode === 'dark' ? '2E' : '1A'
+                      }`
+                  }}
+                />
+              ))}
+          </Box>
         </Stack>
       )}
     </>
