@@ -85,40 +85,41 @@ export function CountryLanguageSelector({
 
   return (
     <>
-      {data?.country != null && country != null && (
-        <Stack
-          spacing={4}
-          direction={{ xs: 'column', sm: 'row' }}
-          alignItems={{ xs: 'flex-start', sm: 'center' }}
-          sx={{ pt: 6, pb: 3 }}
-        >
-          <Box
-            sx={{
-              gap: 4,
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center'
-            }}
+      {country != null &&
+        data?.country != null &&
+        spokenLanguages.length > 0 && (
+          <Stack
+            spacing={4}
+            direction={{ xs: 'column', sm: 'row' }}
+            alignItems={{ xs: 'flex-start', sm: 'center' }}
+            sx={{ pt: 6, pb: 3 }}
           >
-            {data?.country.flagPngSrc != null && (
-              <Image
-                src={data?.country?.flagPngSrc ?? ''}
-                alt={country}
-                width={40}
-                height={20}
-              />
-            )}
-            <Typography variant="h6">{country}: </Typography>
-          </Box>
-          <Box
-            sx={{
-              gap: 4,
-              display: 'flex',
-              flexWrap: 'wrap'
-            }}
-          >
-            {spokenLanguages.length > 0 &&
-              spokenLanguages.map((language) => (
+            <Box
+              sx={{
+                gap: 4,
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center'
+              }}
+            >
+              {data?.country.flagPngSrc != null && (
+                <Image
+                  src={data?.country?.flagPngSrc}
+                  alt={country}
+                  width={40}
+                  height={20}
+                />
+              )}
+              <Typography variant="h6">{country}: </Typography>
+            </Box>
+            <Box
+              sx={{
+                gap: 4,
+                display: 'flex',
+                flexWrap: 'wrap'
+              }}
+            >
+              {spokenLanguages.map((language) => (
                 <Chip
                   clickable
                   key={language}
@@ -134,9 +135,9 @@ export function CountryLanguageSelector({
                   }}
                 />
               ))}
-          </Box>
-        </Stack>
-      )}
+            </Box>
+          </Stack>
+        )}
     </>
   )
 }
