@@ -16,7 +16,7 @@ import {
   getGridStringOperators,
   gridClasses
 } from '@mui/x-data-grid'
-import { VariablesOf, graphql } from 'gql.tada'
+import { ResultOf, VariablesOf, graphql } from 'gql.tada'
 import { usePathname, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { ReactElement, useState } from 'react'
@@ -45,6 +45,10 @@ export const GET_VIDEOS_AND_COUNT = graphql(`
 `)
 
 type VideosFilter = VariablesOf<typeof GET_VIDEOS_AND_COUNT>['where']
+export type GetVideosAndCount = ResultOf<typeof GET_VIDEOS_AND_COUNT>
+export type GetVideosAndCountVariables = VariablesOf<
+  typeof GET_VIDEOS_AND_COUNT
+>
 
 export function VideoList(): ReactElement {
   const videosLimit = 50
@@ -69,7 +73,10 @@ export function VideoList(): ReactElement {
   const router = useRouter()
   const pathname = usePathname()
 
-  const { data, loading, fetchMore } = useQuery(GET_VIDEOS_AND_COUNT, {
+  const { data, loading, fetchMore } = useQuery<
+    GetVideosAndCount,
+    GetVideosAndCountVariables
+  >(GET_VIDEOS_AND_COUNT, {
     variables: {
       limit: videosLimit,
       offset: paginationModel.page * videosLimit,
