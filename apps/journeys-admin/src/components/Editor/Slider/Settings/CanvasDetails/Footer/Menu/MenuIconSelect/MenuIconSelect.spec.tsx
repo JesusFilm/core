@@ -80,6 +80,50 @@ describe('MenuIconSelect', () => {
     await waitFor(() => expect(mockUpdate.result).toHaveBeenCalled())
   })
 
+  it('can reset the icon', async () => {
+    const mockUpdate = getJourneySettingsUpdateMock({
+      menuButtonIcon: null
+    })
+    const mockUpdateUndo = getJourneySettingsUpdateMock({
+      menuButtonIcon: JourneyMenuButtonIcon.home4
+    })
+    const mockUpdateRedo = getJourneySettingsUpdateMock({
+      menuButtonIcon: null
+    })
+
+    render(
+      <MockedProvider mocks={[mockUpdate, mockUpdateUndo, mockUpdateRedo]}>
+        <JourneyProvider
+          value={{
+            journey: {
+              ...defaultJourney,
+              menuButtonIcon: JourneyMenuButtonIcon.home4
+            }
+          }}
+        >
+          <EditorProvider>
+            <MenuIconSelect />
+            <CommandUndoItem variant="button" />
+            <CommandRedoItem variant="button" />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.mouseDown(screen.getByRole('combobox'))
+
+    const options = screen.getAllByRole('option')
+    fireEvent.click(options[0])
+
+    await waitFor(() => expect(mockUpdate.result).toHaveBeenCalled())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(mockUpdateUndo.result).toHaveBeenCalled())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+    await waitFor(() => expect(mockUpdateRedo.result).toHaveBeenCalled())
+  })
+
   it('should handle undo/redo', async () => {
     const mockUpdate = getJourneySettingsUpdateMock({
       menuButtonIcon: JourneyMenuButtonIcon.home4
@@ -102,6 +146,7 @@ describe('MenuIconSelect', () => {
         </JourneyProvider>
       </MockedProvider>
     )
+
     fireEvent.mouseDown(screen.getByRole('combobox'))
 
     const options = screen.getAllByRole('option')
