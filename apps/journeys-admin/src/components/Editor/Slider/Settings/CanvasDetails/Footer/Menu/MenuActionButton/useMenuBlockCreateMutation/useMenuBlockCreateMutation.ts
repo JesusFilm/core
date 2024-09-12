@@ -39,8 +39,8 @@ export const MENU_BLOCK_CREATE = gql`
       ...TypographyFields
     }
     journeyUpdate(id: $journeyId, input: $journeyUpdateInput) {
+      id
       menuStepBlock {
-        id
         ...StepFields
       }
     }
@@ -78,9 +78,6 @@ function updateCache(
   cache.modify({
     id: cache.identify({ __typename: 'Journey', id: journeyId }),
     fields: {
-      // menuStepBlock() {
-      //   return data.step
-      // },
       blocks(existingBlockRefs) {
         const newStepBlockRef = cache.writeFragment({
           data: data.step,

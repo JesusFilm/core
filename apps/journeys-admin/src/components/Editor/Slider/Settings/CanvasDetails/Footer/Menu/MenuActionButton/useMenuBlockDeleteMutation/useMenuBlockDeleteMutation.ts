@@ -18,19 +18,9 @@ export const MENU_BLOCK_DELETE = gql`
   mutation MenuBlockDelete(
     $journeyId: ID!
     $stepId: ID!
-    $cardId: ID!
-    $typographyId: ID!
     $journeyUpdateInput: JourneyUpdateInput!
   ) {
     stepDelete: blockDelete(id: $stepId) {
-      id
-      parentOrder
-    }
-    cardDelete: blockDelete(id: $cardId) {
-      id
-      parentOrder
-    }
-    typographyDelete: blockDelete(id: $typographyId) {
       id
       parentOrder
     }

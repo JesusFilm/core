@@ -123,6 +123,7 @@ export interface MenuBlockRestore_journeyUpdate_menuStepBlock {
 
 export interface MenuBlockRestore_journeyUpdate {
   __typename: "Journey";
+  id: string;
   menuStepBlock: MenuBlockRestore_journeyUpdate_menuStepBlock | null;
 }
 

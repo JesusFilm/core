@@ -15,18 +15,6 @@ export interface MenuBlockDelete_stepDelete {
   parentOrder: number | null;
 }
 
-export interface MenuBlockDelete_cardDelete {
-  __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "FormBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
-  id: string;
-  parentOrder: number | null;
-}
-
-export interface MenuBlockDelete_typographyDelete {
-  __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "FormBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
-  id: string;
-  parentOrder: number | null;
-}
-
 export interface MenuBlockDelete_journeyUpdate_menuStepBlock {
   __typename: "StepBlock";
   id: string;
@@ -54,6 +42,7 @@ export interface MenuBlockDelete_journeyUpdate_menuStepBlock {
 
 export interface MenuBlockDelete_journeyUpdate {
   __typename: "Journey";
+  id: string;
   menuStepBlock: MenuBlockDelete_journeyUpdate_menuStepBlock | null;
 }
 
@@ -62,21 +51,11 @@ export interface MenuBlockDelete {
    * blockDelete returns the updated sibling blocks on successful delete
    */
   stepDelete: MenuBlockDelete_stepDelete[];
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
-  cardDelete: MenuBlockDelete_cardDelete[];
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
-  typographyDelete: MenuBlockDelete_typographyDelete[];
   journeyUpdate: MenuBlockDelete_journeyUpdate;
 }
 
 export interface MenuBlockDeleteVariables {
   journeyId: string;
   stepId: string;
-  cardId: string;
-  typographyId: string;
   journeyUpdateInput: JourneyUpdateInput;
 }

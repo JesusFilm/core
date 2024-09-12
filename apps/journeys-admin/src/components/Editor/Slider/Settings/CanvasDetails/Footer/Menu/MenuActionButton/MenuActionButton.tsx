@@ -146,16 +146,12 @@ export function MenuActionButton(): ReactElement {
             variables: {
               journeyId: journey.id,
               stepId,
-              cardId,
-              typographyId: typography.id,
               journeyUpdateInput: {
                 menuStepBlockId: null
               }
             },
             optimisticResponse: {
               stepDelete: [],
-              cardDelete: [],
-              typographyDelete: [],
               journeyUpdate: {
                 ...journey,
                 menuStepBlock: null

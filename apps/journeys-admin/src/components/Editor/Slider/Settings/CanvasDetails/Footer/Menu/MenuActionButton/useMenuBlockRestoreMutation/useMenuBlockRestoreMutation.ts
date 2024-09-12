@@ -6,10 +6,9 @@ import {
   useMutation
 } from '@apollo/client'
 
-import { CARD_FIELDS } from '@core/journeys/ui/Card/cardFields'
+import { BLOCK_FIELDS } from '@core/journeys/ui/block/blockFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { STEP_FIELDS } from '@core/journeys/ui/Step/stepFields'
-import { TYPOGRAPHY_FIELDS } from '@core/journeys/ui/Typography/typographyFields'
 
 import {
   MenuBlockRestore,
@@ -17,24 +16,21 @@ import {
 } from '../../../../../../../../../../__generated__/MenuBlockRestore'
 
 export const MENU_BLOCK_RESTORE = gql`
+  ${BLOCK_FIELDS}
   ${STEP_FIELDS}
-  ${CARD_FIELDS}
-  ${TYPOGRAPHY_FIELDS}
   mutation MenuBlockRestore(
     $journeyId: ID!
     $stepId: ID!
-    $cardId: ID!
-    $typographyId: ID!
     $journeyUpdateInput: JourneyUpdateInput!
   ) {
     stepRestore: blockRestore(id: $stepId) {
-      ...StepFields
-    }
-    cardRestore: blockRestore(id: $cardId) {
-      ...CardFields
-    }
-    typographyRestore: blockRestore(id: $typographyId) {
-      ...TypographyFields
+      id
+      ...BlockFields
+      ... on StepBlock {
+        id
+        x
+        y
+      }
     }
     journeyUpdate(id: $journeyId, input: $journeyUpdateInput) {
       id
