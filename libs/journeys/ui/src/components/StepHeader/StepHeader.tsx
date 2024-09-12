@@ -9,6 +9,7 @@ import { getJourneyRTL } from '../../libs/rtl'
 import { InformationButton } from './InformationButton'
 import { Logo } from './Logo'
 import { PaginationBullets } from './PaginationBullets'
+import { StepHeaderMenu } from './StepHeaderMenu'
 
 interface StepHeaderProps {
   onHeaderClick?: () => void
@@ -33,6 +34,7 @@ export function StepHeader({
         top: 0,
         alignItems: 'flex-end',
         width: { xs: '100%', lg: 'auto' },
+        py: 4,
         ...sx
       }}
       onClick={(e) => {
@@ -85,7 +87,9 @@ export function StepHeader({
                 {journey?.displayTitle ?? journey?.seoTitle}
               </Typography>
             </Stack>
+
             {/* Menu */}
+            <StepHeaderMenu />
           </Stack>
         </Stack>
       ) : (
