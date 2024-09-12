@@ -41,15 +41,14 @@ export function StepHeaderMenu(): ReactElement {
   }
 
   const handleClick = (): void => {
-    if (journey == null) return
+    if (journey == null || journey.menuStepBlock == null) return
 
     if (isMenu) {
       void router.back()
     } else {
-      const route = `/${journey?.slug ?? journey.id}/${
-        journey?.menuStepBlock?.slug ?? journey.menuStepBlock?.id
-      }`
-      void router.push(route)
+      const { slug, id } = journey.menuStepBlock
+
+      void router.push(`/${journey?.slug}/${slug ?? id}`)
     }
   }
 
