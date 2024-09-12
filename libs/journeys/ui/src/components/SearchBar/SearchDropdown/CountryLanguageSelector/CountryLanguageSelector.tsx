@@ -5,7 +5,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import Image from 'next/image'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useState } from 'react'
 
 import { getTopSpokenLanguages } from '../../../../libs/algolia/getTopSpokenLanguages'
 import { useSearchBar } from '../../../../libs/algolia/SearchBarProvider'
@@ -57,20 +57,32 @@ export function CountryLanguageSelector({
     }
   }
 
-  useEffect(() => {
-    const countryCookie = document.cookie
+  function getCountryCookie(): string | undefined {
+    return document.cookie
       .split('; ')
       .find((row) => row.startsWith('NEXT_COUNTRY'))
       ?.split('=')[1]
+  }
 
+  function parseCountryName(countryCode: string): string | undefined {
+    const displayNames = new Intl.DisplayNames(['en'], { type: 'region' })
+    return displayNames.of(countryCode)
+  }
+
+  const findUserCountry = useCallback(() => {
+    const countryCookie = getCountryCookie()
     if (countryCookie != null) {
       const [, countryCode] = countryCookie.split('---')
-      const displayNames = new Intl.DisplayNames(['en'], { type: 'region' })
-      const countryName = displayNames.of(countryCode)
+      const countryName = parseCountryName(countryCode)
       setCountry(countryName)
       setCountryCode(countryCode)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  useEffect(() => {
+    findUserCountry()
+  }, [findUserCountry])
 
   return (
     <>
@@ -91,7 +103,7 @@ export function CountryLanguageSelector({
           >
             {loading ? (
               <>
-                <Skeleton variant="rectangular" width={40} height={20} />
+                <Skeleton variant="rectangular" width={35} height={15} />
                 <Skeleton variant="text" width={150} height={62} />
               </>
             ) : (
@@ -117,7 +129,7 @@ export function CountryLanguageSelector({
           >
             {loading
               ? [1, 2, 3].map((i) => (
-                <Skeleton key={i} variant="rounded" width={80} height={32} />
+                  <Skeleton key={i} variant="rounded" width={80} height={32} />
                 ))
               : spokenLanguages.length > 0 &&
                 spokenLanguages.map((language) => (
