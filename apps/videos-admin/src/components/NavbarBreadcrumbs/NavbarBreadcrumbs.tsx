@@ -34,7 +34,7 @@ export function NavbarBreadcrumbs(): ReactElement {
   const params = useParams()
 
   const labels: { [key: string]: Label } = {
-    [params?.locale.toString() ?? 'en']: {
+    [params?.locale?.toString() ?? 'en']: {
       icon: <HomeRoundedIcon fontSize="inherit" />,
       value: t('Dashboard')
     },
