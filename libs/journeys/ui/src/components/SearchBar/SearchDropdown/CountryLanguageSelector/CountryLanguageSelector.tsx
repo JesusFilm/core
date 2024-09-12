@@ -73,7 +73,7 @@ export function CountryLanguageSelector({
 
   return (
     <>
-      {country != null && (
+      {data?.country != null && country != null && (
         <Stack
           spacing={4}
           direction={{ xs: 'column', sm: 'row' }}
@@ -88,12 +88,14 @@ export function CountryLanguageSelector({
               alignItems: 'center'
             }}
           >
-            <Image
-              src={data?.country?.flagPngSrc ?? ''}
-              alt={country}
-              width={40}
-              height={20}
-            />
+            {data?.country.flagPngSrc != null && (
+              <Image
+                src={data?.country?.flagPngSrc ?? ''}
+                alt={country}
+                width={40}
+                height={20}
+              />
+            )}
             <Typography variant="h6">{country}: </Typography>
           </Box>
           <Box
