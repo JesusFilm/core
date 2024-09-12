@@ -131,7 +131,8 @@ export function MenuIconSelect(): ReactElement {
               width: 48,
               borderRadius: 2,
               boxSizing: 'border-box',
-              border: '3px dashed #f1f1f1',
+              border: ({ palette }) =>
+                `3px dashed ${palette.background.default}`,
               display: 'grid',
               placeItems: 'center'
             }}
@@ -144,7 +145,7 @@ export function MenuIconSelect(): ReactElement {
                 height: 48,
                 width: 48,
                 borderRadius: 2,
-                background: '#f1f1f1',
+                background: ({ palette }) => palette.background.default,
                 display: 'grid',
                 placeItems: 'center'
               }}
