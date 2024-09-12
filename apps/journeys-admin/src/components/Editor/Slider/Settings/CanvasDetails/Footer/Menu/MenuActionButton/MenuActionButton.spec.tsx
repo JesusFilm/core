@@ -178,9 +178,7 @@ describe('MenuActionButton', () => {
         expect(mockUseMenuBlockRestoreMutation.result).toHaveBeenCalled()
       )
       expect(cache.extract()['Journey:journey-id']?.blocks).toEqual([
-        { __ref: 'StepBlock:step.id' },
-        { __ref: 'CardBlock:card.id' },
-        { __ref: 'TypographyBlock:typography.id' }
+        { __ref: 'StepBlock:step.id' }
       ])
     })
   })
