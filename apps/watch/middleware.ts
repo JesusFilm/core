@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 const PUBLIC_FILE_REGEX = /\.(.*)$/
 
 // update the fingerprint when updating cookies logic
-// update CountryLanguageSelector usage of fingerprint as well
+// update CountryLanguageSelector data file to reflect the changes
 const COOKIE_FINGERPRINT = '00001'
 
 // geo information is available on projects that is hosted on Vercel

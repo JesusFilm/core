@@ -10,10 +10,6 @@ import { getTopSpokenLanguages } from '../../../../libs/algolia/getTopSpokenLang
 import { useSearchBar } from '../../../../libs/algolia/SearchBarProvider'
 import { useCountryQuery } from '../../../../libs/useCountryQuery'
 
-// The cookie is set by the watch middleware
-// Only use for tests
-export const NEXT_COUNTRY = 'NEXT_COUNTRY=00001---US'
-
 interface CountryLanguageSelectorProps {
   refinements: RefinementListRenderState
 }

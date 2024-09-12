@@ -7,10 +7,8 @@ import { SearchBarProvider } from '../../../../libs/algolia/SearchBarProvider'
 import { getCountryMock } from '../../../../libs/useCountryQuery/useCountryQuery.mock'
 import { languageRefinements } from '../../data'
 
-import {
-  CountryLanguageSelector,
-  NEXT_COUNTRY
-} from './CountryLanguageSelector'
+import { CountryLanguageSelector } from './CountryLanguageSelector'
+import { NEXT_COUNTRY } from './data'
 
 const CountryLanguageSelectorStory: Meta<typeof CountryLanguageSelector> = {
   ...watchConfig,
