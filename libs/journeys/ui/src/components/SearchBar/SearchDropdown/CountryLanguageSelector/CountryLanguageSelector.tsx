@@ -106,8 +106,8 @@ export function CountryLanguageSelector({
                 <Image
                   src={data?.country?.flagPngSrc}
                   alt={country}
-                  width={40}
-                  height={20}
+                  width={25}
+                  height={15}
                 />
               )}
               <Typography variant="h6">{country}: </Typography>
