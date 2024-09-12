@@ -1,6 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { ResultOf, VariablesOf } from 'gql.tada'
 import { NextIntlClientProvider } from 'next-intl'
 
 import {

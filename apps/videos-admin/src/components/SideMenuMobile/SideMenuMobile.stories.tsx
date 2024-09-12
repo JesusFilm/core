@@ -1,11 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react'
+import noop from 'lodash/noop'
 import { NextIntlClientProvider } from 'next-intl'
 import { ComponentProps } from 'react'
 
+import { AuthProvider } from '../../libs/auth/AuthProvider'
 import { videosAdminConfig } from '../../libs/storybookConfig'
 
 import { SideMenuMobile } from './SideMenuMobile'
-import { AuthProvider } from '../../libs/auth/AuthProvider'
 
 const meta: Meta<typeof SideMenuMobile> = {
   ...videosAdminConfig,
@@ -39,7 +40,7 @@ export const Default: Story = {
       }}
     >
       <NextIntlClientProvider locale={locale}>
-        <SideMenuMobile open toggleDrawer={(newOpen: boolean) => () => {}} />
+        <SideMenuMobile open toggleDrawer={(newOpen: boolean) => noop} />
       </NextIntlClientProvider>
     </AuthProvider>
   ),

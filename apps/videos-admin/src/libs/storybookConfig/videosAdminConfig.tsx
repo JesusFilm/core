@@ -5,11 +5,11 @@ import {
 } from '@mui/material/styles'
 import { Decorator, StoryContext } from '@storybook/react'
 import { SnackbarProvider } from 'notistack'
+import { ReactElement } from 'react'
 
 import { sharedUiConfig } from '@core/shared/ui/sharedUiConfig'
 
 import { theme } from '../../theme'
-import { ReactElement } from 'react'
 
 function StorySlot({
   storyComponent,
@@ -18,7 +18,7 @@ function StorySlot({
   storyComponent: ReactElement
   storyContext: StoryContext
 }): ReactElement {
-  const { mode, setMode } = useColorScheme()
+  const { setMode } = useColorScheme()
   setMode(storyContext.globals.theme ?? storyContext.parameters.theme)
 
   return <>{storyComponent}</>

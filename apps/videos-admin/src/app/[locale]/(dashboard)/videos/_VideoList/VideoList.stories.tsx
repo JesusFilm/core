@@ -1,6 +1,9 @@
+import { MockedResponse } from '@apollo/client/testing'
 import type { Meta, StoryObj } from '@storybook/react'
 import { NextIntlClientProvider } from 'next-intl'
 import { ComponentProps } from 'react'
+
+import { videosAdminConfig } from '../../../../../libs/storybookConfig'
 
 import {
   GET_VIDEOS_AND_COUNT,
@@ -8,8 +11,6 @@ import {
   GetVideosAndCountVariables,
   VideoList
 } from './VideoList'
-import { videosAdminConfig } from '../../../../../libs/storybookConfig'
-import { MockedResponse } from '@apollo/client/testing'
 
 const meta: Meta<typeof VideoList> = {
   ...videosAdminConfig,
