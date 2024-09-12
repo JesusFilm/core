@@ -92,7 +92,7 @@ export function CountryLanguageSelector({
             {loading ? (
               <>
                 <Skeleton variant="rectangular" width={40} height={20} />
-                <Skeleton variant="text" width={150} height={32} />
+                <Skeleton variant="text" width={150} height={62} />
               </>
             ) : (
               <>
