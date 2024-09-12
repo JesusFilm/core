@@ -11,7 +11,7 @@ import {
   TypographyVariant
 } from '../../../../../../../../../__generated__/globalTypes'
 
-export const menuStep: TreeBlock<
+export const mockMenuStep: TreeBlock<
   BlockFields_StepBlock & { x: number; y: number }
 > = {
   __typename: 'StepBlock',
@@ -25,7 +25,7 @@ export const menuStep: TreeBlock<
   slug: 'menu',
   children: []
 }
-export const menuCard: BlockFields_CardBlock = {
+export const mockMenuCard: BlockFields_CardBlock = {
   __typename: 'CardBlock',
   id: 'card.id',
   parentBlockId: 'step.id',
@@ -36,7 +36,7 @@ export const menuCard: BlockFields_CardBlock = {
   backgroundColor: null,
   parentOrder: 0
 }
-export const menuTypography: BlockFields_TypographyBlock = {
+export const mockMenuTypography: BlockFields_TypographyBlock = {
   __typename: 'TypographyBlock' as const,
   id: 'typography.id',
   parentBlockId: 'card.id',

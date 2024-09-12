@@ -8,13 +8,13 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
 import { TestEditorState } from '../../../../../../../../libs/TestEditorState'
+import { mockUseMenuBlockCreateMutation } from '../../../../../../../../libs/useMenuBlockCreateMutation/useMenuBlockCreateMutation.mock'
+import { mockUseMenuBlockDeleteMutation } from '../../../../../../../../libs/useMenuBlockDeleteMutation/useMenuBlockDeleteMutation.mock'
+import { mockUseMenuBlockRestoreMutation } from '../../../../../../../../libs/useMenuBlockRestoreMutation/useMenuBlockRestoreMutation.mock'
 import { CommandRedoItem } from '../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../Toolbar/Items/CommandUndoItem'
 
-import { menuCard, menuStep, menuTypography } from './data'
-import { mockUseMenuBlockCreateMutation } from './useMenuBlockCreateMutation/useMenuBlockCreateMutation.mock'
-import { mockUseMenuBlockDeleteMutation } from './useMenuBlockDeleteMutation/useMenuBlockDeleteMutation.mock'
-import { mockUseMenuBlockRestoreMutation } from './useMenuBlockRestoreMutation/useMenuBlockRestoreMutation.mock'
+import { mockMenuCard, mockMenuStep, mockMenuTypography } from './data'
 
 import { MenuActionButton } from '.'
 
@@ -77,9 +77,9 @@ describe('MenuActionButton', () => {
     })
 
     it('should handle undo menu card creation', async () => {
-      mockUuidv4.mockReturnValueOnce(menuStep.id)
-      mockUuidv4.mockReturnValueOnce(menuCard.id)
-      mockUuidv4.mockReturnValueOnce(menuTypography.id)
+      mockUuidv4.mockReturnValueOnce(mockMenuStep.id)
+      mockUuidv4.mockReturnValueOnce(mockMenuCard.id)
+      mockUuidv4.mockReturnValueOnce(mockMenuTypography.id)
 
       const cache = new InMemoryCache()
       cache.restore({
@@ -125,9 +125,9 @@ describe('MenuActionButton', () => {
     })
 
     it('should handle undo/redo menu card creation', async () => {
-      mockUuidv4.mockReturnValueOnce(menuStep.id)
-      mockUuidv4.mockReturnValueOnce(menuCard.id)
-      mockUuidv4.mockReturnValueOnce(menuTypography.id)
+      mockUuidv4.mockReturnValueOnce(mockMenuStep.id)
+      mockUuidv4.mockReturnValueOnce(mockMenuCard.id)
+      mockUuidv4.mockReturnValueOnce(mockMenuTypography.id)
 
       const cache = new InMemoryCache()
       cache.restore({
@@ -191,7 +191,7 @@ describe('MenuActionButton', () => {
             value={{
               journey: {
                 ...defaultJourney,
-                menuStepBlock: menuStep
+                menuStepBlock: mockMenuStep
               }
             }}
           >
@@ -212,7 +212,7 @@ describe('MenuActionButton', () => {
             value={{
               journey: {
                 ...defaultJourney,
-                menuStepBlock: menuStep
+                menuStepBlock: mockMenuStep
               }
             }}
           >

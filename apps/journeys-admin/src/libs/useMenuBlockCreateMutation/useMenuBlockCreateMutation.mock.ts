@@ -6,13 +6,20 @@ import {
   ThemeMode,
   ThemeName,
   TypographyVariant
-} from '../../../../../../../../../../__generated__/globalTypes'
+} from '../../../__generated__/globalTypes'
 import {
   MenuBlockCreate,
   MenuBlockCreateVariables
-} from '../../../../../../../../../../__generated__/MenuBlockCreate'
-import { MENU_BLOCK_X, MENU_BLOCK_Y } from '../../constants'
-import { menuCard, menuStep, menuTypography } from '../data'
+} from '../../../__generated__/MenuBlockCreate'
+import {
+  MENU_BLOCK_X,
+  MENU_BLOCK_Y
+} from '../../components/Editor/Slider/Settings/CanvasDetails/Footer/Menu/constants'
+import {
+  mockMenuCard,
+  mockMenuStep,
+  mockMenuTypography
+} from '../../components/Editor/Slider/Settings/CanvasDetails/Footer/Menu/MenuActionButton/data'
 
 import { MENU_BLOCK_CREATE } from './useMenuBlockCreateMutation'
 
@@ -25,22 +32,22 @@ export const mockUseMenuBlockCreateMutation: MockedResponse<
     variables: {
       journeyId: defaultJourney.id,
       stepBlockCreateInput: {
-        id: menuStep.id,
+        id: mockMenuStep.id,
         journeyId: defaultJourney.id,
         x: MENU_BLOCK_X,
         y: MENU_BLOCK_Y
       },
       cardBlockCreateInput: {
-        id: menuCard.id,
+        id: mockMenuCard.id,
         journeyId: defaultJourney.id,
-        parentBlockId: menuStep.id,
+        parentBlockId: mockMenuStep.id,
         themeMode: ThemeMode.dark,
         themeName: ThemeName.base
       },
       typographyBlockCreateInput: {
-        id: menuTypography.id,
+        id: mockMenuTypography.id,
         journeyId: defaultJourney.id,
-        parentBlockId: menuCard.id,
+        parentBlockId: mockMenuCard.id,
         content: 'Menu',
         variant: TypographyVariant.h1
       },
@@ -51,12 +58,12 @@ export const mockUseMenuBlockCreateMutation: MockedResponse<
   },
   result: jest.fn(() => ({
     data: {
-      step: menuStep,
-      card: menuCard,
-      typography: menuTypography,
+      step: mockMenuStep,
+      card: mockMenuCard,
+      typography: mockMenuTypography,
       journeyUpdate: {
         ...defaultJourney,
-        menuStepBlock: menuStep
+        menuStepBlock: mockMenuStep
       }
     }
   }))

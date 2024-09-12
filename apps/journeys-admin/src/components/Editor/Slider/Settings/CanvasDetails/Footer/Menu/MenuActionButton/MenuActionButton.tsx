@@ -22,15 +22,14 @@ import {
   ThemeName,
   TypographyVariant
 } from '../../../../../../../../../__generated__/globalTypes'
-import { setBlockRestoreEditorState } from '../../../../../../utils/useBlockDeleteCommand'
-import { MENU_BLOCK_X, MENU_BLOCK_Y } from '../constants'
-
-import { useMenuBlockCreateMutation } from './useMenuBlockCreateMutation/useMenuBlockCreateMutation'
+import { useMenuBlockCreateMutation } from '../../../../../../../../libs/useMenuBlockCreateMutation/useMenuBlockCreateMutation'
 import {
   removeCachedBlocks,
   useMenuBlockDeleteMutation
-} from './useMenuBlockDeleteMutation/useMenuBlockDeleteMutation'
-import { useMenuBlockRestoreMutation } from './useMenuBlockRestoreMutation/useMenuBlockRestoreMutation'
+} from '../../../../../../../../libs/useMenuBlockDeleteMutation/useMenuBlockDeleteMutation'
+import { useMenuBlockRestoreMutation } from '../../../../../../../../libs/useMenuBlockRestoreMutation/useMenuBlockRestoreMutation'
+import { setBlockRestoreEditorState } from '../../../../../../utils/useBlockDeleteCommand'
+import { MENU_BLOCK_X, MENU_BLOCK_Y } from '../constants'
 
 export function MenuActionButton(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')

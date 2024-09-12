@@ -5,8 +5,8 @@ import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 import {
   MenuBlockRestore,
   MenuBlockRestoreVariables
-} from '../../../../../../../../../../__generated__/MenuBlockRestore'
-import { menuStep } from '../data'
+} from '../../../__generated__/MenuBlockRestore'
+import { mockMenuStep } from '../../components/Editor/Slider/Settings/CanvasDetails/Footer/Menu/MenuActionButton/data'
 
 import { MENU_BLOCK_RESTORE } from './useMenuBlockRestoreMutation'
 
@@ -18,7 +18,7 @@ export const mockUseMenuBlockRestoreMutation: MockedResponse<
     query: MENU_BLOCK_RESTORE,
     variables: {
       journeyId: defaultJourney.id,
-      stepId: menuStep.id,
+      stepId: mockMenuStep.id,
       journeyUpdateInput: {
         menuStepBlockId: 'step.id'
       }
@@ -26,10 +26,10 @@ export const mockUseMenuBlockRestoreMutation: MockedResponse<
   },
   result: jest.fn(() => ({
     data: {
-      stepRestore: [menuStep],
+      stepRestore: [mockMenuStep],
       journeyUpdate: {
         ...defaultJourney,
-        menuStepBlock: menuStep
+        menuStepBlock: mockMenuStep
       }
     }
   }))

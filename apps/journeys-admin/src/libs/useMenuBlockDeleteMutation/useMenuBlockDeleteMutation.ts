@@ -11,7 +11,7 @@ import { STEP_FIELDS } from '@core/journeys/ui/Step/stepFields'
 import {
   MenuBlockDelete,
   MenuBlockDeleteVariables
-} from '../../../../../../../../../../__generated__/MenuBlockDelete'
+} from '../../../__generated__/MenuBlockDelete'
 
 export const MENU_BLOCK_DELETE = gql`
   ${STEP_FIELDS}

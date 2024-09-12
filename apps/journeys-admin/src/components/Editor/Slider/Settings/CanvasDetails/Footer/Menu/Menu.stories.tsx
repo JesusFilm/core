@@ -12,7 +12,7 @@ import { JourneyMenuButtonIcon } from '../../../../../../../../__generated__/glo
 import { DRAWER_WIDTH } from '../../../../../constants'
 
 import { Menu } from './Menu'
-import { menuStep } from './MenuActionButton/data'
+import { mockMenuStep } from './MenuActionButton/data'
 
 const MenuStory: Meta<typeof Menu> = {
   ...simpleComponentConfig,
@@ -51,7 +51,7 @@ export const Filled = {
     journey: {
       ...defaultJourney,
       menuButtonIcon: JourneyMenuButtonIcon.home4,
-      menuStepBlock: menuStep
+      mockMenuStepBlock: mockMenuStep
     }
   },
   play: async () => {

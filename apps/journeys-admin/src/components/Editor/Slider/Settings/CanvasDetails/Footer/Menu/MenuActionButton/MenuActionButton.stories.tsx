@@ -10,7 +10,7 @@ import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { DRAWER_WIDTH } from '../../../../../../constants'
 
-import { menuStep } from './data'
+import { mockMenuStep } from './data'
 
 import { MenuActionButton } from '.'
 
@@ -45,7 +45,7 @@ export const Filled: Story = {
     journey: {
       foo: 'bar',
       ...defaultJourney,
-      menuStepBlock: menuStep
+      menuStepBlock: mockMenuStep
     }
   }
 }

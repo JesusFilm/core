@@ -5,8 +5,8 @@ import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 import {
   MenuBlockDelete,
   MenuBlockDeleteVariables
-} from '../../../../../../../../../../__generated__/MenuBlockDelete'
-import { menuStep } from '../data'
+} from '../../../__generated__/MenuBlockDelete'
+import { mockMenuStep } from '../../components/Editor/Slider/Settings/CanvasDetails/Footer/Menu/MenuActionButton/data'
 
 import { MENU_BLOCK_DELETE } from './useMenuBlockDeleteMutation'
 
@@ -18,7 +18,7 @@ export const mockUseMenuBlockDeleteMutation: MockedResponse<
     query: MENU_BLOCK_DELETE,
     variables: {
       journeyId: defaultJourney.id,
-      stepId: menuStep.id,
+      stepId: mockMenuStep.id,
       journeyUpdateInput: {
         menuStepBlockId: null
       }

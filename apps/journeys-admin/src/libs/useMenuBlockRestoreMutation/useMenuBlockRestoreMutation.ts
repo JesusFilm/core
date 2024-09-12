@@ -13,7 +13,7 @@ import { STEP_FIELDS } from '@core/journeys/ui/Step/stepFields'
 import {
   MenuBlockRestore,
   MenuBlockRestoreVariables
-} from '../../../../../../../../../../__generated__/MenuBlockRestore'
+} from '../../../__generated__/MenuBlockRestore'
 
 export const MENU_BLOCK_RESTORE = gql`
   ${BLOCK_FIELDS}

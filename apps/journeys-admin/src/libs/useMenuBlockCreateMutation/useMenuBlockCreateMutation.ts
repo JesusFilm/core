@@ -14,7 +14,7 @@ import { TYPOGRAPHY_FIELDS } from '@core/journeys/ui/Typography/typographyFields
 import {
   MenuBlockCreate,
   MenuBlockCreateVariables
-} from '../../../../../../../../../../__generated__/MenuBlockCreate'
+} from '../../../__generated__/MenuBlockCreate'
 
 export const MENU_BLOCK_CREATE = gql`
   ${STEP_FIELDS}

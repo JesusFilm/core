@@ -11,8 +11,11 @@ import { ThemeMode } from '@core/shared/ui/themes'
 import {
   ThemeName,
   TypographyVariant
-} from '../../../../../../../../../../__generated__/globalTypes'
-import { MENU_BLOCK_X, MENU_BLOCK_Y } from '../../constants'
+} from '../../../__generated__/globalTypes'
+import {
+  MENU_BLOCK_X,
+  MENU_BLOCK_Y
+} from '../../components/Editor/Slider/Settings/CanvasDetails/Footer/Menu/constants'
 
 import { useMenuBlockCreateMutation } from './useMenuBlockCreateMutation'
 import { mockUseMenuBlockCreateMutation } from './useMenuBlockCreateMutation.mock'
