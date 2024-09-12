@@ -1,6 +1,8 @@
 import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
 
+import { ImageAspectRatio } from './enums'
+import { ImageInput } from './inputs'
 import {
   createImageByDirectUpload,
   createImageFromResponse,
@@ -16,6 +18,10 @@ builder.prismaObject('CloudflareImage', {
     userId: t.exposeID('userId'),
     createdAt: t.expose('createdAt', {
       type: 'Date'
+    }),
+    aspectRatio: t.expose('aspectRatio', {
+      type: ImageAspectRatio,
+      nullable: true
     })
   })
 })
@@ -66,7 +72,10 @@ builder.mutationFields((t) => ({
     authScopes: {
       isAuthenticated: true
     },
-    resolve: async (query, _root, _args, { userId }) => {
+    args: {
+      input: t.arg({ type: ImageInput, required: false })
+    },
+    resolve: async (query, _root, { input }, { userId }) => {
       if (userId == null) throw new Error('User not found')
 
       const { id, uploadURL } = await createImageByDirectUpload()
@@ -76,7 +85,9 @@ builder.mutationFields((t) => ({
         data: {
           id,
           uploadUrl: uploadURL,
-          userId
+          userId,
+          aspectRatio: input?.aspectRatio ?? undefined,
+          videoId: input?.videoId ?? undefined
         }
       })
     }
@@ -87,9 +98,10 @@ builder.mutationFields((t) => ({
       isAuthenticated: true
     },
     args: {
-      url: t.arg.string({ required: true })
+      url: t.arg.string({ required: true }),
+      input: t.arg({ type: ImageInput, required: false })
     },
-    resolve: async (query, _root, { url }, { userId }) => {
+    resolve: async (query, _root, { url, input }, { userId }) => {
       if (userId == null) throw new Error('User not found')
 
       const { id } = await createImageFromUrl(url)
@@ -99,7 +111,9 @@ builder.mutationFields((t) => ({
         data: {
           id,
           userId,
-          uploaded: true
+          uploaded: true,
+          aspectRatio: input?.aspectRatio ?? undefined,
+          videoId: input?.videoId ?? undefined
         }
       })
     }
@@ -110,9 +124,10 @@ builder.mutationFields((t) => ({
       isAuthenticated: true
     },
     args: {
-      prompt: t.arg.string({ required: true })
+      prompt: t.arg.string({ required: true }),
+      input: t.arg({ type: ImageInput, required: false })
     },
-    resolve: async (query, _root, { prompt }, { userId }) => {
+    resolve: async (query, _root, { prompt, input }, { userId }) => {
       if (userId == null) throw new Error('User not found')
 
       const image = await createImageFromResponse(
@@ -124,7 +139,9 @@ builder.mutationFields((t) => ({
         data: {
           id: image.id,
           userId,
-          uploaded: true
+          uploaded: true,
+          aspectRatio: input?.aspectRatio ?? undefined,
+          videoId: input?.videoId ?? undefined
         }
       })
     }

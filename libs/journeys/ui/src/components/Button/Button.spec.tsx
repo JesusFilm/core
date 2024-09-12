@@ -580,7 +580,8 @@ describe('Button', () => {
         parentBlockId: block.id,
         gtmEventName: 'gtmEventName',
         blockId: 'def'
-      }
+      },
+      undefined
     )
   })
 

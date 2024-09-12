@@ -299,6 +299,7 @@ export type ChatOpenEventCreateInput = {
 
 export type CloudflareImage = {
   __typename?: 'CloudflareImage';
+  aspectRatio?: Maybe<ImageAspectRatio>;
   createdAt: Scalars['Date']['output'];
   id: Scalars['ID']['output'];
   uploadUrl?: Maybe<Scalars['String']['output']>;
@@ -654,6 +655,11 @@ export enum IdType {
   Slug = 'slug'
 }
 
+export enum ImageAspectRatio {
+  Banner = 'banner',
+  Hd = 'hd'
+}
+
 export type ImageBlock = Block & {
   __typename?: 'ImageBlock';
   alt: Scalars['String']['output'];
@@ -697,6 +703,11 @@ export type ImageBlockUpdateInput = {
   scale?: InputMaybe<Scalars['Int']['input']>;
   src?: InputMaybe<Scalars['String']['input']>;
   width?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type ImageInput = {
+  aspectRatio?: InputMaybe<ImageAspectRatio>;
+  videoId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export type Integration = {
@@ -753,7 +764,9 @@ export type Journey = {
   id: Scalars['ID']['output'];
   journeyCollections: Array<JourneyCollection>;
   language: Language;
+  logoImageBlock?: Maybe<ImageBlock>;
   menuButtonIcon?: Maybe<JourneyMenuButtonIcon>;
+  menuStepBlock?: Maybe<StepBlock>;
   /** used in a plausible share link to embed report */
   plausibleToken?: Maybe<Scalars['String']['output']>;
   primaryImageBlock?: Maybe<ImageBlock>;
@@ -1436,11 +1449,18 @@ export type MutationCloudflareUploadCompleteArgs = {
 
 
 export type MutationCreateCloudflareImageFromPromptArgs = {
+  input?: InputMaybe<ImageInput>;
   prompt: Scalars['String']['input'];
 };
 
 
+export type MutationCreateCloudflareUploadByFileArgs = {
+  input?: InputMaybe<ImageInput>;
+};
+
+
 export type MutationCreateCloudflareUploadByUrlArgs = {
+  input?: InputMaybe<ImageInput>;
   url: Scalars['String']['input'];
 };
 
@@ -3203,8 +3223,12 @@ export type Video = {
   id: Scalars['ID']['output'];
   image?: Maybe<Scalars['String']['output']>;
   imageAlt: Array<VideoImageAlt>;
+  images: Array<CloudflareImage>;
   keywords: Array<Keyword>;
   label: VideoLabel;
+  mobileCinematicHigh?: Maybe<Scalars['String']['output']>;
+  mobileCinematicLow?: Maybe<Scalars['String']['output']>;
+  mobileCinematicVeryLow?: Maybe<Scalars['String']['output']>;
   noIndex?: Maybe<Scalars['Boolean']['output']>;
   primaryLanguageId: Scalars['ID']['output'];
   /** slug is a permanent link to the video. */
@@ -3212,11 +3236,14 @@ export type Video = {
   snippet: Array<VideoSnippet>;
   studyQuestions: Array<VideoStudyQuestion>;
   subtitles: Array<VideoSubtitle>;
+  thumbnail?: Maybe<Scalars['String']['output']>;
   title: Array<VideoTitle>;
   variant?: Maybe<VideoVariant>;
   variantLanguages: Array<Language>;
   variantLanguagesCount: Scalars['Int']['output'];
   variantLanguagesWithSlug: Array<LanguageWithSlug>;
+  variants: Array<VideoVariant>;
+  videoStill?: Maybe<Scalars['String']['output']>;
 };
 
 
@@ -3229,6 +3256,11 @@ export type VideoDescriptionArgs = {
 export type VideoImageAltArgs = {
   languageId?: InputMaybe<Scalars['ID']['input']>;
   primary?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+export type VideoImagesArgs = {
+  aspectRatio?: InputMaybe<ImageAspectRatio>;
 };
 
 
@@ -3751,11 +3783,13 @@ export type VideoTriggerBlock = Block & {
 
 export type VideoVariant = {
   __typename?: 'VideoVariant';
+  dash?: Maybe<Scalars['String']['output']>;
   downloads: Array<VideoVariantDownload>;
   duration: Scalars['Int']['output'];
   hls?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   language: Language;
+  share?: Maybe<Scalars['String']['output']>;
   /** slug is a permanent link to the video variant. */
   slug: Scalars['String']['output'];
   subtitle: Array<VideoSubtitle>;
@@ -3770,10 +3804,12 @@ export type VideoVariantSubtitleArgs = {
 
 export type VideoVariantDownload = {
   __typename?: 'VideoVariantDownload';
+  height: Scalars['Int']['output'];
   id: Scalars['ID']['output'];
   quality: VideoVariantDownloadQuality;
   size: Scalars['Float']['output'];
   url: Scalars['String']['output'];
+  width: Scalars['Int']['output'];
 };
 
 export enum VideoVariantDownloadQuality {

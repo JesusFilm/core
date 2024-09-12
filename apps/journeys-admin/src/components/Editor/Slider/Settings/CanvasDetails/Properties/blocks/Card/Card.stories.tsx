@@ -1,5 +1,5 @@
-import { jest } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
+import { fn } from '@storybook/test'
 import { ComponentProps } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -22,7 +22,7 @@ const Demo: Meta<typeof Card> = {
     'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Card'
 }
 
-const onClose = jest.fn()
+const onClose = fn()
 
 const block: TreeBlock<CardBlock> = {
   id: 'card1.id',

@@ -101,12 +101,12 @@ describe('videosFilter', () => {
       id: undefined,
       label: undefined,
       title: undefined,
-      variants: {
+      subtitles: {
         some: {
-          languageId: undefined,
-          subtitle: { some: { languageId: { in: ['529'] } } }
+          languageId: { in: ['529'] }
         }
-      }
+      },
+      variants: undefined
     })
   })
 })

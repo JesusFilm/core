@@ -1,19 +1,25 @@
 /* eslint-disable */
-import type { Prisma, CloudflareImage, CloudflareVideo, Video, VideoTitle, VideoVariantDownload, VideoVariant, VideoSubtitle, VideoVariantSubtitle, VideoSnippet, VideoDescription, VideoImageAlt, VideoStudyQuestion, ImportTimes, BibleCitation, BibleBook, BibleBookName, Keyword, TagName, Tag, Tagging, UserMediaRole } from ".prisma/api-media-client";
+import type { Prisma, CloudflareImage, CloudflareVideo, Video, VideoTitle, VideoVariantDownload, VideoVariant, VideoSubtitle, VideoSnippet, VideoDescription, VideoImageAlt, VideoStudyQuestion, ImportTimes, BibleCitation, BibleBook, BibleBookName, Keyword, TagName, Tag, Tagging, UserMediaRole } from ".prisma/api-media-client";
 export default interface PrismaTypes {
     CloudflareImage: {
         Name: "CloudflareImage";
         Shape: CloudflareImage;
-        Include: never;
+        Include: Prisma.CloudflareImageInclude;
         Select: Prisma.CloudflareImageSelect;
         OrderBy: Prisma.CloudflareImageOrderByWithRelationAndSearchRelevanceInput;
         WhereUnique: Prisma.CloudflareImageWhereUniqueInput;
         Where: Prisma.CloudflareImageWhereInput;
         Create: {};
         Update: {};
-        RelationName: never;
+        RelationName: "video";
         ListRelations: never;
-        Relations: {};
+        Relations: {
+            video: {
+                Shape: Video | null;
+                Name: "Video";
+                Nullable: true;
+            };
+        };
     };
     CloudflareVideo: {
         Name: "CloudflareVideo";
@@ -39,8 +45,8 @@ export default interface PrismaTypes {
         Where: Prisma.VideoWhereInput;
         Create: {};
         Update: {};
-        RelationName: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parent" | "variants" | "bibleCitation" | "keywords";
-        ListRelations: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parent" | "variants" | "bibleCitation" | "keywords";
+        RelationName: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parent" | "variants" | "bibleCitation" | "keywords" | "images";
+        ListRelations: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parent" | "variants" | "bibleCitation" | "keywords" | "images";
         Relations: {
             title: {
                 Shape: VideoTitle[];
@@ -97,6 +103,11 @@ export default interface PrismaTypes {
                 Name: "Keyword";
                 Nullable: false;
             };
+            images: {
+                Shape: CloudflareImage[];
+                Name: "CloudflareImage";
+                Nullable: false;
+            };
         };
     };
     VideoTitle: {
@@ -149,17 +160,12 @@ export default interface PrismaTypes {
         Where: Prisma.VideoVariantWhereInput;
         Create: {};
         Update: {};
-        RelationName: "downloads" | "subtitle" | "video";
-        ListRelations: "downloads" | "subtitle";
+        RelationName: "downloads" | "video";
+        ListRelations: "downloads";
         Relations: {
             downloads: {
                 Shape: VideoVariantDownload[];
                 Name: "VideoVariantDownload";
-                Nullable: false;
-            };
-            subtitle: {
-                Shape: VideoVariantSubtitle[];
-                Name: "VideoVariantSubtitle";
                 Nullable: false;
             };
             video: {
@@ -185,26 +191,6 @@ export default interface PrismaTypes {
             Video: {
                 Shape: Video;
                 Name: "Video";
-                Nullable: false;
-            };
-        };
-    };
-    VideoVariantSubtitle: {
-        Name: "VideoVariantSubtitle";
-        Shape: VideoVariantSubtitle;
-        Include: Prisma.VideoVariantSubtitleInclude;
-        Select: Prisma.VideoVariantSubtitleSelect;
-        OrderBy: Prisma.VideoVariantSubtitleOrderByWithRelationAndSearchRelevanceInput;
-        WhereUnique: Prisma.VideoVariantSubtitleWhereUniqueInput;
-        Where: Prisma.VideoVariantSubtitleWhereInput;
-        Create: {};
-        Update: {};
-        RelationName: "variant";
-        ListRelations: never;
-        Relations: {
-            variant: {
-                Shape: VideoVariant;
-                Name: "VideoVariant";
                 Nullable: false;
             };
         };

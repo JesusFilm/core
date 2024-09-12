@@ -49,6 +49,7 @@ export function AppNavbar(): ReactElement {
         borderBottom: '1px solid',
         borderColor: 'divider'
       }}
+      data-testid="AppNavbar"
     >
       <Toolbar variant="regular">
         <Stack
