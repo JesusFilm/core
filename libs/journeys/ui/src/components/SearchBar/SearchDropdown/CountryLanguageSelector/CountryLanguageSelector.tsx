@@ -9,6 +9,10 @@ import { getTopSpokenLanguages } from '../../../../libs/algolia/getTopSpokenLang
 import { useSearchBar } from '../../../../libs/algolia/SearchBarProvider'
 import { useCountryQuery } from '../../../../libs/useCountryQuery'
 
+// The cookie is set by the watch middleware
+// Only use for tests
+export const NEXT_COUNTRY = 'NEXT_COUNTRY=00001---US'
+
 interface CountryLanguageSelectorProps {
   refinements: RefinementListRenderState
 }
@@ -16,12 +20,11 @@ interface CountryLanguageSelectorProps {
 export function CountryLanguageSelector({
   refinements
 }: CountryLanguageSelectorProps): ReactElement {
-  const { dispatch } = useSearchBar()
   const { items, refine } = refinements
 
+  const { dispatch } = useSearchBar()
   const [country, setCountry] = useState<string>()
   const [countryCode, setCountryCode] = useState<string>()
-
   const { data } = useCountryQuery({ countryId: countryCode ?? '' })
 
   const continent = data?.country?.continent?.name?.find(
@@ -54,17 +57,6 @@ export function CountryLanguageSelector({
     }
   }
 
-  function getCountryName(countryCode: string): string {
-    try {
-      // set to 'en' as Watch is only translated to English
-      const displayNames = new Intl.DisplayNames(['en'], { type: 'region' })
-      return displayNames.of(countryCode) ?? countryCode
-    } catch (error) {
-      console.error('Error converting Country Code: ', error)
-      return countryCode
-    }
-  }
-
   useEffect(() => {
     const countryCookie = document.cookie
       .split('; ')
@@ -73,7 +65,8 @@ export function CountryLanguageSelector({
 
     if (countryCookie != null) {
       const [, countryCode] = countryCookie.split('---')
-      const countryName = getCountryName(countryCode)
+      const displayNames = new Intl.DisplayNames(['en'], { type: 'region' })
+      const countryName = displayNames.of(countryCode)
       setCountry(countryName)
       setCountryCode(countryCode)
     }

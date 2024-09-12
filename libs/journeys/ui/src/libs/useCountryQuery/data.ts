@@ -3,7 +3,8 @@ import { GetCountry_country as Country } from './__generated__/GetCountry'
 export const country: Country = {
   __typename: 'Country',
   id: 'US',
-  flagPngSrc: 'https://example.flag.com',
+  flagPngSrc:
+    'https://d3s4plubcuq0w9.cloudfront.net/flags/png_8/flag_country_detail_us.png',
   continent: {
     __typename: 'Continent',
     name: [
@@ -36,12 +37,12 @@ export const country: Country = {
           {
             __typename: 'LanguageName',
             primary: true,
-            value: 'Spanish'
+            value: 'Spanish, Latin American'
           },
           {
             __typename: 'LanguageName',
             primary: true,
-            value: 'Spanish'
+            value: 'Spanish, Latin American'
           }
         ]
       },
