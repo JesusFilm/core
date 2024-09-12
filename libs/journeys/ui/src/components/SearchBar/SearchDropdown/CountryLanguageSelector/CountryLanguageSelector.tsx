@@ -129,7 +129,7 @@ export function CountryLanguageSelector({
           >
             {loading
               ? [1, 2, 3].map((i) => (
-                  <Skeleton key={i} variant="rounded" width={80} height={32} />
+                <Skeleton key={i} variant="rounded" width={80} height={32} />
                 ))
               : spokenLanguages.length > 0 &&
                 spokenLanguages.map((language) => (
