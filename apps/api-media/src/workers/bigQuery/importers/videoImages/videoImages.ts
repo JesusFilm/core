@@ -1,56 +1,61 @@
 import { Logger } from 'pino'
-import { z } from 'zod'
 
 import { ImageAspectRatio } from '.prisma/api-media-client'
 
 import { prisma } from '../../../../lib/prisma'
-import { parse, parseMany, processTable } from '../../importer'
-import { getVideoIds } from '../videos'
-
-const videoImageSchema = z
-  .object({
-    id: z.string(),
-    aspectRatio: z.nativeEnum(ImageAspectRatio),
-    videoId: z.string(),
-    uploadUrl: z.string()
-  })
-  .transform((data) => ({
-    ...data,
-    userId: 'system'
-  }))
+import { getClient } from '../../../../schema/cloudflare/image/service'
 
 export async function importVideoImages(logger?: Logger): Promise<void> {
-  await processTable(
-    'jfp-data-warehouse.jfp_mmdb_prod.core_cloudflare_image_data',
-    importOne,
-    importMany,
-    true,
-    logger
-  )
-}
-
-export async function importOne(row: unknown): Promise<void> {
-  const videoImage = parse(videoImageSchema, row)
-  if (!getVideoIds().includes(videoImage.videoId))
-    throw new Error(`Video with id ${videoImage.videoId} not found`)
-
-  await prisma.cloudflareImage.upsert({
-    where: {
-      id: videoImage.id
-    },
-    update: videoImage,
-    create: videoImage
+  logger?.info('imageSeed started')
+  const newVideos = await prisma.video.findMany({
+    select: { id: true },
+    where: { images: { none: {} } }
   })
-}
 
-export async function importMany(rows: unknown[]): Promise<void> {
-  const { data: videoImages, inValidRowIds } = parseMany(videoImageSchema, rows)
+  if (newVideos.length === 0) {
+    logger?.info('imageSeed finished')
+    return
+  }
 
-  if (videoImages.length !== rows.length)
-    throw new Error(`some rows do not match schema: ${inValidRowIds.join(',')}`)
-
-  await prisma.cloudflareImage.createMany({
-    data: videoImages.filter(({ videoId }) => getVideoIds().includes(videoId)),
-    skipDuplicates: true
-  })
+  const client = getClient()
+  const video = newVideos[0]
+  // for (const video of newVideos) {
+  const fileNames = [
+    `${video.id}.mobileCinematicHigh.jpg`,
+    `${video.id}.videoStill.jpg`
+  ]
+  for (const fileName of fileNames) {
+    try {
+      const url = `https://d1wl257kev7hsz.cloudfront.net/cinematics/${fileName}`
+      try {
+        await client.images.v1.get(fileName, {
+          account_id: process.env.CLOUDFLARE_ACCOUNT_ID as string
+        })
+      } catch {
+        await client.images.v1.create(
+          {
+            account_id: process.env.CLOUDFLARE_ACCOUNT_ID as string
+          },
+          {
+            body: {
+              id: fileName,
+              url
+            }
+          }
+        )
+      }
+      await prisma.cloudflareImage.create({
+        data: {
+          id: fileName,
+          aspectRatio: ImageAspectRatio.banner,
+          videoId: video.id,
+          uploadUrl: url,
+          userId: 'system'
+        }
+      })
+    } catch (e) {
+      logger?.info(e)
+    }
+  }
+  logger?.info('imageSeed finished')
 }
