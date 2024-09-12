@@ -9,7 +9,7 @@
   "overrides": [
     {
       "files": [
-        "/apps/videos-admin/src/libs/storybookConfig/videosAdminConfig.tsx"
+        "apps/videos-admin/src/libs/storybookConfig/videosAdminConfig.tsx"
       ],
       "rules": {
         "eslint-disable i18next/no-literal-string": "off"
