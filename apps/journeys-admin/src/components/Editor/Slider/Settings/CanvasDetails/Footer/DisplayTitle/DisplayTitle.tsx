@@ -19,11 +19,10 @@ export function DisplayTitle(): ReactElement {
   async function handleUpdate(newTitle: string): Promise<void> {
     if (journey == null) return
 
-    const displayTitle = newTitle === '' ? null : newTitle
     const undoDisplayTitle = journey.displayTitle
     add({
       parameters: {
-        execute: { displayTitle },
+        execute: { displayTitle: newTitle },
         undo: { displayTitle: undoDisplayTitle }
       },
       execute({ displayTitle }) {
