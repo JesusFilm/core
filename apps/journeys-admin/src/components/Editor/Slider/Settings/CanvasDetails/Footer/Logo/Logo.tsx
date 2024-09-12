@@ -3,6 +3,7 @@ import Box from '@mui/material/Box'
 import Slider from '@mui/material/Slider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import pick from 'lodash/pick'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
@@ -27,7 +28,6 @@ import {
   LogoBlockCreateVariables
 } from '../../../../../../../../__generated__/LogoBlockCreate'
 import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
-import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
 import { ImageSource } from '../../../Drawer/ImageSource'
 import { Accordion } from '../../Properties/Accordion'
 import { IMAGE_BLOCK_UPDATE } from '../../Properties/blocks/Image/Options/ImageOptions'
@@ -55,8 +55,7 @@ export function Logo(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const { add } = useCommand()
-  const { addBlock } = useBlockCreateCommand()
-  const [currentScale, setCurrentScale] = useState(
+  const [sliderValue, setSliderValue] = useState(
     journey?.logoImageBlock?.scale ?? 1
   )
 
@@ -100,9 +99,13 @@ export function Logo(): ReactElement {
       scale: null
     }
 
-    addBlock({
-      block: newImageBlock,
-      execute() {
+    add({
+      parameters: {
+        execute: newImageBlock,
+        undo: newImageBlock,
+        redo: newImageBlock
+      },
+      execute(block) {
         void logoBlockCreate({
           variables: {
             id: journey.id,
@@ -110,15 +113,35 @@ export function Logo(): ReactElement {
             journeyUpdateInput
           },
           optimisticResponse: {
-            imageBlockCreate: newImageBlock,
+            imageBlockCreate: block,
             journeyUpdate: {
               __typename: 'Journey',
               id: journey.id,
-              logoImageBlock: newImageBlock
+              logoImageBlock: block
             }
           },
           update(cache, { data }) {
             blockCreateUpdate(cache, journey.id, data?.imageBlockCreate)
+          }
+        })
+      },
+      undo(block) {
+        void imageBlockUpdate({
+          variables: {
+            id: block.id,
+            input: {
+              src: null
+            }
+          }
+        })
+      },
+      redo(block) {
+        void imageBlockUpdate({
+          variables: {
+            id: block.id,
+            input: {
+              src: block.src
+            }
           }
         })
       }
@@ -147,16 +170,13 @@ export function Logo(): ReactElement {
         void imageBlockUpdate({
           variables: {
             id: imageBlock.id,
-            input: {
-              scale: block.scale,
-              src: block.src
-            }
+            input: pick(block, Object.keys(input))
           },
           optimisticResponse: {
             imageBlockUpdate: block
           }
         })
-        setCurrentScale(block.scale ?? 1)
+        setSliderValue(block.scale ?? 1)
       }
     })
   }
@@ -169,13 +189,13 @@ export function Logo(): ReactElement {
     }
   }
   async function deleteImageBlock(): Promise<void> {
-    await updateImageBlock({ src: null, alt: '' })
+    updateImageBlock({ src: null, alt: '' })
   }
   function handleImageScaleChange(_, value: number): void {
-    setCurrentScale(value)
+    setSliderValue(value)
   }
-  function handleImageScaleCommit(): void {
-    updateImageBlock({ scale: currentScale })
+  function handleImageScaleCommit(_, value: number): void {
+    updateImageBlock({ scale: value })
   }
 
   return (
@@ -189,7 +209,8 @@ export function Logo(): ReactElement {
         <Box>
           <Typography>{t('Size')}</Typography>
           <Slider
-            value={currentScale}
+            aria-label="size-slider"
+            value={sliderValue}
             onChange={handleImageScaleChange}
             onChangeCommitted={handleImageScaleCommit}
             min={1}

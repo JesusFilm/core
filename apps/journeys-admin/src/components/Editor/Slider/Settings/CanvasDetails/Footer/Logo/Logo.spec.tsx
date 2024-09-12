@@ -8,13 +8,21 @@ import { CommandProvider } from '@core/journeys/ui/CommandProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
+import { ImageBlockUpdateInput } from '../../../../../../../../__generated__/globalTypes'
+import {
+  ImageBlockUpdate,
+  ImageBlockUpdateVariables
+} from '../../../../../../../../__generated__/ImageBlockUpdate'
 import {
   LogoBlockCreate_imageBlockCreate as ImageBlock,
   LogoBlockCreate,
   LogoBlockCreateVariables
 } from '../../../../../../../../__generated__/LogoBlockCreate'
+import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
+import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 import { createCloudflareUploadByUrlMock } from '../../../Drawer/ImageBlockEditor/CustomImage/CustomUrl/data'
 import { listUnsplashCollectionPhotosMock } from '../../../Drawer/ImageBlockEditor/UnsplashGallery/data'
+import { IMAGE_BLOCK_UPDATE } from '../../Properties/blocks/Image/Options/ImageOptions'
 
 import { LOGO_BLOCK_CREATE } from './Logo'
 
@@ -53,34 +61,26 @@ describe('Logo', () => {
     logoImageBlock: null
   } as unknown as Journey
 
-  it('should create logo image block', async () => {
-    mockUuidv4.mockReturnValueOnce('logoImageBlockId')
-    const cache = new InMemoryCache()
-    cache.restore({
-      ['Journey:' + 'journeyId']: {
-        blocks: [],
-        id: 'journeyId',
-        __typename: 'Journey'
-      }
-    })
+  mockUuidv4.mockReturnValue('logoImageBlockId')
 
-    const imageBlock: ImageBlock = {
-      __typename: 'ImageBlock',
-      id: 'logoImageBlockId',
-      parentBlockId: null,
-      src: 'https://imagedelivery.net/cloudflare-key/uploadId/public',
-      alt: 'public',
-      scale: 1,
-      parentOrder: null,
-      width: 1,
-      height: 1,
-      blurhash: ''
-    }
+  const imageBlock: ImageBlock = {
+    __typename: 'ImageBlock',
+    id: 'logoImageBlockId',
+    parentBlockId: null,
+    src: 'https://imagedelivery.net/cloudflare-key/uploadId/public',
+    alt: 'public',
+    scale: 1,
+    parentOrder: null,
+    width: 1,
+    height: 1,
+    blurhash: ''
+  }
 
-    const logoBlockCreateMock: MockedResponse<
-      LogoBlockCreate,
-      LogoBlockCreateVariables
-    > = {
+  function getLogoImageBlockCreateMock(): MockedResponse<
+    LogoBlockCreate,
+    LogoBlockCreateVariables
+  > {
+    return {
       request: {
         query: LOGO_BLOCK_CREATE,
         variables: {
@@ -108,6 +108,43 @@ describe('Logo', () => {
         }
       }))
     }
+  }
+
+  function getImageBlockUpdateMock(
+    id: string,
+    input: ImageBlockUpdateInput
+  ): MockedResponse<ImageBlockUpdate, ImageBlockUpdateVariables> {
+    return {
+      request: {
+        query: IMAGE_BLOCK_UPDATE,
+        variables: {
+          id,
+          input
+        }
+      },
+      result: jest.fn(() => ({
+        data: {
+          imageBlockUpdate: {
+            ...imageBlock,
+            alt: input.alt ?? imageBlock.alt,
+            scale: input.scale ?? imageBlock.scale,
+            id
+          }
+        }
+      }))
+    }
+  }
+
+  it('should create logo image block', async () => {
+    const cache = new InMemoryCache()
+    cache.restore({
+      ['Journey:' + 'journeyId']: {
+        blocks: [],
+        id: 'journeyId',
+        __typename: 'Journey'
+      }
+    })
+    const createLogoMock = getLogoImageBlockCreateMock()
 
     render(
       <MockedProvider
@@ -115,7 +152,7 @@ describe('Logo', () => {
         mocks={[
           createCloudflareUploadByUrlMock,
           listUnsplashCollectionPhotosMock,
-          logoBlockCreateMock
+          createLogoMock
         ]}
       >
         <JourneyProvider value={{ journey: defaultJourney }}>
@@ -138,23 +175,309 @@ describe('Logo', () => {
     })
     fireEvent.blur(textBox)
 
-    await waitFor(() => expect(logoBlockCreateMock.result).toHaveBeenCalled())
+    await waitFor(() => expect(createLogoMock.result).toHaveBeenCalled())
     expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
       { __ref: 'ImageBlock:logoImageBlockId' }
     ])
   })
 
-  it('should undo logo image block create', async () => {})
+  it('should undo and redo logo image block create', async () => {
+    const createLogoMock = getLogoImageBlockCreateMock()
+    const undoMock = getImageBlockUpdateMock(imageBlock.id, { src: null })
+    const redoMock = getImageBlockUpdateMock(imageBlock.id, {
+      src: imageBlock.src
+    })
 
-  it('should update logo image', async () => {})
+    render(
+      <MockedProvider
+        mocks={[
+          createCloudflareUploadByUrlMock,
+          listUnsplashCollectionPhotosMock,
+          createLogoMock,
+          undoMock,
+          redoMock
+        ]}
+      >
+        <JourneyProvider value={{ journey: defaultJourney }}>
+          <CommandProvider>
+            <CommandUndoItem variant="button" />
+            <CommandRedoItem variant="button" />
+            <Logo />
+          </CommandProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
 
-  it('should undo logo image update', async () => {})
+    fireEvent.click(screen.getByRole('button', { name: 'Logo' }))
+    await waitFor(() => fireEvent.click(screen.getByTestId('card click area')))
+    await waitFor(() => fireEvent.click(screen.getByTestId('Image3Icon')))
+    await waitFor(() => fireEvent.click(screen.getByTestId('CustomURL')))
+    const textBox = screen
+      .getByTestId('JourneysAdminTextFieldForm')
+      .querySelector('input') as HTMLInputElement
+    fireEvent.change(textBox, {
+      target: { value: 'https://example.com/image.jpg' }
+    })
+    fireEvent.blur(textBox)
 
-  it('should delete logo image block', async () => {})
+    await waitFor(() => expect(createLogoMock.result).toHaveBeenCalled())
 
-  it('should undo logo image block delete', async () => {})
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(undoMock.result).toHaveBeenCalled())
 
-  it('should update logo scale', async () => {})
+    fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+    await waitFor(() => expect(redoMock.result).toHaveBeenCalled())
+  })
 
-  it('should undo logo scale update', async () => {})
+  it('should update logo image', async () => {
+    const journey = {
+      ...defaultJourney,
+      logoImageBlock: {
+        ...imageBlock,
+        src: 'https://imagedelivery.net/cloudflare-key/old-uploadId/public'
+      }
+    }
+    const updateMock = getImageBlockUpdateMock(imageBlock.id, {
+      src: imageBlock.src,
+      alt: 'public'
+    })
+
+    render(
+      <MockedProvider
+        mocks={[
+          createCloudflareUploadByUrlMock,
+          listUnsplashCollectionPhotosMock,
+          updateMock
+        ]}
+      >
+        <JourneyProvider value={{ journey }}>
+          <CommandProvider>
+            <Logo />
+          </CommandProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Logo' }))
+    await waitFor(() => fireEvent.click(screen.getByTestId('card click area')))
+    await waitFor(() => fireEvent.click(screen.getByTestId('Image3Icon')))
+    await waitFor(() => fireEvent.click(screen.getByTestId('CustomURL')))
+    const textBox = screen
+      .getByTestId('JourneysAdminTextFieldForm')
+      .querySelector('input') as HTMLInputElement
+    fireEvent.change(textBox, {
+      target: { value: 'https://example.com/image.jpg' }
+    })
+    fireEvent.blur(textBox)
+
+    await waitFor(() => expect(updateMock.result).toHaveBeenCalled())
+  })
+
+  it('should undo logo image update', async () => {
+    const journey = {
+      ...defaultJourney,
+      logoImageBlock: {
+        ...imageBlock,
+        src: 'https://imagedelivery.net/cloudflare-key/old-uploadId/public'
+      }
+    }
+    const updateMock = getImageBlockUpdateMock(imageBlock.id, {
+      src: imageBlock.src,
+      alt: 'public'
+    })
+    const undoMock = getImageBlockUpdateMock(imageBlock.id, {
+      src: journey.logoImageBlock.src,
+      alt: 'public'
+    })
+
+    render(
+      <MockedProvider
+        mocks={[
+          createCloudflareUploadByUrlMock,
+          listUnsplashCollectionPhotosMock,
+          updateMock,
+          undoMock
+        ]}
+      >
+        <JourneyProvider value={{ journey }}>
+          <CommandProvider>
+            <CommandUndoItem variant="button" />
+            <Logo />
+          </CommandProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Logo' }))
+    await waitFor(() => fireEvent.click(screen.getByTestId('card click area')))
+    await waitFor(() => fireEvent.click(screen.getByTestId('Image3Icon')))
+    await waitFor(() => fireEvent.click(screen.getByTestId('CustomURL')))
+    const textBox = screen
+      .getByTestId('JourneysAdminTextFieldForm')
+      .querySelector('input') as HTMLInputElement
+    fireEvent.change(textBox, {
+      target: { value: 'https://example.com/image.jpg' }
+    })
+    fireEvent.blur(textBox)
+
+    await waitFor(() => expect(updateMock.result).toHaveBeenCalled())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(undoMock.result).toHaveBeenCalled())
+  })
+
+  it('should delete logo image block', async () => {
+    const journey = {
+      ...defaultJourney,
+      logoImageBlock: imageBlock
+    }
+    const deleteMock = getImageBlockUpdateMock(imageBlock.id, {
+      src: null,
+      alt: ''
+    })
+
+    render(
+      <MockedProvider
+        mocks={[
+          createCloudflareUploadByUrlMock,
+          listUnsplashCollectionPhotosMock,
+          deleteMock
+        ]}
+      >
+        <JourneyProvider value={{ journey }}>
+          <CommandProvider>
+            <Logo />
+          </CommandProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Logo' }))
+    await waitFor(() => fireEvent.click(screen.getByTestId('card click area')))
+    await waitFor(() =>
+      fireEvent.click(screen.getByTestId('imageBlockHeaderDelete'))
+    )
+
+    await waitFor(() => expect(deleteMock.result).toHaveBeenCalled())
+  })
+
+  it('should undo logo image block delete', async () => {
+    const journey = {
+      ...defaultJourney,
+      logoImageBlock: imageBlock
+    }
+    const deleteMock = getImageBlockUpdateMock(imageBlock.id, {
+      src: null,
+      alt: ''
+    })
+    const undoMock = getImageBlockUpdateMock(imageBlock.id, {
+      src: imageBlock.src,
+      alt: imageBlock.alt
+    })
+
+    render(
+      <MockedProvider
+        mocks={[
+          createCloudflareUploadByUrlMock,
+          listUnsplashCollectionPhotosMock,
+          deleteMock,
+          undoMock
+        ]}
+      >
+        <JourneyProvider value={{ journey }}>
+          <CommandProvider>
+            <CommandUndoItem variant="button" />
+            <Logo />
+          </CommandProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Logo' }))
+    await waitFor(() => fireEvent.click(screen.getByTestId('card click area')))
+    await waitFor(() =>
+      fireEvent.click(screen.getByTestId('imageBlockHeaderDelete'))
+    )
+    await waitFor(() => expect(deleteMock.result).toHaveBeenCalled())
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+
+    await waitFor(() => expect(undoMock.result).toHaveBeenCalled())
+  })
+
+  it('should update logo scale', async () => {
+    const journey = {
+      ...defaultJourney,
+      logoImageBlock: imageBlock
+    }
+    const updateMock = getImageBlockUpdateMock(imageBlock.id, {
+      scale: 50
+    })
+
+    render(
+      <MockedProvider
+        mocks={[
+          createCloudflareUploadByUrlMock,
+          listUnsplashCollectionPhotosMock,
+          updateMock
+        ]}
+      >
+        <JourneyProvider value={{ journey }}>
+          <CommandProvider>
+            <Logo />
+          </CommandProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Logo' }))
+    await waitFor(() =>
+      fireEvent.change(screen.getByLabelText('size-slider'), {
+        target: { value: 50 }
+      })
+    )
+
+    await waitFor(() => expect(updateMock.result).toHaveBeenCalled())
+  })
+
+  it('should undo logo scale update', async () => {
+    const journey = {
+      ...defaultJourney,
+      logoImageBlock: imageBlock
+    }
+    const updateMock = getImageBlockUpdateMock(imageBlock.id, {
+      scale: 50
+    })
+    const undoMock = getImageBlockUpdateMock(imageBlock.id, {
+      scale: 1
+    })
+
+    render(
+      <MockedProvider
+        mocks={[
+          createCloudflareUploadByUrlMock,
+          listUnsplashCollectionPhotosMock,
+          updateMock,
+          undoMock
+        ]}
+      >
+        <JourneyProvider value={{ journey }}>
+          <CommandProvider>
+            <CommandUndoItem variant="button" />
+            <Logo />
+          </CommandProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Logo' }))
+    await waitFor(() =>
+      fireEvent.change(screen.getByLabelText('size-slider'), {
+        target: { value: 50 }
+      })
+    )
+    await waitFor(() => expect(updateMock.result).toHaveBeenCalled())
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+
+    await waitFor(() => expect(undoMock.result).toHaveBeenCalled())
+  })
 })
