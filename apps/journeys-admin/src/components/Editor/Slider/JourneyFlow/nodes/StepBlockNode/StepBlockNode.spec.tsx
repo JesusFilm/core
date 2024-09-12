@@ -64,6 +64,49 @@ describe('StepBlockNode', () => {
     expect(screen.getByText('Default Next Step →')).toBeInTheDocument()
   })
 
+  it('should render step without default action in website mode', () => {
+    const props = {
+      id: 'step.id',
+      xPos: 0,
+      yPos: 0,
+      dragging: false
+    } as unknown as NodeProps
+
+    const step: TreeBlock<StepBlock> = {
+      __typename: 'StepBlock',
+      id: 'step.id',
+      parentBlockId: null,
+      parentOrder: 0,
+      locked: false,
+      nextBlockId: null,
+      slug: null,
+      children: []
+    }
+
+    render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{ journey: { ...defaultJourney, website: true } }}
+        >
+          <ReactFlowProvider>
+            <EditorProvider
+              initialState={{
+                steps: [step],
+                selectedStep: step,
+                activeContent: ActiveContent.Canvas
+              }}
+            >
+              <StepBlockNode {...props} />
+            </EditorProvider>
+          </ReactFlowProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByTestId('StepBlockNodeCard')).toBeInTheDocument()
+    expect(screen.queryByText('Default Next Step →')).not.toBeInTheDocument()
+  })
+
   it('should render step actions', () => {
     const action = {
       __typename: 'NavigateToBlockAction',
