@@ -206,4 +206,33 @@ describe('SearchBar', () => {
 
     await waitFor(() => expect(screen.getByText('Cantonese')).toBeVisible())
   })
+
+  const enterKey = {
+    key: 'Enter',
+    code: 'Enter',
+    charCode: 13
+  }
+
+  it('should close dropdown on key enter', async () => {
+    render(
+      <MockedProvider mocks={[getLanguagesContinentsMock]}>
+        <SearchBar showLanguageButton />
+      </MockedProvider>
+    )
+    await clickOnSearchBar()
+    fireEvent.keyDown(screen.getByDisplayValue('Hello World!'), enterKey)
+    expect(screen.queryByTestId('SearchBarDropdown')).not.toBeInTheDocument()
+  })
+
+  it('should open dropdown again after closing on key enter', async () => {
+    render(
+      <MockedProvider mocks={[getLanguagesContinentsMock]}>
+        <SearchBar showLanguageButton />
+      </MockedProvider>
+    )
+    await clickOnSearchBar()
+    fireEvent.keyDown(screen.getByDisplayValue('Hello World!'), enterKey)
+    await clickOnSearchBar()
+    expect(screen.getByTestId('SearchBarDropdown')).toBeInTheDocument()
+  })
 })
