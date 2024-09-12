@@ -38,7 +38,7 @@ describe('CountryLanguageSelector', () => {
     await waitFor(() =>
       expect(screen.getByRole('img')).toHaveAttribute(
         'src',
-        '/_next/image?url=https%3A%2F%2Fd3s4plubcuq0w9.cloudfront.net%2Fflags%2Fpng_8%2Fflag_country_detail_us.png&w=96&q=75'
+        '/_next/image?url=https%3A%2F%2Fd3s4plubcuq0w9.cloudfront.net%2Fflags%2Fpng_8%2Fflag_country_detail_us.png&w=64&q=75'
       )
     )
     expect(
