@@ -40,7 +40,7 @@ export function RefinementGroups({
 }: RefinementGroupsProps): ReactElement {
   const { t } = useTranslation('apps-watch')
   const theme = useTheme()
-  const [isOpen, setIsOpen] = useState(false)
+  const [isCollapsed, setIsCollapsed] = useState(false)
 
   const { refine: clearRefinements, canRefine: canClearRefinements } =
     useClearRefinements()
@@ -61,15 +61,15 @@ export function RefinementGroups({
             direction={{ xs: 'column', lg: 'row' }}
             sx={{
               minHeight: 344,
-              height: isOpen ? 'auto' : 344,
+              height: isCollapsed ? 'auto' : 344,
               overflow: 'hidden',
-              '-webkit-mask-image': !isOpen
+              '-webkit-mask-image': !isCollapsed
                 ? {
                     xs: 'linear-gradient(to bottom, black 85%, transparent 100%)',
                     lg: 'linear-gradient(to bottom, black 60%, transparent 60%)'
                   }
                 : 'none',
-              'mask-image': !isOpen
+              'mask-image': !isCollapsed
                 ? {
                     xs: 'linear-gradient(to bottom, black 85%, transparent 100%)',
                     lg: 'linear-gradient(to bottom, black 60%, transparent 85%)'
@@ -100,10 +100,10 @@ export function RefinementGroups({
             <Stack direction="row" spacing={3}>
               <StyledButton
                 size="small"
-                onClick={() => setIsOpen(!isOpen)}
-                endIcon={isOpen ? <ChevronUp /> : <ChevronDown />}
+                onClick={() => setIsCollapsed(!isCollapsed)}
+                endIcon={isCollapsed ? <ChevronUp /> : <ChevronDown />}
               >
-                {t(isOpen ? 'See Less' : 'See All')}
+                {t(isCollapsed ? 'See Less' : 'See All')}
               </StyledButton>
               {canClearRefinements && (
                 <StyledButton
