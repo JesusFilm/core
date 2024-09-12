@@ -6,7 +6,7 @@ import {
   MenuBlockDelete,
   MenuBlockDeleteVariables
 } from '../../../../../../../../../../__generated__/MenuBlockDelete'
-import { menuCard, menuStep, menuTypography } from '../data'
+import { menuStep } from '../data'
 
 import { MENU_BLOCK_DELETE } from './useMenuBlockDeleteMutation'
 
@@ -19,8 +19,6 @@ export const mockUseMenuBlockDeleteMutation: MockedResponse<
     variables: {
       journeyId: defaultJourney.id,
       stepId: menuStep.id,
-      cardId: menuCard.id,
-      typographyId: menuTypography.id,
       journeyUpdateInput: {
         menuStepBlockId: null
       }
@@ -29,8 +27,6 @@ export const mockUseMenuBlockDeleteMutation: MockedResponse<
   result: jest.fn(() => ({
     data: {
       stepDelete: [],
-      cardDelete: [],
-      typographyDelete: [],
       journeyUpdate: {
         ...defaultJourney,
         menuStepBlock: null
