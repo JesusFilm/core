@@ -1,32 +1,38 @@
-import Box from '@mui/material/Box'
 import CssBaseline from '@mui/material/CssBaseline'
-import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles'
-import { Decorator } from '@storybook/react'
+import {
+  ThemeProvider as MuiThemeProvider,
+  useColorScheme
+} from '@mui/material/styles'
+import { Decorator, StoryContext } from '@storybook/react'
 import { SnackbarProvider } from 'notistack'
 
 import { sharedUiConfig } from '@core/shared/ui/sharedUiConfig'
 
-import { ToggleColorMode } from '../../components/ToggleColorMode'
 import { theme } from '../../theme'
+import { ReactElement } from 'react'
+
+function StorySlot({
+  storyComponent,
+  storyContext
+}: {
+  storyComponent: ReactElement
+  storyContext: StoryContext
+}): ReactElement {
+  const { mode, setMode } = useColorScheme()
+  setMode(storyContext.globals.theme ?? storyContext.parameters.theme)
+
+  return <>{storyComponent}</>
+}
 
 export const videosAdminConfig = {
   ...sharedUiConfig,
   decorators: [
-    (
-      Story: Parameters<Decorator>[0],
-      { parameters }: { parameters: { showThemeToggle?: boolean } }
-    ) => {
-      const { showThemeToggle } = parameters
+    (Story: Parameters<Decorator>[0], context: StoryContext) => {
       return (
         <SnackbarProvider>
           <MuiThemeProvider theme={theme}>
-            {showThemeToggle != null && showThemeToggle && (
-              <Box sx={{ p: 4 }}>
-                <ToggleColorMode />
-              </Box>
-            )}
             <CssBaseline enableColorScheme />
-            <Story />
+            <StorySlot storyComponent={<Story />} storyContext={context} />
           </MuiThemeProvider>
         </SnackbarProvider>
       )

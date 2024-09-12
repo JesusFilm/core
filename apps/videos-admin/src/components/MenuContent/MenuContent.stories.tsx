@@ -4,30 +4,32 @@ import { ComponentProps } from 'react'
 
 import { videosAdminConfig } from '../../libs/storybookConfig'
 
-import { AppNavbar } from './AppNavbar'
+import { MenuContent } from './MenuContent'
 
-const meta: Meta<typeof AppNavbar> = {
+const meta: Meta<typeof MenuContent> = {
   ...videosAdminConfig,
-  title: 'Videos-Admin/AppNavbar',
-  component: AppNavbar,
+  title: 'Videos-Admin/MenuContent',
+  component: MenuContent,
   parameters: {
+    ...videosAdminConfig.parameters,
     nextjs: {
       appDirectory: true
     },
+
     viewport: {
-      defaultViewport: 'mobileMax'
-    }
-  },
-  tags: ['!autodocs']
+      defaultViewport: 'none'
+    },
+    showThemeToggle: true
+  }
 }
 
 export default meta
-type Story = StoryObj<ComponentProps<typeof AppNavbar> & { locale: string }>
+type Story = StoryObj<ComponentProps<typeof MenuContent> & { locale: string }>
 
 export const Default: Story = {
   render: ({ locale }) => (
     <NextIntlClientProvider locale={locale}>
-      <AppNavbar />
+      <MenuContent />
     </NextIntlClientProvider>
   ),
   args: {

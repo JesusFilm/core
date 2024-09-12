@@ -4,30 +4,31 @@ import { ComponentProps } from 'react'
 
 import { videosAdminConfig } from '../../libs/storybookConfig'
 
-import { AppNavbar } from './AppNavbar'
+import { ToggleColorMode } from './ToggleColorMode'
 
-const meta: Meta<typeof AppNavbar> = {
+const meta: Meta<typeof ToggleColorMode> = {
   ...videosAdminConfig,
-  title: 'Videos-Admin/AppNavbar',
-  component: AppNavbar,
+  title: 'Videos-Admin/ToggleColorMode',
+  component: ToggleColorMode,
   parameters: {
     nextjs: {
-      appDirectory: true
+      appDirectory: false
     },
     viewport: {
-      defaultViewport: 'mobileMax'
+      defaultViewport: 'none'
     }
-  },
-  tags: ['!autodocs']
+  }
 }
 
 export default meta
-type Story = StoryObj<ComponentProps<typeof AppNavbar> & { locale: string }>
+type Story = StoryObj<
+  ComponentProps<typeof ToggleColorMode> & { locale: string }
+>
 
 export const Default: Story = {
   render: ({ locale }) => (
     <NextIntlClientProvider locale={locale}>
-      <AppNavbar />
+      <ToggleColorMode />
     </NextIntlClientProvider>
   ),
   args: {

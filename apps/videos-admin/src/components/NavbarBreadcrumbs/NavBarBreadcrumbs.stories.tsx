@@ -4,12 +4,12 @@ import { ComponentProps } from 'react'
 
 import { videosAdminConfig } from '../../libs/storybookConfig'
 
-import { Header } from './Header'
+import { NavbarBreadcrumbs } from './NavbarBreadcrumbs'
 
-const meta: Meta<typeof Header> = {
+const meta: Meta<typeof NavbarBreadcrumbs> = {
   ...videosAdminConfig,
-  title: 'Videos-Admin/Header',
-  component: Header,
+  title: 'Videos-Admin/NavbarBreadcrumbs',
+  component: NavbarBreadcrumbs,
   parameters: {
     ...videosAdminConfig.parameters,
     nextjs: {
@@ -23,12 +23,14 @@ const meta: Meta<typeof Header> = {
 }
 
 export default meta
-type Story = StoryObj<ComponentProps<typeof Header> & { locale: string }>
+type Story = StoryObj<
+  ComponentProps<typeof NavbarBreadcrumbs> & { locale: string }
+>
 
 export const Default: Story = {
   render: ({ locale }) => (
     <NextIntlClientProvider locale={locale}>
-      <Header />
+      <NavbarBreadcrumbs />
     </NextIntlClientProvider>
   ),
   args: {
@@ -47,7 +49,7 @@ export const Default: Story = {
 export const WithSettings: Story = {
   render: ({ locale }) => (
     <NextIntlClientProvider locale={locale}>
-      <Header />
+      <NavbarBreadcrumbs />
     </NextIntlClientProvider>
   ),
   args: {
@@ -66,7 +68,7 @@ export const WithSettings: Story = {
 export const WithVideos: Story = {
   render: ({ locale }) => (
     <NextIntlClientProvider locale={locale}>
-      <Header />
+      <NavbarBreadcrumbs />
     </NextIntlClientProvider>
   ),
   args: {
@@ -85,7 +87,7 @@ export const WithVideos: Story = {
 export const WithVideosAndId: Story = {
   render: ({ locale }) => (
     <NextIntlClientProvider locale={locale}>
-      <Header />
+      <NavbarBreadcrumbs />
     </NextIntlClientProvider>
   ),
   args: {

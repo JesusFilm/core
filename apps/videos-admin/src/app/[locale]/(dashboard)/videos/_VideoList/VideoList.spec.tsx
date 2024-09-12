@@ -3,17 +3,18 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ResultOf, VariablesOf } from 'gql.tada'
 import { NextIntlClientProvider } from 'next-intl'
 
-import { GET_VIDEOS_AND_COUNT, VideoList } from './VideoList'
+import {
+  GET_VIDEOS_AND_COUNT,
+  GetVideosAndCount,
+  GetVideosAndCountVariables,
+  VideoList
+} from './VideoList'
 
 jest.mock('next/navigation')
 
 describe('VideoList', () => {
-  type GetVideosAndCountResult = ResultOf<typeof GET_VIDEOS_AND_COUNT>
-
-  type GetVideosAndCountVariables = VariablesOf<typeof GET_VIDEOS_AND_COUNT>
-
   const mockGetVideosAndCount: MockedResponse<
-    GetVideosAndCountResult,
+    GetVideosAndCount,
     GetVideosAndCountVariables
   > = {
     request: {
