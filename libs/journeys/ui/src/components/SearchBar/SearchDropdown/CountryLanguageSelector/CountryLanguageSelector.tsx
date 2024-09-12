@@ -1,6 +1,5 @@
 import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
-import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
@@ -27,7 +26,7 @@ export function CountryLanguageSelector({
   const { dispatch } = useSearchBar()
   const [country, setCountry] = useState<string>()
   const [countryCode, setCountryCode] = useState<string>()
-  const { data, loading } = useCountryQuery({ countryId: countryCode ?? '' })
+  const { data } = useCountryQuery({ countryId: countryCode ?? '' })
 
   const spokenLanguages = getTopSpokenLanguages({
     country: data?.country,
@@ -86,7 +85,7 @@ export function CountryLanguageSelector({
 
   return (
     <>
-      {country != null && (
+      {data?.country != null && country != null && (
         <Stack
           spacing={4}
           direction={{ xs: 'column', sm: 'row' }}
@@ -101,24 +100,15 @@ export function CountryLanguageSelector({
               alignItems: 'center'
             }}
           >
-            {loading ? (
-              <>
-                <Skeleton variant="rectangular" width={35} height={15} />
-                <Skeleton variant="text" width={150} height={62} />
-              </>
-            ) : (
-              <>
-                {data?.country?.flagPngSrc != null && (
-                  <Image
-                    src={data.country.flagPngSrc}
-                    alt={country}
-                    width={40}
-                    height={20}
-                  />
-                )}
-                <Typography variant="h6">{country}: </Typography>
-              </>
+            {data?.country.flagPngSrc != null && (
+              <Image
+                src={data?.country?.flagPngSrc ?? ''}
+                alt={country}
+                width={40}
+                height={20}
+              />
             )}
+            <Typography variant="h6">{country}: </Typography>
           </Box>
           <Box
             sx={{
@@ -127,27 +117,23 @@ export function CountryLanguageSelector({
               flexWrap: 'wrap'
             }}
           >
-            {loading
-              ? [1, 2, 3].map((i) => (
-                <Skeleton key={i} variant="rounded" width={80} height={32} />
-                ))
-              : spokenLanguages.length > 0 &&
-                spokenLanguages.map((language) => (
-                  <Chip
-                    clickable
-                    key={language}
-                    label={language}
-                    variant="outlined"
-                    size="medium"
-                    onClick={() => handleClick(language)}
-                    sx={{
-                      border: (theme) =>
-                        `2px solid ${theme.palette.text.primary}${
-                          theme.palette.mode === 'dark' ? '2E' : '1A'
-                        }`
-                    }}
-                  />
-                ))}
+            {spokenLanguages.length > 0 &&
+              spokenLanguages.map((language) => (
+                <Chip
+                  clickable
+                  key={language}
+                  label={language}
+                  variant="outlined"
+                  size="medium"
+                  onClick={() => handleClick(language)}
+                  sx={{
+                    border: (theme) =>
+                      `2px solid ${theme.palette.text.primary}${
+                        theme.palette.mode === 'dark' ? '2E' : '1A'
+                      }`
+                  }}
+                />
+              ))}
           </Box>
         </Stack>
       )}
