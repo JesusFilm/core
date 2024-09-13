@@ -1,6 +1,8 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { act, renderHook, waitFor } from '@testing-library/react'
 
+import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
+
 import { JourneySettingsUpdate } from '../../../__generated__/JourneySettingsUpdate'
 
 import {
@@ -27,6 +29,7 @@ describe('useJourneyUpdateMutation', () => {
     result: jest.fn(() => ({
       data: {
         journeyUpdate: {
+          ...defaultJourney,
           __typename: 'Journey',
           id: 'journeyId',
           title: 'New Title',

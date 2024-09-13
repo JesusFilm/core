@@ -6,6 +6,7 @@ import { NodeProps } from 'reactflow'
 
 import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
 import { filterActionBlocks } from '@core/journeys/ui/filterActionBlocks'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { BaseNode, HandleVariant } from '../BaseNode'
 
@@ -24,6 +25,7 @@ export function StepBlockNode({
   const {
     state: { steps, selectedStep, activeContent, showAnalytics }
   } = useEditor()
+  const { journey } = useJourney()
   const step = steps?.find((step) => step.id === id)
 
   const actionBlocks = useMemo(
@@ -33,6 +35,14 @@ export function StepBlockNode({
 
   const isSelected =
     activeContent === ActiveContent.Canvas && selectedStep?.id === step?.id
+
+  const isMenuCard = journey?.menuStepBlock?.id === id
+
+  const targetHandleVariant = isMenuCard
+    ? HandleVariant.None
+    : showAnalytics === true
+    ? HandleVariant.Disabled
+    : HandleVariant.Shown
 
   return step != null ? (
     <Stack sx={{ position: 'relative' }}>
@@ -67,11 +77,7 @@ export function StepBlockNode({
       >
         <BaseNode
           id={step.id}
-          targetHandle={
-            showAnalytics === true
-              ? HandleVariant.Disabled
-              : HandleVariant.Shown
-          }
+          targetHandle={targetHandleVariant}
           selected={isSelected}
           isSourceConnected={step.nextBlockId != null}
           dragging={dragging}

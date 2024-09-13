@@ -135,7 +135,9 @@ const defaultJourney: Journey = {
   showShareButton: null,
   showLikeButton: null,
   showDislikeButton: null,
-  displayTitle: null
+  displayTitle: null,
+  menuButtonIcon: null,
+  menuStepBlock: null
 }
 
 const blankSeoJourney: Journey = {
