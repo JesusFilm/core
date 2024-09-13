@@ -6,7 +6,7 @@ import { styled, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 import { useClearRefinements } from 'react-instantsearch'
 
 import ChevronDown from '@core/shared/ui/icons/ChevronDown'
@@ -42,6 +42,7 @@ export function RefinementGroups({
 }: RefinementGroupsProps): ReactElement {
   const { t } = useTranslation('apps-watch')
   const theme = useTheme()
+  const [isCollapsed, setIsCollapsed] = useState(false)
 
   const { refine: clearRefinements, canRefine: canClearRefinements } =
     useClearRefinements()
@@ -55,8 +56,6 @@ export function RefinementGroups({
   const languageEntries = Object.entries(languages)
   const isLoading = languageEntries.length === 0
 
-  const { canToggleShowMore, isShowingMore, toggleShowMore } = refinements
-  const shouldFade = canToggleShowMore && !isShowingMore
   const hasRefinements = refinements.items.length > 0
 
   return (
@@ -69,13 +68,16 @@ export function RefinementGroups({
             columns={{ xs: 1, lg: 6 }}
             direction={{ xs: 'column', lg: 'row' }}
             sx={{
-              '-webkit-mask-image': shouldFade
+              minHeight: 344,
+              height: isCollapsed ? 'auto' : 344,
+              overflow: 'hidden',
+              '-webkit-mask-image': !isCollapsed
                 ? {
                     xs: 'linear-gradient(to bottom, black 85%, transparent 100%)',
                     lg: 'linear-gradient(to bottom, black 60%, transparent 60%)'
                   }
                 : 'none',
-              'mask-image': shouldFade
+              'mask-image': !isCollapsed
                 ? {
                     xs: 'linear-gradient(to bottom, black 85%, transparent 100%)',
                     lg: 'linear-gradient(to bottom, black 60%, transparent 85%)'
@@ -104,16 +106,13 @@ export function RefinementGroups({
           </Grid>
           <Box sx={{ justifyContent: 'center', display: 'flex' }}>
             <Stack direction="row" spacing={3}>
-              {canToggleShowMore && (
-                <StyledButton
-                  size="small"
-                  onClick={toggleShowMore}
-                  disabled={!canToggleShowMore}
-                  endIcon={isShowingMore ? <ChevronUp /> : <ChevronDown />}
-                >
-                  {t(isShowingMore ? 'See Less' : 'See All')}
-                </StyledButton>
-              )}
+              <StyledButton
+                size="small"
+                onClick={() => setIsCollapsed(!isCollapsed)}
+                endIcon={isCollapsed ? <ChevronUp /> : <ChevronDown />}
+              >
+                {t(isCollapsed ? 'See Less' : 'See All')}
+              </StyledButton>
               {canClearRefinements && (
                 <StyledButton
                   size="small"
