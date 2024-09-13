@@ -33,6 +33,14 @@ const DisplayTitle = dynamic(
   { ssr: false }
 )
 
+const Menu = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Footer/Menu/Menu" */ './Menu'
+    ).then((mod) => mod.Menu),
+  { ssr: false }
+)
+
 const Chat = dynamic(
   async () =>
     await import(
@@ -67,6 +75,7 @@ export function Footer(): ReactElement {
       {journey?.website === true ? (
         <>
           <DisplayTitle />
+          <Menu />
           <Chat />
         </>
       ) : (

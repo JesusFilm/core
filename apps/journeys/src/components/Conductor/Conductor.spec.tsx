@@ -152,7 +152,9 @@ describe('Conductor', () => {
     showShareButton: null,
     showLikeButton: null,
     showDislikeButton: null,
-    displayTitle: null
+    displayTitle: null,
+    menuButtonIcon: null,
+    menuStepBlock: null
   }
 
   it('should create a journeyViewEvent', async () => {

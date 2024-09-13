@@ -36,6 +36,7 @@ import {
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import { isActionBlock } from '@core/journeys/ui/isActionBlock'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { searchBlocks } from '@core/journeys/ui/searchBlocks'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import ArrowRefresh6Icon from '@core/shared/ui/icons/ArrowRefresh6'
@@ -101,6 +102,7 @@ export function JourneyFlow(): ReactElement {
     state: { steps, activeSlide, showAnalytics, analytics },
     dispatch
   } = useEditor()
+  const { journey } = useJourney()
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance | null>(null)
   const connectingParams = useRef<OnConnectStartParams | null>(null)
@@ -225,11 +227,19 @@ export function JourneyFlow(): ReactElement {
       return
     }
 
-    const { nodes, edges } = transformSteps(steps ?? [], positions)
+    let filteredSteps = steps
+
+    if (journey?.menuStepBlock != null && journey.website !== true) {
+      filteredSteps = steps.filter(
+        (step) => step.id !== journey.menuStepBlock?.id
+      )
+    }
+
+    const { nodes, edges } = transformSteps(filteredSteps ?? [], positions)
 
     setEdges(edges)
     setNodes(nodes)
-  }, [steps, data, theme, setEdges, setNodes, allBlockPositionUpdate])
+  }, [steps, data, theme, setEdges, setNodes, allBlockPositionUpdate, journey])
 
   const onConnect = useCallback<OnConnect>(() => {
     // reset the start node on connections

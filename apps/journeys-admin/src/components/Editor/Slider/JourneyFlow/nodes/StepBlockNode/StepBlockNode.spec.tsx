@@ -4,6 +4,8 @@ import { NodeProps, ReactFlowProvider } from 'reactflow'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { ActiveContent, EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
 import {
   BlockFields_ButtonBlock as ButtonBlock,
@@ -268,5 +270,68 @@ describe('StepBlockNode', () => {
     )
 
     expect(screen.getByTestId('StepBlockNodeAnalytics')).toBeInTheDocument()
+  })
+
+  it('should disable target handle for menu', () => {
+    const step: TreeBlock<StepBlock> = {
+      __typename: 'StepBlock',
+      id: 'step.id',
+      parentBlockId: null,
+      parentOrder: 0,
+      locked: false,
+      nextBlockId: null,
+      slug: null,
+      children: []
+    }
+
+    const props = {
+      id: 'step.id',
+      xPos: 0,
+      yPos: 0,
+      dragging: false
+    } as unknown as NodeProps
+
+    render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{ journey: { ...defaultJourney, menuStepBlock: step } }}
+        >
+          <ReactFlowProvider>
+            <EditorProvider
+              initialState={{
+                steps: [step],
+                selectedStep: step,
+                activeContent: ActiveContent.Canvas,
+                showAnalytics: true,
+                analytics: {
+                  totalVisitors: 0,
+                  chatsStarted: 0,
+                  linksVisited: 0,
+                  referrers: { nodes: [], edges: [] },
+                  stepsStats: [],
+                  targetMap: new Map(),
+                  stepMap: new Map([
+                    [
+                      'step.id',
+                      {
+                        eventMap: new Map(),
+                        total: 10
+                      }
+                    ]
+                  ]),
+                  blockMap: new Map([['button.id', 5]])
+                }
+              }}
+            >
+              <StepBlockNode {...props} />
+            </EditorProvider>
+          </ReactFlowProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(
+      screen.queryByTestId('BaseNodeLeftHandle-shown')
+    ).not.toBeInTheDocument()
   })
 })

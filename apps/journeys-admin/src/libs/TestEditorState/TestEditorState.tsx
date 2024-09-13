@@ -12,6 +12,7 @@ export function TestEditorState(): ReactElement {
     <>
       <div>selectedBlock: {state.selectedBlock?.id}</div>
       <div>selectedStep: {state.selectedStep?.id}</div>
+      <div>selectedStepId: {state.selectedStepId}</div>
       <div>selectedAttributeId: {state.selectedAttributeId}</div>
       <div>activeContent: {state.activeContent}</div>
       <div>activeCanvasDetailsDrawer: {state.activeCanvasDetailsDrawer}</div>

@@ -299,6 +299,7 @@ export type ChatOpenEventCreateInput = {
 
 export type CloudflareImage = {
   __typename?: 'CloudflareImage';
+  aspectRatio?: Maybe<ImageAspectRatio>;
   createdAt: Scalars['Date']['output'];
   id: Scalars['ID']['output'];
   uploadUrl?: Maybe<Scalars['String']['output']>;
@@ -654,6 +655,11 @@ export enum IdType {
   Slug = 'slug'
 }
 
+export enum ImageAspectRatio {
+  Banner = 'banner',
+  Hd = 'hd'
+}
+
 export type ImageBlock = Block & {
   __typename?: 'ImageBlock';
   alt: Scalars['String']['output'];
@@ -697,6 +703,11 @@ export type ImageBlockUpdateInput = {
   scale?: InputMaybe<Scalars['Int']['input']>;
   src?: InputMaybe<Scalars['String']['input']>;
   width?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type ImageInput = {
+  aspectRatio?: InputMaybe<ImageAspectRatio>;
+  videoId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export type Integration = {
@@ -1438,11 +1449,18 @@ export type MutationCloudflareUploadCompleteArgs = {
 
 
 export type MutationCreateCloudflareImageFromPromptArgs = {
+  input?: InputMaybe<ImageInput>;
   prompt: Scalars['String']['input'];
 };
 
 
+export type MutationCreateCloudflareUploadByFileArgs = {
+  input?: InputMaybe<ImageInput>;
+};
+
+
 export type MutationCreateCloudflareUploadByUrlArgs = {
+  input?: InputMaybe<ImageInput>;
   url: Scalars['String']['input'];
 };
 
@@ -3205,6 +3223,7 @@ export type Video = {
   id: Scalars['ID']['output'];
   image?: Maybe<Scalars['String']['output']>;
   imageAlt: Array<VideoImageAlt>;
+  images: Array<CloudflareImage>;
   keywords: Array<Keyword>;
   label: VideoLabel;
   mobileCinematicHigh?: Maybe<Scalars['String']['output']>;
@@ -3237,6 +3256,11 @@ export type VideoDescriptionArgs = {
 export type VideoImageAltArgs = {
   languageId?: InputMaybe<Scalars['ID']['input']>;
   primary?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+export type VideoImagesArgs = {
+  aspectRatio?: InputMaybe<ImageAspectRatio>;
 };
 
 

@@ -92,7 +92,9 @@ const defaultJourney: Journey = {
   showShareButton: null,
   showLikeButton: null,
   showDislikeButton: null,
-  displayTitle: null
+  displayTitle: null,
+  menuButtonIcon: null,
+  menuStepBlock: null
 }
 
 type Story = StoryObj<ComponentProps<typeof Conductor> & { journey?: Journey }>
