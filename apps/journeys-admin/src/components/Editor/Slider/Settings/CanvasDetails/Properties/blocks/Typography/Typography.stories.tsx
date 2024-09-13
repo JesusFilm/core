@@ -1,5 +1,5 @@
-import { jest } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
+import { fn } from '@storybook/test'
 import { ComponentProps } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -29,7 +29,7 @@ const Demo: Meta<typeof Typography> = {
   }
 }
 
-const onClose = jest.fn()
+const onClose = fn()
 
 const block: TreeBlock<TypographyBlock> = {
   __typename: 'TypographyBlock',

@@ -1,6 +1,5 @@
-import { expect } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
-import { screen, userEvent, waitFor } from '@storybook/testing-library'
+import { expect, screen, userEvent, waitFor } from '@storybook/test'
 import { ComponentPropsWithoutRef } from 'react'
 
 import {
@@ -62,7 +61,9 @@ const journey: Journey = {
   showShareButton: null,
   showLikeButton: null,
   showDislikeButton: null,
-  displayTitle: null
+  displayTitle: null,
+  menuButtonIcon: null,
+  menuStepBlock: null
 }
 
 type Story = StoryObj<ComponentPropsWithoutRef<typeof InformationButton>>

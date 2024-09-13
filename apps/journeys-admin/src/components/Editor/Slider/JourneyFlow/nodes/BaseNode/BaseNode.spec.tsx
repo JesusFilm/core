@@ -113,6 +113,20 @@ describe('BaseNode', () => {
     expect(handle).not.toBeVisible()
   })
 
+  it('should not render when handle variant none', () => {
+    render(
+      <ReactFlowProvider>
+        <MockedProvider>
+          <BaseNode sourceHandle={HandleVariant.None} />
+        </MockedProvider>
+      </ReactFlowProvider>
+    )
+
+    expect(
+      screen.queryByTestId('BaseNodeLeftHandle-shown')
+    ).not.toBeInTheDocument()
+  })
+
   it('should render arrow icon', () => {
     render(
       <ReactFlowProvider>

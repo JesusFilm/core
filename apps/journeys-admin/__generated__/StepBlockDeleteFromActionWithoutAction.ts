@@ -27,7 +27,7 @@ export interface StepBlockDeleteFromActionWithoutAction_blockDelete_StepBlock {
 export type StepBlockDeleteFromActionWithoutAction_blockDelete = StepBlockDeleteFromActionWithoutAction_blockDelete_ImageBlock | StepBlockDeleteFromActionWithoutAction_blockDelete_StepBlock;
 
 export interface StepBlockDeleteFromActionWithoutAction_blockDeleteAction_ImageBlock {
-  __typename: "ImageBlock" | "CardBlock" | "IconBlock" | "RadioQuestionBlock" | "StepBlock" | "TextResponseBlock" | "TypographyBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+  __typename: "ImageBlock" | "StepBlock" | "CardBlock" | "IconBlock" | "RadioQuestionBlock" | "TextResponseBlock" | "TypographyBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
 }
 

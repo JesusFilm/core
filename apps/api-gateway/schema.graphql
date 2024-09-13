@@ -374,6 +374,7 @@ type CloudflareImage
   uploadUrl: String
   userId: ID!
   createdAt: Date!
+  aspectRatio: ImageAspectRatio
 }
 
 type CloudflareVideo
@@ -795,6 +796,13 @@ enum IdType
   slug @join__enumValue(graph: JOURNEYS) @join__enumValue(graph: MEDIA)
 }
 
+enum ImageAspectRatio
+  @join__type(graph: MEDIA)
+{
+  hd @join__enumValue(graph: MEDIA)
+  banner @join__enumValue(graph: MEDIA)
+}
+
 type ImageBlock implements Block
   @join__implements(graph: JOURNEYS, interface: "Block")
   @join__type(graph: JOURNEYS)
@@ -856,6 +864,13 @@ input ImageBlockUpdateInput
   width: Int
   height: Int
   scale: Int
+}
+
+input ImageInput
+  @join__type(graph: MEDIA)
+{
+  aspectRatio: ImageAspectRatio
+  videoId: ID
 }
 
 interface Integration
@@ -924,6 +939,8 @@ type Journey
   blocks: [Block!]
   primaryImageBlock: ImageBlock
   creatorImageBlock: ImageBlock
+  logoImageBlock: ImageBlock
+  menuStepBlock: StepBlock
   chatButtons: [ChatButton!]!
   id: ID!
 
@@ -1352,7 +1369,6 @@ type Language
   @join__type(graph: JOURNEYS, key: "id")
   @join__type(graph: LANGUAGES, key: "id")
   @join__type(graph: MEDIA, key: "id", extension: true)
-  @join__type(graph: USERS, key: "id")
 {
   id: ID!
   bcp47: String @join__field(graph: LANGUAGES)
@@ -1745,9 +1761,9 @@ type Mutation
   Allow current user to update specific allowable fields of their visitor record
   """
   visitorUpdateForCurrentUser(input: VisitorUpdateInput!): Visitor! @join__field(graph: JOURNEYS)
-  createCloudflareUploadByFile: CloudflareImage! @join__field(graph: MEDIA)
-  createCloudflareUploadByUrl(url: String!): CloudflareImage! @join__field(graph: MEDIA)
-  createCloudflareImageFromPrompt(prompt: String!): CloudflareImage! @join__field(graph: MEDIA)
+  createCloudflareUploadByFile(input: ImageInput): CloudflareImage! @join__field(graph: MEDIA)
+  createCloudflareUploadByUrl(url: String!, input: ImageInput): CloudflareImage! @join__field(graph: MEDIA)
+  createCloudflareImageFromPrompt(prompt: String!, input: ImageInput): CloudflareImage! @join__field(graph: MEDIA)
   deleteCloudflareImage(id: ID!): Boolean! @join__field(graph: MEDIA)
   cloudflareUploadComplete(id: ID!): Boolean! @join__field(graph: MEDIA)
   createCloudflareVideoUploadByFile(uploadLength: Int!, name: String!): CloudflareVideo! @join__field(graph: MEDIA)
@@ -2749,7 +2765,6 @@ enum ThemeName
 
 type Translation
   @join__type(graph: JOURNEYS)
-  @join__type(graph: USERS)
 {
   value: String!
   language: Language!
@@ -3082,6 +3097,11 @@ type Video
   studyQuestions(languageId: ID, primary: Boolean): [VideoStudyQuestion!]! @join__field(graph: MEDIA)
   image: String @join__field(graph: MEDIA)
   imageAlt(languageId: ID, primary: Boolean): [VideoImageAlt!]! @join__field(graph: MEDIA)
+  videoStill: String @join__field(graph: MEDIA)
+  thumbnail: String @join__field(graph: MEDIA)
+  mobileCinematicHigh: String @join__field(graph: MEDIA)
+  mobileCinematicLow: String @join__field(graph: MEDIA)
+  mobileCinematicVeryLow: String @join__field(graph: MEDIA)
   variantLanguages: [Language!]! @join__field(graph: MEDIA)
   variantLanguagesCount: Int! @join__field(graph: MEDIA)
 
@@ -3093,8 +3113,10 @@ type Video
   """the number value of the amount of children on a video"""
   childrenCount: Int! @join__field(graph: MEDIA)
   variantLanguagesWithSlug: [LanguageWithSlug!]! @join__field(graph: MEDIA)
+  variants: [VideoVariant!]! @join__field(graph: MEDIA)
   subtitles(languageId: ID, primary: Boolean, edition: String): [VideoSubtitle!]! @join__field(graph: MEDIA)
   variant(languageId: ID): VideoVariant @join__field(graph: MEDIA)
+  images(aspectRatio: ImageAspectRatio): [CloudflareImage!]! @join__field(graph: MEDIA)
 }
 
 type VideoBlock implements Block
@@ -3765,6 +3787,8 @@ type VideoVariant
 {
   id: ID!
   hls: String
+  dash: String
+  share: String
   downloads: [VideoVariantDownload!]!
   duration: Int!
   language: Language!
@@ -3781,6 +3805,8 @@ type VideoVariantDownload
   id: ID!
   quality: VideoVariantDownloadQuality!
   size: Float!
+  height: Int!
+  width: Int!
   url: String!
 }
 

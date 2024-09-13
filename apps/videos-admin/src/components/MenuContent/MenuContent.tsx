@@ -28,12 +28,12 @@ export function MenuContent(): ReactElement {
     {
       text: t('Home'),
       icon: <HomeRoundedIcon />,
-      href: `/${params?.locale.toString() ?? 'en'}`
+      href: `/${params?.locale?.toString() ?? 'en'}`
     },
     {
       text: t('Video Library'),
       icon: <VideoLibraryRoundedIcon />,
-      href: `/${params?.locale.toString() ?? 'en'}/videos`,
+      href: `/${params?.locale?.toString() ?? 'en'}/videos`,
       startsWith: true
     }
   ]
@@ -42,13 +42,19 @@ export function MenuContent(): ReactElement {
     {
       text: t('Settings'),
       icon: <SettingsRoundedIcon />,
-      href: `/${params?.locale.toString() ?? 'en'}/settings`,
+      href: `/${params?.locale?.toString() ?? 'en'}/settings`,
       startsWith: true
     }
   ]
 
   return (
-    <Stack sx={{ flexGrow: 1, p: 1, justifyContent: 'space-between' }}>
+    <Stack
+      sx={{
+        flexGrow: 1,
+        p: 1,
+        justifyContent: 'space-between'
+      }}
+    >
       <List dense>
         {mainListItems.map((item, index) => (
           <ListItem key={index} disablePadding sx={{ display: 'block' }}>

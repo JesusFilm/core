@@ -34,7 +34,7 @@ export function NavbarBreadcrumbs(): ReactElement {
   const params = useParams()
 
   const labels: { [key: string]: Label } = {
-    [params?.locale.toString() ?? 'en']: {
+    [params?.locale?.toString() ?? 'en']: {
       icon: <HomeRoundedIcon fontSize="inherit" />,
       value: t('Dashboard')
     },
@@ -52,6 +52,7 @@ export function NavbarBreadcrumbs(): ReactElement {
     <StyledBreadcrumbs
       aria-label="breadcrumb"
       separator={<NavigateNextRoundedIcon fontSize="small" />}
+      data-testid="NavBarBreadcrumbs"
     >
       {pathNames.map((link, index) => {
         const href = `/${pathNames.slice(0, index + 1).join('/')}`

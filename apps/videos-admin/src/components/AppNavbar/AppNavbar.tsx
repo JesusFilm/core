@@ -1,3 +1,5 @@
+'use client'
+
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded'
 import AppBar from '@mui/material/AppBar'
 import Stack from '@mui/material/Stack'
@@ -15,7 +17,6 @@ import { SideMenuMobile } from '../SideMenuMobile'
 import { ToggleColorMode } from '../ToggleColorMode'
 
 const Toolbar = styled(MuiToolbar)({
-  width: '100%',
   padding: '12px',
   display: 'flex',
   flexDirection: 'column',
@@ -49,6 +50,7 @@ export function AppNavbar(): ReactElement {
         borderBottom: '1px solid',
         borderColor: 'divider'
       }}
+      data-testid="AppNavbar"
     >
       <Toolbar variant="regular">
         <Stack

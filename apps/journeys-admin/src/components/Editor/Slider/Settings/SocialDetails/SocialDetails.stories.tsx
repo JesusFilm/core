@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
-import { screen, userEvent } from '@storybook/testing-library'
+import { screen, userEvent } from '@storybook/test'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -71,7 +71,9 @@ const journey: Journey = {
   showShareButton: null,
   showLikeButton: null,
   showDislikeButton: null,
-  displayTitle: null
+  displayTitle: null,
+  menuButtonIcon: null,
+  menuStepBlock: null
 }
 
 const image: ImageBlock = {

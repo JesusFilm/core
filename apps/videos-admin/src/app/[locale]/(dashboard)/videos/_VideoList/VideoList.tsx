@@ -13,9 +13,11 @@ import {
   GridRowsProp,
   GridToolbar,
   MuiEvent,
-  getGridStringOperators
+  getGridStringOperators,
+  gridClasses
 } from '@mui/x-data-grid'
-import { VariablesOf, graphql } from 'gql.tada'
+import { ResultOf, VariablesOf, graphql } from 'gql.tada'
+import { usePathname, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { ReactElement, useState } from 'react'
 
@@ -43,6 +45,10 @@ export const GET_VIDEOS_AND_COUNT = graphql(`
 `)
 
 type VideosFilter = VariablesOf<typeof GET_VIDEOS_AND_COUNT>['where']
+export type GetVideosAndCount = ResultOf<typeof GET_VIDEOS_AND_COUNT>
+export type GetVideosAndCountVariables = VariablesOf<
+  typeof GET_VIDEOS_AND_COUNT
+>
 
 export function VideoList(): ReactElement {
   const videosLimit = 50
@@ -64,7 +70,13 @@ export function VideoList(): ReactElement {
   const [getVideosWhereArgs, setGetVideosWhereArgs] = useState<VideosFilter>({})
 
   const t = useTranslations()
-  const { data, loading, fetchMore } = useQuery(GET_VIDEOS_AND_COUNT, {
+  const router = useRouter()
+  const pathname = usePathname()
+
+  const { data, loading, fetchMore } = useQuery<
+    GetVideosAndCount,
+    GetVideosAndCountVariables
+  >(GET_VIDEOS_AND_COUNT, {
     variables: {
       limit: videosLimit,
       offset: paginationModel.page * videosLimit,
@@ -115,8 +127,7 @@ export function VideoList(): ReactElement {
     _event: MuiEvent,
     _details: GridCallbackDetails
   ): void {
-    // console.log(`redirect to: [locale]/videos/[${params.id}]`)
-    // console.log(params)io
+    router.push(`${pathname}/${params.id}`)
   }
 
   async function handleChangePage(
@@ -159,7 +170,6 @@ export function VideoList(): ReactElement {
   return (
     <Box sx={{ height: 'calc(100vh - 90px)', width: '100%' }}>
       <DataGrid
-        checkboxSelection
         getRowClassName={(params) =>
           params.indexRelativeToCurrentPage % 2 === 0 ? 'even' : 'odd'
         }
@@ -185,6 +195,22 @@ export function VideoList(): ReactElement {
         }
         filterModel={filterModel}
         onFilterModelChange={handleFilterModelChange}
+        sx={{
+          [`& .${gridClasses.columnHeader}, & .${gridClasses.cell}`]: {
+            outline: 'transparent'
+          },
+          [`& .${gridClasses.columnHeader}:focus-within, & .${gridClasses.cell}:focus-within`]:
+            {
+              outline: 'none'
+            }
+        }}
+        slotProps={{
+          row: {
+            style: {
+              cursor: 'pointer'
+            }
+          }
+        }}
       />
     </Box>
   )
