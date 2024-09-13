@@ -71,7 +71,7 @@ export function SearchBar({
   const refinements = useRefinementList({
     attribute: 'languageEnglishName',
     showMore: true,
-    limit: 5,
+    limit: 1000,
     showMoreLimit: 5000
   })
 
