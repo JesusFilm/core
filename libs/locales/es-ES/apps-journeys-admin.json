@@ -207,6 +207,8 @@
   "Select a Host": "Selecciona un anfitrión",
   "Cannot edit hosts for this old journey": "No se pueden editar los anfitriones de este antiguo viaje",
   "Only {{ teamName }} members can edit this": "Sólo los miembros de {{ teamName }} pueden editar esto",
+  "Logo": "Logotipo",
+  "Size": "Talla",
   "Edit Menu Card": "Editar tarjeta de menú",
   "Create Menu Card": "Crear tarjeta de menú",
   "Select Icon": "Seleccionar icono",
