@@ -22,6 +22,25 @@ jest.mock('../../../../schema/cloudflare/image/service', () => ({
   })
 }))
 
+jest.mock('../../importer', () => ({
+  client: {
+    query: jest.fn().mockResolvedValue([
+      [
+        {
+          mobileCinematicHigh:
+            'https://d1wl257kev7hsz.cloudfront.net/cinematics/mockVideoId.mobileCinematicHigh.jpg',
+          mobileCinematicLow: null,
+          mobileCinematicVeryLow: null,
+          thumbnail:
+            'https://d1wl257kev7hsz.cloudfront.net/cinematics/mockVideoId.thumbnail.jpg',
+          videoStill:
+            'https://d1wl257kev7hsz.cloudfront.net/cinematics/mockVideoId.videoStill.jpg'
+        }
+      ]
+    ])
+  }
+}))
+
 describe('bigQuery/importers/videoImages', () => {
   describe('importVideoImages', () => {
     beforeEach(() => {
@@ -95,6 +114,33 @@ describe('bigQuery/importers/videoImages', () => {
           uploadUrl:
             'https://d1wl257kev7hsz.cloudfront.net/cinematics/mockVideoId.videoStill.jpg',
           userId: 'system'
+        }
+      })
+    })
+
+    it('should fix broken images', async () => {
+      prismaMock.video.findMany.mockResolvedValue([
+        {
+          id: 'mockVideoId',
+          mobileCinematicHigh: null,
+          videoStill: null
+        } as unknown as Video
+      ])
+      prismaMock.video.update.mockResolvedValue({} as unknown as Video)
+      await importVideoImages()
+      expect(prismaMock.video.update).toHaveBeenCalledWith({
+        data: {
+          mobileCinematicHigh:
+            'https://d1wl257kev7hsz.cloudfront.net/cinematics/mockVideoId.mobileCinematicHigh.jpg',
+          mobileCinematicLow: null,
+          mobileCinematicVeryLow: null,
+          thumbnail:
+            'https://d1wl257kev7hsz.cloudfront.net/cinematics/mockVideoId.thumbnail.jpg',
+          videoStill:
+            'https://d1wl257kev7hsz.cloudfront.net/cinematics/mockVideoId.videoStill.jpg'
+        },
+        where: {
+          id: 'mockVideoId'
         }
       })
     })

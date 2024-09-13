@@ -4,6 +4,7 @@ import { ImageAspectRatio } from '.prisma/api-media-client'
 
 import { prisma } from '../../../../lib/prisma'
 import { getClient } from '../../../../schema/cloudflare/image/service'
+import { client as bqClient } from '../../importer'
 
 enum fields {
   videoStill = 'videoStill',
@@ -11,6 +12,42 @@ enum fields {
 }
 
 export async function importVideoImages(logger?: Logger): Promise<void> {
+  logger?.info('check for broken video images')
+  const brokenVideos = await prisma.video.findMany({
+    select: { id: true, mobileCinematicHigh: true },
+    where: {
+      mobileCinematicHigh: null
+    }
+  })
+  if (brokenVideos.length > 0)
+    logger?.info(`found ${brokenVideos.length} broken video images`)
+
+  for (const video of brokenVideos) {
+    const bqResult = await bqClient.query({
+      query: `SELECT * FROM \`jfp-data-warehouse.jfp_mmdb_prod.core_video_arclight_data\` WHERE id = @id`,
+      params: {
+        id: video.id
+      },
+      location: 'US'
+    })
+    const bqVideo = bqResult[0][0]
+    if (bqVideo?.mobileCinematicHigh == null) {
+      logger?.info(`video ${video.id} has no image in bigquery`)
+      continue
+    }
+
+    await prisma.video.update({
+      where: { id: video.id },
+      data: {
+        mobileCinematicHigh: bqVideo.mobileCinematicHigh,
+        mobileCinematicLow: bqVideo.mobileCinematicLow,
+        mobileCinematicVeryLow: bqVideo.mobileCinematicVeryLow,
+        thumbnail: bqVideo.thumbnail,
+        videoStill: bqVideo.videoStill
+      }
+    })
+  }
+
   logger?.info('imageSeed started')
   const newVideos = await prisma.video.findMany({
     select: { id: true, videoStill: true, image: true },
