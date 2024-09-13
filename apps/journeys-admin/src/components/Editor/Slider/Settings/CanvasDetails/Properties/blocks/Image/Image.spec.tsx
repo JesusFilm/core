@@ -21,7 +21,8 @@ describe('Image', () => {
     width: 1920,
     height: 1080,
     blurhash: '',
-    children: []
+    children: [],
+    scale: null
   }
 
   it('should display Image Options', () => {

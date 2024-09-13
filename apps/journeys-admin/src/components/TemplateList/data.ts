@@ -19,7 +19,8 @@ const imageBlock: ImageFields = {
   alt: 'image.alt',
   width: 10,
   height: 10,
-  blurhash: ''
+  blurhash: '',
+  scale: null
 }
 
 export const defaultTemplate: Journey = {
