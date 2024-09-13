@@ -232,6 +232,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
                   }}
                 >
                   <Typography
+                    data-testid="ToolbarTitle"
                     variant="subtitle1"
                     sx={{
                       overflow: 'hidden',
@@ -243,6 +244,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
                     {journey.title}
                   </Typography>
                   <Typography
+                    data-testid="ToolbarDescription"
                     variant="caption"
                     sx={{
                       maxWidth: 'auto',

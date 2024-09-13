@@ -149,7 +149,7 @@ export function Menu({ user }: MenuProps): ReactElement {
           )}
         {!smUp && (
           <>
-            <Divider />
+            <Divider data-testid="helpscout-menu-divider" />
             <HelpScoutBeacon
               variant="menuItem"
               userInfo={{
