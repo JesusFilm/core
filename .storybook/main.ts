@@ -22,7 +22,8 @@ const storiesForProject = {
   ],
   'api-users': [
     '../apps/api-users/src/emails/stories/*.stories.@(js|jsx|ts|tsx)'
-  ]
+  ],
+  'videos-admin': ['../apps/videos-admin/src/**/*.stories.@(js|jsx|ts|tsx)']
   // Add new UI projects here and in allStories
 }
 
@@ -33,7 +34,8 @@ const stories = [
   ...storiesForProject['watch'],
   ...storiesForProject['shared-ui'],
   ...storiesForProject['api-journeys'],
-  ...storiesForProject['api-users']
+  ...storiesForProject['api-users'],
+  ...storiesForProject['videos-admin']
 ]
 
 const config: StorybookConfig = {
@@ -84,9 +86,10 @@ const config: StorybookConfig = {
     name: '@storybook/nextjs',
     options: {}
   },
-
   docs: {},
-
+  features: {
+    experimentalRSC: true
+  },
   typescript: {
     reactDocgen: 'react-docgen-typescript'
   }
