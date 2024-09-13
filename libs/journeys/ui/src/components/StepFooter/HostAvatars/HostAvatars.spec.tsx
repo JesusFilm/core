@@ -62,7 +62,9 @@ describe('HostAvatars', () => {
     showLikeButton: null,
     showDislikeButton: null,
     displayTitle: null,
-    logoImageBlock: null
+    logoImageBlock: null,
+    menuButtonIcon: null,
+    menuStepBlock: null
   }
 
   it('renders both avatars if both images are set', () => {

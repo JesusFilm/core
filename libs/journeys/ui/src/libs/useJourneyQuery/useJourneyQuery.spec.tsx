@@ -75,7 +75,9 @@ describe('useJourneyQuery', () => {
       showLikeButton: null,
       showDislikeButton: null,
       displayTitle: null,
-      logoImageBlock: null
+      logoImageBlock: null,
+      menuButtonIcon: null,
+      menuStepBlock: null
     }
 
     const result = jest.fn(() => ({ data: { journey } }))
