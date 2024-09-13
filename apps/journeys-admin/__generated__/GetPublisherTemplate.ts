@@ -156,6 +156,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_ImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_NavigateToBlockAction {
@@ -465,6 +466,7 @@ export interface GetPublisherTemplate_publisherTemplate_primaryImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_creatorImageBlock {
@@ -481,6 +483,7 @@ export interface GetPublisherTemplate_publisherTemplate_creatorImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_userJourneys_user {
@@ -543,6 +546,23 @@ export interface GetPublisherTemplate_publisherTemplate_tags {
   id: string;
   parentId: string | null;
   name: GetPublisherTemplate_publisherTemplate_tags_name[];
+}
+
+export interface GetPublisherTemplate_publisherTemplate_logoImageBlock {
+  __typename: "ImageBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  src: string | null;
+  alt: string;
+  width: number;
+  height: number;
+  /**
+   * blurhash is a compact representation of a placeholder for an image.
+   * Find a frontend implementation at https: // github.com/woltapp/blurhash
+   */
+  blurhash: string;
+  scale: number | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_menuStepBlock {
@@ -610,6 +630,7 @@ export interface GetPublisherTemplate_publisherTemplate {
    * public title for viewers
    */
   displayTitle: string | null;
+  logoImageBlock: GetPublisherTemplate_publisherTemplate_logoImageBlock | null;
   menuButtonIcon: JourneyMenuButtonIcon | null;
   menuStepBlock: GetPublisherTemplate_publisherTemplate_menuStepBlock | null;
 }

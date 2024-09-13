@@ -56,7 +56,8 @@ export function NewImageButton(): ReactElement {
       width: 0,
       height: 0,
       blurhash: '',
-      __typename: 'ImageBlock'
+      __typename: 'ImageBlock',
+      scale: null
     }
     addBlock({
       block: imageBlock,

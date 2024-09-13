@@ -142,6 +142,7 @@ export interface CardPollRestore_imageRestore_ImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface CardPollRestore_imageRestore_RadioOptionBlock_action_NavigateToBlockAction {
@@ -570,6 +571,7 @@ export interface CardPollRestore_subtitleRestore_ImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface CardPollRestore_subtitleRestore_RadioOptionBlock_action_NavigateToBlockAction {
@@ -998,6 +1000,7 @@ export interface CardPollRestore_titleRestore_ImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface CardPollRestore_titleRestore_RadioOptionBlock_action_NavigateToBlockAction {
@@ -1426,6 +1429,7 @@ export interface CardPollRestore_radioQuestionRestore_ImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface CardPollRestore_radioQuestionRestore_RadioOptionBlock_action_NavigateToBlockAction {
@@ -1854,6 +1858,7 @@ export interface CardPollRestore_radioOption1Restore_ImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface CardPollRestore_radioOption1Restore_RadioOptionBlock_action_NavigateToBlockAction {
@@ -2282,6 +2287,7 @@ export interface CardPollRestore_radioOption2Restore_ImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface CardPollRestore_radioOption2Restore_RadioOptionBlock_action_NavigateToBlockAction {
@@ -2710,6 +2716,7 @@ export interface CardPollRestore_radioOption3Restore_ImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface CardPollRestore_radioOption3Restore_RadioOptionBlock_action_NavigateToBlockAction {
@@ -3138,6 +3145,7 @@ export interface CardPollRestore_radioOption4Restore_ImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface CardPollRestore_radioOption4Restore_RadioOptionBlock_action_NavigateToBlockAction {
@@ -3566,6 +3574,7 @@ export interface CardPollRestore_bodyRestore_ImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface CardPollRestore_bodyRestore_RadioOptionBlock_action_NavigateToBlockAction {
