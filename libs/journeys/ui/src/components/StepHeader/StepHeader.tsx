@@ -48,7 +48,7 @@ export function StepHeader({
           justifyContent="space-between"
           spacing={2}
           sx={{
-            px: { xs: 4, lg: 0 },
+            px: { xs: 6, lg: 0 },
             flexDirection: { lg: rtl ? 'row-reverse' : 'row' },
             justifyContent: 'space-between',
             alignItems: { xs: 'flex-start', lg: 'center' },
