@@ -72,7 +72,7 @@ describe('StepHeaderMenu', () => {
     it('should render close icon for menu card', () => {
       const journey = {
         ...defaultJourney,
-        menuStepBlockId: 'menuStep.id',
+        menuStepBlock: menuStep,
         menuButtonIcon: JourneyMenuButtonIcon.home3,
         blocks: [menuStep]
       }
@@ -122,7 +122,7 @@ describe('StepHeaderMenu', () => {
 
       const journey = {
         ...defaultJourney,
-        menuStepBlockId: 'menuStep.id',
+        menuStepBlock: menuStep,
         menuButtonIcon: JourneyMenuButtonIcon.home3,
         blocks: [menuStep]
       }
