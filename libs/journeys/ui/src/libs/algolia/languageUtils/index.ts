@@ -1,5 +1,6 @@
 export {
   normalizeLanguage,
   capitalizeFirstLetter,
-  parseSuggestion
+  parseSuggestion,
+  stripLanguageFromQuery
 } from './languageUtils'

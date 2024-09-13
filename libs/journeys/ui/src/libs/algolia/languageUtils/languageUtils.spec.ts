@@ -1,7 +1,8 @@
 import {
   capitalizeFirstLetter,
   normalizeLanguage,
-  parseSuggestion
+  parseSuggestion,
+  stripLanguageFromQuery
 } from './languageUtils'
 
 describe('normalizeLanguage', () => {
@@ -55,5 +56,33 @@ describe('parseSuggestion', () => {
 
   it('should parse categories separate', () => {
     expect(parseSuggestion('french and english')).toEqual(['french', 'english'])
+  })
+})
+
+describe('stripLanguageFromQuery', () => {
+  it('should return empty string from empty string', () => {
+    expect(stripLanguageFromQuery('', '')).toBe('')
+  })
+
+  it('should return empty language from jesus string', () => {
+    expect(stripLanguageFromQuery('', 'jesus')).toBe('jesus')
+  })
+
+  it('should return empty string because no french found', () => {
+    expect(stripLanguageFromQuery('French', '')).toBe('')
+  })
+
+  it('should return empty string because no spanish found in love spain', () => {
+    expect(stripLanguageFromQuery('Spanish', 'love spain')).toBe('love spain')
+  })
+
+  it('should strip irish from sport irish query', () => {
+    expect(stripLanguageFromQuery('Irish', 'sport irish')).toBe('sport')
+  })
+
+  it('should strip spanish from jesus spanish', () => {
+    expect(
+      stripLanguageFromQuery('Spanish, Latin American', 'jesus spanish')
+    ).toBe('jesus')
   })
 })
