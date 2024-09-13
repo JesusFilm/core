@@ -2,6 +2,7 @@ import Box from '@mui/material/Box'
 import Checkbox from '@mui/material/Checkbox'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import FormGroup from '@mui/material/FormGroup'
+import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { type ReactElement } from 'react'
@@ -23,6 +24,7 @@ export function RefinementGroup({
     dispatch,
     state: { continentLanguages }
   } = useSearchBar()
+  const theme = useTheme()
   const { items, refine } = refinement
   const { query, refine: refineQuery } = useSearchBox()
 
@@ -76,16 +78,26 @@ export function RefinementGroup({
           <FormGroup>
             {items.map((item) => (
               <FormControlLabel
-                key={item.value}
+                key={item.label}
                 control={
                   <Checkbox
+                    size="small"
                     checked={isItemChecked(item)}
                     disabled={isItemDisabled(item.label)}
                     onClick={() => handleClick(item.label, !item.isRefined)}
-                    size="small"
                   />
                 }
                 label={item.label}
+                sx={{
+                  maxWidth: '95%',
+                  [theme.breakpoints.up('lg')]: {
+                    '& .MuiFormControlLabel-label': {
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis'
+                    }
+                  }
+                }}
               />
             ))}
           </FormGroup>
