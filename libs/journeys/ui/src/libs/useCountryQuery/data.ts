@@ -37,12 +37,12 @@ export const country: Country = {
           {
             __typename: 'LanguageName',
             primary: true,
-            value: 'Spanish, Latin American'
+            value: 'Spanish Latin American'
           },
           {
             __typename: 'LanguageName',
-            primary: true,
-            value: 'Spanish, Latin American'
+            primary: false,
+            value: 'Spanish Latin American'
           }
         ]
       },

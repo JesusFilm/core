@@ -16,10 +16,6 @@ export function getTopSpokenLanguages({
 }: getTopSpokenLanguagesProps): string[] {
   if (country == null) return []
 
-  const availableLanguageSet = new Set(
-    availableLanguages.map((lang) => lang.value)
-  )
-
   const countryLanguages = country?.countryLanguages ?? []
 
   const sortedLanguages = orderBy(countryLanguages, ['speakers'], ['desc'])
@@ -30,10 +26,19 @@ export function getTopSpokenLanguages({
     return localName ?? nativeName ?? ''
   })
 
-  const topSpokenLanguages = languageNames
-    .filter(Boolean)
-    .filter((language) => availableLanguageSet.has(language))
+  const topSpokenLanguages = availableLanguages
+    .filter(({ value }) => languageNames.includes(removeCommas(value)))
+    .sort(
+      (a, b) =>
+        languageNames.indexOf(removeCommas(a.value)) -
+        languageNames.indexOf(removeCommas(b.value))
+    )
     .slice(0, limit)
+    .map(({ value }) => value)
 
   return topSpokenLanguages
+}
+
+function removeCommas(str: string): string {
+  return str.replace(/,/g, '').trim()
 }
