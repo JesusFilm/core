@@ -50,14 +50,17 @@ export function StepHeaderMenu(): ReactElement {
       void router.push(`/${journey?.slug}/${slug ?? id}`)
     }
   }
+  const isEmpty = menuButtonIcon === null && variant === 'admin'
 
   return (
     <Box
       sx={{
         borderRadius: 100,
-        border: menuButtonIcon == null && variant === 'admin' ? 'dashed' : null,
-        minHeight: 48,
-        minWidth: 48,
+        border: isEmpty ? 'dashed' : null,
+        borderWidth: 3,
+        borderColor: ({ palette }) => palette.grey[700],
+        minHeight: 44,
+        minWidth: 44,
         display: 'grid',
         placeItems: 'center',
         maxWidth: 'min-content',
@@ -72,7 +75,12 @@ export function StepHeaderMenu(): ReactElement {
               <Icon />
             </IconButton>
           ) : (
-            <Icon />
+            <Icon
+              sx={{
+                color: ({ palette }) =>
+                  isEmpty ? palette.grey[700] : undefined
+              }}
+            />
           )}
         </>
       )}
