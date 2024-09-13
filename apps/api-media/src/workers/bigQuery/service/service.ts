@@ -36,11 +36,12 @@ export async function service(logger?: Logger): Promise<void> {
     await importVideoVariants(logger),
     await importVideoSubtitles(logger),
     await importVideoChildren(logger),
-    await importVideoImages(logger),
     // depends on bibleBooks and videos
     await importBibleCitations(logger),
     // depends on videoVariants
-    await importVideoVariantDownloads(logger)
+    await importVideoVariantDownloads(logger),
+    // run last since it can be slow initially
+    await importVideoImages(logger)
   ]
   cleanup.forEach((fn) => fn?.())
 }

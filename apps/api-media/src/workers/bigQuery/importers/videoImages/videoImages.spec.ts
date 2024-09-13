@@ -33,14 +33,14 @@ describe('bigQuery/importers/videoImages', () => {
 
     it('should get existing images for videos', async () => {
       prismaMock.video.findMany.mockResolvedValue([
-        { id: 'mockVideoId' } as unknown as Video
+        { id: 'mockVideoId', image: null, videoStill: null } as unknown as Video
       ])
       prismaMock.cloudflareImage.create.mockResolvedValue(
         {} as unknown as CloudflareImage
       )
       await importVideoImages()
       expect(prismaMock.video.findMany).toHaveBeenCalledWith({
-        select: { id: true },
+        select: { id: true, image: true, videoStill: true },
         where: { images: { none: {} } }
       })
       expect(getClient().images.v1.get).toHaveBeenCalledWith(
