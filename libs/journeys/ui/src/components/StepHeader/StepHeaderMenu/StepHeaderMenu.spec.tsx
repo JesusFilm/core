@@ -47,18 +47,18 @@ describe('StepHeaderMenu', () => {
     })
 
     it('should render menu icon', () => {
+      mockedUseRouter.mockReturnValueOnce({
+        query: { stepSlug: 'step.id' }
+      } as unknown as NextRouter)
+
       const journey = {
         ...defaultJourney,
-        menuButtonIcon: JourneyMenuButtonIcon.home3
+        menuButtonIcon: JourneyMenuButtonIcon.home3,
+        menuStepBlock: menuStep
       }
 
       render(
-        <JourneyProvider
-          value={{
-            journey: { ...journey, menuStepBlock: menuStep },
-            variant: 'default'
-          }}
-        >
+        <JourneyProvider value={{ journey, variant: 'default' }}>
           <StepHeaderMenu />
         </JourneyProvider>
       )
@@ -89,15 +89,14 @@ describe('StepHeaderMenu', () => {
     it('should navigate to menu card when clicked', () => {
       const push = jest.fn()
 
-      mockedUseRouter.mockReturnValue({
-        query: { stepSlug: 'menu' },
+      mockedUseRouter.mockReturnValueOnce({
+        query: { stepSlug: 'step.id' },
         push
       } as unknown as NextRouter)
 
       const journey = {
         ...defaultJourney,
         menuStepBlock: menuStep,
-        menuStepBlockId: 'menuStep.id',
         menuButtonIcon: JourneyMenuButtonIcon.home3
       }
 
@@ -115,7 +114,7 @@ describe('StepHeaderMenu', () => {
     it('should navigate back when close button is clicked', () => {
       const back = jest.fn()
 
-      mockedUseRouter.mockReturnValue({
+      mockedUseRouter.mockReturnValueOnce({
         query: { stepSlug: 'menu' },
         back
       } as unknown as NextRouter)
