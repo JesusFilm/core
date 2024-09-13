@@ -5,17 +5,17 @@ import { ImageAspectRatio } from '.prisma/api-media-client'
 import { prisma } from '../../../../lib/prisma'
 import { getClient } from '../../../../schema/cloudflare/image/service'
 
+enum fields {
+  videoStill = 'videoStill',
+  image = 'image'
+}
+
 export async function importVideoImages(logger?: Logger): Promise<void> {
   logger?.info('imageSeed started')
   const newVideos = await prisma.video.findMany({
-    select: { id: true },
+    select: { id: true, videoStill: true, image: true },
     where: { images: { none: {} } }
   })
-
-  if (newVideos.length === 0) {
-    logger?.info('imageSeed finished')
-    return
-  }
 
   const client = getClient()
   for (const video of newVideos) {
@@ -23,16 +23,20 @@ export async function importVideoImages(logger?: Logger): Promise<void> {
     const editions = [
       {
         fileName: `${video.id}.mobileCinematicHigh.jpg`,
+        field: fields.image,
         aspectRatio: ImageAspectRatio.banner
       },
       {
         fileName: `${video.id}.videoStill.jpg`,
+        field: fields.videoStill,
         aspectRatio: ImageAspectRatio.hd
       }
     ]
     for (const edition of editions) {
       try {
-        const url = `https://d1wl257kev7hsz.cloudfront.net/cinematics/${edition.fileName}`
+        const url =
+          video[edition.field] ??
+          `https://d1wl257kev7hsz.cloudfront.net/cinematics/${edition.fileName}`
         try {
           await client.images.v1.get(edition.fileName, {
             account_id: process.env.CLOUDFLARE_ACCOUNT_ID as string
