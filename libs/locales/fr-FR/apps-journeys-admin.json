@@ -207,6 +207,8 @@
   "Select a Host": "Sélectionne un hôte",
   "Cannot edit hosts for this old journey": "Impossible de modifier les hôtes pour ce vieux voyage",
   "Only {{ teamName }} members can edit this": "Seuls les membres de {{ teamName }} peuvent modifier cette page",
+  "Logo": "Logo",
+  "Size": "Taille",
   "Edit Menu Card": "Editer la carte de menu",
   "Create Menu Card": "Créer une carte de menu",
   "Select Icon": "Sélectionne l'icône",
