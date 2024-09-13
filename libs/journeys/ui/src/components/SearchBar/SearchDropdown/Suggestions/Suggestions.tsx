@@ -6,7 +6,10 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { useSearchBox } from 'react-instantsearch'
 
-import { parseSuggestion } from '../../../../libs/algolia/languageUtils'
+import {
+  parseSuggestion,
+  stripLanguageFromQuery
+} from '../../../../libs/algolia/languageUtils'
 
 import { Suggestion } from './Suggestion'
 
@@ -31,9 +34,26 @@ export function Suggestions({ refinements }: SuggestionsProps): ReactElement {
     })
   }
 
+  function stripLanguagesFromQuery(languagesToStrip: string[]): string {
+    let strippedQuery = query
+    languagesToStrip.forEach((language) => {
+      strippedQuery = stripLanguageFromQuery(language, strippedQuery)
+    })
+    return strippedQuery
+  }
+
+  function updateQuery(languagesToStrip: string[]): void {
+    if (query === '') {
+      refineQuery('Jesus')
+    } else {
+      const strippedQuery = stripLanguagesFromQuery(languagesToStrip)
+      if (query !== strippedQuery) refineQuery(strippedQuery)
+    }
+  }
+
   function selectSuggestion(suggestion: string): void {
-    if (query === '') refineQuery('Jesus')
     const suggestionParts = parseSuggestion(suggestion)
+    updateQuery(suggestionParts.slice(1))
     refineLanguages(suggestionParts.slice(1))
   }
 
