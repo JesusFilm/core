@@ -7,6 +7,7 @@ import { useJourney } from '../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../libs/rtl'
 
 import { InformationButton } from './InformationButton'
+import { Logo } from './Logo'
 import { PaginationBullets } from './PaginationBullets'
 import { StepHeaderMenu } from './StepHeaderMenu'
 
@@ -48,7 +49,7 @@ export function StepHeader({
           justifyContent="space-between"
           spacing={2}
           sx={{
-            px: { xs: 6, lg: 0 },
+            px: { xs: 3, lg: 0 },
             flexDirection: { lg: rtl ? 'row-reverse' : 'row' },
             justifyContent: 'space-between',
             alignItems: { xs: 'flex-start', lg: 'center' },
@@ -64,7 +65,7 @@ export function StepHeader({
             }}
             gap={4}
           >
-            {/* Logo */}
+            <Logo />
             <Stack
               sx={{
                 flex: '1 1 100%',
