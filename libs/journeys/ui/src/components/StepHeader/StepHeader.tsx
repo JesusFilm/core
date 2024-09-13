@@ -86,8 +86,6 @@ export function StepHeader({
                 {journey?.displayTitle ?? journey?.seoTitle}
               </Typography>
             </Stack>
-
-            {/* Menu */}
             <StepHeaderMenu />
           </Stack>
         </Stack>
