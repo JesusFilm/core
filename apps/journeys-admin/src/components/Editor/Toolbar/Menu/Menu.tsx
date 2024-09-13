@@ -2,7 +2,9 @@ import { gql, useQuery } from '@apollo/client'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import MuiMenu from '@mui/material/Menu'
+import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { User } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
@@ -19,6 +21,7 @@ import { AnalyticsItem } from '../Items/AnalyticsItem'
 import { CopyLinkItem } from '../Items/CopyLinkItem'
 import { CreateTemplateItem } from '../Items/CreateTemplateItem'
 import { DescriptionItem } from '../Items/DescriptionItem'
+import { DetailsItem } from '../Items/DetailsItem'
 import { LanguageItem } from '../Items/LanguageItem'
 import { ShareItem } from '../Items/ShareItem'
 import { StrategyItem } from '../Items/StrategyItem'
@@ -79,19 +82,53 @@ export function Menu({ user }: MenuProps): ReactElement {
         MenuListProps={{
           'aria-labelledby': 'edit-journey-actions'
         }}
+        sx={{
+          '& .MuiList-root': {
+            py: 2
+          }
+        }}
       >
-        <AccessItem variant="menu-item" onClose={handleCloseMenu} />
+        <Stack sx={{ width: 220, display: { xs: 'flex', sm: 'none' } }}>
+          <Stack spacing={2} sx={{ px: 4, py: 1 }}>
+            <Typography
+              variant="subtitle2"
+              sx={{
+                display: '-webkit-box',
+                '-webkit-line-clamp': '2',
+                '-webkit-box-orient': 'vertical',
+                overflow: 'hidden'
+              }}
+            >
+              {journey?.title}
+            </Typography>
+            <Typography
+              variant="caption"
+              sx={{
+                maxWidth: 'auto',
+                overflow: 'hidden',
+                display: '-webkit-box',
+                '-webkit-line-clamp': '2',
+                '-webkit-box-orient': 'vertical'
+              }}
+            >
+              {journey?.description}
+            </Typography>
+          </Stack>
+          <DetailsItem variant="menu-item" onClose={handleCloseMenu} />
+          <Divider />
+        </Stack>
         {journey?.template === true && (
           <TemplateSettingsItem variant="menu-item" onClose={handleCloseMenu} />
         )}
-        {journey?.template !== true && (
-          <TitleItem variant="menu-item" onClose={handleCloseMenu} />
-        )}
-        {journey?.template !== true && (
-          <DescriptionItem variant="menu-item" onClose={handleCloseMenu} />
-        )}
         {(journey?.template !== true || isPublisher != null) && (
           <LanguageItem variant="menu-item" onClose={handleCloseMenu} />
+        )}
+        <AccessItem variant="menu-item" onClose={handleCloseMenu} />
+        {smUp && journey?.template !== true && (
+          <TitleItem variant="menu-item" onClose={handleCloseMenu} />
+        )}
+        {smUp && journey?.template !== true && (
+          <DescriptionItem variant="menu-item" onClose={handleCloseMenu} />
         )}
         {!smUp && journey?.template !== true && (
           <AnalyticsItem variant="menu-item" />
@@ -105,10 +142,6 @@ export function Menu({ user }: MenuProps): ReactElement {
             <ShareItem variant="menu-item" closeMenu={handleCloseMenu} />
           </>
         )}
-        {journey != null &&
-          (journey?.template !== true || isPublisher != null) && (
-            <Divider data-testid="menu-divider" />
-          )}
         {journey != null &&
           (journey?.template !== true || isPublisher != null) && (
             <CopyLinkItem variant="menu-item" onClose={handleCloseMenu} />

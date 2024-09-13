@@ -268,7 +268,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
         </>
       )}
       <Stack ref={menuRef} flexDirection="row">
-        <Box sx={{ display: { xs: 'flex', sm: 'none' } }}>
+        <Box sx={{ display: { xs: 'flex', sm: 'none' }, px: 2 }}>
           <PreviewItem variant="icon-button" />
         </Box>
         <Menu user={user} />
