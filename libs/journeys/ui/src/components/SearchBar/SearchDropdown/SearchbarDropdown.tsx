@@ -19,8 +19,6 @@ import Search1 from '@core/shared/ui/icons/Search1'
 import { TabPanel } from '@core/shared/ui/TabPanel'
 
 import { useSearchBar } from '../../../libs/algolia/SearchBarProvider'
-import { useLanguagesContinentsQuery } from '../../../libs/useLanguagesContinentsQuery'
-import { useSortLanguageContinents } from '../../../libs/useSortLanguageContinents'
 
 import { CountryLanguageSelector } from './CountryLanguageSelector'
 import { RefinementGroups } from './RefinementGroups'
@@ -63,14 +61,10 @@ export function SearchbarDropdown({
 }: SearchbarDropdownProps): ReactElement {
   const { t } = useTranslation('apps-watch')
   const {
-    dispatch,
-    state: { continentLanguages }
+    state: { continentLanguages },
+    languages,
+    dispatch
   } = useSearchBar()
-
-  const { data } = useLanguagesContinentsQuery()
-  const languages = useSortLanguageContinents({
-    languages: data?.languages ?? []
-  })
 
   const updateDefaultLanguageContinent = useCallback(() => {
     const refinedItems = refinements.items.filter((item) => item.isRefined)

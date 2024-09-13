@@ -9,6 +9,10 @@ import {
   useReducer
 } from 'react'
 
+import { useLanguagesContinentsQuery } from '../../useLanguagesContinentsQuery'
+import { useSortLanguageContinents } from '../../useSortLanguageContinents'
+import { LanguageContinentsRecord } from '../../useSortLanguageContinents/useSortLanguageContinents'
+
 type Continent = string
 type Language = string
 
@@ -142,6 +146,7 @@ export const reducer = (
 
 interface SearchBarContextType {
   state: SearchBarState
+  languages: LanguageContinentsRecord
   dispatch: Dispatch<SearchBarAction>
 }
 
@@ -158,6 +163,11 @@ export function SearchBarProvider({
   children,
   initialState
 }: SearchBarProviderProps): ReactElement {
+  const { data } = useLanguagesContinentsQuery()
+  const languages = useSortLanguageContinents({
+    languages: data?.languages ?? []
+  })
+
   const [state, dispatch] = useReducer(reducer, {
     continentLanguages: {},
     ...initialState
@@ -167,6 +177,7 @@ export function SearchBarProvider({
     <SearchBarContext.Provider
       value={{
         state,
+        languages,
         dispatch
       }}
     >

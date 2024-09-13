@@ -1,7 +1,9 @@
+import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 
 import { SearchBarProvider } from '../../../libs/algolia/SearchBarProvider'
+import { getLanguagesContinentsMock } from '../../../libs/useLanguagesContinentsQuery/useLanguagesContinentsQuery.mock'
 import { languageRefinements } from '../data'
 
 import { LanguageButtons } from './LanguageButtons'
@@ -29,9 +31,11 @@ describe('LanguageButtons', () => {
 
   it('should render the language button with default text', () => {
     render(
-      <SearchBarProvider>
-        <LanguageButtons onClick={jest.fn()} refinements={refinements} />
-      </SearchBarProvider>
+      <MockedProvider mocks={[getLanguagesContinentsMock]}>
+        <SearchBarProvider>
+          <LanguageButtons onClick={jest.fn()} refinements={refinements} />
+        </SearchBarProvider>
+      </MockedProvider>
     )
     expect(
       screen.getAllByRole('button', { name: 'Language' })[0]
@@ -42,9 +46,11 @@ describe('LanguageButtons', () => {
     const onClick = jest.fn()
 
     render(
-      <SearchBarProvider>
-        <LanguageButtons onClick={onClick} refinements={refinements} />
-      </SearchBarProvider>
+      <MockedProvider mocks={[getLanguagesContinentsMock]}>
+        <SearchBarProvider>
+          <LanguageButtons onClick={onClick} refinements={refinements} />
+        </SearchBarProvider>
+      </MockedProvider>
     )
 
     const button = screen.getAllByRole('button', { name: 'Language' })[0]
@@ -54,12 +60,14 @@ describe('LanguageButtons', () => {
 
   it('should render the button with a selected language', () => {
     render(
-      <SearchBarProvider>
-        <LanguageButtons
-          onClick={jest.fn()}
-          refinements={refinementsWithRefinedValue}
-        />
-      </SearchBarProvider>
+      <MockedProvider mocks={[getLanguagesContinentsMock]}>
+        <SearchBarProvider>
+          <LanguageButtons
+            onClick={jest.fn()}
+            refinements={refinementsWithRefinedValue}
+          />
+        </SearchBarProvider>
+      </MockedProvider>
     )
     expect(
       screen.getAllByRole('button', { name: 'English' })[0]
@@ -88,12 +96,14 @@ describe('LanguageButtons', () => {
     } as unknown as RefinementListRenderState
 
     render(
-      <SearchBarProvider>
-        <LanguageButtons
-          onClick={jest.fn()}
-          refinements={selectedRefinements}
-        />
-      </SearchBarProvider>
+      <MockedProvider mocks={[getLanguagesContinentsMock]}>
+        <SearchBarProvider>
+          <LanguageButtons
+            onClick={jest.fn()}
+            refinements={selectedRefinements}
+          />
+        </SearchBarProvider>
+      </MockedProvider>
     )
 
     expect(screen.getByRole('button', { name: 'English' })).toBeInTheDocument()

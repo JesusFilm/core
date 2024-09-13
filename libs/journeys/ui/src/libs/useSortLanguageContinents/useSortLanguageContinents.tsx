@@ -2,7 +2,7 @@ import mapValues from 'lodash/mapValues'
 
 import { GetLanguagesContinents_languages as Languages } from '../useLanguagesContinentsQuery/__generated__/GetLanguagesContinents'
 
-interface LanguageContinentsRecord {
+export interface LanguageContinentsRecord {
   [continent: string]: string[]
 }
 

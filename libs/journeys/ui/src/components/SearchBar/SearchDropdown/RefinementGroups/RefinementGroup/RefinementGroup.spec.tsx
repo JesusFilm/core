@@ -1,3 +1,4 @@
+import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
@@ -5,6 +6,7 @@ import { useSearchBox } from 'react-instantsearch'
 
 import '../../../../../../test/i18n'
 import { SearchBarProvider } from '../../../../../libs/algolia/SearchBarProvider'
+import { getLanguagesContinentsMock } from '../../../../../libs/useLanguagesContinentsQuery/useLanguagesContinentsQuery.mock'
 import { languageRefinements } from '../../../data'
 
 import { RefinementGroup } from './RefinementGroup'
@@ -45,18 +47,22 @@ describe('RefinementGroup', () => {
 
   it('should have languages header', () => {
     render(
-      <SearchBarProvider>
-        <RefinementGroup title="Languages" refinement={useRefinementList} />
-      </SearchBarProvider>
+      <MockedProvider mocks={[getLanguagesContinentsMock]}>
+        <SearchBarProvider>
+          <RefinementGroup title="Languages" refinement={useRefinementList} />
+        </SearchBarProvider>
+      </MockedProvider>
     )
     expect(screen.getByText('Languages')).toBeInTheDocument()
   })
 
   it('should have languages listed', () => {
     render(
-      <SearchBarProvider>
-        <RefinementGroup title="Languages" refinement={useRefinementList} />
-      </SearchBarProvider>
+      <MockedProvider mocks={[getLanguagesContinentsMock]}>
+        <SearchBarProvider>
+          <RefinementGroup title="Languages" refinement={useRefinementList} />
+        </SearchBarProvider>
+      </MockedProvider>
     )
     expect(screen.getByText('English')).toBeInTheDocument()
     expect(screen.getByText('Spanish, Latin American')).toBeInTheDocument()
@@ -65,9 +71,11 @@ describe('RefinementGroup', () => {
 
   it('should refine when langauge selected', () => {
     render(
-      <SearchBarProvider>
-        <RefinementGroup title="Languages" refinement={useRefinementList} />
-      </SearchBarProvider>
+      <MockedProvider mocks={[getLanguagesContinentsMock]}>
+        <SearchBarProvider>
+          <RefinementGroup title="Languages" refinement={useRefinementList} />
+        </SearchBarProvider>
+      </MockedProvider>
     )
     fireEvent.click(screen.getByText('Cantonese'))
     expect(refine).toHaveBeenCalled()
@@ -79,9 +87,11 @@ describe('RefinementGroup', () => {
       refine
     } as unknown as RefinementListRenderState
     render(
-      <SearchBarProvider>
-        <RefinementGroup title="Languages" refinement={emptyRefinementList} />
-      </SearchBarProvider>
+      <MockedProvider mocks={[getLanguagesContinentsMock]}>
+        <SearchBarProvider>
+          <RefinementGroup title="Languages" refinement={emptyRefinementList} />
+        </SearchBarProvider>
+      </MockedProvider>
     )
     expect(screen.getByText('Languages')).toBeInTheDocument()
     expect(screen.queryByRole('label')).not.toBeInTheDocument()
@@ -89,18 +99,20 @@ describe('RefinementGroup', () => {
 
   it('should check the checkbox if title, continent, and refinement match', () => {
     render(
-      <SearchBarProvider
-        initialState={{
-          continentLanguages: {
-            Asia: ['Cantonese']
-          }
-        }}
-      >
-        <RefinementGroup
-          title="Asia"
-          refinement={useRefinementListWithRefinedValue}
-        />
-      </SearchBarProvider>
+      <MockedProvider mocks={[getLanguagesContinentsMock]}>
+        <SearchBarProvider
+          initialState={{
+            continentLanguages: {
+              Asia: ['Cantonese']
+            }
+          }}
+        >
+          <RefinementGroup
+            title="Asia"
+            refinement={useRefinementListWithRefinedValue}
+          />
+        </SearchBarProvider>
+      </MockedProvider>
     )
     expect(screen.getByRole('checkbox', { name: 'Cantonese' })).toBeChecked()
   })
@@ -118,18 +130,20 @@ describe('RefinementGroup', () => {
     } as unknown as RefinementListRenderState
 
     render(
-      <SearchBarProvider
-        initialState={{
-          continentLanguages: {
-            Europe: ['Cantonese']
-          }
-        }}
-      >
-        <RefinementGroup
-          title="Asia"
-          refinement={useRefinementListWithRefinedValue}
-        />
-      </SearchBarProvider>
+      <MockedProvider mocks={[getLanguagesContinentsMock]}>
+        <SearchBarProvider
+          initialState={{
+            continentLanguages: {
+              Europe: ['Cantonese']
+            }
+          }}
+        >
+          <RefinementGroup
+            title="Asia"
+            refinement={useRefinementListWithRefinedValue}
+          />
+        </SearchBarProvider>
+      </MockedProvider>
     )
     expect(screen.getByRole('checkbox', { name: 'Cantonese' })).toBeDisabled()
   })
@@ -143,12 +157,14 @@ describe('RefinementGroup', () => {
     mockUseSearchBox.mockReturnValue(useSearchBox)
 
     render(
-      <SearchBarProvider>
-        <RefinementGroup
-          title="Asia"
-          refinement={useRefinementListWithRefinedValue}
-        />
-      </SearchBarProvider>
+      <MockedProvider mocks={[getLanguagesContinentsMock]}>
+        <SearchBarProvider>
+          <RefinementGroup
+            title="Asia"
+            refinement={useRefinementListWithRefinedValue}
+          />
+        </SearchBarProvider>
+      </MockedProvider>
     )
     expect(refineQuery).not.toHaveBeenCalled()
   })
@@ -162,12 +178,14 @@ describe('RefinementGroup', () => {
     mockUseSearchBox.mockReturnValue(useSearchBox)
 
     render(
-      <SearchBarProvider>
-        <RefinementGroup
-          title="Asia"
-          refinement={useRefinementListWithRefinedValue}
-        />
-      </SearchBarProvider>
+      <MockedProvider mocks={[getLanguagesContinentsMock]}>
+        <SearchBarProvider>
+          <RefinementGroup
+            title="Asia"
+            refinement={useRefinementListWithRefinedValue}
+          />
+        </SearchBarProvider>
+      </MockedProvider>
     )
     fireEvent.click(screen.getByText('Cantonese'))
     expect(refineQuery).not.toHaveBeenCalled()
@@ -182,9 +200,11 @@ describe('RefinementGroup', () => {
     mockUseSearchBox.mockReturnValue(useSearchBox)
 
     render(
-      <SearchBarProvider>
-        <RefinementGroup title="Asia" refinement={useRefinementList} />
-      </SearchBarProvider>
+      <MockedProvider mocks={[getLanguagesContinentsMock]}>
+        <SearchBarProvider>
+          <RefinementGroup title="Asia" refinement={useRefinementList} />
+        </SearchBarProvider>
+      </MockedProvider>
     )
     fireEvent.click(screen.getByText('Chinese, Traditional'))
     await waitFor(() => expect(refineQuery).toHaveBeenCalledWith('Jesus'))

@@ -1,5 +1,8 @@
+import { MockedProvider } from '@apollo/client/testing'
 import { renderHook } from '@testing-library/react'
 import { ReactNode } from 'react'
+
+import { getLanguagesContinentsMock } from '../../useLanguagesContinentsQuery/useLanguagesContinentsQuery.mock'
 
 import {
   SearchBarProvider,
@@ -183,7 +186,9 @@ describe('SearchBarContext', () => {
       }
 
       const wrapper = ({ children }: { children: ReactNode }): ReactNode => (
-        <SearchBarProvider initialState={state}>{children}</SearchBarProvider>
+        <MockedProvider mocks={[getLanguagesContinentsMock]}>
+          <SearchBarProvider initialState={state}>{children}</SearchBarProvider>
+        </MockedProvider>
       )
       const { result } = renderHook(() => useSearchBar(), {
         wrapper
