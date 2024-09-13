@@ -15,7 +15,8 @@ describe('AIPrompt', () => {
     height: 1067,
     blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
     parentBlockId: 'card',
-    parentOrder: 0
+    parentOrder: 0,
+    scale: null
   }
 
   it('should have prefilled textfield on existing prompt', async () => {

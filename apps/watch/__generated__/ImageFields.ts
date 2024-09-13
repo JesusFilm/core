@@ -21,4 +21,5 @@ export interface ImageFields {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }

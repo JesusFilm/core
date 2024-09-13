@@ -39,7 +39,8 @@ describe('SocialPreviewNode', () => {
     alt: 'image.jpg',
     width: 1920,
     height: 1080,
-    blurhash: ''
+    blurhash: '',
+    scale: null
   }
 
   const defaultJourney: Journey = {
@@ -85,6 +86,7 @@ describe('SocialPreviewNode', () => {
     showLikeButton: null,
     showDislikeButton: null,
     displayTitle: null,
+    logoImageBlock: null,
     menuButtonIcon: null,
     menuStepBlock: null
   }

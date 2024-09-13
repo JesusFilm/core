@@ -156,6 +156,7 @@ export interface JourneyFields_blocks_ImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface JourneyFields_blocks_RadioOptionBlock_action_NavigateToBlockAction {
@@ -465,6 +466,7 @@ export interface JourneyFields_primaryImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface JourneyFields_creatorImageBlock {
@@ -481,6 +483,7 @@ export interface JourneyFields_creatorImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface JourneyFields_userJourneys_user {
@@ -543,6 +546,23 @@ export interface JourneyFields_tags {
   id: string;
   parentId: string | null;
   name: JourneyFields_tags_name[];
+}
+
+export interface JourneyFields_logoImageBlock {
+  __typename: "ImageBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  src: string | null;
+  alt: string;
+  width: number;
+  height: number;
+  /**
+   * blurhash is a compact representation of a placeholder for an image.
+   * Find a frontend implementation at https: // github.com/woltapp/blurhash
+   */
+  blurhash: string;
+  scale: number | null;
 }
 
 export interface JourneyFields_menuStepBlock {
@@ -610,6 +630,7 @@ export interface JourneyFields {
    * public title for viewers
    */
   displayTitle: string | null;
+  logoImageBlock: JourneyFields_logoImageBlock | null;
   menuButtonIcon: JourneyMenuButtonIcon | null;
   menuStepBlock: JourneyFields_menuStepBlock | null;
 }
