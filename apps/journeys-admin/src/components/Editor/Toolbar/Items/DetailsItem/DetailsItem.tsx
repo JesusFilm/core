@@ -33,7 +33,7 @@ export function DetailsItem({
   }
 
   function handleClick(): void {
-    setRoute('title')
+    setRoute('titleDescription')
     setDialogOpen(true)
     onClose?.()
   }
