@@ -7,7 +7,7 @@ import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refine
 import { type ReactElement } from 'react'
 import { useSearchBox } from 'react-instantsearch'
 
-import { normalizeLanguage } from '../../../../../libs/algolia/normalizeLanguage'
+import { stripLanguageFromQuery } from '../../../../../libs/algolia/languageUtils'
 import { useSearchBar } from '../../../../../libs/algolia/SearchBarProvider'
 
 interface RefinementGroupProps {
@@ -26,16 +26,6 @@ export function RefinementGroup({
   const { items, refine } = refinement
   const { query, refine: refineQuery } = useSearchBox()
 
-  function stripLanguageFromQuery(language: string): void {
-    const normalizedLanguage = normalizeLanguage(language)
-    const hasLanguageInQuery = query.toLowerCase().includes(normalizedLanguage)
-    if (hasLanguageInQuery) {
-      const regEx = new RegExp(normalizedLanguage, 'ig')
-      const strippedQuery = query.replace(regEx, '').trim()
-      refineQuery(strippedQuery)
-    }
-  }
-
   function isLanguageRefined(language: string): boolean {
     const languageRefinement = items.find((item) => item.label === language)
     return languageRefinement !== undefined && !languageRefinement.isRefined
@@ -48,7 +38,10 @@ export function RefinementGroup({
       language,
       isSelected
     })
-    if (isLanguageRefined(language)) stripLanguageFromQuery(language)
+    if (isLanguageRefined(language)) {
+      const strippedQuery = stripLanguageFromQuery(language, query)
+      if (query !== strippedQuery) refineQuery(strippedQuery)
+    }
     refine(language)
   }
 

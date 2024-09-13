@@ -1,1 +1,0 @@
-export { normalizeLanguage } from './normalizeLanguage'
