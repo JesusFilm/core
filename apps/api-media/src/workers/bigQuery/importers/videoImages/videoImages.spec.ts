@@ -1,8 +1,7 @@
-import { Video } from '.prisma/api-media-client'
+import { CloudflareImage, Video } from '.prisma/api-media-client'
 
 import { prismaMock } from '../../../../../test/prismaMock'
-import { createImageFromUrl } from '../../../../schema/cloudflare/image/service'
-import { client, getCurrentTimeStamp } from '../../importer'
+import { getClient } from '../../../../schema/cloudflare/image/service'
 
 import { importVideoImages } from '.'
 
@@ -10,38 +9,94 @@ jest.mock('../videos', () => ({
   getVideoIds: jest.fn().mockReturnValue(['mockVideoId', 'mockVideoId1'])
 }))
 
-describe('bigQuery/importers/imageSeed', () => {
-  describe('imageSeed', () => {
+jest.mock('../../../../schema/cloudflare/image/service', () => ({
+  getClient: jest.fn().mockReturnValue({
+    images: {
+      v1: {
+        create: jest.fn().mockResolvedValue(null),
+        get: jest.fn().mockImplementation(() => {
+          throw new Error('mock error')
+        })
+      }
+    }
+  })
+}))
+
+describe('bigQuery/importers/videoImages', () => {
+  describe('importVideoImages', () => {
+    beforeEach(() => {
+      process.env = {
+        ...process.env,
+        CLOUDFLARE_ACCOUNT_ID: 'mockAccountId'
+      }
+    })
+
     it('should get existing images for videos', async () => {
       prismaMock.video.findMany.mockResolvedValue([
         { id: 'mockVideoId' } as unknown as Video
       ])
+      prismaMock.cloudflareImage.create.mockResolvedValue(
+        {} as unknown as CloudflareImage
+      )
       await importVideoImages()
       expect(prismaMock.video.findMany).toHaveBeenCalledWith({
         select: { id: true },
         where: { images: { none: {} } }
       })
-      expect(getCurrentTimeStamp).toHaveBeenCalled()
-      expect(fetch).toHaveBeenCalledWith(
-        'https://d1wl257kev7hsz.cloudfront.net/cinematics/mockVideoId.mobileCinematicHigh.jpg',
-        { method: 'HEAD' }
+      expect(getClient().images.v1.get).toHaveBeenCalledWith(
+        'mockVideoId.mobileCinematicHigh.jpg',
+        {
+          account_id: 'mockAccountId'
+        }
       )
-      expect(fetch).toHaveBeenCalledWith(
-        'https://d1wl257kev7hsz.cloudfront.net/cinematics/mockVideoId.videoStill.jpg',
-        { method: 'HEAD' }
+      expect(getClient().images.v1.create).toHaveBeenCalledWith(
+        {
+          account_id: 'mockAccountId'
+        },
+        {
+          body: {
+            id: 'mockVideoId.mobileCinematicHigh.jpg',
+            url: 'https://d1wl257kev7hsz.cloudfront.net/cinematics/mockVideoId.mobileCinematicHigh.jpg'
+          }
+        }
       )
-      expect(createImageFromUrl).toHaveBeenCalledWith(
-        'https://d1wl257kev7hsz.cloudfront.net/cinematics/mockVideoId.mobileCinematicHigh.jpg'
+      expect(prismaMock.cloudflareImage.create).toHaveBeenCalledWith({
+        data: {
+          id: 'mockVideoId.mobileCinematicHigh.jpg',
+          aspectRatio: 'banner',
+          videoId: 'mockVideoId',
+          uploadUrl:
+            'https://d1wl257kev7hsz.cloudfront.net/cinematics/mockVideoId.mobileCinematicHigh.jpg',
+          userId: 'system'
+        }
+      })
+      expect(getClient().images.v1.get).toHaveBeenCalledWith(
+        'mockVideoId.videoStill.jpg',
+        {
+          account_id: 'mockAccountId'
+        }
       )
-      expect(createImageFromUrl).toHaveBeenCalledWith(
-        'https://d1wl257kev7hsz.cloudfront.net/cinematics/mockVideoId.videoStill.jpg'
+      expect(getClient().images.v1.create).toHaveBeenCalledWith(
+        {
+          account_id: 'mockAccountId'
+        },
+        {
+          body: {
+            id: 'mockVideoId.videoStill.jpg',
+            url: 'https://d1wl257kev7hsz.cloudfront.net/cinematics/mockVideoId.videoStill.jpg'
+          }
+        }
       )
-      expect(client.query).toHaveBeenCalledWith(
-        "INSERT INTO \"jfp-data-warehouse.jfp_mmdb_prod.core_cloudflare_image_data\" (id, aspectRatio, videoId, uploadUrl, updatedAt) VALUES ('mockId', 'banner', 'mockVideoId', 'https://d1wl257kev7hsz.cloudfront.net/cinematics/mockVideoId.mobileCinematicHigh.jpg', 'mockTimeStamp')"
-      )
-      expect(client.query).toHaveBeenCalledWith(
-        "INSERT INTO \"jfp-data-warehouse.jfp_mmdb_prod.core_cloudflare_image_data\" (id, aspectRatio, videoId, uploadUrl, updatedAt) VALUES ('mockId', 'hd', 'mockVideoId', 'https://d1wl257kev7hsz.cloudfront.net/cinematics/mockVideoId.videoStill.jpg', 'mockTimeStamp')"
-      )
+      expect(prismaMock.cloudflareImage.create).toHaveBeenCalledWith({
+        data: {
+          id: 'mockVideoId.videoStill.jpg',
+          aspectRatio: 'hd',
+          videoId: 'mockVideoId',
+          uploadUrl:
+            'https://d1wl257kev7hsz.cloudfront.net/cinematics/mockVideoId.videoStill.jpg',
+          userId: 'system'
+        }
+      })
     })
   })
 })

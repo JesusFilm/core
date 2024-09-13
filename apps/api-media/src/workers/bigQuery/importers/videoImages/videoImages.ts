@@ -18,43 +18,49 @@ export async function importVideoImages(logger?: Logger): Promise<void> {
   }
 
   const client = getClient()
-  const video = newVideos[0]
-  // for (const video of newVideos) {
-  const fileNames = [
-    `${video.id}.mobileCinematicHigh.jpg`,
-    `${video.id}.videoStill.jpg`
-  ]
-  for (const fileName of fileNames) {
-    try {
-      const url = `https://d1wl257kev7hsz.cloudfront.net/cinematics/${fileName}`
-      try {
-        await client.images.v1.get(fileName, {
-          account_id: process.env.CLOUDFLARE_ACCOUNT_ID as string
-        })
-      } catch {
-        await client.images.v1.create(
-          {
-            account_id: process.env.CLOUDFLARE_ACCOUNT_ID as string
-          },
-          {
-            body: {
-              id: fileName,
-              url
-            }
-          }
-        )
+  for (const video of newVideos) {
+    const editions = [
+      {
+        fileName: `${video.id}.mobileCinematicHigh.jpg`,
+        aspectRatio: ImageAspectRatio.banner
+      },
+      {
+        fileName: `${video.id}.videoStill.jpg`,
+        aspectRatio: ImageAspectRatio.hd
       }
-      await prisma.cloudflareImage.create({
-        data: {
-          id: fileName,
-          aspectRatio: ImageAspectRatio.banner,
-          videoId: video.id,
-          uploadUrl: url,
-          userId: 'system'
+    ]
+    for (const edition of editions) {
+      try {
+        const url = `https://d1wl257kev7hsz.cloudfront.net/cinematics/${edition.fileName}`
+        try {
+          await client.images.v1.get(edition.fileName, {
+            account_id: process.env.CLOUDFLARE_ACCOUNT_ID as string
+          })
+        } catch {
+          await client.images.v1.create(
+            {
+              account_id: process.env.CLOUDFLARE_ACCOUNT_ID as string
+            },
+            {
+              body: {
+                id: edition.fileName,
+                url
+              }
+            }
+          )
         }
-      })
-    } catch (e) {
-      logger?.info(e)
+        await prisma.cloudflareImage.create({
+          data: {
+            id: edition.fileName,
+            aspectRatio: edition.aspectRatio,
+            videoId: video.id,
+            uploadUrl: url,
+            userId: 'system'
+          }
+        })
+      } catch (e) {
+        logger?.info(e)
+      }
     }
   }
   logger?.info('imageSeed finished')
