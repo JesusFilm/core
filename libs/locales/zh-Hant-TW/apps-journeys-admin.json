@@ -207,6 +207,8 @@
   "Select a Host": "選擇主機",
   "Cannot edit hosts for this old journey": "無法編輯此舊旅程的主機",
   "Only {{ teamName }} members can edit this": "Only {{ teamName }} members can edit this",
+  "Logo": "Logo",
+  "Size": "Size",
   "Edit Menu Card": "Edit Menu Card",
   "Create Menu Card": "Create Menu Card",
   "Select Icon": "Select Icon",
