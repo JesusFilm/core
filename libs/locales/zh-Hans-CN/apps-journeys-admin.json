@@ -207,6 +207,8 @@
   "Select a Host": "选择主机",
   "Cannot edit hosts for this old journey": "无法编辑此旧旅程的主机",
   "Only {{ teamName }} members can edit this": "只有 {{ teamName }} 会员可以编辑",
+  "Logo": "标志",
+  "Size": "尺寸",
   "Edit Menu Card": "编辑菜单卡",
   "Create Menu Card": "创建菜单卡",
   "Select Icon": "选择图标",
