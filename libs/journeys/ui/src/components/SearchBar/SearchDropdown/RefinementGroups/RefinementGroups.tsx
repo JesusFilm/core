@@ -47,7 +47,7 @@ export function RefinementGroups({
     useClearRefinements()
 
   const { dispatch } = useSearchBar()
-  function unselectAllLanguages(): void {
+  function handleClick(): void {
     clearRefinements()
     dispatch({ type: 'RemoveAllLanguageContinents' })
   }
@@ -117,7 +117,7 @@ export function RefinementGroups({
               {canClearRefinements && (
                 <StyledButton
                   size="small"
-                  onClick={unselectAllLanguages}
+                  onClick={handleClick}
                   disabled={!canClearRefinements}
                   endIcon={<X1 />}
                   sx={{
