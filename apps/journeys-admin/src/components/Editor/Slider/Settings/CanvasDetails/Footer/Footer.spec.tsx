@@ -103,6 +103,9 @@ describe('Footer', () => {
     const title = await waitFor(() =>
       screen.getByRole('button', { name: 'Display Title' })
     )
+    const menu = await waitFor(() =>
+      screen.getByRole('button', { name: 'Menu' })
+    )
     const chat = await waitFor(() =>
       screen.getByRole('button', { name: 'Chat Widget' })
     )
@@ -111,6 +114,7 @@ describe('Footer', () => {
     )
 
     expect(title).toBeInTheDocument()
+    expect(menu).toBeInTheDocument()
     expect(chat).toBeInTheDocument()
     expect(logo).toBeInTheDocument()
   })

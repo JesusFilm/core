@@ -79,6 +79,7 @@ const iconNames: IconName[] = [
   'Ellipsis',
   'Email',
   'Embed',
+  'Equals',
   'Expand2',
   'Expand',
   'EyeClosed',
