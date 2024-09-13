@@ -92,61 +92,23 @@ describe('RefinementGroups', () => {
     ).toBeInTheDocument()
   })
 
-  it('should render a see all button', () => {
-    const showMoreRefinements = {
-      ...refinements,
-      canToggleShowMore: true,
-      isShowingMore: false,
-      toggleShowMore: jest.fn()
-    }
+  it('should render a see all button', async () => {
     render(
       <SearchBarProvider>
-        <RefinementGroups
-          refinements={showMoreRefinements}
-          languages={languages}
-        />
+        <RefinementGroups refinements={refinements} languages={languages} />
       </SearchBarProvider>
     )
-    expect(screen.getByText('See All')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'See All' })).toBeInTheDocument()
   })
 
   it('should render a see less button', () => {
-    const showMoreRefinements = {
-      ...refinements,
-      canToggleShowMore: true,
-      isShowingMore: true,
-      toggleShowMore: jest.fn()
-    }
     render(
       <SearchBarProvider>
-        <RefinementGroups
-          refinements={showMoreRefinements}
-          languages={languages}
-        />
+        <RefinementGroups refinements={refinements} languages={languages} />
       </SearchBarProvider>
     )
+    fireEvent.click(screen.getByRole('button', { name: 'See All' }))
     expect(screen.getByText('See Less')).toBeInTheDocument()
-  })
-
-  it('should call toggleShowMore when see all button clicked', () => {
-    const toggleShowMore = jest.fn()
-    const showMoreRefinements = {
-      ...refinements,
-      canToggleShowMore: true,
-      isShowingMore: false,
-      toggleShowMore
-    }
-    render(
-      <SearchBarProvider>
-        <RefinementGroups
-          refinements={showMoreRefinements}
-          languages={languages}
-        />
-      </SearchBarProvider>
-    )
-    const seeAllButton = screen.getByText('See All')
-    fireEvent.click(seeAllButton)
-    expect(toggleShowMore).toHaveBeenCalled()
   })
 
   it('should not show clear all button if cannot clear refinements', () => {

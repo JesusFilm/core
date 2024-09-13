@@ -71,7 +71,7 @@ export function SearchBar({
   const refinements = useRefinementList({
     attribute: 'languageEnglishName',
     showMore: true,
-    limit: 5,
+    limit: 1000,
     showMoreLimit: 5000
   })
 
@@ -125,6 +125,10 @@ export function SearchBar({
                     onChange={handleChange}
                     onBlur={handleBlur}
                     onFocus={openSuggestionsDropdown}
+                    onClick={openSuggestionsDropdown}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') setOpen(false)
+                    }}
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
