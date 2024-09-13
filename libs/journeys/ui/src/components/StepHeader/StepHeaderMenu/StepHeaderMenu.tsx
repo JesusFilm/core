@@ -61,7 +61,7 @@ export function StepHeaderMenu(): ReactElement {
         display: 'grid',
         placeItems: 'center',
         maxWidth: 'min-content',
-        opacity: menuButtonIcon == null ? 0.6 : 1
+        opacity: menuButtonIcon == null ? 0.5 : 1
       }}
       data-testid="StepHeaderMenu"
     >
