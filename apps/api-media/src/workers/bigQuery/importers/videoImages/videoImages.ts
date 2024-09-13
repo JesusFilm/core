@@ -19,6 +19,7 @@ export async function importVideoImages(logger?: Logger): Promise<void> {
 
   const client = getClient()
   for (const video of newVideos) {
+    logger?.info(`imageSeed started for video: ${video.id}`)
     const editions = [
       {
         fileName: `${video.id}.mobileCinematicHigh.jpg`,
