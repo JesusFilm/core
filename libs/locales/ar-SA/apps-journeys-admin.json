@@ -207,6 +207,8 @@
   "Select a Host": "اختيار مضيف",
   "Cannot edit hosts for this old journey": "لا يمكن تحرير المضيفين لهذه الرحلة القديمة",
   "Only {{ teamName }} members can edit this": "يمكن فقط لأعضاء {{ teamName }} تعديل هذا الرابط",
+  "Logo": "Logo",
+  "Size": "Size",
   "Edit Menu Card": "Edit Menu Card",
   "Create Menu Card": "Create Menu Card",
   "Select Icon": "Select Icon",
