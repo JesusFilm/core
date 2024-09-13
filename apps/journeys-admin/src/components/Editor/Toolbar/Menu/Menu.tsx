@@ -142,6 +142,7 @@ export function Menu({ user }: MenuProps): ReactElement {
             <ShareItem variant="menu-item" closeMenu={handleCloseMenu} />
           </>
         )}
+        {journey != null && smUp && <Divider data-testid="menu-divider" />}
         {journey != null &&
           (journey?.template !== true || isPublisher != null) && (
             <CopyLinkItem variant="menu-item" onClose={handleCloseMenu} />
