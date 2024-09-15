@@ -109,10 +109,14 @@ describe('Footer', () => {
     const chat = await waitFor(() =>
       screen.getByRole('button', { name: 'Chat Widget' })
     )
+    const logo = await waitFor(() =>
+      screen.getByRole('button', { name: 'Logo' })
+    )
 
     expect(title).toBeInTheDocument()
     expect(menu).toBeInTheDocument()
     expect(chat).toBeInTheDocument()
+    expect(logo).toBeInTheDocument()
   })
 
   it('should return to journey map when close icon is clicked', async () => {

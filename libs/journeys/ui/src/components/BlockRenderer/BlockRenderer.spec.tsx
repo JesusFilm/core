@@ -272,6 +272,7 @@ describe('BlockRenderer', () => {
       parentBlockId: null,
       parentOrder: 0,
       blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
+      scale: null,
       children: []
     }
     const { getByRole } = render(<BlockRenderer block={block} />)
@@ -294,6 +295,7 @@ describe('BlockRenderer', () => {
       parentBlockId: null,
       parentOrder: 0,
       blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
+      scale: null,
       children: []
     }
     const { getByTestId, getByRole } = render(

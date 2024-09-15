@@ -168,7 +168,8 @@ const imageBlock: TreeBlock<ImageBlock> = {
   width: 0,
   height: 0,
   blurhash: '',
-  children: []
+  children: [],
+  scale: null
 }
 const videoBlock: TreeBlock<VideoBlock> = {
   id: 'videoBlockId',
