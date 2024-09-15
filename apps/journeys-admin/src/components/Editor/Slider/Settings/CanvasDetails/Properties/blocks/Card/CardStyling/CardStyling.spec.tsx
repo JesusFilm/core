@@ -81,6 +81,7 @@ const journey: Journey = {
   showLikeButton: null,
   showDislikeButton: null,
   displayTitle: null,
+  logoImageBlock: null,
   menuButtonIcon: null,
   menuStepBlock: null
 }

@@ -99,7 +99,8 @@ export function BackgroundMediaImage({
       width: input.width ?? 0,
       height: input.height ?? 0,
       blurhash: input.blurhash ?? '',
-      parentOrder: null
+      parentOrder: null,
+      scale: null
     }
 
     add({

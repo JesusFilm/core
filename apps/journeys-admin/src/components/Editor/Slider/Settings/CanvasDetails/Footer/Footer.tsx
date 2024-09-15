@@ -17,6 +17,14 @@ const Reactions = dynamic(
   { ssr: false }
 )
 
+const Logo = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Footer/Logo/Logo" */ './Logo'
+    ).then((mod) => mod.Logo),
+  { ssr: false }
+)
+
 const Host = dynamic(
   async () =>
     await import(
@@ -74,6 +82,7 @@ export function Footer(): ReactElement {
       {websiteMode && <WebsiteToggle />}
       {journey?.website === true ? (
         <>
+          <Logo />
           <DisplayTitle />
           <Menu />
           <Chat />

@@ -58,7 +58,8 @@ const block: TreeBlock<Block> = {
           parentBlockId: 'card0.id',
           parentOrder: 0,
           children: [],
-          blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
+          blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
+          scale: null
         },
         {
           id: 'typographyBlockId1',

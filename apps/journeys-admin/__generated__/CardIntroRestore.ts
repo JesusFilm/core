@@ -142,6 +142,7 @@ export interface CardIntroRestore_subtitle_ImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface CardIntroRestore_subtitle_RadioOptionBlock_action_NavigateToBlockAction {
@@ -570,6 +571,7 @@ export interface CardIntroRestore_title_ImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface CardIntroRestore_title_RadioOptionBlock_action_NavigateToBlockAction {
@@ -998,6 +1000,7 @@ export interface CardIntroRestore_body_ImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface CardIntroRestore_body_RadioOptionBlock_action_NavigateToBlockAction {
@@ -1426,6 +1429,7 @@ export interface CardIntroRestore_button_ImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface CardIntroRestore_button_RadioOptionBlock_action_NavigateToBlockAction {
@@ -1854,6 +1858,7 @@ export interface CardIntroRestore_startIcon_ImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface CardIntroRestore_startIcon_RadioOptionBlock_action_NavigateToBlockAction {
@@ -2282,6 +2287,7 @@ export interface CardIntroRestore_endIcon_ImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface CardIntroRestore_endIcon_RadioOptionBlock_action_NavigateToBlockAction {
@@ -2710,6 +2716,7 @@ export interface CardIntroRestore_video_ImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface CardIntroRestore_video_RadioOptionBlock_action_NavigateToBlockAction {
