@@ -5,15 +5,20 @@ import InputAdornment from '@mui/material/InputAdornment'
 import { styled, useTheme } from '@mui/material/styles'
 import TextField, { TextFieldProps } from '@mui/material/TextField'
 import { Formik } from 'formik'
-import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next'
-import { type ReactElement, useRef, useState } from 'react'
+import dynamic from 'next/dynamic'
+import { type ReactElement, useEffect, useRef, useState } from 'react'
 import { useRefinementList, useSearchBox } from 'react-instantsearch'
 
 import Search1Icon from '@core/shared/ui/icons/Search1'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
 
 import { SearchBarProvider } from '../../libs/algolia/SearchBarProvider'
+import { useLanguagesContinentsLazyQuery } from '../../libs/useLanguagesContinentsQuery'
+import {
+  LanguageContinentsRecord,
+  sortLanguageContinents
+} from '../../libs/useSortLanguageContinents/useSortLanguageContinents'
 
 import { LanguageButtons } from './LanguageButtons'
 
@@ -89,6 +94,20 @@ export function SearchBar({
     setTabValue(1)
     setOpen(!open)
   }
+
+  const [data, setData] = useState<LanguageContinentsRecord | null>(null)
+  const [isLoading, setLoading] = useState(true)
+  const [getLanguages] = useLanguagesContinentsLazyQuery()
+
+  useEffect(() => {
+    void getLanguages().then((res) => {
+      const languages = sortLanguageContinents({
+        languages: res.data?.languages ?? []
+      })
+      setData(languages)
+      setLoading(false)
+    })
+  }, [])
 
   return (
     <SearchBarProvider>
