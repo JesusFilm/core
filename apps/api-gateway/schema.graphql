@@ -1079,6 +1079,7 @@ type JourneyProfile
   lastActiveTeamId: String
   onboardingFormCompletedAt: DateTime
   journeyFlowBackButtonClicked: Boolean
+  analyticsButtonClicked: Boolean
 }
 
 input JourneyProfileUpdateInput
@@ -1086,6 +1087,7 @@ input JourneyProfileUpdateInput
 {
   lastActiveTeamId: String
   journeyFlowBackButtonClicked: Boolean
+  analyticsButtonClicked: Boolean
 }
 
 type JourneysEmailPreference

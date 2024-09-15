@@ -2336,11 +2336,13 @@ type JourneyProfile
   lastActiveTeamId: String
   onboardingFormCompletedAt: DateTime
   journeyFlowBackButtonClicked: Boolean
+  analyticsButtonClicked: Boolean
 }
 
 input JourneyProfileUpdateInput {
   lastActiveTeamId: String
   journeyFlowBackButtonClicked: Boolean
+  analyticsButtonClicked: Boolean
 }
 
 type JourneyVisitor
