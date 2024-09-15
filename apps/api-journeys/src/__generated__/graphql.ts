@@ -869,6 +869,7 @@ export type JourneyNotificationUpdateInput = {
 export type JourneyProfile = {
   __typename?: 'JourneyProfile';
   acceptedTermsAt?: Maybe<Scalars['DateTime']['output']>;
+  analyticsButtonClicked?: Maybe<Scalars['Boolean']['output']>;
   id: Scalars['ID']['output'];
   journeyFlowBackButtonClicked?: Maybe<Scalars['Boolean']['output']>;
   lastActiveTeamId?: Maybe<Scalars['String']['output']>;
@@ -877,6 +878,7 @@ export type JourneyProfile = {
 };
 
 export type JourneyProfileUpdateInput = {
+  analyticsButtonClicked?: InputMaybe<Scalars['Boolean']['input']>;
   journeyFlowBackButtonClicked?: InputMaybe<Scalars['Boolean']['input']>;
   lastActiveTeamId?: InputMaybe<Scalars['String']['input']>;
 };

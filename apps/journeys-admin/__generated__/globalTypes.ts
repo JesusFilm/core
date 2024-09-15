@@ -454,6 +454,7 @@ export interface JourneyNotificationUpdateInput {
 export interface JourneyProfileUpdateInput {
   lastActiveTeamId?: string | null;
   journeyFlowBackButtonClicked?: boolean | null;
+  analyticsButtonClicked?: boolean | null;
 }
 
 export interface JourneyTemplateInput {
