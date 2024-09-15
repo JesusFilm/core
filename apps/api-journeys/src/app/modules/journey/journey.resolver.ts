@@ -196,7 +196,6 @@ export class JourneyResolver {
       throw new GraphQLError('user is not allowed to view journey', {
         extensions: { code: 'FORBIDDEN' }
       })
-    console.log(journey)
     return journey
   }
 
