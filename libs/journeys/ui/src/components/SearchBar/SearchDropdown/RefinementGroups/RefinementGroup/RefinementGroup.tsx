@@ -3,9 +3,10 @@ import Checkbox from '@mui/material/Checkbox'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import FormGroup from '@mui/material/FormGroup'
 import { useTheme } from '@mui/material/styles'
+import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
-import { type ReactElement } from 'react'
+import { type ReactElement, useEffect, useRef, useState } from 'react'
 import { useSearchBox } from 'react-instantsearch'
 
 import { normalizeLanguage } from '../../../../../libs/algolia/normalizeLanguage'
@@ -87,14 +88,12 @@ export function RefinementGroup({
                     onClick={() => handleClick(item.label, !item.isRefined)}
                   />
                 }
-                label={item.label}
+                label={<TooltipLabelWrapper label={item.label} />}
                 sx={{
-                  maxWidth: '95%',
+                  maxWidth: '90%',
                   [theme.breakpoints.up('lg')]: {
                     '& .MuiFormControlLabel-label': {
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis'
+                      width: '90%'
                     }
                   }
                 }}
@@ -106,5 +105,48 @@ export function RefinementGroup({
         )}
       </Box>
     </Box>
+  )
+}
+
+function TooltipLabelWrapper({ label }: { label: string }): ReactElement {
+  const theme = useTheme()
+  const textRef = useRef<HTMLSpanElement>(null)
+  const [isTextTruncated, setIsTextTruncated] = useState(false)
+
+  useEffect(() => {
+    function checkTruncation(): void {
+      if (textRef.current != null) {
+        setIsTextTruncated(
+          textRef.current.scrollWidth > textRef.current.clientWidth
+        )
+      }
+    }
+
+    checkTruncation()
+    window.addEventListener('resize', checkTruncation)
+    return () => window.removeEventListener('resize', checkTruncation)
+  }, [label])
+
+  return (
+    <Tooltip
+      arrow
+      title={label}
+      placement="top"
+      disableHoverListener={!isTextTruncated}
+    >
+      <Typography
+        ref={textRef}
+        sx={{
+          [theme.breakpoints.up('lg')]: {
+            display: 'block',
+            overflow: 'hidden',
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis'
+          }
+        }}
+      >
+        {label}
+      </Typography>
+    </Tooltip>
   )
 }
