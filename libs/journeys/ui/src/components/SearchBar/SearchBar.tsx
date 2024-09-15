@@ -5,8 +5,8 @@ import InputAdornment from '@mui/material/InputAdornment'
 import { styled, useTheme } from '@mui/material/styles'
 import TextField, { TextFieldProps } from '@mui/material/TextField'
 import { Formik } from 'formik'
-import { useTranslation } from 'next-i18next'
 import dynamic from 'next/dynamic'
+import { useTranslation } from 'next-i18next'
 import { type ReactElement, useEffect, useRef, useState } from 'react'
 import { useRefinementList, useSearchBox } from 'react-instantsearch'
 
@@ -188,16 +188,14 @@ export function SearchBar({
               />
             </Box>
           </Box>
-          {open && (
-            <DynamicSearchbarDropdown
-              open={open}
-              refinements={refinements}
-              id={open ? 'simple-popper' : undefined}
-              anchorEl={anchorEl}
-              tabIndex={tabValue}
-              handleTabValueChange={setTabValue}
-            />
-          )}
+          <DynamicSearchbarDropdown
+            open={open}
+            refinements={refinements}
+            id={open ? 'simple-popper' : undefined}
+            anchorEl={anchorEl}
+            tabIndex={tabValue}
+            handleTabValueChange={setTabValue}
+          />
         </Box>
       </ClickAwayListener>
     </SearchBarProvider>
