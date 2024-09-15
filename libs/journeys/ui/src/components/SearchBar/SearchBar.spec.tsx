@@ -143,10 +143,20 @@ describe('SearchBar', () => {
     expect(screen.queryByTestId('SearchBarDropdown')).not.toBeInTheDocument()
   })
 
+  it('should render search bar dropdown', async () => {
+    render(
+      <MockedProvider mocks={[getLanguagesContinentsMock]}>
+        <SearchBar showDropdown />
+      </MockedProvider>
+    )
+    await clickOnSearchBar()
+    expect(screen.queryByTestId('SearchBarDropdown')).toBeInTheDocument()
+  })
+
   it('should open suggestions dropdown when searchbar clicked', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchBar />
+        <SearchBar showDropdown />
       </MockedProvider>
     )
     await clickOnSearchBar()
@@ -157,7 +167,7 @@ describe('SearchBar', () => {
   it('should open languages dropdown when language button clicked', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchBar showLanguageButton />
+        <SearchBar showDropdown showLanguageButton />
       </MockedProvider>
     )
     expect(screen.getAllByText('Language')[0]).toBeInTheDocument()
@@ -172,7 +182,7 @@ describe('SearchBar', () => {
   it('should not switch back to suggestions after languages button clicked', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchBar showLanguageButton />
+        <SearchBar showDropdown showLanguageButton />
       </MockedProvider>
     )
     fireEvent.click(screen.getAllByText('Language')[0])
@@ -184,7 +194,7 @@ describe('SearchBar', () => {
   it('should navigate to suggestions tab from languages', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchBar showLanguageButton />
+        <SearchBar showDropdown showLanguageButton />
       </MockedProvider>
     )
     fireEvent.click(screen.getAllByText('Language')[0])
@@ -197,7 +207,7 @@ describe('SearchBar', () => {
   it('should navigate to languages tab from suggestions', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchBar showLanguageButton />
+        <SearchBar showDropdown showLanguageButton />
       </MockedProvider>
     )
     await clickOnSearchBar()
@@ -227,7 +237,7 @@ describe('SearchBar', () => {
   it('should open dropdown again after closing on key enter', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchBar showLanguageButton />
+        <SearchBar showDropdown showLanguageButton />
       </MockedProvider>
     )
     await clickOnSearchBar()

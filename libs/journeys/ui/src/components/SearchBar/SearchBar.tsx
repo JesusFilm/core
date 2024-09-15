@@ -50,11 +50,13 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
 }))
 
 interface SearchBarProps {
+  showDropdown?: boolean
   showLanguageButton?: boolean
   props?: TextFieldProps
 }
 
 export function SearchBar({
+  showDropdown = false,
   showLanguageButton = false,
   props
 }: SearchBarProps): ReactElement {
@@ -114,6 +116,7 @@ export function SearchBar({
               {({ values, handleChange, handleBlur }) => (
                 <>
                   <StyledTextField
+                    data-testid="SearchBarInput"
                     value={values.title}
                     name="title"
                     type="search"
@@ -169,7 +172,7 @@ export function SearchBar({
               />
             </Box>
           </Box>
-          {open && (
+          {open && showDropdown && (
             <DynamicSearchbarDropdown
               open={open}
               refinements={refinements}
