@@ -60,6 +60,7 @@ import Cursor4 from './Cursor4'
 import Cursor6 from './Cursor6'
 import CursorPointer from './CursorPointer'
 import Dash from './Dash'
+import Diamond from './Diamond'
 import DotVertical from './DotVertical'
 import DownArrow from './DownArrow'
 import DownArrowSm from './DownArrowSm'
@@ -70,6 +71,7 @@ import Edit2 from './Edit2'
 import Ellipsis from './Ellipsis'
 import Email from './Email'
 import Embed from './Embed'
+import Equals from './Equals'
 import Expand from './Expand'
 import Expand2 from './Expand2'
 import EyeClosed from './EyeClosed'
@@ -269,6 +271,7 @@ export type IconName =
   | 'Cursor6'
   | 'CursorPointer'
   | 'Dash'
+  | 'Diamond'
   | 'DotVertical'
   | 'DownArrowSm'
   | 'DownArrow'
@@ -279,6 +282,7 @@ export type IconName =
   | 'Ellipsis'
   | 'Email'
   | 'Embed'
+  | 'Equals'
   | 'Expand2'
   | 'Expand'
   | 'EyeClosed'
@@ -482,6 +486,7 @@ const iconComponents: IconComponents = {
   Cursor6,
   CursorPointer,
   Dash,
+  Diamond,
   DotVertical,
   DownArrowSm,
   DownArrow,
@@ -492,6 +497,7 @@ const iconComponents: IconComponents = {
   Ellipsis,
   Email,
   Embed,
+  Equals,
   Expand2,
   Expand,
   EyeClosed,

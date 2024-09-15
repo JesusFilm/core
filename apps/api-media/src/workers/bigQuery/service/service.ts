@@ -9,6 +9,7 @@ import {
   importVideoChildren,
   importVideoDescriptions,
   importVideoImageAlts,
+  importVideoImages,
   importVideoSnippets,
   importVideoStudyQuestions,
   importVideoSubtitles,
@@ -38,7 +39,9 @@ export async function service(logger?: Logger): Promise<void> {
     // depends on bibleBooks and videos
     await importBibleCitations(logger),
     // depends on videoVariants
-    await importVideoVariantDownloads(logger)
+    await importVideoVariantDownloads(logger),
+    // run last since it can be slow initially
+    await importVideoImages(logger)
   ]
   cleanup.forEach((fn) => fn?.())
 }

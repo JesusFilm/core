@@ -3,7 +3,7 @@ import 'cloudflare/shims/node'
 import Cloudflare from 'cloudflare'
 import fetch, { Response } from 'node-fetch'
 
-function getClient(): Cloudflare {
+export function getClient(): Cloudflare {
   if (process.env.CLOUDFLARE_IMAGES_TOKEN == null)
     throw new Error('Missing CLOUDFLARE_IMAGES_TOKEN')
 

@@ -142,6 +142,7 @@ export interface StepBlockRestoreFromStep_blockRestore_ImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface StepBlockRestoreFromStep_blockRestore_RadioOptionBlock_action_NavigateToBlockAction {

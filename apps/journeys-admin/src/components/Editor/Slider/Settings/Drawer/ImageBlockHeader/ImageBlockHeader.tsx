@@ -14,7 +14,7 @@ import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../__gen
 import { ImageBlockThumbnail } from '../ImageBlockThumbnail'
 
 interface ImageBlockHeaderProps {
-  selectedBlock: ImageBlock | null
+  selectedBlock?: ImageBlock | null
   showAdd?: boolean
   showTitle?: boolean
   onDelete?: () => void

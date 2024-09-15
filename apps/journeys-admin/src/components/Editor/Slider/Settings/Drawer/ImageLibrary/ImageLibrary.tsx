@@ -45,7 +45,7 @@ interface ImageLibraryProps {
   onClose?: () => void
   onChange: (image: ImageBlockUpdateInput) => Promise<void>
   onDelete?: () => Promise<void>
-  selectedBlock: ImageBlock | null
+  selectedBlock?: ImageBlock | null
   loading?: boolean
   showAdd?: boolean
   error?: boolean

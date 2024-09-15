@@ -69,7 +69,8 @@ const steps: Array<TreeBlock<StepBlock>> = [
             parentBlockId: 'card0.id',
             parentOrder: 0,
             children: [],
-            blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
+            blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
+            scale: null
           },
           {
             id: 'typographyBlockId1',
@@ -158,7 +159,8 @@ const steps: Array<TreeBlock<StepBlock>> = [
             parentBlockId: 'card1.id',
             parentOrder: 0,
             children: [],
-            blurhash: 'LQEf1v^*XkEe*IyD$RnOyXTJRjjG'
+            blurhash: 'LQEf1v^*XkEe*IyD$RnOyXTJRjjG',
+            scale: null
           },
           {
             id: 'typographyBlockId1',
@@ -246,7 +248,8 @@ const steps: Array<TreeBlock<StepBlock>> = [
             parentBlockId: 'card2.id',
             parentOrder: 0,
             children: [],
-            blurhash: 'L;KRQa-Rs-kA}ot4bZj@SMR,WWj@'
+            blurhash: 'L;KRQa-Rs-kA}ot4bZj@SMR,WWj@',
+            scale: null
           },
           {
             id: 'typographyBlockId1',
@@ -343,7 +346,8 @@ const steps: Array<TreeBlock<StepBlock>> = [
             parentBlockId: 'card3.id',
             parentOrder: 0,
             children: [],
-            blurhash: 'L3CZt$_NyX4n=|?b00Ip8_IV00IA'
+            blurhash: 'L3CZt$_NyX4n=|?b00Ip8_IV00IA',
+            scale: null
           },
           {
             id: 'typographyBlockId1',
@@ -490,7 +494,8 @@ const steps: Array<TreeBlock<StepBlock>> = [
             parentBlockId: 'card5.id',
             parentOrder: 0,
             blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
-            children: []
+            children: [],
+            scale: null
           },
           {
             __typename: 'SignUpBlock',
@@ -536,7 +541,8 @@ const steps: Array<TreeBlock<StepBlock>> = [
             parentBlockId: 'card6.id',
             parentOrder: 0,
             children: [],
-            blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ'
+            blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ',
+            scale: null
           },
           {
             id: 'typographyBlockId1',

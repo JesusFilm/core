@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { IdType, JourneysQueryOptions, JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, MessagePlatform } from "./globalTypes";
+import { IdType, JourneysQueryOptions, JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, MessagePlatform, JourneyMenuButtonIcon } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetJourney
@@ -156,6 +156,7 @@ export interface GetJourney_journey_blocks_ImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToBlockAction {
@@ -465,6 +466,7 @@ export interface GetJourney_journey_primaryImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface GetJourney_journey_creatorImageBlock {
@@ -481,6 +483,7 @@ export interface GetJourney_journey_creatorImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface GetJourney_journey_userJourneys_user {
@@ -545,6 +548,48 @@ export interface GetJourney_journey_tags {
   name: GetJourney_journey_tags_name[];
 }
 
+export interface GetJourney_journey_logoImageBlock {
+  __typename: "ImageBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  src: string | null;
+  alt: string;
+  width: number;
+  height: number;
+  /**
+   * blurhash is a compact representation of a placeholder for an image.
+   * Find a frontend implementation at https: // github.com/woltapp/blurhash
+   */
+  blurhash: string;
+  scale: number | null;
+}
+
+export interface GetJourney_journey_menuStepBlock {
+  __typename: "StepBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  /**
+   * locked will be set to true if the user should not be able to manually
+   * advance to the next step.
+   */
+  locked: boolean;
+  /**
+   * nextBlockId contains the preferred block to navigate to, users will have to
+   * manually set the next block they want to card to navigate to
+   */
+  nextBlockId: string | null;
+  /**
+   * Slug should be unique amongst all blocks
+   * (server will throw BAD_USER_INPUT error if not)
+   * If not required will use the current block id
+   * If the generated slug is not unique the uuid will be placed
+   * at the end of the slug guaranteeing uniqueness
+   */
+  slug: string | null;
+}
+
 export interface GetJourney_journey {
   __typename: "Journey";
   id: string;
@@ -585,6 +630,9 @@ export interface GetJourney_journey {
    * public title for viewers
    */
   displayTitle: string | null;
+  logoImageBlock: GetJourney_journey_logoImageBlock | null;
+  menuButtonIcon: JourneyMenuButtonIcon | null;
+  menuStepBlock: GetJourney_journey_menuStepBlock | null;
 }
 
 export interface GetJourney {

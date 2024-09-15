@@ -73,7 +73,10 @@ const journey: Journey = {
   showShareButton: null,
   showLikeButton: null,
   showDislikeButton: null,
-  displayTitle: null
+  displayTitle: null,
+  logoImageBlock: null,
+  menuButtonIcon: null,
+  menuStepBlock: null
 }
 
 describe('BackgroundColor', () => {
