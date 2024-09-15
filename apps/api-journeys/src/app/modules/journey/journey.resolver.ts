@@ -196,6 +196,7 @@ export class JourneyResolver {
       throw new GraphQLError('user is not allowed to view journey', {
         extensions: { code: 'FORBIDDEN' }
       })
+    console.log(journey)
     return journey
   }
 
@@ -1068,7 +1069,7 @@ export class JourneyResolver {
     @CaslAbility() ability: AppAbility,
     @Parent() journey: Journey
   ): Promise<string | null> {
-    if (ability.cannot(Action.Manage, subject('Journey', journey))) return null
+    if (ability.cannot(Action.Update, subject('Journey', journey))) return null
 
     return journey.plausibleToken
   }
