@@ -5,9 +5,8 @@ import InputAdornment from '@mui/material/InputAdornment'
 import { styled, useTheme } from '@mui/material/styles'
 import TextField, { TextFieldProps } from '@mui/material/TextField'
 import { Formik } from 'formik'
-import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next'
-import { type ReactElement, useEffect, useRef, useState } from 'react'
+import { type ReactElement, useRef, useState } from 'react'
 import { useRefinementList, useSearchBox } from 'react-instantsearch'
 
 import Search1Icon from '@core/shared/ui/icons/Search1'
@@ -22,14 +21,7 @@ import {
 } from '../../libs/useSortLanguageContinents/useSortLanguageContinents'
 
 import { LanguageButtons } from './LanguageButtons'
-
-const DynamicSearchbarDropdown = dynamic(
-  async () =>
-    await import(
-      /* webpackChunkName: "SearchbarDropdown" */
-      './SearchDropdown'
-    ).then((mod) => mod.SearchbarDropdown)
-)
+import { SearchbarDropdown } from './SearchDropdown'
 
 /* Styles below used to fake a gradient border because the 
 css attributes border-radius and border-image-source are not compatible */
@@ -201,7 +193,7 @@ export function SearchBar({
               />
             </Box>
           </Box>
-          <DynamicSearchbarDropdown
+          <SearchbarDropdown
             open={open}
             refinements={refinements}
             languages={data}
