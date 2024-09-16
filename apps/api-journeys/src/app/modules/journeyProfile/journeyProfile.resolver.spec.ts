@@ -24,7 +24,8 @@ describe('JourneyProfileResolver', () => {
     lastActiveTeamId: null,
     onboardingFormCompletedAt: null,
     journeyFlowBackButtonClicked: null,
-    analyticsButtonClicked: null
+    analyticsButtonClicked: null,
+    reportsPageVisited: null
   }
 
   const user: User = {
@@ -81,7 +82,8 @@ describe('JourneyProfileResolver', () => {
         lastActiveTeamId: null,
         onboardingFormCompletedAt: null,
         journeyFlowBackButtonClicked: null,
-        analyticsButtonClicked: null
+        analyticsButtonClicked: null,
+        reportsPageVisited: null
       })
 
       await resolver.journeyProfileCreate({
