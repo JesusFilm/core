@@ -83,7 +83,8 @@ const steps: Array<TreeBlock<StepBlock>> = [
             parentBlockId: 'card6.id',
             parentOrder: 0,
             children: [],
-            blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ'
+            blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ',
+            scale: null
           },
           {
             id: 'typographyBlockId1',

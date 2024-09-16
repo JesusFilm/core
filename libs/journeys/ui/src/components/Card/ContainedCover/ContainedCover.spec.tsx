@@ -23,6 +23,7 @@ describe('ContainedCover', () => {
     alt: 'random image from unsplash',
     parentBlockId: 'card1.id',
     parentOrder: 0,
+    scale: null,
     children: []
   }
 

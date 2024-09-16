@@ -156,6 +156,24 @@ describe('SearchBarContext', () => {
         })
       })
     })
+
+    describe('RemoveAllLanguageContinents', () => {
+      it('should remove all languages from all continents', () => {
+        const state = {
+          continentLanguages: {
+            Europe: ['English', 'French'],
+            Asia: ['Chinese', 'English']
+          }
+        }
+        expect(
+          reducer(state, {
+            type: 'RemoveAllLanguageContinents'
+          })
+        ).toEqual({
+          continentLanguages: {}
+        })
+      })
+    })
   })
 
   describe('SearchBarProvider', () => {

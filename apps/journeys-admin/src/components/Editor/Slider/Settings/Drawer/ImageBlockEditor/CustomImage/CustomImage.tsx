@@ -11,7 +11,7 @@ import { ImageUpload } from './ImageUpload'
 interface CustomImageProps {
   onChange: (input: ImageBlockUpdateInput) => void
   setUploading?: (uploading?: boolean) => void
-  selectedBlock: ImageBlock | null
+  selectedBlock?: ImageBlock | null
   loading?: boolean
   error?: boolean
 }

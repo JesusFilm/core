@@ -17,6 +17,14 @@ const Reactions = dynamic(
   { ssr: false }
 )
 
+const Logo = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Footer/Logo/Logo" */ './Logo'
+    ).then((mod) => mod.Logo),
+  { ssr: false }
+)
+
 const Host = dynamic(
   async () =>
     await import(
@@ -30,6 +38,14 @@ const DisplayTitle = dynamic(
     await import(
       /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Footer/DisplayTitle/DisplayTitle" */ './DisplayTitle'
     ).then((mod) => mod.DisplayTitle),
+  { ssr: false }
+)
+
+const Menu = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Footer/Menu/Menu" */ './Menu'
+    ).then((mod) => mod.Menu),
   { ssr: false }
 )
 
@@ -66,7 +82,9 @@ export function Footer(): ReactElement {
       {websiteMode && <WebsiteToggle />}
       {journey?.website === true ? (
         <>
+          <Logo />
           <DisplayTitle />
+          <Menu />
           <Chat />
         </>
       ) : (

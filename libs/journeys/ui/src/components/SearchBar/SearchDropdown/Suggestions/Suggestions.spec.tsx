@@ -30,22 +30,30 @@ describe('Suggestions', () => {
     jest.clearAllMocks()
   })
 
-  it('should display default suggestions', () => {
+  it('should display suggestion in english', () => {
     render(<Suggestions refinements={refinements} />)
     expect(screen.getByText('- in English')).toBeInTheDocument()
-    expect(screen.getByText('- in English and Spanish')).toBeInTheDocument()
   })
 
-  it('should refine language on click of first suggestion', () => {
+  it('should display suggestion in english and spanish', () => {
+    render(<Suggestions refinements={refinements} />)
+    expect(
+      screen.getByText('- in English and Spanish, Latin American')
+    ).toBeInTheDocument()
+  })
+
+  it('should refine once on click of suggestion with one language filter', () => {
     render(<Suggestions refinements={refinements} />)
     const firstSuggestion = screen.getByText('- in English')
     fireEvent.click(firstSuggestion)
     expect(refine).toHaveBeenCalled()
   })
 
-  it('should refine languages on click of second suggestion', () => {
+  it('should refine twice on click of suggestion with two language filters', () => {
     render(<Suggestions refinements={refinements} />)
-    const secondSuggestion = screen.getByText('- in English and Spanish')
+    const secondSuggestion = screen.getByText(
+      '- in English and Spanish, Latin American'
+    )
     fireEvent.click(secondSuggestion)
     expect(refine).toHaveBeenCalledTimes(2)
   })
@@ -59,13 +67,15 @@ describe('Suggestions', () => {
 
   it('should refine multiple languages on suggestion click', () => {
     render(<Suggestions refinements={refinements} />)
-    const secondSuggestion = screen.getByText('- in English and Spanish')
+    const secondSuggestion = screen.getByText(
+      '- in English and Spanish, Latin American'
+    )
     fireEvent.click(secondSuggestion)
     expect(refine).toHaveBeenCalledWith('English')
     expect(refine).toHaveBeenCalledWith('Spanish, Latin American')
   })
 
-  it('should not refine language if it is already refined', () => {
+  it('should not give suggestion with refined item', () => {
     const refinedLanguage = {
       count: 842,
       isRefined: true,
@@ -81,9 +91,7 @@ describe('Suggestions', () => {
     } as unknown as RefinementListRenderState
 
     render(<Suggestions refinements={refinementsWithRefined} />)
-    const firstSuggestion = screen.getByText('- in English')
-    fireEvent.click(firstSuggestion)
-    expect(refine).not.toHaveBeenCalledWith('English')
+    expect(screen.queryByText('- in English')).not.toBeInTheDocument()
   })
 
   it('should show suggestions using query string', () => {

@@ -142,6 +142,7 @@ export interface CardQuoteRestore_image_ImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface CardQuoteRestore_image_RadioOptionBlock_action_NavigateToBlockAction {
@@ -570,6 +571,7 @@ export interface CardQuoteRestore_subtitle_ImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface CardQuoteRestore_subtitle_RadioOptionBlock_action_NavigateToBlockAction {
@@ -998,6 +1000,7 @@ export interface CardQuoteRestore_title_ImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface CardQuoteRestore_title_RadioOptionBlock_action_NavigateToBlockAction {
@@ -1426,6 +1429,7 @@ export interface CardQuoteRestore_body_ImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface CardQuoteRestore_body_RadioOptionBlock_action_NavigateToBlockAction {

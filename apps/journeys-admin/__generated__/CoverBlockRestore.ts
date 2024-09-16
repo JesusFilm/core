@@ -162,6 +162,7 @@ export interface CoverBlockRestore_blockRestore_ImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export type CoverBlockRestore_blockRestore = CoverBlockRestore_blockRestore_StepBlock | CoverBlockRestore_blockRestore_VideoBlock | CoverBlockRestore_blockRestore_ImageBlock;

@@ -13,6 +13,7 @@ import { BlockFields_CardBlock as CardBlock } from '../../../../../__generated__
 import { blockDeleteUpdate } from '../../../../libs/blockDeleteUpdate'
 import { useBlockDeleteMutation } from '../../../../libs/useBlockDeleteMutation'
 import { useBlockRestoreMutation } from '../../../../libs/useBlockRestoreMutation'
+import { useJourneyUpdateMutation } from '../../../../libs/useJourneyUpdateMutation'
 
 import { setBlockRestoreEditorState } from './setBlockRestoreEditorState'
 
@@ -27,6 +28,7 @@ export function useBlockDeleteCommand(): {
   const { journey } = useJourney()
   const [blockDelete] = useBlockDeleteMutation()
   const [blockRestore] = useBlockRestoreMutation()
+  const [journeyUpdate] = useJourneyUpdateMutation()
 
   function flatten(children: TreeBlock[]): TreeBlock[] {
     return children?.reduce<TreeBlock[]>((result, item) => {
@@ -69,6 +71,11 @@ export function useBlockDeleteCommand(): {
         parentOrder: block.parentOrder != null ? index : null
       })
     )
+
+    const isMenuBlock =
+      currentBlock.id === journey.menuStepBlock?.id &&
+      currentBlock.__typename === 'StepBlock'
+
     add({
       parameters: {
         execute: {},
@@ -117,6 +124,23 @@ export function useBlockDeleteCommand(): {
             )
           }
         })
+
+        if (isMenuBlock) {
+          void journeyUpdate({
+            variables: {
+              id: journey.id,
+              input: {
+                menuStepBlockId: null
+              }
+            },
+            optimisticResponse: {
+              journeyUpdate: {
+                ...journey,
+                menuStepBlock: null
+              }
+            }
+          })
+        }
       },
       undo() {
         const flattenedChildren = flatten(currentBlock?.children)
@@ -140,6 +164,22 @@ export function useBlockDeleteCommand(): {
                   ]
                 }
         })
+
+        if (isMenuBlock)
+          void journeyUpdate({
+            variables: {
+              id: journey.id,
+              input: {
+                menuStepBlockId: currentBlock.id
+              }
+            },
+            optimisticResponse: {
+              journeyUpdate: {
+                ...journey,
+                menuStepBlock: currentBlock
+              }
+            }
+          })
       }
     })
   }
