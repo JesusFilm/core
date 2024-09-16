@@ -874,6 +874,7 @@ export type JourneyProfile = {
   journeyFlowBackButtonClicked?: Maybe<Scalars['Boolean']['output']>;
   lastActiveTeamId?: Maybe<Scalars['String']['output']>;
   onboardingFormCompletedAt?: Maybe<Scalars['DateTime']['output']>;
+  reportsPageVisited?: Maybe<Scalars['Boolean']['output']>;
   userId: Scalars['ID']['output'];
 };
 
@@ -881,6 +882,7 @@ export type JourneyProfileUpdateInput = {
   analyticsButtonClicked?: InputMaybe<Scalars['Boolean']['input']>;
   journeyFlowBackButtonClicked?: InputMaybe<Scalars['Boolean']['input']>;
   lastActiveTeamId?: InputMaybe<Scalars['String']['input']>;
+  reportsPageVisited?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export enum JourneyStatus {

@@ -243,6 +243,7 @@ export interface JourneyProfileUpdateInput {
   lastActiveTeamId?: string | null;
   journeyFlowBackButtonClicked?: boolean | null;
   analyticsButtonClicked?: boolean | null;
+  reportsPageVisited?: boolean | null;
 }
 
 export interface JourneysFilter {
