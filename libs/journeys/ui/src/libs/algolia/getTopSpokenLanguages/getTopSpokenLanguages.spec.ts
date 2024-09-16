@@ -3,12 +3,20 @@ import { RefinementListItem } from 'instantsearch.js/es/connectors/refinement-li
 import { GetCountry_country as Country } from '../../useCountryQuery/__generated__/GetCountry'
 import { country } from '../../useCountryQuery/data'
 
-import { getTopSpokenLanguages } from './getTopSpokenLanguages'
+import { getTopSpokenLanguages, removeCommas } from './getTopSpokenLanguages'
+
+describe('removeCommas', () => {
+  it('should remove commas from a string', () => {
+    const value = 'Spanish, Latin American'
+    const result = removeCommas(value)
+    expect(result).toBe('Spanish Latin American')
+  })
+})
 
 describe('getTopSpokenLanguages', () => {
   const availableLanguages = [
     { value: 'English' },
-    { value: 'Spanish' },
+    { value: 'Spanish, Latin American' },
     { value: 'French' },
     { value: 'German' },
     { value: 'Italian' }
@@ -69,7 +77,7 @@ describe('getTopSpokenLanguages', () => {
       availableLanguages
     })
 
-    expect(topSpokenLanguages).toEqual(['Spanish', 'English'])
+    expect(topSpokenLanguages).toEqual(['Spanish, Latin American', 'English'])
   })
 
   it('should return the top spoken languages of a country when there are more than 4 languages', () => {
@@ -80,7 +88,7 @@ describe('getTopSpokenLanguages', () => {
 
     expect(topSpokenLanguages).toEqual([
       'French',
-      'Spanish',
+      'Spanish, Latin American',
       'English',
       'German'
     ])
@@ -88,7 +96,7 @@ describe('getTopSpokenLanguages', () => {
 
   it('should not return languages that are not available in Algolia refinement', () => {
     const customAvailableLanguages = availableLanguages.filter(
-      (language) => language.value !== 'Spanish'
+      (language) => language.value !== 'Spanish, Latin American'
     )
 
     const topSpokenLanguages = getTopSpokenLanguages({
@@ -112,5 +120,14 @@ describe('getTopSpokenLanguages', () => {
     })
 
     expect(topSpokenLanguages).toHaveLength(2)
+  })
+
+  it('should return an empty array if the country is null', () => {
+    const topSpokenLanguages = getTopSpokenLanguages({
+      country: null,
+      availableLanguages
+    })
+
+    expect(topSpokenLanguages).toEqual([])
   })
 })
