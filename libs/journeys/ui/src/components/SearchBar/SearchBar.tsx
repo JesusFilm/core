@@ -78,7 +78,7 @@ export function SearchBar({
   }
 
   function openSuggestionsDropdown(): void {
-    prepareDropdown()
+    void prepareDropdown()
     setAnchorEl(popperRef.current)
     setOpen(true)
   }
@@ -98,17 +98,16 @@ export function SearchBar({
   const [isPreparingDropdown, setIsPreparingDropdown] = useState(false)
   const [getLanguages] = useLanguagesContinentsLazyQuery()
 
-  function prepareDropdown(): void {
+  async function prepareDropdown(): Promise<void> {
     if (!isPreparingDropdown) {
       setIsPreparingDropdown(true) // Trigger import of dropdown but still closed
 
-      void getLanguages().then((res) => {
-        const languages = sortLanguageContinents({
-          languages: res.data?.languages ?? []
-        })
-        setData(languages)
-        console.log('finished getting languages', languages)
+      const result = await getLanguages()
+      const languages = sortLanguageContinents({
+        languages: result.data?.languages ?? []
       })
+      setData(languages)
+      console.log('finished getting languages', languages)
     }
   }
 
