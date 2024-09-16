@@ -167,7 +167,8 @@ export function CardQuote(): ReactElement {
       width: 5094,
       height: 3396,
       blurhash: 'L99*0;01IAtk5R%MRie;t8D%-pa$',
-      __typename: 'ImageBlock'
+      __typename: 'ImageBlock',
+      scale: null
     } satisfies ImageBlock
 
     const subtitle = {

@@ -13,6 +13,8 @@ import ChevronDown from '@core/shared/ui/icons/ChevronDown'
 import ChevronUp from '@core/shared/ui/icons/ChevronUp'
 import X1 from '@core/shared/ui/icons/X1'
 
+import { useSearchBar } from '../../../../libs/algolia/SearchBarProvider'
+
 import { RefinementGroup } from './RefinementGroup'
 
 const StyledButton = styled(Button)(({ theme }) => ({
@@ -45,9 +47,15 @@ export function RefinementGroups({
   const { refine: clearRefinements, canRefine: canClearRefinements } =
     useClearRefinements()
 
-  const languageEntries = Object.entries(languages)
+  const { dispatch } = useSearchBar()
+  function handleClick(): void {
+    clearRefinements()
+    dispatch({ type: 'RemoveAllLanguageContinents' })
+  }
 
+  const languageEntries = Object.entries(languages)
   const isLoading = languageEntries.length === 0
+
   const hasRefinements = refinements.items.length > 0
 
   return (
@@ -108,7 +116,7 @@ export function RefinementGroups({
               {canClearRefinements && (
                 <StyledButton
                   size="small"
-                  onClick={clearRefinements}
+                  onClick={handleClick}
                   disabled={!canClearRefinements}
                   endIcon={<X1 />}
                   sx={{

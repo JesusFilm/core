@@ -7,6 +7,16 @@
 // GraphQL query operation: GetCountry
 // ====================================================
 
+export interface GetCountry_country_continent_name {
+  __typename: "ContinentName";
+  value: string;
+}
+
+export interface GetCountry_country_continent {
+  __typename: "Continent";
+  name: GetCountry_country_continent_name[];
+}
+
 export interface GetCountry_country_countryLanguages_language_name {
   __typename: "LanguageName";
   primary: boolean;
@@ -28,6 +38,7 @@ export interface GetCountry_country {
   __typename: "Country";
   id: string;
   flagPngSrc: string | null;
+  continent: GetCountry_country_continent;
   countryLanguages: GetCountry_country_countryLanguages[];
 }
 

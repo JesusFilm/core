@@ -37,10 +37,15 @@ interface RemoveLanguageContinentsAction {
   language: Language
 }
 
+interface RemoveAllLanguageContinentsAction {
+  type: 'RemoveAllLanguageContinents'
+}
+
 type SearchBarAction =
   | SelectLanguageContinentAction
   | SetDefaultLanguageContinentAction
   | RemoveLanguageContinentsAction
+  | RemoveAllLanguageContinentsAction
 
 function selectLanguageContinent(
   state: SearchBarState,
@@ -110,6 +115,13 @@ function removeLanguageContinents(
   }
 }
 
+function removeAllLanguageContinents(state: SearchBarState): SearchBarState {
+  return {
+    ...state,
+    continentLanguages: {}
+  }
+}
+
 export const reducer = (
   state: SearchBarState,
   action: SearchBarAction
@@ -121,6 +133,8 @@ export const reducer = (
       return setDefaultLanguageContinent(state, action)
     case 'RemoveLanguageContinents':
       return removeLanguageContinents(state, action)
+    case 'RemoveAllLanguageContinents':
+      return removeAllLanguageContinents(state)
     default:
       return state
   }

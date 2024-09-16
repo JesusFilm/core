@@ -3,8 +3,12 @@ import orderBy from 'lodash/orderBy'
 
 import { GetCountry_country as Country } from '../../useCountryQuery/__generated__/GetCountry'
 
+export function removeCommas(str: string): string {
+  return str.replace(/,/g, '').trim()
+}
+
 interface getTopSpokenLanguagesProps {
-  country: Country
+  country?: Country | null
   availableLanguages: RefinementListItem[]
   limit?: number
 }
@@ -14,9 +18,7 @@ export function getTopSpokenLanguages({
   availableLanguages,
   limit = 4
 }: getTopSpokenLanguagesProps): string[] {
-  const availableLanguageSet = new Set(
-    availableLanguages.map((lang) => lang.value)
-  )
+  if (country == null) return []
 
   const countryLanguages = country?.countryLanguages ?? []
 
@@ -28,10 +30,15 @@ export function getTopSpokenLanguages({
     return localName ?? nativeName ?? ''
   })
 
-  const topSpokenLanguages = languageNames
-    .filter(Boolean)
-    .filter((language) => availableLanguageSet.has(language))
+  const topSpokenLanguages = availableLanguages
+    .filter(({ value }) => languageNames.includes(removeCommas(value)))
+    .sort(
+      (a, b) =>
+        languageNames.indexOf(removeCommas(a.value)) -
+        languageNames.indexOf(removeCommas(b.value))
+    )
     .slice(0, limit)
+    .map(({ value }) => value)
 
   return topSpokenLanguages
 }

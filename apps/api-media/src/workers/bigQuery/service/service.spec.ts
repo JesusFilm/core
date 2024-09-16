@@ -7,6 +7,7 @@ import {
   importVideoChildren,
   importVideoDescriptions,
   importVideoImageAlts,
+  importVideoImages,
   importVideoSnippets,
   importVideoStudyQuestions,
   importVideoSubtitles,
@@ -26,6 +27,7 @@ jest.mock('../importers', () => ({
   importLanguageSlugs: jest.fn(),
   importVideoChildren: jest.fn(),
   importVideoDescriptions: jest.fn(),
+  importVideoImages: jest.fn(),
   importVideoImageAlts: jest.fn(),
   importVideoSnippets: jest.fn(),
   importVideoStudyQuestions: jest.fn(),
@@ -55,6 +57,7 @@ describe('bigQuery/service', () => {
       expect(importVideoVariantDownloads).toHaveBeenCalled()
       expect(importVideoVariants).toHaveBeenCalled()
       expect(importVideos).toHaveBeenCalled()
+      expect(importVideoImages).toHaveBeenCalled()
     })
   })
 })

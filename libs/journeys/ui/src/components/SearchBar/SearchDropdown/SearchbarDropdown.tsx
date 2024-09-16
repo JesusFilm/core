@@ -22,6 +22,7 @@ import { useSearchBar } from '../../../libs/algolia/SearchBarProvider'
 import { useLanguagesContinentsQuery } from '../../../libs/useLanguagesContinentsQuery'
 import { useSortLanguageContinents } from '../../../libs/useSortLanguageContinents'
 
+import { CountryLanguageSelector } from './CountryLanguageSelector'
 import { RefinementGroups } from './RefinementGroups'
 import { Suggestions } from './Suggestions'
 
@@ -74,15 +75,15 @@ export function SearchbarDropdown({
   const updateDefaultLanguageContinent = useCallback(() => {
     const refinedItems = refinements.items.filter((item) => item.isRefined)
     if (refinedItems.length > 0) {
-      const refinedItemsContinents = Object.entries(continentLanguages).filter(
-        ([continent, languages]) =>
-          refinedItems.some((item) => languages.includes(item.label))
-      )
-      if (refinedItemsContinents.length === 0) {
+      const languagesSet = Object.values(continentLanguages).flat()
+      if (languagesSet.length < refinedItems.length) {
+        const languagesNotSet = refinedItems
+          .map((item) => item.label)
+          .filter((language) => !languagesSet.includes(language))
         dispatch({
           type: 'SetDefaultLanguageContinent',
           continents: languages,
-          refinedItems: refinedItems.map((item) => item.label)
+          refinedItems: languagesNotSet
         })
       }
     }
@@ -118,6 +119,7 @@ export function SearchbarDropdown({
         sx={{ px: 8, pb: 8, bgcolor: 'background.paper', mt: 3 }}
         color="text.primary"
       >
+        <CountryLanguageSelector refinements={refinements} />
         <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 5 }}>
           <Tabs
             value={tabValue}

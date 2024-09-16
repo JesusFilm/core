@@ -142,6 +142,7 @@ export interface CardCtaRestore_imageRestore_ImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface CardCtaRestore_imageRestore_RadioOptionBlock_action_NavigateToBlockAction {
@@ -570,6 +571,7 @@ export interface CardCtaRestore_subtitleRestore_ImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface CardCtaRestore_subtitleRestore_RadioOptionBlock_action_NavigateToBlockAction {
@@ -998,6 +1000,7 @@ export interface CardCtaRestore_titleRestore_ImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface CardCtaRestore_titleRestore_RadioOptionBlock_action_NavigateToBlockAction {
@@ -1426,6 +1429,7 @@ export interface CardCtaRestore_button1Restore_ImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface CardCtaRestore_button1Restore_RadioOptionBlock_action_NavigateToBlockAction {
@@ -1854,6 +1858,7 @@ export interface CardCtaRestore_startIcon1Restore_ImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface CardCtaRestore_startIcon1Restore_RadioOptionBlock_action_NavigateToBlockAction {
@@ -2282,6 +2287,7 @@ export interface CardCtaRestore_endIcon1Restore_ImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface CardCtaRestore_endIcon1Restore_RadioOptionBlock_action_NavigateToBlockAction {
@@ -2710,6 +2716,7 @@ export interface CardCtaRestore_button2Restore_ImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface CardCtaRestore_button2Restore_RadioOptionBlock_action_NavigateToBlockAction {
@@ -3138,6 +3145,7 @@ export interface CardCtaRestore_startIcon2Restore_ImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface CardCtaRestore_startIcon2Restore_RadioOptionBlock_action_NavigateToBlockAction {
@@ -3566,6 +3574,7 @@ export interface CardCtaRestore_endIcon2Restore_ImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface CardCtaRestore_endIcon2Restore_RadioOptionBlock_action_NavigateToBlockAction {
@@ -3994,6 +4003,7 @@ export interface CardCtaRestore_button3Restore_ImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface CardCtaRestore_button3Restore_RadioOptionBlock_action_NavigateToBlockAction {
@@ -4422,6 +4432,7 @@ export interface CardCtaRestore_startIcon3Restore_ImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface CardCtaRestore_startIcon3Restore_RadioOptionBlock_action_NavigateToBlockAction {
@@ -4850,6 +4861,7 @@ export interface CardCtaRestore_endIcon3Restore_ImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface CardCtaRestore_endIcon3Restore_RadioOptionBlock_action_NavigateToBlockAction {
