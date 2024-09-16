@@ -18,7 +18,6 @@ import {
   sortLanguageContinents
 } from '../../libs/algolia/sortLanguageContinents'
 import { useLanguagesContinentsLazyQuery } from '../../libs/useLanguagesContinentsQuery'
-import { languagesContinents } from '../../libs/useLanguagesContinentsQuery/data'
 
 import { LanguageButtons } from './LanguageButtons'
 import { SearchbarDropdown } from './SearchDropdown'
@@ -89,11 +88,11 @@ export function SearchBar({
     setOpen(!open)
   }
 
-  const fallbackLanguageContinents = sortLanguageContinents({
-    languages: languagesContinents
+  const emptyLanguageContinents = sortLanguageContinents({
+    languages: []
   })
   const [data, setData] = useState<LanguageContinentsRecord>(
-    fallbackLanguageContinents
+    emptyLanguageContinents
   )
   const [isPreparingDropdown, setIsPreparingDropdown] = useState(false)
   const [getLanguages] = useLanguagesContinentsLazyQuery()
