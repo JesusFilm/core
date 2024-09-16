@@ -109,7 +109,7 @@ export function SearchBar({
         setData(languages)
         setLoading(false)
       })
-    }, 1000) // Delay the query by 1 second after page load to avoid impacting initial load
+    }, 3000) // Delay the query by 1 second after page load to avoid impacting initial load
 
     return () => clearTimeout(timer)
   }, [])
