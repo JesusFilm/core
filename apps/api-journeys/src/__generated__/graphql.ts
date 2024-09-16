@@ -869,20 +869,20 @@ export type JourneyNotificationUpdateInput = {
 export type JourneyProfile = {
   __typename?: 'JourneyProfile';
   acceptedTermsAt?: Maybe<Scalars['DateTime']['output']>;
-  analyticsButtonClicked?: Maybe<Scalars['Boolean']['output']>;
   id: Scalars['ID']['output'];
   journeyFlowBackButtonClicked?: Maybe<Scalars['Boolean']['output']>;
   lastActiveTeamId?: Maybe<Scalars['String']['output']>;
   onboardingFormCompletedAt?: Maybe<Scalars['DateTime']['output']>;
-  reportsPageVisited?: Maybe<Scalars['Boolean']['output']>;
+  plausibleDashboardViewed?: Maybe<Scalars['Boolean']['output']>;
+  plausibleJourneyFlowViewed?: Maybe<Scalars['Boolean']['output']>;
   userId: Scalars['ID']['output'];
 };
 
 export type JourneyProfileUpdateInput = {
-  analyticsButtonClicked?: InputMaybe<Scalars['Boolean']['input']>;
   journeyFlowBackButtonClicked?: InputMaybe<Scalars['Boolean']['input']>;
   lastActiveTeamId?: InputMaybe<Scalars['String']['input']>;
-  reportsPageVisited?: InputMaybe<Scalars['Boolean']['input']>;
+  plausibleDashboardViewed?: InputMaybe<Scalars['Boolean']['input']>;
+  plausibleJourneyFlowViewed?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export enum JourneyStatus {
