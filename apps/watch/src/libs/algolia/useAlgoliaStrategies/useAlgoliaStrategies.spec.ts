@@ -19,6 +19,21 @@ describe('removeExcerptPTags', () => {
     const result = removeExcerptPTags('<p>description</p>')
     expect(result).toBe('description')
   })
+
+  it('should remove multiple p tags from excerpt', () => {
+    const result = removeExcerptPTags('<p>description</p><p>description</p>')
+    expect(result).toBe('descriptiondescription')
+  })
+
+  it('should handle nested p tags', () => {
+    const result = removeExcerptPTags('<p><p>description</p><p>')
+    expect(result).toBe('description')
+  })
+
+  it('should handle no p tags', () => {
+    const result = removeExcerptPTags('description')
+    expect(result).toBe('description')
+  })
 })
 
 describe('useAlgoliaStrategies', () => {
