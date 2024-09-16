@@ -136,31 +136,36 @@ export function JourneyFlow(): ReactElement {
 
   const blockPositionUpdate = useCallback(
     (input: Array<{ id: string; x: number; y: number }>): void => {
-      void stepBlockPositionUpdate({
-        variables: {
-          input
-        },
-        optimisticResponse: {
-          stepBlockPositionUpdate: input.map((step) => ({
-            ...step,
-            __typename: 'StepBlock'
-          }))
-        }
-      })
+      if (importedSteps == null) {
+        void stepBlockPositionUpdate({
+          variables: {
+            input
+          },
+          optimisticResponse: {
+            stepBlockPositionUpdate: input.map((step) => ({
+              ...step,
+              __typename: 'StepBlock'
+            }))
+          }
+        })
+      }
     },
     [stepBlockPositionUpdate]
   )
 
   const allBlockPositionUpdate = useCallback(
     async (onload = false): Promise<void> => {
-      if (steps == null || data == null) return
+      if ((steps == null && importedSteps == null) || data == null) return
 
-      const input = Object.entries(arrangeSteps(steps)).map(
+      const stepData = importedSteps ?? steps ?? []
+
+      const input = Object.entries(arrangeSteps(stepData)).map(
         ([id, position]) => ({
           id,
           ...position
         })
       )
+      // console.log('data', data.blocks, input)
 
       if (onload) {
         blockPositionUpdate(input)
@@ -190,7 +195,7 @@ export function JourneyFlow(): ReactElement {
         })
       }
     },
-    [data, dispatch, steps, add, blockPositionUpdate]
+    [data, dispatch, steps, add, blockPositionUpdate, importedSteps]
   )
 
   const handleCancelPreviewMode = useCallback(() => {
@@ -207,26 +212,23 @@ export function JourneyFlow(): ReactElement {
   }, [dispatch])
 
   useEffect(() => {
-    if (
-      data?.blocks == null ||
-      steps == null ||
-      data.blocks.length !== steps.length
-    )
-      return
+    if (data?.blocks == null || (steps == null && importedSteps == null)) return
+
+    if (steps != null && data.blocks.length !== steps.length) return
+
+    const blocks = importedSteps ?? steps ?? []
 
     const positions: PositionMap =
-      data.blocks.reduce((acc, block) => {
-        if (
-          block.__typename === 'StepBlock' &&
-          block.x != null &&
-          block.y != null
-        ) {
-          acc[block.id] = { x: block.x, y: block.y }
+      blocks.reduce((acc, block, i) => {
+        if (block.__typename === 'StepBlock') {
+          acc[block.id] = { x: -10, y: i * 200 }
         }
         return acc
       }, {}) ?? {}
 
-    const validSteps = steps.every((step) => {
+    // console.log('blocks', importedSteps, blocks, data.blocks)
+
+    const validSteps = blocks.every((step) => {
       return (
         positions[step.id] != null &&
         positions[step.id].x != null &&
@@ -239,11 +241,19 @@ export function JourneyFlow(): ReactElement {
       return
     }
 
-    const { nodes, edges } = transformSteps(steps ?? [], positions)
+    const { nodes, edges } = transformSteps(blocks ?? [], positions)
 
     setEdges(edges)
     setNodes(nodes)
-  }, [steps, data, theme, setEdges, setNodes, allBlockPositionUpdate])
+  }, [
+    steps,
+    data,
+    theme,
+    setEdges,
+    setNodes,
+    allBlockPositionUpdate,
+    importedSteps
+  ])
 
   const onConnect = useCallback<OnConnect>(() => {
     // reset the start node on connections
