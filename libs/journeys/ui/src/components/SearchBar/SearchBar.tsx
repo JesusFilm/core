@@ -15,6 +15,7 @@ import { SubmitListener } from '@core/shared/ui/SubmitListener'
 
 import { SearchBarProvider } from '../../libs/algolia/SearchBarProvider'
 import { useLanguagesContinentsLazyQuery } from '../../libs/useLanguagesContinentsQuery'
+import { languagesContinents } from '../../libs/useLanguagesContinentsQuery/data'
 import {
   LanguageContinentsRecord,
   sortLanguageContinents
@@ -96,11 +97,11 @@ export function SearchBar({
     setOpen(!open)
   }
 
-  const emptyLanguageContinents = sortLanguageContinents({
-    languages: []
+  const fallbackLanguageContinents = sortLanguageContinents({
+    languages: languagesContinents
   })
   const [data, setData] = useState<LanguageContinentsRecord>(
-    emptyLanguageContinents
+    fallbackLanguageContinents
   )
   const [isPreparingDropdown, setIsPreparingDropdown] = useState(false)
   const [getLanguages] = useLanguagesContinentsLazyQuery()
@@ -200,17 +201,15 @@ export function SearchBar({
               />
             </Box>
           </Box>
-          {isPreparingDropdown && (
-            <DynamicSearchbarDropdown
-              open={open}
-              refinements={refinements}
-              languages={data}
-              id={open ? 'simple-popper' : undefined}
-              anchorEl={anchorEl}
-              tabIndex={tabValue}
-              handleTabValueChange={setTabValue}
-            />
-          )}
+          <DynamicSearchbarDropdown
+            open={open}
+            refinements={refinements}
+            languages={data}
+            id={open ? 'simple-popper' : undefined}
+            anchorEl={anchorEl}
+            tabIndex={tabValue}
+            handleTabValueChange={setTabValue}
+          />
         </Box>
       </ClickAwayListener>
     </SearchBarProvider>
