@@ -7,8 +7,8 @@ import noop from 'lodash/noop'
 import { useClearRefinements, useSearchBox } from 'react-instantsearch'
 
 import { SearchBarProvider } from '../../../libs/algolia/SearchBarProvider'
+import { sortedLanguageContinents } from '../../../libs/algolia/sortLanguageContinents/data'
 import { getLanguagesContinentsMock } from '../../../libs/useLanguagesContinentsQuery/useLanguagesContinentsQuery.mock'
-import { sortedLanguageContinents } from '../../../libs/useSortLanguageContinents/data'
 import { languageRefinements } from '../data'
 
 import { SearchbarDropdown } from './SearchbarDropdown'

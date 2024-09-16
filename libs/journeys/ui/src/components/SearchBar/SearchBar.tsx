@@ -13,12 +13,12 @@ import Search1Icon from '@core/shared/ui/icons/Search1'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
 
 import { SearchBarProvider } from '../../libs/algolia/SearchBarProvider'
-import { useLanguagesContinentsLazyQuery } from '../../libs/useLanguagesContinentsQuery'
-import { languagesContinents } from '../../libs/useLanguagesContinentsQuery/data'
 import {
   LanguageContinentsRecord,
   sortLanguageContinents
-} from '../../libs/useSortLanguageContinents/useSortLanguageContinents'
+} from '../../libs/algolia/sortLanguageContinents'
+import { useLanguagesContinentsLazyQuery } from '../../libs/useLanguagesContinentsQuery'
+import { languagesContinents } from '../../libs/useLanguagesContinentsQuery/data'
 
 import { LanguageButtons } from './LanguageButtons'
 import { SearchbarDropdown } from './SearchDropdown'

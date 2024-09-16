@@ -19,7 +19,7 @@ import Search1 from '@core/shared/ui/icons/Search1'
 import { TabPanel } from '@core/shared/ui/TabPanel'
 
 import { useSearchBar } from '../../../libs/algolia/SearchBarProvider'
-import { LanguageContinentsRecord } from '../../../libs/useSortLanguageContinents/useSortLanguageContinents'
+import { LanguageContinentsRecord } from '../../../libs/algolia/sortLanguageContinents/sortLanguageContinents'
 
 import { CountryLanguageSelector } from './CountryLanguageSelector'
 import { RefinementGroups } from './RefinementGroups'
