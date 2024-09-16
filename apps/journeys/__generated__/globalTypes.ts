@@ -244,6 +244,7 @@ export interface ChatOpenEventCreateInput {
 export interface JourneyProfileUpdateInput {
   lastActiveTeamId?: string | null;
   journeyFlowBackButtonClicked?: boolean | null;
+  analyticsButtonClicked?: boolean | null;
 }
 
 export interface JourneyViewEventCreateInput {
