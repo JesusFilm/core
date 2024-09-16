@@ -2125,34 +2125,7 @@ describe('JourneyResolver', () => {
       })
     })
 
-    it('returns blocks without menuStepBlock', async () => {
-      const journeyWithMenuStepBlock = {
-        ...journey,
-        menuStepBlockId: 'menuStepBlockId'
-      }
-      prismaService.block.findMany.mockResolvedValueOnce([block])
-      blockService.removeDescendantsOfDeletedBlocks.mockResolvedValueOnce([
-        block as BlockWithAction
-      ])
-      expect(await resolver.blocks(journeyWithMenuStepBlock)).toEqual([
-        { ...block, __typename: 'ImageBlock', typename: undefined }
-      ])
-      expect(prismaService.block.findMany).toHaveBeenCalledWith({
-        include: {
-          action: true
-        },
-        orderBy: {
-          parentOrder: 'asc'
-        },
-        where: {
-          journeyId: 'journeyId',
-          id: { notIn: ['menuStepBlockId'] },
-          deletedAt: null
-        }
-      })
-    })
-
-    it('returns blocks without primaryImageBlock, creatorImageBlock, logoImageBlock or menuStepBlock', async () => {
+    it('returns blocks without primaryImageBlock, creatorImageBlock, logoImageBlock', async () => {
       const journeyWithPrimaryImageBlock = {
         ...journey,
         primaryImageBlockId: 'primaryImageBlockId',
@@ -2180,8 +2153,7 @@ describe('JourneyResolver', () => {
             notIn: [
               'primaryImageBlockId',
               'creatorImageBlockId',
-              'logoImageBlockId',
-              'menuStepBlockId'
+              'logoImageBlockId'
             ]
           },
           deletedAt: null
@@ -2530,23 +2502,34 @@ describe('JourneyResolver', () => {
   })
 
   describe('plausibleToken', () => {
-    it('returns plausibleToken', async () => {
-      const journeyWithToken = {
+    it('returns plausibleToken for manager', async () => {
+      const journeyWithManager = {
         ...journeyWithUserTeam,
         plausibleToken: 'plausibleToken'
       }
-      expect(await resolver.plausibleToken(ability, journeyWithToken)).toBe(
+      expect(await resolver.plausibleToken(ability, journeyWithManager)).toBe(
+        'plausibleToken'
+      )
+    })
+
+    it('returns plausibleToken for member', async () => {
+      const journeyWithManager = {
+        ...journeyWithUserTeam,
+        team: { userTeams: [{ userId: 'userId', role: UserTeamRole.member }] },
+        plausibleToken: 'plausibleToken'
+      }
+      expect(await resolver.plausibleToken(ability, journeyWithManager)).toBe(
         'plausibleToken'
       )
     })
 
     it('returns null', async () => {
-      const journeyWithToken = {
+      const journeyNoAbility = {
         ...journey,
         plausibleToken: 'plausibleToken'
       }
       expect(
-        await resolver.plausibleToken(ability, journeyWithToken)
+        await resolver.plausibleToken(ability, journeyNoAbility)
       ).toBeNull()
     })
   })

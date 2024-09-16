@@ -39,6 +39,7 @@ mswInitialize({
 
 module.exports = {
   loaders: [mswLoader],
+
   parameters: {
     backgrounds: {
       disable: true,
@@ -55,6 +56,7 @@ module.exports = {
       MockedProvider
     }
   },
+
   globalTypes: {
     theme: {
       name: 'Theme Mode',
@@ -65,5 +67,7 @@ module.exports = {
         items: ['light', 'dark', 'all']
       }
     }
-  }
+  },
+
+  tags: ['autodocs']
 }

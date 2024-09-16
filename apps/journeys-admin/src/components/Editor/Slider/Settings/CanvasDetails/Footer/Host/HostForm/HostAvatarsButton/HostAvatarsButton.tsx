@@ -139,7 +139,8 @@ export function HostAvatarsButton(): ReactElement {
                   height: 52,
                   blurhash: '',
                   parentBlockId: null,
-                  parentOrder: 0
+                  parentOrder: 0,
+                  scale: null
                 }
               : null
           }

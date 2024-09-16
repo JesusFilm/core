@@ -7,8 +7,8 @@
 // GraphQL mutation operation: PosterImageBlockRestore
 // ====================================================
 
-export interface PosterImageBlockRestore_blockRestore_ButtonBlock {
-  __typename: "ButtonBlock" | "CardBlock" | "FormBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "StepBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+export interface PosterImageBlockRestore_blockRestore_StepBlock {
+  __typename: "StepBlock" | "ButtonBlock" | "CardBlock" | "FormBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
 }
 
@@ -26,9 +26,10 @@ export interface PosterImageBlockRestore_blockRestore_ImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
-export type PosterImageBlockRestore_blockRestore = PosterImageBlockRestore_blockRestore_ButtonBlock | PosterImageBlockRestore_blockRestore_ImageBlock;
+export type PosterImageBlockRestore_blockRestore = PosterImageBlockRestore_blockRestore_StepBlock | PosterImageBlockRestore_blockRestore_ImageBlock;
 
 export interface PosterImageBlockRestore_videoBlockUpdate {
   __typename: "VideoBlock";

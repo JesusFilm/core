@@ -7,6 +7,8 @@ import { MouseEvent, ReactElement } from 'react'
 
 import { handleAction } from '../../libs/action'
 import type { TreeBlock } from '../../libs/block'
+import { getNextStepSlug } from '../../libs/getNextStepSlug'
+import { useJourney } from '../../libs/JourneyProvider'
 
 import { RadioOptionFields } from './__generated__/RadioOptionFields'
 
@@ -37,12 +39,14 @@ export function RadioOption({
   onClick,
   editableLabel
 }: RadioOptionProps): ReactElement {
+  const { journey } = useJourney()
   const router = useRouter()
 
   const handleClick = (e: MouseEvent): void => {
     e.stopPropagation()
     onClick?.(id, label)
-    handleAction(router, action)
+    const nextStepSlug = getNextStepSlug(journey, action)
+    handleAction(router, action, nextStepSlug)
   }
 
   return (

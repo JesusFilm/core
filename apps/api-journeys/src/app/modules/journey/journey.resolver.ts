@@ -958,9 +958,6 @@ export class JourneyResolver {
     if (journey.logoImageBlockId != null) {
       idNotIn.push(journey.logoImageBlockId)
     }
-    if (journey.menuStepBlockId != null) {
-      idNotIn.push(journey.menuStepBlockId)
-    }
     if (idNotIn.length > 0) {
       filter.id = { notIn: idNotIn }
     }
@@ -1071,7 +1068,7 @@ export class JourneyResolver {
     @CaslAbility() ability: AppAbility,
     @Parent() journey: Journey
   ): Promise<string | null> {
-    if (ability.cannot(Action.Manage, subject('Journey', journey))) return null
+    if (ability.cannot(Action.Update, subject('Journey', journey))) return null
 
     return journey.plausibleToken
   }

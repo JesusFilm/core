@@ -1,5 +1,5 @@
-import { jest } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
+import { fn } from '@storybook/test'
 import { ComponentProps } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -18,7 +18,7 @@ const Demo: Meta<typeof Image> = {
     'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Image'
 }
 
-const onClose = jest.fn()
+const onClose = fn()
 
 const image: TreeBlock<ImageBlock> = {
   id: 'image1.id',
@@ -30,7 +30,8 @@ const image: TreeBlock<ImageBlock> = {
   width: 1920,
   height: 1080,
   blurhash: '',
-  children: []
+  children: [],
+  scale: null
 }
 
 const Template: StoryObj<ComponentProps<typeof Image>> = {

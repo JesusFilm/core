@@ -34,7 +34,8 @@ describe('VideoDetails', () => {
     width: 0,
     height: 0,
     blurhash: '',
-    children: []
+    children: [],
+    scale: null
   }
   const videoBlock: TreeBlock<VideoBlock> = {
     id: 'videoBlockId',

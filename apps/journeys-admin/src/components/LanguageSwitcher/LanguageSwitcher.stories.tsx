@@ -1,5 +1,5 @@
-import { jest } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
+import { fn } from '@storybook/test'
 
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
@@ -12,6 +12,6 @@ const LanguageSwitcherStory: Meta<typeof LanguageSwitcher> = {
 }
 
 export const Default: StoryObj<typeof LanguageSwitcher> = {
-  render: () => <LanguageSwitcher open handleClose={jest.fn()} />
+  render: () => <LanguageSwitcher open handleClose={fn()} />
 }
 export default LanguageSwitcherStory

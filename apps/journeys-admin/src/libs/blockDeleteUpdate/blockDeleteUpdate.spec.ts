@@ -67,7 +67,8 @@ const image: TreeBlock<ImageBlock> = {
   blurhash: '',
   width: 10,
   height: 10,
-  children: []
+  children: [],
+  scale: null
 }
 
 const journey: Journey = {
@@ -112,7 +113,10 @@ const journey: Journey = {
   showShareButton: null,
   showLikeButton: null,
   showDislikeButton: null,
-  displayTitle: null
+  displayTitle: null,
+  logoImageBlock: null,
+  menuButtonIcon: null,
+  menuStepBlock: null
 }
 
 const response = [{ ...image, parentOrder: 0 }]

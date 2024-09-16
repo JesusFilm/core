@@ -61,7 +61,8 @@ describe('RadioOption', () => {
         parentBlockId: 'radioOption1.id',
         gtmEventName: 'gtmEventName',
         blockId: 'def'
-      }
+      },
+      undefined
     )
   })
 })

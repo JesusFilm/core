@@ -238,7 +238,8 @@ describe('SignUp', () => {
           parentBlockId: 'signUp0.id',
           gtmEventName: 'signUp',
           url: '#'
-        }
+        },
+        undefined
       )
     })
   })

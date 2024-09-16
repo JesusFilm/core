@@ -768,6 +768,8 @@ export class JourneyNotificationUpdateInput {
 export class JourneyProfileUpdateInput {
     lastActiveTeamId?: Nullable<string>;
     journeyFlowBackButtonClicked?: Nullable<boolean>;
+    plausibleJourneyFlowViewed?: Nullable<boolean>;
+    plausibleDashboardViewed?: Nullable<boolean>;
 }
 
 export class JourneyVisitorFilter {
@@ -1105,6 +1107,8 @@ export class Journey {
     blocks?: Nullable<Block[]>;
     primaryImageBlock?: Nullable<ImageBlock>;
     creatorImageBlock?: Nullable<ImageBlock>;
+    logoImageBlock?: Nullable<ImageBlock>;
+    menuStepBlock?: Nullable<StepBlock>;
     chatButtons: ChatButton[];
     id: string;
     title: string;
@@ -1702,6 +1706,8 @@ export class JourneyProfile {
     lastActiveTeamId?: Nullable<string>;
     onboardingFormCompletedAt?: Nullable<DateTime>;
     journeyFlowBackButtonClicked?: Nullable<boolean>;
+    plausibleJourneyFlowViewed?: Nullable<boolean>;
+    plausibleDashboardViewed?: Nullable<boolean>;
 }
 
 export class JourneyVisitor {

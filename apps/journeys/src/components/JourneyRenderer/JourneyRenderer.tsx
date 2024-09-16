@@ -17,7 +17,10 @@ export function JourneyRenderer(): ReactElement {
       {blocks != null && (
         <>
           {journey?.website === true ? (
-            <WebView stepBlock={blocks[0] as TreeBlock<StepFields>} />
+            <WebView
+              blocks={blocks}
+              stepBlock={blocks[0] as TreeBlock<StepFields>}
+            />
           ) : (
             <Conductor blocks={blocks} />
           )}
