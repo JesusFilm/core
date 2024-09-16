@@ -1,3 +1,4 @@
+import { gql, useMutation, useQuery } from '@apollo/client'
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -29,6 +30,11 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import ThumbsUpIcon from '@core/shared/ui/icons/ThumbsUp'
 
+import { GetPlausibleJourneyFlowViewed } from '../../../../__generated__/GetPlausibleJourneyFlowViewed'
+import {
+  UpdatePlausibleJourneyFlowViewed,
+  UpdatePlausibleJourneyFlowViewedVariables
+} from '../../../../__generated__/UpdatePlausibleJourneyFlowViewed'
 import logo from '../../../../public/taskbar-icon.svg'
 import { HelpScoutBeacon } from '../../HelpScoutBeacon'
 import { NotificationPopover } from '../../NotificationPopover'
@@ -51,6 +57,26 @@ interface ToolbarProps {
   user?: User
 }
 
+export const GET_PLAUSIBLE_JOURNEY_FLOW_VIEWED = gql`
+  query GetPlausibleJourneyFlowViewed {
+    getJourneyProfile {
+      id
+      plausibleJourneyFlowViewed
+    }
+  }
+`
+
+export const UPDATE_PLAUSIBLE_JOURNEY_FLOW_VIEWED = gql`
+  mutation UpdatePlausibleJourneyFlowViewed(
+    $input: JourneyProfileUpdateInput!
+  ) {
+    journeyProfileUpdate(input: $input) {
+      id
+      plausibleJourneyFlowViewed
+    }
+  }
+`
+
 export function Toolbar({ user }: ToolbarProps): ReactElement {
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
@@ -67,6 +93,22 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
 
   const helpScoutRef = useRef(null)
   const menuRef = useRef(null)
+
+  const { data } = useQuery<GetPlausibleJourneyFlowViewed>(
+    GET_PLAUSIBLE_JOURNEY_FLOW_VIEWED
+  )
+
+  const [updatePlausibleJourneyFlowViewed] = useMutation<
+    UpdatePlausibleJourneyFlowViewed,
+    UpdatePlausibleJourneyFlowViewedVariables
+  >(UPDATE_PLAUSIBLE_JOURNEY_FLOW_VIEWED, {
+    variables: {
+      input: {
+        plausibleJourneyFlowViewed: true
+      }
+    }
+  })
+
   useEffect(() => {
     if (showAnalytics === true) {
       setBeaconRoute('/ask/')
@@ -75,9 +117,15 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
       } else {
         setAnchorEl(menuRef.current)
       }
-      setAnchorEl(null)
+      if (data?.getJourneyProfile?.plausibleJourneyFlowViewed === true)
+        setAnchorEl(null)
     }
-  }, [showAnalytics, smUp, setAnchorEl])
+  }, [
+    showAnalytics,
+    smUp,
+    setAnchorEl,
+    data?.getJourneyProfile?.plausibleJourneyFlowViewed
+  ])
 
   function setRoute(param: string): void {
     void router.push({ query: { ...router.query, param } }, undefined, {
@@ -291,7 +339,10 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
           open={Boolean(anchorEl)}
           currentRef={anchorEl}
           pointerPosition={smUp ? '92%' : '94%'}
-          handleClose={() => setAnchorEl(null)}
+          handleClose={() => {
+            void updatePlausibleJourneyFlowViewed()
+            setAnchorEl(null)
+          }}
           popoverAction={{
             label: t('Feedback'),
             handleClick: () => {
