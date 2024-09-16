@@ -1,5 +1,4 @@
 import { gql, useMutation } from '@apollo/client'
-import Box from '@mui/material/Box'
 import Slider from '@mui/material/Slider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -206,7 +205,7 @@ export function Logo(): ReactElement {
           onChange={async (input) => handleImageChange(input)}
           onDelete={deleteImageBlock}
         />
-        <Box>
+        <Stack>
           <Typography>{t('Size')}</Typography>
           <Slider
             aria-label="size-slider"
@@ -217,17 +216,15 @@ export function Logo(): ReactElement {
             max={100}
             size="medium"
             sx={{
+              alignSelf: 'center',
+              width: '97%',
               '& .MuiSlider-rail': {
                 color: (theme) => `${theme.palette.secondary.light}`,
                 opacity: '0.38'
-              },
-              '& .MuiSlider-track': {
-                color: (theme) => `${theme.palette.secondary.light}`,
-                opacity: '0.7'
               }
             }}
           />
-        </Box>
+        </Stack>
       </Stack>
     </Accordion>
   )
