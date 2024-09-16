@@ -3,6 +3,10 @@ import orderBy from 'lodash/orderBy'
 
 import { GetCountry_country as Country } from '../../useCountryQuery/__generated__/GetCountry'
 
+export function removeCommas(str: string): string {
+  return str.replace(/,/g, '').trim()
+}
+
 interface getTopSpokenLanguagesProps {
   country?: Country | null
   availableLanguages: RefinementListItem[]
@@ -37,8 +41,4 @@ export function getTopSpokenLanguages({
     .map(({ value }) => value)
 
   return topSpokenLanguages
-}
-
-function removeCommas(str: string): string {
-  return str.replace(/,/g, '').trim()
 }

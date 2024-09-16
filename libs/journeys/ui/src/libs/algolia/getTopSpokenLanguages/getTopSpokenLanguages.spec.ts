@@ -3,7 +3,15 @@ import { RefinementListItem } from 'instantsearch.js/es/connectors/refinement-li
 import { GetCountry_country as Country } from '../../useCountryQuery/__generated__/GetCountry'
 import { country } from '../../useCountryQuery/data'
 
-import { getTopSpokenLanguages } from './getTopSpokenLanguages'
+import { getTopSpokenLanguages, removeCommas } from './getTopSpokenLanguages'
+
+describe('removeCommas', () => {
+  it('should remove commas from a string', () => {
+    const value = 'Spanish, Latin American'
+    const result = removeCommas(value)
+    expect(result).toBe('Spanish Latin American')
+  })
+})
 
 describe('getTopSpokenLanguages', () => {
   const availableLanguages = [
