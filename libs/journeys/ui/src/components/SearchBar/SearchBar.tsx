@@ -85,6 +85,7 @@ export function SearchBar({
   }
 
   function openSuggestionsDropdown(): void {
+    prepareDropdown()
     setAnchorEl(popperRef.current)
     setOpen(true)
   }
@@ -95,23 +96,28 @@ export function SearchBar({
     setOpen(!open)
   }
 
-  const [data, setData] = useState<LanguageContinentsRecord | null>(null)
-  const [isLoading, setLoading] = useState(true)
+  const emptyLanguageContinents = sortLanguageContinents({
+    languages: []
+  })
+  const [data, setData] = useState<LanguageContinentsRecord>(
+    emptyLanguageContinents
+  )
+  const [isPreparingDropdown, setIsPreparingDropdown] = useState(false)
   const [getLanguages] = useLanguagesContinentsLazyQuery()
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
+  function prepareDropdown(): void {
+    if (!isPreparingDropdown) {
+      setIsPreparingDropdown(true) // Trigger import of dropdown but still closed
+
       void getLanguages().then((res) => {
         const languages = sortLanguageContinents({
           languages: res.data?.languages ?? []
         })
         setData(languages)
-        setLoading(false)
+        console.log('finished getting languages', languages)
       })
-    }, 3000) // Delay the query by 3 seconds after page load to avoid impacting initial load
-
-    return () => clearTimeout(timer)
-  }, [])
+    }
+  }
 
   return (
     <SearchBarProvider>
@@ -152,6 +158,8 @@ export function SearchBar({
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') setOpen(false)
                     }}
+                    onMouseEnter={prepareDropdown}
+                    onTouchStart={prepareDropdown}
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
@@ -192,11 +200,11 @@ export function SearchBar({
               />
             </Box>
           </Box>
-          {!isLoading && (
+          {isPreparingDropdown && (
             <DynamicSearchbarDropdown
               open={open}
               refinements={refinements}
-              languages={data as LanguageContinentsRecord}
+              languages={data}
               id={open ? 'simple-popper' : undefined}
               anchorEl={anchorEl}
               tabIndex={tabValue}
