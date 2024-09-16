@@ -7,6 +7,11 @@ export const GET_COUNTRY = gql`
     country(id: $countryId) {
       id
       flagPngSrc
+      continent {
+        name {
+          value
+        }
+      }
       countryLanguages {
         language {
           name {
