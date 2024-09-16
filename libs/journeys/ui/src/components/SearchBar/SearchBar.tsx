@@ -91,9 +91,8 @@ export function SearchBar({
   const emptyLanguageContinents = sortLanguageContinents({
     languages: []
   })
-  const [data, setData] = useState<LanguageContinentsRecord>(
-    emptyLanguageContinents
-  )
+  const [languageContinents, setLanguageContinents] =
+    useState<LanguageContinentsRecord>(emptyLanguageContinents)
   const [isPreparingDropdown, setIsPreparingDropdown] = useState(false)
   const [getLanguages] = useLanguagesContinentsLazyQuery()
 
@@ -102,7 +101,7 @@ export function SearchBar({
     const languages = sortLanguageContinents({
       languages: result.data?.languages ?? []
     })
-    setData(languages)
+    setLanguageContinents(languages)
   }
 
   async function prepareDropdown(): Promise<void> {
@@ -196,7 +195,7 @@ export function SearchBar({
           <SearchbarDropdown
             open={open}
             refinements={refinements}
-            languages={data}
+            languages={languageContinents}
             id={open ? 'simple-popper' : undefined}
             anchorEl={anchorEl}
             tabIndex={tabValue}
