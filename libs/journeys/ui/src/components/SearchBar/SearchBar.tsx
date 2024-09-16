@@ -5,8 +5,8 @@ import InputAdornment from '@mui/material/InputAdornment'
 import { styled, useTheme } from '@mui/material/styles'
 import TextField, { TextFieldProps } from '@mui/material/TextField'
 import { Formik } from 'formik'
-import { useTranslation } from 'next-i18next'
 import dynamic from 'next/dynamic'
+import { useTranslation } from 'next-i18next'
 import { type ReactElement, useEffect, useRef, useState } from 'react'
 import { useRefinementList, useSearchBox } from 'react-instantsearch'
 
@@ -101,7 +101,6 @@ export function SearchBar({
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      // Trigger the Apollo query here
       void getLanguages().then((res) => {
         const languages = sortLanguageContinents({
           languages: res.data?.languages ?? []
@@ -109,7 +108,7 @@ export function SearchBar({
         setData(languages)
         setLoading(false)
       })
-    }, 3000) // Delay the query by 1 second after page load to avoid impacting initial load
+    }, 3000) // Delay the query by 3 seconds after page load to avoid impacting initial load
 
     return () => clearTimeout(timer)
   }, [])
@@ -193,10 +192,11 @@ export function SearchBar({
               />
             </Box>
           </Box>
-          {open && (
+          {!isLoading && (
             <DynamicSearchbarDropdown
               open={open}
               refinements={refinements}
+              languages={data as LanguageContinentsRecord}
               id={open ? 'simple-popper' : undefined}
               anchorEl={anchorEl}
               tabIndex={tabValue}
