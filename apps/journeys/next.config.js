@@ -59,6 +59,10 @@ const nextConfig = {
       {
         source: '/robots.txt',
         destination: '/api/robots'
+      },
+      {
+        source: '/:hostname/:slug',
+        destination: '/:hostname'
       }
     ]
   }
