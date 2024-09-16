@@ -58,7 +58,7 @@ export function Slider(): ReactElement {
     boolean | undefined
   >(undefined)
   const {
-    state: { activeSlide, activeContent, selectedStep },
+    state: { activeSlide, activeContent, selectedStep, showAnalytics },
     dispatch
   } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
@@ -251,7 +251,8 @@ export function Slider(): ReactElement {
           height: {
             xs: `calc(100svh - ${EDIT_TOOLBAR_HEIGHT}px - 50px)`,
             md: '100%'
-          }
+          },
+          pointerEvents: showAnalytics ? 'none' : 'auto'
         }}
       >
         <Box
@@ -283,7 +284,8 @@ export function Slider(): ReactElement {
           display: 'flex',
           flexDirection: { xs: 'column', md: 'row' },
           justifyContent: { md: 'space-between' },
-          position: 'relative'
+          position: 'relative',
+          pointerEvents: showAnalytics ? 'none' : 'auto'
         }}
       >
         {/* slide bar (mobile bottom) */}
@@ -321,7 +323,8 @@ export function Slider(): ReactElement {
           height: {
             xs: `calc(100svh - ${EDIT_TOOLBAR_HEIGHT}px - 50px)`,
             md: '100%'
-          }
+          },
+          pointerEvents: showAnalytics ? 'none' : 'auto'
         }}
       >
         <Settings />
