@@ -100,13 +100,18 @@ export function SearchBar({
   const [getLanguages] = useLanguagesContinentsLazyQuery()
 
   useEffect(() => {
-    void getLanguages().then((res) => {
-      const languages = sortLanguageContinents({
-        languages: res.data?.languages ?? []
+    const timer = setTimeout(() => {
+      // Trigger the Apollo query here
+      void getLanguages().then((res) => {
+        const languages = sortLanguageContinents({
+          languages: res.data?.languages ?? []
+        })
+        setData(languages)
+        setLoading(false)
       })
-      setData(languages)
-      setLoading(false)
-    })
+    }, 1000) // Delay the query by 1 second after page load to avoid impacting initial load
+
+    return () => clearTimeout(timer)
   }, [])
 
   return (
