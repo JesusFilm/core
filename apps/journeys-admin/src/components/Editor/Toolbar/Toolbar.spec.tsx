@@ -192,10 +192,24 @@ describe('Toolbar', () => {
       .fn()
       .mockReturnValue(mockUpdatePlausibleJourneyFlowViewed.result)
 
+    const result2 = jest.fn().mockReturnValue({
+      ...mockGetPlausibleJourneyFlowViewed.result,
+      data: {
+        journeyProfileUpdate: {
+          id: 'journeyProfileId',
+          plausibleJourneyFlowViewed: null,
+          __typename: 'JourneyProfile'
+        }
+      }
+    })
+
     render(
       <FlagsProvider flags={{ editorAnalytics: true }}>
         <MockedProvider
-          mocks={[{ ...mockUpdatePlausibleJourneyFlowViewed, result }]}
+          mocks={[
+            { ...mockUpdatePlausibleJourneyFlowViewed, result },
+            { ...mockGetPlausibleJourneyFlowViewed, result: result2 }
+          ]}
         >
           <SnackbarProvider>
             <JourneyProvider
@@ -214,10 +228,11 @@ describe('Toolbar', () => {
         </MockedProvider>
       </FlagsProvider>
     )
-
+    await waitFor(() => expect(result2).toHaveBeenCalled())
     expect(screen.getByText('New Feature Feedback')).toBeInTheDocument()
+
     fireEvent.click(screen.getByRole('button', { name: 'Feedback' }))
-    expect(window.Beacon).toHaveBeenCalledWith('open')
+    await waitFor(() => expect(window.Beacon).toHaveBeenCalledWith('open'))
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(screen.queryByText('New Feature Feedback')).not.toBeInTheDocument()
   })

@@ -1,4 +1,4 @@
-import { gql, useMutation, useQuery } from '@apollo/client'
+import { gql, useApolloClient, useMutation } from '@apollo/client'
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -14,7 +14,7 @@ import NextLink from 'next/link'
 import { useRouter } from 'next/router'
 import { User } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect, useRef, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 
 import {
   openBeacon,
@@ -93,10 +93,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
 
   const helpScoutRef = useRef(null)
   const menuRef = useRef(null)
-
-  const { data } = useQuery<GetPlausibleJourneyFlowViewed>(
-    GET_PLAUSIBLE_JOURNEY_FLOW_VIEWED
-  )
+  const client = useApolloClient()
 
   const [updatePlausibleJourneyFlowViewed] = useMutation<
     UpdatePlausibleJourneyFlowViewed,
@@ -109,7 +106,10 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
     }
   })
 
-  useEffect(() => {
+  const fetchPlausibleData = useCallback(async () => {
+    const { data } = await client.query<GetPlausibleJourneyFlowViewed>({
+      query: GET_PLAUSIBLE_JOURNEY_FLOW_VIEWED
+    })
     if (showAnalytics === true) {
       setBeaconRoute('/ask/')
       if (smUp) {
@@ -117,15 +117,17 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
       } else {
         setAnchorEl(menuRef.current)
       }
-      if (data?.getJourneyProfile?.plausibleJourneyFlowViewed === true)
+      if (data.getJourneyProfile?.plausibleJourneyFlowViewed === true) {
         setAnchorEl(null)
+      }
     }
-  }, [
-    showAnalytics,
-    smUp,
-    setAnchorEl,
-    data?.getJourneyProfile?.plausibleJourneyFlowViewed
-  ])
+  }, [client, showAnalytics, smUp])
+
+  useEffect(() => {
+    if (showAnalytics === true) {
+      void fetchPlausibleData()
+    }
+  }, [showAnalytics, smUp, setAnchorEl, fetchPlausibleData])
 
   function setRoute(param: string): void {
     void router.push({ query: { ...router.query, param } }, undefined, {
