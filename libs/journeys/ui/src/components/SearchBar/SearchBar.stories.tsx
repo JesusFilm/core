@@ -6,6 +6,7 @@ import type { ComponentProps } from 'react'
 import { watchConfig } from '@core/shared/ui/storybook'
 
 import { InstantSearchTestWrapper } from '../../libs/algolia/InstantSearchTestWrapper'
+import { SearchBarProvider } from '../../libs/algolia/SearchBarProvider'
 import { getLanguagesContinentsMock } from '../../libs/useLanguagesContinentsQuery/useLanguagesContinentsQuery.mock'
 
 import { SearchBar } from './SearchBar'
@@ -25,9 +26,11 @@ const Template: StoryObj<ComponentProps<typeof SearchBar> & { query: string }> =
   {
     render: (args) => (
       <InstantSearchTestWrapper query={args.query}>
-        <MockedProvider mocks={[getLanguagesContinentsMock]}>
-          <SearchBar showLanguageButton={args.showLanguageButton} />
-        </MockedProvider>
+        <SearchBarProvider>
+          <MockedProvider mocks={[getLanguagesContinentsMock]}>
+            <SearchBar showLanguageButton={args.showLanguageButton} />
+          </MockedProvider>
+        </SearchBarProvider>
       </InstantSearchTestWrapper>
     )
   }

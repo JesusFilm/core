@@ -21,6 +21,7 @@ import { TabPanel } from '@core/shared/ui/TabPanel'
 import { useSearchBar } from '../../../libs/algolia/SearchBarProvider'
 import { LanguageContinentsRecord } from '../../../libs/useSortLanguageContinents/useSortLanguageContinents'
 
+import { CountryLanguageSelector } from './CountryLanguageSelector'
 import { RefinementGroups } from './RefinementGroups'
 import { Suggestions } from './Suggestions'
 
@@ -114,6 +115,7 @@ export function SearchbarDropdown({
         sx={{ px: 8, pb: 8, bgcolor: 'background.paper', mt: 3 }}
         color="text.primary"
       >
+        <CountryLanguageSelector refinements={refinements} />
         <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 5 }}>
           <Tabs
             value={tabValue}
