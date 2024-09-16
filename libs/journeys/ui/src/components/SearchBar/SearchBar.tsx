@@ -98,16 +98,18 @@ export function SearchBar({
   const [isPreparingDropdown, setIsPreparingDropdown] = useState(false)
   const [getLanguages] = useLanguagesContinentsLazyQuery()
 
+  async function getLanguageContinents(): Promise<void> {
+    const result = await getLanguages()
+    const languages = sortLanguageContinents({
+      languages: result.data?.languages ?? []
+    })
+    setData(languages)
+  }
+
   async function prepareDropdown(): Promise<void> {
     if (!isPreparingDropdown) {
-      setIsPreparingDropdown(true) // Trigger import of dropdown but still closed
-
-      const result = await getLanguages()
-      const languages = sortLanguageContinents({
-        languages: result.data?.languages ?? []
-      })
-      setData(languages)
-      console.log('finished getting languages', languages)
+      setIsPreparingDropdown(true) // Trigger import of dropdown closed
+      await getLanguageContinents()
     }
   }
 
