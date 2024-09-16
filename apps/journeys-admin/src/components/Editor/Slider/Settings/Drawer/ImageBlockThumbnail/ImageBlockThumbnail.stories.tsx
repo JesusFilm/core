@@ -44,7 +44,8 @@ const image: ImageBlock = {
   width: 300,
   height: 200,
   blurhash: '',
-  alt: 'poster'
+  alt: 'poster',
+  scale: null
 }
 
 const Template: StoryObj<typeof ImageBlockThumbnail> = {

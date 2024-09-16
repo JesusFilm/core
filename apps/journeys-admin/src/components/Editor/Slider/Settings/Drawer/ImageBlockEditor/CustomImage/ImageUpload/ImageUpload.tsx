@@ -29,7 +29,7 @@ export const CREATE_CLOUDFLARE_UPLOAD_BY_FILE = gql`
 interface ImageUploadProps {
   onChange: (input: ImageBlockUpdateInput) => void
   setUploading?: (uploading?: boolean) => void
-  selectedBlock: ImageBlock | null
+  selectedBlock?: ImageBlock | null
   loading?: boolean
   error?: boolean
 }

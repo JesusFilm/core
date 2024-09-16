@@ -63,6 +63,7 @@ const block: TreeBlock<VideoFields> = {
       blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
       parentBlockId: 'video0.id',
       parentOrder: 0,
+      scale: null,
       children: []
     }
   ]

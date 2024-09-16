@@ -68,6 +68,7 @@ const iconNames: IconName[] = [
   'Cursor6',
   'CursorPointer',
   'Dash',
+  'Diamond',
   'DotVertical',
   'DownArrowSm',
   'DownArrow',

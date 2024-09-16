@@ -146,7 +146,8 @@ describe('TemplateView', () => {
         width: 6000,
         height: 4000,
         blurhash: 'LHFr#AxW9a%L0KM{IVRkoMD%D%R*',
-        __typename: 'ImageBlock'
+        __typename: 'ImageBlock',
+        scale: null
       }
     }
     const { getAllByText, getAllByRole } = render(
@@ -190,7 +191,8 @@ describe('TemplateView', () => {
         width: 6000,
         height: 4000,
         blurhash: 'LHFr#AxW9a%L0KM{IVRkoMD%D%R*',
-        __typename: 'ImageBlock'
+        __typename: 'ImageBlock',
+        scale: null
       }
     }
     const { queryAllByText, queryAllByRole } = render(

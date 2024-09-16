@@ -195,6 +195,7 @@ describe('CardBlock', () => {
     blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
     parentBlockId: 'card',
     parentOrder: 0,
+    scale: null,
     children: []
   }
 

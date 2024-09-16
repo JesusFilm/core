@@ -81,6 +81,7 @@ const journey: Journey = {
   showLikeButton: null,
   showDislikeButton: null,
   displayTitle: null,
+  logoImageBlock: null,
   menuButtonIcon: null,
   menuStepBlock: null
 }
@@ -149,7 +150,8 @@ const poster: TreeBlock<ImageBlock> = {
   height: 200,
   blurhash: '',
   alt: 'poster',
-  children: []
+  children: [],
+  scale: null
 }
 
 const image: TreeBlock<ImageBlock> = {
@@ -162,7 +164,8 @@ const image: TreeBlock<ImageBlock> = {
   width: 1920,
   height: 1080,
   blurhash: '',
-  children: []
+  children: [],
+  scale: null
 }
 
 const videoLanguages: GetVideoVariantLanguages_video = {

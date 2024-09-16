@@ -71,6 +71,7 @@ const defaultJourney: Journey = {
   showLikeButton: null,
   showDislikeButton: null,
   displayTitle: null,
+  logoImageBlock: null,
   menuButtonIcon: null,
   menuStepBlock: null
 }
@@ -151,7 +152,12 @@ export const Website = {
     journey: {
       ...defaultJourney,
       website: true,
-      displayTitle: 'Display title'
+      displayTitle: 'Display title',
+      logoImageBlock: {
+        __typename: 'ImageBlock',
+        src: 'https://images.unsplash.com/photo-1725715443838-1574b8eb1c3a?q=80&w=5070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+        alt: 'Logo'
+      }
     },
     variant: 'default'
   }

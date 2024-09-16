@@ -156,6 +156,7 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_ImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface GetAdminJourneyWithPlausibleToken_journey_blocks_RadioOptionBlock_action_NavigateToBlockAction {
@@ -465,6 +466,7 @@ export interface GetAdminJourneyWithPlausibleToken_journey_primaryImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface GetAdminJourneyWithPlausibleToken_journey_creatorImageBlock {
@@ -481,6 +483,7 @@ export interface GetAdminJourneyWithPlausibleToken_journey_creatorImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface GetAdminJourneyWithPlausibleToken_journey_userJourneys_user {
@@ -543,6 +546,23 @@ export interface GetAdminJourneyWithPlausibleToken_journey_tags {
   id: string;
   parentId: string | null;
   name: GetAdminJourneyWithPlausibleToken_journey_tags_name[];
+}
+
+export interface GetAdminJourneyWithPlausibleToken_journey_logoImageBlock {
+  __typename: "ImageBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  src: string | null;
+  alt: string;
+  width: number;
+  height: number;
+  /**
+   * blurhash is a compact representation of a placeholder for an image.
+   * Find a frontend implementation at https: // github.com/woltapp/blurhash
+   */
+  blurhash: string;
+  scale: number | null;
 }
 
 export interface GetAdminJourneyWithPlausibleToken_journey_menuStepBlock {
@@ -610,6 +630,7 @@ export interface GetAdminJourneyWithPlausibleToken_journey {
    * public title for viewers
    */
   displayTitle: string | null;
+  logoImageBlock: GetAdminJourneyWithPlausibleToken_journey_logoImageBlock | null;
   menuButtonIcon: JourneyMenuButtonIcon | null;
   menuStepBlock: GetAdminJourneyWithPlausibleToken_journey_menuStepBlock | null;
   /**
