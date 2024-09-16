@@ -768,8 +768,8 @@ export class JourneyNotificationUpdateInput {
 export class JourneyProfileUpdateInput {
     lastActiveTeamId?: Nullable<string>;
     journeyFlowBackButtonClicked?: Nullable<boolean>;
-    analyticsButtonClicked?: Nullable<boolean>;
-    reportsPageVisited?: Nullable<boolean>;
+    plausibleJourneyFlowViewed?: Nullable<boolean>;
+    plausibleDashboardViewed?: Nullable<boolean>;
 }
 
 export class JourneyVisitorFilter {
@@ -1706,8 +1706,8 @@ export class JourneyProfile {
     lastActiveTeamId?: Nullable<string>;
     onboardingFormCompletedAt?: Nullable<DateTime>;
     journeyFlowBackButtonClicked?: Nullable<boolean>;
-    analyticsButtonClicked?: Nullable<boolean>;
-    reportsPageVisited?: Nullable<boolean>;
+    plausibleJourneyFlowViewed?: Nullable<boolean>;
+    plausibleDashboardViewed?: Nullable<boolean>;
 }
 
 export class JourneyVisitor {

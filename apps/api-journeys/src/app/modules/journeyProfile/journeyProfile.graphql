@@ -5,8 +5,8 @@ type JourneyProfile @key(fields: "id") {
   lastActiveTeamId: String
   onboardingFormCompletedAt: DateTime
   journeyFlowBackButtonClicked: Boolean
-  analyticsButtonClicked: Boolean
-  reportsPageVisited: Boolean
+  plausibleJourneyFlowViewed: Boolean
+  plausibleDashboardViewed: Boolean
 }
 
 extend type Query {
@@ -16,8 +16,8 @@ extend type Query {
 input JourneyProfileUpdateInput {
   lastActiveTeamId: String
   journeyFlowBackButtonClicked: Boolean
-  analyticsButtonClicked: Boolean
-  reportsPageVisited: Boolean
+  plausibleJourneyFlowViewed: Boolean
+  plausibleDashboardViewed: Boolean
 }
 
 extend type Mutation {

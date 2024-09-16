@@ -24,8 +24,8 @@ describe('JourneyProfileResolver', () => {
     lastActiveTeamId: null,
     onboardingFormCompletedAt: null,
     journeyFlowBackButtonClicked: null,
-    analyticsButtonClicked: null,
-    reportsPageVisited: null
+    plausibleJourneyFlowViewed: null,
+    plausibleDashboardViewed: null
   }
 
   const user: User = {
@@ -82,8 +82,8 @@ describe('JourneyProfileResolver', () => {
         lastActiveTeamId: null,
         onboardingFormCompletedAt: null,
         journeyFlowBackButtonClicked: null,
-        analyticsButtonClicked: null,
-        reportsPageVisited: null
+        plausibleJourneyFlowViewed: null,
+        plausibleDashboardViewed: null
       })
 
       await resolver.journeyProfileCreate({
@@ -135,28 +135,28 @@ describe('JourneyProfileResolver', () => {
       })
     })
 
-    it('should update journeyProfile analyticsButtonClicked', async () => {
+    it('should update journeyProfile plausibleJourneyFlowViewed', async () => {
       prismaService.journeyProfile.findUnique.mockResolvedValueOnce(profile)
       await resolver.journeyProfileUpdate('userId', {
-        analyticsButtonClicked: true
+        plausibleJourneyFlowViewed: true
       })
       expect(prismaService.journeyProfile.update).toHaveBeenCalledWith({
         where: { id: profile.id },
         data: {
-          analyticsButtonClicked: true
+          plausibleJourneyFlowViewed: true
         }
       })
     })
 
-    it('should update journeyProfile reportsPageVisited', async () => {
+    it('should update journeyProfile plausibleDashboardViewed', async () => {
       prismaService.journeyProfile.findUnique.mockResolvedValueOnce(profile)
       await resolver.journeyProfileUpdate('userId', {
-        reportsPageVisited: true
+        plausibleDashboardViewed: true
       })
       expect(prismaService.journeyProfile.update).toHaveBeenCalledWith({
         where: { id: profile.id },
         data: {
-          reportsPageVisited: true
+          plausibleDashboardViewed: true
         }
       })
     })
