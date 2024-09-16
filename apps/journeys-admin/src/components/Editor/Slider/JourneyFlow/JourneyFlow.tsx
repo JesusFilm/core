@@ -246,7 +246,7 @@ export function JourneyFlow(): ReactElement {
     let filteredSteps = blocks
 
     if (journey?.menuStepBlock != null && journey.website !== true) {
-      filteredSteps = steps.filter(
+      filteredSteps = blocks?.filter(
         (step) => step.id !== journey.menuStepBlock?.id
       )
     }
