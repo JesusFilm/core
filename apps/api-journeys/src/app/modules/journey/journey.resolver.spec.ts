@@ -2502,23 +2502,34 @@ describe('JourneyResolver', () => {
   })
 
   describe('plausibleToken', () => {
-    it('returns plausibleToken', async () => {
-      const journeyWithToken = {
+    it('returns plausibleToken for manager', async () => {
+      const journeyWithManager = {
         ...journeyWithUserTeam,
         plausibleToken: 'plausibleToken'
       }
-      expect(await resolver.plausibleToken(ability, journeyWithToken)).toBe(
+      expect(await resolver.plausibleToken(ability, journeyWithManager)).toBe(
+        'plausibleToken'
+      )
+    })
+
+    it('returns plausibleToken for member', async () => {
+      const journeyWithManager = {
+        ...journeyWithUserTeam,
+        team: { userTeams: [{ userId: 'userId', role: UserTeamRole.member }] },
+        plausibleToken: 'plausibleToken'
+      }
+      expect(await resolver.plausibleToken(ability, journeyWithManager)).toBe(
         'plausibleToken'
       )
     })
 
     it('returns null', async () => {
-      const journeyWithToken = {
+      const journeyNoAbility = {
         ...journey,
         plausibleToken: 'plausibleToken'
       }
       expect(
-        await resolver.plausibleToken(ability, journeyWithToken)
+        await resolver.plausibleToken(ability, journeyNoAbility)
       ).toBeNull()
     })
   })
