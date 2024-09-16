@@ -84,11 +84,11 @@ function VideosPage({
     <InstantSearchSSRProvider {...serverState}>
       <ApolloProvider client={client}>
         <InstantSearch
-          insights
-          indexName={indexName}
           searchClient={searchClient}
-          future={{ preserveSharedStateOnUnmount: true }}
+          indexName={indexName}
           stalledSearchDelay={500}
+          future={{ preserveSharedStateOnUnmount: true }}
+          insights
           routing={nextRouter}
         >
           <Configure ruleContexts={['all_videos_page']} />

@@ -47,7 +47,7 @@ export default function Part3Page({
   const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
 
   return (
-    <InstantSearch insights searchClient={searchClient} indexName={indexName}>
+    <InstantSearch searchClient={searchClient} indexName={indexName} insights>
       <SnackbarProvider>
         <LanguageProvider>
           <VideoProvider value={{ content, container }}>

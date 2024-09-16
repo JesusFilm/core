@@ -49,6 +49,7 @@ function StrategiesPage({
         <InstantSearch
           searchClient={searchClient}
           future={{ preserveSharedStateOnUnmount: true }}
+          stalledSearchDelay={500}
           insights
           routing={{
             router: createInstantSearchRouterNext({
