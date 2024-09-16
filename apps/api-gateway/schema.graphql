@@ -1080,6 +1080,7 @@ type JourneyProfile
   onboardingFormCompletedAt: DateTime
   journeyFlowBackButtonClicked: Boolean
   analyticsButtonClicked: Boolean
+  reportsPageVisited: Boolean
 }
 
 input JourneyProfileUpdateInput
@@ -1088,6 +1089,7 @@ input JourneyProfileUpdateInput
   lastActiveTeamId: String
   journeyFlowBackButtonClicked: Boolean
   analyticsButtonClicked: Boolean
+  reportsPageVisited: Boolean
 }
 
 type JourneysEmailPreference

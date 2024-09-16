@@ -769,6 +769,7 @@ export class JourneyProfileUpdateInput {
     lastActiveTeamId?: Nullable<string>;
     journeyFlowBackButtonClicked?: Nullable<boolean>;
     analyticsButtonClicked?: Nullable<boolean>;
+    reportsPageVisited?: Nullable<boolean>;
 }
 
 export class JourneyVisitorFilter {
@@ -1706,6 +1707,7 @@ export class JourneyProfile {
     onboardingFormCompletedAt?: Nullable<DateTime>;
     journeyFlowBackButtonClicked?: Nullable<boolean>;
     analyticsButtonClicked?: Nullable<boolean>;
+    reportsPageVisited?: Nullable<boolean>;
 }
 
 export class JourneyVisitor {

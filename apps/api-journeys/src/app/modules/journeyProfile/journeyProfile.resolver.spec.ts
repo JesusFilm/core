@@ -145,6 +145,19 @@ describe('JourneyProfileResolver', () => {
         }
       })
     })
+
+    it('should update journeyProfile reportsPageVisited', async () => {
+      prismaService.journeyProfile.findUnique.mockResolvedValueOnce(profile)
+      await resolver.journeyProfileUpdate('userId', {
+        reportsPageVisited: true
+      })
+      expect(prismaService.journeyProfile.update).toHaveBeenCalledWith({
+        where: { id: profile.id },
+        data: {
+          reportsPageVisited: true
+        }
+      })
+    })
   })
 
   describe('journeyProfileOnboardingFormComplete', () => {

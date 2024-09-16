@@ -431,6 +431,7 @@ model JourneyProfile {
   onboardingFormCompletedAt    DateTime?
   journeyFlowBackButtonClicked Boolean?
   analyticsButtonClicked       Boolean?
+  reportsPageVisited           Boolean?
 
   @@index(userId)
 }
