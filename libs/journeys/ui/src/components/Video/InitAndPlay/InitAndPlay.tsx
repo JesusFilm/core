@@ -70,7 +70,6 @@ export function InitAndPlay({
           controlBar: false,
           bigPlayButton: false,
           loadingSpinner: false,
-          // Make video fill container instead of set aspect ratio
           fill: true,
           userActions: {
             hotkeys: true,
@@ -111,8 +110,13 @@ export function InitAndPlay({
       if (player != null) {
         player.currentTime(startTime)
         player.muted(muted === true)
-        if (autoplay === true) void player.play()
-        // iOS blocks videos from calling seeked so loading hangs
+        if (autoplay === true && !error) {
+          void player.play().catch(() => {
+            // Fallback - request user gesture to play
+            player.muted(true)
+            setError(true)
+          })
+        }
         void handleStopLoading()
       }
     }
@@ -134,7 +138,6 @@ export function InitAndPlay({
     if (player != null) {
       if (selectedBlock === undefined) {
         player.on('ready', handleVideoReady)
-        // Video jumps to new time and finishes loading - occurs on autoplay
         player.on('seeked', handleStopLoading)
         player.on('canplay', handleStopLoading)
         player.on('playing', handlePlaying)
@@ -162,7 +165,8 @@ export function InitAndPlay({
     muted,
     variant,
     setLoading,
-    setShowPoster
+    setShowPoster,
+    error
   ])
 
   // player.duration() can change after play
@@ -199,7 +203,7 @@ export function InitAndPlay({
 
   // Play the video when active
   useEffect(() => {
-    if (player == null || autoplay !== true) return
+    if (player == null || autoplay !== true || error) return
 
     if (activeStep) {
       const block = activeBlock.children[0]?.children[0] ?? undefined
@@ -209,17 +213,12 @@ export function InitAndPlay({
         player.muted(true)
       }
 
-      // Tries to autoplay, fallback to muted autoplay if not allowed
       const playPromise = player.play()
       if (playPromise != null) {
         playPromise.catch(() => {
           player.muted(true)
           setError(true)
         })
-      }
-
-      if (error) {
-        void playPromise
       }
     }
   }, [activeStep, activeBlock, autoplay, blockId, player, setError, error])
