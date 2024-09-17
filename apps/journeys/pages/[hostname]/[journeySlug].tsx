@@ -45,8 +45,10 @@ function HostJourneyPage({
     if (router?.query?.defaultJourney === 'true') {
       window.history.pushState(null, `${journey.title}`, hostname)
     }
-  }, [router, window, journey])
-
+  }, [router, journey, hostname])
+  if (router?.query?.defaultJourney === 'true') {
+    window.history.pushState(null, `${journey.title}`, hostname)
+  }
   return (
     <>
       <Head>
