@@ -719,7 +719,7 @@ export const RTL = {
   }
 }
 
-export const FooterEdit = {
+export const JourneyAppearanceEdit = {
   ...Template,
   args: {
     ...Template.args,

@@ -6,7 +6,7 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 
 import { AddBlock } from './AddBlock'
-import { Footer } from './Footer'
+import { JourneyAppearance } from './JourneyAppearance'
 import { Properties } from './Properties'
 
 export function CanvasDetails(): ReactElement {
@@ -17,7 +17,7 @@ export function CanvasDetails(): ReactElement {
     case ActiveCanvasDetailsDrawer.AddBlock:
       return <AddBlock />
     case ActiveCanvasDetailsDrawer.Footer:
-      return <Footer />
+      return <JourneyAppearance />
     case ActiveCanvasDetailsDrawer.Properties:
       return <Properties />
   }

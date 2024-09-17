@@ -6,7 +6,7 @@ import {
   MenuBlockDelete,
   MenuBlockDeleteVariables
 } from '../../../__generated__/MenuBlockDelete'
-import { mockMenuStep } from '../../components/Editor/Slider/Settings/CanvasDetails/Footer/Menu/MenuActionButton/data'
+import { mockMenuStep } from '../../components/Editor/Slider/Settings/CanvasDetails/JourneyAppearance/Menu/MenuActionButton/data'
 
 import { MENU_BLOCK_DELETE } from './useMenuBlockDeleteMutation'
 
