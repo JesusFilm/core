@@ -7,6 +7,7 @@ const strategyItem = {
   post_title: 'London Bridges 1 One Week',
   post_date: 1671059126,
   post_date_formatted: '12/14/2022',
+  post_excerpt: '<p>description from excerpt</p>',
   post_modified: 1717597535,
   images: {
     thumbnail: {
