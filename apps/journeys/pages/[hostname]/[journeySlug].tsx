@@ -40,13 +40,11 @@ function HostJourneyPage({
   console.log(router.query)
   console.log(host)
   console.log(router?.query?.defaultJourney === 'true')
-  const { hostname } = router.query
-
   useEffect(() => {
-    if (hostname) {
-      router.replace(`/${hostname}`, undefined, { shallow: true })
+    if (router?.query?.defaultJourney === 'true') {
+      window.history.pushState(null, `${journey.title}`, `/${host}`)
     }
-  }, [hostname, router])
+  }, [])
 
   return (
     <>
