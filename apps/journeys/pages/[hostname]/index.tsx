@@ -141,6 +141,7 @@ export const getStaticProps: GetStaticProps<HostJourneysPageProps> = async (
     return {
       redirect: {
         destination: `/${data.journeys[0].slug}`,
+        query: { defaultJourney: true },
         permanent: false
       },
       revalidate: 60
