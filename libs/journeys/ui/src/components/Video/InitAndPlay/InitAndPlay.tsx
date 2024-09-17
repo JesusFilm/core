@@ -110,6 +110,8 @@ export function InitAndPlay({
     const handleVideoReady = (): void => {
       if (player != null) {
         player.currentTime(startTime)
+        player.muted(muted === true)
+        if (autoplay === true) void player.play()
         // iOS blocks videos from calling seeked so loading hangs
         void handleStopLoading()
       }
@@ -128,18 +130,13 @@ export function InitAndPlay({
         void player.exitFullscreen()
       }
     }
-    const handleCanPlay = (): void => {
-      handleStopLoading()
-      if (player != null) player.muted(muted === true)
-      if (player != null && autoplay === true) void player.play()
-    }
 
     if (player != null) {
       if (selectedBlock === undefined) {
         player.on('ready', handleVideoReady)
         // Video jumps to new time and finishes loading - occurs on autoplay
         player.on('seeked', handleStopLoading)
-        player.on('canplay', handleCanPlay)
+        player.on('canplay', handleStopLoading)
         player.on('playing', handlePlaying)
         player.on('ended', handleVideoEnd)
       }
@@ -149,7 +146,7 @@ export function InitAndPlay({
       if (player != null) {
         player.off('ready', handleVideoReady)
         player.off('seeked', handleStopLoading)
-        player.off('canplay', handleCanPlay)
+        player.off('canplay', handleStopLoading)
         player.off('playing', handlePlaying)
         player.off('ended', handleVideoEnd)
       }
