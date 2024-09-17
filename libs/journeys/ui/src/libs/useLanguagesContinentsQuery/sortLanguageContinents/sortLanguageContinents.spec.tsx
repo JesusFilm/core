@@ -1,4 +1,4 @@
-import { languagesContinents } from '../../useLanguagesContinentsQuery/data'
+import { languagesContinents } from '../data'
 
 import {
   languageWithMultipleCountries,

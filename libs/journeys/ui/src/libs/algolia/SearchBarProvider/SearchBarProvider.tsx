@@ -9,7 +9,10 @@ import {
   useReducer
 } from 'react'
 
-import { Continent, Language } from '../sortLanguageContinents'
+import {
+  Continent,
+  Language
+} from '../../useLanguagesContinentsQuery/sortLanguageContinents'
 
 export interface SearchBarState {
   /**
