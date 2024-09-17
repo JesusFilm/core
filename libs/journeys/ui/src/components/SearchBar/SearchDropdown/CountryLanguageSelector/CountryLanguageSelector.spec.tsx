@@ -9,6 +9,16 @@ import { languageRefinements } from '../../data'
 import { CountryLanguageSelector } from './CountryLanguageSelector'
 import { NEXT_COUNTRY } from './data'
 
+global.fetch = jest.fn(
+  async () =>
+    await Promise.resolve({
+      json: async () =>
+        await Promise.resolve({
+          country: 'US'
+        })
+    })
+) as jest.Mock
+
 describe('CountryLanguageSelector', () => {
   const refine = jest.fn()
   const refinements = {
