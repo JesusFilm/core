@@ -1,5 +1,5 @@
-export {
-  sortLanguageContinents,
+export { sortLanguageContinents } from './sortLanguageContinents'
+export type {
   LanguageContinentsRecord,
   Continent,
   Language
