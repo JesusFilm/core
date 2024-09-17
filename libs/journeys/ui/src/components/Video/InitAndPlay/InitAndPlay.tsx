@@ -128,13 +128,17 @@ export function InitAndPlay({
         void player.exitFullscreen()
       }
     }
+    const handleCanPlay = (): void => {
+      if (player != null) player.muted(muted === true)
+      handleStopLoading()
+    }
 
     if (player != null) {
       if (selectedBlock === undefined) {
         player.on('ready', handleVideoReady)
         // Video jumps to new time and finishes loading - occurs on autoplay
         player.on('seeked', handleStopLoading)
-        player.on('canplay', handleStopLoading)
+        player.on('canplay', handleCanPlay)
         player.on('playing', handlePlaying)
         player.on('ended', handleVideoEnd)
       }
