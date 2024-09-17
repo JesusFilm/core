@@ -88,11 +88,8 @@ export function SearchBar({
     setOpen(!open)
   }
 
-  const emptyLanguageContinents = sortLanguageContinents({
-    languages: []
-  })
   const [languageContinents, setLanguageContinents] =
-    useState<LanguageContinentsRecord>(emptyLanguageContinents)
+    useState<LanguageContinentsRecord>({})
   const [isPreparingDropdown, setIsPreparingDropdown] = useState(false)
   const [getLanguages] = useLanguagesContinentsLazyQuery()
 
