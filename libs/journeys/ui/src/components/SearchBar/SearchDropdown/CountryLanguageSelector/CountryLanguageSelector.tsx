@@ -24,14 +24,6 @@ export function CountryLanguageSelector({
   const [countryCode, setCountryCode] = useState<string>()
   const { data } = useCountryQuery({ countryId: countryCode ?? '' })
 
-  useEffect(() => {
-    void fetch('/api/jf/watch.html/geolocation').then((response) => {
-      void response.json().then((data: { country?: string }) => {
-        console.log('country', data.country)
-      })
-    })
-  }, [])
-
   const spokenLanguages = getTopSpokenLanguages({
     country: data?.country,
     availableLanguages: items
@@ -60,27 +52,21 @@ export function CountryLanguageSelector({
     }
   }
 
-  function getCountryCookie(): string | undefined {
-    return document.cookie
-      .split('; ')
-      .find((row) => row.startsWith('NEXT_COUNTRY'))
-      ?.split('=')[1]
-  }
-
   function parseCountryName(countryCode: string): string | undefined {
     const displayNames = new Intl.DisplayNames(['en'], { type: 'region' })
     return displayNames.of(countryCode)
   }
 
   const findUserCountry = useCallback(() => {
-    const countryCookie = getCountryCookie()
-    if (countryCookie != null) {
-      const [, countryCode] = countryCookie.split('---')
-      const countryName = parseCountryName(countryCode)
-      setCountry(countryName)
-      setCountryCode(countryCode)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    void fetch('/api/jf/watch.html/geolocation').then((response) => {
+      void response.json().then((data: { country?: string }) => {
+        if (data.country != null) {
+          const countryName = parseCountryName(data.country)
+          setCountry(countryName)
+          setCountryCode(data.country)
+        }
+      })
+    })
   }, [])
 
   useEffect(() => {
