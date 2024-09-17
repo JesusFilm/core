@@ -1,3 +1,4 @@
+import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
@@ -14,7 +15,12 @@ import { ReactElement, useRef, useState } from 'react'
 import { openBeacon, setBeaconRoute } from '@core/journeys/ui/beaconHooks'
 
 import { GetAdminJourney } from '../../../__generated__/GetAdminJourney'
+import { GetPlausibleDashboardViewed } from '../../../__generated__/GetPlausibleDashboardViewed'
 import { JourneysReportType } from '../../../__generated__/globalTypes'
+import {
+  UpdatePlausibleDashboardViewed,
+  UpdatePlausibleDashboardViewedVariables
+} from '../../../__generated__/UpdatePlausibleDashboardViewed'
 import { UserJourneyOpen } from '../../../__generated__/UserJourneyOpen'
 import { MemoizedDynamicReport } from '../../../src/components/DynamicPowerBiReport'
 import { HelpScoutBeacon } from '../../../src/components/HelpScoutBeacon'
@@ -25,14 +31,44 @@ import { ReportsNavigation } from '../../../src/components/ReportsNavigation'
 import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'
 import { GET_ADMIN_JOURNEY, USER_JOURNEY_OPEN } from '../[journeyId]'
 
-function JourneyReportsPage({ flags }): ReactElement {
+export const GET_PLAUSIBLE_DASHBOARD_VIEWED = gql`
+  query GetPlausibleDashboardViewed {
+    getJourneyProfile {
+      id
+      plausibleDashboardViewed
+    }
+  }
+`
+
+export const UPDATE_PLAUSIBLE_DASHBOARD_VIEWED = gql`
+  mutation UpdatePlausibleDashboardViewed($input: JourneyProfileUpdateInput!) {
+    journeyProfileUpdate(input: $input) {
+      id
+      plausibleDashboardViewed
+    }
+  }
+`
+
+function JourneyReportsPage({ flags, plausibleDashboardViewed }): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const user = useUser()
   const router = useRouter()
 
   const ref = useRef(null)
   const currentRef = ref.current
-  const [open, setOpen] = useState(false)
+
+  const [updatePlausibleDashboardViewed] = useMutation<
+    UpdatePlausibleDashboardViewed,
+    UpdatePlausibleDashboardViewedVariables
+  >(UPDATE_PLAUSIBLE_DASHBOARD_VIEWED, {
+    variables: {
+      input: {
+        plausibleDashboardViewed: true
+      }
+    }
+  })
+
+  const [open, setOpen] = useState(plausibleDashboardViewed !== true)
 
   const journeyId = router.query.journeyId as string
 
@@ -68,14 +104,15 @@ function JourneyReportsPage({ flags }): ReactElement {
           <>
             <PlausibleEmbedDashboard />
             <NotificationPopover
+              open={open}
               title={t('New Feature Feedback')}
               description={t(
                 'We are collecting feedback on the new analytics feature. Please take a moment to share your thoughts.'
               )}
-              open={open}
               currentRef={currentRef}
               pointerPosition="92%"
               handleClose={() => {
+                void updatePlausibleDashboardViewed()
                 setBeaconRoute('/ask/')
                 setOpen(false)
               }}
@@ -127,7 +164,9 @@ export const getServerSideProps = withUserTokenSSR({
       }
     }
   }
-
+  const { data } = await apolloClient.query<GetPlausibleDashboardViewed>({
+    query: GET_PLAUSIBLE_DASHBOARD_VIEWED
+  })
   await apolloClient.mutate<UserJourneyOpen>({
     mutation: USER_JOURNEY_OPEN,
     variables: { id: query?.journeyId }
@@ -136,7 +175,8 @@ export const getServerSideProps = withUserTokenSSR({
   return {
     props: {
       ...translations,
-      flags
+      flags,
+      plausibleDashboardViewed: data.getJourneyProfile?.plausibleDashboardViewed
     }
   }
 })
