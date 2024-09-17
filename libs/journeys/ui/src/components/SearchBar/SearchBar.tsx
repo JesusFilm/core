@@ -12,7 +12,7 @@ import { useRefinementList, useSearchBox } from 'react-instantsearch'
 import Search1Icon from '@core/shared/ui/icons/Search1'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
 
-import { SearchBarProvider } from '../../libs/algolia/SearchBarProvider'
+import { useSearchBar } from '../../libs/algolia/SearchBarProvider'
 import { useLanguagesContinentsLazyQuery } from '../../libs/useLanguagesContinentsQuery'
 import {
   LanguageContinentsRecord,
@@ -93,12 +93,18 @@ export function SearchBar({
   const [isPreparingDropdown, setIsPreparingDropdown] = useState(false)
   const [getLanguages] = useLanguagesContinentsLazyQuery()
 
+  const { dispatch } = useSearchBar()
+
   async function getLanguageContinents(): Promise<void> {
     const result = await getLanguages()
     const languages = sortLanguageContinents({
       languages: result.data?.languages ?? []
     })
     setLanguageContinents(languages)
+    dispatch({
+      type: 'SetAllContinentLanguages',
+      allContinentLanguages: languages
+    })
   }
 
   async function prepareDropdown(): Promise<void> {
@@ -109,97 +115,93 @@ export function SearchBar({
   }
 
   return (
-    <SearchBarProvider>
-      <ClickAwayListener onClickAway={() => setOpen(false)}>
-        <Box>
+    <ClickAwayListener onClickAway={() => setOpen(false)}>
+      <Box>
+        <Box
+          sx={{
+            borderRadius: 3,
+            background:
+              'linear-gradient(90deg, #0C79B3 0%, #0FDABC 51%, #E72DBB 100%)',
+            p: 1
+          }}
+          data-testid="SearchBar"
+          ref={popperRef}
+        >
+          <Formik
+            initialValues={{
+              title: query
+            }}
+            onSubmit={handleSubmit}
+            enableReinitialize
+          >
+            {({ values, handleChange, handleBlur }) => (
+              <>
+                <StyledTextField
+                  value={values.title}
+                  name="title"
+                  type="search"
+                  placeholder={t('Search by topic, occasion, or audience ...')}
+                  fullWidth
+                  autoComplete="off"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  onFocus={openSuggestionsDropdown}
+                  onClick={openSuggestionsDropdown}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') setOpen(false)
+                  }}
+                  onMouseEnter={prepareDropdown}
+                  onTouchStart={prepareDropdown}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Search1Icon />
+                      </InputAdornment>
+                    ),
+                    endAdornment: showLanguageButton ? (
+                      <InputAdornment
+                        position="end"
+                        sx={{
+                          [theme.breakpoints.down('lg')]: { display: 'none' }
+                        }}
+                      >
+                        <LanguageButtons
+                          onClick={handleLanguageClick}
+                          refinements={refinements}
+                        />
+                      </InputAdornment>
+                    ) : (
+                      <></>
+                    )
+                  }}
+                  {...props}
+                />
+                <SubmitListener />
+              </>
+            )}
+          </Formik>
           <Box
             sx={{
-              borderRadius: 3,
-              background:
-                'linear-gradient(90deg, #0C79B3 0%, #0FDABC 51%, #E72DBB 100%)',
-              p: 1
+              [theme.breakpoints.up('lg')]: { display: 'none' }
             }}
-            data-testid="SearchBar"
-            ref={popperRef}
           >
-            <Formik
-              initialValues={{
-                title: query
-              }}
-              onSubmit={handleSubmit}
-              enableReinitialize
-            >
-              {({ values, handleChange, handleBlur }) => (
-                <>
-                  <StyledTextField
-                    value={values.title}
-                    name="title"
-                    type="search"
-                    placeholder={t(
-                      'Search by topic, occasion, or audience ...'
-                    )}
-                    fullWidth
-                    autoComplete="off"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    onFocus={openSuggestionsDropdown}
-                    onClick={openSuggestionsDropdown}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') setOpen(false)
-                    }}
-                    onMouseEnter={prepareDropdown}
-                    onTouchStart={prepareDropdown}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <Search1Icon />
-                        </InputAdornment>
-                      ),
-                      endAdornment: showLanguageButton ? (
-                        <InputAdornment
-                          position="end"
-                          sx={{
-                            [theme.breakpoints.down('lg')]: { display: 'none' }
-                          }}
-                        >
-                          <LanguageButtons
-                            onClick={handleLanguageClick}
-                            refinements={refinements}
-                          />
-                        </InputAdornment>
-                      ) : (
-                        <></>
-                      )
-                    }}
-                    {...props}
-                  />
-                  <SubmitListener />
-                </>
-              )}
-            </Formik>
-            <Box
-              sx={{
-                [theme.breakpoints.up('lg')]: { display: 'none' }
-              }}
-            >
-              <Divider variant="middle" orientation="horizontal" />
-              <LanguageButtons
-                onClick={handleLanguageClick}
-                refinements={refinements}
-              />
-            </Box>
+            <Divider variant="middle" orientation="horizontal" />
+            <LanguageButtons
+              onClick={handleLanguageClick}
+              refinements={refinements}
+            />
           </Box>
-          <SearchbarDropdown
-            open={open}
-            refinements={refinements}
-            languages={languageContinents}
-            id={open ? 'simple-popper' : undefined}
-            anchorEl={anchorEl}
-            tabIndex={tabValue}
-            handleTabValueChange={setTabValue}
-          />
         </Box>
-      </ClickAwayListener>
-    </SearchBarProvider>
+        <SearchbarDropdown
+          open={open}
+          refinements={refinements}
+          languages={languageContinents}
+          id={open ? 'simple-popper' : undefined}
+          anchorEl={anchorEl}
+          tabIndex={tabValue}
+          handleTabValueChange={setTabValue}
+        />
+      </Box>
+    </ClickAwayListener>
   )
 }

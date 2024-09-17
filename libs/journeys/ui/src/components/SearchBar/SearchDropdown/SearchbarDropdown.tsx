@@ -78,7 +78,6 @@ export function SearchbarDropdown({
           .filter((language) => !languagesSet.includes(language))
         dispatch({
           type: 'SetDefaultLanguageContinent',
-          continents: languages,
           refinedItems: languagesNotSet
         })
       }

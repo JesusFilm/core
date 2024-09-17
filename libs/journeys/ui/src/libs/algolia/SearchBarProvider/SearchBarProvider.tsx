@@ -17,6 +17,12 @@ export interface SearchBarState {
    * selected languages sorted by continent
    */
   continentLanguages: Record<Continent, Language[]>
+  allContinentLanguages: Record<Continent, Language[]>
+}
+
+interface SetAllContinentLanguagesAction {
+  type: 'SetAllContinentLanguages'
+  allContinentLanguages: Record<Continent, Language[]>
 }
 
 interface SelectLanguageContinentAction {
@@ -28,7 +34,6 @@ interface SelectLanguageContinentAction {
 
 interface SetDefaultLanguageContinentAction {
   type: 'SetDefaultLanguageContinent'
-  continents: Record<Continent, Language[]>
   refinedItems: string[]
 }
 
@@ -42,16 +47,29 @@ interface RemoveAllLanguageContinentsAction {
 }
 
 type SearchBarAction =
+  | SetAllContinentLanguagesAction
   | SelectLanguageContinentAction
   | SetDefaultLanguageContinentAction
   | RemoveLanguageContinentsAction
   | RemoveAllLanguageContinentsAction
+
+function setAllContinentLanguages(
+  state: SearchBarState,
+  action: SetAllContinentLanguagesAction
+): SearchBarState {
+  const { allContinentLanguages } = action
+  return {
+    ...state,
+    allContinentLanguages
+  }
+}
 
 function selectLanguageContinent(
   state: SearchBarState,
   action: SelectLanguageContinentAction
 ): SearchBarState {
   const { continent, language, isSelected } = action
+
   const currentLanguages = state.continentLanguages[continent] ?? []
   const updatedLanguages = isSelected
     ? [...currentLanguages, language]
@@ -69,12 +87,13 @@ function setDefaultLanguageContinent(
   state: SearchBarState,
   action: SetDefaultLanguageContinentAction
 ): SearchBarState {
-  const { continents, refinedItems } = action
+  const { allContinentLanguages } = state
+  const { refinedItems } = action
 
   const updatedContinentLanguages = refinedItems.reduce(
     (acc, item) => {
-      const continent = Object.keys(continents).find((continent) =>
-        continents[continent].includes(item)
+      const continent = Object.keys(allContinentLanguages).find((continent) =>
+        allContinentLanguages[continent].includes(item)
       )
 
       if (continent != null) {
@@ -97,7 +116,6 @@ function setDefaultLanguageContinent(
       continentLanguages: updatedContinentLanguages
     }
   }
-
   return state
 }
 
@@ -127,6 +145,8 @@ export const reducer = (
   action: SearchBarAction
 ): SearchBarState => {
   switch (action.type) {
+    case 'SetAllContinentLanguages':
+      return setAllContinentLanguages(state, action)
     case 'SelectLanguageContinent':
       return selectLanguageContinent(state, action)
     case 'SetDefaultLanguageContinent':
@@ -160,6 +180,7 @@ export function SearchBarProvider({
 }: SearchBarProviderProps): ReactElement {
   const [state, dispatch] = useReducer(reducer, {
     continentLanguages: {},
+    allContinentLanguages: {},
     ...initialState
   })
 

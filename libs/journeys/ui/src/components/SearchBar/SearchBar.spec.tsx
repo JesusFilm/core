@@ -10,6 +10,7 @@ import {
 } from 'react-instantsearch'
 
 import '../../../test/i18n'
+import { SearchBarProvider } from '../../libs/algolia/SearchBarProvider'
 import { getLanguagesContinentsMock } from '../../libs/useLanguagesContinentsQuery/useLanguagesContinentsQuery.mock'
 
 import { languageRefinements } from './data'
@@ -64,7 +65,9 @@ describe('SearchBar', () => {
   it('should render input field', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchBar />
+        <SearchBarProvider>
+          <SearchBar />
+        </SearchBarProvider>
       </MockedProvider>
     )
     expect(screen.getByDisplayValue('Hello World!')).toBeVisible()
@@ -73,7 +76,9 @@ describe('SearchBar', () => {
   it('should have placeholder text', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchBar />
+        <SearchBarProvider>
+          <SearchBar />
+        </SearchBarProvider>
       </MockedProvider>
     )
     const inputElement = screen.getByPlaceholderText(
@@ -85,7 +90,9 @@ describe('SearchBar', () => {
   it('should have globe icon', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchBar />
+        <SearchBarProvider>
+          <SearchBar />
+        </SearchBarProvider>
       </MockedProvider>
     )
     const searchIcon = screen.getByTestId('Search1Icon')
@@ -95,7 +102,9 @@ describe('SearchBar', () => {
   it('should refine when text typed', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchBar />
+        <SearchBarProvider>
+          <SearchBar />
+        </SearchBarProvider>
       </MockedProvider>
     )
     const input = screen.getByDisplayValue('Hello World!')
@@ -106,7 +115,9 @@ describe('SearchBar', () => {
   it('should refine once when further keystrokes', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchBar />
+        <SearchBarProvider>
+          <SearchBar />
+        </SearchBarProvider>
       </MockedProvider>
     )
     const input = screen.getByDisplayValue('Hello World!')
@@ -119,7 +130,9 @@ describe('SearchBar', () => {
   it('should have language icon', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchBar showLanguageButton />
+        <SearchBarProvider>
+          <SearchBar showLanguageButton />
+        </SearchBarProvider>
       </MockedProvider>
     )
     expect(screen.getAllByTestId('Globe1Icon')[0]).toBeVisible()
@@ -128,7 +141,9 @@ describe('SearchBar', () => {
   it('should render language button', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchBar showLanguageButton />
+        <SearchBarProvider>
+          <SearchBar showLanguageButton />
+        </SearchBarProvider>
       </MockedProvider>
     )
     expect(screen.getAllByText('Language')[0]).toBeVisible()
@@ -137,7 +152,9 @@ describe('SearchBar', () => {
   it('should have dropdown closed by default', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchBar />
+        <SearchBarProvider>
+          <SearchBar />
+        </SearchBarProvider>
       </MockedProvider>
     )
     expect(screen.queryByTestId('SearchBarDropdown')).not.toBeInTheDocument()
@@ -146,7 +163,9 @@ describe('SearchBar', () => {
   it('should open suggestions dropdown when searchbar clicked', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchBar />
+        <SearchBarProvider>
+          <SearchBar />
+        </SearchBarProvider>
       </MockedProvider>
     )
     await clickOnSearchBar()
@@ -157,7 +176,9 @@ describe('SearchBar', () => {
   it('should open languages dropdown when language button clicked', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchBar showLanguageButton />
+        <SearchBarProvider>
+          <SearchBar showLanguageButton />
+        </SearchBarProvider>
       </MockedProvider>
     )
     expect(screen.getAllByText('Language')[0]).toBeInTheDocument()
@@ -172,7 +193,9 @@ describe('SearchBar', () => {
   it('should not switch back to suggestions after languages button clicked', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchBar showLanguageButton />
+        <SearchBarProvider>
+          <SearchBar showLanguageButton />
+        </SearchBarProvider>
       </MockedProvider>
     )
     fireEvent.click(screen.getAllByText('Language')[0])
@@ -184,7 +207,9 @@ describe('SearchBar', () => {
   it('should navigate to suggestions tab from languages', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchBar showLanguageButton />
+        <SearchBarProvider>
+          <SearchBar showLanguageButton />
+        </SearchBarProvider>
       </MockedProvider>
     )
     fireEvent.click(screen.getAllByText('Language')[0])
@@ -197,7 +222,9 @@ describe('SearchBar', () => {
   it('should navigate to languages tab from suggestions', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchBar showLanguageButton />
+        <SearchBarProvider>
+          <SearchBar showLanguageButton />
+        </SearchBarProvider>
       </MockedProvider>
     )
     await clickOnSearchBar()
@@ -216,7 +243,9 @@ describe('SearchBar', () => {
   it('should close dropdown on key enter', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchBar showLanguageButton />
+        <SearchBarProvider>
+          <SearchBar showLanguageButton />
+        </SearchBarProvider>
       </MockedProvider>
     )
     await clickOnSearchBar()
@@ -227,7 +256,9 @@ describe('SearchBar', () => {
   it('should open dropdown again after closing on key enter', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchBar showLanguageButton />
+        <SearchBarProvider>
+          <SearchBar showLanguageButton />
+        </SearchBarProvider>
       </MockedProvider>
     )
     await clickOnSearchBar()

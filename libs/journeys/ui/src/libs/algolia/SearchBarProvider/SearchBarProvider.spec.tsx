@@ -12,20 +12,23 @@ import {
 } from './SearchBarProvider'
 
 describe('SearchBarContext', () => {
+  const initState: SearchBarState = {
+    continentLanguages: {},
+    allContinentLanguages: {}
+  }
+
   describe('reducer', () => {
     describe('SelectLanguageContinent', () => {
       it('should set a continent for the selected language', () => {
-        const state = {
-          continentLanguages: {}
-        }
         expect(
-          reducer(state, {
+          reducer(initState, {
             type: 'SelectLanguageContinent',
             continent: 'Europe',
             language: 'English',
             isSelected: true
           })
         ).toEqual({
+          ...initState,
           continentLanguages: {
             Europe: ['English']
           }
@@ -36,7 +39,8 @@ describe('SearchBarContext', () => {
         const state = {
           continentLanguages: {
             Europe: ['English']
-          }
+          },
+          allContinentLanguages: {}
         }
         expect(
           reducer(state, {
@@ -46,6 +50,7 @@ describe('SearchBarContext', () => {
             isSelected: true
           })
         ).toEqual({
+          ...state,
           continentLanguages: {
             Europe: ['English', 'French']
           }
@@ -56,7 +61,8 @@ describe('SearchBarContext', () => {
         const state = {
           continentLanguages: {
             Europe: ['English']
-          }
+          },
+          allContinentLanguages: {}
         }
         expect(
           reducer(state, {
@@ -66,6 +72,7 @@ describe('SearchBarContext', () => {
             isSelected: true
           })
         ).toEqual({
+          ...state,
           continentLanguages: {
             Europe: ['English'],
             Asia: ['Chinese']
@@ -77,7 +84,8 @@ describe('SearchBarContext', () => {
         const state = {
           continentLanguages: {
             Europe: ['English', 'French']
-          }
+          },
+          allContinentLanguages: {}
         }
         expect(
           reducer(state, {
@@ -87,6 +95,7 @@ describe('SearchBarContext', () => {
             isSelected: false
           })
         ).toEqual({
+          ...state,
           continentLanguages: {
             Europe: ['English']
           }
@@ -97,18 +106,19 @@ describe('SearchBarContext', () => {
     describe('SetDefaultLanguageContinent', () => {
       it('should set the default language for each continent', () => {
         const state = {
-          continentLanguages: {}
+          continentLanguages: {},
+          allContinentLanguages: {
+            Europe: ['English'],
+            Asia: ['Chinese']
+          }
         }
         expect(
           reducer(state, {
             type: 'SetDefaultLanguageContinent',
-            continents: {
-              Europe: ['English'],
-              Asia: ['Chinese']
-            },
             refinedItems: ['English', 'Chinese']
           })
         ).toEqual({
+          ...state,
           continentLanguages: {
             Europe: ['English'],
             Asia: ['Chinese']
@@ -118,19 +128,20 @@ describe('SearchBarContext', () => {
 
       it('should select the first continent the language is found in', () => {
         const state = {
-          continentLanguages: {}
+          continentLanguages: {},
+          allContinentLanguages: {
+            Africa: ['English'],
+            Europe: ['English'],
+            Asia: ['English']
+          }
         }
         expect(
           reducer(state, {
             type: 'SetDefaultLanguageContinent',
-            continents: {
-              Africa: ['English'],
-              Europe: ['English'],
-              Asia: ['English']
-            },
             refinedItems: ['English']
           })
         ).toEqual({
+          ...state,
           continentLanguages: {
             Africa: ['English']
           }
@@ -144,7 +155,8 @@ describe('SearchBarContext', () => {
           continentLanguages: {
             Europe: ['English', 'French'],
             Asia: ['Chinese', 'English']
-          }
+          },
+          allContinentLanguages: {}
         }
         expect(
           reducer(state, {
@@ -152,6 +164,7 @@ describe('SearchBarContext', () => {
             language: 'English'
           })
         ).toEqual({
+          ...state,
           continentLanguages: {
             Europe: ['French'],
             Asia: ['Chinese']
@@ -166,37 +179,32 @@ describe('SearchBarContext', () => {
           continentLanguages: {
             Europe: ['English', 'French'],
             Asia: ['Chinese', 'English']
-          }
+          },
+          allContinentLanguages: {}
         }
         expect(
           reducer(state, {
             type: 'RemoveAllLanguageContinents'
           })
-        ).toEqual({
-          continentLanguages: {}
-        })
+        ).toEqual(initState)
       })
     })
   })
 
   describe('SearchBarProvider', () => {
     it('should set initial state', () => {
-      const state: SearchBarState = {
-        continentLanguages: {}
-      }
-
       const wrapper = ({ children }: { children: ReactNode }): ReactNode => (
         <MockedProvider mocks={[getLanguagesContinentsMock]}>
-          <SearchBarProvider initialState={state}>{children}</SearchBarProvider>
+          <SearchBarProvider initialState={initState}>
+            {children}
+          </SearchBarProvider>
         </MockedProvider>
       )
       const { result } = renderHook(() => useSearchBar(), {
         wrapper
       })
 
-      expect(result.current.state).toEqual({
-        continentLanguages: {}
-      })
+      expect(result.current.state).toEqual(initState)
     })
   })
 })
