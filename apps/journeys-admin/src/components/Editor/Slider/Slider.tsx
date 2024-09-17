@@ -252,7 +252,7 @@ export function Slider(): ReactElement {
             xs: `calc(100svh - ${EDIT_TOOLBAR_HEIGHT}px - 50px)`,
             md: '100%'
           },
-          pointerEvents: showAnalytics ? 'none' : 'auto'
+          pointerEvents: showAnalytics === true ? 'none' : 'auto'
         }}
       >
         <Box
@@ -285,7 +285,7 @@ export function Slider(): ReactElement {
           flexDirection: { xs: 'column', md: 'row' },
           justifyContent: { md: 'space-between' },
           position: 'relative',
-          pointerEvents: showAnalytics ? 'none' : 'auto'
+          pointerEvents: showAnalytics === true ? 'none' : 'auto'
         }}
       >
         {/* slide bar (mobile bottom) */}
@@ -324,7 +324,7 @@ export function Slider(): ReactElement {
             xs: `calc(100svh - ${EDIT_TOOLBAR_HEIGHT}px - 50px)`,
             md: '100%'
           },
-          pointerEvents: showAnalytics ? 'none' : 'auto'
+          pointerEvents: showAnalytics === true ? 'none' : 'auto'
         }}
       >
         <Settings />
