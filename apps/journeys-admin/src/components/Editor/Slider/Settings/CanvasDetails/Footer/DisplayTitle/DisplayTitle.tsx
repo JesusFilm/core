@@ -50,7 +50,7 @@ export function DisplayTitle(): ReactElement {
       <Stack sx={{ p: 4, pt: 2 }} data-testid="DisplayTitle">
         <TextFieldForm
           id="display-title"
-          initialValue={journey?.displayTitle ?? ''}
+          initialValue={journey?.displayTitle ?? journey?.seoTitle ?? ''}
           onSubmit={handleUpdate}
           label={t('Display Title')}
         />
