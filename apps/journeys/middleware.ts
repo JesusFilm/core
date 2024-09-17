@@ -51,5 +51,5 @@ export default async function middleware(
   }
 
   // rewrite everything else to `/[hostname]/[slug] dynamic route
-  return NextResponse.rewrite(new URL(`/${hostname}`, req.url))
+  return NextResponse.rewrite(new URL(`/${hostname}${path}`, req.url))
 }
