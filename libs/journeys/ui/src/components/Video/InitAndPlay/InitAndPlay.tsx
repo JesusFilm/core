@@ -162,6 +162,7 @@ export function InitAndPlay({
     activeBlock,
     blockId,
     activeStep,
+    muted,
     variant,
     setLoading,
     setShowPoster
