@@ -1,9 +1,7 @@
 import mapValues from 'lodash/mapValues'
 
+import { Continent, Language } from '../../algolia/SearchBarProvider'
 import { GetLanguagesContinents_languages as Languages } from '../__generated__/GetLanguagesContinents'
-
-export type Continent = string
-export type Language = string
 
 export interface LanguageContinentsRecord {
   [continent: Continent]: Language[]

@@ -9,10 +9,8 @@ import {
   useReducer
 } from 'react'
 
-import {
-  Continent,
-  Language
-} from '../../useLanguagesContinentsQuery/sortLanguageContinents'
+export type Continent = string
+export type Language = string
 
 export interface SearchBarState {
   /**
