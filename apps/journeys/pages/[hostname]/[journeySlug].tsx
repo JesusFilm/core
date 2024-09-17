@@ -39,16 +39,15 @@ function HostJourneyPage({
   if (isIframe) {
     void router.push('/embed/[journeySlug]', `/embed/${journey.slug}`)
   }
-  console.log(router.query)
-  console.log(router?.query?.defaultJourney === 'true')
+
   useEffect(() => {
     if (router?.query?.defaultJourney === 'true') {
       window.history.pushState(null, `${journey.title}`, '')
     }
   }, [router, journey, hostname])
-  if (router?.query?.defaultJourney === 'true') {
-    window.history.pushState(null, `${journey.title}`, '')
-  }
+  // if (router?.query?.defaultJourney === 'true') {
+  //   window.history.pushState(null, `${journey.title}`, '')
+  // }
   return (
     <>
       <Head>
