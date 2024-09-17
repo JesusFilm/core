@@ -12,6 +12,16 @@ import { languageRefinements } from '../data'
 
 import { SearchbarDropdown } from './SearchbarDropdown'
 
+global.fetch = jest.fn(
+  async () =>
+    await Promise.resolve({
+      json: async () =>
+        await Promise.resolve({
+          country: 'US'
+        })
+    })
+) as jest.Mock
+
 jest.mock('react-instantsearch')
 
 const mockUseSearchBox = useSearchBox as jest.MockedFunction<

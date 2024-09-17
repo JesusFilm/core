@@ -15,6 +15,16 @@ import { getLanguagesContinentsMock } from '../../libs/useLanguagesContinentsQue
 import { languageRefinements } from './data'
 import { SearchBar } from './SearchBar'
 
+global.fetch = jest.fn(
+  async () =>
+    await Promise.resolve({
+      json: async () =>
+        await Promise.resolve({
+          country: 'US'
+        })
+    })
+) as jest.Mock
+
 jest.mock('react-instantsearch')
 
 const mockUseRefinementList = useRefinementList as jest.MockedFunction<

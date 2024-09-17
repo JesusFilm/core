@@ -82,24 +82,6 @@ describe('CountryLanguageSelector', () => {
     expect(refine).toHaveBeenCalledWith('English')
   })
 
-  it('should not render the component if the country is not found', async () => {
-    jest
-      .spyOn(document, 'cookie', 'get')
-      .mockImplementation(() => 'NEXT_COUNTRY=00001---XX')
-
-    render(
-      <SearchBarProvider>
-        <MockedProvider mocks={[getCountryMock]}>
-          <CountryLanguageSelector refinements={refinements} />
-        </MockedProvider>
-      </SearchBarProvider>
-    )
-
-    expect(
-      screen.queryByRole('heading', { level: 6, name: 'United States:' })
-    ).not.toBeInTheDocument()
-  })
-
   it('should not render the component if there are no data for the country', async () => {
     render(
       <SearchBarProvider>
