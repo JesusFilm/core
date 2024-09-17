@@ -66,7 +66,7 @@ export function Canvas(): ReactElement {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-  function handleFooterClick(): void {
+  function handleJourneyAppearanceClick(): void {
     dispatch({
       type: 'SetActiveCanvasDetailsDrawerAction',
       activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer
@@ -273,7 +273,7 @@ export function Canvas(): ReactElement {
                               }}
                               onHeaderClick={
                                 journey?.website === true
-                                  ? handleFooterClick
+                                  ? handleJourneyAppearanceClick
                                   : undefined
                               }
                             />
@@ -311,7 +311,7 @@ export function Canvas(): ReactElement {
                                 borderRadius: 5,
                                 cursor: 'pointer'
                               }}
-                              onFooterClick={handleFooterClick}
+                              onFooterClick={handleJourneyAppearanceClick}
                             />
                           </ThemeProvider>
                         </Stack>

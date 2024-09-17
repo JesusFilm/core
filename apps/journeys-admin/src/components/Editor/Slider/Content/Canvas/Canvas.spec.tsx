@@ -232,7 +232,7 @@ describe('Canvas', () => {
   })
 
   // TODO: Add to E2E tests when complete. Can't test in unit test as iframe doesn't render
-  it.skip('should selected footer on click', () => {
+  it.skip('should selected JourneyAppearance on click', () => {
     render(
       <MockedProvider>
         <ThemeProvider>
