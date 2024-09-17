@@ -23,6 +23,7 @@ export interface JourneyImageBlockUpdate_imageBlockUpdate {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface JourneyImageBlockUpdate {

@@ -1,7 +1,7 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
-import { screen, userEvent, waitFor } from '@storybook/testing-library'
+import { screen, userEvent, waitFor } from '@storybook/test'
 
 import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -99,7 +99,8 @@ const posterInternal: TreeBlock<ImageBlock> = {
   height: 200,
   blurhash: '',
   alt: 'poster',
-  children: []
+  children: [],
+  scale: null
 }
 
 const videoYouTube: TreeBlock<VideoBlock> = {
@@ -137,7 +138,8 @@ const posterYouTube: TreeBlock<ImageBlock> = {
   height: 200,
   blurhash: '',
   alt: 'poster',
-  children: []
+  children: [],
+  scale: null
 }
 
 const onChange = async (): Promise<void> => await Promise.resolve()

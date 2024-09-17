@@ -222,7 +222,8 @@ export function CardPoll(): ReactElement {
       blurhash: 'LuHo2rtSIUfl.TtRRiogXot6aekC',
       height: 3456,
       src: 'https://images.unsplash.com/photo-1488048924544-c818a467dacd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0MDYwNDN8MHwxfHNlYXJjaHwyMHx8aXNyYWVsfGVufDB8fHx8MTY5NTE3MDI2NHww&ixlib=rb-4.0.3&q=80&w=1080',
-      width: 5184
+      width: 5184,
+      scale: null
     } satisfies ImageBlock
 
     const subtitle = {

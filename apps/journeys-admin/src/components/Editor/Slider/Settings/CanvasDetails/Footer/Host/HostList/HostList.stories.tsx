@@ -1,7 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
-import { jest } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
+import { fn } from '@storybook/test'
 import { ComponentProps } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -76,7 +76,7 @@ const journey = {
   host: null
 } as unknown as Journey
 
-const handleSelection = jest.fn()
+const handleSelection = fn()
 
 const Template: StoryObj<{
   journey: Journey

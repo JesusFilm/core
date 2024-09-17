@@ -2,6 +2,8 @@ import { ResultOf } from 'gql.tada'
 
 import {
   BibleCitation,
+  CloudflareImage,
+  ImageAspectRatio,
   Keyword,
   Video,
   VideoDescription,
@@ -29,6 +31,7 @@ describe('video', () => {
         $offset: Int
         $limit: Int
         $where: VideosFilter
+        $aspectRatio: ImageAspectRatio
       ) {
         videos(offset: $offset, limit: $limit, where: $where) {
           id
@@ -72,6 +75,11 @@ describe('video', () => {
               id
             }
           }
+          thumbnail
+          videoStill
+          mobileCinematicHigh
+          mobileCinematicLow
+          mobileCinematicVeryLow
           image
           imageAlt(languageId: $languageId, primary: $primary) {
             id
@@ -116,6 +124,10 @@ describe('video', () => {
           variant(languageId: $languageId) {
             id
           }
+          images(aspectRatio: $aspectRatio) {
+            id
+            aspectRatio
+          }
         }
       }
     `)
@@ -130,6 +142,7 @@ describe('video', () => {
       imageAlt: VideoImageAlt[]
       children: Video[]
       subtitles: VideoSubtitle[]
+      images: CloudflareImage[]
     }
 
     const children: Video[] = [
@@ -137,6 +150,11 @@ describe('video', () => {
         id: 'videoId2',
         label: 'collection',
         primaryLanguageId: 'primaryLanguageId',
+        thumbnail: null,
+        videoStill: null,
+        mobileCinematicHigh: null,
+        mobileCinematicLow: null,
+        mobileCinematicVeryLow: null,
         image: null,
         slug: null,
         noIndex: null,
@@ -145,6 +163,11 @@ describe('video', () => {
       {
         id: 'videoId1',
         label: 'collection',
+        thumbnail: null,
+        videoStill: null,
+        mobileCinematicHigh: null,
+        mobileCinematicLow: null,
+        mobileCinematicVeryLow: null,
         primaryLanguageId: 'primaryLanguageId',
         image: null,
         slug: null,
@@ -159,6 +182,11 @@ describe('video', () => {
         label: 'behindTheScenes',
         primaryLanguageId: 'primaryLanguageId',
         image: null,
+        thumbnail: null,
+        videoStill: null,
+        mobileCinematicHigh: null,
+        mobileCinematicLow: null,
+        mobileCinematicVeryLow: null,
         slug: null,
         noIndex: null,
         childIds: ['videoId1', 'videoId2'],
@@ -258,13 +286,29 @@ describe('video', () => {
             videoId: 'videoId',
             primary: true
           }
+        ],
+        images: [
+          {
+            id: 'imageId',
+            aspectRatio: ImageAspectRatio.hd,
+            uploaded: true,
+            userId: 'testUserId',
+            uploadUrl: 'testUrl',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            videoId: null
+          }
         ]
       }
     ]
 
     const result: ResultOf<typeof VIDEOS_QUERY>['videos'] = [
       {
-        bibleCitations: [{ id: 'bibleCitationId' }],
+        bibleCitations: [
+          {
+            id: 'bibleCitationId'
+          }
+        ],
         children: [
           {
             id: 'videoId1'
@@ -283,6 +327,11 @@ describe('video', () => {
           }
         ],
         id: 'videoId',
+        thumbnail: null,
+        videoStill: null,
+        mobileCinematicHigh: null,
+        mobileCinematicLow: null,
+        mobileCinematicVeryLow: null,
         image: null,
         imageAlt: [
           {
@@ -372,6 +421,12 @@ describe('video', () => {
           {
             language: { id: 'languageId' },
             slug: 'slug'
+          }
+        ],
+        images: [
+          {
+            id: 'imageId',
+            aspectRatio: ImageAspectRatio.hd
           }
         ]
       }
@@ -477,7 +532,8 @@ describe('video', () => {
                 }
               ]
             }
-          }
+          },
+          images: { where: { aspectRatio: undefined } }
         }
       })
       expect(data).toHaveProperty('data.videos', result)
@@ -503,6 +559,7 @@ describe('video', () => {
       ])
       // variant
       prismaMock.videoVariant.findUnique.mockResolvedValueOnce(null)
+
       const data = await client({
         document: VIDEOS_QUERY,
         variables: {
@@ -544,7 +601,8 @@ describe('video', () => {
           limit: 20,
           where: {
             title: 'Jesus'
-          }
+          },
+          aspectRatio: ImageAspectRatio.hd
         }
       })
       expect(prismaMock.video.findMany).toHaveBeenCalledWith({
@@ -658,6 +716,11 @@ describe('video', () => {
                 }
               ]
             }
+          },
+          images: {
+            where: {
+              aspectRatio: ImageAspectRatio.hd
+            }
           }
         }
       })
@@ -678,6 +741,11 @@ describe('video', () => {
       id: 'videoId',
       label: 'behindTheScenes',
       primaryLanguageId: 'primaryLanguageId',
+      thumbnail: null,
+      videoStill: null,
+      mobileCinematicHigh: null,
+      mobileCinematicLow: null,
+      mobileCinematicVeryLow: null,
       image: null,
       slug: null,
       noIndex: null,

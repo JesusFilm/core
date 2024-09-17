@@ -1,5 +1,5 @@
-import { jest } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
+import { fn } from '@storybook/test'
 
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
@@ -23,7 +23,7 @@ export const Default = {
       { id: 'tag2', name: { value: 'Christmas' } },
       { id: 'tag3', name: { value: 'Easter' } }
     ],
-    onChange: jest.fn()
+    onChange: fn()
   }
 }
 

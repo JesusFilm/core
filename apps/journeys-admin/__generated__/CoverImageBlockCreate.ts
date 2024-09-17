@@ -23,6 +23,7 @@ export interface CoverImageBlockCreate_imageBlockCreate {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface CoverImageBlockCreate_cardBlockUpdate {

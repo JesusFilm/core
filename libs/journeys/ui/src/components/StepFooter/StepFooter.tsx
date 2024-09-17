@@ -6,6 +6,7 @@ import { ReactElement } from 'react'
 
 import { useJourney } from '../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../libs/rtl'
+import { InformationButton } from '../StepHeader/InformationButton'
 
 import { ChatButtons } from './ChatButtons'
 import { FooterButtonList } from './FooterButtonList'
@@ -33,6 +34,8 @@ export function StepFooter({
   const hasChatWidget =
     variant === 'admin' ||
     (journey?.chatButtons != null && journey?.chatButtons.length > 0)
+
+  const isWebsite = journey?.website === true
 
   return (
     <Box
@@ -64,58 +67,66 @@ export function StepFooter({
           width: '100%'
         }}
       >
-        <Box sx={{ display: { xs: 'flex', sm: 'none' } }}>
-          <FooterButtonList />
-        </Box>
+        {!isWebsite && (
+          <Box sx={{ display: { xs: 'flex', sm: 'none' } }}>
+            <FooterButtonList />
+          </Box>
+        )}
 
         <Stack
           sx={{
             width: '100%',
             height: 52,
             flexDirection: rtl ? 'row-reverse' : 'row',
-            alignItems: 'center'
+            alignItems: 'center',
+            justifyContent: isWebsite ? 'space-between' : undefined
           }}
           gap={4}
         >
-          <Stack
-            sx={{
-              width: '100%',
-              minWidth: 0,
-              flexDirection: 'row',
-              alignItems: 'center'
-            }}
-            gap={2}
-          >
-            {hasAvatar && (
-              <HostAvatars
-                hasPlaceholder={variant === 'admin'}
-                avatarSrc1={journey?.host?.src1}
-                avatarSrc2={journey?.host?.src2}
-              />
-            )}
-            <Stack sx={{ flex: '1 1 100%', minWidth: 0 }}>
-              <Typography
-                variant="subtitle1"
-                sx={{
-                  zIndex: 1,
-                  // Always dark mode on lg breakpoint
-                  color: { xs: 'primary.main', lg: 'white' },
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis'
-                }}
-              >
-                {title != null
-                  ? title
-                  : journey?.displayTitle ?? journey?.seoTitle}
-              </Typography>
-              <HostTitleLocation />
-            </Stack>
+          {isWebsite ? (
+            <InformationButton sx={{ m: 0, p: 0 }} />
+          ) : (
+            <Stack
+              sx={{
+                width: '100%',
+                minWidth: 0,
+                flexDirection: 'row',
+                alignItems: 'center'
+              }}
+              gap={2}
+            >
+              {hasAvatar && (
+                <HostAvatars
+                  hasPlaceholder={variant === 'admin'}
+                  avatarSrc1={journey?.host?.src1}
+                  avatarSrc2={journey?.host?.src2}
+                />
+              )}
+              <Stack sx={{ flex: '1 1 100%', minWidth: 0 }}>
+                <Typography
+                  variant="subtitle1"
+                  sx={{
+                    zIndex: 1,
+                    // Always dark mode on lg breakpoint
+                    color: { xs: 'primary.main', lg: 'white' },
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis'
+                  }}
+                >
+                  {title != null
+                    ? title
+                    : journey?.displayTitle ?? journey?.seoTitle}
+                </Typography>
+                <HostTitleLocation />
+              </Stack>
 
-            <Box sx={{ display: { xs: 'none', sm: 'flex' } }}>
-              <FooterButtonList />
-            </Box>
-          </Stack>
+              <Box sx={{ display: { xs: 'none', sm: 'flex' } }}>
+                <FooterButtonList />
+              </Box>
+            </Stack>
+          )}
+
           {hasChatWidget && (
             <Box>
               <ChatButtons />

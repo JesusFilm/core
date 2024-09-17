@@ -23,6 +23,7 @@ export interface CardFormCreate_image {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export interface CardFormCreate_subtitle {

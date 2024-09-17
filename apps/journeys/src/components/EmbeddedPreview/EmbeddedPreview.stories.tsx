@@ -1,7 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { expect } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
-import { screen, userEvent, waitFor } from '@storybook/testing-library'
+import { expect, screen, userEvent, waitFor } from '@storybook/test'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
 
@@ -93,7 +92,10 @@ const journey: Journey = {
   showShareButton: null,
   showLikeButton: null,
   showDislikeButton: null,
-  displayTitle: null
+  displayTitle: null,
+  logoImageBlock: null,
+  menuButtonIcon: null,
+  menuStepBlock: null
 }
 
 const Template: StoryObj<typeof EmbeddedPreview> = {

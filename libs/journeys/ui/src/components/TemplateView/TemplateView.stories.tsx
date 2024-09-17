@@ -80,7 +80,8 @@ const primaryImageBlock: PrimaryImageBlock = {
   width: 1152,
   height: 768,
   blurhash: 'UE9Qmr%MIpWCtmbH%Mxu_4xuWYoL-;oIWYt7',
-  parentOrder: 1
+  parentOrder: 1,
+  scale: null
 }
 
 const getJourneysMockEmpty: MockedResponse<GetJourneys> = {

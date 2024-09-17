@@ -113,7 +113,8 @@ export const basic: TreeBlock[] = [
             parentBlockId: 'card1.id',
             parentOrder: 0,
             children: [],
-            blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
+            blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
+            scale: null
           }
         ]
       }
@@ -488,7 +489,8 @@ export const imageBlocks: TreeBlock[] = [
             parentBlockId: 'card0.id',
             parentOrder: 0,
             children: [],
-            blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
+            blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
+            scale: null
           }
         ]
       }
@@ -571,7 +573,8 @@ export const imageBlocks: TreeBlock[] = [
             parentBlockId: 'card0.id',
             parentOrder: 0,
             children: [],
-            blurhash: 'LQEf1v^*XkEe*IyD$RnOyXTJRjjG'
+            blurhash: 'LQEf1v^*XkEe*IyD$RnOyXTJRjjG',
+            scale: null
           }
         ]
       }
@@ -642,7 +645,8 @@ export const imageBlocks: TreeBlock[] = [
             parentBlockId: 'card2.id',
             parentOrder: 0,
             children: [],
-            blurhash: 'L;KRQa-Rs-kA}ot4bZj@SMR,WWj@'
+            blurhash: 'L;KRQa-Rs-kA}ot4bZj@SMR,WWj@',
+            scale: null
           }
         ]
       }
@@ -726,7 +730,8 @@ export const imageBlocks: TreeBlock[] = [
             parentBlockId: 'card0.id',
             parentOrder: 1,
             children: [],
-            blurhash: 'L3CZt$_NyX4n=|?b00Ip8_IV00IA'
+            blurhash: 'L3CZt$_NyX4n=|?b00Ip8_IV00IA',
+            scale: null
           }
         ]
       }
@@ -762,7 +767,8 @@ export const imageBlocks: TreeBlock[] = [
             parentBlockId: 'card0.id',
             parentOrder: null,
             children: [],
-            blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ'
+            blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ',
+            scale: null
           },
           {
             id: 'typographyBlockId1',
@@ -902,6 +908,7 @@ export const videoBlocks: TreeBlock[] = [
                 alt: 'random image from unsplash',
                 parentBlockId: 'card1.id',
                 parentOrder: 0,
+                scale: null,
                 children: []
               }
             ]
@@ -1044,6 +1051,7 @@ export const videoBlocks: TreeBlock[] = [
                 blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
                 parentBlockId: 'videoBlockId',
                 parentOrder: 0,
+                scale: null,
                 children: []
               }
             ]
@@ -1298,6 +1306,7 @@ export const videoBlocksNoPoster: TreeBlock[] = [
                 blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
                 parentBlockId: 'videoBlockId',
                 parentOrder: 0,
+                scale: null,
                 children: []
               }
             ]
@@ -1552,6 +1561,7 @@ export const videoBlocksNoVideo: TreeBlock[] = [
                 blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
                 parentBlockId: 'videoBlockId',
                 parentOrder: 0,
+                scale: null,
                 children: []
               }
             ]
@@ -1710,6 +1720,7 @@ export const videoLoop: TreeBlock[] = [
                 alt: 'random image from unsplash',
                 parentBlockId: 'card1.id',
                 parentOrder: 0,
+                scale: null,
                 children: []
               }
             ]
@@ -1775,6 +1786,7 @@ export const videoLoop: TreeBlock[] = [
                 alt: 'random image from unsplash',
                 parentBlockId: 'card1.id',
                 parentOrder: 0,
+                scale: null,
                 children: []
               }
             ]
@@ -1835,6 +1847,7 @@ export const videoLoop: TreeBlock[] = [
                 alt: 'random image from unsplash',
                 parentBlockId: 'card1.id',
                 parentOrder: 0,
+                scale: null,
                 children: []
               }
             ]

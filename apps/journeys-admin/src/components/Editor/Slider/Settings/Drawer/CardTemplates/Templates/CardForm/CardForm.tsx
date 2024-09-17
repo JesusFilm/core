@@ -184,7 +184,8 @@ export function CardForm(): ReactElement {
       width: 5184,
       height: 3456,
       blurhash: 'LuHo2rtSIUfl.TtRRiogXot6aekC',
-      __typename: 'ImageBlock'
+      __typename: 'ImageBlock',
+      scale: null
     } satisfies ImageBlock
 
     const subtitle = {

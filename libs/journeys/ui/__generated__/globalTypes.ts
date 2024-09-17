@@ -78,6 +78,17 @@ export enum IdType {
   slug = "slug",
 }
 
+export enum JourneyMenuButtonIcon {
+  chevronDown = "chevronDown",
+  ellipsis = "ellipsis",
+  equals = "equals",
+  grid1 = "grid1",
+  home3 = "home3",
+  home4 = "home4",
+  menu1 = "menu1",
+  more = "more",
+}
+
 export enum JourneyStatus {
   archived = "archived",
   deleted = "deleted",
@@ -215,6 +226,8 @@ export interface ChatOpenEventCreateInput {
 export interface JourneyProfileUpdateInput {
   lastActiveTeamId?: string | null;
   journeyFlowBackButtonClicked?: boolean | null;
+  plausibleJourneyFlowViewed?: boolean | null;
+  plausibleDashboardViewed?: boolean | null;
 }
 
 export interface JourneysFilter {

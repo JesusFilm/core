@@ -68,72 +68,11 @@ describe('StepFooter', () => {
     showShareButton: null,
     showLikeButton: null,
     showDislikeButton: null,
-    displayTitle: null
+    displayTitle: null,
+    logoImageBlock: null,
+    menuButtonIcon: null,
+    menuStepBlock: null
   }
-
-  it('should display host avatar, name and location', () => {
-    render(
-      <MockedProvider>
-        <SnackbarProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <StepFooter />
-          </JourneyProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    expect(screen.getByTestId('StepFooterHostAvatars')).toBeInTheDocument()
-    expect(
-      screen.getByTestId('StepFooterHostTitleLocation')
-    ).toBeInTheDocument()
-  })
-
-  it('should show footer buttons', () => {
-    render(
-      <MockedProvider>
-        <SnackbarProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <StepFooter />
-          </JourneyProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    expect(screen.getAllByTestId('StepFooterButtonList')).toHaveLength(2)
-  })
-
-  it('should show display title by default', () => {
-    render(
-      <MockedProvider>
-        <SnackbarProvider>
-          <JourneyProvider
-            value={{
-              journey: { ...journey, displayTitle: 'Display title' },
-              variant: 'admin'
-            }}
-          >
-            <StepFooter />
-          </JourneyProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    expect(screen.getByText('Display title')).toBeInTheDocument()
-  })
-
-  it('should display social media title if no display title', () => {
-    render(
-      <MockedProvider>
-        <SnackbarProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <StepFooter />
-          </JourneyProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    expect(screen.getByText('My awesome journey')).toBeInTheDocument()
-  })
 
   it('should render custom styles', () => {
     render(
@@ -193,5 +132,110 @@ describe('StepFooter', () => {
       </MockedProvider>
     )
     expect(screen.getByText('discovery journey title')).toBeInTheDocument()
+  })
+
+  describe('Journey', () => {
+    it('should display social media title if no display title', () => {
+      render(
+        <MockedProvider>
+          <SnackbarProvider>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <StepFooter />
+            </JourneyProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+
+      expect(screen.getByText('My awesome journey')).toBeInTheDocument()
+    })
+
+    it('should show display title by default', () => {
+      render(
+        <MockedProvider>
+          <SnackbarProvider>
+            <JourneyProvider
+              value={{
+                journey: { ...journey, displayTitle: 'Display title' },
+                variant: 'admin'
+              }}
+            >
+              <StepFooter />
+            </JourneyProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+
+      expect(screen.getByText('Display title')).toBeInTheDocument()
+    })
+
+    it('should display host avatar, name and location', () => {
+      render(
+        <MockedProvider>
+          <SnackbarProvider>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <StepFooter />
+            </JourneyProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+
+      expect(screen.getByTestId('StepFooterHostAvatars')).toBeInTheDocument()
+      expect(
+        screen.getByTestId('StepFooterHostTitleLocation')
+      ).toBeInTheDocument()
+    })
+
+    it('should show footer buttons', () => {
+      render(
+        <MockedProvider>
+          <SnackbarProvider>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <StepFooter />
+            </JourneyProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+
+      expect(screen.getAllByTestId('StepFooterButtonList')).toHaveLength(2)
+    })
+  })
+
+  describe('website', () => {
+    const websiteJourney = {
+      ...journey,
+      website: true
+    }
+
+    it('should show information', () => {
+      render(
+        <MockedProvider>
+          <SnackbarProvider>
+            <JourneyProvider
+              value={{ journey: websiteJourney, variant: 'admin' }}
+            >
+              <StepFooter />
+            </JourneyProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+
+      expect(screen.getByTestId('InformationButton')).toBeInTheDocument()
+    })
+
+    it('should chat buttons', () => {
+      render(
+        <MockedProvider>
+          <SnackbarProvider>
+            <JourneyProvider
+              value={{ journey: websiteJourney, variant: 'admin' }}
+            >
+              <StepFooter />
+            </JourneyProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+
+      expect(screen.getByTestId('StepFooterChatButtons')).toBeInTheDocument()
+    })
   })
 })

@@ -1,6 +1,5 @@
-import { expect } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
-import { screen, userEvent, waitFor } from '@storybook/testing-library'
+import { expect, screen, userEvent, waitFor } from '@storybook/test'
 import noop from 'lodash/noop'
 import { ComponentProps } from 'react'
 

@@ -1,7 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { expect } from '@storybook/jest'
 import { Meta, StoryObj } from '@storybook/react'
-import { userEvent, waitFor, within } from '@storybook/testing-library'
+import { expect, userEvent, waitFor, within } from '@storybook/test'
 import { ComponentProps, ReactElement, useState } from 'react'
 
 import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
