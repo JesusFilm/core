@@ -130,6 +130,7 @@ export function InitAndPlay({
     }
     const handleCanPlay = (): void => {
       if (player != null) player.muted(muted === true)
+      if (player != null && autoplay === true) void player.play()
       handleStopLoading()
     }
 
