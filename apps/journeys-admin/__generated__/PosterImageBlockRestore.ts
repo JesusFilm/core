@@ -26,6 +26,7 @@ export interface PosterImageBlockRestore_blockRestore_ImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
 }
 
 export type PosterImageBlockRestore_blockRestore = PosterImageBlockRestore_blockRestore_StepBlock | PosterImageBlockRestore_blockRestore_ImageBlock;

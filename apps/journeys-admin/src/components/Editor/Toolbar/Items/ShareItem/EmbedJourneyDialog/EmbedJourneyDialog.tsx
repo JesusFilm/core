@@ -110,12 +110,7 @@ export function EmbedJourneyDialog({
             </AccordionDetails>
           </Accordion>
         )}
-        <Stack
-          direction="column"
-          spacing={smUp ? 0 : 4}
-          justifyContent="start"
-          sx={{ justifyContent: 'space-between' }}
-        >
+        <Stack direction="column" justifyContent="start">
           <TextField
             id="embed-url"
             multiline
@@ -130,7 +125,7 @@ export function EmbedJourneyDialog({
               underline="none"
               target="_blank"
               rel="noopener"
-              color="#0041B2"
+              color="primary.main"
             >
               {t('Terms of agreement')}
             </Link>

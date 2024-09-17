@@ -103,7 +103,10 @@ const journey: Journey = {
   showShareButton: null,
   showLikeButton: null,
   showDislikeButton: null,
-  displayTitle: null
+  displayTitle: null,
+  logoImageBlock: null,
+  menuButtonIcon: null,
+  menuStepBlock: null
 }
 
 const card: TreeBlock<CardBlock> = {
@@ -129,7 +132,8 @@ const image: TreeBlock<ImageBlock> = {
   width: 1920,
   height: 1080,
   blurhash: '',
-  children: []
+  children: [],
+  scale: null
 }
 
 describe('BackgroundMediaImage', () => {
@@ -178,7 +182,8 @@ describe('BackgroundMediaImage', () => {
           width: image.width,
           height: image.height,
           parentOrder: image.parentOrder,
-          blurhash: image.blurhash
+          blurhash: image.blurhash,
+          scale: null
         },
         cardBlockUpdate: {
           id: card.id,
@@ -337,7 +342,8 @@ describe('BackgroundMediaImage', () => {
           width: image.width,
           height: image.height,
           parentOrder: image.parentOrder,
-          blurhash: image.blurhash
+          blurhash: image.blurhash,
+          scale: null
         }
       }
       const coverImageBlockUpdateMock: MockedResponse<

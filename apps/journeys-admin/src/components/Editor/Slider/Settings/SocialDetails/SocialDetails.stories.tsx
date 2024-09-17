@@ -71,7 +71,10 @@ const journey: Journey = {
   showShareButton: null,
   showLikeButton: null,
   showDislikeButton: null,
-  displayTitle: null
+  displayTitle: null,
+  logoImageBlock: null,
+  menuButtonIcon: null,
+  menuStepBlock: null
 }
 
 const image: ImageBlock = {
@@ -83,7 +86,8 @@ const image: ImageBlock = {
   alt: 'image.jpg',
   width: 1920,
   height: 1080,
-  blurhash: ''
+  blurhash: '',
+  scale: null
 }
 
 const Template: StoryObj<typeof SocialDetails> = {

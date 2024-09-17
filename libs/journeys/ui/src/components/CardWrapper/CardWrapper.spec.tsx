@@ -60,7 +60,8 @@ describe('CardWrapper', () => {
               parentBlockId: 'video5.id',
               parentOrder: 0,
               children: [],
-              blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ'
+              blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ',
+              scale: null
             }
           ]
         }
@@ -90,7 +91,8 @@ describe('CardWrapper', () => {
                 parentBlockId: 'video5.id',
                 parentOrder: 0,
                 src: 'https://images.unsplash.com/photo-1601142634808-38923eb7c560?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
-                width: 1920
+                width: 1920,
+                scale: null
               }
             ],
             endAt: null,
@@ -173,7 +175,8 @@ describe('CardWrapper', () => {
               parentBlockId: 'video5.id',
               parentOrder: 0,
               children: [],
-              blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ'
+              blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ',
+              scale: null
             }
           ]
         }
@@ -203,7 +206,8 @@ describe('CardWrapper', () => {
                 parentBlockId: 'video5.id',
                 parentOrder: 0,
                 src: 'https://images.unsplash.com/photo-1601142634808-38923eb7c560?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
-                width: 1920
+                width: 1920,
+                scale: null
               }
             ],
             endAt: null,
