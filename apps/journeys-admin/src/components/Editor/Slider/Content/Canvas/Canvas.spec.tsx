@@ -270,7 +270,7 @@ describe('Canvas', () => {
     ).toBeInTheDocument()
     expect(
       screen.getByText(
-        `activeCanvasDetailsDrawerAction: ${ActiveCanvasDetailsDrawer.Footer}`
+        `activeCanvasDetailsDrawerAction: ${ActiveCanvasDetailsDrawer.JourneyAppearance}`
       )
     ).toBeInTheDocument()
     expect(screen.getByTestId('JourneysStepFooter')).toHaveStyle({

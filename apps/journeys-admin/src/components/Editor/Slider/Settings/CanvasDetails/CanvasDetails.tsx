@@ -16,7 +16,7 @@ export function CanvasDetails(): ReactElement {
   switch (activeCanvasDetailsDrawer) {
     case ActiveCanvasDetailsDrawer.AddBlock:
       return <AddBlock />
-    case ActiveCanvasDetailsDrawer.Footer:
+    case ActiveCanvasDetailsDrawer.JourneyAppearance:
       return <JourneyAppearance />
     case ActiveCanvasDetailsDrawer.Properties:
       return <Properties />

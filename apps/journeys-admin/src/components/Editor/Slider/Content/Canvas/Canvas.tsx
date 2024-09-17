@@ -69,7 +69,7 @@ export function Canvas(): ReactElement {
   function handleJourneyAppearanceClick(): void {
     dispatch({
       type: 'SetActiveCanvasDetailsDrawerAction',
-      activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer
+      activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.JourneyAppearance
     })
     dispatch({
       type: 'SetActiveSlideAction',
@@ -262,7 +262,7 @@ export function Canvas(): ReactElement {
                               sx={{
                                 outline:
                                   activeCanvasDetailsDrawer ===
-                                    ActiveCanvasDetailsDrawer.Footer &&
+                                    ActiveCanvasDetailsDrawer.JourneyAppearance &&
                                   journey?.website === true
                                     ? '2px solid #C52D3A'
                                     : 'none',
@@ -304,7 +304,7 @@ export function Canvas(): ReactElement {
                               sx={{
                                 outline:
                                   activeCanvasDetailsDrawer ===
-                                  ActiveCanvasDetailsDrawer.Footer
+                                  ActiveCanvasDetailsDrawer.JourneyAppearance
                                     ? '2px solid #C52D3A'
                                     : 'none',
                                 outlineOffset: -4,

@@ -725,7 +725,7 @@ export const JourneyAppearanceEdit = {
     ...Template.args,
     state: {
       selectedBlock: {},
-      activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer
+      activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.JourneyAppearance
     },
     journey: {
       chatButtons: [
