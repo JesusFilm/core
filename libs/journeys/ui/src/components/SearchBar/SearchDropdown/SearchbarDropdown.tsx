@@ -19,6 +19,7 @@ import Search1 from '@core/shared/ui/icons/Search1'
 import { TabPanel } from '@core/shared/ui/TabPanel'
 
 import { useSearchBar } from '../../../libs/algolia/SearchBarProvider'
+import { LanguageContinentsRecord } from '../../../libs/useLanguagesContinentsQuery/sortLanguageContinents'
 
 import { CountryLanguageSelector } from './CountryLanguageSelector'
 import { RefinementGroups } from './RefinementGroups'
@@ -45,6 +46,7 @@ const StyledTab = styled(Tab)(({ theme }) => ({
 interface SearchbarDropdownProps {
   open: boolean
   refinements: RefinementListRenderState
+  languages: LanguageContinentsRecord
   id?: string
   anchorEl?: HTMLElement | null
   tabIndex?: number
@@ -54,6 +56,7 @@ interface SearchbarDropdownProps {
 export function SearchbarDropdown({
   open,
   refinements,
+  languages,
   id,
   anchorEl,
   tabIndex: tabValue = 0,
@@ -62,7 +65,6 @@ export function SearchbarDropdown({
   const { t } = useTranslation('apps-watch')
   const {
     state: { continentLanguages },
-    languages,
     dispatch
   } = useSearchBar()
 

@@ -7,6 +7,7 @@ import noop from 'lodash/noop'
 import { useClearRefinements, useSearchBox } from 'react-instantsearch'
 
 import { SearchBarProvider } from '../../../libs/algolia/SearchBarProvider'
+import { sortedLanguageContinents } from '../../../libs/useLanguagesContinentsQuery/sortLanguageContinents/data'
 import { getLanguagesContinentsMock } from '../../../libs/useLanguagesContinentsQuery/useLanguagesContinentsQuery.mock'
 import { languageRefinements } from '../data'
 
@@ -58,6 +59,7 @@ describe('SearchbarDropdown', () => {
           <SearchbarDropdown
             open={false}
             refinements={refinements}
+            languages={sortedLanguageContinents}
             handleTabValueChange={noop}
           />
         </SearchBarProvider>
@@ -75,6 +77,7 @@ describe('SearchbarDropdown', () => {
           <SearchbarDropdown
             open
             refinements={refinements}
+            languages={sortedLanguageContinents}
             handleTabValueChange={noop}
           />
         </SearchBarProvider>
@@ -91,6 +94,7 @@ describe('SearchbarDropdown', () => {
           <SearchbarDropdown
             open
             refinements={refinements}
+            languages={sortedLanguageContinents}
             handleTabValueChange={noop}
           />
         </SearchBarProvider>
@@ -106,6 +110,7 @@ describe('SearchbarDropdown', () => {
           <SearchbarDropdown
             open
             refinements={refinements}
+            languages={sortedLanguageContinents}
             tabIndex={1}
             handleTabValueChange={noop}
           />
@@ -122,6 +127,7 @@ describe('SearchbarDropdown', () => {
           <SearchbarDropdown
             open
             refinements={refinements}
+            languages={sortedLanguageContinents}
             tabIndex={1}
             handleTabValueChange={noop}
           />
@@ -144,6 +150,7 @@ describe('SearchbarDropdown', () => {
           <SearchbarDropdown
             open
             refinements={refinements}
+            languages={sortedLanguageContinents}
             tabIndex={1}
             handleTabValueChange={noop}
           />
@@ -168,6 +175,7 @@ describe('SearchbarDropdown', () => {
           <SearchbarDropdown
             open
             refinements={emptyRefinements}
+            languages={sortedLanguageContinents}
             tabIndex={1}
             handleTabValueChange={noop}
           />
@@ -189,6 +197,7 @@ describe('SearchbarDropdown', () => {
           <SearchbarDropdown
             open
             refinements={emptyRefinements}
+            languages={sortedLanguageContinents}
             tabIndex={1}
             handleTabValueChange={noop}
           />
@@ -214,6 +223,7 @@ describe('SearchbarDropdown', () => {
           <SearchbarDropdown
             open
             refinements={refinements}
+            languages={sortedLanguageContinents}
             tabIndex={1}
             handleTabValueChange={noop}
           />
@@ -235,6 +245,7 @@ describe('SearchbarDropdown', () => {
           <SearchbarDropdown
             open
             refinements={refinements}
+            languages={sortedLanguageContinents}
             tabIndex={1}
             handleTabValueChange={noop}
           />
@@ -254,6 +265,7 @@ describe('SearchbarDropdown', () => {
           <SearchbarDropdown
             open
             refinements={refinements}
+            languages={sortedLanguageContinents}
             tabIndex={0}
             handleTabValueChange={noop}
           />
@@ -275,6 +287,7 @@ describe('SearchbarDropdown', () => {
           <SearchbarDropdown
             open
             refinements={refinements}
+            languages={sortedLanguageContinents}
             tabIndex={1}
             handleTabValueChange={noop}
           />

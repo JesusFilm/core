@@ -1,4 +1,11 @@
-import { QueryResult, gql, useQuery } from '@apollo/client'
+import {
+  LazyQueryResultTuple,
+  OperationVariables,
+  QueryResult,
+  gql,
+  useLazyQuery,
+  useQuery
+} from '@apollo/client'
 
 import { GetLanguagesContinents } from './__generated__/GetLanguagesContinents'
 
@@ -22,4 +29,11 @@ export const GET_LANGUAGES_CONTINENTS = gql`
 
 export function useLanguagesContinentsQuery(): QueryResult<GetLanguagesContinents> {
   return useQuery<GetLanguagesContinents>(GET_LANGUAGES_CONTINENTS)
+}
+
+export function useLanguagesContinentsLazyQuery(): LazyQueryResultTuple<
+  GetLanguagesContinents,
+  OperationVariables
+> {
+  return useLazyQuery<GetLanguagesContinents>(GET_LANGUAGES_CONTINENTS)
 }

@@ -5,7 +5,6 @@ import InputAdornment from '@mui/material/InputAdornment'
 import { styled, useTheme } from '@mui/material/styles'
 import TextField, { TextFieldProps } from '@mui/material/TextField'
 import { Formik } from 'formik'
-import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next'
 import { type ReactElement, useRef, useState } from 'react'
 import { useRefinementList, useSearchBox } from 'react-instantsearch'
@@ -14,16 +13,14 @@ import Search1Icon from '@core/shared/ui/icons/Search1'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
 
 import { SearchBarProvider } from '../../libs/algolia/SearchBarProvider'
+import { useLanguagesContinentsLazyQuery } from '../../libs/useLanguagesContinentsQuery'
+import {
+  LanguageContinentsRecord,
+  sortLanguageContinents
+} from '../../libs/useLanguagesContinentsQuery/sortLanguageContinents'
 
 import { LanguageButtons } from './LanguageButtons'
-
-const DynamicSearchbarDropdown = dynamic(
-  async () =>
-    await import(
-      /* webpackChunkName: "SearchbarDropdown" */
-      './SearchDropdown'
-    ).then((mod) => mod.SearchbarDropdown)
-)
+import { SearchbarDropdown } from './SearchDropdown'
 
 /* Styles below used to fake a gradient border because the 
 css attributes border-radius and border-image-source are not compatible */
@@ -80,6 +77,7 @@ export function SearchBar({
   }
 
   function openSuggestionsDropdown(): void {
+    void prepareDropdown()
     setAnchorEl(popperRef.current)
     setOpen(true)
   }
@@ -88,6 +86,26 @@ export function SearchBar({
     setAnchorEl(popperRef.current)
     setTabValue(1)
     setOpen(!open)
+  }
+
+  const [languageContinents, setLanguageContinents] =
+    useState<LanguageContinentsRecord>({})
+  const [isPreparingDropdown, setIsPreparingDropdown] = useState(false)
+  const [getLanguages] = useLanguagesContinentsLazyQuery()
+
+  async function getLanguageContinents(): Promise<void> {
+    const result = await getLanguages()
+    const languages = sortLanguageContinents({
+      languages: result.data?.languages ?? []
+    })
+    setLanguageContinents(languages)
+  }
+
+  async function prepareDropdown(): Promise<void> {
+    if (!isPreparingDropdown) {
+      setIsPreparingDropdown(true) // Trigger import of dropdown closed
+      await getLanguageContinents()
+    }
   }
 
   return (
@@ -129,6 +147,8 @@ export function SearchBar({
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') setOpen(false)
                     }}
+                    onMouseEnter={prepareDropdown}
+                    onTouchStart={prepareDropdown}
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
@@ -169,16 +189,15 @@ export function SearchBar({
               />
             </Box>
           </Box>
-          {open && (
-            <DynamicSearchbarDropdown
-              open={open}
-              refinements={refinements}
-              id={open ? 'simple-popper' : undefined}
-              anchorEl={anchorEl}
-              tabIndex={tabValue}
-              handleTabValueChange={setTabValue}
-            />
-          )}
+          <SearchbarDropdown
+            open={open}
+            refinements={refinements}
+            languages={languageContinents}
+            id={open ? 'simple-popper' : undefined}
+            anchorEl={anchorEl}
+            tabIndex={tabValue}
+            handleTabValueChange={setTabValue}
+          />
         </Box>
       </ClickAwayListener>
     </SearchBarProvider>

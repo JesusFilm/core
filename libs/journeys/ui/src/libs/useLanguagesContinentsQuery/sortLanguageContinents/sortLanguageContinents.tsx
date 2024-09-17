@@ -1,18 +1,19 @@
 import mapValues from 'lodash/mapValues'
 
-import { GetLanguagesContinents_languages as Languages } from '../useLanguagesContinentsQuery/__generated__/GetLanguagesContinents'
+import { Continent, Language } from '../../algolia/SearchBarProvider'
+import { GetLanguagesContinents_languages as Languages } from '../__generated__/GetLanguagesContinents'
 
 export interface LanguageContinentsRecord {
-  [continent: string]: string[]
+  [continent: Continent]: Language[]
 }
 
-interface useSortLanguageContinentsProps {
+interface sortLanguageContinentsProps {
   languages: Languages[]
 }
 
-export function useSortLanguageContinents({
+export function sortLanguageContinents({
   languages
-}: useSortLanguageContinentsProps): LanguageContinentsRecord {
+}: sortLanguageContinentsProps): LanguageContinentsRecord {
   const record: Record<string, Set<string>> = languages.reduce(
     (acc: Record<string, Set<string>>, language: Languages) => {
       language.countryLanguages.forEach((countryLanguage) => {
