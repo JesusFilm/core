@@ -109,7 +109,7 @@ export function TitleDescriptionDialog({
                   <TextField
                     id="title"
                     name="title"
-                    label="Title"
+                    label={t('Title')}
                     fullWidth
                     value={values.title}
                     variant="filled"
@@ -121,7 +121,7 @@ export function TitleDescriptionDialog({
                   <TextField
                     id="description"
                     name="description"
-                    label="Description"
+                    label={t('Description')}
                     fullWidth
                     value={values.description}
                     multiline
