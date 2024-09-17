@@ -3,7 +3,7 @@ import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { NextSeo } from 'next-seo'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { GET_JOURNEY } from '@core/journeys/ui/useJourneyQuery'
@@ -40,16 +40,19 @@ function HostJourneyPage({
   console.log(router.query)
   console.log(host)
   console.log(router?.query?.defaultJourney === 'true')
-  if (router?.query?.defaultJourney === 'true') {
-    console.log('here')
-    void router.push(
-      {
-        pathname: `/${host}`
-      },
-      undefined,
-      { shallow: true }
-    )
-  }
+  useEffect(() => {
+    if (router?.query?.defaultJourney === 'true') {
+      console.log('here')
+      void router.push(
+        {
+          pathname: `/`
+        },
+        undefined,
+        { shallow: true }
+      )
+    }
+  }, [])
+
   return (
     <>
       <Head>
