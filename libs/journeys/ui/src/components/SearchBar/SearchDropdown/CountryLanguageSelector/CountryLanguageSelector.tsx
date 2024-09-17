@@ -24,6 +24,14 @@ export function CountryLanguageSelector({
   const [countryCode, setCountryCode] = useState<string>()
   const { data } = useCountryQuery({ countryId: countryCode ?? '' })
 
+  useEffect(() => {
+    void fetch('/api/jf/watch.html/geolocation').then((response) => {
+      void response.json().then((data: { country?: string }) => {
+        console.log('country', data.country)
+      })
+    })
+  }, [])
+
   const spokenLanguages = getTopSpokenLanguages({
     country: data?.country,
     availableLanguages: items
