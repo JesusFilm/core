@@ -1,6 +1,6 @@
 import { ApolloError } from '@apollo/client'
+import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
-import Typography from '@mui/material/Typography'
 import { Form, Formik, FormikValues } from 'formik'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
@@ -98,7 +98,6 @@ export function TitleDescriptionDialog({
             <Dialog
               open={open}
               onClose={handleClose(resetForm)}
-              dialogTitle={{ title: t('Title: ') }}
               dialogAction={{
                 onSubmit: handleSubmit,
                 closeLabel: t('Cancel')
@@ -106,35 +105,31 @@ export function TitleDescriptionDialog({
               testId="TitleDescriptionDialog"
             >
               <Form>
-                <TextField
-                  id="title"
-                  name="title"
-                  hiddenLabel
-                  fullWidth
-                  value={values.title}
-                  variant="filled"
-                  error={Boolean(errors.title)}
-                  onKeyDown={(e) => e.stopPropagation()}
-                  onChange={handleChange}
-                  helperText={errors.title as string}
-                />
-                <Typography
-                  variant="subtitle1"
-                  style={{ paddingTop: 20, paddingBottom: 16 }}
-                >
-                  {t('Description: ')}
-                </Typography>
-                <TextField
-                  id="description"
-                  name="description"
-                  hiddenLabel
-                  fullWidth
-                  value={values.description}
-                  multiline
-                  variant="filled"
-                  rows={2}
-                  onChange={handleChange}
-                />
+                <Stack spacing={6}>
+                  <TextField
+                    id="title"
+                    name="title"
+                    label={t('Title')}
+                    fullWidth
+                    value={values.title}
+                    variant="filled"
+                    error={Boolean(errors.title)}
+                    onKeyDown={(e) => e.stopPropagation()}
+                    onChange={handleChange}
+                    helperText={errors.title as string}
+                  />
+                  <TextField
+                    id="description"
+                    name="description"
+                    label={t('Description')}
+                    fullWidth
+                    value={values.description}
+                    multiline
+                    variant="filled"
+                    rows={2}
+                    onChange={handleChange}
+                  />
+                </Stack>
               </Form>
             </Dialog>
           )}
