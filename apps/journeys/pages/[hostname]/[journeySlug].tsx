@@ -37,10 +37,14 @@ function HostJourneyPage({
   if (isIframe) {
     void router.push('/embed/[journeySlug]', `/embed/${journey.slug}`)
   }
+  console.log(router.query)
+  console.log(host)
+  console.log(router?.query?.defaultJourney === 'true')
   if (router?.query?.defaultJourney === 'true') {
+    console.log('here')
     void router.push(
       {
-        pathname: '/'
+        pathname: `/${host}`
       },
       undefined,
       { shallow: true }
