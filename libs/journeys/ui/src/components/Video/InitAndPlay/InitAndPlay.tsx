@@ -131,10 +131,7 @@ export function InitAndPlay({
     const handleCanPlay = (): void => {
       handleStopLoading()
       if (player != null) player.muted(muted === true)
-      if (player != null && autoplay === true)
-        setTimeout(() => {
-          void player.play()
-        }, 1000)
+      if (player != null && autoplay === true) void player.play()
     }
 
     if (player != null) {
@@ -152,7 +149,7 @@ export function InitAndPlay({
       if (player != null) {
         player.off('ready', handleVideoReady)
         player.off('seeked', handleStopLoading)
-        player.off('canplay', handleStopLoading)
+        player.off('canplay', handleCanPlay)
         player.off('playing', handlePlaying)
         player.off('ended', handleVideoEnd)
       }
