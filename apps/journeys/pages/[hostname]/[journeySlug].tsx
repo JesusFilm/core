@@ -20,7 +20,6 @@ import { JourneyRenderer } from '../../src/components/JourneyRenderer'
 import { createApolloClient } from '../../src/libs/apolloClient'
 
 interface HostJourneyPageProps {
-  hostname: string
   host: string
   journey: Journey
   locale: string
@@ -28,7 +27,6 @@ interface HostJourneyPageProps {
 }
 
 function HostJourneyPage({
-  hostname,
   host,
   journey,
   locale,
@@ -44,10 +42,8 @@ function HostJourneyPage({
     if (router?.query?.defaultJourney === 'true') {
       window.history.pushState(null, `${journey.title}`, '')
     }
-  }, [router, journey, hostname])
-  // if (router?.query?.defaultJourney === 'true') {
-  //   window.history.pushState(null, `${journey.title}`, '')
-  // }
+  }, [router, journey])
+
   return (
     <>
       <Head>
@@ -111,7 +107,6 @@ export const getStaticProps: GetStaticProps<HostJourneyPageProps> = async (
     const { rtl, locale } = getJourneyRTL(data.journey)
     return {
       props: {
-        hostname: context.params?.hostname?.toString() ?? '',
         host: context.params?.host?.toString() ?? '',
         ...(await serverSideTranslations(
           context.locale ?? 'en',
