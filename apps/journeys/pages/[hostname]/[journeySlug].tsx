@@ -42,14 +42,7 @@ function HostJourneyPage({
   console.log(router?.query?.defaultJourney === 'true')
   useEffect(() => {
     if (router?.query?.defaultJourney === 'true') {
-      console.log('here')
-      void router.push(
-        {
-          pathname: `/`
-        },
-        undefined,
-        { shallow: true }
-      )
+      window.history.replaceState(null, '', '/')
     }
   }, [])
 
