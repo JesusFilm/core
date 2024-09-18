@@ -12,9 +12,8 @@ import {
 import '../../../test/i18n'
 import { getLanguagesContinentsMock } from '../../libs/useLanguagesContinentsQuery/useLanguagesContinentsQuery.mock'
 
-import { languageRefinements } from './data'
+import { fetchCountryMock, languageRefinements } from './data'
 import { SearchBar } from './SearchBar'
-import { fetchCountryMock } from './SearchDropdown/CountryLanguageSelector/data'
 
 global.fetch = jest.fn(fetchCountryMock) as jest.Mock
 

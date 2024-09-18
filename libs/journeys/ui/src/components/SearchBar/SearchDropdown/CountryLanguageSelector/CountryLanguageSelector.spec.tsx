@@ -7,9 +7,6 @@ import { getCountryMock } from '../../../../libs/useCountryQuery/useCountryQuery
 import { languageRefinements } from '../../data'
 
 import { CountryLanguageSelector } from './CountryLanguageSelector'
-import { fetchCountryMock } from './data'
-
-global.fetch = jest.fn(fetchCountryMock) as jest.Mock
 
 describe('CountryLanguageSelector', () => {
   const refine = jest.fn()
@@ -26,7 +23,7 @@ describe('CountryLanguageSelector', () => {
     render(
       <SearchBarProvider>
         <MockedProvider mocks={[getCountryMock]}>
-          <CountryLanguageSelector refinements={refinements} />
+          <CountryLanguageSelector countryCode="US" refinements={refinements} />
         </MockedProvider>
       </SearchBarProvider>
     )
@@ -46,7 +43,7 @@ describe('CountryLanguageSelector', () => {
     render(
       <SearchBarProvider>
         <MockedProvider mocks={[getCountryMock]}>
-          <CountryLanguageSelector refinements={refinements} />
+          <CountryLanguageSelector countryCode="US" refinements={refinements} />
         </MockedProvider>
       </SearchBarProvider>
     )
@@ -59,7 +56,7 @@ describe('CountryLanguageSelector', () => {
     render(
       <SearchBarProvider>
         <MockedProvider mocks={[getCountryMock]}>
-          <CountryLanguageSelector refinements={refinements} />
+          <CountryLanguageSelector countryCode="US" refinements={refinements} />
         </MockedProvider>
       </SearchBarProvider>
     )
