@@ -15,6 +15,7 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 
+import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 import {
@@ -143,14 +144,14 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
 }
 
 export const GET_JOURNEYS = gql`
+  ${JOURNEY_FIELDS}
   query GetJourneysSummary($featured: Boolean, $options: JourneysQueryOptions) {
     journeys(
       where: { featured: $featured, template: false }
       options: $options
     ) {
       id
-      title
-      slug
+      ...JourneyFields
     }
   }
 `
