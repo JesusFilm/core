@@ -49,10 +49,6 @@ export function SignUpEdit({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [undo?.id])
 
-  useEffect(() => {
-    setValue(submitLabel)
-  }, [submitLabel])
-
   function resetCommandInput(): void {
     setCommandInput({ id: uuidv4(), value })
   }
@@ -101,6 +97,7 @@ export function SignUpEdit({
             ...context
           }
         })
+        setValue(submitLabel)
       }
     })
   }

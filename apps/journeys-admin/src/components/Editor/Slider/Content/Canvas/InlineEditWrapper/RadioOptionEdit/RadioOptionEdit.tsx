@@ -58,10 +58,6 @@ export function RadioOptionEdit({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [undo?.id])
 
-  useEffect(() => {
-    setValue(label)
-  }, [label])
-
   function resetCommandInput(): void {
     setCommandInput({ id: uuidv4(), value })
   }
@@ -110,6 +106,7 @@ export function RadioOptionEdit({
             ...context
           }
         })
+        setValue(label)
       }
     })
   }
