@@ -42,12 +42,9 @@ function HostJourneyPage({
 
   useEffect(() => {
     if (router?.query?.defaultJourney === 'true') {
-      window.history.pushState(null, `${journey.title}`, '')
+      window.history.pushState(null, `${journey.title}`, '/')
     }
   }, [router, journey, hostname])
-  if (router?.query?.defaultJourney === 'true') {
-    window.history.pushState(null, `${journey.title}`, '')
-  }
 
   return (
     <>
