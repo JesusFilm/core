@@ -76,6 +76,9 @@ export function Item({
           target={href != null ? '_blank' : undefined}
           href={href}
           onClick={onClick}
+          sx={{
+            gap: 2
+          }}
         >
           <ListItemIcon>{icon}</ListItemIcon>
           <ListItemText>{label}</ListItemText>

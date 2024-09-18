@@ -119,9 +119,11 @@ describe('Toolbar', () => {
 
   it('should render title & description on Toolbar', () => {
     render(toolbar(defaultJourney))
-    expect(screen.getByText('My Awesome Journey Title')).toBeInTheDocument()
+    expect(screen.getAllByRole('heading', { level: 6 })[0]).toHaveTextContent(
+      'My Awesome Journey Title'
+    )
     expect(
-      screen.getByText('My Awesome Journey Description')
+      screen.getAllByText('My Awesome Journey Description')[0]
     ).toBeInTheDocument()
   })
 
