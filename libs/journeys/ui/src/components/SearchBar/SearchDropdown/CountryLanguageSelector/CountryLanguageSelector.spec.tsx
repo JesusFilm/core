@@ -7,17 +7,9 @@ import { getCountryMock } from '../../../../libs/useCountryQuery/useCountryQuery
 import { languageRefinements } from '../../data'
 
 import { CountryLanguageSelector } from './CountryLanguageSelector'
-import { NEXT_COUNTRY } from './data'
+import { fetchCountryMock } from './data'
 
-global.fetch = jest.fn(
-  async () =>
-    await Promise.resolve({
-      json: async () =>
-        await Promise.resolve({
-          country: 'US'
-        })
-    })
-) as jest.Mock
+global.fetch = jest.fn(fetchCountryMock) as jest.Mock
 
 describe('CountryLanguageSelector', () => {
   const refine = jest.fn()
@@ -25,10 +17,6 @@ describe('CountryLanguageSelector', () => {
     items: languageRefinements,
     refine
   } as unknown as RefinementListRenderState
-
-  beforeEach(() => {
-    jest.spyOn(document, 'cookie', 'get').mockImplementation(() => NEXT_COUNTRY)
-  })
 
   afterEach(() => {
     jest.clearAllMocks()
