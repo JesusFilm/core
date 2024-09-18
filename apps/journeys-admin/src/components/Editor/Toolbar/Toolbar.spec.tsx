@@ -118,12 +118,12 @@ describe('Toolbar', () => {
 
   it('should render title & description on Toolbar', () => {
     render(toolbar(defaultJourney))
-    expect(screen.getByTestId('ToolbarTitle')).toHaveTextContent(
+    expect(screen.getAllByRole('heading', { level: 6 })[0]).toHaveTextContent(
       'My Awesome Journey Title'
     )
-    expect(screen.getByTestId('ToolbarDescription')).toHaveTextContent(
-      'My Awesome Journey Description'
-    )
+    expect(
+      screen.getAllByText('My Awesome Journey Description')[0]
+    ).toBeInTheDocument()
   })
 
   it('should open the title dialog when selected', async () => {
