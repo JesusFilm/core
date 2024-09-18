@@ -98,7 +98,7 @@ export function SearchBar({
   }
 
   const findUserCountry = useCallback(async () => {
-    const response = await fetch('/api/jf/watch.html/geolocation')
+    const response = await fetch('/api/geolocation')
     const { country } = await response.json()
 
     if (country != null) {
