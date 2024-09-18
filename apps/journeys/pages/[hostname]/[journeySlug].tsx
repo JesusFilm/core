@@ -20,7 +20,6 @@ import { JourneyRenderer } from '../../src/components/JourneyRenderer'
 import { createApolloClient } from '../../src/libs/apolloClient'
 
 interface HostJourneyPageProps {
-  hostname: string
   host: string
   journey: Journey
   locale: string
@@ -28,7 +27,6 @@ interface HostJourneyPageProps {
 }
 
 function HostJourneyPage({
-  hostname,
   host,
   journey,
   locale,
