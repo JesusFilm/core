@@ -4,7 +4,6 @@ import IconButton from '@mui/material/IconButton'
 import MuiMenu from '@mui/material/Menu'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
-import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { User } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
@@ -27,6 +26,8 @@ import { ShareItem } from '../Items/ShareItem'
 import { StrategyItem } from '../Items/StrategyItem'
 import { TemplateSettingsItem } from '../Items/TemplateSettingsItem'
 import { TitleItem } from '../Items/TitleItem'
+
+import { JourneyDetails } from './JourneyDetails'
 
 export const GET_ROLE = gql`
   query GetRole {
@@ -89,31 +90,7 @@ export function Menu({ user }: MenuProps): ReactElement {
         }}
       >
         <Stack sx={{ width: 220, display: { xs: 'flex', sm: 'none' } }}>
-          <Stack spacing={2} sx={{ px: 4, py: 1 }}>
-            <Typography
-              variant="subtitle2"
-              sx={{
-                display: '-webkit-box',
-                '-webkit-line-clamp': '2',
-                '-webkit-box-orient': 'vertical',
-                overflow: 'hidden'
-              }}
-            >
-              {journey?.title}
-            </Typography>
-            <Typography
-              variant="caption"
-              sx={{
-                maxWidth: 'auto',
-                overflow: 'hidden',
-                display: '-webkit-box',
-                '-webkit-line-clamp': '2',
-                '-webkit-box-orient': 'vertical'
-              }}
-            >
-              {journey?.description}
-            </Typography>
-          </Stack>
+          <JourneyDetails />
           <DetailsItem variant="menu-item" onClose={handleCloseMenu} />
           <Divider />
         </Stack>
