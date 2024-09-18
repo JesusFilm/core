@@ -52,31 +52,24 @@ export function CountryLanguageSelector({
     }
   }
 
-  function getCountryCookie(): string | undefined {
-    return document.cookie
-      .split('; ')
-      .find((row) => row.startsWith('NEXT_COUNTRY'))
-      ?.split('=')[1]
-  }
-
   function parseCountryName(countryCode: string): string | undefined {
     const displayNames = new Intl.DisplayNames(['en'], { type: 'region' })
     return displayNames.of(countryCode)
   }
 
-  const findUserCountry = useCallback(() => {
-    const countryCookie = getCountryCookie()
-    if (countryCookie != null) {
-      const [, countryCode] = countryCookie.split('---')
-      const countryName = parseCountryName(countryCode)
+  const findUserCountry = useCallback(async () => {
+    const response = await fetch('/api/jf/watch.html/geolocation')
+    const { country } = await response.json()
+
+    if (country != null) {
+      const countryName = parseCountryName(country)
       setCountry(countryName)
-      setCountryCode(countryCode)
+      setCountryCode(country)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
-    findUserCountry()
+    void findUserCountry()
   }, [findUserCountry])
 
   return (
