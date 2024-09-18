@@ -22,13 +22,24 @@ export function PaginationBullets(): ReactElement {
     } as unknown as TreeBlock<StepFields>
   )
 
+  const BULLET_GAP = 16
+  const BULLET_INITIAL_POSITION = 52
+
+  const adminBullets = useMemo(() => {
+    return {
+      bullets: [0, 1, 2],
+      activeIndex: 1,
+      distance: 2 * BULLET_GAP
+    }
+  }, [])
+
   const bullets: number[] = useMemo(() => {
     if (variant === 'admin') {
-      return [...new Array(3)]
+      return adminBullets.bullets
     } else {
       return bulletsToRender(treeBlocks)
     }
-  }, [treeBlocks, variant])
+  }, [treeBlocks, variant, adminBullets])
 
   useEffect(() => {
     const currentActiveBlock = blockHistory[
@@ -38,14 +49,18 @@ export function PaginationBullets(): ReactElement {
 
     // to prevent infinite card loops from running out of pagination dots
     removeAlreadyVisitedBlocksFromHistory(blockHistory, currentActiveBlock)
-
-    setActiveIndex(
+    const hasBlockAction =
       currentActiveBlock?.nextBlockId != null ||
-        filterActionBlocks(currentActiveBlock).some((block) => hasAction(block))
-        ? blockHistory.length - 1
-        : bullets.length - 1
-    )
-  }, [blockHistory, bullets.length])
+      filterActionBlocks(currentActiveBlock).some((block) => hasAction(block))
+
+    if (hasBlockAction) {
+      setActiveIndex(blockHistory.length - 1)
+    } else if (variant === 'admin') {
+      setActiveIndex(adminBullets.activeIndex)
+    } else {
+      setActiveIndex(bullets.length - 1)
+    }
+  }, [blockHistory, bullets.length, variant, adminBullets])
 
   return (
     <Box
@@ -70,15 +85,20 @@ export function PaginationBullets(): ReactElement {
         }}
       >
         {bullets.map((val, i) => {
-          const gap = 16
-          const initial = 52
-          const distanceFromInitial = i * gap
-          // if on a card that has no next step - show end pagination bullets state
-          const moveDistance =
-            activeBlock?.nextBlockId != null ||
-            filterActionBlocks(activeBlock).some((block) => hasAction(block))
-              ? blockHistory.length * gap
-              : bullets.length * gap
+          const distanceFromInitial = i * BULLET_GAP
+          const moveDistance = (): number => {
+            // if on a card that has no next step - show end pagination bullets state
+            const hasBlockAction =
+              activeBlock?.nextBlockId != null ||
+              filterActionBlocks(activeBlock).some((block) => hasAction(block))
+            if (hasBlockAction) {
+              return blockHistory.length * BULLET_GAP
+            } else if (variant === 'admin') {
+              return adminBullets.distance
+            } else {
+              return bullets.length * BULLET_GAP
+            }
+          }
 
           return (
             <Bullet
@@ -90,7 +110,9 @@ export function PaginationBullets(): ReactElement {
                   ? 'adjacent'
                   : 'default'
               }
-              left={initial + distanceFromInitial - moveDistance}
+              left={
+                BULLET_INITIAL_POSITION + distanceFromInitial - moveDistance()
+              }
             />
           )
         })}
