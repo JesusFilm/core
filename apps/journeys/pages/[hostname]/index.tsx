@@ -1,3 +1,4 @@
+import { gql } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Fade from '@mui/material/Fade'
@@ -14,6 +15,7 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 
+import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
@@ -28,7 +30,6 @@ import logo from '../../public/logo.svg'
 import { JourneyPageWrapper } from '../../src/components/JourneyPageWrapper'
 import { JourneyRenderer } from '../../src/components/JourneyRenderer'
 import { createApolloClient } from '../../src/libs/apolloClient'
-import { GET_JOURNEYS } from '../home'
 
 enum PageType {
   DefaultJourney = 'DefaultJourney',
@@ -53,6 +54,19 @@ interface DefaulJourneytHostPageProps {
   locale: string
   rtl: boolean
 }
+
+export const GET_JOURNEYS_FIELDS = gql`
+  ${JOURNEY_FIELDS}
+  query GetJourneysFields($featured: Boolean, $options: JourneysQueryOptions) {
+    journeys(
+      where: { featured: $featured, template: false }
+      options: $options
+    ) {
+      id
+      ...JourneyFields
+    }
+  }
+`
 
 const StyledIframe = styled('iframe')(() => ({}))
 
@@ -200,7 +214,7 @@ export const getStaticProps: GetStaticProps<
     GetJourneysSummary,
     GetJourneysSummaryVariables
   >({
-    query: GET_JOURNEYS,
+    query: GET_JOURNEYS_FIELDS,
     variables: {
       options: {
         hostname: context.params?.hostname as string,
