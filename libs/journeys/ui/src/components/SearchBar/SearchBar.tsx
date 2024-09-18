@@ -95,7 +95,7 @@ export function SearchBar({
     setOpen(!open)
   }
 
-  const [languageContinents, setLanguageContinents] =
+  const [allContinentLanguages, setAllContinentLanguages] =
     useState<LanguageContinentsRecord>({})
   const [isPreparingDropdown, setIsPreparingDropdown] = useState(false)
   const [getLanguages] = useLanguagesContinentsLazyQuery()
@@ -105,12 +105,12 @@ export function SearchBar({
     const languages = sortLanguageContinents({
       languages: result.data?.languages ?? []
     })
-    setLanguageContinents(languages)
+    setAllContinentLanguages(languages)
   }
 
   async function prepareDropdown(): Promise<void> {
     if (!isPreparingDropdown) {
-      setIsPreparingDropdown(true) // Trigger import of dropdown closed
+      setIsPreparingDropdown(true)
       await getLanguageContinents()
     }
   }
@@ -141,6 +141,10 @@ export function SearchBar({
             }}
             data-testid="SearchBar"
             ref={popperRef}
+            onMouseEnter={prepareDropdown}
+            onTouchStart={prepareDropdown}
+            onClick={prepareDropdown}
+            onFocus={prepareDropdown}
           >
             <Formik
               initialValues={{
@@ -167,8 +171,6 @@ export function SearchBar({
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') setOpen(false)
                     }}
-                    onMouseEnter={prepareDropdown}
-                    onTouchStart={prepareDropdown}
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
@@ -212,7 +214,7 @@ export function SearchBar({
           <SearchbarDropdown
             open={open}
             refinements={refinements}
-            languages={languageContinents}
+            languages={allContinentLanguages}
             countryCode={countryCode}
             id={open ? 'simple-popper' : undefined}
             anchorEl={anchorEl}
