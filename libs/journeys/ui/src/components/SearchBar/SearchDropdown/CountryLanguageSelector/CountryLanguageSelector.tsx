@@ -58,15 +58,14 @@ export function CountryLanguageSelector({
   }
 
   const findUserCountry = useCallback(async () => {
-    await fetch('/api/jf/watch.html/geolocation').then(async (response) => {
-      await response.json().then((data: { country?: string }) => {
-        if (data.country != null) {
-          const countryName = parseCountryName(data.country)
-          setCountry(countryName)
-          setCountryCode(data.country)
-        }
-      })
-    })
+    const response = await fetch('/api/jf/watch.html/geolocation')
+    const { country } = await response.json()
+
+    if (country != null) {
+      const countryName = parseCountryName(country)
+      setCountry(countryName)
+      setCountryCode(country)
+    }
   }, [])
 
   useEffect(() => {
