@@ -5,8 +5,12 @@ import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refine
 import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
 import { useHits, useRefinementList, useSearchBox } from 'react-instantsearch'
 
+import { fetchCountryMock } from '@core/journeys/ui/SearchBar/data'
+
 import { StrategiesView } from './StrategiesView'
 import { strategyItems } from './StrategySections/StrategySection/data'
+
+global.fetch = jest.fn(fetchCountryMock) as jest.Mock
 
 jest.mock('react-instantsearch')
 

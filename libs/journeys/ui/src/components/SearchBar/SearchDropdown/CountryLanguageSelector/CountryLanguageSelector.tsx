@@ -4,24 +4,25 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import Image from 'next/image'
-import { ReactElement, useCallback, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
 import { getTopSpokenLanguages } from '../../../../libs/algolia/getTopSpokenLanguages'
 import { useSearchBar } from '../../../../libs/algolia/SearchBarProvider'
 import { useCountryQuery } from '../../../../libs/useCountryQuery'
 
 interface CountryLanguageSelectorProps {
+  countryCode?: string
   refinements: RefinementListRenderState
 }
 
 export function CountryLanguageSelector({
+  countryCode,
   refinements
 }: CountryLanguageSelectorProps): ReactElement {
   const { items, refine } = refinements
 
   const { dispatch } = useSearchBar()
   const [country, setCountry] = useState<string>()
-  const [countryCode, setCountryCode] = useState<string>()
   const { data } = useCountryQuery({ countryId: countryCode ?? '' })
 
   const spokenLanguages = getTopSpokenLanguages({
@@ -57,20 +58,12 @@ export function CountryLanguageSelector({
     return displayNames.of(countryCode)
   }
 
-  const findUserCountry = useCallback(async () => {
-    const response = await fetch('/api/jf/watch.html/geolocation')
-    const { country } = await response.json()
-
-    if (country != null) {
-      const countryName = parseCountryName(country)
-      setCountry(countryName)
-      setCountryCode(country)
-    }
-  }, [])
-
   useEffect(() => {
-    void findUserCountry()
-  }, [findUserCountry])
+    if (countryCode != null) {
+      const countryName = parseCountryName(countryCode)
+      setCountry(countryName)
+    }
+  }, [countryCode])
 
   return (
     <>
