@@ -930,9 +930,7 @@ export class JourneyPage {
   }
 
   async clickPreviewBtnInCustomJourneyPage() {
-    await this.page
-      .locator('div[data-testid="PreviewItem"] a[aria-label="Preview"]')
-      .click()
+    await this.page.getByTestId('ItemsStack').getByLabel('Preview').click()
   }
 
   async verifyPreviewFromCustomJourneyPage() {
