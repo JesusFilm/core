@@ -10,7 +10,10 @@ import { SearchBarProvider } from '../../../libs/algolia/SearchBarProvider'
 import { getLanguagesContinentsMock } from '../../../libs/useLanguagesContinentsQuery/useLanguagesContinentsQuery.mock'
 import { languageRefinements } from '../data'
 
+import { fetchCountryMock } from './CountryLanguageSelector/data'
 import { SearchbarDropdown } from './SearchbarDropdown'
+
+global.fetch = jest.fn(fetchCountryMock) as jest.Mock
 
 jest.mock('react-instantsearch')
 

@@ -14,6 +14,9 @@ import { getLanguagesContinentsMock } from '../../libs/useLanguagesContinentsQue
 
 import { languageRefinements } from './data'
 import { SearchBar } from './SearchBar'
+import { fetchCountryMock } from './SearchDropdown/CountryLanguageSelector/data'
+
+global.fetch = jest.fn(fetchCountryMock) as jest.Mock
 
 jest.mock('react-instantsearch')
 
