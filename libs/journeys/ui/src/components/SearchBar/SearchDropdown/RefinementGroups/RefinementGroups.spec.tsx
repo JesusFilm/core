@@ -3,7 +3,11 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { ClearRefinementsRenderState } from 'instantsearch.js/es/connectors/clear-refinements/connectClearRefinements'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
-import { useClearRefinements, useSearchBox } from 'react-instantsearch'
+import {
+  useClearRefinements,
+  useRefinementList,
+  useSearchBox
+} from 'react-instantsearch'
 
 import { SearchBarProvider } from '../../../../libs/algolia/SearchBarProvider'
 import { getLanguagesContinentsMock } from '../../../../libs/useLanguagesContinentsQuery/useLanguagesContinentsQuery.mock'
@@ -19,6 +23,10 @@ const mockUseClearRefinements = useClearRefinements as jest.MockedFunction<
 
 const mockUseSearchBox = useSearchBox as jest.MockedFunction<
   typeof useSearchBox
+>
+
+const mockUseRefinementList = useRefinementList as jest.MockedFunction<
+  typeof useRefinementList
 >
 
 describe('RefinementGroups', () => {
@@ -49,6 +57,7 @@ describe('RefinementGroups', () => {
   beforeEach(() => {
     mockUseSearchBox.mockReturnValue(useSearchBox)
     mockUseClearRefinements.mockReturnValue(clearRefinements)
+    mockUseRefinementList.mockReturnValue(refinements)
   })
 
   it('should render the correct continent headers', () => {

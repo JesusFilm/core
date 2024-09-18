@@ -12,7 +12,10 @@ import { useRefinementList, useSearchBox } from 'react-instantsearch'
 import Search1Icon from '@core/shared/ui/icons/Search1'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
 
-import { useSearchBar } from '../../libs/algolia/SearchBarProvider'
+import {
+  languageRefinementProps,
+  useSearchBar
+} from '../../libs/algolia/SearchBarProvider'
 import { useLanguagesContinentsLazyQuery } from '../../libs/useLanguagesContinentsQuery'
 import {
   LanguageContinentsRecord,
@@ -65,12 +68,7 @@ export function SearchBar({
 
   const { query, refine } = useSearchBox()
 
-  const refinements = useRefinementList({
-    attribute: 'languageEnglishName',
-    showMore: true,
-    limit: 1000,
-    showMoreLimit: 5000
-  })
+  const refinements = useRefinementList(languageRefinementProps)
 
   function handleSubmit(values: { title: string }): void {
     refine(values.title)

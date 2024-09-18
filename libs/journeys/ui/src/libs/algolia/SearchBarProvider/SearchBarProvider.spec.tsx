@@ -1,6 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { renderHook } from '@testing-library/react'
+import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { ReactNode } from 'react'
+import { useRefinementList } from 'react-instantsearch'
 
 import { getLanguagesContinentsMock } from '../../useLanguagesContinentsQuery/useLanguagesContinentsQuery.mock'
 
@@ -10,6 +12,12 @@ import {
   reducer,
   useSearchBar
 } from './SearchBarProvider'
+
+jest.mock('react-instantsearch')
+
+const mockUseRefinementList = useRefinementList as jest.MockedFunction<
+  typeof useRefinementList
+>
 
 describe('SearchBarContext', () => {
   const initState: SearchBarState = {
@@ -192,6 +200,15 @@ describe('SearchBarContext', () => {
   })
 
   describe('SearchBarProvider', () => {
+    const useRefinementsList = {
+      items: [],
+      refine: jest.fn()
+    } as unknown as RefinementListRenderState
+
+    beforeEach(() => {
+      mockUseRefinementList.mockReturnValue(useRefinementsList)
+    })
+
     it('should set initial state', () => {
       const wrapper = ({ children }: { children: ReactNode }): ReactNode => (
         <MockedProvider mocks={[getLanguagesContinentsMock]}>

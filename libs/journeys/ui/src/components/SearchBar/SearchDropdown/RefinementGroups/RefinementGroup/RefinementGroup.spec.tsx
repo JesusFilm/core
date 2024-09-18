@@ -2,7 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
-import { useSearchBox } from 'react-instantsearch'
+import { useRefinementList, useSearchBox } from 'react-instantsearch'
 
 import '../../../../../../test/i18n'
 import { SearchBarProvider } from '../../../../../libs/algolia/SearchBarProvider'
@@ -15,6 +15,10 @@ jest.mock('react-instantsearch')
 
 const mockUseSearchBox = useSearchBox as jest.MockedFunction<
   typeof useSearchBox
+>
+
+const mockUseRefinementList = useRefinementList as jest.MockedFunction<
+  typeof useRefinementList
 >
 
 describe('RefinementGroup', () => {
@@ -43,6 +47,7 @@ describe('RefinementGroup', () => {
 
   beforeEach(() => {
     mockUseSearchBox.mockReturnValue(useSearchBox)
+    mockUseRefinementList.mockReturnValue(useRefinementList)
   })
 
   it('should have languages header', () => {

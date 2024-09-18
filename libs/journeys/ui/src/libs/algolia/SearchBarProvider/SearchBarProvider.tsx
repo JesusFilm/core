@@ -5,9 +5,12 @@ import {
   ReactElement,
   ReactNode,
   createContext,
+  useCallback,
   useContext,
+  useEffect,
   useReducer
 } from 'react'
+import { UseRefinementListProps, useRefinementList } from 'react-instantsearch'
 
 export type Continent = string
 export type Language = string
@@ -89,6 +92,13 @@ function setDefaultLanguageContinent(
 ): SearchBarState {
   const { allContinentLanguages } = state
   const { refinedItems } = action
+
+  if (Object.keys(allContinentLanguages).length === 0) {
+    console.warn(
+      'Provider has not recieved all continent languages before trying to set language!'
+    )
+    return state
+  }
 
   const updatedContinentLanguages = refinedItems.reduce(
     (acc, item) => {
@@ -174,6 +184,13 @@ interface SearchBarProviderProps {
   initialState?: Partial<SearchBarState>
 }
 
+export const languageRefinementProps: UseRefinementListProps = {
+  attribute: 'languageEnglishName',
+  showMore: true,
+  limit: 1000,
+  showMoreLimit: 5000
+}
+
 export function SearchBarProvider({
   children,
   initialState
@@ -183,6 +200,29 @@ export function SearchBarProvider({
     allContinentLanguages: {},
     ...initialState
   })
+
+  const { items } = useRefinementList(languageRefinementProps)
+
+  const updateLanguages = useCallback(() => {
+    const refinedItems = items.filter((item) => item.isRefined)
+    if (refinedItems.length > 0) {
+      const languagesSet = Object.values(state.continentLanguages).flat()
+      if (languagesSet.length < refinedItems.length) {
+        const languagesNotSet = refinedItems
+          .map((item) => item.label)
+          .filter((language) => !languagesSet.includes(language))
+        dispatch({
+          type: 'SetDefaultLanguageContinent',
+          refinedItems: languagesNotSet
+        })
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [items])
+
+  useEffect(() => {
+    updateLanguages()
+  }, [updateLanguages])
 
   return (
     <SearchBarContext.Provider

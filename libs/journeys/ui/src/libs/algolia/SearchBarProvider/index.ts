@@ -1,2 +1,6 @@
-export { useSearchBar, SearchBarProvider } from './SearchBarProvider'
+export {
+  useSearchBar,
+  SearchBarProvider,
+  languageRefinementProps
+} from './SearchBarProvider'
 export type { Continent, Language } from './SearchBarProvider'

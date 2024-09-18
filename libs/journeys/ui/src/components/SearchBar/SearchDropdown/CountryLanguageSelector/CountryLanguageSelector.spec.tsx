@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
+import { useRefinementList } from 'react-instantsearch'
 
 import { SearchBarProvider } from '../../../../libs/algolia/SearchBarProvider'
 import { getCountryMock } from '../../../../libs/useCountryQuery/useCountryQuery.mock'
@@ -8,6 +9,12 @@ import { languageRefinements } from '../../data'
 
 import { CountryLanguageSelector } from './CountryLanguageSelector'
 import { NEXT_COUNTRY } from './data'
+
+jest.mock('react-instantsearch')
+
+const mockUseRefinementList = useRefinementList as jest.MockedFunction<
+  typeof useRefinementList
+>
 
 describe('CountryLanguageSelector', () => {
   const refine = jest.fn()
@@ -18,6 +25,7 @@ describe('CountryLanguageSelector', () => {
 
   beforeEach(() => {
     jest.spyOn(document, 'cookie', 'get').mockImplementation(() => NEXT_COUNTRY)
+    mockUseRefinementList.mockReturnValue(refinements)
   })
 
   afterEach(() => {

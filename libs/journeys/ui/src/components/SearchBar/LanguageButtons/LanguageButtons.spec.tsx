@@ -1,12 +1,19 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
+import { useRefinementList } from 'react-instantsearch'
 
 import { SearchBarProvider } from '../../../libs/algolia/SearchBarProvider'
 import { getLanguagesContinentsMock } from '../../../libs/useLanguagesContinentsQuery/useLanguagesContinentsQuery.mock'
 import { languageRefinements } from '../data'
 
 import { LanguageButtons } from './LanguageButtons'
+
+jest.mock('react-instantsearch')
+
+const mockUseRefinementList = useRefinementList as jest.MockedFunction<
+  typeof useRefinementList
+>
 
 describe('LanguageButtons', () => {
   const refinements = {
@@ -26,6 +33,7 @@ describe('LanguageButtons', () => {
   } as unknown as RefinementListRenderState
 
   beforeEach(() => {
+    mockUseRefinementList.mockReturnValue(refinements)
     jest.clearAllMocks()
   })
 

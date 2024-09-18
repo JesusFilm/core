@@ -4,7 +4,11 @@ import { ClearRefinementsRenderState } from 'instantsearch.js/es/connectors/clea
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
 import noop from 'lodash/noop'
-import { useClearRefinements, useSearchBox } from 'react-instantsearch'
+import {
+  useClearRefinements,
+  useRefinementList,
+  useSearchBox
+} from 'react-instantsearch'
 
 import { SearchBarProvider } from '../../../libs/algolia/SearchBarProvider'
 import { sortedLanguageContinents } from '../../../libs/useLanguagesContinentsQuery/sortLanguageContinents/data'
@@ -21,6 +25,10 @@ const mockUseSearchBox = useSearchBox as jest.MockedFunction<
 
 const mockUseClearRefinements = useClearRefinements as jest.MockedFunction<
   typeof useClearRefinements
+>
+
+const mockUseRefinementList = useRefinementList as jest.MockedFunction<
+  typeof useRefinementList
 >
 
 describe('SearchbarDropdown', () => {
@@ -49,6 +57,7 @@ describe('SearchbarDropdown', () => {
   beforeEach(() => {
     mockUseSearchBox.mockReturnValue(searchBox)
     mockUseClearRefinements.mockReturnValue(clearRefinements)
+    mockUseRefinementList.mockReturnValue(refinements)
     jest.clearAllMocks()
   })
 

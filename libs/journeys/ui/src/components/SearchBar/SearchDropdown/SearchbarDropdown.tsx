@@ -5,20 +5,12 @@ import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import { useTranslation } from 'next-i18next'
-import {
-  Dispatch,
-  ReactElement,
-  SetStateAction,
-  SyntheticEvent,
-  useCallback,
-  useEffect
-} from 'react'
+import { Dispatch, ReactElement, SetStateAction, SyntheticEvent } from 'react'
 
 import Globe1 from '@core/shared/ui/icons/Globe1'
 import Search1 from '@core/shared/ui/icons/Search1'
 import { TabPanel } from '@core/shared/ui/TabPanel'
 
-import { useSearchBar } from '../../../libs/algolia/SearchBarProvider'
 import { LanguageContinentsRecord } from '../../../libs/useLanguagesContinentsQuery/sortLanguageContinents'
 
 import { CountryLanguageSelector } from './CountryLanguageSelector'
@@ -63,31 +55,6 @@ export function SearchbarDropdown({
   handleTabValueChange: setTabValue
 }: SearchbarDropdownProps): ReactElement {
   const { t } = useTranslation('apps-watch')
-  const {
-    state: { continentLanguages },
-    dispatch
-  } = useSearchBar()
-
-  const updateDefaultLanguageContinent = useCallback(() => {
-    const refinedItems = refinements.items.filter((item) => item.isRefined)
-    if (refinedItems.length > 0) {
-      const languagesSet = Object.values(continentLanguages).flat()
-      if (languagesSet.length < refinedItems.length) {
-        const languagesNotSet = refinedItems
-          .map((item) => item.label)
-          .filter((language) => !languagesSet.includes(language))
-        dispatch({
-          type: 'SetDefaultLanguageContinent',
-          refinedItems: languagesNotSet
-        })
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [refinements.items, dispatch])
-
-  useEffect(() => {
-    updateDefaultLanguageContinent()
-  }, [updateDefaultLanguageContinent])
 
   function handleTabChange(event: SyntheticEvent, newValue: number): void {
     setTabValue(newValue)
