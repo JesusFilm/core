@@ -6,7 +6,13 @@ import { styled, useTheme } from '@mui/material/styles'
 import TextField, { TextFieldProps } from '@mui/material/TextField'
 import { Formik } from 'formik'
 import { useTranslation } from 'next-i18next'
-import { type ReactElement, useRef, useState } from 'react'
+import {
+  type ReactElement,
+  useCallback,
+  useEffect,
+  useRef,
+  useState
+} from 'react'
 import { useRefinementList, useSearchBox } from 'react-instantsearch'
 
 import Search1Icon from '@core/shared/ui/icons/Search1'
@@ -62,6 +68,7 @@ export function SearchBar({
   const [open, setOpen] = useState(false)
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [tabValue, setTabValue] = useState<number>(0)
+  const [countryCode, setCountryCode] = useState<string>()
 
   const { query, refine } = useSearchBox()
 
@@ -107,6 +114,19 @@ export function SearchBar({
       await getLanguageContinents()
     }
   }
+
+  const findUserCountry = useCallback(async () => {
+    const response = await fetch('/api/jf/watch.html/geolocation')
+    const { country } = await response.json()
+
+    if (country != null) {
+      setCountryCode(country)
+    }
+  }, [])
+
+  useEffect(() => {
+    void findUserCountry()
+  }, [findUserCountry])
 
   return (
     <SearchBarProvider>
@@ -193,6 +213,7 @@ export function SearchBar({
             open={open}
             refinements={refinements}
             languages={languageContinents}
+            countryCode={countryCode}
             id={open ? 'simple-popper' : undefined}
             anchorEl={anchorEl}
             tabIndex={tabValue}
