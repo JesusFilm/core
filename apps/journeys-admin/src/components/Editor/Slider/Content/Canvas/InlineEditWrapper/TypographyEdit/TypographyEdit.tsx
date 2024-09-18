@@ -52,10 +52,6 @@ export function TypographyEdit({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [undo?.id])
 
-  useEffect(() => {
-    setValue(content)
-  }, [content])
-
   function resetCommandInput(): void {
     setCommandInput({ id: uuidv4(), value })
   }
@@ -104,6 +100,7 @@ export function TypographyEdit({
             ...context
           }
         })
+        setValue(content)
       }
     })
   }
