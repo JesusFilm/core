@@ -109,6 +109,7 @@ describe('Toolbar', () => {
   it('should render NextSteps logo on Toolbar', () => {
     render(toolbar(defaultJourney))
     expect(screen.getByAltText('Next Steps')).toBeInTheDocument() // NextSteps logo
+    expect(screen.getByTestId('NextStepsLogo')).toHaveAttribute('href', '/')
   })
 
   it('should render help scout beacon', () => {
