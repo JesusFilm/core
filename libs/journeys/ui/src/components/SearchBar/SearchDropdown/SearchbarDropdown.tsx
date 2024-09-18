@@ -106,6 +106,7 @@ export function SearchbarDropdown({
       placement="bottom-end"
       sx={{ width: anchorEl?.clientWidth }}
       data-testid="SearchBarDropdown"
+      keepMounted
       modifiers={[
         {
           name: 'flip',
