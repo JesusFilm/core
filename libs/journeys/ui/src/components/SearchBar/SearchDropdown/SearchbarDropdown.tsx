@@ -40,6 +40,7 @@ interface SearchbarDropdownProps {
   refinements: RefinementListRenderState
   languages: LanguageContinentsRecord
   id?: string
+  countryCode?: string
   anchorEl?: HTMLElement | null
   tabIndex?: number
   handleTabValueChange: Dispatch<SetStateAction<number>>
@@ -50,6 +51,7 @@ export function SearchbarDropdown({
   refinements,
   languages,
   id,
+  countryCode,
   anchorEl,
   tabIndex: tabValue = 0,
   handleTabValueChange: setTabValue
@@ -81,7 +83,10 @@ export function SearchbarDropdown({
         sx={{ px: 8, pb: 8, bgcolor: 'background.paper', mt: 3 }}
         color="text.primary"
       >
-        <CountryLanguageSelector refinements={refinements} />
+        <CountryLanguageSelector
+          countryCode={countryCode}
+          refinements={refinements}
+        />
         <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 5 }}>
           <Tabs
             value={tabValue}

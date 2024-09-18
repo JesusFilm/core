@@ -5,8 +5,13 @@ import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refine
 import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
 import { useHits, useRefinementList, useSearchBox } from 'react-instantsearch'
 
+import { SearchBarProvider } from '@core/journeys/ui/algolia/SearchBarProvider'
+import { fetchCountryMock } from '@core/journeys/ui/SearchBar/data'
+
 import { StrategiesView } from './StrategiesView'
 import { strategyItems } from './StrategySections/StrategySection/data'
+
+global.fetch = jest.fn(fetchCountryMock) as jest.Mock
 
 jest.mock('react-instantsearch')
 
@@ -50,7 +55,9 @@ describe('StrategiesView', () => {
   it('should render interaction text', () => {
     render(
       <MockedProvider>
-        <StrategiesView />
+        <SearchBarProvider>
+          <StrategiesView />
+        </SearchBarProvider>
       </MockedProvider>
     )
     expect(screen.getByText('Resource for every')).toBeInTheDocument()
@@ -60,7 +67,9 @@ describe('StrategiesView', () => {
   it('should render searchbar', () => {
     render(
       <MockedProvider>
-        <StrategiesView />
+        <SearchBarProvider>
+          <StrategiesView />
+        </SearchBarProvider>
       </MockedProvider>
     )
     expect(screen.getByTestId('SearchBar')).toBeInTheDocument()
@@ -69,7 +78,9 @@ describe('StrategiesView', () => {
   it('should render strategy sections', () => {
     render(
       <MockedProvider>
-        <StrategiesView />
+        <SearchBarProvider>
+          <StrategiesView />
+        </SearchBarProvider>
       </MockedProvider>
     )
     expect(screen.getByTestId('StrategySections')).toBeInTheDocument()

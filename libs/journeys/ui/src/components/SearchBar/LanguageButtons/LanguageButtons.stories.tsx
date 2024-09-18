@@ -1,12 +1,11 @@
-import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
 import React, { ComponentProps } from 'react'
 
 import { watchConfig } from '@core/shared/ui/storybook'
 
+import { InstantSearchTestWrapper } from '../../../libs/algolia/InstantSearchTestWrapper'
 import { SearchBarProvider } from '../../../libs/algolia/SearchBarProvider'
-import { getLanguagesContinentsMock } from '../../../libs/useLanguagesContinentsQuery/useLanguagesContinentsQuery.mock'
 
 import { LanguageButtons } from './LanguageButtons'
 
@@ -20,11 +19,11 @@ type Story = StoryObj<ComponentProps<typeof LanguageButtons>>
 
 const Template: Story = {
   render: (args) => (
-    <MockedProvider mocks={[getLanguagesContinentsMock]}>
+    <InstantSearchTestWrapper>
       <SearchBarProvider>
         <LanguageButtons {...args} />
       </SearchBarProvider>
-    </MockedProvider>
+    </InstantSearchTestWrapper>
   )
 }
 

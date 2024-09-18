@@ -8,7 +8,6 @@ import { getCountryMock } from '../../../../libs/useCountryQuery/useCountryQuery
 import { languageRefinements } from '../../data'
 
 import { CountryLanguageSelector } from './CountryLanguageSelector'
-import { NEXT_COUNTRY } from './data'
 
 jest.mock('react-instantsearch')
 
@@ -24,7 +23,6 @@ describe('CountryLanguageSelector', () => {
   } as unknown as RefinementListRenderState
 
   beforeEach(() => {
-    jest.spyOn(document, 'cookie', 'get').mockImplementation(() => NEXT_COUNTRY)
     mockUseRefinementList.mockReturnValue(refinements)
   })
 
@@ -36,7 +34,7 @@ describe('CountryLanguageSelector', () => {
     render(
       <SearchBarProvider>
         <MockedProvider mocks={[getCountryMock]}>
-          <CountryLanguageSelector refinements={refinements} />
+          <CountryLanguageSelector countryCode="US" refinements={refinements} />
         </MockedProvider>
       </SearchBarProvider>
     )
@@ -56,7 +54,7 @@ describe('CountryLanguageSelector', () => {
     render(
       <SearchBarProvider>
         <MockedProvider mocks={[getCountryMock]}>
-          <CountryLanguageSelector refinements={refinements} />
+          <CountryLanguageSelector countryCode="US" refinements={refinements} />
         </MockedProvider>
       </SearchBarProvider>
     )
@@ -69,7 +67,7 @@ describe('CountryLanguageSelector', () => {
     render(
       <SearchBarProvider>
         <MockedProvider mocks={[getCountryMock]}>
-          <CountryLanguageSelector refinements={refinements} />
+          <CountryLanguageSelector countryCode="US" refinements={refinements} />
         </MockedProvider>
       </SearchBarProvider>
     )
@@ -78,24 +76,6 @@ describe('CountryLanguageSelector', () => {
       fireEvent.click(screen.getByRole('button', { name: 'English' }))
     )
     expect(refine).toHaveBeenCalledWith('English')
-  })
-
-  it('should not render the component if the country is not found', async () => {
-    jest
-      .spyOn(document, 'cookie', 'get')
-      .mockImplementation(() => 'NEXT_COUNTRY=00001---XX')
-
-    render(
-      <SearchBarProvider>
-        <MockedProvider mocks={[getCountryMock]}>
-          <CountryLanguageSelector refinements={refinements} />
-        </MockedProvider>
-      </SearchBarProvider>
-    )
-
-    expect(
-      screen.queryByRole('heading', { level: 6, name: 'United States:' })
-    ).not.toBeInTheDocument()
   })
 
   it('should not render the component if there are no data for the country', async () => {

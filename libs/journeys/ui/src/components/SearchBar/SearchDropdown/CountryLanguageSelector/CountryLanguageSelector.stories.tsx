@@ -1,14 +1,17 @@
+import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
-import { ComponentProps, ReactElement, ReactNode, useEffect } from 'react'
+import { ComponentProps } from 'react'
 
 import { watchConfig } from '@core/shared/ui/storybook'
 
+import { InstantSearchTestWrapper } from '../../../../libs/algolia/InstantSearchTestWrapper'
 import { SearchBarProvider } from '../../../../libs/algolia/SearchBarProvider'
 import { getCountryMock } from '../../../../libs/useCountryQuery/useCountryQuery.mock'
+import { getLanguagesContinentsMock } from '../../../../libs/useLanguagesContinentsQuery/useLanguagesContinentsQuery.mock'
 import { languageRefinements } from '../../data'
+import { emptyResultsHandler } from '../../SearchBar.handlers'
 
 import { CountryLanguageSelector } from './CountryLanguageSelector'
-import { NEXT_COUNTRY } from './data'
 
 const CountryLanguageSelectorStory: Meta<typeof CountryLanguageSelector> = {
   ...watchConfig,
@@ -16,24 +19,15 @@ const CountryLanguageSelectorStory: Meta<typeof CountryLanguageSelector> = {
   title: 'Journeys-Ui/SearchBar/SearchDropdown/CountryLanguageSelector'
 }
 
-function CookieWrapper({ children }: { children: ReactNode }): ReactElement {
-  useEffect(() => {
-    document.cookie = `${NEXT_COUNTRY}; path=/; max-age=3600`
-    return () => {
-      document.cookie =
-        'NEXT_COUNTRY=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT'
-    }
-  }, [])
-  return <>{children}</>
-}
-
 const Template: StoryObj<ComponentProps<typeof CountryLanguageSelector>> = {
   render: (args) => (
-    <SearchBarProvider>
-      <CookieWrapper>
-        <CountryLanguageSelector {...args} />
-      </CookieWrapper>
-    </SearchBarProvider>
+    <MockedProvider mocks={[getLanguagesContinentsMock]}>
+      <InstantSearchTestWrapper>
+        <SearchBarProvider>
+          <CountryLanguageSelector {...args} />
+        </SearchBarProvider>
+      </InstantSearchTestWrapper>
+    </MockedProvider>
   )
 }
 
@@ -47,6 +41,9 @@ export const Default = {
   parameters: {
     apolloClient: {
       mocks: [getCountryMock]
+    },
+    msw: {
+      handlers: [emptyResultsHandler]
     }
   }
 }

@@ -48,6 +48,7 @@ describe('RefinementGroup', () => {
   beforeEach(() => {
     mockUseSearchBox.mockReturnValue(useSearchBox)
     mockUseRefinementList.mockReturnValue(useRefinementList)
+    jest.clearAllMocks()
   })
 
   it('should have languages header', () => {
@@ -213,5 +214,35 @@ describe('RefinementGroup', () => {
     )
     fireEvent.click(screen.getByText('Chinese, Traditional'))
     await waitFor(() => expect(refineQuery).toHaveBeenCalledWith('Jesus'))
+  })
+
+  it('should show tooltip when hovering over langauge', async () => {
+    window.ResizeObserver = jest.fn().mockImplementation(() => ({
+      observe: jest.fn(),
+      unobserve: jest.fn(),
+      disconnect: jest.fn()
+    }))
+
+    jest
+      .spyOn(HTMLElement.prototype, 'scrollWidth', 'get')
+      .mockImplementation(() => 200)
+    jest
+      .spyOn(HTMLElement.prototype, 'clientWidth', 'get')
+      .mockImplementation(() => 100)
+
+    render(
+      <MockedProvider mocks={[getLanguagesContinentsMock]}>
+        <SearchBarProvider>
+          <RefinementGroup title="Languages" refinement={useRefinementList} />
+        </SearchBarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.mouseOver(screen.getByText('Spanish, Latin American'))
+    await waitFor(() =>
+      expect(
+        screen.getByRole('tooltip', { name: 'Spanish, Latin American' })
+      ).toBeInTheDocument()
+    )
   })
 })

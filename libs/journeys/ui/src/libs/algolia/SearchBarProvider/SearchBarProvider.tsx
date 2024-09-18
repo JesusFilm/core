@@ -72,7 +72,6 @@ function selectLanguageContinent(
   action: SelectLanguageContinentAction
 ): SearchBarState {
   const { continent, language, isSelected } = action
-
   const currentLanguages = state.continentLanguages[continent] ?? []
   const updatedLanguages = isSelected
     ? [...currentLanguages, language]
