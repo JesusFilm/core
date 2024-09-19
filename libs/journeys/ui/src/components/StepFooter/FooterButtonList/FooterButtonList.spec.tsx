@@ -1,5 +1,8 @@
-import { render } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+
+import { JourneyProvider } from '../../../libs/JourneyProvider'
+import { JourneyFields } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
 
 import { FooterButtonList } from './FooterButtonList'
 
@@ -9,22 +12,61 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 }))
 
 describe('FooterButtonList', () => {
-  it('should show share button', () => {
-    const { getByTestId } = render(
+  it('should render reaction buttons', () => {
+    const journey = {
+      showShareButton: true,
+      showLikeButton: true,
+      showDislikeButton: true
+    } as unknown as JourneyFields
+
+    render(
       <SnackbarProvider>
-        <FooterButtonList />
+        <JourneyProvider value={{ journey }}>
+          <FooterButtonList />
+        </JourneyProvider>
       </SnackbarProvider>
     )
-    expect(getByTestId('ShareIcon')).toBeInTheDocument()
+    expect(screen.getByTestId('StepFooterButtonList')).toBeInTheDocument()
+    expect(screen.getByTestId('ShareIcon')).toBeInTheDocument()
+    expect(screen.getByTestId('ThumbsUpIcon')).toBeInTheDocument()
+    expect(screen.getByTestId('ThumbsDownIcon')).toBeInTheDocument()
   })
 
-  it('should show like and dislike button', () => {
-    const { getByTestId } = render(
+  it('should only hide a button when value is false', () => {
+    const journey = {
+      showShareButton: false,
+      showLikeButton: null,
+      showDislikeButton: undefined
+    } as unknown as JourneyFields
+
+    render(
       <SnackbarProvider>
-        <FooterButtonList />
+        <JourneyProvider value={{ journey }}>
+          <FooterButtonList />
+        </JourneyProvider>
       </SnackbarProvider>
     )
-    expect(getByTestId('ThumbsUpIcon')).toBeInTheDocument()
-    expect(getByTestId('ThumbsDownIcon')).toBeInTheDocument()
+
+    expect(screen.queryByTestId('ShareIcon')).not.toBeInTheDocument()
+    expect(screen.getByTestId('ThumbsUpIcon')).toBeInTheDocument()
+    expect(screen.getByTestId('ThumbsDownIcon')).toBeInTheDocument()
+  })
+
+  it('should not render footer button list if there are no buttons', () => {
+    const journey = {
+      showShareButton: false,
+      showLikeButton: false,
+      showDislikeButton: false
+    } as unknown as JourneyFields
+
+    render(
+      <SnackbarProvider>
+        <JourneyProvider value={{ journey }}>
+          <FooterButtonList />
+        </JourneyProvider>
+      </SnackbarProvider>
+    )
+
+    expect(screen.queryByTestId('StepFooterButtonList')).not.toBeInTheDocument()
   })
 })
