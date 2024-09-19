@@ -1,7 +1,9 @@
 import { MockedResponse } from '@apollo/client/testing'
-import { GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS } from './TeamProvider'
-import { GetLastActiveTeamIdAndTeams } from './__generated__/GetLastActiveTeamIdAndTeams'
+
 import { UserTeamRole } from '../../../__generated__/globalTypes'
+
+import { GetLastActiveTeamIdAndTeams } from './__generated__/GetLastActiveTeamIdAndTeams'
+import { GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS } from './TeamProvider'
 
 export const getLastActiveTeamIdAndTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> =
   {

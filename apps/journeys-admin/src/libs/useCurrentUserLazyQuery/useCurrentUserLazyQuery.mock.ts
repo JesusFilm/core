@@ -1,6 +1,8 @@
 import { MockedResponse } from '@apollo/client/testing'
-import { GET_CURRENT_USER } from './useCurrentUserLazyQuery'
+
 import { GetCurrentUser } from '../../../__generated__/GetCurrentUser'
+
+import { GET_CURRENT_USER } from './useCurrentUserLazyQuery'
 
 export const mockUseCurrentUserLazyQuery: MockedResponse<GetCurrentUser> = {
   request: {
