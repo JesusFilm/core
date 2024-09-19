@@ -103,13 +103,13 @@ function JourneysApp({
           </Script>
         )}
       <ApolloProvider client={apolloClient}>
-        <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM_ID ?? ''} />
         <SnackbarProvider
           anchorOrigin={{
             vertical: 'bottom',
             horizontal: 'right'
           }}
         >
+          <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM_ID ?? ''} />
           <Component {...pageProps} />
         </SnackbarProvider>
       </ApolloProvider>
