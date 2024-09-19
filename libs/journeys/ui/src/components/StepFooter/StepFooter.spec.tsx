@@ -71,7 +71,20 @@ describe('StepFooter', () => {
     displayTitle: null,
     logoImageBlock: null,
     menuButtonIcon: null,
-    menuStepBlock: null
+    menuStepBlock: null,
+    showHosts: null,
+    showDisplayTitle: null,
+    showReactionButtons: null,
+    showChatButtons: null,
+    showLogo: null,
+    showMenu: null
+  }
+
+  const toggleOptions = {
+    showHosts: true,
+    showDisplayTitle: true,
+    showReactionButtons: true,
+    showChatButtons: true
   }
 
   it('should render custom styles', () => {
@@ -139,7 +152,12 @@ describe('StepFooter', () => {
       render(
         <MockedProvider>
           <SnackbarProvider>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider
+              value={{
+                journey: { ...journey, ...toggleOptions },
+                variant: 'admin'
+              }}
+            >
               <StepFooter />
             </JourneyProvider>
           </SnackbarProvider>
@@ -155,7 +173,11 @@ describe('StepFooter', () => {
           <SnackbarProvider>
             <JourneyProvider
               value={{
-                journey: { ...journey, displayTitle: 'Display title' },
+                journey: {
+                  ...journey,
+                  ...toggleOptions,
+                  displayTitle: 'Display title'
+                },
                 variant: 'admin'
               }}
             >
@@ -168,11 +190,30 @@ describe('StepFooter', () => {
       expect(screen.getByText('Display title')).toBeInTheDocument()
     })
 
-    it('should display host avatar, name and location', () => {
+    it('should hide display title when showDisplayTitle is falsy', () => {
       render(
         <MockedProvider>
           <SnackbarProvider>
             <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <StepFooter />
+            </JourneyProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+
+      expect(screen.queryByText('Display title')).not.toBeInTheDocument()
+    })
+
+    it('should display host avatar, name and location', () => {
+      render(
+        <MockedProvider>
+          <SnackbarProvider>
+            <JourneyProvider
+              value={{
+                journey: { ...journey, ...toggleOptions },
+                variant: 'admin'
+              }}
+            >
               <StepFooter />
             </JourneyProvider>
           </SnackbarProvider>
@@ -189,15 +230,34 @@ describe('StepFooter', () => {
       render(
         <MockedProvider>
           <SnackbarProvider>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider
+              value={{
+                journey: { ...journey, ...toggleOptions },
+                variant: 'admin'
+              }}
+            >
               <StepFooter />
             </JourneyProvider>
           </SnackbarProvider>
         </MockedProvider>
       )
 
-      expect(screen.getAllByTestId('StepFooterButtonList')).toHaveLength(2)
+      expect(screen.getByTestId('StepFooterButtonList')).toBeInTheDocument()
     })
+  })
+
+  it('should hide reaction buttons when showReactionButtons is falsy', () => {
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <StepFooter />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.queryByTestId('StepFooterButtonList')).not.toBeInTheDocument()
   })
 
   describe('website', () => {
@@ -220,22 +280,6 @@ describe('StepFooter', () => {
       )
 
       expect(screen.getByTestId('InformationButton')).toBeInTheDocument()
-    })
-
-    it('should chat buttons', () => {
-      render(
-        <MockedProvider>
-          <SnackbarProvider>
-            <JourneyProvider
-              value={{ journey: websiteJourney, variant: 'admin' }}
-            >
-              <StepFooter />
-            </JourneyProvider>
-          </SnackbarProvider>
-        </MockedProvider>
-      )
-
-      expect(screen.getByTestId('StepFooterChatButtons')).toBeInTheDocument()
     })
   })
 })

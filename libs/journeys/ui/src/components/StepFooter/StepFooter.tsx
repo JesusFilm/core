@@ -31,10 +31,6 @@ export function StepFooter({
     journey?.host?.src1 != null ||
     journey?.host?.src2 != null
 
-  const hasChatWidget =
-    variant === 'admin' ||
-    (journey?.chatButtons != null && journey?.chatButtons.length > 0)
-
   const isWebsite = journey?.website === true
 
   return (
@@ -69,7 +65,7 @@ export function StepFooter({
       >
         {!isWebsite && (
           <Box sx={{ display: { xs: 'flex', sm: 'none' } }}>
-            <FooterButtonList />
+            {journey?.showReactionButtons === true && <FooterButtonList />}
           </Box>
         )}
 
@@ -103,35 +99,35 @@ export function StepFooter({
                 />
               )}
               <Stack sx={{ flex: '1 1 100%', minWidth: 0 }}>
-                <Typography
-                  variant="subtitle1"
-                  sx={{
-                    zIndex: 1,
-                    // Always dark mode on lg breakpoint
-                    color: { xs: 'primary.main', lg: 'white' },
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis'
-                  }}
-                >
-                  {title != null
-                    ? title
-                    : journey?.displayTitle ?? journey?.seoTitle}
-                </Typography>
-                <HostTitleLocation />
+                {journey?.showDisplayTitle === true && (
+                  <Typography
+                    variant="subtitle1"
+                    sx={{
+                      zIndex: 1,
+                      // Always dark mode on lg breakpoint
+                      color: { xs: 'primary.main', lg: 'white' },
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis'
+                    }}
+                  >
+                    {title != null
+                      ? title
+                      : journey?.displayTitle ?? journey?.seoTitle}
+                  </Typography>
+                )}
+                {journey?.showHosts === true && <HostTitleLocation />}
               </Stack>
 
               <Box sx={{ display: { xs: 'none', sm: 'flex' } }}>
-                <FooterButtonList />
+                {journey?.showReactionButtons === true && <FooterButtonList />}
               </Box>
             </Stack>
           )}
 
-          {hasChatWidget && (
-            <Box>
-              <ChatButtons />
-            </Box>
-          )}
+          <Box>
+            <ChatButtons />
+          </Box>
         </Stack>
       </Stack>
     </Box>
