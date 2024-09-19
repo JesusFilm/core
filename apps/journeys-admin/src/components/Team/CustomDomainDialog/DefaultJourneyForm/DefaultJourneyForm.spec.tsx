@@ -21,7 +21,10 @@ import {
   GetAdminJourneysVariables
 } from '../../../../../__generated__/GetAdminJourneys'
 import { GetCustomDomains_customDomains as CustomDomain } from '../../../../../__generated__/GetCustomDomains'
-import { JourneyStatus } from '../../../../../__generated__/globalTypes'
+import {
+  JourneyStatus,
+  UserTeamRole
+} from '../../../../../__generated__/globalTypes'
 import {
   UpdateJourneyCollection,
   UpdateJourneyCollectionVariables
@@ -199,7 +202,10 @@ describe('DefaultJourneyForm', () => {
       >
         <TeamProvider>
           <SnackbarProvider>
-            <DefaultJourneyForm customDomain={customDomain} />
+            <DefaultJourneyForm
+              customDomain={customDomain}
+              currentUserTeamRole={UserTeamRole.manager}
+            />
           </SnackbarProvider>
         </TeamProvider>
       </MockedProvider>
@@ -242,6 +248,7 @@ describe('DefaultJourneyForm', () => {
                   ]
                 }
               }}
+              currentUserTeamRole={UserTeamRole.manager}
             />
           </SnackbarProvider>
         </TeamProvider>
@@ -285,6 +292,7 @@ describe('DefaultJourneyForm', () => {
                   ]
                 }
               }}
+              currentUserTeamRole={UserTeamRole.manager}
             />
           </SnackbarProvider>
         </TeamProvider>
@@ -293,5 +301,41 @@ describe('DefaultJourneyForm', () => {
     fireEvent.mouseDown(getByRole('combobox'))
     fireEvent.click(getByLabelText('Clear'))
     await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
+  it('should be disabled if user does not have correct permissions', async () => {
+    const result = jest.fn().mockReturnValue(deleteJourneyCollectionMock.result)
+    const { getByRole, getByLabelText } = render(
+      <MockedProvider
+        mocks={[
+          getAdminJourneysMock,
+          getLastActiveTeamIdAndTeamsMock,
+          { ...deleteJourneyCollectionMock, result }
+        ]}
+      >
+        <TeamProvider>
+          <SnackbarProvider>
+            <DefaultJourneyForm
+              customDomain={{
+                ...customDomain,
+                journeyCollection: {
+                  __typename: 'JourneyCollection',
+                  id: 'journeyCollectionId',
+                  journeys: [
+                    {
+                      __typename: 'Journey',
+                      id: 'journey-id',
+                      title: 'Default Journey Heading'
+                    }
+                  ]
+                }
+              }}
+              currentUserTeamRole={UserTeamRole.member}
+            />
+          </SnackbarProvider>
+        </TeamProvider>
+      </MockedProvider>
+    )
+    expect(getByRole('combobox')).toBeDisabled()
   })
 })

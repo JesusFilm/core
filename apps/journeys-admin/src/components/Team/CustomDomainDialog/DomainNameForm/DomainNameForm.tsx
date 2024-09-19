@@ -232,7 +232,7 @@ export function DomainNameForm({
           >
             <Box>
               <Button
-                disabled={isSubmitting}
+                disabled={isSubmitting || currentUserTeamRole === 'member'}
                 onClick={() => handleSubmit()}
                 sx={{ width: 120, height: 55 }}
               >

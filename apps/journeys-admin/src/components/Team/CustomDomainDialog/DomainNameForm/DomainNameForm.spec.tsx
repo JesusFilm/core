@@ -21,6 +21,7 @@ import {
   DeleteCustomDomainVariables
 } from '../../../../../__generated__/DeleteCustomDomain'
 import { GetCustomDomains_customDomains as CustomDomain } from '../../../../../__generated__/GetCustomDomains'
+import { UserTeamRole } from '../../../../../__generated__/globalTypes'
 
 import {
   CREATE_CUSTOM_DOMAIN,
@@ -124,7 +125,10 @@ describe('DomainNameForm', () => {
           cache={cache}
           mocks={[{ ...deleteCustomDomainMock, result }]}
         >
-          <DomainNameForm customDomain={customDomain} />
+          <DomainNameForm
+            customDomain={customDomain}
+            currentUserTeamRole={UserTeamRole.manager}
+          />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -148,7 +152,7 @@ describe('DomainNameForm', () => {
           ]}
         >
           <TeamProvider>
-            <DomainNameForm />
+            <DomainNameForm currentUserTeamRole={UserTeamRole.manager} />
           </TeamProvider>
         </MockedProvider>
       </SnackbarProvider>
@@ -176,7 +180,7 @@ describe('DomainNameForm', () => {
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
           <TeamProvider>
-            <DomainNameForm />
+            <DomainNameForm currentUserTeamRole={UserTeamRole.manager} />
           </TeamProvider>
         </MockedProvider>
       </SnackbarProvider>
@@ -201,7 +205,7 @@ describe('DomainNameForm', () => {
           mocks={[getLastActiveTeamIdAndTeamsMock, createCustomDomainErrorMock]}
         >
           <TeamProvider>
-            <DomainNameForm />
+            <DomainNameForm currentUserTeamRole={UserTeamRole.manager} />
           </TeamProvider>
         </MockedProvider>
       </SnackbarProvider>
@@ -234,7 +238,7 @@ describe('DomainNameForm', () => {
           ]}
         >
           <TeamProvider>
-            <DomainNameForm />
+            <DomainNameForm currentUserTeamRole={UserTeamRole.manager} />
           </TeamProvider>
         </MockedProvider>
       </SnackbarProvider>
@@ -267,7 +271,7 @@ describe('DomainNameForm', () => {
           ]}
         >
           <TeamProvider>
-            <DomainNameForm />
+            <DomainNameForm currentUserTeamRole={UserTeamRole.manager} />
           </TeamProvider>
         </MockedProvider>
       </SnackbarProvider>
@@ -284,7 +288,7 @@ describe('DomainNameForm', () => {
     )
   })
 
-  it('should show error message if user does not have required permissions to add custom domain', async () => {
+  it('should now allow user to create custom domain if they are only a team member', async () => {
     const createCustomDomainErrorAlreadyInUseMock = {
       ...createCustomDomainErrorMock,
       result: {
@@ -293,7 +297,7 @@ describe('DomainNameForm', () => {
         ]
       }
     }
-    const { getByText, getByRole, queryByTestId } = render(
+    const { getByRole, queryByTestId, getByText } = render(
       <SnackbarProvider>
         <MockedProvider
           mocks={[
@@ -302,7 +306,7 @@ describe('DomainNameForm', () => {
           ]}
         >
           <TeamProvider>
-            <DomainNameForm />
+            <DomainNameForm currentUserTeamRole={UserTeamRole.member} />
           </TeamProvider>
         </MockedProvider>
       </SnackbarProvider>
@@ -310,12 +314,13 @@ describe('DomainNameForm', () => {
     await waitFor(() =>
       expect(queryByTestId('DeleteCustomDomainIcon')).not.toBeInTheDocument()
     )
-    await userEvent.type(getByRole('textbox'), 'www.example.com')
-    getByRole('button', { name: 'Connect' }).click()
+    fireEvent.mouseOver(getByRole('button', { name: 'Connect' }))
     await waitFor(() =>
       expect(
-        getByText('Only team managers can add a custom domain')
+        getByText('Only team managers can update the custom domain')
       ).toBeInTheDocument()
     )
+
+    expect(getByRole('button', { name: 'Connect' })).toBeDisabled()
   })
 })

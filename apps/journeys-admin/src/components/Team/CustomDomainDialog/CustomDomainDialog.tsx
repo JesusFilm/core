@@ -91,13 +91,15 @@ export function CustomDomainDialog({
           <Box>
             <Globe2Icon sx={{ color: 'secondary.light', mt: 4 }} />
           </Box>
-          <DomainNameForm
-            customDomain={customDomain}
-            loading={loading}
-            currentUserTeamRole={currentUserTeamRole}
-          />
+          {currentUserTeamRole != null && (
+            <DomainNameForm
+              customDomain={customDomain}
+              loading={loading}
+              currentUserTeamRole={currentUserTeamRole}
+            />
+          )}
         </Stack>
-        {customDomain != null && (
+        {customDomain != null && currentUserTeamRole != null && (
           <>
             <Stack spacing={4} direction="row">
               <ComputerIcon sx={{ color: 'secondary.light' }} />
@@ -106,15 +108,16 @@ export function CustomDomainDialog({
                 currentUserTeamRole={currentUserTeamRole}
               />
             </Stack>
-            {currentUserTeamRole === 'manager' && (
-              <>
-                <Divider />
-                <Stack spacing={4} direction="row">
-                  <Lightning2Icon sx={{ color: 'secondary.light' }} />
-                  <DNSConfigSection customDomain={customDomain} />
-                </Stack>
-              </>
-            )}
+            {currentUserTeamRole === 'manager' &&
+              currentUserTeamRole != null && (
+                <>
+                  <Divider />
+                  <Stack spacing={4} direction="row">
+                    <Lightning2Icon sx={{ color: 'secondary.light' }} />
+                    <DNSConfigSection customDomain={customDomain} />
+                  </Stack>
+                </>
+              )}
           </>
         )}
       </Stack>
