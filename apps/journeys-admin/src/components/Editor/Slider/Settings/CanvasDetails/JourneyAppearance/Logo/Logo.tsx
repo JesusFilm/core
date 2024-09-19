@@ -30,6 +30,7 @@ import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
 import { ImageSource } from '../../../Drawer/ImageSource'
 import { Accordion } from '../../Properties/Accordion'
 import { IMAGE_BLOCK_UPDATE } from '../../Properties/blocks/Image/Options/ImageOptions'
+import { useToggleJourneyProperty } from '../libs/useToggleJourneyProperty/useToggleJourneyProperty'
 
 export const LOGO_BLOCK_CREATE = gql`
   ${IMAGE_FIELDS}
@@ -54,6 +55,7 @@ export function Logo(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const { add } = useCommand()
+  const [checked, toggleProperty] = useToggleJourneyProperty('showLogo')
   const [sliderValue, setSliderValue] = useState(
     journey?.logoImageBlock?.scale ?? 1
   )
@@ -205,7 +207,15 @@ export function Logo(): ReactElement {
   }
 
   return (
-    <Accordion id="logo" icon={<DiamondIcon />} name={t('Logo')}>
+    <Accordion
+      id="logo"
+      icon={<DiamondIcon />}
+      name={t('Logo')}
+      switchProps={{
+        handleToggle: (e) => toggleProperty(e.target.checked),
+        checked
+      }}
+    >
       <Stack gap={4} sx={{ p: 4, pt: 2 }} data-testid="Logo">
         <ImageSource
           selectedBlock={imageBlock}

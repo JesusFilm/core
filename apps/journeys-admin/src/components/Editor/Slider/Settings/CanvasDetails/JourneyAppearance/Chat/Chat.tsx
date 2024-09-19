@@ -9,12 +9,14 @@ import MessageTyping from '@core/shared/ui/icons/MessageTyping'
 
 import { MessagePlatform } from '../../../../../../../../__generated__/globalTypes'
 import { Accordion } from '../../Properties/Accordion'
+import { useToggleJourneyProperty } from '../libs/useToggleJourneyProperty/useToggleJourneyProperty'
 
 import { ChatOption } from './ChatOption'
 
 export function Chat(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
+  const [checked, toggleProperty] = useToggleJourneyProperty('showChatButtons')
 
   const chatButtons = journey?.chatButtons ?? []
   const maxSelection = chatButtons.length >= 2
@@ -39,6 +41,10 @@ export function Chat(): ReactElement {
       id="chat platforms"
       icon={<MessageTyping />}
       name={t('Chat Widget')}
+      switchProps={{
+        handleToggle: (e) => toggleProperty(e.target.checked),
+        checked
+      }}
     >
       <Box data-testid="Chat">
         <ChatOption
