@@ -7,16 +7,16 @@ import { SearchBar } from '@core/journeys/ui/SearchBar'
 
 import { PageWrapper } from '../PageWrapper'
 
-import { StrategySections } from './StrategySections'
+import { ResourceSections } from './ResourceSections'
 
-export function StrategiesView(): ReactElement {
+export function ResourcesView(): ReactElement {
   return (
     <PageWrapper>
       <Container maxWidth="xxl" sx={{ px: { xs: 0 }, py: { xs: 6, sm: 9 } }}>
         <Stack sx={{ p: 0, gap: 10 }}>
           <ResourceHeading heading="Resource" />
           <SearchBar />
-          <StrategySections includeIndex />
+          <ResourceSections includeIndex />
         </Stack>
       </Container>
     </PageWrapper>

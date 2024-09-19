@@ -1,6 +1,6 @@
 import { BaseHit, Hit } from 'instantsearch.js'
 
-const strategyItem = {
+const resourceItem = {
   post_id: 5899,
   post_type: 'mission-trip',
   post_type_label: 'Mission Trips',
@@ -22,50 +22,50 @@ const strategyItem = {
   objectID: '5899-0'
 } as unknown as Hit<BaseHit>
 
-export const strategyItems: Array<Hit<BaseHit>> = [
-  strategyItem,
+export const resourceItems: Array<Hit<BaseHit>> = [
+  resourceItem,
   {
-    ...strategyItem,
+    ...resourceItem,
     id: 5900,
     post_title: 'London Bridges 2 Two Weeks'
   },
   {
-    ...strategyItem,
+    ...resourceItem,
     id: 5901,
     post_title: 'London Bridges 3 Three Weeks'
   },
   {
-    ...strategyItem,
+    ...resourceItem,
     id: 5902,
     post_title: 'London Bridges 4 Four Weeks'
   },
   {
-    ...strategyItem,
+    ...resourceItem,
     id: 5903,
     post_title: 'London Bridges 5 Five Weeks'
   },
   {
-    ...strategyItem,
+    ...resourceItem,
     id: 5904,
     post_title: 'London Bridges 6 Six Weeks'
   },
   {
-    ...strategyItem,
+    ...resourceItem,
     id: 5905,
     post_title: 'London Bridges 7 Seven Weeks'
   },
   {
-    ...strategyItem,
+    ...resourceItem,
     id: 5906,
     post_title: 'London Bridges 8 Eight Weeks'
   },
   {
-    ...strategyItem,
+    ...resourceItem,
     id: 5907,
     post_title: 'London Bridges 9 Nine Weeks'
   },
   {
-    ...strategyItem,
+    ...resourceItem,
     id: 5908,
     post_title: 'London Bridges 10 Ten Weeks'
   }

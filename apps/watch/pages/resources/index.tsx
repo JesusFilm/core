@@ -15,7 +15,7 @@ import {
 import { createInstantSearchRouterNext } from 'react-instantsearch-router-nextjs'
 
 import i18nConfig from '../../next-i18next.config'
-import { StrategiesView } from '../../src/components/StrategiesView'
+import { ResourcesView } from '../../src/components/ResourcesView'
 import {
   createApolloClient,
   useApolloClient
@@ -64,7 +64,7 @@ function StrategiesPage({
             })
           }}
         >
-          <StrategiesView />
+          <ResourcesView />
         </InstantSearch>
       </ApolloProvider>
     </InstantSearchSSRProvider>

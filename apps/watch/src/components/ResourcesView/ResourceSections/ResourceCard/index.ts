@@ -1,0 +1,1 @@
+export { StrategyCard } from './ResourceCard'
