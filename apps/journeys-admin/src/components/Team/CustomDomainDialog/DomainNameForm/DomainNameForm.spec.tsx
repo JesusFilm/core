@@ -283,4 +283,39 @@ describe('DomainNameForm', () => {
       ).toBeInTheDocument()
     )
   })
+
+  it('should show error message if user does not have required permissions to add custom domain', async () => {
+    const createCustomDomainErrorAlreadyInUseMock = {
+      ...createCustomDomainErrorMock,
+      result: {
+        errors: [
+          new GraphQLError('user is not allowed to create custom domain')
+        ]
+      }
+    }
+    const { getByText, getByRole, queryByTestId } = render(
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={[
+            getLastActiveTeamIdAndTeamsMock,
+            createCustomDomainErrorAlreadyInUseMock
+          ]}
+        >
+          <TeamProvider>
+            <DomainNameForm />
+          </TeamProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    await waitFor(() =>
+      expect(queryByTestId('DeleteCustomDomainIcon')).not.toBeInTheDocument()
+    )
+    await userEvent.type(getByRole('textbox'), 'www.example.com')
+    getByRole('button', { name: 'Connect' }).click()
+    await waitFor(() =>
+      expect(
+        getByText('Only team managers can add a custom domain')
+      ).toBeInTheDocument()
+    )
+  })
 })

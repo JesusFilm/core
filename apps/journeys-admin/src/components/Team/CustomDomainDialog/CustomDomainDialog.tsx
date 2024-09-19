@@ -16,6 +16,7 @@ import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCir
 import Lightning2Icon from '@core/shared/ui/icons/Lightning2'
 import LinkExternalIcon from '@core/shared/ui/icons/LinkExternal'
 
+import { useCurrentUserLazyQuery } from '../../../libs/useCurrentUserLazyQuery'
 import { useCustomDomainsQuery } from '../../../libs/useCustomDomainsQuery'
 
 import { CustomDomainDialogTitle } from './CustomDomainDialogTitle'
@@ -40,13 +41,16 @@ export function CustomDomainDialog({
     skip: activeTeam?.id == null,
     notifyOnNetworkStatusChange: true
   })
-
+  const { loadUser, data: currentUser } = useCurrentUserLazyQuery()
   useEffect(() => {
     // rerun query if user changes active team
     void refetch()
-  }, [activeTeam, refetch])
-
+    void loadUser()
+  }, [activeTeam, refetch, loadUser])
   const customDomain = data?.customDomains[0]
+  const currentUserTeamRole = activeTeam?.userTeams.find(
+    (userTeam) => userTeam.user.email === currentUser.email
+  )?.role
 
   return (
     <Dialog
@@ -87,19 +91,30 @@ export function CustomDomainDialog({
           <Box>
             <Globe2Icon sx={{ color: 'secondary.light', mt: 4 }} />
           </Box>
-          <DomainNameForm customDomain={customDomain} loading={loading} />
+          <DomainNameForm
+            customDomain={customDomain}
+            loading={loading}
+            currentUserTeamRole={currentUserTeamRole}
+          />
         </Stack>
         {customDomain != null && (
           <>
             <Stack spacing={4} direction="row">
               <ComputerIcon sx={{ color: 'secondary.light' }} />
-              <DefaultJourneyForm customDomain={customDomain} />
+              <DefaultJourneyForm
+                customDomain={customDomain}
+                currentUserTeamRole={currentUserTeamRole}
+              />
             </Stack>
-            <Divider />
-            <Stack spacing={4} direction="row">
-              <Lightning2Icon sx={{ color: 'secondary.light' }} />
-              <DNSConfigSection customDomain={customDomain} />
-            </Stack>
+            {currentUserTeamRole === 'manager' && (
+              <>
+                <Divider />
+                <Stack spacing={4} direction="row">
+                  <Lightning2Icon sx={{ color: 'secondary.light' }} />
+                  <DNSConfigSection customDomain={customDomain} />
+                </Stack>
+              </>
+            )}
           </>
         )}
       </Stack>

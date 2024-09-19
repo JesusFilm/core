@@ -5,6 +5,7 @@ import FormControl from '@mui/material/FormControl'
 import FormHelperText from '@mui/material/FormHelperText'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
+import Tooltip from '@mui/material/Tooltip'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
@@ -24,7 +25,10 @@ import {
   GetCustomDomains_customDomains as CustomDomain,
   GetCustomDomains_customDomains_journeyCollection_journeys as Journey
 } from '../../../../../__generated__/GetCustomDomains'
-import { JourneyStatus } from '../../../../../__generated__/globalTypes'
+import {
+  JourneyStatus,
+  UserTeamRole
+} from '../../../../../__generated__/globalTypes'
 import {
   UpdateJourneyCollection,
   UpdateJourneyCollectionVariables
@@ -34,6 +38,7 @@ import { CustomDomainDialogTitle } from '../CustomDomainDialogTitle'
 
 interface DefaultJourneyFormProps {
   customDomain: CustomDomain
+  currentUserTeamRole: UserTeamRole
 }
 export const DELETE_JOURNEY_COLLECTION = gql`
   mutation DeleteJourneyCollection($id: ID!) {
@@ -90,7 +95,8 @@ export const CREATE_JOURNEY_COLLECTION = gql`
 `
 
 export function DefaultJourneyForm({
-  customDomain
+  customDomain,
+  currentUserTeamRole
 }: DefaultJourneyFormProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
@@ -189,17 +195,23 @@ export function DefaultJourneyForm({
       <CustomDomainDialogTitle title={t('Default Journey')} />
       <Stack direction="row" justifyContent="space-between">
         <FormControl variant="filled" fullWidth hiddenLabel>
-          <Autocomplete
-            getOptionLabel={(options) => options.title}
-            id="defaultJourney"
-            defaultValue={customDomain.journeyCollection?.journeys?.[0]}
-            onChange={async (_e, option) => await handleOnChange(option)}
-            options={data?.journeys ?? []}
-            renderInput={(params) => (
-              <TextField {...params} variant="filled" hiddenLabel />
-            )}
-            blurOnSelect
-          />
+          <Tooltip
+            title={t('Only team managers can update the custom domain')}
+            arrow
+          >
+            <Autocomplete
+              disabled={currentUserTeamRole === 'member'}
+              getOptionLabel={(options) => options.title}
+              id="defaultJourney"
+              defaultValue={customDomain.journeyCollection?.journeys?.[0]}
+              onChange={async (_e, option) => await handleOnChange(option)}
+              options={data?.journeys ?? []}
+              renderInput={(params) => (
+                <TextField {...params} variant="filled" hiddenLabel />
+              )}
+              blurOnSelect
+            />
+          </Tooltip>
           <FormHelperText sx={{ wordBreak: 'break-all' }}>
             {t('The default Journey will be available at {{ customDomain }}', {
               customDomain: customDomain.name
