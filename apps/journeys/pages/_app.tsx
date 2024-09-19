@@ -1,6 +1,7 @@
 import { ApolloProvider } from '@apollo/client'
 import type { EmotionCache } from '@emotion/cache'
 import { CacheProvider } from '@emotion/react'
+import { GoogleTagManager, sendGTMEvent } from '@next/third-parties/google'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import { AppProps as NextJsAppProps } from 'next/app'
 import Head from 'next/head'
@@ -9,7 +10,6 @@ import { SSRConfig, appWithTranslation, useTranslation } from 'next-i18next'
 import { DefaultSeo } from 'next-seo'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement, useEffect } from 'react'
-import TagManager from 'react-gtm-module'
 
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
@@ -36,12 +36,6 @@ function JourneysApp({
 }: JourneysAppProps): ReactElement {
   const { t } = useTranslation('apps-journeys')
   useEffect(() => {
-    if (
-      process.env.NEXT_PUBLIC_GTM_ID != null &&
-      process.env.NEXT_PUBLIC_GTM_ID !== ''
-    )
-      TagManager.initialize({ gtmId: process.env.NEXT_PUBLIC_GTM_ID })
-
     // Remove the server-side injected CSS.
     const jssStyles = document.querySelector('#jss-server-side')
     if (jssStyles != null) {
@@ -50,9 +44,15 @@ function JourneysApp({
     const auth = getAuth(firebaseClient)
     return onAuthStateChanged(auth, (user) => {
       if (user != null) {
-        TagManager.dataLayer({ dataLayer: { userId: user.uid } })
+        sendGTMEvent({
+          event: 'user_logged_in',
+          userId: user.uid
+        })
       } else {
-        TagManager.dataLayer({ dataLayer: { userId: undefined } })
+        sendGTMEvent({
+          event: 'user_logged_out',
+          userId: undefined
+        })
       }
     })
   }, [])
@@ -105,6 +105,7 @@ function JourneysApp({
           </Script>
         )}
       <ApolloProvider client={apolloClient}>
+        <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM_ID ?? ''} />
         <SnackbarProvider
           anchorOrigin={{
             vertical: 'bottom',
