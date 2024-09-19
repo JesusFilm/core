@@ -9,12 +9,14 @@ import Type3 from '@core/shared/ui/icons/Type3'
 import { useJourneyUpdateMutation } from '../../../../../../../libs/useJourneyUpdateMutation'
 import { TextFieldForm } from '../../../../../../TextFieldForm'
 import { Accordion } from '../../Properties/Accordion'
+import { useToggleJourneyProperty } from '../libs/useToggleJourneyProperty/useToggleJourneyProperty'
 
 export function DisplayTitle(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const { add } = useCommand()
   const [journeyUpdate] = useJourneyUpdateMutation()
+  const [checked, toggleProperty] = useToggleJourneyProperty('showDisplayTitle')
 
   async function handleUpdate(newTitle: string): Promise<void> {
     if (journey == null) return
@@ -46,7 +48,15 @@ export function DisplayTitle(): ReactElement {
   }
 
   return (
-    <Accordion id="display title" icon={<Type3 />} name={t('Display Title')}>
+    <Accordion
+      id="display title"
+      icon={<Type3 />}
+      name={t('Display Title')}
+      switchProps={{
+        handleToggle: (e) => toggleProperty(e.target.checked),
+        checked
+      }}
+    >
       <Stack sx={{ p: 4, pt: 2 }} data-testid="DisplayTitle">
         <TextFieldForm
           id="display-title"
