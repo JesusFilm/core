@@ -6,7 +6,7 @@ import { useJourney } from '../../../libs/JourneyProvider'
 import { ReactionButton } from './ReactionButton'
 import { ShareButton } from './ShareButton'
 
-export function FooterButtonList(): ReactElement {
+export function FooterButtonList(): ReactElement | null {
   const { journey } = useJourney()
 
   const showShareButton = journey?.showShareButton ?? true
