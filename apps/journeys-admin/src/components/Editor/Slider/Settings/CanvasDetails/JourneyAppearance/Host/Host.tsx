@@ -15,6 +15,7 @@ import { UserTeamRole } from '../../../../../../../../__generated__/globalTypes'
 import { useCurrentUserLazyQuery } from '../../../../../../../libs/useCurrentUserLazyQuery'
 import { useUserTeamsAndInvitesQuery } from '../../../../../../../libs/useUserTeamsAndInvitesQuery'
 import { Accordion } from '../../Properties/Accordion'
+import { useToggleJourneyProperty } from '../libs/useToggleJourneyProperty/useToggleJourneyProperty'
 
 import { HostSelection } from './HostSelection'
 
@@ -60,6 +61,7 @@ export function Host(): ReactElement {
   const [openHostForm, setOpenHostForm] = useState(false)
   const [openHostInfo, setOpenHostInfo] = useState(false)
   const { journey } = useJourney()
+  const [checked, toggleProperty] = useToggleJourneyProperty('showHosts')
   const { t } = useTranslation('apps-journeys-admin')
   // Get all team members of journey team, check if user in team
   // TODO: Replace with CASL authorisation check
@@ -126,6 +128,10 @@ export function Host(): ReactElement {
       id="author details"
       icon={<UserProfileCircleIcon />}
       name={t('Hosted By')}
+      switchProps={{
+        handleToggle: (e) => toggleProperty(e.target.checked),
+        checked
+      }}
     >
       <Box data-testid="Host">
         {openHostSelection && (
