@@ -5,6 +5,7 @@ import { GetLastActiveTeamIdAndTeams_teams_userTeams as UserTeams } from '@core/
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { TeamAvatars } from './TeamAvatars'
+import { UserTeamRole } from 'libs/journeys/ui/__generated__/globalTypes'
 
 const TeamAvatarsStory: Meta<typeof TeamAvatars> = {
   ...journeysAdminConfig,
@@ -21,8 +22,10 @@ const userTeam: UserTeams[] = [
       id: 'userId',
       firstName: 'Joe',
       lastName: 'Bloggs',
-      imageUrl: 'image'
-    }
+      imageUrl: 'image',
+      email: 'email@example.com'
+    },
+    role: UserTeamRole.member
   },
   {
     __typename: 'UserTeam',
@@ -32,8 +35,10 @@ const userTeam: UserTeams[] = [
       id: 'userId',
       firstName: 'Mike',
       lastName: 'The Guy',
-      imageUrl: 'image'
-    }
+      imageUrl: 'image',
+      email: 'email1@example.com'
+    },
+    role: UserTeamRole.member
   },
   {
     __typename: 'UserTeam',
@@ -43,8 +48,10 @@ const userTeam: UserTeams[] = [
       id: 'userId',
       firstName: 'Bob',
       lastName: 'The Builder',
-      imageUrl: 'image'
-    }
+      imageUrl: 'image',
+      email: 'email1@example.com'
+    },
+    role: UserTeamRole.member
   }
 ]
 
@@ -57,8 +64,10 @@ const userTeamOverflow: UserTeams[] = [
       id: 'userId',
       firstName: 'Joe',
       lastName: 'Bloggs',
-      imageUrl: 'image'
-    }
+      imageUrl: 'image',
+      email: 'email1@example.com'
+    },
+    role: UserTeamRole.member
   },
   {
     __typename: 'UserTeam',
@@ -68,8 +77,10 @@ const userTeamOverflow: UserTeams[] = [
       id: 'userId',
       firstName: 'Mike',
       lastName: 'The Guy',
-      imageUrl: 'image'
-    }
+      imageUrl: 'image',
+      email: 'email1@example.com'
+    },
+    role: UserTeamRole.member
   },
   {
     __typename: 'UserTeam',
@@ -79,8 +90,10 @@ const userTeamOverflow: UserTeams[] = [
       id: 'userId',
       firstName: 'Bob',
       lastName: 'The Builder',
-      imageUrl: 'image'
-    }
+      imageUrl: 'image',
+      email: 'email1@example.com'
+    },
+    role: UserTeamRole.member
   },
   {
     __typename: 'UserTeam',
@@ -90,8 +103,10 @@ const userTeamOverflow: UserTeams[] = [
       id: 'userId',
       firstName: 'Hello',
       lastName: 'Kitty',
-      imageUrl: 'image'
-    }
+      imageUrl: 'image',
+      email: 'email1@example.com'
+    },
+    role: UserTeamRole.member
   },
   {
     __typename: 'UserTeam',
@@ -101,8 +116,10 @@ const userTeamOverflow: UserTeams[] = [
       id: 'userId',
       firstName: 'Serena',
       lastName: 'Williams',
-      imageUrl: 'image'
-    }
+      imageUrl: 'image',
+      email: 'email1@example.com'
+    },
+    role: UserTeamRole.member
   },
   {
     __typename: 'UserTeam',
@@ -112,8 +129,10 @@ const userTeamOverflow: UserTeams[] = [
       id: 'userId',
       firstName: 'Jonathan',
       lastName: 'G',
-      imageUrl: 'image'
-    }
+      imageUrl: 'image',
+      email: 'email1@example.com'
+    },
+    role: UserTeamRole.member
   }
 ]
 
