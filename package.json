@@ -244,7 +244,7 @@
     "@types/lodash": "^4.14.198",
     "@types/node": "20.16.5",
     "@types/nodemailer": "^6.4.15",
-    "@types/react": "18.3.6",
+    "@types/react": "18.3.8",
     "@types/react-beautiful-dnd": "^13.1.7",
     "@types/react-dom": "18.3.0",
     "@types/react-gtm-module": "^2.0.1",
