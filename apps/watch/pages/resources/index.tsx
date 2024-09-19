@@ -29,15 +29,15 @@ const searchClient = algoliasearch(
     ''
 )
 
-interface StrategiesPageProps {
+interface ResourcesPageProps {
   intitialApolloState?: NormalizedCacheObject
   serverState?: InstantSearchServerState
 }
 
-function StrategiesPage({
+function ResourcesPage({
   intitialApolloState,
   serverState
-}: StrategiesPageProps): ReactElement {
+}: ResourcesPageProps): ReactElement {
   const baseUrl = (process.env.NEXT_PUBLIC_WATCH_URL ?? '').replace(
     '/watch',
     ''
@@ -56,7 +56,7 @@ function StrategiesPage({
           insights
           routing={{
             router: createInstantSearchRouterNext({
-              serverUrl: `${baseUrl}/strategies`,
+              serverUrl: `${baseUrl}/resources`,
               singletonRouter,
               routerOptions: {
                 cleanUrlOnDispose: false
@@ -71,7 +71,7 @@ function StrategiesPage({
   )
 }
 
-export const getStaticProps: GetStaticProps<StrategiesPageProps> = async ({
+export const getStaticProps: GetStaticProps<ResourcesPageProps> = async ({
   locale
 }) => {
   const flags = await getFlags()
@@ -83,7 +83,7 @@ export const getStaticProps: GetStaticProps<StrategiesPageProps> = async ({
       props: {}
     }
 
-  const serverState = await getServerState(<StrategiesPage />, {
+  const serverState = await getServerState(<ResourcesPage />, {
     renderToString
   })
 
@@ -104,4 +104,4 @@ export const getStaticProps: GetStaticProps<StrategiesPageProps> = async ({
   }
 }
 
-export default StrategiesPage
+export default ResourcesPage

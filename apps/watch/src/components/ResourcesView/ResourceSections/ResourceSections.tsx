@@ -6,13 +6,13 @@ import { EmptySearch } from '@core/journeys/ui/EmptySearch'
 
 import { ResourceSection } from './ResourceSection'
 
-interface StrategySectionsProps {
+interface ResourceSectionsProps {
   includeIndex?: boolean
 }
 
 export function ResourceSections({
   includeIndex = false
-}: StrategySectionsProps): ReactElement {
+}: ResourceSectionsProps): ReactElement {
   const indexes = [
     'wp_prd_posts_equipment',
     'wp_prd_posts_training_strategies',

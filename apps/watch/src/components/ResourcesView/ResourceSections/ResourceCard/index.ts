@@ -1,1 +1,1 @@
-export { StrategyCard } from './ResourceCard'
+export { ResourceCard } from './ResourceCard'
