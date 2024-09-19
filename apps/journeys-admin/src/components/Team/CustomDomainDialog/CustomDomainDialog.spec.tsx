@@ -2,23 +2,18 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
-import {
-  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
-  TeamProvider
-} from '@core/journeys/ui/TeamProvider'
-import { GetLastActiveTeamIdAndTeams } from '@core/journeys/ui/TeamProvider/__generated__/GetLastActiveTeamIdAndTeams'
-
-import { CheckCustomDomain } from '../../../../__generated__/CheckCustomDomain'
-import { getCustomDomainMock } from '../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
-
-import { CustomDomainDialog } from './CustomDomainDialog'
-import { CHECK_CUSTOM_DOMAIN } from './DNSConfigSection'
-import { UserTeamRole } from '../../../../__generated__/globalTypes'
-import { mockUseCurrentUserLazyQuery } from '../../../libs/useCurrentUserLazyQuery/useCurrentUserLazyQuery.mock'
+import { TeamProvider } from '@core/journeys/ui/TeamProvider'
 import {
   getLastActiveTeamIdAndTeamsMock,
   getLastActiveTeamIdAndTeamsMockTeamMember
 } from '@core/journeys/ui/TeamProvider/TeamProvider.mock'
+
+import { CheckCustomDomain } from '../../../../__generated__/CheckCustomDomain'
+import { mockUseCurrentUserLazyQuery } from '../../../libs/useCurrentUserLazyQuery/useCurrentUserLazyQuery.mock'
+import { getCustomDomainMock } from '../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
+
+import { CustomDomainDialog } from './CustomDomainDialog'
+import { CHECK_CUSTOM_DOMAIN } from './DNSConfigSection'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,

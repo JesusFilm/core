@@ -305,7 +305,7 @@ describe('DefaultJourneyForm', () => {
 
   it('should be disabled if user does not have correct permissions', async () => {
     const result = jest.fn().mockReturnValue(deleteJourneyCollectionMock.result)
-    const { getByRole, getByLabelText } = render(
+    const { getByRole } = render(
       <MockedProvider
         mocks={[
           getAdminJourneysMock,
