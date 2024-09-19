@@ -99,5 +99,11 @@ export const JOURNEY_FIELDS = gql`
     menuStepBlock {
       ...StepFields
     }
+    showHosts
+    showChatButtons
+    showReactionButtons
+    showLogo
+    showMenu
+    showDisplayTitle
   }
 `

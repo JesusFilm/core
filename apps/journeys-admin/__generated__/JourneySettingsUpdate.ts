@@ -74,6 +74,12 @@ export interface JourneySettingsUpdate_journeyUpdate {
   displayTitle: string | null;
   menuButtonIcon: JourneyMenuButtonIcon | null;
   menuStepBlock: JourneySettingsUpdate_journeyUpdate_menuStepBlock | null;
+  showHosts: boolean | null;
+  showChatButtons: boolean | null;
+  showReactionButtons: boolean | null;
+  showLogo: boolean | null;
+  showMenu: boolean | null;
+  showDisplayTitle: boolean | null;
 }
 
 export interface JourneySettingsUpdate {

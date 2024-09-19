@@ -635,6 +635,12 @@ export interface GetPublisherTemplate_publisherTemplate {
   logoImageBlock: GetPublisherTemplate_publisherTemplate_logoImageBlock | null;
   menuButtonIcon: JourneyMenuButtonIcon | null;
   menuStepBlock: GetPublisherTemplate_publisherTemplate_menuStepBlock | null;
+  showHosts: boolean | null;
+  showChatButtons: boolean | null;
+  showReactionButtons: boolean | null;
+  showLogo: boolean | null;
+  showMenu: boolean | null;
+  showDisplayTitle: boolean | null;
 }
 
 export interface GetPublisherTemplate {

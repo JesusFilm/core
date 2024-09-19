@@ -41,6 +41,12 @@ export const JOURNEY_SETTINGS_UPDATE = gql`
       menuStepBlock {
         ...BlockFields
       }
+      showHosts
+      showChatButtons
+      showReactionButtons
+      showLogo
+      showMenu
+      showDisplayTitle
     }
   }
 `
