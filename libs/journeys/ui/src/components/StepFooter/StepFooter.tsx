@@ -35,7 +35,6 @@ export function StepFooter({
 
   const hostAvatar = hasHostAvatar({ journey, variant })
   const hostDetails = hasHostDetails({ journey })
-  const chat = hasChatWidget({ journey, variant })
   const title = getTitle({ journey })
 
   const footerMobileHeight = getFooterMobileHeight({ journey, variant })
@@ -75,7 +74,7 @@ export function StepFooter({
       >
         {!isWebsite && !combinedFooter && (
           <Box sx={{ display: { xs: 'flex', sm: 'none' } }}>
-            <FooterButtonList />
+            {journey?.showReactionButtons === true && <FooterButtonList />}
           </Box>
         )}
 
@@ -135,16 +134,14 @@ export function StepFooter({
               )}
 
               <Box sx={{ display: { xs: 'none', sm: 'flex' } }}>
-                <FooterButtonList />
+                {journey?.showReactionButtons === true && <FooterButtonList />}
               </Box>
             </Stack>
           )}
 
-          {chat && (
-            <Box>
-              <ChatButtons />
-            </Box>
-          )}
+          <Box>
+            <ChatButtons />
+          </Box>
         </Stack>
       </Stack>
     </Box>
