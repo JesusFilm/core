@@ -18,14 +18,14 @@ jest.mock('next/compat/router', () => ({
 
 describe('HeaderTabButtons', () => {
   const trueHeaderItemsFlags = {
-    resources: true,
+    strategies: true,
     journeys: true,
     calendar: true,
     products: true
   }
 
   const falseHeaderItemsFlags = {
-    resources: false,
+    strategies: false,
     journeys: false,
     calendar: false,
     products: false
