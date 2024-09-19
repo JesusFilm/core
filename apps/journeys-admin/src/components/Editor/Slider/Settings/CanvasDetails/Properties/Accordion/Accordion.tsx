@@ -4,9 +4,10 @@ import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
+import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
-import { ReactElement, ReactNode } from 'react'
+import { ChangeEvent, ReactElement, ReactNode } from 'react'
 
 import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -18,6 +19,10 @@ interface AccordionProps {
   value?: string
   param?: string
   children: ReactNode
+  switchProps?: {
+    checked: boolean
+    handleToggle: (e: ChangeEvent<HTMLInputElement>) => void
+  }
 }
 
 export function Accordion({
@@ -26,13 +31,15 @@ export function Accordion({
   name,
   value,
   param,
-  children
+  children,
+  switchProps
 }: AccordionProps): ReactElement {
   const router = useRouter()
   const {
     state: { selectedAttributeId },
     dispatch
   } = useEditor()
+
   const expanded = id === selectedAttributeId
 
   const handleClick = (): void => {
@@ -72,7 +79,13 @@ export function Accordion({
         expandIcon={<ExpandMoreIcon sx={{ color: 'primary.main' }} />}
         data-testid="AccordionSummary"
       >
-        <Stack spacing={3} alignItems="center" direction="row">
+        <Stack
+          spacing={3}
+          alignItems="center"
+          direction="row"
+          useFlexGap
+          sx={{ width: '100%' }}
+        >
           {icon}
           <Box sx={{ maxWidth: '24ch', overflow: 'hidden' }}>
             {value != null ? (
@@ -88,6 +101,15 @@ export function Accordion({
               </Typography>
             )}
           </Box>
+          {switchProps != null && (
+            <Switch
+              sx={{ ml: 'auto', justifySelf: 'flex-end' }}
+              checked={switchProps.checked}
+              onChange={switchProps.handleToggle}
+              onClick={(e) => e.stopPropagation()}
+              inputProps={{ 'aria-label': 'controlled' }}
+            />
+          )}
         </Stack>
       </AccordionSummary>
       <AccordionDetails sx={{ p: 0 }}>{children}</AccordionDetails>
