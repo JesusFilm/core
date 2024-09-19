@@ -45,12 +45,10 @@ function JourneysApp({
     return onAuthStateChanged(auth, (user) => {
       if (user != null) {
         sendGTMEvent({
-          event: 'user_logged_in',
           userId: user.uid
         })
       } else {
         sendGTMEvent({
-          event: 'user_logged_out',
           userId: undefined
         })
       }
