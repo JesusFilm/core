@@ -1,13 +1,51 @@
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
+import { alpha } from '@mui/material/styles'
 import { useRouter } from 'next/router'
-import { ReactElement, ReactNode } from 'react'
+import { ReactElement } from 'react'
 
 import DiamondIcon from '@core/shared/ui/icons/Diamond'
 
 import { useJourney } from '../../../libs/JourneyProvider'
 
-export function Logo(): ReactElement {
+function Fallback(): ReactElement {
+  return (
+    <IconButton
+      key="default"
+      disabled
+      sx={{
+        height: 44,
+        width: 44,
+        outline: 'none',
+        border: '3px dashed ',
+        opacity: 0.5,
+        borderColor: ({ palette }) => palette.grey[700]
+      }}
+    >
+      <DiamondIcon sx={{ color: ({ palette }) => palette.grey[700] }} />
+    </IconButton>
+  )
+}
+
+function Empty(): ReactElement {
+  return (
+    <Box
+      data-testid="empty-logo"
+      sx={{
+        borderRadius: 2,
+        minWidth: 44,
+        height: 44,
+        outline: 'none',
+        border: '3px dashed ',
+        opacity: 0.5,
+        borderColor: 'common.white',
+        backgroundColor: ({ palette }) => alpha(palette.common.white, 0.7)
+      }}
+    />
+  )
+}
+
+export function Logo(): ReactElement | null {
   const { journey, variant } = useJourney()
   const router = useRouter()
 
@@ -19,14 +57,19 @@ export function Logo(): ReactElement {
   }
 
   const logo = journey?.logoImageBlock
-  const showLogo = logo?.src != null
-  const showEmpty = !showLogo && variant !== 'admin'
+  const hideLogo = journey?.showLogo !== true
 
-  const children: ReactNode = showLogo ? (
+  if (hideLogo) {
+    return variant === 'admin' ? <Fallback /> : null
+  }
+
+  if (logo?.src == null) return <Empty />
+
+  return (
     <Box
       component="img"
-      src={logo.src ?? ''}
-      alt={logo.alt}
+      src={logo?.src ?? ''}
+      alt={logo?.alt}
       onClick={handleHomeClick}
       sx={{
         width: 44,
@@ -34,30 +77,5 @@ export function Logo(): ReactElement {
         objectFit: 'contain'
       }}
     />
-  ) : showEmpty ? (
-    <Box
-      data-testid="empty-logo"
-      sx={{
-        width: 44,
-        height: 44
-      }}
-    />
-  ) : (
-    <IconButton
-      key="default"
-      disabled
-      sx={{
-        height: 44,
-        width: 44,
-        outline: 'none',
-        border: '3px dashed ',
-        opacity: 0.5,
-        borderColor: (theme) => theme.palette.grey[700]
-      }}
-    >
-      <DiamondIcon sx={{ color: (theme) => theme.palette.grey[700] }} />
-    </IconButton>
   )
-
-  return children
 }
