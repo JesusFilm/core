@@ -1,5 +1,4 @@
 import ListItemIcon from '@mui/material/ListItemIcon'
-import ListItemText from '@mui/material/ListItemText'
 import MenuItem from '@mui/material/MenuItem'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
@@ -36,17 +35,19 @@ export function Suggestion({
       <ListItemIcon>
         <Globe1Icon />
       </ListItemIcon>
-      <ListItemText>
-        <Typography display="inline" fontWeight="1000">
-          {query}
-        </Typography>
-        <Typography display="inline">{` - in ${filtersLabel}`}</Typography>
-      </ListItemText>
+      <Typography component="span" fontWeight="1000">
+        {query}
+      </Typography>
+      <Typography
+        pl={1}
+        component="span"
+        noWrap
+      >{`- in ${filtersLabel}`}</Typography>
       <Typography
         variant="body1"
         color="text.secondary"
         ml={6}
-        sx={{ display: { xs: 'none', md: 'block' } }}
+        sx={{ ml: 'auto', display: { xs: 'none', md: 'block' } }}
       >
         {variant}
       </Typography>
