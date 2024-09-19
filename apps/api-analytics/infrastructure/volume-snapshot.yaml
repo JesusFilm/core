@@ -10,7 +10,7 @@ spec:
 apiVersion: snapshot.storage.k8s.io/v1
 kind: VolumeSnapshot
 metadata:
-  name: clickhouse-gp3-snapshot
+  name: clickhouse-gp3-replica-snapshot
 spec:
   volumeSnapshotClassName: clickhouse-gp3-snapshotclass
   source:

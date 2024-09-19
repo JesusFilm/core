@@ -210,4 +210,16 @@ nodeSelector: {}
 
 tolerations: []
 
-affinity: {}
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: topology.kubernetes.io/zone
+              operator: In
+              values:
+                - us-east-2a
+            - key: eks.amazonaws.com/nodegroup
+              operator: In
+              values:
+                - jfp-eks-node-group-2a-stage
