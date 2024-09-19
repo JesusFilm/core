@@ -7,7 +7,13 @@ import TextField, { TextFieldProps } from '@mui/material/TextField'
 import { Formik } from 'formik'
 import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next'
-import { type ReactElement, useRef, useState } from 'react'
+import {
+  type ReactElement,
+  useCallback,
+  useEffect,
+  useRef,
+  useState
+} from 'react'
 import { useRefinementList, useSearchBox } from 'react-instantsearch'
 
 import Search1Icon from '@core/shared/ui/icons/Search1'
@@ -67,6 +73,7 @@ export function SearchBar({
   const [open, setOpen] = useState(false)
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [tabValue, setTabValue] = useState<number>(0)
+  const [countryCode, setCountryCode] = useState<string>()
 
   const { query, refine } = useSearchBox()
 
@@ -91,6 +98,19 @@ export function SearchBar({
     setTabValue(1)
     setOpen(!open)
   }
+
+  const findUserCountry = useCallback(async () => {
+    const response = await fetch('/api/geolocation')
+    const { country } = await response.json()
+
+    if (country != null) {
+      setCountryCode(country)
+    }
+  }, [])
+
+  useEffect(() => {
+    void findUserCountry()
+  }, [findUserCountry])
 
   return (
     <SearchBarProvider>
@@ -176,6 +196,7 @@ export function SearchBar({
             <DynamicSearchbarDropdown
               open={open}
               refinements={refinements}
+              countryCode={countryCode}
               id={open ? 'simple-popper' : undefined}
               anchorEl={anchorEl}
               tabIndex={tabValue}
