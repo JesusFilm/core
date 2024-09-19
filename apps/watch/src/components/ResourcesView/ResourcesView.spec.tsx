@@ -57,7 +57,7 @@ describe('ResourcesView', () => {
         <ResourcesView />
       </MockedProvider>
     )
-    expect(screen.getByText('Resource for every')).toBeInTheDocument()
+    expect(screen.getByText('Resources for every')).toBeInTheDocument()
     expect(screen.getByText('interaction')).toBeInTheDocument()
   })
 
