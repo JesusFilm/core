@@ -121,23 +121,11 @@ export function MenuIconSelect(): ReactElement {
         autoWidth
         sx={{
           width: 'min-content',
-          borderRadius: 2
+          borderRadius: 2,
+          minWidth: 100,
+          minHeight: 80
         }}
       >
-        <MenuItem value="" key="empty">
-          <Box
-            sx={{
-              height: 48,
-              width: 48,
-              borderRadius: 2,
-              boxSizing: 'border-box',
-              border: ({ palette }) =>
-                `3px dashed ${palette.background.default}`,
-              display: 'grid',
-              placeItems: 'center'
-            }}
-          />
-        </MenuItem>
         {Icons.map(({ Icon, value }) => (
           <MenuItem value={value} key={value}>
             <Box
