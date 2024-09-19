@@ -9,6 +9,7 @@ import { appWithTranslation } from 'next-i18next'
 import { DefaultSeo } from 'next-seo'
 import { type ReactElement, useEffect } from 'react'
 
+import { InstantSearchProvider } from '@core/journeys/ui/algolia/InstantSearchProvider'
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
@@ -103,8 +104,10 @@ function WatchApp({
             themeName={ThemeName.website}
             themeMode={ThemeMode.light}
           >
-            <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM_ID ?? ''} />
-            <Component {...pageProps} />
+            <InstantSearchProvider>
+              <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM_ID ?? ''} />
+              <Component {...pageProps} />
+            </InstantSearchProvider>
           </ThemeProvider>
         </CacheProvider>
       </ApolloProvider>
