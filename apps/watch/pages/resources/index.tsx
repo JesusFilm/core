@@ -1,6 +1,5 @@
 /* eslint-disable i18next/no-literal-string */
 import { ApolloProvider, NormalizedCacheObject } from '@apollo/client'
-import algoliasearch from 'algoliasearch'
 import { GetStaticProps } from 'next'
 import singletonRouter from 'next/router'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
@@ -14,6 +13,8 @@ import {
 } from 'react-instantsearch'
 import { createInstantSearchRouterNext } from 'react-instantsearch-router-nextjs'
 
+import { useInstantSearchClient } from '@core/journeys/ui/algolia/InstantSearchProvider'
+
 import i18nConfig from '../../next-i18next.config'
 import { ResourcesView } from '../../src/components/ResourcesView'
 import {
@@ -21,13 +22,6 @@ import {
   useApolloClient
 } from '../../src/libs/apolloClient'
 import { getFlags } from '../../src/libs/getFlags'
-
-const searchClient = algoliasearch(
-  process.env.NEXT_PUBLIC_ALGOLIA_APP_ID ?? '',
-  process.env.ALGOLIA_SERVER_API_KEY ??
-    process.env.NEXT_PUBLIC_ALGOLIA_API_KEY ??
-    ''
-)
 
 interface ResourcesPageProps {
   intitialApolloState?: NormalizedCacheObject
@@ -47,12 +41,15 @@ function ResourcesPage({
     initialState: intitialApolloState
   })
 
+  const searchClient = useInstantSearchClient()
+
   return (
     <InstantSearchSSRProvider {...serverState}>
       <ApolloProvider client={client}>
         <InstantSearch
           searchClient={searchClient}
           future={{ preserveSharedStateOnUnmount: true }}
+          stalledSearchDelay={500}
           insights
           routing={{
             router: createInstantSearchRouterNext({
