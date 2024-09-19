@@ -6,35 +6,21 @@ import { EmptySearch } from '@core/journeys/ui/EmptySearch'
 
 import { ResourceSection } from './ResourceSection'
 
-const PROD_INDEXES = [
-  'wp_prd_posts_equipment',
-  'wp_prd_posts_training_strategies',
-  'wp_prd_posts_outreach_resources',
-  'wp_prd_posts_prayer_resources',
-  'wp_prd_posts_digital_strategies'
-]
-
-const DEV_INDEXES = [
-  'wp_dev_posts_equipment',
-  'wp_dev_posts_training_strategies',
-  'wp_dev_posts_outreach_resources',
-  'wp_dev_posts_prayer_resources',
-  'wp_dev_posts_digital_strategies'
-]
-
-function getIndexes(): string[] {
-  const isProd = process.env.DOPPLER_ENVIRONMENT === 'prd'
-  return isProd ? PROD_INDEXES : DEV_INDEXES
-}
-
-interface ResourceSectionsProps {
+interface StrategySectionsProps {
   includeIndex?: boolean
 }
 
 export function ResourceSections({
   includeIndex = false
-}: ResourceSectionsProps): ReactElement {
-  const indexes = getIndexes()
+}: StrategySectionsProps): ReactElement {
+  const indexes = [
+    'wp_prd_posts_equipment',
+    'wp_prd_posts_training_strategies',
+    'wp_prd_posts_outreach_resources',
+    'wp_prd_posts_prayer_resources',
+    'wp_prd_posts_digital_strategies'
+  ]
+
   const [hasResult, setHasResult] = useState<boolean>(true)
 
   const resultsMap = new Map<number, boolean>()
