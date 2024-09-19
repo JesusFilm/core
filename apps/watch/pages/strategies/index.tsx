@@ -1,4 +1,5 @@
 /* eslint-disable i18next/no-literal-string */
+import { ApolloProvider, NormalizedCacheObject } from '@apollo/client'
 import algoliasearch from 'algoliasearch'
 import { GetStaticProps } from 'next'
 import singletonRouter from 'next/router'
@@ -15,6 +16,10 @@ import { createInstantSearchRouterNext } from 'react-instantsearch-router-nextjs
 
 import i18nConfig from '../../next-i18next.config'
 import { StrategiesView } from '../../src/components/StrategiesView'
+import {
+  createApolloClient,
+  useApolloClient
+} from '../../src/libs/apolloClient'
 import { getFlags } from '../../src/libs/getFlags'
 
 const searchClient = algoliasearch(
@@ -25,32 +30,43 @@ const searchClient = algoliasearch(
 )
 
 interface StrategiesPageProps {
+  intitialApolloState?: NormalizedCacheObject
   serverState?: InstantSearchServerState
 }
 
-function StrategiesPage({ serverState }: StrategiesPageProps): ReactElement {
+function StrategiesPage({
+  intitialApolloState,
+  serverState
+}: StrategiesPageProps): ReactElement {
   const baseUrl = (process.env.NEXT_PUBLIC_WATCH_URL ?? '').replace(
     '/watch',
     ''
   )
+
+  const client = useApolloClient({
+    initialState: intitialApolloState
+  })
+
   return (
     <InstantSearchSSRProvider {...serverState}>
-      <InstantSearch
-        searchClient={searchClient}
-        future={{ preserveSharedStateOnUnmount: true }}
-        insights
-        routing={{
-          router: createInstantSearchRouterNext({
-            serverUrl: `${baseUrl}/strategies`,
-            singletonRouter,
-            routerOptions: {
-              cleanUrlOnDispose: false
-            }
-          })
-        }}
-      >
-        <StrategiesView />
-      </InstantSearch>
+      <ApolloProvider client={client}>
+        <InstantSearch
+          searchClient={searchClient}
+          future={{ preserveSharedStateOnUnmount: true }}
+          insights
+          routing={{
+            router: createInstantSearchRouterNext({
+              serverUrl: `${baseUrl}/strategies`,
+              singletonRouter,
+              routerOptions: {
+                cleanUrlOnDispose: false
+              }
+            })
+          }}
+        >
+          <StrategiesView />
+        </InstantSearch>
+      </ApolloProvider>
     </InstantSearchSSRProvider>
   )
 }
@@ -71,11 +87,14 @@ export const getStaticProps: GetStaticProps<StrategiesPageProps> = async ({
     renderToString
   })
 
+  const apolloClient = createApolloClient()
+
   return {
     revalidate: 3600,
     props: {
       flags,
       serverState,
+      intitialApolloState: apolloClient.cache.extract(),
       ...(await serverSideTranslations(
         locale ?? 'en',
         ['apps-watch'],

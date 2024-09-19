@@ -53,5 +53,6 @@ describe('StepHeader', () => {
       'src',
       'https://example.com/logo.png'
     )
+    expect(screen.getByTestId('StepHeaderMenu')).toBeInTheDocument()
   })
 })
