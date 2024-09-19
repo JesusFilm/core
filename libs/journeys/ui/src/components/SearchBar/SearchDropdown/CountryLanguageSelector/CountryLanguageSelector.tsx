@@ -4,24 +4,25 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import Image from 'next/image'
-import { ReactElement, useCallback, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
 import { getTopSpokenLanguages } from '../../../../libs/algolia/getTopSpokenLanguages'
 import { useSearchBar } from '../../../../libs/algolia/SearchBarProvider'
 import { useCountryQuery } from '../../../../libs/useCountryQuery'
 
 interface CountryLanguageSelectorProps {
+  countryCode?: string
   refinements: RefinementListRenderState
 }
 
 export function CountryLanguageSelector({
+  countryCode,
   refinements
 }: CountryLanguageSelectorProps): ReactElement {
   const { items, refine } = refinements
 
   const { dispatch } = useSearchBar()
   const [country, setCountry] = useState<string>()
-  const [countryCode, setCountryCode] = useState<string>()
   const { data } = useCountryQuery({ countryId: countryCode ?? '' })
 
   const spokenLanguages = getTopSpokenLanguages({
@@ -52,32 +53,17 @@ export function CountryLanguageSelector({
     }
   }
 
-  function getCountryCookie(): string | undefined {
-    return document.cookie
-      .split('; ')
-      .find((row) => row.startsWith('NEXT_COUNTRY'))
-      ?.split('=')[1]
-  }
-
   function parseCountryName(countryCode: string): string | undefined {
     const displayNames = new Intl.DisplayNames(['en'], { type: 'region' })
     return displayNames.of(countryCode)
   }
 
-  const findUserCountry = useCallback(() => {
-    const countryCookie = getCountryCookie()
-    if (countryCookie != null) {
-      const [, countryCode] = countryCookie.split('---')
+  useEffect(() => {
+    if (countryCode != null) {
       const countryName = parseCountryName(countryCode)
       setCountry(countryName)
-      setCountryCode(countryCode)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  useEffect(() => {
-    findUserCountry()
-  }, [findUserCountry])
+  }, [countryCode])
 
   return (
     <>
