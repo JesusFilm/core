@@ -184,6 +184,34 @@ data "aws_ami" "eks-worker" {
 # USERDATA
 # }
 
+# resource "aws_launch_configuration" "this" {
+#   associate_public_ip_address = true
+#   iam_instance_profile        = aws_iam_instance_profile.eks-node.name
+#   image_id                    = data.aws_ami.eks-worker.id
+#   instance_type               = "t3.medium"
+#   name_prefix                 = "terraform-eks-${var.env}"
+#   security_groups             = [aws_security_group.eks-node.id]
+#   user_data_base64            = base64encode(local.eks-node-userdata)
+
+#   lifecycle {
+#     create_before_destroy = true
+#   }
+# }
+
+# resource "aws_autoscaling_group" "this" {
+#   desired_capacity     = 1
+#   launch_configuration = aws_launch_configuration.this.id
+#   max_size             = 4
+#   min_size             = 1
+#   name                 = "terraform-eks-${var.env}"
+#   vpc_zone_identifier  = var.subnet_ids
+#   tag {
+#     key                 = "kubernetes.io/cluster/${var.name}-${var.env}"
+#     value               = "owned"
+#     propagate_at_launch = true
+#   }
+# }
+
 resource "aws_eks_node_group" "az_2a" {
   cluster_name    = aws_eks_cluster.this.name
   node_group_name = "jfp-eks-node-group-2a-${var.env}"
