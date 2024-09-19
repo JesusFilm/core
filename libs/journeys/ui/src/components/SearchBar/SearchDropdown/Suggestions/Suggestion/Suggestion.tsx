@@ -35,14 +35,8 @@ export function Suggestion({
       <ListItemIcon>
         <Globe1Icon />
       </ListItemIcon>
-      <Typography component="span" fontWeight="1000">
-        {query}
-      </Typography>
-      <Typography
-        pl={1}
-        component="span"
-        noWrap
-      >{`- in ${filtersLabel}`}</Typography>
+      <Typography fontWeight="1000">{query}</Typography>
+      <Typography pl={1} noWrap>{`- in ${filtersLabel}`}</Typography>
       <Typography
         variant="body1"
         color="text.secondary"
