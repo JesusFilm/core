@@ -140,7 +140,7 @@ export const getStaticProps: GetStaticProps<HostJourneysPageProps> = async (
   } else if (data.journeys.length === 1) {
     return {
       redirect: {
-        destination: `/${data.journeys[0].slug}`,
+        destination: `/${data.journeys[0].slug}?defaultJourney=true`,
         permanent: false
       },
       revalidate: 60
