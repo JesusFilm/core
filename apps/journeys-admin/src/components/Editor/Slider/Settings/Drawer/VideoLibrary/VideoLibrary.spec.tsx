@@ -13,6 +13,8 @@ import {
 
 import { VideoBlockSource } from '../../../../../../../__generated__/globalTypes'
 
+import { videoHits } from './data'
+
 import { VideoLibrary } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -49,26 +51,11 @@ describe('VideoLibrary', () => {
     } as unknown as SearchBoxRenderState)
 
     mockUseInfiniteHits.mockReturnValue({
-      hits: [
-        {
-          videoId: 'videoId',
-          titles: ['title1'],
-          description: ['description'],
-          duration: 10994,
-          languageId: '529',
-          subtitles: [],
-          slug: 'video-slug/english',
-          label: 'featureFilm',
-          image:
-            'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_GOJ-0-0.mobileCinematicHigh.jpg',
-          imageAlt: 'Life of Jesus (Gospel of John)',
-          childrenCount: 49,
-          objectID: '2_529-GOJ-0-0'
-        }
-      ],
+      hits: videoHits,
       showMore: jest.fn(),
       isLastPage: false
     } as unknown as InfiniteHitsRenderState)
+
     mockUseInstantSearch.mockReturnValue({
       status: 'idle'
     } as unknown as InstantSearchApi)
