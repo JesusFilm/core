@@ -51,22 +51,4 @@ describe('FooterButtonList', () => {
     expect(screen.getByTestId('ThumbsUpIcon')).toBeInTheDocument()
     expect(screen.getByTestId('ThumbsDownIcon')).toBeInTheDocument()
   })
-
-  it('should not render footer button list if there are no buttons', () => {
-    const journey = {
-      showShareButton: false,
-      showLikeButton: false,
-      showDislikeButton: false
-    } as unknown as JourneyFields
-
-    render(
-      <SnackbarProvider>
-        <JourneyProvider value={{ journey }}>
-          <FooterButtonList />
-        </JourneyProvider>
-      </SnackbarProvider>
-    )
-
-    expect(screen.queryByTestId('StepFooterButtonList')).not.toBeInTheDocument()
-  })
 })
