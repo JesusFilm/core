@@ -99,23 +99,23 @@ export function StepFooter({
                 />
               )}
               <Stack sx={{ flex: '1 1 100%', minWidth: 0 }}>
-                {journey?.showDisplayTitle === true && (
-                  <Typography
-                    variant="subtitle1"
-                    sx={{
-                      zIndex: 1,
-                      // Always dark mode on lg breakpoint
-                      color: { xs: 'primary.main', lg: 'white' },
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis'
-                    }}
-                  >
-                    {title != null
-                      ? title
-                      : journey?.displayTitle ?? journey?.seoTitle}
-                  </Typography>
-                )}
+                <Typography
+                  variant="subtitle1"
+                  sx={{
+                    zIndex: 1,
+                    // Always dark mode on lg breakpoint
+                    color: { xs: 'primary.main', lg: 'white' },
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis'
+                  }}
+                >
+                  {title != null
+                    ? title
+                    : journey?.showDisplayTitle === true
+                    ? journey?.displayTitle ?? journey?.seoTitle
+                    : null}
+                </Typography>
                 {journey?.showHosts === true && <HostTitleLocation />}
               </Stack>
 
