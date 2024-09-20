@@ -64,7 +64,13 @@ const journey: Journey = {
   displayTitle: null,
   logoImageBlock: null,
   menuButtonIcon: null,
-  menuStepBlock: null
+  menuStepBlock: null,
+  showHosts: null,
+  showChatButtons: null,
+  showReactionButtons: null,
+  showLogo: null,
+  showMenu: null,
+  showDisplayTitle: null
 }
 
 type Story = StoryObj<ComponentPropsWithoutRef<typeof InformationButton>>
