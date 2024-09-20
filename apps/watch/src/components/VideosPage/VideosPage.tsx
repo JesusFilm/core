@@ -18,12 +18,10 @@ import { VideosHero } from './Hero'
 import { VideosSubHero } from './SubHero'
 
 interface VideosPageProps {
-  index?: boolean
+  indexName?: string
 }
 
-export function VideosPage({ index = false }: VideosPageProps): ReactElement {
-  const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
-
+export function VideosPage({ indexName }: VideosPageProps): ReactElement {
   const { data: languagesData, loading: languagesLoading } =
     useQuery<GetLanguages>(GET_LANGUAGES, {
       variables: { languageId: '529' }
@@ -55,7 +53,7 @@ export function VideosPage({ index = false }: VideosPageProps): ReactElement {
       </Container>
       <Divider sx={{ height: 2, background: 'rgba(33, 33, 33, 0.08)' }} />
       <Container maxWidth="xxl" sx={{ py: 12 }}>
-        {index ? (
+        {indexName != null ? (
           <Index indexName={indexName}>{videosPageSegment}</Index>
         ) : (
           <>{videosPageSegment}</>

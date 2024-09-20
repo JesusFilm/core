@@ -34,6 +34,19 @@ clickhouse:
   # -- The URL Connection String to clickhouse DB see -> https://clickhouse.tech/docs/en/interfaces/http/
   #  url: "http://plausible-clickhouse:8123/plausible_events_db"
   # -- Sub-chart values, see https://artifacthub.io/packages/helm/sentry/clickhouse
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: topology.kubernetes.io/zone
+                operator: In
+                values:
+                  - us-east-2a
+              - key: eks.amazonaws.com/nodegroup
+                operator: In
+                values:
+                  - jfp-eks-node-group-2a-prod
   clickhouse:
     replicas: 1
     # -- Latest sentry/clickhouse chart ships 19.14, which doesn't work together
@@ -197,4 +210,16 @@ nodeSelector: {}
 
 tolerations: []
 
-affinity: {}
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: topology.kubernetes.io/zone
+              operator: In
+              values:
+                - us-east-2a
+            - key: eks.amazonaws.com/nodegroup
+              operator: In
+              values:
+                - jfp-eks-node-group-2a-prod
