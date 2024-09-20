@@ -1,0 +1,1 @@
+export { useLanguagesContinentsQuery } from './useLanguagesContinentsQuery'

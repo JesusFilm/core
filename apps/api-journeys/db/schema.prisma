@@ -430,6 +430,8 @@ model JourneyProfile {
   lastActiveTeamId             String?
   onboardingFormCompletedAt    DateTime?
   journeyFlowBackButtonClicked Boolean?
+  plausibleJourneyFlowViewed   Boolean?
+  plausibleDashboardViewed     Boolean?
 
   @@index(userId)
 }

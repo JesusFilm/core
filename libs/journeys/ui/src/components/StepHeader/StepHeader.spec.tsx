@@ -28,7 +28,19 @@ describe('StepHeader', () => {
           journey: {
             ...defaultJourney,
             website: true,
-            displayTitle: 'Journey display title'
+            displayTitle: 'Journey display title',
+            logoImageBlock: {
+              __typename: 'ImageBlock',
+              id: 'logoImageBlockId',
+              src: 'https://example.com/logo.png',
+              alt: 'Logo',
+              parentBlockId: null,
+              parentOrder: null,
+              height: 10,
+              width: 10,
+              blurhash: 'blurhash',
+              scale: 1
+            }
           }
         }}
       >
@@ -37,5 +49,10 @@ describe('StepHeader', () => {
     )
 
     expect(screen.getByText('Journey display title')).toBeInTheDocument()
+    expect(screen.getByRole('img')).toHaveAttribute(
+      'src',
+      'https://example.com/logo.png'
+    )
+    expect(screen.getByTestId('StepHeaderMenu')).toBeInTheDocument()
   })
 })

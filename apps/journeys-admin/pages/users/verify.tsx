@@ -17,6 +17,7 @@ import {
   withUserTokenSSR
 } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
+import { NextSeo } from 'next-seo'
 import { ReactElement, useState } from 'react'
 import { number, object } from 'yup'
 
@@ -112,105 +113,108 @@ function ValidateEmail({
   }
 
   return (
-    <OnboardingPageWrapper
-      title={t('Verify Your Email')}
-      emailSubject={t('Validate NextStep Email')}
-      user={user}
-    >
-      <Formik
-        initialValues={{ token }}
-        onSubmit={handleReValidateEmail}
-        validationSchema={validationSchema}
+    <>
+      <NextSeo title={t('Email Verification')} />
+      <OnboardingPageWrapper
+        title={t('Verify Your Email')}
+        emailSubject={t('Validate NextStep Email')}
+        user={user}
       >
-        {({ values, handleChange, handleBlur, errors, touched }) => (
-          <Form noValidate autoComplete="off" data-testid="EmailInviteForm">
-            <Stack textAlign="center">
-              <Stack textAlign="left" spacing={4}>
-                <Typography variant="subtitle2">{email}</Typography>
-                <Typography variant="body1">
-                  {t(
-                    'Email has been sent to this address with a link to verify your account. If you have not received the email after a few minutes, please check your spam folder.'
-                  )}
+        <Formik
+          initialValues={{ token }}
+          onSubmit={handleReValidateEmail}
+          validationSchema={validationSchema}
+        >
+          {({ values, handleChange, handleBlur, errors, touched }) => (
+            <Form noValidate autoComplete="off" data-testid="EmailInviteForm">
+              <Stack textAlign="center">
+                <Stack textAlign="left" spacing={4}>
+                  <Typography variant="subtitle2">{email}</Typography>
+                  <Typography variant="body1">
+                    {t(
+                      'Email has been sent to this address with a link to verify your account. If you have not received the email after a few minutes, please check your spam folder.'
+                    )}
+                  </Typography>
+                  <Button
+                    onClick={handleResendValidationEmail}
+                    variant="contained"
+                    disabled={disableResendButton}
+                    color="secondary"
+                    fullWidth
+                  >
+                    {t('Resend Validation Email')}
+                  </Button>
+                </Stack>
+                <Accordion
+                  sx={{
+                    mt: 7,
+                    bgcolor: 'transparent',
+                    boxShadow: 'none',
+                    border: '1px solid',
+                    borderRadius: '8px !important',
+                    borderColor: 'divider',
+                    '&:before': { opacity: 0 }
+                  }}
+                  elevation={0}
+                >
+                  <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                    <Typography px={4}>
+                      {t('Verify With Code Instead')}
+                    </Typography>
+                  </AccordionSummary>
+                  <AccordionDetails sx={{ textAlign: 'left' }}>
+                    <Stack spacing={4} px={4}>
+                      <Typography variant="body1">
+                        {t('Enter verification code from email')}
+                      </Typography>
+                      <TextField
+                        label={t('Code')}
+                        name="token"
+                        fullWidth
+                        variant="filled"
+                        value={values.token}
+                        autoComplete="off"
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        error={errors.token != null && touched.token != null}
+                        helperText={
+                          <>
+                            {touched?.token != null && errors.token != null
+                              ? errors.token
+                              : ' '}
+                          </>
+                        }
+                      />
+                      <Button
+                        disabled={disableValidationButton}
+                        type="submit"
+                        variant="contained"
+                        color="secondary"
+                        sx={{ mb: 4 }}
+                        fullWidth
+                      >
+                        {t('Validate Email')}
+                      </Button>
+                    </Stack>
+                  </AccordionDetails>
+                </Accordion>
+                <Typography variant="body2" color="error">
+                  {error?.message ?? ' '}
                 </Typography>
                 <Button
-                  onClick={handleResendValidationEmail}
-                  variant="contained"
-                  disabled={disableResendButton}
-                  color="secondary"
+                  onClick={handleLogout}
+                  sx={{ mt: 7 }}
+                  variant="text"
                   fullWidth
                 >
-                  {t('Resend Validation Email')}
+                  {t('Logout')}
                 </Button>
               </Stack>
-              <Accordion
-                sx={{
-                  mt: 7,
-                  bgcolor: 'transparent',
-                  boxShadow: 'none',
-                  border: '1px solid',
-                  borderRadius: '8px !important',
-                  borderColor: 'divider',
-                  '&:before': { opacity: 0 }
-                }}
-                elevation={0}
-              >
-                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                  <Typography px={4}>
-                    {t('Verify With Code Instead')}
-                  </Typography>
-                </AccordionSummary>
-                <AccordionDetails sx={{ textAlign: 'left' }}>
-                  <Stack spacing={4} px={4}>
-                    <Typography variant="body1">
-                      {t('Enter verification code from email')}
-                    </Typography>
-                    <TextField
-                      label={t('Code')}
-                      name="token"
-                      fullWidth
-                      variant="filled"
-                      value={values.token}
-                      autoComplete="off"
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      error={errors.token != null && touched.token != null}
-                      helperText={
-                        <>
-                          {touched?.token != null && errors.token != null
-                            ? errors.token
-                            : ' '}
-                        </>
-                      }
-                    />
-                    <Button
-                      disabled={disableValidationButton}
-                      type="submit"
-                      variant="contained"
-                      color="secondary"
-                      sx={{ mb: 4 }}
-                      fullWidth
-                    >
-                      {t('Validate Email')}
-                    </Button>
-                  </Stack>
-                </AccordionDetails>
-              </Accordion>
-              <Typography variant="body2" color="error">
-                {error?.message ?? ' '}
-              </Typography>
-              <Button
-                onClick={handleLogout}
-                sx={{ mt: 7 }}
-                variant="text"
-                fullWidth
-              >
-                {t('Logout')}
-              </Button>
-            </Stack>
-          </Form>
-        )}
-      </Formik>
-    </OnboardingPageWrapper>
+            </Form>
+          )}
+        </Formik>
+      </OnboardingPageWrapper>
+    </>
   )
 }
 

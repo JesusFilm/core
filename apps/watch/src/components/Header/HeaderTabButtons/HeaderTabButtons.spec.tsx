@@ -39,7 +39,7 @@ describe('HeaderTabButtons', () => {
         </FlagsProvider>
       )
       expect(screen.getByTestId('HeaderTabButtons')).toBeInTheDocument()
-      expect(screen.getByTestId('StrategiesButton')).toBeInTheDocument()
+      expect(screen.getByTestId('ResourcesButton')).toBeInTheDocument()
       expect(screen.getByTestId('JourneysButton')).toBeInTheDocument()
       expect(screen.getByTestId('VideosButton')).toBeInTheDocument()
       expect(screen.getByTestId('CalendarButton')).toBeInTheDocument()
@@ -52,9 +52,9 @@ describe('HeaderTabButtons', () => {
           <HeaderTabButtons />
         </FlagsProvider>
       )
-      expect(screen.getByTestId('StrategiesButton')).toHaveAttribute(
+      expect(screen.getByTestId('ResourcesButton')).toHaveAttribute(
         'href',
-        '/strategies'
+        '/resources'
       )
       expect(screen.getByTestId('JourneysButton')).toHaveAttribute(
         'href',
@@ -131,7 +131,7 @@ describe('HeaderTabButtons', () => {
       const button = screen.getByTestId('DropDownButton')
       fireEvent.click(button)
       expect(
-        screen.getByRole('menuitem', { name: 'Strategies' })
+        screen.getByRole('menuitem', { name: 'Resources' })
       ).toBeInTheDocument()
       expect(
         screen.getByRole('menuitem', { name: 'Journeys' })
@@ -156,8 +156,8 @@ describe('HeaderTabButtons', () => {
       const button = screen.getByTestId('DropDownButton')
       fireEvent.click(button)
       expect(
-        screen.getByRole('menuitem', { name: 'Strategies' })
-      ).toHaveAttribute('href', '/strategies')
+        screen.getByRole('menuitem', { name: 'Resources' })
+      ).toHaveAttribute('href', '/resources')
       expect(
         screen.getByRole('menuitem', { name: 'Journeys' })
       ).toHaveAttribute('href', '/journeys')
