@@ -238,8 +238,7 @@ describe('StepFooter', () => {
           </SnackbarProvider>
         </MockedProvider>
       )
-
-      expect(screen.getByTestId('StepFooterButtonList')).toBeInTheDocument()
+      expect(screen.getAllByTestId('StepFooterButtonList')).toHaveLength(2)
     })
   })
 
