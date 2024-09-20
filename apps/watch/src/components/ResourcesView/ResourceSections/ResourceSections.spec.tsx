@@ -2,23 +2,23 @@ import { render, screen } from '@testing-library/react'
 import { HitsRenderState } from 'instantsearch.js/es/connectors/hits/connectHits'
 import { useHits } from 'react-instantsearch'
 
-import { strategyItems } from './StrategySection/data'
-import { StrategySections } from './StrategySections'
+import { resourceItems } from './ResourceSection/data'
+import { ResourceSections } from './ResourceSections'
 
 jest.mock('react-instantsearch')
 
 const mockedUseHits = useHits as jest.MockedFunction<typeof useHits>
 
-describe('StrategySections', () => {
+describe('ResourceSections', () => {
   beforeEach(() => {
     mockedUseHits.mockReturnValue({
-      hits: strategyItems
+      hits: resourceItems
     } as unknown as HitsRenderState)
     jest.clearAllMocks()
   })
 
-  it('should render strategysections', () => {
-    render(<StrategySections />)
+  it('should render ResourceSections', () => {
+    render(<ResourceSections />)
     expect(screen.getAllByText('Mission Trips')[0]).toBeInTheDocument()
     expect(
       screen.getAllByText('London Bridges 1 One Week')[0]
@@ -30,7 +30,7 @@ describe('StrategySections', () => {
       hits: []
     } as unknown as HitsRenderState)
 
-    render(<StrategySections />)
+    render(<ResourceSections />)
 
     expect(screen.getByText('Sorry, no results')).toBeInTheDocument()
     expect(screen.queryByTestId('StrategySection')).not.toBeInTheDocument()
