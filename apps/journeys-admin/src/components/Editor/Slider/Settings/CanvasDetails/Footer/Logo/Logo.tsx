@@ -169,7 +169,12 @@ export function Logo(): ReactElement {
         void imageBlockUpdate({
           variables: {
             id: imageBlock.id,
-            input: pick(block, Object.keys(input))
+            input: pick(block, [
+              ...Object.keys(input),
+              'width',
+              'height',
+              'blurhash'
+            ])
           },
           optimisticResponse: {
             imageBlockUpdate: block
