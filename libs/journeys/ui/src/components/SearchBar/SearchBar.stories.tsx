@@ -28,7 +28,10 @@ const Template: StoryObj<ComponentProps<typeof SearchBar> & { query: string }> =
       <InstantSearchTestWrapper query={args.query}>
         <SearchBarProvider>
           <MockedProvider mocks={[getLanguagesContinentsMock]}>
-            <SearchBar showLanguageButton={args.showLanguageButton} />
+            <SearchBar
+              showDropdown={args.showDropdown}
+              showLanguageButton={args.showLanguageButton}
+            />
           </MockedProvider>
         </SearchBarProvider>
       </InstantSearchTestWrapper>
@@ -63,9 +66,29 @@ export const Search = {
   }
 }
 
+export const Dropdown = {
+  ...Template,
+  args: {
+    showDropdown: true
+  },
+  parameters: {
+    msw: {
+      handlers: [getLanguageFacetHandlers]
+    }
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    const canvas = within(canvasElement)
+    await waitFor(async () => {
+      await expect(canvas.getByTestId('SearchBarInput')).toBeInTheDocument()
+    })
+    await userEvent.click(canvas.getByTestId('SearchBarInput'))
+  }
+}
+
 export const Language = {
   ...Template,
   args: {
+    showDropdown: true,
     showLanguageButton: true
   },
   parameters: {
@@ -76,9 +99,9 @@ export const Language = {
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     const canvas = within(canvasElement)
     await waitFor(async () => {
-      await expect(canvas.getByText('Language')).toBeInTheDocument()
+      await expect(canvas.getAllByText('Language')[0]).toBeInTheDocument()
     })
-    await userEvent.click(canvas.getByText('Language'))
+    await userEvent.click(canvas.getAllByText('Language')[0])
   }
 }
 
@@ -86,6 +109,7 @@ export const NoLanguages = {
   ...Template,
   args: {
     query: 'abcdefghijklmnopqrstuvwxyz',
+    showDropdown: true,
     showLanguageButton: true
   },
   parameters: {
@@ -96,9 +120,9 @@ export const NoLanguages = {
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     const canvas = within(canvasElement)
     await waitFor(async () => {
-      await expect(canvas.getByText('Language')).toBeInTheDocument()
+      await expect(canvas.getAllByText('Language')[0]).toBeInTheDocument()
     })
-    await userEvent.click(canvas.getByText('Language'))
+    await userEvent.click(canvas.getAllByText('Language')[0])
     expect(
       screen.getByText(
         'Sorry, there are no languages available for this search. Try removing some of your search criteria!'
