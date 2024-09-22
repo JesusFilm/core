@@ -75,6 +75,7 @@ export function SocialPreviewNode(): ReactElement {
       onSourceConnect={handleSourceConnect}
       isSourceConnected
       positionTargetHandle={false}
+      sourceHandleProps={{ isConnectableStart: showAnalytics === false }}
     >
       {({ selected }) => (
         <Card
