@@ -1,1 +1,0 @@
-export { StrategiesView } from './StrategiesView'

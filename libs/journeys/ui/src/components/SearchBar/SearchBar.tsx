@@ -103,7 +103,7 @@ export function SearchBar({
     setOpen(!open)
   }
 
-  const [languageContinents, setLanguageContinents] =
+  const [allContinentLanguages, setAllContinentLanguages] =
     useState<LanguageContinentsRecord>({})
   const [isPreparingDropdown, setIsPreparingDropdown] = useState(false)
   const [getLanguages] = useLanguagesContinentsLazyQuery()
@@ -115,7 +115,7 @@ export function SearchBar({
     const languages = sortLanguageContinents({
       languages: result.data?.languages ?? []
     })
-    setLanguageContinents(languages)
+    setAllContinentLanguages(languages)
     dispatch({
       type: 'SetAllContinentLanguages',
       allContinentLanguages: languages
@@ -124,7 +124,7 @@ export function SearchBar({
 
   async function prepareDropdown(): Promise<void> {
     if (!isPreparingDropdown) {
-      setIsPreparingDropdown(true) // Trigger import of dropdown closed
+      setIsPreparingDropdown(true)
       await getLanguageContinents()
     }
   }
@@ -154,6 +154,10 @@ export function SearchBar({
           }}
           data-testid="SearchBar"
           ref={popperRef}
+          onMouseEnter={prepareDropdown}
+          onTouchStart={prepareDropdown}
+          onClick={prepareDropdown}
+          onFocus={prepareDropdown}
         >
           <Formik
             initialValues={{
@@ -210,23 +214,25 @@ export function SearchBar({
               </>
             )}
           </Formik>
-          <Box
-            sx={{
-              [theme.breakpoints.up('lg')]: { display: 'none' }
-            }}
-          >
-            <Divider variant="middle" orientation="horizontal" />
-            <LanguageButtons
-              onClick={handleLanguageClick}
-              refinements={refinements}
-            />
-          </Box>
+          {showLanguageButton && (
+            <Box
+              sx={{
+                [theme.breakpoints.up('lg')]: { display: 'none' }
+              }}
+            >
+              <Divider variant="middle" orientation="horizontal" />
+              <LanguageButtons
+                onClick={handleLanguageClick}
+                refinements={refinements}
+              />
+            </Box>
+          )}
         </Box>
         {showDropdown && (
           <SearchbarDropdown
             open={open}
             refinements={refinements}
-            languages={languageContinents}
+            languages={allContinentLanguages}
             countryCode={countryCode}
             id={open ? 'simple-popper' : undefined}
             anchorEl={anchorEl}

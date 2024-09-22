@@ -8,8 +8,8 @@ import { useHits, useRefinementList, useSearchBox } from 'react-instantsearch'
 import { SearchBarProvider } from '@core/journeys/ui/algolia/SearchBarProvider'
 import { fetchCountryMock } from '@core/journeys/ui/SearchBar/data'
 
-import { StrategiesView } from './StrategiesView'
-import { strategyItems } from './StrategySections/StrategySection/data'
+import { resourceItems } from './ResourceSections/ResourceSection/data'
+import { ResourcesView } from './ResourcesView'
 
 global.fetch = jest.fn(fetchCountryMock) as jest.Mock
 
@@ -23,7 +23,7 @@ const mockUseRefinementList = useRefinementList as jest.MockedFunction<
   typeof useRefinementList
 >
 
-describe('StrategiesView', () => {
+describe('ResourcesView', () => {
   const refine = jest.fn()
 
   const useSearchBox = {
@@ -32,7 +32,7 @@ describe('StrategiesView', () => {
   } as unknown as SearchBoxRenderState
 
   const useHits = {
-    hits: strategyItems
+    hits: resourceItems
   } as unknown as HitsRenderState
 
   const useRefinementsList = {
@@ -56,11 +56,11 @@ describe('StrategiesView', () => {
     render(
       <MockedProvider>
         <SearchBarProvider>
-          <StrategiesView />
+          <ResourcesView />
         </SearchBarProvider>
       </MockedProvider>
     )
-    expect(screen.getByText('Resource for every')).toBeInTheDocument()
+    expect(screen.getByText('Resources for every')).toBeInTheDocument()
     expect(screen.getByText('interaction')).toBeInTheDocument()
   })
 
@@ -68,21 +68,21 @@ describe('StrategiesView', () => {
     render(
       <MockedProvider>
         <SearchBarProvider>
-          <StrategiesView />
+          <ResourcesView />
         </SearchBarProvider>
       </MockedProvider>
     )
     expect(screen.getByTestId('SearchBar')).toBeInTheDocument()
   })
 
-  it('should render strategy sections', () => {
+  it('should render resource sections', () => {
     render(
       <MockedProvider>
         <SearchBarProvider>
-          <StrategiesView />
+          <ResourcesView />
         </SearchBarProvider>
       </MockedProvider>
     )
-    expect(screen.getByTestId('StrategySections')).toBeInTheDocument()
+    expect(screen.getByTestId('ResourceSections')).toBeInTheDocument()
   })
 })

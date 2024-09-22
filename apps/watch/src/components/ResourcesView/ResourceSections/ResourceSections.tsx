@@ -4,15 +4,15 @@ import { Index } from 'react-instantsearch'
 
 import { EmptySearch } from '@core/journeys/ui/EmptySearch'
 
-import { StrategySection } from './StrategySection/StrategySection'
+import { ResourceSection } from './ResourceSection'
 
-interface StrategySectionsProps {
+interface ResourceSectionsProps {
   includeIndex?: boolean
 }
 
-export function StrategySections({
+export function ResourceSections({
   includeIndex = false
-}: StrategySectionsProps): ReactElement {
+}: ResourceSectionsProps): ReactElement {
   const indexes = [
     'wp_prd_posts_equipment',
     'wp_prd_posts_training_strategies',
@@ -32,14 +32,14 @@ export function StrategySections({
   }
 
   return (
-    <Stack data-testid="StrategySections" sx={{ pt: 0, gap: 10 }}>
+    <Stack data-testid="ResourceSections" sx={{ pt: 0, gap: 10 }}>
       {!hasResult && <EmptySearch />}
       {includeIndex ? (
         <Index indexName={indexes[0]}>
-          <StrategySection index={0} handleItemSearch={handleItemSearch} />
+          <ResourceSection index={0} handleItemSearch={handleItemSearch} />
           {indexes.slice(1).map((indexName, index) => (
             <Index key={index} indexName={indexName}>
-              <StrategySection
+              <ResourceSection
                 index={index + 1}
                 handleItemSearch={handleItemSearch}
               />
@@ -49,7 +49,7 @@ export function StrategySections({
       ) : (
         <>
           {indexes.map((indexName, index) => (
-            <StrategySection
+            <ResourceSection
               key={indexName}
               index={index + 1}
               handleItemSearch={handleItemSearch}
