@@ -8,7 +8,7 @@ import NextLink from 'next/link'
 import { ReactElement } from 'react'
 import { useHits } from 'react-instantsearch'
 
-export interface StrategyItemProps {
+export interface ResourceItemProps {
   id: string
   title: string
   description: string
@@ -16,22 +16,22 @@ export interface StrategyItemProps {
   link: string
 }
 
-interface StrategyCardProps {
-  item?: StrategyItemProps
+interface ResourceCardProps {
+  item?: ResourceItemProps
   priority?: boolean
 }
 
-export function StrategyCard({
+export function ResourceCard({
   item,
   priority = true
-}: StrategyCardProps): ReactElement {
+}: ResourceCardProps): ReactElement {
   const { hits, sendEvent } = useHits()
   const hit = hits.filter((hit) => hit.objectID === item?.id)
 
   return (
     <Card
-      data-testid="StrategyCard"
-      aria-label="StrategyCard"
+      data-testid="ResourceCard"
+      aria-label="ResourceCard"
       tabIndex={0}
       sx={{
         border: 'none',
@@ -64,7 +64,7 @@ export function StrategyCard({
         <Box
           component="a"
           tabIndex={-1}
-          data-testid="StrategyCardLink"
+          data-testid="ResourceCardLink"
           sx={{
             height: 'inherit',
             color: 'inherit',
@@ -72,7 +72,7 @@ export function StrategyCard({
           }}
           onClick={(event) => {
             event.stopPropagation()
-            sendEvent('click', hit, 'Strategy Clicked')
+            sendEvent('click', hit, 'Resource Clicked')
           }}
         >
           <Stack
