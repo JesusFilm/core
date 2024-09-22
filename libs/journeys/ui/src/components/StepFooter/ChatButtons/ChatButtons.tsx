@@ -118,7 +118,9 @@ export function ChatButtons(): ReactElement {
             },
             boxShadow: (theme) =>
               journey?.website === true
-                ? `0px 6px 6px ${theme.palette.grey[900]}60`
+                ? index === 0
+                  ? `0px 6px 6px ${theme.palette.grey[900]}60`
+                  : `0px 6px 6px ${theme.palette.grey[900]}70`
                 : undefined
           }}
         >
